@@ -58,7 +58,7 @@
       </tr>
       <tr>
         <td class="txtlibform"><fmt:message key="GML.export.duration"/> :</td>
-        <td>${silfn:getTimeData(report.duration).formattedDurationAsHMS}</td>
+        <td>${silfn:getDuration(report.duration).formattedDurationAsHMS}</td>
       </tr>
     </table>
   </c:otherwise>

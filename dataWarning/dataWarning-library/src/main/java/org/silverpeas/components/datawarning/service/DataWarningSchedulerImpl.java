@@ -36,10 +36,10 @@ import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.notification.user.client.UserRecipient;
+import org.silverpeas.core.scheduler.Job;
+import org.silverpeas.core.scheduler.JobExecutionContext;
 import org.silverpeas.core.scheduler.ScheduledJob;
 import org.silverpeas.core.scheduler.Scheduler;
-import org.silverpeas.core.scheduler.SchedulerEvent;
-import org.silverpeas.core.scheduler.SchedulerEventListener;
 import org.silverpeas.core.scheduler.SchedulerProvider;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.util.LocalizationBundle;
@@ -54,7 +54,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
-public class DataWarningSchedulerImpl implements SchedulerEventListener {
+public class DataWarningSchedulerImpl {
 
   public static final String DATAWARNING_JOB_NAME = "DataWarning";
   private static final String MAIL_TITLE_KEY = "titreMail";
@@ -91,7 +91,7 @@ public class DataWarningSchedulerImpl implements SchedulerEventListener {
       }
       idAllUniqueUsers = hs.toArray(new String[idAllUniqueUsers.length]);
 
-      this.scheduler = SchedulerProvider.getScheduler();
+      this.scheduler = SchedulerProvider.getVolatileScheduler();
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e);
     }
@@ -111,8 +111,13 @@ public class DataWarningSchedulerImpl implements SchedulerEventListener {
       if (startDate.after(new Date())) {
         trigger.startAt(startDate);
       }
-      theJob = scheduler.scheduleJob(jobName, trigger, this);
-      dataWarningEngine.updateSchedulerWakeUp(theJob.getNexExecutionTimeInMillis());
+      theJob = scheduler.scheduleJob(new Job(jobName) {
+        @Override
+        public void execute(final JobExecutionContext context) {
+          doDataWarningSchedulerImpl();
+        }
+      }, trigger);
+      dataWarningEngine.updateSchedulerWakeUp(theJob.getNextExecutionTime().getTime());
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e);
     }
@@ -180,7 +185,7 @@ public class DataWarningSchedulerImpl implements SchedulerEventListener {
         }
 
         // Re-init the WakeUp time to the next wake time
-        dataWarningEngine.updateSchedulerWakeUp(theJob.getNexExecutionTimeInMillis());
+        dataWarningEngine.updateSchedulerWakeUp(theJob.getNextExecutionTime().getTime());
       } catch (Exception e) {
         SilverLogger.getLogger(this).error(e);
       }
@@ -308,20 +313,5 @@ public class DataWarningSchedulerImpl implements SchedulerEventListener {
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e);
     }
-  }
-
-  @Override
-  public void triggerFired(SchedulerEvent anEvent) throws Exception {
-    doDataWarningSchedulerImpl();
-  }
-
-  @Override
-  public void jobSucceeded(SchedulerEvent anEvent) {
-    // nothing to do
-  }
-
-  @Override
-  public void jobFailed(SchedulerEvent anEvent) {
-    // nothing to do
   }
 }

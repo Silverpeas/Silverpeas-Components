@@ -26,7 +26,6 @@ package org.silverpeas.components.silvercrawler.servlets.handlers;
 
 import org.silverpeas.components.silvercrawler.control.SilverCrawlerSessionController;
 import org.silverpeas.components.silvercrawler.model.SilverCrawlerForbiddenActionException;
-import org.silverpeas.core.exception.SilverpeasException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
@@ -45,8 +44,7 @@ public class IndexSelectedFilesHandler extends FunctionHandler {
     // checks that users has admin profile
     String userHighestRole = getUserHighestRole(sessionController);
     if (!userHighestRole.equals("admin")) {
-      throw new SilverCrawlerForbiddenActionException("IndexSelectedFilesHandler.getDestination",
-          SilverpeasException.ERROR, "User is not manager of this component");
+      throw new SilverCrawlerForbiddenActionException("User is not manager of this component");
     }
 
     // retrieves file list

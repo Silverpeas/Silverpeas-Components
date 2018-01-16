@@ -7,7 +7,6 @@ import org.silverpeas.components.suggestionbox.notification
     .SuggestionPendingValidationUserNotification;
 import org.silverpeas.components.suggestionbox.notification.SuggestionValidationUserNotification;
 import org.silverpeas.components.suggestionbox.repository.SuggestionRepository;
-import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.ContributionStatus;
@@ -16,7 +15,7 @@ import org.silverpeas.core.contribution.model.ContributionValidation;
 import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import org.silverpeas.core.persistence.Transaction;
-import org.silverpeas.core.util.CollectionUtil;
+import org.silverpeas.core.util.Process;
 
 import javax.enterprise.inject.Vetoed;
 import java.util.Collection;
@@ -97,7 +96,7 @@ public class SuggestionCollection implements Collection<Suggestion> {
    * @param uploadedFiles a collection of file to attach to the suggestion.
    */
   public void add(final Suggestion suggestion, final Collection<UploadedFile> uploadedFiles) {
-    Transaction.performInOne((Transaction.Process<Void>) () -> {
+    Transaction.performInOne((Process<Void>) () -> {
       final SuggestionRepository suggestionRepository = getSuggestionRepository();
       SuggestionBox actual =
           SuggestionBox.getByComponentInstanceId(suggestionBox.getComponentInstanceId());
@@ -122,16 +121,12 @@ public class SuggestionCollection implements Collection<Suggestion> {
   @Override
   public boolean remove(Object aSuggestion) {
     final Suggestion suggestion = (Suggestion) aSuggestion;
-    boolean r = Transaction.performInOne(new Transaction.Process<Boolean>() {
-      @Override
-      public Boolean execute() {
-        final SuggestionRepository suggestionRepository = getSuggestionRepository();
-        Suggestion actual = suggestionRepository.getById(suggestion.getId());
-        suggestionRepository.delete(actual);
-        return true;
-      }
+    return Transaction.performInOne(() -> {
+      final SuggestionRepository suggestionRepository = getSuggestionRepository();
+      Suggestion actual = suggestionRepository.getById(suggestion.getId());
+      suggestionRepository.delete(actual);
+      return true;
     });
-    return r;
   }
 
   @Override
@@ -143,44 +138,37 @@ public class SuggestionCollection implements Collection<Suggestion> {
 
   @Override
   public boolean addAll(final Collection<? extends Suggestion> suggestions) {
-    Transaction.performInOne(new Transaction.Process<Void>() {
-      @Override
-      public Void execute() {
-        final SuggestionRepository suggestionRepository = getSuggestionRepository();
-        for (Suggestion suggestion : suggestions) {
-          SuggestionBox actual =
-              SuggestionBox.getByComponentInstanceId(suggestionBox.getComponentInstanceId());
-          suggestion.setSuggestionBox(actual);
-          actual.persistedSuggestions().add(suggestion);
-          suggestionRepository.save(suggestion);
-        }
-        return null;
+    Transaction.performInOne((Process<Void>) () -> {
+      final SuggestionRepository suggestionRepository = getSuggestionRepository();
+      for (Suggestion suggestion : suggestions) {
+        SuggestionBox actual =
+            SuggestionBox.getByComponentInstanceId(suggestionBox.getComponentInstanceId());
+        suggestion.setSuggestionBox(actual);
+        actual.persistedSuggestions().add(suggestion);
+        suggestionRepository.save(suggestion);
       }
+      return null;
     });
     return true;
   }
 
   @Override
   public boolean removeAll(final Collection<?> theSuggestions) {
-    boolean r = Transaction.performInOne(new Transaction.Process<Boolean>() {
-      @Override
-      public Boolean execute() {
-        final Collection<Suggestion> suggestions = (Collection<Suggestion>) theSuggestions;
-        final SuggestionRepository suggestionRepository = getSuggestionRepository();
-        Boolean changed = false;
-        for (Suggestion suggestion : suggestions) {
-          Suggestion actual = suggestionRepository.getById(suggestion.getId());
-          if (suggestion.getSuggestionBox().equals(suggestionBox) &&
-              (actual.getValidation().isInDraft() || actual.
-                  getValidation().isRefused())) {
-            suggestionRepository.delete(actual);
-            changed = true;
-          }
+    return Transaction.performInOne(() -> {
+      final Collection<Suggestion> suggestions = (Collection<Suggestion>) theSuggestions;
+      final SuggestionRepository suggestionRepository = getSuggestionRepository();
+      Boolean changed = false;
+      for (Suggestion suggestion : suggestions) {
+        Suggestion actual = suggestionRepository.getById(suggestion.getId());
+        if (suggestion.getSuggestionBox().equals(suggestionBox) &&
+            (actual.getValidation().isInDraft() || actual.
+                getValidation().isRefused())) {
+          suggestionRepository.delete(actual);
+          changed = true;
         }
-        return changed;
       }
+      return changed;
     });
-    return r;
   }
 
   @Override
@@ -281,31 +269,27 @@ public class SuggestionCollection implements Collection<Suggestion> {
     // Persisting the publishing.
     final SuggestionRepository suggestionRepository = getSuggestionRepository();
     Pair<Suggestion, Boolean> result =
-        Transaction.performInOne(new Transaction.Process<Pair<Suggestion, Boolean>>() {
-              @Override
-              public Pair<Suggestion, Boolean> execute() {
-                boolean triggerNotif = false;
-                Suggestion actual = get(suggestion.getId());
-                if (actual.getValidation().isInDraft() || actual.getValidation().isRefused()) {
-                  User updater = suggestion.getLastUpdater();
-                  SilverpeasRole highestUserRole = suggestionBox.getHighestUserRole(updater);
-                  if (highestUserRole.isGreaterThanOrEquals(SilverpeasRole.writer)) {
-                    ContributionValidation validation = actual.getValidation();
-                    if (highestUserRole.isGreaterThanOrEquals(SilverpeasRole.publisher)) {
-                      validation.setStatus(ContributionStatus.VALIDATED);
-                      validation.setDate(new Date());
-                      validation.setValidator(updater);
-                    } else {
-                      validation.setStatus(ContributionStatus.PENDING_VALIDATION);
-                    }
-                    suggestionRepository.save(actual);
-                    triggerNotif = true;
-                  }
-                }
-                return Pair.of(actual, triggerNotif);
+        Transaction.performInOne(() -> {
+          boolean triggerNotif = false;
+          Suggestion actual = get(suggestion.getId());
+          if (actual.getValidation().isInDraft() || actual.getValidation().isRefused()) {
+            User updater = suggestion.getLastUpdater();
+            SilverpeasRole highestUserRole = suggestionBox.getHighestUserRole(updater);
+            if (highestUserRole.isGreaterThanOrEquals(SilverpeasRole.writer)) {
+              ContributionValidation validation = actual.getValidation();
+              if (highestUserRole.isGreaterThanOrEquals(SilverpeasRole.publisher)) {
+                validation.setStatus(ContributionStatus.VALIDATED);
+                validation.setDate(new Date());
+                validation.setValidator(updater);
+              } else {
+                validation.setStatus(ContributionStatus.PENDING_VALIDATION);
               }
+              suggestionRepository.save(actual);
+              triggerNotif = true;
             }
-        );
+          }
+          return Pair.of(actual, triggerNotif);
+        });
 
     // Sending notification after the persistence is successfully committed.
     Suggestion updatedSuggestion = result.getLeft();
@@ -319,6 +303,8 @@ public class SuggestionCollection implements Collection<Suggestion> {
           suggestionRepository.index(updatedSuggestion);
           UserNotificationHelper
               .buildAndSend(new SuggestionBoxSubscriptionUserNotification(updatedSuggestion));
+          break;
+        default:
           break;
       }
     }
@@ -342,28 +328,24 @@ public class SuggestionCollection implements Collection<Suggestion> {
     // Persisting the validation.
     final SuggestionRepository suggestionRepository = getSuggestionRepository();
     Pair<Suggestion, Boolean> result =
-        Transaction.performInOne(new Transaction.Process<Pair<Suggestion, Boolean>>() {
-              @Override
-              public Pair<Suggestion, Boolean> execute() {
-                boolean triggerNotif = false;
-                Suggestion actual = get(suggestion.getId());
-                if (actual.getValidation().isPendingValidation()) {
-                  User updater = suggestion.getLastUpdater();
-                  SilverpeasRole highestUserRole = suggestionBox.getHighestUserRole(updater);
-                  if (highestUserRole.isGreaterThanOrEquals(SilverpeasRole.publisher)) {
-                    ContributionValidation actualValidation = actual.getValidation();
-                    actualValidation.setStatus(validation.getStatus());
-                    actualValidation.setComment(validation.getComment());
-                    actualValidation.setDate(new Date());
-                    actualValidation.setValidator(updater);
-                  }
-                  suggestionRepository.save(actual);
-                  triggerNotif = true;
-                }
-                return Pair.of(actual, triggerNotif);
-              }
+        Transaction.performInOne(() -> {
+          boolean triggerNotif = false;
+          Suggestion actual = get(suggestion.getId());
+          if (actual.getValidation().isPendingValidation()) {
+            User updater = suggestion.getLastUpdater();
+            SilverpeasRole highestUserRole = suggestionBox.getHighestUserRole(updater);
+            if (highestUserRole.isGreaterThanOrEquals(SilverpeasRole.publisher)) {
+              ContributionValidation actualValidation = actual.getValidation();
+              actualValidation.setStatus(validation.getStatus());
+              actualValidation.setComment(validation.getComment());
+              actualValidation.setDate(new Date());
+              actualValidation.setValidator(updater);
             }
-        );
+            suggestionRepository.save(actual);
+            triggerNotif = true;
+          }
+          return Pair.of(actual, triggerNotif);
+        });
 
     // Sending notification(s) after the persistence is successfully committed.
     Suggestion updatedSuggestion = result.getLeft();
@@ -373,10 +355,14 @@ public class SuggestionCollection implements Collection<Suggestion> {
           suggestionRepository.index(updatedSuggestion);
           UserNotificationHelper
               .buildAndSend(new SuggestionBoxSubscriptionUserNotification(updatedSuggestion));
-        case REFUSED:
-          // The below notification is sent on VALIDATED or REFUSED status.
           UserNotificationHelper
               .buildAndSend(new SuggestionValidationUserNotification(updatedSuggestion));
+          break;
+        case REFUSED:
+          UserNotificationHelper
+              .buildAndSend(new SuggestionValidationUserNotification(updatedSuggestion));
+          break;
+        default:
           break;
       }
     }

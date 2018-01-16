@@ -28,9 +28,7 @@ import org.silverpeas.components.mailinglist.service.job.MessageChecker;
 import org.silverpeas.components.mailinglist.service.model.MailingListService;
 import org.silverpeas.components.mailinglist.service.model.beans.MailingList;
 import org.silverpeas.core.initialization.Initialization;
-import org.silverpeas.core.scheduler.Scheduler;
 import org.silverpeas.core.scheduler.SchedulerException;
-import org.silverpeas.core.scheduler.SchedulerProvider;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.scheduler.trigger.TimeUnit;
 import org.silverpeas.core.util.ResourceLocator;
@@ -42,7 +40,6 @@ import java.util.List;
 
 public class MailCheckerInitialize implements Initialization {
 
-  public static final String MAILING_LIST_JOB_NAME = "mailingListScheduler";
   @Inject
   private MessageChecker messageChecker;
   @Inject
@@ -69,16 +66,13 @@ public class MailCheckerInitialize implements Initialization {
   @Override
   public void init() throws Exception {
     try {
-      Scheduler scheduler = SchedulerProvider.getScheduler();
-      if (scheduler.isJobScheduled(MAILING_LIST_JOB_NAME)) {
-        scheduler.unscheduleJob(MAILING_LIST_JOB_NAME);
-      }
+      MessageChecker checker = getMessageChecker();
+      checker.unschedule();
       if (hasToCheckForNewMails()) {
         SilverLogger.getLogger(this).debug("Check mails from mailing lists every "
         + getFrequency() + " minutes");
-        MessageChecker checker = getMessageChecker();
         JobTrigger trigger = JobTrigger.triggerEvery(getFrequency(), TimeUnit.MINUTE);
-        scheduler.scheduleJob(MAILING_LIST_JOB_NAME, trigger, checker);
+        checker.schedule(trigger);
         List<MailingList> mailingLists = getMailingListService().listAllMailingLists();
         for (MailingList list : mailingLists) {
           MailingListComponent component = new MailingListComponent(list.getComponentId());

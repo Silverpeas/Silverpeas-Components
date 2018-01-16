@@ -23,21 +23,19 @@
  */
 package org.silverpeas.components.quickinfo.web;
 
-import java.math.BigDecimal;
-import java.net.URI;
-import java.util.Date;
+import org.silverpeas.components.quickinfo.model.News;
+import org.silverpeas.core.date.TimeUnit;
+import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.UnitUtil;
+import org.silverpeas.core.util.time.Duration;
+import org.silverpeas.core.webapi.base.WebEntity;
 
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlElement;
-
-import org.silverpeas.core.webapi.base.WebEntity;
-import org.silverpeas.components.quickinfo.model.News;
-import org.silverpeas.core.util.UnitUtil;
-import org.silverpeas.core.util.time.TimeData;
-import org.silverpeas.core.util.time.TimeUnit;
-
-import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
-import org.silverpeas.core.util.DateUtil;
+import java.math.BigDecimal;
+import java.net.URI;
+import java.util.Date;
 
 public class NewsEntity implements WebEntity {
 
@@ -171,15 +169,15 @@ public class NewsEntity implements WebEntity {
   
   @XmlElement
   public String getPublishedFor() {
-    TimeData timeData = UnitUtil.getTimeData(DateUtil.getNow().getTime() - getDate().getTime());
-    TimeUnit bestUnit = timeData.getBestUnit();
-    return UnitUtil.getTimeData(new BigDecimal(String.valueOf(timeData.getBestValue().intValue())),
+    Duration duration = UnitUtil.getDuration(DateUtil.getNow().getTime() - getDate().getTime());
+    TimeUnit bestUnit = duration.getBestUnit();
+    return UnitUtil.getDuration(new BigDecimal(String.valueOf(duration.getBestValue().intValue())),
         bestUnit).getBestDisplayValue();
   }
   
   @XmlElement
   public int getPublishedForNbDays() {
-    return UnitUtil.getTimeData(DateUtil.getNow().getTime() - getDate().getTime())
+    return UnitUtil.getDuration(DateUtil.getNow().getTime() - getDate().getTime())
         .getTimeConverted(TimeUnit.DAY).intValue();
   }
   

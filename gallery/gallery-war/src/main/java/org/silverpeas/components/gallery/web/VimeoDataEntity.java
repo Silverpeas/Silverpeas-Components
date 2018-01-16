@@ -24,11 +24,11 @@
 package org.silverpeas.components.gallery.web;
 
 import org.silverpeas.components.gallery.constant.StreamingProvider;
+import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.io.media.Definition;
 import org.silverpeas.core.webapi.media.MediaDefinitionEntity;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.UnitUtil;
-import org.silverpeas.core.util.time.TimeUnit;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -52,7 +52,7 @@ public class VimeoDataEntity extends StreamingProviderDataEntity {
     // duration.
     if (StringUtil.isInteger(oembedVimeoData.getDuration())) {
       setFormattedDurationHMS(
-          UnitUtil.getTimeData(Long.valueOf(oembedVimeoData.getDuration()), TimeUnit.SEC)
+          UnitUtil.getDuration(Long.valueOf(oembedVimeoData.getDuration()), TimeUnit.SECOND)
               .getFormattedDurationAsHMS());
     }
 

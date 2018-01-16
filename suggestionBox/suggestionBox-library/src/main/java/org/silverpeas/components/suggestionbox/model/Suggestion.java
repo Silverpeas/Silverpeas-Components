@@ -36,6 +36,7 @@ import org.silverpeas.core.contribution.rating.model.Rateable;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
+import org.silverpeas.core.util.Process;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -219,7 +220,7 @@ public class Suggestion extends SilverpeasJpaEntity<Suggestion, UuidIdentifier>
    */
   public void save() {
     final Suggestion suggestion = this;
-    Transaction.performInOne((Transaction.Process<Void>) () -> {
+    Transaction.performInOne((Process<Void>) () -> {
       SuggestionRepository.get().save(suggestion);
       return null;
     });

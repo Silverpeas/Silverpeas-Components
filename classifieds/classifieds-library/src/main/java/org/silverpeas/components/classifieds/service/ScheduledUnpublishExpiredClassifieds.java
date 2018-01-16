@@ -52,12 +52,12 @@ public class ScheduledUnpublishExpiredClassifieds implements SchedulerEventListe
   private ClassifiedService classifiedService;
 
   public static final String CLASSIFIEDSENGINE_JOB_NAME = "ClassifiedsEngineJobDelete";
-  private SettingBundle settings =
-      ResourceLocator.getSettingBundle("org.silverpeas.classifieds.settings.classifiedsSettings");
 
   @Override
   public void init() throws Exception{
     try {
+      SettingBundle settings =
+          ResourceLocator.getSettingBundle("org.silverpeas.classifieds.settings.classifiedsSettings");
       String cron = settings.getString("cronScheduledDeleteClassifieds");
       scheduler.unscheduleJob(CLASSIFIEDSENGINE_JOB_NAME);
       JobTrigger trigger = JobTrigger.triggerAt(cron);
@@ -74,8 +74,9 @@ public class ScheduledUnpublishExpiredClassifieds implements SchedulerEventListe
       String[] instanceIds = organizationController.getCompoId("classifieds");
 
       // Get default expiration delay from properties
+      SettingBundle settings =
+          ResourceLocator.getSettingBundle("org.silverpeas.classifieds.settings.classifiedsSettings");
       int defaultExpirationDelay = settings.getInteger("nbDaysForDeleteClassifieds");
-
 
       // Iterate over all instances
       for (String instanceId : instanceIds) {
@@ -108,7 +109,7 @@ public class ScheduledUnpublishExpiredClassifieds implements SchedulerEventListe
   }
 
   @Override
-  public void triggerFired(SchedulerEvent anEvent) throws Exception {
+  public void triggerFired(SchedulerEvent anEvent) {
     doScheduledDeleteClassifieds();
   }
 

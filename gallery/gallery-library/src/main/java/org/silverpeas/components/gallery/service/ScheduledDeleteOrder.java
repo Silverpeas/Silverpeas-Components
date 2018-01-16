@@ -25,36 +25,34 @@ package org.silverpeas.components.gallery.service;
 
 import org.silverpeas.components.gallery.model.GalleryRuntimeException;
 import org.silverpeas.components.gallery.model.Order;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.scheduler.Scheduler;
 import org.silverpeas.core.scheduler.SchedulerEvent;
 import org.silverpeas.core.scheduler.SchedulerEventListener;
 import org.silverpeas.core.scheduler.SchedulerProvider;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.List;
 
 public class ScheduledDeleteOrder implements SchedulerEventListener {
 
   public static final String GALLERYENGINE_JOB_NAME = "GalleryEngineJobOrder";
-  private SettingBundle resources =
-      ResourceLocator.getSettingBundle("org.silverpeas.gallery.settings.gallerySettings");
 
   public void initialize() {
-
     try {
+      SettingBundle resources =
+          ResourceLocator.getSettingBundle("org.silverpeas.gallery.settings.gallerySettings");
       String cron = resources.getString("cronScheduledDeleteOrder");
-      Scheduler scheduler = SchedulerProvider.getScheduler();
+      Scheduler scheduler = SchedulerProvider.getVolatileScheduler();
       scheduler.unscheduleJob(GALLERYENGINE_JOB_NAME);
       JobTrigger trigger = JobTrigger.triggerAt(cron);
       scheduler.scheduleJob(GALLERYENGINE_JOB_NAME, trigger, this);
     } catch (Exception e) {
-      SilverTrace.error("gallery", "ScheduledDeleteOrder.initialize()",
-          "gallery.EX_CANT_INIT_SCHEDULED_DELETE_ORDER", e);
+      SilverLogger.getLogger(this).error(e);
     }
   }
 
@@ -62,6 +60,8 @@ public class ScheduledDeleteOrder implements SchedulerEventListener {
 
     try {
       // recherche du nombre de jours avant suppression
+      SettingBundle resources =
+          ResourceLocator.getSettingBundle("org.silverpeas.gallery.settings.gallerySettings");
       int nbDays = resources.getInteger("nbDaysForDeleteOrder");
       // rechercher toutes les demandes arrivant à échéance
       List<Order> orders = getGalleryBm().getAllOrderToDelete(nbDays);
@@ -80,7 +80,7 @@ public class ScheduledDeleteOrder implements SchedulerEventListener {
   }
 
   @Override
-  public void triggerFired(SchedulerEvent anEvent) throws Exception {
+  public void triggerFired(SchedulerEvent anEvent) {
     doScheduledDeleteOrder();
   }
 
@@ -91,8 +91,7 @@ public class ScheduledDeleteOrder implements SchedulerEventListener {
 
   @Override
   public void jobFailed(SchedulerEvent anEvent) {
-    SilverTrace.error("gallery",
-        "ScheduledDeleteOrder.handleSchedulerEvent", "The job '"
+    SilverLogger.getLogger(this).error("The job '"
         + anEvent.getJobExecutionContext().getJobName() + "' was not successfull");
   }
 }

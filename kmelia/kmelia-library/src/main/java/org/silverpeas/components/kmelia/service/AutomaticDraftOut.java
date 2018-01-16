@@ -20,38 +20,36 @@
  */
 package org.silverpeas.components.kmelia.service;
 
+import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.scheduler.Scheduler;
 import org.silverpeas.core.scheduler.SchedulerEvent;
 import org.silverpeas.core.scheduler.SchedulerEventListener;
 import org.silverpeas.core.scheduler.SchedulerProvider;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 public class AutomaticDraftOut implements SchedulerEventListener {
 
   public static final String AUTOMATICDRAFTOUT_JOB_NAME = "KmeliaAutomaticDraftOutJob";
-  private SettingBundle resources =
-      ResourceLocator.getSettingBundle("org.silverpeas.kmelia.settings.kmeliaSettings");
 
   public void initialize() {
-
     try {
+      SettingBundle resources =
+          ResourceLocator.getSettingBundle("org.silverpeas.kmelia.settings.kmeliaSettings");
       String cron = resources.getString("cronAutomaticDraftOut", "");
-      Scheduler scheduler = SchedulerProvider.getScheduler();
+      Scheduler scheduler = SchedulerProvider.getVolatileScheduler();
       scheduler.unscheduleJob(AUTOMATICDRAFTOUT_JOB_NAME);
       if (StringUtil.isDefined(cron)) {
         JobTrigger trigger = JobTrigger.triggerAt(cron);
         scheduler.scheduleJob(AUTOMATICDRAFTOUT_JOB_NAME, trigger, this);
       }
     } catch (Exception e) {
-      SilverTrace.error("kmelia", "AutomaticDraftOut.initialize()",
-          "kmelia.EX_CANT_INIT_AUTOMATIC_DRAFT_OUT", e);
+      SilverLogger.getLogger(this).error(e);
     }
   }
 
@@ -71,17 +69,18 @@ public class AutomaticDraftOut implements SchedulerEventListener {
   }
 
   @Override
-  public void triggerFired(SchedulerEvent anEvent) throws Exception {
+  public void triggerFired(SchedulerEvent anEvent) {
     doAutomaticDraftOut();
   }
 
   @Override
   public void jobSucceeded(SchedulerEvent anEvent) {
+    // nothing to do
   }
 
   @Override
   public void jobFailed(SchedulerEvent anEvent) {
-    SilverTrace.error("kmelia", "AutomaticDraftOut.handleSchedulerEvent",
-        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' was not successfull");
+    SilverLogger.getLogger(this).error("The job '"
+        + anEvent.getJobExecutionContext().getJobName() + "' was not successfull");
   }
 }
