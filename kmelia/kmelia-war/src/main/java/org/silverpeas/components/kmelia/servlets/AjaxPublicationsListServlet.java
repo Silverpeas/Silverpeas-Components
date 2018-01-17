@@ -450,10 +450,6 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 
             }
             out.write("</span>");
-          } else {
-            out.write("<span class=\"thumbnail\">");
-            out.write("<img src=\"" + resources.getIcon("kmelia.1px") + "\" alt=\"\"/>");
-            out.write("</span>");
           }
         }
         out.write("</div>");
@@ -484,20 +480,11 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       if (toSearch) {
         noPublications = kmeliaScc.getString("NoPubFound");
       }
-      out.write("<div id=\"noPublicationMessage\">");
-      out.write(board.printBefore());
-      out.write("<table width=\"100%\" border=\"0\" cellspacing=\"0\" align=\"center\">");
-      out.write("<tr valign=\"middle\">");
-      out.write("<td width=\"80\"><img src=\"" + publicationSrc + "\" border=\"0\"/></td>");
+      out.write("<div class=\"tableBoard\" id=\"noPublicationMessage\">");
+      out.write("<div id=\"pubsHeader\"><img src=\"" + publicationSrc + "\" border=\"0\" /> ");
       out.write(
-          "<td align=\"left\"><b>" + resources.getString("GML.publications") + "</b></td></tr>");
-      out.write("<tr><td colspan=\"2\">&#160;</td></tr>");
-      out.write("<tr>");
-      out.write("<td>&#160;</td>");
-      out.write("<td>" + noPublications + "</td>");
-      out.write("</tr>");
-      out.write("</table>");
-      out.write(board.printAfter());
+          "<span>" + resources.getString("GML.publications") + "</span></div>");
+      out.write("<p>" + noPublications + "</p>");
       out.write("</div>");
     }
     out.write("</form>");
@@ -631,13 +618,13 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       throws IOException {
     PublicationDetail pub = aPub.getDetail();
     String name = Encode.forHtml(pub.getName(language));
-    out.write("<div class=\"line1\">");
+    out.write("<div class=\"publication-name line1\">");
     if (fragmentSettings.linksAllowed) {
-      out.write("<font color=\"");
+      out.write("<div class=\"");
       out.write(fragmentSettings.pubColor);
       out.write("\"><a href=\"javascript:onClick=publicationGoTo('");
       out.write(pub.getPK().getId());
-      out.write("')\"><b class=\"" + fragmentSettings.highlightClass + "\">");
+      out.write("')\"><span class=\"" + fragmentSettings.highlightClass + "\">");
       if (fragmentSettings.draggable) {
         out.write("<span class=\"jstree-draggable\" id=\"pub-" + pub.getPK().getId() + "\">");
         out.write(name);
@@ -645,23 +632,23 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       } else {
         out.write(name);
       }
-      out.write("</b></a></font>");
+      out.write("</span></a></div>");
     } else {
       String ref = "";
       if (fragmentSettings.seeAlso && resources.getSetting("linkManagerShowPubId", false)) {
         ref = " [ " + pub.getPK().getId() + " ] ";
       }
-      out.write("<font color=\"");
+       out.write("<div class=\"");
       out.write(fragmentSettings.pubColor);
-      out.write("\"><b class=\"" + fragmentSettings.highlightClass + "\">");
+      out.write("\"><span class=\"" + fragmentSettings.highlightClass + "\">");
       out.write(ref);
       out.write(name);
-      out.write("</b></font>");
+      out.write("</span></div>");
     }
     out.write("&#160;");
     if (StringUtil.isDefined(fragmentSettings.pubState)) {
-      out.write("<span class=\"state_");
-      out.write(fragmentSettings.pubState);
+      out.write("<span class=\"state ");
+      out.write(fragmentSettings.pubColor);
       out.write("\">(");
       out.write(fragmentSettings.pubState);
       out.write(")</span>");
@@ -679,8 +666,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     }
 
     out.write("</div>");
-    out.write("<div class=\"line2\">");
-    out.write("<font color=\"");
+    out.write("<div class=\"line2 ");
     out.write(fragmentSettings.pubColor);
     out.write("\">");
     // Show topic name only in search in topic case
@@ -733,14 +719,12 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     String description = pub.getDescription(language);
     // displays publication description
     if (StringUtil.isDefined(description) && !description.equals(name)) {
-      out.write("<div class=\"line3\">");
-      out.write("<span class=\"description\">");
+      out.write("<p class=\"description line3\">");
       out.write(WebEncodeHelper.convertWhiteSpacesForHTMLDisplay(Encode.forHtml(description)));
-      out.write("</span>");
-      out.write("</div>");
+      out.write("</p>");
     }
 
-    out.write("</font>");
+
 
     out.write(displayFiles(pub, fragmentSettings.linkAttachment, fragmentSettings.seeAlso, userId,
         topicId, kmeliaScc, resources));
@@ -1130,36 +1114,25 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 
     Iterator<KmeliaPublication> iterator = pubs.iterator();
 
-    Board board = gef.getBoard();
-    writer.write(board.printBefore());
-    writer.write("<table border=\"0\" width=\"98%\" align=\"center\" id=\"latestPublications\">");
-    writer.write("<tr>");
+
+    writer.write("<div class=\"tableBoard\" id=\"latestPublications\">");
+
     writer.write(
-        "<td width=\"40\" align=\"left\"><img src=\"" + resources.getIcon("kmelia.publication") +
-            "\" border=0></td>");
-    writer.write("<td align=\"left\" width=\"100%\"><b>" + kmeliaScc.getString("PublicationsLast") +
-        "</b></td>");
-    writer.write("</tr>");
+        "<div id=\"pubsHeader\"><img src=\"" + resources.getIcon("kmelia.publication") +
+            "\" />");
+    writer.write("<b>" + kmeliaScc.getString("PublicationsLast") +
+        "</b></div>");
+
     if (iterator.hasNext()) {
-      writer.write("<tr><td colspan=\"2\">&nbsp;</td></tr>");
-      writer.write("<!-- Publications Header End -->");
-      writer.write("<tr><td colspan=\"2\"><table border=\"0\" width=\"100%\">");
-      int j = 1;
-      int nbCol = Integer.parseInt(resources.getSetting("HomeNbCols"));
-      if (pubs.size() < nbCol) {
-        nbCol = pubs.size();
-      }
-      String width = Integer.toString(100 / nbCol);
-      boolean endRaw = false;
+    
+      writer.write("<ul class=\"list-publication-home\">");
+     
+    
+     
       String linkIcon = resources.getIcon("kmelia.link");
       while (iterator.hasNext()) {
-        if (j == 1) {
-          writer.write("<tr>\n");
-          writer.write("<td valign=\"top\">&nbsp;</td>\n");
-          endRaw = false;
-        }
-        if (j <= nbCol) {
-          kmeliaPub = iterator.next();
+       
+        kmeliaPub = iterator.next();
           pub = kmeliaPub.getDetail();
           String shortcut;
           if (!pub.getPK().getInstanceId().equals(kmeliaScc.getComponentId())) {
@@ -1168,59 +1141,41 @@ public class AjaxPublicationsListServlet extends HttpServlet {
             shortcut = "";
           }
 
-          writer.write("<!-- Publication Body -->");
-          writer.write("<td valign=\"top\" width=\"100\">&#149; </td>");
-          writer.write("<td valign=\"top\" width=\"" + width + "%\">");
-          writer.write("<p><b><a href=\"javascript:onClick=publicationGoToFromMain('" + pub.getPK().
+         
+       
+          writer.write("<li>");
+          writer.write("<div class=\"publication-name line1\"><a href=\"javascript:onClick=publicationGoToFromMain('" + pub.getPK().
               getId() + "')\">" + Encode.forHtml(pub.getName(language)) + "</a>" + shortcut +
-              "</b><br/>");
+              "</div>");
 
           if (kmeliaScc.showUserNameInList()) {
-            writer.write(getUserName(kmeliaPub, kmeliaScc) + " - ");
+				writer.write("<span class=\"publication-user\">");
+				writer.write(getUserName(kmeliaPub, kmeliaScc));
+				writer.write("</span>");
           }
-          writer.write(resources.getOutputDate(pub.getUpdateDate()));
+          writer.write("<span class=\"publication-date\">"+resources.getOutputDate(pub.getUpdateDate())+"</span>");
           if (displayLinks) {
             String link = URLUtil.getSimpleURL(URLUtil.URL_PUBLI, pub.getPK().getId());
-            writer.write(" - <a href=\"" + link + "\"><img src=\"" + linkIcon +
-                "\" border=\"0\" align=\"absmiddle\" alt=\"" +
+            writer.write("<a class=\"publication-hyperlink\" href=\"" + link + "\"><img src=\"" + linkIcon +
+                "\"  alt=\"" +
                 resources.getString("kmelia.CopyPublicationLink") + "\" title=\"" +
-                resources.getString("kmelia.CopyPublicationLink") + "\"></a>");
+                resources.getString("kmelia.CopyPublicationLink") + "\" /></a>");
           }
-          writer.write("<br/>");
-          writer.write(WebEncodeHelper.convertWhiteSpacesForHTMLDisplay(Encode.forHtml(pub.
-              getDescription(language))));
-          writer.write("</p>");
-          writer.write("</td>");
-          writer.write("<!-- Publication Body End -->");
-          j++;
-        }
-        if (j > nbCol) {
-          writer.write("\t</tr>");
-          endRaw = true;
-          j = 1;
-        }
+          writer.write("<p class=\"publication-description\">"+WebEncodeHelper.convertWhiteSpacesForHTMLDisplay(Encode.forHtml(pub.
+          getDescription(language))));
+          writer.write("</li>");
+         
+          
+       
+    
       }
-      if (!endRaw) {
-        int nbTd = nbCol - j + 1;
-        int k = 1;
-        while (k <= nbTd) {
-          writer.write("<td colspan=\"3\" valign=\"top\">&nbsp;</td>\n");
-          k++;
-        }
-        writer.write("</tr>\n");
-      }
-      writer.write("</td></tr></table>");
+      
+      writer.write("</ul>");
     } // End if
-    else {
-      writer.write("<tr>");
-      writer.write("<td>&nbsp;</td>");
-      writer.write("<td>" + kmeliaScc.getString("PubAucune") + "</td>");
-      writer.write("</tr>");
-    }
-    writer.write("</td>");
-    writer.write("</tr>");
-    writer.write("</table>");
-    writer.write(board.printAfter());
+   
+
+    writer.write("</div>");
+
   }
 
   private String displayPublicationFullPath(KmeliaSessionController kmelia, PublicationDetail pub) {
