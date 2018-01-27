@@ -2,7 +2,7 @@
 <%@ page import="java.util.List" %>
 <%--
 
-    Copyright (C) 2000 - 2017 Silverpeas
+    Copyright (C) 2000 - 2018 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
