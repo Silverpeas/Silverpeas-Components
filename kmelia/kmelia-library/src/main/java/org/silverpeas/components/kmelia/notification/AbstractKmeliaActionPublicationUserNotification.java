@@ -44,7 +44,7 @@ public abstract class AbstractKmeliaActionPublicationUserNotification extends Ab
   }
 
   /**
-   * Gets the most recent identifier of the user which performed the last modification.<br/>
+   * Gets the most recent identifier of the user which performed the last modification.<br>
    * If no identifier is retrieved, {@link #stop()} method is called and the process of
    * notification building is terminated.
    * @return a user identifier as string.

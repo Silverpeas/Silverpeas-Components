@@ -182,7 +182,7 @@ public class GalleryProcessManagement {
 
   /**
    * Recursive method to add processes to create albums from a file repository.
-   * This method performs a transaction between each file to save.<br/>
+   * This method performs a transaction between each file to save.<br>
    * It could happen, in the very particular case of space memory quota exception, that an album
    * is created with no media inside...
    * @throws Exception

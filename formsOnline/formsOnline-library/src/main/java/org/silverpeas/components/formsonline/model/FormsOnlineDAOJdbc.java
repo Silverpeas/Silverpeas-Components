@@ -525,7 +525,7 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
   }
 
   /**
-   * Centralization of form instances queries execution.<br/>
+   * Centralization of form instances queries execution.<br>
    * Common filtering and ordering are applied to the given {@link JdbcSqlQuery} instance.
    * @param preparedQuery an initialized and prepared {@link JdbcSqlQuery} instance.
    * @param states the states to filter on.

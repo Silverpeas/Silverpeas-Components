@@ -114,7 +114,7 @@ public class Streaming extends Media {
   }
 
   /**
-   * Gets OEMBED data as JSON string.<br/>
+   * Gets OEMBED data as JSON string.<br>
    * WARNING: performances can be altered when called from a list treatments as it performs an
    * HTTP request.
    * @return a JSON structure as string that represents oembed data.

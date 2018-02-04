@@ -108,7 +108,7 @@ public class AdvancedNotificationHelperTest extends AbstractMailingListTest {
           "lisa.simpson@silverpeas.com", "maggie.simpson@silverpeas.com",
           "bart.simpson@silverpeas.com"));
       String notificationMessage = "<html><head/><body>p><b>Message [" + message.getTitle()
-          + "] :</b></p><p>" + message.getSummary() + " ...<br/><a href=\"/Rmailinglist/100/"
+          + "] :</b></p><p>" + message.getSummary() + " ...<br><a href=\"/Rmailinglist/100/"
           + "message/700\">Cliquer ici</a></p></body></html>" + TECHNICAL_CONTENT;
       assertThat(data.getMessage(), is(notificationMessage));
       String url = (String) data.getTargetParam().get("URL");

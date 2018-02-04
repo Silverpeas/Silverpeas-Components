@@ -37,7 +37,7 @@ import javax.servlet.http.HttpSession;
 import java.util.List;
 
 /**
- * This listener handles the blocking news about Quick Info application.<br/>
+ * This listener handles the blocking news about Quick Info application.<br>
  * Just after a successful user authentication, blocking news are displayed to the user if any.
  */
 @Singleton

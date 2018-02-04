@@ -3296,7 +3296,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   /**
-   * @return the list of SpaceInst from current space identifier (in session) to root space <br/>
+   * @return the list of SpaceInst from current space identifier (in session) to root space <br>
    * (all the subspace)
    */
   public List<SpaceInstLight> getSpacePath() {

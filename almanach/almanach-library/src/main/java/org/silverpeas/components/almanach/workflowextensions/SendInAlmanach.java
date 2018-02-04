@@ -59,7 +59,7 @@ import static org.silverpeas.core.util.StringUtil.getBooleanValue;
  * <li>startDate</li>
  * </ul>
  * To get more information you can also fill other trigger parameters : description, startHour,
- * endDate, endHour, place, link, priority<br/>
+ * endDate, endHour, place, link, priority<br>
  * Watch {@link AlmanachTriggerParam} to get more trigger parameter information
  * @author ebonnet
  */

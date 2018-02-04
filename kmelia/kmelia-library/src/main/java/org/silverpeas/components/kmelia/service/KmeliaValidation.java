@@ -94,7 +94,7 @@ class KmeliaValidation {
   }
 
   /**
-   * Handles the validation of given publications.<br/>
+   * Handles the validation of given publications.<br>
    * Be CAREFUL, the context of validation instance is not reset, so if the method is called
    * several times, the treatment will take into account the previous calls.
    * @param publications
@@ -106,7 +106,7 @@ class KmeliaValidation {
   }
 
   /**
-   * Handles the validation of given publication.<br/>
+   * Handles the validation of given publication.<br>
    * Be CAREFUL, the context of validation instance is not reset, so if the method is called
    * several times, the treatment will take into account the previous calls.
    * @param publication a publication to validate.

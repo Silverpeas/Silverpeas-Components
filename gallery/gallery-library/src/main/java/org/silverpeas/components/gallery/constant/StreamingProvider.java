@@ -109,7 +109,7 @@ public enum StreamingProvider {
   }
 
   /**
-   * Gets the oembed url from the homepage url of a streaming.<br/>
+   * Gets the oembed url from the homepage url of a streaming.<br>
    * @param homepageUrl the streaming home page url.
    * @return the oembed url as string.
    */

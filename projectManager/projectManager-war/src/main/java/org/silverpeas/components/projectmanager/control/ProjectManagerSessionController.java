@@ -837,7 +837,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
   }
 
   /**
-   * Retrieve the most relevant date if the current date parameter is null.<br/>
+   * Retrieve the most relevant date if the current date parameter is null.<br>
    *
    * @param startDate the string representation of the date. If null we will retrieve the most
    * relevant date in order to display current tasks
@@ -857,7 +857,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Here is a method which uses existing service to retrieve the most relevant date. We already
-   * uses this algorithm :<br/>
+   * uses this algorithm :<br>
    * <ol>
    * <li>if tasks exist in the current month we return current date</li>
    * <li>else if we display following months if contains tasks</li>
