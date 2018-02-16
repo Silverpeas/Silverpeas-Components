@@ -384,6 +384,7 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
       if (word != null && !"*".equals(word.trim()) && !word.trim().isEmpty()) {
         QueryDescription query = new QueryDescription(word);
         query.setSearchingUser(getUserId());
+        query.setRequestedLanguage("*");
         query.addSpaceComponentPair(getSpaceId(), getComponentId());
         SilverTrace.info("silverCrawler",
           "SilverCrawlerSessionController.getResultSearch()",

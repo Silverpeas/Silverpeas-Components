@@ -84,14 +84,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.beans.admin.AdminController;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.ObjectType;
-import com.stratelia.webactiv.beans.admin.ProfileInst;
-import com.stratelia.webactiv.beans.admin.SpaceInst;
-import com.stratelia.webactiv.beans.admin.SpaceInstLight;
-import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.beans.admin.*;
 import com.stratelia.webactiv.kmelia.FileImport;
 import com.stratelia.webactiv.kmelia.KmeliaSecurity;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
@@ -2995,55 +2988,70 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
    */
   public List<Treeview> getComponents(List<Alias> aliases) throws RemoteException {
     List<Treeview> result = new ArrayList<Treeview>();
+
+    try {
+      SpaceWithSubSpacesAndComponents spaceRoot =
+          getOrganisationController().getFullTreeview(getUserId());
+
+      List<SpaceWithSubSpacesAndComponents> spaces = spaceRoot.getSubSpaces();
+      for (SpaceWithSubSpacesAndComponents space : spaces) {
+        getComponents(space, aliases, result);
+      }
+    } catch (AdminException e) {
+
+    }
+    return result;
+  }
+
+  private void getComponents(SpaceWithSubSpacesAndComponents space, List<Alias> aliases,
+      List<Treeview> result) {
+    String path = "";
     List<NodeDetail> tree = null;
-    NodePK root = new NodePK(NodePK.ROOT_NODE_ID);
+    List<ComponentInstLight> components = space.getComponents();
+    for (ComponentInstLight component : components) {
+      String instanceId = component.getId();
 
-    List<SpaceInstLight> spaces = getOrganisationController().getSpaceTreeview(getUserId());
-    for (SpaceInstLight space : spaces) {
-      String path = "";
-      String[] componentIds = getOrganisationController().getAvailCompoIdsAtRoot(
-          space.getFullId(), getUserId());
-      for (String componentId : componentIds) {
-        String instanceId = componentId;
+      if (instanceId.startsWith("kmelia")) {
+        if (getKmeliaBm().isUserCanPublish(instanceId, getUserId()) ||
+            instanceId.equals(getComponentId())) {
 
-        if (instanceId.startsWith("kmelia")) {
-          if (getKmeliaBm().isUserCanPublish(instanceId, getUserId()) ||
-              instanceId.equals(getComponentId())) {
-            root.setComponentName(instanceId);
+          if (instanceId.equals(getComponentId())) {
+            NodePK root = new NodePK(NodePK.ROOT_NODE_ID, instanceId);
+            tree = getKmeliaBm().getTreeview(root, null, false, false, getUserId(),
+                false, isRightsOnTopicsEnabled());
+          }
 
-            if (instanceId.equals(getComponentId())) {
-              tree = getKmeliaBm().getTreeview(root, null, false, false, getUserId(),
-                  false, isRightsOnTopicsEnabled());
-            }
-
-            if (!StringUtil.isDefined(path)) {
-              List<SpaceInst> sPath = getOrganisationController().getSpacePath(space.getFullId());
-              boolean first = true;
-              for (SpaceInst spaceInPath : sPath) {
-                if (!first) {
-                  path += " > ";
-                }
-                path += spaceInPath.getName();
-                first = false;
+          if (!StringUtil.isDefined(path)) {
+            List<SpaceInstLight> sPath =
+                getOrganisationController().getPathToSpace(space.getSpace().getFullId());
+            boolean first = true;
+            for (SpaceInstLight spaceInPath : sPath) {
+              if (!first) {
+                path += " > ";
               }
+              path += spaceInPath.getName();
+              first = false;
             }
+          }
 
-            Treeview treeview = new Treeview(path + " > "
-                + getOrganisationController().getComponentInstLight(instanceId).getLabel(),
-                tree, instanceId);
+          Treeview treeview = new Treeview(path + " > " + component.getLabel(),
+              tree, instanceId);
 
-            treeview.setNbAliases(getNbAliasesInComponent(aliases, instanceId));
+          treeview.setNbAliases(getNbAliasesInComponent(aliases, instanceId));
 
-            if (instanceId.equals(getComponentId())) {
-              result.add(0, treeview);
-            } else {
-              result.add(treeview);
-            }
+          if (instanceId.equals(getComponentId())) {
+            result.add(0, treeview);
+          } else {
+            result.add(treeview);
           }
         }
       }
     }
-    return result;
+
+    List<SpaceWithSubSpacesAndComponents> subSpaces = space.getSubSpaces();
+    for (SpaceWithSubSpacesAndComponents subSpace : subSpaces) {
+      getComponents(subSpace, aliases, result);
+    }
   }
 
   public List<NodeDetail> getAliasTreeview() throws RemoteException {
