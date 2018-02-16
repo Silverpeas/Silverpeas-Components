@@ -105,6 +105,7 @@
       <pane-extra>
         <silverpeas-calendar-event-view-reminder
             calendar-event-occurrence="ceo">
+        </silverpeas-calendar-event-view-reminder>
         <silverpeas-calendar-event-view-recurrence
             calendar-event-occurrence="ceo"
             ng-if="ceo.recurrence">
