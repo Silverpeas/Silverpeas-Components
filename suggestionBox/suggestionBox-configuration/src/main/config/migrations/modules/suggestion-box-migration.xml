@@ -20,7 +20,9 @@
   ~ If not, see <http://www.gnu.org/licenses/>.
   -->
 <migration module="suggestionBox"
-           xmlns="http://www.silverpeas.org/schema/migration">
+           xmlns="http://silverpeas.org/xml/ns/migration"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://silverpeas.org/xml/ns/migration https://www.silverpeas.org/xsd/migration.xsd">
 
   <current version="001">
     <script name="create_table.sql" type="sql"/>
