@@ -125,7 +125,7 @@ public class SuggestionBoxWebController extends
    * Standard Session Controller Constructor
    * @param mainSessionCtrl The user's profile
    * @param componentContext The component's profile
-   * @see
+   *
    */
   public SuggestionBoxWebController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {

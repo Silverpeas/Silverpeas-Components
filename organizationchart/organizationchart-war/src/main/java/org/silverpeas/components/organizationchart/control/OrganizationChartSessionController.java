@@ -96,7 +96,7 @@ public class OrganizationChartSessionController extends AbstractComponentSession
    * Standard Session Controller Constructeur
    * @param mainSessionCtrl The user's profile
    * @param componentContext The component's profile
-   * @see
+   *
    */
   public OrganizationChartSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {

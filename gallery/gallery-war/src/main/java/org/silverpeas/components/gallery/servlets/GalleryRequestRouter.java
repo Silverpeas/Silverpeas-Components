@@ -96,7 +96,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
    * @param mainSessionCtrl
    * @param componentContext
    * @return
-   * @see
+   *
    */
   @Override
   public GallerySessionController createComponentSessionController(

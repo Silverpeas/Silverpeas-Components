@@ -85,7 +85,7 @@ public class ResourcesManagerRequestRouter
    * @param mainSessionCtrl
    * @param componentContext
    * @return
-   * @see
+   *
    */
   @Override
   public ResourcesManagerSessionController createComponentSessionController(

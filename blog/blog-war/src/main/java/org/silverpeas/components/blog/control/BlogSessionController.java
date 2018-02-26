@@ -99,7 +99,6 @@ public final class BlogSessionController extends AbstractComponentSessionControl
    * Standard Session Controller Constructeur
    * @param mainSessionCtrl The user's profile
    * @param componentContext The component's profile
-   * @see
    */
   public BlogSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {

@@ -1009,7 +1009,7 @@ public class DefaultForumService implements ForumService {
   /**
    * Method declaration
    * @param messagePK
-   * @see
+   *
    */
   @Override
   public void createIndex(MessagePK messagePK) {

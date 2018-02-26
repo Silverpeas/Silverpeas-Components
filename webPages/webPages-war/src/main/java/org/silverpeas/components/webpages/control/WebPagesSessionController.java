@@ -61,7 +61,7 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
    * Standard Session Controller Constructor
    * @param mainSessionCtrl The user's profile
    * @param componentContext The component's profile
-   * @see
+   *
    */
   public WebPagesSessionController(MainSessionController mainSessionCtrl,
           ComponentContext componentContext) {

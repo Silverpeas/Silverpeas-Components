@@ -50,7 +50,7 @@ public class KmeliaStatistics implements ComponentStatisticsProvider {
    * @param spaceId
    * @param componentId
    * @return
-   * @see
+   *
    */
   @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)

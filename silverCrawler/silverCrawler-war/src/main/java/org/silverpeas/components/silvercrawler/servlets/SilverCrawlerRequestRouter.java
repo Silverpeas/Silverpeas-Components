@@ -51,7 +51,7 @@ public class SilverCrawlerRequestRouter
    * @param mainSessionCtrl
    * @param componentContext
    * @return
-   * @see
+   *
    */
   public SilverCrawlerSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {

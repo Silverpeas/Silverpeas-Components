@@ -124,7 +124,6 @@ public class GalleryResourceMock extends GalleryResource {
 
   /*
    * (non-Javadoc)
-   * @see
    * AbstractGalleryResource#verifyViewAllPhotoAuthorized(com.silverpeas
    * .gallery.model.PhotoDetail)
    */

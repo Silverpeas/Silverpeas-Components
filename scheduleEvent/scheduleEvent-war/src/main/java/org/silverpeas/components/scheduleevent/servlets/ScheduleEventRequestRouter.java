@@ -158,7 +158,7 @@ public class ScheduleEventRequestRouter extends
    * @param mainSessionCtrl
    * @param componentContext
    * @return
-   * @see
+   *
    */
   public ScheduleEventSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {

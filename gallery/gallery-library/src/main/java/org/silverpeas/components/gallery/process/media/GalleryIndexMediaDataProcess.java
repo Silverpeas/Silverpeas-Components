@@ -62,7 +62,7 @@ public class GalleryIndexMediaDataProcess extends AbstractGalleryDataProcess {
 
   /*
    * (non-Javadoc)
-   * @see
+   *
    * AbstractGalleryDataProcess#processData(com.silverpeas.gallery
    * .process.GalleryProcessExecutionContext, ProcessSession)
    */

@@ -110,7 +110,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
    * Standard Session Controller Constructeur
    * @param mainSessionCtrl The user's profile
    * @param componentContext The component's profile
-   * @see
+   *
    */
   public InfoLetterSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {

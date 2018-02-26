@@ -34,7 +34,7 @@ public class SpaceMembersSessionController extends AbstractComponentSessionContr
    * Standard Session Controller Constructor
    * @param mainSessionCtrl The user's profile
    * @param componentContext The component's profile
-   * @see
+   *
    */
   public SpaceMembersSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {

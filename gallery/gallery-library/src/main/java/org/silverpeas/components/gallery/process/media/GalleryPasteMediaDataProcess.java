@@ -94,7 +94,7 @@ public class GalleryPasteMediaDataProcess extends AbstractGalleryDataProcess {
 
   /*
    * (non-Javadoc)
-   * @see
+   *
    * AbstractGalleryDataProcess#processData(com.silverpeas.gallery
    * .process.ProcessExecutionContext, ProcessSession)
    */

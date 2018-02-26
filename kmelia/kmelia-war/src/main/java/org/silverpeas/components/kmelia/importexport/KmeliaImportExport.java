@@ -141,7 +141,7 @@ public class KmeliaImportExport extends GEDImportExport {
    * @return un objet clé primaire du nouveau thème créé ou du thème déjà existant (thème de même
    * identifiant non modifié).
    * @throws ImportExportException en cas d'anomalie lors de la création du noeud.
-   * @see
+   *
    * GEDImportExport#addSubTopicToTopic(NodeDetail,
    * int, UnitReport)
    */
@@ -192,7 +192,7 @@ public class KmeliaImportExport extends GEDImportExport {
    * @param topicId l'ID du thème dans lequel créer le nouveau thème.
    * @return un objet clé primaire du nouveau thème créé.
    * @throws ImportExportException en cas d'anomalie lors de la création du noeud.
-   * @see
+   *
    * GEDImportExport#addSubTopicToTopic(NodeDetail,
    * int, MassiveReport)
    */

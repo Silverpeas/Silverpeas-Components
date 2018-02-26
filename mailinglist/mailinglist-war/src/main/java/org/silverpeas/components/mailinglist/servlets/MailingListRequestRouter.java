@@ -46,7 +46,7 @@ public class MailingListRequestRouter extends ComponentRequestRouter<MailingList
    * @param mainSessionCtrl
    * @param componentContext
    * @return
-   * @see
+   *
    */
   @Override
   public MailingListSessionController createComponentSessionController(
