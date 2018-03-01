@@ -30,7 +30,6 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.web.search.AbstractResultDisplayer;
 import org.silverpeas.core.web.search.SearchResultContentVO;
-import org.silverpeas.core.contribution.content.wysiwyg.dynamicvalue.control.DynamicValueReplacement;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
@@ -140,7 +139,6 @@ public class ResultSearchRenderer extends AbstractResultDisplayer {
     if (WysiwygController.haveGotWysiwyg(componentId, id, language)) {
 
       // WYSIWYG content to add inside template
-
       String content = WysiwygController.load(componentId, id, language);
 
       // if content not found in specified language, check other ones
@@ -151,20 +149,12 @@ public class ResultSearchRenderer extends AbstractResultDisplayer {
           content = WysiwygController.load(componentId, id, language);
         }
       }
-      // dynamic value functionnality : check if active and try to replace the keys by their
-      // values
-      if (DynamicValueReplacement.isActivate()) {
-        DynamicValueReplacement replacement = new DynamicValueReplacement();
-        content = replacement.replaceKeyByValue(content);
-      }
 
       // Add to template only if defined
       if (StringUtil.isDefined(content)) {
         template.setAttribute("wysiwygContent", content);
       }
     } else {
-      //
-
       String infoId = pubDetail.getInfoId();
       String pubId = pubDetail.getPK().getId();
       if (!StringUtil.isInteger(infoId)) {
