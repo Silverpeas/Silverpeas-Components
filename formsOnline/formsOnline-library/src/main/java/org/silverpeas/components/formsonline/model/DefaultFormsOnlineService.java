@@ -131,10 +131,12 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
   @Override
   public FormDetail loadForm(FormPK pk) throws FormsOnlineDatabaseException {
     FormDetail form = getDAO().getForm(pk);
-    form.setSendersAsUsers(getSendersAsUsers(pk));
-    form.setSendersAsGroups(getSendersAsGroups(pk));
-    form.setReceiversAsUsers(getReceiversAsUsers(pk));
-    form.setReceiversAsGroups(getReceiversAsGroups(pk));
+    if (form != null) {
+      form.setSendersAsUsers(getSendersAsUsers(pk));
+      form.setSendersAsGroups(getSendersAsGroups(pk));
+      form.setReceiversAsUsers(getReceiversAsUsers(pk));
+      form.setReceiversAsGroups(getReceiversAsGroups(pk));
+    }
     return form;
   }
 
@@ -207,10 +209,14 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
   }
 
   @Override
-  public RequestsByStatus getValidatorRequests(String appId, boolean allRequests, String userId,
-      final PaginationPage paginationPage)
-      throws FormsOnlineDatabaseException {
-    final List<String> formIds = getAvailableFormIdsAsReceiver(appId, userId);
+  public RequestsByStatus getValidatorRequests(RequestsFilter filter, String userId,
+      final PaginationPage paginationPage) throws FormsOnlineDatabaseException {
+    final List<String> formIds = getAvailableFormIdsAsReceiver(filter.getComponentId(), userId);
+
+    // limit requests to specified forms
+    if (!filter.getFormIds().isEmpty()) {
+      formIds.retainAll(filter.getFormIds());
+    }
     final List<FormDetail> availableForms = getDAO().getForms(formIds);
     RequestsByStatus requests = new RequestsByStatus(paginationPage);
     for (FormDetail form : availableForms) {
@@ -222,7 +228,8 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
         final PaginationCriterion paginationCriterion =
             paginationPage != null ? paginationPage.asCriterion() : null;
         final SilverpeasList<FormInstance> result = getDAO()
-            .getReceivedRequests(form.getPK(), allRequests, userId, states, paginationCriterion);
+            .getReceivedRequests(form.getPK(), filter.isAllRequests(), userId, states,
+                paginationCriterion);
         merge.accept(requests, result.stream()
                                      .peek(l -> l.setForm(form))
                                      .collect(SilverpeasList.collector(result)));

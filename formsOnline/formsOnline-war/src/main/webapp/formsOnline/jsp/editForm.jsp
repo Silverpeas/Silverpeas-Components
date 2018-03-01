@@ -123,7 +123,7 @@ $(document).ready(function() {
             &nbsp;<img width="5" height="5" alt="${labelMandatory}" src="${iconMandatory}" /> </div>
         </div>
         <div class="field" id="templateForm">
-          <label for="template" class="txtlibform"><fmt:message key="formsOnline.Template"/></label>
+          <label for="templates" class="txtlibform"><fmt:message key="formsOnline.Template"/></label>
           <div class="champs">
             <c:choose>
               <c:when test="${form.id != -1}">
@@ -151,7 +151,7 @@ $(document).ready(function() {
         <div class="field" id="descriptionForm">
           <label for="description" class="txtlibform"><fmt:message key="GML.description"/></label>
           <div class="champs">
-            <textarea rows="4" cols="65" name="description" id="description">${form.description}</textarea>
+            <textarea rows="4" cols="65" name="description" id="description" maxlength="2000">${form.description}</textarea>
             &nbsp;<img width="5" height="5" alt="${labelMandatory}" src="${iconMandatory}" />
           </div>
         </div>

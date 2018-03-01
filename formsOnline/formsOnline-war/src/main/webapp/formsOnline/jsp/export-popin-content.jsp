@@ -25,37 +25,32 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 
-<%@page import="org.silverpeas.core.contribution.content.form.Form"%>
-<%@page import="org.silverpeas.core.contribution.content.form.PagesContext"%>
+<c:set var="lang" value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
+<fmt:setLocale value="${lang}"/>
+<view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 
-<%
-	Form formUpdate = (Form) request.getAttribute("Form");
+<fmt:message var="labelSize" key="GML.export.fileSize"/>
+<fmt:message var="labelFile" key="GML.export.file"/>
+<fmt:message var="labelNumber" key="GML.export.items.nb"/>
 
-	// context creation
-	PagesContext context = (PagesContext) request.getAttribute("FormContext");
-	context.setFormName("myForm");
-	context.setFormIndex("0");
-	context.setBorderPrinted(false);
-%>
+<c:set var="summary" value="${requestScope['ExportSummary']}"/>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title></title>
-<view:looknfeel/>
-<% formUpdate.displayScripts(out, context); %>
-</head>
-<body class="yui-skin-sam">
-<view:window popup="true" browseBarVisible="false">
-<view:frame>
-	<form name="myForm" method="post" action="UpdateXMLForm" enctype="multipart/form-data">
-	<%
-	formUpdate.display(out, context);
-	%>
-	</form>
-
-</view:frame>
-</view:window>
-</body>
-</html>
+<table>
+  <tr>
+    <td class="txtlibform">${labelFile}</td>
+    <td><a href="${summary.downloadURL}">${summary.filename}</a></td>
+  </tr>
+  <tr>
+    <td class="txtlibform">${labelSize}</td>
+    <td>${silfn:formatMemSize(summary.fileSize)}</td>
+  </tr>
+  <tr>
+    <td class="txtlibform">${labelNumber}</td>
+    <td>${summary.nbExportedItems}</td>
+  </tr>
+</table>

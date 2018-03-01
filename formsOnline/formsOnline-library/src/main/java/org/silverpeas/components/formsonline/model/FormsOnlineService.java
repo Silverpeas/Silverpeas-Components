@@ -59,9 +59,8 @@ public interface FormsOnlineService extends ApplicationService<FormInstance> {
       final PaginationPage paginationPage)
       throws FormsOnlineDatabaseException;
 
-  RequestsByStatus getValidatorRequests(String appId, boolean allRequests, String userId,
-      final PaginationPage paginationPage)
-      throws FormsOnlineDatabaseException;
+  RequestsByStatus getValidatorRequests(RequestsFilter filter, String userId,
+      final PaginationPage paginationPage) throws FormsOnlineDatabaseException;
 
   List<String> getAvailableFormIdsAsReceiver(String appId, String userId)
       throws FormsOnlineDatabaseException;

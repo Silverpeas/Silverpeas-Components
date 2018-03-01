@@ -24,15 +24,12 @@
 package org.silverpeas.components.formsonline.servlets;
 
 import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.components.formsonline.ExportSummary;
 import org.silverpeas.components.formsonline.control.FormsOnlineSessionController;
 import org.silverpeas.components.formsonline.model.FormDetail;
 import org.silverpeas.components.formsonline.model.FormInstance;
-import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.PagesContext;
-import org.silverpeas.core.contribution.content.form.RecordSet;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
@@ -76,7 +73,6 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
       HttpRequest request) {
     String destination = "";
 
-
     try {
       if ("Main".equals(function)) {
         formsOnlineSC.getSelectedValidatorRequestIds().clear();
@@ -98,7 +94,7 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
 
         request.setAttribute("UserRequests", formsOnlineSC.getAllUserRequests());
         request.setAttribute("App", formsOnlineSC.getComponentInstLight());
-        formsOnlineSC.setCurrentForm(null);
+        formsOnlineSC.resetCurrentForm();
 
         destination = "formsList.jsp";
       } else if ("CreateForm".equals(function)) {
@@ -117,10 +113,8 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
           form.setXmlFormName(request.getParameter("template"));
         }
 
-        String[] senderUserIds = StringUtil.split(
-            request.getParameter(
-                FormsOnlineSessionController.USER_PANEL_SENDERS_PREFIX +
-                    USER_PANEL_CURRENT_USER_IDS),
+        String[] senderUserIds = StringUtil.split(request.getParameter(
+            FormsOnlineSessionController.USER_PANEL_SENDERS_PREFIX + USER_PANEL_CURRENT_USER_IDS),
             ',');
         String[] senderGroupIds = StringUtil.split(request.getParameter(
             FormsOnlineSessionController.USER_PANEL_SENDERS_PREFIX + USER_PANEL_CURRENT_GROUP_IDS),
@@ -133,17 +127,15 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
             FormsOnlineSessionController.USER_PANEL_RECEIVERS_PREFIX + USER_PANEL_CURRENT_GROUP_IDS),
             ',');
 
-        formsOnlineSC.updateCurrentForm(senderUserIds, senderGroupIds, receiverUserIds,
-            receiverGroupIds);
+        formsOnlineSC
+            .updateCurrentForm(senderUserIds, senderGroupIds, receiverUserIds, receiverGroupIds);
 
         return getDestination("Main", formsOnlineSC, request);
       } else if ("EditForm".equals(function)) {
         String formId = request.getParameter("formId");
-        FormDetail form;
+        FormDetail form = formsOnlineSC.getCurrentForm();
         if (formId != null) {
-          form = formsOnlineSC.loadForm(Integer.parseInt(formId));
-        } else {
-          form = formsOnlineSC.getCurrentForm();
+          form = formsOnlineSC.setCurrentForm(formId);
         }
 
         if (form == null) {
@@ -161,12 +153,10 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
         }
         return getDestination("Main", formsOnlineSC, request);
       } else if ("ModifySenders".equals(function) || "ModifyReceivers".equals(function)) {
-        List<String> userIds =
-            (List<String>) StringUtil.splitString(request.getParameter(USER_PANEL_CURRENT_USER_IDS),
-                ',');
-        List<String> groupIds =
-            (List<String>) StringUtil.splitString(request.getParameter(USER_PANEL_CURRENT_GROUP_IDS),
-                ',');
+        List<String> userIds = (List<String>) StringUtil
+            .splitString(request.getParameter(USER_PANEL_CURRENT_USER_IDS), ',');
+        List<String> groupIds = (List<String>) StringUtil
+            .splitString(request.getParameter(USER_PANEL_CURRENT_GROUP_IDS), ',');
 
         if ("ModifySenders".equals(function)) {
           return formsOnlineSC.initSelectionSenders(userIds, groupIds);
@@ -176,26 +166,12 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
       } else if ("Preview".equals(function)) {
         // form object and data fetching
         String xmlFormName = request.getParameter("Form");
-        String xmlFormShortName =
-            xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName.indexOf('.'));
-
-        // PublicationTemplate creation
-        getPublicationTemplateManager()
-            .addDynamicPublicationTemplate(formsOnlineSC.getComponentId() + ":" + xmlFormShortName,
-                xmlFormName);
-        PublicationTemplateImpl pubTemplate =
-            (PublicationTemplateImpl) getPublicationTemplateManager()
-                .getPublicationTemplate(formsOnlineSC.getComponentId() + ":" + xmlFormShortName,
-                    xmlFormName);
 
         // DataRecord and form creation
-        Form formUpdate = pubTemplate.getUpdateForm();
-        RecordSet recordSet = pubTemplate.getRecordSet();
-        DataRecord data = recordSet.getEmptyRecord();
+        Form formUpdate = formsOnlineSC.getEmptyForm(xmlFormName);
 
         // call to the JSP with required parameters
         request.setAttribute("Form", formUpdate);
-        request.setAttribute("Data", data);
         request.setAttribute("XMLFormName", xmlFormName);
         request.setAttribute(FORM_CONTEXT, getFormContext(formsOnlineSC));
 
@@ -212,30 +188,27 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
         request.mergeSelectedItemsInto(formsOnlineSC.getSelectedValidatorRequestIds());
 
         request.setAttribute("Requests", formsOnlineSC.getAllValidatorRequests());
+
+        request.setAttribute("CurrentForm", formsOnlineSC.getCurrentForm());
+        request.setAttribute("Forms", formsOnlineSC.getAllForms(false));
+
         destination = "inbox.jsp";
+      } else if ("FilterRequests".equals(function)) {
+        String formId = request.getParameter("FormId");
+        formsOnlineSC.setCurrentForm(formId);
+
+        return getDestination(INBOX, formsOnlineSC, request);
+      } else if ("Export".equals(function)) {
+        ExportSummary exportSummary = formsOnlineSC.export();
+        request.setAttribute("ExportSummary", exportSummary);
+
+        destination = "export-popin-content.jsp";
       } else if ("NewRequest".equals(function)) {
         String formId = request.getParameter("FormId");
-        FormDetail form = formsOnlineSC.loadForm(Integer.parseInt(formId));
-        formsOnlineSC.setCurrentForm(form);
-        // form object and name fetching
-        String xmlFormName = form.getXmlFormName();
-        String xmlFormShortName =
-            xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName.indexOf('.'));
-
-        // PublicationTemplate creation
-        getPublicationTemplateManager()
-            .addDynamicPublicationTemplate(formsOnlineSC.getComponentId() + ":" + xmlFormShortName,
-                xmlFormName);
-        PublicationTemplateImpl pubTemplate =
-            (PublicationTemplateImpl) getPublicationTemplateManager()
-                .getPublicationTemplate(formsOnlineSC.getComponentId() + ":" + xmlFormShortName,
-                    xmlFormName);
+        FormDetail form = formsOnlineSC.setCurrentForm(formId);
 
         // form and DataRecord creation
-        Form formUpdate = pubTemplate.getUpdateForm();
-        RecordSet recordSet = pubTemplate.getRecordSet();
-        DataRecord data = recordSet.getEmptyRecord();
-        formUpdate.setData(data);
+        Form formUpdate = formsOnlineSC.getCurrentEmptyForm();
 
         // call of the JSP with required parameters
         request.setAttribute("Form", formUpdate);
@@ -306,16 +279,7 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
       destination = "/admin/jsp/errorpageMain.jsp";
     }
 
-
     return destination;
-  }
-
-  /**
-   * Gets an instance of the PublicationTemplateManager manager.
-   * @return an instance of PublicationTemplateManager.
-   */
-  private PublicationTemplateManager getPublicationTemplateManager() {
-    return PublicationTemplateManager.getInstance();
   }
 
   private String checkOrigin(HttpRequest httpRequest) {
