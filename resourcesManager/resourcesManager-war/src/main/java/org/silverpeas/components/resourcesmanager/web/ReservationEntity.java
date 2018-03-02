@@ -23,10 +23,10 @@
  */
 package org.silverpeas.components.resourcesmanager.web;
 
-import org.silverpeas.core.date.DateTime;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.webapi.calendar.AbstractEventEntity;
 import org.silverpeas.components.resourcesmanager.model.Reservation;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.webapi.calendar.AbstractEventEntity;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -34,6 +34,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.net.URI;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -92,8 +94,11 @@ public class ReservationEntity extends AbstractEventEntity<ReservationEntity> {
    * Default hidden constructor.
    */
   private ReservationEntity(final String instanceId, final Reservation reservation) {
-    super("reservation", instanceId, reservation.getIdAsString(), reservation.getEvent(), null,
-        new DateTime(reservation.getBeginDate()), new DateTime(reservation.getEndDate()), null);
+    super(ContributionIdentifier.from("reservation", instanceId, reservation.getIdAsString()),
+        reservation.getEvent(), null,
+        OffsetDateTime.ofInstant(reservation.getBeginDate().toInstant(), ZoneId.systemDefault()),
+        OffsetDateTime.ofInstant(reservation.getEndDate().toInstant(), ZoneId.systemDefault()),
+        null);
     this.reservation = reservation;
     reason = reservation.getReason();
     place = reservation.getPlace();

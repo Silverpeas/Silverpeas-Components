@@ -47,6 +47,7 @@ import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.content.form.RenderingContext;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformer;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.contribution.converter.DocumentFormatConverterProvider;
 import org.silverpeas.core.contribution.converter.HTMLConverter;
@@ -278,7 +279,8 @@ public class ODTDocumentBuilder {
   private void buildWithHTMLText(String htmlText, final TextDocument odtDocument) throws Exception {
     Section content = odtDocument.getSectionByName(SECTION_CONTENT);
     if (isDefined(htmlText)) {
-      String html = "<html><body>" + htmlText + "</body></html>";
+      String text = WysiwygContentTransformer.on(htmlText).resolveVariablesDirective().transform();
+      String html = "<html><body>" + text + "</body></html>";
       Paragraph p = content.getParagraphByIndex(1, false);
       if (p != null) {
         content.removeParagraph(p);
