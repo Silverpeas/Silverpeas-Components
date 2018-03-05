@@ -479,3 +479,14 @@ fieldset {
 #informationForm legend {
   background: url("/silverpeas/util/icons/component/formsOnlineSmall.gif") no-repeat scroll 11px 0px transparent;
 }
+
+#all-requests .sp_button {
+  padding: 1px 10px;
+  font-size: 9pt !important;
+  height: 17px;
+  line-height: 17px;
+}
+
+#all-requests #filter {
+  margin: 0 0 10px 0;
+}

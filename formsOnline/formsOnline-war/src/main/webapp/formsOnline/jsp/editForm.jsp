@@ -62,39 +62,24 @@
 <view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
 <script type="text/javascript">
 function valider() {
-  var errorMsg = "";
-  var errorNb = 0;
-
   var description = stripInitialWhitespace(document.creationForm.description.value);
 	var templateSelectedIndex = document.creationForm.template.selectedIndex;
   var title = stripInitialWhitespace(document.creationForm.title.value);
 
   if (isWhitespace(title)) {
-    errorMsg+="  - <fmt:message key="GML.theField"/> '<fmt:message key="GML.title"/>' <fmt:message key="GML.MustBeFilled"/>\n";
-    errorNb++;
+    SilverpeasError.add("'<fmt:message key="GML.title"/>' <fmt:message key="GML.MustBeFilled"/>");
   }
 
   if (templateSelectedIndex < 1) {
-     errorMsg+="  - <fmt:message key="GML.theField"/> '<fmt:message key="formsOnline.Template"/>' <fmt:message key="GML.MustBeFilled"/>\n";
-     errorNb++;
+    SilverpeasError.add("'<fmt:message key="formsOnline.Template"/>' <fmt:message key="GML.MustBeFilled"/>");
   }
 
   if (isWhitespace(description)) {
-    errorMsg+="  - <fmt:message key="GML.theField"/> '<fmt:message key="GML.description"/>' <fmt:message key="GML.MustBeFilled"/>\n";
-    errorNb++;
+    SilverpeasError.add("'<fmt:message key="GML.description"/>' <fmt:message key="GML.MustBeFilled"/>");
   }
 
-  switch(errorNb) {
-    case 0 :
-        document.creationForm.submit();
-        break;
-    case 1 :
-        errorMsg = "<fmt:message key="GML.ThisFormContains"/> 1 <fmt:message key="GML.error"/> : \n" + errorMsg;
-        jQuery.popup.error(errorMsg);
-        break;
-    default :
-        errorMsg = "<fmt:message key="GML.ThisFormContains"/> " + errorNb + " <fmt:message key="GML.errors"/> :\n" + errorMsg;
-        jQuery.popup.error(errorMsg);
+  if (!SilverpeasError.show()) {
+    document.creationForm.submit();
   }
 }
 
@@ -138,7 +123,7 @@ $(document).ready(function() {
             &nbsp;<img width="5" height="5" alt="${labelMandatory}" src="${iconMandatory}" /> </div>
         </div>
         <div class="field" id="templateForm">
-          <label for="template" class="txtlibform"><fmt:message key="formsOnline.Template"/></label>
+          <label for="templates" class="txtlibform"><fmt:message key="formsOnline.Template"/></label>
           <div class="champs">
             <c:choose>
               <c:when test="${form.id != -1}">
@@ -166,7 +151,7 @@ $(document).ready(function() {
         <div class="field" id="descriptionForm">
           <label for="description" class="txtlibform"><fmt:message key="GML.description"/></label>
           <div class="champs">
-            <textarea rows="4" cols="65" name="description" id="description">${form.description}</textarea>
+            <textarea rows="4" cols="65" name="description" id="description" maxlength="2000">${form.description}</textarea>
             &nbsp;<img width="5" height="5" alt="${labelMandatory}" src="${iconMandatory}" />
           </div>
         </div>

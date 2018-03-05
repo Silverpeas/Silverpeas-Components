@@ -42,6 +42,9 @@
 <c:set var="requests" value="${requestScope['Requests']}"/>
 <jsp:useBean id="requests" type="org.silverpeas.components.formsonline.model.RequestsByStatus"/>
 
+<c:set var="forms" value="${requestScope['Forms']}"/>
+<c:set var="currentForm" value="${requestScope['CurrentForm']}"/>
+
 <fmt:message var="statusReadLabel" key="formsOnline.stateRead"/>
 <fmt:message var="statusValidatedLabel" key="formsOnline.stateValidated"/>
 <fmt:message var="statusDeniedLabel" key="formsOnline.stateRefused"/>
@@ -52,7 +55,10 @@
 <fmt:message var="colDate" key="formsOnline.sendDate"/>
 <fmt:message var="colSender" key="formsOnline.sender"/>
 <fmt:message var="colForm" key="formsOnline.Form"/>
-<fmt:message var="colValidator" key="formsOnline.receiver"/>
+<fmt:message var="colValidator" key="formsOnline.request.process.user"/>
+<fmt:message var="colProcessDate" key="formsOnline.request.process.date"/>
+
+<fmt:message var="labelExport" key="GML.export.result"/>
 
 <fmt:message var="deletionConfirmMessage" key="formsOnline.requests.action.delete.confirm"/>
 
@@ -61,6 +67,11 @@
 <head>
   <title></title>
   <view:looknfeel/>
+  <style type="text/css">
+    #link-export {
+      display: none;
+    }
+  </style>
   <script type="text/javascript">
 
     var arrayPaneAjaxControl;
@@ -73,9 +84,34 @@
         ajaxRequest.send().then(arrayPaneAjaxControl.refreshFromRequestResponse);
       });
     }
+
+    whenSilverpeasReady(function() {
+      $("#selectedForm").change(function() {
+        var formId = $(this).val();
+        if (formId === "") {
+          $("#link-export").hide();
+        } else {
+          $("#link-export").show();
+        }
+        var ajaxRequest = sp.ajaxRequest("FilterRequests").byPostMethod();
+        ajaxRequest.withParam("FormId", formId);
+        checkboxMonitor.prepareAjaxRequest(ajaxRequest);
+        ajaxRequest.send().then(arrayPaneAjaxControl.refreshFromRequestResponse);
+      });
+
+      if (${currentForm != null}) {
+        $("#link-export").show();
+      }
+
+      $("#link-export").click(function() {
+        displaySingleFreePopupFrom("Export", {
+          title : '${silfn:escapeJs(labelExport)}'
+        });
+      });
+    });
   </script>
 </head>
-<body>
+<body id="all-requests">
 <fmt:message var="browseBarAll" key="formsOnline.requests.all.breadcrumb"/>
 <view:browseBar extraInformations="${browseBarAll}"/>
 <view:operationPane>
@@ -84,6 +120,23 @@
 </view:operationPane>
 <view:window>
   <view:frame>
+    <div id="filter">
+      <fmt:message key="formsOnline.Form"/> :
+      <select id="selectedForm">
+        <option></option>
+        <c:forEach items="${forms}" var="form">
+          <c:choose>
+            <c:when test="${form.id == currentForm.id}">
+              <option value="${form.id}" selected="selected">${form.name}</option>
+            </c:when>
+            <c:otherwise>
+              <option value="${form.id}">${form.name}</option>
+            </c:otherwise>
+          </c:choose>
+        </c:forEach>
+      </select>
+      <a id="link-export" class="sp_button" href="#"><fmt:message key="GML.export"/></a>
+    </div>
     <div id="list">
       <c:set var="requestStatusLabelLambda" value="${r ->
               (r.data.read ? statusReadLabel :
@@ -95,8 +148,9 @@
         <view:arrayColumn width="10" sortable="false"/>
         <view:arrayColumn title="${colStatus}" compareOn="${requestStatusLabelLambda}"/>
         <view:arrayColumn title="${colDate}" compareOn="${r -> r.data.creationDate}"/>
-        <view:arrayColumn title="${colForm}" compareOn="${r -> r.data.form.title}"/>
         <view:arrayColumn title="${colSender}" compareOn="${r -> r.creator.displayedName}"/>
+        <view:arrayColumn title="${colForm}" compareOn="${r -> r.data.form.title}"/>
+        <view:arrayColumn title="${colProcessDate}" compareOn="${r -> r.data.validationDate}"/>
         <view:arrayColumn title="${colValidator}" compareOn="${r -> r.validator.displayedName}"/>
         <view:arrayLines var="request" items="${requestItems}">
           <view:arrayLine>
@@ -112,8 +166,9 @@
             </c:choose>
             <view:arrayCellText text="${requestStatusLabelLambda(request)}"/>
             <view:arrayCellText text="${silfn:formatDate(request.data.creationDate, lang)}"/>
-            <view:arrayCellText><a href="ViewRequest?Id=${request.id}&Origin=InBox">${request.data.form.title}</a></view:arrayCellText>
             <view:arrayCellText text="${request.creator.displayedName}"/>
+            <view:arrayCellText><a href="ViewRequest?Id=${request.id}&Origin=InBox">${request.data.form.title}</a></view:arrayCellText>
+            <view:arrayCellText text="${silfn:formatDate(request.data.validationDate, lang)}"/>
             <view:arrayCellText text="${request.validator.displayedName}"/>
           </view:arrayLine>
         </view:arrayLines>
