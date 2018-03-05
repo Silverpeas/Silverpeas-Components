@@ -744,25 +744,25 @@ function getString(key) {
 }
 
 function resizePart(idPart) {
-    var frame = window.frameElement;
-	
-    /* initialisation de la hauteur par celle de la frame*/
-    var hauteur = frame.scrollHeight ;
-	var hauteurPubList = $("#pubList").height();
-	
-	$(idPart).css("height",hauteurPubList);
-    var hauteurBody = $("body").height();
-    var hauteurFilAriane = $(".cellBrowseBar").height();
+  $(idPart).css("height","auto");
+  
+  /* initialisation de la hauteur par celle de la frame*/
+  var frame = window.frameElement;
+  var hauteur = frame.scrollHeight ;
+  
+  var hauteurBody = $("#kmelia").height();
+  
+  var hauteurFilAriane = $(".cellBrowseBar").height();
+  
+  if(hauteurBody >= hauteur){
+   /*ascenseur */
+    hauteur = hauteurBody-hauteurFilAriane-70;
+  }else {
+    /* si pas d'ascenseur*/
+    hauteur = hauteur-hauteurFilAriane-70;
+  }
 
-    if(hauteurBody < hauteur){
-      /* si aucun ascenseur au niveau de la frame*/
-      hauteur = hauteur-hauteurFilAriane-70;
-    }else {
-      /* si un ascenseur au niveau de la frame*/
-      hauteur = hauteurPubList+64;
-    }
-
-    $(idPart).css("height",hauteur);
+  $(idPart).css("height",hauteur);
 }
 
 $(document).ready(
