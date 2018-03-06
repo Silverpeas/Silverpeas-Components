@@ -27,6 +27,8 @@
 
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+
 <%@taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 
 <%@page import="com.silverpeas.thumbnail.ThumbnailSettings"%>
@@ -35,6 +37,9 @@
 <%@page import="com.stratelia.webactiv.kmelia.model.KmeliaPublication" %>
 
 <c:set var="attachmentsEnabled" value="${requestScope['AttachmentsEnabled']}"/>
+
+<c:set var="userLanguage" value="${requestScope.resources.language}"/>
+<fmt:setLocale value="${userLanguage}"/>
 
 <%@include file="checkKmelia.jsp" %>
 <%@include file="publicationsList.jsp.inc" %>
