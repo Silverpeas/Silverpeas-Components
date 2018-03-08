@@ -619,20 +619,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
   }
 
   public List<ComponentInstLight> getGalleries() {
-    List<ComponentInstLight> galleries = null;
-    OrganisationController orgaController = new OrganizationController();
-    String[] compoIds = orgaController.getCompoId("gallery");
-    for (final String compoId : compoIds) {
-      if ("yes".equalsIgnoreCase(
-          orgaController.getComponentParameterValue("gallery" + compoId, "viewInWysiwyg"))) {
-        if (galleries == null) {
-          galleries = new ArrayList<ComponentInstLight>();
-        }
-        ComponentInstLight gallery = orgaController.getComponentInstLight("gallery" + compoId);
-        galleries.add(gallery);
-      }
-    }
-    return galleries;
+    return getOrganisationController().getComponentsWithParameterValue("viewInWysiwyg", "yes");
   }
 
   public boolean isPdcUsed() {

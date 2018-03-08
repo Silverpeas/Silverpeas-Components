@@ -137,6 +137,11 @@ public class OrganisationControllerMockWrapper implements OrganisationController
   }
 
   @Override
+  public List<ComponentInstLight> getComponentsWithParameterValue(String param, String value) {
+    return mock.getComponentsWithParameterValue(param, value);
+  }
+
+  @Override
   public ComponentInst getComponentInst(String sComponentId) {
     return mock.getComponentInst(sComponentId);
   }
@@ -500,5 +505,20 @@ public class OrganisationControllerMockWrapper implements OrganisationController
   public SpaceProfile getSpaceProfile(final String spaceId, final SilverpeasRole role)
       throws AdminException {
     return mock.getSpaceProfile(spaceId, role);
+  }
+
+  @Override
+  public SpaceWithSubSpacesAndComponents getFullTreeview(String userId) throws AdminException {
+    return mock.getFullTreeview(userId);
+  }
+
+  @Override
+  public List<SpaceInstLight> getPathToSpace(String spaceId) {
+    return mock.getPathToSpace(spaceId);
+  }
+
+  @Override
+  public List<SpaceInstLight> getPathToComponent(String componentId) {
+    return mock.getPathToComponent(componentId);
   }
 }

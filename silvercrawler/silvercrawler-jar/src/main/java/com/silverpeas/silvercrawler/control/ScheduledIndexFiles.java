@@ -35,7 +35,7 @@ import com.silverpeas.scheduler.SchedulerEventListener;
 import com.silverpeas.scheduler.SchedulerFactory;
 import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
@@ -70,34 +70,28 @@ public class ScheduledIndexFiles
     try {
       // indexation des fichiers du composant
       OrganisationController orga = new OrganizationController();
-      String[] instanceIds = orga.getCompoId("silverCrawler");
-      for (int i = 0; instanceIds != null && i < instanceIds.length; i++) {
-        ComponentInst instance = orga.getComponentInst("silverCrawler"
-            + instanceIds[i]);
-        boolean periodicIndex = "yes".equals(instance.getParameterValue("periodicIndex"));
-        if (periodicIndex) {
-          RepositoryIndexer repositoryIndexer = new RepositoryIndexer(null,
-              instance.getId());
+      List<ComponentInstLight> instances = orga.getComponentsWithParameterValue("periodicIndex", "yes");
+      for (ComponentInstLight instance : instances) {
+        RepositoryIndexer repositoryIndexer = new RepositoryIndexer(null,
+            instance.getId());
 
-          List<String> profiles = new ArrayList<String>();
-          profiles.add("admin");
-          String[] adminIds = orga.getUsersIdsByRoleNames(instance.getId(),
-              profiles);
+        List<String> profiles = new ArrayList<String>();
+        profiles.add("admin");
+        String[] adminIds = orga.getUsersIdsByRoleNames(instance.getId(), profiles);
 
-          String adminId = "0";
-          if (adminIds != null && adminIds.length > 0) {
-            adminId = adminIds[0];
-          }
-
-          String pathRepository = instance.getParameterValue("directory");
-
-          if (!pathRepository.endsWith(File.separator)) {
-            pathRepository += File.separator;
-          }
-          Date dateIndex = new Date();
-          repositoryIndexer.pathIndexer(pathRepository, dateIndex.toString(),
-              adminId, "add");
+        String adminId = "0";
+        if (adminIds != null && adminIds.length > 0) {
+          adminId = adminIds[0];
         }
+
+        String pathRepository = orga.getComponentParameterValue(instance.getId(), "directory");
+
+        if (!pathRepository.endsWith(File.separator)) {
+          pathRepository += File.separator;
+        }
+        Date dateIndex = new Date();
+        repositoryIndexer.pathIndexer(pathRepository, dateIndex.toString(),
+            adminId, "add");
       }
     } catch (Exception e) {
       throw new SilverCrawlerRuntimeException(
