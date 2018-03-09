@@ -23,11 +23,7 @@
  */
 package com.silverpeas.kmelia.notification;
 
-import org.silverpeas.attachment.model.SimpleDocument;
-import static com.silverpeas.util.StringUtil.isDefined;
-
 import com.silverpeas.notification.model.NotificationResourceData;
-import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.constant.NotifAction;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -36,8 +32,11 @@ import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import org.silverpeas.attachment.model.SimpleDocument;
 
 import java.util.Collection;
+
+import static com.silverpeas.util.StringUtil.isDefined;
 
 /**
  * @author Yohann Chastagnier
@@ -91,12 +90,11 @@ public class KmeliaDocumentSubscriptionPublicationUserNotification extends
         .setAttribute("attachmentCreationDate", DateUtil.getOutputDate(document.getCreated(), language));
     template.setAttribute("attachmentSize", FileRepositoryManager.formatFileSize(document.getSize()));
 
-    String author = document.getUpdatedBy();
-    if(!StringUtil.isDefined(author)) {
-      author = document.getCreatedBy();
+    UserDetail author = getOrganisationController().getUserDetail(document.getUpdatedBy());
+    if(author == null) {
+      author = getOrganisationController().getUserDetail(document.getCreatedBy());
     }
-    final UserDetail authorDetail = getOrganisationController().getUserDetail(author);
-    template.setAttribute("attachmentAuthor", authorDetail.getFirstName() + " " + authorDetail.getLastName());
+    template.setAttribute("attachmentAuthor", author.getFirstName() + " " + author.getLastName());
 
     if (document.isVersioned()) {
       template.setAttribute("attachmentMajorNumber", document.getMajorVersion());
