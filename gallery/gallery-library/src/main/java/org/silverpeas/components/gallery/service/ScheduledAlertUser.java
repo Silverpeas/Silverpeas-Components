@@ -25,23 +25,22 @@ package org.silverpeas.components.gallery.service;
 
 import org.silverpeas.components.gallery.model.GalleryRuntimeException;
 import org.silverpeas.components.gallery.model.Media;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.notification.user.client.NotificationManagerException;
+import org.silverpeas.core.notification.user.client.NotificationMetaData;
+import org.silverpeas.core.notification.user.client.NotificationSender;
+import org.silverpeas.core.notification.user.client.UserRecipient;
 import org.silverpeas.core.scheduler.Scheduler;
 import org.silverpeas.core.scheduler.SchedulerEvent;
 import org.silverpeas.core.scheduler.SchedulerEventListener;
 import org.silverpeas.core.scheduler.SchedulerProvider;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.core.notification.user.client.NotificationManagerException;
-import org.silverpeas.core.notification.user.client.NotificationMetaData;
-import org.silverpeas.core.notification.user.client.NotificationSender;
-import org.silverpeas.core.notification.user.client.UserRecipient;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.util.Link;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.text.MessageFormat;
@@ -50,8 +49,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.silverpeas.components.gallery.service.MediaServiceProvider.getMediaService;
-import static org.silverpeas.core.notification.user.client.NotificationParameters.NORMAL;
 import static org.silverpeas.core.admin.service.OrganizationControllerProvider.getOrganisationController;
+import static org.silverpeas.core.notification.user.client.NotificationParameters.NORMAL;
 
 public class ScheduledAlertUser implements SchedulerEventListener {
 
@@ -102,8 +101,7 @@ public class ScheduledAlertUser implements SchedulerEventListener {
         createMessage(messageContent, currentInstanceId);
       }
     } catch (Exception e) {
-      throw new GalleryRuntimeException("ScheduledAlertUser.doScheduledAlertUser()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+      throw new GalleryRuntimeException(e);
     }
   }
 

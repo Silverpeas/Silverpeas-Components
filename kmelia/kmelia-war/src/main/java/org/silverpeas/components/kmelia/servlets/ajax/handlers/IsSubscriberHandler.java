@@ -34,7 +34,7 @@ public class IsSubscriberHandler implements AjaxHandler {
     String topicId = request.getParameter("Id");
     try {
       // check if user is subscriber of given topic
-      if (kmelia.getKmeliaBm().checkSubscription(new NodePK(topicId, kmelia.getComponentId()),
+      if (kmelia.getKmeliaService().checkSubscription(new NodePK(topicId, kmelia.getComponentId()),
           kmelia.getUserId())) {
         return "false";
       }

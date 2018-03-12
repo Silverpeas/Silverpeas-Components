@@ -40,7 +40,6 @@ import org.silverpeas.components.gallery.model.MetaData;
 import org.silverpeas.components.gallery.model.Photo;
 import org.silverpeas.components.gallery.model.Sound;
 import org.silverpeas.components.gallery.model.Video;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.io.media.Definition;
 import org.silverpeas.core.io.media.MetadataExtractor;
 import org.silverpeas.core.io.media.image.ImageTool;
@@ -130,10 +129,6 @@ public class MediaUtil {
         }
       }
     }
-  }
-
-  private static ImageTool getImageTool() {
-    return ImageTool.get();
   }
 
   /**
@@ -418,8 +413,7 @@ public class MediaUtil {
       } else {
         getMedia().setFileName(null);
         try {
-          throw new GalleryRuntimeException("MediaHelper.setInternalMetadata",
-              SilverpeasRuntimeException.ERROR,
+          throw new GalleryRuntimeException(
               "Mime-Type of " + fileForData.getName() + " is not supported (" +
                   FileUtil.getMimeType(fileForData.getPath()) + ")");
         } finally {
@@ -487,7 +481,7 @@ public class MediaUtil {
     protected void generateFiles() {
       VideoThumbnailExtractor vte = VideoThumbnailExtractor.get();
       if (vte.isActivated()) {
-        vte.generateThumbnailsFrom(getPhysicalFileMetaData(), getHandledFile().getFile());
+        vte.generateThumbnailsFrom(getPhysicalFileMetaData(), super.getHandledFile().getFile());
       }
     }
   }
@@ -505,6 +499,10 @@ public class MediaUtil {
       this.watermark = watermark;
       this.watermarkHD = watermarkHD;
       this.watermarkOther = watermarkOther;
+    }
+
+    private static ImageTool getImageTool() {
+      return ImageTool.get();
     }
 
     @Override
@@ -540,12 +538,12 @@ public class MediaUtil {
       }
       String[] widthAndHeight = null;
       try {
-        widthAndHeight = getImageTool()
-            .getImageInfo(getHandledFile().getFile(), WIDTH_IN_PIXEL, HEIGHT_IN_PIXEL);
+        widthAndHeight = getImageTool().getImageInfo(super.getHandledFile().getFile(),
+            WIDTH_IN_PIXEL, HEIGHT_IN_PIXEL);
       } catch (Exception e) {
         SilverLogger.getLogger(this)
             .error("impossible to read the width and height of file ''{0}''",
-                new Object[]{getHandledFile().getFile().getName()}, e);
+                new Object[]{super.getHandledFile().getFile().getName()}, e);
       }
       final int widthAndHeightSize = 2;
       if (widthAndHeight == null || widthAndHeight.length != widthAndHeightSize) {
@@ -575,7 +573,7 @@ public class MediaUtil {
       // Tiny
       final MediaResolution[] mediaResolutions =
           new MediaResolution[]{LARGE, PREVIEW, MEDIUM, SMALL, TINY};
-      final HandledFile originalFile = getHandledFile();
+      final HandledFile originalFile = super.getHandledFile();
       HandledFile source = originalFile;
       final String originalFileExt = "." + FilenameUtils.getExtension(photo.getFileName());
       for (MediaResolution mediaResolution : mediaResolutions) {
@@ -631,14 +629,7 @@ public class MediaUtil {
       if (watermark && photo.getFileMimeType().isIPTCCompliant()) {
         try {
           if (isDefined(watermarkHD)) {
-            // Photo duplication that is stamped with a Watermark.
-            nameAuthor = defaultStringIfNotDefined(getWatermarkValue(watermarkHD), nameAuthor);
-            if (!nameAuthor.isEmpty()) {
-              final HandledFile watermarkFile = getHandledFile().getParentHandledFile()
-                  .getHandledFile(photo.getId() + "_watermark.jpg");
-              AbstractImageToolOption option = WatermarkTextOption.text(nameAuthor);
-              getImageTool().convert(getHandledFile().getFile(), watermarkFile.getFile(), option);
-            }
+            nameAuthor = processWatermarkHD(nameAuthor, photo);
           }
           if (isDefined(watermarkOther)) {
             nameAuthor = defaultStringIfNotDefined(getWatermarkValue(watermarkOther), nameAuthor);
@@ -649,17 +640,32 @@ public class MediaUtil {
         } catch (MediaMetadataException e) {
           SilverLogger.getLogger(MediaUtil.class)
               .silent(e)
-              .error("Bad image file format " + getHandledFile().getFile().getPath() + ": " +
+              .error("Bad image file format " + super.getHandledFile().getFile().getPath() + ": " +
                   e.getMessage());
         } catch (IOException e) {
           SilverLogger.getLogger(MediaUtil.class)
               .silent(e)
               .error(
-                  "Bad metadata encoding in image " + getHandledFile().getFile().getPath() + ": " +
+                  "Bad metadata encoding in image " + super.getHandledFile().getFile().getPath() +
+                      ": " +
                       e.getMessage());
         }
       }
       return nameForWatermark;
+    }
+
+    private String processWatermarkHD(String nameAuthor, final Photo photo)
+        throws MediaMetadataException, IOException {
+      // Photo duplication that is stamped with a Watermark.
+      nameAuthor = defaultStringIfNotDefined(getWatermarkValue(watermarkHD), nameAuthor);
+      if (!nameAuthor.isEmpty()) {
+        final HandledFile watermarkFile = super.getHandledFile()
+            .getParentHandledFile()
+            .getHandledFile(photo.getId() + "_watermark.jpg");
+        AbstractImageToolOption option = WatermarkTextOption.text(nameAuthor);
+        getImageTool().convert(super.getHandledFile().getFile(), watermarkFile.getFile(), option);
+      }
+      return nameAuthor;
     }
 
     /**
@@ -672,7 +678,7 @@ public class MediaUtil {
       if (cachedIptcMetadata == null) {
         final MediaMetadataExtractor extractor =
             new DrewMediaMetadataExtractor(getMedia().getInstanceId());
-        cachedIptcMetadata = extractor.extractImageIptcMetaData(getHandledFile().getFile());
+        cachedIptcMetadata = extractor.extractImageIptcMetaData(super.getHandledFile().getFile());
       }
       return cachedIptcMetadata;
     }

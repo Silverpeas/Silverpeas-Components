@@ -509,7 +509,7 @@ public class ProcessManagerRequestRouter
       request.setAttribute("action", session.getAction(actionName));
 
       // Get the associated form
-      Form form = session.getActionForm(stateName, actionName);
+      Form form = session.getActionForm(actionName);
       request.setAttribute("form", form);
 
       // Set the form context
@@ -550,10 +550,10 @@ public class ProcessManagerRequestRouter
       String actionName = request.getParameter("action");
 
       // Get the associated form
-      Form form = session.getActionForm(stateName, actionName);
+      Form form = session.getActionForm(actionName);
       if (form == null) {
         // no form associated to this action, process action directly
-        DataRecord data = session.getActionRecord(stateName, actionName);
+        DataRecord data = session.getActionRecord(actionName);
 
         // lock the process instance
         session.lock(stateName);
@@ -574,7 +574,7 @@ public class ProcessManagerRequestRouter
         request.setAttribute("context", context);
 
         // Get the form data
-        DataRecord data = session.getActionRecord(stateName, actionName);
+        DataRecord data = session.getActionRecord(actionName);
         request.setAttribute("data", data);
 
         // Set flag to indicate action record has never been saved as draft for this step
@@ -612,9 +612,9 @@ public class ProcessManagerRequestRouter
         boolean isFirstTimeSaved =
             StringUtil.getBooleanValue(FileUploadUtil.getParameter(items, "isFirstTimeSaved"));
 
-        Form form = session.getActionForm(stateName, actionName);
+        Form form = session.getActionForm(actionName);
         PagesContext context = getFormContext("actionForm", "0", session);
-        DataRecord data = session.getActionRecord(stateName, actionName);
+        DataRecord data = session.getActionRecord(actionName);
 
         if (form != null) {
           form.update(items, data, context);

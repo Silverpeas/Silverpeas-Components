@@ -34,7 +34,6 @@ import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.process.management.ProcessExecutionContext;
 import org.silverpeas.core.process.session.ProcessSession;
 
@@ -97,21 +96,17 @@ public class GalleryDeleteMediaDataProcess extends AbstractGalleryDataProcess {
       final String xmlFormName = getXMLFormName(context);
       if (isDefined(xmlFormName)) {
         final String xmlFormShortName =
-            xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
+            xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName.indexOf('.'));
         final PublicationTemplate pubTemplate =
             getPublicationTemplateManager().getPublicationTemplate(
                 context.getComponentInstanceId() + ":" + xmlFormShortName);
 
         final RecordSet set = pubTemplate.getRecordSet();
         final DataRecord data = set.getRecord(mediaId);
-        set.delete(data);
+        set.delete(data.getId());
       }
-    } catch (final PublicationTemplateException e) {
-      throw new GalleryRuntimeException("GallerySessionController.removeXMLContentOfMedia()",
-          SilverpeasRuntimeException.ERROR, "gallery.EX_IMPOSSIBLE_DE_SUPPRIMER_LE_CONTENU_XML", e);
-    } catch (final FormException e) {
-      throw new GalleryRuntimeException("GallerySessionController.removeXMLContentOfMedia()",
-          SilverpeasRuntimeException.ERROR, "gallery.EX_IMPOSSIBLE_DE_SUPPRIMER_LE_CONTENU_XML", e);
+    } catch (final PublicationTemplateException | FormException e) {
+      throw new GalleryRuntimeException(e);
     }
   }
 }

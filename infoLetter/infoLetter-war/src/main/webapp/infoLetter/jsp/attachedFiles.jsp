@@ -25,9 +25,7 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ page import="org.silverpeas.core.util.URLEncoder" %>
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
-<%@ page import="org.silverpeas.core.exception.SilverpeasRuntimeException" %>
 <%@ page import="org.silverpeas.components.infoletter.InfoLetterException" %>
 
 <%!
@@ -39,8 +37,7 @@ void displayAttachmentEdit(String id, String spaceId, String componentId, String
       org.silverpeas.core.util.URLEncoder.encodeQueryNameOrValue(url)).include(request, response);
 
     } catch (Exception e) {
-		throw new InfoLetterException("viewLetter_JSP.displayViewWysiwyg",
-		SilverpeasRuntimeException.ERROR, e.getMessage());
+		throw new InfoLetterException(e);
     }
 }
 %>

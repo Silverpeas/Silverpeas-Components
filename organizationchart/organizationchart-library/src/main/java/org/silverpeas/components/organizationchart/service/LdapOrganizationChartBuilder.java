@@ -52,8 +52,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import static org.silverpeas.components.organizationchart.model.OrganizationalChartType
+    .TYPE_UNITCHART;
+
 class LdapOrganizationChartBuilder extends AbstractOrganizationChartBuilder {
 
+  private static final String OBJECT_CLASS = "(objectclass=";
   private final LdapOrganizationChartConfiguration config;
 
   static LdapOrganizationChartBuilder from(LdapOrganizationChartConfiguration config) {
@@ -88,18 +92,18 @@ class LdapOrganizationChartBuilder extends AbstractOrganizationChartBuilder {
       ctls.setCountLimit(0);
 
       if (StringUtil.isDefined(config.getLdapAttCSSClass())) {
-        OrganizationalUnit root = getOrganizationalUnit(ctx, ctls, rootOu);
-        String cssClass = getSpecificCSSClass(ctx, ctls, root);
+        OrganizationalUnit root = getOrganizationalUnit(ctx, rootOu);
+        String cssClass = getSpecificCSSClass(ctx, root);
         parent.setSpecificCSSClass(cssClass);
         parent.setDetail(root.getDetail());
       }
 
       // get organization unit members
       ouMembers = getOUMembers(ctx, ctls, rootOu, type);
-      parent.setHasMembers(ouMembers != null && ouMembers.size() > 1);
+      parent.setHasMembers(ouMembers.size() > 1);
 
       // get sub organization units
-      if (type == OrganizationalChartType.TYPE_UNITCHART) {
+      if (type == TYPE_UNITCHART) {
         units = getSubOrganizationUnits(ctx, ctls, rootOu);
       }
 
@@ -119,15 +123,11 @@ class LdapOrganizationChartBuilder extends AbstractOrganizationChartBuilder {
     boolean silverpeasUserLinkable = StringUtil.isDefined(config.getDomainId());
 
     OrganizationalChart chart;
-    switch (type) {
-      case TYPE_UNITCHART:
-        chart = new OrganizationalChart(parent, units, ouMembers, silverpeasUserLinkable);
-        break;
-
-      default:
-        Set<PersonCategory> categories = getCategories(ouMembers);
-        chart = new OrganizationalChart(parent, ouMembers, categories, silverpeasUserLinkable);
-        break;
+    if (type == TYPE_UNITCHART) {
+      chart = new OrganizationalChart(parent, units, ouMembers, silverpeasUserLinkable);
+    } else {
+      Set<PersonCategory> categories = getCategories(ouMembers);
+      chart = new OrganizationalChart(parent, ouMembers, categories, silverpeasUserLinkable);
     }
 
     return chart;
@@ -189,7 +189,7 @@ class LdapOrganizationChartBuilder extends AbstractOrganizationChartBuilder {
     List<OrganizationalPerson> personList = new ArrayList<>();
 
     NamingEnumeration<SearchResult> results =
-        ctx.search(rootOu, "(objectclass=" + config.getLdapClassPerson() + ")", ctls);
+        ctx.search(rootOu, OBJECT_CLASS + config.getLdapClassPerson() + ")", ctls);
 
 
     int i = 0;
@@ -224,7 +224,7 @@ class LdapOrganizationChartBuilder extends AbstractOrganizationChartBuilder {
     ArrayList<OrganizationalUnit> units = new ArrayList<>();
 
     NamingEnumeration<SearchResult> results =
-        ctx.search(rootOu, "(objectclass=" + config.getLdapClassUnit() + ")", ctls);
+        ctx.search(rootOu, OBJECT_CLASS + config.getLdapClassUnit() + ")", ctls);
 
     while (results != null && results.hasMore()) {
       SearchResult entry = results.next();
@@ -245,14 +245,14 @@ class LdapOrganizationChartBuilder extends AbstractOrganizationChartBuilder {
 
     for (OrganizationalUnit unit : units) {
       boolean hasSubOrganizations =
-          hasResults(unit.getCompleteName(), "(objectclass=" + config.getLdapClassUnit() + ")", ctx,
+          hasResults(unit.getCompleteName(), OBJECT_CLASS + config.getLdapClassUnit() + ")", ctx,
               ctls);
       unit.setHasSubUnits(hasSubOrganizations);
 
       try {
         // set responsible of subunit
         List<OrganizationalPerson> users =
-            getOUMembers(ctx, ctls, unit.getCompleteName(), OrganizationalChartType.TYPE_UNITCHART);
+            getOUMembers(ctx, ctls, unit.getCompleteName(), TYPE_UNITCHART);
         List<OrganizationalPerson> mainActors = getMainActors(users);
         unit.setMainActors(mainActors);
 
@@ -261,7 +261,7 @@ class LdapOrganizationChartBuilder extends AbstractOrganizationChartBuilder {
 
         // set css class
         if (StringUtil.isDefined(config.getLdapAttCSSClass())) {
-          String cssClass = getSpecificCSSClass(ctx, ctls, unit);
+          String cssClass = getSpecificCSSClass(ctx, unit);
           unit.setSpecificCSSClass(cssClass);
         }
       } catch (Exception e) {
@@ -274,8 +274,8 @@ class LdapOrganizationChartBuilder extends AbstractOrganizationChartBuilder {
     return units;
   }
 
-  private OrganizationalUnit getOrganizationalUnit(DirContext ctx, SearchControls ctls,
-      String rootOu) throws NamingException {
+  private OrganizationalUnit getOrganizationalUnit(DirContext ctx, String rootOu)
+      throws NamingException {
     Attributes attrs = ctx.getAttributes(rootOu);
 
     String ou = getFirstAttributeValue(attrs.get(config.getAttUnit()));
@@ -292,7 +292,7 @@ class LdapOrganizationChartBuilder extends AbstractOrganizationChartBuilder {
     return unit;
   }
 
-  private String getSpecificCSSClass(DirContext ctx, SearchControls ctls, OrganizationalUnit unit)
+  private String getSpecificCSSClass(DirContext ctx, OrganizationalUnit unit)
       throws NamingException {
     String cssClass = unit.getSpecificCSSClass();
 
@@ -303,13 +303,11 @@ class LdapOrganizationChartBuilder extends AbstractOrganizationChartBuilder {
         OrganizationalUnit parent = getParentOU(ou);
         if (parent.getCompleteName() != null) {
           OrganizationalUnit fullParent =
-              getOrganizationalUnit(ctx, ctls, parent.getCompleteName());
-          if (fullParent != null) {
-            cssClass = fullParent.getSpecificCSSClass();
-            ou = parent.getCompleteName();
-          }
+              getOrganizationalUnit(ctx, parent.getCompleteName());
+          cssClass = fullParent.getSpecificCSSClass();
+          ou = parent.getCompleteName();
         } else {
-          ou = null;
+          ou = "";
         }
       }
     }
@@ -383,13 +381,10 @@ class LdapOrganizationChartBuilder extends AbstractOrganizationChartBuilder {
 
     // Determines attributes to be returned
     Map<String, String> attributesToReturn;
-    switch (type) {
-      case TYPE_UNITCHART:
-        attributesToReturn = config.getUnitsChartOthersInfosKeys();
-        break;
-
-      default:
-        attributesToReturn = config.getPersonnsChartOthersInfosKeys();
+    if (type == TYPE_UNITCHART) {
+      attributesToReturn = config.getUnitsChartOthersInfosKeys();
+    } else {
+      attributesToReturn = config.getPersonnsChartOthersInfosKeys();
     }
 
     Map<String, String> details = getDetails(attributesToReturn, attrs);
@@ -397,14 +392,10 @@ class LdapOrganizationChartBuilder extends AbstractOrganizationChartBuilder {
 
     // defined the boxes with personns inside
     if (function != null) {
-      switch (type) {
-        case TYPE_UNITCHART:
-          defineUnitChartRoles(person, function, config);
-          break;
-
-        default:
-          defineDetailledChartRoles(person, function, config);
-          break;
+      if (type == TYPE_UNITCHART) {
+        defineUnitChartRoles(person, function, config);
+      } else {
+        defineDetailledChartRoles(person, function, config);
       }
     } else {
       person.setVisibleCategory(new PersonCategory("Personnel"));
@@ -422,20 +413,16 @@ class LdapOrganizationChartBuilder extends AbstractOrganizationChartBuilder {
         try {
           String detail;
           if (att.size() > 1) {
-            StringBuilder listOfVals = new StringBuilder();
-            NamingEnumeration<?> vals = att.getAll();
-            while (vals.hasMore()) {
-              String val = (String) vals.next();
-              listOfVals.append(val).append(", ");
-            }
-            detail = listOfVals.toString().substring(0, listOfVals.length() - 2);
+            String listOfVals = getListOfValues(att);
+            detail = listOfVals.substring(0, listOfVals.length() - 2);
           } else {
             detail = getFirstAttributeValue(att);
           }
 
           // convert characters
-          detail = escapeHTML(detail);
-
+          if (detail != null) {
+            detail = escapeHTML(detail);
+          }
           details.put(attribute.getValue(), detail);
         } catch (NamingException e) {
           SilverLogger.getLogger(this).error("cannot get data of attribute ''{0}'' ({1})",
@@ -444,6 +431,16 @@ class LdapOrganizationChartBuilder extends AbstractOrganizationChartBuilder {
       }
     }
     return details;
+  }
+
+  private String getListOfValues(final Attribute att) throws NamingException {
+    StringBuilder listOfVals = new StringBuilder();
+    NamingEnumeration<?> vals = att.getAll();
+    while (vals.hasMore()) {
+      String val = (String) vals.next();
+      listOfVals.append(val).append(", ");
+    }
+    return listOfVals.toString();
   }
 
   private String escapeHTML(String s) {

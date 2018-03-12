@@ -47,8 +47,6 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.date.period.Period;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.index.search.model.QueryDescription;
 import org.silverpeas.core.index.search.model.SearchResult;
 import org.silverpeas.core.node.dao.NodeDAO;
@@ -121,8 +119,7 @@ public class DefaultGalleryService implements GalleryService {
     try {
       return new AlbumDetail(nodeService.getDetailTransactionally(nodePK), visibility);
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("DefaultGalleryService.getAlbum()",
-          SilverpeasRuntimeException.ERROR, "gallery.MSG_ALBUM_NOT_EXIST", e);
+      throw new GalleryRuntimeException(e);
     }
   }
 
@@ -137,8 +134,7 @@ public class DefaultGalleryService implements GalleryService {
       }
       return albums;
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("DefaultGalleryService.getAllAlbums()",
-          SilverpeasRuntimeException.ERROR, "gallery.MSG_ALBUM_NOT_EXIST", e);
+      throw new GalleryRuntimeException(e);
     }
   }
 
@@ -149,8 +145,7 @@ public class DefaultGalleryService implements GalleryService {
       final AlbumDetail currentAlbum = getAlbum(nodePK);
       return nodeService.createNode(album, currentAlbum);
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("DefaultGalleryService.createAlbum()",
-          SilverpeasRuntimeException.ERROR, "gallery.MSG_ALBUM_NOT_CREATE", e);
+      throw new GalleryRuntimeException(e);
     }
   }
 
@@ -160,8 +155,7 @@ public class DefaultGalleryService implements GalleryService {
     try {
       nodeService.setDetail(album);
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("DefaultGalleryService.updateAlbum()",
-          SilverpeasRuntimeException.ERROR, "gallery.MSG_ALBUM_NOT_UPDATE", e);
+      throw new GalleryRuntimeException(e);
     }
   }
 
@@ -175,8 +169,7 @@ public class DefaultGalleryService implements GalleryService {
       processManagement.addDeleteAlbumProcesses(nodePK);
       processManagement.execute();
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("DefaultGalleryService.deleteAlbum()",
-          SilverpeasRuntimeException.ERROR, "gallery.MSG_ALBUM_NOT_DELETE", e);
+      throw new GalleryRuntimeException(e);
     }
   }
 
@@ -185,8 +178,7 @@ public class DefaultGalleryService implements GalleryService {
     try {
       return PhotoDAO.getPhoto(mediaPK.getId());
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("DefaultGalleryService.getPhoto()",
-          SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
+      throw new GalleryRuntimeException(e);
     }
   }
 
@@ -201,8 +193,7 @@ public class DefaultGalleryService implements GalleryService {
       return MediaDAO.getByCriteria(MediaCriteria.fromComponentInstanceId(mediaPK.getInstanceId())
               .identifierIsOneOf(mediaPK.getId()).withVisibility(visibility));
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("DefaultGalleryService.getMedia()", SilverpeasRuntimeException.ERROR,
-          "gallery.MSG_PHOTO_NOT_EXIST", e);
+      throw new GalleryRuntimeException(e);
     }
   }
 
@@ -219,8 +210,7 @@ public class DefaultGalleryService implements GalleryService {
           .identifierIsOneOf(mediaIds.toArray(new String[mediaIds.size()]))
           .withVisibility(visibility));
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("DefaultGalleryService.getMedia()",
-          SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
+      throw new GalleryRuntimeException(e);
     }
   }
 
@@ -236,8 +226,7 @@ public class DefaultGalleryService implements GalleryService {
       return MediaDAO.findByCriteria(
           MediaCriteria.fromComponentInstanceId(instanceId).withVisibility(visibility));
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("DefaultGalleryService.getAllMedia()",
-          SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
+      throw new GalleryRuntimeException(e);
     }
   }
 
@@ -256,8 +245,7 @@ public class DefaultGalleryService implements GalleryService {
           MediaCriteria.fromComponentInstanceId(instanceId).albumIdentifierIsOneOf(albumId)
               .withVisibility(visibility));
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("DefaultGalleryService.getAllMedia()",
-          SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
+      throw new GalleryRuntimeException(e);
     }
   }
 
@@ -275,8 +263,7 @@ public class DefaultGalleryService implements GalleryService {
           MediaCriteria.fromComponentInstanceId(instanceId).albumIdentifierIsOneOf(albumId)
               .withVisibility(visibility));
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("GalleryBmEJB.countAllPhoto()",
-          SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
+      throw new GalleryRuntimeException(e);
     }
   }
 
@@ -293,8 +280,7 @@ public class DefaultGalleryService implements GalleryService {
       final String instanceId = nodePK.getInstanceId();
       return PhotoDAO.getAllPhoto(albumId, instanceId, visibility);
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("DefaultGalleryService.getAllPhotos()",
-          SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
+      throw new GalleryRuntimeException(e);
     }
   }
 
@@ -304,8 +290,7 @@ public class DefaultGalleryService implements GalleryService {
       return MediaDAO.findByCriteria(MediaCriteria.fromComponentInstanceId(instanceId)
           .withVisibility(MediaCriteria.VISIBILITY.HIDDEN_ONLY));
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("DefaultGalleryService.getNotVisible()",
-          SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
+      throw new GalleryRuntimeException(e);
     }
   }
 
@@ -332,8 +317,7 @@ public class DefaultGalleryService implements GalleryService {
       }
       processManagement.execute();
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("GalleryService.paste()", SilverpeasRuntimeException.ERROR,
-          "gallery.MSG_PASTE_ERROR", e);
+      throw new GalleryRuntimeException(e);
     }
   }
 
@@ -346,8 +330,7 @@ public class DefaultGalleryService implements GalleryService {
       GalleryProcessManagement.importFromRepositoryProcesses(user, componentInstanceId, repository,
           delegate.getAlbumId(), delegate);
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("GalleryService.importFromRepository()",
-          SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTOS_NOT_IMPORTED", e);
+      throw new GalleryRuntimeException(e);
     }
   }
 
@@ -366,8 +349,7 @@ public class DefaultGalleryService implements GalleryService {
       processManagement.execute();
       return newMedia;
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("GalleryService.createMedia()",
-          SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_CREATE", e);
+      throw new GalleryRuntimeException(e);
     }
   }
 
@@ -386,8 +368,7 @@ public class DefaultGalleryService implements GalleryService {
       }
       processManagement.execute();
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("GalleryService.updateMedia()",
-          SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_UPDATE", e);
+      throw new GalleryRuntimeException(e);
     }
   }
 
@@ -403,8 +384,7 @@ public class DefaultGalleryService implements GalleryService {
           .addUpdateMediaProcesses(media, watermark, watermarkHD, watermarkOther, delegate);
       processManagement.execute();
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("GalleryService.updateMedia()",
-          SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_UPDATE", e);
+      throw new GalleryRuntimeException(e);
     }
   }
 
@@ -421,8 +401,7 @@ public class DefaultGalleryService implements GalleryService {
       }
       processManagement.execute();
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("GalleryService.deleteMedia()",
-          SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_DELETE", e);
+      throw new GalleryRuntimeException(e);
     }
   }
 
@@ -433,8 +412,7 @@ public class DefaultGalleryService implements GalleryService {
           .orderedBy(CREATE_DATE_DESC, IDENTIFIER_DESC)
           .limitResultTo(GalleryComponentSettings.getNbMediaDisplayedPerPage()));
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("DefaultGalleryService.getLastRegisteredMedia()",
-          SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
+      throw new GalleryRuntimeException(e);
     }
   }
 
@@ -442,8 +420,7 @@ public class DefaultGalleryService implements GalleryService {
     try {
       return DBUtil.openConnection();
     } catch (final SQLException e) {
-      throw new GalleryRuntimeException("DefaultGalleryService.openConnection()", SilverpeasException.ERROR,
-          "root.EX_CONNECTION_OPEN_FAILED", e);
+      throw new GalleryRuntimeException(e);
     }
   }
 
@@ -453,8 +430,7 @@ public class DefaultGalleryService implements GalleryService {
     try {
       path = nodeService.getPath(nodePK);
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("DefaultGalleryService.getPath()", SilverpeasRuntimeException.ERROR,
-          "gallery.MSG_PATH", e);
+      throw new GalleryRuntimeException(e);
     }
     return path;
   }
@@ -464,8 +440,7 @@ public class DefaultGalleryService implements GalleryService {
     try {
       return MediaDAO.getAlbumIdsOf(media);
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("DefaultGalleryService.getPathList()",
-          SilverpeasRuntimeException.ERROR, "gallery.MSG_PATH", e);
+      throw new GalleryRuntimeException(e);
     }
   }
 
@@ -475,8 +450,7 @@ public class DefaultGalleryService implements GalleryService {
     try {
       MediaDAO.deleteAllMediaPath(media);
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("DefaultGalleryService.removeMediaFromAllAlbums()",
-          SilverpeasRuntimeException.ERROR, "gallery.MSG_PATH", e);
+      throw new GalleryRuntimeException(e);
     }
   }
 
@@ -488,8 +462,7 @@ public class DefaultGalleryService implements GalleryService {
         MediaDAO.saveMediaPath(media, albumId);
       }
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("DefaultGalleryService.addMediaToAlbums()",
-          SilverpeasRuntimeException.ERROR, "gallery.MSG_PATH", e);
+      throw new GalleryRuntimeException(e);
     }
   }
 
@@ -505,9 +478,7 @@ public class DefaultGalleryService implements GalleryService {
           + " > "
           + displayPath(path, 10);
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("DefaultGalleryService.getHTMLNodePath()",
-          SilverpeasRuntimeException.ERROR,
-          "gallery.EX_IMPOSSIBLE_DOBTENIR_LES_EMPLACEMENTS_DE_LA_PUBLICATION", e);
+      throw new GalleryRuntimeException(e);
     }
     return htmlPath;
   }
@@ -574,8 +545,7 @@ public class DefaultGalleryService implements GalleryService {
         try {
           nodeService.createIndex(album);
         } catch (final Exception e) {
-          throw new GalleryRuntimeException("DefaultGalleryService.indexGallery()",
-              SilverpeasRuntimeException.ERROR, "gallery.MSG_INDEXALBUM", e);
+          throw new GalleryRuntimeException(e);
         }
 
         final Collection<Media> media = getAllMedia(album.getNodePK(),
@@ -596,8 +566,7 @@ public class DefaultGalleryService implements GalleryService {
       processManagement.addIndexMediaProcesses(media);
       processManagement.execute();
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("GalleryService.createIndex()", SilverpeasRuntimeException.ERROR,
-          "gallery.MSG_PHOTO_NOT_CREATE", e);
+      throw new GalleryRuntimeException(e);
     }
   }
 
@@ -615,8 +584,7 @@ public class DefaultGalleryService implements GalleryService {
             Transaction.performInOne(() -> createSilverContent(media, media.getCreatorId()));
       }
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("DefaultGalleryService.getSilverObjectId()",
-          SilverpeasRuntimeException.ERROR, "gallery.EX_IMPOSSIBLE_DOBTENIR_LE_SILVEROBJECTID", e);
+      throw new GalleryRuntimeException(e);
     }
     return silverObjectId;
   }
@@ -625,8 +593,7 @@ public class DefaultGalleryService implements GalleryService {
     try {
       return galleryContentManager.createSilverContent(media, creatorId);
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("DefaultGalleryService.createSilverContent()",
-          SilverpeasRuntimeException.ERROR, "gallery.EX_IMPOSSIBLE_DOBTENIR_LE_SILVEROBJECTID", e);
+      throw new GalleryRuntimeException(e);
     }
   }
 
@@ -647,8 +614,7 @@ public class DefaultGalleryService implements GalleryService {
             }
           });
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("GallerySessionController.search()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_ADD_OBJECT", e);
+      throw new GalleryRuntimeException(e);
     }
     return mediaList;
   }
@@ -659,8 +625,7 @@ public class DefaultGalleryService implements GalleryService {
       return MediaDAO.findByCriteria(MediaCriteria.fromNbDaysBeforeThatMediaIsNotVisible(nbDays)
           .withVisibility(MediaCriteria.VISIBILITY.FORCE_GET_ALL));
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("DefaultGalleryService.getAllMediaThatWillBeNotVisible()",
-          SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
+      throw new GalleryRuntimeException(e);
     }
   }
 
@@ -671,8 +636,7 @@ public class DefaultGalleryService implements GalleryService {
     try {
       return OrderDAO.createOrder(basket, userId, componentId);
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("DefaultGalleryService.createOrder()",
-          SilverpeasRuntimeException.ERROR, "gallery.MSG_REQUEST_NOT_CREATE", e);
+      throw new GalleryRuntimeException(e);
     }
   }
 
@@ -682,8 +646,7 @@ public class DefaultGalleryService implements GalleryService {
       return OrderDAO.findByCriteria(
           MediaOrderCriteria.fromComponentInstanceId(instanceId).withOrdererId(userId));
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("DefaultGalleryService.getAllOrders()",
-          SilverpeasRuntimeException.ERROR, "gallery.MSG_REQUEST_LIST_NOT_EXIST", e);
+      throw new GalleryRuntimeException(e);
     }
   }
 
@@ -693,8 +656,7 @@ public class DefaultGalleryService implements GalleryService {
     try {
       OrderDAO.updateOrder(order);
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("DefaultGalleryService.updateORder()",
-          SilverpeasRuntimeException.ERROR, "gallery.MSG_REQUEST_ORDER_NOT_EXIST", e);
+      throw new GalleryRuntimeException(e);
     }
   }
 
@@ -704,8 +666,7 @@ public class DefaultGalleryService implements GalleryService {
     try {
       OrderDAO.updateOrderRow(row);
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("DefaultGalleryService.updateOrderRow()",
-          SilverpeasRuntimeException.ERROR, "gallery.MSG_REQUEST_ORDER_ROW_NOT_EXIST", e);
+      throw new GalleryRuntimeException(e);
     }
   }
 
@@ -715,8 +676,7 @@ public class DefaultGalleryService implements GalleryService {
       return OrderDAO.getByCriteria(
           MediaOrderCriteria.fromComponentInstanceId(instanceId).identifierIsOneOf(orderId));
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("DefaultGalleryService.getOrder()",
-          SilverpeasRuntimeException.ERROR, "gallery.MSG_ORDER_NOT_EXIST", e);
+      throw new GalleryRuntimeException(e);
     }
   }
 
@@ -725,8 +685,7 @@ public class DefaultGalleryService implements GalleryService {
     try {
       return OrderDAO.findByCriteria(MediaOrderCriteria.fromNbDaysAfterThatDeleteAnOrder(nbDays));
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("DefaultGalleryService.getAllOrderToDelete()",
-          SilverpeasRuntimeException.ERROR, "gallery.MSG_ORDER_NOT_EXIST", e);
+      throw new GalleryRuntimeException(e);
     }
   }
 
@@ -739,8 +698,7 @@ public class DefaultGalleryService implements GalleryService {
         OrderDAO.deleteOrder(order);
       }
     } catch (final Exception e) {
-      throw new GalleryRuntimeException("DefaultGalleryService.deleteOrders()",
-          SilverpeasRuntimeException.ERROR, "gallery.MSG_ORDER_NOT_EXIST", e);
+      throw new GalleryRuntimeException(e);
     }
   }
 
@@ -755,8 +713,7 @@ public class DefaultGalleryService implements GalleryService {
     try {
       return MediaDAO.getAllMediaIdByUserId(userId, period);
     } catch (final SQLException e) {
-      throw new GalleryRuntimeException("DefaultGalleryService.getAllMediaByUserId()",
-          SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
+      throw new GalleryRuntimeException(e);
     }
   }
 
@@ -773,8 +730,7 @@ public class DefaultGalleryService implements GalleryService {
       return MediaDAO
           .getSocialInformationListOfMyContacts(listOfUserId, availableComponent, period);
     } catch (final SQLException e) {
-      throw new GalleryRuntimeException("DefaultGalleryService.getSocialInformationListOfMyContacts()",
-          SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
+      throw new GalleryRuntimeException(e);
     }
   }
 
@@ -783,8 +739,7 @@ public class DefaultGalleryService implements GalleryService {
     try (final Connection con = openConnection()) {
       NodeDAO.sortNodes(con, nodePKs);
     } catch (final SQLException e) {
-      throw new GalleryRuntimeException("sortAlbums()", SilverpeasRuntimeException.ERROR,
-          "gallery.MSG_NOT_ORDER", e);
+      throw new GalleryRuntimeException(e);
     }
   }
 }

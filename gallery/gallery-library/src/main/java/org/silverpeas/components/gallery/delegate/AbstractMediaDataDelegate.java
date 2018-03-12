@@ -23,23 +23,22 @@
  */
 package org.silverpeas.components.gallery.delegate;
 
-import org.silverpeas.core.contribution.content.form.DataRecord;
-import org.silverpeas.core.contribution.content.form.Form;
-import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.contribution.content.form.PagesContext;
-import org.silverpeas.core.contribution.content.form.RecordSet;
+import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.gallery.constant.MediaType;
 import org.silverpeas.components.gallery.constant.StreamingProvider;
 import org.silverpeas.components.gallery.model.GalleryRuntimeException;
 import org.silverpeas.components.gallery.model.InternalMedia;
 import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.components.gallery.model.Streaming;
-import org.silverpeas.core.pdc.pdc.model.PdcPosition;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
-import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.Form;
+import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.PagesContext;
+import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.date.period.Period;
+import org.silverpeas.core.pdc.pdc.model.PdcPosition;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileUploadUtil;
 
 import java.text.ParseException;
@@ -137,9 +136,7 @@ public abstract class AbstractMediaDataDelegate {
       StreamingProvider streamingProvider =
           StreamingProvider.fromUrl(getHeaderData().getHompageUrl());
       if (streamingProvider.isUnknown()) {
-        throw new GalleryRuntimeException("AbstractMediaDelegate.updateHeader",
-            SilverpeasRuntimeException.ERROR,
-            "streaming homepage URL must be defined and supported");
+        throw new GalleryRuntimeException("Streaming homepage URL must be defined and supported");
       }
       Streaming streaming = media.getStreaming();
       streaming.setHomepageUrl(getHeaderData().getHompageUrl());
@@ -217,6 +214,20 @@ public abstract class AbstractMediaDataDelegate {
     private Date beginDownloadDate = null;
     private Date endDownloadDate = null;
     private List<PdcPosition> pdcPositions = null;
+
+    /**
+     * Internal tool
+     * @param stringDate
+     * @return
+     * @throws ParseException
+     */
+    private Date stringToDate(final String stringDate) throws ParseException {
+      Date date = null;
+      if (stringDate != null && StringUtil.isDefined(stringDate.trim())) {
+        date = DateUtil.stringToDate(stringDate, language);
+      }
+      return date;
+    }
 
     private String getHompageUrl() {
       return hompageUrl;
@@ -310,20 +321,6 @@ public abstract class AbstractMediaDataDelegate {
       this.pdcPositions = pdcPositions;
     }
 
-  }
-
-  /**
-   * Internal tool
-   * @param stringDate
-   * @return
-   * @throws ParseException
-   */
-  private Date stringToDate(final String stringDate) throws ParseException {
-    Date date = null;
-    if (stringDate != null && StringUtil.isDefined(stringDate.trim())) {
-      date = DateUtil.stringToDate(stringDate, language);
-    }
-    return date;
   }
 
   /**

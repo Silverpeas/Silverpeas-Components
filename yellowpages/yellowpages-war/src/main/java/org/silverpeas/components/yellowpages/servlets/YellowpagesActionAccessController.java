@@ -34,50 +34,11 @@ import java.util.Map;
  */
 public class YellowpagesActionAccessController {
 
-  private Map<String, SilverpeasRole> actionRole = new HashMap<String, SilverpeasRole>();
+  private Map<String, SilverpeasRole> actionRole = new HashMap<>();
 
   public YellowpagesActionAccessController() {
     actionRole.put("Main", SilverpeasRole.reader);
     actionRole.put("DeleteContact", SilverpeasRole.writer);
-
-    /*
-      function.equals("GoTo")) {
-      function.startsWith("portlet")) {
-      function.startsWith("annuaire")) {
-      function.startsWith("topicManager")) {
-      function.equals("GoToGroup")) {
-      function.equals("RemoveGroup")) {
-      function.equals("ViewUserFull")) {
-      function.startsWith("searchResult")) {
-      function.equals("Search")) {
-      "ToAddFolder".equals(function)) {
-      "AddFolder".equals(function)) {
-      "ToUpdateFolder".equals(function)) {
-      "UpdateFolder".equals(function)) {
-      "DeleteFolder".equals(function)) {
-      function.equals("PrintList")) {
-      function.startsWith("Contact")) {
-      function.startsWith("http")) {
-      function.equals("selectUser")) {
-      function.startsWith("saveUser")) {
-      function.equals("ToChooseGroup")) {
-      function.equals("AddGroup")) {
-      function.equals("ModelUsed")) {
-      function.equals("SelectModel")) {
-      function.equals("DeleteBasketContent")) {
-      "ExportCSV".equals(function)) {
-      "ToImportCSV".equals(function)) {
-      "ImportCSV".equals(function)) {
-    if ("ContactView".equals(function)) {
-    "ContactExternalView".equals(function)) {
-    "ContactNew".equals(function)) {
-    "ContactNewFromUser".equals(function)) {
-    "ContactUpdate".equals(function)) {
-    "ContactSave".equals(function)) {
-    "ContactSetFolders".equals(function)) {
-    }
-    */
-
   }
 
 
@@ -89,11 +50,6 @@ public class YellowpagesActionAccessController {
    */
   public boolean hasRightAccess(String action, SilverpeasRole role) {
     boolean actionExist = actionRole.containsKey(action);
-    if (actionExist && role.isGreaterThanOrEquals(actionRole.get(action))) {
-      return true;
-    } else if (!actionExist) {
-      return true;
-    }
-    return false;
+    return (actionExist && role.isGreaterThanOrEquals(actionRole.get(action)) || (!actionExist));
   }
 }

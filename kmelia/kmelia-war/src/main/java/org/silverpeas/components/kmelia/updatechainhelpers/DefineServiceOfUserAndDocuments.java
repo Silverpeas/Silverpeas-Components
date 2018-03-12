@@ -31,7 +31,6 @@ import org.silverpeas.core.pdc.pdc.model.Value;
 import org.silverpeas.components.kmelia.control.KmeliaSessionController;
 import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -40,12 +39,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
 public class DefineServiceOfUserAndDocuments extends UpdateChainHelperImpl {
 
+  @Override
   public void execute(UpdateChainHelperContext uchc) {
     KmeliaSessionController kmeliaScc = uchc.getKmeliaScc();
 
@@ -63,7 +64,7 @@ public class DefineServiceOfUserAndDocuments extends UpdateChainHelperImpl {
     String[] topics = new String[1];
     List<NodeDetail> allTopics = uchc.getAllTopics();
     for (NodeDetail node : allTopics) {
-      if (node.getName().toUpperCase().equals(service.toUpperCase())) {
+      if (node.getName().equalsIgnoreCase(service.toUpperCase())) {
         topics[0] = node.getId() + "," + node.getNodePK().getInstanceId();
       }
     }
@@ -99,10 +100,10 @@ public class DefineServiceOfUserAndDocuments extends UpdateChainHelperImpl {
     Connection con = getConnection();
     String result = "";
 
-    String query = "select " + field +
-        " from personnel where (lastname||' '||firstname|| ' '||matricule) = ? ";
+    final String query =
+        "select {0} from personnel where (lastname||' '||firstname|| ' '||matricule) = ? ";
 
-    try (PreparedStatement prepStmt = con.prepareStatement(query)) {
+    try (PreparedStatement prepStmt = con.prepareStatement(MessageFormat.format(query, field))) {
       prepStmt.setString(1, userName);
       try (ResultSet rs = prepStmt.executeQuery()) {
         while (rs.next()) {
@@ -111,8 +112,7 @@ public class DefineServiceOfUserAndDocuments extends UpdateChainHelperImpl {
         }
       }
     } catch (SQLException sqlEx) {
-      throw new KmeliaRuntimeException("DefineServiceOfUserAndDocuments.getUserServiceMatricule()",
-          SilverpeasRuntimeException.ERROR, "kmelia.SERVICE_NOT_EXIST", sqlEx);
+      throw new KmeliaRuntimeException(sqlEx);
     } finally {
       freeConnection(con);
     }
@@ -121,11 +121,9 @@ public class DefineServiceOfUserAndDocuments extends UpdateChainHelperImpl {
 
   private Connection getConnection() {
     try {
-      Connection con = DBUtil.openConnection();
-      return con;
+      return DBUtil.openConnection();
     } catch (Exception e) {
-      throw new KmeliaRuntimeException("DefineServiceOfUser.getConnection()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
+      throw new KmeliaRuntimeException(e);
     }
   }
 
@@ -134,8 +132,7 @@ public class DefineServiceOfUserAndDocuments extends UpdateChainHelperImpl {
       try {
         con.close();
       } catch (Exception e) {
-        throw new KmeliaRuntimeException("DefineServiceOfUser.getConnection()",
-            SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_CLOSE_FAILED", "", e);
+        throw new KmeliaRuntimeException(e);
       }
     }
   }
@@ -149,7 +146,7 @@ public class DefineServiceOfUserAndDocuments extends UpdateChainHelperImpl {
     String valuePath = "";
     ClassifyValue value = null;
     List<ClassifyValue> values = new ArrayList<>();
-    for (; st.hasMoreTokens(); ) {
+    while (st.hasMoreTokens()) {
       valueInfo = st.nextToken();
       if (valueInfo.length() >= 3) {
         axisId = valueInfo.substring(0, valueInfo.indexOf('|'));

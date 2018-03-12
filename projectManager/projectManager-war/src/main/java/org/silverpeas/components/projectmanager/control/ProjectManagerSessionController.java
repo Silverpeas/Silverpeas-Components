@@ -20,34 +20,33 @@
  */
 package org.silverpeas.components.projectmanager.control;
 
-import org.silverpeas.components.projectmanager.service.ProjectManagerService;
 import org.silverpeas.components.projectmanager.model.Filtre;
 import org.silverpeas.components.projectmanager.model.HolidayDetail;
 import org.silverpeas.components.projectmanager.model.ProjectManagerRuntimeException;
 import org.silverpeas.components.projectmanager.model.TaskDetail;
 import org.silverpeas.components.projectmanager.model.TaskResourceDetail;
+import org.silverpeas.components.projectmanager.service.ProjectManagerService;
 import org.silverpeas.components.projectmanager.vo.DayVO;
 import org.silverpeas.components.projectmanager.vo.MonthVO;
 import org.silverpeas.components.projectmanager.vo.WeekVO;
+import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.Pair;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.web.selection.SelectionUsersGroups;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.ForeignPK;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.Pair;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
-import org.silverpeas.core.i18n.I18NHelper;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -64,6 +63,8 @@ import java.util.MissingResourceException;
  */
 public class ProjectManagerSessionController extends AbstractComponentSessionController {
 
+  private static final String RESPONSABLE_ROLE = "responsable";
+  private static final String ADMIN_ROLE = "admin";
   /**
    * Project manager EJB
    */
@@ -75,10 +76,9 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
   private Collection<TaskResourceDetail> currentResources = null;
   private boolean filtreActif = false;
   private Filtre filtre = null;
-  private List<Integer> unfoldTasks = new ArrayList<Integer>();
+  private List<Integer> unfoldTasks = new ArrayList<>();
   private Calendar calendar = null;
   private static final int WORKING_DAY = 0;
-  private static final int HOLIDAY_DAY = 1;
 
   public ProjectManagerSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
@@ -119,14 +119,14 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     currentTask = null;
     List<TaskDetail> tasks = getProjectManagerService().getTasksByMotherId(getComponentId(),
         getCurrentProject().getId(), getFiltre());
-    List<TaskDetail> arbo = new ArrayList<TaskDetail>();
+    List<TaskDetail> arbo = new ArrayList<>();
     for (TaskDetail task : tasks) {
-      arbo = buildArbo(arbo, task, null, 0);
+      buildArbo(arbo, task, null, 0);
     }
     return arbo;
   }
 
-  private List<TaskDetail> buildArbo(List<TaskDetail> arbo, TaskDetail task, TaskDetail actionMere,
+  private void buildArbo(List<TaskDetail> arbo, TaskDetail task, TaskDetail actionMere,
       int level) {
     enrichirTask(task);
 
@@ -137,11 +137,11 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
       task.setDeletionAvailable(true);
       task.setUpdateAvailable(true);
     } else {
-      if (actionMere != null && "responsable".equals(getRole())
+      if (actionMere != null && RESPONSABLE_ROLE.equals(getRole())
           && actionMere.getResponsableId() == Integer.parseInt(getUserId())) {
         task.setDeletionAvailable(true);
         task.setUpdateAvailable(true);
-      } else if ("responsable".equals(getRole())
+      } else if (RESPONSABLE_ROLE.equals(getRole())
           && task.getResponsableId() == Integer.parseInt(getUserId())) {
         task.setUpdateAvailable(true);
       }
@@ -162,7 +162,6 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
       task.setUnfold(false);
       arbo.add(task);
     }
-    return arbo;
   }
 
   public List<TaskDetail> getTasks(String id) {
@@ -388,9 +387,9 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     sel.setHostPath(null);
     sel.setHostComponentName(hostComponentName);
 
-    ArrayList<String> roles = new ArrayList<String>();
-    roles.add("admin");
-    roles.add("responsable");
+    ArrayList<String> roles = new ArrayList<>();
+    roles.add(ADMIN_ROLE);
+    roles.add(RESPONSABLE_ROLE);
 
     // Add extra params
     SelectionUsersGroups sug = new SelectionUsersGroups();
@@ -417,9 +416,9 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     sel.setHostPath(null);
     sel.setHostComponentName(hostComponentName);
 
-    ArrayList<String> roles = new ArrayList<String>();
-    roles.add("admin");
-    roles.add("responsable");
+    ArrayList<String> roles = new ArrayList<>();
+    roles.add(ADMIN_ROLE);
+    roles.add(RESPONSABLE_ROLE);
 
     // Add extra params
     SelectionUsersGroups sug = new SelectionUsersGroups();
@@ -551,7 +550,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     calculateAllTasksDates();
   }
 
-  public void changeDayOfWeekStatus(String year, String month, String day) throws ParseException {
+  public void changeDayOfWeekStatus(String year, String month, String day) {
 
     int iMonth = Integer.parseInt(month);
     getCalendar().set(Calendar.YEAR, Integer.parseInt(year));
@@ -567,7 +566,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     HolidayDetail holidayDate = new HolidayDetail(date, getCurrentProject().getId(),
         getComponentId());
     boolean isHoliday = getProjectManagerService().isHolidayDate(holidayDate);
-    List<HolidayDetail> holidayDates = new ArrayList<HolidayDetail>();
+    List<HolidayDetail> holidayDates = new ArrayList<>();
     while (getCalendar().get(Calendar.MONTH) == iMonth) {
       holidayDates.add(new HolidayDetail(getCalendar().getTime(), getCurrentProject().getId(),
           getComponentId()));
@@ -639,8 +638,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
       try {
         projectManagerService = ProjectManagerService.get();
       } catch (Exception e) {
-        throw new ProjectManagerRuntimeException("projectManager", SilverpeasRuntimeException.ERROR,
-            "ProjectManagerSessionController.getProjectManagerService()", "IoC error cannot retrieve AlmanachBm from container", e);
+        throw new ProjectManagerRuntimeException(e);
       }
     }
     return projectManagerService;
@@ -655,10 +653,10 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     for (int i = 0; i < roles.length; i++) {
       String role = roles[i];
       // if admin, return it, we won't find a better profile
-      if ("admin".equals(role)) {
+      if (ADMIN_ROLE.equals(role)) {
         return role;
       }
-      if ("responsable".equals(role)) {
+      if (RESPONSABLE_ROLE.equals(role)) {
         higherRole = role;
       }
     }
@@ -688,8 +686,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
             getProjectManagerService().getOccupationByUser(userId, dateDeb, dateFin));
       }
     } catch (Exception e) {
-      throw new ProjectManagerRuntimeException("ProjectManagerSessionController.updateOccupation()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+      throw new ProjectManagerRuntimeException(e);
     }
   }
 
@@ -705,9 +702,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
       Date dateFin = task.getDateFin();
       return getProjectManagerService().getOccupationByUser(userId, dateDeb, dateFin, task.getId());
     } catch (Exception e) {
-      throw new ProjectManagerRuntimeException(
-          "ProjectManagerSessionController.updateOccupation()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+      throw new ProjectManagerRuntimeException(e);
     }
   }
 
@@ -723,8 +718,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
       return getProjectManagerService().getOccupationByUser(userId, beginDate, endDate,
           Integer.parseInt(taskId));
     } catch (Exception e) {
-      throw new ProjectManagerRuntimeException("ProjectManagerSessionController.updateOccupation()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+      throw new ProjectManagerRuntimeException(e);
     }
   }
 
@@ -738,8 +732,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     try {
       return getProjectManagerService().getOccupationByUser(userId, beginDate, endDate);
     } catch (Exception e) {
-      throw new ProjectManagerRuntimeException("ProjectManagerSessionController.updateOccupation()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+      throw new ProjectManagerRuntimeException(e);
     }
   }
 
@@ -758,8 +751,8 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     int currentWeek = -1;
     int numWeekInYear = curDayCal.get(Calendar.WEEK_OF_YEAR);
     int oldNumWeekInYear = numWeekInYear;
-    List<WeekVO> weeks = new ArrayList<WeekVO>();
-    List<DayVO> curDays = new ArrayList<DayVO>();
+    List<WeekVO> weeks = new ArrayList<>();
+    List<DayVO> curDays = new ArrayList<>();
     for (int i = 1; i < nbDaysDisplayed + 1; i++) {
       curDayCal.set(Calendar.DAY_OF_MONTH, i);
       int numDayinWeek = curDayCal.get(Calendar.DAY_OF_WEEK);
@@ -776,7 +769,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
         WeekVO week = new WeekVO(curDays, Integer.toString(oldNumWeekInYear));
         weeks.add(week);
         currentWeek = numWeekInYear;
-        curDays = new ArrayList<DayVO>();
+        curDays = new ArrayList<>();
       } else {
         currentWeek = numWeekInYear;
       }
@@ -787,9 +780,8 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
       }
       oldNumWeekInYear = numWeekInYear;
     }
-    MonthVO curMonth = new MonthVO(weeks, Integer.toString(curDayCal.get(Calendar.MONTH)),
+    return new MonthVO(weeks, Integer.toString(curDayCal.get(Calendar.MONTH)),
         nbDaysDisplayed);
-    return curMonth;
   }
 
   /**
@@ -797,7 +789,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
    * @return a quarter which contains 3 month value object starting from start date month
    * @throws ParseException
    */
-  public List<MonthVO> getQuarterMonth(Date curDate) throws ParseException {
+  public List<MonthVO> getQuarterMonth(Date curDate) {
     return getNbMonth(3, curDate);
   }
 
@@ -806,7 +798,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
    * @return a quarter which contains 3 month value object starting from start date month
    * @throws ParseException
    */
-  public List<MonthVO> getYearMonth(Date curDate) throws ParseException {
+  public List<MonthVO> getYearMonth(Date curDate) {
     return getNbMonth(12, curDate);
   }
 
@@ -819,7 +811,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
    */
   private List<MonthVO> getNbMonth(int nbMonth, Date curDate) {
     // Result list decaration
-    List<MonthVO> months = new ArrayList<MonthVO>();
+    List<MonthVO> months = new ArrayList<>();
     if (nbMonth <= 0) {
       return months;
     }
@@ -915,8 +907,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
         }
       }
     } catch (Exception e) {
-      SilverTrace.warn(getComponentName(), ProjectManagerSessionController.class.getName(),
-          "Problem to retrieve all the tasks", e);
+      SilverLogger.getLogger(this).error(e);
     }
     if (isAfterCurrentMonth) {
       relevantDate = nextDate;

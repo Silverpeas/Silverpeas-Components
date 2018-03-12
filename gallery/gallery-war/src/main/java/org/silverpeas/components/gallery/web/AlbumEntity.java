@@ -63,8 +63,7 @@ public class AlbumEntity implements WebEntity {
   private String description;
 
   @XmlElement
-  private final Map<String, AbstractMediaEntity> mediaList =
-      new LinkedHashMap<String, AbstractMediaEntity>();
+  private final Map<String, AbstractMediaEntity> mediaList = new LinkedHashMap<>();
 
   @XmlElement(defaultValue = "0")
   private int maxWidth = 0;
@@ -149,6 +148,7 @@ public class AlbumEntity implements WebEntity {
   }
 
   protected AlbumEntity() {
+    // for JSON deserialization
   }
 
   protected Map<String, AbstractMediaEntity> getMediaList() {

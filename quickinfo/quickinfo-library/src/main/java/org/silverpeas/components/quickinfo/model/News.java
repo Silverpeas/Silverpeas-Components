@@ -139,10 +139,12 @@ public class News extends SilverpeasJpaEntity<News, UuidIdentifier> implements S
     return publication;
   }
 
+  @Override
   public News setId(String id) {
     return super.setId(id);
   }
 
+  @Override
   public String getTitle() {
     return getPublication().getName();
   }
@@ -151,6 +153,7 @@ public class News extends SilverpeasJpaEntity<News, UuidIdentifier> implements S
     getPublication().setName(title);
   }
 
+  @Override
   public String getDescription() {
     return getPublication().getDescription();
   }
@@ -210,7 +213,7 @@ public class News extends SilverpeasJpaEntity<News, UuidIdentifier> implements S
   }
 
   public List<Integer> getBroadcastModes() {
-    List<Integer> modes = new ArrayList<Integer>();
+    List<Integer> modes = new ArrayList<>();
     modes.add(getPublication().getImportance());
     return modes;
   }

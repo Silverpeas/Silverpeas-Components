@@ -50,7 +50,7 @@ public class MessageServiceImpl implements MessageService {
   private MessageDao messageDao;
   private int elementsPerPage = 10;
   @Inject
-  private SilverpeasCalendar calendarBm;
+  private SilverpeasCalendar calendar;
   private static final int MSG_PER_ACTIVITY = 5;
 
   public int getElementsPerPage() {
@@ -156,13 +156,13 @@ public class MessageServiceImpl implements MessageService {
       messageDao.deleteMessage(message);
       MessageIndexer.unindexMessage(message);
       try {
-        Collection<ToDoHeader> todos = getCalendarBm().getOrganizerToDos(message.getComponentId());
+        Collection<ToDoHeader> todos = getCalendar().getOrganizerToDos(message.getComponentId());
         if (todos != null && !todos.isEmpty()) {
           for (ToDoHeader todo : todos) {
             if (id.equalsIgnoreCase(todo.getDescription())) {
               todo.setCompletedDate(new Date());
               todo.setPercentCompleted(100);
-              getCalendarBm().updateToDo(todo);
+              getCalendar().updateToDo(todo);
               return;
             }
           }
@@ -182,14 +182,16 @@ public class MessageServiceImpl implements MessageService {
       MessageIndexer.indexMessage(message);
     }
     try {
-      Collection<ToDoHeader> todos = getCalendarBm().getOrganizerToDos(message.getComponentId());
-      if (todos != null && !todos.isEmpty()) {
-        for (ToDoHeader todo : todos) {
-          if (id.equalsIgnoreCase(todo.getDescription())) {
-            todo.setCompletedDate(new Date());
-            todo.setPercentCompleted(100);
-            getCalendarBm().updateToDo(todo);
-            return;
+      if (message != null) {
+        Collection<ToDoHeader> todos = getCalendar().getOrganizerToDos(message.getComponentId());
+        if (todos != null && !todos.isEmpty()) {
+          for (ToDoHeader todo : todos) {
+            if (id.equalsIgnoreCase(todo.getDescription())) {
+              todo.setCompletedDate(new Date());
+              todo.setPercentCompleted(100);
+              getCalendar().updateToDo(todo);
+              return;
+            }
           }
         }
       }
@@ -206,8 +208,8 @@ public class MessageServiceImpl implements MessageService {
             orderBy);
   }
 
-  public SilverpeasCalendar getCalendarBm() {
-    return calendarBm;
+  public SilverpeasCalendar getCalendar() {
+    return calendar;
   }
 
   @Override

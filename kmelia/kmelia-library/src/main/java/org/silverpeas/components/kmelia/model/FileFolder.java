@@ -27,8 +27,7 @@ package org.silverpeas.components.kmelia.model;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import java.util.List;
 
 public class FileFolder implements java.io.Serializable {
   private static final long serialVersionUID = 5071147110169726697L;
@@ -73,10 +72,10 @@ public class FileFolder implements java.io.Serializable {
       File fChild;
       if (f.exists()) {
         this.name = f.getName();
-        String[] children_name = f.list();
+        String[] childrenName = f.list();
 
-        for (int i = 0; children_name != null && i < children_name.length; i++) {
-          fChild = new File(path + File.separator + children_name[i]);
+        for (int i = 0; childrenName != null && i < childrenName.length; i++) {
+          fChild = new File(path + File.separator + childrenName[i]);
           children.add(new FileDetail(fChild.getName(), fChild.getPath(),
               fChild.length(), fChild.isDirectory()));
           if (fChild.isDirectory()) {
@@ -89,9 +88,7 @@ public class FileFolder implements java.io.Serializable {
         }
       }
     } catch (Exception e) {
-      throw new KmeliaRuntimeException("FileFolder.FileFolder()",
-          SilverpeasRuntimeException.ERROR,
-          "kmelia.IMPOSSIBLE_DACCEDER_AU_REPERTOIRE", e);
+      throw new KmeliaRuntimeException(e);
     }
   }
 
@@ -126,7 +123,7 @@ public class FileFolder implements java.io.Serializable {
   /**
    * @return
    */
-  public ArrayList getChildren() {
+  public List getChildren() {
     return children;
   }
 

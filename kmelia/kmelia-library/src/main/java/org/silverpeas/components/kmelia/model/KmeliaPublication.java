@@ -36,7 +36,6 @@ import org.silverpeas.core.contribution.publication.model.CompletePublication;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
@@ -46,11 +45,11 @@ import org.silverpeas.core.security.authorization.AccessControllerProvider;
 import org.silverpeas.core.security.authorization.NodeAccessControl;
 import org.silverpeas.core.silverstatistics.access.model.StatisticRuntimeException;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.Collections;
 import java.util.Date;
@@ -256,8 +255,7 @@ public class KmeliaPublication implements SilverpeasContent {
     try {
       return PdcManager.get().getPositions(silverObjectId, pk.getInstanceId());
     } catch (PdcException e) {
-      throw new KmeliaRuntimeException("kmelia", e.getErrorLevel(), e.getMessage(),
-          e.getExtraInfos(), e);
+      throw new KmeliaRuntimeException(e);
     }
 
   }
@@ -266,8 +264,7 @@ public class KmeliaPublication implements SilverpeasContent {
     try {
       return getStatisticService().getCount(new ForeignPK(detail.getPK()), 1, "Publication");
     } catch (Exception e) {
-      SilverTrace.error("kmelia", "KmeliaPublication.getNbAccess", "kmelia.CANT_GET_NB_ACCESS",
-          "pubId = " + pk.getId(), e);
+      SilverLogger.getLogger(this).error(e);
     }
     return -1;
   }
@@ -304,8 +301,7 @@ public class KmeliaPublication implements SilverpeasContent {
     try {
       return ServiceProvider.getService(KmeliaService.class);
     } catch (Exception e) {
-      throw new KmeliaRuntimeException("KmeliaPublication.getKmeliaService()",
-          SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DE_FABRIQUER_KmeliaBm_HOME", e);
+      throw new KmeliaRuntimeException(e);
     }
   }
 

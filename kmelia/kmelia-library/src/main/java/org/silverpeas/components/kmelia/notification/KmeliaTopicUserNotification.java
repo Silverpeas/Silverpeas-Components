@@ -27,7 +27,6 @@ import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
 import org.silverpeas.components.kmelia.service.KmeliaHelper;
 import org.silverpeas.core.admin.ObjectType;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
@@ -38,6 +37,7 @@ import org.silverpeas.core.util.logging.SilverLogger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.MissingResourceException;
 
@@ -56,18 +56,16 @@ public class KmeliaTopicUserNotification extends AbstractKmeliaUserNotification<
     this.nodePK = nodePK;
     this.alertType = alertType;
     try {
-      setResource(getNodeBm().getHeader(nodePK));
+      setResource(getNodeService().getHeader(nodePK));
       if (fatherPK != null) {
         action = NotifAction.CREATE;
-        fatherDetail = getNodeBm().getHeader(fatherPK);
+        fatherDetail = getNodeService().getHeader(fatherPK);
       } else {
         action = NotifAction.UPDATE;
         fatherDetail = null;
       }
     } catch (final Exception e) {
-      throw new KmeliaRuntimeException("DefaultKmeliaService.topicCreationAlert()",
-          SilverpeasRuntimeException.ERROR,
-          "kmelia.EX_IMPOSSIBLE_DALERTER_POUR_MANIPULATION_THEME", e);
+      throw new KmeliaRuntimeException(e);
     }
   }
 
@@ -88,51 +86,63 @@ public class KmeliaTopicUserNotification extends AbstractKmeliaUserNotification<
 
     final String[] users;
     if (!haveRights) {
-      if ("All".equals(alertType)) {
-        final UserDetail[] userDetails = getOrganisationController().getAllUsers(getComponentInstanceId());
-        if (userDetails != null) {
-          users = new String[userDetails.length];
-          int i = 0;
-          for (final UserDetail userDetail : userDetails) {
-            users[i++] = userDetail.getId();
-          }
-        } else {
-          users = null;
-        }
-      } else if ("Publisher".equals(alertType)) {
-        // Get the list of all publishers and admin
-        final List<String> profileNames = new ArrayList<String>();
-        profileNames.add("admin");
-        profileNames.add("publisher");
-        profileNames.add("writer");
-        users = getOrganisationController().getUsersIdsByRoleNames(getComponentInstanceId(), profileNames);
-      } else {
-        users = null;
-      }
+      users = getEitherAllOrAdmins();
     } else {
-      final List<String> profileNames = new ArrayList<String>();
-      profileNames.add("admin");
-      profileNames.add("publisher");
-      profileNames.add("writer");
-
-      if (alertType.equals("All")) {
-        profileNames.add("user");
-        users =
-            getOrganisationController().getUsersIdsByRoleNames(getComponentInstanceId(),
-                String.valueOf(rightsDependOn), ObjectType.NODE, profileNames);
-      } else if (alertType.equals("Publisher")) {
-        users =
-            getOrganisationController().getUsersIdsByRoleNames(getComponentInstanceId(),
-                String.valueOf(rightsDependOn), ObjectType.NODE, profileNames);
-      } else {
-        users = null;
-      }
+      users = getUsersWithModificationRights(rightsDependOn);
     }
 
     if (users == null) {
-      return null;
+      return Collections.emptyList();
     }
     return Arrays.asList(users);
+  }
+
+  private String[] getUsersWithModificationRights(final int rightsDependOn) {
+    final String[] users;
+    final List<String> profileNames = new ArrayList<>();
+    profileNames.add("admin");
+    profileNames.add("publisher");
+    profileNames.add("writer");
+
+    if (alertType.equals("All")) {
+      profileNames.add("user");
+      users =
+          getOrganisationController().getUsersIdsByRoleNames(getComponentInstanceId(),
+              String.valueOf(rightsDependOn), ObjectType.NODE, profileNames);
+    } else if (alertType.equals("Publisher")) {
+      users =
+          getOrganisationController().getUsersIdsByRoleNames(getComponentInstanceId(),
+              String.valueOf(rightsDependOn), ObjectType.NODE, profileNames);
+    } else {
+      users = null;
+    }
+    return users;
+  }
+
+  private String[] getEitherAllOrAdmins() {
+    final String[] users;
+    if ("All".equals(alertType)) {
+      final UserDetail[] userDetails = getOrganisationController().getAllUsers(getComponentInstanceId());
+      if (userDetails != null) {
+        users = new String[userDetails.length];
+        int i = 0;
+        for (final UserDetail userDetail : userDetails) {
+          users[i++] = userDetail.getId();
+        }
+      } else {
+        users = null;
+      }
+    } else if ("Publisher".equals(alertType)) {
+      // Get the list of all publishers and admin
+      final List<String> profileNames = new ArrayList<>();
+      profileNames.add("admin");
+      profileNames.add("publisher");
+      profileNames.add("writer");
+      users = getOrganisationController().getUsersIdsByRoleNames(getComponentInstanceId(), profileNames);
+    } else {
+      users = null;
+    }
+    return users;
   }
 
   @Override

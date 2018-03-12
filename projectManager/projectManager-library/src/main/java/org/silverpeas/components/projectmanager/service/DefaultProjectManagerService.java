@@ -30,7 +30,6 @@ import org.silverpeas.components.projectmanager.model.TaskPK;
 import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
@@ -87,9 +86,7 @@ public class DefaultProjectManagerService implements ProjectManagerService {
     try {
       return ProjectManagerDAO.getTasksByMotherId(con, instanceId, -1, null);
     } catch (SQLException re) {
-      throw new ProjectManagerRuntimeException("DefaultProjectManagerService.getProjects()",
-          SilverpeasRuntimeException.ERROR, "projectManager.GETTING_PROJECTS_FAILED",
-          "instanceId = " + instanceId, re);
+      throw new ProjectManagerRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -108,9 +105,7 @@ public class DefaultProjectManagerService implements ProjectManagerService {
     try {
       return ProjectManagerDAO.getTasksByMotherId(con, instanceId, motherId, filtre);
     } catch (SQLException re) {
-      throw new ProjectManagerRuntimeException("DefaultProjectManagerService.getTasksByMotherId()",
-          SilverpeasRuntimeException.ERROR, "projectManager.GETTING_TASKS_FAILED", "instanceId = "
-          + instanceId, re);
+      throw new ProjectManagerRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -124,9 +119,7 @@ public class DefaultProjectManagerService implements ProjectManagerService {
     try {
       return ProjectManagerDAO.getTasksNotCancelledByMotherId(con, instanceId, motherId, filtre);
     } catch (SQLException re) {
-      throw new ProjectManagerRuntimeException("DefaultProjectManagerService.getTasksByMotherId()",
-          SilverpeasRuntimeException.ERROR, "projectManager.GETTING_TASKS_FAILED", "instanceId = "
-          + instanceId, re);
+      throw new ProjectManagerRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -140,10 +133,7 @@ public class DefaultProjectManagerService implements ProjectManagerService {
       return ProjectManagerDAO.
           getTasksByMotherIdAndPreviousId(con, instanceId, motherId, previousId);
     } catch (SQLException re) {
-      throw new ProjectManagerRuntimeException(
-          "DefaultProjectManagerService.getTasksByMotherIdAndPreviousId()",
-          SilverpeasRuntimeException.ERROR, "projectManager.GETTING_TASKS_FAILED", "instanceId = "
-          + instanceId, re);
+      throw new ProjectManagerRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -156,9 +146,7 @@ public class DefaultProjectManagerService implements ProjectManagerService {
     try {
       return ProjectManagerDAO.getAllTasks(con, instanceId, filtre);
     } catch (SQLException re) {
-      throw new ProjectManagerRuntimeException("DefaultProjectManagerService.getAllTasks()",
-          SilverpeasRuntimeException.ERROR, "projectManager.GETTING_TASKS_FAILED", "instanceId = "
-          + instanceId, re);
+      throw new ProjectManagerRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -171,8 +159,7 @@ public class DefaultProjectManagerService implements ProjectManagerService {
     try {
       return ProjectManagerDAO.getTask(con, id);
     } catch (SQLException re) {
-      throw new ProjectManagerRuntimeException("DefaultProjectManagerService.getTask()",
-          SilverpeasRuntimeException.ERROR, "projectManager.GETTING_TASK_FAILED", "id = " + id, re);
+      throw new ProjectManagerRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -188,9 +175,7 @@ public class DefaultProjectManagerService implements ProjectManagerService {
       actionId = todo.getExternalId();
       return ProjectManagerDAO.getTask(con, actionId);
     } catch (Exception re) {
-      throw new ProjectManagerRuntimeException("DefaultProjectManagerService.getTaskByTodoId()",
-          SilverpeasRuntimeException.ERROR, "projectManager.GETTING_TASK_FAILED", "actionId = "
-          + actionId, re);
+      throw new ProjectManagerRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -203,9 +188,7 @@ public class DefaultProjectManagerService implements ProjectManagerService {
     try {
       return ProjectManagerDAO.getMostDistantTask(con, taskId);
     } catch (Exception re) {
-      throw new ProjectManagerRuntimeException("DefaultProjectManagerService.getMostDistantTask()",
-          SilverpeasRuntimeException.ERROR, "projectManager.GETTING_TASK_FAILED", "taskId = "
-          + taskId, re);
+      throw new ProjectManagerRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -240,9 +223,7 @@ public class DefaultProjectManagerService implements ProjectManagerService {
       }
       return id;
     } catch (SQLException re) {
-      throw new ProjectManagerRuntimeException("DefaultProjectManagerService.addTask()",
-          SilverpeasRuntimeException.ERROR, "projectManager.CREATING_TASK_FAILED", "task = " + task,
-          re);
+      throw new ProjectManagerRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -279,8 +260,7 @@ public class DefaultProjectManagerService implements ProjectManagerService {
       // modification de sa tache mère s'il en existe une
       updateChargesMotherTask(con, task);
     } catch (Exception re) {
-      throw new ProjectManagerRuntimeException("DefaultProjectManagerService.removeTask()",
-          SilverpeasRuntimeException.ERROR, "projectManager.DELETING_TASK_FAILED", "id = " + id, re);
+      throw new ProjectManagerRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -347,9 +327,7 @@ public class DefaultProjectManagerService implements ProjectManagerService {
         alertResource(task, false);
       }
     } catch (SQLException re) {
-      throw new ProjectManagerRuntimeException("DefaultProjectManagerService.updateTask()",
-          SilverpeasRuntimeException.ERROR, "projectManager.UPDATING_TASK_FAILED", "task = " + task,
-          re);
+      throw new ProjectManagerRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -367,48 +345,46 @@ public class DefaultProjectManagerService implements ProjectManagerService {
     TaskDetail subTask = null;
     for (int t = 0; t < subTasks.size(); t++) {
       boolean isModifBeginDate = false;
-      boolean isModifEndDate = false;
-
       subTask = subTasks.get(t);
+      updateSubTask(userId, beginDate, holidays, calendar, subTask, isModifBeginDate);
+    }
+  }
 
-      Date beginDateSub = subTask.getDateDebut();
-      Date saveBeginDate = beginDateSub;
+  private void updateSubTask(final String userId, final Date beginDate, final List<Date> holidays,
+      final Calendar calendar, final TaskDetail subTask, boolean isModifBeginDate) {
+    Date beginDateSub = subTask.getDateDebut();
+    Date saveBeginDate = beginDateSub;
 
-      // vérifie si la date de début n'est pas un jour travaillé
-      calendar.setTime(beginDateSub);
-      while (holidays.contains(beginDateSub)) {
-        calendar.add(Calendar.DATE, 1);
-        beginDateSub = calendar.getTime();
-        subTask.setDateDebut(beginDateSub);
-      }
+    // vérifie si la date de début n'est pas un jour travaillé
+    calendar.setTime(beginDateSub);
+    beginDateSub = goAfterHoliday(holidays, calendar, subTask, beginDateSub);
 
-      if (beginDate.after(beginDateSub)) {
-        // La date de début de la tâche mêre est supérieure à la sous tâche cette tâche doit être décalée
-        // nouvelle date de début = date début mère
-        beginDateSub = beginDate;
-        subTask.setDateDebut(beginDate);
-      }
+    if (beginDate.after(beginDateSub)) {
+      // La date de début de la tâche mêre est supérieure à la sous tâche cette tâche doit être décalée
+      // nouvelle date de début = date début mère
+      beginDateSub = beginDate;
+      subTask.setDateDebut(beginDate);
+    }
 
-      Date endDateSub = subTask.getDateFin();
-      Date saveEndDate = endDateSub;
+    Date endDateSub = subTask.getDateFin();
+    Date saveEndDate = endDateSub;
 
-      // calcul la date de fin
-      endDateSub = processEndDate(subTask, calendar, holidays);
-      subTask.setDateFin(endDateSub);
+    // calcul la date de fin
+    endDateSub = processEndDate(subTask, calendar, holidays);
+    subTask.setDateFin(endDateSub);
 
-      // regarder si les dates sont modifiées
-      if (!beginDateSub.equals(saveBeginDate)) {
-        isModifBeginDate = true;
-      }
-      if (!endDateSub.equals(saveEndDate)) {
-        isModifBeginDate = true;
-      }
+    // regarder si les dates sont modifiées
+    if (!beginDateSub.equals(saveBeginDate)) {
+      isModifBeginDate = true;
+    }
+    if (!endDateSub.equals(saveEndDate)) {
+      isModifBeginDate = true;
+    }
 
-      // si on est dans un cas de modif de date, faire la mise à jour
-      // seulement si les dates changent
-      if (isModifBeginDate || isModifEndDate) {
-        updateTask(subTask, userId);
-      }
+    // si on est dans un cas de modif de date, faire la mise à jour
+    // seulement si les dates changent
+    if (isModifBeginDate) {
+      updateTask(subTask, userId);
     }
   }
 
@@ -418,16 +394,11 @@ public class DefaultProjectManagerService implements ProjectManagerService {
     List<TaskDetail> nextTasks = ProjectManagerDAO.getNextTasks(con, task.getId());
 
     // détecte les tâches qui doivent être décalées
-    TaskDetail linkedTask = null;
-    TaskDetail motherTask = null;
-    float charge = 0;
+    TaskDetail linkedTask;
+    TaskDetail motherTask;
     Calendar calendar2 = Calendar.getInstance();
-    boolean updateMother = false;
 
     for (int t = 0; t < nextTasks.size(); t++) {
-      boolean isModifBeginDate = false;
-      boolean isModifEndDate = false;
-
       linkedTask = nextTasks.get(t);
 
       Date beginDateLinked = linkedTask.getDateDebut();
@@ -436,23 +407,13 @@ public class DefaultProjectManagerService implements ProjectManagerService {
       // vérifie si la date de début n'est pas
       // un jour travaillé
       calendar.setTime(beginDateLinked);
-      while (holidays.contains(beginDateLinked)) {
-        calendar.add(Calendar.DATE, 1);
-        beginDateLinked = calendar.getTime();
-        linkedTask.setDateDebut(beginDateLinked);
-      }
+      beginDateLinked = goAfterHoliday(holidays, calendar, linkedTask, beginDateLinked);
 
       Date endDateLinked = linkedTask.getDateFin();
       Date saveEndDate = endDateLinked;
 
       if (endDate.equals(endDateLinked) || endDate.after(endDateLinked)) {
-        // La date de fin de la tâche précédente est supérieure ou égale à la
-        // tâche liéée
-        // cette tâche doit être décalée
-
-        // calcul de la nouvelle date de début (= date fin + 1)
-        beginDateLinked = getBeginDate(calendar, endDate, holidays);
-        linkedTask.setDateDebut(beginDateLinked);
+        beginDateLinked = moveTask(endDate, holidays, calendar, linkedTask);
       }
 
       // calcul de la nouvelle date de fin (date début + charge)
@@ -460,64 +421,104 @@ public class DefaultProjectManagerService implements ProjectManagerService {
       linkedTask.setDateFin(endDateLinked);
 
       // regarder si les dates sont modifiées
-      if (!beginDateLinked.equals(saveBeginDate)) {
-        isModifBeginDate = true;
-      }
-      if (!endDateLinked.equals(saveEndDate)) {
-        isModifBeginDate = true;
-      }
-
-      // si on est dans un cas de modif de date, faire la mise à jour
-      // seulement si les dates changent
-      if (isModifBeginDate || isModifEndDate) {
-        updateTask(linkedTask, userId);
-      }
+      updateTask(userId, linkedTask, beginDateLinked, saveBeginDate, endDateLinked, saveEndDate);
 
       // on traite maintenant la tâche mère de la tache liée
       motherTask = ProjectManagerDAO.getTask(con, task.getMereId());
       if (motherTask.getMereId() != -1) {
         // c'est une tache, pas le projet
-        updateMother = false;
-        endDateLinked = linkedTask.getDateFin();
+        updateMotherTask(con, holidays, calendar, linkedTask, motherTask, calendar2);
 
-        // vérifie si la date de fin n'est pas
-        // un jour travaillé
-        calendar.setTime(motherTask.getDateFin());
-        while (holidays.contains(motherTask.getDateFin())) {
-          calendar.add(Calendar.DATE, 1);
-          motherTask.setDateFin(calendar.getTime());
-          updateMother = true;
-        }
-
-        if (endDateLinked.after(motherTask.getDateFin())) {
-          // La date de fin de la tâche fille est supérieure à celle de la mère cette tâche doit être décalée
-          // nouvelle date de fin de la mère = date fin fille
-          motherTask.setDateFin(endDateLinked);
-          updateMother = true;
-        }
-
-        if (updateMother) {
-          // recalcule la charge
-          calendar.setTime(motherTask.getDateDebut());
-          calendar2.setTime(motherTask.getDateFin());
-          charge = 0;
-          while (true) {
-            if (calendar.before(calendar2) || calendar.equals(calendar2)) {
-              charge++;
-            } else {
-              break;
-            }
-            calendar.add(Calendar.DATE, 1);
-          }
-
-          // recalcul les charges de la tache mère
-          motherTask.setCharge(charge);
-
-          // modification de la tâche mère en BdD
-          ProjectManagerDAO.updateTask(con, motherTask);
-        }
       }
     }
+  }
+
+  private void updateMotherTask(final Connection con, final List<Date> holidays,
+      final Calendar calendar, final TaskDetail linkedTask, final TaskDetail motherTask,
+      final Calendar calendar2) throws SQLException {
+    boolean updateMother;
+    final Date endDateLinked;
+    float charge;
+    updateMother = false;
+    endDateLinked = linkedTask.getDateFin();
+
+    // vérifie si la date de fin n'est pas
+    // un jour travaillé
+    calendar.setTime(motherTask.getDateFin());
+    while (holidays.contains(motherTask.getDateFin())) {
+      calendar.add(Calendar.DATE, 1);
+      motherTask.setDateFin(calendar.getTime());
+      updateMother = true;
+    }
+
+    if (endDateLinked.after(motherTask.getDateFin())) {
+      // La date de fin de la tâche fille est supérieure à celle de la mère cette tâche doit être décalée
+      // nouvelle date de fin de la mère = date fin fille
+      motherTask.setDateFin(endDateLinked);
+      updateMother = true;
+    }
+
+    if (updateMother) {
+      // recalcule la charge
+      calendar.setTime(motherTask.getDateDebut());
+      calendar2.setTime(motherTask.getDateFin());
+      charge = 0;
+      while (true) {
+        if (calendar.before(calendar2) || calendar.equals(calendar2)) {
+          charge++;
+        } else {
+          break;
+        }
+        calendar.add(Calendar.DATE, 1);
+      }
+
+      // recalcul les charges de la tache mère
+      motherTask.setCharge(charge);
+
+      // modification de la tâche mère en BdD
+      ProjectManagerDAO.updateTask(con, motherTask);
+    }
+  }
+
+  private void updateTask(final String userId, final TaskDetail linkedTask,
+      final Date beginDateLinked, final Date saveBeginDate, final Date endDateLinked,
+      final Date saveEndDate) {
+    boolean isModifBeginDate = false;
+    boolean isModifEndDate = false;
+    if (!beginDateLinked.equals(saveBeginDate)) {
+      isModifBeginDate = true;
+    }
+    if (!endDateLinked.equals(saveEndDate)) {
+      isModifEndDate = true;
+    }
+
+    // si on est dans un cas de modif de date, faire la mise à jour
+    // seulement si les dates changent
+    if (isModifBeginDate || isModifEndDate) {
+      updateTask(linkedTask, userId);
+    }
+  }
+
+  private Date moveTask(final Date endDate, final List<Date> holidays, final Calendar calendar,
+      final TaskDetail linkedTask) {
+    final Date beginDateLinked;// La date de fin de la tâche précédente est supérieure ou égale à la
+    // tâche liéée
+    // cette tâche doit être décalée
+
+    // calcul de la nouvelle date de début (= date fin + 1)
+    beginDateLinked = getBeginDate(calendar, endDate, holidays);
+    linkedTask.setDateDebut(beginDateLinked);
+    return beginDateLinked;
+  }
+
+  private Date goAfterHoliday(final List<Date> holidays, final Calendar calendar,
+      final TaskDetail linkedTask, Date beginDateLinked) {
+    while (holidays.contains(beginDateLinked)) {
+      calendar.add(Calendar.DATE, 1);
+      beginDateLinked = calendar.getTime();
+      linkedTask.setDateDebut(beginDateLinked);
+    }
+    return beginDateLinked;
   }
 
   private String getNotificationSubject(final LocalizationBundle message, boolean onCreation) {
@@ -655,13 +656,11 @@ public class DefaultProjectManagerService implements ProjectManagerService {
     Date beginDate = null;
     Date endDate = null;
     boolean isModifBeginDate = false;
-    boolean isModifEndDate = false;
     Date saveBeginDate = null;
     Date saveEndDate = null;
 
     for (int t = 0; t < tasks.size(); t++) {
       isModifBeginDate = false;
-      isModifEndDate = false;
       task = tasks.get(t);
       beginDate = task.getDateDebut();
       saveBeginDate = beginDate;
@@ -687,7 +686,7 @@ public class DefaultProjectManagerService implements ProjectManagerService {
       }
 
       // modification de la tâche + autres tâches liées si besoin
-      if (isModifBeginDate || isModifEndDate) {
+      if (isModifBeginDate) {
         updateTask(task, userId);
       }
     }
@@ -720,9 +719,7 @@ public class DefaultProjectManagerService implements ProjectManagerService {
         ProjectManagerDAO.updateTask(con, motherTask);
       }
     } catch (SQLException re) {
-      throw new ProjectManagerRuntimeException("DefaultProjectManagerService.updateChargesMotherTask()",
-          SilverpeasRuntimeException.ERROR, "projectManager.UPDATING_TASK_FAILED", "task = " + task,
-          re);
+      throw new ProjectManagerRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -735,9 +732,7 @@ public class DefaultProjectManagerService implements ProjectManagerService {
     try {
       return ProjectManagerCalendarDAO.getHolidayDates(con, instanceId);
     } catch (Exception re) {
-      throw new ProjectManagerRuntimeException("DefaultProjectManagerService.getHolidayDates()",
-          SilverpeasRuntimeException.ERROR, "projectManager.GETTING_HOLIDAYDATES_FAILED",
-          "instanceId = " + instanceId, re);
+      throw new ProjectManagerRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -750,9 +745,7 @@ public class DefaultProjectManagerService implements ProjectManagerService {
     try {
       return ProjectManagerCalendarDAO.getHolidayDates(con, instanceId, beginDate, endDate);
     } catch (SQLException re) {
-      throw new ProjectManagerRuntimeException("DefaultProjectManagerService.getHolidayDates()",
-          SilverpeasRuntimeException.ERROR, "projectManager.GETTING_HOLIDAYDATES_FAILED",
-          "instanceId = " + instanceId, re);
+      throw new ProjectManagerRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -765,9 +758,7 @@ public class DefaultProjectManagerService implements ProjectManagerService {
     try {
       ProjectManagerCalendarDAO.addHolidayDate(con, holiday);
     } catch (SQLException re) {
-      throw new ProjectManagerRuntimeException("DefaultProjectManagerService.addHolidayDate()",
-          SilverpeasRuntimeException.ERROR, "projectManager.ADDING_HOLIDAYDATE_FAILED", "date = "
-          + holiday.getDate(), re);
+      throw new ProjectManagerRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -782,8 +773,7 @@ public class DefaultProjectManagerService implements ProjectManagerService {
         ProjectManagerCalendarDAO.addHolidayDate(con, holiday);
       }
     } catch (SQLException re) {
-      throw new ProjectManagerRuntimeException("DefaultProjectManagerService.addHolidayDates()",
-          SilverpeasRuntimeException.ERROR, "projectManager.ADDING_HOLIDAYDATES_FAILED", re);
+      throw new ProjectManagerRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -796,9 +786,7 @@ public class DefaultProjectManagerService implements ProjectManagerService {
     try {
       ProjectManagerCalendarDAO.removeHolidayDate(con, holiday);
     } catch (SQLException re) {
-      throw new ProjectManagerRuntimeException("DefaultProjectManagerService.removeHolidayDate()",
-          SilverpeasRuntimeException.ERROR, "projectManager.REMOVING_HOLIDAYDATE_FAILED", "date = "
-          + holiday.getDate(), re);
+      throw new ProjectManagerRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -813,8 +801,7 @@ public class DefaultProjectManagerService implements ProjectManagerService {
         ProjectManagerCalendarDAO.removeHolidayDate(con, holiday);
       }
     } catch (SQLException re) {
-      throw new ProjectManagerRuntimeException("DefaultProjectManagerService.removeHolidayDates()",
-          SilverpeasRuntimeException.ERROR, "projectManager.REMOVING_HOLIDAYDATES_FAILED", re);
+      throw new ProjectManagerRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -826,8 +813,7 @@ public class DefaultProjectManagerService implements ProjectManagerService {
     try {
       return ProjectManagerCalendarDAO.isHolidayDate(con, date);
     } catch (SQLException re) {
-      throw new ProjectManagerRuntimeException("DefaultProjectManagerService.isHolidayDate()",
-          SilverpeasRuntimeException.ERROR, "projectManager.GETTING_HOLIDAYDATE_FAILED", re);
+      throw new ProjectManagerRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -892,8 +878,7 @@ public class DefaultProjectManagerService implements ProjectManagerService {
     try {
       return DBUtil.openConnection();
     } catch (Exception e) {
-      throw new ProjectManagerRuntimeException("DefaultProjectManagerService.getConnection()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
+      throw new ProjectManagerRuntimeException(e);
     }
   }
 
@@ -903,8 +888,7 @@ public class DefaultProjectManagerService implements ProjectManagerService {
     try {
       return ProjectManagerDAO.getOccupationByUser(con, userId, dateDeb, dateFin);
     } catch (SQLException re) {
-      throw new ProjectManagerRuntimeException("DefaultProjectManagerService.isHolidayDate()",
-          SilverpeasRuntimeException.ERROR, "projectManager.GETTING_HOLIDAYDATE_FAILED", re);
+      throw new ProjectManagerRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }
@@ -916,8 +900,7 @@ public class DefaultProjectManagerService implements ProjectManagerService {
     try {
       return ProjectManagerDAO.getOccupationByUser(con, userId, dateDeb, dateFin, excludedTaskId);
     } catch (SQLException re) {
-      throw new ProjectManagerRuntimeException("DefaultProjectManagerService.isHolidayDate()",
-          SilverpeasRuntimeException.ERROR, "projectManager.GETTING_HOLIDAYDATE_FAILED", re);
+      throw new ProjectManagerRuntimeException(re);
     } finally {
       DBUtil.close(con);
     }

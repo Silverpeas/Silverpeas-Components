@@ -34,7 +34,6 @@ import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.index.indexing.model.FieldDescription;
 import org.silverpeas.core.index.indexing.model.IndexManager;
 import org.silverpeas.core.index.search.SearchEngineProvider;
@@ -137,8 +136,7 @@ public class PublicationImport {
         updatePublicationDetail(pubDetail, publiParams, language);
         updatePublication(pubDetail, true);
       } catch (Exception e) {
-        throw new KmeliaRuntimeException("PublicationImport.importPublication()",
-            SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DIMPORTER_PUBLICATION", e);
+        throw new KmeliaRuntimeException(e);
       }
     } else {
       // Creation
@@ -152,8 +150,7 @@ public class PublicationImport {
 
         pubPK = pubDetail.getPK();
       } catch (Exception e) {
-        throw new KmeliaRuntimeException("PublicationImport.importPublication()",
-            SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DIMPORTER_PUBLICATION", e);
+        throw new KmeliaRuntimeException(e);
       }
     }
 
@@ -187,7 +184,7 @@ public class PublicationImport {
       if (ignoreMissingFormFields) {
         context.setUpdatePolicy(PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES);
       }
-      List< FileItem> items = new ArrayList<FileItem>();
+      List< FileItem> items = new ArrayList<>();
       for (String fieldName : data.getFieldNames()) {
         String fieldValue = formParams.get(fieldName);
         fieldValue = (fieldValue == null ? "" : fieldValue);
@@ -199,8 +196,7 @@ public class PublicationImport {
       NodePK nodePK = new NodePK(topicId, spaceId, componentId);
       kmeliaService.draftOutPublication(pubPK, nodePK, userProfile, true);
     } catch (Exception e) {
-      throw new KmeliaRuntimeException("PublicationImport.importPublication()",
-          SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DIMPORTER_PUBLICATION", e);
+      throw new KmeliaRuntimeException(e);
     }
 
     return resultStatus;
@@ -223,7 +219,7 @@ public class PublicationImport {
    * @throws Exception
    */
   private PublicationDetail getPublicationDetail(Map<String, String> parameters, String language)
-      throws Exception {
+      throws java.text.ParseException {
     String id = parameters.get("PubId");
     String status = parameters.get("Status");
     String name = parameters.get("Name");
@@ -300,9 +296,7 @@ public class PublicationImport {
     }
 
     NodePK nodePK = new NodePK(topicId, spaceId, componentId);
-    String result = kmeliaService.createPublicationIntoTopic(pubDetail, nodePK);
-
-    return result;
+    return kmeliaService.createPublicationIntoTopic(pubDetail, nodePK);
   }
 
   /**
@@ -369,7 +363,7 @@ public class PublicationImport {
     PublicationService publicationService = getPublicationService();
     Collection<PublicationDetail> publications = publicationService.getAllPublications(new PublicationPK(
         "useless", componentId));
-    List<String> result = new ArrayList<String>();
+    List<String> result = new ArrayList<>();
     Iterator<PublicationDetail> iter = publications.iterator();
     while (iter.hasNext()) {
       PublicationDetail publication = iter.next();
@@ -416,7 +410,7 @@ public class PublicationImport {
    * @throws Exception
    */
   private void updatePublicationDetail(PublicationDetail pubDetail, Map<String, String> parameters,
-      String language) throws Exception {
+      String language) throws java.text.ParseException {
     String status = parameters.get("Status");
     String name = parameters.get("Name");
     String description = parameters.get("Description");

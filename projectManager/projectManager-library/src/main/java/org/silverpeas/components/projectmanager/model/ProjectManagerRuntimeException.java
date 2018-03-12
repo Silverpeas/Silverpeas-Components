@@ -24,39 +24,21 @@
 
 package org.silverpeas.components.projectmanager.model;
 
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.SilverpeasRuntimeException;
 
 public class ProjectManagerRuntimeException extends SilverpeasRuntimeException {
-  private static final long serialVersionUID = -1416351973604283038L;
+  private static final long serialVersionUID = -1416351973604283039L;
 
-  /**
-   * constructors
-   */
-  public ProjectManagerRuntimeException(String callingClass, int errorLevel,
-      String message) {
-    super(callingClass, errorLevel, message);
+
+  public ProjectManagerRuntimeException(final String message) {
+    super(message);
   }
 
-  public ProjectManagerRuntimeException(String callingClass, int errorLevel,
-      String message, String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public ProjectManagerRuntimeException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  public ProjectManagerRuntimeException(String callingClass, int errorLevel,
-      String message, Exception nested) {
-    super(callingClass, errorLevel, message, nested);
+  public ProjectManagerRuntimeException(final Throwable cause) {
+    super(cause);
   }
-
-  public ProjectManagerRuntimeException(String callingClass, int errorLevel,
-      String message, String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  /**
-   * Implements SilverpeasRuntimeException getModule abstract method
-   */
-  public String getModule() {
-    return "projectManager";
-  }
-
 }

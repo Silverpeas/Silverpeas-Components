@@ -38,7 +38,6 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.exception.DecodingException;
 import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.exception.UtilTrappedException;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
@@ -232,9 +231,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     try {
       WysiwygController.deleteWysiwygAttachments(getComponentId(), pk.getId());
     } catch (Exception e) {
-      throw new InfoLetterException(
-          "InfoLetterSessionController",
-          SilverpeasRuntimeException.ERROR, e.getMessage(), e);
+      throw new InfoLetterException(e);
     }
     dataInterface.deleteInfoLetterPublication(pk, getComponentId());
   }
@@ -330,9 +327,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
         ns.notifyUser(notifMetaData);
 
       } catch (NotificationManagerException e) {
-        throw new InfoLetterException(
-            "InfoLetterSessionController",
-            SilverpeasRuntimeException.ERROR, e.getMessage(), e);
+        throw new InfoLetterException(e);
       }
     }
   }
@@ -471,8 +466,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
       WysiwygController
           .copy(getComponentId(), publicationSource, getComponentId(), target, getUserId());
     } catch (Exception e) {
-      throw new InfoLetterException("InfoLetterSessionController.copyWYSIWYG",
-          SilverpeasRuntimeException.ERROR, e.getMessage(), e);
+      throw new InfoLetterException(e);
     }
   }
 
@@ -636,9 +630,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
         FileUtils.writeStringToFile(fileOutput, email + "\n", true);
       }
     } catch (Exception e) {
-      throw new InfoLetterException(
-          "InfoLetterSessionController",
-          SilverpeasRuntimeException.ERROR, e.getMessage(), e);
+      throw new InfoLetterException(e);
     }
     return true;
   }

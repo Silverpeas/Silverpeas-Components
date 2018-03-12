@@ -29,16 +29,15 @@ import com.drew.metadata.Metadata;
 import com.drew.metadata.exif.ExifIFD0Descriptor;
 import com.drew.metadata.exif.ExifIFD0Directory;
 import com.drew.metadata.iptc.IptcDirectory;
-import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.components.gallery.model.MetaData;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.util.ArrayUtil;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.EncodingUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
@@ -170,7 +169,7 @@ public class DrewMediaMetadataExtractor extends AbstractMediaMetadataExtractor {
             break;
         }
       }
-      String defaultEncoding = CharEncoding.UTF_8;
+      String defaultEncoding = Charsets.UTF_8.name();
       if (iptcCharset != null) {
         defaultEncoding = iptcCharset;
       }
@@ -212,7 +211,7 @@ public class DrewMediaMetadataExtractor extends AbstractMediaMetadataExtractor {
       MetaData meta = new MetaData(data);
       meta.setLabel(iptcProperty.getLabel(lang));
       meta.setProperty(String.valueOf(iptcProperty.getProperty()));
-      if (iptcProperty.isDate()) {
+      if (iptcProperty.isDate() && iptcDirectory != null) {
         meta.setDate(true);
         meta.setDateValue(iptcDirectory.getDate(iptcProperty.getProperty(), TimeZone.getDefault()));
       } else {
@@ -236,13 +235,13 @@ public class DrewMediaMetadataExtractor extends AbstractMediaMetadataExtractor {
     return null;
   }
 
-  private String getIptcCharset(IptcDirectory iptcDirectory) throws UnsupportedEncodingException {
+  private String getIptcCharset(IptcDirectory iptcDirectory) {
     if (iptcDirectory != null && iptcDirectory.containsTag(TAG_CODED_CHARACTER_SET)) {
       byte[] data = iptcDirectory.getByteArray(TAG_CODED_CHARACTER_SET);
       if (data != null) {
-        String escapeCode = new String(data, CharEncoding.UTF_8);
+        String escapeCode = new String(data, Charsets.UTF_8);
         if ("%G".equals(escapeCode)) {
-          return CharEncoding.UTF_8;
+          return Charsets.UTF_8.name();
         }
       }
     }

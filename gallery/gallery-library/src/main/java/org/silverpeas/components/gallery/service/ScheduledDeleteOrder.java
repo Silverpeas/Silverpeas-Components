@@ -25,7 +25,6 @@ package org.silverpeas.components.gallery.service;
 
 import org.silverpeas.components.gallery.model.GalleryRuntimeException;
 import org.silverpeas.components.gallery.model.Order;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.scheduler.Scheduler;
 import org.silverpeas.core.scheduler.SchedulerEvent;
 import org.silverpeas.core.scheduler.SchedulerEventListener;
@@ -64,18 +63,17 @@ public class ScheduledDeleteOrder implements SchedulerEventListener {
           ResourceLocator.getSettingBundle("org.silverpeas.gallery.settings.gallerySettings");
       int nbDays = resources.getInteger("nbDaysForDeleteOrder");
       // rechercher toutes les demandes arrivant à échéance
-      List<Order> orders = getGalleryBm().getAllOrderToDelete(nbDays);
+      List<Order> orders = getGalleryService().getAllOrderToDelete(nbDays);
 
-      getGalleryBm().deleteOrders(orders);
+      getGalleryService().deleteOrders(orders);
     } catch (Exception e) {
-      throw new GalleryRuntimeException("ScheduledDeleteOrder.doScheduledDeleteOrder()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+      throw new GalleryRuntimeException(e);
     }
 
 
   }
 
-  private GalleryService getGalleryBm() {
+  private GalleryService getGalleryService() {
     return ServiceProvider.getService(GalleryService.class);
   }
 

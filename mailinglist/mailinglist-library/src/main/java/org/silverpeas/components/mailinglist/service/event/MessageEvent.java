@@ -23,6 +23,8 @@
  */
 package org.silverpeas.components.mailinglist.service.event;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.components.mailinglist.service.model.beans.Message;
 
 import java.util.ArrayList;
@@ -35,9 +37,6 @@ import java.util.List;
 public class MessageEvent {
 
   private final List<Message> messages = new ArrayList<>(5);
-
-  public MessageEvent() {
-  }
 
   /**
    * Adds a message to the list of messages.
@@ -58,10 +57,7 @@ public class MessageEvent {
 
   @Override
   public int hashCode() {
-    int prime = 31;
-    int result = 1;
-    result = prime * result + ((messages == null) ? 0 : messages.hashCode());
-    return result;
+    return new HashCodeBuilder().append(messages).toHashCode();
   }
 
   @Override
@@ -76,13 +72,6 @@ public class MessageEvent {
       return false;
     }
     final MessageEvent other = (MessageEvent) obj;
-    if (messages == null) {
-      if (other.messages != null) {
-        return false;
-      }
-    } else if (!messages.equals(other.messages)) {
-      return false;
-    }
-    return true;
+    return new EqualsBuilder().append(messages, other.messages).isEquals();
   }
 }

@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.questionreply.web;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.silverpeas.components.questionreply.model.Question;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
@@ -193,45 +194,20 @@ public class QuestionEntity implements WebEntity {
       return false;
     }
     final QuestionEntity other = (QuestionEntity) obj;
-    if (this.id != null && other.id != null && this.id.equals(other.id)) {
-      return true;
-    }
-    if ((this.title == null) ? (other.title != null) : !this.title.equals(other.title)) {
-      return false;
-    }
-    if ((this.content == null) ? (other.content != null) : !this.content.equals(other.content)) {
-      return false;
-    }
-    if ((this.creatorId == null) ? (other.creatorId != null) :
-        !this.creatorId.equals(other.creatorId)) {
-      return false;
-    }
-    if ((this.creatorName == null) ? (other.creatorName != null) :
-        !this.creatorName.equals(other.creatorName)) {
-      return false;
-    }
-    if ((this.creationDate == null) ? (other.creationDate != null) :
-        !this.creationDate.equals(other.creationDate)) {
-      return false;
-    }
-    if (this.status != other.status) {
-      return false;
-    }
-    if (this.publicReplyNumber != other.publicReplyNumber) {
-      return false;
-    }
-    if (this.privateReplyNumber != other.privateReplyNumber) {
-      return false;
-    }
-    if (this.replyNumber != other.replyNumber) {
-      return false;
-    }
-    if ((this.instanceId == null) ? (other.instanceId != null) :
-        !this.instanceId.equals(other.instanceId)) {
-      return false;
-    }
-    return this.categoryId == null ? other.categoryId == null :
-        this.categoryId.equals(other.categoryId);
+    return new EqualsBuilder()
+        .append(this.id, other.id)
+        .append(this.title, other.title)
+        .append(this.content, other.content)
+        .append(this.creatorId, other.creatorId)
+        .append(this.creatorName, other.creatorName)
+        .append(this.creationDate, other.creationDate)
+        .append(this.status, other.status)
+        .append(this.publicReplyNumber, other.publicReplyNumber)
+        .append(this.privateReplyNumber, other.privateReplyNumber)
+        .append(replyNumber, other.replyNumber)
+        .append(this.instanceId, other.instanceId)
+        .append(this.categoryId, other.categoryId)
+        .build();
   }
 
   @Override
@@ -270,7 +246,7 @@ public class QuestionEntity implements WebEntity {
    */
   public static List<QuestionEntity> fromQuestions(final Iterable<Question> questions,
       final String lang) {
-    List<QuestionEntity> entities = new ArrayList<QuestionEntity>();
+    List<QuestionEntity> entities = new ArrayList<>();
     for (Question question : questions) {
       entities.add(fromQuestion(question, lang));
     }
@@ -310,16 +286,9 @@ public class QuestionEntity implements WebEntity {
   }
 
   boolean isQuestionUpdatable(User user, SilverpeasRole profile) {
-    boolean questionUpdatable = true;
-    if (profile == publisher && !this.getCreatorId().equals(user.getId())) {
-      questionUpdatable = false;
-    } else if (profile == publisher && this.getStatus() != Question.NEW) {
-      questionUpdatable = false;
-    }
-    if (profile == SilverpeasRole.user) {
-      questionUpdatable = false;
-    }
-    return questionUpdatable;
+    return !((profile == publisher && !this.getCreatorId().equals(user.getId())) ||
+        (profile == publisher && this.getStatus() != Question.NEW) ||
+        (profile == SilverpeasRole.user));
   }
 
   boolean isQuestionCloseable(User user, SilverpeasRole profile) {

@@ -75,7 +75,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -1175,7 +1174,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     if (nodesPK != null) {
       NodePK firstNodePK = nodesPK.get(0);
       String topicPathName = spaceLabel + " > " + componentLabel + " > " + kmelia.displayPath(
-          kmelia.getKmeliaBm().getPath(firstNodePK.getId(), firstNodePK.getInstanceId()), false, 3);
+          kmelia.getKmeliaService().getPath(firstNodePK.getId(), firstNodePK.getInstanceId()), false, 3);
       return "<div class=\"publiPath\">" + topicPathName + "</div>";
     }
     return "";

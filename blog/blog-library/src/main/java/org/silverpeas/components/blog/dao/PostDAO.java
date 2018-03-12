@@ -23,21 +23,22 @@
  */
 package org.silverpeas.components.blog.dao;
 
+import org.apache.commons.lang3.time.FastDateFormat;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-
 public class PostDAO {
-  static SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
+
+  private static final FastDateFormat FORMATTER = FastDateFormat.getInstance("yyyy/MM/dd");
 
   private PostDAO () {
   }
@@ -170,8 +171,8 @@ public class PostDAO {
     try {
       prepStmt = con.prepareStatement(query);
       prepStmt.setString(1, instanceId);
-      prepStmt.setString(2, Long.toString((formatter.parse(beginDate)).getTime()));
-      prepStmt.setString(3, Long.toString((formatter.parse(endDate)).getTime()));
+      prepStmt.setString(2, Long.toString((FORMATTER.parse(beginDate)).getTime()));
+      prepStmt.setString(3, Long.toString((FORMATTER.parse(endDate)).getTime()));
       rs = prepStmt.executeQuery();
       listEvents = new ArrayList<>();
       while (rs.next()) {

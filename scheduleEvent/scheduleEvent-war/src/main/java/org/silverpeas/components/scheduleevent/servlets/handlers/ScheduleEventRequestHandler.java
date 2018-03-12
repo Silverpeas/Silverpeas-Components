@@ -24,23 +24,21 @@
 
 package org.silverpeas.components.scheduleevent.servlets.handlers;
 
-import java.text.SimpleDateFormat;
+import org.silverpeas.components.scheduleevent.control.ScheduleEventSessionController;
 
 import javax.servlet.http.HttpServletRequest;
-
-import org.silverpeas.components.scheduleevent.control.ScheduleEventSessionController;
-import org.silverpeas.components.scheduleevent.control.ScheduleEventSessionController;
+import java.text.SimpleDateFormat;
 
 public interface ScheduleEventRequestHandler {
 
-  public static final String LAST_DATE = "scheduleEventLastDate";
-  public static final String SCHEDULE_EVENT_DETAIL = "scheduleEventDetail";
-  public static final String CURRENT_SCHEDULE_EVENT = "currentScheduleEvent";
-  public static final String LIST_SCHEDULE_EVENT = "scheduleEventList";
+  String LAST_DATE = "scheduleEventLastDate";
+  String SCHEDULE_EVENT_DETAIL = "scheduleEventDetail";
+  String CURRENT_SCHEDULE_EVENT = "currentScheduleEvent";
+  String LIST_SCHEDULE_EVENT = "scheduleEventList";
 
-  public static final SimpleDateFormat formatterTmpId = new SimpleDateFormat("ddMMyy");
+  SimpleDateFormat FORMATTER_TMP_ID = new SimpleDateFormat("ddMMyy");
 
-  public String getDestination(String function, ScheduleEventSessionController scheduleeventSC,
+  String getDestination(String function, ScheduleEventSessionController scheduleeventSC,
       HttpServletRequest request) throws Exception;
 
 }

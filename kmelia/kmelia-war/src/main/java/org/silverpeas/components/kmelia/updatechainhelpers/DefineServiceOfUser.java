@@ -25,10 +25,9 @@
 package org.silverpeas.components.kmelia.updatechainhelpers;
 
 import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
-import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -38,6 +37,7 @@ import java.util.List;
 
 public class DefineServiceOfUser extends UpdateChainHelperImpl {
 
+  @Override
   public void execute(UpdateChainHelperContext uchc) {
     // Retrieve publication detail
     PublicationDetail pubDetail = uchc.getPubDetail();
@@ -74,8 +74,7 @@ public class DefineServiceOfUser extends UpdateChainHelperImpl {
         }
       }
     } catch (SQLException sqlEx) {
-      throw new KmeliaRuntimeException("DefineServiceOfUser.getUserService()",
-          SilverpeasRuntimeException.ERROR, "kmelia.SERVICE_NOT_EXIST", sqlEx);
+      throw new KmeliaRuntimeException(sqlEx);
     } finally {
       freeConnection(con);
     }
@@ -84,11 +83,9 @@ public class DefineServiceOfUser extends UpdateChainHelperImpl {
 
   private Connection getConnection() {
     try {
-      Connection con = DBUtil.openConnection();
-      return con;
+      return DBUtil.openConnection();
     } catch (Exception e) {
-      throw new KmeliaRuntimeException("DefineServiceOfUser.getConnection()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
+      throw new KmeliaRuntimeException(e);
     }
   }
 
@@ -97,8 +94,7 @@ public class DefineServiceOfUser extends UpdateChainHelperImpl {
       try {
         con.close();
       } catch (Exception e) {
-        throw new KmeliaRuntimeException("DefineServiceOfUser.getConnection()",
-            SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_CLOSE_FAILED", "", e);
+        throw new KmeliaRuntimeException(e);
       }
     }
   }

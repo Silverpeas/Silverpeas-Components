@@ -23,41 +23,21 @@
  */
 package org.silverpeas.components.blog.model;
 
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.SilverpeasRuntimeException;
 
 public class BlogRuntimeException extends SilverpeasRuntimeException {
 
-  private static final long serialVersionUID = -72770968540781128L;
+  private static final long serialVersionUID = -72770968540781129L;
 
-  /**
-   * --------------------------------------------------------------------------
-   * constructors
-   */
-  public BlogRuntimeException(String callingClass, int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
+  public BlogRuntimeException(final String message) {
+    super(message);
   }
 
-  public BlogRuntimeException(String callingClass, int errorLevel, String message,
-      String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public BlogRuntimeException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  public BlogRuntimeException(String callingClass, int errorLevel, String message,
-      Exception nested) {
-    super(callingClass, errorLevel, message, nested);
+  public BlogRuntimeException(final Throwable cause) {
+    super(cause);
   }
-
-  public BlogRuntimeException(String callingClass, int errorLevel, String message,
-      String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  /**
-   * --------------------------------------------------------------------------
-   * getModule
-   */
-  public String getModule() {
-    return "Blog";
-  }
-
 }

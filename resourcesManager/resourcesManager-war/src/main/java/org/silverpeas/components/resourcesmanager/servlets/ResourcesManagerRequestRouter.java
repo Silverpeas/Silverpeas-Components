@@ -23,6 +23,15 @@
  */
 package org.silverpeas.components.resourcesmanager.servlets;
 
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.components.resourcesmanager.control.ResourceManagerDataViewType;
+import org.silverpeas.components.resourcesmanager.control.ResourcesManagerSessionController;
+import org.silverpeas.components.resourcesmanager.model.Category;
+import org.silverpeas.components.resourcesmanager.model.Reservation;
+import org.silverpeas.components.resourcesmanager.model.Resource;
+import org.silverpeas.components.resourcesmanager.util.ResourceUtil;
+import org.silverpeas.core.admin.component.model.GlobalContext;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.FormException;
@@ -32,28 +41,19 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.MultiSilverpeasBundle;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.WebEncodeHelper;
+import org.silverpeas.core.util.file.FileUploadUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.calendar.CalendarViewType;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.web.selection.SelectionUsersGroups;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.core.web.calendar.CalendarViewType;
-import org.silverpeas.components.resourcesmanager.model.Category;
-import org.silverpeas.components.resourcesmanager.model.Reservation;
-import org.silverpeas.components.resourcesmanager.model.Resource;
-import org.silverpeas.components.resourcesmanager.util.ResourceUtil;
-import org.silverpeas.components.resourcesmanager.control.ResourceManagerDataViewType;
-import org.silverpeas.components.resourcesmanager.control.ResourcesManagerSessionController;
-import org.silverpeas.core.util.file.FileUploadUtil;
-import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.WebEncodeHelper;
-import org.silverpeas.core.admin.component.model.GlobalContext;
-import org.silverpeas.core.util.MultiSilverpeasBundle;
-import org.silverpeas.core.util.StringUtil;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -69,7 +69,7 @@ public class ResourcesManagerRequestRouter
     extends ComponentRequestRouter<ResourcesManagerSessionController> {
 
   private static final long serialVersionUID = 1L;
-  private static final String root = "/resourcesManager/jsp/";
+  private static final String ROOT = "/resourcesManager/jsp/";
 
   /**
    * This method has to be implemented in the component request rooter class. returns the session
@@ -136,15 +136,9 @@ public class ResourcesManagerRequestRouter
       Date dateFin = request.getParameterAsDate("endDate", "endHour");
       String raison = request.getParameter("raison");
       String lieu = request.getParameter("lieu");
-      Reservation reservation = new Reservation(evenement, dateDebut, dateFin, raison, lieu);
-      SilverTrace
-          .info("resourcesmanager", "ResourcesManagerRequestRouter.request2ReservationDetail()",
-              "root.MSG_GEN_PARAM_VALUE", "reservation=" + reservation);
-      return reservation;
+      return new Reservation(evenement, dateDebut, dateFin, raison, lieu);
     } catch (ParseException e) {
-      SilverTrace
-          .error("resourcesmanager", "ResourcesManagerRequestRouter.request2ReservationDetail()",
-              "root.MSG_GEN_PARAM_VALUE", e);
+      SilverLogger.getLogger(this).error(e);
     }
     return null;
   }
@@ -175,7 +169,7 @@ public class ResourcesManagerRequestRouter
         destination = displayCalendarView(request, resourcesManagerSC);
       } else if ("NewCategory".equals(function)) {
         request.setAttribute("listTemplates", getForms(resourcesManagerSC));
-        destination = root + "categoryManager.jsp";
+        destination = ROOT + "categoryManager.jsp";
       } else if ("SaveCategory".equals(function)) {
         Category category = request2CategoryDetail(resourcesManagerSC, request);
         resourcesManagerSC.createCategory(category);
@@ -185,7 +179,7 @@ public class ResourcesManagerRequestRouter
         List<PublicationTemplate> listTemplates = getForms(resourcesManagerSC);
         request.setAttribute("listTemplates", listTemplates);
         request.setAttribute("category", category);
-        destination = root + "categoryManager.jsp";
+        destination = ROOT + "categoryManager.jsp";
       } else if ("ModifyCategory".equals(function)) {
         Category category = request2CategoryDetail(resourcesManagerSC, request);
         resourcesManagerSC.updateCategory(category);
@@ -193,7 +187,7 @@ public class ResourcesManagerRequestRouter
       } else if ("ViewCategories".equals(function)) {
         List<Category> list = resourcesManagerSC.getCategories();
         request.setAttribute("categories", list);
-        destination = root + "categories.jsp";
+        destination = ROOT + "categories.jsp";
       } else if ("DeleteCategory".equals(function)) {
         resourcesManagerSC.deleteCategory(request.getParameterAsLong("id"));
         destination = getDestination("ViewCategories", resourcesManagerSC, request);
@@ -205,7 +199,7 @@ public class ResourcesManagerRequestRouter
         request.setAttribute("listCategories", list);
         request.setAttribute("categoryId", resourcesManagerSC.getCategoryIdForResource());
         setXMLFormIntoRequest(request, resourcesManagerSC);
-        destination = root + "resourceManager.jsp";
+        destination = ROOT + "resourceManager.jsp";
       } else if ("SaveResource".equals(function)) {
         // récupération des données saisies dans le formulaire
         List<FileItem> items = request.getFileItems();
@@ -245,7 +239,7 @@ public class ResourcesManagerRequestRouter
         resourcesManagerSC.setCategoryIdForResource(resource.getCategoryId());
         setXMLFormIntoRequest(request, resourcesManagerSC);
 
-        destination = root + "resourceManager.jsp";
+        destination = ROOT + "resourceManager.jsp";
       } else if ("ModifyResource".equals(function)) {
         // récupération des données saisies dans le formulaire
         List<FileItem> items = request.getFileItems();
@@ -269,7 +263,7 @@ public class ResourcesManagerRequestRouter
         request.setAttribute("listCategories", listcategories);
         request.setAttribute("list", list);
         request.setAttribute("categoryId", categoryId);
-        destination = root + "resources.jsp";
+        destination = ROOT + "resources.jsp";
       } else if ("ViewResource".equals(function)) {
         String provenance;
         if (request.getParameter("provenance") != null) {
@@ -310,7 +304,7 @@ public class ResourcesManagerRequestRouter
         request.setAttribute("provenance", provenance);
         request.setAttribute("resource", resource);
         request.setAttribute("ShowComments", resourcesManagerSC.areCommentsEnabled());
-        destination = root + "resource.jsp";
+        destination = ROOT + "resource.jsp";
       } else if ("DeleteRessource".equals(function)) {
         resourcesManagerSC.deleteResource(request.getParameterAsLong("resourceId"));
         request.setAttribute("id", request.getParameterAsLong("categoryId"));
@@ -328,7 +322,7 @@ public class ResourcesManagerRequestRouter
                 DateUtil.getOutputHour(date, resourcesManagerSC.getLanguage()));
           }
         }
-        destination = root + "reservationManager.jsp";
+        destination = ROOT + "reservationManager.jsp";
       } else if ("GetAvailableResources".equals(function)) {
         reservationId = request.getParameterAsLong("reservationId");
         if (reservationId == null) {
@@ -340,9 +334,11 @@ public class ResourcesManagerRequestRouter
         // si unavailableReservationResources c'est qu'il n y a pas eu de problème d'enregistrement
         if (unavailableReservationResources == null) {
           Reservation reservation = request2ReservationDetail(request);
-          resourcesManagerSC.createReservation(reservation);
-          resourcesManagerSC.setBeginDateReservation(reservation.getBeginDate());
-          resourcesManagerSC.setEndDateReservation(reservation.getEndDate());
+          if (reservation != null) {
+            resourcesManagerSC.createReservation(reservation);
+            resourcesManagerSC.setBeginDateReservation(reservation.getBeginDate());
+            resourcesManagerSC.setEndDateReservation(reservation.getEndDate());
+          }
         }
         Reservation reservation = resourcesManagerSC.getReservationCourante();
         List<Resource> reservableResources = resourcesManagerSC
@@ -391,7 +387,7 @@ public class ResourcesManagerRequestRouter
         request.setAttribute("reservation", reservation);
         request.setAttribute("unavailableReservationResources", unavailableReservationResources);
         request.setAttribute("categories", categories);
-        destination = root + "cart.jsp";
+        destination = ROOT + "cart.jsp";
       } else if ("FinalReservation".equals(function)) {
         // resourceIds est la liste complète des ressources réservées lors
         // d'une création ou d'une édition de réservation
@@ -459,7 +455,7 @@ public class ResourcesManagerRequestRouter
         // ainsi que la liste qui posent problème quand on change les dates
         request.setAttribute("reservation", reservation);
         request.setAttribute("listResourcesProblem", listResourcesProblem);
-        destination = root + "reservationManager.jsp";
+        destination = ROOT + "reservationManager.jsp";
       } else if ("ViewReservation".equals(function)) {
         reservationId = request.getParameterAsLong("reservationId");
         if (reservationId == null) {
@@ -478,11 +474,11 @@ public class ResourcesManagerRequestRouter
         request.setAttribute("reservationId", reservationId);
         request.setAttribute("reservation", reservation);
         request.setAttribute("objectView", objectView);
-        destination = root + "viewReservation.jsp";
+        destination = ROOT + "viewReservation.jsp";
       } else if ("ViewReservations".equals(function)) {
         List<Reservation> listOfReservation = resourcesManagerSC.getReservationUser();
         request.setAttribute("listOfReservation", listOfReservation);
-        destination = root + "viewReservations.jsp";
+        destination = ROOT + "viewReservations.jsp";
       } else if ("DeleteReservation".equals(function)) {
         resourcesManagerSC.deleteReservation(request.getParameterAsLong("id"));
         destination = displayCalendarView(request, resourcesManagerSC);
@@ -553,7 +549,7 @@ public class ResourcesManagerRequestRouter
         request.setAttribute("resourceName", myResource.getName());
         request.setAttribute("resourceType", getSessionControlBeanName());
 
-        destination = root + "comments.jsp";
+        destination = ROOT + "comments.jsp";
       } else if ("SelectManager".equals(function)) {
         destination = resourcesManagerSC.initUPToSelectManager("");
       } else if (function.startsWith("ChooseOtherPlanning")) {
@@ -596,12 +592,7 @@ public class ResourcesManagerRequestRouter
       } else if ("ToSelectManagers".equals(function)) {
         // récupération de la liste des responsables
         Collection<String> currentManagers = request2Managers(request);
-        try {
-          destination = resourcesManagerSC.initUserSelect(currentManagers);
-        } catch (Exception e) {
-          SilverTrace.warn("resourcesmanager", "resourcesManagerRequestRouter.getDestination()",
-              "root.EX_USERPANEL_FAILED", "function = " + function, e);
-        }
+        destination = initUserSelection(resourcesManagerSC, destination, currentManagers);
       } else if ("FromUserSelect".equals(function)) {
         // récupération des valeurs de userPanel
         Selection sel = resourcesManagerSC.getSelection();
@@ -611,7 +602,7 @@ public class ResourcesManagerRequestRouter
           UserDetail[] userDetails = SelectionUsersGroups.getUserDetails(userIds);
           request.setAttribute("Managers", Arrays.asList(userDetails));
         }
-        destination = root + "refreshFromUserSelect.jsp";
+        destination = ROOT + "refreshFromUserSelect.jsp";
       } else if ("ValidateResource".equals(function)) {
         resourceId = request.getParameterAsLong("ResourceId");
         reservationId = request.getParameterAsLong("reservationId");
@@ -629,7 +620,7 @@ public class ResourcesManagerRequestRouter
         request.setAttribute("ResourceId", resourceId);
         request.setAttribute("ResourceName", resourceName);
         request.setAttribute("objectView", objectView);
-        destination = root + "refuseResource.jsp";
+        destination = ROOT + "refuseResource.jsp";
       } else if ("RefuseResource".equals(function)) {
         resourceId = request.getParameterAsLong("ResourceId");
         reservationId = request.getParameterAsLong("reservationId");
@@ -642,7 +633,7 @@ public class ResourcesManagerRequestRouter
       } else {
         resourcesManagerSC.getViewContext().resetFilters();
         displayCalendarView(request, resourcesManagerSC);
-        destination = root + function + ".jsp";
+        destination = ROOT + function + ".jsp";
       }
     } catch (Exception e) {
       request.setAttribute("javax.servlet.jsp.jspException", e);
@@ -650,6 +641,16 @@ public class ResourcesManagerRequestRouter
     }
 
 
+    return destination;
+  }
+
+  private String initUserSelection(final ResourcesManagerSessionController resourcesManagerSC,
+      String destination, final Collection<String> currentManagers) {
+    try {
+      destination = resourcesManagerSC.initUserSelect(currentManagers);
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).warn(e);
+    }
     return destination;
   }
 
@@ -701,9 +702,9 @@ public class ResourcesManagerRequestRouter
     request.setAttribute("objectView", myObjectView);
     request.setAttribute("IsResponsible", sessionController.isResponsible());
     if (StringUtil.getBooleanValue(request.getParameter("isPortlet"))) {
-      return root + "portlet.jsp";
+      return ROOT + "portlet.jsp";
     }
-    return root + "almanach.jsp";
+    return ROOT + "almanach.jsp";
   }
 
   private String getView(HttpRequest request, ResourcesManagerSessionController sessionController) {
@@ -724,12 +725,9 @@ public class ResourcesManagerRequestRouter
       if ("admin".equals(profile)) {
         return profile;
       }
-      if ("responsable".equals(profile)) {
+      if ("responsable".equals(profile) ||
+          ("publisher".equals(profile) && !"responsable".equals(flag))) {
         flag = profile;
-      } else if ("publisher".equals(profile)) {
-        if (!"responsable".equals(flag)) {
-          flag = profile;
-        }
       }
     }
     return flag;
@@ -743,7 +741,7 @@ public class ResourcesManagerRequestRouter
     String xmlFormName = category.getForm();
     if (StringUtil.isDefined(xmlFormName)) {
       String xmlFormShortName =
-          xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
+          xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName.indexOf('.'));
       // création du PublicationTemplate
       getPublicationTemplateManager().addDynamicPublicationTemplate(
           resourcesManagerSC.getComponentId() + ":" + xmlFormShortName, xmlFormName);
@@ -778,7 +776,7 @@ public class ResourcesManagerRequestRouter
 
     String xmlFormName = category.getForm();
     String xmlFormShortName =
-        xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
+        xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName.indexOf('.'));
 
     // register xmlForm
     getPublicationTemplateManager()
@@ -819,7 +817,7 @@ public class ResourcesManagerRequestRouter
     String xmlFormName = category.getForm();
     if (StringUtil.isDefined(xmlFormName)) {
       String xmlFormShortName =
-          xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
+          xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName.indexOf('.'));
       // récupération des données du formulaire (via le DataRecord)
       PublicationTemplate pub = getPublicationTemplateManager()
           .getPublicationTemplate(resourcesManagerSC.getComponentId() + ":" + xmlFormShortName);

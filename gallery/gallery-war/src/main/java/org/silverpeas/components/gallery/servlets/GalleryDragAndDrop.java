@@ -24,11 +24,9 @@
 package org.silverpeas.components.gallery.servlets;
 
 import org.silverpeas.components.gallery.delegate.MediaDataCreateDelegate;
-import org.silverpeas.components.gallery.model.GalleryRuntimeException;
 import org.silverpeas.components.gallery.service.GalleryService;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.io.upload.UploadSession;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.ZipUtil;
@@ -128,11 +126,6 @@ public class GalleryDragAndDrop extends SilverpeasAuthenticatedHttpServlet {
    * @return a GalleryService
    */
   private static GalleryService getGalleryService() {
-    try {
-      return ServiceProvider.getService(GalleryService.class);
-    } catch (final Exception e) {
-      throw new GalleryRuntimeException("GalleryProcessBuilder.getGalleryBm()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
+    return ServiceProvider.getService(GalleryService.class);
   }
 }

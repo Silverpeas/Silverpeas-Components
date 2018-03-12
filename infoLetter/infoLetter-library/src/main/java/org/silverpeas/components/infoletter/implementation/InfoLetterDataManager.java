@@ -23,6 +23,33 @@
  */
 package org.silverpeas.components.infoletter.implementation;
 
+import org.silverpeas.components.infoletter.InfoLetterContentManager;
+import org.silverpeas.components.infoletter.InfoLetterException;
+import org.silverpeas.components.infoletter.model.InfoLetter;
+import org.silverpeas.components.infoletter.model.InfoLetterPublication;
+import org.silverpeas.components.infoletter.model.InfoLetterPublicationPdC;
+import org.silverpeas.components.infoletter.model.InfoLetterService;
+import org.silverpeas.components.infoletter.service.ByteArrayDataSource;
+import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.model.DocumentType;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformer;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
+import org.silverpeas.core.contribution.content.wysiwyg.service.process.MailContentProcess;
+import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.mail.MailSending;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.persistence.jdbc.bean.IdPK;
+import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
+import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
+import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAOFactory;
 import org.silverpeas.core.subscription.Subscription;
 import org.silverpeas.core.subscription.SubscriptionServiceProvider;
 import org.silverpeas.core.subscription.service.ComponentSubscription;
@@ -31,36 +58,8 @@ import org.silverpeas.core.subscription.service.GroupSubscriptionSubscriber;
 import org.silverpeas.core.subscription.service.ResourceSubscriptionProvider;
 import org.silverpeas.core.subscription.service.UserSubscriptionSubscriber;
 import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
-import org.silverpeas.components.infoletter.InfoLetterContentManager;
-import org.silverpeas.components.infoletter.InfoLetterException;
-import org.silverpeas.components.infoletter.service.ByteArrayDataSource;
-import org.silverpeas.components.infoletter.model.InfoLetter;
-import org.silverpeas.components.infoletter.model.InfoLetterService;
-import org.silverpeas.components.infoletter.model.InfoLetterPublication;
-import org.silverpeas.components.infoletter.model.InfoLetterPublicationPdC;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.admin.user.model.Group;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.persistence.jdbc.bean.IdPK;
-import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAOFactory;
-import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
-import org.silverpeas.core.contribution.attachment.model.DocumentType;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.mail.MailSending;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.util.MimeTypes;
-import org.silverpeas.core.WAPrimaryKey;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
-import org.silverpeas.core.i18n.I18NHelper;
-import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformer;
-import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
-import org.silverpeas.core.contribution.content.wysiwyg.service.process.MailContentProcess;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
@@ -91,6 +90,7 @@ import static org.silverpeas.core.mail.MailAddress.eMail;
 public class InfoLetterDataManager implements InfoLetterService {
 
   private static final String TABLE_EXTERNAL_EMAILS = "SC_IL_ExtSus";
+  private static final String INSTANCE_ID = "instanceId = '";
 
   private SilverpeasBeanDAO<InfoLetter> infoLetterDAO;
   private SilverpeasBeanDAO<InfoLetterPublication> infoLetterPublicationDAO;
@@ -105,9 +105,7 @@ public class InfoLetterDataManager implements InfoLetterService {
       infoLetterPublicationDAO = SilverpeasBeanDAOFactory
           .getDAO("org.silverpeas.components.infoletter.model.InfoLetterPublication");
     } catch (PersistenceException pe) {
-      throw new InfoLetterException(
-          "InfoLetterDataManager",
-          SilverpeasRuntimeException.FATAL, pe.getMessage(), pe);
+      throw new InfoLetterException(pe);
     }
   }
 
@@ -120,9 +118,7 @@ public class InfoLetterDataManager implements InfoLetterService {
       WAPrimaryKey pk = infoLetterDAO.add(il);
       il.setPK(pk);
     } catch (PersistenceException pe) {
-      throw new InfoLetterException(
-          "InfoLetterDataManager",
-          SilverpeasRuntimeException.FATAL, pe.getMessage(), pe);
+      throw new InfoLetterException(pe);
     }
   }
 
@@ -131,21 +127,17 @@ public class InfoLetterDataManager implements InfoLetterService {
     try {
       infoLetterDAO.update(ie);
     } catch (PersistenceException pe) {
-      throw new InfoLetterException(
-          "InfoLetterDataManager",
-          SilverpeasRuntimeException.FATAL, pe.getMessage(), pe);
+      throw new InfoLetterException(pe);
     }
   }
 
   @Override
   public List<InfoLetter> getInfoLetters(String instanceId) {
-    String whereClause = "instanceId = '" + instanceId + "'";
+    String whereClause = INSTANCE_ID + instanceId + "'";
     try {
       return new ArrayList<>(infoLetterDAO.findByWhereClause(new IdPK(), whereClause));
     } catch (PersistenceException pe) {
-      throw new InfoLetterException(
-          "InfoLetterDataManager",
-          SilverpeasRuntimeException.FATAL, pe.getMessage(), pe);
+      throw new InfoLetterException(pe);
     }
   }
 
@@ -154,13 +146,11 @@ public class InfoLetterDataManager implements InfoLetterService {
     try {
       InfoLetter letter = getInfoLetter(letterPK);
       String whereClause =
-          "instanceId = '" + letter.getInstanceId() + "' AND letterId = " + letterPK.getId() +
+          INSTANCE_ID + letter.getInstanceId() + "' AND letterId = " + letterPK.getId() +
               " ORDER BY id desc";
       return new ArrayList<>(infoLetterPublicationDAO.findByWhereClause(letterPK, whereClause));
     } catch (PersistenceException pe) {
-      throw new InfoLetterException(
-          "InfoLetterDataManager",
-          SilverpeasRuntimeException.FATAL, pe.getMessage(), pe);
+      throw new InfoLetterException(pe);
     }
   }
 
@@ -175,9 +165,7 @@ public class InfoLetterDataManager implements InfoLetterService {
       infoLetterContentManager.createSilverContent(con, ilp, userId);
     } catch (Exception pe) {
       DBUtil.rollback(con);
-      throw new InfoLetterException(
-          "InfoLetterDataManager",
-          SilverpeasRuntimeException.FATAL, pe.getMessage(), pe);
+      throw new InfoLetterException(pe);
     } finally {
       DBUtil.close(con);
     }
@@ -191,8 +179,7 @@ public class InfoLetterDataManager implements InfoLetterService {
       infoLetterContentManager.deleteSilverContent(con, pk.getId(), componentId);
     } catch (Exception pe) {
       DBUtil.rollback(con);
-      throw new InfoLetterException("InfoLetterDataManager.createInfoLetterPublication()",
-          SilverpeasRuntimeException.FATAL, pe.getMessage(), pe);
+      throw new InfoLetterException(pe);
     } finally {
       DBUtil.close(con);
     }
@@ -204,9 +191,7 @@ public class InfoLetterDataManager implements InfoLetterService {
       infoLetterPublicationDAO.update(ilp);
       infoLetterContentManager.updateSilverContentVisibility(ilp);
     } catch (Exception e) {
-      throw new InfoLetterException(
-          "InfoLetterDataManager",
-          SilverpeasRuntimeException.FATAL, e.getMessage(), e);
+      throw new InfoLetterException(e);
     }
   }
 
@@ -216,9 +201,7 @@ public class InfoLetterDataManager implements InfoLetterService {
     try {
       retour = infoLetterDAO.findByPrimaryKey(letterPK);
     } catch (PersistenceException pe) {
-      throw new InfoLetterException(
-          "InfoLetterDataManager",
-          SilverpeasRuntimeException.FATAL, pe.getMessage(), pe);
+      throw new InfoLetterException(pe);
     }
     return retour;
   }
@@ -229,9 +212,7 @@ public class InfoLetterDataManager implements InfoLetterService {
     try {
       retour = new InfoLetterPublicationPdC(infoLetterPublicationDAO.findByPrimaryKey(publiPK));
     } catch (PersistenceException pe) {
-      throw new InfoLetterException(
-          "InfoLetterDataManager",
-          SilverpeasRuntimeException.FATAL, pe.getMessage(), pe);
+      throw new InfoLetterException(pe);
     }
     return retour;
   }
@@ -256,18 +237,16 @@ public class InfoLetterDataManager implements InfoLetterService {
   @Override
   public void deleteAllInfoLetters(final String componentId) {
     try (Connection connection = openConnection()) {
-      infoLetterPublicationDAO.removeWhere(connection, null, "instanceId = '" + componentId + "'");
+      infoLetterPublicationDAO.removeWhere(connection, null, INSTANCE_ID + componentId + "'");
       infoLetterDAO.removeWhere(connection, null,
-          "instanceId = '" + componentId + "'");//TABLE_EXTERNAL_EMAILS
+          INSTANCE_ID + componentId + "'");//TABLE_EXTERNAL_EMAILS
       try (PreparedStatement statement = connection.prepareStatement(
           "delete from " + TABLE_EXTERNAL_EMAILS + " where instanceId = ?")) {
         statement.setString(1, componentId);
         statement.execute();
       }
     } catch (Exception e) {
-      throw new InfoLetterException(
-          "InfoLetterDataManager",
-          SilverpeasRuntimeException.ERROR, e.getMessage(), e);
+      throw new InfoLetterException(e);
     }
   }
 
@@ -285,8 +264,7 @@ public class InfoLetterDataManager implements InfoLetterService {
       }
       return silverObjectId;
     } catch (Exception e) {
-      throw new InfoLetterException("InfoLetterDataManager.getSilverObjectId()",
-          SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DOBTENIR_LE_SILVEROBJECTID", e);
+      throw new InfoLetterException(e);
     }
   }
 
@@ -340,9 +318,7 @@ public class InfoLetterDataManager implements InfoLetterService {
         }
       }
     } catch (Exception e) {
-      throw new InfoLetterException(
-          "InfoLetterDataManager",
-          SilverpeasRuntimeException.FATAL, e.getMessage(), e);
+      throw new InfoLetterException(e);
     }
     return retour;
   }
@@ -358,7 +334,7 @@ public class InfoLetterDataManager implements InfoLetterService {
       try (Statement stmt = con.createStatement()) {
         stmt.executeUpdate(query);
       }
-      if (emails.size() > 0) {
+      if (!emails.isEmpty()) {
         for (String email : emails) {
           query = "INSERT INTO " + TABLE_EXTERNAL_EMAILS + "(letter, email, instanceId)";
           query +=
@@ -370,9 +346,7 @@ public class InfoLetterDataManager implements InfoLetterService {
         }
       }
     } catch (Exception e) {
-      throw new InfoLetterException(
-          "InfoLetterDataManager",
-          SilverpeasRuntimeException.FATAL, e.getMessage());
+      throw new InfoLetterException(e);
     }
   }
 
@@ -401,9 +375,7 @@ public class InfoLetterDataManager implements InfoLetterService {
           new ForeignPK(InfoLetterPublication.TEMPLATE_ID + letterPK.getId(), componentId), userId,
           I18NHelper.defaultLanguage);
     } catch (Exception e) {
-      throw new InfoLetterException(
-          "com.stratelia.silverpeas.infoLetter.control.InfoLetterSessionController",
-          SilverpeasRuntimeException.ERROR, e.getMessage(), e);
+      throw new InfoLetterException(e);
     }
   }
 
@@ -412,18 +384,17 @@ public class InfoLetterDataManager implements InfoLetterService {
    * @return Connection
    * @throws InfoLetterException
    */
-  private Connection openConnection() throws InfoLetterException {
+  private Connection openConnection() {
     Connection con;
     try {
       con = DBUtil.openConnection();
     } catch (Exception e) {
-      throw new InfoLetterException("InfoLetterDataManager.openConnection()",
-          SilverpeasRuntimeException.FATAL, e.getMessage(), e);
+      throw new InfoLetterException(e);
     }
     return con;
   }
 
-  private Multipart attachFilesToMail(Multipart mp, List<SimpleDocument> listAttachedFiles)
+  private void attachFilesToMail(Multipart mp, List<SimpleDocument> listAttachedFiles)
       throws MessagingException {
     for (SimpleDocument attachment : listAttachedFiles) {
       // create the second message part
@@ -440,7 +411,6 @@ public class InfoLetterDataManager implements InfoLetterService {
       // create the Multipart and its parts to it
       mp.addBodyPart(mbp);
     }
-    return mp;
   }
 
   private Multipart createContentMessageMail(InfoLetterPublicationPdC ilp, String mimeMultipart)
@@ -471,7 +441,7 @@ public class InfoLetterDataManager implements InfoLetterService {
     List<SimpleDocument> listAttachedFilesFromTab =
         AttachmentServiceProvider.getAttachmentService().
             listDocumentsByForeignKeyAndType(foreignKey, DocumentType.attachment, null);
-    multipart = attachFilesToMail(multipart, listAttachedFilesFromTab);
+    attachFilesToMail(multipart, listAttachedFilesFromTab);
 
     // The completed multipart mail to send
     return multipart;
@@ -483,41 +453,37 @@ public class InfoLetterDataManager implements InfoLetterService {
 
     Set<String> emailErrors = new LinkedHashSet<>();
 
-    if (listEmailDest.size() > 0) {
-
-
-
+    if (!listEmailDest.isEmpty()) {
       try {
         // create the Multipart and its parts to it
         Multipart mp = createContentMessageMail(ilp, mimeMultipart);
-
         for (String receiverEmail : listEmailDest) {
-          try {
-            // Verifying the email
-            new InternetAddress(receiverEmail);
-
-            // Prepare the mail
-            MailSending mail =
-                MailSending.from(eMail(emailFrom)).to(eMail(receiverEmail)).withSubject(subject)
-                    .withContent(mp);
-
-            // Sending the mail
-            mail.send();
-
-          } catch (Exception ex) {
-            SilverTrace.error("infoLetter", "InfoLetterDataManager.sendLetterByMail()",
-                "root.MSG_GEN_PARAM_VALUE", "Email = " + receiverEmail, new InfoLetterException(
-                    "com.stratelia.silverpeas.infoLetter.control.InfoLetterSessionController",
-                    SilverpeasRuntimeException.ERROR, ex.getMessage(), ex));
-            emailErrors.add(receiverEmail);
-          }
+          sendMail(subject, emailFrom, emailErrors, mp, receiverEmail);
         }
       } catch (Exception e) {
-        throw new InfoLetterException(
-            "InfoLetterDataManager",
-            SilverpeasRuntimeException.ERROR, e.getMessage(), e);
+        throw new InfoLetterException(e);
       }
     }
     return emailErrors;
+  }
+
+  private void sendMail(final String subject, final String emailFrom, final Set<String> emailErrors,
+      final Multipart mp, final String receiverEmail) {
+    try {
+      // Verifying the email
+      new InternetAddress(receiverEmail);
+
+      // Prepare the mail
+      MailSending mail =
+          MailSending.from(eMail(emailFrom)).to(eMail(receiverEmail)).withSubject(subject)
+              .withContent(mp);
+
+      // Sending the mail
+      mail.send();
+
+    } catch (Exception ex) {
+      SilverLogger.getLogger(this).error(ex);
+      emailErrors.add(receiverEmail);
+    }
   }
 }

@@ -20,32 +20,28 @@
  */
 package org.silverpeas.components.projectmanager;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import org.silverpeas.components.projectmanager.service.ProjectManagerService;
-import org.silverpeas.components.projectmanager.model.ProjectManagerRuntimeException;
 import org.silverpeas.components.projectmanager.model.TaskDetail;
-import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
+import org.silverpeas.components.projectmanager.service.ProjectManagerService;
 import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
-
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 @Singleton
 @Named("projectManager" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
 public class ProjectManagerStatistics implements ComponentStatisticsProvider {
 
   @Inject
-  private ProjectManagerService projectManagerService = null;
+  private ProjectManagerService projectManagerService;
 
   @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId) {
-    Collection<TaskDetail> tasks = getProjectManagerService().getAllTasks(componentId, null);
+    Collection<TaskDetail> tasks = projectManagerService.getAllTasks(componentId, null);
     List<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>(tasks.size());
     for (TaskDetail task : tasks) {
       UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
@@ -57,11 +53,4 @@ public class ProjectManagerStatistics implements ComponentStatisticsProvider {
     return myArrayList;
   }
 
-  private ProjectManagerService getProjectManagerService() {
-    if (projectManagerService == null) {
-      throw new ProjectManagerRuntimeException("projectManager", SilverpeasRuntimeException.ERROR,
-          "ProjectManagerStatistics.getProjectManagerService()", "CDI bootstrap error");
-    }
-    return projectManagerService;
-  }
 }

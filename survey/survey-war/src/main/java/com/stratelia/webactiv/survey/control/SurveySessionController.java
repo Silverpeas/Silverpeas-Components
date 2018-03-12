@@ -509,7 +509,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
   }
 
   public Collection<String> getUsersBySurvey(String surveyId) throws SurveyException {
-    Collection<String> users = new LinkedHashSet<String>();
+    Collection<String> users = new LinkedHashSet<>();
     QuestionContainerDetail survey = getSurvey(surveyId);
     Collection<Question> questions = survey.getQuestions();
     for (Question question : questions) {
@@ -900,7 +900,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
       } else {
         StringBuilder message = new StringBuilder();
         message.append("Trying to delete a wrong question, questionIndexToDelete=").append(qId).
-            append(", questions list size=").append(qV.size());
+            append(", questions list size=").append(qV == null ? "null": qV.size());
         SilverLogger.getLogger(this).warn(message.toString());
       }
 
@@ -917,23 +917,29 @@ public class SurveySessionController extends AbstractComponentSessionController 
     }
 
     if (StringUtil.isDefined(surveyId)) {
-      this.removeSessionSurveyId();
-      this.removeSessionQuestions();
-      this.removeSessionSurveyName();
-      List<Question> questionsV = new ArrayList<>();
-      QuestionContainerDetail survey = null;
-      try {
-        survey = this.getSurvey(surveyId);
-        Collection<Question> questions = survey.getQuestions();
-        // Cast Collection to List
-        questionsV = new ArrayList<>(questions);
-      } catch (SurveyException e) {
-        SilverLogger.getLogger(this).error(e.getMessage(), e);
-      }
-      this.setSessionQuestions(questionsV);
-      this.setSessionSurveyId(surveyId);
-      this.setSessionSurveyName(survey.getHeader().getTitle());
+      setUpSessionSurvey(surveyId);
     }
+  }
+
+  private void setUpSessionSurvey(final String surveyId) {
+    this.removeSessionSurveyId();
+    this.removeSessionQuestions();
+    this.removeSessionSurveyName();
+    String surveyName = "";
+    List<Question> questionsV = new ArrayList<>();
+    QuestionContainerDetail survey = null;
+    try {
+      survey = this.getSurvey(surveyId);
+      Collection<Question> questions = survey.getQuestions();
+      // Cast Collection to List
+      questionsV.addAll(questions);
+      surveyName = survey.getHeader().getTitle();
+    } catch (SurveyException e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
+    }
+    this.setSessionQuestions(questionsV);
+    this.setSessionSurveyId(surveyId);
+    this.setSessionSurveyName(surveyName);
   }
 
   /**
@@ -1024,20 +1030,9 @@ public class SurveySessionController extends AbstractComponentSessionController 
       }
       boolean anonymous =
           StringUtil.isDefined(anonymousString) && "on".equalsIgnoreCase(anonymousString);
-      if (StringUtil.isDefined(beginDate)) {
-        try {
-          beginDate = DateUtil.date2SQLDate(beginDate, this.getLanguage());
-        } catch (ParseException e) {
-          SilverLogger.getLogger(this).error("Impossible to parse start date " + beginDate, e);
-          beginDate = null;
-        }
-      }
+      beginDate = date2SQLDate(beginDate);
       if (StringUtil.isDefined(endDate)) {
-        try {
-          endDate = DateUtil.date2SQLDate(endDate, this.getLanguage());
-        } catch (ParseException e) {
-          endDate = null;
-        }
+        endDate = date2SQLDate(endDate);
       }
 
       QuestionContainerHeader surveyHeader =
@@ -1050,6 +1045,18 @@ public class SurveySessionController extends AbstractComponentSessionController 
       setNewSurveyPositionsFromJSON(positions);
       this.setSessionSurveyUnderConstruction(surveyDetail);
     }
+  }
+
+  private String date2SQLDate(String beginDate) {
+    if (StringUtil.isDefined(beginDate)) {
+      try {
+        beginDate = DateUtil.date2SQLDate(beginDate, this.getLanguage());
+      } catch (ParseException e) {
+        SilverLogger.getLogger(this).error("Impossible to parse start date " + beginDate, e);
+        beginDate = null;
+      }
+    }
+    return beginDate;
   }
 
   /**
@@ -1168,7 +1175,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
           String physicalName = getFilePhysicalName(attachmentSuffix, item);
           attachmentSuffix = attachmentSuffix + 1;
           long size = saveFile(item, physicalName);
-          if (size > 0) {
+          if (size > 0 && answer != null) {
             answer.setImage(physicalName);
             file = true;
           }

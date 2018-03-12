@@ -64,7 +64,7 @@ public class AttachmentServlet extends HttpServlet implements MailingListRoutage
       response.setContentType(file.getContentType());
       final String filename = encodeInlineFilenameAsUtf8(file.getFileName());
       response.setHeader("Content-Disposition", filename);
-      int length = Long.valueOf(file.getSize()).intValue();
+      long length = file.getSize();
       response.setHeader("Content-Length", String.valueOf(length));
       try (OutputStream out = response.getOutputStream();
            InputStream in = new FileInputStream(file.getPath())) {

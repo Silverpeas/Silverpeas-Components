@@ -30,7 +30,6 @@ import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import net.htmlparser.jericho.Source;
-import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
 import org.silverpeas.components.kmelia.service.KmeliaService;
 import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.admin.service.OrganizationController;
@@ -53,7 +52,6 @@ import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
@@ -179,7 +177,7 @@ public class SendInKmelia extends ExternalActionImpl {
       pubDetail.setInfoId(xmlFormName);
     }
 
-    KmeliaService kmelia = getKmeliaBm();
+    KmeliaService kmelia = getKmeliaService();
     NodePK nodePK = new NodePK(getTopicId(), getTargetId());
     String pubId = kmelia.createPublicationIntoTopic(pubDetail, nodePK);
     pubPK.setId(pubId);
@@ -209,7 +207,7 @@ public class SendInKmelia extends ExternalActionImpl {
 
     Parameter draftOutParameter = getTriggerParameter("forceDraftOut");
     if (draftOutParameter != null && StringUtil.getBooleanValue(draftOutParameter.getValue())) {
-      getKmeliaBm().draftOutPublication(pubPK, nodePK, SilverpeasRole.admin.toString());
+      getKmeliaService().draftOutPublication(pubPK, nodePK, SilverpeasRole.admin.toString());
     }
   }
 
@@ -225,22 +223,8 @@ public class SendInKmelia extends ExternalActionImpl {
       DataRecord record = pubTemplate.getRecordSet().getEmptyRecord();
       record.setId(pubId);
       for (String fieldName : record.getFieldNames()) {
-        Object fieldValue = null;
-        try {
-          Field fieldOfFolder = currentProcessInstance.getField(fieldName);
-          FieldTemplate fieldTemplate = pubTemplate.getRecordTemplate().getFieldTemplate(fieldName);
-          fieldValue = fieldOfFolder.getObjectValue();
-          // Check file attachment in order to put them inside form
-          if (fieldOfFolder instanceof FileField) {
-
-            fieldValue = copyFormFile(fromPK, toPK, ((FileField) fieldOfFolder).getAttachmentId());
-          } else if ("wysiwyg".equals(fieldTemplate.getDisplayerName())) {
-            WysiwygFCKFieldDisplayer displayer = new WysiwygFCKFieldDisplayer();
-            fieldValue = displayer.duplicateContent(fieldOfFolder, fieldTemplate, fromPK, toPK,
-                I18NHelper.defaultLanguage);
-          }
-        } catch (WorkflowException e) {
-        }
+        Object fieldValue =
+            getFieldValue(fromPK, toPK, currentProcessInstance, pubTemplate, fieldName);
         record.getField(fieldName).setObjectValue(fieldValue);
       }
       // Update
@@ -249,6 +233,30 @@ public class SendInKmelia extends ExternalActionImpl {
     } catch (PublicationTemplateException | FormException e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
+  }
+
+  private Object getFieldValue(final ForeignPK fromPK, final ForeignPK toPK,
+      final UpdatableProcessInstance currentProcessInstance,
+      final PublicationTemplateImpl pubTemplate, final String fieldName)
+      throws FormException, PublicationTemplateException {
+    Object fieldValue = null;
+    try {
+      Field fieldOfFolder = currentProcessInstance.getField(fieldName);
+      FieldTemplate fieldTemplate = pubTemplate.getRecordTemplate().getFieldTemplate(fieldName);
+      fieldValue = fieldOfFolder.getObjectValue();
+      // Check file attachment in order to put them inside form
+      if (fieldOfFolder instanceof FileField) {
+
+        fieldValue = copyFormFile(fromPK, toPK, ((FileField) fieldOfFolder).getAttachmentId());
+      } else if ("wysiwyg".equals(fieldTemplate.getDisplayerName())) {
+        WysiwygFCKFieldDisplayer displayer = new WysiwygFCKFieldDisplayer();
+        fieldValue = displayer.duplicateContent(fieldOfFolder, fieldTemplate, fromPK, toPK,
+            I18NHelper.defaultLanguage);
+      }
+    } catch (WorkflowException e) {
+      SilverLogger.getLogger(this).warn(e);
+    }
+    return fieldValue;
   }
 
   private String copyFormFile(ForeignPK fromPK, ForeignPK toPK, String attachmentId) {
@@ -312,7 +320,7 @@ public class SendInKmelia extends ExternalActionImpl {
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
-    return null;
+    return new byte[0];
   }
 
   private void generatePDFStep(HistoryStep step, com.lowagie.text.Document document) {
@@ -331,21 +339,7 @@ public class SendInKmelia extends ExternalActionImpl {
         activity = resolvedState.getLabel(getRole(), getLanguage());
       }
 
-      String sAction;
-      try {
-        if ("#question#".equals(step.getAction())) {
-          sAction = getString("processManager.question");
-        } else if ("#response#".equals(step.getAction())) {
-          sAction = getString("processManager.response");
-        } else if ("#reAssign#".equals(step.getAction())) {
-          sAction = getString("processManager.reAffectation");
-        } else {
-          Action action = step.getProcessInstance().getProcessModel().getAction(step.getAction());
-          sAction = action.getLabel(getRole(), getLanguage());
-        }
-      } catch (WorkflowException we) {
-        sAction = "##";
-      }
+      String sAction = getAction(step);
 
       String actor = step.getUser().getFullName();
 
@@ -371,6 +365,25 @@ public class SendInKmelia extends ExternalActionImpl {
       document.add(pTable);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
+    }
+  }
+
+  private String getAction(final HistoryStep step) {
+    try {
+      final String sAction;
+      if ("#question#".equals(step.getAction())) {
+        sAction = getString("processManager.question");
+      } else if ("#response#".equals(step.getAction())) {
+        sAction = getString("processManager.response");
+      } else if ("#reAssign#".equals(step.getAction())) {
+        sAction = getString("processManager.reAffectation");
+      } else {
+        Action action = step.getProcessInstance().getProcessModel().getAction(step.getAction());
+        sAction = action.getLabel(getRole(), getLanguage());
+      }
+      return sAction;
+    } catch (WorkflowException we) {
+      return "##";
     }
   }
 
@@ -486,12 +499,8 @@ public class SendInKmelia extends ExternalActionImpl {
     this.role = role;
   }
 
-  private KmeliaService getKmeliaBm() {
-    try {
-      return ServiceProvider.getService(KmeliaService.class);
-    } catch (Exception e) {
-      throw new KmeliaRuntimeException("SendInKmelia.getKmeliaService()", SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
+  private KmeliaService getKmeliaService() {
+    return ServiceProvider.getService(KmeliaService.class);
   }
 
   /**
@@ -516,7 +525,7 @@ public class SendInKmelia extends ExternalActionImpl {
       }
     }
     byte[] pdf = generatePDF(getProcessInstance());
-    getKmeliaBm().addAttachmentToPublication(pubPK, userId, fileName, "", pdf);
+    getKmeliaService().addAttachmentToPublication(pubPK, userId, fileName, "", pdf);
   }
 
   private String getNodeId(String explicitPath) {

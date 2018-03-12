@@ -24,7 +24,6 @@
 
 package org.silverpeas.components.datawarning.servlets;
 
-import org.silverpeas.components.datawarning.service.DataWarningEngine;
 import org.silverpeas.components.datawarning.control.DataWarningSessionController;
 import org.silverpeas.components.datawarning.model.DataWarning;
 import org.silverpeas.components.datawarning.model.DataWarningGroup;
@@ -33,13 +32,13 @@ import org.silverpeas.components.datawarning.model.DataWarningQueryResult;
 import org.silverpeas.components.datawarning.model.DataWarningResult;
 import org.silverpeas.components.datawarning.model.DataWarningScheduler;
 import org.silverpeas.components.datawarning.model.DataWarningUser;
+import org.silverpeas.components.datawarning.service.DataWarningEngine;
 import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.web.util.viewgenerator.html.Encode;
-import org.silverpeas.core.web.http.HttpRequest;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -119,9 +118,8 @@ public class DataWarningRequestRouter extends ComponentRequestRouter<DataWarning
         //mettre en place un systeme de backlist... lors envoi mail, enlever les user qui sont ds
         // la back list
         boolean isAbonne = false;
-        if (dataWarningSC.isUserInDataWarningGroups()) {
-          isAbonne = true;
-        } else if (dwe.getDataWarningUser(dataWarningSC.getUserId()) != null) {
+        if (dataWarningSC.isUserInDataWarningGroups() ||
+            dwe.getDataWarningUser(dataWarningSC.getUserId()) != null) {
           isAbonne = true;
         }
         request.setAttribute("isAbonne", Boolean.valueOf(isAbonne));
@@ -196,7 +194,7 @@ public class DataWarningRequestRouter extends ComponentRequestRouter<DataWarning
         DataWarning data = dwe.getDataWarning();
         request.setAttribute(DATA_QUERY, dataQuery);
         request.setAttribute("data", data);
-        request.setAttribute("currentQuery", new Integer(dataWarningSC.getCurrentQueryType()));
+        request.setAttribute("currentQuery", dataWarningSC.getCurrentQueryType());
         destination = "requestParameters.jsp";
       } else if ("changeQuery".equals(function)) {
         /********************** changement de la requete *****************************************/
@@ -427,9 +425,6 @@ public class DataWarningRequestRouter extends ComponentRequestRouter<DataWarning
           columns[i] = request.getParameter("Colonne" + i);
         }
         String req = request.getParameter(SQL_REQ);
-        SilverTrace
-            .info(DATA_WARNING, "DataWarningRequestRouter.getDestination().SelectConstraints",
-                "root.MSG_GEN_PARAM_VALUE", "requete=" + req);
         request.setAttribute("req", req);
         dataWarningSC.setColumns(columns);
         request.setAttribute(COLUMNS, columns);
@@ -526,8 +521,7 @@ public class DataWarningRequestRouter extends ComponentRequestRouter<DataWarning
         dwqr.returnTriggerValueFromResult();
       }
     } catch (Exception e) {
-      SilverTrace.warn(DATA_WARNING, "DataWarningRequestRouter.getDestination()",
-          "root.MSG_GEN_ENTER_METHOD", "Error during Request Save Verification");
+      SilverLogger.getLogger(this).warn(e);
       dwqr.addError(e, "Value = " + dwqr.getValue(0, 0));
     }
   }

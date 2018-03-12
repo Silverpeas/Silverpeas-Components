@@ -20,8 +20,6 @@
  */
 package org.silverpeas.components.kmelia.service;
 
-import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.scheduler.Scheduler;
 import org.silverpeas.core.scheduler.SchedulerEvent;
 import org.silverpeas.core.scheduler.SchedulerEventListener;
@@ -55,17 +53,12 @@ public class AutomaticDraftOut implements SchedulerEventListener {
 
   public void doAutomaticDraftOut() {
 
-    getKmeliaBm().doAutomaticDraftOut();
+    getKmeliaService().doAutomaticDraftOut();
 
   }
 
-  private KmeliaService getKmeliaBm() {
-    try {
-      return ServiceProvider.getService(KmeliaService.class);
-    } catch (Exception e) {
-      throw new KmeliaRuntimeException("AutomaticDraftOut.getKmeliaService()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
+  private KmeliaService getKmeliaService() {
+    return ServiceProvider.getService(KmeliaService.class);
   }
 
   @Override

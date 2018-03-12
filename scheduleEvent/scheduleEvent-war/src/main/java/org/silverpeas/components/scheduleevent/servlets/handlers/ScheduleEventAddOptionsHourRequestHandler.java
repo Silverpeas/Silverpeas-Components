@@ -44,7 +44,7 @@ public class ScheduleEventAddOptionsHourRequestHandler implements ScheduleEventR
     Iterator<DateOption> iter = dates.iterator();
     while (iter.hasNext()) {
       DateOption aDate = iter.next();
-      String tmpId = formatterTmpId.format(aDate.getDay());
+      String tmpId = FORMATTER_TMP_ID.format(aDate.getDay());
       String hourFromParameters = request.getParameter("hourFor" + tmpId);
       int hour;
       try {

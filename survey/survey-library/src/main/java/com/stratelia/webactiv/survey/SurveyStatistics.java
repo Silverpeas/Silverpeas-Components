@@ -23,12 +23,11 @@
  */
 package com.stratelia.webactiv.survey;
 
-import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
-import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.questioncontainer.container.service.QuestionContainerService;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerHeader;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerPK;
+import org.silverpeas.core.questioncontainer.container.service.QuestionContainerService;
+import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
+import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -80,10 +79,6 @@ public class SurveyStatistics implements ComponentStatisticsProvider {
    * @return
    */
   private QuestionContainerService getQuestionContainerService() {
-    if (questionContainerService == null) {
-      SilverTrace.fatal("survey", "SurveyStatistics.getQuestionContainerService()",
-          "cannot inject question container BM");
-    }
     return questionContainerService;
   }
 

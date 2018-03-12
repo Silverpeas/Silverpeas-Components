@@ -23,14 +23,12 @@
  */
 package org.silverpeas.components.gallery;
 
-import org.silverpeas.components.gallery.service.GalleryService;
-import org.silverpeas.components.gallery.model.GalleryRuntimeException;
 import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.components.gallery.model.MediaCriteria;
-import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
+import org.silverpeas.components.gallery.service.GalleryService;
 import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
+import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -45,7 +43,7 @@ public class GalleryStatistics implements ComponentStatisticsProvider {
   @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
       throws Exception {
-    Collection<Media> media = getGalleryBm().getAllMedia(componentId,
+    Collection<Media> media = getGalleryService().getAllMedia(componentId,
         MediaCriteria.VISIBILITY.FORCE_GET_ALL);
     List<UserIdCountVolumeCouple> myArrayList = new ArrayList<>(media.size());
     for (Media aMedia : media) {
@@ -57,12 +55,7 @@ public class GalleryStatistics implements ComponentStatisticsProvider {
     return myArrayList;
   }
 
-  private GalleryService getGalleryBm() {
-    try {
-      return ServiceProvider.getService(GalleryService.class);
-    } catch (final Exception e) {
-      throw new GalleryRuntimeException("GalleryProcessBuilder.getGalleryBm()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
+  private GalleryService getGalleryService() {
+    return ServiceProvider.getService(GalleryService.class);
   }
 }

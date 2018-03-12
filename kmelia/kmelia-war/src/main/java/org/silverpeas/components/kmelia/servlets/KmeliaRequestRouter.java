@@ -110,8 +110,6 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
   private static final StatisticRequestHandler STATISTIC_REQUEST_HANDLER =
       new StatisticRequestHandler();
 
-  private KmeliaActionAccessController actionAccessController = new KmeliaActionAccessController();
-
   /**
    * This method creates a KmeliaSessionController instance
    * @param mainSessionCtrl The MainSessionController instance
@@ -652,7 +650,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           request.setAttribute("ValidationType", kmelia.getValidationType());
 
           // check if user is writer with approval right (versioning case)
-          request.setAttribute("WriterApproval", kmelia.isWriterApproval(id));
+          request.setAttribute("WriterApproval", kmelia.isWriterApproval());
           request.setAttribute("NotificationAllowed", kmelia.isNotificationAllowed());
 
           // check is requested publication is an alias
@@ -1055,7 +1053,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
         // force indexation to add thumbnail and attachments to publication index
         if ((newThumbnail || !attachments.isEmpty()) && pubDetail.isIndexable()) {
-          kmelia.getPublicationBm().createIndex(pubDetail.getPK());
+          kmelia.getPublicationService().createIndex(pubDetail.getPK());
         }
 
         request.setAttribute("PubId", newPubId);
@@ -1677,6 +1675,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
   @Override
   protected boolean checkUserAuthorization(final String function,
       final KmeliaSessionController kmelia) {
+    KmeliaActionAccessController actionAccessController =
+        ServiceProvider.getService(KmeliaActionAccessController.class);
     return actionAccessController.hasRightAccess(function, kmelia.getHighestSilverpeasUserRole());
   }
 

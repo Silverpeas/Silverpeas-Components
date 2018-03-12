@@ -26,7 +26,6 @@ package org.silverpeas.components.gallery.web;
 
 import org.silverpeas.components.gallery.constant.MediaMimeType;
 import org.silverpeas.components.gallery.model.GalleryRuntimeException;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.notification.message.MessageManager;
 import org.silverpeas.core.notification.message.MessageNotifier;
 import org.silverpeas.core.util.LocalizationBundle;
@@ -66,7 +65,7 @@ public class GalleryInstanceFileUploadVerification
               MessageManager.getLanguage());
       final String message = galleryBundle.getStringWithParams("gallery.format", file.getName());
       MessageNotifier.addError(message);
-      throw new GalleryRuntimeException("checkMimeType", SilverpeasRuntimeException.ERROR, message);
+      throw new GalleryRuntimeException(message);
     }
   }
 }

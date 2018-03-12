@@ -27,63 +27,24 @@
 
 package org.silverpeas.components.infoletter;
 
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.SilverpeasRuntimeException;
 
 /**
  * Info Letter Runtime Exception
  */
 public class InfoLetterException extends SilverpeasRuntimeException {
 
-  private static final long serialVersionUID = 166786757597185875L;
+  private static final long serialVersionUID = 166786757597185876L;
 
-  /**
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   */
-  public InfoLetterException(String callingClass, int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
+  public InfoLetterException(final String message) {
+    super(message);
   }
 
-  /**
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param extraParams
-   */
-  public InfoLetterException(String callingClass, int errorLevel, String message,
-      String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public InfoLetterException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  /**
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param nested
-   */
-  public InfoLetterException(String callingClass, int errorLevel, String message,
-      Exception nested) {
-    super(callingClass, errorLevel, message, nested);
+  public InfoLetterException(final Throwable cause) {
+    super(cause);
   }
-
-  /**
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param extraParams
-   * @param nested
-   */
-  public InfoLetterException(String callingClass, int errorLevel, String message,
-      String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  /**
-   * @return
-   */
-  public String getModule() {
-    return "infoLetter";
-  }
-
 }

@@ -23,13 +23,13 @@
  */
 package org.silverpeas.components.gallery.servlets;
 
-import org.silverpeas.components.gallery.service.GalleryService;
 import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.components.gallery.model.MediaPK;
+import org.silverpeas.components.gallery.service.GalleryService;
+import org.silverpeas.core.util.Charsets;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.util.servlet.GoTo;
-import org.apache.commons.lang3.CharEncoding;
-import org.silverpeas.core.util.ServiceProvider;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -43,21 +43,15 @@ public class GoToImage extends GoTo {
   public String getDestination(String objectId, HttpServletRequest req, HttpServletResponse res)
       throws Exception {
     MediaPK mediaPK = new MediaPK(objectId);
-    Media media = getGalleryBm().getMedia(mediaPK);
+    Media media = getGalleryService().getMedia(mediaPK);
     String componentId = media.getMediaPK().getInstanceId();
 
     String gotoURL = URLUtil.getURL(null, componentId) + media.getURL();
 
-    return "goto=" + URLEncoder.encode(gotoURL, CharEncoding.UTF_8);
+    return "goto=" + URLEncoder.encode(gotoURL, Charsets.UTF_8.name());
   }
 
-  private GalleryService getGalleryBm() {
-    GalleryService currentGalleryService = null;
-    try {
-      currentGalleryService = ServiceProvider.getService(GalleryService.class);
-    } catch (Exception e) {
-      displayError(null);
-    }
-    return currentGalleryService;
+  private GalleryService getGalleryService() {
+    return ServiceProvider.getService(GalleryService.class);
   }
 }

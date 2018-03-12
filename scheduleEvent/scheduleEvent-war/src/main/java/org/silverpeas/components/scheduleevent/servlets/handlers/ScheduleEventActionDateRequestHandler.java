@@ -36,7 +36,7 @@ public abstract class ScheduleEventActionDateRequestHandler implements ScheduleE
     Iterator<DateOption> iter = dates.iterator();
     while (iter.hasNext() && dateOption == null) {
       DateOption aDate = iter.next();
-      String currentDayId = formatterTmpId.format(aDate.getDay());
+      String currentDayId = FORMATTER_TMP_ID.format(aDate.getDay());
       if (currentDayId.equals(dateIdSearch)) {
         dateOption = aDate;
       }

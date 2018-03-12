@@ -38,7 +38,6 @@ import org.silverpeas.components.gallery.model.Video;
 import org.silverpeas.components.gallery.process.media.*;
 import org.silverpeas.components.gallery.service.GalleryService;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
@@ -61,6 +60,7 @@ import static org.silverpeas.components.gallery.GalleryComponentSettings.*;
  */
 public class GalleryProcessManagement {
 
+  private static final String UNKNOWN = "unknown";
   private final UserDetail user;
   private final String componentInstanceId;
   private final ProcessList<ProcessExecutionContext> processList;
@@ -82,15 +82,14 @@ public class GalleryProcessManagement {
    * Execute the transactional processing
    * @throws Exception
    */
-  public void execute() throws Exception {
+  public void execute() {
     Transaction.performInOne(() -> {
       try {
         ProcessProvider.getProcessManagement()
             .execute(processList, new ProcessExecutionContext(user, componentInstanceId));
         return null;
       } catch (final Exception e) {
-        throw new GalleryRuntimeException("executeProcessList()", SilverpeasRuntimeException.ERROR,
-            "gallery.TRANSACTION_ERROR", e);
+        throw new GalleryRuntimeException(e);
       }
     });
   }
@@ -201,13 +200,7 @@ public class GalleryProcessManagement {
         if (file.isFile()) {
           MediaMimeType mediaMimeType = MediaMimeType.fromFile(file);
           Media newMedia = null;
-          if (mediaMimeType.isSupportedPhotoType()) {
-            newMedia = new Photo();
-          } else if (mediaMimeType.isSupportedVideoType()) {
-            newMedia = new Video();
-          } else if (mediaMimeType.isSupportedSoundType()) {
-            newMedia = new Sound();
-          }
+          newMedia = getMediaByType(mediaMimeType, newMedia);
           if (newMedia != null) {
             // Creation of the media
             // In a transaction.
@@ -228,6 +221,17 @@ public class GalleryProcessManagement {
     }
   }
 
+  private static Media getMediaByType(final MediaMimeType mediaMimeType, Media newMedia) {
+    if (mediaMimeType.isSupportedPhotoType()) {
+      newMedia = new Photo();
+    } else if (mediaMimeType.isSupportedVideoType()) {
+      newMedia = new Video();
+    } else if (mediaMimeType.isSupportedSoundType()) {
+      newMedia = new Sound();
+    }
+    return newMedia;
+  }
+
   /**
    * Centralized method to create an album
    * @param name the album name
@@ -237,14 +241,14 @@ public class GalleryProcessManagement {
    * @throws Exception
    */
   private static AlbumDetail createAlbum(final UserDetail user, final String componentInstanceId,
-      final String name, final String albumId) throws Exception {
+      final String name, final String albumId) {
     final AlbumDetail newAlbum =
-        new AlbumDetail(new NodeDetail("unknown", name, null, null, null, null, "0", "unknown"));
+        new AlbumDetail(new NodeDetail(UNKNOWN, name, null, null, null, null, "0", UNKNOWN));
     newAlbum.setCreationDate(DateUtil.date2SQLDate(new Date()));
     newAlbum.setCreatorId(user.getId());
     newAlbum.getNodePK().setComponentName(componentInstanceId);
-    newAlbum
-        .setNodePK(getGalleryBm().createAlbum(newAlbum, new NodePK(albumId, componentInstanceId)));
+    newAlbum.setNodePK(
+        getGalleryService().createAlbum(newAlbum, new NodePK(albumId, componentInstanceId)));
     return newAlbum;
   }
 
@@ -270,13 +274,13 @@ public class GalleryProcessManagement {
 
       // Move images
       NodePK toSubAlbumPK;
-      for (final NodeDetail subAlbumToPaste : getNodeBm().getSubTree(fromAlbum.getNodePK())) {
+      for (final NodeDetail subAlbumToPaste : getNodeService().getSubTree(fromAlbum.getNodePK())) {
         toSubAlbumPK = new NodePK(subAlbumToPaste.getNodePK().getId(), componentInstanceId);
         addPasteMediaAlbumProcesses(subAlbumToPaste.getNodePK(), toSubAlbumPK, true);
       }
 
       // Move album
-      getNodeBm().moveNode(fromAlbum.getNodePK(), toAlbum.getNodePK());
+      getNodeService().moveNode(fromAlbum.getNodePK(), toAlbum.getNodePK());
 
     } else {
 
@@ -284,7 +288,7 @@ public class GalleryProcessManagement {
 
       // Create new album
       final AlbumDetail newAlbum = new AlbumDetail(new NodeDetail());
-      final NodePK newAlbumPK = new NodePK("unknown", componentInstanceId);
+      final NodePK newAlbumPK = new NodePK(UNKNOWN, componentInstanceId);
       newAlbum.setNodePK(newAlbumPK);
       newAlbum.setCreatorId(user.getId());
       newAlbum.setName(fromAlbum.getName());
@@ -294,13 +298,13 @@ public class GalleryProcessManagement {
       newAlbum.setRightsDependsOn(toAlbum.getRightsDependsOn());
 
       // Persisting the new album
-      getNodeBm().createNode(newAlbum, toAlbum);
+      getNodeService().createNode(newAlbum, toAlbum);
 
       // Paste images of album
       addPasteMediaAlbumProcesses(fromAlbum.getNodePK(), newAlbum.getNodePK(), false);
 
       // Perform sub albums
-      for (final NodeDetail subNode : getNodeBm().getChildrenDetails(fromAlbum.getNodePK())) {
+      for (final NodeDetail subNode : getNodeService().getChildrenDetails(fromAlbum.getNodePK())) {
         addPasteAlbumProcesses(new AlbumDetail(subNode), newAlbum, false);
       }
     }
@@ -314,8 +318,8 @@ public class GalleryProcessManagement {
    * @throws Exception
    */
   private void addPasteMediaAlbumProcesses(final NodePK fromAlbumPk, final NodePK toAlbumPk,
-      final boolean isCutted) throws Exception {
-    for (final Media media : getGalleryBm()
+      final boolean isCutted) {
+    for (final Media media : getGalleryService()
         .getAllMedia(fromAlbumPk, MediaCriteria.VISIBILITY.FORCE_GET_ALL)) {
       addPasteMediaProcesses(media, toAlbumPk, isCutted);
     }
@@ -328,11 +332,11 @@ public class GalleryProcessManagement {
    */
   public void addDeleteAlbumProcesses(final NodePK albumPk) throws Exception {
     addDeleteMediaAlbumProcesses(albumPk);
-    final Collection<NodeDetail> childrens = getNodeBm().getChildrenDetails(albumPk);
+    final Collection<NodeDetail> childrens = getNodeService().getChildrenDetails(albumPk);
     for (final NodeDetail node : childrens) {
       addDeleteAlbumProcesses(node.getNodePK());
     }
-    getNodeBm().removeNode(albumPk);
+    getNodeService().removeNode(albumPk);
   }
 
   /**
@@ -340,10 +344,10 @@ public class GalleryProcessManagement {
    * @param albumPk
    * @throws Exception
    */
-  private void addDeleteMediaAlbumProcesses(final NodePK albumPk) throws Exception {
-    for (final Media media : getGalleryBm()
+  private void addDeleteMediaAlbumProcesses(final NodePK albumPk) {
+    for (final Media media : getGalleryService()
         .getAllMedia(albumPk, MediaCriteria.VISIBILITY.FORCE_GET_ALL)) {
-      Collection<String> albumIds = getGalleryBm().getAlbumIdsOf(media);
+      Collection<String> albumIds = getGalleryService().getAlbumIdsOf(media);
       if (albumIds.size() > 1) {
         // the image is in several albums
         // delete only the link between it and album to delete
@@ -363,25 +367,15 @@ public class GalleryProcessManagement {
    * Gets the GalleryService Service
    * @return
    */
-  private static GalleryService getGalleryBm() {
-    try {
+  private static GalleryService getGalleryService() {
       return ServiceProvider.getService(GalleryService.class);
-    } catch (final Exception e) {
-      throw new GalleryRuntimeException("GalleryProcessBuilder.getGalleryBm()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
   }
 
   /**
    * Gets the Node service
    * @return
    */
-  private static NodeService getNodeBm() {
-    try {
+  private static NodeService getNodeService() {
       return NodeService.get();
-    } catch (final Exception e) {
-      throw new GalleryRuntimeException("GalleryProcessBuilder.getNodeService()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
   }
 }

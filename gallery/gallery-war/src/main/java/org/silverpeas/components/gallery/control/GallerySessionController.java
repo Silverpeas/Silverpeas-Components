@@ -55,8 +55,6 @@ import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.importexport.ExportDescriptor;
 import org.silverpeas.core.importexport.ExportException;
 import org.silverpeas.core.importexport.ImportExportDescriptor;
@@ -73,7 +71,6 @@ import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.notification.user.client.UserRecipient;
 import org.silverpeas.core.pdc.pdc.model.SearchContext;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.Link;
@@ -107,7 +104,6 @@ import static org.silverpeas.core.cache.service.CacheServiceProvider.getSessionC
 
 public final class GallerySessionController extends AbstractComponentSessionController {
 
-  private static final String ERROR_MSG = "root.EX_CANT_GET_REMOTE_OBJECT";
   private static final String SUBJECT_NOTIF = "gallery.orderNotifAskSubject";
   private String currentAlbumId = "0";
   private AlbumDetail currentAlbum = getAlbum(currentAlbumId);
@@ -115,12 +111,12 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   private MediaResolution displayedMediaResolution = MediaResolution.SMALL;
   private MediaSort sort = MediaSort.CreationDateDesc;
   private String currentOrderId = "0";
-  private List<String> listSelected = new ArrayList<String>();
+  private List<String> listSelected = new ArrayList<>();
   private boolean isViewNotVisible = false;
   // manage search keyword
   private String searchKeyWord = "";
-  private List<Media> searchResultListMedia = new ArrayList<Media>();
-  private List<Media> restrictedListMedia = new ArrayList<Media>();
+  private List<Media> searchResultListMedia = new ArrayList<>();
+  private List<Media> restrictedListMedia = new ArrayList<>();
   private boolean isSearchResult = false;
   private QueryDescription query = new QueryDescription();
   private SearchContext pdcSearchContext;
@@ -133,14 +129,11 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   private int indexOfCurrentPage = 0;
   private int nbMediasPerPage = GalleryComponentSettings.getNbMediaDisplayedPerPage();
   // manage basket case (contains list of media identifier)
-  private List<String> basket = new ArrayList<String>();
+  private List<String> basket = new ArrayList<>();
   private static final SettingBundle DEFAULT_SETTINGS =
       ResourceLocator.getSettingBundle("org.silverpeas.gallery.settings.metadataSettings");
   private static final String MULTILANG_GALLERY_BUNDLE =
       "org.silverpeas.gallery.multilang.galleryBundle";
-
-
-  private SettingBundle settings = DEFAULT_SETTINGS;
 
   /**
    * Standard Session Controller Constructeur
@@ -170,8 +163,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     try {
       return getMediaService().getLastRegisteredMedia(getComponentId());
     } catch (Exception e) {
-      throw new GalleryRuntimeException("GallerySessionController.getLastRegistredMedia()",
-          SilverpeasRuntimeException.ERROR, ERROR_MSG, e);
+      throw new GalleryRuntimeException(e);
     }
   }
 
@@ -186,8 +178,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
       silverObjectId = getMediaService()
           .getSilverObjectId(new MediaPK(objectId, getSpaceId(), getComponentId()));
     } catch (Exception e) {
-      SilverTrace.error("gallery", "GallerySessionController.getSilverObjectId()",
-          "root.EX_CANT_GET_LANGUAGE_RESOURCE", "objectId=" + objectId, e);
+      SilverLogger.getLogger(this).error(e);
     }
     return silverObjectId;
   }
@@ -212,8 +203,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
       album = getMediaService().getAlbum(nodePK);
       sort(album.getMedia());
     } catch (Exception e) {
-      throw new GalleryRuntimeException("GallerySessionController.getAlbum()",
-          SilverpeasRuntimeException.ERROR, ERROR_MSG, e);
+      throw new GalleryRuntimeException(e);
     }
     return album;
   }
@@ -224,8 +214,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     try {
       album = getMediaService().getAlbum(nodePK);
     } catch (Exception e) {
-      throw new GalleryRuntimeException("GallerySessionController.getAlbumLight()",
-          SilverpeasRuntimeException.ERROR, ERROR_MSG, e);
+      throw new GalleryRuntimeException(e);
     }
     return album;
   }
@@ -237,8 +226,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
       setRestrictedListMedia(media);
       return media;
     } catch (Exception e) {
-      throw new GalleryRuntimeException("GallerySessionController.getNotVisible()",
-          SilverpeasRuntimeException.ERROR, ERROR_MSG, e);
+      throw new GalleryRuntimeException(e);
     }
   }
 
@@ -246,8 +234,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     try {
       return getMediaService().getAllAlbums(getComponentId());
     } catch (Exception e) {
-      throw new GalleryRuntimeException("GallerySessionController.getAlbum()",
-          SilverpeasRuntimeException.ERROR, ERROR_MSG, e);
+      throw new GalleryRuntimeException(e);
     }
   }
 
@@ -295,8 +282,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
           .deleteAlbum(getUserDetail(), getComponentId(), getAlbum(albumId).getNodePK());
       goToAlbum(parentId);
     } catch (Exception e) {
-      throw new GalleryRuntimeException("GGallerySessionController.deleteAlbum()",
-          SilverpeasRuntimeException.ERROR, ERROR_MSG, e);
+      throw new GalleryRuntimeException(e);
     }
   }
 
@@ -342,7 +328,6 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   }
 
   private Media getPreviousOrNext(boolean isPreviousRequired) {
-    String type = isPreviousRequired ? "Previous" : "Next";
     int offset = isPreviousRequired ? -1 : 1;
     Media media;
     try {
@@ -355,8 +340,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
       rang = newRang;
 
     } catch (Exception e) {
-      throw new GalleryRuntimeException("GallerySessionController.get" + type + "()",
-          SilverpeasException.ERROR, ERROR_MSG, e);
+      throw new GalleryRuntimeException(e);
     }
     return media;
   }
@@ -379,8 +363,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
 
       return createdMedia.getId();
     } catch (Exception e) {
-      throw new GalleryRuntimeException("GallerySessionController.createMedia()",
-          SilverpeasRuntimeException.ERROR, ERROR_MSG, e);
+      throw new GalleryRuntimeException(e);
     }
   }
 
@@ -421,8 +404,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
       loadCurrentAlbum();
 
     } catch (Exception e) {
-      throw new GalleryRuntimeException("GallerySessionController.updateMedia()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_ADD_METADATA", e);
+      throw new GalleryRuntimeException(e);
     }
   }
 
@@ -436,8 +418,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
       getMediaService().deleteMedia(getUserDetail(), getComponentId(), mediaIds);
 
     } catch (Exception e) {
-      throw new GalleryRuntimeException("GallerySessionController.deleteMedia()",
-          SilverpeasRuntimeException.ERROR, ERROR_MSG, e);
+      throw new GalleryRuntimeException(e);
     }
 
     // Reloading the album to take into account the deletion.
@@ -579,7 +560,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     if (StringUtil.isDefined(formName)) {
       try {
         String xmlFormShortName =
-            formName.substring(formName.indexOf("/") + 1, formName.indexOf("."));
+            formName.substring(formName.indexOf('/') + 1, formName.indexOf('.'));
         getPublicationTemplateManager()
             .getPublicationTemplate(getComponentId() + ":" + xmlFormShortName, formName);
       } catch (PublicationTemplateException e) {
@@ -617,13 +598,13 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     query.setSearchingUser(getUserId());
     query.addComponent(getComponentId());
 
-    Collection<Media> result = new ArrayList<Media>();
+    Collection<Media> result = new ArrayList<>();
     try {
       result = getMediaService().search(query);
       // mise à jour de la liste
       isSearchResult = true;
     } catch (Exception e) {
-      SilverTrace.warn("gallery", "GallerySessionControler.search", "Gallery search error", e);
+      SilverLogger.getLogger(this).warn(e);
     }
     // sauvegarde de la recherche
     setQuery(query);
@@ -849,7 +830,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
 
       Collection<ClipboardSelection> clipObjects = getClipboardSelectedObjects();
       Map<Object, ClipboardSelection> clipObjectPerformed =
-          new HashMap<Object, ClipboardSelection>();
+          new HashMap<>();
       for (ClipboardSelection clipObject : clipObjects) {
         if (clipObject.isDataFlavorSupported(MediaSelection.MediaFlavor)) {
           Media media = (Media) clipObject.getTransferData(MediaSelection.MediaFlavor);
@@ -871,8 +852,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
       getMediaService().paste(getUserDetail(), getComponentId(), delegate);
 
     } catch (Exception e) {
-      throw new GalleryRuntimeException("GallerySessionController.paste()",
-          SilverpeasRuntimeException.ERROR, "gallery.EX_PASTE_ERROR", e);
+      throw new GalleryRuntimeException(e);
     }
     clipboardPasteDone();
   }
@@ -1026,7 +1006,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   }
 
   public List<Media> getBasketMedias() {
-    List<Media> medias = new ArrayList<Media>();
+    List<Media> medias = new ArrayList<>();
     if (!basket.isEmpty()) {
       for (String mediaId : basket) {
         medias.add(getMediaById(mediaId));
@@ -1112,7 +1092,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
 
   public List<MetaData> getMetaDataKeys() {
     List<MetaData> metaDatas = new ArrayList<>();
-    settings = ResourceLocator.getSettingBundle(
+    SettingBundle settings = ResourceLocator.getSettingBundle(
         "org.silverpeas.gallery.settings.metadataSettings_" + getComponentId());
     if (!settings.exists()) {
       settings = DEFAULT_SETTINGS;
@@ -1127,27 +1107,32 @@ public final class GallerySessionController extends AbstractComponentSessionCont
         label = getMetadataResources().getString(label);
         boolean isSearch = StringUtil.getBooleanValue(settings.getString(value + "_SEARCH"));
         if (isSearch) {
-          boolean isDate = StringUtil.getBooleanValue(settings.getString(value + "_DATE"));
-          MetaData metaData = new MetaData();
-          metaData.setProperty(property);
-          metaData.setDate(isDate);
-          metaData.setLabel(label);
-          // rechercher sa valeur dans la query (résultat de la recherche)
-          List<FieldDescription> metadataValue = query.getMultiFieldQuery();
-          if (metadataValue != null) {
-            for (FieldDescription field : metadataValue) {
-              if (field.getFieldName().equals("IPTC_" + metaData.getProperty())) {
-                metaData.setValue(field.getContent());
-              }
-
-            }
-          }
-          // ajout de cette metadata à la liste
-          metaDatas.add(metaData);
+          setMetadata(metaDatas, settings, value, property, label);
         }
       }
     }
     return metaDatas;
+  }
+
+  private void setMetadata(final List<MetaData> metaDatas, final SettingBundle settings,
+      final String value, final String property, final String label) {
+    boolean isDate = StringUtil.getBooleanValue(settings.getString(value + "_DATE"));
+    MetaData metaData = new MetaData();
+    metaData.setProperty(property);
+    metaData.setDate(isDate);
+    metaData.setLabel(label);
+    // rechercher sa valeur dans la query (résultat de la recherche)
+    List<FieldDescription> metadataValue = query.getMultiFieldQuery();
+    if (metadataValue != null) {
+      for (FieldDescription field : metadataValue) {
+        if (field.getFieldName().equals("IPTC_" + metaData.getProperty())) {
+          metaData.setValue(field.getContent());
+        }
+
+      }
+    }
+    // ajout de cette metadata à la liste
+    metaDatas.add(metaData);
   }
 
   public void updateOrder(Order order) {
@@ -1255,8 +1240,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     try {
       getMediaService().sortAlbums(albumPKs);
     } catch (Exception e) {
-      throw new GalleryRuntimeException("GallerySessionController.sortAlbums()",
-          SilverpeasRuntimeException.ERROR, ERROR_MSG, e);
+      throw new GalleryRuntimeException(e);
     }
   }
 
@@ -1283,8 +1267,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
       NotificationSender notifSender = new NotificationSender(getComponentId());
       notifSender.notifyUser(notifMetaData);
     } catch (NotificationManagerException e) {
-      throw new GalleryRuntimeException("GallerySessionController.notifyUsers()",
-          SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
+      throw new GalleryRuntimeException(e);
     }
   }
 
@@ -1352,7 +1335,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
       ImportExportDescriptor exportDesc =
           new ExportDescriptor().withParameter(GalleryExporter.EXPORT_FOR_USER, getUserDetail())
               .withParameter(GalleryExporter.EXPORT_RESOLUTION, mediaResolution);
-      List<Media> medias = new ArrayList<Media>();
+      List<Media> medias = new ArrayList<>();
       for (String photoId : basket) {
         medias.add(getMediaById(photoId));
       }
@@ -1393,7 +1376,8 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   }
 
   public PublicationTemplate getTemplate() throws PublicationTemplateException {
-    return getTemplate(getXMLFormName());
+    final String formName = getXMLFormName();
+    return getTemplate(formName == null ? "" : formName);
   }
 
   public PublicationTemplate getOrderTemplate() throws PublicationTemplateException {
@@ -1404,7 +1388,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     PublicationTemplate pub = null;
     if (StringUtil.isDefined(fileName)) {
       String xmlFormShortName =
-          fileName.substring(fileName.indexOf("/") + 1, fileName.indexOf("."));
+          fileName.substring(fileName.indexOf('/') + 1, fileName.indexOf('.'));
       String registerId = getComponentId() + ":" + xmlFormShortName;
       final String sessionCacheKey = this.getClass().getName() + registerId;
       SimpleCache sessionCache = getSessionCacheService().getCache();

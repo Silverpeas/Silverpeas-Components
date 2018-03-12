@@ -24,7 +24,6 @@
 package org.silverpeas.components.kmelia.notification;
 
 import org.silverpeas.components.kmelia.model.KmaxRuntimeException;
-import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
@@ -40,8 +39,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-
-import static org.silverpeas.core.exception.SilverpeasRuntimeException.ERROR;
 
 /**
  * @author Yohann Chastagnier
@@ -66,22 +63,16 @@ public abstract class AbstractKmeliaUserNotification<T> extends AbstractTemplate
     return OrganizationControllerProvider.getOrganisationController();
   }
 
-  protected NodeService getNodeBm() {
-    try {
-      return ServiceProvider.getService(NodeService.class);
-    } catch (final Exception e) {
-      throw new KmeliaRuntimeException("AbstractKmeliaNotificationBuilder.getNodeService()", ERROR,
-          "kmelia.EX_IMPOSSIBLE_DE_FABRIQUER_NODEBM_HOME", e);
-    }
+  protected NodeService getNodeService() {
+    return ServiceProvider.getService(NodeService.class);
   }
 
   protected NodeDetail getNodeHeader(final NodePK pk) {
     NodeDetail nodeDetail;
     try {
-      nodeDetail = getNodeBm().getHeader(pk);
+      nodeDetail = getNodeService().getHeader(pk);
     } catch (final Exception e) {
-      throw new KmaxRuntimeException("AbstractKmeliaNotificationBuilder.getNodeHeader()", ERROR,
-          "kmax.EX_IMPOSSIBLE_DOBTENIR_LE_NOEUD", e);
+      throw new KmaxRuntimeException(e);
     }
     return nodeDetail;
   }
@@ -94,15 +85,15 @@ public abstract class AbstractKmeliaUserNotification<T> extends AbstractTemplate
     // get the path of the topic where the publication is classified
     String htmlPath = "";
     if (nodePK != null) {
-      final List<NodeDetail> path = (List<NodeDetail>) getNodeBm().getPath(nodePK);
-      if (path.size() > 0) {
+      final List<NodeDetail> path = (List<NodeDetail>) getNodeService().getPath(nodePK);
+      if (!path.isEmpty()) {
         // remove root topic "Accueil"
         path.remove(path.size() - 1);
       }
       htmlPath = getSpacesPath(nodePK.getInstanceId(), language)
           + getComponentLabel(nodePK.getInstanceId(), language);
       if (!path.isEmpty()) {
-        htmlPath += " > " + displayPath(path, 10, language);
+        htmlPath += " > " + displayPath(path, language);
       }
     }
     return htmlPath;
@@ -131,8 +122,7 @@ public abstract class AbstractKmeliaUserNotification<T> extends AbstractTemplate
     return componentLabel;
   }
 
-  private String displayPath(final Collection<NodeDetail> path, final int beforeAfter,
-      final String language) {
+  private String displayPath(final Collection<NodeDetail> path, final String language) {
     final StringBuilder pathString = new StringBuilder();
     boolean first = true;
 

@@ -89,6 +89,9 @@ import static org.silverpeas.core.workflow.util.WorkflowUtil.getItemByName;
  */
 public class ProcessManagerSessionController extends AbstractComponentSessionController {
 
+  private static final String PROCESS_MANAGER_SESSION_CONTROLLER =
+      "ProcessManagerSessionController";
+
   /**
    * Builds and init a new session controller
    * @param mainSessionCtrl
@@ -110,7 +113,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     // the user roles are given by the context.
     userRoles = context.getCurrentProfile();
     if (userRoles == null || userRoles.length == 0) {
-      throw new ProcessManagerException("ProcessManagerSessionController",
+      throw new ProcessManagerException(PROCESS_MANAGER_SESSION_CONTROLLER,
           "processManager.UNAUTHORIZED_USER");
     }
     currentRole = userRoles[0];
@@ -237,18 +240,14 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       try {
         instance = Workflow.getProcessInstanceManager().getProcessInstance(instanceId);
       } catch (WorkflowException e) {
-        throw new ProcessManagerException("ProcessManagerSessionControler",
+        throw new ProcessManagerException(PROCESS_MANAGER_SESSION_CONTROLLER,
             "processManager.UNKNOWN_PROCESS_INSTANCE", instanceId, e);
       }
-      if (isAllowed(instance)) {
-        currentProcessInstance = instance;
-      } else {
-        throw new ProcessManagerException("ProcessManagerSessionController",
-            "processManager.NO_ACCESS_TO_PROCESS_INSTANCE");
-      }
+      currentProcessInstance = instance;
+
     }
     if (currentProcessInstance == null) {
-      throw new ProcessManagerException("ProcessManagerSessionController",
+      throw new ProcessManagerException(PROCESS_MANAGER_SESSION_CONTROLLER,
           "processManager.NO_CURRENT_PROCESS_INSTANCE");
     }
     return currentProcessInstance;
@@ -305,7 +304,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
           .getProcessInstances(peasId, currentUser, currentRole, getUserRoles(), groupIds);
       currentProcessList = getCurrentFilter().filter(processList, currentRole, getLanguage());
     } catch (WorkflowException e) {
-      throw new ProcessManagerException("ProcessManagerSessionController",
+      throw new ProcessManagerException(PROCESS_MANAGER_SESSION_CONTROLLER,
           "processManager.GET_PROCESS_LIST_FAILED", peasId, e);
     }
     return currentProcessList;
@@ -319,7 +318,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     try {
       return Workflow.getTaskManager().getRoleNameFromExternalTodoId(externalTodoId);
     } catch (WorkflowException e) {
-      throw new ProcessManagerException("ProcessManagerSessionController",
+      throw new ProcessManagerException(PROCESS_MANAGER_SESSION_CONTROLLER,
           "processManager.GET_ROLENAME_FROM_TODO_FAILED", "externalTodoId : " + externalTodoId, e);
     }
   }
@@ -335,7 +334,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     try {
       return Workflow.getTaskManager().getProcessInstanceIdFromExternalTodoId(externalTodoId);
     } catch (WorkflowException e) {
-      throw new ProcessManagerException("ProcessManagerSessionController",
+      throw new ProcessManagerException(PROCESS_MANAGER_SESSION_CONTROLLER,
           "processManager.GET_PROCESS_FROM_TODO_FAILED", "externalTodoId : " + externalTodoId, e);
     }
   }
@@ -570,16 +569,14 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
           Field field = currentProcessInstance.getField(item.getName());
           String role = relatedUser.getRole();
           if (field instanceof UserField) {
-            if (StringUtil.isDefined(role) && currentRole.equals(role)) {
-              users.add(field.getStringValue());
-            } else if (StringUtil.isNotDefined(role)) {
+            if ((StringUtil.isDefined(role) && currentRole.equals(role)) ||
+                StringUtil.isNotDefined(role)) {
               users.add(field.getStringValue());
             }
           } else if (field instanceof MultipleUserField) {
             MultipleUserField multipleUserField = (MultipleUserField) field;
-            if (StringUtil.isDefined(role) && currentRole.equals(role)) {
-              users.addAll(Arrays.asList(multipleUserField.getUserIds()));
-            } else if (StringUtil.isNotDefined(role)) {
+            if ((StringUtil.isDefined(role) && currentRole.equals(role)) ||
+                StringUtil.isNotDefined(role)) {
               users.addAll(Arrays.asList(multipleUserField.getUserIds()));
             }
           }
@@ -815,7 +812,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     try {
       return new XmlForm(new QuestionTemplate(getLanguage(), readonly));
     } catch (FormException fe) {
-      throw new ProcessManagerException("ProcessManagerSessionController",
+      throw new ProcessManagerException(PROCESS_MANAGER_SESSION_CONTROLLER,
           "processManager.GET_QUESTION_FORM_FAILED", fe);
     }
   }
@@ -877,7 +874,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       }
       return rt;
     } catch (FormException | WorkflowException ex) {
-      throw new ProcessManagerException("ProcessManagerSessionController",
+      throw new ProcessManagerException(PROCESS_MANAGER_SESSION_CONTROLLER,
           "processManager.GET_ASSIGN_TEMPLATE_FAILED", ex);
     }
   }
@@ -889,7 +886,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     try {
       return new XmlForm(getAssignTemplate());
     } catch (FormException ex) {
-      throw new ProcessManagerException("ProcessManagerSessionController",
+      throw new ProcessManagerException(PROCESS_MANAGER_SESSION_CONTROLLER,
           "processManager.GET_ASSIGN_FORM_FAILED", ex);
     }
   }
@@ -969,7 +966,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       // update folder
       updateFolder(changes);
     } catch (WorkflowException | FormException we) {
-      throw new ProcessManagerException("ProcessManagerSessionController",
+      throw new ProcessManagerException(PROCESS_MANAGER_SESSION_CONTROLLER,
           "processManager.RE_ASSIGN_FAILED", we);
     }
   }
@@ -1028,6 +1025,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
         Thread.sleep(duration);
       } catch (InterruptedException ie) {
         SilverLogger.getLogger(this).error(ie.getLocalizedMessage(), ie);
+        Thread.currentThread().interrupt();
       }
     }
   }
@@ -1066,9 +1064,9 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    * @return an array of 2 String { action.name, state.name }, null if no action found
    */
   public String[] getDeleteAction() {
-    Task[] tasks = null;
-    State state = null;
-    Action[] actions = null;
+    Task[] tasks;
+    State state;
+    Action[] actions;
 
     try {
       tasks = getTasks();
@@ -1086,10 +1084,10 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
         }
       }
 
-      return null;
+      return new String[0];
     } catch (ProcessManagerException e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      return null;
+      return new String[0];
     }
   }
 
@@ -1121,7 +1119,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    * Returns the form associated to the named action. Returns null if this action has no form.
    * Throws an exception if the action is unknown.
    */
-  public Form getActionForm(String stateName, String actionName) throws ProcessManagerException {
+  public Form getActionForm(String actionName) throws ProcessManagerException {
     try {
       return processModel.getPublicationForm(actionName, currentRole, getLanguage());
     } catch (WorkflowException e) {
@@ -1133,7 +1131,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    * Returns a new DataRecord filled whith the folder data and which will be be completed by the
    * action form.
    */
-  public DataRecord getActionRecord(String stateName, String actionName)
+  public DataRecord getActionRecord(String actionName)
       throws ProcessManagerException {
     try {
       return currentProcessInstance.getNewActionRecord(actionName);
@@ -1520,7 +1518,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     try {
       return currentProcessInstance.getSavedStep(getUserId());
     } catch (WorkflowException e) {
-      throw new ProcessManagerException("ProcessManagerSessionController",
+      throw new ProcessManagerException(PROCESS_MANAGER_SESSION_CONTROLLER,
           "processManager.GET_SAVED_STEP_FAILED", e);
     }
   }
@@ -1534,7 +1532,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     try {
       return savedStep.getActionRecord();
     } catch (WorkflowException e) {
-      throw new ProcessManagerException("ProcessManagerSessionController",
+      throw new ProcessManagerException(PROCESS_MANAGER_SESSION_CONTROLLER,
           "processManager.GET_SAVED_STEP_DATARECORD_FAILED", e);
     }
   }
@@ -1614,7 +1612,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
       return new XmlForm(userInfos.toRecordTemplate(currentRole, getLanguage(), false));
     } catch (FormException | WorkflowException we) {
-      throw new ProcessManagerException("ProcessManagerSessionController",
+      throw new ProcessManagerException(PROCESS_MANAGER_SESSION_CONTROLLER,
           "processManager.GET_USERSETTINGS_FORM_FAILED", we);
     }
   }
@@ -1626,7 +1624,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     try {
       return processModel.getNewUserInfosRecord(currentRole, getLanguage());
     } catch (WorkflowException we) {
-      throw new ProcessManagerException("ProcessManagerSessionController",
+      throw new ProcessManagerException(PROCESS_MANAGER_SESSION_CONTROLLER,
           "processManager.GET_EMPTY_USERSETTINGS_RECORD_FAILED", we);
     }
   }
@@ -1642,7 +1640,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
       return data;
     } catch (WorkflowException we) {
-      throw new ProcessManagerException("ProcessManagerSessionController",
+      throw new ProcessManagerException(PROCESS_MANAGER_SESSION_CONTROLLER,
           "processManager.GET_EMPTY_USERSETTINGS_RECORD_FAILED", we);
     }
   }
@@ -1656,7 +1654,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
           processModel.getUserInfos().toRecordTemplate(currentRole, getLanguage(), false);
       UserSettingsService.get().update(userSettings, data, userSettingsTemplate);
     } catch (WorkflowException we) {
-      throw new ProcessManagerException("ProcessManagerSessionController",
+      throw new ProcessManagerException(PROCESS_MANAGER_SESSION_CONTROLLER,
           "processManager.SAVE_USERSETTINGS_FAILED", we);
     }
   }
@@ -1702,7 +1700,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
             .warn("Security alert from userId {0} on processId {1}", getUserId(), processId);
       }
     } catch (WorkflowException we) {
-      throw new ProcessManagerException("ProcessManagerSessionController",
+      throw new ProcessManagerException(PROCESS_MANAGER_SESSION_CONTROLLER,
           "processManager.REMOVE_PROCESS_FAILED", we);
     }
   }
@@ -1721,7 +1719,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
           }
         }
       } catch (WorkflowException e) {
-        throw new ProcessManagerException("ProcessManagerSessionController",
+        throw new ProcessManagerException(PROCESS_MANAGER_SESSION_CONTROLLER,
             "checkUserIsInstanceSupervisor", e);
       }
 
@@ -1736,17 +1734,9 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     try {
       return Workflow.getErrorManager().getErrorsOfInstance(processId);
     } catch (WorkflowException we) {
-      throw new ProcessManagerException("ProcessManagerSessionController",
+      throw new ProcessManagerException(PROCESS_MANAGER_SESSION_CONTROLLER,
           "processManager.GET_PROCESS_ERRORS_FAILED", we);
     }
-  }
-
-  /**
-   * Returns true if : the instance is built from the process model of this session. the user is
-   * allowed to access to this instance with his current role.
-   */
-  private boolean isAllowed(ProcessInstance instance) {
-    return true; // xoxox
   }
 
   /**
@@ -1872,7 +1862,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       return csvRows;
     } catch (FormException e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      return null;
+      return Collections.emptyList();
     }
   }
 
@@ -1916,7 +1906,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       }
       csvRows.add(csvHeader);
 
-      StringBuilder csvRow = new StringBuilder();
+      StringBuilder csvRow;
       for (final DataRecord aProcessList : processList) {
         instance = (ProcessInstanceRowRecord) aProcessList;
         if (instance != null) {
@@ -1947,7 +1937,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       return csvRows;
     } catch (FormException e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      return null;
+      return Collections.emptyList();
     }
   }
 
@@ -1960,8 +1950,8 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
         rt.addFieldTemplate(fieldTemplate);
       }
       DataRecord folder = rt.getEmptyRecord();
-      for (String fieldName : changes.keySet()) {
-        folder.getField(fieldName).setStringValue(changes.get(fieldName));
+      for (Map.Entry<String, String> fieldEntry : changes.entrySet()) {
+        folder.getField(fieldEntry.getKey()).setStringValue(fieldEntry.getValue());
       }
       currentProcessInstance.updateFolder(folder);
     }

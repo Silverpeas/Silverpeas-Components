@@ -34,7 +34,6 @@ import org.odftoolkit.simple.text.Paragraph;
 import org.odftoolkit.simple.text.Section;
 import org.odftoolkit.simple.text.list.ListItem;
 import org.silverpeas.components.kmelia.model.KmeliaPublication;
-import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
 import org.silverpeas.components.kmelia.service.KmeliaService;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
@@ -54,7 +53,6 @@ import org.silverpeas.core.contribution.converter.HTMLConverter;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.pdc.pdc.model.ClassifyValue;
@@ -207,8 +205,7 @@ public class ODTDocumentBuilder {
   private TextDocument loadTemplate() throws Exception {
     String exportTemplateDir = FileRepositoryManager.getExportTemplateRepository();
     String templateDoc = settings.getString(DOCUMENT_TEMPLATE);
-    TextDocument template = TextDocument.loadDocument(new File(exportTemplateDir + templateDoc));
-    return template;
+    return TextDocument.loadDocument(new File(exportTemplateDir + templateDoc));
   }
 
   private void translate(final TextDocument odtDocument) {
@@ -285,7 +282,8 @@ public class ODTDocumentBuilder {
       if (p != null) {
         content.removeParagraph(p);
       }
-      File htmlFile = null, odtConvertedHtmlFile = null;
+      File htmlFile = null;
+      File odtConvertedHtmlFile = null;
       try {
         htmlFile = new File(
             FileRepositoryManager.getTemporaryPath() + UUID.randomUUID().toString() + ".html");
@@ -427,33 +425,47 @@ public class ODTDocumentBuilder {
         classification.removeParagraph(p);
       }
       for (ClassifyPosition aPosition : positions) {
-        classification.addParagraph("Position " + rank++);
-        org.odftoolkit.simple.text.list.List ul = odtDocument.addList();
-        for (ClassifyValue positionValue : aPosition.getValues()) {
-          StringBuilder pathToRender = new StringBuilder();
-          List<Value> pathNodes = positionValue.getFullPath();
-          int pathLength = pathNodes.size();
-          if (pathLength > pathMaxLength) {
-            for (int i = 0; i < pathNodeMinNb; i++) {
-              pathToRender.append(pathNodes.get(i).getName(getLanguage())).append(pathSeparator);
-            }
-            pathToRender.append("...").append(pathSeparator);
-            for (int i = pathNodeMinNb; i > 0; i--) {
-              pathToRender.append(pathNodes.get(pathLength - i).getName(getLanguage()))
-                  .append(pathSeparator);
-            }
-          } else {
-            for (Value pathNode : pathNodes) {
-              pathToRender.append(pathNode.getName(getLanguage())).append(pathSeparator);
-            }
-          }
-          if (!pathSeparator.equals(pathToRender.toString()) && pathToRender.length() > 0) {
-            ul.addItem(pathToRender.substring(0, pathToRender.length() - pathSeparator.length()));
-          }
-        }
-        classification.getOdfElement().appendChild(ul.getOdfElement().cloneNode(true));
-        ul.remove();
+        rank = buildPosition(odtDocument, classification, pathMaxLength, pathNodeMinNb,
+            pathSeparator, rank, aPosition);
       }
+    }
+  }
+
+  private int buildPosition(final TextDocument odtDocument, final Section classification,
+      final int pathMaxLength, final int pathNodeMinNb, final String pathSeparator, int rank,
+      final ClassifyPosition aPosition) {
+    classification.addParagraph("Position " + rank++);
+    org.odftoolkit.simple.text.list.List ul = odtDocument.addList();
+    for (ClassifyValue positionValue : aPosition.getValues()) {
+      buildPositionValue(pathMaxLength, pathNodeMinNb, pathSeparator, ul, positionValue);
+    }
+    classification.getOdfElement().appendChild(ul.getOdfElement().cloneNode(true));
+    ul.remove();
+    return rank;
+  }
+
+  private void buildPositionValue(final int pathMaxLength, final int pathNodeMinNb,
+      final String pathSeparator, final org.odftoolkit.simple.text.list.List ul,
+      final ClassifyValue positionValue) {
+    StringBuilder pathToRender = new StringBuilder();
+    List<Value> pathNodes = positionValue.getFullPath();
+    int pathLength = pathNodes.size();
+    if (pathLength > pathMaxLength) {
+      for (int i = 0; i < pathNodeMinNb; i++) {
+        pathToRender.append(pathNodes.get(i).getName(getLanguage())).append(pathSeparator);
+      }
+      pathToRender.append("...").append(pathSeparator);
+      for (int i = pathNodeMinNb; i > 0; i--) {
+        pathToRender.append(pathNodes.get(pathLength - i).getName(getLanguage()))
+            .append(pathSeparator);
+      }
+    } else {
+      for (Value pathNode : pathNodes) {
+        pathToRender.append(pathNode.getName(getLanguage())).append(pathSeparator);
+      }
+    }
+    if (!pathSeparator.equals(pathToRender.toString()) && pathToRender.length() > 0) {
+      ul.addItem(pathToRender.substring(0, pathToRender.length() - pathSeparator.length()));
     }
   }
 
@@ -471,7 +483,7 @@ public class ODTDocumentBuilder {
     return "0".equals(isTree) || "1".equals(isTree);
   }
 
-  private String getTopicIdOf(final KmeliaPublication publication) throws Exception {
+  private String getTopicIdOf(final KmeliaPublication publication) {
     String theTopicId = this.topicIdToConsider;
     if (theTopicId == null) {
       String componentId = publication.getPk().getInstanceId();
@@ -505,12 +517,7 @@ public class ODTDocumentBuilder {
    * @return an instance of KmeliaService.
    */
   protected KmeliaService getKmeliaService() {
-    try {
-      return ServiceProvider.getService(KmeliaService.class);
-    } catch (Exception e) {
-      throw new KmeliaRuntimeException(getClass().getSimpleName() + ".getKmeliaService()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
+    return ServiceProvider.getService(KmeliaService.class);
   }
 
   /**

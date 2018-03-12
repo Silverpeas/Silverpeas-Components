@@ -31,7 +31,6 @@ import org.silverpeas.components.gallery.model.MediaPK;
 import org.silverpeas.components.gallery.model.Photo;
 import org.silverpeas.components.gallery.service.GalleryService;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.io.file.SilverpeasFileProvider;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.util.ServiceProvider;
@@ -64,6 +63,7 @@ public class GalleryInWysiwygRouter extends HttpServlet {
   @Inject
   private OrganizationController organizationController;
 
+  @Override
   public void init(ServletConfig config) {
     try {
       super.init(config);
@@ -72,14 +72,15 @@ public class GalleryInWysiwygRouter extends HttpServlet {
     }
   }
 
+  @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
     doPost(req, res);
   }
 
+  @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
-
 
     String componentId = request.getParameter("ComponentId");
     String albumId = request.getParameter("AlbumId");
@@ -101,7 +102,7 @@ public class GalleryInWysiwygRouter extends HttpServlet {
       // contenu d'un album
       if (StringUtil.isDefined(imageId)) {
         // Display image
-        Photo image = getGalleryBm().getPhoto(new MediaPK(imageId, componentId));
+        Photo image = getGalleryService().getPhoto(new MediaPK(imageId, componentId));
         displayImage(response, image, size, useOriginal);
       } else if (!StringUtil.isDefined(albumId)) {
         // Display albums content
@@ -130,10 +131,9 @@ public class GalleryInWysiwygRouter extends HttpServlet {
    */
   private Collection<AlbumDetail> viewAllAlbums(String componentId) {
     try {
-      return getGalleryBm().getAllAlbums(componentId);
+      return getGalleryService().getAllAlbums(componentId);
     } catch (Exception e) {
-      throw new GalleryRuntimeException("GalleryInWysiwygRouter.viewAllAlbums()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+      throw new GalleryRuntimeException(e);
     }
 
   }
@@ -147,10 +147,9 @@ public class GalleryInWysiwygRouter extends HttpServlet {
   private Collection<Photo> viewPhotosOfAlbum(String componentId, String albumId) {
     try {
       NodePK nodePK = new NodePK(albumId, componentId);
-      return getGalleryBm().getAllPhotos(nodePK);
+      return getGalleryService().getAllPhotos(nodePK);
     } catch (Exception e) {
-      throw new GalleryRuntimeException("GalleryInWysiwygRouter.viewPhotosOfAlbum()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+      throw new GalleryRuntimeException(e);
     }
   }
 
@@ -159,8 +158,6 @@ public class GalleryInWysiwygRouter extends HttpServlet {
     res.setContentType(image.getFileMimeType().getMimeType());
     OutputStream out2 = res.getOutputStream();
     int read;
-    BufferedInputStream input = null;
-
     String fileName = image.getFile(MediaResolution.PREVIEW).getName();
     if (useOriginal) {
       fileName = image.getFileName();
@@ -171,9 +168,8 @@ public class GalleryInWysiwygRouter extends HttpServlet {
     String filePath = FileRepositoryManager.getAbsolutePath(image.getMediaPK().getInstanceId())
         + "image" + image.getId() + File.separator + fileName;
 
-    try {
-      input =
-          new BufferedInputStream(new FileInputStream(SilverpeasFileProvider.getFile(filePath)));
+    try (BufferedInputStream input = new BufferedInputStream(
+        new FileInputStream(SilverpeasFileProvider.getFile(filePath)))) {
       read = input.read();
       while (read != -1) {
         // writes bytes into the response
@@ -186,9 +182,6 @@ public class GalleryInWysiwygRouter extends HttpServlet {
 
       // we must close the in and out streams
       try {
-        if (input != null) {
-          input.close();
-        }
         out2.close();
       } catch (Exception e) {
         SilverLogger.getLogger(this).warn(e);
@@ -196,13 +189,8 @@ public class GalleryInWysiwygRouter extends HttpServlet {
     }
   }
 
-  private GalleryService getGalleryBm() {
-    try {
-      return ServiceProvider.getService(GalleryService.class);
-    } catch (final Exception e) {
-      throw new GalleryRuntimeException("GalleryProcessBuilder.getGalleryBm()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
+  private GalleryService getGalleryService() {
+    return ServiceProvider.getService(GalleryService.class);
   }
 
   private OrganizationController getOrganisationController() {

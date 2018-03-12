@@ -41,7 +41,6 @@ import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.comment.service.CommentServiceProvider;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.exception.EncodingException;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.index.indexing.model.IndexManager;
 import org.silverpeas.core.mylinks.model.LinkDetail;
@@ -53,7 +52,6 @@ import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelp
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.Pair;
@@ -72,6 +70,7 @@ import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.security.AccessControlException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -86,6 +85,10 @@ public final class BlogSessionController extends AbstractComponentSessionControl
 
   private static final int DEFAULT_POST_COUNT = 10;
   private static final String STYLES_CSS = "styles.css";
+  private static final String THE_WALLPAPER_DELETION_FAILED = "The wallpaper {0} deletion failed!";
+  private static final String BANNER_PNG = "banner.png";
+  private static final String BANNER_GIF = "banner.gif";
+  private static final String BANNER_JPG = "banner.jpg";
   private Calendar currentBeginDate = Calendar.getInstance();
   private Calendar currentEndDate = Calendar.getInstance();
   private String serverURL = null;
@@ -392,8 +395,7 @@ public final class BlogSessionController extends AbstractComponentSessionControl
     try {
       this.currentBeginDate.setTime(DateUtil.parse(beginDate));
     } catch (ParseException e) {
-      throw new BlogRuntimeException("BlogSessionController.setCurrentBeginDate()",
-          SilverpeasRuntimeException.ERROR, "blog.DATE_FORMAT_ERROR", e);
+      throw new BlogRuntimeException(e);
     }
   }
 
@@ -401,8 +403,7 @@ public final class BlogSessionController extends AbstractComponentSessionControl
     try {
       this.currentEndDate.setTime(DateUtil.parse(endDate));
     } catch (ParseException e) {
-      throw new BlogRuntimeException("BlogSessionController.setCurrentEndDate()",
-          SilverpeasRuntimeException.ERROR, "blog.DATE_FORMAT_ERROR", e);
+      throw new BlogRuntimeException(e);
     }
   }
 
@@ -464,8 +465,7 @@ public final class BlogSessionController extends AbstractComponentSessionControl
     try {
       return JSONCodec.encode(entities);
     } catch (EncodingException ex) {
-      throw new BlogRuntimeException("BlogSessionController.listAsJSON()",
-          SilverpeasRuntimeException.ERROR, "root.EX_NO_MESSAGE", ex);
+      throw new BlogRuntimeException(ex);
     }
   }
 
@@ -484,8 +484,8 @@ public final class BlogSessionController extends AbstractComponentSessionControl
     }
 
     for (File file : files) {
-      if ("banner.gif".equals(file.getName()) || "banner.jpg".equals(file.getName()) ||
-          "banner.png".equals(file.getName())) {
+      if (BANNER_GIF.equals(file.getName()) || BANNER_JPG.equals(file.getName()) ||
+          BANNER_PNG.equals(file.getName())) {
         this.wallPaper = new WallPaper();
         this.wallPaper.setName(file.getName());
         this.wallPaper.setUrl(FileServerUtils
@@ -516,10 +516,11 @@ public final class BlogSessionController extends AbstractComponentSessionControl
       extension = "jpg";
     }
 
-    if (!"gif".equalsIgnoreCase(extension) && !"jpg".equalsIgnoreCase(extension) && !"png".
-        equalsIgnoreCase(extension)) {
-      throw new BlogRuntimeException("BlogSessionController.saveWallPaperFile()",
-          SilverpeasRuntimeException.ERROR, "blog.EX_EXTENSION_WALLPAPER");
+    if (extension == null ||
+        (!"gif".equalsIgnoreCase(extension) && !"jpg".equalsIgnoreCase(extension) && !"png".
+            equalsIgnoreCase(extension))) {
+      throw new BlogRuntimeException(
+          fileItemWallPaper.getName() + " wallpaper format isn't supported");
     }
 
     //path to create the file
@@ -547,8 +548,7 @@ public final class BlogSessionController extends AbstractComponentSessionControl
               ""));
       this.wallPaper.setSize(FileRepositoryManager.formatFileSize(fileWallPaper.length()));
     } catch (Exception ex) {
-      throw new BlogRuntimeException("BlogSessionController.saveWallPaperFile()",
-          SilverpeasRuntimeException.ERROR, "blog.EX_CREATE_WALLPAPER", ex);
+      throw new BlogRuntimeException(ex);
     }
   }
 
@@ -557,19 +557,25 @@ public final class BlogSessionController extends AbstractComponentSessionControl
    */
   public void removeWallPaperFile() {
     String path = FileRepositoryManager.getAbsolutePath(this.getComponentId());
-    File banner = new File(path, "banner.gif");
-    if (banner.exists()) {
-      banner.delete();
+    File banner = new File(path, BANNER_GIF);
+    try {
+      Files.deleteIfExists(banner.toPath());
+    } catch (IOException e) {
+      SilverLogger.getLogger(this).warn(THE_WALLPAPER_DELETION_FAILED, BANNER_GIF);
     }
 
-    banner = new File(path, "banner.jpg");
-    if (banner.exists()) {
-      banner.delete();
+    banner = new File(path, BANNER_JPG);
+    try {
+      Files.deleteIfExists(banner.toPath());
+    } catch (IOException e) {
+      SilverLogger.getLogger(this).warn(THE_WALLPAPER_DELETION_FAILED, BANNER_JPG);
     }
 
-    banner = new File(path, "banner.png");
-    if (banner.exists()) {
-      banner.delete();
+    banner = new File(path, BANNER_PNG);
+    try {
+      Files.deleteIfExists(banner.toPath());
+    } catch (IOException e) {
+      SilverLogger.getLogger(this).warn(THE_WALLPAPER_DELETION_FAILED, BANNER_PNG);
     }
 
     this.wallPaper = null;
@@ -600,9 +606,7 @@ public final class BlogSessionController extends AbstractComponentSessionControl
         try {
           this.styleSheet.setContent(FileUtils.readFileToString(file, "UTF-8"));
         } catch (IOException e) {
-          SilverTrace
-              .warn("blog", "BlogSessionController.setStyleSheet()", "blog.EX_DISPLAY_STYLESHEET",
-                  e);
+          SilverLogger.getLogger(this).warn(e);
           this.styleSheet.setContent(null);
         }
         break;
@@ -626,8 +630,8 @@ public final class BlogSessionController extends AbstractComponentSessionControl
     //extension
     String extension = FileRepositoryManager.getFileExtension(fileItemStyleSheet.getName());
     if (!"css".equalsIgnoreCase(extension)) {
-      throw new BlogRuntimeException("BlogSessionController.saveStyleSheetFile()",
-          SilverpeasRuntimeException.ERROR, "blog.EX_EXTENSION_STYLESHEET");
+      throw new BlogRuntimeException(
+          fileItemStyleSheet.getName() + " isn't a supported stylesheet");
     }
 
     //path to create the file
@@ -657,8 +661,7 @@ public final class BlogSessionController extends AbstractComponentSessionControl
       setStylesheetContent(fileStyleSheet);
 
     } catch (Exception ex) {
-      throw new BlogRuntimeException("BlogSessionController.saveStyleSheetFile()",
-          SilverpeasRuntimeException.ERROR, "blog.EX_CREATE_STYLESHEET", ex);
+      throw new BlogRuntimeException(ex);
     }
   }
 
@@ -666,8 +669,7 @@ public final class BlogSessionController extends AbstractComponentSessionControl
     try {
       this.styleSheet.setContent(FileUtils.readFileToString(fileStyleSheet, "UTF-8"));
     } catch (IOException e) {
-      SilverTrace.warn("blog", "BlogSessionController.setStylesheetContent()",
-          "blog.EX_DISPLAY_STYLESHEET", e);
+      SilverLogger.getLogger(this).warn(e);
       this.styleSheet.setContent(null);
     }
   }
@@ -678,8 +680,10 @@ public final class BlogSessionController extends AbstractComponentSessionControl
   public void removeStyleSheetFile() {
     String path = FileRepositoryManager.getAbsolutePath(this.getComponentId());
     File styles = new File(path, STYLES_CSS);
-    if (styles.exists()) {
-      styles.delete();
+    try {
+      Files.deleteIfExists(styles.toPath());
+    } catch (IOException e) {
+      SilverLogger.getLogger(this).warn(e);
     }
 
     this.styleSheet = null;

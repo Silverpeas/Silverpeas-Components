@@ -50,13 +50,15 @@ public class UserEventPK implements Serializable {
 
   @Override
   public boolean equals(Object obj) {
-    UserEventPK pk = (UserEventPK) obj;
-    if (userId.equals(pk.getUserId()) &&
-        scheduleEventId.equals(pk.getScheduleEventId())) {
-      return true;
-    } else {
+    if (obj == null)  {
       return false;
     }
+    if (!obj.getClass().equals(this.getClass())) {
+      return false;
+    }
+    UserEventPK pk = (UserEventPK) obj;
+    return userId.equals(pk.getUserId()) &&
+        scheduleEventId.equals(pk.getScheduleEventId());
   }
 
   @Override

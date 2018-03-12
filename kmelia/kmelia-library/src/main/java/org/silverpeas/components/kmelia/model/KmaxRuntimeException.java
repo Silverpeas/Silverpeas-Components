@@ -24,62 +24,21 @@
 
 package org.silverpeas.components.kmelia.model;
 
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.SilverpeasRuntimeException;
 
 public class KmaxRuntimeException extends SilverpeasRuntimeException {
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 2L;
 
-  /**
-   * --------------------------------------------------------------------------
-   * constructors
-   */
-  public KmaxRuntimeException(String callingClass, int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
+
+  public KmaxRuntimeException(final String message) {
+    super(message);
   }
 
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param extraParams
-   */
-  public KmaxRuntimeException(String callingClass, int errorLevel, String message,
-      String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public KmaxRuntimeException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param nested
-   */
-  public KmaxRuntimeException(String callingClass, int errorLevel, String message,
-      Exception nested) {
-    super(callingClass, errorLevel, message, nested);
+  public KmaxRuntimeException(final Throwable cause) {
+    super(cause);
   }
-
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param extraParams
-   * @param nested
-   */
-  public KmaxRuntimeException(String callingClass, int errorLevel, String message,
-      String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  /**
-   * @return
-   */
-  @Override
-  public String getModule() {
-    return "kmax";
-  }
-
 }

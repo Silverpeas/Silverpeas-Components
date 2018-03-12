@@ -20,35 +20,36 @@
  */
 package org.silverpeas.components.kmelia;
 
-import org.silverpeas.core.security.authorization.ComponentAuthorization;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.admin.ObjectType;
-import org.silverpeas.components.kmelia.service.KmeliaService;
-import org.silverpeas.components.kmelia.service.KmeliaHelper;
 import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
-import org.silverpeas.core.node.service.NodeService;
-import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.contribution.publication.service.PublicationService;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.components.kmelia.service.KmeliaHelper;
+import org.silverpeas.components.kmelia.service.KmeliaService;
+import org.silverpeas.core.admin.ObjectType;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.publication.service.PublicationService;
+import org.silverpeas.core.exception.UtilException;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.node.service.NodeService;
+import org.silverpeas.core.security.authorization.ComponentAuthorization;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
-import org.silverpeas.core.exception.UtilException;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.*;
 
@@ -99,11 +100,11 @@ public class KmeliaAuthorization implements ComponentAuthorization {
     }
   }
 
-  private Boolean readFromCache(String objectId, String objectType, String componentId) {
+  private Optional<Boolean> readFromCache(String objectId, String objectType, String componentId) {
     if (cacheEnabled) {
-      return cache.get(objectId + objectType + componentId);
+      return Optional.ofNullable(cache.get(objectId + objectType + componentId));
     }
-    return null;
+    return Optional.empty();
   }
 
   private void writeInCache(String componentId, boolean available) {
@@ -112,11 +113,11 @@ public class KmeliaAuthorization implements ComponentAuthorization {
     }
   }
 
-  private Boolean readFromCache(String componentId) {
+  private Optional<Boolean> readFromCache(String componentId) {
     if (cacheEnabled) {
-      return cache.get(componentId);
+      return Optional.ofNullable(cache.get(componentId));
     }
-    return null;
+    return Optional.empty();
   }
 
   @Override
@@ -140,48 +141,69 @@ public class KmeliaAuthorization implements ComponentAuthorization {
       }
       // Then, check the publication's status and visibility period
       PublicationDetail publication = getPublicationDetail(pk);
-      if (publication != null) {
-        String profile = getProfile(userId, pk);
-        if (!getKmeliaService().isPublicationVisible(publication, SilverpeasRole.from(profile), userId)) {
-          return false;
-        }
-        if (publication.isValid()) {
-          return true;
-        }
-        if (publication.isValidationRequired()) {
-          if (user.isInRole(profile)) {
-            return false;
-          }
-          if (writer.isInRole(profile)) {
-            return publication.isPublicationEditor(userId) || isCoWritingEnable(componentId);
-          }
-          return true;
-        }
-        if (publication.isRefused()) {
-          if (!user.isInRole(profile)) {
-            return publication.isPublicationEditor(userId) || isCoWritingEnable(componentId)
-                || admin.isInRole(profile) || publisher.isInRole(profile);
-          }
-          return false;
-        }
-        if (publication.isDraft()) {
-          if (!user.isInRole(profile)) {
-            if (isCoWritingEnable(componentId)
-                && isDraftVisibleWithCoWriting()
-                && !reader.isInRole(profile)) {
-              return true;
-            } else {
-              return publication.isPublicationEditor(userId);
-            }
-          }
-          return false;
-        }
+      Optional<Boolean> profile = checkPublicationStatus(componentId, userId, pk, publication);
+      if (profile.isPresent()) {
+        return profile.get();
       }
     } else if (NODE_TYPE.equalsIgnoreCase(objectType)) {
       NodePK pk = new NodePK(objectId, componentId);
       return isNodeAvailable(pk, userId);
     }
     return true;
+  }
+
+  private Optional<Boolean> checkPublicationStatus(final String componentId, final String userId,
+      final PublicationPK pk, final PublicationDetail publication) {
+    if (publication != null) {
+      String profile = getProfile(userId, pk);
+      if (!getKmeliaService().isPublicationVisible(publication, SilverpeasRole.from(profile),
+          userId)) {
+        return Optional.of(false);
+      }
+      if (publication.isValid()) {
+        return Optional.of(true);
+      }
+      if (publication.isValidationRequired()) {
+        return canUserValidate(componentId, userId, publication, profile);
+      }
+      if (publication.isRefused()) {
+        if (!user.isInRole(profile)) {
+          return Optional.of(
+              publication.isPublicationEditor(userId) || isCoWritingEnable(componentId) ||
+                  admin.isInRole(profile) || publisher.isInRole(profile));
+        }
+        return Optional.of(false);
+      }
+      if (publication.isDraft()) {
+        return checkWenPublicationIsInDraft(componentId, userId, publication, profile);
+      }
+    }
+    return Optional.empty();
+  }
+
+  private Optional<Boolean> checkWenPublicationIsInDraft(final String componentId,
+      final String userId, final PublicationDetail publication, final String profile) {
+    if (!user.isInRole(profile)) {
+      if (isCoWritingEnable(componentId) && isDraftVisibleWithCoWriting() &&
+          !reader.isInRole(profile)) {
+        return Optional.of(true);
+      } else {
+        return Optional.of(publication.isPublicationEditor(userId));
+      }
+    }
+    return Optional.of(false);
+  }
+
+  private Optional<Boolean> canUserValidate(final String componentId, final String userId,
+      final PublicationDetail publication, final String profile) {
+    if (user.isInRole(profile)) {
+      return Optional.of(false);
+    }
+    if (writer.isInRole(profile)) {
+      return Optional.of(
+          publication.isPublicationEditor(userId) || isCoWritingEnable(componentId));
+    }
+    return Optional.of(true);
   }
 
   @Override
@@ -224,10 +246,10 @@ public class KmeliaAuthorization implements ComponentAuthorization {
   }
 
   private boolean isComponentAvailable(String componentId, String userId) {
-    Boolean fromCache = readFromCache(componentId);
-    if (fromCache != null) {
+    Optional<Boolean> fromCache = readFromCache(componentId);
+    if (fromCache.isPresent()) {
       // Availabily already processed
-      return fromCache;
+      return fromCache.get();
     }
 
     boolean available = controller.isComponentAvailable(componentId, userId);
@@ -236,10 +258,10 @@ public class KmeliaAuthorization implements ComponentAuthorization {
   }
 
   protected boolean isPublicationAvailable(PublicationPK pk, String userId) {
-    Boolean fromCache = readFromCache(pk.getId(), PUBLICATION_TYPE, pk.getInstanceId());
-    if (fromCache != null) {
+    Optional<Boolean> fromCache = readFromCache(pk.getId(), PUBLICATION_TYPE, pk.getInstanceId());
+    if (fromCache.isPresent()) {
       // Availabily already processed
-      return fromCache;
+      return fromCache.get();
     }
 
     boolean objectAvailable = false;
@@ -248,42 +270,12 @@ public class KmeliaAuthorization implements ComponentAuthorization {
       return false;
     }
     if (isInBasket(fatherPKs)) {
-      SilverpeasRole profile = SilverpeasRole.from(KmeliaHelper.getProfile(getAppProfiles(userId,
-          pk.getInstanceId())));
-      if (SilverpeasRole.READER_ROLES.contains(profile)) {
-        // readers do not see basket content
-        return false;
-      } else if (SilverpeasRole.admin == profile) {
-        // admins see basket content
-        return true;
-      } else {
-        // others profiles see only theirs publications
-        PublicationDetail publication = getPublicationDetail(pk);
-        if (publication != null) {
-          return publication.isPublicationEditor(userId);
-        }
+      Optional<Boolean> publication = isPublicationAccessibleInBasket(pk, userId);
+      if (publication.isPresent()) {
+        return publication.get();
       }
     } else if (isRightsOnTopicsEnabled(pk.getInstanceId())) {
-      for (NodePK fatherPK : fatherPKs) {
-        if (!fatherPK.isTrash()) {
-          try {
-            objectAvailable = isNodeAvailable(fatherPK, userId);
-          } catch (Exception e) {
-            // don't throw exception, log only error
-            SilverTrace.error("kmelia", "KmeliaAuthorization.isNodeAvailable",
-                "root.MSG_GEN_PARAM_VALUE",
-                "Node (" + fatherPK.getId() + ", " + fatherPK.getInstanceId()
-                + ") no more exist but still referenced by a publication (" + pk.getId() + ", "
-                + pk.getInstanceId() + ")");
-            objectAvailable = false;
-          }
-        } else {
-          objectAvailable = true;
-        }
-        if (objectAvailable) {
-          break;
-        }
-      }
+      objectAvailable = isPublicationAccessibleInTopic(pk, userId, objectAvailable, fatherPKs);
     } else {
       objectAvailable = true;
     }
@@ -291,20 +283,63 @@ public class KmeliaAuthorization implements ComponentAuthorization {
     return objectAvailable;
   }
 
+  private boolean isPublicationAccessibleInTopic(final PublicationPK pk, final String userId,
+      boolean objectAvailable, final Collection<NodePK> fatherPKs) {
+    for (NodePK fatherPK : fatherPKs) {
+      if (!fatherPK.isTrash()) {
+        try {
+          objectAvailable = isNodeAvailable(fatherPK, userId);
+        } catch (Exception e) {
+          // don't throw exception, log only error
+          SilverLogger.getLogger(this)
+              .error("Node (" + fatherPK.getId() + ", " + fatherPK.getInstanceId() +
+                  ") no more exist but still referenced by a publication (" + pk.getId() + ", " +
+                  pk.getInstanceId() + ")", e);
+          objectAvailable = false;
+        }
+      } else {
+        objectAvailable = true;
+      }
+      if (objectAvailable) {
+        break;
+      }
+    }
+    return objectAvailable;
+  }
+
+  private Optional<Boolean> isPublicationAccessibleInBasket(final PublicationPK pk, final String userId) {
+    SilverpeasRole profile = SilverpeasRole.from(KmeliaHelper.getProfile(getAppProfiles(userId,
+        pk.getInstanceId())));
+    if (SilverpeasRole.READER_ROLES.contains(profile)) {
+      // readers do not see basket content
+      return Optional.of(false);
+    } else if (SilverpeasRole.admin == profile) {
+      // admins see basket content
+      return Optional.of(true);
+    } else {
+      // others profiles see only theirs publications
+      PublicationDetail publication = getPublicationDetail(pk);
+      if (publication != null) {
+        return Optional.of(publication.isPublicationEditor(userId));
+      }
+    }
+    return Optional.empty();
+  }
+
   private Collection<NodePK> getPublicationFolderPKs(PublicationPK pk) {
     Collection<NodePK> fatherPKs = null;
     try {
       fatherPKs = getPublicationService().getAllFatherPK(pk);
     } catch (Exception e) {
-      SilverTrace.warn("kmelia", "KmeliaAuthorization.getPublicationFolderPKs",
-          "kmelia.EX_IMPOSSIBLE_DOBTENIR_LA_PUBLICATION", "PubId = " + pk.toString());
+      SilverLogger.getLogger(this).warn(e);
     }
     return fatherPKs;
   }
 
   private boolean isInBasket(Collection<NodePK> pks) {
-    for (NodePK pk : pks) {
-      return pk.isTrash();
+    Iterator<NodePK> iterator = pks.iterator();
+    if (iterator.hasNext()) {
+      return iterator.next().isTrash();
     }
     return false;
   }
@@ -313,16 +348,15 @@ public class KmeliaAuthorization implements ComponentAuthorization {
     try {
       return getPublicationService().getDetail(pk);
     } catch (Exception e) {
-      throw new KmeliaRuntimeException("KmeliaAuthorization.getPublicationDetail()",
-          SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DOBTENIR_LA_PUBLICATION", e);
+      throw new KmeliaRuntimeException(e);
     }
   }
 
   private boolean isNodeAvailable(NodePK nodePK, String userId) {
-    Boolean fromCache = readFromCache(nodePK.getId(), NODE_TYPE, nodePK.getInstanceId());
-    if (fromCache != null) {
+    Optional<Boolean> fromCache = readFromCache(nodePK.getId(), NODE_TYPE, nodePK.getInstanceId());
+    if (fromCache.isPresent()) {
       // Availability already processed
-      return fromCache;
+      return fromCache.get();
     }
     boolean objectAvailable;
     if (isRightsOnTopicsEnabled(nodePK.getInstanceId())) {
@@ -389,8 +423,7 @@ public class KmeliaAuthorization implements ComponentAuthorization {
       try {
         kmeliaService = ServiceProvider.getService(KmeliaService.class);
       } catch (UtilException e) {
-        throw new KmeliaRuntimeException("KmeliaAuthorization.getKmeliaService()",
-            SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DE_FABRIQUER_KMELIABM_HOME", e);
+        throw new KmeliaRuntimeException(e);
       }
     }
     return kmeliaService;

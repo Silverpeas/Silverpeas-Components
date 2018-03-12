@@ -24,20 +24,19 @@
 
 package org.silverpeas.components.scheduleevent.servlets.handlers;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.silverpeas.components.scheduleevent.control.ScheduleEventSessionController;
 import org.silverpeas.components.scheduleevent.service.model.beans.DateOption;
 import org.silverpeas.components.scheduleevent.service.model.beans.ScheduleEvent;
 import org.silverpeas.core.util.DateUtil;
 
+import javax.servlet.http.HttpServletRequest;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Set;
+
 public class ScheduleEventAddDateRequestHandler extends ScheduleEventActionDateRequestHandler {
-  private final static DateFormat JS_DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd");
+  private final DateFormat jsDateFormatter = new SimpleDateFormat("yyyy-MM-dd");
   private ScheduleEventRequestHandler forwardRequestHandler = null;
 
   public void setForwardRequestHandler(ScheduleEventRequestHandler forwardRequestHandler) {
@@ -50,7 +49,7 @@ public class ScheduleEventAddDateRequestHandler extends ScheduleEventActionDateR
     if (forwardRequestHandler != null) {
       return addSelectedDateAndForwardRequestHandler(function, scheduleeventSC, request);
     } else {
-      throw UndefinedForwardRequestHandlerException();
+      throw undefinedForwardRequestHandlerException();
     }
   }
 
@@ -60,18 +59,18 @@ public class ScheduleEventAddDateRequestHandler extends ScheduleEventActionDateR
     Set<DateOption> dates = current.getDates();
     Date dateToAdd =
         DateUtil.stringToDate(request.getParameter("dateToAdd"), scheduleeventSC.getLanguage());
-    String dateIdSearch = formatterTmpId.format(dateToAdd);
+    String dateIdSearch = FORMATTER_TMP_ID.format(dateToAdd);
     DateOption dateOption = getExistingDateOption(current.getDates(), dateIdSearch);
     if (dateOption == null) {
       DateOption option = new DateOption();
       option.setDay(dateToAdd);
       dates.add(option);
     }
-    request.setAttribute(LAST_DATE, JS_DATE_FORMATTER.format(dateToAdd));
+    request.setAttribute(LAST_DATE, jsDateFormatter.format(dateToAdd));
     return forwardRequestHandler.getDestination(function, scheduleeventSC, request);
   }
 
-  private Exception UndefinedForwardRequestHandlerException() {
+  private Exception undefinedForwardRequestHandlerException() {
     return new Exception(
         "No forward request defines for" + this.getClass());
   }

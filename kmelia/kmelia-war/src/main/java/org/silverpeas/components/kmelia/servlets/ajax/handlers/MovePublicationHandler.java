@@ -21,16 +21,14 @@
 package org.silverpeas.components.kmelia.servlets.ajax.handlers;
 
 
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.components.kmelia.control.KmeliaSessionController;
 import org.silverpeas.components.kmelia.service.KmeliaService;
-import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
 import org.silverpeas.components.kmelia.servlets.ajax.AjaxHandler;
-import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -45,21 +43,16 @@ public class MovePublicationHandler implements AjaxHandler {
       PublicationPK pubPK = new PublicationPK(id, controller.getComponentId());
       NodePK from = new NodePK(sourceId, controller.getComponentId());
       NodePK to = new NodePK(targetId, controller.getComponentId());
-      getKmeliaBm().movePublicationInSameApplication(pubPK, from, to, controller.getUserId());
+      getKmeliaService().movePublicationInSameApplication(pubPK, from, to, controller.getUserId());
       return "ok";
     } catch (Exception e) {
-      SilverTrace.error("kmelia", "PasteHandler.handleRequest", "root.MSG_GEN_PARAM_VALUE", e);
+      SilverLogger.getLogger(this).error(e);
       SilverpeasTransverseErrorUtil.throwTransverseErrorIfAny(e, controller.getLanguage());
       return e.getMessage();
     }
   }
 
-  public KmeliaService getKmeliaBm() {
-    try {
-      return ServiceProvider.getService(KmeliaService.class);
-    } catch (Exception e) {
-      throw new KmeliaRuntimeException("MovePublicationHandler.getKmeliaService()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
+  public KmeliaService getKmeliaService() {
+    return ServiceProvider.getService(KmeliaService.class);
   }
 }

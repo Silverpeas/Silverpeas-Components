@@ -75,7 +75,7 @@ public enum MediaMimeType {
    * @return {@link MediaMimeType}
    */
   public static MediaMimeType fromFile(File file) {
-    return fromMimeType(file != null ? FileUtil.getMimeType(file.getPath()) : null);
+    return fromMimeType(file != null ? FileUtil.getMimeType(file.getPath()) : "");
   }
 
   /**
