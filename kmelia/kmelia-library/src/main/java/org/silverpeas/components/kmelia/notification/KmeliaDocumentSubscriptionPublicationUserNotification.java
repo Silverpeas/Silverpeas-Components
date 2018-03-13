@@ -23,21 +23,20 @@
  */
 package org.silverpeas.components.kmelia.notification;
 
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import static org.silverpeas.core.util.StringUtil.isDefined;
-
-import org.silverpeas.core.notification.user.model.NotificationResourceData;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.notification.user.client.constant.NotifAction;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.components.kmelia.service.KmeliaHelper;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.notification.user.client.constant.NotifAction;
+import org.silverpeas.core.notification.user.model.NotificationResourceData;
+import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 
 import java.util.Collection;
+
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * @author Yohann Chastagnier
@@ -91,12 +90,11 @@ public class KmeliaDocumentSubscriptionPublicationUserNotification extends
         .setAttribute("attachmentCreationDate", DateUtil.getOutputDate(document.getCreated(), language));
     template.setAttribute("attachmentSize", FileRepositoryManager.formatFileSize(document.getSize()));
 
-    String author = document.getUpdatedBy();
-    if(!StringUtil.isDefined(author)) {
-      author = document.getCreatedBy();
+    User author = getOrganisationController().getUserDetail(document.getUpdatedBy());
+    if(author == null) {
+      author = getOrganisationController().getUserDetail(document.getCreatedBy());
     }
-    final UserDetail authorDetail = getOrganisationController().getUserDetail(author);
-    template.setAttribute("attachmentAuthor", authorDetail.getFirstName() + " " + authorDetail.getLastName());
+    template.setAttribute("attachmentAuthor", author.getFirstName() + " " + author.getLastName());
 
     if (document.isVersioned()) {
       template.setAttribute("attachmentMajorNumber", document.getMajorVersion());
