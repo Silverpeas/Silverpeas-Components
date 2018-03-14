@@ -219,6 +219,7 @@
 	padding: 0.8em 0px 0.8em 0px;
 	width: 100%;
 	border-bottom:1px solid #ddd;
+	display: flex; 
 }
 
 #pubList ul li:last-child {
