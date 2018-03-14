@@ -28,20 +28,24 @@ import org.silverpeas.components.almanach.AlmanachSettings;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.Calendar;
+import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.webapi.calendar.CalendarWebManager;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import static java.util.Collections.emptyList;
 import static org.silverpeas.components.almanach.AlmanachSettings.*;
 import static org.silverpeas.core.admin.service.OrganizationControllerProvider
     .getOrganisationController;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * @author Yohann Chastagnier
@@ -49,6 +53,9 @@ import static org.silverpeas.core.admin.service.OrganizationControllerProvider
 @Singleton
 @Named("almanach" + CalendarWebManager.NAME_SUFFIX)
 public class AlmanachWebManager extends CalendarWebManager {
+
+  @Inject
+  private ComponentAccessControl componentAccessController;
 
   protected AlmanachWebManager() {
   }
@@ -67,14 +74,30 @@ public class AlmanachWebManager extends CalendarWebManager {
    * @return list of component instance identifier which does not contain the given one.
    */
   private List<String> getComponentInstanceIdsToAggregateWith(final String componentId) {
-    final List<String> componentInstanceIdsToAggregate = new ArrayList<>();
 
     // if the parameter is not activated, the empty list is returned immediately
     if (!StringUtil.getBooleanValue(getOrganisationController()
         .getComponentParameterValue(componentId, "useAgregation"))) {
-      return componentInstanceIdsToAggregate;
+      return emptyList();
     }
 
+    final String customAggregation = getOrganisationController()
+        .getComponentParameterValue(componentId, "customAggregation");
+    if (isDefined(customAggregation)) {
+      return Arrays
+          .stream(customAggregation.split(","))
+          .filter(StringUtil::isDefined)
+          .map(String::trim)
+          .filter(i -> !i.equals(componentId))
+          .filter(i -> COMPONENT_NAME.equals(SilverpeasComponentInstance.getComponentName(i)))
+          .filter(i -> componentAccessController.isUserAuthorized(User.getCurrentRequester().getId(), i))
+          .collect(Collectors.toList());
+    }
+
+    return getAlmanachIdsByDefaultAggregation(componentId);
+  }
+
+  private List<String> getAlmanachIdsByDefaultAggregation(final String componentId) {
     final String aggregationMode = getAggregationMode();
 
     boolean inCurrentSpace = false;
@@ -90,12 +113,11 @@ public class AlmanachWebManager extends CalendarWebManager {
         SilverpeasComponentInstance.getById(componentId)
             .orElseThrow(() -> new WebApplicationException(Response.Status.NOT_FOUND));
 
-    Arrays.stream(getOrganisationController()
+    return Arrays.stream(getOrganisationController()
         .getAllComponentIdsRecur(componentInstance.getSpaceId(), User.getCurrentRequester().getId(),
             componentInstance.getName(), inCurrentSpace, inAllSpaces))
-        .filter(i -> !i.equals(componentId)).forEach(componentInstanceIdsToAggregate::add);
-
-    return componentInstanceIdsToAggregate;
+        .filter(i -> !i.equals(componentId))
+        .collect(Collectors.toList());
   }
 
   @Override

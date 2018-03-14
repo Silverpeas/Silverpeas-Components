@@ -143,13 +143,45 @@
       <updatable>always</updatable>
       <help>
         <message lang="fr">Cette application pourra afficher des évènements d'autres Calendriers selon le
-          paramétrage de la plate-forme (calendriers des sous-espaces, de l'espace ou de toute la plate-forme).
+          paramétrage de la plate-forme (calendriers des sous-espaces, de l'espace ou de toute la plate-forme) ou
+          selon si le paramètre 'Agrégation sur mesure' est renseigné.
         </message>
         <message lang="en">This application can aggregate events from other Calendars according to the
-          platform settings (calendars in subspaces, in the space or from the whole platform).
+          platform settings (calendars in subspaces, in the space or from the whole platform) or
+          according to 'Custom aggregation' parameter if it is filled.
         </message>
-        <message lang="de">Dieses Kalender kann Ereignisse von anderen Kalenders gemäß den
-          Einstellungen aggregieren (Kalenders in Unterräumen, im Raum oder in allen Kalenders).
+        <message lang="de">This application can aggregate events from other Calendars according to the
+          platform settings (calendars in subspaces, in the space or from the whole platform) or
+          according to 'Custom aggregation' parameter if it is filled.
+        </message>
+      </help>
+    </parameter>
+    <parameter>
+      <name>customAggregation</name>
+      <label>
+        <message lang="fr">Agrégation sur mesure</message>
+        <message lang="en">Custom aggregation</message>
+        <message lang="de">Custom aggregation</message>
+      </label>
+      <order>4</order>
+      <mandatory>false</mandatory>
+      <value/>
+      <type>text</type>
+      <size>25</size>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Si renseigné et que le paramètre 'Agrégation' est activé, le paramétrage
+          de la plate-forme (calendriers des sous-espaces, de l'espace ou de toute la plate-forme)
+          est ignoré et seuls les calendriers indiqués sont pris en compte
+          (identifiants d'instance séparés par des virgules).
+        </message>
+        <message lang="en">If filled and if 'Aggregation' parameter is activated, the
+          platform settings (calendars in subspaces, in the space or from the whole platform) is
+          ignored and indicated calendars are taken into account (instance identifiers separated by comma).
+        </message>
+        <message lang="de">If filled and if 'Aggregation' parameter is activated, the
+          platform settings (calendars in subspaces, in the space or from the whole platform) is
+          ignored and indicated calendars are taken into account (instance identifiers separated by comma).
         </message>
       </help>
     </parameter>
@@ -160,7 +192,7 @@
         <message lang="en">Hide week-ends</message>
         <message lang="de">Wochenenden Verstecken</message>
       </label>
-      <order>4</order>
+      <order>5</order>
       <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
@@ -178,7 +210,7 @@
         <message lang="en">Default view</message>
         <message lang="de">Standard-Ansicht</message>
       </label>
-      <order>5</order>
+      <order>6</order>
       <mandatory>true</mandatory>
       <value>MONTHLY</value>
       <options>
@@ -222,7 +254,7 @@
         <message lang="en">RSS</message>
         <message lang="de">RSS</message>
       </label>
-      <order>6</order>
+      <order>7</order>
       <mandatory>false</mandatory>
       <value>N</value>
       <type>checkbox</type>
@@ -240,7 +272,7 @@
         <message lang="en">Aggregation type</message>
         <message lang="de">Aggregierung-Typ</message>
       </label>
-      <order>7</order>
+      <order>8</order>
       <mandatory>false</mandatory>
       <value>3</value>
       <options>
