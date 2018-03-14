@@ -490,7 +490,7 @@ Suggestion= <c:out value="${suggestion}" />
             <c:set var="gallery" value="${requestScope['Gallery']}" />
             <c:if test="${not empty(gallery)}">
               <select id="galleries" name="galleries" onchange="choixGallery(this, '<c:out value="${cptAnswer}"/>');this.selectedIndex=0;">
-                <option selected><fmt:message key="survey.galleries" /></option>
+                <option selected><fmt:message key="GML.thumbnail.galleries" /></option>
               <c:forEach var="curGal" items="${gallery}" varStatus="galIndex">
                  <option value="<c:out value="${curGal.id}"/>"><c:out value="${curGal.label}"/></option> 
               </c:forEach>
@@ -725,7 +725,7 @@ Suggestion= <c:out value="${suggestion}" />
             <c:set var="gallery" value="${requestScope['Gallery']}" />
             <c:if test="${not empty(gallery)}">
               <select id="galleries" name="galleries" onchange="choixGallery(this, '<%=i %>');this.selectedIndex=0;">
-                <option selected><fmt:message key="survey.galleries" /></option>
+                <option selected><fmt:message key="GML.thumbnail.galleries" /></option>
               <c:forEach var="curGal" items="${gallery}" varStatus="galIndex">
                  <option value="<c:out value="${curGal.id}"/>"><c:out value="${curGal.label}"/></option> 
               </c:forEach>

@@ -509,7 +509,7 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
 	                        if (galleries.size() > 0)
 	    					{
 	    						out.println(" <select id=\"galleries\" name=\"galleries\" onchange=\"choixGallery(this, '"+i+"');this.selectedIndex=0;\"> ");
-	    						out.println(" <option selected>"+resources.getString("survey.galleries")+"</option> ");
+	    						out.println(" <option selected>"+resources.getString("GML.thumbnail.galleries")+"</option> ");
 	   							for(int k=0; k < galleries.size(); k++ )
 	   							{
 	   								ComponentInstLight gallery = (ComponentInstLight) galleries.get(k);

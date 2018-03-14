@@ -147,20 +147,13 @@
 				browseInfo="<%=title%>" objectId="<%=post.getId()%>"
 				activateWysiwygBackupManager="true"/>
 		
-			<% if ("CreatePost".equals(action)) {
-			%>     
+			<% if ("CreatePost".equals(action)) {	%>
 			$("#Title").click(function() {
 				if ($('#Title').attr('value') === "${blog_postUntitled}") {
 					$("#Title").attr('value','');
 				}
 			});
-			<%
-			}
-			%>
-			
-			if ($.trim($(".wysiwyg-fileStorage").text()).length==0) {
-				$(".wysiwyg-fileStorage").css("display", "none") ;
-			}
+			<% } %>
 		});
 	</script>
 </head>
@@ -200,15 +193,6 @@
     <div class="field" id="contentArea">
 		<label for="editor" class="txtlibform"><fmt:message key="blog.content"/></label>
 		<div class="champs">
-			
-			<div class="container-wysiwyg wysiwyg-fileStorage">
-			
-   				<viewTags:displayToolBarWysiwyg
-			        editorName="editor"
-			        componentId="<%=instanceId%>" 
-			        objectId="<%=post.getId()%>" />
-			</div>
-			
 			<textarea rows="5" cols="10" name="editor" id="editor"><c:out value="<%=content%>" escapeXml="true"/></textarea>
 		</div>
 	</div>

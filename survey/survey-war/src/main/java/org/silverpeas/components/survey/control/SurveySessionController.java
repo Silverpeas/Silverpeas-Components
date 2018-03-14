@@ -758,19 +758,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
    * @return a list of component instance light of the silverpeas gallery
    */
   public List<ComponentInstLight> getGalleries() {
-    List<ComponentInstLight> galleries = new ArrayList<>();
-    OrganizationController orgaController = getOrganisationController();
-    String[] compoIds = orgaController.getCompoId(GALLERY_COMPONENT);
-    for (final String compoId : compoIds) {
-      if ("yes".equalsIgnoreCase(
-          orgaController.getComponentParameterValue(GALLERY_COMPONENT + compoId,
-              "viewInWysiwyg"))) {
-        ComponentInstLight gallery =
-            orgaController.getComponentInstLight(GALLERY_COMPONENT + compoId);
-        galleries.add(gallery);
-      }
-    }
-    return galleries;
+    return OrganizationController.get().getComponentsWithParameterValue("viewInWysiwyg", "yes");
   }
 
   public String exportSurveyCSV(String surveyId) {

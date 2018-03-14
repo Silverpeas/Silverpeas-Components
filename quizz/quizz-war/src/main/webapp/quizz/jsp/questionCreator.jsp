@@ -606,7 +606,7 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
         <%if (galleries != null) {%>
         <span class="txtsublibform"> ou </span><input type="hidden" name="valueImageGallery<%= i %>" id="valueImageGallery<%= i %>"/>
          <select class="galleries" name="galleries" onchange="choixGallery(this, '<%= i %>');this.selectedIndex=0;"> 
-           <option selected><%= surveyResource.getString("survey.galleries") %></option>
+           <option selected><%= surveyResource.getString("GML.thumbnail.galleries") %></option>
 <%
           for (ComponentInstLight gallery : galleries) { %>
              <option value="<%= gallery.getId() %>"><%= gallery.getLabel() %></option> 
