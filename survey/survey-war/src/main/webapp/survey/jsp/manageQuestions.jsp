@@ -425,7 +425,7 @@ function insertHTMLAnswer(answerId) {
   <c:set var="gallery" value="${requestScope['Gallery']}" />
       <c:if test="${not empty(gallery)}">
   htmlAnswer +=  '<select id="galleries" name="galleries" onchange="javascript:choixGallery(this, \'' + answerId + '\');this.selectedIndex=0;">';
-  htmlAnswer +=  '<option selected><fmt:message key="survey.galleries" /></option>';
+  htmlAnswer +=  '<option selected><fmt:message key="GML.thumbnail.galleries" /></option>';
         <c:forEach var="curGal" items="${gallery}" varStatus="galIndex">
   htmlAnswer +=  '<option value="<c:out value="${curGal.id}"/>"><c:out value="${curGal.label}"/></option>'; 
         </c:forEach>
@@ -559,7 +559,7 @@ function insertHTMLAnswer(answerId) {
             <c:set var="gallery" value="${requestScope['Gallery']}" />
             <c:if test="${not empty(gallery)}">
               <select id="galleries" name="galleries" onchange="javascript:choixGallery(this, '<c:out value="${answerStatus.index}"/>');this.selectedIndex=0;">
-                <option selected><fmt:message key="survey.galleries" /></option>
+                <option selected><fmt:message key="GML.thumbnail.galleries" /></option>
               <c:forEach var="curGal" items="${gallery}" varStatus="galIndex">
                  <option value="<c:out value="${curGal.id}"/>"><c:out value="${curGal.label}"/></option> 
               </c:forEach>
@@ -598,7 +598,7 @@ function insertHTMLAnswer(answerId) {
             <c:set var="gallery" value="${requestScope['Gallery']}" />
             <c:if test="${not empty(gallery)}">
               <select id="galleries" name="galleries" onchange="javascript:choixGallery(this, '0');this.selectedIndex=0;">
-                <option selected><fmt:message key="survey.galleries" /></option>
+                <option selected><fmt:message key="GML.thumbnail.galleries" /></option>
               <c:forEach var="curGal" items="${gallery}" varStatus="galIndex">
                  <option value="<c:out value="${curGal.id}"/>"><c:out value="${curGal.label}"/></option> 
               </c:forEach>
@@ -622,7 +622,7 @@ function insertHTMLAnswer(answerId) {
             <c:set var="gallery" value="${requestScope['Gallery']}" />
             <c:if test="${not empty(gallery)}">
               <select id="galleries" name="galleries" onchange="javascript:choixGallery(this, '1');this.selectedIndex=0;">
-                <option selected><fmt:message key="survey.galleries" /></option>
+                <option selected><fmt:message key="GML.thumbnail.galleries" /></option>
               <c:forEach var="curGal" items="${gallery}" varStatus="galIndex">
                  <option value="<c:out value="${curGal.id}"/>"><c:out value="${curGal.label}"/></option> 
               </c:forEach>
