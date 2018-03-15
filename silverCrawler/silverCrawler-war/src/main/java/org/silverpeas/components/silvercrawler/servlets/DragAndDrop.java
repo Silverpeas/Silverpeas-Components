@@ -33,13 +33,13 @@ import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 /**
  * Class declaration
@@ -50,26 +50,26 @@ public class DragAndDrop extends SilverpeasAuthenticatedHttpServlet {
   private static final long serialVersionUID = 1L;
 
   @Override
-  public void init(ServletConfig config) {
-    try {
-      super.init(config);
-    } catch (ServletException e) {
-      SilverLogger.getLogger(this).error(e.getMessage(), e);
-    }
-  }
-
-  @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
     doPost(req, res);
   }
 
   @Override
-  public void doPost(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException {
+  public void doPost(HttpServletRequest req, HttpServletResponse res) {
 
     HttpRequest request = HttpRequest.decorate(req);
-    request.setCharacterEncoding("UTF-8");
+    try {
+      request.setCharacterEncoding("UTF-8");
+    } catch (UnsupportedEncodingException e) {
+      SilverLogger.getLogger(this).error(e);
+      try {
+        res.sendError(HttpServletResponse.SC_BAD_REQUEST);
+        return;
+      } catch (IOException e1) {
+        SilverLogger.getLogger(this).error(e1);
+      }
+    }
 
     UploadSession uploadSession = UploadSession.from(request);
 
@@ -128,7 +128,13 @@ public class DragAndDrop extends SilverpeasAuthenticatedHttpServlet {
       }
 
     } catch (Exception e) {
-      throw new ServletException(e);
+      SilverLogger.getLogger(this).error(e);
+      try {
+        res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        return;
+      } catch (IOException e1) {
+        SilverLogger.getLogger(this).error(e1);
+      }
     } finally {
       uploadSession.clear();
     }

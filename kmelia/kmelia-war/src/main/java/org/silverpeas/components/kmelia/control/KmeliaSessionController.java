@@ -91,7 +91,6 @@ import org.silverpeas.core.datereminder.persistence.DateReminderDetail;
 import org.silverpeas.core.datereminder.persistence.PersistentResourceDateReminder;
 import org.silverpeas.core.datereminder.persistence.service.DateReminderServiceProvider;
 import org.silverpeas.core.datereminder.persistence.service.PersistentDateReminderService;
-import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.importexport.ExportDescriptor;
 import org.silverpeas.core.importexport.attachment.AttachmentImportExport;
@@ -1334,11 +1333,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   public Collection<PublicationDetail> getAllPublicationsByTopic(PublicationPK pubPK,
       List<String> fatherIds) {
-    Collection<PublicationDetail> result = getPublicationService().
+    return getPublicationService().
         getDetailsByFatherIdsAndStatus(fatherIds, pubPK, "P.pubUpdateDate desc, P.pubId desc",
             PublicationDetail.VALID_STATUS);
-
-    return result;
   }
 
   /**
@@ -2558,8 +2555,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     } else {
       SilverLogger.getLogger(this)
           .warn("Security alert from user {0} trying to copy publication {1}", getUserId(), pubId);
-      throw new ClipboardException(KMELIA, SilverpeasException.WARNING,
-          "Security purpose, access to publication is forbidden");
+      throw new ClipboardException("Security purpose, access to publication is forbidden");
     }
   }
 
@@ -2588,8 +2584,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     } else {
       SilverLogger.getLogger(this)
           .warn("Security alert from user {0} trying to cut publication {1}", getUserId(), pubId);
-      throw new ClipboardException(KMELIA, SilverpeasException.WARNING,
-          "Security purpose, access to publication is forbidden");
+      throw new ClipboardException("Security purpose, access to publication is forbidden");
     }
   }
 
@@ -2616,8 +2611,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     } else {
       SilverLogger.getLogger(this)
           .warn("Security alert from user {0} trying to copy topic {1}", getUserId(), id);
-      throw new ClipboardException(KMELIA, SilverpeasException.WARNING,
-          "Security purpose : access to node is forbidden");
+      throw new ClipboardException("Security purpose : access to node is forbidden");
     }
   }
 
@@ -2633,8 +2627,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     } else {
       SilverLogger.getLogger(this)
           .warn("Security alert from user {0} trying to cut topic {1}", getUserId(), id);
-      throw new ClipboardException(KMELIA, SilverpeasException.WARNING,
-          "Security purpose : access to node is forbidden");
+      throw new ClipboardException("Security purpose : access to node is forbidden");
     }
   }
 

@@ -37,12 +37,9 @@ import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 
 import javax.inject.Inject;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
-import java.io.IOException;
 
 /**
  * Class declaration
@@ -55,24 +52,7 @@ public class GalleryDragAndDrop extends SilverpeasAuthenticatedHttpServlet {
   private OrganizationController organizationController;
 
   @Override
-  public void init(ServletConfig config) {
-    try {
-      super.init(config);
-    } catch (ServletException e) {
-      SilverLogger.getLogger(this).error(e.getMessage(), e);
-    }
-  }
-
-  @Override
-  public void doGet(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException {
-    doPost(req, res);
-  }
-
-  @Override
-  public void doPost(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException {
-
+  public void doPost(HttpServletRequest req, HttpServletResponse res) {
     UserDetail userDetail = UserDetail.getCurrentRequester();
     HttpRequest request = HttpRequest.decorate(req);
     UploadSession uploadSession = UploadSession.from(request);

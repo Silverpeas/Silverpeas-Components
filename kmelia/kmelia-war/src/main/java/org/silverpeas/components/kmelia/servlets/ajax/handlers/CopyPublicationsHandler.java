@@ -20,9 +20,9 @@
  */
 package org.silverpeas.components.kmelia.servlets.ajax.handlers;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.components.kmelia.control.KmeliaSessionController;
 import org.silverpeas.core.clipboard.ClipboardException;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -35,8 +35,7 @@ public class CopyPublicationsHandler extends OperationOnPublicationsHandler {
       controller.copySelectedPublications();
       return "ok";
     } catch (ClipboardException e) {
-      SilverTrace.error("kmelia", "CopyPublicationsHandler.handleRequest",
-          "root.MSG_GEN_PARAM_VALUE", e);
+      SilverLogger.getLogger(this).error(e);
       return e.getMessage();
     }
   }

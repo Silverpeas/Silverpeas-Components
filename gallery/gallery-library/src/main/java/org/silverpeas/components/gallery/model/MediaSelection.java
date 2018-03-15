@@ -27,7 +27,7 @@ import org.silverpeas.core.clipboard.ClipboardSelection;
 import org.silverpeas.core.clipboard.SKDException;
 import org.silverpeas.core.clipboard.SilverpeasKeyData;
 import org.silverpeas.core.index.indexing.model.IndexEntry;
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -88,7 +88,7 @@ public class MediaSelection extends ClipboardSelection {
         keyData.setProperty("ENDDATE", currentMedia.getVisibilityPeriod().getEndDate().toString());
       }
     } catch (SKDException e) {
-      SilverTrace.error("gallery", "PhotoSelection.getKeyData", "gallery.ERROR_KEY_DATA", e);
+      SilverLogger.getLogger(this).error(e);
     }
     return keyData;
   }

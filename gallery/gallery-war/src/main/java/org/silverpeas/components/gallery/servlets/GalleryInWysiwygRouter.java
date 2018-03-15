@@ -40,7 +40,6 @@ import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -62,15 +61,6 @@ public class GalleryInWysiwygRouter extends HttpServlet {
 
   @Inject
   private OrganizationController organizationController;
-
-  @Override
-  public void init(ServletConfig config) {
-    try {
-      super.init(config);
-    } catch (ServletException e) {
-      SilverLogger.getLogger(this).error(e.getMessage(), e);
-    }
-  }
 
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res)
