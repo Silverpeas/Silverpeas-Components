@@ -24,7 +24,7 @@
 package org.silverpeas.components.kmelia.model;
 
 import org.silverpeas.components.kmelia.service.KmeliaService;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.User;
@@ -262,7 +262,7 @@ public class KmeliaPublication implements SilverpeasContent {
 
   public int getNbAccess() {
     try {
-      return getStatisticService().getCount(new ForeignPK(detail.getPK()), 1, "Publication");
+      return getStatisticService().getCount(new ResourceReference(detail.getPK()), 1, "Publication");
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e);
     }

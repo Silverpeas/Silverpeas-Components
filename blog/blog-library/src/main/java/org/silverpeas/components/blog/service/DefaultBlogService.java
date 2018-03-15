@@ -30,7 +30,7 @@ import org.silverpeas.components.blog.model.BlogRuntimeException;
 import org.silverpeas.components.blog.model.Category;
 import org.silverpeas.components.blog.model.PostDetail;
 import org.silverpeas.components.blog.notification.BlogUserSubscriptionNotification;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.ObjectType;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.comment.model.Comment;
@@ -254,8 +254,9 @@ public class DefaultBlogService implements BlogService {
       // Delete date event
       PostDAO.deleteDateEvent(con, pubPK.getId());
       // Delete comments
-      ForeignPK foreignPK = new ForeignPK(postId, instanceId);
-      getCommentService().deleteAllCommentsOnPublication(PostDetail.getResourceType(), foreignPK);
+      ResourceReference resourceReference = new ResourceReference(postId, instanceId);
+      getCommentService().deleteAllCommentsOnPublication(PostDetail.getResourceType(),
+          resourceReference);
       // Delete wysiwyg content
       WysiwygController.deleteFileAndAttachment(instanceId, postId);
       // Delete publication

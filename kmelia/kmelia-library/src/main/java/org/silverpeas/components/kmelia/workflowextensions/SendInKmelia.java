@@ -31,7 +31,7 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import net.htmlparser.jericho.Source;
 import org.silverpeas.components.kmelia.service.KmeliaService;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
@@ -106,7 +106,7 @@ public class SendInKmelia extends ExternalActionImpl {
       // getting place to create publication from explorer field
       try {
         ExplorerField explorer = (ExplorerField) getProcessInstance().getField(explorerFieldName);
-        ForeignPK pk = (ForeignPK) explorer.getObjectValue();
+        ResourceReference pk = (ResourceReference) explorer.getObjectValue();
         targetId = pk.getInstanceId();
         topicId = pk.getId();
       } catch (WorkflowException e) {
@@ -188,8 +188,9 @@ public class SendInKmelia extends ExternalActionImpl {
     }
 
     // 3 - Copy all instance regular files to publication
-    ForeignPK fromPK = new ForeignPK(getProcessInstance().getInstanceId(), getProcessInstance().getModelId());
-    ForeignPK toPK = new ForeignPK(pubPK);
+    ResourceReference
+        fromPK = new ResourceReference(getProcessInstance().getInstanceId(), getProcessInstance().getModelId());
+    ResourceReference toPK = new ResourceReference(pubPK);
     copyFiles(fromPK, toPK, DocumentType.attachment, DocumentType.attachment);
 
     if (addPDFHistory && !addPDFHistoryFirst) {
@@ -211,7 +212,7 @@ public class SendInKmelia extends ExternalActionImpl {
     }
   }
 
-  public void populateFields(String pubId, ForeignPK fromPK, ForeignPK toPK) {
+  public void populateFields(String pubId, ResourceReference fromPK, ResourceReference toPK) {
     // Get the current instance
     UpdatableProcessInstance currentProcessInstance = (UpdatableProcessInstance) getProcessInstance();
     try {
@@ -235,7 +236,7 @@ public class SendInKmelia extends ExternalActionImpl {
     }
   }
 
-  private Object getFieldValue(final ForeignPK fromPK, final ForeignPK toPK,
+  private Object getFieldValue(final ResourceReference fromPK, final ResourceReference toPK,
       final UpdatableProcessInstance currentProcessInstance,
       final PublicationTemplateImpl pubTemplate, final String fieldName)
       throws FormException, PublicationTemplateException {
@@ -259,7 +260,7 @@ public class SendInKmelia extends ExternalActionImpl {
     return fieldValue;
   }
 
-  private String copyFormFile(ForeignPK fromPK, ForeignPK toPK, String attachmentId) {
+  private String copyFormFile(ResourceReference fromPK, ResourceReference toPK, String attachmentId) {
     SimpleDocument attachment;
     if (StringUtil.isDefined(attachmentId)) {
       AttachmentService service = AttachmentServiceProvider.getAttachmentService();
@@ -273,7 +274,7 @@ public class SendInKmelia extends ExternalActionImpl {
     return null;
   }
 
-  private Map<String, String> copyFiles(ForeignPK fromPK, ForeignPK toPK, DocumentType fromType,
+  private Map<String, String> copyFiles(ResourceReference fromPK, ResourceReference toPK, DocumentType fromType,
       DocumentType toType) {
     Map<String, String> fileIds = new HashMap<>();
     try {
@@ -290,11 +291,11 @@ public class SendInKmelia extends ExternalActionImpl {
     return fileIds;
   }
 
-  private SimpleDocumentPK copyFileWithoutDocumentTypeChange(SimpleDocument file, ForeignPK toPK) {
+  private SimpleDocumentPK copyFileWithoutDocumentTypeChange(SimpleDocument file, ResourceReference toPK) {
     return copyFile(file, toPK, null);
   }
 
-  private SimpleDocumentPK copyFile(SimpleDocument file, ForeignPK toPK, DocumentType type) {
+  private SimpleDocumentPK copyFile(SimpleDocument file, ResourceReference toPK, DocumentType type) {
     if (type != null) {
       file.setDocumentType(type);
     }

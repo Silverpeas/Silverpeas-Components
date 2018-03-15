@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.classifieds.control;
 
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.RecordSet;
@@ -353,7 +353,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
     getClassifiedService().deleteClassified(this.getComponentId(), classifiedId);
 
     //supprime les commentaires
-    WAPrimaryKey pk = new ForeignPK(classifiedId, getComponentId());
+    WAPrimaryKey pk = new ResourceReference(classifiedId, getComponentId());
     getCommentService().deleteAllCommentsOnPublication(ClassifiedDetail.getResourceType(), pk);
   }
 

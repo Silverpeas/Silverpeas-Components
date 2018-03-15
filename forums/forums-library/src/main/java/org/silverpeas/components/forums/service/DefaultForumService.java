@@ -35,7 +35,7 @@ import org.silverpeas.components.forums.subscription.ForumMessageSubscription;
 import org.silverpeas.components.forums.subscription.ForumMessageSubscriptionResource;
 import org.silverpeas.components.forums.subscription.ForumSubscription;
 import org.silverpeas.components.forums.subscription.ForumSubscriptionResource;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
@@ -1022,7 +1022,7 @@ public class DefaultForumService implements ForumService {
       indexEntry.setTitle(message.getTitle());
       indexEntry.setCreationDate(message.getDate());
       indexEntry.setCreationUser(message.getAuthor());
-      WysiwygController.addToIndex(indexEntry, new ForeignPK(messagePK), defaultLanguage);
+      WysiwygController.addToIndex(indexEntry, new ResourceReference(messagePK), defaultLanguage);
       IndexEngineProxy.addIndexEntry(indexEntry);
     }
 
@@ -1307,7 +1307,7 @@ public class DefaultForumService implements ForumService {
   }
 
   private void deleteAllAttachments(MessagePK messagePK) {
-    ForeignPK foreignKey = new ForeignPK(messagePK);
+    ResourceReference foreignKey = new ResourceReference(messagePK);
     List<SimpleDocument> documents = AttachmentServiceProvider.getAttachmentService()
         .listAllDocumentsByForeignKey(foreignKey, null);
     for (SimpleDocument doc : documents) {

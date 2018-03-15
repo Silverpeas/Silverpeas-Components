@@ -38,7 +38,7 @@ import org.silverpeas.components.kmelia.servlets.handlers.StatisticRequestHandle
 import org.silverpeas.components.kmelia.updatechainhelpers.UpdateChainHelper;
 import org.silverpeas.components.kmelia.updatechainhelpers.UpdateChainHelperContext;
 import org.silverpeas.core.ActionType;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.contribution.ContributionStatus;
@@ -634,9 +634,9 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           request.setAttribute("Languages", publicationLanguages);
 
           // see also management
-          Collection<ForeignPK> links = kmeliaPublication.getCompleteDetail().getLinkList();
+          Collection<ResourceReference> links = kmeliaPublication.getCompleteDetail().getLinkList();
           HashSet<String> linkedList = new HashSet<String>(links.size());
-          for (ForeignPK link : links) {
+          for (ResourceReference link : links) {
             linkedList.add(link.getId() + "-" + link.getInstanceId());
           }
           // put into session the current list of selected publications (see also)
@@ -969,10 +969,10 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         String[] pubIds = request.getParameterValues("PubIds");
 
         if (pubIds != null) {
-          List<ForeignPK> infoLinks = new ArrayList<ForeignPK>();
+          List<ResourceReference> infoLinks = new ArrayList<ResourceReference>();
           for (String pubId : pubIds) {
             StringTokenizer tokens = new StringTokenizer(pubId, "-");
-            infoLinks.add(new ForeignPK(tokens.nextToken(), tokens.nextToken()));
+            infoLinks.add(new ResourceReference(tokens.nextToken(), tokens.nextToken()));
 
             // removing deleted pks from session
             Set<String> list = (Set<String>) request.getSession()
@@ -1038,7 +1038,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
         // create thumbnail if exists
         boolean newThumbnail = ThumbnailController
-            .processThumbnail(new ForeignPK(newPubId, kmelia.getComponentId()),
+            .processThumbnail(new ResourceReference(newPubId, kmelia.getComponentId()),
                 PublicationDetail.getResourceType(), parameters);
 
         //process files
@@ -1078,7 +1078,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
         PublicationDetail pubDetail = getPublicationDetail(parameters, kmelia);
         String pubId = pubDetail.getPK().getId();
-        ThumbnailController.processThumbnail(new ForeignPK(pubId, kmelia.getComponentId()),
+        ThumbnailController.processThumbnail(new ResourceReference(pubId, kmelia.getComponentId()),
             PublicationDetail.getResourceType(), parameters);
 
         kmelia.updatePublication(pubDetail);
@@ -2425,10 +2425,10 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
    * @return a list of one or several Silverpeas primary keys, each of them corresponding to one
    * specified identifier.
    */
-  private List<ForeignPK> asPks(String instanceId, String... ids) {
-    List<ForeignPK> pks = new ArrayList<ForeignPK>();
+  private List<ResourceReference> asPks(String instanceId, String... ids) {
+    List<ResourceReference> pks = new ArrayList<ResourceReference>();
     for (String oneId : ids) {
-      pks.add(new ForeignPK(oneId, instanceId));
+      pks.add(new ResourceReference(oneId, instanceId));
     }
     return pks;
   }

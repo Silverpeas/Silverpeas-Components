@@ -24,7 +24,7 @@ import org.silverpeas.components.kmelia.KmeliaCopyDetail;
 import org.silverpeas.components.kmelia.model.KmeliaPublication;
 import org.silverpeas.components.kmelia.model.TopicDetail;
 import org.silverpeas.core.ApplicationService;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.notification.AttachmentRef;
@@ -280,7 +280,7 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
    * @param pubPK publication identifier which you want to update links
    * @param links list of publication to link with current.
    */
-  void addInfoLinks(PublicationPK pubPK, List<ForeignPK> links);
+  void addInfoLinks(PublicationPK pubPK, List<ResourceReference> links);
 
   /**
    * Removes links between publications and the specified publication
@@ -288,7 +288,7 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
    * @param links list of links to remove
    * @
    */
-  void deleteInfoLinks(PublicationPK pubPK, List<ForeignPK> links);
+  void deleteInfoLinks(PublicationPK pubPK, List<ResourceReference> links);
 
   CompletePublication getCompletePublication(PublicationPK pubPK);
 
@@ -300,7 +300,7 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
   NodePK getPublicationFatherPK(PublicationPK pubPK, boolean isTreeStructureUsed, String userId,
       boolean isRightsOnTopicsUsed);
 
-  Collection<PublicationDetail> getPublicationDetails(List<ForeignPK> links);
+  Collection<PublicationDetail> getPublicationDetails(List<ResourceReference> links);
 
   /**
    * gets a list of authorized publications
@@ -312,7 +312,7 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
    * @
    * @since 1.0
    */
-  Collection<KmeliaPublication> getPublications(List<ForeignPK> links, String userId,
+  Collection<KmeliaPublication> getPublications(List<ResourceReference> links, String userId,
       boolean isRightsOnTopicsUsed);
 
   /**

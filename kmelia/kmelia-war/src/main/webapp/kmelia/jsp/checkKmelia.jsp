@@ -80,7 +80,7 @@
 <%@ page import="org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController"%>
 <%@ page import="org.silverpeas.core.contribution.content.wysiwyg.WysiwygException"%>
 
-<%@ page import="org.silverpeas.core.ForeignPK"%>
+<%@ page import="org.silverpeas.core.ResourceReference"%>
 <%@ page import="org.silverpeas.core.util.StringUtil"%>
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper"%>
 <%@ page import="org.silverpeas.core.contribution.template.publication.PublicationTemplate"%>

@@ -25,7 +25,7 @@
 package org.silverpeas.components.webpages;
 
 import org.silverpeas.components.webpages.model.WebPagesException;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.Administration;
@@ -63,8 +63,9 @@ public class WebPagesIndexer implements ComponentIndexation {
     if (isXMLTemplateUsed(componentInst.getId())) {
       indexForm(componentInst.getId(), indexEntry);
     } else {
-      ForeignPK foreignPK = new ForeignPK(componentInst.getId(), componentInst.getId());
-      WysiwygController.addToIndex(indexEntry, foreignPK, null);
+      ResourceReference
+          resourceReference = new ResourceReference(componentInst.getId(), componentInst.getId());
+      WysiwygController.addToIndex(indexEntry, resourceReference, null);
     }
     IndexEngineProxy.addIndexEntry(indexEntry);
   }

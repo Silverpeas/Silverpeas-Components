@@ -29,7 +29,7 @@ import org.silverpeas.components.projectmanager.service.ProjectManagerService;
 import org.silverpeas.components.projectmanager.vo.DayVO;
 import org.silverpeas.components.projectmanager.vo.MonthVO;
 import org.silverpeas.components.projectmanager.vo.WeekVO;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
@@ -322,7 +322,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
   }
 
   public List<SimpleDocument> getAttachments(String id) {
-    ForeignPK foreignKey = new ForeignPK(id, getComponentId());
+    ResourceReference foreignKey = new ResourceReference(id, getComponentId());
     return AttachmentServiceProvider.getAttachmentService().listDocumentsByForeignKey(foreignKey,
         null);
   }

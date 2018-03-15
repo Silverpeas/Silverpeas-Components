@@ -36,7 +36,7 @@ import org.silverpeas.components.forums.notification.ForumsMessageValidationUser
 import org.silverpeas.components.forums.service.ForumService;
 import org.silverpeas.components.forums.service.ForumsException;
 import org.silverpeas.components.forums.service.ForumsServiceProvider;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.model.Attachments;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
@@ -761,12 +761,12 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   public void addMessageStat(int messageId, String userId) {
     getStatisticService()
-        .addStat(userId, new ForeignPK(String.valueOf(messageId), getComponentId()), 1, STAT_TYPE);
+        .addStat(userId, new ResourceReference(String.valueOf(messageId), getComponentId()), 1, STAT_TYPE);
   }
 
   public int getMessageStat(int messageId) {
     return getStatisticService()
-        .getCount(new ForeignPK(String.valueOf(messageId), getComponentId()), STAT_TYPE);
+        .getCount(new ResourceReference(String.valueOf(messageId), getComponentId()), STAT_TYPE);
   }
 
   public boolean isDisplayAllMessages() {

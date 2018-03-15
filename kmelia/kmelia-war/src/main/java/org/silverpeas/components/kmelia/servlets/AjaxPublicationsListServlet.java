@@ -36,7 +36,7 @@ import org.silverpeas.components.kmelia.model.TopicDetail;
 import org.silverpeas.components.kmelia.model.TopicSearch;
 import org.silverpeas.components.kmelia.search.KmeliaSearchServiceProvider;
 import org.silverpeas.components.kmelia.service.KmeliaHelper;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
@@ -903,9 +903,9 @@ public class AjaxPublicationsListServlet extends HttpServlet {
   private String displayAttachments(final KmeliaSessionController kmeliaScc,
       PublicationDetail pubDetail, MultiSilverpeasBundle resources, boolean linkAttachment,
       boolean alias) {
-    ForeignPK foreignPK = new ForeignPK(pubDetail.getPK());
+    ResourceReference resourceReference = new ResourceReference(pubDetail.getPK());
     List<SimpleDocument> documents = AttachmentServiceProvider.getAttachmentService().
-        listDocumentsByForeignKey(foreignPK, kmeliaScc.getCurrentLanguage());
+        listDocumentsByForeignKey(resourceReference, kmeliaScc.getCurrentLanguage());
     StringBuilder result = new StringBuilder(documents.size() * 256);
     boolean hasDisplayableAttachments = false;
     for (SimpleDocument document : documents) {

@@ -30,7 +30,7 @@ import org.silverpeas.components.infoletter.model.InfoLetterPublication;
 import org.silverpeas.components.infoletter.model.InfoLetterPublicationPdC;
 import org.silverpeas.components.infoletter.model.InfoLetterService;
 import org.silverpeas.components.infoletter.service.ByteArrayDataSource;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.service.OrganizationController;
@@ -372,7 +372,7 @@ public class InfoLetterDataManager implements InfoLetterService {
     try {
       String basicTemplate = "<body></body>";
       WysiwygController.createUnindexedFileAndAttachment(basicTemplate,
-          new ForeignPK(InfoLetterPublication.TEMPLATE_ID + letterPK.getId(), componentId), userId,
+          new ResourceReference(InfoLetterPublication.TEMPLATE_ID + letterPK.getId(), componentId), userId,
           I18NHelper.defaultLanguage);
     } catch (Exception e) {
       throw new InfoLetterException(e);
@@ -418,7 +418,7 @@ public class InfoLetterDataManager implements InfoLetterService {
     Multipart multipart = new MimeMultipart(mimeMultipart);
 
     // create and fill the first message part
-    ForeignPK foreignKey = new ForeignPK(ilp.getPK().getId(), ilp.getComponentInstanceId());
+    ResourceReference foreignKey = new ResourceReference(ilp.getPK().getId(), ilp.getComponentInstanceId());
 
     // Load and transform WYSIWYG content for mailing
     String wysiwygContent =

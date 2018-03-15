@@ -35,6 +35,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.attachment.AttachmentException;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
@@ -45,7 +46,6 @@ import org.silverpeas.core.contribution.attachment.util.SimpleDocumentList;
 import org.silverpeas.components.forums.test.WarBuilder4Forums;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.test.rule.DbSetupRule;
-import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.WAPrimaryKey;
 
 import javax.annotation.Priority;
@@ -180,13 +180,13 @@ public class ForumsInstancePreDestructionIT {
     }
 
     @Override
-    public Map<String, String> mergeDocuments(final ForeignPK originalForeignKey,
-        final ForeignPK cloneForeignKey, final DocumentType type) {
+    public Map<String, String> mergeDocuments(final ResourceReference originalForeignKey,
+        final ResourceReference cloneForeignKey, final DocumentType type) {
       return null;
     }
 
     @Override
-    public SimpleDocumentPK copyDocument(final SimpleDocument original, final ForeignPK targetPk) {
+    public SimpleDocumentPK copyDocument(final SimpleDocument original, final ResourceReference targetPk) {
       return null;
     }
 
@@ -198,7 +198,7 @@ public class ForumsInstancePreDestructionIT {
 
     @Override
     public SimpleDocumentPK moveDocument(final SimpleDocument document,
-        final ForeignPK destination) {
+        final ResourceReference destination) {
       return null;
     }
 
@@ -371,7 +371,7 @@ public class ForumsInstancePreDestructionIT {
 
     @Override
     public SimpleDocument findExistingDocument(final SimpleDocumentPK pk, final String fileName,
-        final ForeignPK foreign, final String lang) {
+        final ResourceReference foreign, final String lang) {
       return null;
     }
 

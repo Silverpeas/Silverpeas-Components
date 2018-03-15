@@ -32,7 +32,7 @@ import org.silverpeas.components.quickinfo.notification.QuickInfoSubscriptionUse
 import org.silverpeas.components.quickinfo.repository.NewsRepository;
 import org.silverpeas.components.quickinfo.service.QuickInfoContentManager;
 import org.silverpeas.components.quickinfo.service.QuickInfoDateComparatorDesc;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.component.model.CompoSpace;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.User;
@@ -163,8 +163,8 @@ public class DefaultQuickInfoService implements QuickInfoService {
 
   @Override
   public News create(final News news) {
-    ForeignPK volatileAttachmentSourcePK =
-        new ForeignPK(news.getPublicationId(), news.getComponentInstanceId());
+    ResourceReference volatileAttachmentSourcePK =
+        new ResourceReference(news.getPublicationId(), news.getComponentInstanceId());
 
     // Creating publication
     final PublicationDetail publication = news.getPublication();

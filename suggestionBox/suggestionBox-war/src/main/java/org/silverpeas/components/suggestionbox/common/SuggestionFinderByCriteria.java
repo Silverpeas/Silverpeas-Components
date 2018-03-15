@@ -29,7 +29,7 @@ import org.silverpeas.components.suggestionbox.model.SuggestionCriteria;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteria.QUERY_ORDER_BY;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteriaProcessor;
 import org.silverpeas.components.suggestionbox.repository.SuggestionRepository;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.comment.model.CommentedPublicationInfo;
@@ -103,7 +103,7 @@ public class SuggestionFinderByCriteria implements SuggestionCriteriaProcessor {
       if (joinDataApplies.contains(JOIN_DATA_APPLY.COMMENT)) {
         CommentService commentService = CommentServiceProvider.getCommentService();
         List<CommentedPublicationInfo> suggestionInfos = commentService.
-            getMostCommentedPublicationsInfo(Suggestion.TYPE, Arrays.asList(new ForeignPK(null,
+            getMostCommentedPublicationsInfo(Suggestion.TYPE, Arrays.asList(new ResourceReference(null,
                 criteria.getSuggestionBox().getComponentInstanceId())));
 
         for (CommentedPublicationInfo info : suggestionInfos) {

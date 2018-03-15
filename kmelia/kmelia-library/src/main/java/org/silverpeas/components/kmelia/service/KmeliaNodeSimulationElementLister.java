@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.kmelia.service;
 
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
@@ -57,9 +57,9 @@ public class KmeliaNodeSimulationElementLister extends AbstractKmeliaSimulationE
 
       // Using also for the current node specifics
       for (String prefix : new String[]{"Node_"}) {
-        ForeignPK foreignPK =
-            new ForeignPK(prefix + node.getNodePK().getId(), node.getNodePK().getInstanceId());
-        new AttachmentSimulationElementLister(this).listElements(foreignPK, language);
+        ResourceReference resourceReference =
+            new ResourceReference(prefix + node.getNodePK().getId(), node.getNodePK().getInstanceId());
+        new AttachmentSimulationElementLister(this).listElements(resourceReference, language);
       }
 
       // Finally, using here the implementation of publication document lister

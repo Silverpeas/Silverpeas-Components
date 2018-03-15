@@ -953,7 +953,7 @@ String displaySurveyResult(String choice, QuestionContainerDetail survey, Graphi
 	              if (style.equals("open")) {
 	                r += displayOpenAnswersToQuestion(anonymous, question.getPK().getId(), surveyScc);
 	              } else {
-	                int nbUsers = surveyScc.getUserByQuestion(new ForeignPK(question.getPK())).size();
+	                int nbUsers = surveyScc.getUserByQuestion(new ResourceReference(question.getPK())).size();
 	                r += displaySurveyResultChart(anonymous, answers, m_context, settings, nbUsers);
 	              }
 	            }
@@ -1150,7 +1150,7 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
                 r += "</tr> </thead>";
                 r += "<tbody>";
 
-                users = surveyScc.getUserByQuestion(new ForeignPK(question.getPK()));
+                users = surveyScc.getUserByQuestion(new ResourceReference(question.getPK()));
                 String saveUser = "";
                 Iterator itU = users.iterator();
                 while (itU.hasNext())
@@ -1164,7 +1164,7 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
 	                	r += "<tr><td align=\"left\" width=\"40%\" class=\"displayUserName\"><a href=\"javaScript:onClick=viewResultByUser('"+userId+"','"+userName+"');\">"+Encode.javaStringToHtmlString(userName)+"</a></td>";
 	                	// rechercher les réponses pour cet utilisateur
 	                	String value;
-	                	Collection results = surveyScc.getResultByUser(userId, new ForeignPK(question.getPK()));
+	                	Collection results = surveyScc.getResultByUser(userId, new ResourceReference(question.getPK()));
 	                	Iterator it = results.iterator();
 	                	position = 1;
 	                	while (it.hasNext())

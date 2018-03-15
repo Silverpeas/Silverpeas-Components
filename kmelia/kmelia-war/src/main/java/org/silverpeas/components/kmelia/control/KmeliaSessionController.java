@@ -45,7 +45,7 @@ import org.silverpeas.components.kmelia.model.updatechain.UpdateChainDescriptor;
 import org.silverpeas.components.kmelia.search.KmeliaSearchServiceProvider;
 import org.silverpeas.components.kmelia.service.KmeliaHelper;
 import org.silverpeas.components.kmelia.service.KmeliaService;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.ObjectType;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.GlobalContext;
@@ -250,11 +250,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     init();
   }
 
-  public static List<String> getLanguagesOfAttachments(ForeignPK foreignPK) {
+  public static List<String> getLanguagesOfAttachments(ResourceReference resourceReference) {
     List<String> languages = new ArrayList<>();
     for (String availableLanguage : I18NHelper.getAllSupportedLanguages()) {
       List<SimpleDocument> attachments = AttachmentServiceProvider.getAttachmentService()
-          .listDocumentsByForeignKeyAndType(foreignPK, DocumentType.attachment, availableLanguage);
+          .listDocumentsByForeignKeyAndType(resourceReference, DocumentType.attachment, availableLanguage);
       for (SimpleDocument attachment : attachments) {
         if (availableLanguage.equalsIgnoreCase(attachment.getLanguage())) {
           languages.add(availableLanguage);
@@ -1071,7 +1071,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
    * @param pubId publication which you want removes the external link
    * @param links list of links to remove
    */
-  public void deleteInfoLinks(String pubId, List<ForeignPK> links) {
+  public void deleteInfoLinks(String pubId, List<ResourceReference> links) {
     getKmeliaService().deleteInfoLinks(getPublicationPK(pubId), links);
 
     // reset current publication
@@ -1084,7 +1084,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
    * @param pubId publication which you want removes the external link
    * @param links list of links to remove
    */
-  public void addInfoLinks(String pubId, List<ForeignPK> links) {
+  public void addInfoLinks(String pubId, List<ResourceReference> links) {
     getKmeliaService().addInfoLinks(getPublicationPK(pubId), links);
 
     // reset current publication
@@ -1099,9 +1099,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController
    * @see KmeliaPublication
    */
   public List<KmeliaPublication> getLinkedVisiblePublications() {
-    List<ForeignPK> seeAlsoList = getSessionPublication().getCompleteDetail().getLinkList();
-    List<ForeignPK> authorizedSeeAlsoList = new ArrayList<>();
-    for (ForeignPK curFPK : seeAlsoList) {
+    List<ResourceReference> seeAlsoList = getSessionPublication().getCompleteDetail().getLinkList();
+    List<ResourceReference> authorizedSeeAlsoList = new ArrayList<>();
+    for (ResourceReference curFPK : seeAlsoList) {
       String curComponentId = curFPK.getComponentName();
       // check if user have access to application
       if (curComponentId != null &&
@@ -1131,19 +1131,19 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     KmeliaPublication publication = getKmeliaService().getPublication(pubPK);
     PublicationDetail publicationDetail = publication.getDetail();
 
-    ForeignPK foreignPK = new ForeignPK(pubId, getComponentId());
+    ResourceReference resourceReference = new ResourceReference(pubId, getComponentId());
     if (!publicationDetail.getPK().getInstanceId().equals(getComponentId())) {
       // it's an alias
-      foreignPK.setComponentName(publicationDetail.getPK().getInstanceId());
+      resourceReference.setComponentName(publicationDetail.getPK().getInstanceId());
     }
 
     if (getSessionPublication() != null) {
       if (!pubId.equals(getSessionPublication().getId())) {
         // memorize the reading of the publication by the user
-        getStatisticService().addStat(getUserId(), foreignPK, 1, PUBLICATION);
+        getStatisticService().addStat(getUserId(), resourceReference, 1, PUBLICATION);
       }
     } else {
-      getStatisticService().addStat(getUserId(), foreignPK, 1, PUBLICATION);
+      getStatisticService().addStat(getUserId(), resourceReference, 1, PUBLICATION);
     }
 
     if (processIndex) {
@@ -1436,7 +1436,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
    * @param links
    * @return
    */
-  public synchronized Collection<KmeliaPublication> getPublications(List<ForeignPK> links) {
+  public synchronized Collection<KmeliaPublication> getPublications(List<ResourceReference> links) {
     return getKmeliaService().getPublications(links, getUserId(), true);
   }
 
@@ -1578,10 +1578,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController
    * @return the number of links created
    */
   public int addPublicationsToLink(String pubId, Set<String> links) {
-    List<ForeignPK> infoLinks = new ArrayList<>();
+    List<ResourceReference> infoLinks = new ArrayList<>();
     for (String link : links) {
       StringTokenizer tokens = new StringTokenizer(link, "-");
-      infoLinks.add(new ForeignPK(tokens.nextToken(), tokens.nextToken()));
+      infoLinks.add(new ResourceReference(tokens.nextToken(), tokens.nextToken()));
     }
     addInfoLinks(pubId, infoLinks);
     return infoLinks.size();
@@ -2752,7 +2752,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     PublicationPK pubPK = getSessionPubliOrClone().getDetail().getPK();
     // get attachments languages
     List<String> languages = new ArrayList<>();
-    List<String> attLanguages = getLanguagesOfAttachments(new ForeignPK(pubPK.getId(), pubPK.
+    List<String> attLanguages = getLanguagesOfAttachments(new ResourceReference(pubPK.getId(), pubPK.
         getInstanceId()));
     for (String language : attLanguages) {
       if (!languages.contains(language)) {

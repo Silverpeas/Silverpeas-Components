@@ -25,7 +25,7 @@ package org.silverpeas.components.suggestionbox.repository;
 
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteria;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
@@ -142,7 +142,7 @@ public class SuggestionRepository implements EntityRepository<Suggestion> {
       WysiwygController
           .deleteWysiwygAttachments(suggestion.getComponentInstanceId(), suggestion.getId());
       commentService.deleteAllCommentsOnPublication(suggestion.getContributionType(),
-          new ForeignPK(suggestion.getId(), suggestion.getComponentInstanceId()));
+          new ResourceReference(suggestion.getId(), suggestion.getComponentInstanceId()));
     }
   }
 
@@ -202,7 +202,7 @@ public class SuggestionRepository implements EntityRepository<Suggestion> {
   private void withCommentCount(final Suggestion suggestion) {
     if (suggestion != null) {
       int count = commentService.getCommentsCountOnPublication(suggestion.getContributionType(),
-          new ForeignPK(suggestion.getId(), suggestion.getComponentInstanceId()));
+          new ResourceReference(suggestion.getId(), suggestion.getComponentInstanceId()));
       suggestion.setCommentCount(count);
     }
   }
@@ -223,7 +223,7 @@ public class SuggestionRepository implements EntityRepository<Suggestion> {
       indexEntry.setCreationDate(suggestion.getValidation().getDate());
       indexEntry.setCreationUser(suggestion.getCreatorId());
       WysiwygController.addToIndex(indexEntry,
-          new ForeignPK(suggestion.getId(), suggestion.getComponentInstanceId()), null);
+          new ResourceReference(suggestion.getId(), suggestion.getComponentInstanceId()), null);
       IndexEngineProxy.addIndexEntry(indexEntry);
     }
   }

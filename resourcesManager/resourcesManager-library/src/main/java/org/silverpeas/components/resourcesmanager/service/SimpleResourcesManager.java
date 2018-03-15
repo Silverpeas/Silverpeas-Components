@@ -39,7 +39,7 @@ import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
@@ -253,7 +253,7 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
   public void deleteReservation(Long id, String componentId) {
     deleteIndex(id, "Reservation", componentId);
     List<SimpleDocument> documents = AttachmentServiceProvider.getAttachmentService()
-        .listDocumentsByForeignKey(new ForeignPK(id.toString(), componentId), null);
+        .listDocumentsByForeignKey(new ResourceReference(id.toString(), componentId), null);
     for (SimpleDocument document : documents) {
       AttachmentServiceProvider.getAttachmentService().deleteAttachment(document);
     }

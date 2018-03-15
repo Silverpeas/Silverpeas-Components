@@ -23,7 +23,7 @@ package org.silverpeas.components.kmelia.servlets;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.components.kmelia.KmeliaAuthorization;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
@@ -95,7 +95,7 @@ public class AliasFileServer extends HttpServlet {
       attachment = AttachmentServiceProvider.getAttachmentService().
           searchDocumentById(new SimpleDocumentPK(attachmentId), language);
       if (attachment != null) {
-        foreignKey = new ForeignPK(attachment.getForeignId(), attachment.getInstanceId());
+        foreignKey = new ResourceReference(attachment.getForeignId(), attachment.getInstanceId());
       }
     }
 

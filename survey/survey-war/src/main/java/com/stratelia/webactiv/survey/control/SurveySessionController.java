@@ -26,7 +26,7 @@ package com.stratelia.webactiv.survey.control;
 import com.stratelia.webactiv.survey.SurveyException;
 import com.stratelia.webactiv.survey.notification.SurveyUserNotification;
 import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
@@ -401,11 +401,11 @@ public class SurveySessionController extends AbstractComponentSessionController 
     }
   }
 
-  public Collection<String> getUserByQuestion(ForeignPK questionPK) {
+  public Collection<String> getUserByQuestion(ResourceReference questionPK) {
     return getUserByQuestion(questionPK, true);
   }
 
-  public Collection<String> getUserByQuestion(ForeignPK questionPK, boolean withName) {
+  public Collection<String> getUserByQuestion(ResourceReference questionPK, boolean withName) {
     // return list declaration
     Collection<String> users = new LinkedHashSet<>();
     Collection<QuestionResult> results =
@@ -423,7 +423,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
     return users;
   }
 
-  public Collection<QuestionResult> getResultByUser(String userId, ForeignPK questionPK) {
+  public Collection<QuestionResult> getResultByUser(String userId, ResourceReference questionPK) {
     return getQuestionResultService().getUserQuestionResultsToQuestion(userId, questionPK);
   }
 
@@ -434,7 +434,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
     Collection<Question> questions = survey.getQuestions();
     for (final Question question : questions) {
       Collection<QuestionResult> questionResult = getQuestionResultService()
-          .getUserQuestionResultsToQuestion(userId, new ForeignPK(question.getPK()));
+          .getUserQuestionResultsToQuestion(userId, new ResourceReference(question.getPK()));
       result.addAll(questionResult);
     }
     // Only retrieve response identifiers
@@ -513,7 +513,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
     QuestionContainerDetail survey = getSurvey(surveyId);
     Collection<Question> questions = survey.getQuestions();
     for (Question question : questions) {
-      ForeignPK questionPK = new ForeignPK(question.getPK());
+      ResourceReference questionPK = new ResourceReference(question.getPK());
       users.addAll(getUserByQuestion(questionPK, false));
     }
     return users;

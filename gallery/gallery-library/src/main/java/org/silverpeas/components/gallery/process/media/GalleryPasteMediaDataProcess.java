@@ -27,7 +27,7 @@ import org.silverpeas.components.gallery.dao.MediaDAO;
 import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.components.gallery.model.MediaPK;
 import org.silverpeas.components.gallery.process.AbstractGalleryDataProcess;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.comment.service.CommentServiceProvider;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.RecordSet;
@@ -60,8 +60,8 @@ public class GalleryPasteMediaDataProcess extends AbstractGalleryDataProcess {
   private final boolean isCutted;
 
   private boolean isSameComponentInstanceDestination = true;
-  private ForeignPK fromForeignPK = null;
-  private ForeignPK toForeignPK = null;
+  private ResourceReference fromResourceReference = null;
+  private ResourceReference toResourceReference = null;
   private MediaPK toMediaPK = null;
 
   /**
@@ -105,7 +105,7 @@ public class GalleryPasteMediaDataProcess extends AbstractGalleryDataProcess {
     // Initializing variables
     isSameComponentInstanceDestination =
         fromMediaPk.getInstanceId().equals(context.getComponentInstanceId());
-    fromForeignPK = new ForeignPK(getMedia().getId(), fromMediaPk.getInstanceId());
+    fromResourceReference = new ResourceReference(getMedia().getId(), fromMediaPk.getInstanceId());
 
     // If the destination application is different from the original, then update destination
     // information and user data
@@ -131,7 +131,7 @@ public class GalleryPasteMediaDataProcess extends AbstractGalleryDataProcess {
     }
 
     // Initializing variables after media creation
-    toForeignPK = new ForeignPK(getMedia().getId(), context.getComponentInstanceId());
+    toResourceReference = new ResourceReference(getMedia().getId(), context.getComponentInstanceId());
     toMediaPK = new MediaPK(getMedia().getId(), context.getComponentInstanceId());
 
     // Commons
@@ -166,7 +166,8 @@ public class GalleryPasteMediaDataProcess extends AbstractGalleryDataProcess {
 
       // move comments
       CommentServiceProvider.getCommentService()
-          .moveAndReindexComments(getMedia().getContributionType(), fromForeignPK, toForeignPK);
+          .moveAndReindexComments(getMedia().getContributionType(), fromResourceReference,
+              toResourceReference);
 
       // XML Form
       pasteXmlForm(context);
@@ -193,7 +194,8 @@ public class GalleryPasteMediaDataProcess extends AbstractGalleryDataProcess {
 
           // Getting the recordset
           GenericRecordSet toRecordset = getPublicationTemplateManager()
-              .addDynamicPublicationTemplate(toForeignPK.getInstanceId() + ":" + xmlFormShortName,
+              .addDynamicPublicationTemplate(
+                  toResourceReference.getInstanceId() + ":" + xmlFormShortName,
                   xmlFormShortName + ".xml");
 
           PublicationTemplate pubTemplate = getPublicationTemplateManager()
@@ -201,9 +203,9 @@ public class GalleryPasteMediaDataProcess extends AbstractGalleryDataProcess {
           RecordSet set = pubTemplate.getRecordSet();
 
           if (!isCutted) {
-            set.copy(fromForeignPK, toForeignPK, toRecordset.getRecordTemplate(), null);
+            set.copy(fromResourceReference, toResourceReference, toRecordset.getRecordTemplate(), null);
           } else {
-            set.move(fromForeignPK, toForeignPK, toRecordset.getRecordTemplate());
+            set.move(fromResourceReference, toResourceReference, toRecordset.getRecordTemplate());
           }
         }
       } catch (final PublicationTemplateException e) {

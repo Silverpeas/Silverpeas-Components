@@ -28,10 +28,10 @@ import java.util.List;
 
 import javax.servlet.jsp.JspWriter;
 
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 
-import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.util.StringUtil;
 
 import org.silverpeas.core.util.URLUtil;
@@ -328,7 +328,7 @@ public class KmeliaDisplayHelper {
 
   public static void displayUserAttachmentsView(PublicationDetail pubDetail, String webContext,
       JspWriter out, String lang, boolean showIcon, MultiSilverpeasBundle resources) throws IOException {
-    ForeignPK foreignKey = new ForeignPK(pubDetail.getPK());
+    ResourceReference foreignKey = new ResourceReference(pubDetail.getPK());
     List<SimpleDocument> documents = AttachmentServiceProvider.getAttachmentService()
         .listDocumentsByForeignKey(foreignKey, lang);
 

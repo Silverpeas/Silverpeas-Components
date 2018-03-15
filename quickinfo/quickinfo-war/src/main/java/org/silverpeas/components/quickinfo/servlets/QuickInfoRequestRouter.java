@@ -24,7 +24,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.quickinfo.NewsByStatus;
 import org.silverpeas.components.quickinfo.control.QuickInfoSessionController;
 import org.silverpeas.components.quickinfo.model.News;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.date.period.Period;
@@ -223,7 +223,7 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
 
     // process thumbnail first to be stored in index when publication is updated
     ThumbnailController
-        .processThumbnail(new ForeignPK(news.getPublicationId(), quickInfo.getComponentId()),
+        .processThumbnail(new ResourceReference(news.getPublicationId(), quickInfo.getComponentId()),
             PublicationDetail.getResourceType(), items);
 
     // process files

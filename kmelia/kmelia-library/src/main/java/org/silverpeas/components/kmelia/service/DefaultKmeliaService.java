@@ -34,7 +34,7 @@ import org.silverpeas.components.kmelia.model.TopicComparator;
 import org.silverpeas.components.kmelia.model.TopicDetail;
 import org.silverpeas.components.kmelia.notification.*;
 import org.silverpeas.core.ActionType;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.ObjectType;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.service.OrganizationController;
@@ -1316,27 +1316,30 @@ public class DefaultKmeliaService implements KmeliaService {
       @TargetPK NodePK to, String userId) {
 
     try {
-      ForeignPK fromForeignPK = new ForeignPK(pub.getPK());
+      ResourceReference fromResourceReference = new ResourceReference(pub.getPK());
       String fromComponentId = pub.getInstanceId();
-      ForeignPK toPubliForeignPK = new ForeignPK(pub.getId(), to);
+      ResourceReference toPubliResourceReference =
+          new ResourceReference(pub.getId(), to.getInstanceId());
 
       // remove index relative to publication
       unIndexExternalElementsOfPublication(pub.getPK());
 
       // move thumbnail
-      ThumbnailController.moveThumbnail(fromForeignPK, toPubliForeignPK);
+      ThumbnailController.moveThumbnail(fromResourceReference, toPubliResourceReference);
 
-      moveAdditionalFiles(pub, fromForeignPK, toPubliForeignPK);
+      moveAdditionalFiles(pub, fromResourceReference, toPubliResourceReference);
 
       // change images path in wysiwyg
-      WysiwygController.wysiwygPlaceHaveChanged(fromForeignPK.getInstanceId(), pub.getPK().getId(),
+      WysiwygController.wysiwygPlaceHaveChanged(fromResourceReference.getInstanceId(),
+          pub.getPK().getId(),
           to.getInstanceId(), pub.getPK().getId());
 
       // move regular files
       List<SimpleDocument> docs = AttachmentServiceProvider.getAttachmentService().
-          listDocumentsByForeignKeyAndType(fromForeignPK, DocumentType.attachment, null);
+          listDocumentsByForeignKeyAndType(fromResourceReference, DocumentType.attachment, null);
       for (SimpleDocument doc : docs) {
-        AttachmentServiceProvider.getAttachmentService().moveDocument(doc, toPubliForeignPK);
+        AttachmentServiceProvider.getAttachmentService()
+            .moveDocument(doc, toPubliResourceReference);
       }
 
       // move form content
@@ -1354,12 +1357,12 @@ public class DefaultKmeliaService implements KmeliaService {
             getPublicationTemplate(fromComponentId + ":" + pub.getInfoId());
 
         RecordSet set = pubTemplateFrom.getRecordSet();
-        set.move(fromForeignPK, toPubliForeignPK, toRecordTemplate);
+        set.move(fromResourceReference, toPubliResourceReference, toRecordTemplate);
       }
 
       // move comments
-      getCommentService()
-          .moveComments(PublicationDetail.getResourceType(), fromForeignPK, toPubliForeignPK);
+      getCommentService().moveComments(PublicationDetail.getResourceType(), fromResourceReference,
+          toPubliResourceReference);
 
       // move pdc positions
       // Careful! positions must be moved according to taxonomy restrictions of target application
@@ -1372,7 +1375,7 @@ public class DefaultKmeliaService implements KmeliaService {
       deleteSilverContent(pub.getPK());
 
       // move statistics
-      statisticService.moveStat(toPubliForeignPK, 1, PUBLICATION);
+      statisticService.moveStat(toPubliResourceReference, 1, PUBLICATION);
 
       // move publication itself
       publicationService.movePublication(pub.getPK(), to, false);
@@ -1395,15 +1398,17 @@ public class DefaultKmeliaService implements KmeliaService {
   }
 
   private void moveAdditionalFiles(final @SourcePK PublicationDetail pub,
-      final ForeignPK fromForeignPK, final ForeignPK toPubliForeignPK) {
+      final ResourceReference fromResourceReference,
+      final ResourceReference toPubliResourceReference) {
     try {
       // move additional files
       List<SimpleDocument> documents = AttachmentServiceProvider.getAttachmentService().
-          listDocumentsByForeignKeyAndType(fromForeignPK, DocumentType.image, null);
+          listDocumentsByForeignKeyAndType(fromResourceReference, DocumentType.image, null);
       documents.addAll(AttachmentServiceProvider.getAttachmentService().
-          listDocumentsByForeignKeyAndType(fromForeignPK, DocumentType.wysiwyg, null));
+          listDocumentsByForeignKeyAndType(fromResourceReference, DocumentType.wysiwyg, null));
       for (SimpleDocument doc : documents) {
-        AttachmentServiceProvider.getAttachmentService().moveDocument(doc, toPubliForeignPK);
+        AttachmentServiceProvider.getAttachmentService()
+            .moveDocument(doc, toPubliResourceReference);
       }
     } catch (AttachmentException e) {
       SilverLogger.getLogger(this)
@@ -1783,7 +1788,7 @@ public class DefaultKmeliaService implements KmeliaService {
    */
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
-  public void addInfoLinks(PublicationPK pubPK, List<ForeignPK> links) {
+  public void addInfoLinks(PublicationPK pubPK, List<ResourceReference> links) {
     try {
       publicationService.addLinks(pubPK, links);
     } catch (Exception e) {
@@ -1793,7 +1798,7 @@ public class DefaultKmeliaService implements KmeliaService {
 
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
-  public void deleteInfoLinks(PublicationPK pubPK, List<ForeignPK> links) {
+  public void deleteInfoLinks(PublicationPK pubPK, List<ResourceReference> links) {
     try {
       publicationService.deleteInfoLinks(pubPK, links);
     } catch (Exception e) {
@@ -1898,11 +1903,11 @@ public class DefaultKmeliaService implements KmeliaService {
    * @return a list of PublicationDetail
    */
   @Override
-  public Collection<PublicationDetail> getPublicationDetails(List<ForeignPK> links) {
+  public Collection<PublicationDetail> getPublicationDetails(List<ResourceReference> links) {
     Collection<PublicationDetail> publications = null;
     List<PublicationPK> publicationPKs = new ArrayList<>();
 
-    for (ForeignPK link : links) {
+    for (ResourceReference link : links) {
       PublicationPK pubPK = new PublicationPK(link.getId(), link.getInstanceId());
       publicationPKs.add(pubPK);
     }
@@ -1924,16 +1929,16 @@ public class DefaultKmeliaService implements KmeliaService {
    * @since 1.0
    */
   @Override
-  public Collection<KmeliaPublication> getPublications(List<ForeignPK> links, String userId,
+  public Collection<KmeliaPublication> getPublications(List<ResourceReference> links, String userId,
       boolean isRightsOnTopicsUsed) {
     // initialization of the publications list
-    List<ForeignPK> allowedPublicationIds = new ArrayList<>(links);
+    List<ResourceReference> allowedPublicationIds = new ArrayList<>(links);
     if (isRightsOnTopicsUsed) {
       KmeliaAuthorization security = new KmeliaAuthorization();
       allowedPublicationIds.clear();
 
       // check if the publication is authorized for current user
-      for (ForeignPK link : links) {
+      for (ResourceReference link : links) {
         if (security.isObjectAvailable(link.getInstanceId(), userId, link.getId(),
             KmeliaAuthorization.PUBLICATION_TYPE)) {
           allowedPublicationIds.add(link);
@@ -1957,9 +1962,9 @@ public class DefaultKmeliaService implements KmeliaService {
   public List<KmeliaPublication> getLinkedPublications(KmeliaPublication publication,
       String userId) {
     KmeliaAuthorization security = new KmeliaAuthorization();
-    List<ForeignPK> allLinkIds = publication.getCompleteDetail().getLinkList();
+    List<ResourceReference> allLinkIds = publication.getCompleteDetail().getLinkList();
     List<KmeliaPublication> authorizedLinks = new ArrayList<>(allLinkIds.size());
-    for (ForeignPK linkId : allLinkIds) {
+    for (ResourceReference linkId : allLinkIds) {
       if (security.isAccessAuthorized(linkId.getInstanceId(), userId, linkId.getId())) {
         PublicationPK pubPk = new PublicationPK(linkId.getId(), linkId.getInstanceId());
         authorizedLinks.add(KmeliaPublication.aKmeliaPublicationWithPk(pubPk));
@@ -1976,9 +1981,9 @@ public class DefaultKmeliaService implements KmeliaService {
    */
   @Override
   public List<KmeliaPublication> getLinkedPublications(KmeliaPublication publication) {
-    List<ForeignPK> allLinkIds = publication.getCompleteDetail().getLinkList();
+    List<ResourceReference> allLinkIds = publication.getCompleteDetail().getLinkList();
     List<KmeliaPublication> linkedPublications = new ArrayList<>(allLinkIds.size());
-    for (ForeignPK linkId : allLinkIds) {
+    for (ResourceReference linkId : allLinkIds) {
       PublicationPK pubPk = new PublicationPK(linkId.getId(), linkId.getInstanceId());
       linkedPublications.add(KmeliaPublication.aKmeliaPublicationWithPk(pubPk));
     }
@@ -2422,8 +2427,8 @@ public class DefaultKmeliaService implements KmeliaService {
     if (!"-1".equals(cloneId)) {
       currentPubDetail = clonePublication(cloneId, pubPK, validatorUserId, validationDate);
       // merge des fichiers joints
-      ForeignPK pkFrom = new ForeignPK(pubPK.getId(), pubPK.getInstanceId());
-      ForeignPK pkTo = new ForeignPK(cloneId, pubPK.getInstanceId());
+      ResourceReference pkFrom = new ResourceReference(pubPK.getId(), pubPK.getInstanceId());
+      ResourceReference pkTo = new ResourceReference(cloneId, pubPK.getInstanceId());
       Map<String, String> attachmentIds = AttachmentServiceProvider.getAttachmentService().
           mergeDocuments(pkFrom, pkTo, DocumentType.attachment);
       // merge du contenu XMLModel
@@ -2748,7 +2753,7 @@ public class DefaultKmeliaService implements KmeliaService {
   @Override
   public void deleteAllReadingControlsByPublication(PublicationPK pubPK) {
     try {
-      statisticService.deleteStats(new ForeignPK(pubPK.getId(), pubPK.getInstanceId()),
+      statisticService.deleteStats(new ResourceReference(pubPK.getId(), pubPK.getInstanceId()),
           PUBLICATION);
     } catch (Exception e) {
       throw new KmeliaRuntimeException(e);
@@ -2760,7 +2765,7 @@ public class DefaultKmeliaService implements KmeliaService {
       String excludedUserId) {
 
     Collection<HistoryObjectDetail> allAccess =
-        statisticService.getHistoryByAction(new ForeignPK(pk), 1, PUBLICATION);
+        statisticService.getHistoryByAction(new ResourceReference(pk), 1, PUBLICATION);
     List<String> userIds = getUserIdsOfFolder(nodePK);
     List<String> readerIds = new ArrayList<>();
 
@@ -3942,7 +3947,7 @@ public class DefaultKmeliaService implements KmeliaService {
 
       // clone attachments
       List<SimpleDocument> documents = AttachmentServiceProvider.getAttachmentService()
-          .listDocumentsByForeignKey(new ForeignPK(fromId, fromComponentId), null);
+          .listDocumentsByForeignKey(new ResourceReference(fromId, fromComponentId), null);
       Map<String, String> attachmentIds = new HashMap<>(documents.size());
       for (SimpleDocument document : documents) {
         AttachmentServiceProvider.getAttachmentService().cloneDocument(document, cloneId);
@@ -4561,7 +4566,8 @@ public class DefaultKmeliaService implements KmeliaService {
     NodePK nodePK = copyDetail.getToNodePK();
     String userId = copyDetail.getUserId();
     try {
-      ForeignPK toForeignPK = new ForeignPK(UNKNOWN, nodePK);
+      ResourceReference toResourceReference =
+          new ResourceReference(ResourceReference.UNKNOWN_ID, nodePK.getInstanceId());
       PublicationPK toPubPK = new PublicationPK(UNKNOWN, nodePK);
       String toComponentId = nodePK.getInstanceId();
 
@@ -4601,7 +4607,8 @@ public class DefaultKmeliaService implements KmeliaService {
 
       String fromId = publiToCopy.getPK().getId();
       String fromComponentId = publiToCopy.getPK().getInstanceId();
-      ForeignPK fromForeignPK = new ForeignPK(publiToCopy.getPK().getId(), fromComponentId);
+      ResourceReference fromResourceReference =
+          new ResourceReference(publiToCopy.getPK().getId(), fromComponentId);
       PublicationPK fromPubPK = new PublicationPK(publiToCopy.getPK().getId(), fromComponentId);
 
       if (copyDetail.isAdministrativeOperation()) {
@@ -4615,10 +4622,10 @@ public class DefaultKmeliaService implements KmeliaService {
       String id = createPublicationIntoTopic(newPubli, nodePK);
       // update id cause new publication is created
       toPubPK.setId(id);
-      toForeignPK.setId(id);
+      toResourceReference.setId(id);
 
       // Copy vignette
-      ThumbnailController.copyThumbnail(fromForeignPK, toForeignPK);
+      ThumbnailController.copyThumbnail(fromResourceReference, toResourceReference);
 
       // Copy positions on Pdc
       if (copyDetail.isPublicationPositionsMustBeCopied()) {
@@ -4647,7 +4654,8 @@ public class DefaultKmeliaService implements KmeliaService {
               .getPublicationTemplate(fromComponentId + ":" + xmlFormShortName);
           RecordSet set = pubTemplate.getRecordSet();
 
-          set.copy(fromForeignPK, toForeignPK, toRecordset.getRecordTemplate(), fileIds);
+          set.copy(fromResourceReference, toResourceReference, toRecordset.getRecordTemplate(),
+              fileIds);
         } else {
           // paste wysiwyg
           WysiwygController.copy(fromComponentId, fromId, toPubPK.getInstanceId(), id, userId);
@@ -4670,7 +4678,7 @@ public class DefaultKmeliaService implements KmeliaService {
         listDocumentsByForeignKeyAndType(fromPK, DocumentType.attachment, null);
     for (SimpleDocument origin : origins) {
       SimpleDocumentPK copyPk = AttachmentServiceProvider.getAttachmentService()
-          .copyDocument(origin, new ForeignPK(toPK));
+          .copyDocument(origin, new ResourceReference(toPK));
       fileIds.put(origin.getId(), copyPk.getId());
     }
     return fileIds;
