@@ -213,7 +213,7 @@ public class SendInKmelia extends ExternalActionImpl {
     }
   }
 
-  public void populateFields(String pubId, ForeignPK fromPK, ForeignPK toPK) {
+  private void populateFields(String pubId, ForeignPK fromPK, ForeignPK toPK) {
     // Get the current instance
     UpdatableProcessInstance currentProcessInstance = (UpdatableProcessInstance) getProcessInstance();
     try {
@@ -232,14 +232,14 @@ public class SendInKmelia extends ExternalActionImpl {
           fieldValue = fieldOfFolder.getObjectValue();
           // Check file attachment in order to put them inside form
           if (fieldOfFolder instanceof FileField) {
-
             fieldValue = copyFormFile(fromPK, toPK, ((FileField) fieldOfFolder).getAttachmentId());
           } else if ("wysiwyg".equals(fieldTemplate.getDisplayerName())) {
             WysiwygFCKFieldDisplayer displayer = new WysiwygFCKFieldDisplayer();
-            fieldValue = displayer.duplicateContent(fieldOfFolder, fieldTemplate, fromPK, toPK,
+            fieldValue = displayer.duplicateContent(fieldTemplate, fromPK, toPK,
                 I18NHelper.defaultLanguage);
           }
         } catch (WorkflowException e) {
+          SilverLogger.getLogger(this).error("Error when populating field : "+fieldName, e);
         }
         record.getField(fieldName).setObjectValue(fieldValue);
       }
