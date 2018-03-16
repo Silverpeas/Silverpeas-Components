@@ -99,14 +99,6 @@
 
   <div class="field" id="contentArea">
     <div class="champs">
-      <div class="container-wysiwyg wysiwyg-fileStorage">
-
-        <viewTags:displayToolBarWysiwyg
-            editorName="Content"
-            componentId="<%=componentId%>"
-            objectId="${parution}" />
-      </div>
-
       <textarea rows="5" cols="10" name="editor" id="Content">${parutionContent}</textarea>
     </div>
   </div>

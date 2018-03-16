@@ -273,9 +273,9 @@
         <parameter>
           <name>viewInWysiwyg</name>
           <label>
-            <message lang="fr">Images réutilisables</message>
-            <message lang="en">Reusable images</message>
-            <message lang="de">Wiederverwendbare Bilder</message>
+            <message lang="fr">Banque d'images</message>
+            <message lang="en">Image store</message>
+            <message lang="de">Bildbank</message>
           </label>
           <order>10</order>
           <mandatory>true</mandatory>
@@ -283,8 +283,8 @@
           <type>checkbox</type>
           <updatable>always</updatable>
           <help>
-            <message lang="fr">Permet d'utiliser les images de cette application depuis l'éditeur Wysiwyg et les applications Vote et Enquête</message>
-            <message lang="en">Images will be available from Wysiwyg editor and Vote and Survey applications</message>
+            <message lang="fr">Permet d'utiliser les images de cette application depuis l'éditeur WYSIWYG et les applications Vote et Enquête</message>
+            <message lang="en">Images will be available from WYSIWYG editor and Vote and Survey applications</message>
             <message lang="de">Bilder werden von WYSIWYG-Editor, Abstimmung und Umfrage Komponent verfügbar sein</message>
           </help>
           <warning>

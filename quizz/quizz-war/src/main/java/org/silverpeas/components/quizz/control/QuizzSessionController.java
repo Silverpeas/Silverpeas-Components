@@ -26,7 +26,6 @@ package org.silverpeas.components.quizz.control;
 import org.silverpeas.components.quizz.QuizzException;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.clipboard.ClipboardException;
 import org.silverpeas.core.clipboard.ClipboardSelection;
 import org.silverpeas.core.exception.DecodingException;
@@ -57,7 +56,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
@@ -533,21 +531,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
   }
 
   public List<ComponentInstLight> getGalleries() {
-    List<ComponentInstLight> galleries = null;
-    OrganizationController orgaController =
-        OrganizationControllerProvider.getOrganisationController();
-    String[] compoIds = orgaController.getCompoId("gallery");
-    for (final String compoId : compoIds) {
-      if ("yes".equalsIgnoreCase(
-          orgaController.getComponentParameterValue("gallery" + compoId, "viewInWysiwyg"))) {
-        if (galleries == null) {
-          galleries = new ArrayList<>();
-        }
-        ComponentInstLight gallery = orgaController.getComponentInstLight("gallery" + compoId);
-        galleries.add(gallery);
-      }
-    }
-    return galleries;
+    return OrganizationController.get().getComponentsWithParameterValue("viewInWysiwyg", "yes");
   }
 
   public boolean isPdcUsed() {
