@@ -1690,16 +1690,17 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   public void setCurrentFolderId(String id, boolean resetSessionPublication) {
-    if (!id.equals(currentFolderId) &&
-        !KmeliaHelper.SPECIALFOLDER_TOVALIDATE.equalsIgnoreCase(id)) {
+    if (!id.equals(currentFolderId)) {
       indexOfFirstPubToDisplay = 0;
       resetSelectedPublicationPKs();
       setSearchContext(null);
-      Collection<NodeDetail> pathColl = getTopicPath(id);
-      String linkedPathString = displayPath(pathColl, true, 3);
-      String pathString = displayPath(pathColl, false, 3);
-      setSessionPath(linkedPathString);
-      setSessionPathString(pathString);
+      if (!KmeliaHelper.SPECIALFOLDER_TOVALIDATE.equalsIgnoreCase(id)) {
+        Collection<NodeDetail> pathColl = getTopicPath(id);
+        String linkedPathString = displayPath(pathColl, true, 3);
+        String pathString = displayPath(pathColl, false, 3);
+        setSessionPath(linkedPathString);
+        setSessionPathString(pathString);
+      }
     }
     if (resetSessionPublication) {
       setSessionPublication(null);
