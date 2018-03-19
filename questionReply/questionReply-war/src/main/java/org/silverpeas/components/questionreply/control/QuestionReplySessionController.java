@@ -58,7 +58,7 @@ import org.silverpeas.core.notification.user.client.UserRecipient;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.pdc.pdc.model.SearchContext;
-import org.silverpeas.core.pdc.pdc.service.GlobalPdcManager;
+import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.persistence.jdbc.bean.IdPK;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.DateUtil;
@@ -485,7 +485,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    */
   public SearchContext getSilverContentIdPosition() throws QuestionReplyException {
     try {
-      return new GlobalPdcManager()
+      return PdcManager.get()
           .getSilverContentIdSearchContext(Integer.parseInt(getCurrentQuestionContentId()),
               getComponentId());
     } catch (Exception e) {
@@ -541,7 +541,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       // question
       SearchContext position = getSilverContentIdPosition();
       if (position != null && !position.isEmpty()) {
-        GlobalPdcManager pdc = new GlobalPdcManager();
+        PdcManager pdc = PdcManager.get();
         List<Integer> liste = pdc.findSilverContentIdByPosition(position, listeInstanceId);
 
         CardManager cardManager = CardManager.getInstance();

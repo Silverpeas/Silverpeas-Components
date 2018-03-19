@@ -44,7 +44,6 @@ import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
-import org.silverpeas.core.pdc.pdc.service.GlobalPdcManager;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.bean.IdPK;
@@ -363,7 +362,7 @@ public class CardManager {
       throws ContentManagerException, PdcException {
     ContentManager aContentManager = ContentManagerProvider.getContentManager();
     int contentId = aContentManager.getSilverContentId(card.getPK().getId(), card.getInstanceId());
-    PdcManager pdcManager = new GlobalPdcManager();
+    PdcManager pdcManager = PdcManager.get();
 
     List<ClassifyPosition> positions = pdcManager.getPositions(contentId, card.getInstanceId());
     return !positions.isEmpty();

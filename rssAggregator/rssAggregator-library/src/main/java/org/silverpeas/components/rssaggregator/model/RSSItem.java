@@ -258,7 +258,7 @@ public class RSSItem implements Serializable, Comparable<RSSItem> {
     }
 
     public long getId() {
-      return SEED + (long)Math.abs(rand.nextInt());
+      return SEED + rand.nextLong();
     }
   }
 }

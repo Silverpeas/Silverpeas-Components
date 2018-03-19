@@ -23,35 +23,6 @@
  */
 package org.silverpeas.components.whitepages.control;
 
-import org.silverpeas.core.admin.domain.DomainDriverManagerProvider;
-import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.contribution.content.form.DataRecord;
-import org.silverpeas.core.contribution.content.form.FieldTemplate;
-import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.contribution.content.form.PagesContext;
-import org.silverpeas.core.contribution.content.form.RecordTemplate;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
-import org.silverpeas.core.index.search.model.SearchResult;
-import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
-import org.silverpeas.core.notification.user.client.NotificationManagerException;
-import org.silverpeas.core.notification.user.client.NotificationMetaData;
-import org.silverpeas.core.notification.user.client.NotificationParameters;
-import org.silverpeas.core.notification.user.client.NotificationSender;
-import org.silverpeas.core.notification.user.client.UserRecipient;
-import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
-import org.silverpeas.core.web.mvc.controller.ComponentContext;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.web.selection.Selection;
-import org.silverpeas.core.admin.service.AdministrationServiceProvider;
-import org.silverpeas.core.admin.component.model.CompoSpace;
-import org.silverpeas.core.admin.domain.DomainDriverManager;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.whitepages.WhitePagesException;
 import org.silverpeas.components.whitepages.model.Card;
@@ -61,17 +32,38 @@ import org.silverpeas.components.whitepages.model.WhitePagesCard;
 import org.silverpeas.components.whitepages.record.UserRecord;
 import org.silverpeas.components.whitepages.record.UserTemplate;
 import org.silverpeas.components.whitepages.service.WhitePageServiceProvider;
+import org.silverpeas.core.admin.component.model.CompoSpace;
+import org.silverpeas.core.admin.domain.DomainDriverManager;
+import org.silverpeas.core.admin.domain.DomainDriverManagerProvider;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.service.AdministrationServiceProvider;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.FieldTemplate;
+import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.PagesContext;
+import org.silverpeas.core.contribution.content.form.RecordTemplate;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
+import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.index.indexing.model.FieldDescription;
+import org.silverpeas.core.index.search.model.SearchResult;
+import org.silverpeas.core.notification.user.client.NotificationManagerException;
+import org.silverpeas.core.notification.user.client.NotificationMetaData;
+import org.silverpeas.core.notification.user.client.NotificationParameters;
+import org.silverpeas.core.notification.user.client.NotificationSender;
+import org.silverpeas.core.notification.user.client.UserRecipient;
 import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.pdc.pdc.model.ClassifyValue;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.pdc.pdc.model.Value;
-import org.silverpeas.core.pdc.pdc.service.GlobalPdcManager;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
-import org.silverpeas.core.util.file.FileUploadUtil;
-import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.Link;
@@ -80,7 +72,14 @@ import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.file.FileUploadUtil;
+import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.selection.Selection;
+import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -931,7 +930,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
 
   private PdcManager getPdcManager() {
     if (pdcManager == null) {
-      pdcManager = new GlobalPdcManager();
+      pdcManager = PdcManager.get();
     }
     return pdcManager;
   }

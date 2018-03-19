@@ -35,7 +35,6 @@ import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.contribution.publication.model.CompletePublication;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
-import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
@@ -43,7 +42,6 @@ import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.security.authorization.AccessController;
 import org.silverpeas.core.security.authorization.AccessControllerProvider;
 import org.silverpeas.core.security.authorization.NodeAccessControl;
-import org.silverpeas.core.silverstatistics.access.model.StatisticRuntimeException;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.ResourceLocator;
@@ -306,12 +304,7 @@ public class KmeliaPublication implements SilverpeasContent {
   }
 
   private StatisticService getStatisticService() {
-    try {
-      return ServiceProvider.getService(StatisticService.class);
-    } catch (Exception e) {
-      throw new StatisticRuntimeException("KmeliaPublication.getStatisticService()",
-          SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
+    return ServiceProvider.getService(StatisticService.class);
   }
 
   private CommentService getCommentService() {

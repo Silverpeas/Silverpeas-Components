@@ -42,7 +42,6 @@ import org.silverpeas.core.io.media.image.thumbnail.control.ThumbnailController;
 import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
 import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
-import org.silverpeas.core.pdc.pdc.service.GlobalPdcManager;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
@@ -405,6 +404,6 @@ public class News extends SilverpeasJpaEntity<News, UuidIdentifier> implements S
   }
 
   private PdcManager getTaxonomyService() {
-    return new GlobalPdcManager();
+    return PdcManager.get();
   }
 }

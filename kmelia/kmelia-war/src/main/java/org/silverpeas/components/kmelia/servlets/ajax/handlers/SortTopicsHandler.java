@@ -48,7 +48,7 @@ public class SortTopicsHandler implements AjaxHandler {
     }
     // Save order
     try {
-      kmelia.getNodeBm().sortNodes(pks);
+      kmelia.getNodeService().sortNodes(pks);
       return "ok";
     } catch (Exception e) {
       SilverTrace.error("kmelia", "SortTopicsHandler.handleRequest", "root.MSG_GEN_PARAM_VALUE", e);

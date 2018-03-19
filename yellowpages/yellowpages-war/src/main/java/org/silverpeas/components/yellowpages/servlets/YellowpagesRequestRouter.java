@@ -56,7 +56,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
    */
   private static final long serialVersionUID = 1L;
 
-  private YellowpagesActionAccessController actionAccessController =
+  private final YellowpagesActionAccessController actionAccessController =
       new YellowpagesActionAccessController();
 
   @Override

@@ -43,7 +43,6 @@ import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.exception.DecodingException;
-import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
@@ -53,7 +52,6 @@ import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.silverstatistics.access.model.StatisticRuntimeException;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
 import org.silverpeas.core.subscription.SubscriptionServiceProvider;
 import org.silverpeas.core.subscription.service.ComponentSubscription;
@@ -103,8 +101,6 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   private static final String TYPE_MESSAGES = "Messages";
   private static final String TYPE_SUBJECTS = "Subjects";
   private SettingBundle settings = null;
-  private PublicationService publicationService = null;
-  private StatisticService statisticService = null;
   private boolean displayAllMessages = true;
   private boolean external = false;
   private boolean resizeFrame = false;
@@ -814,22 +810,11 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   }
 
   private PublicationService getPublicationService() {
-    if (publicationService == null) {
-      publicationService = ServiceProvider.getService(PublicationService.class);
-    }
-    return publicationService;
+    return ServiceProvider.getService(PublicationService.class);
   }
 
   protected StatisticService getStatisticService() {
-    if (statisticService == null) {
-      try {
-        statisticService = ServiceProvider.getService(StatisticService.class);
-      } catch (Exception e) {
-        throw new StatisticRuntimeException("KmeliaSessionController.getStatisticService()",
-            SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-      }
-    }
-    return statisticService;
+    return ServiceProvider.getService(StatisticService.class);
   }
 
   protected ForumService getForumsService() {

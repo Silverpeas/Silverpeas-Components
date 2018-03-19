@@ -110,13 +110,11 @@ import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.model.NodeSelection;
 import org.silverpeas.core.node.service.NodeService;
-import org.silverpeas.core.notification.user.client.NotificationManager;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
-import org.silverpeas.core.pdc.pdc.service.GlobalPdcManager;
 import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.security.authorization.AccessControlContext;
@@ -175,11 +173,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   private static final String PUBLICATION = "Publication";
   private static final String USELESS = "useless";
 
-  /* Services used by sessionController */
-  private CommentService commentService = null;
-  private PdcManager pdcManager = null;
-  private NotificationManager notificationManager = null;
-  private PersistentDateReminderService dateReminderService = null;
   // Session objects
   private TopicDetail sessionTopic = null;
   private String currentFolderId = NodePK.ROOT_NODE_ID;
@@ -199,7 +192,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   private String sortValue = null;
   private String defaultSortValue = "2";
   private int rang = 0;
-  private SettingBundle publicationSettings = null;
   public static final String TAB_PREVIEW = "tabpreview";
   public static final String TAB_HEADER = "tabheader";
   public static final String TAB_CONTENT = "tabcontent";
@@ -301,10 +293,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
    * @return a DefaultCommentService instance.
    */
   protected CommentService getCommentService() {
-    if (commentService == null) {
-      commentService = CommentServiceProvider.getCommentService();
-    }
-    return commentService;
+    return CommentServiceProvider.getCommentService();
   }
 
   public KmeliaService getKmeliaService() {
@@ -321,18 +310,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   * @return a DefaultDateReminderService instance.
   */
   protected PersistentDateReminderService getDateReminderService() {
-    if (dateReminderService == null) {
-      dateReminderService = DateReminderServiceProvider.getDateReminderService();
-    }
-    return dateReminderService;
-  }
-
-  public SettingBundle getPublicationSettings() {
-    if (publicationSettings == null) {
-      publicationSettings =
-          ResourceLocator.getSettingBundle("org.silverpeas.publication.publicationSettings");
-    }
-    return publicationSettings;
+    return DateReminderServiceProvider.getDateReminderService();
   }
 
   public int getNbPublicationsOnRoot() {
@@ -751,7 +729,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   public synchronized List<NodeDetail> getAllTopics() {
-    return getNodeBm().getSubTree(getNodePK(NodePK.ROOT_NODE_ID));
+    return getNodeService().getSubTree(getNodePK(NodePK.ROOT_NODE_ID));
   }
 
   public synchronized void flushTrashCan() {
@@ -802,7 +780,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
         SilverpeasRole.admin.isInRole(getUserTopicProfile(NodePK.ROOT_NODE_ID)) ||
         SilverpeasRole.admin.isInRole(getUserTopicProfile(node.getFatherPK().getId()))) {
       // First, remove rights on topic and its descendants
-      List<NodeDetail> treeview = getNodeBm().getSubTree(getNodePK(topicId));
+      List<NodeDetail> treeview = getNodeService().getSubTree(getNodePK(topicId));
       for (NodeDetail nodeToDelete : treeview) {
         deleteTopicRoles(nodeToDelete);
       }
@@ -1360,7 +1338,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     // récupérer la liste des sous thèmes de topicId
     List<String> fatherIds = new ArrayList<>();
     NodePK nodePK = new NodePK(topicId, getComponentId());
-    List<NodeDetail> nodes = getNodeBm().getSubTree(nodePK);
+    List<NodeDetail> nodes = getNodeService().getSubTree(nodePK);
     for (NodeDetail node : nodes) {
       fatherIds.add(Integer.toString(node.getId()));
     }
@@ -1405,7 +1383,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   public void processTopicWysiwyg(String topicId) {
-    getNodeBm().processWysiwyg(getNodePK(topicId));
+    getNodeService().processWysiwyg(getNodePK(topicId));
   }
 
   /**
@@ -1960,28 +1938,15 @@ public class KmeliaSessionController extends AbstractComponentSessionController
    * @return
    */
   public PdcManager getPdcManager() {
-    if (pdcManager == null) {
-      pdcManager = new GlobalPdcManager();
-    }
-    return pdcManager;
+    return ServiceProvider.getService(PdcManager.class);
   }
 
-  public NodeService getNodeBm() {
+  public NodeService getNodeService() {
     return NodeService.get();
   }
 
   public PublicationService getPublicationService() {
     return ServiceProvider.getService(PublicationService.class);
-  }
-
-  /**
-   * @return
-   */
-  public NotificationManager getNotificationManager() {
-    if (notificationManager == null) {
-      notificationManager = NotificationManager.get();
-    }
-    return notificationManager;
   }
 
   /**
@@ -2411,7 +2376,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     // Update the topic
     NodeDetail topic = getNodeHeader(nodeId);
     topic.setRightsDependsOnMe();
-    getNodeBm().updateRightsDependency(topic);
+    getNodeService().updateRightsDependency(topic);
 
     profile.removeAllGroups();
     profile.removeAllUsers();
@@ -2982,7 +2947,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   public synchronized List<NodeDetail> getSubTopics(String rootId) {
-    return getNodeBm().getSubTree(getNodePK(rootId));
+    return getNodeService().getSubTree(getNodePK(rootId));
   }
 
   public List<NodeDetail> getUpdateChainTopics() {
@@ -3108,7 +3073,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   public List<NodeDetail> getTopicPath(String topicId) {
     try {
       List<NodeDetail> pathInReverse =
-          (List<NodeDetail>) getNodeBm().getPath(new NodePK(topicId, getComponentId()));
+          (List<NodeDetail>) getNodeService().getPath(new NodePK(topicId, getComponentId()));
       Collections.reverse(pathInReverse);
       return pathInReverse;
     } catch (Exception e) {
@@ -3302,7 +3267,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
     if (!isKmaxMode) {
       List<NodeDetail> path =
-          (List<NodeDetail>) getNodeBm().getPath(getCurrentFolder().getNodePK());
+          (List<NodeDetail>) getNodeService().getPath(getCurrentFolder().getNodePK());
       Collections.reverse(path);
       path.remove(0); // remove root folder
       for (NodeDetail node : path) {

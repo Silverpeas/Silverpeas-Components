@@ -22,19 +22,17 @@ package org.silverpeas.components.kmelia.stats;
 
 import org.silverpeas.components.kmelia.model.StatisticActivityVO;
 import org.silverpeas.components.kmelia.model.StatsFilterVO;
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.Group;
-import org.silverpeas.core.node.service.NodeService;
-import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.publication.service.PublicationService;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
-import org.silverpeas.core.silverstatistics.access.model.StatisticRuntimeException;
-import org.silverpeas.core.WAPrimaryKey;
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.silvertrace.SilverTrace;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -244,10 +242,6 @@ public class StatisticServiceImpl implements
   }
 
   private StatisticService getStatisticService() {
-    if (statisticService == null) {
-        throw new StatisticRuntimeException("PdcSearchSessionController.getStatisticService()",
-            SilverpeasException.ERROR, "Cant bootstrap StatisticService with CDI");
-    }
     return statisticService;
   }
 
