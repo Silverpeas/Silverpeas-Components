@@ -26,6 +26,7 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 
@@ -42,6 +43,9 @@
 <%@ page import="org.silverpeas.core.admin.user.model.User" %>
 <%@ page import="org.silverpeas.core.contribution.content.form.Form" %>
 <%@ page import="org.silverpeas.core.contribution.content.form.PagesContext" %>
+
+<c:set var="userLanguage" value="${requestScope.resources.language}"/>
+<fmt:setLocale value="${userLanguage}"/>
 
 <c:set var="attachmentsEnabled" value="${requestScope['AttachmentsEnabled']}"/>
 

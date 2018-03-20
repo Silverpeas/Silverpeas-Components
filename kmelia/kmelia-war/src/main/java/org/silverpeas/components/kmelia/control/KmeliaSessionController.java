@@ -630,6 +630,14 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     String nodeId = id;
     if (!StringUtil.isDefined(id)) {
       nodeId = getCurrentFolderId();
+      try {
+        // check that current node still exists
+        getKmeliaService().getNodeHeader(nodeId, getComponentId());
+      } catch (Exception e) {
+        SilverLogger.getLogger(this).warn(e);
+        setCurrentFolderId(NodePK.ROOT_NODE_ID, true);
+        nodeId = NodePK.ROOT_NODE_ID;
+      }
     }
     return getKmeliaService().getUserTopicProfile(getNodePK(nodeId), getUserId());
   }
@@ -1649,16 +1657,17 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   public void setCurrentFolderId(String id, boolean resetSessionPublication) {
-    if (!id.equals(currentFolderId) &&
-        !KmeliaHelper.SPECIALFOLDER_TOVALIDATE.equalsIgnoreCase(id)) {
+    if (!id.equals(currentFolderId)) {
       indexOfFirstPubToDisplay = 0;
       resetSelectedPublicationPKs();
       setSearchContext(null);
-      Collection<NodeDetail> pathColl = getTopicPath(id);
-      String linkedPathString = displayPath(pathColl, true, 3);
-      String pathString = displayPath(pathColl, false, 3);
-      setSessionPath(linkedPathString);
-      setSessionPathString(pathString);
+      if (!KmeliaHelper.SPECIALFOLDER_TOVALIDATE.equalsIgnoreCase(id)) {
+        Collection<NodeDetail> pathColl = getTopicPath(id);
+        String linkedPathString = displayPath(pathColl, true, 3);
+        String pathString = displayPath(pathColl, false, 3);
+        setSessionPath(linkedPathString);
+        setSessionPathString(pathString);
+      }
     }
     if (resetSessionPublication) {
       setSessionPublication(null);
