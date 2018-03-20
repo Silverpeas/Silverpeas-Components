@@ -701,6 +701,15 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     String nodeId = id;
     if (!StringUtil.isDefined(id)) {
       nodeId = getCurrentFolderId();
+      try {
+        // check that current node still exists
+        getKmeliaBm().getNodeHeader(nodeId, getComponentId());
+      } catch (Exception e) {
+        SilverTrace.warn("kmelia", "KmeliaSessionControl.getUserTopicProfile", "root.MSG_PARAM_VALUE",
+            nodeId + " is no more in " + getComponentId());
+        setCurrentFolderId(NodePK.ROOT_NODE_ID, true);
+        nodeId = NodePK.ROOT_NODE_ID;
+      }
     }
     return getKmeliaBm().getUserTopicProfile(getNodePK(nodeId), getUserId());
   }
