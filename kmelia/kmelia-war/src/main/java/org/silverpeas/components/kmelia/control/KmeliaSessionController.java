@@ -632,7 +632,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       nodeId = getCurrentFolderId();
       try {
         // check that current node still exists
-        getKmeliaBm().getNodeHeader(nodeId, getComponentId());
+        getKmeliaService().getNodeHeader(nodeId, getComponentId());
       } catch (Exception e) {
         SilverLogger.getLogger(this).warn(e);
         setCurrentFolderId(NodePK.ROOT_NODE_ID, true);
