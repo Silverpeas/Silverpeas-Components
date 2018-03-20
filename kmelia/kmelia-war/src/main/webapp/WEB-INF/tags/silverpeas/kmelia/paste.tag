@@ -59,9 +59,9 @@
         <span class="label"><fmt:message key="PubState"/></span>
         <div>
           <input value="Draft" type="radio" name="PastePublicationState" id="PasteDraftState" checked="checked"/>
-          <label for="draftState"><fmt:message key="PubStateDraft"/></label><br/>
+          <label for="PasteDraftState"><fmt:message key="PubStateDraft"/></label><br/>
           <input value="NotDraft" type="radio" name="PastePublicationState" id="PastePublishedState"/>
-          <label for="publishedState"><fmt:message key="PubStatePublished"/></label>
+          <label for="PastePublishedState"><fmt:message key="PubStatePublished"/></label>
         </div>
       </c:if>
       <c:if test="${validationMandatory}">
