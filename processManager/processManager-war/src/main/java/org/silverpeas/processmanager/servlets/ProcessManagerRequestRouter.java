@@ -320,7 +320,7 @@ public class ProcessManagerRequestRouter
       request.setAttribute("data", data);
 
       String[] deleteAction = session.getDeleteAction();
-      if (deleteAction != null) {
+      if (deleteAction != null && deleteAction.length > 0) {
         request.setAttribute("deleteAction", deleteAction);
       }
 

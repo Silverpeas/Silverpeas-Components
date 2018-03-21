@@ -80,7 +80,7 @@
 		tabbedPane.addTab(resource.getString("processManager.history"), "viewHistory?processId=" + process.getInstanceId(), false, true);
 		tabbedPane.addTab(resource.getString("processManager.errors"), "adminViewErrors?processId=" + process.getInstanceId(), false, true);
 	} else {
-		if (deleteAction != null) {
+		if (deleteAction != null && deleteAction.length > 0) {
 			operationPane.addOperation(resource.getIcon("processManager.remove"), deleteAction[2],
           "editAction?state="+deleteAction[1]+"&action="+deleteAction[0]);
 		}

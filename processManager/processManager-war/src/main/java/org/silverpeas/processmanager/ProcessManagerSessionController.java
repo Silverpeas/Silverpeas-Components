@@ -1061,7 +1061,8 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   /**
    * Search for an hypothetic action of kind "delete", allowed for the current user with the given
    * role
-   * @return an array of 2 String { action.name, state.name }, null if no action found
+   * @return an array of 3 Strings { action.name, state.name, action.label }, an empty array
+   * if no action found
    */
   public String[] getDeleteAction() {
     Task[] tasks;
