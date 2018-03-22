@@ -25,7 +25,7 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="com.stratelia.webactiv.survey.control.FileHelper"%>
+<%@ page import="org.silverpeas.components.survey.control.FileHelper"%>
 <%@ page import="org.silverpeas.core.web.http.HttpRequest"%>
 <%@ page import="org.silverpeas.core.util.SettingBundle"%>
 <%@ page import="java.io.File"%>

@@ -28,17 +28,17 @@
   <servlet>
     <display-name>SurveyRequestRouter</display-name>
     <servlet-name>SurveyRequestRouter</servlet-name>
-    <servlet-class>com.stratelia.webactiv.survey.servlets.SurveyRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.components.survey.servlets.SurveyRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <display-name>GoToSurvey</display-name>
     <servlet-name>GoToSurvey</servlet-name>
-    <servlet-class>com.stratelia.webactiv.survey.servlets.GoToSurvey</servlet-class>
+    <servlet-class>org.silverpeas.components.survey.servlets.GoToSurvey</servlet-class>
   </servlet>
   <servlet>
     <display-name>RecordParticipation</display-name>
     <servlet-name>RecordParticipation</servlet-name>
-    <servlet-class>com.stratelia.webactiv.survey.servlets.RecordParticipation</servlet-class>
+    <servlet-class>org.silverpeas.components.survey.servlets.RecordParticipation</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>SurveyRequestRouter</servlet-name>
