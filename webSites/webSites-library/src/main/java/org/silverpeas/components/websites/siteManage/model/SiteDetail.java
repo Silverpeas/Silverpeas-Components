@@ -148,7 +148,7 @@ public class SiteDetail extends PublicationDetail {
   @Override
   public String toString() {
     return sitePk.getId() + "|" + this.getName() + "|" + this.getDescription() + "|" +
-        this.getContent() + "|" + "|" + siteType + "|" + this.getCreatorId() + "|" +
+        this.getContentPagePath() + "|" + "|" + siteType + "|" + this.getCreatorId() + "|" +
         this.getCreationDate() + "|" + state;
   }
 

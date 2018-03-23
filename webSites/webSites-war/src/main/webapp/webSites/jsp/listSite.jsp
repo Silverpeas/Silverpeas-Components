@@ -255,7 +255,7 @@ function openSPWindow(fonction, windowName){
 				if (siteDescription == null) {
 					siteDescription = "";
 				}
-				String sitePage = site.getContent();
+				String sitePage = site.getContentPagePath();
 				String type = new Integer(site.getImportance()).toString();
 				liste += "<tr>\n";
 				String listeIcones = "";

@@ -228,7 +228,7 @@ private boolean appartientId(IconDetail iconDetail, Collection c) {
       description = "";
     }
 
-		lapage = site.getContent();
+		lapage = site.getContentPagePath();
 		icones = new ArrayList(listIcons);
 
 		//site de reference ou pas

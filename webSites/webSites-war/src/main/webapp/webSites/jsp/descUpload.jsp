@@ -157,7 +157,7 @@
     nomSite = siteDetail.getName();
     description = siteDetail.getDescription();
     popup = siteDetail.getPopup();
-    nomPage = siteDetail.getContent();
+    nomPage = siteDetail.getContentPagePath();
   }
 
   String mandatoryField = m_context + "/util/icons/mandatoryField.gif";
