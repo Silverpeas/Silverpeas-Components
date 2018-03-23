@@ -3885,8 +3885,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       clonePublication();
     }
 
+    final String currentLanguageCopy = getCurrentLanguage();
     PublicationDetail pubDetail = getSessionPubliOrClone().getDetail();
     saveXMLFormToPublication(pubDetail, items, forceUpdatePublication);
+    setCurrentLanguage(currentLanguageCopy);
   }
 
   public PublicationDetail prepareNewPublication() {
