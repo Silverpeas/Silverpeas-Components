@@ -251,7 +251,7 @@ public class SendInKmelia extends ExternalActionImpl {
         fieldValue = copyFormFile(fromPK, toPK, ((FileField) fieldOfFolder).getAttachmentId());
       } else if ("wysiwyg".equals(fieldTemplate.getDisplayerName())) {
         WysiwygFCKFieldDisplayer displayer = new WysiwygFCKFieldDisplayer();
-        fieldValue = displayer.duplicateContent(fieldOfFolder, fieldTemplate, fromPK, toPK,
+        fieldValue = displayer.duplicateContent(fieldTemplate, fromPK, toPK,
             I18NHelper.defaultLanguage);
       }
     } catch (WorkflowException e) {
