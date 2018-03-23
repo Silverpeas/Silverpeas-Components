@@ -32,7 +32,6 @@ import org.silverpeas.core.contact.model.ContactFatherDetail;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayCellText;
 import org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayColumn;
@@ -53,9 +52,13 @@ import java.util.function.Function;
 
 public class DisplayContactsHelper {
 
+  private DisplayContactsHelper() {
+    throw new IllegalAccessError("Utility class");
+  }
+
   public static void displayContactsAdmin(String contactCard,
       YellowpagesSessionController yellowpagesScc, String profile, Collection<UserContact> contacts,
-      boolean subtopicsExist, String contactDeleteIcon, GraphicElementFactory gef,
+      String contactDeleteIcon, GraphicElementFactory gef,
       ServletRequest request, HttpSession session, MultiSilverpeasBundle resources, JspWriter out)
       throws IOException {
     int indexLastNameColumn = 1;
@@ -135,6 +138,7 @@ public class DisplayContactsHelper {
       arrayPane = gef.getArrayPane(nameArrayPane, "PrintList", request, session);
       arrayPane.setVisibleLineNumber(-1);
     }
+    arrayPane.setExportData(true);
 
     // recherche des colonnes a afficher
     List<String> arrayHeaders = yellowpagesScc.getArrayHeaders();
@@ -206,7 +210,7 @@ public class DisplayContactsHelper {
       carte.setProperties(icon, "", link);
 
       for (String nameColumn : properties) {
-        if (nameColumn.equals("icon")) {
+        if ("icon".equals(nameColumn)) {
           ligne.addArrayCellIconPane(iconPane);
         } else if ("topic".equals(nameColumn)) {
           ligne.addArrayCellText(WebEncodeHelper.javaStringToHtmlString(nodeName));
