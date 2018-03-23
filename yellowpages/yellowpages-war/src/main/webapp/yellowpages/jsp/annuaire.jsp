@@ -98,7 +98,6 @@ private String afficheArbo(String idNodeSelected,
 					.getAttribute("PortletMode");
 			boolean portletMode = (bPortletMode != null && bPortletMode
 					.booleanValue());
-			String typeSearch = (String) request.getAttribute("TypeSearch");
 			String searchCriteria = (String) request.getAttribute("SearchCriteria");
 
 			String profile = request.getParameter("Profile");
@@ -142,10 +141,7 @@ function topicGoToSelected() {
     document.topicDetailForm.submit();
 }
 
-function search()
-{
-	var typeSearch = document.topicDetailForm.selectTypeRech.options[document.topicDetailForm.selectTypeRech.selectedIndex].value;    
-    document.topicDetailForm.Action.value = typeSearch;
+function search() {
     document.topicDetailForm.action = "Search";
     document.topicDetailForm.submit();
 }
@@ -179,13 +175,24 @@ function manage(profile) {
 	location.href = "topicManager.jsp?Profile=" + profile;
 }
 
-function clearCell() {
-	document.topicDetailForm.SearchCriteria.value = ""; //vide la cellule
-}
-
 function exportCSV(){
 	printWindow = SP_openWindow("ExportCSV", "printWindow", '400', '200', 'scrollbars=yes, alwayRaised');
 }
+
+whenSilverpeasReady(function() {
+  $("#searchButton a").click(function() {
+    search();
+  });
+
+  $("#searchInput").keypress(function(e) {
+    if (e.which === 13) {
+      e.preventDefault();
+      search();
+      return false;
+    }
+    return true;
+  });
+});
 </script>
 </head>
 <body id="<%=componentId %>" class="yellowpages">
@@ -220,7 +227,7 @@ function exportCSV(){
 			out.println(frame.printBefore());
 			out.println(board.printBefore());
 %>
-<form name="topicDetailForm" action="javaScript:search()" method="post">
+<form name="topicDetailForm" action="" method="post">
 <input type="hidden" name="Action"/> <input type="hidden" name="Id" value="<%=id%>"/>
 <table cellpadding="1" cellspacing="0" border="0" width="98%">
 	<tr>
@@ -230,45 +237,14 @@ function exportCSV(){
 				<td class="intfdcolor4" nowrap="nowrap">
 				<table cellpadding="0" cellspacing="0" border="0" width="100%">
 					<tr>
-						<td nowrap="nowrap" valign="middle"><span class="textePetitBold">
-						<img src="<%=resources.getIcon("yellowpages.aide")%>"
-							align="absbottom" border="0"
-							onmouseover="return overlib('<%=WebEncodeHelper.javaStringToJsString(resources
-					.getString("ExplikRecherche"))%>', CAPTION, '<%=WebEncodeHelper.javaStringToJsString(resources
-					.getString("GML.search"))%>', WIDTH, 500);"
-							onmouseout="return nd();"/> &nbsp; </span> <span class=selectNS>
-						<select name="selectTypeRech">
-							<option value="All"
-								<%if (typeSearch == null || "All".equals(typeSearch)) {
-				out.print("selected");
-			}%>><%=resources.getString("SearchAllFields")%></option>
-							<option value="LastName"
-								<%if (typeSearch != null && "LastName".equals(typeSearch)) {
-				out.print("selected");
-			}%>><%=resources.getString("SearchLastName")%></option>
-							<option value="FirstName"
-								<%if (typeSearch != null && "FirstName".equals(typeSearch)) {
-				out.print("selected");
-			}%>><%=resources.getString("SearchFirstName")%></option>
-							<option value="LastNameFirstName"
-								<%if (typeSearch != null && "LastNameFirstName".equals(typeSearch)) {
-				out.print("selected");
-			}%>><%=resources.getString("SearchLastNameFirstName")%></option>
-						</select> &nbsp; </span> <input type="text" name="SearchCriteria"
-							onclick="javaScript:clearCell('<%=resources.getString("GML.search")%>');"
-							size="15" maxlength="50"
-							value="<%if (searchCriteria == null) {
-				out.print(resources.getString("GML.search"));
-			} else {
+						<td nowrap="nowrap" valign="middle"><input type="text" name="SearchCriteria"
+							id="searchInput" size="50" placeholder="<%=resources.getString("GML.search")%>"
+							value="<%if (searchCriteria != null) {
 				out.print(searchCriteria);
 			}%>"/>
 						</td>
 						<td valign="middle" id="searchButton">
-						<%
-						  ButtonPane buttonPane = gef.getButtonPane();
-						  buttonPane.addButton(gef.getFormButton("Ok", "javaScript:search()", false));
- 						  out.println(buttonPane.print());
-						%>
+              <a class="sp_button" href="#">Ok</a>
 						</td>
 					</tr>
 				</table>
@@ -331,6 +307,7 @@ function exportCSV(){
 		<td width="100%">&nbsp;</td>
 	</tr>
 </table>
+</form>
 <!--Description de la categorie-->
 <%
   String nodeName = null;
@@ -359,7 +336,6 @@ function exportCSV(){
 			out.println(frame.printAfter());
 			out.println(window.printAfter());
 %>
-</form>
 <form name="contactForm" action="contactManager.jsp" target="contactWindow" method="post">
 	<input type="hidden" name="Action"/> 
 	<input type="hidden" name="ContactId"/> 
