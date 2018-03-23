@@ -876,7 +876,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
       File f;
       while (j.hasNext()) {
         f = j.next();
-        if (f.getName().equals(descriptionSite.getContent())) {
+        if (f.getName().equals(descriptionSite.getContentPagePath())) {
           searchOk = true;
           break;
         }
