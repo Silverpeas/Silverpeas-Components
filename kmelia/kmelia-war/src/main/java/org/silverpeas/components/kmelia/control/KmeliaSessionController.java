@@ -885,6 +885,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     pubDetail.setCreatorId(getUserId());
     pubDetail.setCreationDate(new Date());
 
+    setCurrentLanguage(pubDetail.getLanguage());
+
     String result;
     if (isKmaxMode) {
       result = getKmeliaBm().createKmaxPublication(pubDetail);
@@ -918,6 +920,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     pubDetail.getPK().setSpace(getSpaceId());
     pubDetail.getPK().setComponentName(getComponentId());
     pubDetail.setUpdaterId(getUserId());
+
+    setCurrentLanguage(pubDetail.getLanguage());
+
     if (isCloneNeeded()) {
       clonePublication(pubDetail);
     } else {
@@ -3848,7 +3853,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
         context.setNodeId(getCurrentFolderId());
       }
       context.setObjectId(pubId);
-      context.setContentLanguage(getCurrentLanguage());
+      context.setContentLanguage(getContentLanguage());
 
       form.update(items, data, context);
       set.save(data);
@@ -3880,8 +3885,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       clonePublication();
     }
 
+    final String currentLanguageCopy = getCurrentLanguage();
     PublicationDetail pubDetail = getSessionPubliOrClone().getDetail();
     saveXMLFormToPublication(pubDetail, items, forceUpdatePublication);
+    setCurrentLanguage(currentLanguageCopy);
   }
 
   public PublicationDetail prepareNewPublication() {
