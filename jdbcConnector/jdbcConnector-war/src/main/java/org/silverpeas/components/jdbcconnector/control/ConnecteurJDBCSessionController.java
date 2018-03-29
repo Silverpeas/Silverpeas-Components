@@ -37,6 +37,7 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -148,15 +149,15 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
     rowNumber = 0;
 
     if (!isConnectionOpened() && (currentConnectionInfo != null)) {
-      try (Connection conn = currentConnectionInfo.openConnection()) {
-        dbMetaData = conn.getMetaData();
-        try (Statement stmt = conn.createStatement()) {
+      try {
+        connection = currentConnectionInfo.openConnection();
+        dbMetaData = connection.getMetaData();
           if (!StringUtil.isDefined(request)) {
             rs = null;
           } else {
-            rs = stmt.executeQuery(request);
+            PreparedStatement stmt = connection.prepareStatement(request);
+            rs = stmt.executeQuery();
           }
-        }
       } catch (Exception e) {
         SilverLogger.getLogger(this).error("Failure in executing SQL request: " + request, e);
       }
