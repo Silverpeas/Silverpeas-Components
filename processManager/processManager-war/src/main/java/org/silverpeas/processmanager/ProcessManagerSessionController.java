@@ -1135,7 +1135,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   public DataRecord getActionRecord(String actionName)
       throws ProcessManagerException {
     try {
-      return currentProcessInstance.getNewActionRecord(actionName);
+      return currentProcessInstance.getNewActionRecord(actionName, getLanguage());
     } catch (WorkflowException e) {
       throw new ProcessManagerException("SessionController", "processManager.UNKNOWN_ACTION", e);
     }
