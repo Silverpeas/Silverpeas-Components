@@ -1,153 +1,117 @@
 <%--
-  Copyright (C) 2000 - 2018 Silverpeas
-
-  This program is free software: you can redistribute it and/or modify
-  it under the terms of the GNU Affero General Public License as
-  published by the Free Software Foundation, either version 3 of the
-  License, or (at your option) any later version.
-
-  As a special exception to the terms and conditions of version 3.0 of
-  the GPL, you may redistribute this Program in connection with Free/Libre
-  Open Source Software ("FLOSS") applications as described in Silverpeas's
-  FLOSS exception. You should have received a copy of the text describing
-  the FLOSS exception, and it is also available here:
-  "https://www.silverpeas.org/legal/floss_exception.html"
-
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  GNU Affero General Public License for more details.
-
-  You should have received a copy of the GNU Affero General Public License
-  along with this program. If not, see <http://www.gnu.org/licenses/>.
+  ~ Copyright (C) 2000 - 2018 Silverpeas
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU Affero General Public License as
+  ~ published by the Free Software Foundation, either version 3 of the
+  ~ License, or (at your option) any later version.
+  ~
+  ~ As a special exception to the terms and conditions of version 3.0 of
+  ~ the GPL, you may redistribute this Program in connection with Free/Libre
+  ~ Open Source Software ("FLOSS") applications as described in Silverpeas's
+  ~ FLOSS exception.  You should have received a copy of the text describing
+  ~ the FLOSS exception, and it is also available here:
+  ~ "https://www.silverpeas.org/legal/floss_exception.html"
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU Affero General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --%>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
-<%@ include file="imports.jsp" %>
-<%@ include file="init.jsp" %>
+<%@ include file="head.jsp" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
-<%
-String[] allTables = null;
-String[] allColumns = null;
-String[] tables = null;
-String[] columns = null;
-String column = null;
-String action = request.getParameter("Action");
+<c:set var="currentUserLanguage" value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
+<fmt:setLocale value="${currentUserLanguage}"/>
+<view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 
-String value = "";
-String label = "";
-String selected = "";
+<view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.admin"/>
+<view:setConstant var="publisherRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.publisher"/>
 
-String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
-%>
+<c:if test="${not requestScope.highestUserRole.isGreaterThanOrEquals(publisherRole)}">
+  <c:redirect url="/Error403.jsp"/>
+</c:if>
+
+<c:set var="componentId" value="${requestScope.browseContext[3]}"/>
+
+<fmt:message var="windowTitle" key="windowTitleParametrageRequete"/>
+<fmt:message var="crumbTitle" key="titreParametrageRequete"/>
+<fmt:message var="resultTab" key="tabbedPaneConsultation"/>
+<fmt:message var="queryTab" key="tabbedPaneRequete"/>
+<fmt:message var="dataSourceTab" key="tabbedPaneParametresJDBC"/>
+<fmt:message var="queryField" key="champRequete"/>
+<fmt:message var="buttonOk" key="boutonValider"/>
+<fmt:message var="buttonCancel" key="boutonAnnuler"/>
+<fmt:message var="requestError" key="erreurChampsTropLong"/>
+<fmt:message var="requestEditor" key="operationPaneRequete"/>
+
+<c:url var="editorIcon" value="/util/icons/connecteurJDBC_request.gif"/>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-<Head>
-<title><%=connecteurJDBC.getString("windowTitleParametrageRequete")%></title>
-<view:looknfeel withCheckFormScript="true"/>
-</head>
-<script type="text/javascript">
-	function processUpdate()
-	{
-		if( isValidTextMaxi(document.processForm.SQLReq))
-		{
-			document.processForm.action = "SetSQLRequest";
-			document.processForm.submit();
-    } else {
-      var err = '<%=connecteurJDBC.getString("erreurChampsTropLong")%>';
-      jQuery.popup.error(err);
+<head>
+  <title>${windowTitle}</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <view:looknfeel withCheckFormScript="true"/>
+  <view:includePlugin name="popup"/>
+  <script type="application/javascript">
+    function saveRequest() {
+      if (isValidTextMaxi(document.requestEdition.SQLReq)) {
+        document.requestEdition.action = "SetSQLRequest";
+        document.requestEdition.submit();
+      } else {
+        var err = '${requestError}';
+        jQuery.popup.error(err);
+      }
     }
-	}
 
-	function cancel()
-	{
-		document.processForm.action = "connecteurJDBC";
-		document.processForm.submit();
-	}
+    function cancel() {
+      document.requestEdition.action = "DoRequest";
+      document.requestEdition.submit();
+    }
 
-	function editTableColumn()
-	{
-		chemin = "<%=m_context%><%=connecteurJDBC.getComponentUrl()%>EditTableColumn.jsp?indiceForm=0&indiceElem=5";
-		largeur = "540";
-		hauteur = "450";
-		SP_openWindow(chemin,"SqlRequest_Debut",largeur,hauteur,"");
-	}
-
-</script>
-<body marginwidth="5" marginheight="5" leftmargin="5" topmargin="5" bgcolor="#FFFFFF">
-
-<%
-	browseBar.setExtraInformation(connecteurJDBC.getString("titreParametrageRequete")) ;
-
-	//operation Pane
-	OperationPane operationPane = window.getOperationPane();
-	operationPane.addOperation( m_context + "/util/icons/connecteurJDBC_request.gif", connecteurJDBC.getString("operationPaneRequete"), "javascript:onClick=editTableColumn()");
-
-
-	//Les onglets
-    tabbedPane = gef.getTabbedPane();
-  tabbedPane.addTab(connecteurJDBC.getString("tabbedPaneConsultation"), "DoRequest", false);
-
-  if (flag.equals("publisher") || flag.equals("admin")) {
-    tabbedPane.addTab(connecteurJDBC.getString("tabbedPaneRequete"), "ParameterRequest", true);
-  }
-
-  if (flag.equals("admin")) {
-    tabbedPane.addTab(connecteurJDBC.getString("tabbedPaneParametresJDBC"), "ParameterConnection",
-        false);
-  }
-
-
-
-	Frame frame = gef.getFrame();
-
-
-	out.println(window.printBefore());
-	out.println(tabbedPane.print());
-	out.println(frame.printBefore());
-
-%>
-<form name="processForm" action="SetSQLRequest" >
-
-<table cellpadding=0 cellspacing=0 border=0 width="98%" class=intfdcolor4><TR><TD><!--Cadre bleu-->
-	  <table cellpadding=5 cellspacing=0 border=0 width="100%" class=contourintfdcolor>
-
-	<tr class=intfdcolor4>
-		<td align="center" valign=top><span class="txtlibform"><%=connecteurJDBC.getString("champRequete")%> : </span>
-		</td>
-		<td align="center" valign=top>
-			<textarea name="SQLReq" cols=70 rows="15" wrap="SOFT"  ><%
-        String requete = connecteurJDBC.getCurrentConnectionInfo().getSqlRequest();
-				if (requete != null )
-					out.print(requete);
-%></textarea>
-		</td>
-	</tr>
-
-	</table>
-	</td></tr></table>
-	</form>
-	<%
-    Button validateButton = gef.getFormButton(connecteurJDBC.getString("boutonValider"),
-        "javascript:onClick=processUpdate()", false);
-    ButtonPane buttonPane = gef.getButtonPane();
-    buttonPane.addButton(validateButton);
-    buttonPane.addButton(
-        gef.getFormButton(connecteurJDBC.getString("boutonAnnuler"), "javascript:onClick=cancel()",
-            false));
-    out.println(buttonPane.print());
-   %>
-
-</center>
-
-
-<%
-	out.println(frame.printAfter());
-	out.println(window.printAfter());
-%>
-
-<form name="navigationForm" >
-</form>
+    function launchSQLRequestEditor() {
+      /*SP_openWindow('${requestScope.editorUrl}', 'SqlRequest_Debut', '840', '450', '');*/
+      displaySingleFreePopupFrom('${requestScope.editorUrl}', {
+        title: '<fmt:message key="titrePopup"/>',
+        closeOnEscape: true,
+        resizable: true,
+        width: '800px'});
+    }
+  </script>
+</head>
+<body>
+<view:browseBar componentId="${componentId}" path="${requestScope.navigationContext}" extraInformations="${crumbTitle}"/>
+<view:operationPane>
+  <view:operation action="javascript:onClick=launchSQLRequestEditor()" altText="${requestEditor}" icon="${editorIcon}"/>
+</view:operationPane>
+<view:window>
+  <view:tabs>
+    <view:tab label="${resultTab}" action="Main" selected="false"/>
+    <view:tab label="${queryTab}" action="ParameterRequest" selected="true"/>
+    <c:if test="${requestScope.highestUserRole.isGreaterThanOrEquals(adminRole)}">
+      <view:tab label="${dataSourceTab}" action="ParameterConnection" selected="false"/>
+    </c:if>
+  </view:tabs>
+  <view:frame>
+      <form name="requestEdition" action="SetSQLRequest" method="post">
+        <label for="SQLReq">${queryField}&nbsp;:</label>
+        <textarea id="SQLReq" name="SQLReq" rows="15" cols="100%" style="padding: 1px; margin-bottom: 10px;">
+        <c:out value="${requestScope.sqlRequest}" escapeXml="true"/>
+        </textarea>
+        <view:buttonPane>
+          <view:button label="${buttonOk}" action="javascript:onClick=saveRequest()"/>
+          <view:button label="${buttonCancel}" action="javascript:onClick=cancel()"/>
+        </view:buttonPane>
+      </form>
+  </view:frame>
+</view:window>
 </body>
-</html>

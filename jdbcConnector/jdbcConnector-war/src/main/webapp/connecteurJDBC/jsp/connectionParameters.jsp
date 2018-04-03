@@ -1,16 +1,20 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="false" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ include file="head.jsp" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%
-  response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
-  response.setHeader("Pragma", "no-cache"); //HTTP 1.0
-  response.setDateHeader("Expires", -1); //prevents caching at the proxy server
-%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
-<fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
-<view:setBundle basename="org.silverpeas.connecteurJDBC.multilang.connecteurJDBC"/>
+<c:set var="currentUserLanguage" value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
+<fmt:setLocale value="${currentUserLanguage}"/>
+<view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
+
+<view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.admin"/>
+
+<c:if test="${not requestScope.highestUserRole.isGreaterThanOrEquals(adminRole)}">
+  <c:redirect url="/Error403.jsp"/>
+</c:if>
+
 <c:set var="currentConnectionInfo" value="${requestScope.currentConnectionInfo}"/>
 <c:set var="availableDataSources" value="${requestScope.availableDataSources}"/>
 
@@ -19,7 +23,7 @@
 <head>
   <title><fmt:message key="windowTitleParametrageConnection"/></title>
   <view:looknfeel withCheckFormScript="true"/>
-<script type="text/javascript">
+  <script type="application/javascript">
   var dataSources = [];
   <c:forEach items="${availableDataSources}" var="dataSource">
   <c:set var="dataSourceLogin" value=""/>
@@ -65,13 +69,13 @@
       $('#rowLimit').focus();
       notyError("<fmt:message key='erreurChampsNonEntier'/>");
     } else {
-      $('#processForm').attr('action', 'UpdateConnection');
       $('#processForm').submit();
     }
   }
 
   function cancel() {
-    $('#processForm').attr('action', 'connecteurJDBC');
+    $('#processForm').attr('action', 'Main');
+    $('#processForm').attr('method', 'GET');
     $('#processForm').submit();
   }
 </script>
@@ -85,64 +89,48 @@
   <fmt:message var="request" key="tabbedPaneRequete"/>
   <fmt:message var="settings" key="tabbedPaneParametresJDBC"/>
   <view:tabs>
-    <view:tab label="${consultation}" action="DoRequest" selected="false"/>
+    <view:tab label="${consultation}" action="Main" selected="false"/>
     <view:tab label="${request}" action="ParameterRequest" selected="false"/>
     <view:tab label="${settings}" action="ParameterConnection" selected="true"/>
   </view:tabs>
   <view:frame>
-    <form id="processForm" name="processForm" action="">
-      <table CELLPADDING=2 CELLSPACING=0 BORDER=0 WIDTH="98%" CLASS=intfdcolor>
-        <TR>
-          <TD>
-            <table CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH="100%" CLASS=intfdcolor4>
-              <TR>
-                <TD class="txtlibform"><fmt:message key="dataSourceField"/></TD>
-                <TD>
-                  <select id="dataSource" name="DataSource" onchange="javascript:updateForm();">
-                    <c:set var="description" value="${availableDataSources[0].description}"/>
-                    <c:forEach items="${availableDataSources}" var="dataSource">
-                      <c:choose>
-                        <c:when test="${currentConnectionInfo != null && currentConnectionInfo.dataSourceName == dataSource.dataSourceName}">
-                          <option value="${dataSource.dataSourceName}" selected="selected">${dataSource.dataSourceName}</option>
-                          <c:set var="description" value="${dataSource.description}"/>
-                        </c:when>
-                        <c:otherwise>
-                          <option value="${dataSource.dataSourceName}">${dataSource.dataSourceName}</option>
-                        </c:otherwise>
-                      </c:choose>
-                    </c:forEach>
-                  </select>
-                </TD>
-              </TR>
-              <TR>
-                <TD class="txtlibform"><fmt:message key="champsDescription"/></TD>
-                <TD>
-                  <input type="text" id="description" name="Description" size="50" disabled value="${description}"/>
-                </TD>
-              </TR>
-              <TR>
-                <TD class="txtlibform"><fmt:message key="champIdentifiant"/></TD>
-                <TD>
-                  <input type="text" id="login" name="Login" size="50" value="${currentConnectionInfo.login}"/>
-                </TD>
-              </TR>
-              <TR>
-                <TD class="txtlibform"><fmt:message key="champMotDePasse"/></TD>
-                <TD>
-                  <input type="password" id="password" name="Password" size="50" value="${currentConnectionInfo.password}"/>
-                </TD>
-              </TR>
-              <TR>
-                <TD class="txtlibform"><fmt:message key="champLignesMax"/></TD>
-                <TD>
-                  <input type="text" id="rowLimit" name="RowLimit" size="50" value="${currentConnectionInfo.dataMaxNumber}"/>
-                  <i><fmt:message key="champLignesMaxExplanation"/></i>
-                </TD>
-              </TR>
-            </table>
-          </TD>
-        </TR>
-      </table>
+    <form id="processForm" name="processForm" action="UpdateConnection" method="post">
+      <div class="intfdcolor">
+        <div class="intfdcolor4" style="padding: 2px">
+          <label class="txtlibform" for="dataSource"><fmt:message key="dataSourceField"/></label>
+          <select id="dataSource" name="DataSource" onchange="javascript:updateForm();">
+            <c:set var="description" value="${availableDataSources[0].description}"/>
+            <c:forEach items="${availableDataSources}" var="dataSource">
+              <c:choose>
+                <c:when test="${currentConnectionInfo != null && currentConnectionInfo.dataSourceName == dataSource.dataSourceName}">
+                  <option value="${dataSource.dataSourceName}" selected="selected">${dataSource.dataSourceName}</option>
+                  <c:set var="description" value="${dataSource.description}"/>
+                </c:when>
+                <c:otherwise>
+                  <option value="${dataSource.dataSourceName}">${dataSource.dataSourceName}</option>
+                </c:otherwise>
+              </c:choose>
+            </c:forEach>
+          </select>
+        </div>
+        <div class="intfdcolor4" style="padding: 2px">
+          <span style="width: 20em;"><label class="txtlibform" for="description"><fmt:message key="champsDescription"/></label></span>
+          <input type="text" id="description" name="Description" size="50" disabled value="${description}"/>
+        </div>
+        <div class="intfdcolor4" style="padding: 2px">
+          <label class="txtlibform" for="login"><fmt:message key="champIdentifiant"/></label>
+          <input type="text" id="login" name="Login" size="50" value="${currentConnectionInfo.login}"/>
+        </div>
+        <div class="intfdcolor4" style="padding: 2px">
+          <label class="txtlibform" for="password"><fmt:message key="champMotDePasse"/></label>
+          <input type="password" id="password" name="Password" size="50" value="${currentConnectionInfo.password}"/>
+        </div>
+        <div class="intfdcolor4" style="padding: 2px">
+          <label class="txtlibform" for="rowLimit"><fmt:message key="champLignesMax"/></label>
+          <input type="text" id="rowLimit" name="RowLimit" size="50" value="${currentConnectionInfo.dataMaxNumber}"/>
+          <i><fmt:message key="champLignesMaxExplanation"/></i>
+        </div>
+      </div>
     </form>
     <view:buttonPane>
       <fmt:message var="validate" key="boutonValider"/>

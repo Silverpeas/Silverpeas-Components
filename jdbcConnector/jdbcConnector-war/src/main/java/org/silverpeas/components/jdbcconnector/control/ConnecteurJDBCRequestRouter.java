@@ -27,7 +27,7 @@ import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.components.jdbcconnector.service.ConnecteurJDBCException;
+import org.silverpeas.components.jdbcconnector.service.JdbcConnectorException;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.notification.message.MessageNotifier;
 import org.silverpeas.core.util.StringUtil;
@@ -46,7 +46,7 @@ public class ConnecteurJDBCRequestRouter
    * @param mainSessionCtrl
    * @param componentContext
    * @return
-   * @throws ConnecteurJDBCException
+   * @throws JdbcConnectorException
    */
   public ConnecteurJDBCSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
@@ -79,20 +79,20 @@ public class ConnecteurJDBCRequestRouter
   public String getDestination(String function, ConnecteurJDBCSessionController connecteurJDBC,
       HttpRequest request) {
     String destination = null;
-    String rootDest = "/connecteurJDBC/jsp/";
+    String rootDest = "/jdbcConnector/jsp/";
 
     String flag = connecteurJDBC.getHighestSilverpeasUserRole().getName();
     request.setAttribute("flag", flag);
 
     if ((function.startsWith("Main")) || (function.startsWith("connecteurJDBC"))) {
       // the flag is the best user's profile
-      destination = "connecteurJDBC.jsp";
+      destination = "jdbcConnector.jsp";
     } else if (function.startsWith("portlet")) {
       destination = "portlet.jsp";
     } else if (function.startsWith("ParameterRequest")) {
       destination = "requestParameters.jsp";
     } else if (function.startsWith("DoRequest")) {
-      destination = "connecteurJDBC.jsp";
+      destination = "jdbcConnector.jsp";
     } else if (function.startsWith("ParameterConnection")) {
       request.setAttribute("currentConnectionInfo", connecteurJDBC.getCurrentConnectionInfo());
       request.setAttribute("availableDataSources", connecteurJDBC.getAvailableDataSources());
@@ -107,10 +107,10 @@ public class ConnecteurJDBCRequestRouter
       }
       try {
         connecteurJDBC.updateConnectionInfo(dataSource, login, password, rowLimit);
-        destination = "connecteurJDBC.jsp";
+        destination = "jdbcConnector.jsp";
       } catch (Exception e) {
         SilverTrace.warn("connecteurJDBC", "ConnecteurJDBCRequestRouter.getDestination()",
-            "connecteurJDBC.MSG_CONNECTION_NOT_STARTED", e);
+            "jdbcConnector.MSG_CONNECTION_NOT_STARTED", e);
         MessageNotifier.addError(connecteurJDBC.getString("erreurParametresConnectionIncorrects"));
         destination = "connectionParameters.jsp";
       }
@@ -118,10 +118,10 @@ public class ConnecteurJDBCRequestRouter
       String sqlRequest = request.getParameter("SQLReq");
       try {
         connecteurJDBC.updateSQLRequest(sqlRequest);
-        destination = "connecteurJDBC.jsp";
-      } catch (ConnecteurJDBCException ex) {
+        destination = "jdbcConnector.jsp";
+      } catch (JdbcConnectorException ex) {
         MessageNotifier.addError(
-            connecteurJDBC.getString("erreurRequeteIncorrect") + ": " + ex.getExtraInfos());
+            connecteurJDBC.getString("erreurRequeteIncorrect") + ": " + ex.getMessage());
         destination = "requestParameters.jsp";
       }
     } else if (function.startsWith("processForm")) {

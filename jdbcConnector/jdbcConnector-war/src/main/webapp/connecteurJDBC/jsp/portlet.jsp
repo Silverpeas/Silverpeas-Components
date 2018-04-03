@@ -21,135 +21,60 @@
   You should have received a copy of the GNU Affero General Public License
   along with this program. If not, see <http://www.gnu.org/licenses/>.
   --%>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ include file="head.jsp" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
-<%@ include file="imports.jsp" %>
-<%@ include file="init.jsp" %>
+<c:set var="currentUserLanguage" value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
+<fmt:setLocale value="${currentUserLanguage}"/>
+<view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 
-<%
-String spaceId = connecteurJDBC.getSpaceId();
-String componentId =  connecteurJDBC.getComponentId();
-%>
+<c:set var="componentId"       value="${requestScope.browseContext[3]}"/>
+<c:set var="resultSet"         value="${requestScope.resultSet}"/>
+<jsp:useBean id="resultSet" type="java.util.List<org.silverpeas.components.jdbcconnector.service.TableRow>"/>
+
+<fmt:message var="windowTitle"   key="windowTitleMain"/>
+<fmt:message var="crumbTitle"    key="titreExecution"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-<view:looknfeel/>
-<Head>
-  <TITLE><%=connecteurJDBC.getString("windowTitleMain")%></TITLE>
+<head>
+  <title>${windowTitle}</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <view:looknfeel/>
+  <script type="application/javascript">
+    function goToApp() {
+      spLayout.getBody().load({ComponentId: '${componentId}'});
+    }
+  </script>
 </head>
-<Script language="JavaScript">
-	function doRequest()
-	{
-		document.navigationForm.action = "../../RconnecteurJDBC/jsp/connecteurJDBC.jsp?Space=<%=spaceId%>&Component=<%=componentId%>";
-		document.navigationForm.submit();
-	}
-
-<%
-	if (flag.equals("admin")||flag.equals("publisher"))
-	{
-	%>
-	function doParameterRequest()
-	{
-		document.navigationForm.action = "../../RconnecteurJDBC/jsp/requestParameters.jsp?Space=<%=spaceId%>&Component=<%=componentId%>";
-		document.navigationForm.submit();
-	}
-
-<%
-		if (flag.equals("admin"))
-		{
-		%>
-	function doParameterConnection()
-	{
-		document.navigationForm.action = "../../RconnecteurJDBC/jsp/connectionParameters.jsp?Space=<%=spaceId%>&Component=<%=componentId%>";
-		document.navigationForm.submit();
-	}
-<%
-		}
-	}
-%>
-function goto_jsp(jsp, param)
-{
-	window.open("../../RconnecteurJDBC/<%=spaceId%>_<%=componentId%>/"+jsp+"?"+param, "MyMain");
-}
-</Script>
-<Body >
-
-<%
-
-  //browse bar
-  browseBar.setComponentName(connecteurJDBC.getComponentLabel(), "javascript:goto_jsp('Main', '')");
-  browseBar.setExtraInformation(connecteurJDBC.getString("titreExecution"));
-  browseBar.setIgnoreComponentLink(false);
-  browseBar.setComponentId(componentId);
-
-
-	//Les onglets
-    tabbedPane = gef.getTabbedPane();
-	//tabbedPane.addTab(connecteurJDBC.getString("tabbedPaneConsultation"), "javaScript:doRequest()", true);
-	tabbedPane.addTab(connecteurJDBC.getString("tabbedPaneConsultation"), "javaScript:goto_jsp('connecteurJDBC.jsp', '')", true);
-
-
-    if (flag.equals("publisher") || flag.equals("admin"))
-	//tabbedPane.addTab(connecteurJDBC.getString("tabbedPaneRequete"), "javaScript:doParameterRequest()",false );
-	tabbedPane.addTab(connecteurJDBC.getString("tabbedPaneRequete"), "javaScript:goto_jsp('requestParameters.jsp', '')",false );
-
-	if (flag.equals("admin"))
-		//tabbedPane.addTab(connecteurJDBC.getString("tabbedPaneParametresJDBC"), "javaScript:doParameterConnection()", false);
-		tabbedPane.addTab(connecteurJDBC.getString("tabbedPaneParametresJDBC"), "javaScript:goto_jsp('connectionParameters.jsp', '')", false);
-
-	Frame frame = gef.getFrame();
-
-
-	out.println(window.printBefore());
-	out.println(tabbedPane.print());
-	out.println(frame.printBefore());
-
-
-
-	 //Tableau
-	  ArrayPane arrayPane = gef.getArrayPane("ResultSet","",request,session);
-	  arrayPane.setSortable(true);
-
-	if (connecteurJDBC.getCurrentConnectionInfo().getSqlRequest()!=null)
-	{
-	  connecteurJDBC.startConnection();
-
-	  // Add the columns titles
-	  for (int i=1 ; i<=connecteurJDBC.getColumnCount() ; i++) {
-	    arrayPane.addArrayColumn(connecteurJDBC.getColumnName(i)) ;
-	  }
-
-	  while (connecteurJDBC.getNext()) {
-	    ArrayLine arrayLine = arrayPane.addArrayLine() ;
-	    for (int i=1 ; i<=connecteurJDBC.getColumnCount() ; i++) {
-	      ArrayCellText champ = arrayLine.addArrayCellText(connecteurJDBC.getString(i)) ;
-	      champ.setCompareOn(new String(""));
-	    }
-	  }
-
-	  connecteurJDBC.closeConnection();
-}
-
-
-
-  out.println(arrayPane.print());
-
-
-
-	out.println(frame.printAfter());
-	out.println(window.printAfter());
-
-%>
-</Body>
-<form name="processForm" action="processForm.jsp" >
-	<input name="Sender" type="hidden" value = "connecteurJDBC.jsp" >
-	<input name="Action" type="hidden" >
-
-</form>
-
-<form name="navigationForm" METHOD="POST" target="MyMain">
-</form>
-
-
-</HTML>
+<body>
+<view:browseBar componentId="${componentId}" extraInformations="${crumbTitle}" ignoreComponentLink="false"/>
+<view:window>
+  <view:frame>
+    <div id="result-set">
+      <view:arrayPane var="ResultSet${componentId}" routingAddress="Main" numberLinesPerPage="10">
+        <c:forEach var="fieldName" items="${resultSet[0].fieldNames}">
+          <view:arrayColumn title="${fieldName}" sortable="false"/>
+        </c:forEach>
+        <view:arrayLines var="row" items="${resultSet}">
+          <view:arrayLine>
+            <c:forEach var="field" items="${row.fields.entrySet()}">
+              <view:arrayCellText text="${field.value}"/>
+            </c:forEach>
+          </view:arrayLine>
+        </view:arrayLines>
+      </view:arrayPane>
+      <script type="text/javascript">
+        whenSilverpeasReady(function() {
+          sp.arrayPane.ajaxControls('#result-set');
+        });
+      </script>
+    </div>
+  </view:frame>
+</view:window>
+</body>
+</html>

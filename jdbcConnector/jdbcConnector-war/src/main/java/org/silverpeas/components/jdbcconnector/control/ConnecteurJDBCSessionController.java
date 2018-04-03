@@ -25,9 +25,8 @@ package org.silverpeas.components.jdbcconnector.control;
 
 import org.silverpeas.components.jdbcconnector.model.DataSourceConnectionInfo;
 import org.silverpeas.components.jdbcconnector.model.DataSourceDefinition;
-import org.silverpeas.components.jdbcconnector.service.ConnecteurJDBCException;
-import org.silverpeas.components.jdbcconnector.service.ConnecteurJDBCRuntimeException;
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.components.jdbcconnector.service.JdbcConnectorException;
+import org.silverpeas.components.jdbcconnector.service.JdbcConnectorRuntimeException;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -80,12 +79,12 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
    * Constructeur
    * @param mainSessionCtrl
    * @param componentContext
-   * @throws ConnecteurJDBCRuntimeException
+   * @throws JdbcConnectorRuntimeException
    */
   public ConnecteurJDBCSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
-        "org.silverpeas.connecteurJDBC.multilang.connecteurJDBC");
+        "org.silverpeas.jdbcConnector.multilang.jdbcConnector");
     loadAllAvailableDataSources();
     loadCurrentConnectionInfo();
   }
@@ -104,14 +103,12 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
               new DataSourceConnectionInfo("", getComponentId()).withSqlRequest("");
         } else {
           if (connectionInfos.size() > 1) {
-          throw new ConnecteurJDBCException("connecteurJDBCSessionControl.initConnecteur()",
-              SilverpeasException.FATAL, "connecteurJDBC.EX_THERE_MUST_BE_ONLY_ONE_CONECTION");
+          throw new JdbcConnectorException("THERE_MUST_BE_ONLY_ONE_CONECTION");
           }
           currentConnectionInfo = connectionInfos.get(0);
         }
       } catch (Exception e) {
-        throw new ConnecteurJDBCRuntimeException("connecteurJDBCSessionControl.initConnecteur()",
-            SilverpeasException.FATAL, "connecteurJDBC.EX_INIT_CONNECTEUR_FAIL", e);
+        throw new JdbcConnectorRuntimeException(e);
       }
     }
   }
@@ -215,7 +212,7 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
   /**
    * get the liste of the table names
    */
-  public String[] getTableNames() throws ConnecteurJDBCException {
+  public String[] getTableNames() throws JdbcConnectorException {
     startConnection();
     List<String> tableVector = new ArrayList<>();
     try {
@@ -227,8 +224,7 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
       int n = tableVector.size();
       tableNames = tableVector.toArray(new String[n]);
     } catch (Exception e) {
-      throw new ConnecteurJDBCException("connecteurJDBCSessionControl.getTableNames()",
-          SilverpeasException.ERROR, "connecteurJDBC.EX_CANT_GET_TABLES_NAMES", e);
+      throw new JdbcConnectorException(e);
     }
     closeConnection();
     return tableNames;
@@ -237,14 +233,12 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
   /**
    * get the table corresponding to the tableName
    */
-  private ResultSet getTable(String tableName) throws ConnecteurJDBCException {
+  private ResultSet getTable(String tableName) throws JdbcConnectorException {
     ResultSet resultset;
     try {
       resultset = dbMetaData.getColumns(null, null, tableName, null);
     } catch (SQLException e) {
-      throw new ConnecteurJDBCException("connecteurJDBCSessionControl.getTable()",
-          SilverpeasException.ERROR, "connecteurJDBC.EX_GET_TABLE_FAIL",
-          "from table : " + tableName, e);
+      throw new JdbcConnectorException(e);
     }
     return resultset;
   }
@@ -252,7 +246,7 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
   /**
    * get the columns names corrsponding to a table name
    */
-  public String[] getColumnNames(String tableName) throws ConnecteurJDBCException {
+  public String[] getColumnNames(String tableName) throws JdbcConnectorException {
     ResultSet tableRS = getTable(tableName);
     List<String> columnVector = new ArrayList<>();
     try {
@@ -260,9 +254,7 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
         columnVector.add(tableRS.getString("COLUMN_NAME"));
       }
     } catch (SQLException e) {
-      throw new ConnecteurJDBCException("connecteurJDBCSessionControl.getTable()",
-          SilverpeasException.ERROR, "connecteurJDBC.EX_GET_COLUMNS_NAMES_FAIL",
-          "from table : " + tableName, e);
+      throw new JdbcConnectorException(e);
     }
     int n = columnVector.size();
     columnNames = columnVector.toArray(new String[n]);
@@ -322,7 +314,7 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
   }
 
   /**
-   * get the column selected to restrict the request results in the page connecteurJDBC.jsp
+   * get the column selected to restrict the request results in the page jdbcConnector.jsp
    */
   public String getColumnReq() {
     return columnReq;
@@ -479,7 +471,7 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
           rs = stmt.executeQuery(request);
         }
       }
-    } catch (ConnecteurJDBCException | SQLException e) {
+    } catch (JdbcConnectorException | SQLException e) {
       SilverLogger.getLogger(this).error("Error while checking SQL request " + request, e);
       return e.getMessage();
     } catch (MissingResourceException e) {
@@ -493,18 +485,17 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
     return allDataSources;
   }
 
-  public void updateSQLRequest(String sqlRequest) throws ConnecteurJDBCException {
+  public void updateSQLRequest(String sqlRequest) throws JdbcConnectorException {
     String error = checkRequest(sqlRequest);
     if (StringUtil.isDefined(error)) {
-      throw new ConnecteurJDBCException(getClass().getSimpleName() + ".updateSQLRequest()",
-          SilverpeasException.ERROR, "connecteurJDBC.MSG_CHECK_REQUEST_FAIL", error);
+      throw new JdbcConnectorException(error);
     }
     setValidRequest(sqlRequest);
     getCurrentConnectionInfo().withSqlRequest(sqlRequest).save();
   }
 
   public void updateConnectionInfo(String dataSource, String login, String password, int rowLimit)
-      throws ConnecteurJDBCException {
+      throws JdbcConnectorException {
     if (StringUtil.isDefined(dataSource)) {
       currentConnectionInfo = getCurrentConnectionInfo().withDataSourceName(dataSource)
           .withLoginAndPassword(login, password)
@@ -519,7 +510,7 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
   }
 
   private void checkConnection(DataSourceConnectionInfo connectionInfo)
-      throws ConnecteurJDBCException {
+      throws JdbcConnectorException {
     Connection conn = null;
     try {
       conn = connectionInfo.openConnection();

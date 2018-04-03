@@ -21,11 +21,11 @@
 
 package org.silverpeas.components.jdbcconnector.model;
 
-import org.silverpeas.components.jdbcconnector.service.ConnecteurJDBCException;
+import org.silverpeas.components.jdbcconnector.service.JdbcConnectorException;
 import org.silverpeas.components.jdbcconnector.service.DataSourceConnectionInfoService;
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueIntegerIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -35,11 +35,14 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.sql.DataSource;
+import javax.validation.constraints.NotNull;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
 /**
+ * Information about a JDBC connection to a data source. Such information is the name of the
+ * data source and the credentials required to access that data source.
  * @author mmoquillon
  */
 @Entity
@@ -52,7 +55,8 @@ import java.util.List;
 public class DataSourceConnectionInfo
     extends BasicJpaEntity<DataSourceConnectionInfo, UniqueIntegerIdentifier> {
 
-  @Column(length = 250)
+  @Column(length = 250, nullable = false)
+  @NotNull
   private String dataSource;
   @Column(length = 250)
   private String login;
@@ -61,7 +65,8 @@ public class DataSourceConnectionInfo
   @Column(length = 4000)
   private String sqlreq;
   private int rowLimit = 0;
-  @Column(length = 50)
+  @Column(length = 50, nullable = false)
+  @NotNull
   private String instanceId;
 
   public static DataSourceConnectionInfo getById(String id) {
@@ -85,13 +90,23 @@ public class DataSourceConnectionInfo
   }
 
   /**
+   * Is this connection information defined? Information about a connection to a data source is
+   * defined if both it is related to a ConnecteurJDBC application instance and the name of the
+   * data source is defined.
+   * @return
+   */
+  public boolean isDefined() {
+    return StringUtil.isDefined(this.dataSource) && StringUtil.isDefined(this.instanceId);
+  }
+
+  /**
    * Sets the SQL request to used when requesting the data source and returns this connection
    * information.
    * @param sqlRequest a SQL request.
    * @return itself.
    */
   public DataSourceConnectionInfo withSqlRequest(String sqlRequest) {
-    setSqlRequest(sqlRequest);
+    setSqlRequest(sqlRequest.toLowerCase());
     return this;
   }
 
@@ -222,13 +237,22 @@ public class DataSourceConnectionInfo
    * Opens a connection to the data source targeted by this connection information.
    * @return a connection against the data source referred by this object.
    */
-  public Connection openConnection() throws ConnecteurJDBCException {
+  public Connection openConnection() throws JdbcConnectorException {
     try {
-      DataSource dataSource = InitialContext.doLookup(getDataSourceName());
-      return dataSource.getConnection(getLogin(), getPassword());
+      DataSource ds = InitialContext.doLookup(getDataSourceName());
+      return ds.getConnection(getLogin(), getPassword());
     } catch (NamingException | SQLException ex) {
-      throw new ConnecteurJDBCException(getClass().getSimpleName() + ".openConnection()",
-          SilverpeasException.ERROR, "connecteurJDBC.MSG_CONNECTION_NOT_STARTED", ex.getMessage());
+      throw new JdbcConnectorException(ex.getMessage());
     }
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    return super.equals(o);
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
   }
 }

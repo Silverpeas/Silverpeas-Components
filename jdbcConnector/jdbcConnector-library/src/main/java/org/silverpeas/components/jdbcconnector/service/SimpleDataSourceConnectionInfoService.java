@@ -41,7 +41,7 @@ import java.util.List;
 public class SimpleDataSourceConnectionInfoService implements DataSourceConnectionInfoService {
 
   private static final SettingBundle dataSources =
-      ResourceLocator.getSettingBundle("org.silverpeas.connecteurJDBC.settings.dataSources");
+      ResourceLocator.getSettingBundle("org.silverpeas.jdbcConnector.settings.dataSources");
 
   @Inject
   private DataSourceConnectionInfoRepository repository;
