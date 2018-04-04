@@ -24,44 +24,19 @@
 
 package org.silverpeas.components.jdbcconnector.service.comparators;
 
-import org.silverpeas.core.util.StringUtil;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.text.MessageFormat;
+import java.util.Objects;
 
 /**
+ * The inequality comparator
  * @author mmoquillon
  */
-public abstract class AbstractFieldComparatorBuilder implements FieldComparatorBuilder {
-
-  @SuppressWarnings("unchecked")
-  protected <T> T convert(final String value, final Class<T> type) {
-    if (type.equals(String.class)) {
-      return (T) value;
-    }
-    try {
-      Method valueOf = type.getMethod("valueOf", String.class);
-      return (T) valueOf.invoke(type, value);
-
-    } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-      throw new ClassCastException(e.getMessage());
-    }
-  }
+public class Inequality implements FieldValueComparator {
 
   @Override
-  public String compare(final String fieldName, final String value, final Class<?> type) {
-    if (StringUtil.isNotDefined(fieldName)) {
-      return "";
-    }
-    return getFormatter().format(new String[] {fieldName, encode(value, type)});
+  public <T extends Comparable<T>> boolean compare(final T left, final T right) {
+    Objects.requireNonNull(left);
+    Objects.requireNonNull(right);
+    return left.compareTo(right) != 0;
   }
-
-  protected abstract MessageFormat getFormatter();
-
-  protected String encode(final String value, final Class<?> type) {
-    return type.equals(String.class) ? "'" + value + "'" : value;
-  }
-
 }
   

@@ -24,21 +24,19 @@
 
 package org.silverpeas.components.jdbcconnector.service.comparators;
 
-import org.silverpeas.components.jdbcconnector.service.TableRow;
+import java.util.Objects;
 
 /**
- * A comparator of a field in a table row with a given value.
+ * The equality comparator.
  * @author mmoquillon
  */
-public interface FieldComparatorBuilder {
+public class Equality implements FieldValueComparator {
 
-  /**
-   * Builds the comparator that compares the specified field of a table row with the specified
-   * value.
-   * @param fieldName the name of a field of a {@link TableRow} to compare.
-   * @param value the value with which the field has to be compared.
-   * @return the comparing statement according to the comparator this builder builds.
-   */
-  String compare(final String fieldName, final String value, final Class<?> type);
+  @Override
+  public <T extends Comparable<T>> boolean compare(final T left, final T right) {
+    Objects.requireNonNull(left);
+    Objects.requireNonNull(right);
+    return left.compareTo(right) == 0;
+  }
 }
   

@@ -41,7 +41,7 @@ import java.util.Map;
  */
 public class TableRow {
 
-  private final Map<String, Object> fields = new LinkedHashMap<>();
+  private final Map<String, Comparable> fields = new LinkedHashMap<>();
 
   /**
    * Constructs a {@link TableRow} from the specified {@link ResultSet}.
@@ -51,7 +51,16 @@ public class TableRow {
     try {
       ResultSetMetaData rsMetaData = rs.getMetaData();
       for (int i = 1; i <= rsMetaData.getColumnCount(); i++) {
-        this.fields.put(rsMetaData.getColumnName(i), rs.getObject(i));
+        Object value = rs.getObject(i);
+        Comparable valueToStore;
+        if (value == null) {
+          valueToStore = null;
+        } else if (value instanceof Comparable) {
+          valueToStore = (Comparable) value;
+        } else {
+          valueToStore = new TableFieldValue(value);
+        }
+        this.fields.put(rsMetaData.getColumnName(i), valueToStore);
       }
     } catch (SQLException e) {
       throw new JdbcConnectorRuntimeException(e);
@@ -79,7 +88,7 @@ public class TableRow {
    * @param field the name of the field.
    * @return the value of the asked field.
    */
-  public Object getFieldValue(final String field) {
+  public Comparable getFieldValue(final String field) {
     return fields.get(field);
   }
 }

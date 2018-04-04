@@ -24,24 +24,21 @@
 
 package org.silverpeas.components.jdbcconnector.service.comparators;
 
-import java.text.MessageFormat;
-
 /**
- * The including comparator.
+ * A comparator of comparable values. Such comparator is a comparing predicate between two
+ * comparable objects.
  * @author mmoquillon
  */
-public class InclusionBuilder extends AbstractFieldComparatorBuilder {
+@FunctionalInterface
+public interface FieldValueComparator {
 
-  private static final MessageFormat INCLUSION = new MessageFormat("{0} like {1}");
-
-  @Override
-  protected MessageFormat getFormatter() {
-    return INCLUSION;
-  }
-
-  @Override
-  protected String encode(final String value, final Class<?> type) {
-    return super.encode("%" + value + "%", type);
-  }
+  /**
+   * Compares the left value with the right one. The two specified values must be comparable and
+   * instances of a same class.
+   * @param left the left value. Must be non null.
+   * @param right the right value. Must be non null.
+   * @return true if the comparing predicate between the two specified values is satisfied.
+   */
+  <T extends Comparable<T>> boolean compare(final T left, final T right);
 }
   

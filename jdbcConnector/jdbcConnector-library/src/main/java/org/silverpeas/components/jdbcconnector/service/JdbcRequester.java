@@ -25,6 +25,7 @@
 package org.silverpeas.components.jdbcconnector.service;
 
 import org.silverpeas.components.jdbcconnector.model.DataSourceConnectionInfo;
+import org.silverpeas.core.util.StringUtil;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -32,6 +33,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -116,6 +118,16 @@ public class JdbcRequester {
   }
 
   /**
+   * Is there is any default SQL request set with this requester? A request is set when there is a
+   * {@link DataSourceConnectionInfo} instance defined for the component instance to which this
+   * request is related and a SQL query has been defined for that connection information.
+   * @return true if there is a SQL query defined for the current underlying connection information.
+   */
+  public boolean isSQLRequestDefined() {
+    return StringUtil.isNotDefined(currentConnectionInfo.getSqlRequest());
+  }
+
+  /**
    * Gets all the tables in the data source (only public tables and views are fetched). If an error
    * occurs while requesting the data source, a {@link JdbcConnectorRuntimeException} is thrown.
    * @return a list of table names.
@@ -158,12 +170,18 @@ public class JdbcRequester {
   /**
    * Requests the data source by using the SQL query that was set with the current underlying
    * {@link DataSourceConnectionInfo} instance. A {@link JdbcConnectorRuntimeException} is thrown
-   * if the data returned by the requesting fails to be read.
-   * @return a list of rows, each of them represented by a {@link TableRow} instance.
+   * if the data returned by the requesting fails to be read. If no request was set, then nothing
+   * is requested and hence nothing is returned.
+   * @return a list of rows, each of them represented by a {@link TableRow} instance. If no SQL
+   * query is defined with the underlying {@link DataSourceConnectionInfo} instance, then an empty
+   * list is returned.
    * @throws JdbcConnectorException if either no connection can be established or the requesting
    * failed.
    */
   public List<TableRow> request() throws JdbcConnectorException {
+    if (isSQLRequestDefined()) {
+      return Collections.emptyList();
+    }
     return request(currentConnectionInfo.getSqlRequest());
   }
 

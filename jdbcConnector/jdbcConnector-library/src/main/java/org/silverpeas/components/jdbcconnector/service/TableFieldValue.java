@@ -24,12 +24,11 @@
 
 package org.silverpeas.components.jdbcconnector.service;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Objects;
 
 /**
- * The value of a field in a table row.
+ * The value of a field in a table row. Such instance is used instead of a given true field value
+ * when that field value doesn't satisfy the {@link Comparable} interface.
  * @author mmoquillon
  */
 public class TableFieldValue implements Comparable<TableFieldValue> {
@@ -38,6 +37,16 @@ public class TableFieldValue implements Comparable<TableFieldValue> {
 
   TableFieldValue(final Object value) {
     this.value = value;
+  }
+
+  /**
+   * Constructs a {@link TableFieldValue} instance from the specified {@link String} encoded field
+   * value.
+   * @param value the value from which a {@link TableFieldValue} has to be built.
+   * @return a {@link TableFieldValue} instance wrapping the specified {@link String} value.
+   */
+  public static TableFieldValue valueOf(final String value) {
+    return new TableFieldValue(value);
   }
 
   @Override
@@ -57,6 +66,15 @@ public class TableFieldValue implements Comparable<TableFieldValue> {
     return Objects.hash(value);
   }
 
+  /**
+   * Compares this {@link TableFieldValue} with the specified one. The comparing is actually done
+   * on the wrapped values themselves. If the wrapped values satisfy the {@link Comparable}
+   * interface then the {@link Comparable#compareTo(Object)} method is used, otherwise both of them
+   * are converted in {@link String} objects and these {@link String} instances are then compared
+   * between themselves.
+   * @param o another {@link TableFieldValue} with which this one is compared.
+   * @return the comparing distance between the two {@link TableFieldValue} instances.
+   */
   @Override
   public int compareTo(final TableFieldValue o) {
     if (o.value == null && value == null) {
@@ -65,15 +83,10 @@ public class TableFieldValue implements Comparable<TableFieldValue> {
       return 1;
     } else if (value == null) {
       return -1;
-    } else if (o.value.getClass().equals(value.getClass())) {
-      try {
-        Method m = o.getClass().getMethod("compareTo", o.getClass());
-        return (Integer) m.invoke(value, o.value);
-      } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-        return toString().compareTo(o.toString());
-      }
+    } else if (value instanceof Comparable) {
+      return ((Comparable) value).compareTo(o.value);
     }
-    throw new IllegalArgumentException("The table field value isn't of the same type than this");
+    return toString().compareTo(o.toString());
   }
 
   @Override
@@ -81,4 +94,3 @@ public class TableFieldValue implements Comparable<TableFieldValue> {
     return value == null ? null : value.toString();
   }
 }
-  

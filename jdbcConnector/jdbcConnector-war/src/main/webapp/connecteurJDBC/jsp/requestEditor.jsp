@@ -36,7 +36,7 @@
 <view:setConstant var="adminRole"          constant="org.silverpeas.core.admin.user.model.SilverpeasRole.admin"/>
 <view:setConstant var="publisherRole"      constant="org.silverpeas.core.admin.user.model.SilverpeasRole.publisher"/>
 <view:setConstant var="comparingOperators" constant="org.silverpeas.components.jdbcconnector.control.JdbcConnectorWebController.COMPARING_OPERATORS"/>
-<view:setConstant var="nothing"            constant="org.silverpeas.components.jdbcconnector.control.SQLQueryBuilder.FIELD_NONE"/>
+<view:setConstant var="nothing"            constant="org.silverpeas.components.jdbcconnector.control.TableRowsFilter.FIELD_NONE"/>
 
 
 <c:if test="${not requestScope.highestUserRole.isGreaterThanOrEquals(publisherRole)}">
@@ -67,7 +67,7 @@
 
 <form name="requestEditor" action="javascript:setUpRequest();" method="post">
   <div id="step1" style="padding: 5px">
-    <label class="txtlibform" for="tables"><fmt:message key="popupSelection1"/>&nbsp;: </label>
+    <label class="txtlibform" for="table"><fmt:message key="popupSelection1"/>&nbsp;: </label>
     <select id="table" name="table" style="width: 30em;">
       <c:forEach var="tableName" items="${tables.keySet()}">
         <option value="${tableName}">${tableName}</option>

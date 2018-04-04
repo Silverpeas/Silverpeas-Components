@@ -28,11 +28,11 @@ package org.silverpeas.components.jdbcconnector.service.comparators;
  * A builder that builds no comparing statement.
  * @author mmoquillon
  */
-public class NothingBuilder implements FieldComparatorBuilder {
+public class NothingBuilder implements FieldValueComparator {
 
   @Override
-  public String compare(final String fieldName, final String value, final Class<?> type) {
-    return "";
+  public <T extends Comparable<T>> boolean compare(final T left, final T right) {
+    return true;
   }
 }
   

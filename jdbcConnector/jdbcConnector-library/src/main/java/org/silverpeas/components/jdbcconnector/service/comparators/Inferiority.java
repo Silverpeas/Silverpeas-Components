@@ -24,19 +24,19 @@
 
 package org.silverpeas.components.jdbcconnector.service.comparators;
 
-import java.text.MessageFormat;
+import java.util.Objects;
 
 /**
- * The inequality comparator
+ * The non-strict inferiority comparator; the two values can be equal.
  * @author mmoquillon
  */
-public class InequalityBuilder extends AbstractFieldComparatorBuilder {
-
-  private static final MessageFormat INEQUALITY = new MessageFormat("{0} <> {1}");
+public class Inferiority implements FieldValueComparator {
 
   @Override
-  protected MessageFormat getFormatter() {
-    return INEQUALITY;
+  public <T extends Comparable<T>> boolean compare(final T left, final T right) {
+    Objects.requireNonNull(left);
+    Objects.requireNonNull(right);
+    return left.compareTo(right) <= 0;
   }
 }
   

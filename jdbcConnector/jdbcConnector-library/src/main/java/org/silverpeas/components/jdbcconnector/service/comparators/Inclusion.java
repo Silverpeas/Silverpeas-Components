@@ -24,19 +24,23 @@
 
 package org.silverpeas.components.jdbcconnector.service.comparators;
 
-import java.text.MessageFormat;
+import java.util.Objects;
 
 /**
- * The strict inferiority comparator.
+ * The including comparator.
  * @author mmoquillon
  */
-public class StrictInferiorityBuilder extends AbstractFieldComparatorBuilder {
-
-  private static final MessageFormat STRICT_INFERIORITY = new MessageFormat("{0} < {1}");
+public class Inclusion implements FieldValueComparator {
 
   @Override
-  protected MessageFormat getFormatter() {
-    return STRICT_INFERIORITY;
+  public <T extends Comparable<T>> boolean compare(final T left, final T right) {
+    Objects.requireNonNull(left);
+    Objects.requireNonNull(right);
+    if (left instanceof String && right instanceof String) {
+      return ((String)left).contains((String) right);
+    } else {
+      return left.compareTo(right) == 0;
+    }
   }
 }
   

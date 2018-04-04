@@ -39,7 +39,7 @@
 <view:setConstant var="comparingOperator"  constant="org.silverpeas.components.jdbcconnector.control.JdbcConnectorWebController.COMPARING_OPERATOR"/>
 <view:setConstant var="comparingValue"     constant="org.silverpeas.components.jdbcconnector.control.JdbcConnectorWebController.COMPARING_VALUE"/>
 <view:setConstant var="comparingOperators" constant="org.silverpeas.components.jdbcconnector.control.JdbcConnectorWebController.COMPARING_OPERATORS"/>
-<view:setConstant var="nothing"            constant="org.silverpeas.components.jdbcconnector.control.SQLQueryBuilder.FIELD_NONE"/>
+<view:setConstant var="nothing"            constant="org.silverpeas.components.jdbcconnector.control.TableRowsFilter.FIELD_NONE"/>
 
 <c:set var="componentId"       value="${requestScope.browseContext[3]}"/>
 <c:set var="columnToCompare"   value="${requestScope[comparingColumn]}"/>
@@ -51,12 +51,15 @@
 
 <fmt:message var="windowTitle"   key="windowTitleMain"/>
 <fmt:message var="crumbTitle"    key="titreExecution"/>
+<fmt:message var="reload"        key="reloadRequest"/>
 <fmt:message var="resultTab"     key="tabbedPaneConsultation"/>
 <fmt:message var="queryTab"      key="tabbedPaneRequete"/>
 <fmt:message var="dataSourceTab" key="tabbedPaneParametresJDBC"/>
 <fmt:message var="all"           key="comboTous"/>
 <fmt:message var="includes"      key="contient"/>
 <fmt:message var="buttonOk"      key="GML.ok"/>
+
+<c:url var="editorIcon" value="/util/icons/connecteurJDBC_request.gif"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -89,6 +92,9 @@
 </head>
 <body>
 <view:browseBar componentId="${componentId}" path="${requestScope.navigationContext}" extraInformations="${crumbTitle}"/>
+<view:operationPane>
+  <view:operation action="Main?reload=true" altText="${reload}" icon="${editorIcon}"/>
+</view:operationPane>
 <view:window>
   <c:if test="${requestScope.highestUserRole.isGreaterThanOrEquals(publisherRole)}">
     <view:tabs>
@@ -157,7 +163,7 @@
       <c:set var="fieldNames" value="${resultSet[0].fieldNames}"/>
       <view:arrayPane var="ResultSet${componentId}" routingAddress="Main" export="true" numberLinesPerPage="25">
         <c:forEach var="fieldName" items="${fieldNames}">
-          <view:arrayColumn title="${fieldName}" compareOn="${(r, i) -> r.getFieldValue(items[i])}" sortable="true"/>
+          <view:arrayColumn title="${fieldName}" compareOn="${(r, i) -> r.getFieldValue(r.fieldNames[i])}" sortable="true"/>
         </c:forEach>
         <view:arrayLines var="row" items="${resultSet}">
           <view:arrayLine>
