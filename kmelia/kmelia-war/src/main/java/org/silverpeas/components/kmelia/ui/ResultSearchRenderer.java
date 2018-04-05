@@ -130,8 +130,8 @@ public class ResultSearchRenderer extends AbstractResultDisplayer {
       template.setAttribute("pubKeywords", pubDetail.getKeywords());
     }
 
-    if (StringUtil.isDefined(pubDetail.getContent())) {
-      template.setAttribute("pubContent", pubDetail.getContent());
+    if (StringUtil.isDefined(pubDetail.getContentPagePath())) {
+      template.setAttribute("pubContent", pubDetail.getContentPagePath());
     }
     String componentId = silverResult.getInstanceId();
     String id = silverResult.getId();

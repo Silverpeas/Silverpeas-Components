@@ -163,7 +163,7 @@ function publicationGoToUniqueSite(){
 	if ((listeSites != null) && (listeSites.size() == 1)) {
 		PublicationDetail site = (PublicationDetail) listeSites.iterator().next();
 		String siteId = site.getVersion();
-		String sitePage = site.getContent();
+		String sitePage = site.getContentPagePath();
 		SiteDetail siteDetail = scc.getWebSite(siteId);
 		out.println("publicationGoTo('" + siteDetail.getPopup() + "', '" + siteDetail.getSiteType() + "', 'http://"+getMachine(request)+"/"+settings.getString("Context")+"/"+componentId+"/"+siteId+"/' , '"+Encode.javaStringToJsString(sitePage)+"')");
 	}
@@ -309,7 +309,7 @@ function openSuggestionConfirmation() { //v2.0
 			if (siteDescription == null)
 				siteDescription = "";
 
-			String sitePage = site.getContent();
+			String sitePage = site.getContentPagePath();
 			String type = new Integer(site.getImportance()).toString();
 			liste += "<tr>\n";
 			String listeIcones = "";

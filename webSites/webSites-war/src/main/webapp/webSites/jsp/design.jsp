@@ -67,7 +67,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 		auteur = siteDetail.getCreatorId();
 		date = resources.getOutputDate(siteDetail.getCreationDate());
     popup = siteDetail.getPopup();
-		nomPage = siteDetail.getContent();
+		nomPage = siteDetail.getContentPagePath();
 	}
 	boolean searchOk = true;
 	Boolean theSearch = (Boolean) request.getAttribute("SearchOK");
