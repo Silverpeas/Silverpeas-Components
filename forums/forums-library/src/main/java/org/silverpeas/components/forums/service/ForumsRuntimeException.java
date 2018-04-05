@@ -24,33 +24,21 @@
 
 package org.silverpeas.components.forums.service;
 
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.SilverpeasRuntimeException;
 
 public class ForumsRuntimeException extends SilverpeasRuntimeException {
 
-  private static final long serialVersionUID = 2106651190069558942L;
+  private static final long serialVersionUID = 2106651190069558943L;
 
-  public ForumsRuntimeException(String callingClass, int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
+  public ForumsRuntimeException(final String message) {
+    super(message);
   }
 
-  public ForumsRuntimeException(String callingClass, int errorLevel, String message,
-      String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public ForumsRuntimeException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  public ForumsRuntimeException(String callingClass, int errorLevel, String message,
-      Exception nested) {
-    super(callingClass, errorLevel, message, nested);
+  public ForumsRuntimeException(final Throwable cause) {
+    super(cause);
   }
-
-  public ForumsRuntimeException(String callingClass, int errorLevel, String message,
-      String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  public String getModule() {
-    return "forums";
-  }
-
 }

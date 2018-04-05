@@ -26,18 +26,17 @@ package org.silverpeas.components.questionreply.service.notification;
 import org.silverpeas.components.questionreply.QuestionReplyException;
 import org.silverpeas.components.questionreply.model.Question;
 import org.silverpeas.components.questionreply.model.Reply;
-import org.silverpeas.core.ui.DisplayI18NHelper;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.notification.user.client.NotificationManagerException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.notification.user.client.UserRecipient;
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.template.SilverpeasTemplate;
+import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.Link;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.template.SilverpeasTemplate;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -72,11 +71,7 @@ public class SubscriptionNotifier extends Notifier {
             DisplayI18NHelper.getDefaultLanguage());
         Map<String, SilverpeasTemplate> templates = new HashMap<>();
         String translation;
-        try {
-          translation = message.getString("questionReply.subscription.title");
-        } catch (MissingResourceException ex) {
-          translation = "Réponse à : %1$s";
-        }
+        translation = getNotificationTitle(message);
         NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.NORMAL,
             String.format(translation, question.getTitle()), templates, "reply_subscription");
         List<String> languages = DisplayI18NHelper.getLanguages();
@@ -101,9 +96,18 @@ public class SubscriptionNotifier extends Notifier {
 
         notificationSender.notifyUser(notifMetaData);
       } catch (NotificationManagerException e) {
-        throw new QuestionReplyException("QuestionReplySessionController.notify()",
-            SilverpeasException.ERROR, "questionReply.EX_NOTIFICATION_MANAGER_FAILED", "", e);
+        throw new QuestionReplyException(e);
       }
     }
+  }
+
+  private String getNotificationTitle(final LocalizationBundle message) {
+    String translation;
+    try {
+      translation = message.getString("questionReply.subscription.title");
+    } catch (MissingResourceException ex) {
+      translation = "Answer to %1$s";
+    }
+    return translation;
   }
 }
