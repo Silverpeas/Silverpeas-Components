@@ -44,7 +44,7 @@ String m_context = ResourceLocator.getGeneralSettingBundle().getString("Applicat
 
 int nbZone = 4; // nombre de zones � contr�ler
 List<ComponentInstLight> galleries = quizzScc.getGalleries();
-if (galleries != null) {
+if (!galleries.isEmpty()) {
 	nbZone = nbZone + 2;
 }
 
@@ -490,7 +490,7 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
     
         <div class="thumbnailInputs">
         <img title="<%=surveyResource.getString("survey.answer.image.select")%>" alt="<%=surveyResource.getString("survey.answer.image.select")%>" src="/silverpeas/util/icons/images.png" /> <input type="file" id="thumbnailFile" size="40" name="image<%=i%>" />
-          <%if (galleries != null) {%>
+          <%if (!galleries.isEmpty()) {%>
         <span class="txtsublibform"> ou </span><input type="hidden" name="valueImageGallery<%= i %>" id="valueImageGallery<%= i %>"/>
          <select class="galleries" name="galleries" onchange="choixGallery(this, '<%= i %>');this.selectedIndex=0;"> 
            <option selected><%= surveyResource.getString("GML.thumbnail.galleries") %></option>

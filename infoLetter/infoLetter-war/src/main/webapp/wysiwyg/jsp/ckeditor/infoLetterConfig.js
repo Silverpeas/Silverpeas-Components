@@ -14,9 +14,10 @@ CKEDITOR.editorConfig = function( config )
   config.filebrowserImageBrowseUrl = config.baseHref+'uploadFile.jsp';
   config.filebrowserFlashBrowseUrl = config.baseHref+'uploadFile.jsp';
   config.filebrowserBrowseUrl = config.baseHref+'uploadFile.jsp';
-  config.extraPlugins = 'userzoom,identitycard,allmedias';
+  config.extraPlugins = 'userzoom,identitycard,allmedias,autolink,video,html5audio,imageresizerowandcolumn,variables,listblock,floatpanel,richcombo,mediaofcontribution,imagebank,filebank';
   config.allowedContent = true;
   config.toolbarCanCollapse = true;
+  config.disableNativeSpellChecker = false;
   //config.forcePasteAsPlainText = true;
 
   config.stylesSet = [
@@ -29,12 +30,12 @@ CKEDITOR.editorConfig = function( config )
   config.toolbar_infoLetter = [
     { name: 'document',    items : [ 'Source','-','NewPage','DocProps','Preview','Print','-','Templates' ] },
     { name: 'clipboard',   items : [ 'Cut','Copy','Paste','PasteText','PasteFromWord','-','Undo','Redo' ] },
-    { name: 'editing',     items : [ 'Find','Replace','-','SelectAll','-','SpellChecker', 'Scayt' ] },
+    { name: 'editing',     items : [ 'Find','Replace','-','SelectAll' ] },
     '/',
     { name: 'basicstyles', items : [ 'Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat' ] },
-    { name: 'paragraph',   items : [ 'NumberedList','BulletedList','-','Outdent','Indent','-','Blockquote','CreateDiv','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock','-','BidiLtr','BidiRtl' ] },
+    { name: 'paragraph',   items : [ 'NumberedList','BulletedList','-','Outdent','Indent','-','Blockquote','CreateDiv','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock' ] },
     { name: 'links',       items : [ 'Link','Unlink','Anchor' ] },
-    { name: 'insert',      items : [ 'Image','allmedias','Flash','Table','HorizontalRule','Smiley','SpecialChar','PageBreak' ] },
+    { name: 'insert',      items : [ 'Image','mediaofcontribution','imagebank','Video','Html5audio','Iframe','filebank','Table','HorizontalRule','Smiley','SpecialChar','PageBreak', 'variables' ] },
     '/',
     { name: 'styles',      items : [ 'Styles','Format','Font','FontSize' ] },
     { name: 'colors',      items : [ 'TextColor','BGColor' ] },
