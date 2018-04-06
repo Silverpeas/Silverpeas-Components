@@ -903,13 +903,14 @@ a.button.refuse span {
 	flex-flow: row wrap;
 }
 
-#pubList  .list-publication-home li{
+#pubList .list-publication-home li{
 	flex-grow:1;
 	flex-shrink:2;
 	flex-basis:30%;
 	padding:1em 0 0.5em;
 	margin:0em 1em 1em;
 	border-bottom:1px solid #ddd;
+    display:block;
 }
 
 #pubList .list-publication-home li .publication-user::after,
