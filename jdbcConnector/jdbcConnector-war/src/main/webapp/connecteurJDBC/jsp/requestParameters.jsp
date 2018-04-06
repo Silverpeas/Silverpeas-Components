@@ -42,15 +42,16 @@
 
 <c:set var="componentId" value="${requestScope.browseContext[3]}"/>
 
-<fmt:message var="windowTitle" key="windowTitleParametrageRequete"/>
-<fmt:message var="crumbTitle" key="titreParametrageRequete"/>
-<fmt:message var="resultTab" key="tabbedPaneConsultation"/>
-<fmt:message var="queryTab" key="tabbedPaneRequete"/>
+<fmt:message var="windowTitle"   key="windowTitleParametrageRequete"/>
+<fmt:message var="crumbTitle"    key="titreParametrageRequete"/>
+<fmt:message var="popupTitle"    key="titrePopup"/>
+<fmt:message var="resultTab"     key="tabbedPaneConsultation"/>
+<fmt:message var="queryTab"      key="tabbedPaneRequete"/>
 <fmt:message var="dataSourceTab" key="tabbedPaneParametresJDBC"/>
-<fmt:message var="queryField" key="champRequete"/>
-<fmt:message var="buttonOk" key="boutonValider"/>
-<fmt:message var="buttonCancel" key="boutonAnnuler"/>
-<fmt:message var="requestError" key="erreurChampsTropLong"/>
+<fmt:message var="queryField"    key="champRequete"/>
+<fmt:message var="buttonOk"      key="boutonValider"/>
+<fmt:message var="buttonCancel"  key="boutonAnnuler"/>
+<fmt:message var="requestError"  key="erreurChampsTropLong"/>
 <fmt:message var="requestEditor" key="operationPaneRequete"/>
 
 <c:url var="editorIcon" value="/util/icons/connecteurJDBC_request.gif"/>
@@ -60,7 +61,7 @@
 <head>
   <title>${windowTitle}</title>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-  <view:looknfeel withCheckFormScript="true"/>
+  <view:looknfeel withCheckFormScript="true" withFieldsetStyle="true"/>
   <view:includePlugin name="popup"/>
   <script type="application/javascript">
     function saveRequest() {
@@ -79,9 +80,8 @@
     }
 
     function launchSQLRequestEditor() {
-      /*SP_openWindow('${requestScope.editorUrl}', 'SqlRequest_Debut', '840', '450', '');*/
       displaySingleFreePopupFrom('${requestScope.editorUrl}', {
-        title: '<fmt:message key="titrePopup"/>',
+        title: '${popupTitle}',
         closeOnEscape: true,
         resizable: true,
         width: '800px'});

@@ -38,7 +38,6 @@
 <view:setConstant var="comparingOperators" constant="org.silverpeas.components.jdbcconnector.control.JdbcConnectorWebController.COMPARING_OPERATORS"/>
 <view:setConstant var="nothing"            constant="org.silverpeas.components.jdbcconnector.control.TableRowsFilter.FIELD_NONE"/>
 
-
 <c:if test="${not requestScope.highestUserRole.isGreaterThanOrEquals(publisherRole)}">
   <c:redirect url="/Error403.jsp"/>
 </c:if>
@@ -48,79 +47,94 @@
 <c:set var="tables" value="${requestScope.tables}"/>
 <jsp:useBean id="tables" type="java.util.Map<java.lang.String, java.lang.String>"/>
 
-<fmt:message var="windowTitle" key="titrePopup"/>
-<fmt:message var="crumbTitle" key="titrePopup"/>
-<fmt:message var="queryField" key="champRequete"/>
-<fmt:message var="buttonNext" key="boutonSuivant"/>
-<fmt:message var="buttonDone" key="boutonTerminer"/>
-<fmt:message var="buttonCancel" key="boutonAnnuler"/>
-<fmt:message var="requestError" key="erreurChampsTropLong"/>
+<fmt:message var="windowTitle"   key="titrePopup"/>
+<fmt:message var="crumbTitle"    key="titrePopup"/>
+<fmt:message var="queryField"    key="champRequete"/>
+<fmt:message var="buttonNext"    key="boutonSuivant"/>
+<fmt:message var="buttonDone"    key="boutonTerminer"/>
+<fmt:message var="buttonCancel"  key="boutonAnnuler"/>
+<fmt:message var="requestError"  key="erreurChampsTropLong"/>
 <fmt:message var="requestEditor" key="operationPaneRequete"/>
-<fmt:message var="includes" key="contient"/>
+<fmt:message var="includes"      key="contient"/>
+<fmt:message var="selectSome"    key="selectSome"/>
+<fmt:message var="selectAll"     key="selectAll"/>
+<fmt:message var="unselectSome"  key="unselectSome"/>
+<fmt:message var="unselectAll"   key="unselectAll"/>
+<fmt:message var="addCriterion"  key="addCriterion"/>
 
 <c:url var="editorIcon" value="/util/icons/connecteurJDBC_request.gif"/>
-<c:url var="selectOne" value="/util/icons/formButtons/arrowRight.gif"/>
-<c:url var="unselectOne" value="/util/icons/formButtons/arrowLeft.gif"/>
-<c:url var="selectAll" value="/util/icons/formButtons/arrowDoubleRight.gif"/>
-<c:url var="unselectAll" value="/util/icons/formButtons/arrowDoubleLeft.gif"/>
-<c:url var="addCriterion" value="/util/icons/add.gif"/>
+<c:url var="selectSomeIcon" value="/util/icons/formButtons/arrowRight.gif"/>
+<c:url var="unselectSomeIcon" value="/util/icons/formButtons/arrowLeft.gif"/>
+<c:url var="selectAllIcon" value="/util/icons/formButtons/arrowDoubleRight.gif"/>
+<c:url var="unselectAllIcon" value="/util/icons/formButtons/arrowDoubleLeft.gif"/>
+<c:url var="addCriterionIcon" value="/util/icons/add.gif"/>
 
-<form name="requestEditor" action="javascript:setUpRequest();" method="post">
-  <div id="step1" style="padding: 5px">
-    <label class="txtlibform" for="table"><fmt:message key="popupSelection1"/>&nbsp;: </label>
-    <select id="table" name="table" style="width: 30em;">
-      <c:forEach var="tableName" items="${tables.keySet()}">
-        <option value="${tableName}">${tableName}</option>
-      </c:forEach>
-    </select>
-  </div>
-  <div id="step2" style="padding: 5px">
-  <div style="text-align: left; position: relative">
-    <label class="txtlibform" for="table-columns"><fmt:message key="popupSelection2"/>&nbsp;: </label>
-    <select id="table-columns" name="table-columns" multiple size="10" style="width: 10em;">
-    </select>
-  </div>
-  <div style="text-align: center; position: relative">
-    <a href="javascript:selectOne();"><img src="${selectOne}" width="37" height="24" border="0"></a>
-    <a href="javascript:selectAll();"><img src="${selectAll}" width="37" height="24" border="0"></a>
-    <a href="javascript:unselectOne();"><img src="${unselectOne}" width="37" height="24" border="0"></a>
-    <a href="javascript:unselectAll();"><img src="${unselectAll}" width="37" height="24" border="0"></a>
-  </div>
-  <div style="text-align: right; float: right">
-    <label class="txtlibform" for="columns"><fmt:message key="popupSelected"/>&nbsp;: </label>
-    <select id="columns" name="columns" multiple size="10" style="width: 10em;">
-    </select>
-  </div>
-  </div>
-  <div id="step3" style="padding: 5px">
-    <label class="txtlibform"><fmt:message key="popupSelection3"/>&nbsp;: </label>
-    <div id="criteria">
-      <select id="criterion-column" name="criterion-column" size="1">
-        <option value="" selected></option>
-      </select>
-      <select id="criterion-comparator" name="criterion-comparator" size="1">
-        <c:forEach var="comparator" items="${comparators}">
-          <c:set var="comparatorLabel" value="${comparator}"/>
-          <c:if test="${not comparator.equals(nothing)}">
-            <c:if test="${comparator.equals('including')}">
-              <c:set var="comparatorLabel" value="${includes}"/>
+<div class="fields">
+  <form name="requestEditor" action="javascript:setUpRequest();" method="post">
+    <div id="step1" class="field entireWidth">
+      <label class="txtlibform" for="table"><fmt:message key="popupSelection1"/>&nbsp;: </label>
+      <div class="champs">
+        <select id="table" name="table" style="width: 30em;">
+          <c:forEach var="tableName" items="${tables.keySet()}">
+            <option value="${tableName}">${tableName}</option>
+          </c:forEach>
+        </select>
+      </div>
+    </div>
+
+    <div id="step2">
+      <div class="field">
+        <label class="txtlibform" for="table-columns"><fmt:message key="popupSelection2"/>&nbsp;: </label>
+        <div class="champs">
+          <select id="table-columns" name="table-columns" multiple size="10"></select>
+        </div>
+      </div>
+      <div class="field">
+        <label class="txtlibform" for="columns"><fmt:message key="popupSelected"/>&nbsp;: </label>
+        <div class="champs">
+          <select id="columns" name="columns" multiple size="10"></select>
+        </div>
+      </div>
+      <div class="field entireWidth">
+        <div class="champs sp_buttonPane">
+          <a title="${selectSome}" href="javascript:selectOne();"><img src="${selectSomeIcon}"/></a>
+          <a title="${selectAll}" href="javascript:selectAll();"><img src="${selectAllIcon}"/></a>
+          <a title="${unselectSome}" href="javascript:unselectOne();"><img src="${unselectSomeIcon}"/></a>
+          <a title="${unselectAll}" href="javascript:unselectAll();"><img src="${unselectAllIcon}"/></a>
+        </div>
+      </div>
+    </div>
+    <div id="step3" class="field entireWidth">
+      <label class="txtlibform"><fmt:message key="popupSelection3"/>&nbsp;: </label>
+      <div id="criteria">
+        <select id="criterion-column" name="criterion-column" size="1">
+          <option value="" selected="selected"></option>
+        </select>
+        <select id="criterion-comparator" name="criterion-comparator" size="1">
+          <c:forEach var="comparator" items="${comparators}">
+            <c:set var="comparatorLabel" value="${comparator}"/>
+            <c:if test="${not comparator.equals(nothing)}">
+              <c:if test="${comparator.equals('including')}">
+                <c:set var="comparatorLabel" value="${includes}"/>
+              </c:if>
+              <option value="${comparator}">${comparatorLabel}</option>
             </c:if>
-            <option value="${comparator}">${comparatorLabel}</option>
-          </c:if>
-        </c:forEach>
-      </select>
-      <input id="criterion-value" type="text" name="criterion-value" size="30" value="">
-      <a href="javascript:addCriterion();"><img src="${addCriterion}" width="37" height="24" border="0"></a>
+          </c:forEach>
+        </select>
+        <input id="criterion-value" type="text" name="criterion-value" size="30" value="">
+        <a title="${addCriterion}" href="javascript:addCriterion();"><img src="${addCriterionIcon}" border="0"></a>
+      </div>
+      <div id="criteria-statement">
+        <span></span>
+      </div>
     </div>
-    <div id="criteria-statement" style="padding: 2px">
-      <span></span>
-    </div>
-  </div>
-  <view:buttonPane>
-    <view:button label="${buttonDone}" action="javascript:setUpSQLRequest();"/>
-    <view:button label="${buttonCancel}" action="javascript:close();"/>
-  </view:buttonPane>
-</form>
+    <div class="break-line"></div>
+    <view:buttonPane>
+      <view:button label="${buttonDone}" action="javascript:setUpSQLRequest();"/>
+      <view:button label="${buttonCancel}" action="javascript:close();"/>
+    </view:buttonPane>
+  </form>
+</div>
 
 <script type="application/javascript">
   var tables = {};
@@ -186,6 +200,9 @@
       if (comparator === 'include') {
         criteria.push(column + " like '%" + value + "%'")
       } else {
+        if (isNaN(value)) {
+          value = "'" + value + "'";
+        }
         criteria.push(column + ' ' + comparator + ' ' + value);
       }
       $('#criteria-statement span').replaceWith($('<span>').html(criteria.join(' and ')));

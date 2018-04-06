@@ -56,14 +56,15 @@
 <view:window>
   <view:frame>
     <div id="result-set">
+      <c:set var="fieldNames" value="${resultSet[0].fieldNames}"/>
       <view:arrayPane var="ResultSet${componentId}" routingAddress="Main" numberLinesPerPage="10">
-        <c:forEach var="fieldName" items="${resultSet[0].fieldNames}">
-          <view:arrayColumn title="${fieldName}" sortable="false"/>
+        <c:forEach var="fieldName" items="${fieldNames}">
+          <view:arrayColumn title="${fieldName}" compareOn="${(r, i) -> r.getFieldValue(r.fieldNames[i])}" sortable="true"/>
         </c:forEach>
         <view:arrayLines var="row" items="${resultSet}">
           <view:arrayLine>
-            <c:forEach var="field" items="${row.fields.entrySet()}">
-              <view:arrayCellText text="${field.value}"/>
+            <c:forEach var="fieldName" items="${fieldNames}">
+              <view:arrayCellText text="${row.getFieldValue(fieldName)}"/>
             </c:forEach>
           </view:arrayLine>
         </view:arrayLines>
