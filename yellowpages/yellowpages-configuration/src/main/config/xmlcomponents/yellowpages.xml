@@ -104,5 +104,21 @@
         <message lang="en">Permet d'afficher les contacts de cette application dans l'annuaire général de la plate-forme</message>
       </help>
     </parameter>
+    <parameter>
+      <name>directAccess</name>
+      <label>
+        <message lang="fr">Accès transversal</message>
+        <message lang="en">Transversal access</message>
+      </label>
+      <order>2</order>
+      <mandatory>false</mandatory>
+      <value>false</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Permet d'accéder rapidement aux autres applications 'Contacts' de la plate-forme</message>
+        <message lang="en">Allows to quickly access to others 'Contacts' applications</message>
+      </help>
+    </parameter>
   </parameters>
 </WAComponent>
