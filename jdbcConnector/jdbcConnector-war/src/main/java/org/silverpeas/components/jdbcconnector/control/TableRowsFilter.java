@@ -45,6 +45,8 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static org.apache.commons.lang3.StringUtils.EMPTY;
+
 /**
  * Filter of table rows by applying a {@link FieldValueComparator} predicate on them.
  * @author mmoquillon
@@ -59,7 +61,7 @@ public class TableRowsFilter {
   private static final Map<String, FieldValueComparator> comparators = new LinkedHashMap<>(7);
   private String comparator = FIELD_NONE;
   private String fieldName = FIELD_NONE;
-  private String fieldValue = "";
+  private String fieldValue = EMPTY;
   private Class<?> fieldType = null;
 
   /**
@@ -89,7 +91,8 @@ public class TableRowsFilter {
    * @param comparatorSymbol the symbol of a supported comparator.
    */
   public void setComparator(final String comparatorSymbol) {
-    FieldValueComparator builder = comparators.get(comparatorSymbol);
+    FieldValueComparator builder = comparators
+        .get(comparatorSymbol != null ? comparatorSymbol : FIELD_NONE);
     if (builder == null) {
       throw new IllegalArgumentException("Comparator " + comparatorSymbol + " not supported!");
     }
@@ -113,8 +116,7 @@ public class TableRowsFilter {
    * @param fieldValue the value with which the field of each table row will be compared.
    */
   public void setFieldValue(final String fieldValue) {
-    Objects.requireNonNull(fieldValue);
-    this.fieldValue = fieldValue;
+    this.fieldValue = fieldValue != null ? fieldValue : EMPTY;
   }
 
   /**
@@ -183,7 +185,7 @@ public class TableRowsFilter {
       final String fieldName, final Comparable withValue) {
     return r -> {
       Comparable v = r.getFieldValue(fieldName);
-      return v != null && withValue != null && comparator.compare(v, withValue);
+      return withValue != null && comparator.compare(v, withValue);
     };
   }
 }

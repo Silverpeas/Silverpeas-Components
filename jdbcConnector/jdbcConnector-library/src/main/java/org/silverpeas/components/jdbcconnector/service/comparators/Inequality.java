@@ -24,7 +24,9 @@
 
 package org.silverpeas.components.jdbcconnector.service.comparators;
 
-import java.util.Objects;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.silverpeas.components.jdbcconnector.service.comparators.Equality.EMPTY_VALUE;
+import static org.silverpeas.components.jdbcconnector.service.comparators.Equality.NULL_VALUE;
 
 /**
  * The inequality comparator
@@ -33,10 +35,16 @@ import java.util.Objects;
 public class Inequality implements FieldValueComparator {
 
   @Override
-  public <T extends Comparable<T>> boolean compare(final T left, final T right) {
-    Objects.requireNonNull(left);
-    Objects.requireNonNull(right);
-    return left.compareTo(right) != 0;
+  public boolean compare(final Comparable value, final Comparable referenceValue) {
+    if (value == null && NULL_VALUE.equals(referenceValue)) {
+      return false;
+    } else if (value != null && !NULL_VALUE.equals(referenceValue)) {
+      final String finalReferenceValue = EMPTY_VALUE.equals(referenceValue)
+          ? EMPTY
+          : referenceValue.toString();
+      return value.toString().compareTo(finalReferenceValue) != 0;
+    }
+    return true;
   }
 }
   

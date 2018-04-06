@@ -42,18 +42,21 @@
 
 <c:set var="componentId" value="${requestScope.browseContext[3]}"/>
 
-<fmt:message var="windowTitle"   key="windowTitleParametrageRequete"/>
-<fmt:message var="crumbTitle"    key="titreParametrageRequete"/>
-<fmt:message var="popupTitle"    key="titrePopup"/>
-<fmt:message var="resultTab"     key="tabbedPaneConsultation"/>
-<fmt:message var="queryTab"      key="tabbedPaneRequete"/>
-<fmt:message var="dataSourceTab" key="tabbedPaneParametresJDBC"/>
-<fmt:message var="queryField"    key="champRequete"/>
-<fmt:message var="buttonOk"      key="boutonValider"/>
-<fmt:message var="buttonCancel"  key="boutonAnnuler"/>
-<fmt:message var="requestError"  key="erreurChampsTropLong"/>
-<fmt:message var="requestEditor" key="operationPaneRequete"/>
+<fmt:message var="windowTitle"       key="windowTitleParametrageRequete"/>
+<fmt:message var="crumbTitle"        key="titreParametrageRequete"/>
+<fmt:message var="popupTitle"        key="titrePopup"/>
+<fmt:message var="resultTab"         key="tabbedPaneConsultation"/>
+<fmt:message var="queryTab"          key="tabbedPaneRequete"/>
+<fmt:message var="dataSourceTab"     key="tabbedPaneParametresJDBC"/>
+<fmt:message var="queryField"        key="champRequete"/>
+<fmt:message var="queryFieldInError" key="champRequeteEnErreur"/>
+<fmt:message var="buttonOk"          key="boutonValider"/>
+<fmt:message var="buttonCancel"      key="boutonAnnuler"/>
+<fmt:message var="msgMustBeFilled"   key="GML.MustBeFilled"/>
+<fmt:message var="requestError"      key="erreurChampsTropLong"/>
+<fmt:message var="requestEditor"     key="operationPaneRequete"/>
 
+<c:url var="mandatoryIcons" value="/util/icons/mandatoryField.gif"/>
 <c:url var="editorIcon" value="/util/icons/connecteurJDBC_request.gif"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -65,18 +68,20 @@
   <view:includePlugin name="popup"/>
   <script type="application/javascript">
     function saveRequest() {
-      if (isValidTextMaxi(document.requestEdition.SQLReq)) {
+      var $request = $('#SQLReq');
+      if (isWhitespace($request.val())) {
+        SilverpeasError.add('<b>${queryField}</b> ${msgMustBeFilled}');
+      } else if (!isValidTextMaxi($request.val())) {
+        SilverpeasError.add('<b>${queryField}</b> ${requestError}');
+      }
+      if (!SilverpeasError.show()) {
         document.requestEdition.action = "SetSQLRequest";
         document.requestEdition.submit();
-      } else {
-        var err = '${requestError}';
-        jQuery.popup.error(err);
       }
     }
 
     function cancel() {
-      document.requestEdition.action = "DoRequest";
-      document.requestEdition.submit();
+      sp.formRequest('DoRequest').byPostMethod().submit();
     }
 
     function launchSQLRequestEditor() {
@@ -102,16 +107,37 @@
     </c:if>
   </view:tabs>
   <view:frame>
-      <form name="requestEdition" action="SetSQLRequest" method="post">
-        <label for="SQLReq">${queryField}&nbsp;:</label>
-        <textarea id="SQLReq" name="SQLReq" rows="15" cols="100%" style="padding: 1px; margin-bottom: 10px;">
-        <c:out value="${requestScope.sqlRequest}" escapeXml="true"/>
-        </textarea>
+    <form name="requestEdition" action="SetSQLRequest" method="post">
+      <fieldset class="skinFieldset">
+        <div class="fields oneFieldPerLine">
+          <div class="field">
+            <label class="txtlibform" for="SQLReq">${queryField}</label>
+            <div class="champs">
+              <textarea id="SQLReq" name="SQLReq" rows="15" cols="100%" style="padding: 1px; margin-bottom: 10px;"><c:out value="${requestScope.sqlRequest}" escapeXml="true"/></textarea>
+              <span>&nbsp;<img border="0" src="${mandatoryIcons}" width="5" height="5"></span>
+            </div>
+          </div>
+          <c:if test="${not empty requestScope.sqlRequestInError}">
+            <div class="field">
+              <label class="txtlibform" for="SQLReqInError">${queryFieldInError}</label>
+              <div class="champs">
+                <textarea id="SQLReqInError" disabled="disabled" name="SQLReqInError" rows="15" cols="100%" style="padding: 1px; margin-bottom: 10px;"><c:out value="${requestScope.sqlRequestInError}" escapeXml="true"/></textarea>
+              </div>
+            </div>
+          </c:if>
+        </div>
+      </fieldset>
+      <div class="legend">
+        <img alt="mandatory" src="${mandatoryIcons}" width="5" height="5"/>&nbsp;
+        <fmt:message key='GML.requiredField'/>
+      </div>
+      <p>
         <view:buttonPane>
           <view:button label="${buttonOk}" action="javascript:onClick=saveRequest()"/>
           <view:button label="${buttonCancel}" action="javascript:onClick=cancel()"/>
         </view:buttonPane>
-      </form>
+      </p>
+    </form>
   </view:frame>
 </view:window>
 </body>

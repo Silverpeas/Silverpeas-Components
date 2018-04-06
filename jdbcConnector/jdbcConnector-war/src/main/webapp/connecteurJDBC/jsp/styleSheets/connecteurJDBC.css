@@ -34,3 +34,17 @@
   display: block;
   padding: 10px;
 }
+
+.qtip {
+  max-width: 600px !important;
+}
+
+.filter-info-button {
+  position: relative;
+  right: 3px;
+  top: 3px;
+}
+
+#SQLReqInError {
+  color: red;
+}

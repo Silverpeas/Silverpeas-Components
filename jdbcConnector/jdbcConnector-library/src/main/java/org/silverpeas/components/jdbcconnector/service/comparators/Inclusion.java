@@ -24,8 +24,6 @@
 
 package org.silverpeas.components.jdbcconnector.service.comparators;
 
-import java.util.Objects;
-
 /**
  * The including comparator.
  * @author mmoquillon
@@ -33,14 +31,11 @@ import java.util.Objects;
 public class Inclusion implements FieldValueComparator {
 
   @Override
-  public <T extends Comparable<T>> boolean compare(final T left, final T right) {
-    Objects.requireNonNull(left);
-    Objects.requireNonNull(right);
-    if (left instanceof String && right instanceof String) {
-      return ((String)left).contains((String) right);
-    } else {
-      return left.compareTo(right) == 0;
+  public boolean compare(final Comparable value, final Comparable referenceValue) {
+    if (value == null) {
+      return false;
     }
+    return value.toString().contains(referenceValue.toString());
   }
 }
   

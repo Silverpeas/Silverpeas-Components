@@ -49,7 +49,6 @@
 
 <fmt:message var="windowTitle"   key="titrePopup"/>
 <fmt:message var="crumbTitle"    key="titrePopup"/>
-<fmt:message var="queryField"    key="champRequete"/>
 <fmt:message var="buttonNext"    key="boutonSuivant"/>
 <fmt:message var="buttonDone"    key="boutonTerminer"/>
 <fmt:message var="buttonCancel"  key="boutonAnnuler"/>

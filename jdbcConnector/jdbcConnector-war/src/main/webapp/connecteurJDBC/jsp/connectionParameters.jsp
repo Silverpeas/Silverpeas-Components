@@ -18,10 +18,18 @@
 <c:set var="currentConnectionInfo" value="${requestScope.currentConnectionInfo}"/>
 <c:set var="availableDataSources" value="${requestScope.availableDataSources}"/>
 
-<fmt:message var="msgTooLongField"        key='erreurChampsTropLong'/>
-<fmt:message var="msgNotNumberField"      key='erreurChampsNonEntier'/>
-<fmt:message var="connectionSettingTitle" key="titreParametrageConnection"/>
+<fmt:message var="dataSourceField" key="dataSourceField"/>
+<fmt:message var="descriptionField" key="champsDescription"/>
+<fmt:message var="loginField" key="champIdentifiant"/>
+<fmt:message var="passwordField" key="champMotDePasse"/>
+<fmt:message var="maxLineField" key="champLignesMax"/>
 
+<fmt:message var="msgTooLongField" key='erreurChampsTropLong'/>
+<fmt:message var="msgNotNumberField" key='erreurChampsNonEntier'/>
+<fmt:message var="connectionSettingTitle" key="titreParametrageConnection"/>
+<fmt:message var="msgMustBeField" key="GML.MustBeFilled"/>
+
+<c:url var="mandatoryIcons" value="/util/icons/mandatoryField.gif"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -29,61 +37,64 @@
   <title><fmt:message key="windowTitleParametrageConnection"/></title>
   <view:looknfeel withCheckFormScript="true" withFieldsetStyle="true"/>
   <script type="application/javascript">
-  var dataSources = [];
-  <c:forEach items="${availableDataSources}" var="dataSource">
-  <c:set var="dataSourceLogin" value=""/>
-  <c:set var="dataSourcePassword" value=""/>
-  <c:set var="rowLimit" value="0"/>
-  <c:if test="${dataSource.dataSourceName == currentConnectionInfo.dataSourceName}">
+    var dataSources = [];
+    <c:forEach items="${availableDataSources}" var="dataSource">
+    <c:set var="dataSourceLogin" value=""/>
+    <c:set var="dataSourcePassword" value=""/>
+    <c:set var="rowLimit" value="0"/>
+    <c:if test="${dataSource.dataSourceName == currentConnectionInfo.dataSourceName}">
     <c:set var="dataSourceLogin" value="${currentConnectionInfo.login}"/>
     <c:set var="dataSourcePassword" value="${currentConnectionInfo.password}"/>
     <c:set var="rowLimit" value="${currentConnectionInfo.dataMaxNumber}"/>
-  </c:if>
-  dataSources.push({
-    name : '${dataSource.dataSourceName}',
-    description : '${dataSource.description}',
-    login : '${dataSourceLogin}',
-    password : '${dataSourcePassword}',
-    rowLimit : ${rowLimit}
-  });
-  </c:forEach>
+    </c:if>
+    dataSources.push({
+      name : '${dataSource.dataSourceName}',
+      description : '${dataSource.description}',
+      login : '${dataSourceLogin}',
+      password : '${dataSourcePassword}',
+      rowLimit : ${rowLimit}
+    });
+    </c:forEach>
 
-  function updateForm() {
-    var selectedDataSourceName = $('#dataSource').val();
-    var selectedDataSource;
-    for (i = 0; i < dataSources.length; i++) {
-      if (dataSources[i].name === selectedDataSourceName) {
-        selectedDataSource = dataSources[i];
-        break;
+    function updateForm() {
+      var selectedDataSourceName = $('#dataSource').val();
+      var selectedDataSource;
+      for (i = 0; i < dataSources.length; i++) {
+        if (dataSources[i].name === selectedDataSourceName) {
+          selectedDataSource = dataSources[i];
+          break;
+        }
+      }
+      $('#description').val(selectedDataSource.description);
+      $('#login').val(selectedDataSource.login);
+      $('#password').val(selectedDataSource.password);
+      $('#rowLimit').val(selectedDataSource.rowLimit);
+    }
+
+    function processUpdate() {
+      var $login = $('#login');
+      if (!isValidTextField($login.val())) {
+        SilverpeasError.add('<b>${loginField}</b> ${msgTooLongField}');
+      }
+      var $password = $('#password');
+      if (!isValidTextField($password.val())) {
+        SilverpeasError.add('<b>${passwordField}</b> ${msgTooLongField}');
+      }
+      var $rowLimit = $('#rowLimit');
+      if (isWhitespace($rowLimit.val())) {
+        SilverpeasError.add('<b>${maxLineField}</b> ${msgMustBeField}');
+      } else if (!isFinite($rowLimit.val())) {
+        SilverpeasError.add('<b>${maxLineField}</b> ${msgNotNumberField}');
+      }
+      if (!SilverpeasError.show()) {
+        $('#processForm').submit();
       }
     }
-    $('#description').val(selectedDataSource.description);
-    $('#login').val(selectedDataSource.login);
-    $('#password').val(selectedDataSource.password);
-    $('#rowLimit').val(selectedDataSource.rowLimit);
-  }
 
-  function processUpdate() {
-    if (isValidTextField($('#login').val()) === false) {
-      $('#login').focus()
-      notyError('${msgTooLongField}');
-    } else if (isValidTextField($('#password').val()) == false) {
-      $('#password').focus();
-      notyError('${msgTooLongField}');
-    } else if (isFinite($('#rowLimit').val()) == false) {
-      $('#rowLimit').focus();
-      notyError('${msgNotNumberField}');
-    } else {
-      $('#processForm').submit();
+    function cancel() {
+      sp.formRequest('Main').submit();
     }
-  }
-
-  function cancel() {
-    $('#processForm').attr('action', 'Main');
-    $('#processForm').attr('method', 'GET');
-    $('#processForm').submit();
-  }
-</script>
+  </script>
 </head>
 <body>
 <view:browseBar extraInformations="${connectionSettingTitle}"/>
@@ -98,60 +109,67 @@
   </view:tabs>
   <view:frame>
     <form id="processForm" name="processForm" action="UpdateConnection" method="post">
-      <div class="fields">
-        <div class="field entireWidth">
-          <label class="txtlibform" for="dataSource"><fmt:message key="dataSourceField"/></label>
-          <div class="champs">
-            <select id="dataSource" name="DataSource" onchange="javascript:updateForm();">
-              <c:set var="description" value="${availableDataSources[0].description}"/>
-              <c:forEach items="${availableDataSources}" var="dataSource">
-                <c:choose>
-                  <c:when test="${currentConnectionInfo != null && currentConnectionInfo.dataSourceName == dataSource.dataSourceName}">
-                    <option value="${dataSource.dataSourceName}" selected="selected">${dataSource.dataSourceName}</option>
-                    <c:set var="description" value="${dataSource.description}"/>
-                  </c:when>
-                  <c:otherwise>
-                    <option value="${dataSource.dataSourceName}">${dataSource.dataSourceName}</option>
-                  </c:otherwise>
-                </c:choose>
-              </c:forEach>
-            </select>
+      <fieldset class="skinFieldset">
+        <div class="fields oneFieldPerLine">
+          <div class="field">
+            <label class="txtlibform" for="dataSource">${dataSourceField}</label>
+            <div class="champs">
+              <select id="dataSource" name="DataSource" onchange="javascript:updateForm();">
+                <c:set var="description" value="${availableDataSources[0].description}"/>
+                <c:forEach items="${availableDataSources}" var="dataSource">
+                  <c:choose>
+                    <c:when test="${currentConnectionInfo != null && currentConnectionInfo.dataSourceName == dataSource.dataSourceName}">
+                      <option value="${dataSource.dataSourceName}" selected="selected">${dataSource.dataSourceName}</option>
+                      <c:set var="description" value="${dataSource.description}"/>
+                    </c:when>
+                    <c:otherwise>
+                      <option value="${dataSource.dataSourceName}">${dataSource.dataSourceName}</option>
+                    </c:otherwise>
+                  </c:choose>
+                </c:forEach>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label class="txtlibform" for="description">${descriptionField}</label>
+            <div class="champs">
+              <input type="text" id="description" name="Description" size="50" disabled value="${description}"/>
+            </div>
+          </div>
+          <div class="field">
+            <label class="txtlibform" for="login">${loginField}</label>
+            <div class="champs">
+              <input type="text" id="login" name="Login" size="50" value="${currentConnectionInfo.login}"/>
+            </div>
+          </div>
+          <div class="field">
+            <label class="txtlibform" for="password">${passwordField}</label>
+            <div class="champs">
+              <input type="password" id="password" name="Password" size="50" value="${currentConnectionInfo.password}"/>
+            </div>
+          </div>
+          <div class="field">
+            <label class="txtlibform" for="rowLimit">${maxLineField}</label>
+            <div class="champs">
+              <input type="text" id="rowLimit" name="RowLimit" size="50" value="${currentConnectionInfo.dataMaxNumber}"/>
+              <span><img border="0" src="${mandatoryIcons}" width="5" height="5">&nbsp;<i><fmt:message key="champLignesMaxExplanation"/></i></span>
+            </div>
           </div>
         </div>
-        <div class="field entireWidth">
-          <label class="txtlibform" for="description"><fmt:message key="champsDescription"/></label>
-          <div class="champs">
-            <input type="text" id="description" name="Description" size="50" disabled value="${description}"/>
-          </div>
-        </div>
-        <div class="field">
-          <label class="txtlibform" for="login"><fmt:message key="champIdentifiant"/></label>
-          <div class="champs">
-            <input type="text" id="login" name="Login" size="50" value="${currentConnectionInfo.login}"/>
-          </div>
-        </div>
-        <div class="field">
-          <label class="txtlibform" for="password"><fmt:message key="champMotDePasse"/></label>
-          <div class="champs">
-            <input type="password" id="password" name="Password" size="50" value="${currentConnectionInfo.password}"/>
-          </div>
-        </div>
-        <div class="field">
-          <label class="txtlibform" for="rowLimit"><fmt:message key="champLignesMax"/></label>
-          <div class="champs">
-            <input type="text" id="rowLimit" name="RowLimit" size="50" value="${currentConnectionInfo.dataMaxNumber}"/>
-            <i><fmt:message key="champLignesMaxExplanation"/></i>
-          </div>
-        </div>
-      </div>
+      </fieldset>
     </form>
-    <div class="break-line"></div>
-    <view:buttonPane>
-      <fmt:message var="validate" key="boutonValider"/>
-      <fmt:message var="cancel" key="boutonAnnuler"/>
-      <view:button label="${validate}" action="javascript:onclick=processUpdate();"/>
-      <view:button label="${cancel}" action="javascript:onclick=cancel();"/>
-    </view:buttonPane>
+    <div class="legend">
+      <img alt="mandatory" src="${mandatoryIcons}" width="5" height="5"/>&nbsp;
+      <fmt:message key='GML.requiredField'/>
+    </div>
+    <p>
+      <view:buttonPane>
+        <fmt:message var="validate" key="boutonValider"/>
+        <fmt:message var="cancel" key="boutonAnnuler"/>
+        <view:button label="${validate}" action="javascript:onclick=processUpdate();"/>
+        <view:button label="${cancel}" action="javascript:onclick=cancel();"/>
+      </view:buttonPane>
+    </p>
   </view:frame>
 </view:window>
 </body>

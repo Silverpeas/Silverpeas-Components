@@ -21,6 +21,9 @@
   You should have received a copy of the GNU Affero General Public License
   along with this program. If not, see <http://www.gnu.org/licenses/>.
   --%>
+
+<%@ page import="org.silverpeas.components.jdbcconnector.service.comparators.Equality" %>
+
 <%@ include file="head.jsp" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -33,8 +36,9 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 
 <c:set var="componentId"       value="${requestScope.browseContext[3]}"/>
-<c:set var="resultSet"         value="${requestScope.resultSet}"/>
-<jsp:useBean id="resultSet" type="java.util.List<org.silverpeas.components.jdbcconnector.service.TableRow>"/>
+<c:set var="queryResult"       value="${requestScope.queryResult}"/>
+<jsp:useBean id="queryResult" type="org.silverpeas.components.jdbcconnector.control.QueryResult"/>
+<c:set var="nullValue"         value="<%=Equality.NULL%>"/>
 
 <fmt:message var="windowTitle"   key="windowTitleMain"/>
 <fmt:message var="crumbTitle"    key="titreExecution"/>
@@ -46,25 +50,26 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   <view:looknfeel/>
   <script type="application/javascript">
-    function goToApp() {
-      spLayout.getBody().load({ComponentId: '${componentId}'});
+    function goToApp(componentId) {
+      spLayout.getBody().load({ComponentId: componentId});
     }
   </script>
 </head>
 <body>
-<view:browseBar componentId="${componentId}" extraInformations="${crumbTitle}" ignoreComponentLink="false"/>
+<view:browseBar componentId="${componentId}" componentJsCallback="goToApp" extraInformations="${crumbTitle}"/>
 <view:window>
   <view:frame>
     <div id="result-set">
-      <c:set var="fieldNames" value="${resultSet[0].fieldNames}"/>
-      <view:arrayPane var="ResultSet${componentId}" routingAddress="Main" numberLinesPerPage="10">
+      <c:set var="fieldNames" value="${queryResult.fieldNames}"/>
+      <view:arrayPane var="PortletResultSet${componentId}" routingAddress="portlet" numberLinesPerPage="10">
         <c:forEach var="fieldName" items="${fieldNames}">
-          <view:arrayColumn title="${fieldName}" compareOn="${(r, i) -> r.getFieldValue(r.fieldNames[i])}" sortable="true"/>
+          <view:arrayColumn title="${fieldName}" compareOn="${(r, i) -> r.getFieldValue(fieldNames[i])}"/>
         </c:forEach>
-        <view:arrayLines var="row" items="${resultSet}">
+        <view:arrayLines var="row" items="${queryResult.filteredRows}">
           <view:arrayLine>
             <c:forEach var="fieldName" items="${fieldNames}">
-              <view:arrayCellText text="${row.getFieldValue(fieldName)}"/>
+              <c:set var="currentValue" value="${row.getFieldValue(fieldName)}"/>
+              <view:arrayCellText text="${currentValue == null ? nullValue : currentValue}" nullStringValue="${nullValue}"/>
             </c:forEach>
           </view:arrayLine>
         </view:arrayLines>

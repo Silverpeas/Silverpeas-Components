@@ -28,9 +28,8 @@ import org.silverpeas.components.jdbcconnector.model.DataSourceDefinition;
 import org.silverpeas.components.jdbcconnector.service.JdbcConnectorException;
 import org.silverpeas.components.jdbcconnector.service.JdbcConnectorRuntimeException;
 import org.silverpeas.components.jdbcconnector.service.JdbcRequester;
-import org.silverpeas.components.jdbcconnector.service.TableRow;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.notification.message.MessageNotifier;
+import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
@@ -46,12 +45,14 @@ import org.silverpeas.core.web.mvc.webcomponent.annotation.WebComponentControlle
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
 /**
  * The web controller of the ConnecteurJDBC application. Like all of the web controllers in
@@ -66,15 +67,15 @@ public class JdbcConnectorWebController extends
   private static final String TRANSLATIONS_PATH =
       "org.silverpeas.jdbcConnector.multilang.jdbcConnector";
 
-  public static final String RESULT_SET = "resultSet";
+  public static final String QUERY_RESULT = "queryResult";
   public static final String COMPARING_COLUMN = "comparingColumn";
   public static final String COMPARING_OPERATOR = "currentComparator";
   public static final String COMPARING_VALUE = "columnValue";
   public static final String COMPARING_OPERATORS = "comparators";
 
   private JdbcRequester requester;
-  private List<TableRow> result = Collections.emptyList();
-  private TableRowsFilter filter = new TableRowsFilter();
+  private String lastSqlQueryInError = EMPTY;
+  private QueryResult queryResult = new QueryResult();
 
   /**
    * Constructs a new Web controller for the specified context and with the
@@ -99,12 +100,20 @@ public class JdbcConnectorWebController extends
   @RedirectToInternalJsp("jdbcConnector.jsp")
   @LowestRoleAccess(value = SilverpeasRole.reader)
   public void home(final JdbcConnectorWebRequestContext context) {
+    viewResultSet(context);
+  }
+
+  @GET
+  @Path("ViewResultSet")
+  @RedirectToInternalJsp("jdbcConnector.jsp")
+  @LowestRoleAccess(value = SilverpeasRole.reader)
+  public void viewResultSet(final JdbcConnectorWebRequestContext context) {
     if (requester.isDataSourceDefined()) {
       String reload = context.getRequest().getParameter("reload");
       if (StringUtil.getBooleanValue(reload)) {
         clearQueryResult();
       }
-      executeSQLQuery();
+      executeSQLQuery(context);
     }
     setQueryResult(context.getRequest());
   }
@@ -112,6 +121,7 @@ public class JdbcConnectorWebController extends
   @GET
   @Path("portlet")
   @RedirectToInternalJsp("portlet.jsp")
+  @LowestRoleAccess(value = SilverpeasRole.reader)
   public void portlet(final JdbcConnectorWebRequestContext context) {
     home(context);
   }
@@ -122,6 +132,7 @@ public class JdbcConnectorWebController extends
   @LowestRoleAccess(value = SilverpeasRole.publisher, onError = @RedirectTo("Main"))
   public void editSQLRequest(final JdbcConnectorWebRequestContext context) {
     HttpRequest request = context.getRequest();
+    request.setAttribute("sqlRequestInError", lastSqlQueryInError);
     request.setAttribute("sqlRequest", requester.getCurrentConnectionInfo().getSqlRequest());
     request.setAttribute("editorUrl",
         request.getContextPath() + getComponentUrl() + "/RequestEditor");
@@ -133,8 +144,8 @@ public class JdbcConnectorWebController extends
   @LowestRoleAccess(value = SilverpeasRole.reader)
   public void performSQLRequest(final JdbcConnectorWebRequestContext context) {
     if (requester.isDataSourceDefined()) {
+      executeSQLQuery(context);
       readRequestParameters(context.getRequest());
-      executeSQLQuery();
     }
     setQueryResult(context.getRequest());
   }
@@ -170,12 +181,11 @@ public class JdbcConnectorWebController extends
     // established. In that case, any previous SQL query and its result are cleared.
     try {
       requester.checkConnection();
-      requester.getCurrentConnectionInfo().setSqlRequest("");
       requester.getCurrentConnectionInfo().save();
       clearQueryResult();
     } catch (JdbcConnectorException e) {
       SilverLogger.getLogger(this).error(e);
-      MessageNotifier.addError(getString("erreurParametresConnectionIncorrects"));
+      context.getMessager().addError(getString("erreurParametresConnectionIncorrects"));
       nextView = "ParameterConnection";
     }
     context.addRedirectVariable("nextView", nextView);
@@ -190,10 +200,12 @@ public class JdbcConnectorWebController extends
     String sqlRequest = context.getRequest().getParameter("SQLReq");
     Optional<String> validationFailure = validateSQLRequest(sqlRequest);
     if (validationFailure.isPresent()) {
-      MessageNotifier.addError(
+      lastSqlQueryInError = sqlRequest;
+      context.getMessager().addError(
           getString("erreurRequeteIncorrect") + ": " + validationFailure.get());
       nextView = "ParameterRequest";
     } else {
+      lastSqlQueryInError = EMPTY;
       requester.getCurrentConnectionInfo().withSqlRequest(sqlRequest.trim()).save();
       clearQueryResult();
     }
@@ -215,7 +227,7 @@ public class JdbcConnectorWebController extends
       request.setAttribute(COMPARING_OPERATORS, TableRowsFilter.getAllComparators());
     } catch (JdbcConnectorRuntimeException e) {
       SilverLogger.getLogger(this).error(e);
-      MessageNotifier.addError(getString("sqlRequestExecutionFailure"));
+      context.getMessager().addError(getString("sqlRequestExecutionFailure"));
     }
   }
 
@@ -230,7 +242,7 @@ public class JdbcConnectorWebController extends
       validationFailure = Optional.of(getString("erreurModifTable"));
     } else {
       try {
-        result = requester.request(sqlQuery);
+        queryResult.setNewResult(requester.request(sqlQuery));
       } catch (JdbcConnectorException e) {
         SilverLogger.getLogger(this).error("Error while validating SQL request: " + request, e);
         validationFailure = Optional.of(e.getLocalizedMessage());
@@ -240,48 +252,45 @@ public class JdbcConnectorWebController extends
   }
 
   private void readRequestParameters(final HttpRequest request) {
-    if (!result.isEmpty()) {
-      if (request.isParameterDefined(COMPARING_COLUMN)) {
-        final String fieldName = request.getParameter(COMPARING_COLUMN);
-        final Object value = result.get(0).getFieldValue(fieldName);
-        if (value != null) {
-          filter.setFieldName(fieldName, value.getClass());
-        } else {
-          filter.setFieldName(TableRowsFilter.FIELD_NONE, String.class);
-        }
+    if (request.isParameterNotNull(COMPARING_COLUMN)) {
+      final Mutable<Object> firstNonNullValue = Mutable.of(EMPTY);
+      final String fieldName =
+          defaultStringIfNotDefined(request.getParameter(COMPARING_COLUMN), TableRowsFilter.FIELD_NONE);
+      if (!TableRowsFilter.FIELD_NONE.equals(fieldName)) {
+        queryResult.getFirstNonNullValueOfColumn(fieldName).ifPresent(firstNonNullValue::set);
       }
-      if (request.isParameterDefined(COMPARING_OPERATOR)) {
-        filter.setComparator(request.getParameter(COMPARING_OPERATOR));
-      }
-      if (request.isParameterDefined(COMPARING_VALUE)) {
-        filter.setFieldValue(request.getParameter(COMPARING_VALUE));
-      }
+      queryResult.getFilter().setFieldName(fieldName, firstNonNullValue.get().getClass());
+    }
+    if (request.isParameterNotNull(COMPARING_OPERATOR)) {
+      queryResult.getFilter().setComparator(request.getParameter(COMPARING_OPERATOR));
+    }
+    if (request.isParameterNotNull(COMPARING_VALUE)) {
+      queryResult.getFilter().setFieldValue(request.getParameter(COMPARING_VALUE));
     }
   }
 
-  private void executeSQLQuery() {
-    if (result.isEmpty()) {
+  private void executeSQLQuery(final JdbcConnectorWebRequestContext context) {
+    if (!queryResult.existsRows()) {
       // the request is executed only once, when no query hasn't be yet performed.
       // after that, the query result is cached in this web controller.
       try {
-        result = requester.request();
+        queryResult.setNewResult(requester.request());
       } catch (JdbcConnectorException e) {
         SilverLogger.getLogger(this).error(e);
-        MessageNotifier.addError(getString("sqlRequestExecutionFailure"));
+        context.getMessager().addError(getString("sqlRequestExecutionFailure"));
       }
     }
   }
 
   private void clearQueryResult() {
-    result.clear();
-    filter.clear();
+    queryResult.clear();
   }
 
   private void setQueryResult(final HttpRequest request) {
-    request.setAttribute(RESULT_SET, filter.filter(result));
-    request.setAttribute(COMPARING_COLUMN, filter.getFieldName());
-    request.setAttribute(COMPARING_OPERATOR, filter.getComparator());
-    request.setAttribute(COMPARING_VALUE, filter.getFieldValue());
+    request.setAttribute(QUERY_RESULT, queryResult);
+    request.setAttribute(COMPARING_COLUMN, queryResult.getFilter().getFieldName());
+    request.setAttribute(COMPARING_OPERATOR, queryResult.getFilter().getComparator());
+    request.setAttribute(COMPARING_VALUE, queryResult.getFilter().getFieldValue());
     request.setAttribute(COMPARING_OPERATORS, TableRowsFilter.getAllComparators());
   }
 

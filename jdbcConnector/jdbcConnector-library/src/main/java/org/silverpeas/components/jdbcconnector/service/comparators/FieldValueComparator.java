@@ -33,12 +33,11 @@ package org.silverpeas.components.jdbcconnector.service.comparators;
 public interface FieldValueComparator {
 
   /**
-   * Compares the left value with the right one. The two specified values must be comparable and
-   * instances of a same class.
-   * @param left the left value. Must be non null.
-   * @param right the right value. Must be non null.
+   * Compares the value with the reference value. The two specified values must be comparable.
+   * @param value the value to compare.
+   * @param referenceValue the reference value the value is compared to.
    * @return true if the comparing predicate between the two specified values is satisfied.
    */
-  <T extends Comparable<T>> boolean compare(final T left, final T right);
+  boolean compare(final Comparable value, final Comparable referenceValue);
 }
   

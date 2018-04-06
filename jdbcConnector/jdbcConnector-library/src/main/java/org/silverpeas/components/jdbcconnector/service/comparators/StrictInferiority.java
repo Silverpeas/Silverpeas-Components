@@ -24,19 +24,19 @@
 
 package org.silverpeas.components.jdbcconnector.service.comparators;
 
-import java.util.Objects;
-
 /**
  * The strict inferiority comparator.
  * @author mmoquillon
  */
 public class StrictInferiority implements FieldValueComparator {
 
+  @SuppressWarnings("unchecked")
   @Override
-  public <T extends Comparable<T>> boolean compare(final T left, final T right) {
-    Objects.requireNonNull(left);
-    Objects.requireNonNull(right);
-    return left.compareTo(right) < 0;
+  public boolean compare(final Comparable value, final Comparable referenceValue) {
+    if (value == null || !value.getClass().equals(referenceValue.getClass())) {
+      return false;
+    }
+    return value.compareTo(referenceValue) < 0;
   }
 }
   

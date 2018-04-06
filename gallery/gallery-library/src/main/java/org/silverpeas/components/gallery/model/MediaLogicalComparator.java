@@ -45,6 +45,7 @@ public class MediaLogicalComparator extends AbstractComplexComparator<Media> {
    * @param logicalOrderBy
    */
   private MediaLogicalComparator(final List<QUERY_ORDER_BY> logicalOrderBy) {
+    super();
     this.logicalOrderBy = logicalOrderBy;
   }
 

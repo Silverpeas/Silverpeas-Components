@@ -22,6 +22,8 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --%>
 
+<%@ page import="org.silverpeas.components.jdbcconnector.service.comparators.Equality" %>
+
 <%@ include file="head.jsp" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -46,8 +48,9 @@
 <c:set var="comparators"       value="${requestScope[comparingOperators]}"/>
 <c:set var="currentComparator" value="${requestScope[comparingOperator]}"/>
 <c:set var="columnValue"       value="${requestScope[comparingValue]}"/>
-<c:set var="resultSet"         value="${requestScope.resultSet}"/>
-<jsp:useBean id="resultSet" type="java.util.List<org.silverpeas.components.jdbcconnector.service.TableRow>"/>
+<c:set var="queryResult"       value="${requestScope.queryResult}"/>
+<jsp:useBean id="queryResult" type="org.silverpeas.components.jdbcconnector.control.QueryResult"/>
+<c:set var="nullValue"         value="<%=Equality.NULL%>"/>
 
 <fmt:message var="windowTitle"   key="windowTitleMain"/>
 <fmt:message var="crumbTitle"    key="titreExecution"/>
@@ -59,7 +62,14 @@
 <fmt:message var="includes"      key="contient"/>
 <fmt:message var="buttonOk"      key="GML.ok"/>
 
+<fmt:message var="columnField"           key="arrayPaneColonne"/>
+<fmt:message var="crtierionField"        key="arrayPaneCritere"/>
+<fmt:message var="valueCriterionField"   key="champValeur"/>
+
+<fmt:message var="filterValueInfo"       key="filter.value.info"/>
+
 <c:url var="editorIcon" value="/util/icons/connecteurJDBC_request.gif"/>
+<c:url var="infoIcon" value="/util/icons/info.gif"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -68,26 +78,12 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   <view:looknfeel/>
   <script type="application/javascript">
-    function isDefined(value) {
-      if (value !== null && value !== undefined) {
-        if (typeof value === 'string') {
-          return value.trim().length > 0
-        }
-        return true;
-      }
-      return false;
-    }
-
     function restrictResults() {
-      var column = $('#result-filter-column').first().val();
-      var comparator = $('#result-filter-comparator').first().val();
-      var value = $('#result-filter-value').first().val();
-      if (isDefined(column) && isDefined(comparator) && isDefined(value)) {
-        $('#result-filter').submit();
-      } else {
-        $.popup.error("The column or the comparator or the value isn't set");
-      }
+      $('#result-filter').submit();
     }
+    whenSilverpeasReady(function() {
+      TipManager.simpleHelp(".filter-info-button", "${filterValueInfo}");
+    });
   </script>
 </head>
 <body>
@@ -118,7 +114,7 @@
                 <option value="${nothing}">${all}</option>
               </c:otherwise>
             </c:choose>
-            <c:forEach var="column" items="${resultSet[0].fieldNames}">
+            <c:forEach var="column" items="${queryResult.fieldNames}">
               <c:choose>
                 <c:when test="${column.equals(columnToCompare)}">
                   <option value="${column}" selected>${column}</option>
@@ -152,23 +148,25 @@
           </select>
         </span>
         <span class="intfdcolor selectNS" style="padding: 2px">
-          <fmt:message key="champValeur"/>&nbsp;: <input id="result-filter-value" type="text" name="${comparingValue}" size="30" value="${columnValue}"/>
+          ${valueCriterionField}&nbsp;: <input id="result-filter-value" type="text" name="${comparingValue}" size="30" value="${columnValue}"/>
         </span>
         <span class="intfdcolor selectNS">
+          <img class="filter-info-button" src="${infoIcon}" alt="info"/>
           <view:button label="${buttonOk}" action="javascript:onclick=restrictResults()"/>
         </span>
       </form>
     </div>
     <div id="result-set">
-      <c:set var="fieldNames" value="${resultSet[0].fieldNames}"/>
-      <view:arrayPane var="ResultSet${componentId}" routingAddress="Main" export="true" numberLinesPerPage="25">
+      <c:set var="fieldNames" value="${queryResult.fieldNames}"/>
+      <view:arrayPane var="ResultSet${componentId}" routingAddress="ViewResultSet" export="true" numberLinesPerPage="25">
         <c:forEach var="fieldName" items="${fieldNames}">
-          <view:arrayColumn title="${fieldName}" compareOn="${(r, i) -> r.getFieldValue(r.fieldNames[i])}" sortable="true"/>
+          <view:arrayColumn title="${fieldName}" compareOn="${(r, i) -> r.getFieldValue(fieldNames[i])}"/>
         </c:forEach>
-        <view:arrayLines var="row" items="${resultSet}">
+        <view:arrayLines var="row" items="${queryResult.filteredRows}">
           <view:arrayLine>
             <c:forEach var="fieldName" items="${fieldNames}">
-              <view:arrayCellText text="${row.getFieldValue(fieldName)}"/>
+              <c:set var="currentValue" value="${row.getFieldValue(fieldName)}"/>
+              <view:arrayCellText text="${currentValue == null ? nullValue : currentValue}" nullStringValue="${nullValue}"/>
             </c:forEach>
           </view:arrayLine>
         </view:arrayLines>
