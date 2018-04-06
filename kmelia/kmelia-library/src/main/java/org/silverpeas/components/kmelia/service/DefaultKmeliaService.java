@@ -2350,8 +2350,8 @@ public class DefaultKmeliaService implements KmeliaService {
     if (refPub.getBeginHour() != null) {
       clone.setBeginHour(refPub.getBeginHour());
     }
-    if (refPub.getContent() != null) {
-      clone.setContent(refPub.getContent());
+    if (refPub.getContentPagePath() != null) {
+      clone.setContentPagePath(refPub.getContentPagePath());
     }
     clone.setCreationDate(new Date(refPub.getCreationDate().getTime()));
     clone.setCreatorId(refPub.getCreatorId());

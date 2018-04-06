@@ -154,8 +154,7 @@ public class QuestionReplyExport {
       attachments = attachmentIE.getAttachments(reply.getPK(), filePath, relativeFilePath, null);
     } catch (Exception ex) {
       // En cas d"objet non trouvé: pas d'exception gérée par le système
-      throw new QuestionReplyException("QuestionReplySessioncontroller.export()", 0,
-          "root.EX_CANT_GET_ATTACHMENTS", ex);
+      throw new QuestionReplyException(ex);
     }
 
     if (attachments != null && !attachments.isEmpty()) {

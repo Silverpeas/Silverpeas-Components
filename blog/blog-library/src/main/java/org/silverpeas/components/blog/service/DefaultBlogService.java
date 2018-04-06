@@ -161,7 +161,8 @@ public class DefaultBlogService implements BlogService {
 
       // Create empty wysiwyg content
       WysiwygController
-          .createUnindexedFileAndAttachment("", pk, pub.getCreatorId(), pub.getLanguage());
+          .createUnindexedFileAndAttachment("", new ResourceReference(pk),
+              pub.getCreatorId(), pub.getLanguage());
 
       // Create silver content
       createSilverContent(con, pub, pub.getCreatorId());

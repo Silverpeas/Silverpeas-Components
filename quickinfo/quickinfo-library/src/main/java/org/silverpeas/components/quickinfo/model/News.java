@@ -208,7 +208,7 @@ public class News extends SilverpeasJpaEntity<News, UuidIdentifier> implements S
   }
 
   public String getContent() {
-    return getPublication().getWysiwyg();
+    return getPublication().getContent().getRenderer().renderView();
   }
 
   public List<Integer> getBroadcastModes() {

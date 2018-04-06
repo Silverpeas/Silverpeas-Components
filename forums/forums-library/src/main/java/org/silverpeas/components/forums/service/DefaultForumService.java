@@ -42,8 +42,6 @@ import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygControlle
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.rating.model.ContributionRatingPK;
 import org.silverpeas.core.contribution.rating.service.RatingService;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
-import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
@@ -51,7 +49,6 @@ import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.subscription.SubscriptionService;
 import org.silverpeas.core.subscription.SubscriptionServiceProvider;
 import org.silverpeas.core.subscription.service.ComponentSubscriptionResource;
@@ -82,6 +79,7 @@ import static org.silverpeas.core.i18n.I18NHelper.defaultLanguage;
 @Singleton
 @Transactional(Transactional.TxType.SUPPORTS)
 public class DefaultForumService implements ForumService {
+  private static final String RESOURCE_TYPE = "Forum";
   @Inject
   private TagCloudService tagcloud;
   @Inject
@@ -96,8 +94,7 @@ public class DefaultForumService implements ForumService {
     try (Connection con = openConnection()) {
       return ForumsDAO.selectByForumPKs(con, forumPKs);
     } catch (SQLException e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.getForums()", SilverpeasRuntimeException.ERROR,
-          "forums.EXE_GET_FORUMS_LIST_FAILED", e);
+      throw new ForumsRuntimeException(e);
     }
   }
 
@@ -106,8 +103,7 @@ public class DefaultForumService implements ForumService {
     try (Connection con = openConnection()) {
       return ForumsDAO.getForum(con, forumPK);
     } catch (SQLException e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.getForum()", SilverpeasRuntimeException.ERROR,
-          "forums.EXE_GET_FORUM_FAILED", e);
+      throw new ForumsRuntimeException(e);
     }
   }
 
@@ -131,8 +127,7 @@ public class DefaultForumService implements ForumService {
     try (Connection con = openConnection()) {
       return ForumsDAO.getForumsByKeys(con, forumPKs);
     } catch (SQLException e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.getForumsList()",
-          SilverpeasRuntimeException.ERROR, "forums.EXE_GET_FORUMS_LIST_FAILED", e);
+      throw new ForumsRuntimeException(e);
     }
   }
 
@@ -141,8 +136,7 @@ public class DefaultForumService implements ForumService {
     try (Connection con = openConnection()) {
       return ForumsDAO.getThreadsByKeys(con, messagePKs);
     } catch (SQLException e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.getThreadsList()",
-          SilverpeasRuntimeException.ERROR, "forums.EXE_GET_THREADS_LIST_FAILED", e);
+      throw new ForumsRuntimeException(e);
     }
   }
 
@@ -151,8 +145,7 @@ public class DefaultForumService implements ForumService {
     try (Connection con = openConnection()) {
       return ForumsDAO.getForumName(con, forumId);
     } catch (SQLException e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.getForumName()",
-          SilverpeasRuntimeException.ERROR, "forums.EXE_GET_FORUM_FAILED", e);
+      throw new ForumsRuntimeException(e);
     }
   }
 
@@ -161,8 +154,7 @@ public class DefaultForumService implements ForumService {
     try (Connection con = openConnection()) {
       ForumsDAO.deleteAllForums(con, instanceId);
     } catch (SQLException e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.deleteAllForums()",
-          SilverpeasRuntimeException.ERROR, "forums.EXE_DELETE_FORUM_FAILED", e);
+      throw new ForumsRuntimeException(e);
     }
   }
 
@@ -171,8 +163,7 @@ public class DefaultForumService implements ForumService {
     try (Connection con = openConnection()) {
       return ForumsDAO.isForumActive(con, forumId);
     } catch (SQLException e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.isForumActive()",
-          SilverpeasRuntimeException.ERROR, "forums.EXE_GET_FORUM_FAILED", e);
+      throw new ForumsRuntimeException(e);
     }
   }
 
@@ -181,8 +172,7 @@ public class DefaultForumService implements ForumService {
     try (Connection con = openConnection()) {
       return ForumsDAO.getForumParentId(con, forumId);
     } catch (SQLException e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.getForumParentId()",
-          SilverpeasRuntimeException.ERROR, "forums.EXE_GET_FORUM_FAILED", e);
+      throw new ForumsRuntimeException(e);
     }
   }
 
@@ -191,8 +181,7 @@ public class DefaultForumService implements ForumService {
     try (Connection con = openConnection()) {
       return ForumsDAO.getForumInstanceId(con, forumId);
     } catch (SQLException e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.getForumInstanceId()",
-          SilverpeasRuntimeException.ERROR, "forums.EXE_GET_FORUM_FAILED", e);
+      throw new ForumsRuntimeException(e);
     }
   }
 
@@ -200,8 +189,7 @@ public class DefaultForumService implements ForumService {
     try (Connection con = openConnection()) {
       return ForumsDAO.getForumCreatorId(con, forumId);
     } catch (SQLException e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.getForumCreatorId()",
-          SilverpeasRuntimeException.ERROR, "forums.EXE_GET_FORUM_FAILED", e);
+      throw new ForumsRuntimeException(e);
     }
   }
 
@@ -214,8 +202,7 @@ public class DefaultForumService implements ForumService {
     try (Connection con = openConnection()) {
       return ForumsDAO.getForumsList(con, forumPK);
     } catch (SQLException e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.getForums()", SilverpeasRuntimeException.ERROR,
-          "forums.EXE_GET_FORUMS_LIST_FAILED", e);
+      throw new ForumsRuntimeException(e);
     }
   }
 
@@ -224,9 +211,7 @@ public class DefaultForumService implements ForumService {
     try (Connection con = openConnection()) {
       return ForumsDAO.getForumDetail(con, forumPK);
     } catch (SQLException e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.getForumDetail",
-          SilverpeasRuntimeException.ERROR, "problem to load forum detail pk=" + forumPK.getId(),
-          e);
+      throw new ForumsRuntimeException(e);
     }
   }
 
@@ -235,8 +220,7 @@ public class DefaultForumService implements ForumService {
     try (Connection con = openConnection()) {
       return ForumsDAO.getForumsListByCategory(con, forumPK, categoryId);
     } catch (SQLException e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.getForumsByCategory()",
-          SilverpeasRuntimeException.ERROR, "forums.EXE_GET_FORUMS_LIST_FAILED", e);
+      throw new ForumsRuntimeException(e);
     }
   }
 
@@ -249,8 +233,7 @@ public class DefaultForumService implements ForumService {
     try (Connection con = openConnection()) {
       return ForumsDAO.getForumSonsIds(con, forumPK);
     } catch (SQLException e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.getForumSons()",
-          SilverpeasRuntimeException.ERROR, "forums.EXE_GET_FORUMS_SONS_FAILED", e);
+      throw new ForumsRuntimeException(e);
     }
   }
 
@@ -268,8 +251,7 @@ public class DefaultForumService implements ForumService {
     try (Connection con = openConnection()) {
       ForumsDAO.lockForum(con, forumPK, level);
     } catch (SQLException e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.lockForum()", SilverpeasRuntimeException.ERROR,
-          "forums.EXE_LOCK_FORUM_FAILED", e);
+      throw new ForumsRuntimeException(e);
     }
   }
 
@@ -288,8 +270,7 @@ public class DefaultForumService implements ForumService {
     try (Connection con = openConnection()) {
       return ForumsDAO.unlockForum(con, forumPK, level);
     } catch (SQLException e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.unlockForum()",
-          SilverpeasRuntimeException.ERROR, "forums.EXE_UNLOCK_FORUM_FAILED", e);
+      throw new ForumsRuntimeException(e);
     }
   }
 
@@ -322,8 +303,7 @@ public class DefaultForumService implements ForumService {
       deleteTagCloud(forumPK);
       deleteNotation(forumPK);
     } catch (ContentManagerException | SQLException e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.deleteForum()",
-          SilverpeasRuntimeException.ERROR, "forums.EXE_DELETE_FORUM_FAILED", e);
+      throw new ForumsRuntimeException(e);
     }
   }
 
@@ -352,9 +332,8 @@ public class DefaultForumService implements ForumService {
       forumsContentManager.createSilverContent(con, forumPK, forumCreator);
       createTagCloud(forumPK, keywords);
       return forumId;
-    } catch (ContentManagerException | UtilException | SQLException e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.createForum()",
-          SilverpeasRuntimeException.ERROR, "forums.EXE_CREATE_FORUM_FAILED", e);
+    } catch (ContentManagerException | SQLException e) {
+      throw new ForumsRuntimeException(e);
     }
   }
 
@@ -383,8 +362,7 @@ public class DefaultForumService implements ForumService {
         updateTagCloud(forumPK, keywords);
       }
     } catch (SQLException e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.updateForum()",
-          SilverpeasRuntimeException.ERROR, "forums.EXE_UPDATE_FORUM_FAILED", e);
+      throw new ForumsRuntimeException(e);
     }
   }
 
@@ -396,8 +374,7 @@ public class DefaultForumService implements ForumService {
     try (Connection con = openConnection()) {
       return ForumsDAO.getMessagesList(con, forumPK);
     } catch (SQLException e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.getMessagesList()",
-          SilverpeasRuntimeException.ERROR, "forums.EXE_GET_FORUM_MESSAGE_LIST_FAILED", e);
+      throw new ForumsRuntimeException(e);
     }
   }
 
@@ -415,8 +392,7 @@ public class DefaultForumService implements ForumService {
     try (Connection con = openConnection()) {
       return ForumsDAO.getSubjectsIds(con, forumPK);
     } catch (SQLException e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.getSubjectsIds()",
-          SilverpeasRuntimeException.ERROR, "forums.EXE_GET_FORUM_MESSAGE_IDS_FAILED", e);
+      throw new ForumsRuntimeException(e);
     }
   }
 
@@ -424,8 +400,7 @@ public class DefaultForumService implements ForumService {
     try (Connection con = openConnection()) {
       return ForumsDAO.getMessagesIds(con, forumPK, messageParentId);
     } catch (SQLException e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.getMessagesIds()",
-          SilverpeasRuntimeException.ERROR, "forums.EXE_GET_FORUM_MESSAGE_IDS_FAILED", e);
+      throw new ForumsRuntimeException(e);
     }
   }
 
@@ -438,8 +413,7 @@ public class DefaultForumService implements ForumService {
     try (Connection con = openConnection()) {
       return ForumsDAO.getNbMessages(con, forumId, type, status);
     } catch (SQLException e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.getNbMessages()",
-          SilverpeasRuntimeException.ERROR, "forums.EXE_GET_FORUM_MESSAGE_LIST_FAILED", e);
+      throw new ForumsRuntimeException(e);
     }
   }
 
@@ -448,8 +422,7 @@ public class DefaultForumService implements ForumService {
     try (Connection con = openConnection()) {
       return ForumsDAO.getAuthorNbMessages(con, userId, status);
     } catch (SQLException e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.getAuthorNbMessages()",
-          SilverpeasRuntimeException.ERROR, "forums.EXE_GET_FORUM_MESSAGE_LIST_FAILED", e);
+      throw new ForumsRuntimeException(e);
     }
   }
 
@@ -458,8 +431,7 @@ public class DefaultForumService implements ForumService {
     try (Connection con = openConnection()) {
       return ForumsDAO.getNbResponses(con, forumId, messageId, status);
     } catch (Exception e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.getNbResponses()",
-          SilverpeasRuntimeException.ERROR, "forums.EXE_GET_FORUM_MESSAGE_LIST_FAILED", e);
+      throw new ForumsRuntimeException(e);
     }
   }
 
@@ -475,8 +447,7 @@ public class DefaultForumService implements ForumService {
     try (Connection con = openConnection()) {
       return ForumsDAO.getLastMessage(con, forumPK, status);
     } catch (SQLException e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.getLastMessage()",
-          SilverpeasRuntimeException.ERROR, "forums.EXE_GET_FORUM_MESSAGE_LIST_FAILED", e);
+      throw new ForumsRuntimeException(e);
     }
   }
 
@@ -497,8 +468,7 @@ public class DefaultForumService implements ForumService {
         countdown--;
       }
     } catch (SQLException e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.getLastMessageRSS()",
-          SilverpeasRuntimeException.ERROR, "forums.EXE_GET_FORUM_MESSAGE_LIST_FAILED", e);
+      throw new ForumsRuntimeException(e);
     }
     return messages;
   }
@@ -515,8 +485,7 @@ public class DefaultForumService implements ForumService {
       // récupération de la date du dernier message du forum
       return getLastMessage(forumPK, messagesIds, status);
     } catch (Exception e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.getLastMessage()",
-          SilverpeasRuntimeException.ERROR, "forums.EXE_GET_FORUM_MESSAGE_LIST_FAILED", e);
+      throw new ForumsRuntimeException(e);
     }
   }
 
@@ -525,8 +494,7 @@ public class DefaultForumService implements ForumService {
     try (Connection con = openConnection()) {
       return ForumsDAO.getLastMessage(con, forumPK, messageParentIds, status);
     } catch (Exception e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.getLastMessage()",
-          SilverpeasRuntimeException.ERROR, "forums.EXE_GET_FORUM_MESSAGE_LIST_FAILED", e);
+      throw new ForumsRuntimeException(e);
     }
   }
 
@@ -578,8 +546,7 @@ public class DefaultForumService implements ForumService {
         return true;
       }
     } catch (Exception e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.isNewMessage()",
-          SilverpeasRuntimeException.ERROR, "forums.EXE_GET_FORUM_MESSAGE_LIST_FAILED", e);
+      throw new ForumsRuntimeException(e);
     }
     return false;
   }
@@ -595,8 +562,7 @@ public class DefaultForumService implements ForumService {
     try (Connection con = openConnection()) {
       ForumsDAO.addLastVisit(con, userId, messageId);
     } catch (Exception e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.setLastVisit()",
-          SilverpeasRuntimeException.ERROR, "forums.EXE_GET_FORUM_MESSAGE_LIST_FAILED", e);
+      throw new ForumsRuntimeException(e);
     }
   }
 
@@ -611,8 +577,7 @@ public class DefaultForumService implements ForumService {
     try (Connection con = openConnection()) {
       return ForumsDAO.getMessageInfos(con, messagePK);
     } catch (SQLException e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.getMessageInfos()",
-          SilverpeasRuntimeException.ERROR, "forums.EXE_GET_MESSAGE_INFOS_FAILED", e);
+      throw new ForumsRuntimeException(e);
     }
   }
 
@@ -625,8 +590,7 @@ public class DefaultForumService implements ForumService {
       }
       return message;
     } catch (SQLException e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.getMessage()", SilverpeasRuntimeException.ERROR,
-          "forums.EXE_GET_MESSAGE_INFOS_FAILED", e);
+      throw new ForumsRuntimeException(e);
     }
   }
 
@@ -635,8 +599,7 @@ public class DefaultForumService implements ForumService {
     try (Connection con = openConnection()) {
       return ForumsDAO.getMessageTitle(con, messageId);
     } catch (SQLException e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.getMessageTitle()",
-          SilverpeasRuntimeException.ERROR, "forums.EXE_GET_MESSAGE_INFOS_FAILED", e);
+      throw new ForumsRuntimeException(e);
     }
   }
 
@@ -645,8 +608,7 @@ public class DefaultForumService implements ForumService {
     try (Connection con = openConnection()) {
       return ForumsDAO.getMessageParentId(con, messageId);
     } catch (SQLException e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.getMessageParentId()",
-          SilverpeasRuntimeException.ERROR, "forums.EXE_GET_MESSAGE_INFOS_FAILED", e);
+      throw new ForumsRuntimeException(e);
     }
   }
 
@@ -676,8 +638,7 @@ public class DefaultForumService implements ForumService {
       createIndex(messagePK);
       return messageId;
     } catch (SQLException e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.createMessage()",
-          SilverpeasRuntimeException.ERROR, "forums.EXE_CREATE_MESSAGE_FAILED", e);
+      throw new ForumsRuntimeException(e);
     }
   }
 
@@ -691,8 +652,7 @@ public class DefaultForumService implements ForumService {
       updateWysiwyg(messagePK, message, userId);
       createIndex(messagePK);
     } catch (SQLException e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.updateMessage()",
-          SilverpeasRuntimeException.ERROR, "forums.EXE_CREATE_MESSAGE_FAILED", e);
+      throw new ForumsRuntimeException(e);
     }
   }
 
@@ -701,8 +661,7 @@ public class DefaultForumService implements ForumService {
     try {
       updateTagCloud(messagePK, keywords);
     } catch (Exception e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.updateMessage()",
-          SilverpeasRuntimeException.ERROR, "forums.EXE_CREATE_MESSAGE_FAILED", e);
+      throw new ForumsRuntimeException(e);
     }
   }
 
@@ -732,8 +691,7 @@ public class DefaultForumService implements ForumService {
       deleteNotation(messagePK);
       deleteAllAttachments(messagePK);
     } catch (SQLException e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.deleteMessage()",
-          SilverpeasRuntimeException.ERROR, "forums.EXE_DELETE_MESSAGE_FAILED", e);
+      throw new ForumsRuntimeException(e);
     }
   }
 
@@ -748,8 +706,7 @@ public class DefaultForumService implements ForumService {
       try (Connection con = openConnection()) {
         return ForumsDAO.isModerator(con, forumPK, userId);
       } catch (SQLException e) {
-        throw new ForumsRuntimeException("ForumsBmEJB.isModerator()",
-            SilverpeasRuntimeException.ERROR, "root.EX_SQL_QUERY_FAILED", e);
+        throw new ForumsRuntimeException(e);
       }
     }
     return false;
@@ -764,8 +721,7 @@ public class DefaultForumService implements ForumService {
     try (Connection con = openConnection()) {
       ForumsDAO.addModerator(con, forumPK, userId);
     } catch (SQLException e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.addModerator()",
-          SilverpeasRuntimeException.ERROR, "root.EX_SQL_QUERY_FAILED", e);
+      throw new ForumsRuntimeException(e);
     }
   }
 
@@ -778,8 +734,7 @@ public class DefaultForumService implements ForumService {
     try (Connection con = openConnection()) {
       ForumsDAO.removeModerator(con, forumPK, userId);
     } catch (Exception e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.removeModerator()",
-          SilverpeasRuntimeException.ERROR, "root.EX_SQL_QUERY_FAILED", e);
+      throw new ForumsRuntimeException(e);
     }
   }
 
@@ -791,8 +746,7 @@ public class DefaultForumService implements ForumService {
     try (Connection con = openConnection()) {
       ForumsDAO.removeAllModerators(con, forumPK);
     } catch (SQLException e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.removeAllModerators()",
-          SilverpeasRuntimeException.ERROR, "root.EX_SQL_QUERY_FAILED", e);
+      throw new ForumsRuntimeException(e);
     }
   }
 
@@ -810,8 +764,7 @@ public class DefaultForumService implements ForumService {
       }
       return moderators;
     } catch (SQLException e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.getModerators()",
-          SilverpeasRuntimeException.ERROR, "root.EX_SQL_QUERY_FAILED", e);
+      throw new ForumsRuntimeException(e);
     }
   }
 
@@ -831,8 +784,7 @@ public class DefaultForumService implements ForumService {
       }
       ForumsDAO.moveMessage(con, messagePK, forumPK);
     } catch (SQLException e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.moveMessage()",
-          SilverpeasRuntimeException.ERROR, "forums.EXE_MOVE_MESSAGE_FAILED", e);
+      throw new ForumsRuntimeException(e);
     }
   }
 
@@ -846,8 +798,7 @@ public class DefaultForumService implements ForumService {
     try (Connection con = openConnection()) {
       return ForumsDAO.getMessageSons(con, messagePK);
     } catch (SQLException e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.getMessageSons()",
-          SilverpeasRuntimeException.ERROR, "forums.EXE_GET_MESSAGE_SONS_FAILED", e);
+      throw new ForumsRuntimeException(e);
     }
   }
 
@@ -861,8 +812,7 @@ public class DefaultForumService implements ForumService {
     try (Connection con = openConnection()) {
       return ForumsDAO.getAllMessageSons(con, messagePK);
     } catch (SQLException e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.getAllMessageSons()",
-          SilverpeasRuntimeException.ERROR, "forums.EXE_GET_ALL_MESSAGE_SONS_FAILED", e);
+      throw new ForumsRuntimeException(e);
     }
   }
 
@@ -1043,7 +993,8 @@ public class DefaultForumService implements ForumService {
   public void createIndex(ForumPK forumPK) {
     if (forumPK != null) {
       Forum forum = getForum(forumPK);
-      FullIndexEntry indexEntry = new FullIndexEntry(forumPK.getComponentName(), "Forum", forumPK.
+      FullIndexEntry indexEntry =
+          new FullIndexEntry(forumPK.getComponentName(), RESOURCE_TYPE, forumPK.
           getId());
       indexEntry.setTitle(forum.getName());
       indexEntry.setPreview(forum.getDescription());
@@ -1055,7 +1006,8 @@ public class DefaultForumService implements ForumService {
    * @param forumPK
    */
   private void deleteIndex(ForumPK forumPK) {
-    IndexEngineProxy.removeIndexEntry(new IndexEntryKey(forumPK.getComponentName(), "Forum", forumPK.
+    IndexEngineProxy.removeIndexEntry(
+        new IndexEntryKey(forumPK.getComponentName(), RESOURCE_TYPE, forumPK.
         getId()));
   }
 
@@ -1067,8 +1019,7 @@ public class DefaultForumService implements ForumService {
     try {
       return DBUtil.openConnection();
     } catch (SQLException ue) {
-      throw new ForumsRuntimeException("ForumsBmEJB.openConnection()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", ue);
+      throw new ForumsRuntimeException(ue);
     }
   }
 
@@ -1089,8 +1040,7 @@ public class DefaultForumService implements ForumService {
         silverObjectId = forumsContentManager.createSilverContent(null, forumPK, creatorId);
       }
     } catch (Exception e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.getSilverObjectId()",
-          SilverpeasRuntimeException.ERROR, "forums.EX_IMPOSSIBLE_DOBTENIR_LE_SILVEROBJECTID", e);
+      throw new ForumsRuntimeException(e);
     }
     return silverObjectId;
   }
@@ -1102,16 +1052,13 @@ public class DefaultForumService implements ForumService {
       NodePK nodePK = node.createNode(category, new NodeDetail());
       return nodePK.getId();
     } catch (Exception e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.createCategory()",
-          SilverpeasRuntimeException.ERROR, "forums.MSG_CATEGORY_NOT_CREATE", e);
+      throw new ForumsRuntimeException(e);
     }
   }
 
   @Transactional(Transactional.TxType.REQUIRED)
   @Override
   public void updateCategory(NodeDetail category) {
-    SilverTrace
-        .info("forums", "DefaultForumService.updateCategory", "", "category = " + category.getName());
     node.setDetail(category);
   }
 
@@ -1130,8 +1077,7 @@ public class DefaultForumService implements ForumService {
       NodePK nodePk = new NodePK(categoryId, instanceId);
       node.removeNode(nodePk);
     } catch (Exception e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.deleteCategory()",
-          SilverpeasRuntimeException.ERROR, "forums.MSG_CATEGORY_NOT_DELETE", e);
+      throw new ForumsRuntimeException(e);
     }
   }
 
@@ -1181,8 +1127,7 @@ public class DefaultForumService implements ForumService {
         return ForumsDAO.getLastThreads(con, forumPKs, count);
       }
     } catch (Exception e) {
-      throw new ForumsRuntimeException("ForumsBmEJB.getLastTheads()",
-          SilverpeasRuntimeException.ERROR, "forums.EXE_LIST_ALL_SUSCRIBER_FAILED", e);
+      throw new ForumsRuntimeException(e);
     }
   }
 
@@ -1275,7 +1220,7 @@ public class DefaultForumService implements ForumService {
 
   private void deleteNotation(ForumPK forumPK) {
     notation.deleteRating(
-        new ContributionRatingPK(forumPK.getId(), forumPK.getComponentName(), "Forum"));
+        new ContributionRatingPK(forumPK.getId(), forumPK.getComponentName(), RESOURCE_TYPE));
   }
 
   private void deleteNotation(MessagePK messagePK) {
@@ -1292,7 +1237,8 @@ public class DefaultForumService implements ForumService {
   }
 
   private void createWysiwyg(MessagePK messagePK, String text, String userId) {
-    WysiwygController.createUnindexedFileAndAttachment(text, messagePK, userId, defaultLanguage);
+    WysiwygController.createUnindexedFileAndAttachment(text, new ResourceReference(messagePK),
+        userId, defaultLanguage);
   }
 
   private void updateWysiwyg(MessagePK messagePK, String text, String userId) {
@@ -1302,7 +1248,8 @@ public class DefaultForumService implements ForumService {
       WysiwygController
           .updateFileAndAttachment(text, componentId, messageId, userId, defaultLanguage);
     } else {
-      WysiwygController.createUnindexedFileAndAttachment(text, messagePK, userId, defaultLanguage);
+      WysiwygController.createUnindexedFileAndAttachment(text, new ResourceReference(messagePK),
+          userId, defaultLanguage);
     }
   }
 

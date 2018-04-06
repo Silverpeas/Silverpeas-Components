@@ -431,7 +431,7 @@ function pubUp(pubId) {
 				if (siteDescription == null)
 					siteDescription = "";
 
-				String sitePage = site.getContent();
+				String sitePage = site.getContentPagePath();
 				String type = new Integer(site.getImportance()).toString();
 				String siteId = site.getVersion();
 				liste += "<tr>\n";

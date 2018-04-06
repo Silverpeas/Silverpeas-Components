@@ -30,7 +30,6 @@ import org.silverpeas.components.forums.model.ForumPK;
 import org.silverpeas.components.forums.model.Message;
 import org.silverpeas.components.forums.model.MessagePK;
 import org.silverpeas.components.forums.model.Moderator;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.StringUtil;
@@ -50,6 +49,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnGetting;
 
 /**
  * Class managing database accesses for forums.
@@ -159,7 +160,7 @@ public class ForumsDAO {
    */
   public static Collection<ForumDetail> selectByForumPKs(Connection con,
       Collection<ForumPK> forumPKs) throws SQLException {
-    List<ForumDetail> forumDetails = new ArrayList<ForumDetail>(forumPKs.size());
+    List<ForumDetail> forumDetails = new ArrayList<>(forumPKs.size());
     for (ForumPK forumPK : forumPKs) {
       forumDetails.add(getForumDetail(con, forumPK));
     }
@@ -174,7 +175,7 @@ public class ForumsDAO {
    */
   public static Collection<Forum> getForumsByKeys(Connection con, Collection<ForumPK> forumPKs)
       throws SQLException {
-    ArrayList<Forum> forums = new ArrayList<Forum>();
+    ArrayList<Forum> forums = new ArrayList<>();
     Iterator<ForumPK> iterator = forumPKs.iterator();
     ForumPK forumPK;
     Forum forum;
@@ -220,7 +221,7 @@ public class ForumsDAO {
    */
   private static Collection<Message> getMessagesByKeys(Connection con,
       Collection<MessagePK> messagePKs, boolean onlyThreads) throws SQLException {
-    ArrayList<Message> messages = new ArrayList<Message>();
+    ArrayList<Message> messages = new ArrayList<>();
     for (MessagePK messagePK : messagePKs) {
       Message message = (onlyThreads ? getThread(con, messagePK) : getMessage(con, messagePK));
       if (message != null) {
@@ -251,7 +252,7 @@ public class ForumsDAO {
   public static List<Forum> getForumsList(Connection con, ForumPK forumPK) throws SQLException {
 
 
-    List<Forum> forums = new ArrayList<Forum>();
+    List<Forum> forums = new ArrayList<>();
     PreparedStatement selectStmt = null;
     ResultSet rs = null;
     try {
@@ -277,7 +278,7 @@ public class ForumsDAO {
       throws SQLException {
 
 
-    ArrayList<String> forumsIds = new ArrayList<String>();
+    ArrayList<String> forumsIds = new ArrayList<>();
     PreparedStatement selectStmt = null;
     ResultSet rs = null;
     try {
@@ -329,7 +330,7 @@ public class ForumsDAO {
   public static List<String> getForumSonsIds(Connection con, ForumPK forumPK) throws SQLException {
 
 
-    List<String> forumIds = new ArrayList<String>();
+    List<String> forumIds = new ArrayList<>();
     PreparedStatement selectStmt = null;
     ResultSet rs = null;
     try {
@@ -487,9 +488,7 @@ public class ForumsDAO {
       if (rs.next()) {
         return rs.getString(FORUM_COLUMN_FORUM_CREATOR);
       } else {
-        throw new ForumsRuntimeException("ForumsDAO.getForumCreatorId()",
-            SilverpeasRuntimeException.ERROR, "root.EX_CANT_LOAD_ENTITY_ATTRIBUTES",
-            "ForumId = " + forumId + " not found in database !");
+        throw new ForumsRuntimeException(failureOnGetting("forum", forumId));
       }
     } finally {
       DBUtil.close(rs, stmt);
@@ -645,7 +644,9 @@ public class ForumsDAO {
   public static void deleteForum(Connection con, ForumPK forumPK) throws SQLException {
     String sForumId = forumPK.getId();
     int forumId = Integer.parseInt(sForumId);
-    PreparedStatement deleteStmt1 = null, deleteStmt2 = null, deleteStmt3 = null;
+    PreparedStatement deleteStmt1 = null;
+    PreparedStatement deleteStmt2 = null;
+    PreparedStatement deleteStmt3 = null;
     try {
       deleteStmt1 = con.prepareStatement(QUERY_DELETE_FORUM_RIGHTS);
       deleteStmt1.setString(1, sForumId);
@@ -715,7 +716,7 @@ public class ForumsDAO {
       throws SQLException {
 
 
-    ArrayList<Message> messages = new ArrayList<Message>();
+    ArrayList<Message> messages = new ArrayList<>();
     PreparedStatement selectStmt = null;
     ResultSet rs = null;
     try {
@@ -752,7 +753,7 @@ public class ForumsDAO {
         QUERY_GET_MESSAGES_IDS_BY_FORUM);
 
 
-    ArrayList<String> messagesIds = new ArrayList<String>();
+    ArrayList<String> messagesIds = new ArrayList<>();
     PreparedStatement selectStmt = null;
     ResultSet rs = null;
     try {
@@ -874,7 +875,7 @@ public class ForumsDAO {
   public static int getNbResponses(Connection con, int forumId, int messageId, String status) {
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-    ArrayList<Integer> nextMessageIds = new ArrayList<Integer>();
+    ArrayList<Integer> nextMessageIds = new ArrayList<>();
     try {
       prepStmt = con.prepareStatement(QUERY_GET_NB_RESPONSES);
       prepStmt.setInt(1, forumId);
@@ -893,7 +894,7 @@ public class ForumsDAO {
     int nb = nextMessageIds.size();
     int nextMessageId;
     for (int i = 0, n = nextMessageIds.size(); i < n; i++) {
-      nextMessageId = ((Integer) nextMessageIds.get(i)).intValue();
+      nextMessageId = (Integer) nextMessageIds.get(i);
       nb += getNbResponses(con, forumId, nextMessageId, status);
     }
     return nb;
@@ -945,7 +946,7 @@ public class ForumsDAO {
    */
   public static List<Message> getLastThreads(Connection con, ForumPK[] forumPKs, int count)
       throws SQLException {
-    ArrayList<Message> messages = new ArrayList<Message>();
+    ArrayList<Message> messages = new ArrayList<>();
     if (forumPKs.length > 0) {
       StringBuilder selectQuery = new StringBuilder(
           "SELECT " + MESSAGE_COLUMN_MESSAGE_ID + " FROM " + MESSAGE_TABLE + " WHERE " +
@@ -960,7 +961,7 @@ public class ForumsDAO {
       selectQuery.append(") ORDER BY ").append(MESSAGE_COLUMN_MESSAGE_DATE).append(" DESC");
 
 
-      ArrayList<String> messageIds = new ArrayList<String>(count);
+      ArrayList<String> messageIds = new ArrayList<>(count);
       int messagesCount = 0;
       PreparedStatement selectStmt = null;
       ResultSet rs = null;
@@ -978,7 +979,7 @@ public class ForumsDAO {
 
       String componentName = forumPKs[0].getComponentName();
       for (int i = 0; i < messagesCount; i++) {
-        MessagePK messagePK = new MessagePK(componentName, (String) messageIds.get(i));
+        MessagePK messagePK = new MessagePK(componentName, messageIds.get(i));
         messages.add(getMessage(con, messagePK));
       }
     }
@@ -995,7 +996,7 @@ public class ForumsDAO {
    */
   public static Collection<Message> getNotAnsweredLastThreads(Connection con, ForumPK[] forumPKs,
       int count) throws SQLException {
-    ArrayList<Message> messages = new ArrayList<Message>();
+    ArrayList<Message> messages = new ArrayList<>();
     if (forumPKs.length > 0) {
       StringBuilder selectQuery = new StringBuilder(
           "SELECT " + MESSAGE_COLUMN_MESSAGE_ID + ", " + MESSAGE_COLUMN_FORUM_ID + " FROM " +
@@ -1010,7 +1011,7 @@ public class ForumsDAO {
       selectQuery.append(") ORDER BY " + MESSAGE_COLUMN_MESSAGE_DATE + " DESC");
 
 
-      ArrayList<String> messageIds = new ArrayList<String>(count);
+      ArrayList<String> messageIds = new ArrayList<>(count);
       int messageId;
       int forumId;
       int messagesCount = 0;
@@ -1066,7 +1067,7 @@ public class ForumsDAO {
    */
   public static Collection<String> getLastMessageRSS(Connection con, String instanceId)
       throws SQLException {
-    Collection<String> messageIds = new ArrayList<String>();
+    Collection<String> messageIds = new ArrayList<>();
     Collection<Integer> forumIds = getAllForumsByInstanceId(con, instanceId);
     Iterator<Integer> it = forumIds.iterator();
     while (it.hasNext()) {
@@ -1086,7 +1087,7 @@ public class ForumsDAO {
       throws SQLException {
 
 
-    Collection<Integer> forumIds = new ArrayList<Integer>();
+    Collection<Integer> forumIds = new ArrayList<>();
     PreparedStatement selectStmt = null;
     ResultSet rs = null;
     try {
@@ -1117,7 +1118,7 @@ public class ForumsDAO {
       throws SQLException {
 
 
-    Collection<String> messageIds = new ArrayList<String>();
+    Collection<String> messageIds = new ArrayList<>();
     PreparedStatement selectStmt = null;
     ResultSet rs = null;
     try {
@@ -1616,9 +1617,7 @@ public class ForumsDAO {
       if (rs.next()) {
         return resultSet2ForumDetail(rs, forumPK);
       } else {
-        throw new ForumsRuntimeException("ForumsDAO.getForumDetail()",
-            SilverpeasRuntimeException.ERROR, "root.EX_CANT_LOAD_ENTITY_ATTRIBUTES",
-            "ForumId = " + forumPK.getId() + " not found in database !");
+        throw new ForumsRuntimeException(failureOnGetting("forum", forumPK.getId()));
       }
     } finally {
       DBUtil.close(rs, stmt);

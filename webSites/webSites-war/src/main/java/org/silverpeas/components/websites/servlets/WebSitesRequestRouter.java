@@ -867,7 +867,7 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
       WebSiteSessionController scc) {
     String siteId = sitedetail.getSitePK().getId();
 
-    String nomPage = sitedetail.getContent();
+    String nomPage = sitedetail.getContentPagePath();
 
     int type = sitedetail.getSiteType();
 

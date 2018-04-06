@@ -46,8 +46,6 @@ import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerE
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
 import org.silverpeas.core.contribution.model.LocalizedContribution;
 import org.silverpeas.core.exception.DecodingException;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.importexport.report.ExportReport;
 import org.silverpeas.core.io.upload.UploadedFile;
@@ -311,8 +309,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     try {
       QuestionManagerProvider.getQuestionManager().deleteQuestionAndReplies(questionsIds);
     } catch (QuestionReplyException e) {
-      throw new QuestionReplyException("QuestionReplySessionController.deleteQuestions",
-          SilverpeasException.ERROR, "questionReply.EX_DELETE_QUESTION_FAILED", "", e);
+      throw new QuestionReplyException(e);
     }
   }
 
@@ -326,8 +323,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
         getQuestion(((IdPK) getCurrentQuestion().getPK()).getIdAsLong());
       }
     } catch (QuestionReplyException e) {
-      throw new QuestionReplyException("QuestionReplySessionController.deleteReplies",
-          SilverpeasException.ERROR, "questionReply.EX_DELETE_REPLY_FAILED", "", e);
+      throw new QuestionReplyException(e);
     }
   }
 
@@ -489,8 +485,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
           .getSilverContentIdSearchContext(Integer.parseInt(getCurrentQuestionContentId()),
               getComponentId());
     } catch (Exception e) {
-      throw new QuestionReplyException("QuestionReplySessionController.getCurrentQuestionWriters()",
-          SilverpeasException.ERROR, "questionReply.EX_CANT_GET_EXPERTS", "", e);
+      throw new QuestionReplyException(e);
     }
   }
 
@@ -559,8 +554,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
         }
       }
     } catch (Exception e) {
-      throw new QuestionReplyException("QuestionReplySessionController.getCurrentQuestionWriters()",
-          SilverpeasException.ERROR, "questionReply.EX_CANT_GET_EXPERTS", "", e);
+      throw new QuestionReplyException(e);
     }
 
     return arrayUsers;
@@ -666,8 +660,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       NodePK nodePK = new NodePK(NodePK.ROOT_NODE_ID, getComponentId());
       return getNodeService().getChildrenDetails(nodePK);
     } catch (Exception e) {
-      throw new QuestionReplyException("QuestionReplySessioncontroller.getAllCategories()",
-          SilverpeasRuntimeException.ERROR, "QuestionReply.MSG_CATEGORIES_NOT_EXIST", e);
+      throw new QuestionReplyException(e);
     }
   }
 
@@ -678,8 +671,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       category.getNodePK().setComponentName(getComponentId());
       getNodeService().createNode(category, new NodeDetail());
     } catch (Exception e) {
-      throw new QuestionReplyException("QuestionReplySessioncontroller.createCategory()",
-          SilverpeasRuntimeException.ERROR, "QuestionReply.MSG_CATEGORIES_NOT_CREATE", e);
+      throw new QuestionReplyException(e);
     }
   }
 
@@ -688,8 +680,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       NodePK nodePK = new NodePK(categoryId, getComponentId());
       return new Category(getNodeService().getDetail(nodePK));
     } catch (Exception e) {
-      throw new QuestionReplyException("QuestionReplySessioncontroller.getCategory()",
-          SilverpeasRuntimeException.ERROR, "QuestionReply.MSG_CATEGORY_NOT_EXIST", e);
+      throw new QuestionReplyException(e);
     }
   }
 
@@ -697,8 +688,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     try {
       getNodeService().setDetail(category);
     } catch (Exception e) {
-      throw new QuestionReplyException("QuestionReplySessioncontroller.updateCategory()",
-          SilverpeasRuntimeException.ERROR, "QuestionReply.MSG_CATEGORY_NOT_EXIST", e);
+      throw new QuestionReplyException(e);
     }
   }
 
@@ -712,8 +702,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       NodePK nodePk = new NodePK(categoryId, getComponentId());
       getNodeService().removeNode(nodePk);
     } catch (Exception e) {
-      throw new QuestionReplyException("QuestionReplySessioncontroller.deleteCategory()",
-          SilverpeasRuntimeException.ERROR, "QuestionReply.MSG_CATEGORY_NOT_EXIST", e);
+      throw new QuestionReplyException(e);
     }
   }
 
@@ -737,8 +726,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       try {
         FileFolderManager.createFolder(fileExportDir);
       } catch (UtilException ex) {
-        throw new QuestionReplyException("QuestionReplySessionController.export()",
-            SilverpeasRuntimeException.ERROR, "root.MSG_FOLDER_NOT_CREATE", ex);
+        throw new QuestionReplyException(ex);
       }
     }
 
@@ -749,8 +737,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     try {
       FileFolderManager.createFolder(forFiles);
     } catch (UtilException ex) {
-      throw new QuestionReplyException("QuestionReplySessionController.export()",
-          SilverpeasRuntimeException.ERROR, "root.MSG_FOLDER_NOT_CREATE", ex);
+      throw new QuestionReplyException(ex);
     }
 
     // intégrer la css du disque dans "files"
@@ -768,8 +755,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
         FileRepositoryManager.copyFile(file.getPath(), newFile.getPath());
       }
     } catch (Exception ex) {
-      throw new QuestionReplyException("QuestionReplySessionController.export()",
-          SilverpeasRuntimeException.ERROR, "QuestionReply.EX_CANT_COPY_FILE", ex);
+      throw new QuestionReplyException(ex);
     }
 
     // création du fichier html
@@ -781,8 +767,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
         fileWriter.write(toHTML(fileHTML, resource));
       }
     } catch (IOException ex) {
-      throw new QuestionReplyException("QuestionReplySessioncontroller.export()",
-          SilverpeasRuntimeException.ERROR, "QuestionReply.MSG_CAN_WRITE_FILE", ex);
+      throw new QuestionReplyException(ex);
     } finally {
       IOUtils.closeQuietly(fileWriter);
     }
@@ -795,8 +780,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       exportReport.setZipFileSize(zipFileSize);
       exportReport.setZipFilePath(FileServerUtils.getUrlToTempDir(zipFileName));
     } catch (Exception ex) {
-      throw new QuestionReplyException("QuestionReplySessioncontroller.export()",
-          SilverpeasRuntimeException.ERROR, "QuestionReply.MSG_CAN_CREATE_ZIP", ex);
+      throw new QuestionReplyException(ex);
     }
     // Stockage de la date de fin de l'export dans l'objet rapport
     exportReport.setDateFin(new Date());

@@ -245,7 +245,7 @@ function publicationGoTo(type, theURL, nom){
 		if (theDescription == null)
 			theDescription = "";
 
-		String thePage = site.getContent();
+		String thePage = site.getContentPagePath();
 
 	    String type = new Integer(site.getSiteType()).toString();
 	    int theEtat = site.getState();
@@ -295,7 +295,7 @@ function publicationGoTo(type, theURL, nom){
 			if (siteDescription == null)
 				siteDescription = "";
 
-			String sitePage = sitepublie.getContent();
+			String sitePage = sitepublie.getContentPagePath();
 			String type = new Integer(sitepublie.getImportance()).toString();
 			String siteId = sitepublie.getVersion();
 

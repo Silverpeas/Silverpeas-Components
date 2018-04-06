@@ -512,7 +512,7 @@ public class SiteDAO {
       stmt.setInt(1, Integer.parseInt(site.getSitePK().getId()));
       stmt.setString(2, site.getName());
       stmt.setString(3, site.getDescription());
-      stmt.setString(4, site.getContent());
+      stmt.setString(4, site.getContentPagePath());
       stmt.setInt(5, site.getSiteType());
       stmt.setString(6, site.getCreatorId());
       stmt.setString(7, DateUtil.date2SQLDate(site.getCreationDate()));
@@ -681,7 +681,7 @@ public class SiteDAO {
       prepStmt = dbConnection.prepareStatement(updateStr);
       prepStmt.setString(i++, description.getName());
       prepStmt.setString(i++, description.getDescription());
-      prepStmt.setString(i++, description.getContent());
+      prepStmt.setString(i++, description.getContentPagePath());
       prepStmt.setString(i++, description.getCreatorId());
       prepStmt.setString(i++, DateUtil.date2SQLDate(description.getCreationDate()));
       prepStmt.setInt(i++, description.getState());
