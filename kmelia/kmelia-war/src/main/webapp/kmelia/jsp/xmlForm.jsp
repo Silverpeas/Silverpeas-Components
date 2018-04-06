@@ -70,6 +70,7 @@
   <head>
   	<title></title>
     <view:looknfeel/>
+    <view:includePlugin name="wysiwyg"/>
     <% formUpdate.displayScripts(out, context);%>
     <script type="text/javascript">
       function topicGoTo(id) {

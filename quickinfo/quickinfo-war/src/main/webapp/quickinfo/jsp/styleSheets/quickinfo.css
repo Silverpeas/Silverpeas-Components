@@ -179,11 +179,6 @@ fieldset#news-thumbnail legend {
   background: url("../../../util/icons/images.png") no-repeat scroll 11px 0 rgba(0, 0, 0, 0);
 }
 
-.skinFieldset .champs .wysiwyg-fileStorage {
-  width: 98%;
-  background-color: #FFF;
-}
-
 #nameArea,
 #descriptionArea,
 #contentArea,

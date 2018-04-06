@@ -67,7 +67,7 @@ void displayAnswer(int i, String style, MultiSilverpeasBundle resources, List<Co
   		out.println("<img title=\""+resources.getString("survey.answer.image.select")+"\" alt=\""+resources.getString("survey.answer.image.select")+"\" src=\"/silverpeas/util/icons/images.png\"> <input type=\"file\" id=\"thumbnailFile\" size=\"40\" name=\"image"+i+"\">");
   		out.println("<span class=\"txtsublibform\"> ou </span><input type=\"hidden\" name=\"valueImageGallery" + i + "\" id=\"valueImageGallery" + i + "\">");
   		out.println(" <select class=\"galleries\" name=\"galleries\" onchange=\"choixGallery(this, '" + i + "');this.selectedIndex=0;\"> ");
-	      out.println(" <option selected>" + resources.getString("survey.galleries") + "</option> ");
+	      out.println(" <option selected>" + resources.getString("GML.thumbnail.galleries") + "</option> ");
 	      for (int k = 0; k < galleries.size(); k++) {
 	        ComponentInstLight gallery = galleries.get(k);
 	        out.println(" <option value=\"" + gallery.getId() + "\">" + gallery.getLabel() + "</option> ");

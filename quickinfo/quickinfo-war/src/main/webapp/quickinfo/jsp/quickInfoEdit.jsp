@@ -260,9 +260,6 @@ $(document).ready(function() {
     <div class="field" id="contentArea">
       <label class="txtlibform" for="content"><fmt:message key="quickinfo.news.content" /> </label>
       <div class="champs">
-      	<div class="container-wysiwyg wysiwyg-fileStorage">			
-   			<viewTags:displayToolBarWysiwyg editorName="editorContent" componentId="${curQuickInfo.componentInstanceId}" objectId="${curQuickInfo.publicationId}" />
-		</div>
         <textarea name="editorContent" id="editorContent" rows="50" cols="10"><%=codeHtml%></textarea>
       </div>
     </div>

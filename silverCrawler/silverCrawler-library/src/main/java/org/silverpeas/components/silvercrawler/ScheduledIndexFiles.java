@@ -25,9 +25,8 @@
 package org.silverpeas.components.silvercrawler;
 
 import org.silverpeas.components.silvercrawler.model.SilverCrawlerRuntimeException;
-import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.index.indexing.model.RepositoryIndexer;
 import org.silverpeas.core.scheduler.Scheduler;
 import org.silverpeas.core.scheduler.SchedulerEvent;
@@ -64,26 +63,22 @@ public class ScheduledIndexFiles implements SchedulerEventListener {
   public void doScheduledIndex() {
     try {
       // indexation des fichiers du composant
-      OrganizationController orga = OrganizationControllerProvider.getOrganisationController();
-      String[] instanceIds = orga.getCompoId("silverCrawler");
-      for (int i = 0; instanceIds != null && i < instanceIds.length; i++) {
-        ComponentInst instance = orga.getComponentInst("silverCrawler" + instanceIds[i]);
-        boolean periodicIndex = "yes".equals(instance.getParameterValue("periodicIndex"));
-        if (periodicIndex) {
-          RepositoryIndexer repositoryIndexer = new RepositoryIndexer(null, instance.getId());
+      OrganizationController orga = OrganizationController.get();
+      List<ComponentInstLight> instances = orga.getComponentsWithParameterValue("periodicIndex", "yes");
+      for (ComponentInstLight instance : instances) {
+        RepositoryIndexer repositoryIndexer = new RepositoryIndexer(null, instance.getId());
 
-          List<String> profiles = new ArrayList<>();
-          profiles.add("admin");
-          String[] adminIds = orga.getUsersIdsByRoleNames(instance.getId(), profiles);
+        List<String> profiles = new ArrayList<>();
+        profiles.add("admin");
+        String[] adminIds = orga.getUsersIdsByRoleNames(instance.getId(), profiles);
 
-          String adminId = "0";
-          if (adminIds != null && adminIds.length > 0) {
-            adminId = adminIds[0];
-          }
-
-          Path pathRepository = Paths.get(instance.getParameterValue("directory"));
-          repositoryIndexer.addPath(pathRepository, adminId);
+        String adminId = "0";
+        if (adminIds != null && adminIds.length > 0) {
+          adminId = adminIds[0];
         }
+
+        Path pathRepository = Paths.get(instance.getParameterValue("directory"));
+        repositoryIndexer.addPath(pathRepository, adminId);
       }
     } catch (Exception e) {
       throw new SilverCrawlerRuntimeException(e);
