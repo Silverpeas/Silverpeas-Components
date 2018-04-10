@@ -52,6 +52,7 @@
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel/>
+<view:includePlugin name="wysiwyg"/>
 <%
 	form.displayScripts(out, context);
 %>
