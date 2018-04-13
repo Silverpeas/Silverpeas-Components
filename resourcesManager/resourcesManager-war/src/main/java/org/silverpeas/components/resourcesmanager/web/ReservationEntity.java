@@ -94,7 +94,7 @@ public class ReservationEntity extends AbstractEventEntity<ReservationEntity> {
    * Default hidden constructor.
    */
   private ReservationEntity(final String instanceId, final Reservation reservation) {
-    super(ContributionIdentifier.from("reservation", instanceId, reservation.getIdAsString()),
+    super(ContributionIdentifier.from(instanceId, reservation.getIdAsString(), "reservation"),
         reservation.getEvent(), null,
         OffsetDateTime.ofInstant(reservation.getBeginDate().toInstant(), ZoneId.systemDefault()),
         OffsetDateTime.ofInstant(reservation.getEndDate().toInstant(), ZoneId.systemDefault()),

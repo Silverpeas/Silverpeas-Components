@@ -11,7 +11,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have received a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describingé"é&
     the FLOSS exception, and it is also available here:
     "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
@@ -26,14 +26,20 @@
 -->
 
 <web-app>
-  <display-name>ConnecteurJDBC War</display-name>
+  <display-name>JDBC Connector War</display-name>
   <servlet>
-    <display-name>ConnecteurJDBCRequestRouter</display-name>
-    <servlet-name>ConnecteurJDBCRequestRouter</servlet-name>
-    <servlet-class>org.silverpeas.components.jdbcconnector.control.ConnecteurJDBCRequestRouter</servlet-class>
+    <display-name>JdbcConnectorRequestRouter</display-name>
+    <servlet-name>JdbcConnectorRequestRouter</servlet-name>
+    <servlet-class>org.silverpeas.core.web.mvc.webcomponent.WebComponentRequestRouter
+    </servlet-class>
+    <init-param>
+      <param-name>WebComponentController</param-name>
+      <param-value>org.silverpeas.components.jdbcconnector.control.JdbcConnectorWebController
+      </param-value>
+    </init-param>
   </servlet>
   <servlet-mapping>
-    <servlet-name>ConnecteurJDBCRequestRouter</servlet-name>
+    <servlet-name>JdbcConnectorRequestRouter</servlet-name>
     <url-pattern>/RconnecteurJDBC/*</url-pattern>
   </servlet-mapping>
 </web-app>
