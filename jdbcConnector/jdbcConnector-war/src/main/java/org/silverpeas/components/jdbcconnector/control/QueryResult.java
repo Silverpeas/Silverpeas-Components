@@ -63,12 +63,28 @@ public class QueryResult {
     }
   }
 
+  /**
+   * Gets field names extracted from last query result set.
+   * @return the field names.
+   */
   public List<String> getFieldNames() {
     return fieldNames;
   }
 
+  /**
+   * Gets the rows after the applying the filter {@link TableRowsFilter#filter(List)}.
+   * @return the filtered rows.
+   */
   public List<TableRow> getFilteredRows() {
     return filter.filter(rows);
+  }
+
+  /**
+   * Gets the rows without applying any filter.
+   * @return the rows (not filtered).
+   */
+  public List<TableRow> getRows() {
+    return rows;
   }
 
   /**

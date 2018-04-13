@@ -65,7 +65,7 @@
         <c:forEach var="fieldName" items="${fieldNames}">
           <view:arrayColumn title="${fieldName}" compareOn="${(r, i) -> r.getFieldValue(fieldNames[i])}"/>
         </c:forEach>
-        <view:arrayLines var="row" items="${queryResult.filteredRows}">
+        <view:arrayLines var="row" items="${queryResult.rows}">
           <view:arrayLine>
             <c:forEach var="fieldName" items="${fieldNames}">
               <c:set var="currentValue" value="${row.getFieldValue(fieldName)}"/>
