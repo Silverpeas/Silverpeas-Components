@@ -25,4 +25,5 @@
 #searchButton a {
   padding: 1px 10px;
   font-size: 9pt !important;
+  margin-left: 5px;
 }
