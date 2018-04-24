@@ -395,6 +395,12 @@
           errorNb++;
         });
 
+        dateErrors = isDateFuture({dateId : 'dateReminder'});
+        $(dateErrors).each(function(index, error) {
+          errorMsg += " - " + error.message + "\n";
+          errorNb++;
+        });
+
         <% if(!kmaxMode && "New".equals(action)) { %>
         <view:pdcValidateClassification errorCounter="errorNb" errorMessager="errorMsg"/>
         <% } %>
