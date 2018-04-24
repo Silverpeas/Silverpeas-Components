@@ -1706,7 +1706,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     if (!id.equals(currentFolderId)) {
       indexOfFirstPubToDisplay = 0;
       resetSelectedPublicationPKs();
-      setSearchContext(null);
       if (!KmeliaHelper.SPECIALFOLDER_TOVALIDATE.equalsIgnoreCase(id)) {
         Collection<NodeDetail> pathColl = getTopicPath(id);
         String linkedPathString = displayPath(pathColl, true, 3);
@@ -1718,6 +1717,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     if (resetSessionPublication) {
       setSessionPublication(null);
     }
+    setSearchContext(null);
     currentFolderId = id;
   }
 
