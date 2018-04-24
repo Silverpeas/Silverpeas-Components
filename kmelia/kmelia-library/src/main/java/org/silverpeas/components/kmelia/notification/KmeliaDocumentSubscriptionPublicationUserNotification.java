@@ -35,6 +35,7 @@ import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 
 import java.util.Collection;
+import java.util.Collections;
 
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
@@ -65,7 +66,7 @@ public class KmeliaDocumentSubscriptionPublicationUserNotification extends
   @Override
   protected Collection<String> getUserIdsToNotify() {
     // Users to notify are not handled here.
-    return null;
+    return Collections.emptyList();
   }
 
   @Override
