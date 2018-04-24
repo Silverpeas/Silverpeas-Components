@@ -87,8 +87,6 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
   public String getDestination(String function, YellowpagesSessionController scc,
       HttpRequest request) {
 
-
-
     String destination = "";
     String rootDestination = "/yellowpages/jsp/";
 
@@ -133,7 +131,6 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
             if ("0".equals(id) && action == null) {
               // racine : affiche les contacts courants
               contacts = scc.getCurrentContacts();
-              request.setAttribute("TypeSearch", scc.getCurrentTypeSearch());
               request.setAttribute("SearchCriteria", scc.getCurrentSearchCriteria());
             } else {
               // réinitialise la liste
@@ -217,22 +214,15 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
         TopicDetail currentTopic = scc.getTopic("0");
         scc.setCurrentTopic(currentTopic);
 
-        String typeSearch = request.getParameter("Action"); // All || LastName
-        // || FirstName ||
-        // LastNameFirstName
         String searchCriteria = request.getParameter("SearchCriteria");
 
-        scc.setCurrentTypeSearch(typeSearch);
-        scc.setCurrentSearchCriteria(searchCriteria);
-
-        List<ContactFatherDetail> searchResults = scc.search(typeSearch, searchCriteria);
+        List<ContactFatherDetail> searchResults = scc.search(searchCriteria);
 
         scc.setCurrentContacts(searchResults);
 
         request.setAttribute("Contacts", searchResults);
         request.setAttribute("CurrentTopic", currentTopic);
         request.setAttribute("PortletMode", scc.isPortletMode());
-        request.setAttribute("TypeSearch", typeSearch);
         request.setAttribute("SearchCriteria", searchCriteria);
 
         destination = "/yellowpages/jsp/annuaire.jsp?Action=SearchResults&Profile=" + flag;
