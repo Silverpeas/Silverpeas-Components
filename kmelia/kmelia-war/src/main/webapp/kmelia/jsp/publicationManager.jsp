@@ -262,6 +262,7 @@
     <view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
     <view:includePlugin name="datepicker"/>
     <view:includePlugin name="popup"/>
+    <view:includePlugin name="wysiwyg"/>
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/i18n.js"></script>
 
     <% if (extraForm != null) { %>

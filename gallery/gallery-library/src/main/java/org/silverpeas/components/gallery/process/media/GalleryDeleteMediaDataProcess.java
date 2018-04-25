@@ -103,7 +103,9 @@ public class GalleryDeleteMediaDataProcess extends AbstractGalleryDataProcess {
 
         final RecordSet set = pubTemplate.getRecordSet();
         final DataRecord data = set.getRecord(mediaId);
-        set.delete(data.getId());
+        if (data != null) {
+          set.delete(data.getId());
+        }
       }
     } catch (final PublicationTemplateException | FormException e) {
       throw new GalleryRuntimeException(e);
