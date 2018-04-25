@@ -33,8 +33,6 @@ import org.silverpeas.components.kmelia.control.KmeliaSessionController;
 import org.silverpeas.components.kmelia.model.KmeliaPublication;
 import org.silverpeas.components.kmelia.model.KmeliaPublicationComparator;
 import org.silverpeas.components.kmelia.model.TopicDetail;
-import org.silverpeas.components.kmelia.model.TopicSearch;
-import org.silverpeas.components.kmelia.search.KmeliaSearchServiceProvider;
 import org.silverpeas.components.kmelia.service.KmeliaHelper;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
@@ -199,8 +197,6 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         publications = kmeliaSC.getSessionPublicationsList();
         role = SilverpeasRole.user.toString();
       } else if (searchInProgress) {
-        // Insert this new search inside persistence layer in order to compute statistics
-        saveTopicSearch(componentId, nodeId, kmeliaSC, query);
         publications = kmeliaSC.search(query);
       } else {
         publications = kmeliaSC.getSessionPublicationsList();
@@ -247,25 +243,6 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         }
       }
     }
-  }
-
-  /**
-   * Save current topic search inside persistence layer
-   * @param componentId the component identifier
-   * @param nodeId the node identifier
-   * @param kmeliaSC the KmeliaSessionController
-   * @param query the topic search query keywords
-   */
-  private void saveTopicSearch(String componentId, String nodeId, KmeliaSessionController kmeliaSC,
-      String query) {
-    //Check node value
-    if (!StringUtil.isDefined(nodeId)) {
-      nodeId = kmeliaSC.getCurrentFolderId();
-    }
-    TopicSearch newTS = new TopicSearch(componentId, Integer.parseInt(nodeId),
-        Integer.parseInt(kmeliaSC.getUserId()), kmeliaSC.getLanguage(), query.toLowerCase(),
-        new Date());
-    KmeliaSearchServiceProvider.getTopicSearchService().createTopicSearch(newTS);
   }
 
   /**
@@ -344,8 +321,6 @@ public class AjaxPublicationsListServlet extends HttpServlet {
             pubIdToHighlight.equals(pub.getPK().getId())) {
           highlightClass = "highlight";
         }
-
-        out.write("<!-- Publication Body -->");
 
         if (pub.getStatus() != null && pub.isValid()) {
           if (pub.haveGotClone() && CLONE_STATUS.equals(pub.getCloneStatus()) && !user.isInRole(profile)) {
@@ -467,6 +442,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         displayFragmentOfPublication(specificTemplateUsed, aPub, fragmentSettings, language,
             currentUserId, currentTopicId, kmeliaScc, resources, out);
         out.write("</div>");
+        out.write("</li>");
       }
       out.write("</ul>");
 
