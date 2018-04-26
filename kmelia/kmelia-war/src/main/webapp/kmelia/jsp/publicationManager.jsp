@@ -395,7 +395,7 @@
           errorNb++;
         });
 
-        dateErrors = isDateFuture({dateId : 'dateReminder'});
+        dateErrors = isDateFuture({dateId : 'dateReminder', canBeEqualToAnother: false});
         $(dateErrors).each(function(index, error) {
           errorMsg += " - " + error.message + "\n";
           errorNb++;
