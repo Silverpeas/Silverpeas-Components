@@ -1731,13 +1731,8 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   /**
    * Get all the errors occured while processing the current process instance
    */
-  public WorkflowError[] getProcessInstanceErrors(String processId) throws ProcessManagerException {
-    try {
-      return Workflow.getErrorManager().getErrorsOfInstance(processId);
-    } catch (WorkflowException we) {
-      throw new ProcessManagerException(PROCESS_MANAGER_SESSION_CONTROLLER,
-          "processManager.GET_PROCESS_ERRORS_FAILED", we);
-    }
+  public WorkflowError[] getProcessInstanceErrors(String processId) {
+    return Workflow.getErrorManager().getErrorsOfInstance(processId);
   }
 
   /**
