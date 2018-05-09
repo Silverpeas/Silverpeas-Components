@@ -237,7 +237,7 @@ $(document).ready(function() {
     questionTitleLink = $('<a>').addClass('question').attr('id', 'l' + questionId).attr('href', '#'+questionId).attr('title', '<fmt:message key="questionReply.open"/>').text(questionToBeDisplayed.title);
     questionTitle.append(questionTitleLink);
     questionTitleDiv.append(questionTitle);
-    questionHyperlink = $('<a>').addClass('permalink').attr('href', '<c:url value="/Question/" />' + questionId).attr('title', '<fmt:message key="questionReply.CopyQuestionLink"/>');
+    questionHyperlink = $('<a>').addClass('permalink').addClass('sp-permalink').attr('href', '<c:url value="/Question/" />' + questionId).attr('title', '<fmt:message key="questionReply.CopyQuestionLink"/>');
     hyperlinkImg = $('<img>').attr('src', '<c:url value="${hyperlinkIcon}"/>').attr('alt', '<fmt:message key="questionReply.CopyQuestionLink"/>').attr('border', '0');
     questionHyperlink.append(hyperlinkImg);
     questionTitleDiv.append(questionHyperlink);

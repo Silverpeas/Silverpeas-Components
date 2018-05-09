@@ -60,7 +60,7 @@
     ng-if="occurrences"
     no-occurrence-label="${noEventLabel}"
     occurrences="occurrences"
-    on-event-occurrence-click="viewEventOccurrence(occurrence)">
+    on-event-occurrence-click="gotToEventOccurrence(occurrence)">
 </silverpeas-calendar-event-occurrence-list>
 <script type="text/javascript">
   almanachCalendar.value('context', {

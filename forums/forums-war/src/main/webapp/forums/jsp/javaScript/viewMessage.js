@@ -52,12 +52,8 @@ function scrollMessageList(messageId, noMsgDivScroll) {
 }
 
 function scrollToItem($item, referenceItem) {
-  if ($(referenceItem).find($item).length > 0) {
-    var $referenceHeightItem = $(referenceItem == document.body ? window : referenceItem);
-    var referenceHeight = $referenceHeightItem.height();
-    var top = $item.offset().top -
-        (referenceItem == document.body ? 0 : $(referenceItem).offset().top);
-    setScrollTop(referenceItem, (top - Math.ceil(referenceHeight / 2)));
+  if (!sp.element.isInView($item, true, referenceItem)) {
+    sp.element.scrollTo($item, referenceItem);
   }
 }
 
@@ -69,16 +65,5 @@ function scrollMessage(messageId) {
 }
 
 function scrollTop() {
-  setScrollTop(document.body, 0);
-}
-
-function setScrollTop(referenceItem, scrollTop) {
-  if (!scrollTop || scrollTop < 0) {
-	scrollTop = 0;
-  }
-  if (referenceItem == document.body && !$.browser.webkit && document.documentElement) {
-    document.documentElement.scrollTop = scrollTop;
-  } else {
-	$(referenceItem)[0].scrollTop = scrollTop;
-  }
+  sp.element.setScrollTo(0, document.body);
 }

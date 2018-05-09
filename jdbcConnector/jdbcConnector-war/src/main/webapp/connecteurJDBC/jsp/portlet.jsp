@@ -51,7 +51,7 @@
   <view:looknfeel/>
   <script type="application/javascript">
     function goToApp(componentId) {
-      spLayout.getBody().load({ComponentId: componentId});
+      spWindow.loadComponent(componentId);
     }
   </script>
 </head>

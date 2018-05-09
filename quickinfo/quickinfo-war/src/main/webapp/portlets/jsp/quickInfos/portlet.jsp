@@ -131,7 +131,7 @@ $(document).ready(function() {
           </c:choose>
 				</c:otherwise>
 			</c:choose>
-			<h3 class="actuality-title"><a href="${news.permalink}">${news.title}</a></h3>
+			<h3 class="actuality-title"><a class="sp-permalink" href="${news.permalink}">${news.title}</a></h3>
 			<div class="actuality-info-fonctionality">
 				<span class="actuality-publishing">
 					<span class="actuality-date"><span class="actuality-date-label"><fmt:message key="GML.publishedAt"/></span> ${silfn:formatDate(news.updateDate, _language)}</span>
@@ -141,7 +141,7 @@ $(document).ready(function() {
 				</span>
         <view:componentParam var="isCommentEnabled" componentId="${news.componentInstanceId}" parameter="comments"/>
         <c:if test="${silfn:booleanValue(isCommentEnabled) && news.numberOfComments > 0}">
-          <a href="${news.permalink}#commentaires" class="actuality-nb-commentaires"><img src="/silverpeas/util/icons/talk2user.gif" alt="commentaire"/> ${news.numberOfComments}</a>
+          <a class="sp-permalink" href="${news.permalink}#commentaires" class="actuality-nb-commentaires"><img src="/silverpeas/util/icons/talk2user.gif" alt="commentaire"/> ${news.numberOfComments}</a>
         </c:if>
 			</div>
 			<p class="actuality-teasing">${news.description}</p>
