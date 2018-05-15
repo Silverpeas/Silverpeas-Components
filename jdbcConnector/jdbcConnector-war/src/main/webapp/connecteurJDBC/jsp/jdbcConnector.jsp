@@ -72,11 +72,12 @@
 <c:url var="infoIcon" value="/util/icons/info.gif"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.jdbcConnector">
 <head>
   <title>${windowTitle}</title>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   <view:looknfeel/>
+  <view:includePlugin name="toggle"/>
   <script type="application/javascript">
     function restrictResults() {
       $('#result-filter').submit();
@@ -92,6 +93,7 @@
   <view:operation action="Main?reload=true" altText="${reload}" icon="${editorIcon}"/>
 </view:operationPane>
 <view:window>
+  <view:componentInstanceIntro componentId="${componentId}" language="${currentUserLanguage}"/>
   <c:if test="${requestScope.highestUserRole.isGreaterThanOrEquals(publisherRole)}">
     <view:tabs>
       <view:tab label="${resultTab}" action="Main" selected="true"/>
@@ -179,4 +181,8 @@
     </div>
   </view:frame>
 </view:window>
+<script type="text/javascript">
+  /* declare the module myapp and its dependencies (here in the silverpeas module) */
+  var myapp = angular.module('silverpeas.jdbcConnector', ['silverpeas.services', 'silverpeas.directives']);
+</script>
 </body>

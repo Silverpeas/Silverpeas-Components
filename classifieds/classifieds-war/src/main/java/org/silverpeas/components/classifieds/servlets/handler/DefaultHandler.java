@@ -75,7 +75,6 @@ public class DefaultHandler extends FunctionHandler {
     request.setAttribute("Data", data);
     request.setAttribute("NbTotal", nbTotalClassifieds);
     request.setAttribute("Validation", classifiedsSC.isValidationEnabled());
-    request.setAttribute("wysiwygHeader", classifiedsSC.getWysiwygHeader());
 
     //Affichage page d'accueil annonces par catégorie
     if (classifiedsSC.isHomePageDisplayCategorized() && !portletMode) {

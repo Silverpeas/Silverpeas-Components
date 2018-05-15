@@ -44,10 +44,11 @@
 <c:set var="isAdmin" value="<%=isAdmin%>"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.delegatedNews">
   <head>
     <view:looknfeel withCheckFormScript="true"/>
     <view:includePlugin name="datepicker"/>
+    <view:includePlugin name="toggle"/>
     <script type="text/javascript">
     <!--
     function openPublication(pubId, instanceId) {
@@ -312,6 +313,7 @@
     </c:if>
     <view:window>
       <view:frame>
+        <view:componentInstanceIntro componentId="<%=newsScc.getComponentId()%>" language="<%=resources.getLanguage()%>"/>
         <c:if test="${isAdmin}">
           <div class="inlineMessage"><fmt:message key="delegatednews.homePageMessage"/></div>
           <br clear="all"/>
@@ -441,6 +443,11 @@
     <input type="hidden" name="EndDate"/>
     <input type="hidden" name="EndHour"/>
 </form>
+
+<script type="text/javascript">
+  /* declare the module myapp and its dependencies (here in the silverpeas module) */
+  var myapp = angular.module('silverpeas.delegatedNews', ['silverpeas.services', 'silverpeas.directives']);
+</script>
 
 </body>
 </html>

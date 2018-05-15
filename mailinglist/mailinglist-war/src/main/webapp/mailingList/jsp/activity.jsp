@@ -35,7 +35,7 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 <fmt:message key="mailingList.icons.attachmentSmall" var="attachmentIcon" bundle="${icons}" />
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.mailingList">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title><fmt:message key="mailingList.tab.activity.title" /></title>
@@ -55,6 +55,7 @@ function unsubscribe(){
 }
 </script>
 <view:looknfeel />
+<view:includePlugin name="toggle"/>
 </head>
 <body>
 <fmt:message key="mailingList.tab.list.title" var="listTabTitle" />
@@ -82,6 +83,7 @@ function unsubscribe(){
   </c:choose>
 </c:if>
 <view:window>
+  <view:componentInstanceIntro componentId="${componentId}" language="${lang}"/>
   <c:url var="listAction" value="/Rmailinglist/${componentId}/list/${componentId}" />
   <view:tabs>
     <view:tab label="${activityTabTitle}" action="${'#'}" selected="true" />
@@ -104,7 +106,6 @@ function unsubscribe(){
   </view:tabs>
   <c:set var="currentList" value="${requestScope.currentList}" />
   <view:frame>
-    <center>
     <table id="description" class="tableArrayPane" width="98%" cellspacing="2" cellpadding="2" border="0">
       <tr align="left">
         <td class="ArrayColumn"><fmt:message key="mailingList.activity.description.title" /></td>
@@ -224,8 +225,14 @@ function unsubscribe(){
     <c:if test="${requestScope['mailinglistRss'] != null}">
       <br />
       <a href="<c:url value="${requestScope.mailinglistRss}" />"><img src="<c:url value="/util/icons/rss.gif" />" border="0" alt="rss"/></a>
-    </c:if></center>
+    </c:if>
   </view:frame>
 </view:window>
+
+<script type="text/javascript">
+  /* declare the module myapp and its dependencies (here in the silverpeas module) */
+  var myapp = angular.module('silverpeas.mailingList', ['silverpeas.services', 'silverpeas.directives']);
+</script>
+
 </body>
 </html>

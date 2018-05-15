@@ -114,10 +114,10 @@ private String afficheArbo(String idNodeSelected,
 			}
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.yellowpages">
 <head>
 <view:looknfeel/>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/overlib.js"></script>
+<view:includePlugin name="toggle"/>
 <script type="text/javascript">
 var printWindow = window;
 var contactWindow = window;
@@ -216,14 +216,19 @@ whenSilverpeasReady(function() {
 			Frame frame = gef.getFrame();
 			Board board = gef.getBoard();
 			out.println(window.printBefore());
-			if (!portletMode
-					&& ("admin".equals(profile) || "publisher".equals(profile))) {
+
+			if (!portletMode) {
+			%>
+<view:componentInstanceIntro componentId="<%=componentId%>" language="<%=resources.getLanguage()%>"/>
+<%
+      if ("admin".equals(profile) || "publisher".equals(profile)) {
 				//Onglets
 				TabbedPane tabbedPane = gef.getTabbedPane();
 				tabbedPane.addTab(resources.getString("Consultation"), "#",	true);
 				tabbedPane.addTab(resources.getString("GML.management"), "javascript:manage('" + profile + "');", false);
 				out.println(tabbedPane.print());
 			}
+  }
 			out.println(frame.printBefore());
 			out.println(board.printBefore());
 %>
@@ -342,5 +347,11 @@ whenSilverpeasReady(function() {
 	<input type="hidden" name="TopicId"/> 
 	<input type="hidden" name="Path"/>
 </form>
+
+<script type="text/javascript">
+  /* declare the module myapp and its dependencies (here in the silverpeas module) */
+  var myapp = angular.module('silverpeas.yellowpages', ['silverpeas.services', 'silverpeas.directives']);
+</script>
+
 </body>
 </html>

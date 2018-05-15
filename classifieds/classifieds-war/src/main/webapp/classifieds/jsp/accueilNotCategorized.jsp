@@ -51,8 +51,6 @@
 <c:set var="formSearch" value="${requestScope.Form}" />
 <c:set var="data" value="${requestScope.Data}" />
 <c:set var="instanceId" value="${requestScope.InstanceId}" />
-<c:set var="isWysiwygHeaderEnabled" value="${requestScope.isWysiwygHeaderEnabled}"/>
-<c:set var="wysiwygHeader" value="${requestScope.wysiwygHeader}"/>
 <c:set var="currentFirstItemIndex" value="${requestScope.CurrentFirstItemIndex}" />
 <c:set var="nbPerPage" value="${requestScope.NbPerPage}" />
 <c:set var="portletMode" value="${requestScope.PortletMode}" />
@@ -62,9 +60,10 @@
 </c:if>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.classifieds">
 <head>
 <view:looknfeel />
+<view:includePlugin name="toggle"/>
 <script type="text/javascript">
 function sendData() {
 	document.searchForm.submit();
@@ -84,12 +83,6 @@ function viewClassifieds(fieldNumber, fieldValue) {
 
 			<view:operationPane>
 				<c:if test="${profile.name != 'anonymous'}">
-					<c:if test="${(profile.name == 'admin') && (isWysiwygHeaderEnabled)}">
-						<fmt:message var="updateWysiwygLabel" key="classifieds.updateWysiwygClassified" />
-						<fmt:message var="updateWysiwygIcon" key="classifieds.updateWysiwygClassified" bundle="${icons}" />
-						<view:operation action="ToWysiwygHeader" altText="${updateWysiwygLabel}" icon="${updateWysiwygIcon}" />
-					</c:if>
-
 					<c:if
 						test="${(profile.name == 'admin') || (profile.name == 'publisher')}">
 						<fmt:message var="addOp" key="classifieds.addClassified" />
@@ -122,12 +115,8 @@ function viewClassifieds(fieldNumber, fieldValue) {
 			</view:operationPane>
 
 			<view:window>
-
-				<div id="header_classifieds">
-				${wysiwygHeader}
-				</div>
-
 				<view:frame>
+          <view:componentInstanceIntro componentId="${instanceId}" language="${language}"/>
 					<view:areaOfOperationOfCreation/>
 					<jsp:include page="subscriptionManager.jsp"/>
 					<form id="searchForm" name="searchForm" action="SearchClassifieds" method="post" target="MyMain" enctype="multipart/form-data">
@@ -171,5 +160,11 @@ function viewClassifieds(fieldNumber, fieldValue) {
 	</view:frame>
 </view:window>
 </div>
+
+<script type="text/javascript">
+  /* declare the module myapp and its dependencies (here in the silverpeas module) */
+  var myapp = angular.module('silverpeas.classifieds', ['silverpeas.services', 'silverpeas.directives']);
+</script>
+
 </body>
 </html>

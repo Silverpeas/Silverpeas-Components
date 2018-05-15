@@ -31,7 +31,8 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 
-<fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
+<c:set var="lang" value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
+<fmt:setLocale value="${lang}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <c:set var="componentId" value="${requestScope.browseContext[3]}"/>
 
@@ -53,10 +54,11 @@
 <%@ include file="checkQuickInfo.jsp" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.quickinfo">
 <head>
 <title>QuickInfo - Home</title>
 <view:looknfeel/>
+  <view:includePlugin name="toggle"/>
 <script type="text/javascript" src="js/quickinfo.js"></script>
 <script type="text/javascript">
 function openPDCSetup() {
@@ -111,11 +113,8 @@ function onDelete(id) {
   </c:if>
 </view:operationPane>
 <view:window>
-	<!--INTEGRATION HOME quickInfo -->
-	<c:if test="${not empty appSettings.description}">
-		<h2 class="quickInfo-title"><%=componentLabel %></h2>
-		<p class="quickInfo-description">${silfn:escapeHtmlWhitespaces(appSettings.description)}</p>
-	</c:if>
+	<view:componentInstanceIntro componentId="${componentId}" language="${lang}"/>
+
 	<c:if test="${contributor || !appSettings.mosaicViewForUsers}">
 		<!-- Dedicated part for contributors -->
 		<c:if test="${contributor}">
@@ -279,5 +278,11 @@ function onDelete(id) {
 <form name="newsForm" action="" method="post">
   <input type="hidden" name="Id"/>
 </form>
+
+<script type="text/javascript">
+  /* declare the module myapp and its dependencies (here in the silverpeas module) */
+  var myapp = angular.module('silverpeas.quickinfo', ['silverpeas.services', 'silverpeas.directives']);
+</script>
+
 </body>
 </html>

@@ -54,12 +54,13 @@
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.webPage">
 <head>
 <view:looknfeel/>
 <link type="text/css" rel="stylesheet" href="styleSheets/webPages-print.css" media="print"/>
 <view:includePlugin name="popup"/>
 <view:includePlugin name="preview"/>
+<view:includePlugin name="toggle"/>
 </head>
 <body>
 <%
@@ -79,6 +80,7 @@
 		out.println(window.printBefore());
 	}
 %>
+<view:componentInstanceIntro componentId="<%=componentId%>" language="<%=resource.getLanguage()%>"/>
 	<table width="100%" border="0">
 	<tr><td id="richContent">
 		<%
@@ -103,5 +105,11 @@
 		out.println(window.printAfter());
 	}
 %>
+
+<script type="text/javascript">
+  /* declare the module myapp and its dependencies (here in the silverpeas module) */
+  var myapp = angular.module('silverpeas.webPage', ['silverpeas.services', 'silverpeas.directives']);
+</script>
+
 </body>
 </html>

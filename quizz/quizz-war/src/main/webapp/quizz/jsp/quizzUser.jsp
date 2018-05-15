@@ -60,17 +60,16 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
 <%
-String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 String iconsPath = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 String linkIcon = iconsPath + "/util/icons/link.gif";
 %>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.quizz">
 <head>
-<title>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</title>
 <view:looknfeel/>
+  <view:includePlugin name="toggle"/>
 </head>
-<body bgcolor="#FFFFFF" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
+<body>
   <%
   session.removeAttribute("currentQuizz");
   session.removeAttribute("questionsResponses");
@@ -92,14 +91,18 @@ String linkIcon = iconsPath + "/util/icons/link.gif";
   out.println(window.printBefore());
 
   Frame frame = gef.getFrame();
+  out.println(frame.printBefore());
+  %>
+
+  <view:componentInstanceIntro componentId="<%=quizzScc.getComponentId()%>" language="<%=quizzScc.getLanguage()%>"/>
+
+  <%
 
   //onglets
   TabbedPane tabbedPane1 = gef.getTabbedPane();
   tabbedPane1.addTab(resources.getString("QuizzOnglet1"),"Main.jsp",true);
   tabbedPane1.addTab(resources.getString("QuizzSeeResult"),"quizzResultUser.jsp",false);
-  
   out.println(tabbedPane1.print());
-  out.println(frame.printBefore());
 
  //Tableau
   ArrayPane arrayPane = gef.getArrayPane("QuizzList","Main.jsp",request,session);
@@ -149,9 +152,13 @@ String linkIcon = iconsPath + "/util/icons/link.gif";
       <img src="icons/creditOn.gif" width="10" height="10" align="absmiddle">&nbsp;<%=resources.getString("QuizzCreditAvailable")%>
   </blockquote>
 <!--  FIN TAG FORM-->
-<% out.println(frame.printMiddle());
+<%
   out.println(frame.printAfter());
   out.println(window.printAfter());
 %>
+  <script type="text/javascript">
+    /* declare the module myapp and its dependencies (here in the silverpeas module) */
+    var myapp = angular.module('silverpeas.quizz', ['silverpeas.services', 'silverpeas.directives']);
+  </script>
 </body>
 </html>

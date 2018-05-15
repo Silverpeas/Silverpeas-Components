@@ -50,10 +50,10 @@
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.quizz">
 <head>
-<title>___/ Silverpeas - Corporate Portal Organizer\__________________________________________</title>
 <view:looknfeel/>
+<view:includePlugin name="toggle"/>
 <%
   SettingBundle settings = quizzScc.getSettings();
 			String space = quizzScc.getSpaceLabel();
@@ -128,7 +128,11 @@ function clipboardPaste() {
 						"javascript:onClick=clipboardPaste()");
 			}
 			out.println(window.printBefore());
-
+%>
+  <view:frame>
+  <view:componentInstanceIntro componentId="<%=quizzScc.getComponentId()%>" language="<%=quizzScc.getLanguage()%>"/>
+  <view:areaOfOperationOfCreation/>
+<%
 			//onglets
 			TabbedPane tabbedPane1 = gef.getTabbedPane();
 			tabbedPane1.addTab(resources.getString("QuizzOnglet1"),
@@ -137,10 +141,7 @@ function clipboardPaste() {
 					"quizzResultAdmin.jsp", false);
 
 			out.println(tabbedPane1.print());
-%>
-<view:frame>
-<view:areaOfOperationOfCreation/>
-<%			
+
 			//Tableau
 			ArrayPane arrayPane = gef.getArrayPane("QuizzList",
 					"quizzAdmin.jsp", request, session);
@@ -197,5 +198,9 @@ function clipboardPaste() {
 <%
 	out.println(window.printAfter());
 %>
+<script type="text/javascript">
+  /* declare the module myapp and its dependencies (here in the silverpeas module) */
+  var myapp = angular.module('silverpeas.quizz', ['silverpeas.services', 'silverpeas.directives']);
+</script>
 </body>
 </html>

@@ -67,6 +67,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   <view:looknfeel/>
   <view:includePlugin name="calendar"/>
+  <view:includePlugin name="toggle"/>
   <view:script src="/almanach/jsp/javaScript/angularjs/services/almanachcalendar.js"/>
   <view:script src="/almanach/jsp/javaScript/angularjs/almanachcalendar.js"/>
 </head>
@@ -99,6 +100,7 @@
        ng-list>
 <view:window>
   <view:frame>
+    <view:componentInstanceIntro componentId="${componentId}" language="${currentUserLanguage}"/>
     <view:areaOfOperationOfCreation/>
     <silverpeas-calendar participation-user-ids="participationIds"
                          filter-on-pdc="${filterOnPdc}"

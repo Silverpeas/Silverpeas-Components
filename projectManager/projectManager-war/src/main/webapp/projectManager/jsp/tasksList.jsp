@@ -184,9 +184,10 @@ String imgUnfold 	= "<img src=\""+resource.getIcon("projectManager.treeMinus")+"
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.projectManager">
 <head>
 <view:looknfeel withCheckFormScript="true"/>
+<view:includePlugin name="toggle"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 <script type="text/javascript">
 function exportTasks(){
@@ -271,7 +272,9 @@ if ("admin".equals(role)) {
 }
 
 out.println(window.printBefore());
-
+%>
+<view:componentInstanceIntro componentId="<%=componentId%>" language="<%=resource.getLanguage()%>"/>
+<%
 TabbedPane tabbedPane = gef.getTabbedPane();
 tabbedPane.addTab(resource.getString("projectManager.Projet"), "ToProject", false);
 tabbedPane.addTab(resource.getString("projectManager.Taches"), "Main", true);
@@ -538,5 +541,11 @@ out.println(window.printAfter());
 <form name="listForm" action="RemoveTask" method="post">
 <input type="hidden" name="Id"/>
 </form>
+
+<script type="text/javascript">
+  /* declare the module myapp and its dependencies (here in the silverpeas module) */
+  var myapp = angular.module('silverpeas.projectManager', ['silverpeas.services', 'silverpeas.directives']);
+</script>
+
 </body>
 </html>

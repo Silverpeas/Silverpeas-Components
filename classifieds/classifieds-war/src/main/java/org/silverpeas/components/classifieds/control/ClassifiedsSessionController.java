@@ -55,7 +55,6 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.web.util.ListIndex;
 import org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination;
-import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -546,26 +545,6 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    */
   public boolean isCommentsEnabled() {
     return !"no".equalsIgnoreCase(getComponentParameterValue("comments"));
-  }
-
-  /**
-   * return true if wysiwyg header feature is enabled
-   * @return boolean
-   */
-  public boolean isWysiwygHeaderEnabled() {
-    return "yes".equalsIgnoreCase(getComponentParameterValue("wysiwygHeader"));
-  }
-
-  /**
-   * return wysiwyg header html code
-   *
-   * @return wysiwyg header html code
-   */
-  public String getWysiwygHeader() {
-    if (isWysiwygHeaderEnabled()) {
-        return WysiwygController.load(getComponentId(), "Node_0", getLanguage());
-    }
-    return "";
   }
 
   /**

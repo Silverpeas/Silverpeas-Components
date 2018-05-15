@@ -76,7 +76,6 @@ public class ClassifiedsRequestRouter extends ComponentRequestRouter<Classifieds
     request.setAttribute("Profile", highestRole);
     request.setAttribute("InstanceId", classifiedsSC.getComponentId());
     request.setAttribute("Language", classifiedsSC.getLanguage());
-    request.setAttribute("isWysiwygHeaderEnabled", classifiedsSC.isWysiwygHeaderEnabled());
 
     // manage pagination
     if ("SearchClassifieds".equals(function)) {

@@ -68,7 +68,6 @@
 <c:set var="componentId"     value="${requestScope.browseContext[3]}"/>
 <c:set var="suggestionBox"   value="${requestScope.currentSuggestionBox}"/>
 <c:set var="suggestionBoxId" value="${suggestionBox.id}"/>
-<c:set var="isEdito"         value="${requestScope.isEdito}"/>
 <c:set var="suggestions"     value="${requestScope.suggestions}"/>
 
 <c:url var="viewContext"             value="${requestScope.navigationContext.currentNavigationStep.contextIdentifier}"/>
@@ -154,12 +153,6 @@
 </view:operationPane>
 <view:window>
   <view:frame>
-    <h2 class="suggestionBox-title">${suggestionBox.getTitle(currentUserLanguage)}</h2>
-    <c:if test="${isEdito}">
-      <div silverpeas-toggle originalClass="suggestionBox-description">
-        <view:displayWysiwyg objectId="${suggestionBoxId}" componentId="${componentId}" language="${null}"/>
-      </div>
-    </c:if>
     <c:if test="${viewContext != SuggestionsInValidationViewContext and highestUserRole.isGreaterThanOrEquals(writerRole)}">
       <view:areaOfOperationOfCreation/>
     </c:if>

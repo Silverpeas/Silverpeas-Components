@@ -33,11 +33,8 @@ import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RecordTemplate;
-import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
-import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.util.file.FileUploadUtil;
@@ -45,8 +42,6 @@ import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.core.web.mvc.util.RoutingException;
-import org.silverpeas.core.web.mvc.util.WysiwygRouting;
 import org.silverpeas.core.workflow.api.error.WorkflowError;
 import org.silverpeas.core.workflow.api.instance.HistoryStep;
 import org.silverpeas.core.workflow.api.instance.Question;
@@ -65,14 +60,10 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
-import static org.silverpeas.core.contribution.model.CoreContributionType.COMPONENT_INSTANCE;
 
 public class ProcessManagerRequestRouter
     extends ComponentRequestRouter<ProcessManagerSessionController> {
@@ -192,9 +183,6 @@ public class ProcessManagerRequestRouter
         processList = session.getCurrentProcessList();
       }
       request.setAttribute("processList", processList);
-      String welcomeMessage = WysiwygController
-          .load(session.getComponentId(), session.getComponentId(), session.getLanguage());
-      request.setAttribute("WelcomeMessage", welcomeMessage);
       setProcessFilterAttributes(session, request);
       setSharedAttributes(session, request);
       return "/processManager/jsp/listProcess.jsp";
@@ -913,28 +901,6 @@ public class ProcessManagerRequestRouter
     request.setAttribute("data", data);
   }
 
-  private static FunctionHandler toWelcomeWysiwyg = new SessionSafeFunctionHandler() {
-    protected String computeDestination(String function, ProcessManagerSessionController session,
-        HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
-      try {
-        String returnURL = URLEncoder.encode(
-            URLUtil.getApplicationURL() + URLUtil.getURL(null, session.getComponentId()) +
-                "FromWysiwygWelcome", "UTF-8");
-
-        WysiwygRouting routing = new WysiwygRouting();
-        WysiwygRouting.WysiwygRoutingContext context =
-            WysiwygRouting.WysiwygRoutingContext.fromComponentSessionController(session)
-                .withContributionId(ContributionIdentifier.from(session.getComponentId(), session.getComponentId(), COMPONENT_INSTANCE))
-                .withBrowseInfo(session.getString("processManager.welcomeWysiwyg"))
-                .withComeBackUrl(returnURL);
-
-        return routing.getDestinationToWysiwygEditor(context);
-      } catch (RoutingException | UnsupportedEncodingException e) {
-        throw new ProcessManagerException("processManager", "processManager.CANT_GO_TO_WYSIWYG", e);
-      }
-    }
-  };
-
   private static FunctionHandler exportCSVHandler = new SessionSafeFunctionHandler() {
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
@@ -985,8 +951,6 @@ public class ProcessManagerRequestRouter
     handlerMap.put("searchResult", searchResultHandler);
     handlerMap.put("attachmentManager", attachmentManagerHandler);
     handlerMap.put("exportCSV", exportCSVHandler);
-    handlerMap.put("ToWysiwygWelcome", toWelcomeWysiwyg);
-    handlerMap.put("FromWysiwygWelcome", listProcessHandler);
     handlerMap.put("adminRemoveProcess", adminRemoveProcessHandler);
     handlerMap.put("adminViewErrors", adminViewErrorsHandler);
     handlerMap.put("adminReAssign", adminReAssignHandler);

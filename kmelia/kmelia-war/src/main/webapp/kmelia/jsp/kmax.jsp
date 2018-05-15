@@ -224,7 +224,9 @@ if (action.equals("KmaxView")) {
     }
 
     out.println(window.printBefore());
-    
+%>
+<view:componentInstanceIntro componentId="<%=componentId%>" language="<%=translation%>"/>
+<%
     if (profile.equals("admin")) {
     	out.println(tabbedPane.print());
   	}

@@ -122,27 +122,11 @@
       </help>
     </parameter>
     <parameter>
-      <name>wysiwygHeader</name>
-      <label>
-        <message lang="fr">Entête personnalisable</message>
-        <message lang="en">Customisable header</message>
-      </label>
-      <order>2</order>
-      <mandatory>true</mandatory>
-      <value>no</value>
-      <type>checkbox</type>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Permet d'activer la possibilité de personnaliser l'entête de la page d'accueil</message>
-        <message lang="en">Enables ability to customize welcome page header</message>
-      </help>
-    </parameter>
-    <parameter>
       <name>XMLFormName</name>
       <label>
         <message lang="fr">Formulaire XML</message>
         <message lang="en">XML Form</message>
-	<message lang="de">XML Formular</message>
+	      <message lang="de">XML Formular</message>
       </label>
       <order>3</order>
       <mandatory>true</mandatory>

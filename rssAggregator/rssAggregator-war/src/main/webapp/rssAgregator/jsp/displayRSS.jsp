@@ -35,7 +35,8 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
-<fmt:setLocale value="${sessionScope[sessionController].language}" />
+<c:set var="language" value="${sessionScope[sessionController].language}"/>
+<fmt:setLocale value="${language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 
@@ -137,9 +138,10 @@ void displayChannel(SPChannel spChannel, SimpleDateFormat dateFormatter, String 
 	SimpleDateFormat dateFormatter = new SimpleDateFormat(resource.getString("rss.dateFormat"));
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.rssAggregator">
 <head>
 <view:looknfeel withCheckFormScript="true"/>
+<view:includePlugin name="toggle"/>
 <script type="text/javascript">
 var updateChannelWindow = window;
 
@@ -248,6 +250,7 @@ function displayAll() {
   </view:operationPane>
 </c:if>
 <view:window>
+  <view:componentInstanceIntro componentId="${componentId}" language="${language}"/>
 <fmt:message var="urlErrorMsg" key="rss.nonCorrectURL" />
 <c:forEach var="channel" items="${rssChannels}">
   <c:if test="${empty channel.feed}">
@@ -409,6 +412,11 @@ if (nbChannelsToLoad > 0) { %>
 <view:progressMessage/>
 
 <%@include file="channelManager.jsp" %>
+
+<script type="text/javascript">
+  /* declare the module myapp and its dependencies (here in the silverpeas module) */
+  var myapp = angular.module('silverpeas.rssAggregator', ['silverpeas.services', 'silverpeas.directives']);
+</script>
 
 </body>
 </html>

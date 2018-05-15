@@ -82,8 +82,6 @@ String flea = m_context + "/util/icons/buletGrey.gif";
 String suggerer=m_context+"/util/icons/create-action/add-bookmark.png";
 String redFlag = m_context+"/util/icons/urgent.gif";
 
-String bodyPart="";
-
 // Retrieve parameter
 action = (String) request.getParameter("Action");
 id = (String) request.getParameter("Id");
@@ -101,10 +99,11 @@ if (action == null) {
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.bookmark">
 <head>
 <title><%=resources.getString("GML.popupTitle")%></title>
 <view:looknfeel />
+<view:includePlugin name="toggle"/>
 <script type="text/javascript" src="javaScript/spacesInURL.js"></script>
 <script type="text/javascript">
 
@@ -171,7 +170,6 @@ function openSPWindow(fonction, windowName){
 	}
 
 	SilverTrace.info("websites", "JSPlisteSite", "root.MSG_GEN_PARAM_VALUE", "action = "+action);
-	if (action.equals("Search")) {
 
 		SilverTrace.info("websites", "JSPlisteSite", "root.MSG_GEN_PARAM_VALUE", "action = Search");
 		name = webSitesCurrentFolder.getNodeDetail().getName();
@@ -183,13 +181,13 @@ function openSPWindow(fonction, windowName){
 		Collection nbToolByFolder = webSitesCurrentFolder.getNbPubByTopic();
 
 		Collection listeSites = webSitesCurrentFolder.getPublicationDetails();
+%>
+<view:browseBar path="<%=linkedPathString%>"/>
+  <view:window>
+    <view:frame>
+      <view:componentInstanceIntro componentId="<%=componentId%>" language="<%=resources.getLanguage()%>"/>
 
-		Window window = gef.getWindow();
-
-		BrowseBar browseBar = window.getBrowseBar();
-		browseBar.setDomainName(spaceLabel);
-		browseBar.setComponentName(componentLabel, "Main");
-		browseBar.setPath(linkedPathString);
+      <%
 
     //Les onglets
     TabbedPane tabbedPane = gef.getTabbedPane();
@@ -197,11 +195,7 @@ function openSPWindow(fonction, windowName){
 		tabbedPane.addTab(resources.getString("Organiser"), "organize.jsp", false);
     tabbedPane.addTab(resources.getString("GML.management"), "manage.jsp", false);
 
-    bodyPart+=tabbedPane.print();
-
-
-		//Le cadre
-		Frame frame = gef.getFrame();
+    out.print(tabbedPane.print());
 
 		// Creation de la liste de navigation
 		NavigationList navList = gef.getNavigationList();
@@ -237,7 +231,7 @@ function openSPWindow(fonction, windowName){
 		if (subThemes.size() > 0)
 		{
 			//Recuperation du tableau dans le haut du cadre
-			frame.addTop(navList.print());
+			out.print(navList.print());
 		}
 
 		//Liste des sites du theme courant
@@ -292,20 +286,21 @@ function openSPWindow(fonction, windowName){
 		}
 
 		//Recuperation de la liste des sites dans le cadre
-		frame.addBottom(liste);
-
-		//On crache le HTML ;o)
-		bodyPart+=frame.print();
-		window.addBody(bodyPart);
-		out.println(window.print());
-	}
+		out.print(liste);
 %>
+    </view:frame>
+  </view:window>
 
 <form name="topicDetailForm" action="listSite.jsp" method="post">
   <input type="hidden" name="Action"/>
   <input type="hidden" name="Id" value="<%=id%>" />
   <input type="hidden" name="SitePage"/>
 </form>
+
+<script type="text/javascript">
+  /* declare the module myapp and its dependencies (here in the silverpeas module) */
+  var myapp = angular.module('silverpeas.bookmark', ['silverpeas.services', 'silverpeas.directives']);
+</script>
 
 </body>
 </html>
