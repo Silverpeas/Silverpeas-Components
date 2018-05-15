@@ -81,9 +81,10 @@ if ("user".equals(profile) && !allowedNav)
 <c:set var="dragAndDropEnable" value="${highestUserRole.isGreaterThanOrEquals(publisherRole) and folderIsWritable and readWriteActivated}"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.silverCrawler">
 <head>
 <view:looknfeel withCheckFormScript="true"/>
+<view:includePlugin name="toggle"/>
 <script type="text/javascript">
 
 var downloadWindow = window;
@@ -432,6 +433,7 @@ if (StringUtil.isDefined(successMessage)) {
 }
 %>
 <view:frame>
+  <view:componentInstanceIntro componentId="<%=componentId%>" language="<%=resource.getLanguage()%>"/>
 <view:board>
 <%
 // affichage de la zone de recherche
@@ -727,5 +729,9 @@ out.println(window.printAfter());
                               uploadCompletedUrlSuccess="processDnD"
                               ignoreFolders="${ignoreFolders}"/>
 </c:if>
+<script type="text/javascript">
+  /* declare the module myapp and its dependencies (here in the silverpeas module) */
+  var myapp = angular.module('silverpeas.silverCrawler', ['silverpeas.services', 'silverpeas.directives']);
+</script>
 </body>
 </html>

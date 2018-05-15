@@ -33,6 +33,7 @@
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 
 <c:set var="lang" value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
+<c:set var="componentId" value="${requestScope.browseContext[3]}"/>
 
 <fmt:setLocale value="${lang}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
@@ -50,10 +51,11 @@
 <c:url var="iconDelete" value="/util/icons/delete.gif"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.formsOnline">
 <head>
 <title></title>
 <view:looknfeel/>
+<view:includePlugin name="toggle"/>
 <script type="text/javascript">
   function deleteForm(idModel) {
     var label = "<fmt:message key="formsOnline.deleteFormConfirm"/>";
@@ -78,13 +80,7 @@
 </c:if>
 <view:window>
 
-<h2 class="formsOnline-title">${app.getLabel(lang)}</h2>
-
-<c:if test="${not empty app.getDescription(lang)}">
-<div class="formsOnline-description">
-  <p>${app.getDescription(lang)}</p>
-</div>
-</c:if>
+<view:componentInstanceIntro componentId="${componentId}" language="${lang}"/>
 
 <c:choose>
   <c:when test="${role == 'senderOnly'}">
@@ -278,5 +274,11 @@
 <form name="deleteForm" action="DeleteForm" method="post">
   <input type="hidden" name="formId"/>
 </form>
+
+<script type="text/javascript">
+  /* declare the module myapp and its dependencies (here in the silverpeas module) */
+  var myapp = angular.module('silverpeas.formsOnline', ['silverpeas.services', 'silverpeas.directives']);
+</script>
+
 </body>
 </html>

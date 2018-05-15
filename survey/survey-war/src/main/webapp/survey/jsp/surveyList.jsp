@@ -348,10 +348,11 @@
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.survey">
 <head>
 <title></title>
 <view:looknfeel />
+<view:includePlugin name="toggle"/>
 <script type="text/javascript">
 function viewOpenedSurveys() {
   document.surveysForm.Action.value = "ViewOpenedSurveys";
@@ -448,6 +449,7 @@ function openSPWindow(fonction, windowName){
   
   out.println(window.printBefore());
 %>
+<view:componentInstanceIntro componentId="<%=componentId%>" language="<%=resources.getLanguage()%>"/>
 <view:areaOfOperationOfCreation/>
 <%
   int view = surveyScc.getViewType();
@@ -503,6 +505,11 @@ function openSPWindow(fonction, windowName){
 <form name="newPollingStationForm" action="pollCreator.jsp" method="post" enctype="multipart/form-data">
   <input type="hidden" name="Action" value=""/>
 </form>
+
+<script type="text/javascript">
+  /* declare the module myapp and its dependencies (here in the silverpeas module) */
+  var myapp = angular.module('silverpeas.survey', ['silverpeas.services', 'silverpeas.directives']);
+</script>
 
 </body>
 </html>

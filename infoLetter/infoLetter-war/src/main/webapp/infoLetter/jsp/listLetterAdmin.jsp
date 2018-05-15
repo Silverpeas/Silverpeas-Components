@@ -33,10 +33,11 @@
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.icons.Icon" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.infoLetter">
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel withCheckFormScript="true"/>
+<view:includePlugin name="toggle"/>
 <script type="text/javascript">
 
 var templateWindow = window;
@@ -106,6 +107,7 @@ if (isSuscriber) {
 out.println(window.printBefore());
 %>
 <view:frame>
+  <view:componentInstanceIntro componentId="<%=componentId%>" language="<%=language%>"/>
 <% if (showHeader) { %>
 <view:board>
 <center>
@@ -204,5 +206,11 @@ if (publications.size()>0) {
 <%
 out.println(window.printAfter());
 %>
+
+<script type="text/javascript">
+  /* declare the module myapp and its dependencies (here in the silverpeas module) */
+  var myapp = angular.module('silverpeas.infoLetter', ['silverpeas.services', 'silverpeas.directives']);
+</script>
+
 </body>
 </html>

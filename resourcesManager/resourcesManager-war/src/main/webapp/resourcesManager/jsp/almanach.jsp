@@ -55,12 +55,13 @@
 <c:set var="allResources" value="${requestScope.listResourcesofCategory}"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.resourcesManager">
 <head>
   <view:looknfeel/>
   <view:includePlugin name="qtip"/>
   <view:includePlugin name="calendar"/>
   <view:includePlugin name="datepicker"/>
+  <view:includePlugin name="toggle"/>
   <link rel="stylesheet" media="print" type="text/css" href="<c:url value="/resourcesManager/jsp/styleSheets/print_resourcesManager.css"/>">
   <script type="text/javascript" src="<c:url value="/resourcesManager/jsp/javaScript/resourceManager-calendar.js" />"></script>
   <script type="text/javascript">
@@ -282,6 +283,7 @@
 
 <view:window>
 
+  <view:componentInstanceIntro componentId="${componentInstanceId}" language="${language}"/>
   <view:areaOfOperationOfCreation/>
 
   <view:tabs>
@@ -421,5 +423,9 @@
   <input type="hidden" name="resourceIdFilter" value=""/>
 </form>
 <view:progressMessage/>
+<script type="text/javascript">
+  /* declare the module myapp and its dependencies (here in the silverpeas module) */
+  var myapp = angular.module('silverpeas.resourcesManager', ['silverpeas.services', 'silverpeas.directives']);
+</script>
 </body>
 </html>

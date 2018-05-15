@@ -86,10 +86,11 @@ if (!m_MainSessionCtrl.getCurrentUserDetail().isAccessGuest() && isUserSubscribe
 }
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.blog">
 <head>
 <title><%=componentLabel%></title>
 <view:looknfeel withCheckFormScript="true"/>
+<view:includePlugin name="toggle"/>
 <% if (StringUtil.isDefined(rssURL)) { %>
 <link rel="alternate" type="application/rss+xml" title="<%=componentLabel%> : <%=resource.getString("blog.rssLast")%>" href="<%=m_context+rssURL%>"/>
 <% } %>
@@ -232,6 +233,7 @@ function hideStyleSheetFile() {
     <div id="bandeau">
       <h2><a href="<%="Main"%>"><%=componentLabel%></a></h2>
     </div>
+    <view:componentInstanceIntro componentId="<%=instanceId%>" language="<%=resource.getLanguage()%>"/>
     <div id="navBlog">
       <%@ include file="colonneDroite.jsp" %>
     </div>
@@ -369,5 +371,9 @@ out.println(window.printAfter());
 %>
 
   </div>
+<script type="text/javascript">
+  /* declare the module myapp and its dependencies (here in the silverpeas module) */
+  var myapp = angular.module('silverpeas.blog', ['silverpeas.services', 'silverpeas.directives']);
+</script>
 </body>
 </html>

@@ -89,6 +89,7 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
   	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <view:looknfeel />
     <view:includePlugin name="rating" />
+    <view:includePlugin name="toggle"/>
     <script type="text/javascript" src="<c:url value='/forums/jsp/javaScript/forums.js' />"></script>
     <script type="text/javascript">
 
@@ -192,6 +193,7 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
     </c:if>
     <view:window>
       <view:frame>
+        <view:componentInstanceIntro componentId="${sessionController.componentId}" language="${sessionController.language}"/>
       	  <view:areaOfOperationOfCreation/>
           <table width="100%" border="0" align="center" cellpadding="4" cellspacing="1" class="testTableau">
             <tr>

@@ -43,7 +43,6 @@
 <c:set var="highestUserRole"  value="${requestScope.highestUserRole}"/>
 <c:set var="suggestionBox"    value="${requestScope.currentSuggestionBox}"/>
 <c:set var="suggestionBoxId"  value="${suggestionBox.id}"/>
-<c:set var="isEdito"          value="${requestScope.isEdito}"/>
 
 <view:setConstant var="adminRole"                 constant="org.silverpeas.core.admin.user.model.SilverpeasRole.admin"/>
 <view:setConstant var="writerRole"                constant="org.silverpeas.core.admin.user.model.SilverpeasRole.writer"/>
@@ -52,7 +51,6 @@
 <view:setConstant var="STATUS_VALIDATED"          constant="org.silverpeas.core.contribution.ContributionStatus.VALIDATED"/>
 <view:setConstant var="STATUS_PENDING_VALIDATION" constant="org.silverpeas.core.contribution.ContributionStatus.PENDING_VALIDATION"/>
 
-<fmt:message key="suggestionBox.menu.item.edito.modify"                    var="modifyEditoLabel"/>
 <fmt:message key="suggestionBox.menu.item.suggestion.add"                  var="browseBarPathSuggestionLabel"/>
 <fmt:message key="suggestionBox.menu.item.subscribe"                       var="subscribeToSuggestionBoxLabel"/>
 <fmt:message key="suggestionBox.menu.item.unsubscribe"                     var="unsubscribeFromSuggestionBoxLabel"/>
@@ -61,9 +59,6 @@
 <fmt:message key="suggestionBox.label.suggestion.status.Refused"           var="refusedValidationStatusLabel"/>
 <fmt:message key="suggestionBox.label.noSuggestions"                       var="noSuggestions"/>
 <fmt:message key="suggestionBox.label.noComments"                          var="noComments"/>
-<fmt:message key="suggestionBox.message.edito.empty"                       var="editoEmptyMessage">
-  <fmt:param>${componentUriBase}edito/modify</fmt:param>
-</fmt:message>
 <fmt:message key="suggestionBox.label.suggestion.status.Refused"           var="refused"/>
 <fmt:message key="suggestionBox.label.suggestion.status.Validated"         var="validated"/>
 <fmt:message key="suggestionBox.label.suggestion.status.PendingValidation" var="pending"/>
@@ -117,10 +112,6 @@
 </head>
 <body ng-controller="mainController">
 <view:operationPane>
-  <c:if test="${highestUserRole.isGreaterThanOrEquals(adminRole)}">
-    <view:operation action="${componentUriBase}edito/modify" altText="${modifyEditoLabel}"/>
-    <view:operationSeparator/>
-  </c:if>
   <c:if test="${highestUserRole.isGreaterThanOrEquals(publisherRole)}">
     <view:operation action="${componentUriBase}suggestions/pending" altText="${suggestionsInPendingLabel}"/>
     <view:operationSeparator/>
@@ -143,17 +134,7 @@
 </view:operationPane>
 <view:window>
   <view:frame>
-    <h2 class="suggestionBox-title">${suggestionBox.getTitle(currentUserLanguage)}</h2>
-    <c:choose>
-      <c:when test="${isEdito}">
-        <div silverpeas-toggle originalClass="suggestionBox-description">
-          <view:displayWysiwyg objectId="${suggestionBoxId}" componentId="${componentId}" language="${null}"/>
-        </div>
-      </c:when>
-      <c:when test="${highestUserRole.isGreaterThanOrEquals(adminRole)}">
-        <div class="inlineMessage">${silfn:escapeHtmlWhitespaces(editoEmptyMessage)}</div>
-      </c:when>
-    </c:choose>
+    <view:componentInstanceIntro componentId="${componentId}" language="${null}"/>
     <c:if test="${highestUserRole.isGreaterThanOrEquals(writerRole)}">
       <div id="my-suggestionBox">
         <view:areaOfOperationOfCreation/>

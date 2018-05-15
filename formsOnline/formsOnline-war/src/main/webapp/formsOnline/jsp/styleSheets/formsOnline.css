@@ -35,35 +35,6 @@ fieldset {
   color: #607090;
 }
 
-.formsOnline-title {
-  color: #333333;
-  font-size: 130%;
-  font-weight: 100;
-  margin: 0 0 1em;
-  padding: 0;
-}
-
-.formsOnline-description {
-  border-left: 6px solid #E4E4E4;
-  color: #666666;
-  padding: 8px;
-  max-height: 90px;
-  overflow: hidden;
-  margin-bottom: 1em;
-}
-
-.formsOnline-description {
-  margin-bottom: 1em;
-}
-
-.silverpeas-toggle .formsOnline-description {
-  margin-bottom: 0em;
-}
-
-.silverpeas-toggle a.toggle {
-  margin-bottom: 1em;
-}
-
 #all-formsOnline {
   clear: left;
 }
@@ -73,12 +44,6 @@ fieldset {
   font-style: italic;
   font-size: 90%;
 }
-
-.formsOnline-description > ul:first-child, .formsOnline-description > p:first-child {
-  margin-top: 0;
-  padding-top: 0;
-}
-
 
 #all-formsOnline .secteur-container .header {
   height: 30px;

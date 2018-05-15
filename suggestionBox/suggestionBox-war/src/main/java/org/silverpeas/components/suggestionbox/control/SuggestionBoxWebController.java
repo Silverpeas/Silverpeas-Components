@@ -31,7 +31,6 @@ import org.silverpeas.components.suggestionbox.notification
     .SuggestionNotifyManuallyUserNotification;
 import org.silverpeas.components.suggestionbox.web.SuggestionEntity;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import org.silverpeas.core.subscription.SubscriptionService;
 import org.silverpeas.core.subscription.SubscriptionServiceProvider;
@@ -223,7 +222,7 @@ public class SuggestionBoxWebController extends
   @Path("Main")
   @Homepage
   @RedirectToInternalJsp("suggestionBox.jsp")
-  @InvokeAfter({"isEdito", "isUserSubscribed"})
+  @InvokeAfter("isUserSubscribed")
   public void home(SuggestionBoxWebRequestContext context) {
     // Nothing to do for now...
   }
@@ -237,7 +236,6 @@ public class SuggestionBoxWebController extends
   @NavigationStep(identifier = SUGGESTION_LIST_NS_ID,
       contextIdentifier = "AllSuggestions")
   @RedirectToInternalJsp("suggestionList.jsp")
-  @InvokeAfter("isEdito")
   public void listAllSuggestions(SuggestionBoxWebRequestContext context) {
     List<SuggestionEntity> suggestions = getWebServiceProvider().getAllSuggestionsFor(context.
         getSuggestionBox(), context.getUser());
@@ -253,7 +251,6 @@ public class SuggestionBoxWebController extends
   @NavigationStep(identifier = SUGGESTION_LIST_NS_ID,
       contextIdentifier = "PublishedSuggestions")
   @RedirectToInternalJsp("suggestionList.jsp")
-  @InvokeAfter("isEdito")
   public void listPublishedSuggestions(SuggestionBoxWebRequestContext context) {
     List<SuggestionEntity> suggestions = getWebServiceProvider().getPublishedSuggestions(context.
         getSuggestionBox());
@@ -269,7 +266,6 @@ public class SuggestionBoxWebController extends
   @Path(PATH_SUGGESTIONS_PENDING)
   @NavigationStep(identifier = SUGGESTION_LIST_NS_ID, contextIdentifier = "SuggestionsInValidation")
   @RedirectToInternalJsp("suggestionList.jsp")
-  @InvokeAfter("isEdito")
   @LowestRoleAccess(SilverpeasRole.publisher)
   public void listSuggestionsInPendingValidation(SuggestionBoxWebRequestContext context) {
     List<SuggestionEntity> suggestions =
@@ -287,7 +283,6 @@ public class SuggestionBoxWebController extends
   @Path(PATH_SUGGESTIONS_MINE)
   @NavigationStep(identifier = SUGGESTION_LIST_NS_ID, contextIdentifier = "MySuggestions")
   @RedirectToInternalJsp("suggestionList.jsp")
-  @InvokeAfter("isEdito")
   @LowestRoleAccess(SilverpeasRole.writer)
   public void listCurrentUserSuggestions(SuggestionBoxWebRequestContext context) {
     List<SuggestionEntity> suggestions = getWebServiceProvider()
@@ -321,19 +316,6 @@ public class SuggestionBoxWebController extends
     final SuggestionBox suggestionBox = context.getSuggestionBox();
     return context
         .redirectToHtmlEditor(suggestionBox.getId(), COMPONENT_INSTANCE.name(), "Main", false);
-  }
-
-  /**
-   * Sets into request attributes the isEdito constant.
-   * @param context the context of the incoming request.
-   */
-  @Invokable("isEdito")
-  public void setIsEditoIntoRequest(SuggestionBoxWebRequestContext context) {
-    if (WysiwygController
-        .haveGotWysiwyg(context.getComponentInstanceId(), context.getSuggestionBox().getId(),
-            null)) {
-      context.getRequest().setAttribute("isEdito", true);
-    }
   }
 
   /**
