@@ -63,6 +63,7 @@
 <head>
   <title></title>
   <view:looknfeel />
+  <link type="text/css" rel="stylesheet" href='<c:url value="/formsOnline/jsp/styleSheets/formsOnline-print.css"/>' media="print"/>
   <% formView.displayScripts(out, context); %>
   <script type="text/javascript">
 	  function validate() {
@@ -102,6 +103,8 @@
           </c:if>
         </c:otherwise>
       </c:choose>
+      <fmt:message var="opPrint" key="GML.print"/>
+      <view:operation action="javascript:window.print()" altText="${opPrint}"/>
     </view:operationPane>
   <view:window>
 
