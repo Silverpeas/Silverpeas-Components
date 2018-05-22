@@ -78,4 +78,6 @@ public interface FormsOnlineService extends ApplicationService<FormInstance> {
 
   void deleteRequest(RequestPK pk)
       throws FormsOnlineDatabaseException, FormException, PublicationTemplateException;
+
+  void index(String componentId);
 }

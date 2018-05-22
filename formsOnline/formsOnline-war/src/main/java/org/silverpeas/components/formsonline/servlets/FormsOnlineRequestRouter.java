@@ -46,6 +46,7 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
   private static final String USER_PANEL_CURRENT_USER_IDS = "UserPanelCurrentUserIds";
   private static final String USER_PANEL_CURRENT_GROUP_IDS = "UserPanelCurrentGroupIds";
   private static final String FORM_CONTEXT = "FormContext";
+  private static final String PARAM_FORMID = "FormId";
 
   /**
    * This method has to be implemented in the component request rooter class. returns the session
@@ -132,7 +133,7 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
 
         return getDestination("Main", formsOnlineSC, request);
       } else if ("EditForm".equals(function)) {
-        String formId = request.getParameter("formId");
+        String formId = request.getParameter(PARAM_FORMID);
         FormDetail form = formsOnlineSC.getCurrentForm();
         if (formId != null) {
           form = formsOnlineSC.setCurrentForm(formId);
@@ -146,7 +147,7 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
 
         destination = "editForm.jsp";
       } else if ("DeleteForm".equals(function)) {
-        String formId = request.getParameter("formId");
+        String formId = request.getParameter(PARAM_FORMID);
 
         if (formId != null) {
           formsOnlineSC.deleteForm(Integer.parseInt(formId));
@@ -194,7 +195,7 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
 
         destination = "inbox.jsp";
       } else if ("FilterRequests".equals(function)) {
-        String formId = request.getParameter("FormId");
+        String formId = request.getParameter(PARAM_FORMID);
         formsOnlineSC.setCurrentForm(formId);
 
         return getDestination(INBOX, formsOnlineSC, request);
@@ -204,7 +205,10 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
 
         destination = "export-popin-content.jsp";
       } else if ("NewRequest".equals(function)) {
-        String formId = request.getParameter("FormId");
+        String formId = request.getParameter(PARAM_FORMID);
+        if (StringUtil.isNotDefined(formId)) {
+          formId = (String) request.getAttribute(PARAM_FORMID);
+        }
         FormDetail form = formsOnlineSC.setCurrentForm(formId);
 
         // form and DataRecord creation
@@ -269,6 +273,10 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
         formsOnlineSC.getSelectedValidatorRequestIds().clear();
 
         return getDestination(INBOX, formsOnlineSC, request);
+      } else if ("searchResult".equals(function)) {
+        request.setAttribute(PARAM_FORMID, request.getParameter("Id"));
+
+        return getDestination("NewRequest", formsOnlineSC, request);
       } else {
         destination = "welcome.jsp";
       }
