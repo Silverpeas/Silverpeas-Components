@@ -1013,6 +1013,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         extraFormPageContext.setComponentId(kmelia.getComponentId());
         extraFormPageContext.setObjectId(volatilePublication.getPK().getId());
         extraFormPageContext.setNodeId(kmelia.getCurrentFolderId());
+        extraFormPageContext.setLanguage(kmelia.getLanguage());
         request.setAttribute("ExtraFormPageContext", extraFormPageContext);
 
         destination = getDestination("ToPublicationHeader", kmelia, request);
