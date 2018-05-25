@@ -790,7 +790,7 @@ String displaySurveyResult(String choice, QuestionContainerDetail survey, Graphi
 			        r += "        <a target=\"_blank\" href=\""+url+"\">"+simpleDocument.getFilename()+"</a>";
 			        r += "       </span>";
 			        r += "       <span class=\"lineSize\">";
-			        r += "        <a href=\""+permalink+"\"><img border=\"0\" title=\""+resources.getString("survey.attachmentPermalink")+"\" alt=\""+resources.getString("survey.attachmentPermalink")+"\" src=\""+m_context+"/util/icons/link.gif\"></a>";
+			        r += "        <a class=\"sp-permalink\" href=\""+permalink+"\"><img border=\"0\" title=\""+resources.getString("survey.attachmentPermalink")+"\" alt=\""+resources.getString("survey.attachmentPermalink")+"\" src=\""+m_context+"/util/icons/link.gif\"></a>";
 			        r +=            FileRepositoryManager.formatFileSize(simpleDocument.getSize())+" - "+dateDocument;
 			        r += "       </span>";
 			        r += "    </li>";

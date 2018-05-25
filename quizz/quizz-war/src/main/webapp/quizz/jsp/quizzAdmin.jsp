@@ -159,7 +159,7 @@ function clipboardPaste() {
 						.next();
 				// gestion des permaliens sur les quizz
 				String permalink = quizzHeader.getPermalink();
-				String link = "&nbsp;<a href=\"" + permalink + "\"><img src=\""
+				String link = "&nbsp;<a class=\"sp-permalink\" href=\"" + permalink + "\"><img src=\""
 						+ linkIcon + "\" border=\"0\" align=\"bottom\" alt=\""
 						+ resources.getString("quizz.CopyQuizzLink")
 						+ "\" title=\""

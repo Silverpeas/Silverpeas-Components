@@ -100,7 +100,7 @@
             (view == SurveySessionController.CLOSED_SURVEYS_VIEW)) {
           if (survey.getPermalink() != null) {
             link =
-                "&nbsp;<a href=\"" + survey.getPermalink() + "\"><img src=\"" + linkSrc +
+                "&nbsp;<a class=\"sp-permalink\" href=\"" + survey.getPermalink() + "\"><img src=\"" + linkSrc +
                 "\" border=\"0\" align=\"bottom\" alt=\"" +
                 resources.getString("survey.CopySurveyLink") + "\" title=\"" +
                 resources.getString("survey.CopySurveyLink") + "\"></a>";
@@ -157,7 +157,7 @@
 
           if (survey.getPermalink() != null) {
             link =
-                "&nbsp;<a href=\"" + survey.getPermalink() + "\"><img src=\"" + linkSrc +
+                "&nbsp;<a class=\"sp-permalink\" href=\"" + survey.getPermalink() + "\"><img src=\"" + linkSrc +
                 "\" border=\"0\" align=\"bottom\" alt=\"" +
                 resources.getString("survey.CopySurveyLink") + "\" title=\"" +
                 resources.getString("survey.CopySurveyLink") + "\"></a>";
@@ -245,7 +245,7 @@
 
           if (survey.getPermalink() != null)
             link =
-                "&nbsp;<a href=\"" + survey.getPermalink() + "\"><img src=\"" + linkSrc +
+                "&nbsp;<a class=\"sp-permalink\" href=\"" + survey.getPermalink() + "\"><img src=\"" + linkSrc +
                 "\" border=\"0\" align=\"bottom\" alt=\"" +
                 resources.getString("survey.CopySurveyLink") + "\" title=\"" +
                 resources.getString("survey.CopySurveyLink") + "\"></a>";

@@ -523,7 +523,7 @@ if (nav || (!nav && !isRootPath))
 	        String filePath = file.getPath();
 	        filePath = filePath.substring(rootPath.length()+1);
 	        link = URLUtil.getApplicationURL() + "/SubDir/" + componentId +"?Path="+URLEncoder.encode(filePath, "UTF-8");
-	        nameCell = nameCell + "&nbsp;<a href=\"" + link + "\"><img border=\"0\" src=\""+resource.getIcon("silverCrawler.permalien")+"\"/></a>";
+	        nameCell = nameCell + "&nbsp;<a class=\"sp-permalink\" href=\"" + link + "\"><img border=\"0\" src=\""+resource.getIcon("silverCrawler.permalien")+"\"/></a>";
 
 	        // affichage de la cellule
 	        arrayLine.addArrayCellText(nameCell);

@@ -776,7 +776,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     } else {
       link = URLUtil.getSimpleURL(URLUtil.URL_PUBLI, pub.getPK().getId());
     }
-    return " - <a href=\"" + link + "\"><img src=\"" + resources.getIcon("kmelia.link") +
+    return " - <a class=\"sp-permalink\" href=\"" + link + "\"><img src=\"" + resources.getIcon("kmelia.link") +
         "\" border=\"0\" align=\"absmiddle\" alt=\"" +
         resources.getString("kmelia.CopyPublicationLink") + "\" title=\"" +
         resources.getString("kmelia.CopyPublicationLink") + "\"/></a>";
@@ -1122,7 +1122,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         writer.write("<span class=\"publication-date\">"+resources.getOutputDate(pub.getUpdateDate())+"</span>");
         if (displayLinks) {
           String link = URLUtil.getSimpleURL(URLUtil.URL_PUBLI, pub.getPK().getId());
-          writer.write("<a class=\"publication-hyperlink\" href=\"" + link + "\"><img src=\"" + linkIcon +
+          writer.write("<a class=\"sp-permalink publication-hyperlink\" href=\"" + link + "\"><img src=\"" + linkIcon +
               "\"  alt=\"" +
               resources.getString("kmelia.CopyPublicationLink") + "\" title=\"" +
               resources.getString("kmelia.CopyPublicationLink") + "\" /></a>");

@@ -148,7 +148,7 @@ out.println(window.printBefore());
         <div class="titreTicket"><%=WebEncodeHelper.javaStringToHtmlString(post.getPublication().getName())%> <span class="status">(<%=status%>)</span>
 			   	<%if (link != null && !link.equals("")) 
 			   	{	%>
-				  	<a href="<%=link%>"><img src="<%=resource.getIcon("blog.link")%>" border="0" alt='<%=resource.getString("blog.CopyPostLink")%>' title='<%=resource.getString("blog.CopyPostLink")%>' /></a>
+				  	<a class="sp-permalink" href="<%=link%>"><img src="<%=resource.getIcon("blog.link")%>" border="0" alt='<%=resource.getString("blog.CopyPostLink")%>' title='<%=resource.getString("blog.CopyPostLink")%>' /></a>
 				  <%}	%> 
 				</div>
 				<div class="infoTicket"><%=day%> <%=resource.getOutputDate(post.getDateEvent())%></div>

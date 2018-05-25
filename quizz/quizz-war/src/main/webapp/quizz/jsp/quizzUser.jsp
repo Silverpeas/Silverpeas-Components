@@ -125,7 +125,7 @@ String linkIcon = iconsPath + "/util/icons/link.gif";
     arrayLine.addArrayCellLink("<img src=\"icons/palmares_30x15.gif\" border=0>","palmares.jsp?quizz_id="+quizzHeader.getPK().getId());
     //  gestion des permaliens sur les quizz
     String permalink = quizzHeader.getPermalink();
-    String link = "&nbsp;<a href=\""+permalink+"\"><img src=\""+linkIcon+"\" border=\"0\" align=\"bottom\" alt=\""+resources.getString("quizz.CopyQuizzLink")+"\" title=\""+resources.getString("quizz.CopyQuizzLink")+"\"></a>";
+    String link = "&nbsp;<a class=\"sp-permalink\" href=\""+permalink+"\"><img src=\""+linkIcon+"\" border=\"0\" align=\"bottom\" alt=\""+resources.getString("quizz.CopyQuizzLink")+"\" title=\""+resources.getString("quizz.CopyQuizzLink")+"\"></a>";
 
     ArrayCellText arrayCellText2 = null;
     if (nb_user_votes >= nb_max_participations) {

@@ -135,7 +135,7 @@
 
     function clickDay(day) {
       <c:if test="${profile != 'user'}">
-      spLayout.getBody().getContent().load("NewReservation?objectView=${objectView}&Day=" + day);
+      spWindow.loadContent("NewReservation?objectView=${objectView}&Day=" + day);
       </c:if>
     }
 

@@ -108,7 +108,7 @@ void displayTopicsToUsersAsNavlist(KmeliaSessionController kmeliaScc, NodeDetail
                   			if (displayLinks)
 							{
 								String link = URLUtil.getSimpleURL(URLUtil.URL_TOPIC, childId, node.getNodePK().getInstanceId());
-								universalLink = "<a href=\""+link+"\"><img src=\""+linkIcon+"\" border=\"0\" align=\"absmiddle\" alt=\""+resources.getString("kmelia.CopyTopicLink")+"\" title=\""+resources.getString("kmelia.CopyTopicLink")+"\"></a>";
+								universalLink = "<a class=\"sp-permalink\" href=\""+link+"\"><img src=\""+linkIcon+"\" border=\"0\" align=\"absmiddle\" alt=\""+resources.getString("kmelia.CopyTopicLink")+"\" title=\""+resources.getString("kmelia.CopyTopicLink")+"\"></a>";
 							}
                             navList.addItem(Encode.javaStringToHtmlString(childName+nbPublis),"javascript:onClick=topicGoTo('"+childId+"')",-1,childDescription, universalLink);
                             break;
@@ -172,7 +172,7 @@ void displayTopicsToUsersAsArray(KmeliaSessionController kmeliaScc, NodeDetail n
 							if (displayLinks)
 							{
 								String link = URLUtil.getSimpleURL(URLUtil.URL_TOPIC, childId, node.getNodePK().getInstanceId());
-								universalLink = "&nbsp;<a href=\""+link+"\"><img src=\""+linkIcon+"\" border=\"0\" align=\"bottom\" alt=\""+resources.getString("kmelia.CopyTopicLink")+"\" title=\""+resources.getString("kmelia.CopyTopicLink")+"\"></a>";
+								universalLink = "&nbsp;<a class=\"sp-permalink\" href=\""+link+"\"><img src=\""+linkIcon+"\" border=\"0\" align=\"bottom\" alt=\""+resources.getString("kmelia.CopyTopicLink")+"\" title=\""+resources.getString("kmelia.CopyTopicLink")+"\"></a>";
 							}
                             arrayLine.addArrayCellText("<a href=\"javascript:onClick=topicGoTo('"+childId+"')\">"+childName+"</a>"+universalLink);
 							

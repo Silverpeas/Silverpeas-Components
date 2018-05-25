@@ -273,7 +273,7 @@ function hideStyleSheetFile() {
         <div class="titreTicket"> <a href="<%="ViewPost?PostId=" + postId%>"><%=WebEncodeHelper
             .javaStringToHtmlString(post.getPublication().getName())%></a> <span class="status">(<%=status%>)</span>
           <%  if ( link != null && !link.equals("")) {  %>
-          <span class="permalink"><a href="<%=link%>"><img src="<%=resource.getIcon("blog.link")%>" alt='<%=resource.getString("blog.CopyPostLink")%>' title='<%=resource.getString("blog.CopyPostLink")%>'/></a></span>
+          <span class="permalink sp-permalink"><a href="<%=link%>"><img src="<%=resource.getIcon("blog.link")%>" alt='<%=resource.getString("blog.CopyPostLink")%>' title='<%=resource.getString("blog.CopyPostLink")%>'/></a></span>
           <%  } %>
         </div>
 		
