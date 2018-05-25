@@ -3853,7 +3853,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController
         context.setNodeId(getCurrentFolderId());
       }
       context.setObjectId(pubId);
-      context.setContentLanguage(getContentLanguage());
+      if (forceUpdatePublication) {
+        // case of a modification of the publication
+        context.setContentLanguage(getContentLanguage());
+      } else {
+        // the publication is just created
+        context.setContentLanguage(pubDetail.getLanguage());
+      }
 
       form.update(items, data, context);
       set.save(data);
