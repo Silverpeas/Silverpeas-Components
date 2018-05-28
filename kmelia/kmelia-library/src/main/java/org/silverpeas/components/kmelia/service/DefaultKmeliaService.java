@@ -2773,8 +2773,8 @@ public class DefaultKmeliaService implements KmeliaService {
 
     for (HistoryObjectDetail access : allAccess) {
       String readerId = access.getUserId();
-      if ((!StringUtil.isDefined(excludedUserId) || !excludedUserId.equals(readerId)) &&
-          (userIds == null || userIds.contains(readerId)) && !readerIds.contains(readerId)) {
+      if (!readerId.equals(excludedUserId) &&
+          (CollectionUtil.isEmpty(userIds) || userIds.contains(readerId)) && !readerIds.contains(readerId)) {
         readerIds.add(readerId);
         if (!User.getById(readerId).isAnonymous()) {
           lastAccess.add(access);
