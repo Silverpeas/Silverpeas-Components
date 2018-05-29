@@ -116,17 +116,17 @@ $(document).ready(function() {
 	<c:forEach items="${allNews}" var="news">
 			<c:choose>
 				<c:when test="${not empty news.thumbnail}">
-					<li onclick="javascript:location.href='${news.permalink}'">
+					<li onclick="spWindow.loadPermalink('${news.permalink}')">
 					<div class="content-actuality-illustration"><view:image src="${news.thumbnail.URL}" alt="" size="350x" css="actuality-illustration"/></div>
 				</c:when>
 				<c:otherwise>
 					<c:choose>
             <c:when test="${slideshow}">
-              <li onclick="javascript:location.href='${news.permalink}'">
+              <li onclick="spWindow.loadPermalink('${news.permalink}')">
               <div class="content-actuality-illustration"><view:image src="/quickinfo/jsp/icons/defaultThumbnail.jpg" alt="" size="350x" css="actuality-illustration default-illustration"/></div>
             </c:when>
             <c:otherwise>
-              <li onclick="javascript:location.href='${news.permalink}'" class="actuality-without-illustration">
+              <li onclick="spWindow.loadPermalink('${news.permalink}')" class="actuality-without-illustration">
             </c:otherwise>
           </c:choose>
 				</c:otherwise>
