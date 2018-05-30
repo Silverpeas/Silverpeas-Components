@@ -34,9 +34,6 @@
 List<PublicationTemplate> xmlForms	= (List<PublicationTemplate>) request.getAttribute("XMLForms");
 PublicationDetail 	pubDetail 	= (PublicationDetail) request.getAttribute("CurrentPublicationDetail");
 Boolean				wysiwygValid		= (Boolean) request.getAttribute("WysiwygValid");
-String				wizardLast	= (String) request.getAttribute("WizardLast");			
-String 				wizard		= (String) request.getAttribute("Wizard");
-String	 			wizardRow	= (String) request.getAttribute("WizardRow");
 String				currentLang = (String) request.getAttribute("Language");
 
 String pubId = pubDetail.getPK().getId();
@@ -46,19 +43,7 @@ String linkedPathString = kmeliaScc.getSessionPath();
 
 boolean isOwner = kmeliaScc.getSessionOwner();
 
-if (wizardRow == null) {
-	wizardRow = "2";
-}
-
-boolean isEnd = "2".equals(wizardLast);
-
 Button cancelButton = gef.getFormButton(resources.getString("GML.cancel"), "DeletePublication?PubId="+pubId, false);
-Button nextButton;
-if (isEnd) {
-	nextButton = gef.getFormButton(resources.getString("kmelia.End"), "WizardNext?Position=Content&WizardRow="+wizardRow, false);
-} else {
-	nextButton = gef.getFormButton(resources.getString("GML.next"), "WizardNext?Position=Content&WizardRow="+wizardRow, false);
-}
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -95,35 +80,19 @@ function closeWindows() {
     browseBar.setDomainName(spaceLabel);
     browseBar.setComponentName(componentLabel, "Main");
     browseBar.setPath(linkedPathString);
-	browseBar.setExtraInformation(pubName);
+	  browseBar.setExtraInformation(pubName);
 
     out.println(window.printBefore());
 
-    if ("progress".equals(wizard)) {
-    	KmeliaDisplayHelper.displayWizardOperations(wizardRow, pubId, kmeliaScc, gef,
-            "ModelChoice", resources, out, kmaxMode);
-    }
-    else {
-	    if (isOwner) {
-	        KmeliaDisplayHelper.displayAllOperations(pubId, kmeliaScc, gef, "ModelChoice",
-                resources, out, kmaxMode);
-	    } else {
-	        KmeliaDisplayHelper.displayUserOperations(pubId, kmeliaScc, gef, "ModelChoice",
-                resources, out, kmaxMode);
-	    }
+    if (isOwner) {
+        KmeliaDisplayHelper.displayAllOperations(pubId, kmeliaScc, gef, "ModelChoice",
+              resources, out, kmaxMode);
+    } else {
+        KmeliaDisplayHelper.displayUserOperations(pubId, kmeliaScc, gef, "ModelChoice",
+              resources, out, kmaxMode);
     }
     out.println(frame.printBefore());
     
-	//  cadre d'aide
-	if ("progress".equals(wizard) || "finish".equals(wizard)) {
-		// cadre d'aide
-%>
-		<div class="inlineMessage">
-			<img border="0" src="<%=resources.getIcon("kmelia.info") %>"/>
-			<%=resources.getString("kmelia.HelpContent") %>
-		</div>
-<%
-	}
 %>
 
 <fieldset id="pubExtraForm" class="skinFieldset">
@@ -160,13 +129,6 @@ function closeWindows() {
 </table>
 </fieldset>
 <%
-	if (wizard.equals("progress")) {
-		ButtonPane buttonPane = gef.getButtonPane();
-		buttonPane.addButton(nextButton);
-		buttonPane.addButton(cancelButton);
-		buttonPane.setHorizontalPosition();
-		out.println("<br/><center>"+buttonPane.print()+"</center><br/>");
-	}
     out.println(frame.printAfter());
 %>
 

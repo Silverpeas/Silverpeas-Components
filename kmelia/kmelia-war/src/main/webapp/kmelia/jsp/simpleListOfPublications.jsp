@@ -192,9 +192,6 @@ $(document).ready(function() {
         }
         if (userCanCreatePublications) {
 	        operationPane.addOperationOfCreation(resources.getIcon("kmelia.operation.addPubli"), kmeliaScc.getString("PubCreer"), "NewPublication");
-	        if (kmeliaScc.isWizardEnabled()) {
-	      		operationPane.addOperationOfCreation(resources.getIcon("kmelia.wizard"), resources.getString("kmelia.Wizard"), "WizardStart");
-	        }
 	        if (kmeliaScc.isImportFileAllowed()) {
 	      		operationPane.addOperationOfCreation(resources.getIcon("kmelia.operation.importFile"), kmeliaScc.getString("kmelia.ImportFile"), "javascript:onClick=importFile()");
 	        }

@@ -88,7 +88,6 @@ void displayLinkViewSelection(int selectedId, KmeliaSessionController kmeliaScc,
 //Retrieve parameters
 String profile 		= (String) request.getAttribute("Profile");
 String action 		= (String) request.getAttribute("Action");
-String wizard		= (String) request.getAttribute("Wizard");
 String	currentLang = (String) request.getAttribute("Language");
 
 //Icons
@@ -178,16 +177,6 @@ function closeWindows() {
 
         out.println(frame.printBefore());
 
-        if ("finish".equals(wizard)) {
-          %>
-          	<div class="inlineMessage">
-				<img border="0" src="<%=resources.getIcon("kmelia.info") %>"/>
-				<%=resources.getString("kmelia.HelpSeeAlso") %>
-			</div>
-			<br clear="all"/>
-    	  <%
-    	}
-        
         if (action.equals("LinkAuthorView")) {
             displayLinkViewSelection(1, kmeliaScc, out);
             

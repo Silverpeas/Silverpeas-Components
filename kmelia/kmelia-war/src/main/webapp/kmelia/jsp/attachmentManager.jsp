@@ -39,9 +39,6 @@
 <%
 PublicationDetail 	pubDetail 	= (PublicationDetail) request.getAttribute("CurrentPublicationDetail");
 
-String				wizardLast	= (String) request.getAttribute("WizardLast");
-String 				wizard		= (String) request.getAttribute("Wizard");
-String	 			wizardRow	= (String) request.getAttribute("WizardRow");
 String				currentLang = (String) request.getAttribute("Language");
 List languages	= (List) request.getAttribute("Languages");
 String 				xmlForm		= (String) request.getAttribute("XmlFormForFiles");
@@ -59,25 +56,9 @@ boolean isOwner = false;
 if (kmeliaScc.getSessionOwner())
       isOwner = true;
 
-if (wizardRow == null)
-	wizardRow = "3";
-
-boolean isEnd = false;
-if ("3".equals(wizardLast)) {
-	isEnd = true;
-}
-
 String linkedPathString = kmeliaScc.getSessionPath();
 
 String url = kmeliaScc.getComponentUrl()+"ViewAttachments";
-
-Button cancelButton = gef.getFormButton(resources.getString("GML.cancel"), "DeletePublication?PubId="+pubId, false);
-Button nextButton;
-if (isEnd) {
-	nextButton = gef.getFormButton(resources.getString("kmelia.End"), "WizardNext?Position=Attachment", false);
-} else {
-	nextButton =  gef.getFormButton(resources.getString("GML.next"), "WizardNext?Position=Attachment", false);
-}
 
 boolean openUrl = false;
 if (request.getParameter("OpenUrl") != null)  {
@@ -113,39 +94,20 @@ function topicGoTo(id) {
 
 	out.println(window.printBefore());
 
-	if ("progress".equals(wizard)) {
-		KmeliaDisplayHelper.displayWizardOperations(wizardRow, pubId, kmeliaScc, gef,
-          "ViewAttachments", resources, out, kmaxMode);
-	} else {
-		if (isOwner) {
-			KmeliaDisplayHelper.displayAllOperations(pubId, kmeliaScc, gef, "ViewAttachments",
-            resources, out, kmaxMode);
-		} else {
-			KmeliaDisplayHelper.displayUserOperations(pubId, kmeliaScc, gef, "ViewAttachments",
-            resources, out, kmaxMode);
-		}
-	}
+  if (isOwner) {
+    KmeliaDisplayHelper.displayAllOperations(pubId, kmeliaScc, gef, "ViewAttachments",
+          resources, out, kmaxMode);
+  } else {
+    KmeliaDisplayHelper.displayUserOperations(pubId, kmeliaScc, gef, "ViewAttachments",
+          resources, out, kmaxMode);
+  }
 
 	out.println(frame.printBefore());
-	if ("progress".equals(wizard) || "finish".equals(wizard)) {
-		//  cadre d'aide
-%>
-	    <div class="inlineMessage">
-			<img border="0" src="<%=resources.getIcon("kmelia.info") %>"/>
-			<%=resources.getString("kmelia.HelpAttachment") %>
-		</div>
-		<br clear="all"/>
-<%	}
+
 	out.flush();
   getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachedFiles.jsp?Id="+pubId+"&ComponentId="+componentId+"&dnd=true&Context=attachment&IndexIt="+pIndexIt+"&Url="+url+"&UserId="+kmeliaScc.getUserId()+"&OpenUrl="+openUrl+"&Profile="+kmeliaScc.getProfile()+"&Language="+currentLang+"&XMLFormName="+URLEncoder.encode(xmlForm)).include(request, response);
 	out.flush();
 
-	if ("progress".equals(wizard) || "finish".equals(wizard)) {
-		ButtonPane buttonPane = gef.getButtonPane();
-		buttonPane.addButton(nextButton);
-		buttonPane.addButton(cancelButton);
-		out.println("<br/><center>"+buttonPane.print()+"</center><br/>");
-	}
 	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>

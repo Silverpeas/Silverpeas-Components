@@ -64,7 +64,6 @@
   String profile = (String) request.getAttribute("Profile");
   String action = (String) request.getAttribute("Action");
   KmeliaPublication kmeliaPublication = (KmeliaPublication) request.getAttribute("Publication");
-  String wizard = (String) request.getAttribute("Wizard");
   Integer rang = (Integer) request.getAttribute("Rang");
   Integer nbPublis = (Integer) request.getAttribute("NbPublis");
   String language = (String) request.getAttribute("Language");
@@ -736,14 +735,7 @@
         /** Colonne Pricipale																							    **/
         /*********************************************************************************************************************/
     	 out.println("<div class=\"principalContent\">");
-      	 if ("finish".equals(wizard)) {
-       %>
-        	<div class="inlineMessage">
-        		<img border="0" src="<%=resources.getIcon("kmelia.info") %>"/>
-        		<%=resources.getString("kmelia.HelpPubli") %>
-        	</div>
-       <%
-         }
+
          if (StringUtil.isDefined(screenMessage)) {
            out.println(screenMessage);
          }

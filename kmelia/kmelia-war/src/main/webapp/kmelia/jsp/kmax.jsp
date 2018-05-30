@@ -198,10 +198,6 @@ if (action.equals("KmaxView")) {
     if (profile.equals("admin") || profile.equals("publisher") || profile.equals("writer")) {
 		OperationPane operationPane = window.getOperationPane();
 		operationPane.addOperationOfCreation(publicationAddSrc, kmeliaScc.getString("PubCreer"), "javascript:onClick=publicationAdd()");
-		if (kmeliaScc.isWizardEnabled()) {
-    		// ajout assistant de publication
-    		operationPane.addOperationOfCreation(resources.getIcon("kmelia.wizard"), resources.getString("kmelia.Wizard"), "WizardStart");
-    	}
 		operationPane.addLine();
 		operationPane.addOperation(unbalancedSrc, kmeliaScc.getString("PubDeclassified"), "javascript:onClick=viewUnbalanced()");
 		operationPane.addOperation(topicBasketSrc, kmeliaScc.getString("PubBasket"), "javascript:onClick=viewBasket()");
@@ -249,11 +245,6 @@ if (action.equals("KmaxView")) {
     if (profile.equals("admin") || profile.equals("publisher") || profile.equals("writer")) {
 			OperationPane operationPane = window.getOperationPane();
 			operationPane.addOperationOfCreation(publicationAddSrc, kmeliaScc.getString("PubCreer"), "javascript:onClick=publicationAdd()");
-			if (kmeliaScc.isWizardEnabled())
-        	{
-        		// ajout assistant de publication
-        		operationPane.addOperationOfCreation(resources.getIcon("kmelia.wizard"), resources.getString("kmelia.Wizard"), "WizardStart");
-        	}
 			operationPane.addLine();
 			operationPane.addOperation(unbalancedSrc, kmeliaScc.getString("PubDeclassified"), "javascript:onClick=viewUnbalanced()");
 			//Basket

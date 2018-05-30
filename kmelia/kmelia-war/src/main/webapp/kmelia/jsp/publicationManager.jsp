@@ -85,7 +85,6 @@
     String profile = (String) request.getAttribute("Profile");
     String action = (String) request.getAttribute("Action");
     String id = (String) request.getAttribute("PubId");
-    String wizard = (String) request.getAttribute("Wizard");
     String currentLang = (String) request.getAttribute("Language");
     List<NodeDetail> path = (List<NodeDetail>) request.getAttribute("Path");
     boolean draftOutTaxonomyOK = (Boolean) request.getAttribute("TaxonomyOK");
@@ -548,16 +547,8 @@
         }
 
         out.println(frame.printBefore());
-        if ("finish".equals(wizard)) {
-          // cadre d'aide
 %>
-			<div class="inlineMessage">
-				<img border="0" src="<%=resources.getIcon("kmelia.info") %>"/>
-				<%=resources.getString("kmelia.HelpView") %>
-			</div>
-			<br clear="all"/>
-<%        }
-  %>
+
   <div id="header">
   <form name="pubForm" action="#" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
   	<input type="hidden" name="Action"/>

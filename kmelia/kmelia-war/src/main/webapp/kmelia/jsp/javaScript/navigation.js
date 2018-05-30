@@ -337,15 +337,6 @@ function initOperations(id, op) {
     addCreationItem(url, icons["operation.addPubli"], label);
     menuBarEmpty = false;
   }
-  if (op.wizard) {
-    var label = getString('kmelia.Wizard');
-    var url = "WizardStart";
-    menuItem = new YAHOO.widget.MenuItem(label, {url: url});
-    oMenu.addItem(menuItem, groupIndex);
-    groupEmpty = false;
-    addCreationItem(url, icons["operation.wizard"], label);
-    menuBarEmpty = false;
-  }
   if (op.importFile) {
     var label = getString('kmelia.ImportFile');
     var url = "javascript:onclick=importFile()";
