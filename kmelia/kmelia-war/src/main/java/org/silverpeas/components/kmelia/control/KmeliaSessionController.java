@@ -211,10 +211,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   // pagination de la liste des publications
   private int indexOfFirstPubToDisplay = 0;
   private int nbPublicationsPerPage = DEFAULT_NBPUBLIS_PER_PAGE;
-  // Assistant de publication
-  private String wizard = "none";
-  private String wizardRow = "0";
-  private String wizardLast = "0";
   // Specific for Kmax
   private List<Integer> timeAxis = null;
   private List<String> currentCombination = null;
@@ -440,10 +436,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   public boolean isPublicationAlwaysVisibleEnabled() {
     return StringUtil.getBooleanValue(getComponentParameterValue("publicationAlwaysVisible"));
-  }
-
-  public boolean isWizardEnabled() {
-    return StringUtil.getBooleanValue(getComponentParameterValue("wizardEnabled"));
   }
 
   public boolean displayNbPublis() {
@@ -2048,30 +2040,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       models.addAll(getKmeliaService().getModelUsed(getComponentId(), objectId));
     }
     return models;
-  }
-
-  public String getWizard() {
-    return wizard;
-  }
-
-  public void setWizard(String wizard) {
-    this.wizard = wizard;
-  }
-
-  public String getWizardRow() {
-    return wizardRow;
-  }
-
-  public void setWizardRow(String wizardRow) {
-    this.wizardRow = wizardRow;
-  }
-
-  public String getWizardLast() {
-    return wizardLast;
-  }
-
-  public void setWizardLast(String wizardLast) {
-    this.wizardLast = wizardLast;
   }
 
   /**

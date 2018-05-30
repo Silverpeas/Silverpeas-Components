@@ -37,7 +37,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ include file="checkKmelia.jsp" %>
 
 <%
-String 				wizard				= (String) request.getAttribute("Wizard");
 PublicationDetail 	publication 		= (PublicationDetail) request.getAttribute("Publication");
 Collection<NodePK>	pathList 			= (Collection<NodePK>) request.getAttribute("PathList");
 String 				linkedPathString 	= (String) request.getAttribute("LinkedPathString");
@@ -171,17 +170,7 @@ function getObjects(selected) {
     KmeliaDisplayHelper.displayAllOperations(id, kmeliaScc, gef, "ViewPath", resources, out);
 
   out.println(frame.printBefore());
-    if ("finish".equals(wizard)) {
-      //  cadre d'aide
-  %>
-    		<div class="inlineMessage">
-				<img border="0" src="<%=resources.getIcon("kmelia.info") %>"/>
-				<%=resources.getString("kmelia.HelpPubPath") %>
-			</div>
-			<br clear="all"/>
-    <%
-    	}
-        
+
         Board board	= gef.getBoard();
         
         out.println(board.printBefore());

@@ -31,7 +31,6 @@
 <%
 PublicationDetail 	publication 		= (PublicationDetail) request.getAttribute("Publication");
 String 				linkedPathString 	= (String) request.getAttribute("LinkedPathString");
-String 				wizard 				= (String) request.getAttribute("Wizard");
 String				currentLang 		= (String) request.getAttribute("Language");
 
 String pubName = publication.getName(currentLang);
@@ -81,15 +80,6 @@ function closeWindows() {
 	}
 	  
 	out.println(frame.printBefore());
-	if ("finish".equals(wizard)) {
-	%>
-		<div class="inlineMessage">
-			<img border="0" src="<%=resources.getIcon("kmelia.info") %>"/>
-			<%=resources.getString("kmelia.HelpReadingControl") %>
-		</div>
-		<br clear="all"/>
-	<%
-	}
 	
 	String url = kmeliaScc.getComponentUrl()+"ReadingControl";
 	String objectType = "Publication";

@@ -264,24 +264,6 @@
           </help>
         </parameter>
         <parameter>
-          <name>wizardEnabled</name>
-          <label>
-            <message lang="fr">Assistant de création</message>
-            <message lang="en">Creation wizard</message>
-            <message lang="de">Assistent für die Erstellung einer Veröffentlichung</message>
-          </label>
-          <order>26</order>
-          <mandatory>true</mandatory>
-          <value>no</value>
-          <type>checkbox</type>
-          <updatable>always</updatable>
-          <help>
-            <message lang="fr">Dédié aux utilisateurs débutants, cet assistant permet de créer une publication pas à pas.</message>
-            <message lang="en">For beginners only. This wizard allows the user to create a publication step by step.</message>
-            <message lang="de">Nur für Anfänger. Dieser Assistent ermöglicht es dem Benutzer, eine Veröffentlichung Schritt für Schritt zu erstellen.</message>
-          </help>
-        </parameter>
-        <parameter>
           <name>draft</name>
           <label>
             <message lang="fr">Mode brouillon</message>
