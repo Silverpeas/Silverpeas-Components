@@ -126,14 +126,16 @@ if (action == null) {
     id = rootId;
  }
 
+ String suggestLabel = resources.getString("Suggerer");
 
 %>
 
 <!-- listSite_reader -->
 
-<HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.bookmark">
 <HEAD>
 <view:looknfeel/>
+<view:includePlugin name="toggle"/>
 <TITLE><%=resources.getString("GML.popupTitle")%></TITLE>
 <%
 	//Traitement = View, Search, Add, Update, Delete, Classify, Declassify
@@ -227,36 +229,22 @@ function openSuggestionConfirmation() { //v2.0
 	  else
 		out.println("<BODY onLoad=\"publicationGoToUniqueSite();return;\">");
 
-
-     SilverTrace.info("webSites", "JSPlisteSite_reader", "root.MSG_GEN_PARAM_VALUE", "action = "+action);
-
-      /* SEARCH */
-      if (action.equals("Search")) {
-
-		SilverTrace.info("webSites", "JSPlisteSite_reader", "root.MSG_GEN_PARAM_VALUE", "Search");
-
 		Collection pathC = webSitesCurrentFolder.getPath();
 		pathString = navigPath(pathC, false, 3);
 		linkedPathString = navigPath(pathC, true, 3);
 		Collection subThemes = webSitesCurrentFolder.getNodeDetail().getChildrenDetails();
 
 		Collection nbToolByFolder = webSitesCurrentFolder.getNbPubByTopic();
+%>
+<view:operationPane>
+  <view:operation action="Suggest" altText="<%=suggestLabel%>"/>
+</view:operationPane>
+<view:browseBar path="<%=linkedPathString%>"/>
+<view:window>
+    <view:frame>
+      <view:componentInstanceIntro componentId="<%=componentId%>" language="<%=resources.getLanguage()%>"/>
 
-		Window window = gef.getWindow();
-		String bodyPart="";
-
-		BrowseBar browseBar = window.getBrowseBar();
-		browseBar.setDomainName(spaceLabel);
-		browseBar.setComponentName(componentLabel, "Main");
-		browseBar.setPath(linkedPathString);
-
-		//Les op�rations
-		OperationPane operationPane = window.getOperationPane();
-		operationPane.addOperation(suggerer, resources.getString("Suggerer") , "Suggest");
-
-		//Le cadre
-		Frame frame = gef.getFrame();
-
+<%
 		// Cr�ation de la liste de navigation
 		NavigationList navList = gef.getNavigationList();
         Iterator i = subThemes.iterator();
@@ -290,8 +278,7 @@ function openSuggestionConfirmation() { //v2.0
 
 	if (subThemes.size() > 0)
 	{
-	    //R�cup�ration du tableau dans le haut du cadre
-	    frame.addTop(navList.print());
+	    out.print(navList.print());
 	}
 
     //Liste des sites du th�me courant
@@ -344,20 +331,22 @@ function openSuggestionConfirmation() { //v2.0
 	}
 
     //R�cup�ration de la liste des sites dans le cadre
-    frame.addBottom(liste);
-
-    //On crache le HTML ;o)
-    window.addBody(frame.print());
-        out.println(window.print());
-    }
+    out.print(liste);
 %>
 
+    </view:frame>
+  </view:window>
 
 <FORM NAME="topicDetailForm" action="listSite_reader.jsp" METHOD=POST >
   <input type="hidden" name="Action">
   <input type="hidden" name="Id" value="<%=id%>">
   <input type="hidden" name="SitePage">
 </FORM>
+
+<script type="text/javascript">
+  /* declare the module myapp and its dependencies (here in the silverpeas module) */
+  var myapp = angular.module('silverpeas.bookmark', ['silverpeas.services', 'silverpeas.directives']);
+</script>
 
 </BODY>
 </HTML>

@@ -42,11 +42,12 @@
 <c:set var="browseContext" value="${requestScope.browseContext}" />
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.whitePages">
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel withCheckFormScript="true"/>
 <view:includePlugin name="messageme"/>
+<view:includePlugin name="toggle"/>
 <view:script src="/util/javaScript/silverpeas-pdc-widgets.js" />
 <view:script src="/util/javaScript/silverpeas-pdc.js" />
 <script type="text/javascript">
@@ -160,7 +161,6 @@ function dynamicSearchLaunch(){
 <%
 List<Card> cards = (List<Card>)request.getAttribute("cards");
 
-browseBar.setDomainName(spaceLabel);
 browseBar.setPath(resource.getString("whitePages.usersList"));
 
 if(isAdmin){
@@ -181,6 +181,10 @@ if(main){
 
 out.println(window.printBefore());
 out.println(frame.printBefore());
+
+%>
+<view:componentInstanceIntro componentId="<%=componentId%>" language="<%=resource.getLanguage()%>"/>
+<%
 
 SortedSet<SearchField> searchFields = (SortedSet<SearchField>) request.getAttribute("searchFields");
 boolean searchDone = StringUtil.getBooleanValue((String)request.getAttribute("searchDone"));
@@ -302,5 +306,11 @@ if(cards != null && !cards.isEmpty()){
   out.println(window.printAfter());
 %>
 	<view:progressMessage/>
+
+<script type="text/javascript">
+  /* declare the module myapp and its dependencies (here in the silverpeas module) */
+  var myapp = angular.module('silverpeas.whitePages', ['silverpeas.services', 'silverpeas.directives']);
+</script>
+
 </body>
 </html>

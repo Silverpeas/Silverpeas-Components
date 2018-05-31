@@ -55,10 +55,11 @@ if (action == null) {
 }
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.kmax">
 <head>
 <title></title>
 <view:looknfeel/>
+<view:includePlugin name="toggle"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/i18n.js"></script>
 <script type="text/javascript" src="javaScript/publications.js"></script>
 <script type="text/javascript">
@@ -224,7 +225,9 @@ if (action.equals("KmaxView")) {
     }
 
     out.println(window.printBefore());
-    
+%>
+<view:componentInstanceIntro componentId="<%=componentId%>" language="<%=translation%>"/>
+<%
     if (profile.equals("admin")) {
     	out.println(tabbedPane.print());
   	}
@@ -339,5 +342,9 @@ if (action.equals("KmaxView")) {
 	<input type="hidden" name="PubId"/>
 </form>
 
+<script type="text/javascript">
+  /* declare the module myapp and its dependencies (here in the silverpeas module) */
+  var myapp = angular.module('silverpeas.kmax', ['silverpeas.services', 'silverpeas.directives']);
+</script>
 </body>
 </html>

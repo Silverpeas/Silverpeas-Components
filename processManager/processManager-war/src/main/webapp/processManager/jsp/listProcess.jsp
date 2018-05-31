@@ -48,7 +48,6 @@
 <fmt:message var="createProcessLabel" key="processManager.createProcess"/>
 <fmt:message var="userSettingsLabel" key="processManager.userSettings"/>
 <fmt:message var="csvExportLabel" key="processManager.csvExport"/>
-<fmt:message var="welcomeLabel" key="processManager.operation.welcome"/>
 <fmt:message var="refreshLabel" key="processManager.refresh"/>
 <fmt:message var="yourRoleLabel" key="processManager.yourRole"/>
 <fmt:message var="labelFilter" key="processManager.filter"/>
@@ -98,7 +97,6 @@
 <c:set var="isCSVExportEnabled" value="${silfn:booleanValue(requestScope.isCSVExportEnabled)}"/>
 <c:set var="currentRole" value="${requestScope.currentRole}"/>
 <c:set var="isCurrentRoleSupervisor" value="${'supervisor' eq fn:toLowerCase(currentRole)}"/>
-<c:set var="welcomeMessage" value="${requestScope.WelcomeMessage}"/>
 <c:set var="collapse" value="${silfn:booleanValue(empty requestScope.collapse ? 'true' : requestScope.collapse)}"/>
 
 <fmt:message key="processManager.boxDown" var="iconBoxDown" bundle="${icons}"/>
@@ -112,11 +110,12 @@
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.processManager">
 <head>
   <title><%=resource.getString("GML.popupTitle")%>
   </title>
   <view:looknfeel/>
+  <view:includePlugin name="toggle"/>
   <% form.displayScripts(out, context); %>
   <script type="text/javascript">
     var filterDisplayed = ${collapse};
@@ -193,12 +192,6 @@
     <view:operationSeparator/>
     <view:operation action="javaScript:exportCSV();" altText="${csvExportLabel}" icon="${opIcon}"/>
   </c:if>
-  <c:if test="${isCurrentRoleSupervisor}">
-    <fmt:message key="processManager.welcome" var="opIcon" bundle="${icons}"/>
-    <c:url var="opIcon" value="${opIcon}"/>
-    <view:operationSeparator/>
-    <view:operation action="ToWysiwygWelcome" altText="${welcomeLabel}" icon="${opIcon}"/>
-  </c:if>
 </view:operationPane>
 <view:window>
   <view:frame>
@@ -214,9 +207,7 @@
         </form>
       </div>
     </c:if>
-    <c:if test="${not empty welcomeMessage}">
-      <span class="inlineMessage">${welcomeMessage}</span>
-    </c:if>
+    <view:componentInstanceIntro componentId="${componentId}" language="${userLanguage}"/>
     <view:areaOfOperationOfCreation/>
     <form id="filter" name="${context.formName}" method="post" action="filterProcess" enctype="multipart/form-data">
       <div class="bgDegradeGris">
@@ -355,5 +346,9 @@
   ${confirmDeleteMessage}
 </div>
 <view:progressMessage/>
+<script type="text/javascript">
+  /* declare the module myapp and its dependencies (here in the silverpeas module) */
+  var myapp = angular.module('silverpeas.processManager', ['silverpeas.services', 'silverpeas.directives']);
+</script>
 </body>
 </html>

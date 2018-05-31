@@ -134,7 +134,7 @@
       <view:attachmentPane componentId="${componentId}" resourceId="${suggestion.id}" readOnly="${suggestion.validation.validated}"/>
     </div>
     <div class="principalContent">
-      <h2 class="suggestionBox-title"><c:out value='${suggestion.title}'/></h2>
+      <h2 class="suggestion-title"><c:out value='${suggestion.title}'/></h2>
       <c:if test="${not empty suggestion.content}">
         <div id="richContent">
             ${suggestion.content}

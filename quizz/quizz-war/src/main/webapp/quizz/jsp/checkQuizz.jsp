@@ -72,7 +72,7 @@
 <%@ page import="java.util.HashMap" %>
 <%@ page import="java.io.IOException" %>
 
-<%@ page import="org.apache.commons.fileupload.FileItem"%>1
+<%@ page import="org.apache.commons.fileupload.FileItem"%>
 <%@ page import="org.silverpeas.components.quizz.control.QuizzSessionController" %>
 <%@ page import="org.silverpeas.core.util.DateUtil" %>
 <%@ page import="org.silverpeas.core.util.LocalizationBundle" %>

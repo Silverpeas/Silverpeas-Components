@@ -49,10 +49,11 @@
   }
 %>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.questionReply">
 <head>
   <title><fmt:message key="GML.popupTitle"/></title>
   <view:looknfeel />
+  <view:includePlugin name="toggle"/>
 <script type="text/javascript">
   <!--
 
@@ -704,6 +705,7 @@ function filterAll() {
   out.println(window.printBefore());
 %>
 <view:frame>
+<view:componentInstanceIntro componentId="<%=componentId%>" language="<%=language%>"/>
 <view:areaOfOperationOfCreation/>
 
   <div class="container-filter">
@@ -792,5 +794,9 @@ function filterAll() {
 <%
 out.println(window.printAfter());
 %>
+<script type="text/javascript">
+  /* declare the module myapp and its dependencies (here in the silverpeas module) */
+  var myapp = angular.module('silverpeas.questionReply', ['silverpeas.services', 'silverpeas.directives']);
+</script>
 </body>
 </html>
