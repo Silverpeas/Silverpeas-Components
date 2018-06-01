@@ -360,11 +360,6 @@ function initOperations(id, op) {
     oMenu.addItem(menuItem, groupIndex);
     groupEmpty = false;
   }
-  if (op.updateChain) {
-    menuItem = new YAHOO.widget.MenuItem(getString('kmelia.updateByChain'), {url: "javascript:onclick=updateChain()"});
-    oMenu.addItem(menuItem, groupIndex);
-    groupEmpty = false;
-  }
   if (op.copyPublications) {
     menuItem = new YAHOO.widget.MenuItem(getString('kmelia.operation.copyPublications'), {url: "javascript:onclick=copyPublications()"});
     oMenu.addItem(menuItem, groupIndex);
@@ -834,10 +829,6 @@ function dirGoTo(id) {
   document.topicDetailForm.action = "GoToDirectory";
   document.topicDetailForm.Id.value = id;
   document.topicDetailForm.submit();
-}
-
-function updateChain() {
-  document.updateChain.submit();
 }
 
 function publicationGoToFromMain(id) {

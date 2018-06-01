@@ -1522,24 +1522,6 @@
 		        <message lang="de">Diese Funktion ermöglicht es dem Benutzer, alle sichtbaren Veröffentlichungen in der Komponente zu exportieren.</message>
 		      </help>
 		    </parameter>
-		    <parameter>
-		      <name>updateChain</name>
-		      <label>
-		        <message lang="fr">Modifications en chaine</message>
-		        <message lang="en">Modifications in a row</message>
-		        <message lang="de">Kettenänderungen</message>
-		      </label>
-		      <order>32</order>
-		      <mandatory>true</mandatory>
-		      <value>no</value>
-		      <type>checkbox</type>
-		      <updatable>never</updatable>
-		      <help>
-		        <message lang="fr">Possibilité d'effectuer des modifications enchainées sur certains dossiers (possédant un descripteur).</message>
-		        <message lang="en">Provides the possibility of making successive modifications on certains folders (having a descriptor).</message>
-		        <message lang="de">Bietet die Möglichkeit, aufeinanderfolgende Änderungen an einigen Themen (mit einem Deskriptor)auszuführen.</message>
-		      </help>
-		    </parameter>
 		</parameters>
 	</groupOfParameters>
   </groupsOfParameters>

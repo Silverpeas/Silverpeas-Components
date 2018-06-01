@@ -226,8 +226,6 @@ var searchFolderId = "<%=id%>";
 	<input type="hidden" name="Action" value="initial"/>
 </form>
 
-<form name="updateChain" action="UpdateChainInit">
-</form>
 <script type="text/javascript">
 function getComponentPermalink() {
 	return "<%=URLUtil.getSimpleURL(URLUtil.URL_COMPONENT, componentId, false)%>";

@@ -216,8 +216,6 @@ function getToValidateFolderId() {
 	<input type="hidden" name="Action" value="initial"/>
 </form>
 
-<form name="updateChain" action="UpdateChainInit">
-</form>
 <script type="text/javascript">
 var icons = new Object();
 icons["permalink"] = "<%=resources.getIcon("kmelia.link")%>";

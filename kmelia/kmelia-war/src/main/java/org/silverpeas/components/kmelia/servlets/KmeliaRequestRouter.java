@@ -31,12 +31,8 @@ import org.silverpeas.components.kmelia.control.KmeliaSessionController;
 import org.silverpeas.components.kmelia.model.FileFolder;
 import org.silverpeas.components.kmelia.model.KmeliaPublication;
 import org.silverpeas.components.kmelia.model.TopicDetail;
-import org.silverpeas.components.kmelia.model.updatechain.FieldUpdateChainDescriptor;
-import org.silverpeas.components.kmelia.model.updatechain.Fields;
 import org.silverpeas.components.kmelia.service.KmeliaHelper;
 import org.silverpeas.components.kmelia.servlets.handlers.StatisticRequestHandler;
-import org.silverpeas.components.kmelia.updatechainhelpers.UpdateChainHelper;
-import org.silverpeas.components.kmelia.updatechainhelpers.UpdateChainHelperContext;
 import org.silverpeas.core.ActionType;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.ProfileInst;
@@ -91,9 +87,7 @@ import org.silverpeas.core.web.util.ClientBrowserUtil;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -220,9 +214,6 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         request.setAttribute("CurrentFolderId", topicId);
         request.setAttribute("DisplayNBPublis", kmelia.displayNbPublis());
         request.setAttribute("DisplaySearch", kmelia.isSearchOnTopicsEnabled());
-
-        // rechercher si le theme a un descripteur
-        request.setAttribute("HaveDescriptor", kmelia.isTopicHaveUpdateChainDescriptor());
 
         request.setAttribute("Profile", kmelia.getUserTopicProfile(topicId));
         request.setAttribute("IsGuest", kmelia.getUserDetail().isAccessGuest());
@@ -1398,8 +1389,6 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         destination = getDestination("ViewTopicProfiles", kmelia, request);
       } else if (function.equals("CloseWindow")) {
         destination = rootDestination + "closeWindow.jsp";
-      } else if (function.startsWith("UpdateChain")) {
-        destination = processUpdateChainOperation(rootDestination, function, kmelia, request);
       }
       /**
        * *************************
@@ -1961,172 +1950,6 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
       return true;
     }
     return false;
-  }
-
-  private void updatePubliDuringUpdateChain(String id, HttpServletRequest request,
-      KmeliaSessionController kmelia) {
-    // enregistrement des modifications de la publi
-    String name = request.getParameter("Name");
-    String description = request.getParameter("Description");
-    String keywords = request.getParameter("Keywords");
-    String tree = request.getParameter("Tree");
-    String[] topics = request.getParameterValues("topicChoice");
-
-    // sauvegarde des données
-    Fields fields = kmelia.getFieldUpdateChain();
-    FieldUpdateChainDescriptor field = kmelia.getFieldUpdateChain().getName();
-    field.setName("Name");
-    field.setValue(name);
-    fields.setName(field);
-    field = kmelia.getFieldUpdateChain().getDescription();
-    field.setName("Description");
-    field.setValue(description);
-    fields.setDescription(field);
-    field = kmelia.getFieldUpdateChain().getKeywords();
-    field.setName("Keywords");
-    field.setValue(keywords);
-    fields.setKeywords(field);
-    field = kmelia.getFieldUpdateChain().getTree();
-    if (field != null) {
-      field.setName("Topics");
-      field.setValue(tree);
-      fields.setTree(field);
-    }
-
-    fields.setTopics(topics);
-    kmelia.setFieldUpdateChain(fields);
-    String pubId = "X";
-    if (StringUtil.isDefined(id)) {
-      pubId = id;
-    }
-    PublicationDetail pubDetail =
-        new PublicationDetail(pubId, name, description, null, null, null, null, "0", "", keywords,
-            "", "", "", "");
-    pubDetail.setStatus("Valid");
-    I18NHelper.setI18NInfo(pubDetail, request);
-
-    try {
-      // Execute helper
-      String helperClassName = kmelia.getFieldUpdateChain().getHelper();
-      UpdateChainHelper helper;
-      helper = (UpdateChainHelper) Class.forName(helperClassName).newInstance();
-      UpdateChainHelperContext uchc = new UpdateChainHelperContext(pubDetail, kmelia);
-      uchc.setAllTopics(kmelia.getAllTopics());
-      helper.execute(uchc);
-      pubDetail = uchc.getPubDetail();
-
-      // mettre à jour les emplacements si necessaire
-      String[] calculedTopics = uchc.getTopics();
-      if (calculedTopics != null) {
-        topics = calculedTopics;
-      }
-    } catch (Exception e) {
-      SilverLogger.getLogger(this).error(e.getMessage(), e);
-    }
-    kmelia.updatePublication(pubDetail);
-
-    Alias alias;
-    List<Alias> aliases = new ArrayList<Alias>();
-    for (int i = 0; topics != null && i < topics.length; i++) {
-      String topicId = topics[i];
-      StringTokenizer tokenizer = new StringTokenizer(topicId, ",");
-      String nodeId = tokenizer.nextToken();
-      String instanceId = tokenizer.nextToken();
-
-      alias = new Alias(nodeId, instanceId);
-      alias.setUserId(kmelia.getUserId());
-      aliases.add(alias);
-    }
-    kmelia.setAliases(pubDetail.getPK(), aliases);
-  }
-
-  private String processUpdateChainOperation(String rootDestination, String function,
-      KmeliaSessionController kmelia, HttpRequest request)
-      throws IOException, ClassNotFoundException, ParserConfigurationException {
-    if ("UpdateChainInit".equals(function)) {
-      // récupération du descripteur
-      kmelia.initUpdateChainDescriptor();
-
-      // Modification par chaine de toutes les publications du thème :
-      // positionnement sur la première publi
-      String pubId = kmelia.getFirst();
-      request.setAttribute("PubId", pubId);
-      // initialiser le topic en cours
-      kmelia.initUpdateChainTopicChoice(pubId);
-
-      return getDestination("UpdateChainPublications", kmelia, request);
-    } else if ("UpdateChainPublications".equals(function)) {
-      String id = (String) request.getAttribute("PubId");
-
-      request.setAttribute("Action", "UpdateChain");
-      request.setAttribute("Profile", kmelia.getProfile());
-      request.setAttribute("PubId", id);
-      request.setAttribute("SaveFields", kmelia.getFieldUpdateChain());
-
-      if (StringUtil.isDefined(id)) {
-        request.setAttribute("Rang", kmelia.getRang());
-        request.setAttribute("NbPublis", kmelia.getNbPublis());
-        request.setAttribute("LinkedPathString", kmelia.getSessionPath());
-        request.setAttribute("Topics", kmelia.getUpdateChainTopics());
-
-        // mise à jour de la publication en session pour récupérer les alias
-        KmeliaPublication kmeliaPublication = kmelia.getPublication(id);
-        kmelia.setSessionPublication(kmeliaPublication);
-
-        List<Alias> aliases = kmelia.getAliases();
-        request.setAttribute("Aliases", aliases);
-
-        // url du fichier joint
-        request.setAttribute("FileUrl", kmelia.getSingleAttachmentURLOfCurrentPublication(false));
-        return rootDestination + "updateByChain.jsp";
-      }
-    } else if ("UpdateChainNextUpdate".equals(function)) {
-      String id = request.getParameter("PubId");
-      updatePubliDuringUpdateChain(id, request, kmelia);
-
-      // récupération de la publication suivante
-      String nextPubId = kmelia.getNext();
-      request.setAttribute("PubId", nextPubId);
-
-      return getDestination("UpdateChainPublications", kmelia, request);
-    } else if ("UpdateChainLastUpdate".equals(function)) {
-      String id = request.getParameter("PubId");
-      updatePubliDuringUpdateChain(id, request, kmelia);
-
-      // mise à jour du theme pour le retour
-      request.setAttribute("Id", kmelia.getCurrentFolderId());
-      return getDestination("GoToTopic", kmelia, request);
-    } else if ("UpdateChainSkipUpdate".equals(function)) {
-      // récupération de la publication suivante
-      String pubId = kmelia.getNext();
-      request.setAttribute("PubId", pubId);
-      return getDestination("UpdateChainPublications", kmelia, request);
-    } else if ("UpdateChainEndUpdate".equals(function)) {
-      // mise à jour du theme pour le retour
-      request.setAttribute("Id", kmelia.getCurrentFolderId());
-      return getDestination("GoToTopic", kmelia, request);
-    } else if ("UpdateChainUpdateAll".equals(function)) {
-      // mise à jour du theme pour le retour
-      request.setAttribute("Id", kmelia.getCurrentFolderId());
-
-      // enregistrement des modifications sur toutes les publications restantes
-      // publication courante
-      String id = request.getParameter("PubId");
-      updatePubliDuringUpdateChain(id, request, kmelia);
-
-      // passer à la suivante si elle existe
-      int rang = kmelia.getRang();
-      int nbPublis = kmelia.getSessionPublicationsList().size();
-      while (rang < nbPublis - 1) {
-        String pubId = kmelia.getNext();
-        updatePubliDuringUpdateChain(pubId, request, kmelia);
-        rang = kmelia.getRang();
-      }
-
-      // retour au thème
-      return getDestination("GoToTopic", kmelia, request);
-    }
-    return "";
   }
 
   /**
