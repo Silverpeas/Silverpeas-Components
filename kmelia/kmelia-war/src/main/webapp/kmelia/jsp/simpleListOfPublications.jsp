@@ -49,7 +49,6 @@ String 	profile			= (String) request.getAttribute("Profile");
 String  translation 	= (String) request.getAttribute("Language");
 boolean	isGuest			= (Boolean) request.getAttribute("IsGuest");
 Boolean displaySearch	= (Boolean) request.getAttribute("DisplaySearch");
-boolean updateChain		= (Boolean) request.getAttribute("HaveDescriptor");
 int		currentPageIndex = (Integer) request.getAttribute("PageIndex");
 
 SearchContext searchContext = (SearchContext) request.getAttribute("SearchContext");
@@ -85,11 +84,6 @@ boolean userCanSeeStats = kmeliaScc.isStatisticAllowed();
 <view:script src="javaScript/searchInTopic.js"/>
 <view:script src="javaScript/publications.js"/>
 <script type="text/javascript">
-<% if (!profile.equals("user")) { %>
-function updateChain() {
-    document.updateChain.submit();
-}
-<% } %>
 
 window.i18n.properties({
   name: 'kmeliaBundle',
@@ -198,9 +192,6 @@ $(document).ready(function() {
 	        if (kmeliaScc.isImportFilesAllowed()) {
 	        	operationPane.addOperationOfCreation(resources.getIcon("kmelia.operation.importFiles"), kmeliaScc.getString("kmelia.ImportFiles"), "javascript:onClick=importFiles()");
 	        }
-	        if (updateChain) {
-	        	operationPane.addOperation(resources.getIcon("kmelia.updateByChain"), kmeliaScc.getString("kmelia.updateByChain"), "javascript:onClick=updateChain()");
-	        }
 	        operationPane.addOperation("useless", resources.getString("kmelia.operation.copyPublications"), "javascript:onclick=copyPublications()");
 	        operationPane.addOperation("useless", resources.getString("kmelia.operation.cutPublications"), "javascript:onclick=cutPublications()");
 	        operationPane.addOperation(resources.getIcon("kmelia.paste"), resources.getString("GML.paste"), "javascript:onClick=pasteFromOperations()");
@@ -274,8 +265,6 @@ $(document).ready(function() {
 	<input type="hidden" name="Action" value="initial"/>
 </form>
 
-<form name="updateChain" action="UpdateChainInit">
-</form>
 </div>
 
 <%@ include file="../../sharing/jsp/createTicketPopin.jsp" %>

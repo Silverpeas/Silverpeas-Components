@@ -136,8 +136,6 @@ public class JSONServlet extends HttpServlet {
         operations.put("paste", addPublicationAllowed);
 
         operations.put("sortPublications", isAdmin && publicationsInTopic);
-        operations.put("updateChain", isAdmin && publicationsInTopic && kmeliaSC.
-            isTopicHaveUpdateChainDescriptor(id));
 
         operations.put("deletePublications", operationsOnSelectionAllowed);
 

@@ -23,8 +23,6 @@
  */
 package org.silverpeas.components.kmelia.control;
 
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.xml.DomDriver;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.owasp.encoder.Encode;
@@ -38,10 +36,6 @@ import org.silverpeas.components.kmelia.SearchContext;
 import org.silverpeas.components.kmelia.export.ExportFileNameProducer;
 import org.silverpeas.components.kmelia.export.KmeliaPublicationExporter;
 import org.silverpeas.components.kmelia.model.*;
-import org.silverpeas.components.kmelia.model.updatechain.FieldParameter;
-import org.silverpeas.components.kmelia.model.updatechain.FieldUpdateChainDescriptor;
-import org.silverpeas.components.kmelia.model.updatechain.Fields;
-import org.silverpeas.components.kmelia.model.updatechain.UpdateChainDescriptor;
 import org.silverpeas.components.kmelia.search.KmeliaSearchServiceProvider;
 import org.silverpeas.components.kmelia.service.KmeliaHelper;
 import org.silverpeas.components.kmelia.service.KmeliaService;
@@ -140,11 +134,9 @@ import org.silverpeas.core.web.selection.SelectionUsersGroups;
 import org.silverpeas.core.web.subscription.SubscriptionContext;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 
-import javax.xml.parsers.ParserConfigurationException;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.text.ParseException;
@@ -217,8 +209,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   public boolean isKmaxMode = false;
   // i18n
   private String currentLanguage = null;
-  // sauvegarde pour mise à jour à la chaine
-  Fields saveFields = new Fields();
   boolean isDragAndDropEnableByUser = false;
   boolean componentManageable = false;
   private List<PublicationPK> selectedPublicationPKs = new ArrayList<>();
@@ -2866,121 +2856,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     return null;
   }
 
-  public boolean useUpdateChain() {
-    return "yes".equals(getComponentParameterValue("updateChain"));
-  }
-
-  public void setFieldUpdateChain(Fields fields) {
-    this.saveFields = fields;
-  }
-
-  public Fields getFieldUpdateChain() {
-    return saveFields;
-  }
-
-  public void initUpdateChainTopicChoice(String pubId) {
-    Collection<NodePK> path;
-      String[] topics = null;
-      if (saveFields.getTree() != null) {
-        // initialisation du premier thème coché
-        FieldParameter param = saveFields.getTree().getParams().get(0);
-        if (!param.getName().equals("none")) {
-          String id = param.getValue();
-          topics = new String[1];
-          NodePK node = getNodeHeader(id).getNodePK();
-          topics[0] = id + "," + node.getComponentName();
-        }
-      } else {
-        path = getPublicationFathers(pubId);
-        topics = new String[path.size()];
-        Iterator<NodePK> it = path.iterator();
-        int i = 0;
-        while (it.hasNext()) {
-          NodePK node = it.next();
-          topics[i] = node.getId() + "," + node.getComponentName();
-          i++;
-        }
-
-      }
-      getFieldUpdateChain().setTopics(topics);
-  }
-
-  public boolean isTopicHaveUpdateChainDescriptor() {
-    return isTopicHaveUpdateChainDescriptor(null);
-  }
-
-  public boolean isTopicHaveUpdateChainDescriptor(String id) {
-    String currentId = id;
-    boolean haveDescriptor = false;
-    // control if file exists
-    if (useUpdateChain()) {
-      if (!StringUtil.isDefined(currentId)) {
-        currentId = getCurrentFolderId();
-      }
-      File descriptorFile = new File(getUpdateChainDescriptorFilename(currentId));
-      if (descriptorFile.exists()) {
-        haveDescriptor = true;
-      }
-    }
-    return haveDescriptor;
-  }
-
-  private String getUpdateChainDescriptorFilename(String topicId) {
-    return getSettings().getString("updateChainRepository") + getComponentId() + "_" + topicId +
-        ".xml";
-  }
-
   public synchronized List<NodeDetail> getSubTopics(String rootId) {
     return getNodeService().getSubTree(getNodePK(rootId));
-  }
-
-  public List<NodeDetail> getUpdateChainTopics() {
-    List<NodeDetail> topics = new ArrayList<>();
-    if (getFieldUpdateChain().getTree() != null) {
-      FieldParameter param = getFieldUpdateChain().getTree().getParams().get(0);
-      if (param.getName().equals("rootId")) {
-        topics = getSubTopics(param.getValue());
-      }
-      if (param.getName().equals("targetId")) {
-        topics.add(getNodeHeader(param.getValue()));
-      }
-    } else {
-      topics = getAllTopics();
-    }
-    return topics;
-  }
-
-  public void initUpdateChainDescriptor()
-      throws IOException, ClassNotFoundException, ParserConfigurationException {
-    XStream xstream = new XStream(new DomDriver());
-    xstream.alias("fieldDescriptor", FieldUpdateChainDescriptor.class);
-    xstream.alias("updateChain", UpdateChainDescriptor.class);
-    xstream.alias("parameter", FieldParameter.class);
-
-    File descriptorFile = new File(getUpdateChainDescriptorFilename(getCurrentFolderId()));
-    UpdateChainDescriptor updateChainDescriptor =
-        (UpdateChainDescriptor) xstream.fromXML(new FileReader(descriptorFile));
-
-    String title = updateChainDescriptor.getTitle();
-    String libelle = updateChainDescriptor.getLibelle();
-    saveFields.setTitle(title);
-    saveFields.setLibelle(libelle);
-
-    List<FieldUpdateChainDescriptor> fields = updateChainDescriptor.getFields();
-    for (FieldUpdateChainDescriptor field : fields) {
-      saveFields.setHelper(updateChainDescriptor.getHelper());
-
-      if ("Name".equals(field.getName())) {
-        saveFields.setName(field);
-      } else if ("Description".equals(field.getName())) {
-        saveFields.setDescription(field);
-      } else if ("Keywords".equals(field.getName())) {
-        saveFields.setKeywords(field);
-      } else if ("Topics".equals(field.getName())) {
-        saveFields.setTree(field);
-      }
-    }
-
   }
 
   public String getXmlFormForFiles() {
