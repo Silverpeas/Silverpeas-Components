@@ -40,7 +40,7 @@ public class ToolboxIndexer implements ComponentIndexation {
   private KmeliaService kmeliaService;
 
   @Override
-  public void index(SilverpeasComponentInstance componentInst) throws Exception {
+  public void index(SilverpeasComponentInstance componentInst) {
     kmeliaService.indexKmelia(componentInst.getId());
   }
 }

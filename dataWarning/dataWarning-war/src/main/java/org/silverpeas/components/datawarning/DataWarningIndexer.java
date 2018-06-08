@@ -35,8 +35,15 @@ import javax.inject.Singleton;
 @Named("dataWarning" + ComponentIndexation.QUALIFIER_SUFFIX)
 public class DataWarningIndexer implements ComponentIndexation {
 
-    @Override
-    public void index(SilverpeasComponentInstance componentInst) throws Exception {
-        // nothing to index
-    }
+  @Override
+  public void index(SilverpeasComponentInstance componentInst) {
+    // nothing to index
+  }
+
+
+  @Override
+  public void index(final SilverpeasComponentInstance componentInst, final boolean deleteAllBefore) {
+    // PLEASE REMOVE THIS METHOD OVERRIDING IF INDEX METHOD IS IMPLEMENTED
+    index(componentInst);
+  }
 }

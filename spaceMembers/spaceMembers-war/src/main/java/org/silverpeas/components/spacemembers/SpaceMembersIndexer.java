@@ -34,7 +34,13 @@ import javax.inject.Singleton;
 public class SpaceMembersIndexer implements ComponentIndexation {
 
   @Override
-  public void index(SilverpeasComponentInstance componentInst) throws Exception {
+  public void index(SilverpeasComponentInstance componentInst) {
     // nothing to index for this application
+  }
+
+  @Override
+  public void index(final SilverpeasComponentInstance componentInst, final boolean deleteAllBefore) {
+    // PLEASE REMOVE THIS METHOD OVERRIDING IF INDEX METHOD IS IMPLEMENTED
+    index(componentInst);
   }
 }

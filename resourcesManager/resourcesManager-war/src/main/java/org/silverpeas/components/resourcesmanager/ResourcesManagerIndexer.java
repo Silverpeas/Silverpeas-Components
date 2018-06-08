@@ -39,7 +39,7 @@ public class ResourcesManagerIndexer implements ComponentIndexation {
   private ResourcesManager resourcesManager;
 
   @Override
-  public void index(SilverpeasComponentInstance componentInst) throws Exception {
+  public void index(SilverpeasComponentInstance componentInst) {
     resourcesManager.indexResourceManager(componentInst.getId());
   }
 }

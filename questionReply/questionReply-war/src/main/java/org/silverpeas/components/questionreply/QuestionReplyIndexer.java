@@ -27,6 +27,7 @@ import org.silverpeas.components.questionreply.index.QuestionIndexer;
 import org.silverpeas.components.questionreply.model.Question;
 import org.silverpeas.components.questionreply.model.Reply;
 import org.silverpeas.components.questionreply.service.QuestionManager;
+import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.web.index.components.ComponentIndexation;
 
@@ -43,11 +44,12 @@ import java.util.Collection;
 public class QuestionReplyIndexer implements ComponentIndexation {
 
   private final QuestionIndexer questionIndexer = new QuestionIndexer();
+
   @Inject
   private QuestionManager questionManager;
 
   @Override
-  public void index(SilverpeasComponentInstance componentInst) throws Exception {
+  public void index(SilverpeasComponentInstance componentInst) throws SilverpeasException {
     Collection<Question> questions = questionManager.getAllQuestions(componentInst.getId());
     for (Question question : questions) {
       Collection<Reply> replies = questionManager

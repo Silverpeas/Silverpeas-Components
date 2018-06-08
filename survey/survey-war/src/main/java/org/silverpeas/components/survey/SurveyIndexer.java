@@ -70,7 +70,7 @@ public class SurveyIndexer implements ComponentIndexation {
 
   /**
    * Implementation of component indexer interface
-   * @param componentInst
+   * @param componentInst the representation of an instance of a component
    */
   @Override
   public void index(SilverpeasComponentInstance componentInst) {

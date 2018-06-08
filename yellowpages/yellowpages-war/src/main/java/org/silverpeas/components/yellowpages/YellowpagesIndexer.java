@@ -39,7 +39,7 @@ public class YellowpagesIndexer implements ComponentIndexation {
   private YellowpagesService yellowpagesService;
 
   @Override
-  public void index(SilverpeasComponentInstance componentInst) throws Exception {
+  public void index(SilverpeasComponentInstance componentInst) {
     yellowpagesService.index(componentInst.getId());
   }
 }
