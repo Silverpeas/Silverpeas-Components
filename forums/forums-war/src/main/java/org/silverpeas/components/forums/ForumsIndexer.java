@@ -40,14 +40,14 @@ import static org.silverpeas.components.forums.service.ForumsServiceProvider.get
 @Named("forums" + ComponentIndexation.QUALIFIER_SUFFIX)
 public class ForumsIndexer implements ComponentIndexation {
 
-  private static String ROOT_FORUM_ID = "0";
+  private static final String ROOT_FORUM_ID = "0";
 
   @Override
-  public void index(SilverpeasComponentInstance componentInst) throws Exception {
+  public void index(SilverpeasComponentInstance componentInst) {
     indexForum(componentInst.getId(), ROOT_FORUM_ID);
   }
 
-  private void indexForum(String componentId, String forumId) throws Exception {
+  private void indexForum(String componentId, String forumId) {
     ForumPK pk = new ForumPK(componentId, forumId);
     List<String> sonIds = getForumsService().getForumSonsIds(pk);
     for (String aSonId : sonIds) {

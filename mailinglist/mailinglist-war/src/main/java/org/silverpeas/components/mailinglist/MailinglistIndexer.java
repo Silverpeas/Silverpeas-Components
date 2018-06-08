@@ -47,7 +47,7 @@ public class MailinglistIndexer implements ComponentIndexation {
   private MessageService messageService;
 
   @Override
-  public void index(SilverpeasComponentInstance componentInst) throws Exception {
+  public void index(SilverpeasComponentInstance componentInst) {
     List<MailingList> mailingLists = mailingListService.listAllMailingLists();
     for (MailingList mailingList : mailingLists) {
       List<Message> messages = messageService

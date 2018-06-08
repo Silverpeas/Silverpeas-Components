@@ -36,7 +36,7 @@ import javax.inject.Singleton;
 public class FormsOnlineIndexer implements ComponentIndexation {
 
   @Override
-  public void index(SilverpeasComponentInstance componentInst) throws Exception {
+  public void index(SilverpeasComponentInstance componentInst) {
     FormsOnlineService.get().index(componentInst.getId());
   }
 }

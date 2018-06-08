@@ -39,7 +39,7 @@ public class BlogIndexer implements ComponentIndexation {
   private BlogService service;
 
   @Override
-  public void index(SilverpeasComponentInstance componentInst) throws Exception {
+  public void index(SilverpeasComponentInstance componentInst) {
     service.indexBlog(componentInst.getId());
   }
 }

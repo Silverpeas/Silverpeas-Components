@@ -39,8 +39,7 @@ public class ClassifiedsIndexer implements ComponentIndexation {
   private ClassifiedService service;
 
   @Override
-  public void index(SilverpeasComponentInstance componentInst)
-      throws Exception {
+  public void index(SilverpeasComponentInstance componentInst) {
     service.indexClassifieds(componentInst.getId());
   }
 }

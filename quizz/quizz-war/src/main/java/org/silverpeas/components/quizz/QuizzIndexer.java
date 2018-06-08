@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.quizz;
 
+import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerHeader;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerPK;
@@ -42,7 +43,7 @@ public class QuizzIndexer implements ComponentIndexation {
   private QuestionContainerService service;
 
   @Override
-  public void index(SilverpeasComponentInstance componentInst) throws QuizzException {
+  public void index(SilverpeasComponentInstance componentInst) throws SilverpeasException {
     try {
       QuestionContainerPK pk =
           new QuestionContainerPK(null, componentInst.getSpaceId(), componentInst.getId());
@@ -54,8 +55,7 @@ public class QuizzIndexer implements ComponentIndexation {
         service.updateQuestionContainerHeader(header);
       }
     } catch (Exception e) {
-      throw new QuizzException("QuizzIndexer.index", QuizzException.WARNING,
-          "Quizz.EX_CANNOT_UPDATE_QUIZZ_HEADER", e);
+      throw new SilverpeasException(e);
     }
   }
 }
