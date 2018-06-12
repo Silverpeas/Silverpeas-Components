@@ -31,7 +31,6 @@ import org.silverpeas.core.util.UnitUtil;
 import org.silverpeas.core.util.time.Duration;
 import org.silverpeas.core.webapi.base.WebEntity;
 
-import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlElement;
 import java.math.BigDecimal;
 import java.net.URI;
@@ -45,19 +44,15 @@ public class NewsEntity implements WebEntity {
   private URI uri;
   
   @XmlElement
-  @NotNull
   private String id;
   
   @XmlElement
-  @NotNull
   private String publicationId;
 
   @XmlElement
-  @NotNull
   private String componentId;
 
   @XmlElement
-  @NotNull
   private String title;
 
   @XmlElement
@@ -73,11 +68,9 @@ public class NewsEntity implements WebEntity {
   private String thumbnailURL;
 
   @XmlElement
-  @NotNull
   private String permalink;
 
   @XmlElement
-  @NotNull
   private int numberOfAttachments;
   
   public static NewsEntity fromNews(News news) {

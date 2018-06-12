@@ -105,7 +105,6 @@ public class News extends SilverpeasJpaEntity<News, UuidIdentifier> implements S
 
   @Column(name = "foreignId", nullable = false)
   @Size(min = 1)
-  @NotNull
   private String publicationId;
 
   @Column
@@ -405,5 +404,15 @@ public class News extends SilverpeasJpaEntity<News, UuidIdentifier> implements S
 
   private PdcManager getTaxonomyService() {
     return PdcManager.get();
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
+  }
+
+  @Override
+  public boolean equals(final Object obj) {
+    return super.equals(obj);
   }
 }
