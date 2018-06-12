@@ -120,6 +120,10 @@
 <fmt:message key="gallery.lastResult" var="lastResultLabel"/>
 <fmt:message key='gallery.lastResult' var="lastResultIcon" bundle='${icons}'/>
 <c:url var="lastResultIcon" value="${lastResultIcon}"/>
+<fmt:message key="gallery.CopyAlbumLink" var="permalinkAlt"/>
+<fmt:message key='gallery.link' var="permalinkIcon" bundle='${icons}'/>
+<c:url var="permalinkIcon" value="${permalinkIcon}"/>
+<fmt:message key="gallery.album.createdBy" var="albumCreatedByLabel"/>
 
 <c:set var="currentAlbum" value="${requestScope.CurrentAlbum}"/>
 <jsp:useBean id="currentAlbum" type="org.silverpeas.components.gallery.model.AlbumDetail"/>
@@ -467,6 +471,11 @@ function CutSelectedMedia() {
         </view:applyTemplate>
       </div>
     </c:if>
+    <div id="footer" class="txtBaseline">
+        ${albumCreatedByLabel} <view:username userId="${currentAlbum.creatorId}"/>
+      - ${silfn:formatStringDate(currentAlbum.creationDate, userLanguage)}
+      - <a href="${currentAlbum.permalink}" title="${permalinkAlt}" class="sp-permalink"><img src="${permalinkIcon}" alt="${permalinkAlt}"/></a>
+    </div>
 
 <div id="album-export-dialog" style="display: none;">
   <form id="exportForm" action="ExportAlbum" target="_blank">
