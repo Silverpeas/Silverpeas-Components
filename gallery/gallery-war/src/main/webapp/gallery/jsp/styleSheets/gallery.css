@@ -143,6 +143,11 @@ ul#albumList li.ui-state-highlight {
   background-color: #EAEAEA;
 }
 
+#footer {
+  text-align: center;
+  margin-top: 5px;
+}
+
 /* Slider */
 .gallery-slider-player-buttons {
   z-index: 10;
