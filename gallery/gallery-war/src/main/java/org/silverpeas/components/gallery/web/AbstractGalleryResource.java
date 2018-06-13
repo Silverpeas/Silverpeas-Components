@@ -171,10 +171,11 @@ abstract class AbstractGalleryResource extends RESTWebService {
    * @param expectedMediaType expected media type
    * @param mediaId the media identifier
    * @param requestedMediaResolution requested media resolution
+   * @param size a specific size applied on requested resolution
    * @return the requested media.
    */
   private Pair<Media, SilverpeasFile> getCheckedMedia(final MediaType expectedMediaType,
-      final String mediaId, final MediaResolution requestedMediaResolution) {
+      final String mediaId, final MediaResolution requestedMediaResolution, final String size) {
     try {
       final Media media = getMediaService().getMedia(new MediaPK(mediaId, getComponentId()));
       checkNotFoundStatus(media);
@@ -182,7 +183,7 @@ abstract class AbstractGalleryResource extends RESTWebService {
       // Adjusting the resolution according to the user rights
       MediaResolution mediaResolution = getUserMediaResolution(requestedMediaResolution, media);
       // Verifying the physical file exists and that the type of media is the one expected
-      final SilverpeasFile file = media.getFile(mediaResolution);
+      final SilverpeasFile file = media.getFile(mediaResolution, size);
       if (!file.exists() || expectedMediaType != media.getType()) {
         throw new WebApplicationException(Status.NOT_FOUND);
       }
@@ -218,13 +219,14 @@ abstract class AbstractGalleryResource extends RESTWebService {
    * @param expectedMediaType expected media type
    * @param mediaId the media identifier
    * @param requestedMediaResolution requested media resolution
+   * @param size a specific size applied on requested resolution
    * @return the response.
    */
   Response getMediaContent(final MediaType expectedMediaType, final String mediaId,
-      final MediaResolution requestedMediaResolution) {
+      final MediaResolution requestedMediaResolution, final String size) {
     try {
       final Pair<Media, SilverpeasFile> checkedMedia =
-          getCheckedMedia(expectedMediaType, mediaId, requestedMediaResolution);
+          getCheckedMedia(expectedMediaType, mediaId, requestedMediaResolution, size);
       final Media media = checkedMedia.getLeft();
       final SilverpeasFile file = checkedMedia.getRight();
       return FileResponse.fromRest(getHttpServletRequest(), getHttpServletResponse())

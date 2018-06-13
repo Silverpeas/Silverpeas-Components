@@ -328,10 +328,20 @@ public abstract class Media implements SilverContentInterface, Serializable {
 
   /**
    * Gets the Silverpeas file.
-   * @param mediaResolution
-   * @return
+   * @param mediaResolution the aimed resolution.
+   * @return a {@link SilverpeasFile} instance which could represents also an non existing file.
    */
-  public abstract SilverpeasFile getFile(final MediaResolution mediaResolution);
+  public SilverpeasFile getFile(final MediaResolution mediaResolution) {
+    return getFile(mediaResolution, null);
+  }
+
+  /**
+   * Gets the Silverpeas file.
+   * @param mediaResolution the aimed resolution.
+   * @param size a specific size applied on the aimed resolution, ignored if not defined.
+   * @return a {@link SilverpeasFile} instance which could represents also an non existing file.
+   */
+  public abstract SilverpeasFile getFile(final MediaResolution mediaResolution, final String size);
 
   @Override
   public String getSilverpeasContentId() {

@@ -160,7 +160,7 @@ public class GalleryResource extends AbstractGalleryResource {
     if (mediaResolution == null) {
       mediaResolution = MediaResolution.ORIGINAL;
     }
-    return getMediaContent(Photo, photoId, mediaResolution);
+    return getMediaContent(Photo, photoId, mediaResolution, size);
   }
 
   /**
@@ -174,7 +174,7 @@ public class GalleryResource extends AbstractGalleryResource {
   @Path(GALLERY_VIDEOS_PART + "/{videoId}/" + GALLERY_MEDIA_CONTENT_PART)
   @Produces(MediaType.APPLICATION_OCTET_STREAM)
   public Response getVideoContent(@PathParam("videoId") final String videoId) {
-    return getMediaContent(Video, videoId, MediaResolution.ORIGINAL);
+    return getMediaContent(Video, videoId, MediaResolution.ORIGINAL, null);
   }
 
   /**
@@ -209,7 +209,7 @@ public class GalleryResource extends AbstractGalleryResource {
   @Path(GALLERY_SOUNDS_PART + "/{soundId}/" + GALLERY_MEDIA_CONTENT_PART)
   @Produces(MediaType.APPLICATION_OCTET_STREAM)
   public Response getSoundContent(@PathParam("soundId") final String soundId) {
-    return getMediaContent(Sound, soundId, MediaResolution.ORIGINAL);
+    return getMediaContent(Sound, soundId, MediaResolution.ORIGINAL, null);
   }
 
   /**

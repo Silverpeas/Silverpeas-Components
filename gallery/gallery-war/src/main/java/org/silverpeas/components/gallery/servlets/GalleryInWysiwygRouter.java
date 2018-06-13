@@ -31,11 +31,10 @@ import org.silverpeas.components.gallery.model.MediaPK;
 import org.silverpeas.components.gallery.model.Photo;
 import org.silverpeas.components.gallery.service.GalleryService;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.io.file.SilverpeasFileProvider;
+import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
@@ -45,7 +44,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedInputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -148,18 +146,11 @@ public class GalleryInWysiwygRouter extends HttpServlet {
     res.setContentType(image.getFileMimeType().getMimeType());
     OutputStream out2 = res.getOutputStream();
     int read;
-    String fileName = image.getFile(MediaResolution.PREVIEW).getName();
-    if (useOriginal) {
-      fileName = image.getFileName();
-    }
-    if (StringUtil.isDefined(size)) {
-      fileName = size + File.separator + fileName;
-    }
-    String filePath = FileRepositoryManager.getAbsolutePath(image.getMediaPK().getInstanceId())
-        + "image" + image.getId() + File.separator + fileName;
-
-    try (BufferedInputStream input = new BufferedInputStream(
-        new FileInputStream(SilverpeasFileProvider.getFile(filePath)))) {
+    final MediaResolution mediaResolution = useOriginal
+        ? MediaResolution.ORIGINAL
+        : MediaResolution.PREVIEW;
+    final SilverpeasFile imageFile = image.getFile(mediaResolution, size);
+    try (BufferedInputStream input = new BufferedInputStream(new FileInputStream(imageFile))) {
       read = input.read();
       while (read != -1) {
         // writes bytes into the response

@@ -40,12 +40,16 @@ import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * This class represents a Media that the content (the file in other words) is saved on the
@@ -166,7 +170,7 @@ public abstract class InternalMedia extends Media {
   }
 
   @Override
-  public SilverpeasFile getFile(final MediaResolution mediaResolution) {
+  public SilverpeasFile getFile(final MediaResolution mediaResolution, final String size) {
     if (StringUtil.isNotDefined(getFileName())) {
       return SilverpeasFile.NO_FILE;
     }
@@ -183,11 +187,14 @@ public abstract class InternalMedia extends Media {
     }
     SilverpeasFile file = SilverpeasFile.NO_FILE;
     for (String potentialFileName : potentialFileNames) {
-      final File physicalFile = FileUtils
+      File physicalFile = FileUtils
           .getFile(Media.BASE_PATH.getPath(), getComponentInstanceId(), getWorkspaceSubFolderName(),
               potentialFileName);
       if (potentialFileNames.size() > 1 && !physicalFile.exists()) {
         continue;
+      }
+      if (isDefined(size)) {
+        physicalFile = Paths.get(physicalFile.getParentFile().getPath(), size, physicalFile.getName()).toFile();
       }
       file = SilverpeasFileProvider.getFile(physicalFile.getPath());
     }
