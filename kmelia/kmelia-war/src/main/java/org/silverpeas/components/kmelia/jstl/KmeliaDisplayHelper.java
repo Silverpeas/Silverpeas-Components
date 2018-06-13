@@ -266,61 +266,6 @@ public class KmeliaDisplayHelper {
     }
   }
 
-  public static void displayWizardOperations(String wizardRow, String id,
-      KmeliaSessionController kmeliaScc, GraphicElementFactory gef, String action,
-      MultiSilverpeasBundle resources, JspWriter out, boolean kmaxMode) throws IOException {
-
-    String routerUrl = URLUtil.getApplicationURL() + URLUtil.getURL(kmeliaScc
-        .getComponentRootName(), kmeliaScc.getSpaceId(), kmeliaScc.getComponentId());
-
-    displayJavascriptAndFormToOperations(kmeliaScc, out);
-
-    boolean enabledHeader = false;
-    boolean enabledContent = false;
-    boolean enabledAttachment = false;
-    boolean enabledClassification = false;
-    int numRow = Integer.parseInt(wizardRow);
-    if (numRow >= 1) {
-      enabledHeader = false;
-      if (id != null) {
-        enabledHeader = true;
-      }
-    }
-    if (numRow >= 2) {
-      enabledContent = true;
-    }
-    if (numRow >= 3) {
-      enabledAttachment = true;
-    }
-    if (numRow >= 4) {
-      enabledClassification = true;
-    }
-
-    List<String> invisibleTabs = kmeliaScc.getInvisibleTabs();
-
-    TabbedPane tabbedPane = gef.getTabbedPane();
-
-    if (invisibleTabs.indexOf(KmeliaSessionController.TAB_HEADER) == -1) {
-      tabbedPane.addTab(kmeliaScc.getString("Header"), routerUrl + "WizardHeader?PubId=" + id,
-          action.equals("Wizard") || action.equals("UpdateWizard"), enabledHeader);
-    }
-    if (invisibleTabs.indexOf(KmeliaSessionController.TAB_CONTENT) == -1) {
-      tabbedPane.addTab(resources.getString("Model"), "ToPubliContent?PubId=" + id, action.equals(
-          "ModelUpdateView") || action.equals("NewModel") || action.equals("ModelChoice"),
-          enabledContent);
-    }
-    if (invisibleTabs.indexOf(KmeliaSessionController.TAB_ATTACHMENTS) == -1) {
-      tabbedPane.addTab(resources.getString("GML.attachments"), "ViewAttachments?PubId=" + id,
-          action.equals("ViewAttachments"), enabledAttachment);
-    }
-    if (kmaxMode) {
-      tabbedPane.addTab(resources.getString("PubPositions"), "KmaxViewCombination?PubId=" + id,
-          action.equals("KmaxViewCombination"), enabledClassification);
-    }
-    out.println(tabbedPane.print());
-
-  }
-
   public static void displayOnNewOperations(KmeliaSessionController kmeliaScc, JspWriter out)
       throws IOException {
     displayJavascriptAndFormToOperations(kmeliaScc, out);

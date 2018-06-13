@@ -145,7 +145,6 @@ var icons = new Object();
 icons["permalink"] = "<%=resources.getIcon("kmelia.link")%>";
 icons["operation.addTopic"] = "<%=resources.getIcon("kmelia.operation.addTopic")%>";
 icons["operation.addPubli"] = "<%=resources.getIcon("kmelia.operation.addPubli")%>";
-icons["operation.wizard"] = "<%=resources.getIcon("kmelia.operation.wizard")%>";
 icons["operation.importFile"] = "<%=resources.getIcon("kmelia.operation.importFile")%>";
 icons["operation.importFiles"] = "<%=resources.getIcon("kmelia.operation.importFiles")%>";
 icons["operation.subscribe"] = "<%=resources.getIcon("kmelia.operation.subscribe")%>";
@@ -227,8 +226,6 @@ var searchFolderId = "<%=id%>";
 	<input type="hidden" name="Action" value="initial"/>
 </form>
 
-<form name="updateChain" action="UpdateChainInit">
-</form>
 <script type="text/javascript">
 function getComponentPermalink() {
 	return "<%=URLUtil.getSimpleURL(URLUtil.URL_COMPONENT, componentId, false)%>";

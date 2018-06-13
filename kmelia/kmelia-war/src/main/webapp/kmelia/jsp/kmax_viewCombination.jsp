@@ -63,14 +63,7 @@ CoordinatePoint getPoint(NodeDetail nodeDetail, Collection points, String transl
 	String hLineSrc	 = m_context + "/util/icons/colorPix/1px.gif";
 	
 	String	currentLang = (String) request.getAttribute("Language");
-	
-	String 	wizard			= (String) request.getAttribute("Wizard");
-	String 	wizardRow		= (String) request.getAttribute("WizardRow");
 
-	if (wizardRow == null) {
-		wizardRow = "4";
-	}
-	
 	String action = "KmaxViewCombination";
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -127,23 +120,10 @@ CoordinatePoint getPoint(NodeDetail nodeDetail, Collection points, String transl
 	
   out.println(window.printBefore());
 
-	if ("progress".equals(wizard)) {
-		KmeliaDisplayHelper.displayWizardOperations(wizardRow, id, kmeliaScc, gef, action, resources, out, kmaxMode);
-	} else {
-		KmeliaDisplayHelper.displayAllOperations(id, kmeliaScc, gef, action, resources, out, true);
-	}
+  KmeliaDisplayHelper.displayAllOperations(id, kmeliaScc, gef, action, resources, out, true);
+
   out.println(frame.printBefore());
-  if ("finish".equals(wizard) || "progress".equals(wizard)) {
-    %>
-    	<!-- cadre d'aide -->
-		<div class="inlineMessage">
-			<img border="0" src="<%=resources.getIcon("kmelia.info") %>"/>
-      <%=WebEncodeHelper.javaStringToHtmlParagraphe(resources.getString("kmelia.HelpKmaxClassification"))%>
-    </div>
-		<br clear="all"/>
-    <%
-	}
-    
+
 	out.println(displayAxisToPublish(kmeliaScc, gef, currentLang));
     
 	Collection coordinates = kmeliaScc.getPublicationCoordinates(id);
@@ -207,16 +187,6 @@ CoordinatePoint getPoint(NodeDetail nodeDetail, Collection points, String transl
     out.println("</table>");
     out.println("</center>");
     out.println(board.printAfter());
-    
-    if ("progress".equals(wizard)) {
-    	Button cancelButton = gef.getFormButton(resources.getString("GML.cancel"), "DeletePublication?PubId="+id, false);
-    	Button nextButton = gef.getFormButton(resources.getString("kmelia.End"), "WizardNext?Position=KmaxClassification", false);
-    	
-		ButtonPane buttonPane = gef.getButtonPane();
-		buttonPane.addButton(nextButton);
-		buttonPane.addButton(cancelButton);
-		out.println("<br /><center>"+buttonPane.print()+"</center><br />");
-	}
     
 	out.println(frame.printAfter());
 	out.println(window.printAfter());

@@ -129,7 +129,6 @@ public class JSONServlet extends HttpServlet {
         boolean operationsOnSelectionAllowed = (isAdmin || isPublisher) && publicationsInTopic;
 
         operations.put("addPubli", addPublicationAllowed);
-        operations.put("wizard", addPublicationAllowed && kmeliaSC.isWizardEnabled());
         operations.put("importFile", addPublicationAllowed && kmeliaSC.isImportFileAllowed());
         operations.put("importFiles", addPublicationAllowed && kmeliaSC.isImportFilesAllowed());
         operations.put("copyPublications", operationsOnSelectionAllowed);
@@ -137,8 +136,6 @@ public class JSONServlet extends HttpServlet {
         operations.put("paste", addPublicationAllowed);
 
         operations.put("sortPublications", isAdmin && publicationsInTopic);
-        operations.put("updateChain", isAdmin && publicationsInTopic && kmeliaSC.
-            isTopicHaveUpdateChainDescriptor(id));
 
         operations.put("deletePublications", operationsOnSelectionAllowed);
 

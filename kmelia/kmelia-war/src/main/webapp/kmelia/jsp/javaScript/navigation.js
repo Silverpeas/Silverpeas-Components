@@ -337,15 +337,6 @@ function initOperations(id, op) {
     addCreationItem(url, icons["operation.addPubli"], label);
     menuBarEmpty = false;
   }
-  if (op.wizard) {
-    var label = getString('kmelia.Wizard');
-    var url = "WizardStart";
-    menuItem = new YAHOO.widget.MenuItem(label, {url: url});
-    oMenu.addItem(menuItem, groupIndex);
-    groupEmpty = false;
-    addCreationItem(url, icons["operation.wizard"], label);
-    menuBarEmpty = false;
-  }
   if (op.importFile) {
     var label = getString('kmelia.ImportFile');
     var url = "javascript:onclick=importFile()";
@@ -366,11 +357,6 @@ function initOperations(id, op) {
   }
   if (op.sortPublications) {
     menuItem = new YAHOO.widget.MenuItem(getString('kmelia.OrderPublications'), {url: "ToOrderPublications"});
-    oMenu.addItem(menuItem, groupIndex);
-    groupEmpty = false;
-  }
-  if (op.updateChain) {
-    menuItem = new YAHOO.widget.MenuItem(getString('kmelia.updateByChain'), {url: "javascript:onclick=updateChain()"});
     oMenu.addItem(menuItem, groupIndex);
     groupEmpty = false;
   }
@@ -843,10 +829,6 @@ function dirGoTo(id) {
   document.topicDetailForm.action = "GoToDirectory";
   document.topicDetailForm.Id.value = id;
   document.topicDetailForm.submit();
-}
-
-function updateChain() {
-  document.updateChain.submit();
 }
 
 function publicationGoToFromMain(id) {

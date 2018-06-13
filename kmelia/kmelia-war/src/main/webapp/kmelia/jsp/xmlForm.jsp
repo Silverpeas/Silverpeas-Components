@@ -39,9 +39,6 @@
       Form formUpdate = (Form) request.getAttribute("Form");
       DataRecord data = (DataRecord) request.getAttribute("Data");
       PublicationDetail pubDetail = (PublicationDetail) request.getAttribute("CurrentPublicationDetail");
-      String wizardLast = (String) request.getAttribute("WizardLast");
-      String wizard = (String) request.getAttribute("Wizard");
-      String wizardRow = (String) request.getAttribute("WizardRow");
       String currentLang = (String) request.getAttribute("Language");
       boolean changingTemplateAllowed = ((Boolean) request.getAttribute("IsChangingTemplateAllowed")).booleanValue();
       String pubId = pubDetail.getPK().getId();
@@ -59,11 +56,6 @@
       String linkedPathString = kmeliaScc.getSessionPath();
 
       boolean isOwner = kmeliaScc.getSessionOwner();
-
-      if (wizardRow == null) {
-        wizardRow = "2";
-      }
-      boolean isEnd = "2".equals(wizardLast);
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -140,40 +132,17 @@
           	operations.addOperation("useless", resources.getString("kmelia.template.change"), "javascript:onclick=changeTemplate();");
           }
 
-          Button cancelWButton = gef.getFormButton(resources.getString("GML.cancel"), "ToPubliContent?WizardRow=" + wizardRow, false);
-          Button nextButton;
-          if (isEnd) {
-            nextButton = gef.getFormButton(resources.getString("kmelia.End"), "javascript:onClick=B_VALIDER_ONCLICK();", false);
-          } else {
-            nextButton = gef.getFormButton(resources.getString("GML.next"), "javascript:onClick=B_VALIDER_ONCLICK();", false);
-          }
-
           out.println(window.printBefore());
 
-          if ("progress".equals(wizard)) {
-            KmeliaDisplayHelper.displayWizardOperations(wizardRow, pubId, kmeliaScc, gef,
-                  "ModelUpdateView", resources, out, kmaxMode);
+          if (isOwner) {
+            KmeliaDisplayHelper.displayAllOperations(pubId, kmeliaScc, gef, "ModelUpdateView",
+                  resources, out, kmaxMode);
           } else {
-            if (isOwner) {
-              KmeliaDisplayHelper.displayAllOperations(pubId, kmeliaScc, gef, "ModelUpdateView",
-                    resources, out, kmaxMode);
-            } else {
-              KmeliaDisplayHelper.displayUserOperations(pubId, kmeliaScc, gef, "ModelUpdateView",
-                    resources, out, kmaxMode);
-            }
+            KmeliaDisplayHelper.displayUserOperations(pubId, kmeliaScc, gef, "ModelUpdateView",
+                  resources, out, kmaxMode);
           }
 
           out.println(frame.printBefore());
-          
-          if (("finish".equals(wizard)) || ("progress".equals(wizard))) {
-            //  cadre d'aide
-%>
-            <div class="inlineMessage">
-				<img border="0" src="<%=resources.getIcon("kmelia.info") %>"/>
-				<%=resources.getString("kmelia.HelpContentXml") %>
-			</div>
-<%
-		}
           out.println(board.printBefore());
     %>
     <form name="myForm" method="post" action="UpdateXMLForm" enctype="multipart/form-data" accept-charset="UTF-8">
@@ -184,12 +153,6 @@
     </form>
     <%
           out.println(board.printAfter());
-          if (wizard != null && wizard.equals("progress")) {
-            ButtonPane buttonPane = gef.getButtonPane();
-            buttonPane.addButton(nextButton);
-            buttonPane.addButton(cancelWButton);
-            out.println("<br/><center>" + buttonPane.print() + "</center>");
-          } else {
     %>
           <view:buttonPane>
             <c:set var="saveLabel"><%=resources.getString("GML.validate")%></c:set>
