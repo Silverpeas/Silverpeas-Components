@@ -30,7 +30,6 @@ import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
-import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
@@ -68,7 +67,7 @@ public class KmeliaAuthorization implements ComponentAuthorization {
   private NodeService nodeService = NodeService.get();
   private KmeliaService kmeliaService;
   private OrganizationController controller = null;
-  private Map<String, Boolean> cache = Collections.synchronizedMap(new HashMap<String, Boolean>());
+  private Map<String, Boolean> cache = Collections.synchronizedMap(new HashMap<>());
   private volatile boolean cacheEnabled = false;
   private SettingBundle kmeliaSettings = ResourceLocator.getSettingBundle(
       "org.silverpeas.kmelia.settings.kmeliaSettings");
@@ -420,11 +419,7 @@ public class KmeliaAuthorization implements ComponentAuthorization {
 
   public KmeliaService getKmeliaService() {
     if (kmeliaService == null) {
-      try {
-        kmeliaService = ServiceProvider.getService(KmeliaService.class);
-      } catch (UtilException e) {
-        throw new KmeliaRuntimeException(e);
-      }
+      kmeliaService = ServiceProvider.getService(KmeliaService.class);
     }
     return kmeliaService;
   }

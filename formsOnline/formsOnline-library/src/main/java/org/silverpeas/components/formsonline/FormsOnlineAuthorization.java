@@ -13,8 +13,7 @@ import java.util.Map;
 
 public class FormsOnlineAuthorization implements ComponentAuthorization {
 
-  private Map<String, List<String>> cache =
-      Collections.synchronizedMap(new HashMap<String, List<String>>());
+  private Map<String, List<String>> cache = Collections.synchronizedMap(new HashMap<>());
   private volatile boolean cacheEnabled = false;
 
   @Override

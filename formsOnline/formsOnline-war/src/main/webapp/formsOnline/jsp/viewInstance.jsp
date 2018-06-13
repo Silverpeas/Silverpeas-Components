@@ -63,7 +63,7 @@
 <head>
   <title></title>
   <view:looknfeel />
-  <link type="text/css" rel="stylesheet" href='<c:url value="/formsOnline/jsp/styleSheets/formsOnline-print.css"/>' media="print"/>
+  <view:link href="/formsOnline/jsp/styleSheets/formsOnline-print.css" print="true"/>
   <% formView.displayScripts(out, context); %>
   <script type="text/javascript">
 	  function validate() {
