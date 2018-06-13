@@ -42,6 +42,9 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
+import org.silverpeas.core.index.indexing.model.FullIndexEntry;
+import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
+import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.persistence.datasource.repository.PaginationCriterion;
@@ -49,6 +52,7 @@ import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.SilverpeasList;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -155,6 +159,9 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
     theForm.setSendersAsGroups(getSendersAsGroups(theForm.getPK()));
     theForm.setReceiversAsUsers(getReceiversAsUsers(theForm.getPK()));
     theForm.setReceiversAsGroups(getReceiversAsGroups(theForm.getPK()));
+
+    index(theForm);
+
     return theForm;
   }
 
@@ -168,6 +175,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
     FormDetail form = getDAO().getForm(pk);
     form.setState(FormDetail.STATE_PUBLISHED);
     getDAO().updateForm(form);
+    index(form);
   }
 
   @Override
@@ -175,6 +183,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
     FormDetail form = getDAO().getForm(pk);
     form.setState(FormDetail.STATE_UNPUBLISHED);
     getDAO().updateForm(form);
+    index(form);
   }
 
   @Override
@@ -447,6 +456,32 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
   @Override
   public boolean isRelatedTo(final String instanceId) {
     return instanceId.startsWith("formsOnline");
+  }
+
+  private void index(FormDetail form) {
+    IndexEntryKey key =
+        new IndexEntryKey(form.getInstanceId(), "FormOnline", String.valueOf(form.getId()));
+    if (form.isPublished()) {
+      FullIndexEntry fie = new FullIndexEntry(key);
+      fie.setTitle(form.getTitle());
+      fie.setPreview(form.getDescription());
+      fie.setCreationDate(form.getCreationDate());
+      fie.setCreationUser(form.getCreatorId());
+      IndexEngineProxy.addIndexEntry(fie);
+    } else {
+      IndexEngineProxy.removeIndexEntry(key);
+    }
+  }
+
+  public void index(String componentId) {
+    try {
+      List<FormDetail> forms = getAllForms(componentId, "useless", false);
+      for (FormDetail form : forms) {
+        index(form);
+      }
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e);
+    }
   }
 
 }
