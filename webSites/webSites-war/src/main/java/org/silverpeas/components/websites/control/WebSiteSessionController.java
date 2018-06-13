@@ -41,7 +41,6 @@ import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.exception.DecodingException;
 import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
@@ -50,7 +49,6 @@ import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.notification.user.client.UserRecipient;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.ZipUtil;
 import org.silverpeas.core.util.file.FileFolderManager;
@@ -395,13 +393,13 @@ public class WebSiteSessionController extends AbstractComponentSessionController
   }
 
   /**
-   * getAllWebPages2
+   * getAllHTMLWebPages
    */
-  public synchronized Collection<File> getAllWebPages2(String chemin) throws WebSitesException {
+  public synchronized Collection<File> getAllHTMLWebPages(String chemin) throws WebSitesException {
     try {
-      return FileFolderManager.getAllWebPages2(getFullPath(chemin));
+      return FileFolderManager.getAllHTMLWebPages(getFullPath(chemin));
     } catch (Exception e) {
-      throw new WebSitesException("WebSiteSessionController.getAllWebPages2()",
+      throw new WebSitesException("WebSiteSessionController.getAllHTMLWebPages()",
           SilverpeasException.ERROR, "webSites.EX_GET_ALL_WEB_PAGES_FAIL", e);
     }
   }
@@ -433,8 +431,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
       try {
         pdcClassif = PdcClassificationEntity.fromJSON(positions);
       } catch (DecodingException e) {
-        SilverTrace.error("quickInfo", "QuickInfoSessionController.classifyQuickInfo",
-            "PdcClassificationEntity error", "Problem to read JSON", e);
+        SilverLogger.getLogger(this).error(e);
       }
       if (pdcClassif != null && !pdcClassif.isUndefined()) {
         List<PdcPosition> pdcPositions = pdcClassif.getPdcPositions();
@@ -506,7 +503,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
    */
   public synchronized void renameFolder(String oldPath, String newPath) throws WebSitesException {
     try {
-      FileFolderManager.renameFolder(getFullPath(oldPath), getFullPath(newPath));
+      FileFolderManager.moveFolder(getFullPath(oldPath), getFullPath(newPath));
     } catch (Exception e) {
       throw new WebSitesException("WebSiteSessionController.renameFolder()",
           SilverpeasException.ERROR, "webSites.EX_RENAME_FOLDER_FAIL", e);
@@ -532,7 +529,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
       throws WebSitesException {
     try {
       FileFolderManager.createFile(getFullPath(filePath), fileName, fileContent);
-    } catch (UtilException e) {
+    } catch (org.silverpeas.core.util.UtilException e) {
       throw new WebSitesException("WebSiteSessionController.createFile()",
           SilverpeasException.ERROR, "webSites.EX_CREATE_FILE_FAIL", e);
     }
@@ -598,8 +595,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
         deleteDirFiles(directory);
       }
     } catch (Exception e) {
-      SilverTrace.warn("webSites", "WebSiteSessionController.deleteDirectory()",
-          "webSites.EXE_LIST_FILES_FAIL", "path = " + path, e);
+      SilverLogger.getLogger(this).warn(e);
     }
     result = directory.delete();
     if (!result) {
@@ -675,7 +671,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
   public synchronized String getCode(String filePath, String fileName) throws WebSitesException {
 
     try {
-      return FileFolderManager.getCode(getFullPath(filePath), fileName);
+      return FileFolderManager.getFileContent(getFullPath(filePath), fileName);
     } catch (Exception e) {
       throw new WebSitesException("WebSiteSessionController.getCode()", SilverpeasException.ERROR,
           "webSites.EX_GET_CODE_FAIL", e);
@@ -780,8 +776,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
       notifMetaData.setSource(getSpaceLabel() + " - " + getComponentLabel());
       getNotificationSender().notifyUser(notifMetaData);
     } catch (Exception e) {
-      SilverTrace.warn("webSites", "WebSiteSessionController.notifyPublishers()",
-          "webSites.MSG_NOTIFY_PUBLISHERS_FAIL", null, e);
+      SilverLogger.getLogger(this).error(e);
     }
   }
 
@@ -790,8 +785,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
     try {
       silverObjectId = getWebSiteService().getSilverObjectId(getComponentId(), objectId);
     } catch (Exception e) {
-      SilverTrace.error("webSites", "WebSiteSessionController.getSilverObjectId()",
-          "root.EX_CANT_GET_LANGUAGE_RESOURCE", "objectId=" + objectId, e);
+      SilverLogger.getLogger(this).error(e);
     }
     return silverObjectId;
   }
@@ -870,7 +864,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
       }
 
       /* verif que le nom de la page principale est correcte */
-      Collection<File> collPages = getAllWebPages2(getWebSitePathById(descriptionSite.getId()));
+      Collection<File> collPages = getAllHTMLWebPages(getWebSitePathById(descriptionSite.getId()));
       Iterator<File> j = collPages.iterator();
       boolean searchOk = false;
       File f;

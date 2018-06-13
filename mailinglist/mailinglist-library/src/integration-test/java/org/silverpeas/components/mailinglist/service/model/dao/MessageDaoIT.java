@@ -90,15 +90,15 @@ public class MessageDaoIT {
 
 
   @Before
-  public void setUpTest() throws Exception {
+  public void setUpTest() {
     databaseTester = new DataSourceDatabaseTester(getDataSource());
     copyPath = Paths.get(mavenTargetDirectoryRule.getResourceTestDirFile().getPath(),
         COPY_PATH.toString()).toString();
   }
 
   @After
-  public void tearDownTest() throws Exception {
-    FileFolderManager.deleteFolder(getUploadPath(), false);
+  public void tearDownTest() {
+    FileFolderManager.deleteFolder(getUploadPath());
   }
 
 
@@ -235,7 +235,7 @@ public class MessageDaoIT {
   }
 
   @Test
-  public void testCreateSimpleHtmlMessage() throws IOException {
+  public void testCreateSimpleHtmlMessage() {
     MessageDao messageDao = getMessageDAO();
     Calendar sentDate = Calendar.getInstance();
     Message message = new Message();
@@ -872,7 +872,7 @@ public class MessageDaoIT {
     assertNotNull(activities);
     assertEquals(2, activities.size());
     for (final Activity activity : activities) {
-      assertEquals(activity.getYear(), 2008);
+      assertEquals(2008, activity.getYear());
       if (activity.getMonth() == Calendar.FEBRUARY) {
         assertEquals(1, activity.getNbMessages());
       } else {
@@ -883,7 +883,7 @@ public class MessageDaoIT {
   }
 
   @Test
-  public void testCreateMessagesWithSameAttachments() throws IOException {
+  public void testCreateMessagesWithSameAttachments() {
     MessageDao messageDao = getMessageDAO();
     Calendar sentDate = Calendar.getInstance();
     String id1 = Transaction.performInOne(() -> {

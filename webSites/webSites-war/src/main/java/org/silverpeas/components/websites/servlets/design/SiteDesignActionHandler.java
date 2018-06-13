@@ -286,7 +286,7 @@ public class SiteDesignActionHandler {
 
           /* verif que le nom de la page principale est correcte */
     boolean searchOk = false;
-    Collection<File> collPages = controller.getAllWebPages2(currentPath);
+    Collection<File> collPages = controller.getAllHTMLWebPages(currentPath);
     for (File f : collPages) {
       if (f.getName().equals(nomPage)) {
         searchOk = true;

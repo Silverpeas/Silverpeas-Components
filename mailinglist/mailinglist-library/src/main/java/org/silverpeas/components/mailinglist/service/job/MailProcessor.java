@@ -28,11 +28,8 @@ import org.silverpeas.components.mailinglist.service.event.MessageListener;
 import org.silverpeas.components.mailinglist.service.model.beans.Attachment;
 import org.silverpeas.components.mailinglist.service.model.beans.Message;
 import org.silverpeas.components.mailinglist.service.util.HtmlCleaner;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.apache.commons.io.IOUtils;
-import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.MimeTypes;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
@@ -48,6 +45,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
+import java.nio.file.Files;
+
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 public class MailProcessor {
 
@@ -186,13 +186,8 @@ public class MailProcessor {
       parentDir.mkdirs();
     }
     File targetFile = new File(parentDir, getFileName(part));
-    InputStream partIn = part.getInputStream();
-    try {
-
-      FileUtil.writeFile(targetFile, partIn);
-
-    } finally {
-      IOUtils.closeQuietly(partIn);
+    try(InputStream partIn = part.getInputStream()) {
+      Files.copy(partIn, targetFile.toPath(), REPLACE_EXISTING);
     }
     return targetFile.getAbsolutePath();
   }
@@ -240,8 +235,7 @@ public class MailProcessor {
       ContentType type = new ContentType(contentType);
       return type.getBaseType();
     } catch (ParseException e) {
-      SilverTrace.error("mailinglist", "MailProcessor.extractContentType()",
-          "mailinglist.notification.error", e);
+      SilverLogger.getLogger(MailProcessor.class).error(e);
     }
     return contentType;
   }

@@ -46,7 +46,6 @@ import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerE
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
 import org.silverpeas.core.contribution.model.LocalizedContribution;
 import org.silverpeas.core.exception.DecodingException;
-import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.importexport.report.ExportReport;
 import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.node.model.NodeDetail;
@@ -58,7 +57,6 @@ import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.pdc.pdc.model.SearchContext;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.persistence.jdbc.bean.IdPK;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.util.ResourceLocator;
@@ -68,6 +66,7 @@ import org.silverpeas.core.util.ZipUtil;
 import org.silverpeas.core.util.file.FileFolderManager;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileServerUtils;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -635,8 +634,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
         contentId = "" + contentManager
             .getSilverContentId(currentQuestion.getPK().getId(), currentQuestion.getInstanceId());
       } catch (ContentManagerException ignored) {
-        SilverTrace.error("questionReply", "QuestionReplySessionController",
-            "questionReply.EX_UNKNOWN_CONTENT_MANAGER", ignored);
+        SilverLogger.getLogger(this).error(ignored);
         contentId = null;
       }
     }
@@ -725,7 +723,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     if (!fileExportDir.exists()) {
       try {
         FileFolderManager.createFolder(fileExportDir);
-      } catch (UtilException ex) {
+      } catch (org.silverpeas.core.util.UtilException ex) {
         throw new QuestionReplyException(ex);
       }
     }
@@ -736,7 +734,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     File forFiles = new File(dir + File.separator + nameForFiles);
     try {
       FileFolderManager.createFolder(forFiles);
-    } catch (UtilException ex) {
+    } catch (org.silverpeas.core.util.UtilException ex) {
       throw new QuestionReplyException(ex);
     }
 
@@ -894,8 +892,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     try {
       questionDetail = new QuestionDetail(getQuestion(questionId));
     } catch (QuestionReplyException e1) {
-      SilverTrace.error("questionReply", "QuestionReplySessionController.classifyQuestionReply",
-          "Retrieve question error", e1);
+      SilverLogger.getLogger(this).error(e1);
     }
 
     if (StringUtil.isDefined(positions) && questionDetail != null) {
@@ -903,8 +900,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       try {
         qiClassification = PdcClassificationEntity.fromJSON(positions);
       } catch (DecodingException e) {
-        SilverTrace.error("questionReply", "QuestionReplySessionController.classifyQuestionReply",
-            "PdcClassificationEntity error", "Problem to read JSON", e);
+        SilverLogger.getLogger(this).error(e);
       }
       if (qiClassification != null && !qiClassification.isUndefined()) {
         List<PdcPosition> pdcPositions = qiClassification.getPdcPositions();
