@@ -335,7 +335,7 @@ public class MediaTest {
     }
 
     @Override
-    public SilverpeasFile getFile(final MediaResolution mediaResolution) {
+    public SilverpeasFile getFile(final MediaResolution mediaResolution, final String size) {
       return null;
     }
   }
