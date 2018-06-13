@@ -24,6 +24,7 @@
 
 package org.silverpeas.components.formsonline;
 
+import org.silverpeas.components.formsonline.model.FormsOnlineService;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.web.index.components.ComponentIndexation;
 
@@ -35,8 +36,7 @@ import javax.inject.Singleton;
 public class FormsOnlineIndexer implements ComponentIndexation {
 
   @Override
-  public void index(SilverpeasComponentInstance componentInst)
-      throws Exception {
-    // nothing to index
+  public void index(SilverpeasComponentInstance componentInst) throws Exception {
+    FormsOnlineService.get().index(componentInst.getId());
   }
 }

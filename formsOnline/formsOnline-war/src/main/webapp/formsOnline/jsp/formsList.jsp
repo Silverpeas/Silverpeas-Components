@@ -60,7 +60,7 @@
   function deleteForm(idModel) {
     var label = "<fmt:message key="formsOnline.deleteFormConfirm"/>";
     jQuery.popup.confirm(label, function() {
-      document.deleteForm.formId.value = idModel;
+      document.deleteForm.FormId.value = idModel;
       document.deleteForm.submit();
     });
   }
@@ -247,7 +247,7 @@
             </c:if>
             <c:if test="${role == 'admin'}">
               <div class="operation actionShownOnMouseOver">
-                <a href="EditForm?formId=${form.id}" title="<fmt:message key="GML.modify"/>"><img border="0" src="${iconEdit}" alt="<fmt:message key="GML.modify"/>" title="<fmt:message key="GML.modify"/>" /></a>
+                <a href="EditForm?FormId=${form.id}" title="<fmt:message key="GML.modify"/>"><img border="0" src="${iconEdit}" alt="<fmt:message key="GML.modify"/>" title="<fmt:message key="GML.modify"/>" /></a>
                 <c:choose>
                   <c:when test="${form.notYetPublished}">
                     <a href="PublishForm?Id=${form.id}" title="<fmt:message key="formsOnline.publishForm"/>"><img border="0" src="${iconPublish}" alt="<fmt:message key="formsOnline.publishForm"/>" title="<fmt:message key="formsOnline.publishForm"/>" /></a>
@@ -272,7 +272,7 @@
 </div>
 </view:window>
 <form name="deleteForm" action="DeleteForm" method="post">
-  <input type="hidden" name="formId"/>
+  <input type="hidden" name="FormId"/>
 </form>
 
 <script type="text/javascript">
