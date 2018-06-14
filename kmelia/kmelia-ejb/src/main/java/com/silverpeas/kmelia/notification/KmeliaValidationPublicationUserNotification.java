@@ -82,10 +82,8 @@ public class KmeliaValidationPublicationUserNotification extends AbstractKmeliaA
   @Override
   protected Collection<String> getUserIdsToNotify() {
     final Set<String> userIds = new HashSet<String>();
-    for (String userId : new String[] { getResource().getCreatorId(), getResource().getUpdaterId() }) {
-      if (isDefined(userId)) {
-        userIds.add(userId);
-      }
+    if (isDefined(getResource().getUpdaterId())) {
+      userIds.add(getResource().getUpdaterId());
     }
     return userIds;
   }
