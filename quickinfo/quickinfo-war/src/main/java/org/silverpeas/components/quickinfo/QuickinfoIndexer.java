@@ -45,7 +45,7 @@ public class QuickinfoIndexer implements ComponentIndexation {
   private PublicationService publicationService;
 
   @Override
-  public void index(SilverpeasComponentInstance componentInst) throws Exception {
+  public void index(SilverpeasComponentInstance componentInst) {
     List<News> infos = quickInfoService.getVisibleNews(componentInst.getId());
     for (News news : infos) {
       publicationService.createIndex(news.getPublication().getPK());

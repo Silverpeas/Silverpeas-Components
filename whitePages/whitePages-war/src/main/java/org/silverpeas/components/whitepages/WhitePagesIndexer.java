@@ -66,9 +66,15 @@ public class WhitePagesIndexer implements ComponentIndexation {
   private Administration admin;
 
   @Override
-  public void index(SilverpeasComponentInstance componentInst) throws Exception {
-    Collection<Card> visibleCards = enrichWithUserRecordsAndCardRecords(componentInst.getId(),
-        cardManager.getVisibleCards(componentInst.getId()));
+  public void index(SilverpeasComponentInstance componentInst)
+      throws org.silverpeas.core.SilverpeasException {
+    Collection<Card> visibleCards = null;
+    try {
+      visibleCards = enrichWithUserRecordsAndCardRecords(componentInst.getId(),
+          cardManager.getVisibleCards(componentInst.getId()));
+    } catch (WhitePagesException e) {
+      throw new org.silverpeas.core.SilverpeasException(e);
+    }
     for (Card card : visibleCards) {
       cardManager.indexCard(card);
     }

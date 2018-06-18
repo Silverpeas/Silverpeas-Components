@@ -40,8 +40,7 @@ public class GalleryIndexer implements ComponentIndexation {
   private GalleryService galleryService;
 
   @Override
-  public void index(SilverpeasComponentInstance componentInst) throws
-      Exception {
+  public void index(SilverpeasComponentInstance componentInst) {
     galleryService.indexGallery(UserDetail.getCurrentRequester(), componentInst.getId());
   }
 }

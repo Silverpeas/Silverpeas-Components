@@ -39,7 +39,7 @@ public class BookmarkIndexer implements ComponentIndexation {
   private WebSiteService webSiteService;
 
   @Override
-  public void index(SilverpeasComponentInstance componentInst) throws Exception {
+  public void index(SilverpeasComponentInstance componentInst) {
     webSiteService.index(componentInst.getId());
   }
 }

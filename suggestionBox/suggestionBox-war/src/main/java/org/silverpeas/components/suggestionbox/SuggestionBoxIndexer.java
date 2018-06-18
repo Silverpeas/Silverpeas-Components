@@ -40,15 +40,11 @@ public class SuggestionBoxIndexer implements ComponentIndexation {
   private SuggestionBoxService suggestionBoxService;
 
   @Override
-  public void index(SilverpeasComponentInstance componentInst) throws Exception {
-
-
+  public void index(SilverpeasComponentInstance componentInst) {
     // Getting the suggestion box entity
     SuggestionBox suggestionBoxToIndex =
         suggestionBoxService.getByComponentInstanceId(componentInst.getId());
-
     // Indexing the suggestion box
     suggestionBoxService.indexSuggestionBox(suggestionBoxToIndex);
   }
-
 }

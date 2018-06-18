@@ -24,7 +24,6 @@
 
 package org.silverpeas.components.webpages;
 
-import org.silverpeas.components.webpages.model.WebPagesException;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
@@ -50,7 +49,7 @@ import javax.inject.Singleton;
 @Named("webPages" + ComponentIndexation.QUALIFIER_SUFFIX)
 public class WebPagesIndexer implements ComponentIndexation {
 
-  private static String XML_TEMPLATE_PARAM = "xmlTemplate";
+  private static final String XML_TEMPLATE_PARAM = "xmlTemplate";
 
   @Inject
   private Administration admin;
@@ -58,7 +57,7 @@ public class WebPagesIndexer implements ComponentIndexation {
   private PublicationTemplateManager templateManager;
 
   @Override
-  public void index(SilverpeasComponentInstance componentInst) throws Exception {
+  public void index(SilverpeasComponentInstance componentInst) {
     FullIndexEntry indexEntry = getFullIndexEntry((ComponentInstLight) componentInst);
     if (isXMLTemplateUsed(componentInst.getId())) {
       indexForm(componentInst.getId(), indexEntry);
@@ -70,7 +69,7 @@ public class WebPagesIndexer implements ComponentIndexation {
     IndexEngineProxy.addIndexEntry(indexEntry);
   }
 
-  private void indexForm(String componentId, FullIndexEntry indexEntry) throws WebPagesException {
+  private void indexForm(String componentId, FullIndexEntry indexEntry) {
     RecordSet recordSet;
     try {
       PublicationTemplate pub = templateManager.getPublicationTemplate(

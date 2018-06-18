@@ -34,7 +34,13 @@ import javax.inject.Singleton;
 public class AlmanachIndexer implements ComponentIndexation {
 
   @Override
-  public void index(SilverpeasComponentInstance inst) throws Exception {
-    // TODO
+  public void index(SilverpeasComponentInstance inst) {
+    // Nothing to index
+  }
+
+  @Override
+  public void index(final SilverpeasComponentInstance componentInst, final boolean deleteAllBefore) {
+    // PLEASE REMOVE THIS METHOD OVERRIDING IF INDEX METHOD IS IMPLEMENTED
+    index(componentInst);
   }
 }
