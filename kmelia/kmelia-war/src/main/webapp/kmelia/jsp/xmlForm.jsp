@@ -180,7 +180,6 @@
             <view:button label="${cancelLabel}" action="javascript:onClick=B_ANNULER_ONCLICK();"/>
           </view:buttonPane>
     <%
-          }
           out.println(frame.printAfter());
           out.println(window.printAfter());%>
 	<script type="text/javascript">
