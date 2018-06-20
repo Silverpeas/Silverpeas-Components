@@ -34,6 +34,7 @@ import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.silverpeas.core.util.CollectionUtil;
+import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileServerUtils;
@@ -64,6 +65,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 public class ProcessManagerRequestRouter
     extends ComponentRequestRouter<ProcessManagerSessionController> {
@@ -801,6 +803,16 @@ public class ProcessManagerRequestRouter
   /**
    * The editUserSetting handler
    */
+  private static FunctionHandler manageReplacementsHandler = new SessionSafeFunctionHandler() {
+    protected String computeDestination(String function, ProcessManagerSessionController session,
+        HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
+      setSharedAttributes(session, request);
+      return "/processManager/jsp/replacements.jsp";
+    }
+  };
+  /**
+   * The editUserSetting handler
+   */
   private static FunctionHandler editUserSettingsHandler = new SessionSafeFunctionHandler() {
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
@@ -955,6 +967,7 @@ public class ProcessManagerRequestRouter
     handlerMap.put("cancelResponse", cancelResponseHandler);
     handlerMap.put("saveResponse", saveResponseHandler);
     handlerMap.put("listQuestions", listQuestionsHandler);
+    handlerMap.put("manageReplacements", manageReplacementsHandler);
     handlerMap.put("editUserSettings", editUserSettingsHandler);
     handlerMap.put("saveUserSettings", saveUserSettingsHandler);
     handlerMap.put("searchResult.jsp", searchResultHandler);
@@ -1047,13 +1060,18 @@ public class ProcessManagerRequestRouter
    */
   private static void setSharedAttributes(ProcessManagerSessionController session,
       HttpServletRequest request) {
-    String canCreate = session.getCreationRights() ? "1" : "0";
-    boolean isVersionControlled = session.isVersionControlled();
-    String s_isVersionControlled = isVersionControlled ? "1" : "0";
+    final String canCreate = session.getCreationRights() ? "1" : "0";
+    final boolean isVersionControlled = session.isVersionControlled();
+    final String isVersionControlledAsString = isVersionControlled ? "1" : "0";
 
-    request.setAttribute("isVersionControlled", s_isVersionControlled);
+    request.setAttribute("isVersionControlled", isVersionControlledAsString);
     request.setAttribute("language", session.getLanguage());
     request.setAttribute("roles", session.getUserRoleLabels());
+    request.setAttribute("jsRoles", JSONCodec.encodeObject(o -> {
+      Stream.of(session.getUserRoleLabels()).forEach(l -> o.putJSONObject(l.getName(),
+          r -> r.put("label", l.getValue()).put("creationOne", l.isCreationOne())));
+      return o;
+    }));
     request.setAttribute("replacements", session.getUserReplacements());
     request.setAttribute("currentRole", session.getCurrentRole());
     request.setAttribute("canCreate", canCreate);

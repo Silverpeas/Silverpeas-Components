@@ -1,42 +1,42 @@
 .inlineMessage {
-	text-align: left;
-	padding-left: 50px;
-	margin-top: 0px;
+  text-align: left;
+  padding-left: 50px;
+  margin-top: 0px;
 }
 
 .deploy-item,
 .processManager-main #filterLabel #refresh {
-	position:absolute;
-	top:1em;
-	right:1em;
+  position: absolute;
+  top: 1em;
+  right: 1em;
 }
 
 .deploy-item img {
-	border:0
+  border: 0
 }
 
 .bgDegradeGris {
-	position:relative;
+  position: relative;
 }
 
 .btn-closed {
-	margin:1em;
-    display: block;
-	text-align:right;
+  margin: 1em;
+  display: block;
+  text-align: right;
 }
 
 .btn-deploy-all-item{
-	margin:1em 0;
-    display: inline-block;
+  margin: 1em 0;
+  display: inline-block;
 }
 
 .txt-align-right {
-	text-align:right;
+  text-align: right;
 }
 
 .inlineMessage.neutral {
-	background-color:#EFEFEF;
-	border-color:#CCC;
+  background-color: #EFEFEF;
+  border-color: #CCC;
 }
 
 .processManager-main #filter {
@@ -73,4 +73,139 @@
   margin: 0px 10px;
   padding: 7px 20px;
   text-decoration: none;
+}
+
+#all-remplacement {
+  width: 45%;
+  float: right;
+  margin-left: 3%;
+  margin-right: 2%;
+  padding-top: 1em;
+}
+
+#my-remplacement {
+  width: 46%;
+  float: right;
+  padding-right: 3%;
+  border-right: 1px solid #ccc;
+}
+
+/* si vu lecteur bouton de création d'un remplacement à mettre avant */
+#my-remplacement.lecteur-view {
+  width: 100%;
+  float: none;
+  padding-right: 0;
+  border: 0;
+  position: relative;
+}
+
+#my-remplacement.employe {
+  width: 100%;
+  float: none;
+  padding-right: 0;
+  border: 0;
+  position: relative;
+}
+
+#my-remplacement #menubar-creation-actions {
+  margin: 1em 0;
+}
+
+.as-incumbent li .incumbent,
+.as-substitute li .substitute {
+  display: none;
+}
+
+.replacement-module .substitute, .replacement-module .incumbent {
+  display: inline;
+}
+
+.replacement-module .all .incumbent::before {
+  content: '[';
+}
+
+.replacement-module .all .incumbent::after {
+  content: ']';
+}
+
+#all-remplacement .all li .substitute {
+  font-weight: bold;
+}
+
+.header.title h3 {
+  margin: 0em 0 1em;
+  padding: 0;
+  font-size: 130%;
+  font-weight: 100;
+  line-height: 90%;
+}
+
+#all-remplacement .header.title h3 {
+  margin: 1em 0 1em;
+}
+.replacement-form label {
+  white-space: nowrap;
+}
+
+.replacement-module .as-substitute {
+  margin-top: 3em
+}
+
+.replacement-module ul {
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
+}
+
+.replacement-module li {
+  background-color: #f0f0f0;
+  border: 1px solid #cccccc;
+  border-radius: 8px;
+  -webkit-border-radius: 8px;
+  -moz-border-radius: 8px;
+  padding: 13px 82px 13px 13px;
+  margin: 0 0 1em 0;
+  position: relative;
+}
+
+.replacement-module li .actions {
+  position: absolute;
+  right: 13px;
+  top: 13px;
+}
+
+.replacement-module li .period {
+  font-weight: bold;
+}
+
+#replacement-module .inlineMessage {
+  text-align: center;
+  padding-left: inherit;
+}
+
+#replacement-module .inlineMessage .your-role {
+  font-weight: bold;
+}
+
+@media screen and (min-width: 10px) and   (max-width: 800px) {
+
+  #my-remplacement {
+    width: 100%;
+    float: none;
+    padding-right: 0;
+    border-right: 0;
+  }
+
+  #all-remplacement {
+    width: 100%;
+    float: none;
+    margin-left: 0%;
+    margin-right: 0%;
+    padding-top: 0;
+  }
+
+  #all-remplacement #menubar-creation-actions {
+    margin: 0;
+  }
+
 }

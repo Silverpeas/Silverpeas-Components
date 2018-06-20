@@ -43,10 +43,12 @@ public final class NamedValue implements Serializable {
 
   public final String name;
   public final String value;
+  public final boolean creationOne;
 
-  public NamedValue(String name, String value) {
+  NamedValue(String name, String value, final boolean creationOne) {
     this.name = name;
     this.value = value;
+    this.creationOne = creationOne;
   }
 
   public String getName() {
@@ -55,6 +57,10 @@ public final class NamedValue implements Serializable {
 
   public String getValue() {
     return value;
+  }
+
+  public boolean isCreationOne() {
+    return creationOne;
   }
 
   public boolean equals(Object o) {

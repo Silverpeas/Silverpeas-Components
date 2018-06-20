@@ -23,6 +23,7 @@
  */
 package org.silverpeas.processmanager;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
@@ -84,6 +85,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.silverpeas.core.contribution.attachment.AttachmentService.VERSION_MODE;
 import static org.silverpeas.core.workflow.util.WorkflowUtil.getItemByName;
@@ -2130,6 +2132,12 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    */
   private Optional<NamedValue> getRoleLabel(final Replacement replacement, final Role[] roles,
       final String roleName, final String lang) {
+    final List<String> creationRoles;
+    try {
+      creationRoles = Stream.of(processModel.getCreationRoles()).collect(Collectors.toList());
+    } catch (WorkflowException e) {
+      throw new SilverpeasRuntimeException(e);
+    }
     NamedValue label = null;
     final Function<String, NamedValue> getRoleNamedValue = l -> {
       String rName = roleName;
@@ -2139,7 +2147,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
             replacement.getIncumbent().getFullName());
         rName = replacement.getId() + ":" + roleName;
       }
-      return new NamedValue(rName, rLabel);
+      return new NamedValue(rName, rLabel, creationRoles.contains(rName));
     };
     if ("supervisor".equals(roleName)) {
       label = getRoleNamedValue.apply(getString("processManager.supervisor"));

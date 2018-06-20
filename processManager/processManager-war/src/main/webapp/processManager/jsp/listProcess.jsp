@@ -45,6 +45,7 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 
+<fmt:message var="manageReplacementLabel" key="processManager.replacements.manage"/>
 <fmt:message var="createProcessLabel" key="processManager.createProcess"/>
 <fmt:message var="userSettingsLabel" key="processManager.userSettings"/>
 <fmt:message var="csvExportLabel" key="processManager.csvExport"/>
@@ -175,6 +176,11 @@
 </head>
 <body class="yui-skin-sam processManager-main currentProfile_${currentRole} page_processes">
 <view:operationPane>
+  <c:if test="${not canCreate}">
+    <fmt:message key="processManager.replacements.manage" var="opIcon" bundle="${icons}"/>
+    <c:url var="opIcon" value="${opIcon}"/>
+    <view:operation action="manageReplacements" altText="${manageReplacementLabel}" icon="${opIcon}"/>
+  </c:if>
   <c:if test="${canCreate}">
     <fmt:message key="processManager.add" var="opIcon" bundle="${icons}"/>
     <c:url var="opIcon" value="${opIcon}"/>
