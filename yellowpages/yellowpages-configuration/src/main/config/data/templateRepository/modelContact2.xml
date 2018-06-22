@@ -29,6 +29,7 @@
 	<description>Fournisseur</description>
 	<image>/weblib/xmlForms/modelContact2.gif</image>
 	<visible>true</visible>
+  <provided>true</provided>
 	<dataFileName>modelContact2/data.xml</dataFileName>
 	<viewFileName>modelContact2/view.xml</viewFileName>
 	<updateFileName>modelContact2/update.xml</updateFileName>
