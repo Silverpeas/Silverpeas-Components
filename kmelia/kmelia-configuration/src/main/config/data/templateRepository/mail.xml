@@ -3,7 +3,8 @@
     <name>Mail</name>
     <description></description>
     <visible>true</visible>
-	<applications>
+    <provided>true</provided>
+  	<applications>
         <application>kmelia</application>
     </applications>
     <viewFileName>mail/view.xml</viewFileName>
