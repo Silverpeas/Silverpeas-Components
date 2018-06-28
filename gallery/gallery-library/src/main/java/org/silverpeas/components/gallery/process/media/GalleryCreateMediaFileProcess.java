@@ -25,6 +25,7 @@ package org.silverpeas.components.gallery.process.media;
 
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.gallery.MediaUtil;
+import org.silverpeas.components.gallery.Watermark;
 import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.components.gallery.model.Photo;
 import org.silverpeas.components.gallery.model.Sound;
@@ -45,9 +46,7 @@ public class GalleryCreateMediaFileProcess extends AbstractGalleryFileProcess {
 
   private final File file;
   private final FileItem fileItem;
-  private final boolean watermark;
-  private final String watermarkHD;
-  private final String watermarkOther;
+  private final Watermark watermark;
 
   /**
    * Default hidden constructor
@@ -58,7 +57,7 @@ public class GalleryCreateMediaFileProcess extends AbstractGalleryFileProcess {
    * @param watermarkOther
    */
   protected GalleryCreateMediaFileProcess(final Media media, final Object file,
-      final boolean watermark, final String watermarkHD, final String watermarkOther) {
+      final Watermark watermark) {
     super(media);
     if (file != null) {
       if (file instanceof FileItem) {
@@ -77,8 +76,6 @@ public class GalleryCreateMediaFileProcess extends AbstractGalleryFileProcess {
       this.file = null;
     }
     this.watermark = watermark;
-    this.watermarkHD = watermarkHD;
-    this.watermarkOther = watermarkOther;
   }
 
   /**
@@ -86,13 +83,11 @@ public class GalleryCreateMediaFileProcess extends AbstractGalleryFileProcess {
    * @param media
    * @param file
    * @param watermark
-   * @param watermarkHD
-   * @param watermarkOther
    * @return
    */
   public static GalleryCreateMediaFileProcess getInstance(final Media media, final Object file,
-      final boolean watermark, final String watermarkHD, final String watermarkOther) {
-    return new GalleryCreateMediaFileProcess(media, file, watermark, watermarkHD, watermarkOther);
+      final Watermark watermark) {
+    return new GalleryCreateMediaFileProcess(media, file, watermark);
   }
 
   /*
@@ -147,10 +142,10 @@ public class GalleryCreateMediaFileProcess extends AbstractGalleryFileProcess {
     Photo photo = getMedia().getPhoto();
     if (fileItem != null) {
       MediaUtil
-          .processPhoto(fileHandler, photo, fileItem, watermark, watermarkHD, watermarkOther);
+          .processPhoto(fileHandler, photo, fileItem, watermark);
     } else {
       MediaUtil
-          .processPhoto(fileHandler, photo, file, watermark, watermarkHD, watermarkOther);
+          .processPhoto(fileHandler, photo, file, watermark);
     }
   }
 

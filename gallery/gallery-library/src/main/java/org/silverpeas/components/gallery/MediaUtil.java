@@ -227,13 +227,10 @@ public class MediaUtil {
    * @param photo the photo media
    * @param image the image to register
    * @param watermark true if watermark must be handled
-   * @param watermarkHD the primary metadata retrieved to compute the watermark
-   * @param watermarkOther the secondary metadata retrieved to compute the watermark
    * @throws Exception
    */
   public static synchronized void processPhoto(final FileHandler fileHandler, final Photo photo,
-      final FileItem image, final boolean watermark, final String watermarkHD,
-      final String watermarkOther) throws Exception {
+      final FileItem image, final Watermark watermark) throws Exception {
     if (image != null) {
       String name = image.getName();
       if (name != null) {
@@ -241,8 +238,7 @@ public class MediaUtil {
           photo.setFileName(StringUtil.normalize(image.getName()));
           final HandledFile handledImageFile = getHandledFile(fileHandler, photo);
           handledImageFile.copyInputStreamToFile(image.getInputStream());
-          new PhotoProcess(handledImageFile, photo, watermark, watermarkHD, watermarkOther)
-              .process();
+          new PhotoProcess(handledImageFile, photo, watermark).process();
         } finally {
           image.delete();
         }
@@ -258,19 +254,16 @@ public class MediaUtil {
    * @param photo the photo media
    * @param image the image to register
    * @param watermark true if watermark must be handled
-   * @param watermarkHD the primary metadata retrieved to compute the watermark
-   * @param watermarkOther the secondary metadata retrieved to compute the watermark
    * @throws Exception
    */
   public static synchronized void processPhoto(final FileHandler fileHandler, final Photo photo,
-      final File image, final boolean watermark, final String watermarkHD,
-      final String watermarkOther) throws Exception {
+      final File image, final Watermark watermark) throws Exception {
     if (image != null) {
       try {
         photo.setFileName(StringUtil.normalize(image.getName()));
         final HandledFile handledImageFile = getHandledFile(fileHandler, photo);
         fileHandler.copyFile(image, handledImageFile);
-        new PhotoProcess(handledImageFile, photo, watermark, watermarkHD, watermarkOther).process();
+        new PhotoProcess(handledImageFile, photo, watermark).process();
       } finally {
         FileUtils.deleteQuietly(image);
       }
@@ -487,18 +480,14 @@ public class MediaUtil {
   }
 
   private static class PhotoProcess extends MediaProcess<Photo> {
-    private final boolean watermark;
-    private final String watermarkHD;
-    private final String watermarkOther;
+    private final Watermark watermark;
 
     private List<MetaData> cachedIptcMetadata = null;
 
-    private PhotoProcess(final HandledFile handledFile, final Photo photo, final boolean watermark,
-        final String watermarkHD, final String watermarkOther) {
+    private PhotoProcess(final HandledFile handledFile, final Photo photo,
+        final Watermark watermark) {
       super(handledFile, photo);
       this.watermark = watermark;
-      this.watermarkHD = watermarkHD;
-      this.watermarkOther = watermarkOther;
     }
 
     private static ImageTool getImageTool() {
@@ -623,41 +612,35 @@ public class MediaUtil {
     }
 
     private String computeWatermarkText() {
-      String nameAuthor = "";
-      String nameForWatermark = "";
+      String watermarkText = "";
       Photo photo = getMedia();
-      if (watermark && photo.getFileMimeType().isIPTCCompliant()) {
-        try {
-          if (isDefined(watermarkHD)) {
-            nameAuthor = processWatermarkHD(nameAuthor, photo);
-          }
-          if (isDefined(watermarkOther)) {
-            nameAuthor = defaultStringIfNotDefined(getWatermarkValue(watermarkOther), nameAuthor);
-            if (!nameAuthor.isEmpty()) {
-              nameForWatermark = nameAuthor;
+      if (watermark != null && watermark.isEnabled()) {
+          try {
+            processWatermarkHD(photo);
+            if (watermark.isDefinedForThumbnails()) {
+              watermarkText = defaultStringIfNotDefined(
+                  getWatermarkValue(photo, watermark.getIPTCPropertyForThumbnails()),
+                  watermark.getTextForThumbnails());
             }
+          } catch (MediaMetadataException e) {
+            SilverLogger.getLogger(MediaUtil.class).silent(e).error(
+                "Bad image file format " + super.getHandledFile().getFile().getPath() + ": " +
+                    e.getMessage());
+          } catch (IOException e) {
+            SilverLogger.getLogger(MediaUtil.class).silent(e).error(
+                "Bad metadata encoding in image " + super.getHandledFile().getFile().getPath() +
+                    ": " + e.getMessage());
           }
-        } catch (MediaMetadataException e) {
-          SilverLogger.getLogger(MediaUtil.class)
-              .silent(e)
-              .error("Bad image file format " + super.getHandledFile().getFile().getPath() + ": " +
-                  e.getMessage());
-        } catch (IOException e) {
-          SilverLogger.getLogger(MediaUtil.class)
-              .silent(e)
-              .error(
-                  "Bad metadata encoding in image " + super.getHandledFile().getFile().getPath() +
-                      ": " +
-                      e.getMessage());
-        }
       }
-      return nameForWatermark;
+      return watermarkText;
     }
 
-    private String processWatermarkHD(String nameAuthor, final Photo photo)
+    private String processWatermarkHD(final Photo photo)
         throws MediaMetadataException, IOException {
       // Photo duplication that is stamped with a Watermark.
-      nameAuthor = defaultStringIfNotDefined(getWatermarkValue(watermarkHD), nameAuthor);
+      String nameAuthor =
+          defaultStringIfNotDefined(getWatermarkValue(photo, watermark.getIPTCPropertyForHD()),
+              watermark.getTextForHD());
       if (!nameAuthor.isEmpty()) {
         final HandledFile watermarkFile = super.getHandledFile()
             .getParentHandledFile()
@@ -683,8 +666,11 @@ public class MediaUtil {
       return cachedIptcMetadata;
     }
 
-    private String getWatermarkValue(final String property)
+    private String getWatermarkValue(final Photo photo, final String property)
         throws MediaMetadataException, IOException {
+      if (!watermark.isBasedOnIPTC() || !photo.getFileMimeType().isIPTCCompliant()) {
+        return null;
+      }
       String value = null;
       final List<MetaData> iptcMetadata = getIptcMetaData();
       for (final MetaData metadata : iptcMetadata) {
