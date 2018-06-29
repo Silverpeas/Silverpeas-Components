@@ -70,6 +70,7 @@
   </script>
 </head>
 <body>
+<view:progressMessage/>
 <view:browseBar>
   <view:browseBarElt link="manageReplacements" label="${manageReplacementLabel}"/>
 </view:browseBar>
