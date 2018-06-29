@@ -24,21 +24,19 @@
 
 package org.silverpeas.processmanager.servlets;
 
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.core.exception.UtilException;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.file.FileUploadUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.processmanager.ProcessManagerException;
+import org.silverpeas.processmanager.ProcessManagerSessionController;
+
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.fileupload.FileItem;
-
-import org.silverpeas.processmanager.ProcessManagerException;
-import org.silverpeas.processmanager.ProcessManagerSessionController;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.file.FileUploadUtil;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.exception.UtilException;
-import org.silverpeas.core.web.http.HttpRequest;
 
 /**
  * A SessionSafeFunctionHandler must be used to prevent conflicts in HTTP Session when user
@@ -52,7 +50,7 @@ public abstract class SessionSafeFunctionHandler implements FunctionHandler {
   private static final String CANCEL_PARAMETER = "cancel";
 
   @Override
-  final public String getDestination(String function, ProcessManagerSessionController session,
+  public final String getDestination(String function, ProcessManagerSessionController session,
       HttpServletRequest req) throws ProcessManagerException {
     HttpRequest request = HttpRequest.decorate(req);
     List<FileItem> items = null;
@@ -69,8 +67,7 @@ public abstract class SessionSafeFunctionHandler implements FunctionHandler {
           request.setAttribute("ALREADY_PROCESSED", true);
         }
       } catch (UtilException e) {
-        SilverTrace.error("processManager", "SessionSafeFunctionHandler.getDestination()",
-            "processManager.TOKENID_CHECK_FAILURE", e);
+        SilverLogger.getLogger(this).error(e);
       }
     }
 
@@ -174,10 +171,10 @@ public abstract class SessionSafeFunctionHandler implements FunctionHandler {
       // CASE 2 : an action is being processed, user open another window and try to access same
       // workflow
       if (!StringUtil.isDefined(givenTokenId)) {
-        SilverTrace.error("processManager", "SessionSafeFunctionHandler.doVerifications",
-            "processManager.BAD_TOKEN",
-            "CASE 2 : an action is being processed, user open another window and try to access " +
-                "same workflow");
+        SilverLogger.getLogger(this)
+            .error("Provided token empty! " +
+                "CASE 2: an action is being processed, user open another window and try to access" +
+                " same workflow");
         return false;
       } else {
         // CASE 3 : user submits action form correctly
@@ -191,9 +188,9 @@ public abstract class SessionSafeFunctionHandler implements FunctionHandler {
         // then user open a instance procedure from same workflow
         // and at least try submit action form from the first window
         else {
-          SilverTrace.error("processManager", "SessionSafeFunctionHandler.doVerifications",
-              "processManager.BAD_TOKEN",
-              "CASE 4 : an action is being processed, user open another window and logged in");
+          SilverLogger.getLogger(this)
+              .error("Bad token " + givenTokenId +
+                  "CASE 4: an action is being processed, user open another window and logged in");
           return false;
         }
       }
@@ -201,9 +198,9 @@ public abstract class SessionSafeFunctionHandler implements FunctionHandler {
       // CASE 5 : an action is being processed, user open another window and logged in =>
       // previous Silverpeas session data is lost then try submit action form from the first window
       if (StringUtil.isDefined(givenTokenId)) {
-        SilverTrace.error("processManager", "SessionSafeFunctionHandler.doVerifications",
-            "processManager.BAD_TOKEN",
-            "CASE 5 : an action is being processed, user open another window and logged in");
+        SilverLogger.getLogger(this)
+            .error("No current token" +
+                "CASE 5: an action is being processed, user open another window and logged in");
         return false;
       }
       // CASE 6 : user navigates in only one window, or in several windows but only in read-only
@@ -247,7 +244,7 @@ public abstract class SessionSafeFunctionHandler implements FunctionHandler {
    * @return the JSP servlet to be forwarded to.
    * @throws ProcessManagerException
    */
-  abstract protected String computeDestination(String function,
+  protected abstract String computeDestination(String function,
       ProcessManagerSessionController session, HttpServletRequest request, List<FileItem> items)
       throws ProcessManagerException;
 

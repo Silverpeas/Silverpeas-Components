@@ -24,6 +24,7 @@
 package org.silverpeas.processmanager;
 
 import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.DataRecordUtil;
@@ -65,6 +66,7 @@ import org.silverpeas.core.workflow.api.instance.Question;
 import org.silverpeas.core.workflow.api.instance.UpdatableProcessInstance;
 import org.silverpeas.core.workflow.api.model.*;
 import org.silverpeas.core.workflow.api.task.Task;
+import org.silverpeas.core.workflow.api.user.Replacement;
 import org.silverpeas.core.workflow.api.user.User;
 import org.silverpeas.core.workflow.api.user.UserInfo;
 import org.silverpeas.core.workflow.api.user.UserSettings;
@@ -80,6 +82,8 @@ import org.silverpeas.processmanager.record.QuestionTemplate;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static org.silverpeas.core.contribution.attachment.AttachmentService.VERSION_MODE;
 import static org.silverpeas.core.workflow.util.WorkflowUtil.getItemByName;
@@ -121,8 +125,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     // Reset the user rights for creation
     resetCreationRights();
 
-
-    // Load user informations
+    // Load user information
     userSettings = UserSettingsService.get().get(mainSessionCtrl.getUserId(), peasId);
   }
 
@@ -140,7 +143,6 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
         "org.silverpeas.processManager.multilang.processManagerBundle",
         "org.silverpeas.processManager.settings.processManagerIcons",
         "org.silverpeas.processManager.settings.processManagerSettings");
-
     fatalException = fatal;
   }
 
@@ -299,9 +301,10 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     }
 
     try {
-      String[] groupIds = getOrganisationController().getAllGroupIdsOfUser(getUserId());
+      User activeUser = getActiveUser();
+      String[] groupIds = getOrganisationController().getAllGroupIdsOfUser(activeUser.getUserId());
       List<ProcessInstance> processList = Workflow.getProcessInstanceManager()
-          .getProcessInstances(peasId, currentUser, currentRole, getUserRoles(), groupIds);
+          .getProcessInstances(peasId, activeUser, currentRole, getUserRoles(), groupIds);
       currentProcessList = getCurrentFilter().filter(processList, currentRole, getLanguage());
     } catch (WorkflowException e) {
       throw new ProcessManagerException(PROCESS_MANAGER_SESSION_CONTROLLER,
@@ -673,7 +676,15 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    */
   public void resetCurrentRole(String role) throws ProcessManagerException {
     if (role != null && role.length() > 0) {
-      this.currentRole = role;
+      final String[] roleCtx = role.split(":");
+      if (roleCtx.length == 2) {
+        Replacement.get(roleCtx[0]).ifPresent(r -> {
+          this.currentReplacement = r;
+          this.currentRole = roleCtx[1];
+        });
+      } else {
+        this.currentRole = role;
+      }
     }
     resetCreationRights();
     resetProcessFilter();
@@ -688,27 +699,23 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     if (userRoleLabels == null) {
       String lang = getLanguage();
       Role[] roles = processModel.getRoles();
-
       List<NamedValue> labels = new ArrayList<>();
-      NamedValue label;
 
-      // quadratic search ! but it's ok : the list are about 3 or 4 length.
-      for (final String userRole : userRoles) {
-        if ("supervisor".equals(userRole)) {
-          label = new NamedValue("supervisor", getString("processManager.supervisor"));
-          labels.add(label);
-        } else {
-          for (final Role role : roles) {
-            if (userRole.equals(role.getName())) {
-              label = new NamedValue(userRole, role.getLabel(currentRole, lang));
-              labels.add(label);
-            }
-          }
+      List<Replacement> replacements = getUserReplacements();
+      for (final Replacement replacement : replacements) {
+        final List<String> incumbentRoles = getSubstituteRolesOf(replacement.getIncumbent());
+        for (final String roleName : incumbentRoles) {
+          getRoleLabel(replacement, roles, roleName, lang).ifPresent(labels::add);
         }
       }
 
-      Collections.sort(labels, NamedValue.ascendingValues);
-      userRoleLabels = labels.toArray(new NamedValue[labels.size()]);
+      // quadratic search ! but it's ok : the list are about 3 or 4 length.
+      for (final String userRole : userRoles) {
+        getRoleLabel(null, roles, userRole, lang).ifPresent(labels::add);
+      }
+
+      labels.sort(NamedValue.ascendingValues);
+      userRoleLabels = labels.toArray(new NamedValue[0]);
     }
 
     return userRoleLabels;
@@ -2085,6 +2092,83 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   }
 
   /**
+   * Gets all the replacements in which the current user can play as a substitute in the workflow.
+   * @return a list of possible replacements.
+   */
+  public List<Replacement> getUserReplacements() {
+    return Replacement.getAllBy(currentUser, peasId);
+  }
+
+  /**
+   * Gets the roles of the specified user in the underlying workflow the current user can play as
+   * a substitute of him. The current user can play the roles of the specified user only and only
+   * if he has the same role in the workflow.
+   * @param user a user of the workflow.
+   * @return a list of roles.
+   */
+  private List<String> getSubstituteRolesOf(final User user) {
+    final List<String> listOfUserRoles = Arrays.asList(userRoles);
+    final String[] roles = getOrganisationController().getUserProfiles(user.getUserId(), peasId);
+    return SilverpeasRole.from(roles)
+        .stream()
+        .map(SilverpeasRole::getName)
+        .filter(listOfUserRoles::contains)
+        .collect(Collectors.toList());
+  }
+
+  /**
+   * Gets among the roles available in the current process, the label of the specified role in the
+   * given language.
+   * @param replacement a possible replacement for which the role is looking for. Null if the search
+   * isn't done in the context of a replacement.
+   * @param roles the roles the current process supports.
+   * @param roleName the name of a role in the supported roles of the current process.
+   * @param lang an ISO-601 code of the language in which the label should be.
+   * @return optionally a {@link NamedValue} with as name the name of the
+   * role and as value the label of the role. If no role with the specified name is present
+   * in the given list of roles, then nothing is returned.
+   */
+  private Optional<NamedValue> getRoleLabel(final Replacement replacement, final Role[] roles,
+      final String roleName, final String lang) {
+    NamedValue label = null;
+    final Function<String, NamedValue> getRoleNamedValue = l -> {
+      String rName = roleName;
+      String rLabel = l;
+      if (replacement != null) {
+        rLabel = getMultilang().getStringWithParams("processManager.substituteRoleLabel," + l,
+            replacement.getIncumbent().getFullName());
+        rName = replacement.getId() + ":" + roleName;
+      }
+      return new NamedValue(rName, rLabel);
+    };
+    if ("supervisor".equals(roleName)) {
+      label = getRoleNamedValue.apply(getString("processManager.supervisor"));
+    } else {
+      for (final Role role : roles) {
+        if (roleName.equals(role.getName())) {
+          label = getRoleNamedValue.apply(role.getLabel(currentRole, lang));
+          break;
+        }
+      }
+    }
+    return Optional.ofNullable(label);
+  }
+
+  /**
+   * Gets the current active user. It takes into account any enabled replacement. It such a
+   * replacement exists, then the replaced user is returned as the current user is being him.
+   * @return the current active user: either the current user behind the session or a replaced user
+   * from the enabled replacement.
+   */
+  private User getActiveUser() {
+    User activeUser = currentUser;
+    if (currentReplacement != null) {
+      activeUser = currentReplacement.getIncumbent();
+    }
+    return activeUser;
+  }
+
+  /**
    * The session controller saves any fatal exception.
    */
   private ProcessManagerException fatalException = null;
@@ -2103,6 +2187,10 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    */
   private String[] userRoles = null;
   private NamedValue[] userRoleLabels = null;
+  /**
+   * The current enabled replacement if any. By default none.
+   */
+  private Replacement currentReplacement = null;
   /**
    * The session saves a current User role.
    */
@@ -2143,5 +2231,4 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    * Current token Id prevents users to use several windows with the same session.
    */
   private String currentTokenId = null;
-
 }
