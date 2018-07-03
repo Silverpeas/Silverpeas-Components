@@ -32,10 +32,6 @@
     replacement.canBeDeleted = true;
   };
 
-  var __errorParamMessageStyle = {
-    bold : true
-  };
-
   Vue.component('workflow-replacement-module',
     replacementAsyncComponentRepository.get('module', {
       mixins : [VuejsApiMixin, VuejsProgressMessageMixin],
@@ -186,55 +182,26 @@
       data : function() {
         return {
           selectIncumbentApi : undefined,
-          selectSubstituteApi : undefined,
-          startDateStatus : undefined,
-          endDateStatus : undefined
+          selectSubstituteApi : undefined
         };
       },
       created : function() {
         this.extendApiWith({
-          validate : function() {
+          validateForm : function() {
             var data = this.replacement;
-            if (StringUtil.isNotDefined(data.incumbent.id)) {
-              this.api.errorMessage().add(this.formatMessage(this.rootFormMessages.mandatory,
-                  this.messages.incumbentLabel, __errorParamMessageStyle));
-            }
-            if (StringUtil.isNotDefined(data.substitute.id)) {
-              this.api.errorMessage().add(this.formatMessage(this.rootFormMessages.mandatory,
-                  this.messages.substituteLabel, __errorParamMessageStyle));
-            }
             if (data.substitute.id === data.incumbent.id) {
-              this.api.errorMessage().add(
+              this.rootFormApi.errorMessage().add(
                   this.formatMessage(this.rootFormMessages.mustBeDifferentFrom,
-                      [this.messages.substituteLabel, this.messages.incumbentLabel],
-                      __errorParamMessageStyle));
+                      [this.messages.substituteLabel, this.messages.incumbentLabel]));
             }
-            var allValid = true;
-            [{label : this.messages.startDateLabel, status : this.startDateStatus},
-              {label : this.messages.endDateLabel, status : this.endDateStatus}].forEach(
-                function(date) {
-                  if (date.status.empty) {
-                    allValid = false;
-                    this.api.errorMessage().add(
-                        this.formatMessage(this.rootFormMessages.mandatory, date.label,
-                            __errorParamMessageStyle));
-                  } else if (!date.status.valid) {
-                    allValid = false;
-                    this.api.errorMessage().add(
-                        this.formatMessage(this.rootFormMessages.correctDate, date.label,
-                            __errorParamMessageStyle));
-                  }
-            }.bind(this));
-            if (allValid &&
-                sp.moment.make(data.endDate).isBefore(sp.moment.make(data.startDate))) {
-              this.api.errorMessage().add(
+            if (sp.moment.make(data.endDate).isBefore(sp.moment.make(data.startDate))) {
+              this.rootFormApi.errorMessage().add(
                   this.formatMessage(this.rootFormMessages.correctEndDateIncludedPeriod,
-                      [this.messages.startDateLabel, this.messages.endDateLabel],
-                      __errorParamMessageStyle));
+                      [this.messages.startDateLabel, this.messages.endDateLabel]));
             }
-            return this.api.errorMessage().none();
+            return this.rootFormApi.errorMessage().none();
           },
-          updateData : function(replacementToUpdate) {
+          updateFormData : function(replacementToUpdate) {
             extendsObject(replacementToUpdate, this.replacement);
           }
         });

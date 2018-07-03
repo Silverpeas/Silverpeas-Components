@@ -2143,7 +2143,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       String rName = roleName;
       String rLabel = l;
       if (replacement != null) {
-        rLabel = getMultilang().getStringWithParams("processManager.substituteRoleLabel," + l,
+        rLabel = getMultilang().getStringWithParams("processManager.substituteRoleLabel", l,
             replacement.getIncumbent().getFullName());
         rName = replacement.getId() + ":" + roleName;
       }

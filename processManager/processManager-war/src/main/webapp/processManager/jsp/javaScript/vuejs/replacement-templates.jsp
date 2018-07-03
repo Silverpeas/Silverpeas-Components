@@ -238,8 +238,7 @@
                               name="startDate"
                               v-bind:zone-id="context.currentUser.zoneId"
                               v-bind:mandatory="true"
-                              v-model="replacement.startDate"
-                              v-on:status-change="startDateStatus = $event"></silverpeas-date-picker>
+                              v-model="replacement.startDate"></silverpeas-date-picker>
     </div>
     <label class="label-ui-dialog" for="sp_wf_replacement_form_ed">${endDateLabel}</label>
     <div class="champ-ui-dialog">
@@ -247,8 +246,7 @@
                               name="endDate"
                               v-bind:zone-id="context.currentUser.zoneId"
                               v-bind:mandatory="true"
-                              v-model="replacement.endDate"
-                              v-on:status-change="endDateStatus = $event"></silverpeas-date-picker>
+                              v-model="replacement.endDate"></silverpeas-date-picker>
     </div>
   </div>
 </silverpeas-component-template>
