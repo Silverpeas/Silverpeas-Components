@@ -35,7 +35,7 @@
 
   <groupId>org.silverpeas</groupId>
   <artifactId>components</artifactId>
-  <version>6.0.1-SNAPSHOT</version>
+  <version>6.0.1</version>
   <packaging>pom</packaging>
   <name>Silverpeas Components</name>
   <url>http://www.silverpeas.org/docs/components</url>
