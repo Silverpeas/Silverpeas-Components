@@ -25,7 +25,6 @@ package org.silverpeas.processmanager;
 
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.Group;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.DataRecordUtil;
@@ -80,6 +79,8 @@ import org.silverpeas.core.workflow.engine.user.UserSettingsService;
 import org.silverpeas.processmanager.record.QuestionRecord;
 import org.silverpeas.processmanager.record.QuestionTemplate;
 
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
@@ -97,6 +98,10 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   private static final String PROCESS_MANAGER_SESSION_CONTROLLER =
       "ProcessManagerSessionController";
+  private static final String SUPERVISOR_ROLE = "supervisor";
+  private static final String QUESTION_ACTION = "#question#";
+  private static final String RESPONSE_ACTION = "#response#";
+  private static final String RE_ASSIGN_ACTION = "#reAssign#";
 
   /**
    * Builds and init a new session controller
@@ -530,7 +535,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   }
 
   private List<String> getActiveUsers(String stateName) {
-    List<String> activeUsers = new ArrayList<String>();
+    List<String> activeUsers = new ArrayList<>();
     State state = getState(stateName);
     if (state != null) {
       activeUsers.addAll(getUsers(state.getWorkingUsers()));
@@ -672,6 +677,13 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   }
 
   /**
+   * @return the current replacement if any.
+   */
+  public Replacement getCurrentReplacement() {
+    return currentReplacement;
+  }
+
+  /**
    * Returns the current role name.
    * @param role a role
    * @throws ProcessManagerException
@@ -685,6 +697,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
           this.currentRole = roleCtx[1];
         });
       } else {
+        this.currentReplacement = null;
         this.currentRole = role;
       }
     }
@@ -707,7 +720,9 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       for (final Replacement replacement : replacements) {
         final List<String> incumbentRoles = getSubstituteRolesOf(replacement.getIncumbent());
         for (final String roleName : incumbentRoles) {
-          getRoleLabel(replacement, roles, roleName, lang).ifPresent(labels::add);
+          getRoleLabel(replacement, roles, roleName, lang)
+            .filter(n -> labels.stream().noneMatch(l -> Objects.equals(n.getValue(), l.getValue())))
+            .ifPresent(labels::add);
         }
       }
 
@@ -745,7 +760,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     }
   }
 
-  public Item[] getFolderItems() throws ProcessManagerException {
+  public Item[] getFolderItems() {
     return processModel.getDataFolder().getItems();
   }
 
@@ -780,10 +795,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    */
   public Task getCreationTask() throws ProcessManagerException {
     try {
-      Task creationTask =
-          Workflow.getTaskManager().getCreationTask(currentUser, currentRole, processModel);
-
-      return creationTask;
+      return Workflow.getTaskManager().getCreationTask(currentUser, currentRole, processModel);
     } catch (WorkflowException e) {
       throw new ProcessManagerException("SessionController",
           "processManager.CREATION_TASK_UNAVAILABLE", e);
@@ -829,7 +841,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   /**
    * Returns the an empty question record which will be filled with the question form.
    */
-  public DataRecord getEmptyQuestionRecord() throws ProcessManagerException {
+  public DataRecord getEmptyQuestionRecord() {
     return new QuestionRecord("");
   }
 
@@ -854,7 +866,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   /**
    * Returns the an empty question record which will be filled with the question form.
    */
-  public DataRecord getQuestionRecord(String questionId) throws ProcessManagerException {
+  public DataRecord getQuestionRecord(String questionId) {
     Question question = getQuestion(questionId);
     return new QuestionRecord(question.getQuestionText());
   }
@@ -935,7 +947,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     Actor[] oldUsers;
     List<Actor> oldActors = new ArrayList<>();
     List<Actor> newActors = new ArrayList<>();
-    Map<String, String> changes = new HashMap<String, String>();
+    Map<String, String> changes = new HashMap<>();
 
     try {
       WorkflowEngine wfEngine = Workflow.getWorkflowEngine();
@@ -1317,7 +1329,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   }
 
   public List<StepVO> getSteps(String strEnlightedStep) {
-    List<StepVO> stepsVO = new ArrayList<StepVO>();
+    List<StepVO> stepsVO = new ArrayList<>();
 
     // get step from last recent to older
     HistoryStep[] steps = getSortedHistorySteps(false);
@@ -1451,11 +1463,11 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     String actionName = null;
 
     try {
-      if ("#question#".equals(step.getAction())) {
+      if (QUESTION_ACTION.equals(step.getAction())) {
         actionName = getString("processManager.question");
-      } else if ("#response#".equals(step.getAction())) {
+      } else if (RESPONSE_ACTION.equals(step.getAction())) {
         actionName = getString("processManager.response");
-      } else if ("#reAssign#".equals(step.getAction())) {
+      } else if (RE_ASSIGN_ACTION.equals(step.getAction())) {
         actionName = getString("processManager.reAffectation");
       } else {
         action = processModel.getAction(step.getAction());
@@ -1474,7 +1486,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    */
   public Form getStepForm(HistoryStep step) throws ProcessManagerException {
     try {
-      if ("#question#".equals(step.getAction()) || "#response#".equals(step.getAction())) {
+      if (QUESTION_ACTION.equals(step.getAction()) || RESPONSE_ACTION.equals(step.getAction())) {
         return getQuestionForm(true);
       } else {
         return processModel.getPresentationForm(step.getAction(), currentRole, getLanguage());
@@ -1491,7 +1503,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   private DataRecord getStepRecord(HistoryStep step) {
     try {
       final Date actionDate = step.getActionDate();
-      if ("#question#".equals(step.getAction())) {
+      if (QUESTION_ACTION.equals(step.getAction())) {
         final Optional<Question> question = Arrays.stream(currentProcessInstance.getQuestions()).filter(q-> {
           if (step.getResolvedState().equals(q.getFromState().getName())) {
             final Date questionDate = q.getQuestionDate();
@@ -1501,7 +1513,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
           return false;
         }).findFirst();
         return question.<DataRecord>map(q -> new QuestionRecord(q.getQuestionText())).orElse(null);
-      } else if ("#response#".equals(step.getAction())) {
+      } else if (RESPONSE_ACTION.equals(step.getAction())) {
         final Optional<Question> question = Arrays.stream(currentProcessInstance.getQuestions()).filter(q -> {
           if (step.getResolvedState().equals(q.getTargetState().getName())) {
             final Date responseDate = q.getResponseDate();
@@ -1716,11 +1728,11 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   }
 
   private boolean checkUserIsInstanceSupervisor(String processId) throws ProcessManagerException {
-    if ("supervisor".equalsIgnoreCase(getCurrentRole())) {
+    if (SUPERVISOR_ROLE.equalsIgnoreCase(getCurrentRole())) {
       try {
         ProcessInstance processInstance =
             Workflow.getProcessInstanceManager().getProcessInstance(processId);
-        List<User> users = processInstance.getUsersInRole("supervisor");
+        List<User> users = processInstance.getUsersInRole(SUPERVISOR_ROLE);
         if (users != null && !users.isEmpty()) {
           for (User user : users) {
             if (user.getUserId().equals(getUserId())) {
@@ -2018,7 +2030,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     return csvFilename;
   }
 
-  private List<String> getCSVCols() throws ProcessManagerException, FormException {
+  private List<String> getCSVCols() throws FormException {
     List<String> csvCols = new ArrayList<>();
     Item[] items = getFolderItems();
     RecordTemplate listHeaders = getProcessListHeaders();
@@ -2109,11 +2121,12 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    * @return a list of roles.
    */
   private List<String> getSubstituteRolesOf(final User user) {
-    final List<String> listOfUserRoles = Arrays.asList(userRoles);
+    final List<String> creationRoles = getCreationRoles();
+    final List<String> listOfUserRoles = Stream.of(userRoles)
+        .filter(r -> !creationRoles.contains(r))
+        .collect(Collectors.toList());
     final String[] roles = getOrganisationController().getUserProfiles(user.getUserId(), peasId);
-    return SilverpeasRole.from(roles)
-        .stream()
-        .map(SilverpeasRole::getName)
+    return Stream.of(roles)
         .filter(listOfUserRoles::contains)
         .collect(Collectors.toList());
   }
@@ -2132,12 +2145,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    */
   private Optional<NamedValue> getRoleLabel(final Replacement replacement, final Role[] roles,
       final String roleName, final String lang) {
-    final List<String> creationRoles;
-    try {
-      creationRoles = Stream.of(processModel.getCreationRoles()).collect(Collectors.toList());
-    } catch (WorkflowException e) {
-      throw new SilverpeasRuntimeException(e);
-    }
+    final List<String> creationRoles = getCreationRoles();
     NamedValue label = null;
     final Function<String, NamedValue> getRoleNamedValue = l -> {
       String rName = roleName;
@@ -2149,7 +2157,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       }
       return new NamedValue(rName, rLabel, creationRoles.contains(rName));
     };
-    if ("supervisor".equals(roleName)) {
+    if (SUPERVISOR_ROLE.equals(roleName)) {
       label = getRoleNamedValue.apply(getString("processManager.supervisor"));
     } else {
       for (final Role role : roles) {
@@ -2162,6 +2170,16 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     return Optional.ofNullable(label);
   }
 
+  private List<String> getCreationRoles() {
+    final List<String> creationRoles;
+    try {
+      creationRoles = Stream.of(processModel.getCreationRoles()).collect(Collectors.toList());
+    } catch (WorkflowException e) {
+      throw new SilverpeasRuntimeException(e);
+    }
+    return creationRoles;
+  }
+
   /**
    * Gets the current active user. It takes into account any enabled replacement. It such a
    * replacement exists, then the replaced user is returned as the current user is being him.
@@ -2172,6 +2190,11 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     User activeUser = currentUser;
     if (currentReplacement != null) {
       activeUser = currentReplacement.getIncumbent();
+      // verifying the role, technical security in case an HTTP request is performed manually
+      final List<String> incumbentRoles = getSubstituteRolesOf(activeUser);
+      if (!incumbentRoles.contains(currentRole)) {
+        throw new WebApplicationException(Response.Status.FORBIDDEN);
+      }
     }
     return activeUser;
   }

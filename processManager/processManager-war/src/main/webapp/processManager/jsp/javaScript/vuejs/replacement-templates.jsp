@@ -131,7 +131,8 @@
       <silverpeas-form-pane v-on:api="addFormApi = $event"
                             v-bind:manualActions="true">
         <workflow-replacement-form
-            v-bind:replacement="replacement"></workflow-replacement-form>
+            v-bind:replacement="replacement"
+            v-bind:contentReadyDeferred="popinOpenDeferred"></workflow-replacement-form>
       </silverpeas-form-pane>
     </silverpeas-popin>
     <!-- MODIFY POPIN -->
@@ -141,7 +142,8 @@
       <silverpeas-form-pane v-on:api="modifyFormApi = $event"
                             v-bind:manualActions="true">
         <workflow-replacement-form
-            v-bind:replacement="replacement"></workflow-replacement-form>
+            v-bind:replacement="replacement"
+            v-bind:contentReadyDeferred="popinOpenDeferred"></workflow-replacement-form>
       </silverpeas-form-pane>
     </silverpeas-popin>
     <!-- DELETE POPIN -->

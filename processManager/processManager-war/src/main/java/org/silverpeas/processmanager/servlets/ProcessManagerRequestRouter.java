@@ -216,16 +216,6 @@ public class ProcessManagerRequestRouter
     }
   };
 
-  private static FunctionHandler enableReplacementHandler = new SessionSafeFunctionHandler() {
-    @Override
-    protected String computeDestination(final String function,
-        final ProcessManagerSessionController session, final HttpServletRequest request,
-        final List<FileItem> items) throws ProcessManagerException {
-      String replacementId = request.getParameter("replacement");
-      return listProcessHandler.getDestination(function, session, request);
-    }
-  };
-
   /**
    * The filterProcess handler.
    */
@@ -1074,6 +1064,7 @@ public class ProcessManagerRequestRouter
     }));
     request.setAttribute("replacements", session.getUserReplacements());
     request.setAttribute("currentRole", session.getCurrentRole());
+    request.setAttribute("currentReplacement", session.getCurrentReplacement());
     request.setAttribute("canCreate", canCreate);
     request.setAttribute("process", session.getCurrentProcessInstance());
     request.setAttribute("isActiveUser", session.isActiveUser());

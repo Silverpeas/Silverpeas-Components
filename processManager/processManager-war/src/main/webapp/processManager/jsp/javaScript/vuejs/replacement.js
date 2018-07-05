@@ -101,6 +101,7 @@
       data : function() {
         return {
           replacement : {},
+          popinOpenDeferred : undefined,
           addPopinApi : undefined,
           addFormApi : undefined,
           modifyPopinApi : undefined,
@@ -119,12 +120,15 @@
           },
           modify : function(replacementToModify) {
             notyReset();
+            jQuery.popup.showWaiting();
+            this.popinOpenDeferred = sp.promise.deferred();
             this.replacement =
                 extendsObject(this.replacementService.getTools().newReplacementEntity(),
                     replacementToModify);
             if (this.isCreation) {
               this.replacement.incumbent.id = this.context.currentUser.id;
               this.addPopinApi.open({
+                openPromise : this.popinOpenDeferred.promise,
                 callback : function() {
                   return this.addFormApi.validate().then(function(replacementToCreate) {
                     return this.saveReplacement(replacementToCreate);
@@ -133,6 +137,7 @@
               });
             } else {
               this.modifyPopinApi.open({
+                openPromise : this.popinOpenDeferred.promise,
                 callback : function() {
                   return this.modifyFormApi.validate().then(function(replacementToModify) {
                     return this.saveReplacement(replacementToModify);
@@ -140,9 +145,11 @@
                 }.bind(this)
               });
             }
+            this.popinOpenDeferred.promise.then(jQuery.popup.hideWaiting, jQuery.popup.hideWaiting);
           },
           remove : function(replacementToDelete) {
             notyReset();
+            this.popinOpenDeferred = undefined;
             this.replacement = replacementToDelete;
             this.deletePopinApi.open({
               callback : function() {
@@ -177,7 +184,8 @@
       mixins : [VuejsFormApiMixin, VuejsI18nTemplateMixin, ReplacementEntityMixin],
       inject : ['context', 'rootFormMessages'],
       props : {
-        replacement : Object
+        replacement : Object,
+        contentReadyDeferred : Object
       },
       data : function() {
         return {
@@ -209,8 +217,13 @@
       watch : {
         replacement : function() {
           Vue.nextTick(function() {
-            this.selectIncumbentApi.refresh();
-            this.selectSubstituteApi.refresh();
+            var __promises = [];
+            __promises.push(this.selectIncumbentApi.refresh());
+            __promises.push(this.selectSubstituteApi.refresh());
+            sp.promise.whenAllResolved(__promises).then(function() {
+              this.contentReadyDeferred.resolve();
+              this.selectSubstituteApi.focus();
+            }.bind(this));
           }.bind(this));
         }
       },

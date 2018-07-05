@@ -97,6 +97,7 @@
 <c:set var="hasUserSettings" value="${silfn:booleanValue(requestScope.hasUserSettings)}"/>
 <c:set var="isCSVExportEnabled" value="${silfn:booleanValue(requestScope.isCSVExportEnabled)}"/>
 <c:set var="currentRole" value="${requestScope.currentRole}"/>
+<c:set var="currentReplacement" value="${requestScope.currentReplacement}"/>
 <c:set var="isCurrentRoleSupervisor" value="${'supervisor' eq fn:toLowerCase(currentRole)}"/>
 <c:set var="collapse" value="${silfn:booleanValue(empty requestScope.collapse ? 'true' : requestScope.collapse)}"/>
 
@@ -176,7 +177,7 @@
 </head>
 <body class="yui-skin-sam processManager-main currentProfile_${currentRole} page_processes">
 <view:operationPane>
-  <c:if test="${not canCreate}">
+  <c:if test="${not canCreate and currentReplacement == null}">
     <fmt:message key="processManager.replacements.manage" var="opIcon" bundle="${icons}"/>
     <c:url var="opIcon" value="${opIcon}"/>
     <view:operation action="manageReplacements" altText="${manageReplacementLabel}" icon="${opIcon}"/>
@@ -202,12 +203,16 @@
 <view:window>
   <view:frame>
     <c:if test="${fn:length(roles) > 1}">
+      <c:set var="currentSelectedRole" value="${currentRole}"/>
+      <c:if test="${currentReplacement != null}">
+        <c:set var="currentSelectedRole" value="${currentReplacement.id}:${currentSelectedRole}"/>
+      </c:if>
       <div id="roles">
         <form name="roleChoice" method="post" action="changeRole">
           <label class="textePetitBold" for="current-role">${yourRoleLabel} :&nbsp;</label>
           <select id="current-role" name="role" onchange="spProgressMessage.show();document.roleChoice.submit()">
             <c:forEach var="role" items="${roles}">
-              <option ${role.name eq currentRole ? 'selected' : ''} value="${role.name}">${role.value}</option>
+              <option ${role.name eq currentSelectedRole ? 'selected' : ''} value="${role.name}">${role.value}</option>
             </c:forEach>
           </select>
         </form>
