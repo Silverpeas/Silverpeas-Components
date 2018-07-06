@@ -32,6 +32,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/kmelia" prefix="kmeliaTags" %>
 <%
   response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
   response.setHeader("Pragma", "no-cache"); //HTTP 1.0
@@ -51,6 +52,7 @@
 <%@ page import="org.silverpeas.core.contribution.content.form.DataRecord" %>
 <%@ page import="org.silverpeas.core.contribution.content.form.PagesContext" %>
 <%@ page import="org.silverpeas.core.admin.user.model.User" %>
+<%@ page import="org.silverpeas.core.contribution.publication.model.Link" %>
 
 <c:set var="userLanguage" value="${requestScope.resources.language}"/>
 <c:set var="contentLanguage" value="${requestScope.Language}"/>
@@ -77,6 +79,7 @@
   boolean notificationAllowed = (Boolean) request.getAttribute("NotificationAllowed");
   boolean ratingsAllowed = (Boolean) request.getAttribute("PublicationRatingsAllowed");
   boolean attachmentsEnabled = (Boolean) request.getAttribute("AttachmentsEnabled");
+  boolean seeAlsoEnabled = (Boolean) request.getAttribute("SeeAlsoEnabled");
   boolean lastVisitorsEnabled = (Boolean) request.getAttribute("LastVisitorsEnabled");
   boolean draftOutTaxonomyOK = (Boolean) request.getAttribute("TaxonomyOK");
   boolean validatorsOK = (Boolean) request.getAttribute("ValidatorsOK");
@@ -129,6 +132,7 @@
   List<String> availableFormats = kmeliaScc.getAvailableFormats();
 
   boolean sharingAllowed = kmeliaPublication.getDetail().isSharingAllowedForRolesFrom(currentUser);
+  List<Link> linkedPublications = pubComplete.getLinkedPublications(user_id);
 
   //Vrai si le user connecte est le createur de cette publication ou si il est admin
   boolean isOwner = false;
@@ -489,6 +493,12 @@
             	operationPane.addOperation("#", resources.getString("kmelia.AddFile"), "javascript:addAttachment('" +pubDetail.getId() + "')");
             }
 
+            if (seeAlsoEnabled) {
+              operationPane.addOperation("#", resources.getString("AddLinkPub"),
+                  "javascript:goToOperationInAnotherWindow('publicationLinksManager.jsp', '" +
+                      pubDetail.getId() + "', 'Search')");
+            }
+
             if (kmeliaScc.isDraftEnabled() && !pubDetail.haveGotClone()) {
               if (pubDetail.isDraft()) {
                 operationPane.addOperation(pubDraftOutSrc, resources.getString("PubDraftOut"), "javascript:pubDraftOut()");
@@ -531,7 +541,7 @@
         if (isOwner && validatorsOK) {
           KmeliaDisplayHelper.displayAllOperations(id, kmeliaScc, gef, action, resources, out, kmaxMode);
         } else {
-          KmeliaDisplayHelper.displayUserOperations(id, kmeliaScc, gef, action, resources, out, kmaxMode);
+          KmeliaDisplayHelper.displayUserOperations(kmeliaScc, out);
         }
         out.println(frame.printBefore());
 
@@ -639,6 +649,9 @@
 			          /** Affichage des Infos de publication																		**/
 			          /*********************************************************************************************************************/
 			        %>
+
+              <kmeliaTags:seeAlso links="<%=linkedPublications%>" readOnly="<%=!isOwner%>" publicationPK="<%=pubDetail.getPK()%>" enabled="<%=seeAlsoEnabled%>"/>
+
 			         <div id="infoPublication" class="bgDegradeGris crud-container">
 
 			         			<% if (kmeliaScc.isAuthorUsed() && StringUtil.isDefined(pubDetail.getAuthor())) { %>

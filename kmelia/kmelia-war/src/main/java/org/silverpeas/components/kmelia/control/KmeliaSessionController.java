@@ -468,11 +468,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   public boolean isSeeAlsoEnabled() {
-    String parameterValue = getComponentParameterValue("tabSeeAlso");
-    if (!StringUtil.isDefined(parameterValue)) {
-      return false;
-    }
-    return StringUtil.getBooleanValue(parameterValue);
+    return StringUtil.getBooleanValue(getComponentParameterValue("tabSeeAlso"));
   }
 
   public boolean isPublicationRatingAllowed() {
@@ -1041,59 +1037,16 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   /**
-   * removes links between specified publication and other publications contained in links
-   * parameter
-   * @param pubId publication which you want removes the external link
-   * @param links list of links to remove
-   */
-  public void deleteInfoLinks(String pubId, List<ResourceReference> links) {
-    getKmeliaService().deleteInfoLinks(getPublicationPK(pubId), links);
-
-    // reset current publication
-    KmeliaPublication completPub = getKmeliaService().getPublication(getPublicationPK(pubId));
-    setSessionPublication(completPub);
-  }
-
-  /**
    * adds links between specified publication and other publications contained in links parameter
    * @param pubId publication which you want removes the external link
    * @param links list of links to remove
    */
-  public void addInfoLinks(String pubId, List<ResourceReference> links) {
+  private void addInfoLinks(String pubId, List<ResourceReference> links) {
     getKmeliaService().addInfoLinks(getPublicationPK(pubId), links);
 
     // reset current publication
     KmeliaPublication completPub = getKmeliaService().getPublication(getPublicationPK(pubId));
     setSessionPublication(completPub);
-  }
-
-  /**
-   * Get publications explicitly referenced by current publication. Only valid publications which
-   * are not in bin are returned. Rights of user are checked (applications and folders).
-   * @return a List of KmeliaPublication
-   * @see KmeliaPublication
-   */
-  public List<KmeliaPublication> getLinkedVisiblePublications() {
-    List<ResourceReference> seeAlsoList = getSessionPublication().getCompleteDetail().getLinkList();
-    List<ResourceReference> authorizedSeeAlsoList = new ArrayList<>();
-    for (ResourceReference curFPK : seeAlsoList) {
-      String curComponentId = curFPK.getComponentName();
-      // check if user have access to application
-      if (curComponentId != null &&
-          getOrganisationController().isComponentAvailable(curComponentId, getUserId())) {
-        authorizedSeeAlsoList.add(curFPK);
-      }
-    }
-
-    Collection<KmeliaPublication> linkedPublications = getPublications(authorizedSeeAlsoList);
-    List<KmeliaPublication> authorizedAndValidSeeAlsoList = new ArrayList<>();
-    for (KmeliaPublication pub : linkedPublications) {
-      // check if publication is valid and not in bin
-      if (pub.getDetail().isValid() && !isPublicationDeleted(pub.getDetail().getPK())) {
-        authorizedAndValidSeeAlsoList.add(pub);
-      }
-    }
-    return authorizedAndValidSeeAlsoList;
   }
 
   public synchronized KmeliaPublication getPublication(String pubId) {

@@ -88,8 +88,7 @@ function closeWindows() {
         KmeliaDisplayHelper.displayAllOperations(pubId, kmeliaScc, gef, "ModelChoice",
               resources, out, kmaxMode);
     } else {
-        KmeliaDisplayHelper.displayUserOperations(pubId, kmeliaScc, gef, "ModelChoice",
-              resources, out, kmaxMode);
+        KmeliaDisplayHelper.displayUserOperations(kmeliaScc, out);
     }
     out.println(frame.printBefore());
     

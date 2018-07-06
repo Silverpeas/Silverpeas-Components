@@ -47,6 +47,7 @@ import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygControlle
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.publication.model.Alias;
 import org.silverpeas.core.contribution.publication.model.CompletePublication;
+import org.silverpeas.core.contribution.publication.model.Link;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
@@ -621,10 +622,10 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           request.setAttribute("Languages", publicationLanguages);
 
           // see also management
-          Collection<ResourceReference> links = kmeliaPublication.getCompleteDetail().getLinkList();
-          HashSet<String> linkedList = new HashSet<String>(links.size());
-          for (ResourceReference link : links) {
-            linkedList.add(link.getId() + "-" + link.getInstanceId());
+          List<Link> links = kmeliaPublication.getCompleteDetail().getLinkList();
+          HashSet<String> linkedList = new HashSet<>(links.size());
+          for (Link link : links) {
+            linkedList.add(link.getTarget().getId() + "-" + link.getTarget().getComponentInstanceId());
           }
           // put into session the current list of selected publications (see also)
           request.getSession().setAttribute(KmeliaConstants.PUB_TO_LINK_SESSION_KEY, linkedList);
@@ -682,6 +683,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
           request.setAttribute("LastAccess", kmelia.getLastAccess(kmeliaPublication.getPk()));
           request.setAttribute("PublicationRatingsAllowed", kmelia.isPublicationRatingAllowed());
+          request.setAttribute("SeeAlsoEnabled", kmelia.isSeeAlsoEnabled());
 
           // Subscription management
           setupRequestForSubscriptionNotificationSending(request,
@@ -917,54 +919,6 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
       } else if (function.equals("ViewOnly")) {
         String id = request.getParameter("Id");
         destination = rootDestination + "publicationViewOnly.jsp?Id=" + id;
-      } else if (function.equals("SeeAlso")) {
-        String action = request.getParameter("Action");
-        if (!StringUtil.isDefined(action)) {
-          action = "LinkAuthorView";
-        }
-
-        request.setAttribute("Action", action);
-
-        // check if requested publication is an alias
-        String pubId = request.getParameter("PubId");
-        KmeliaPublication kmeliaPublication = kmelia.getSessionPublication();
-        if (StringUtil.isDefined(pubId)) {
-          kmeliaPublication = kmelia.getPublication(pubId);
-          kmelia.setSessionPublication(kmeliaPublication);
-        }
-        checkAlias(kmelia, kmeliaPublication);
-
-        if (kmeliaPublication.isAlias()) {
-          request.setAttribute("Profile", "user");
-          request.setAttribute("IsAlias", "1");
-        } else {
-          request.setAttribute("Profile", kmelia.getProfile());
-        }
-
-        destination = rootDestination + "seeAlso.jsp";
-      } else if (function.equals("DeleteSeeAlso")) {
-        String[] pubIds = request.getParameterValues("PubIds");
-
-        if (pubIds != null) {
-          List<ResourceReference> infoLinks = new ArrayList<ResourceReference>();
-          for (String pubId : pubIds) {
-            StringTokenizer tokens = new StringTokenizer(pubId, "-");
-            infoLinks.add(new ResourceReference(tokens.nextToken(), tokens.nextToken()));
-
-            // removing deleted pks from session
-            Set<String> list = (Set<String>) request.getSession()
-                .getAttribute(KmeliaConstants.PUB_TO_LINK_SESSION_KEY);
-            if (list != null) {
-              list.remove(pubId);
-            }
-          }
-
-          if (!infoLinks.isEmpty()) {
-            kmelia.deleteInfoLinks(kmelia.getSessionPublication().getId(), infoLinks);
-          }
-        }
-
-        destination = getDestination("SeeAlso", kmelia, request);
       } else if (function.equals("ImportFileUpload")) {
         destination = processFormUpload(kmelia, request, rootDestination, false);
       } else if (function.equals("ImportFilesUpload")) {

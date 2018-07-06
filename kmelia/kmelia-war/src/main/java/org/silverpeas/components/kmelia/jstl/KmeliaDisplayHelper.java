@@ -37,7 +37,6 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.components.kmelia.control.KmeliaSessionController;
-import org.silverpeas.components.kmelia.model.KmeliaPublication;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
@@ -58,12 +57,6 @@ public class KmeliaDisplayHelper {
       JspWriter out) throws IOException {
     out.println("<form Name=\"operationsForm\" ACTION=\"null\" Method=\"POST\">");
     out.println("<input type=\"hidden\" name=\"PubId\">");
-    out.println("<input type=\"hidden\" name=\"Action\">");
-    out.println("</form>");
-
-    out.println("<form Name=\"pathForm\" ACTION=\"null\" Method=\"POST\">");
-    out.println("<input type=\"hidden\" name=\"PubId\">");
-    out.println("<input type=\"hidden\" name=\"TopicId\">");
     out.println("<input type=\"hidden\" name=\"Action\">");
     out.println("</form>");
 
@@ -118,21 +111,6 @@ public class KmeliaDisplayHelper {
     out.println("haut = \"600\";");
     out.println(
         "publicationWindow = SP_openWindow(url, windowName, larg, haut, windowParams, false);");
-    out.println("}");
-    out.println("}");
-
-    out.println("function goToPathOperation(target, pubId, topicId, operation) {");
-    out.println("alertMsg = \"" + kmeliaScc.getString("PubRemplirFormulaire") + "\";");
-    out.println("if (pubId == \"\") {");
-    out.println("window.alert(alertMsg);");
-    out.println("} else { ");
-    out.println("if(window.confirm(\"" + kmeliaScc.getString("ConfirmDeletePath") + "\")){");
-    out.println("document.pathForm.PubId.value = pubId;");
-    out.println("document.pathForm.TopicId.value = topicId;");
-    out.println("document.pathForm.Action.value = operation;");
-    out.println("document.pathForm.action = target;");
-    out.println("document.pathForm.submit();");
-    out.println("}");
     out.println("}");
     out.println("}");
 
@@ -199,14 +177,6 @@ public class KmeliaDisplayHelper {
             + "', 'ViewAttachments')", "ViewAttachments".equals(action), enabled);
       }
     }
-    if (invisibleTabs.indexOf(KmeliaSessionController.TAB_SEE_ALSO) == -1 && !kmaxMode) {
-      List<KmeliaPublication> authorizedAndValidSeeAlsoList = kmeliaScc
-          .getLinkedVisiblePublications();
-      tabbedPane.addTab(resources.getString("PubReferenceeParAuteur") + " ("
-          + authorizedAndValidSeeAlsoList.size() + ")", routerUrl + "SeeAlso",
-          "LinkAuthorView".equals(action) || "SameSubjectView".equals(action)
-          || "SameTopicView".equals(action), enabled);
-    }
 
     if (invisibleTabs.indexOf(KmeliaSessionController.TAB_ACCESS_PATHS) == -1 && !kmaxMode) {
       tabbedPane.addTab(resources.getString("PubGererChemins"), routerUrl
@@ -231,39 +201,9 @@ public class KmeliaDisplayHelper {
     out.println(tabbedPane.print());
   }
 
-  public static void displayUserOperations(String id, KmeliaSessionController kmeliaScc,
-      GraphicElementFactory gef, String action, MultiSilverpeasBundle resources, JspWriter out) throws
-      IOException {
-    displayUserOperations(id, kmeliaScc, gef, action, resources, out, false);
-  }
-
-  public static void displayUserOperations(String id, KmeliaSessionController kmeliaScc,
-      GraphicElementFactory gef, String action, MultiSilverpeasBundle resources, JspWriter out,
-      boolean kmaxMode) throws IOException {
-
-    String routerUrl = URLUtil.getApplicationURL() + URLUtil.getURL(kmeliaScc
-        .getComponentRootName(), kmeliaScc.getSpaceId(), kmeliaScc.getComponentId());
+  public static void displayUserOperations(KmeliaSessionController kmeliaScc, JspWriter out)
+      throws IOException {
     displayJavascriptAndFormToOperations(kmeliaScc, out);
-    int i = 0;
-    boolean enabled = StringUtil.isDefined(id);
-    List<String> invisibleTabs = kmeliaScc.getInvisibleTabs();
-    TabbedPane tabbedPane = gef.getTabbedPane();
-    tabbedPane.addTab(resources.getString("GML.publication"), routerUrl + "ViewPublication?PubId="
-        + id, "View".equals(action) || "ViewPublication".equals(action), enabled);
-    if (invisibleTabs.indexOf(KmeliaSessionController.TAB_SEE_ALSO) == -1 && !kmaxMode) {
-      List<KmeliaPublication> authorizedAndValidSeeAlsoList = kmeliaScc
-          .getLinkedVisiblePublications();
-      tabbedPane.addTab(kmeliaScc.getString("PubReferenceeParAuteur") + " ("
-          + authorizedAndValidSeeAlsoList.size() + ")",
-          routerUrl + "SeeAlso?PubId=" + id, "LinkAuthorView".equals(action) || "SameSubjectView"
-          .equals(
-          action) || "SameTopicView".equals(action), enabled);
-      i++;
-    }
-
-    if (i > 0) {
-      out.println(tabbedPane.print());
-    }
   }
 
   public static void displayOnNewOperations(KmeliaSessionController kmeliaScc, JspWriter out)
