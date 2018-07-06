@@ -14,52 +14,52 @@ public class Watermark {
 
   private String textForThumbnails;
 
-  public boolean isEnabled() {
+  boolean isEnabled() {
     return enabled;
   }
 
-  public void setEnabled(final boolean enabled) {
+  void setEnabled(final boolean enabled) {
     this.enabled = enabled;
   }
 
-  public String getIPTCPropertyForHD() {
+  String getIPTCPropertyForHD() {
     return propertyIPTCForHD;
   }
 
-  public void setIPTCPropertyForHD(final String IPTCPropertyForHD) {
+  void setIPTCPropertyForHD(final String IPTCPropertyForHD) {
     this.propertyIPTCForHD = IPTCPropertyForHD;
   }
 
-  public String getIPTCPropertyForThumbnails() {
+  String getIPTCPropertyForThumbnails() {
     return propertyIPTCForThumbnails;
   }
 
-  public void setIPTCPropertyForThumbnails(final String IPTCPropertyForThumbnails) {
+  void setIPTCPropertyForThumbnails(final String IPTCPropertyForThumbnails) {
     this.propertyIPTCForThumbnails = IPTCPropertyForThumbnails;
   }
 
-  public String getTextForHD() {
+  String getTextForHD() {
     return textForHD;
   }
 
-  public void setTextForHD(final String textForHD) {
+  void setTextForHD(final String textForHD) {
     this.textForHD = textForHD;
   }
 
-  public String getTextForThumbnails() {
+  String getTextForThumbnails() {
     return textForThumbnails;
   }
 
-  public void setTextForThumbnails(final String textForThumbnails) {
+  void setTextForThumbnails(final String textForThumbnails) {
     this.textForThumbnails = textForThumbnails;
   }
 
-  public boolean isBasedOnIPTC() {
+  boolean isBasedOnIPTC() {
     return StringUtil.isDefined(getIPTCPropertyForHD()) ||
         StringUtil.isDefined(getIPTCPropertyForThumbnails());
   }
 
-  public boolean isDefinedForThumbnails() {
+  boolean isDefinedForThumbnails() {
     return StringUtil.isDefined(getIPTCPropertyForThumbnails()) ||
         StringUtil.isDefined(getTextForThumbnails());
   }
