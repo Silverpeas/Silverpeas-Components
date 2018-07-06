@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.gallery.service;
 
+import org.silverpeas.components.gallery.Watermark;
 import org.silverpeas.components.gallery.delegate.GalleryPasteDelegate;
 import org.silverpeas.components.gallery.delegate.MediaDataCreateDelegate;
 import org.silverpeas.components.gallery.delegate.MediaDataUpdateDelegate;
@@ -94,14 +95,14 @@ public interface GalleryService extends ApplicationService<Media> {
   void importFromRepository(UserDetail user, String componentInstanceId, File repository,
       MediaDataCreateDelegate delegate);
 
-  Media createMedia(UserDetail user, String componentInstanceId, boolean watermark,
-      String watermarkHD, String watermarkOther, MediaDataCreateDelegate delegate);
+  Media createMedia(UserDetail user, String componentInstanceId, Watermark watermark,
+      MediaDataCreateDelegate delegate);
 
   void updateMedia(UserDetail user, String componentInstanceId, Collection<String> mediaIds,
       String albumId, MediaDataUpdateDelegate delegate);
 
-  void updateMedia(UserDetail user, String componentInstanceId, Media media, boolean watermark,
-      String watermarkHD, String watermarkOther, MediaDataUpdateDelegate delegate);
+  void updateMedia(UserDetail user, String componentInstanceId, Media media, Watermark watermark,
+      MediaDataUpdateDelegate delegate);
 
   void deleteMedia(UserDetail user, String componentInstanceId, Collection<String> mediaIds);
 

@@ -25,6 +25,7 @@ package org.silverpeas.components.gallery.process.media;
 
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.gallery.MediaUtil;
+import org.silverpeas.components.gallery.Watermark;
 import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.components.gallery.process.AbstractGalleryFileProcess;
 import org.silverpeas.core.process.io.file.FileHandler;
@@ -40,24 +41,18 @@ import org.silverpeas.core.util.StringUtil;
 public class GalleryUpdateMediaFileProcess extends AbstractGalleryFileProcess {
 
   private final FileItem fileItem;
-  private final boolean watermark;
-  private final String watermarkHD;
-  private final String watermarkOther;
+  private final Watermark watermark;
 
   /**
    * Gets an instance
    * @param media
    * @param fileItem
    * @param watermark
-   * @param watermarkHD
-   * @param watermarkOther
    * @return
    */
   public static GalleryUpdateMediaFileProcess getInstance(final Media media,
-      final FileItem fileItem, final boolean watermark, final String watermarkHD,
-      final String watermarkOther) {
-    return new GalleryUpdateMediaFileProcess(media, fileItem, watermark, watermarkHD,
-        watermarkOther);
+      final FileItem fileItem, final Watermark watermark) {
+    return new GalleryUpdateMediaFileProcess(media, fileItem, watermark);
   }
 
   /**
@@ -65,16 +60,12 @@ public class GalleryUpdateMediaFileProcess extends AbstractGalleryFileProcess {
    * @param media
    * @param fileItem
    * @param watermark
-   * @param watermarkHD
-   * @param watermarkOther
    */
   protected GalleryUpdateMediaFileProcess(final Media media, final FileItem fileItem,
-      final boolean watermark, final String watermarkHD, final String watermarkOther) {
+      final Watermark watermark) {
     super(media);
     this.fileItem = fileItem;
     this.watermark = watermark;
-    this.watermarkHD = watermarkHD;
-    this.watermarkOther = watermarkOther;
   }
 
   /*
@@ -103,9 +94,7 @@ public class GalleryUpdateMediaFileProcess extends AbstractGalleryFileProcess {
         switch (getMedia().getType()) {
           case Photo:
             // Creating new images
-            MediaUtil
-                .processPhoto(fileHandler, getMedia().getPhoto(), fileItem, watermark, watermarkHD,
-                    watermarkOther);
+            MediaUtil.processPhoto(fileHandler, getMedia().getPhoto(), fileItem, watermark);
             break;
           case Video:
             // Save new video

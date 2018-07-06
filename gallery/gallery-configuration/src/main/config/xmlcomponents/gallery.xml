@@ -447,16 +447,16 @@
           <type>checkbox</type>
           <updatable>always</updatable>
           <help>
-            <message lang="fr">Permet d'insérer le nom du photographe sous forme de watermark sur les images</message>
-            <message lang="en">Insert photographer's name into image as watermark</message>
-            <message lang="de">Name des Fotografen ins Bild als Wasserzeichen einfügen</message>
+            <message lang="fr">Permet d'insérer un texte sous forme de watermark sur les images</message>
+            <message lang="en">Insert text into image as watermark</message>
+            <message lang="de">Text ins Bild als Wasserzeichen einfügen</message>
           </help>
         </parameter>
         <parameter>
           <name>WatermarkHD</name>
           <label>
-            <message lang="fr">Watermark image originale</message>
-            <message lang="en">Put a watermark on the original image</message>
+            <message lang="fr">Donnée IPTC - images originales</message>
+            <message lang="en">IPTC data - original images</message>
             <message lang="de">Setzen Sie ein Wasserzeichen auf dem Original Bild</message>
           </label>
           <order>15</order>
@@ -466,7 +466,7 @@
           <size>25</size>
           <updatable>always</updatable>
           <help>
-            <message lang="fr">Numéro de la donnée IPTC à mettre comme Watermark sur les images haute définition</message>
+            <message lang="fr">Numéro de la donnée IPTC à utiliser sur les images haute définition</message>
             <message lang="en">IPTC number to be used for watermarking on High definition image</message>
             <message lang="de">IPTC Nummer verwenden für Wasserzeichen auf High-Definition-Bild</message>
           </help>
@@ -474,9 +474,9 @@
         <parameter>
           <name>WatermarkOther</name>
           <label>
-            <message lang="fr">Watermark vignettes</message>
-            <message lang="en">Thumbnail watermark</message>
-            <message lang="de">Verwenden Sie IPTC-Daten für Wasserzeichen</message>
+            <message lang="fr">Donnée IPTC - vignettes</message>
+            <message lang="en">IPTC property - thumbnails</message>
+            <message lang="de">IPTC-Eigenschaft - Thumbnails</message>
           </label>
           <order>16</order>
           <mandatory>false</mandatory>
@@ -485,9 +485,47 @@
           <size>25</size>
           <updatable>always</updatable>
           <help>
-            <message lang="fr">Numéro de la donnée IPTC à mettre comme Watermark sur les vignettes</message>
+            <message lang="fr">Numéro de la donnée IPTC à utiliser sur les vignettes</message>
             <message lang="en">IPTC number to be used for watermarking on thumbnails</message>
             <message lang="de">IPTC Nummer verwenden für Wasserzeichen</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>WatermarkTextHD</name>
+          <label>
+            <message lang="fr">Texte - images originales</message>
+            <message lang="en">Text - original images</message>
+            <message lang="de">Text - original Bild</message>
+          </label>
+          <order>15</order>
+          <mandatory>false</mandatory>
+          <value></value>
+          <type>text</type>
+          <size>25</size>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Texte à utiliser sur les images haute définition</message>
+            <message lang="en">Text to be used on High definition images</message>
+            <message lang="de">Text auf High-Definition-Bild</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>WatermarkTextOther</name>
+          <label>
+            <message lang="fr">Texte - vignettes</message>
+            <message lang="en">Text - thumbnails</message>
+            <message lang="de">Text - wasserzeichen</message>
+          </label>
+          <order>16</order>
+          <mandatory>false</mandatory>
+          <value/>
+          <type>text</type>
+          <size>25</size>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Texte à utiliser sur les vignettes</message>
+            <message lang="en">Text to be used on thumbnails</message>
+            <message lang="de">Text verwenden für Wasserzeichen</message>
           </help>
         </parameter>
       </parameters>

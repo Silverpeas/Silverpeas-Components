@@ -24,6 +24,7 @@
 package org.silverpeas.components.gallery.control;
 
 import org.silverpeas.components.gallery.GalleryComponentSettings;
+import org.silverpeas.components.gallery.Watermark;
 import org.silverpeas.components.gallery.constant.MediaResolution;
 import org.silverpeas.components.gallery.constant.MediaType;
 import org.silverpeas.components.gallery.delegate.GalleryPasteDelegate;
@@ -352,11 +353,9 @@ public final class GallerySessionController extends AbstractComponentSessionCont
    */
   public synchronized String createMedia(final MediaDataCreateDelegate delegate) {
     try {
-
       // Persisting data
-      Media createdMedia = getMediaService()
-          .createMedia(getUserDetail(), getComponentId(), isMakeWatermark(), getWatermarkHD(),
-              getWatermarkOther(), delegate);
+      Media createdMedia = getMediaService().createMedia(getUserDetail(), getComponentId(),
+          GalleryComponentSettings.getWatermark(getComponentId()), delegate);
 
       // recharger l'album courant pour prendre en comptes le nouveau média
       goToAlbum(currentAlbumId);
@@ -376,8 +375,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   public void updateMediaByUser(final String mediaId, final MediaDataUpdateDelegate delegate) {
     // Persisting data
     getMediaService()
-        .updateMedia(getUserDetail(), getComponentId(), getMedia(mediaId), isMakeWatermark(),
-            getWatermarkHD(), getWatermarkOther(), delegate);
+        .updateMedia(getUserDetail(), getComponentId(), getMedia(mediaId), getWatermark(), delegate);
   }
 
   /**
@@ -397,8 +395,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
 
   public void updateMedia(final Media media) {
     try {
-      getMediaService().updateMedia(getUserDetail(), getComponentId(), media, isMakeWatermark(),
-          getWatermarkHD(), getWatermarkOther(), null);
+      getMediaService().updateMedia(getUserDetail(), getComponentId(), media, getWatermark(), null);
 
       // Reloading the current album.
       loadCurrentAlbum();
@@ -521,16 +518,12 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     return GalleryComponentSettings.isViewMetadataEnabled(getComponentId());
   }
 
+  public Watermark getWatermark() {
+    return GalleryComponentSettings.getWatermark(getComponentId());
+  }
+
   public Boolean isMakeWatermark() {
     return GalleryComponentSettings.isMakeWatermarkEnabled(getComponentId());
-  }
-
-  public String getWatermarkHD() {
-    return GalleryComponentSettings.getWatermarkIdForOriginalResolution(getComponentId());
-  }
-
-  public String getWatermarkOther() {
-    return GalleryComponentSettings.getWatermarkIdForThumbnailResolution(getComponentId());
   }
 
   public Boolean isViewList() {

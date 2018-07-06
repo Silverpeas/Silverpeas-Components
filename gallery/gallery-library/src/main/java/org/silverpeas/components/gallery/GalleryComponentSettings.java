@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.gallery;
 
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.io.media.video.ThumbnailPeriod;
 import org.silverpeas.core.util.LocalizationBundle;
@@ -114,7 +115,7 @@ public final class GalleryComponentSettings {
         .getComponentParameterValue(componentInstanceId, "watermark"));
   }
 
-  public static String getWatermarkIdForOriginalResolution(String componentInstanceId) {
+  private static String getWatermarkIdForOriginalResolution(String componentInstanceId) {
     String watermarkHD = OrganizationControllerProvider.getOrganisationController()
         .getComponentParameterValue(componentInstanceId, "WatermarkHD");
     if (!StringUtil.isInteger(watermarkHD)) {
@@ -123,7 +124,7 @@ public final class GalleryComponentSettings {
     return watermarkHD;
   }
 
-  public static String getWatermarkIdForThumbnailResolution(String componentInstanceId) {
+  private static String getWatermarkIdForThumbnailResolution(String componentInstanceId) {
     String watermarkOther = OrganizationControllerProvider.getOrganisationController()
         .getComponentParameterValue(componentInstanceId, "WatermarkOther");
     if (!StringUtil.isInteger(watermarkOther)) {
@@ -140,5 +141,18 @@ public final class GalleryComponentSettings {
 
   public static int getMaxNumberOfPreviewThumbnail() {
     return ThumbnailPeriod.ALL_VALIDS.size();
+  }
+
+  public static Watermark getWatermark(String componentInstanceId) {
+    Watermark watermark = new Watermark();
+    watermark.setEnabled(isMakeWatermarkEnabled(componentInstanceId));
+    watermark.setIPTCPropertyForHD(getWatermarkIdForOriginalResolution(componentInstanceId));
+    watermark
+        .setIPTCPropertyForThumbnails(getWatermarkIdForThumbnailResolution(componentInstanceId));
+    watermark.setTextForHD(OrganizationController.get()
+        .getComponentParameterValue(componentInstanceId, "WatermarkTextHD"));
+    watermark.setTextForThumbnails(OrganizationController.get()
+        .getComponentParameterValue(componentInstanceId, "WatermarkTextOther"));
+    return watermark;
   }
 }

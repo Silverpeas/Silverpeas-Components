@@ -25,6 +25,7 @@ package org.silverpeas.components.gallery.service;
 
 import org.silverpeas.components.gallery.GalleryComponentSettings;
 import org.silverpeas.components.gallery.GalleryContentManager;
+import org.silverpeas.components.gallery.Watermark;
 import org.silverpeas.components.gallery.constant.MediaType;
 import org.silverpeas.components.gallery.dao.MediaDAO;
 import org.silverpeas.components.gallery.dao.OrderDAO;
@@ -337,15 +338,14 @@ public class DefaultGalleryService implements GalleryService {
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
   public Media createMedia(final UserDetail user, final String componentInstanceId,
-      final boolean watermark, final String watermarkHD, final String watermarkOther,
-      final MediaDataCreateDelegate delegate) {
+      final Watermark watermark, final MediaDataCreateDelegate delegate) {
     try {
       final GalleryProcessManagement processManagement = new GalleryProcessManagement(user,
           componentInstanceId);
       Media newMedia = delegate.newInstance();
       processManagement
           .addCreateMediaProcesses(newMedia, delegate.getAlbumId(), delegate.getFileItem(),
-              watermark, watermarkHD, watermarkOther, delegate);
+              watermark, delegate);
       processManagement.execute();
       return newMedia;
     } catch (final Exception e) {
@@ -363,8 +363,7 @@ public class DefaultGalleryService implements GalleryService {
           componentInstanceId);
       for (final String mediaId : mediaIds) {
         processManagement
-            .addUpdateMediaProcesses(getMedia(new MediaPK(mediaId, componentInstanceId)), false,
-                null, null, delegate);
+            .addUpdateMediaProcesses(getMedia(new MediaPK(mediaId, componentInstanceId)), null, delegate);
       }
       processManagement.execute();
     } catch (final Exception e) {
@@ -375,13 +374,11 @@ public class DefaultGalleryService implements GalleryService {
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
   public void updateMedia(final UserDetail user, final String componentInstanceId,
-      final Media media, final boolean watermark, final String watermarkHD,
-      final String watermarkOther, final MediaDataUpdateDelegate delegate) {
+      final Media media, final Watermark watermark, final MediaDataUpdateDelegate delegate) {
     try {
       final GalleryProcessManagement processManagement = new GalleryProcessManagement(user,
           componentInstanceId);
-      processManagement
-          .addUpdateMediaProcesses(media, watermark, watermarkHD, watermarkOther, delegate);
+      processManagement.addUpdateMediaProcesses(media, watermark, delegate);
       processManagement.execute();
     } catch (final Exception e) {
       throw new GalleryRuntimeException(e);

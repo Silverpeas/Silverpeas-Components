@@ -24,6 +24,7 @@
 package org.silverpeas.components.gallery.process;
 
 import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.components.gallery.Watermark;
 import org.silverpeas.components.gallery.constant.MediaMimeType;
 import org.silverpeas.components.gallery.delegate.MediaDataCreateDelegate;
 import org.silverpeas.components.gallery.delegate.MediaDataUpdateDelegate;
@@ -104,16 +105,12 @@ public class GalleryProcessManagement {
    * @param albumId
    * @param file
    * @param watermark
-   * @param watermarkHD
-   * @param watermarkOther
    * @param delegate
    */
   public void addCreateMediaProcesses(final Media media, final String albumId, final Object file,
-      final boolean watermark, final String watermarkHD, final String watermarkOther,
-      final MediaDataCreateDelegate delegate) {
+      final Watermark watermark, final MediaDataCreateDelegate delegate) {
     processList.add(GalleryCreateMediaDataProcess.getInstance(media, albumId, delegate));
-    processList.add(GalleryCreateMediaFileProcess
-        .getInstance(media, file, watermark, watermarkHD, watermarkOther));
+    processList.add(GalleryCreateMediaFileProcess.getInstance(media, file, watermark));
     processList.add(GalleryUpdateMediaDataProcess.getInstance(media));
     processList.add(GalleryIndexMediaDataProcess.getInstance(media));
   }
@@ -122,18 +119,15 @@ public class GalleryProcessManagement {
    * Adds processes to update the given media
    * @param media
    * @param watermark
-   * @param watermarkHD
-   * @param watermarkOther
    * @param delegate
    */
-  public void addUpdateMediaProcesses(final Media media, final boolean watermark,
-      final String watermarkHD, final String watermarkOther,
+  public void addUpdateMediaProcesses(final Media media, final Watermark watermark,
       final MediaDataUpdateDelegate delegate) {
     processList.add(GalleryUpdateMediaDataProcess.getInstance(media, delegate));
     final FileItem fileItem = delegate.getFileItem();
     if (fileItem != null && StringUtil.isDefined(fileItem.getName())) {
       processList.add(GalleryUpdateMediaFileProcess
-          .getInstance(media, fileItem, watermark, watermarkHD, watermarkOther));
+          .getInstance(media, fileItem, watermark));
       processList.add(GalleryUpdateMediaDataProcess.getInstance(media));
     }
     processList.add(GalleryIndexMediaDataProcess.getInstance(media));
@@ -190,9 +184,7 @@ public class GalleryProcessManagement {
       final String componentInstanceId, final File repository, final String albumId,
       final MediaDataCreateDelegate delegate) throws Exception {
 
-    final boolean watermark = isMakeWatermarkEnabled(componentInstanceId);
-    final String watermarkHD = getWatermarkIdForOriginalResolution(componentInstanceId);
-    final String watermarkOther = getWatermarkIdForThumbnailResolution(componentInstanceId);
+    final Watermark watermark = getWatermark(componentInstanceId);
 
     final File[] fileList = repository.listFiles();
     if (fileList != null) {
@@ -206,9 +198,7 @@ public class GalleryProcessManagement {
             // In a transaction.
             final GalleryProcessManagement processManagement = new GalleryProcessManagement(user,
                 componentInstanceId);
-            processManagement
-                .addCreateMediaProcesses(newMedia, albumId, file, watermark, watermarkHD,
-                    watermarkOther, delegate);
+            processManagement.addCreateMediaProcesses(newMedia, albumId, file, watermark, delegate);
             processManagement.execute();
           }
         } else if (file.isDirectory()) {
