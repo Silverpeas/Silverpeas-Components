@@ -75,8 +75,7 @@ function closeWindows() {
 		KmeliaDisplayHelper.displayAllOperations(pubId, kmeliaScc, gef, "ViewReadingControl",
           resources, out, kmaxMode);
 	} else {
-	  KmeliaDisplayHelper.displayUserOperations(pubId, kmeliaScc, gef, "ViewReadingControl",
-          resources, out, kmaxMode);
+	  KmeliaDisplayHelper.displayUserOperations(kmeliaScc, out);
 	}
 	  
 	out.println(frame.printBefore());

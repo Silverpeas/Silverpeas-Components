@@ -282,14 +282,6 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
    */
   void addInfoLinks(PublicationPK pubPK, List<ResourceReference> links);
 
-  /**
-   * Removes links between publications and the specified publication
-   * @param pubPK
-   * @param links list of links to remove
-   * @
-   */
-  void deleteInfoLinks(PublicationPK pubPK, List<ResourceReference> links);
-
   CompletePublication getCompletePublication(PublicationPK pubPK);
 
   KmeliaPublication getPublication(PublicationPK pubPK);
@@ -325,14 +317,6 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
    * @ if an error occurs while communicating with the remote business service.
    */
   List<KmeliaPublication> getLinkedPublications(KmeliaPublication publication, String userId);
-
-  /**
-   * Gets all the publications linked with the specified one.
-   * @param publication the publication from which linked publications are get.
-   * @return a list of Kmelia publications.
-   * @ if an error occurs while communicating with the remote business service.
-   */
-  List<KmeliaPublication> getLinkedPublications(KmeliaPublication publication);
 
   List<KmeliaPublication> getPublicationsToValidate(String componentId, String userId);
 

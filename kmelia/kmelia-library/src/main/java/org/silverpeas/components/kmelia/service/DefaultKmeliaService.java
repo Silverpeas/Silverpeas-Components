@@ -61,6 +61,7 @@ import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygControlle
 import org.silverpeas.core.contribution.publication.datereminder.PublicationNoteReference;
 import org.silverpeas.core.contribution.publication.model.Alias;
 import org.silverpeas.core.contribution.publication.model.CompletePublication;
+import org.silverpeas.core.contribution.publication.model.Link;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.model.ValidationStep;
@@ -1797,16 +1798,6 @@ public class DefaultKmeliaService implements KmeliaService {
   }
 
   @Override
-  @Transactional(Transactional.TxType.REQUIRED)
-  public void deleteInfoLinks(PublicationPK pubPK, List<ResourceReference> links) {
-    try {
-      publicationService.deleteInfoLinks(pubPK, links);
-    } catch (Exception e) {
-      throw new KmeliaRuntimeException(e);
-    }
-  }
-
-  @Override
   public CompletePublication getCompletePublication(PublicationPK pubPK) {
     CompletePublication completePublication = null;
 
@@ -1961,33 +1952,12 @@ public class DefaultKmeliaService implements KmeliaService {
   @Override
   public List<KmeliaPublication> getLinkedPublications(KmeliaPublication publication,
       String userId) {
-    KmeliaAuthorization security = new KmeliaAuthorization();
-    List<ResourceReference> allLinkIds = publication.getCompleteDetail().getLinkList();
-    List<KmeliaPublication> authorizedLinks = new ArrayList<>(allLinkIds.size());
-    for (ResourceReference linkId : allLinkIds) {
-      if (security.isAccessAuthorized(linkId.getInstanceId(), userId, linkId.getId())) {
-        PublicationPK pubPk = new PublicationPK(linkId.getId(), linkId.getInstanceId());
-        authorizedLinks.add(KmeliaPublication.aKmeliaPublicationWithPk(pubPk));
-      }
+    List<Link> allLinks = publication.getCompleteDetail().getLinkedPublications(userId);
+    List<KmeliaPublication> authorizedLinks = new ArrayList<>();
+    for (Link link : allLinks) {
+      authorizedLinks.add(KmeliaPublication.aKmeliaPublicationWithPk(link.getPubPK()));
     }
     return authorizedLinks;
-  }
-
-  /**
-   * Gets all the publications linked with the specified one.
-   * @param publication the publication from which linked publications are get.
-   * @return a list of Kmelia publications.
-   * @ if an error occurs while communicating with the remote business service.
-   */
-  @Override
-  public List<KmeliaPublication> getLinkedPublications(KmeliaPublication publication) {
-    List<ResourceReference> allLinkIds = publication.getCompleteDetail().getLinkList();
-    List<KmeliaPublication> linkedPublications = new ArrayList<>(allLinkIds.size());
-    for (ResourceReference linkId : allLinkIds) {
-      PublicationPK pubPk = new PublicationPK(linkId.getId(), linkId.getInstanceId());
-      linkedPublications.add(KmeliaPublication.aKmeliaPublicationWithPk(pubPk));
-    }
-    return linkedPublications;
   }
 
   @Override
@@ -3970,11 +3940,6 @@ public class DefaultKmeliaService implements KmeliaService {
 
         // clone dataRecord
         set.clone(fromId, fromComponentId, cloneId, fromComponentId, attachmentIds);
-      }
-      // paste only links, reverseLinks can't be cloned because it'is a new content not referenced
-      // by any publication
-      if (refPubComplete.getLinkList() != null && !refPubComplete.getLinkList().isEmpty()) {
-        addInfoLinks(clonePK, refPubComplete.getLinkList());
       }
 
       // paste wysiwyg

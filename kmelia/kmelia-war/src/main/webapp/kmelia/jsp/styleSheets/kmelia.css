@@ -21,48 +21,24 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-		
-/* publication link manager*/
-.dimensionTable {
-	height: 500px; 
-	width: 730px;
-}
 
-.firstTd {
-	height: 300px; 
-	width: 250px; 
-	left: 0px; 
-	top: 0px;
-	border:1px solid grey; 
-}
-
-.treeDivDisplay {
-	height: 158px; 
-	width: 220px; 
-	left: 0px; 
-	top: 0px;
-}
-.publistDisplay {
-	width: 480px;
-	overflow: auto;
-}
 
 /* Search zone */
 #searchZone {
-	margin: 1em;
+  margin: 1em;
 }
 
 #searchZone #searchLine {
-	white-space: nowrap;
+  white-space: nowrap;
 }
 
 #searchZone #searchLabel,
 #searchZone #searchButton  {
-	float: left;
+  float: left;
 }
 
 #sortingList #sort7 {
-	display: none;
+  display: none;
 }
 
 #preview .publiName,
@@ -76,25 +52,25 @@
 
 #preview #status,
 #preview-clone #status {
-	vertical-align:bottom;
+  vertical-align:bottom;
 }
 
 #preview .inlineMessage {
-	margin-top: 0px;
+  margin-top: 0px;
 }
 
 #infoPublication{
-	padding-bottom:11px;
+  padding-bottom:11px;
 }
 
 #statPublication .silverpeas-rating {
- float:right; 
+  float:right;
 }
 
 #statPublication .rating-contribution {
- display:block;
- text-align:right;
- color: #999;
+  display:block;
+  text-align:right;
+  color: #999;
 }
 
 #permalinkInfo input {
@@ -103,10 +79,10 @@
 
 #preview .publiDesc,
 #preview-clone .publiDesc {
-	font-weight: bold;
-	color:#666666;
-	padding:8px;
-	border-left:6px solid #e4e4e4;
+  font-weight: bold;
+  color:#666666;
+  padding:8px;
+  border-left:6px solid #e4e4e4;
 }
 
 #preview #pagination {
@@ -116,126 +92,126 @@
 }
 
 #preview .currentPage {
-	opacity:0.6;
+  opacity:0.6;
 }
 
 #preview #pagination img {
-	border:0;
-	vertical-align:top;
+  border:0;
+  vertical-align:top;
 }
 
-#preview #backToSearch {    
-	height: 30px;
-	width: 310px;
-	float: right;
+#preview #backToSearch {
+  height: 30px;
+  width: 310px;
+  float: right;
 }
 
 #preview #backToSearch a.button {
-	background-color:#F4F4F4;
-	background-image: url("../../../util/icons/gradientSVG.jsp?from=fff&to=e5e5e5&vertical=0&horizontal=100");
-		-moz-background-size: 100%;
-	border-radius: 5px;
-	border: 1px solid #CCCCCC;
-	color: #4C4C4C;
-	font-size: 100%;
-	padding: 7px 10px;
-	position: absolute;
-	right: 101px;
-	width: 187px;
+  background-color:#F4F4F4;
+  background-image: url("../../../util/icons/gradientSVG.jsp?from=fff&to=e5e5e5&vertical=0&horizontal=100");
+  -moz-background-size: 100%;
+  border-radius: 5px;
+  border: 1px solid #CCCCCC;
+  color: #4C4C4C;
+  font-size: 100%;
+  padding: 7px 10px;
+  position: absolute;
+  right: 101px;
+  width: 187px;
 }
 
 #preview #backToSearch a.button span{
-	background:transparent url(../../../util/icons/back.png) 0 0 no-repeat;
-	line-height: 16px;
-	padding: 0px 0px 0px 24px;
-	font-weight:bold;
-	display: block;
-	text-align: center;
+  background:transparent url(../../../util/icons/back.png) 0 0 no-repeat;
+  line-height: 16px;
+  padding: 0px 0px 0px 24px;
+  font-weight:bold;
+  display: block;
+  text-align: center;
 }
 
 #preview #permalinkInfo img,
 #preview-clone #permalinkInfo img {
-	border: 0px;
+  border: 0px;
 }
 
 #sortingList {
-	float: right;
+  float: right;
 }
 
 #templates .template {
-	text-align: center;
+  text-align: center;
 }
 
 #pubList {
-	display:block;
-	overflow: auto;
-	padding: 0px;
+  display:block;
+  overflow: auto;
+  padding: 0px;
 }
 
 #pubList #pubsHeader {
-	border-bottom: 1px solid #E9E9E9;
-	background-color: #f3f3f3;
-	font-weight:bold;
-	width: 100%;
-	line-height: 28px;
-	padding-bottom: 3px;
-	vertical-align:middle;
+  border-bottom: 1px solid #E9E9E9;
+  background-color: #f3f3f3;
+  font-weight:bold;
+  width: 100%;
+  line-height: 28px;
+  padding-bottom: 3px;
+  vertical-align:middle;
 }
 
 #pubList #pubsHeader img {
-	vertical-align: middle;
-	margin-right: 3px;
-	margin-left: 5px;
+  vertical-align: middle;
+  margin-right: 3px;
+  margin-left: 5px;
 }
 
 #pubList .tableBoard{
-	padding:0;
-	width: inherit;
-	display: block;
+  padding:0;
+  width: inherit;
+  display: block;
 }
 
 
 #pubList #pubsCounter {
-	position:relative;
+  position:relative;
 }
 
 #pubList #pubsSort {
-	float: right;
-	margin-top: 3px;
-	margin-right: 3px;
-	position: relative;
+  float: right;
+  margin-top: 3px;
+  margin-right: 3px;
+  position: relative;
 }
 
 #pubList ul {
-	list-style: none;
-	width: 100%;
-	white-space: normal;
-	padding: 5px 0px 0px 0px;
-	margin: 0px;
+  list-style: none;
+  width: 100%;
+  white-space: normal;
+  padding: 5px 0px 0px 0px;
+  margin: 0px;
 }
 
 #pubList ul li {
-	margin: 0px;
-	padding: 0.8em 0px 0.8em 0px;
-	width: 100%;
-	border-bottom:1px solid #ddd;
-	display: flex; 
+  margin: 0px;
+  padding: 0.8em 0px 0.8em 0px;
+  width: 100%;
+  border-bottom:1px solid #ddd;
+  display: flex;
 }
 
 #pubList ul li:last-child {
-	border-bottom:0px solid #ddd;
+  border-bottom:0px solid #ddd;
 }
 
 #pubList ul.list-publication-home li:last-child {
-	border-bottom:1px solid #ddd;
+  border-bottom:1px solid #ddd;
 }
 
 #pubList ul li.over-publication {
-	background-color: #ECECEC;
+  background-color: #ECECEC;
 }
 
 #pubList ul li.read .line1 a {
-	color: #006600;
+  color: #006600;
 }
 
 #pubList .firstColumn {
@@ -245,11 +221,11 @@
 }
 
 #pubList .thumbnail {
-	float: left;
+  float: left;
 }
 
 #pubList .thumbnail .vignette{
-	margin-right:0.5em;
+  margin-right:0.5em;
 }
 
 /*#pubList .unit-operation {
@@ -257,26 +233,26 @@
 }*/
 
 #pubList .selection {
-	left: 5px;
-	position: absolute;
-	top: 3px;
+  left: 5px;
+  position: absolute;
+  top: 3px;
 }
 
 #pubList .selection input {
-	display: none;
+  display: none;
 }
 
 #pubList .publication {
-	white-space: normal;
-	display: inline;
+  white-space: normal;
+  display: inline;
 }
 
 #pubList .publication .actualite {
-	font-size: 1em;
+  font-size: 1em;
 }
 
 #pubList .publication .date {
-	font-size: 0.9em;
+  font-size: 0.9em;
 }
 
 #pubList .publication .line1 {
@@ -284,25 +260,25 @@
   min-height: 15px;
 }
 
-#pubList .publication .line2, 
+#pubList .publication .line2,
 #pubList .publication .line3,
 #pubList .publication .files,
 #pubList .publication .publication-name {
-	padding-left: 32px;
-	white-space: normal;
+  padding-left: 32px;
+  white-space: normal;
 }
 
 #pubList .publication .files {
-	padding-left: 45px;
-	display:block;
+  padding-left: 45px;
+  display:block;
   margin-top: 0.5em;
 }
 
 #pubList .publication .description.line3  ,
 #pubList .list-publication-home li .publication-description{
-	font-size:90%;
-	white-space: normal;
-	margin-bottom: 0;
+  font-size:90%;
+  white-space: normal;
+  margin-bottom: 0;
 }
 
 #pubList .important3 .line1 > font > a,
@@ -313,51 +289,51 @@
 }
 
 #pubList .publication .user {
-	/*display: none;*/
+  /*display: none;*/
 }
 
 .portlet #pubList {
-	margin-top: 5px;
+  margin-top: 5px;
 }
 
 #thumbnailPreviewAndActions {
-	background-color:#EEEEEE;
-	border:1px solid #DDDDDD;
-	float:left;
-	margin-left:0;
-	padding:3px;
-	margin-bottom: 3px;
+  background-color:#EEEEEE;
+  border:1px solid #DDDDDD;
+  float:left;
+  margin-left:0;
+  padding:3px;
+  margin-bottom: 3px;
 }
 
 #thumbnailPreview {
-	float: left;
+  float: left;
 }
 
 #thumbnailPreview #thumbnail {
-	height: 50px;
-	border:1px solid #DDDDDD;
+  height: 50px;
+  border:1px solid #DDDDDD;
 }
 
 #thumbnailActions {
-	float: left;
-	margin-left: 4px;	
+  float: left;
+  margin-left: 4px;
 }
 
 #thumbnailActions a {
-	margin-bottom: 5px;
-	display: block;
+  margin-bottom: 5px;
+  display: block;
 }
 
 #thumbnailActions img {
-	vertical-align: middle;
+  vertical-align: middle;
 }
 
 #thumbnailInputs {
-	clear: both;
+  clear: both;
 }
 
 #thumbnailInputs img, #thumbnailInputs input, #thumbnailInputs select {
-	vertical-align: middle;
+  vertical-align: middle;
 }
 
 #preview .txtBaseline {
@@ -370,36 +346,36 @@
 }
 
 #DropZone {
-	padding-left: 5px;
-	padding-right: 5px;
-	margin-right: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin-right: 5px;
 }
 
 #footer {
-	text-align: center;
+  text-align: center;
 }
 
 #footer img {
-	border: 0px;
+  border: 0px;
 }
 
 #subTopics {
-	width:98%;
-	padding-bottom:5px;
+  width:98%;
+  padding-bottom:5px;
 }
 
 #subTopics ul {
-	list-style-type:none;
-	padding:0;
-	margin:5px;
+  list-style-type:none;
+  padding:0;
+  margin:5px;
 }
 
 #subTopics ul li {
-	margin:2px 0 0 0;
-	height: 63px;
-	position:relative;
+  margin:2px 0 0 0;
+  height: 63px;
+  position:relative;
 }
-	
+
 /*** presentation sur 4 colonnes***/
 #subTopics ul li  {
   display: inline;
@@ -408,9 +384,9 @@
   margin-right: 0.5em;
   width:24%;
   position:relative;
-	} 
+}
 
-#subTopics ul li a { 
+#subTopics ul li a {
   background: url("../../../kmelia/jsp/icons/pack_big_icons.gif")  3px 5px no-repeat;
   display: block;
   overflow:hidden;
@@ -420,32 +396,32 @@
   border:1px solid #EAEAEA ;
   border-radius:10px;
   background-color:#EAEAEA;
-	}
-#subTopics ul li a.trash { 
+}
+#subTopics ul li a.trash {
   background: url("../../../kmelia/jsp/icons/pack_big_icons.gif")  3px -395px no-repeat;
-	border:1px solid #EAEAEA ;
-	border-radius:10px;
-	background-color:#EAEAEA;}
-#subTopics ul li a.trash:hover { 
- background: url("../../../kmelia/jsp/icons/pack_big_icons.gif")  3px -495px no-repeat;
-	border:1px solid #FFFBBB ;
-	background-color:#FFFFDC;}
+  border:1px solid #EAEAEA ;
+  border-radius:10px;
+  background-color:#EAEAEA;}
+#subTopics ul li a.trash:hover {
+  background: url("../../../kmelia/jsp/icons/pack_big_icons.gif")  3px -495px no-repeat;
+  border:1px solid #FFFBBB ;
+  background-color:#FFFFDC;}
 
-#subTopics ul li a.toValidate { 
+#subTopics ul li a.toValidate {
   background: url("../../../kmelia/jsp/icons/pack_big_icons.gif")  3px -195px no-repeat;
-	border:1px solid #EAEAEA ;
-	border-radius:10px;
-	background-color:#EAEAEA;}
-#subTopics ul li a.toValidate:hover { 
+  border:1px solid #EAEAEA ;
+  border-radius:10px;
+  background-color:#EAEAEA;}
+#subTopics ul li a.toValidate:hover {
   background: url("../../../kmelia/jsp/icons/pack_big_icons.gif")  3px -295px no-repeat;
-	border:1px solid #FFFBBB ;
-	background-color:#FFFFDC;}
-	
+  border:1px solid #FFFBBB ;
+  background-color:#FFFFDC;}
+
 #subTopics ul li a strong {
-	display:block;
-	padding:0 30px 2px 0;
-	}
-	
+  display:block;
+  padding:0 30px 2px 0;
+}
+
 #subTopics ul li a strong span {
   background: url("../../../kmelia/jsp/icons/mini_publi.gif")  top right no-repeat;
   display:block;
@@ -457,25 +433,25 @@
   padding: 1px 17px 0 0;
   color: #000000;
   text-align: right;
-	}	
-#subTopics ul li a:hover { 
+}
+#subTopics ul li a:hover {
   background: url("../../../kmelia/jsp/icons/pack_big_icons.gif")  3px -95px no-repeat;
   border:1px solid #FFFBBB ;
   background-color:#FFFFDC;
   color:#000;
-	}
+}
 #subTopics ul li a span{
-	color: #666666;
+  color: #666666;
   display: block;
   font-size: 1em;
   height: 33px;
   line-height:1em;
   overflow: hidden;
-	}
+}
 
 #topicDescription {
-	color:#666;
-	padding: 1em; 
+  color:#666;
+  padding: 1em;
 }
 
 .principalContent .inlineMessage,
@@ -511,41 +487,27 @@ a.button.refuse span {
   padding: 2px 0px 2px 24px;
 }
 
-.yui-skin-sam .dimensionTable #pubList ul li {
-  position:relative;
-}
- 
-.yui-skin-sam .dimensionTable #pubList ul li .firstColumn .selection input{
-  position:absolute;
-  top:0;
-  left:0;
-}
- 
-.yui-skin-sam .dimensionTable #pubList .publication .line1 {
- 	padding-left: 32px;
-}
-
 .rightContent{
-	width:310px;
-	clear:right;
-	float:right;
+  width:310px;
+  clear:right;
+  float:right;
 }
 
 .clearAll {
-	clear:both;
+  clear:both;
 }
 
 /* Pour Kmax */
 #listAxis{
-	display:inline;
-	float:left;
+  display:inline;
+  float:left;
 }
 
 #btnForm{
-	display:inline;
-	float:left;
-	padding-top:12px;
-	width:100px;
+  display:inline;
+  float:left;
+  padding-top:12px;
+  width:100px;
 }
 
 .oneAxis {
@@ -559,19 +521,19 @@ a.button.refuse span {
 }
 
 .kmax .sousNavBulle, .kmaxManager .sousNavBull{
-	position:relative;
+  position:relative;
 }
 
 .kmax .sousNavBulle #btnForm .sp_button {
-	background-color:transparent;
-	border:0;
+  background-color:transparent;
+  border:0;
 }
 
 .oneAxis  label {
-	display: block;
-	padding: 4px 0 3px 0;
-	font-weight:100;
-	color:#26334A;
+  display: block;
+  padding: 4px 0 3px 0;
+  font-weight:100;
+  color:#26334A;
 }
 
 .oneAxis select {
@@ -580,23 +542,23 @@ a.button.refuse span {
 }
 
 .axisManagment .oneAxis label{
-	padding-right:8px;
-	cursor:pointer;
+  padding-right:8px;
+  cursor:pointer;
 }
 
 .oneAxis .action {
-	position:absolute;
-	top:6px;
-	right:6px;
-	border:0;
-	background-color:transparent;
+  position:absolute;
+  top:6px;
+  right:6px;
+  border:0;
+  background-color:transparent;
 }
 .oneAxis .action:hover {
-	background-color:#FFFFCC;
+  background-color:#FFFFCC;
 }
 .oneAxis .action img {
-	width:13px;
-	border: 0px;
+  width:13px;
+  border: 0px;
 }
 
 .axisManagment .oneAxis{
@@ -614,54 +576,54 @@ a.button.refuse span {
 
 /**mise en page  publicationManager **/
 #creationArea .champs, #updateArea .champs{
-	position:relative;
-	padding-left:40px;
+  position:relative;
+  padding-left:40px;
 }
 
 #updateArea .champs {
-	margin-left: 0px;
+  margin-left: 0px;
 }
 
 #creationArea .profilPhoto, #updateArea .profilPhoto {
-	position:absolute;
-	top:5px;
-	left:0;
-	width:30px;
-	height:30px;
-	text-align:center;
+  position:absolute;
+  top:5px;
+  left:0;
+  width:30px;
+  height:30px;
+  text-align:center;
 }
 
 #creationArea .profilPhoto img, #updateArea .profilPhoto img {
-	height:30px;
-	position:relative;
+  height:30px;
+  position:relative;
 }
 
 #pubDates legend{
-	background:transparent url(../../../util/icons/calendar_1.png) 11px 0px no-repeat; /*icone présente core > .. util > icons */
+  background:transparent url(../../../util/icons/calendar_1.png) 11px 0px no-repeat; /*icone présente core > .. util > icons */
 }
 #pubThumb legend{
-	background:transparent url(../../../util/icons/images.png) 11px 0px no-repeat; /*icone présente core > .. util > icons */
+  background:transparent url(../../../util/icons/images.png) 11px 0px no-repeat; /*icone présente core > .. util > icons */
 }
 
 #pubInfo legend{
-	background:transparent url(../icons/mini_publi.gif) 11px 0px no-repeat; /*icone présente dans kmelia */
+  background:transparent url(../icons/mini_publi.gif) 11px 0px no-repeat; /*icone présente dans kmelia */
 }
 
 #codificationArea, #pubNameArea, #descriptionArea , #keywordsArea, #authorArea, #draftOutArea, #endArea, #beginArea, #thumb, #validatorArea{
-	width:98%;
+  width:98%;
 }
 
 #stateArea img, #languageArea img {
-	vertical-align: middle;
+  vertical-align: middle;
 }
 
 #descriptionArea textarea, #pubNameArea input, #keywordsArea input, #authorArea input{
-	width:94%;
+  width:94%;
 }
 
 #header .legend {
-	padding: 15px;
-	clear: both;
+  padding: 15px;
+  clear: both;
 }
 
 #header #pubExtraForm .legend {
@@ -673,90 +635,90 @@ a.button.refuse span {
 }
 
 .commentaires {
-	border-top: 2px dotted #CECECE;
-	margin-top: 15px;
-	overflow:auto;
-	width:100%;
-	clear:left;
+  border-top: 2px dotted #CECECE;
+  margin-top: 15px;
+  overflow:auto;
+  width:100%;
+  clear:left;
 }
 
 .publicationManager .classification .legende {
-	display: none;
+  display: none;
 }
 
 #addOrUpdateNode #deleteTranslation img {
-	vertical-align: text-bottom;
-	border: 0px;
-	margin-left: 3px;
+  vertical-align: text-bottom;
+  border: 0px;
+  margin-left: 3px;
 }
 
 .topic-statistics .container-filter label {
-	display:inline-block;
-	width:150px;
+  display:inline-block;
+  width:150px;
 }
 .topic-statistics .button-filter {
-	margin:20px 0 0 50px;
+  margin:20px 0 0 50px;
 }
 .topic-statistics #datePersonnalisedControl {
-	margin:7px 0 0 153px;
+  margin:7px 0 0 153px;
 }
-.topic-statistics  .datecontrole , 
+.topic-statistics  .datecontrole ,
 .topic-statistics  .filterLibGroup {
-	margin-bottom:7px;
+  margin-bottom:7px;
 }
 
-.topic-statistics  .filterLibGroup a, 
-.topic-statistics  .filterLibGroup a:hover{    
+.topic-statistics  .filterLibGroup a,
+.topic-statistics  .filterLibGroup a:hover{
   background-color:transparent;
   border: 0px solid #CECECE;
   padding:0;
- }
- .topic-statistics  img {
-	vertical-align:text-bottom;
- } 
- 
- .topic-statistics .inlineMessage {
-	font-size:16px;
-	text-align:left;
-	width:98%;
-	padding:0.5% 1%;
-	margin:10px 0;
- }
+}
+.topic-statistics  img {
+  vertical-align:text-bottom;
+}
+
+.topic-statistics .inlineMessage {
+  font-size:16px;
+  text-align:left;
+  width:98%;
+  padding:0.5% 1%;
+  margin:10px 0;
+}
 .table-result-statistics {
-	width:100%;
-	
+  width:100%;
+
 }
 .table-result-statistics .even td,
 .table-result-statistics .odd td{
-	background-color:#f9f9f9;
-	border-bottom:1px solid #d4d4d4;
-	padding:10px;
- }
+  background-color:#f9f9f9;
+  border-bottom:1px solid #d4d4d4;
+  padding:10px;
+}
 .table-result-statistics .odd td{
-	background-color:#eeeeee;
- }
+  background-color:#eeeeee;
+}
 .table-result-statistics thead td{
-	background-color:#e4e4e4;
-	border-bottom:1px solid #cccccc;
-	font-weight:bold;
-	padding:10px;
- }
+  background-color:#e4e4e4;
+  border-bottom:1px solid #cccccc;
+  font-weight:bold;
+  padding:10px;
+}
 .table-result-statistics thead th{
-	font-weight:bold;
-	text-align:left;
-	padding:10px 0;
-	font-size:120%;
- }
+  font-weight:bold;
+  text-align:left;
+  padding:10px 0;
+  font-size:120%;
+}
 .table-result-statistics .index-table {
-	width:25px;
- }
+  width:25px;
+}
 .table-result-statistics .principal-element-table {
-	font-weight:bold;
+  font-weight:bold;
 }
 
 /*** rightPane ****/
 #treeDiv1 {
-	overflow:auto;
+  overflow:auto;
 }
 
 .wrap{
@@ -777,8 +739,8 @@ a.button.refuse span {
 }
 
 .wrap #rightSide.resizable > div {
-	margin-left:2em;
-	margin-right:1em;
+  margin-left:2em;
+  margin-right:1em;
 }
 
 .wrap .ui-resizable-e{
@@ -793,24 +755,24 @@ a.button.refuse span {
 }
 
 #footer {
-	text-align: center;
+  text-align: center;
 }
 
 .jstree li.Invisible > a {
-	color: #BBBBBB;
+  color: #BBBBBB;
 }
 
 .jstree li.Visible > a {
-	color: #000000;
+  color: #000000;
 }
 
 #latestPublications p {
-	margin: 0px 0px 10px 0px;
+  margin: 0px 0px 10px 0px;
 }
 
 #richContent a {
-	color: blue;
-	text-decoration: underline;
+  color: blue;
+  text-decoration: underline;
 }
 
 /* Last access */
@@ -819,18 +781,18 @@ a.button.refuse span {
   height: 16px;
 }
 #preview #lastReaderList {
-	list-style-type:none;
-	padding:17px 10px;
-	margin:0;
+  list-style-type:none;
+  padding:17px 10px;
+  margin:0;
 }
 
 #preview #lastReaderList li {
-	width:50%;
-	float:left;
-	position:relative;
-	padding:0;
-	margin:0 0 8px;
-	overflow: hidden;
+  width:50%;
+  float:left;
+  position:relative;
+  padding:0;
+  margin:0 0 8px;
+  overflow: hidden;
 }
 #preview #lastReaderList li:nth-child(2n+1) {
   clear:left;
@@ -845,22 +807,22 @@ a.button.refuse span {
 
 #preview #lastReaderList li span.consultationDate,
 #preview #lastReaderList li span.userToZoom {
-	display:block;
-	padding-left:40px;
-	padding-right: 5px;
+  display:block;
+  padding-left:40px;
+  padding-right: 5px;
 }
 
 #preview #lastReaderList li span.consultationDate {
-	color:#727272;
+  color:#727272;
 }
 
 #preview #readingControlLink {
-	color:#444;
-	display:block;
-	text-align:right;
-	padding: 0px 10px 7px 10px;
-	text-decoration:underline;
-	clear: both;
+  color:#444;
+  display:block;
+  text-align:right;
+  padding: 0px 10px 7px 10px;
+  text-decoration:underline;
+  clear: both;
 }
 
 #commentInfo a {
@@ -881,7 +843,7 @@ a.button.refuse span {
   background-color: #d6d6d6;
   border-radius:0.5em;
 }
-#treeDiv1::-webkit-scrollbar-button { 
+#treeDiv1::-webkit-scrollbar-button {
 }
 
 /******************** IE **************/
@@ -898,51 +860,121 @@ a.button.refuse span {
 }
 
 #pubList  .list-publication-home {
-	list-style-type:none;
-	display:flex;
-	flex-flow: row wrap;
+  list-style-type:none;
+  display:flex;
+  flex-flow: row wrap;
 }
 
 #pubList .list-publication-home li{
-	flex-grow:1;
-	flex-shrink:2;
-	flex-basis:30%;
-	padding:1em 0 0.5em;
-	margin:0em 1em 1em;
-	border-bottom:1px solid #ddd;
-    display:block;
+  flex-grow:1;
+  flex-shrink:2;
+  flex-basis:30%;
+  padding:1em 0 0.5em;
+  margin:0em 1em 1em;
+  border-bottom:1px solid #ddd;
+  display:block;
 }
 
 #pubList .list-publication-home li .publication-user::after,
 #pubList .list-publication-home li .publication-date::after{
-	content:' - ';
-	display:inline;
+  content:' - ';
+  display:inline;
 }
 
 #pubList li .publication-name a{
-	font-weight:700;
+  font-weight:700;
 }
 #pubList .publication-name > div {
-	display:inline;
+  display:inline;
 }
 
 #pubList .blue ,
 #pubList .blue a,
 #pubList .blue .date{
-	color:#1c94d4 !important
+  color:#1c94d4 !important
 }
 #pubList .gray,
 #pubList .gray a,
 #pubList .gray .date,
 #pubList .state_Plus{
-	color:#888 !important
+  color:#888 !important
 }
 #pubList .red ,
 #pubList .red a,
 #pubList .red .date{
-	color:#cf3636 !important
+  color:#cf3636 !important
 }
 
 #noPublicationMessage p {
-	padding:0.5em 1em;
+  padding:0.5em 1em;
+}
+
+/* see also */
+
+#block-seeAlso ul {
+  list-style-type:none;
+  padding:0;
+  margin:1em 0.5em;
+  color:#4d4d4d;
+  border-bottom:1px solid #e9e9e9;
+}
+
+#block-seeAlso  ul li {
+  background:transparent url(../../../util/icons/list-puce-green.gif) 4px 8px no-repeat;
+  line-height:14px;
+  margin:1em 0;
+  padding:2px 18px 4px 18px;
+}
+
+
+#block-seeAlso  ul li:last-child {
+  margin-bottom:0;
+}
+
+#block-seeAlso .showActionsOnMouseOver {
+  position:relative;
+}
+
+#block-seeAlso .showActionsOnMouseOver .actionShownOnMouseOver{
+  position:absolute;
+  top:2px;
+  left:-2px;
+}
+
+#block-seeAlso .showActionsOnMouseOver .actionShownOnMouseOver .delete{
+  background: url(../../../util/icons/delete.gif)  no-repeat;
+  width:16px;
+  height:16px;
+  display:block;
+  text-indent:-300em;
+}
+/* publication link manager*/
+.dimensionTable {
+  height: 500px;
+  width: 100%;
+  padding-top:1em;
+}
+
+.dimensionTable > tbody > tr > td:first-child {
+  width:250px;
+}
+.dimensionTable td.secondTd {
+  padding-right:1em;
+}
+.yui-skin-sam .dimensionTable #pubList ul li .firstColumn {
+  padding-left: 26px;
+}
+.yui-skin-sam .dimensionTable #pubList .publication .line1 ,
+.yui-skin-sam .dimensionTable #pubList .publication .line2,
+.yui-skin-sam .dimensionTable #pubList .publication .line3,
+.yui-skin-sam .dimensionTable #pubList .publication .files,
+.yui-skin-sam .dimensionTable #pubList .publication .publication-name{
+  padding-left: 0px;
+}
+.yui-skin-sam .dimensionTable  #pubList .publication {
+  padding-top:3px;
+}
+
+.publistDisplay {
+  min-width: 480px;
 }
