@@ -153,6 +153,10 @@ public final class GalleryComponentSettings {
         .getComponentParameterValue(componentInstanceId, "WatermarkTextHD"));
     watermark.setTextForThumbnails(OrganizationController.get()
         .getComponentParameterValue(componentInstanceId, "WatermarkTextOther"));
+    watermark.setImageUrlForHD(componentInstanceId, OrganizationController.get()
+        .getComponentParameterValue(componentInstanceId, "WatermarkImageUrlHD"));
+    watermark.setImageUrlForThumbnails(componentInstanceId, OrganizationController.get()
+        .getComponentParameterValue(componentInstanceId, "WatermarkImageUrlOther"));
     return watermark;
   }
 }

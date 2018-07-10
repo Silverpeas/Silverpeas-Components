@@ -443,7 +443,7 @@
         switch (media.type) {
           case $.gallerySlider.mediaType.photo :
             currentMediaData.image = media.previewUrl;
-            currentMediaData.big = media.url;
+            currentMediaData.big = media.normalUrl;
             currentMediaData.link = (options.callbackLink) ? options.callbackLink(media) : null;
             break;
           case $.gallerySlider.mediaType.sound :

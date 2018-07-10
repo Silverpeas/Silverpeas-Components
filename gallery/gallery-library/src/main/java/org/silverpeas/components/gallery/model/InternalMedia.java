@@ -40,7 +40,6 @@ import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.File;
-import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -128,7 +127,8 @@ public abstract class InternalMedia extends Media {
 
   @Override
   public String getApplicationThumbnailUrl(MediaResolution mediaResolution) {
-    if (mediaResolution == null || mediaResolution == MediaResolution.ORIGINAL) {
+    if (mediaResolution == null || mediaResolution == MediaResolution.ORIGINAL ||
+        mediaResolution == MediaResolution.NORMAL) {
       mediaResolution = MediaResolution.PREVIEW;
     }
     if (getType().isPhoto()) {
@@ -178,8 +178,10 @@ public abstract class InternalMedia extends Media {
     List<String> potentialFileNames = new ArrayList<>(maxSize);
     potentialFileNames.add(getFileName());
     if (getType().isPhoto()) {
-      String thumbnailSuffix = mediaResolution.getThumbnailSuffix();
-      if (StringUtil.isDefined(thumbnailSuffix)) {
+      final String thumbnailSuffix = mediaResolution.getThumbnailSuffix();
+      if (mediaResolution == MediaResolution.NORMAL) {
+        potentialFileNames.add(getId() + thumbnailSuffix + ".jpg");
+      } else if (StringUtil.isDefined(thumbnailSuffix)) {
         final String originalFileExt = "." + FilenameUtils.getExtension(getFileName());
         potentialFileNames.set(0, getId() + thumbnailSuffix + originalFileExt);
         potentialFileNames.add(getId() + thumbnailSuffix + ".jpg");
