@@ -40,6 +40,7 @@ import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.subscription.SubscriptionService;
 import org.silverpeas.core.subscription.SubscriptionServiceProvider;
 import org.silverpeas.core.subscription.service.ComponentSubscription;
+import org.silverpeas.core.subscription.service.ComponentSubscriptionResource;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ServiceProvider;
@@ -49,6 +50,7 @@ import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.util.AlertUser;
 import org.silverpeas.core.web.selection.SelectionUsersGroups;
+import org.silverpeas.core.web.subscription.SubscriptionContext;
 import org.silverpeas.core.web.util.ListIndex;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 
@@ -240,6 +242,12 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
           .existsSubscription(new ComponentSubscription(getUserId(), getComponentId()));
     }
     return subscriber;
+  }
+
+  public String manageSubscriptions() {
+    SubscriptionContext subscriptionContext = getSubscriptionContext();
+    subscriptionContext.initialize(ComponentSubscriptionResource.from(getComponentId()));
+    return subscriptionContext.getDestinationUrl();
   }
 
   public String notify(String newsId) {
