@@ -105,7 +105,13 @@ function bindCategoryEvent() {
    $('.categoryTitle').on('click', function() {
       category = this.id;
       id = category.substring(1);
-      openCategory(id);
+      if ($(this).hasClass('category-open')) {
+        $(this).removeClass('category-open').addClass('category-closed');
+        $("#qc"+id).hide();
+      } else {
+        $(this).removeClass('category-closed').addClass('category-open');
+        openCategory(id);
+      }
       return false;
     });
 }
