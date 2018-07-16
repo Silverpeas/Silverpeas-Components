@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<publicationTemplate>
+    <name>Salle</name>
+    <description></description>
+    <directoryUsage>false</directoryUsage>
+    <visible>true</visible>
+    <provided>true</provided>
+    <dataEncrypted>false</dataEncrypted>
+    <applications>
+        <application>resourcesManager</application>
+    </applications>
+    <viewFileName>room\view.xml</viewFileName>
+    <updateFileName>room\update.xml</updateFileName>
+    <dataFileName>room\data.xml</dataFileName>
+    <viewTypeFile></viewTypeFile>
+    <updateTypeFile></updateTypeFile>
+    <searchResultFileName>room\searchresult.xml</searchResultFileName>
+</publicationTemplate>
