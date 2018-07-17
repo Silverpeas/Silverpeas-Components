@@ -528,6 +528,44 @@
             <message lang="de">Text verwenden für Wasserzeichen</message>
           </help>
         </parameter>
+        <parameter>
+          <name>WatermarkImageUrlHD</name>
+          <label>
+            <message lang="fr">URL image - images originales</message>
+            <message lang="en">Image URL - original images</message>
+            <message lang="de">Image URL - original Bild</message>
+          </label>
+          <order>15</order>
+          <mandatory>false</mandatory>
+          <value></value>
+          <type>text</type>
+          <size>25</size>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Image à utiliser sur les images haute définition</message>
+            <message lang="en">Image to be used on High definition images</message>
+            <message lang="de">Image auf High-Definition-Bild</message>
+          </help>
+        </parameter>
+        <parameter>
+          <name>WatermarkImageUrlOther</name>
+          <label>
+            <message lang="fr">URL image - vignettes</message>
+            <message lang="en">Image URL - thumbnails</message>
+            <message lang="de">Image URL - wasserzeichen</message>
+          </label>
+          <order>16</order>
+          <mandatory>false</mandatory>
+          <value/>
+          <type>text</type>
+          <size>25</size>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Image à utiliser sur les vignettes</message>
+            <message lang="en">Image to be used on thumbnails</message>
+            <message lang="de">Image verwenden für Wasserzeichen</message>
+          </help>
+        </parameter>
       </parameters>
     </groupOfParameters>
     <groupOfParameters>

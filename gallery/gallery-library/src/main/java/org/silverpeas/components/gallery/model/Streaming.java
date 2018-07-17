@@ -23,23 +23,21 @@
  */
 package org.silverpeas.components.gallery.model;
 
-import org.apache.http.HttpHost;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.silverpeas.components.gallery.constant.MediaResolution;
 import org.silverpeas.components.gallery.constant.MediaType;
 import org.silverpeas.components.gallery.constant.StreamingProvider;
 import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.lang.SystemWrapper;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.ws.rs.WebApplicationException;
+
+import static org.silverpeas.core.util.HttpUtil.httpClient;
 
 /**
  * This class represents a Streaming.
@@ -143,15 +141,5 @@ public class Streaming extends Media {
     } finally {
       httpGet.releaseConnection();
     }
-  }
-
-  private static CloseableHttpClient httpClient() {
-    HttpClientBuilder builder = HttpClients.custom();
-    final String proxyHost = SystemWrapper.get().getProperty("http.proxyHost");
-    final String proxyPort = SystemWrapper.get().getProperty("http.proxyPort");
-    if (StringUtil.isDefined(proxyHost) && StringUtil.isInteger(proxyPort)) {
-      builder.setProxy(new HttpHost(proxyHost, Integer.parseInt(proxyPort)));
-    }
-    return builder.build();
   }
 }

@@ -41,6 +41,7 @@ public enum MediaResolution {
   MEDIUM(true, "266x150", 266, 150, "266x150"),
   LARGE(false, "600x400", 600, 400, null),
   PREVIEW(false, "preview", 600, 400, "600x400"),
+  NORMAL(false, "normal", null, null, null),
   WATERMARK(false, "watermark", null, null, null),
   ORIGINAL(false, "original", null, null, null);
 

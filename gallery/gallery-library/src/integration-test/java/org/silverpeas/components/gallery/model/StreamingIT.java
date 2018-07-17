@@ -69,6 +69,7 @@ public class StreamingIT extends AbstractMediaIT {
     expected.put(MediaResolution.LARGE, "/silverpeas/gallery/jsp/icons/streaming_266x150.png");
     expected.put(MediaResolution.PREVIEW, "/silverpeas/gallery/jsp/icons/streaming_266x150.png");
     expected.put(MediaResolution.WATERMARK, "");
+    expected.put(MediaResolution.NORMAL, "/silverpeas/gallery/jsp/icons/streaming_266x150.png");
     expected.put(MediaResolution.ORIGINAL, "/silverpeas/gallery/jsp/icons/streaming_266x150.png");
     for (MediaResolution mediaResolution : MediaResolution.values()) {
       assertThat(streaming.getApplicationThumbnailUrl(mediaResolution),

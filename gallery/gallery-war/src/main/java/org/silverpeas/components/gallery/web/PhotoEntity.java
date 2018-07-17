@@ -42,6 +42,9 @@ public class PhotoEntity extends AbstractMediaEntity<PhotoEntity> {
   @XmlElement(defaultValue = "")
   private URI previewUrl;
 
+  @XmlElement(defaultValue = "")
+  private URI normalUrl;
+
   /**
    * Creates a new photo entity from the specified photo.
    * @param photo
@@ -56,11 +59,23 @@ public class PhotoEntity extends AbstractMediaEntity<PhotoEntity> {
     return this;
   }
 
+  public PhotoEntity withNormalUrl(final URI normalUrl) {
+    this.normalUrl = normalUrl;
+    return this;
+  }
+
   /**
    * @return the previewUrl
    */
   public URI getPreviewUrl() {
     return previewUrl;
+  }
+
+  /**
+   * @return the normalUrl
+   */
+  public URI getNormalUrl() {
+    return normalUrl;
   }
 
   /**

@@ -44,7 +44,10 @@ import org.silverpeas.core.io.media.Definition;
 import org.silverpeas.core.io.media.MetadataExtractor;
 import org.silverpeas.core.io.media.image.ImageTool;
 import org.silverpeas.core.io.media.image.option.AbstractImageToolOption;
+import org.silverpeas.core.io.media.image.option.AnchoringPosition;
 import org.silverpeas.core.io.media.image.option.DimensionOption;
+import org.silverpeas.core.io.media.image.option.OrientationOption;
+import org.silverpeas.core.io.media.image.option.WatermarkImageOption;
 import org.silverpeas.core.io.media.image.option.WatermarkTextOption;
 import org.silverpeas.core.io.media.video.VideoThumbnailExtractor;
 import org.silverpeas.core.notification.message.MessageManager;
@@ -58,9 +61,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import static org.apache.commons.io.filefilter.FileFilterUtils.*;
 import static org.silverpeas.components.gallery.constant.MediaResolution.*;
@@ -482,14 +487,16 @@ public class MediaUtil {
   }
 
   private static class PhotoProcess extends MediaProcess<Photo> {
-    private final Watermark watermark;
+    private Set<AbstractImageToolOption> watermarkNormalOptions = Collections.emptySet();
+    private Set<AbstractImageToolOption> watermarkThumbnailOptions = Collections.emptySet();
+    private HandledFile[] thumbnailSrc = new HandledFile[2];
 
     private List<MetaData> cachedIptcMetadata = null;
 
     private PhotoProcess(final HandledFile handledFile, final Photo photo,
         final Watermark watermark) {
       super(handledFile, photo);
-      this.watermark = watermark;
+      computeWatermarks(watermark);
     }
 
     private static ImageTool getImageTool() {
@@ -505,12 +512,12 @@ public class MediaUtil {
         // Registering the size of the image
         registerResolutionData();
 
-        // Computing watermark HD and retrieving the one for thumbnails
-        final String thumbnailWatermarkText = processWatermarkHDAndReturningThumbnailOne();
+        // Creating normal pictures (normal and watermark)
+        createNormals(photo);
 
         // Creating preview and thumbnails
         try {
-          createThumbnails(thumbnailWatermarkText);
+          createThumbnails();
         } catch (final Exception e) {
           SilverLogger.getLogger(MediaUtil.class)
               .error("image = " + photo.getTitle() + " (#" + photo.getId() + ")", e);
@@ -547,10 +554,9 @@ public class MediaUtil {
 
     /**
      * Creates all the thumbnails around a photo.
-     * @param watermarkText the text of the watermark to stamp.
      * @throws Exception on technical error.
      */
-    private void createThumbnails(final String watermarkText) throws Exception {
+    private void createThumbnails() throws Exception {
       Photo photo = getMedia();
 
       // File name
@@ -565,17 +571,22 @@ public class MediaUtil {
       final MediaResolution[] mediaResolutions =
           new MediaResolution[]{LARGE, PREVIEW, MEDIUM, SMALL, TINY};
       final HandledFile originalFile = super.getHandledFile();
-      HandledFile source = originalFile;
+      final HandledFile[] sources = Stream.of(thumbnailSrc).toArray(HandledFile[]::new);
       final String originalFileExt = "." + FilenameUtils.getExtension(photo.getFileName());
       for (MediaResolution mediaResolution : mediaResolutions) {
-        HandledFile currentThumbnail = originalFile.getParentHandledFile()
+        final boolean watermarkApplicable = mediaResolution.isWatermarkApplicable();
+        final int index = watermarkApplicable && thumbnailSrc[1] != null ? 1 : 0;
+        final HandledFile currentThumbnail = originalFile.getParentHandledFile()
             .getHandledFile(photoId + mediaResolution.getThumbnailSuffix() + originalFileExt);
-        generateThumbnail(source, currentThumbnail, mediaResolution, watermarkText);
+        generateThumbnail(thumbnailSrc[index], currentThumbnail, mediaResolution);
         // The first thumbnail that has to be created must be the larger one and without watermark.
         // This first thumbnail is cached and reused for the following thumbnail creation.
-        if (source == originalFile) {
-          source = currentThumbnail;
+        if (sources[index] == thumbnailSrc[index]) {
+          thumbnailSrc[index] = currentThumbnail;
         }
+      }
+      if (sources[1] != null) {
+        sources[1].delete();
       }
     }
 
@@ -584,13 +595,12 @@ public class MediaUtil {
      * @param sourceFile
      * @param outputFile
      * @param mediaResolution
-     * @param watermarkText
      * @throws Exception
      */
     private void generateThumbnail(final HandledFile sourceFile, final HandledFile outputFile,
-        MediaResolution mediaResolution, final String watermarkText) throws Exception {
+        MediaResolution mediaResolution) throws Exception {
       final boolean watermarkToApply =
-          mediaResolution.isWatermarkApplicable() && isDefined(watermarkText);
+          mediaResolution.isWatermarkApplicable() && !watermarkThumbnailOptions.isEmpty();
       final Definition definition = getMedia().getDefinition();
       final boolean resizeToPerform = definition.getWidth() > mediaResolution.getWidth() ||
           definition.getHeight() > mediaResolution.getHeight();
@@ -601,56 +611,91 @@ public class MediaUtil {
       }
 
       // Optimized media processing
-      Set<AbstractImageToolOption> options = new HashSet<>();
+      final Set<AbstractImageToolOption> options = new HashSet<>();
+      options.add(OrientationOption.auto());
       if (resizeToPerform) {
         options.add(DimensionOption
             .widthAndHeight(mediaResolution.getWidth(), mediaResolution.getHeight()));
-      }
-      if (watermarkToApply) {
-        options.add(WatermarkTextOption.text(watermarkText).withFont("Arial"));
       }
       getImageTool().convert(sourceFile.getFile(), outputFile.getFile(), options, PREVIEW_WORK,
           GEOMETRY_SHRINK);
     }
 
-    private String processWatermarkHDAndReturningThumbnailOne() {
-      String thumbnailWatermarkText = "";
+    private void computeWatermarks(Watermark watermark) {
+      String wText = null;
+      File wImage = null;
+      String thumbnailWText = null;
+      File thumbnailWImage = null;
       final Photo photo = getMedia();
       if (watermark != null && watermark.isEnabled()) {
-          try {
-            processWatermarkHD(photo);
-            if (watermark.isDefinedForThumbnails()) {
-              thumbnailWatermarkText = defaultStringIfNotDefined(
-                  getIptcWatermarkValue(photo, watermark.getIPTCPropertyForThumbnails()),
-                  watermark.getTextForThumbnails());
-            }
-          } catch (MediaMetadataException e) {
-            SilverLogger.getLogger(MediaUtil.class).silent(e).error(
-                "Bad image file format " + super.getHandledFile().getFile().getPath() + ": " +
-                    e.getMessage());
-          } catch (IOException e) {
-            SilverLogger.getLogger(MediaUtil.class).silent(e).error(
-                "Bad metadata encoding in image " + super.getHandledFile().getFile().getPath() +
-                    ": " + e.getMessage());
+        try {
+          wText = defaultStringIfNotDefined(
+              getIptcWatermarkValue(watermark, photo, watermark.getIPTCPropertyForHD()),
+              watermark.getTextForHD());
+          wImage = watermark.getImageForHD();
+          if (watermark.isDefinedForThumbnails()) {
+            thumbnailWText = defaultStringIfNotDefined(
+                getIptcWatermarkValue(watermark, photo, watermark.getIPTCPropertyForThumbnails()),
+                watermark.getTextForThumbnails());
+            thumbnailWImage = watermark.getImageForThumbnails();
           }
+        } catch (MediaMetadataException e) {
+          SilverLogger.getLogger(MediaUtil.class).silent(e).error(
+              "Bad image file format " + super.getHandledFile().getFile().getPath() + ": " +
+                  e.getMessage());
+        } catch (IOException e) {
+          SilverLogger.getLogger(MediaUtil.class).silent(e).error(
+              "Bad metadata encoding in image " + super.getHandledFile().getFile().getPath() +
+                  ": " + e.getMessage());
+        }
       }
-      return thumbnailWatermarkText;
+      watermarkNormalOptions = computeWatermarkOptions(wText, wImage);
+      watermarkThumbnailOptions = computeWatermarkOptions(thumbnailWText, thumbnailWImage);
     }
 
-    private void processWatermarkHD(final Photo photo)
-        throws MediaMetadataException, IOException {
+    private void createNormals(final Photo photo) {
+      // Normal duplication (for orientation)
+      final HandledFile normalFile = super.getHandledFile()
+          .getParentHandledFile()
+          .getHandledFile(photo.getId() + "_normal.jpg");
+      getImageTool().convert(super.getHandledFile().getFile(), normalFile.getFile(),
+          OrientationOption.auto());
+      thumbnailSrc[0] = normalFile;
       // Photo duplication that is stamped with a Watermark.
-      final String watermarkText =
-          defaultStringIfNotDefined(
-              getIptcWatermarkValue(photo, watermark.getIPTCPropertyForHD()),
-              watermark.getTextForHD());
-      if (isDefined(watermarkText)) {
+      if (!watermarkNormalOptions.isEmpty()) {
         final HandledFile watermarkFile = super.getHandledFile()
             .getParentHandledFile()
             .getHandledFile(photo.getId() + "_watermark.jpg");
-        AbstractImageToolOption option = WatermarkTextOption.text(watermarkText);
-        getImageTool().convert(super.getHandledFile().getFile(), watermarkFile.getFile(), option);
+        getImageTool().convert(super.getHandledFile().getFile(), watermarkFile.getFile(),
+            watermarkNormalOptions);
       }
+      if (!watermarkThumbnailOptions.isEmpty()) {
+        final HandledFile watermarkFileForThumbnails = super.getHandledFile().getParentHandledFile()
+            .getHandledFile(photo.getId() + "_watermark_for_thumbnails.jpg");
+        getImageTool()
+            .convert(super.getHandledFile().getFile(), watermarkFileForThumbnails.getFile(),
+                watermarkThumbnailOptions);
+        thumbnailSrc[1] = watermarkFileForThumbnails;
+      }
+    }
+
+    private Set<AbstractImageToolOption> computeWatermarkOptions(final String textToWatermark,
+        final File imageToWatermark) {
+      final Set<AbstractImageToolOption> options = new HashSet<>();
+      if (isDefined(textToWatermark)) {
+        final WatermarkTextOption wText = WatermarkTextOption.text(textToWatermark);
+        if (imageToWatermark != null) {
+          wText.withAnchoringPosition(AnchoringPosition.SOUTH_WEST);
+        }
+        options.add(wText);
+      }
+      if (imageToWatermark != null) {
+        options.add(WatermarkImageOption.image(imageToWatermark));
+      }
+      if (!options.isEmpty()) {
+        options.add(OrientationOption.auto());
+      }
+      return options;
     }
 
     /**
@@ -668,7 +713,8 @@ public class MediaUtil {
       return cachedIptcMetadata;
     }
 
-    private String getIptcWatermarkValue(final Photo photo, final String property)
+    private String getIptcWatermarkValue(final Watermark watermark, final Photo photo,
+        final String property)
         throws MediaMetadataException, IOException {
       String value = null;
       if (watermark.isBasedOnIPTC() && photo.getFileMimeType().isIPTCCompliant()) {

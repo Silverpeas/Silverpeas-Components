@@ -68,6 +68,7 @@ public class SoundIT extends AbstractMediaIT {
     expected.put(LARGE, "/silverpeas/gallery/jsp/icons/sound_266x150.png");
     expected.put(PREVIEW, "/silverpeas/gallery/jsp/icons/sound_266x150.png");
     expected.put(WATERMARK, "");
+    expected.put(NORMAL, "/silverpeas/gallery/jsp/icons/sound_266x150.png");
     expected.put(ORIGINAL, "/silverpeas/gallery/jsp/icons/sound_266x150.png");
     for (MediaResolution mediaResolution : MediaResolution.values()) {
       assertThat(sound.getApplicationThumbnailUrl(mediaResolution),

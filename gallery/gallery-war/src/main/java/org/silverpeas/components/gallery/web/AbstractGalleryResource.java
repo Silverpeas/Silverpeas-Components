@@ -111,6 +111,7 @@ abstract class AbstractGalleryResource extends RESTWebService {
     switch (media.getType()) {
       case Photo:
         entity = PhotoEntity.createFrom(media.getPhoto())
+            .withNormalUrl(GalleryResourceURIs.buildMediaContentURI(media, MediaResolution.NORMAL))
             .withPreviewUrl(GalleryResourceURIs.buildMediaContentURI(media, MediaResolution.PREVIEW))
             .withThumbUrl(URI.create(media.getApplicationThumbnailUrl(MediaResolution.SMALL)));
         break;
