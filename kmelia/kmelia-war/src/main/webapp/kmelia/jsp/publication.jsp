@@ -746,9 +746,8 @@
         %>
             <div class="inlineMessage">
               <div><%=resources.getString("kmelia.publication.shortcut.source.label")%>
-                <a href="<%=URLUtil.getSimpleURL(URLUtil.URL_TOPIC, originalFatherPK.getId(), originalFatherPK.getInstanceId())%>">
-                  <view:componentPath componentId="<%=originalFatherPK.getInstanceId()%>" nodeId="<%=originalFatherPK.getId()%>" language="<%=language%>"/>
-                </a></div>
+                <view:componentPath componentId="<%=originalFatherPK.getInstanceId()%>" nodeId="<%=originalFatherPK.getId()%>" language="<%=language%>" link="true"/>
+              </div>
               <a href="<%=kmeliaPublication.getDetail().getPermalink()%>" class="button"><span><%=resources.getString("kmelia.publication.shortcut.source.go")%></span></a>
             </div>
          <% }
