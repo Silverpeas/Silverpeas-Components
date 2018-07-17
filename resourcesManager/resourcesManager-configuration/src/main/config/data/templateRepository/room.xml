@@ -4,7 +4,7 @@
     <description></description>
     <directoryUsage>false</directoryUsage>
     <visible>true</visible>
-    <provided>true</provided>
+    <locked>true</locked>
     <dataEncrypted>false</dataEncrypted>
     <applications>
         <application>resourcesManager</application>

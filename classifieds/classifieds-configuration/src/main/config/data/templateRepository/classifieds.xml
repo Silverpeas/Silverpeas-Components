@@ -4,7 +4,7 @@
     <description>Données complémentaires pour les petites annonces</description>
   	<image>/weblib/xmlForms/model1.gif</image>
     <visible>true</visible>
-    <provided>true</provided>
+    <locked>true</locked>
 	  <applications>
         <application>classifieds</application>
     </applications>
