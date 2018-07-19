@@ -266,7 +266,7 @@ public abstract class Media implements SilverContentInterface, Serializable {
    * @return the permalink string of a media.
    */
   public String getPermalink() {
-    return URLUtil.getPermalink(URLUtil.Permalink.Media, getId());
+    return URLUtil.getPermalink(URLUtil.Permalink.MEDIA, getId());
   }
 
   /**

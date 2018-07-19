@@ -90,11 +90,9 @@ int i=0;
 
 				arrayPane.addArrayColumn(resource.getString("infoLetter.name"));
 				arrayPane.addArrayColumn(resource.getString("GML.date"));
-				// ArrayColumn arrayColumn = arrayPane.addArrayColumn(resource.getString("GML.operation"));
-				// arrayColumn.setSortable(false);
 if (publications.size()>0) {
 	for (i = 0; i < publications.size(); i++) {
-						InfoLetterPublication pub = (InfoLetterPublication) publications.get(i);
+						InfoLetterPublication pub = publications.get(i);
 						if (pub._isValid()) {
 							ArrayLine arrayLine = arrayPane.addArrayLine();
 
@@ -103,7 +101,10 @@ if (publications.size()>0) {
 							debIcon.setProperties(resource.getIcon("infoLetter.minicone"), "#");
 							arrayLine.addArrayCellIconPane(iconPane1);
 
-							arrayLine.addArrayCellLink(WebEncodeHelper.javaStringToHtmlString(pub.getTitle()), "javascript:openViewParution('" + pub.getPK().getId() + "');");
+              String permalink = " <a class=\"sp-permalink\" href=\""+pub._getPermalink()+"\"><img src=\""+resource.getIcon("infoLetter.permalink")+"\"/></a>";
+              String link = "<a href=\"javascript:openViewParution('" + pub.getPK().getId() + "')\">"+pub.getTitle()+"</a>";
+							ArrayCellText cellTitle = arrayLine.addArrayCellText(link+permalink);
+							cellTitle.setCompareOn(pub.getTitle());
 
 							java.util.Date date = DateUtil.parse(pub.getParutionDate());
 							ArrayCellText cell = arrayLine.addArrayCellText(resource.getOutputDate(date));
