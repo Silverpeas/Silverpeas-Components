@@ -40,8 +40,13 @@
 
 <body>
 <%
-  DbTable dbTable = myDBSC.getDbTable();
-  StringBuffer pageTitleSb = new StringBuffer(resource.getString("PageTitleConsultation")); 
+  DbTable dbTable = null;
+  try {
+    dbTable = myDBSC.getDbTable();
+  } catch (Exception e) {
+
+  }
+  StringBuffer pageTitleSb = new StringBuffer(resource.getString("PageTitleConsultation"));
   if (dbTable != null)
   {
     pageTitleSb.append(" : ").append(resource.getString("Table")).append(" ").append(dbTable.getName());

@@ -37,9 +37,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Vector;
 
 import com.silverpeas.util.StringUtil;
 import org.silverpeas.mydb.control.DriverManager;
@@ -495,7 +495,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
    * @return The list of tables names available in database.
    */
   public String[] getTableNames() {
-    Vector<String> tableVector = new Vector<String>();
+    List<String> tableVector = new ArrayList<String>();
     startConnection();
     if (connection == null) {
       SilverTrace.warn("myDB", "MyDBSessionController.getTableNames()",
@@ -506,7 +506,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
         if (dbMetaData != null) {
           rs = dbMetaData.getTables(null, null, null, new String[]{"TABLE"});
           while (rs.next()) {
-            tableVector.addElement(rs.getString("TABLE_NAME"));
+            tableVector.add(rs.getString("TABLE_NAME"));
           }
         }
       } catch (SQLException e) {
@@ -517,7 +517,32 @@ public class MyDBSessionController extends AbstractComponentSessionController {
         closeConnection();
       }
     }
-    return (String[]) tableVector.toArray(new String[tableVector.size()]);
+    return getAuthorizedTables(tableVector);
+  }
+
+  private String[] getAuthorizedTables(List<String> tableNames) {
+    List<String> authorizedTables = new ArrayList<String>();
+    for (String tableName : tableNames) {
+      if (isAuthorizedTable(tableName)) {
+        authorizedTables.add(tableName);
+      }
+    }
+    return authorizedTables.toArray(new String[authorizedTables.size()]);
+  }
+
+  private boolean isAuthorizedTable(String tableName) {
+    startConnection();
+    try {
+      String query = "select count(*) from "+tableName;
+      prepStmt = connection.prepareStatement(query);
+      prepStmt.executeQuery();
+      rs = prepStmt.getResultSet();
+    } catch (SQLException e) {
+      return false;
+    } finally {
+      closeConnection();
+    }
+    return true;
   }
 
   /**
@@ -620,8 +645,9 @@ public class MyDBSessionController extends AbstractComponentSessionController {
               SilverpeasException.ERROR,
               "myDB.EX_CANNOT_GET_TABLE_DESCRIPTION", "TableName : "
               + tableName, e);
+        } finally {
+          closeConnection();
         }
-        closeConnection();
 
         if (dbTable != null) {
           final String query = new StringBuffer(100).append("select ").append(
@@ -695,8 +721,9 @@ public class MyDBSessionController extends AbstractComponentSessionController {
             throw new MyDBException("myDBSessionController.getDbTable()",
                 SilverpeasException.ERROR, "myDB.EX_CANNOT_GET_TABLE_DATA",
                 "TableName : " + tableName, e);
+          } finally {
+            closeConnection();
           }
-          closeConnection();
         }
       }
     }
@@ -1199,7 +1226,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
       String tableName = tableManager.getTable().getName();
       connection = getConnection();
       DatabaseMetaData dbMetaData = connection.getMetaData();
-      rs = dbMetaData.getTables(null, "%", tableName, new String[]{"TABLE"});      
+      rs = dbMetaData.getTables(null, "%", tableName, new String[]{"TABLE"});
       if (rs.next()) {
         // Vérification de l'existence de la table.
         stmt = connection.createStatement();
