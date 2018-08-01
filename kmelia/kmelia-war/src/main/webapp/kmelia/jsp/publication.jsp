@@ -218,6 +218,7 @@
   String updaterId = pubDetail.getUpdaterId();
 
   boolean highlightFirst = resources.getSetting("highlightFirstOccurence", false);
+  String attProfile = kmeliaScc.getProfile();
 %>
 
 <c:set var="kmeliaPubli" value="<%=kmeliaPublication%>"/>
@@ -618,7 +619,6 @@
 			            out.println("<a name=\"attachments\"></a>");
 			          }
                 out.flush();
-                String attProfile = kmeliaScc.getProfile();
                 if (!attachmentsUpdatable) {
                   attProfile = "user";
                 }
@@ -812,6 +812,14 @@
 				      <%
 				          }
 				        }
+				        %>
+              <viewTags:viewAttachmentsAsContent componentInstanceId="<%= componentId %>"
+                                                 resourceType="<%=resourceType %>"
+                                                 resourceId="<%=id%>"
+                                                 contentLanguage="<%=contentLanguage%>"
+                                                 highestUserRole="<%=SilverpeasRole.from(attProfile)%>"/>
+              <%
+
 				        out.println("</div>");
 
                         if (kmeliaScc.getInvisibleTabs().indexOf(kmeliaScc.TAB_COMMENT) == -1 && !kmaxMode)	 {
