@@ -586,16 +586,6 @@ public class DefaultBlogService implements BlogService {
   }
 
   @Override
-  public void addSubscription(final String userId, final String instanceId) {
-    getSubscribeService().subscribe(new ComponentSubscription(userId, instanceId));
-  }
-
-  @Override
-  public void removeSubscription(final String userId, final String instanceId) {
-    getSubscribeService().unsubscribe(new ComponentSubscription(userId, instanceId));
-  }
-
-  @Override
   public boolean isSubscribed(final String userId, final String instanceId) {
     return getSubscribeService().existsSubscription(new ComponentSubscription(userId, instanceId));
   }

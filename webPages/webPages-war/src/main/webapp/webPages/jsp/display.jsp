@@ -51,6 +51,9 @@
 	context.setBorderPrinted(false);
 
 	boolean operationsVisibles = !action.equals("Portlet") && !isAnonymous;
+
+  String labelSubscribe = resource.getString("GML.subscribe");
+  String labelUnsubscribe = resource.getString("GML.unsubscribe");
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -61,19 +64,41 @@
 <view:includePlugin name="popup"/>
 <view:includePlugin name="preview"/>
 <view:includePlugin name="toggle"/>
+<script type="text/javascript">
+  function addSubscription() {
+    $.post(webContext+"/services/subscribe/<%=componentId%>", successSubscribe(), 'json');
+  }
+
+  function successSubscribe() {
+    // changing label and href of operation on-the-fly
+    $("a[href='javascript:addSubscription()']").first().attr('href', "javascript:removeSubscription()").text("<%=labelUnsubscribe%>");
+  }
+
+  function removeSubscription() {
+    $.post(webContext+"/services/unsubscribe/<%=componentId%>", successUnsubscribe(), 'json');
+  }
+
+  function successUnsubscribe() {
+    //changing label and href of operation on-the-fly
+    $("a[href='javascript:removeSubscription()']").first().attr('href', "javascript:addSubscription()").text("<%=labelSubscribe%>");
+  }
+</script>
 </head>
 <body>
 <%
 	if (operationsVisibles) {
 	  if ("Preview".equals(action)) {
       operationPane.addOperation("useless", resource.getString("webPages.edit"), "Edit");
+      if (subscriptionEnabled) {
+        operationPane.addOperation("useless", resource.getString("GML.manageSubscriptions"), "ManageSubscriptions");
+      }
       operationPane.addLine();
     }
     if (subscriptionEnabled) {
       if (!isSubscriber) {
-        operationPane.addOperation("useless", resource.getString("webPages.subscriptionAdd"), "AddSubscription");
+        operationPane.addOperation("useless", labelSubscribe, "javascript:addSubscription()");
       } else {
-        operationPane.addOperation("useless", resource.getString("webPages.subscriptionRemove"), "RemoveSubscription");
+        operationPane.addOperation("useless", labelUnsubscribe, "javascript:removeSubscription()");
       }
     }
     operationPane.addOperation("useless", resource.getString("GML.print"), "javaScript:print();");

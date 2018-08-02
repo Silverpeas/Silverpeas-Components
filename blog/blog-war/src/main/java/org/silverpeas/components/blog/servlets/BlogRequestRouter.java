@@ -351,14 +351,8 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         request.setAttribute("Posts", blogSC.lastValidPosts());
         // appel de la page de portlet
         destination = rootDest + "portlet.jsp";
-      } else if ("AddSubscription".equals(function)) {
-        // ajout aux abonnements
-        blogSC.addUserSubscription();
-        destination = getDestination("Main", blogSC, request);
-      } else if ("RemoveSubscription".equals(function)) {
-        // ajout aux abonnements
-        blogSC.removeUserSubscription();
-        destination = getDestination("Main", blogSC, request);
+      } else if ("ManageSubscriptions".equals(function)) {
+        destination = blogSC.manageSubscriptions();
       } else if ("UpdateFooter".equals(function)) {
         // mise à jour du pied de page
         WysiwygRouting routing = new WysiwygRouting();

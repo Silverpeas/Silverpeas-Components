@@ -137,12 +137,8 @@ public class WebPagesRequestRouter extends ComponentRequestRouter<WebPagesSessio
       } else if (function.startsWith("portlet")) {
         request.setAttribute("Action", "Portlet");
         destination = getDestination("Preview", webPagesSC, request);
-      } else if (function.startsWith("AddSubscription")) {
-        webPagesSC.addSubscription();
-        destination = getDestination("Main", webPagesSC, request);
-      } else if (function.startsWith("RemoveSubscription")) {
-        webPagesSC.removeSubscription();
-        destination = getDestination("Main", webPagesSC, request);
+      } else if ("ManageSubscriptions".equals(function)) {
+        destination = webPagesSC.manageSubscriptions();
       } else if ("EditXMLContent".equals(function)) {
         // user wants to edit data
         request.setAttribute("Form", webPagesSC.getUpdateForm());

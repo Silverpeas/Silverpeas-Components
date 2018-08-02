@@ -46,11 +46,11 @@ import org.silverpeas.core.mylinks.model.LinkDetail;
 import org.silverpeas.core.mylinks.service.MyLinksService;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.notification.message.MessageNotifier;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
+import org.silverpeas.core.subscription.service.ComponentSubscriptionResource;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.Pair;
@@ -65,6 +65,7 @@ import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.util.AlertUser;
+import org.silverpeas.core.web.subscription.SubscriptionContext;
 import org.silverpeas.core.webapi.node.NodeEntity;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 
@@ -339,18 +340,14 @@ public final class BlogSessionController extends AbstractComponentSessionControl
     return getBlogService().getResultSearch(word, getUserId(), getComponentId());
   }
 
-  public synchronized void addUserSubscription() {
-    getBlogService().addSubscription(getUserId(), getComponentId());
-    MessageNotifier.addSuccess(getString("blog.addSubscriptionOk"));
-  }
-
-  public synchronized void removeUserSubscription() {
-    getBlogService().removeSubscription(getUserId(), getComponentId());
-    MessageNotifier.addSuccess(getString("blog.removeSubscriptionOk"));
-  }
-
   public synchronized boolean isUserSubscribed() {
     return getBlogService().isSubscribed(getUserId(), getComponentId());
+  }
+
+  public String manageSubscriptions() {
+    SubscriptionContext subscriptionContext = getSubscriptionContext();
+    subscriptionContext.initialize(ComponentSubscriptionResource.from(getComponentId()));
+    return subscriptionContext.getDestinationUrl();
   }
 
   private boolean isUseRss() {
