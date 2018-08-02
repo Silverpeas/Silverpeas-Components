@@ -38,6 +38,7 @@
 
 <fmt:message key="GML.subscribe" var="actionLabelSubscribe"/>
 <fmt:message key="GML.unsubscribe" var="actionLabelUnsubscribe"/>
+<fmt:message key="GML.manageSubscriptions" var="actionLabelManageSubscriptions"/>
 <fmt:message key="quickinfo.news.broadcast.mode.major" var="labelModeMajor"/>
 <fmt:message key="GML.attachments" var="labelFiles"/>
 <fmt:message key="GML.comments" var="labelComments"/>
@@ -92,9 +93,12 @@ function onDelete(id) {
 <body class="quickInfo" id="${componentId}">
 <view:browseBar />
 <view:operationPane>
-  <c:if test="${role == 'admin' && appSettings.taxonomyEnabled}">
-  	<fmt:message var="pdcMsg" key="GML.PDCParam"/>
-  	<view:operation altText="${pdcMsg}" action="javascript:onclick=openPDCSetup()"/>
+  <c:if test="${role == 'admin'}">
+    <c:if test="${appSettings.taxonomyEnabled}">
+      <fmt:message var="pdcMsg" key="GML.PDCParam"/>
+      <view:operation altText="${pdcMsg}" action="javascript:onclick=openPDCSetup()"/>
+    </c:if>
+    <view:operation altText="${actionLabelManageSubscriptions}" action="ManageSubscriptions"/>
   </c:if>
   <c:if test="${contributor}">
 	  <fmt:message var="addMsg" key="creation"/>

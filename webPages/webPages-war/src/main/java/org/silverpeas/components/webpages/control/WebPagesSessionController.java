@@ -34,6 +34,7 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.subscription.SubscriptionService;
 import org.silverpeas.core.subscription.SubscriptionServiceProvider;
 import org.silverpeas.core.subscription.service.ComponentSubscription;
+import org.silverpeas.core.subscription.service.ComponentSubscriptionResource;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -49,13 +50,14 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
+import org.silverpeas.core.web.subscription.SubscriptionContext;
 
 import java.util.Date;
 import java.util.List;
 
 public class WebPagesSessionController extends AbstractComponentSessionController {
 
-  String usedTemplate = null;
+  private String usedTemplate = null;
 
   /**
    * Standard Session Controller Constructor
@@ -96,20 +98,15 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
         I18NHelper.defaultLanguage);
   }
 
-  public synchronized void removeSubscription() {
-    getSubscribeService().unsubscribe(new ComponentSubscription(getUserId(), getComponentId()));
-  }
-
-  public synchronized void addSubscription() {
-    if (isSubscriber()) {
-      return;
-    }
-    getSubscribeService().subscribe(new ComponentSubscription(getUserId(), getComponentId()));
-  }
-
   public boolean isSubscriber() {
     return getSubscribeService().existsSubscription(
         new ComponentSubscription(getUserId(), getComponentId()));
+  }
+
+  public String manageSubscriptions() {
+    SubscriptionContext subscriptionContext = getSubscriptionContext();
+    subscriptionContext.initialize(ComponentSubscriptionResource.from(getComponentId()));
+    return subscriptionContext.getDestinationUrl();
   }
 
   private NodePK getNodePK() {

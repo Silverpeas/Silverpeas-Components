@@ -177,6 +177,8 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
         String id = request.getParameter("Id");
         quickInfo.submitNewsOnHomepage(id);
         destination = getDestination("View", quickInfo, request);
+      } else if ("ManageSubscriptions".equals(function)) {
+        destination = quickInfo.manageSubscriptions();
       } else {
         destination = "/quickinfo/jsp/" + function;
       }

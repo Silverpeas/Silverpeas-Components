@@ -59,9 +59,17 @@ WallPaper wallPaper = (WallPaper) request.getAttribute("WallPaper");
 StyleSheet styleSheet = (StyleSheet) request.getAttribute("StyleSheet");
 Date dateCalendar = DateUtil.parse(dateCal);
 
+String labelSubscribe = resource.getString("GML.subscribe");
+String labelUnsubscribe = resource.getString("GML.unsubscribe");
+
 if (SilverpeasRole.admin.equals(SilverpeasRole.valueOf(profile)) || SilverpeasRole.publisher.equals(SilverpeasRole.valueOf(profile))) {
-  if (SilverpeasRole.admin.equals(SilverpeasRole.valueOf(profile)) && isPdcUsed) {
-    operationPane.addOperation("useless", resource.getString("GML.PDCParam"), "javascript:onClick=openSPWindow('"+m_context+"/RpdcUtilization/jsp/Main?ComponentId="+instanceId+"','utilizationPdc1')");
+  if (SilverpeasRole.admin.equals(SilverpeasRole.valueOf(profile))) {
+    if (isPdcUsed) {
+      operationPane.addOperation("useless", resource.getString("GML.PDCParam"),
+          "javascript:onClick=openSPWindow('" + m_context +
+              "/RpdcUtilization/jsp/Main?ComponentId=" + instanceId + "','utilizationPdc1')");
+    }
+    operationPane.addOperation("useless", resource.getString("GML.manageSubscriptions"), "ManageSubscriptions");
     operationPane.addLine();
   }
   operationPane.addOperationOfCreation(resource.getIcon("blog.addPost"), resource.getString("blog.newPost"), "NewPost");
@@ -79,9 +87,9 @@ if (SilverpeasRole.admin.equals(SilverpeasRole.valueOf(profile)) || SilverpeasRo
 
 if (!m_MainSessionCtrl.getCurrentUserDetail().isAccessGuest() && isUserSubscribed != null) {
   if (!isUserSubscribed) {
-    operationPane.addOperation("useless", resource.getString("blog.addSubscription"), "javascript:onClick=addSubscription()");
+    operationPane.addOperation("useless", labelSubscribe, "javascript:addSubscription()");
   } else {
-    operationPane.addOperation("useless", resource.getString("blog.removeSubscription"), "javascript:onClick=removeSubscription()");
+    operationPane.addOperation("useless", labelUnsubscribe, "javascript:removeSubscription()");
   }
 }
 %>
@@ -107,13 +115,21 @@ function sendData() {
 }
 
 function addSubscription() {
-  window.document.subscriptionForm.action = "AddSubscription";
-  window.document.subscriptionForm.submit();
+  $.post(webContext+"/services/subscribe/<%=instanceId%>", successSubscribe(), 'json');
+}
+
+function successSubscribe() {
+  // changing label and href of operation on-the-fly
+  $("a[href='javascript:addSubscription()']").first().attr('href', "javascript:removeSubscription()").text("<%=labelUnsubscribe%>");
 }
 
 function removeSubscription() {
-  window.document.subscriptionForm.action = "RemoveSubscription";
-  window.document.subscriptionForm.submit();
+  $.post(webContext+"/services/unsubscribe/<%=instanceId%>", successUnsubscribe(), 'json');
+}
+
+function successUnsubscribe() {
+  //changing label and href of operation on-the-fly
+  $("a[href='javascript:removeSubscription()']").first().attr('href', "javascript:addSubscription()").text("<%=labelSubscribe%>");
 }
 
 function customize() {
@@ -364,8 +380,6 @@ function hideStyleSheetFile() {
       </form>
     </div>
 </div>
-<form name="subscriptionForm" action="AddSubscription" method="post">
-</form>
 <%
 out.println(window.printAfter());
 %>

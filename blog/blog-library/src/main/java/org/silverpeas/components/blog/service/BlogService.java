@@ -85,10 +85,6 @@ public interface BlogService extends ApplicationService<PostDetail> {
 
   public void externalElementsOfPublicationHaveChanged(final PublicationPK pubPK, String userId);
 
-  public void addSubscription(final String userId, final String instanceId);
-
-  public void removeSubscription(final String userId, final String instanceId);
-
   public boolean isSubscribed(final String userId, final String instanceId);
 
   public void sendSubscriptionsNotification(final NodePK fatherPK, PostDetail post, Comment comment,
