@@ -138,7 +138,7 @@ $(document).ready(function() {
     <div class="field" id="questionArea">
       <label class="txtlibform" for="title"><fmt:message key="questionReply.question" /> </label>
       <div class="champs">
-        <input type="text" name="title" size="100" id="title" maxlength="100" value="" />
+        <input type="text" name="title" size="100" id="title" maxlength="300" value="" />
         &nbsp;<img alt="<%=resource.getString("GML.requiredField")%>" src="<%=resource.getIcon("questionReply.mandatory")%>" width="5" height="5" />
       </div>
     </div>
@@ -161,7 +161,7 @@ $(document).ready(function() {
     <div class="field" id="answerArea">
       <label class="txtlibform" for="titleR"><fmt:message key="questionReply.reponse" /> </label>
       <div class="champs">
-        <input type="text" name="titleR" size="100" id="titleR" maxlength="100" value="" />
+        <input type="text" name="titleR" size="100" id="titleR" maxlength="300" value="" />
         &nbsp;<img alt="<%=resource.getString("GML.requiredField")%>" src="<%=resource.getIcon("questionReply.mandatory")%>" width="5" height="5" />
       </div>
     </div>

@@ -51,6 +51,10 @@ li.category {
   padding-right:60px;
 }
 
+.categoryTitle.category-open {
+  background:#EAEAEA url("../../../util/icons/arrow/closed.gif") 5px center no-repeat;
+}
+
 .select .categoryTitle {
   background:#DDDDDD url() 5px  center no-repeat;
   border:1px solid #DDDDDD;
