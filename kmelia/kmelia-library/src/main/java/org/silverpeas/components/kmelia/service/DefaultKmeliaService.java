@@ -416,7 +416,7 @@ public class DefaultKmeliaService implements KmeliaService {
     if (!"-1".equals(pk.getId())) {
       subTopic.setNodePK(pk);
       subTopic.setFatherPK(fatherPK);
-      topicCreationAlert(subTopic, NotifAction.UPDATE, alertType);
+      topicCreationAlert(subTopic, NotifAction.CREATE, alertType);
     }
     return pk;
   }
@@ -448,22 +448,20 @@ public class DefaultKmeliaService implements KmeliaService {
    */
   @Override
   public NodePK updateTopic(NodeDetail topic, String alertType) {
-    try {
-      // Order of the node must be unchanged
-      NodeDetail oldNode = nodeService.getHeader(topic.getNodePK());
-      int order = oldNode.getOrder();
-      topic.setOrder(order);
-      nodeService.setDetail(topic);
+    // Order of the node must be unchanged
+    NodeDetail oldNode = nodeService.getHeader(topic.getNodePK());
+    int order = oldNode.getOrder();
+    topic.setOrder(order);
+    nodeService.setDetail(topic);
 
-      // manage operations relative to folder rights
-      if (isRightsOnTopicsEnabled(topic.getNodePK().getInstanceId())) {
-        updateNode(topic, oldNode);
-      }
-    } catch (Exception e) {
-      throw new KmeliaRuntimeException(e);
+    // manage operations relative to folder rights
+    if (isRightsOnTopicsEnabled(topic.getNodePK().getInstanceId())) {
+      updateNode(topic, oldNode);
     }
+
     // Update Alert
-    topicCreationAlert(topic, null, alertType);
+    topic.setFatherPK(oldNode.getFatherPK());
+    topicCreationAlert(topic, NotifAction.UPDATE, alertType);
     return topic.getNodePK();
   }
 
@@ -2668,13 +2666,12 @@ public class DefaultKmeliaService implements KmeliaService {
   }
 
   @Override
-  public NotificationMetaData getAlertNotificationMetaData(PublicationPK pubPK, NodePK topicPK,
-      String senderName) {
+  public NotificationMetaData getAlertNotificationMetaData(PublicationPK pubPK, NodePK topicPK) {
     final PublicationDetail pubDetail = getPublicationDetail(pubPK);
     pubDetail.setAlias(isAlias(pubDetail, topicPK));
 
     return UserNotificationHelper
-        .build(new KmeliaNotifyPublicationUserNotification(topicPK, pubDetail, senderName));
+        .build(new KmeliaNotifyPublicationUserNotification(topicPK, pubDetail));
   }
 
   public boolean isAlias(PublicationDetail pubDetail, NodePK nodePK) {
@@ -2693,13 +2690,12 @@ public class DefaultKmeliaService implements KmeliaService {
    * @param pubPK
    * @param documentPk
    * @param topicPK
-   * @param senderName
    * @return
    * @
    */
   @Override
   public NotificationMetaData getAlertNotificationMetaData(PublicationPK pubPK,
-      SimpleDocumentPK documentPk, NodePK topicPK, String senderName) {
+      SimpleDocumentPK documentPk, NodePK topicPK) {
     final PublicationDetail pubDetail = getPublicationDetail(pubPK);
     final SimpleDocument document = AttachmentServiceProvider.getAttachmentService().
         searchDocumentById(documentPk, null);
@@ -2708,8 +2704,7 @@ public class DefaultKmeliaService implements KmeliaService {
       version = document.getVersionMaster();
     }
     return UserNotificationHelper.build(
-        new KmeliaDocumentSubscriptionPublicationUserNotification(topicPK, pubDetail, version,
-            senderName));
+        new KmeliaDocumentSubscriptionPublicationUserNotification(topicPK, pubDetail, version));
   }
 
   /**

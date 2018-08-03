@@ -60,7 +60,6 @@ public abstract class AbstractKmeliaFolderUserNotification
     template.setAttribute("topic", resource);
     template.setAttribute("topicName", resource.getName(language));
     template.setAttribute("topicDescription", resource.getDescription(language));
-    template.setAttribute("senderName", "");
   }
 
   @Override

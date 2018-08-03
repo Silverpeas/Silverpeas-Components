@@ -48,8 +48,8 @@ public class KmeliaDocumentSubscriptionPublicationUserNotification extends
   private final SimpleDocument document;
 
   public KmeliaDocumentSubscriptionPublicationUserNotification(final NodePK nodePK, final PublicationDetail resource,
-      final SimpleDocument document, final String senderName) {
-    super(nodePK, resource, NotifAction.REPORT, senderName);
+      final SimpleDocument document) {
+    super(nodePK, resource, NotifAction.REPORT);
     this.document = document;
   }
 

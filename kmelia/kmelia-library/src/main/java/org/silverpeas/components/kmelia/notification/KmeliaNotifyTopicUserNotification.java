@@ -27,6 +27,7 @@ import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * @author Nicolas Eysseric
@@ -39,13 +40,13 @@ public class KmeliaNotifyTopicUserNotification extends AbstractKmeliaFolderUserN
 
   @Override
   protected String getBundleSubjectKey() {
-    return "kmelia.NewTopic";
+    return "kmelia.notif.subject.folder";
   }
 
   @Override
   protected Collection<String> getUserIdsToNotify() {
     // Users to notify are not handled here.
-    return null;
+    return Collections.emptyList();
   }
 
   @Override

@@ -60,8 +60,4 @@ public class KmeliaModificationPublicationUserNotification extends AbstractKmeli
     return Collections.singletonList(getSender());
   }
 
-  @Override
-  protected String getSenderName() {
-    return getSender();
-  }
 }

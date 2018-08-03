@@ -64,7 +64,6 @@ import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RecordSet;
-import org.silverpeas.core.contribution.content.wysiwyg.WysiwygException;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.contribution.converter.DocumentFormat;
 import org.silverpeas.core.contribution.model.LocalizedContribution;
@@ -648,10 +647,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   /*
    * Topic management
    */
-  public NodePK getRootPK() {
-    return new NodePK(NodePK.ROOT_NODE_ID, getComponentId());
-  }
-
   public synchronized TopicDetail getTopic(String id) {
     return getTopic(id, true);
   }
@@ -741,6 +736,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     nd.getNodePK().setSpace(getSpaceId());
     nd.getNodePK().setComponentName(getComponentId());
     if (isTopicAdmin(nd.getNodePK().getId())) {
+      nd.setCreatorId(getUserId());
+      nd.setCreationDate(DateUtil.today2SQLDate());
       return getKmeliaService().updateTopic(nd, alertType);
     }
     SilverLogger.getLogger(this).warn("Security alert from {0}", getUserId());
@@ -1468,17 +1465,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   private synchronized NotificationMetaData getAlertNotificationMetaData(String pubId) {
-    NotificationMetaData metaData;
-    if (isKmaxMode) {
-      metaData = getKmeliaService().getAlertNotificationMetaData(getPublicationPK(pubId), null,
-          getUserDetail().getDisplayedName());
-    } else {
-      metaData = getKmeliaService()
-          .getAlertNotificationMetaData(getPublicationPK(pubId), getCurrentFolderPK(),
-              getUserDetail().getDisplayedName());
+    NodePK nodePK = null;
+    if (!isKmaxMode) {
+      nodePK = getCurrentFolderPK();
     }
-    metaData.setSender(getUserId());
-    return metaData;
+    return getKmeliaService().getAlertNotificationMetaData(getPublicationPK(pubId), nodePK);
   }
 
   private synchronized NotificationMetaData getAlertNotificationMetaData(String pubId,
@@ -1488,17 +1479,12 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       nodePK = getCurrentFolderPK();
     }
     SimpleDocumentPK documentPk = new SimpleDocumentPK(attachmentId, getComponentId());
-    NotificationMetaData metaData = getKmeliaService()
-        .getAlertNotificationMetaData(getPublicationPK(pubId), documentPk, nodePK,
-            getUserDetail().getDisplayedName());
-    metaData.setSender(getUserId());
-    return metaData;
+    return getKmeliaService()
+        .getAlertNotificationMetaData(getPublicationPK(pubId), documentPk, nodePK);
   }
 
   private synchronized NotificationMetaData getAlertNotificationMetaData(NodePK pk) {
-    NotificationMetaData metaData = getKmeliaService().getAlertNotificationMetaData(pk);
-    metaData.setSender(getUserId());
-    return metaData;
+    return getKmeliaService().getAlertNotificationMetaData(pk);
   }
 
   public boolean isIndexable(PublicationDetail pubDetail) {
@@ -1770,6 +1756,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     // alertUserPeas
     Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(), null);
     sel.setHostComponentName(hostComponentName);
+    sel.setHostPath(getCurrentFolderPath());
     SelectionUsersGroups sug = new SelectionUsersGroups();
     sug.setComponentId(getComponentId());
     if (!isKmaxMode && isRightsOnTopicsEnabled()) {
@@ -1780,6 +1767,20 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     }
     sel.setSelectionUsersGroups(sug);
     return sel;
+  }
+
+  private List<String> getCurrentFolderPath() {
+    List<String> result = new ArrayList<>();
+    if (isKmaxMode) {
+      return result;
+    }
+    List<NodeDetail> path = getTopicPath(getCurrentFolder().getNodePK().getId());
+    for (NodeDetail node : path) {
+      if (!node.getNodePK().isRoot()) {
+        result.add(node.getName(getLanguage()));
+      }
+    }
+    return result;
   }
 
   public boolean isVersionControlled() {
@@ -1878,7 +1879,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     return false;
   }
 
-  public boolean isCurrentPublicationHaveContent() throws WysiwygException {
+  public boolean isCurrentPublicationHaveContent() {
     return (StringUtil.isDefined(WysiwygController.load(getComponentId(), getSessionPublication().
         getId(), getCurrentLanguage())) ||
         !isInteger(getSessionPublication().getCompleteDetail().getPublicationDetail().getInfoId()));
@@ -2196,14 +2197,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
     // on est sur la précédente, mettre à jour le rang avec la publication courante
     rang = rangNext;
-
-    return pubId;
-  }
-
-  public String getFirst() {
-    rang = 0;
-    KmeliaPublication pub = getSessionPublicationsList().get(0);
-    String pubId = pub.getDetail().getId();
 
     return pubId;
   }
@@ -2869,11 +2862,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     if (!StringUtil.isDefined(parameterValue)) {
       return true;
     }
-    return "yes".equals(parameterValue.toLowerCase());
+    return StringUtil.getBooleanValue(parameterValue);
   }
 
   public boolean isWysiwygOnTopicsEnabled() {
-    return "yes".equals(getComponentParameterValue("wysiwygOnTopics").toLowerCase());
+    return StringUtil.getBooleanValue(getComponentParameterValue("wysiwygOnTopics"));
   }
 
   public String getWysiwygOnTopic(String id) {
@@ -2905,8 +2898,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   public ThumbnailSettings getThumbnailSettings() {
     int width = getSettings().getInteger("vignetteWidth", -1);
     int height = getSettings().getInteger("vignetteHeight", -1);
-    ThumbnailSettings settings = ThumbnailSettings.getInstance(getComponentId(), width, height);
-    return settings;
+    return ThumbnailSettings.getInstance(getComponentId(), width, height);
   }
 
   /**

@@ -36,8 +36,8 @@ public class KmeliaNotifyPublicationUserNotification
     extends AbstractKmeliaPublicationUserNotification {
 
   public KmeliaNotifyPublicationUserNotification(final NodePK nodePK,
-      final PublicationDetail resource, final String senderName) {
-    super(nodePK, resource, NotifAction.REPORT, senderName);
+      final PublicationDetail resource) {
+    super(nodePK, resource, NotifAction.REPORT);
   }
 
   @Override

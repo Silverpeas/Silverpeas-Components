@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.kmelia.notification;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
@@ -30,6 +31,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.components.kmelia.service.KmeliaHelper;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.util.StringUtil;
 
 import java.util.MissingResourceException;
 
@@ -41,19 +43,12 @@ public abstract class AbstractKmeliaPublicationUserNotification
 
   private final NodePK nodePK;
   private final NotifAction action;
-  private final String senderName;
 
   protected AbstractKmeliaPublicationUserNotification(final NodePK nodePK,
       final PublicationDetail resource, final NotifAction action) {
-    this(nodePK, resource, action, null);
-  }
-
-  protected AbstractKmeliaPublicationUserNotification(final NodePK nodePK,
-      final PublicationDetail resource, final NotifAction action, final String senderName) {
     super(resource);
     this.nodePK = nodePK;
     this.action = action;
-    this.senderName = senderName;
   }
 
   @Override
@@ -71,7 +66,14 @@ public abstract class AbstractKmeliaPublicationUserNotification
     template.setAttribute("publicationName", resource.getName(language));
     template.setAttribute("publicationDesc", resource.getDescription(language));
     template.setAttribute("publicationKeywords", resource.getKeywords(language));
-    template.setAttribute("senderName", getSenderName());
+    String senderId = getSender();
+    if (StringUtil.isDefined(senderId)) {
+      User sender = User.getById(senderId);
+      if (sender != null) {
+        template.setAttribute("sender", sender);
+        template.setAttribute("senderName", sender.getDisplayedName());
+      }
+    }
   }
 
   @Override
@@ -100,10 +102,6 @@ public abstract class AbstractKmeliaPublicationUserNotification
       return "";
     }
     return getHTMLNodePath(nodePK, language);
-  }
-
-  protected String getSenderName() {
-    return senderName;
   }
 
   @Override

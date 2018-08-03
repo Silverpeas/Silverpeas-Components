@@ -24,6 +24,7 @@
 package org.silverpeas.components.kmelia.notification;
 
 import org.silverpeas.core.admin.ObjectType;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
@@ -49,10 +50,10 @@ public class KmeliaTopicUserNotification extends AbstractKmeliaFolderUserNotific
 
   @Override
   protected String getBundleSubjectKey() {
-    if (getAction() == NotifAction.CREATE) {
-      return "kmelia.NewTopic";
+    if (NotifAction.CREATE.equals(getAction())) {
+      return "kmelia.notif.subject.folder.create";
     }
-    return "kmelia.NewTopic";
+    return "kmelia.notif.subject.folder.update";
   }
 
   @Override
@@ -127,9 +128,16 @@ public class KmeliaTopicUserNotification extends AbstractKmeliaFolderUserNotific
     return users;
   }
 
+  protected String getSenderName() {
+    return User.getById(getSender()).getDisplayedName();
+  }
+
   @Override
   protected String getTemplateFileName() {
-    return "notificationCreateTopic";
+    if (NotifAction.CREATE.equals(getAction())) {
+      return "notificationCreateTopic";
+    }
+    return "notificationUpdateTopic";
   }
 
 }
