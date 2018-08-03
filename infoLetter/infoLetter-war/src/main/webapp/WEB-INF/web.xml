@@ -32,8 +32,18 @@
     <servlet-name>InfoLetterRequestRouter</servlet-name>
     <servlet-class>org.silverpeas.components.infoletter.servlets.InfoLetterRequestRouter</servlet-class>
   </servlet>
+  <servlet>
+    <display-name>GoToNewsletter</display-name>
+    <servlet-name>GoToNewsletter</servlet-name>
+    <servlet-class>org.silverpeas.components.infoletter.servlets.GoToNewsletter</servlet-class>
+  </servlet>
+
   <servlet-mapping>
     <servlet-name>InfoLetterRequestRouter</servlet-name>
     <url-pattern>/RinfoLetter/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>GoToNewsletter</servlet-name>
+    <url-pattern>/Newsletter/*</url-pattern>
   </servlet-mapping>
 </web-app>

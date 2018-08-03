@@ -29,6 +29,7 @@ import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
+import org.silverpeas.core.util.URLUtil;
 
 /**
  * @author frageade
@@ -155,6 +156,10 @@ public class InfoLetterPublication extends SilverpeasBean implements Comparable<
 
   public void setLetterId(String letterId) {
     this.letterId = Integer.parseInt(letterId);
+  }
+
+  public String _getPermalink() {
+    return URLUtil.getSimpleURL(URLUtil.URL_NEWSLETTER, getPK().getId());
   }
 
   // Methodes

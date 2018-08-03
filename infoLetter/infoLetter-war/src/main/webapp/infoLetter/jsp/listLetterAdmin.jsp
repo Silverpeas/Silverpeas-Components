@@ -31,6 +31,7 @@
 <%@ page import="org.silverpeas.components.infoletter.model.InfoLetterPublication" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPane" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.icons.Icon" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayCell" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.infoLetter">
@@ -159,7 +160,7 @@ int i=0;
 
 if (publications.size()>0) {
 	for (i = 0; i < publications.size(); i++) {
-						InfoLetterPublication pub = (InfoLetterPublication) publications.get(i);
+						InfoLetterPublication pub = publications.get(i);
 						ArrayLine arrayLine = arrayPane.addArrayLine();
 
 						IconPane iconPane1 = gef.getIconPane();
@@ -168,17 +169,19 @@ if (publications.size()>0) {
 						else debIcon.setProperties(resource.getIcon("infoLetter.minicone"), "", "javascript:openEditParution('" + pub.getPK().getId() + "');");
 						arrayLine.addArrayCellIconPane(iconPane1);
 
-						if (pub._isValid()) arrayLine.addArrayCellLink(pub.getTitle(), "javascript:openViewParution('" + pub.getPK().getId() + "');");
-						else arrayLine.addArrayCellLink(WebEncodeHelper.javaStringToHtmlString(pub.getTitle()), "javascript:openEditParution('" + pub.getPK().getId() + "');");
+            String permalink = " <a class=\"sp-permalink\" href=\""+pub._getPermalink()+"\"><img src=\""+resource.getIcon("infoLetter.permalink")+"\"/></a>";
+            String link = "<a href=\"javascript:openEditParution('" + pub.getPK().getId() + "')\">"+pub.getTitle()+"</a>";
+						if (pub._isValid()) {
+						  link = "<a href=\"javascript:openViewParution('" + pub.getPK().getId() + "')\">"+pub.getTitle()+"</a>";
+            }
+            ArrayCellText cellTitle = arrayLine.addArrayCellText(link+permalink);
+            cellTitle.setCompareOn(pub.getTitle());
 
-						if (pub._isValid())
-						{
+            if (pub._isValid()) {
 							java.util.Date date = DateUtil.parse(pub.getParutionDate());
 							ArrayCellText cell = arrayLine.addArrayCellText(resource.getOutputDate(date));
 							cell.setCompareOn(date);
-						}
-						else
-						{
+						} else {
 							arrayLine.addArrayCellText("");
 						}
 
