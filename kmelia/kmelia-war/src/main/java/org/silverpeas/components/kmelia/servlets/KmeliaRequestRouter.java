@@ -724,28 +724,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
         destination = URLUtil.getURL(URLUtil.CMP_CLIPBOARD, null, null) +
             "Idle.jsp?message=REFRESHCLIPBOARD";
-      } else if (function.startsWith("ToAlertUserAttachment")) { // utilisation de alertUser et
-        // alertUserPeas
-        try {
-          String attachmentId = request.getParameter("AttachmentOrDocumentId");
-          destination = kmelia.initAlertUserAttachment(attachmentId);
-        } catch (Exception e) {
-          SilverLogger.getLogger(this).error(e.getMessage(), e);
-        }
-      } else if (function.startsWith("ToAlertUserDocument")) { // utilisation de alertUser et
-        // alertUserPeas
-        try {
-          String documentId = request.getParameter("AttachmentOrDocumentId");
-          destination = kmelia.initAlertUserAttachment(documentId);
-        } catch (Exception e) {
-          SilverLogger.getLogger(this).error(e.getMessage(), e);
-        }
-      } else if (function.startsWith("ToAlertUser")) { // utilisation de alertUser et alertUserPeas
-        try {
-          destination = kmelia.initAlertUser();
-        } catch (Exception e) {
-          SilverLogger.getLogger(this).error(e.getMessage(), e);
-        }
+      } else if (function.startsWith("ToAlertUser")) {
+        destination = toAlertUsers(function, request, kmelia);
       } else if (function.equals("ReadingControl")) {
         PublicationDetail publication = kmelia.getSessionPublication().getDetail();
         request.setAttribute("LinkedPathString", kmelia.getSessionPath());
@@ -1979,6 +1959,21 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
       pks.add(new ResourceReference(oneId, instanceId));
     }
     return pks;
+  }
+
+  private String toAlertUsers(String function, HttpRequest request,
+      KmeliaSessionController kmelia) {
+    // utilisation de alertUser et alertUserPeas
+    if (function.startsWith("ToAlertUserAttachment") ||
+        function.startsWith("ToAlertUserDocument")) {
+      String documentId = request.getParameter("AttachmentOrDocumentId");
+      return kmelia.initAlertUserAttachment(documentId);
+    } else if (function.startsWith("ToAlertUserFolder")) {
+      return kmelia.initAlertUserFolder();
+    } else if (function.startsWith("ToAlertUser")) {
+      return kmelia.initAlertUser();
+    }
+    return "";
   }
 
 }

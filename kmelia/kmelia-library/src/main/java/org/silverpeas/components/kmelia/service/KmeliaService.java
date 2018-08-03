@@ -395,6 +395,12 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
       SimpleDocumentPK documentPk, NodePK topicPK, String senderName);
 
   /**
+   * Send a notification to alert users about a folder
+   * @param pk the folder id
+   */
+  NotificationMetaData getAlertNotificationMetaData(NodePK pk);
+
+  /**
    * delete reading controls to a publication
    * @param pubPK the id of a publication
    * @since 1.0

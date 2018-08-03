@@ -65,7 +65,6 @@ import org.silverpeas.core.contribution.publication.model.Link;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.model.ValidationStep;
-import org.silverpeas.core.contribution.publication.notification.PublicationEventNotifier;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.contribution.template.form.dao.ModelDAO;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
@@ -167,8 +166,6 @@ public class DefaultKmeliaService implements KmeliaService {
   private PdcManager pdcManager;
   @Inject
   private CoordinatesService coordinatesService;
-  @Inject
-  private PublicationEventNotifier notifier;
   @Inject
   private CommentService commentService;
   @Inject
@@ -417,23 +414,23 @@ public class DefaultKmeliaService implements KmeliaService {
     NodePK pk = addToTopic(fatherPK, subTopic);
     // Creation alert
     if (!"-1".equals(pk.getId())) {
-      topicCreationAlert(pk, fatherPK, alertType);
+      subTopic.setNodePK(pk);
+      subTopic.setFatherPK(fatherPK);
+      topicCreationAlert(subTopic, NotifAction.UPDATE, alertType);
     }
     return pk;
   }
 
   /**
    * Alert all users, only publishers or nobody of the topic creation or update
-   * @param nodePK the NodePK of the new sub topic
-   * @param fatherPK the NodePK of the parent topic
    * @param alertType alertType = "All"|"Publisher"|"None"
    * @see NodePK
    * @since 1.0
    */
-  private void topicCreationAlert(final NodePK nodePK, final NodePK fatherPK,
+  private void topicCreationAlert(final NodeDetail node, NotifAction action,
       final String alertType) {
     UserNotificationHelper
-        .buildAndSend(new KmeliaTopicUserNotification(nodePK, fatherPK, alertType));
+        .buildAndSend(new KmeliaTopicUserNotification(node, action, alertType));
   }
 
   /**
@@ -466,7 +463,7 @@ public class DefaultKmeliaService implements KmeliaService {
       throw new KmeliaRuntimeException(e);
     }
     // Update Alert
-    topicCreationAlert(topic.getNodePK(), null, alertType);
+    topicCreationAlert(topic, null, alertType);
     return topic.getNodePK();
   }
 
@@ -4766,5 +4763,11 @@ public class DefaultKmeliaService implements KmeliaService {
     PublicationPK pubPK =
         new PublicationPK(attachment.getForeignId(), attachment.getInstanceId());
     externalElementsOfPublicationHaveChanged(pubPK, attachment.getUserId(), false);
+  }
+
+  @Override
+  public NotificationMetaData getAlertNotificationMetaData(NodePK pk) {
+    NodeDetail node = getNodeHeader(pk);
+    return UserNotificationHelper.build(new KmeliaNotifyTopicUserNotification(node));
   }
 }

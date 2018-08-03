@@ -1495,6 +1495,12 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     return metaData;
   }
 
+  private synchronized NotificationMetaData getAlertNotificationMetaData(NodePK pk) {
+    NotificationMetaData metaData = getKmeliaService().getAlertNotificationMetaData(pk);
+    metaData.setSender(getUserId());
+    return metaData;
+  }
+
   public boolean isIndexable(PublicationDetail pubDetail) {
     return KmeliaHelper.isIndexable(pubDetail);
   }
@@ -1735,7 +1741,25 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   public String initAlertUser() {
     String pubId = getSessionPublication().getDetail().getPK().getId();
+    AlertUser sel = preInitAlertUser();
+    sel.setNotificationMetaData(getAlertNotificationMetaData(pubId));
+    return AlertUser.getAlertUserURL();
+  }
 
+  public String initAlertUserAttachment(String attachmentOrDocumentId) {
+    AlertUser sel = preInitAlertUser();
+    String pubId = getSessionPublication().getDetail().getPK().getId();
+    sel.setNotificationMetaData(getAlertNotificationMetaData(pubId, attachmentOrDocumentId));
+    return AlertUser.getAlertUserURL();
+  }
+
+  public String initAlertUserFolder() {
+    AlertUser sel = preInitAlertUser();
+    sel.setNotificationMetaData(getAlertNotificationMetaData(getCurrentFolderPK()));
+    return AlertUser.getAlertUserURL();
+  }
+
+  private AlertUser preInitAlertUser() {
     AlertUser sel = getAlertUser();
     sel.resetAll();
     // Set space name inside browsebar
@@ -1746,8 +1770,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     // alertUserPeas
     Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(), null);
     sel.setHostComponentName(hostComponentName);
-    // set notification metadata to notify user
-    sel.setNotificationMetaData(getAlertNotificationMetaData(pubId));
     SelectionUsersGroups sug = new SelectionUsersGroups();
     sug.setComponentId(getComponentId());
     if (!isKmaxMode && isRightsOnTopicsEnabled()) {
@@ -1757,22 +1779,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       }
     }
     sel.setSelectionUsersGroups(sug);
-
-    return AlertUser.getAlertUserURL();
-  }
-
-  public String initAlertUserAttachment(String attachmentOrDocumentId) {
-    initAlertUser();
-    AlertUser sel = getAlertUser();
-    String pubId = getSessionPublication().getDetail().getPK().getId();
-    sel.setNotificationMetaData(getAlertNotificationMetaData(pubId, attachmentOrDocumentId));
-    return AlertUser.getAlertUserURL();
-  }
-
-  public void toRecoverUserId() {
-    Selection sel = getSelection();
-    idSelectedUser =
-        SelectionUsersGroups.getDistinctUserIds(sel.getSelectedElements(), sel.getSelectedSets());
+    return sel;
   }
 
   public boolean isVersionControlled() {

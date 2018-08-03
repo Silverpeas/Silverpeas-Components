@@ -428,13 +428,19 @@ function initOperations(id, op) {
     menuEmpty = false;
   }
 
+  if (op.notify) {
+    menuItem = new YAHOO.widget.MenuItem(getString('GML.notify'), {
+      url: "javascript:onclick=notifyOnFolder()"
+    });
+    oMenu.addItem(menuItem, groupIndex);
+  }
+
   if (op.mylinks) {
     menuItem = new YAHOO.widget.MenuItem(getString('GML.favorite.application.add'), {
       classname: 'space-or-application-favorites-operation',
       url: "javascript:onclick=addAppAsFavorite()"
     });
     oMenu.addItem(menuItem, groupIndex);
-    groupEmpty = false;
   }
 
   if (op.responsibles) {
@@ -443,7 +449,6 @@ function initOperations(id, op) {
       url: "javascript:onclick=displayResponsibles()"
     });
     oMenu.addItem(menuItem, groupIndex);
-    groupEmpty = false;
   }
 
   oMenu.render();
@@ -942,4 +947,8 @@ function movePublication(id, sourceId, targetId) {
 function setDataInFolderDialog(name, desc) {
   $("#addOrUpdateNode #folderName").val(name.unescapeHTML());
   $("#addOrUpdateNode #folderDescription").val(desc.unescapeHTML());
+}
+
+function notifyOnFolder() {
+  SP_openWindow("ToAlertUserFolder", "toAlertUserFolder", '600', '400', 'scrollbars=yes, resizable, alwaysRaised');
 }

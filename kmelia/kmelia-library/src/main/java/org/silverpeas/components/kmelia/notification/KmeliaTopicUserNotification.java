@@ -23,54 +23,35 @@
  */
 package org.silverpeas.components.kmelia.notification;
 
-import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
-import org.silverpeas.components.kmelia.service.KmeliaHelper;
 import org.silverpeas.core.admin.ObjectType;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
-import org.silverpeas.core.notification.user.model.NotificationResourceData;
-import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.MissingResourceException;
 
 /**
  * @author Yohann Chastagnier
  */
-public class KmeliaTopicUserNotification extends AbstractKmeliaUserNotification<NodeDetail> {
+public class KmeliaTopicUserNotification extends AbstractKmeliaFolderUserNotification {
 
-  private final NodePK nodePK;
-  private final NodeDetail fatherDetail;
   private final String alertType;
-  private final NotifAction action;
 
-  public KmeliaTopicUserNotification(final NodePK nodePK, final NodePK fatherPK, final String alertType) {
-    super(null);
-    this.nodePK = nodePK;
+  public KmeliaTopicUserNotification(final NodeDetail node, NotifAction action,
+      final String alertType) {
+    super(node, action);
     this.alertType = alertType;
-    try {
-      setResource(getNodeService().getHeader(nodePK));
-      if (fatherPK != null) {
-        action = NotifAction.CREATE;
-        fatherDetail = getNodeService().getHeader(fatherPK);
-      } else {
-        action = NotifAction.UPDATE;
-        fatherDetail = null;
-      }
-    } catch (final Exception e) {
-      throw new KmeliaRuntimeException(e);
-    }
   }
 
   @Override
   protected String getBundleSubjectKey() {
+    if (getAction() == NotifAction.CREATE) {
+      return "kmelia.NewTopic";
+    }
     return "kmelia.NewTopic";
   }
 
@@ -78,6 +59,7 @@ public class KmeliaTopicUserNotification extends AbstractKmeliaUserNotification<
   protected Collection<String> getUserIdsToNotify() {
     boolean haveRights = getResource().haveRights();
     int rightsDependOn = getResource().getRightsDependsOn();
+    NodeDetail fatherDetail = getNodeHeader(getResource().getFatherPK());
     if (fatherDetail != null) {
       // Case of creation only
       haveRights = fatherDetail.haveRights();
@@ -146,64 +128,8 @@ public class KmeliaTopicUserNotification extends AbstractKmeliaUserNotification<
   }
 
   @Override
-  protected void perform(final NodeDetail resource) {
-    super.perform(resource);
-    getNotificationMetaData().displayReceiversInFooter();
-  }
-
-  @Override
-  protected void performTemplateData(final String language, final NodeDetail resource, final SilverpeasTemplate template) {
-    String title;
-    try {
-      title = getBundle(language).getString(getBundleSubjectKey());
-    } catch (MissingResourceException ex) {
-      SilverLogger.getLogger(this).silent(ex);
-      title = getTitle();
-    }
-    getNotificationMetaData().addLanguage(language, title, "");
-    template.setAttribute("path", getHTMLNodePath(resource.getFatherPK(), language));
-    template.setAttribute("topic", resource);
-    template.setAttribute("topicName", resource.getName(language));
-    template.setAttribute("topicDescription", resource.getDescription(language));
-    template.setAttribute("senderName", "");
-  }
-
-  @Override
-  protected void performNotificationResource(final String language, final NodeDetail resource,
-      final NotificationResourceData notificationResourceData) {
-    notificationResourceData.setResourceId(resource.getId());
-    notificationResourceData.setResourceType(resource.getType());
-    notificationResourceData.setResourceName(resource.getName(language));
-    notificationResourceData.setResourceDescription(resource.getDescription(language));
-  }
-
-  @Override
   protected String getTemplateFileName() {
     return "notificationCreateTopic";
   }
 
-  @Override
-  protected String getResourceURL(final NodeDetail resource) {
-    return KmeliaHelper.getNodeUrl(resource);
-  }
-
-  @Override
-  protected NotifAction getAction() {
-    return action;
-  }
-
-  @Override
-  protected String getComponentInstanceId() {
-    return nodePK.getInstanceId();
-  }
-
-  @Override
-  protected String getSender() {
-    return getResource().getCreatorId();
-  }
-
-  @Override
-  protected String getContributionAccessLinkLabelBundleKey() {
-    return "kmelia.notifTopicLinkLabel";
-  }
 }
