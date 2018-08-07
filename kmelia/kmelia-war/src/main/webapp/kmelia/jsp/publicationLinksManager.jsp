@@ -39,15 +39,15 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <% 
 String pubId = kmeliaScc.getSessionPublication().getDetail().getPK().getId();
 String pubComponentId = kmeliaScc.getSessionPublication().getDetail().getPK().getComponentName();
-Button closeButton = gef.getFormButton(resources.getString("GML.close"), "javaScript:closeAndReturn('"+pubId+"');", false);
+Button closeButton = gef.getFormButton(resources.getString("GML.close"), "javascript:window.close();", false);
 Button linkButton = gef.getFormButton(resources.getString("GML.linkTo"), "javaScript:linkTo();", false);
 String closeWindow="";
 if(request.getAttribute("NbLinks")!=null){
   closeWindow ="onload=\"closeAndReturn('"+pubId+"');\"";
 }
 %>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><%=resources.getString("GML.popupTitle")%></title>
 <view:looknfeel />
@@ -129,7 +129,7 @@ function doPagination(index, nbItemsPerPage){
 }
 
 function closeAndReturn(pubId) {
-    window.opener.location.replace("SeeAlso?PubId="+pubId);
+    window.opener.location.replace("ViewPublication");
     window.close();
 }
 
@@ -181,10 +181,10 @@ function hidePublicationOperations () {
 			<div id="pubList" class="publistDisplay"><p align="center" ><%= kmeliaScc.getString("kmelia.linkManager.home.title")%></p> <p align="center"> <br><br><%=kmeliaScc.getString("kmelia.linkManager.home.description") %> </p></div>
 			<div align="center">  
 			<% ButtonPane buttonPane = gef.getButtonPane();
-              buttonPane.addButton(closeButton);
               buttonPane.addButton(linkButton);
-              out.println(buttonPane.print());%>          
-              </div>
+              buttonPane.addButton(closeButton);
+              out.println(buttonPane.print());%>
+      </div>
 		</td>
 	</tr>
 </table>

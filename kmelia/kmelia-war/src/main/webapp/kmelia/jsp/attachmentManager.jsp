@@ -98,8 +98,7 @@ function topicGoTo(id) {
     KmeliaDisplayHelper.displayAllOperations(pubId, kmeliaScc, gef, "ViewAttachments",
           resources, out, kmaxMode);
   } else {
-    KmeliaDisplayHelper.displayUserOperations(pubId, kmeliaScc, gef, "ViewAttachments",
-          resources, out, kmaxMode);
+    KmeliaDisplayHelper.displayUserOperations(kmeliaScc, out);
   }
 
 	out.println(frame.printBefore());
