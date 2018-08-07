@@ -414,9 +414,19 @@
   background-color:#EAEAEA;}
 #subTopics ul li a.toValidate:hover {
   background: url("../../../kmelia/jsp/icons/pack_big_icons.gif")  3px -295px no-repeat;
+	border:1px solid #FFFBBB ;
+	background-color:#FFFFDC;}
+
+#subTopics ul li a.folder-with-rights {
+  background: url("../../../kmelia/jsp/icons/pack_big_icons.gif")  3px -596px no-repeat;
+  border:1px solid #EAEAEA ;
+  border-radius:10px;
+  background-color:#EAEAEA;}
+#subTopics ul li a.folder-with-rights:hover {
+  background: url("../../../kmelia/jsp/icons/pack_big_icons.gif")  3px -696px no-repeat;
   border:1px solid #FFFBBB ;
   background-color:#FFFFDC;}
-
+	
 #subTopics ul li a strong {
   display:block;
   padding:0 30px 2px 0;

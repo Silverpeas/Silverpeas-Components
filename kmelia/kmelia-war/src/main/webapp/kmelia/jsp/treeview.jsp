@@ -27,6 +27,7 @@
 <%@page import="org.silverpeas.components.kmelia.SearchContext"%>
 <%@page import="org.silverpeas.core.admin.user.model.SilverpeasRole"%>
 <%@ page import="org.silverpeas.core.i18n.I18NHelper" %>
+<%@ page import="org.silverpeas.core.webapi.node.NodeType" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="checkKmelia.jsp" %>
@@ -40,6 +41,7 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 
 <c:set var='highestUserRole' value='<%=SilverpeasRole.from((String) request.getAttribute("Profile"))%>'/>
+<view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.admin"/>
 
 <%
 String		rootId				= "0";
@@ -877,6 +879,13 @@ $(document).ready(function() {
       "folder" : {
         // those prevent the functions with the same name to be used on `root` nodes
         "valid_children" : ["folder"]
+      },
+      "<%=NodeType.FOLDER_WITH_RIGHTS%>" : {
+        // those prevent the functions with the same name to be used on `root` nodes
+        <c:if test="${highestUserRole.isGreaterThanOrEquals(adminRole)}">
+          "icon" : getWebContext() + "/util/icons/treeview/folder-bicolor.png",
+        </c:if>
+        "valid_children" : ["folder","<%=NodeType.FOLDER_WITH_RIGHTS%>"]
       }
     },
     "contextmenu" : {

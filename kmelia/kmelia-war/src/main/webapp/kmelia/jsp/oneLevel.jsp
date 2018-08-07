@@ -43,6 +43,7 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 
 <c:set var='highestUserRole' value='<%=SilverpeasRole.from((String) request.getAttribute("Profile"))%>'/>
+<view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.admin"/>
 
 <%
 String		rootId				= "0";
@@ -341,13 +342,19 @@ function getSubFolder(folder) {
 	var nbItems = folder.attr["nbItems"];
 	var name = folder.text;
 	var desc = folder.attr["description"];
+	var specificRights = folder.attr["specificRights"];
+
 	var str = '<li id="topic_'+id+'">';
 	str += '<a href="#" onclick="topicGoTo(\''+id+'\')" ';
 	if (id === getToValidateFolderId()) {
 		str += 'class="toValidate"';
 	} else if (id === "1") {
 		str += 'class="trash"';
-	}
+	} else if (specificRights) {
+    <c:if test="${highestUserRole.isGreaterThanOrEquals(adminRole)}">
+	  str += 'class="folder-with-rights"';
+    </c:if>
+  }
 	str += '>';
 	str += '<strong>'+name+' ';
 	if (nbItems && typeof(nbItems) !== "undefined") {
