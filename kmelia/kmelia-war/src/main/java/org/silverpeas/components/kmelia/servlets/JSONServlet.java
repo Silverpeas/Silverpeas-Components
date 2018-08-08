@@ -141,12 +141,13 @@ public class JSONServlet extends HttpServlet {
 
         operations.put("exportSelection", !user.isAnonymous());
         operations.put("manageSubscriptions", isAdmin);
-        operations.put("subscriptions", !isBasket && !user.isAnonymous());
-        operations.put("favorites", !isRoot && !isBasket && !user.isAnonymous());
+        operations.put("subscriptions", !user.isAnonymous());
+        operations.put("favorites", !isRoot && !user.isAnonymous());
         if (isRoot && canShowStats) {
           operations.put("statistics", true);
         }
         operations.put("mylinks", !user.isAnonymous());
+        operations.put("notify", !user.isAnonymous() && kmeliaSC.isNotificationAllowed());
         operations.put("responsibles", !user.isAnonymous());
       }
       return operations;

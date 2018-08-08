@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception. You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -23,42 +23,35 @@
  */
 package org.silverpeas.components.kmelia.notification;
 
+import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
-import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /**
- * @author Yohann Chastagnier
+ * @author Nicolas Eysseric
  */
-public class KmeliaNotifyPublicationUserNotification
-    extends AbstractKmeliaPublicationUserNotification {
+public class KmeliaNotifyTopicUserNotification extends AbstractKmeliaFolderUserNotification {
 
-  public KmeliaNotifyPublicationUserNotification(final NodePK nodePK,
-      final PublicationDetail resource) {
-    super(nodePK, resource, NotifAction.REPORT);
+  public KmeliaNotifyTopicUserNotification(final NodeDetail node) {
+    super(node, NotifAction.REPORT);
   }
 
   @Override
-  protected void perform(final PublicationDetail resource) {
-    super.perform(resource);
-    getNotificationMetaData().displayReceiversInFooter();
+  protected String getBundleSubjectKey() {
+    return "kmelia.notif.subject.folder";
   }
 
   @Override
   protected Collection<String> getUserIdsToNotify() {
     // Users to notify are not handled here.
-    return null;
-  }
-
-  @Override
-  protected String getBundleSubjectKey() {
-    return "Alert";
+    return Collections.emptyList();
   }
 
   @Override
   protected String getTemplateFileName() {
-    return "notification";
+    return "notificationTopic";
   }
+
 }

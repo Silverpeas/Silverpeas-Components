@@ -85,15 +85,17 @@ public abstract class AbstractKmeliaUserNotification<T> extends AbstractTemplate
     // get the path of the topic where the publication is classified
     String htmlPath = "";
     if (nodePK != null) {
-      final List<NodeDetail> path = (List<NodeDetail>) getNodeService().getPath(nodePK);
-      if (!path.isEmpty()) {
-        // remove root topic "Accueil"
-        path.remove(path.size() - 1);
-      }
       htmlPath = getSpacesPath(nodePK.getInstanceId(), language)
           + getComponentLabel(nodePK.getInstanceId(), language);
-      if (!path.isEmpty()) {
-        htmlPath += " > " + displayPath(path, language);
+      if (!nodePK.isRoot() && !nodePK.getId().equals("-1")) {
+        final List<NodeDetail> path = (List<NodeDetail>) getNodeService().getPath(nodePK);
+        if (!path.isEmpty()) {
+          // remove root topic "Accueil"
+          path.remove(path.size() - 1);
+        }
+        if (!path.isEmpty()) {
+          htmlPath += " > " + displayPath(path, language);
+        }
       }
     }
     return htmlPath;

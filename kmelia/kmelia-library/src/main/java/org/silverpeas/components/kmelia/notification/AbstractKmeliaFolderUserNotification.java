@@ -23,62 +23,50 @@
  */
 package org.silverpeas.components.kmelia.notification;
 
-import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.components.kmelia.service.KmeliaHelper;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.notification.user.client.constant.NotifAction;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.components.kmelia.service.KmeliaHelper;
-import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.MissingResourceException;
 
 /**
- * @author Yohann Chastagnier
+ * @author Nicolas EYSSERIC
  */
-public abstract class AbstractKmeliaPublicationUserNotification
-    extends AbstractKmeliaUserNotification<PublicationDetail> {
+public abstract class AbstractKmeliaFolderUserNotification
+    extends AbstractKmeliaUserNotification<NodeDetail> {
 
-  private final NodePK nodePK;
   private final NotifAction action;
 
-  protected AbstractKmeliaPublicationUserNotification(final NodePK nodePK,
-      final PublicationDetail resource, final NotifAction action) {
+  protected AbstractKmeliaFolderUserNotification(final NodeDetail resource, final NotifAction action) {
     super(resource);
-    this.nodePK = nodePK;
     this.action = action;
   }
 
-  @Override
-  protected void performTemplateData(final String language, final PublicationDetail resource,
+  protected void performTemplateData(final String language, final NodeDetail resource,
       final SilverpeasTemplate template) {
+
     String title;
     try {
       title = getBundle(language).getString(getBundleSubjectKey());
     } catch (MissingResourceException ex) {
+      SilverLogger.getLogger(this).silent(ex);
       title = getTitle();
     }
     getNotificationMetaData().addLanguage(language, title, "");
-    template.setAttribute("path", getPath(language));
-    template.setAttribute("publication", resource);
-    template.setAttribute("publicationName", resource.getName(language));
-    template.setAttribute("publicationDesc", resource.getDescription(language));
-    template.setAttribute("publicationKeywords", resource.getKeywords(language));
-    String senderId = getSender();
-    if (StringUtil.isDefined(senderId)) {
-      User sender = User.getById(senderId);
-      if (sender != null) {
-        template.setAttribute("sender", sender);
-        template.setAttribute("senderName", sender.getDisplayedName());
-      }
-    }
+    template.setAttribute("path", getHTMLNodePath(resource.getFatherPK(), language));
+    template.setAttribute("topic", resource);
+    template.setAttribute("topicName", resource.getName(language));
+    template.setAttribute("topicDescription", resource.getDescription(language));
   }
 
   @Override
-  protected void performNotificationResource(final String language,
-      final PublicationDetail resource, final NotificationResourceData notificationResourceData) {
+  protected void performNotificationResource(final String language, final NodeDetail resource,
+      final NotificationResourceData notificationResourceData) {
+    notificationResourceData.setResourceId(resource.getId());
+    notificationResourceData.setResourceType(resource.getType());
     notificationResourceData.setResourceName(resource.getName(language));
     notificationResourceData.setResourceDescription(resource.getDescription(language));
   }
@@ -89,19 +77,15 @@ public abstract class AbstractKmeliaPublicationUserNotification
   }
 
   @Override
-  protected String getResourceURL(final PublicationDetail resource) {
-    return KmeliaHelper.getPublicationUrl(resource, getNodePK());
-  }
-
-  protected NodePK getNodePK() {
-    return nodePK;
+  protected String getResourceURL(final NodeDetail resource) {
+    return KmeliaHelper.getNodeUrl(resource);
   }
 
   protected final String getPath(final String language) {
-    if (nodePK == null) {
+    if (getResource().getNodePK() == null) {
       return "";
     }
-    return getHTMLNodePath(nodePK, language);
+    return getHTMLNodePath(getResource().getNodePK(), language);
   }
 
   @Override
@@ -111,26 +95,26 @@ public abstract class AbstractKmeliaPublicationUserNotification
 
   @Override
   protected String getComponentInstanceId() {
-    return getResource().getInstanceId();
+    return getResource().getNodePK().getInstanceId();
   }
 
   @Override
   protected String getSender() {
     if (NotifAction.REPORT.equals(action)) {
       return null;
-    } else if (NotifAction.CREATE.equals(action)) {
-      String userId = getResource().getCreatorId();
-      UserDetail creator = UserDetail.getById(userId);
-      if (!creator.isActivatedState()) {
-        return getResource().getUpdaterId();
-      }
-      return userId;
     }
-    return getResource().getUpdaterId();
+    return getResource().getCreatorId();
   }
 
   @Override
   protected String getContributionAccessLinkLabelBundleKey() {
-    return "kmelia.notifPublicationLinkLabel";
+    return "kmelia.notifTopicLinkLabel";
   }
+
+  @Override
+  protected void perform(final NodeDetail resource) {
+    super.perform(resource);
+    getNotificationMetaData().displayReceiversInFooter();
+  }
+
 }

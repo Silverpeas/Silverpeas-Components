@@ -1,0 +1,1 @@
+<b>$senderName$</b> vous informe que le dossier <b>$topicName$</b> est disponible ici : $path$

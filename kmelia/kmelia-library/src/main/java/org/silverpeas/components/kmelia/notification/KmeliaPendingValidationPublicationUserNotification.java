@@ -26,7 +26,9 @@ package org.silverpeas.components.kmelia.notification;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 
@@ -62,14 +64,13 @@ public class KmeliaPendingValidationPublicationUserNotification extends Abstract
   @Override
   protected Collection<String> getUserIdsToNotify() {
     if (usersToBeNotified == null) {
-      return null;
+      return Collections.emptyList();
     }
-    return new ArrayList<String>(Arrays.asList(usersToBeNotified));
+    return new ArrayList<>(Arrays.asList(usersToBeNotified));
   }
 
-  @Override
   protected String getSenderName() {
-    return getSender();
+    return User.getById(getSender()).getDisplayedName();
   }
 
   @Override

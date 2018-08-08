@@ -1,0 +1,1 @@
+<b>$senderName$</b> informiert dich, dass der Ordner <b>$topicName$</b> hier verfügbar ist : $path$
