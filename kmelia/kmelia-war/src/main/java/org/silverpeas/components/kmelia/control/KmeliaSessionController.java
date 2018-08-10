@@ -205,7 +205,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   // Specific for Kmax
   private List<Integer> timeAxis = null;
   private List<String> currentCombination = null;
-  public boolean isKmaxMode = false;
+  private boolean isKmaxMode = false;
   // i18n
   private String currentLanguage = null;
   boolean isDragAndDropEnableByUser = false;
@@ -271,6 +271,15 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     if (StringUtil.isInteger(parameterValue)) {
       nbPublicationsPerPage = Integer.parseInt(parameterValue);
     }
+  }
+
+  public boolean isKmaxMode() {
+    return isKmaxMode;
+  }
+
+  public KmeliaSessionController setKmaxMode(final boolean kmaxMode) {
+    isKmaxMode = kmaxMode;
+    return this;
   }
 
   /**
@@ -670,26 +679,30 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     }
 
     if (displayNbPublis()) {
-      List<NodeDetail> treeview = getTreeview("0");
-      // set nb objects of current root
-      currentTopic.getNodeDetail().setNbObjects(treeview.get(0).getNbObjects());
-      // set nb objects of children
-      Collection<NodeDetail> children = currentTopic.getNodeDetail().getChildrenDetails();
-      for (NodeDetail node : children) {
-        if (node != null) {
-          int index = treeview.indexOf(node);
-          if (index != -1) {
-            NodeDetail nodeTreeview = treeview.get(index);
-            if (nodeTreeview != null) {
-              node.setNbObjects(nodeTreeview.getNbObjects());
-            }
-          }
-        }
-      }
+      prepareForPublicationNbDisplaying(currentTopic);
     }
     setSessionTopic(currentTopic);
     applyVisibilityFilter();
     return currentTopic;
+  }
+
+  private void prepareForPublicationNbDisplaying(final TopicDetail currentTopic) {
+    List<NodeDetail> treeview = getTreeview("0");
+    // set nb objects of current root
+    currentTopic.getNodeDetail().setNbObjects(treeview.get(0).getNbObjects());
+    // set nb objects of children
+    Collection<NodeDetail> children = currentTopic.getNodeDetail().getChildrenDetails();
+    for (NodeDetail node : children) {
+      if (node != null) {
+        int index = treeview.indexOf(node);
+        if (index != -1) {
+          NodeDetail nodeTreeview = treeview.get(index);
+          if (nodeTreeview != null) {
+            node.setNbObjects(nodeTreeview.getNbObjects());
+          }
+        }
+      }
+    }
   }
 
   public List<NodeDetail> getTreeview(String nodeId) {
@@ -2695,40 +2708,47 @@ public class KmeliaSessionController extends AbstractComponentSessionController
         if (instanceId.startsWith(KMELIA) &&
             (getKmeliaService().isUserCanPublish(instanceId, getUserId()) ||
                 instanceId.equals(getComponentId()))) {
-          root.setComponentName(instanceId);
-
-          if (instanceId.equals(getComponentId())) {
-            tree = getKmeliaService().getTreeview(root, null, false, false, getUserId(), false,
-                isRightsOnTopicsEnabled());
-          }
-
-          if (path.length() == 0) {
-            List<SpaceInstLight> sPath = getOrganisationController().getPathToSpace(space.getId());
-            boolean first = true;
-            for (SpaceInstLight spaceInPath : sPath) {
-              if (!first) {
-                path.append(" > ");
-              }
-              path.append(spaceInPath.getName());
-              first = false;
-            }
-          }
-
-          Treeview treeview = new Treeview(path.toString() + " > " +
-              getOrganisationController().getComponentInstLight(instanceId).getLabel(), tree,
-              instanceId);
-
-          treeview.setNbAliases(getNbAliasesInComponent(aliases, instanceId));
-
-          if (instanceId.equals(getComponentId())) {
-            result.add(0, treeview);
-          } else {
-            result.add(treeview);
-          }
+          tree = initTreeView(aliases, result, tree, root, space, path, instanceId);
         }
       }
     }
     return result;
+  }
+
+  private List<NodeDetail> initTreeView(final List<Alias> aliases, final List<Treeview> result,
+      List<NodeDetail> tree, final NodePK root, final SpaceInstLight space,
+      final StringBuilder path, final String instanceId) {
+    root.setComponentName(instanceId);
+
+    if (instanceId.equals(getComponentId())) {
+      tree = getKmeliaService().getTreeview(root, null, false, false, getUserId(), false,
+          isRightsOnTopicsEnabled());
+    }
+
+    if (path.length() == 0) {
+      List<SpaceInstLight> sPath = getOrganisationController().getPathToSpace(space.getId());
+      boolean first = true;
+      for (SpaceInstLight spaceInPath : sPath) {
+        if (!first) {
+          path.append(" > ");
+        }
+        path.append(spaceInPath.getName());
+        first = false;
+      }
+    }
+
+    Treeview treeview = new Treeview(path.toString() + " > " +
+        getOrganisationController().getComponentInstLight(instanceId).getLabel(), tree,
+        instanceId);
+
+    treeview.setNbAliases(getNbAliasesInComponent(aliases, instanceId));
+
+    if (instanceId.equals(getComponentId())) {
+      result.add(0, treeview);
+    } else {
+      result.add(treeview);
+    }
+    return tree;
   }
 
   public List<NodeDetail> getAliasTreeview() {
@@ -2769,7 +2789,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   public String getSingleAttachmentURLOfCurrentPublication(boolean alias) {
     PublicationPK pubPK = getSessionPublication().getDetail().getPK();
     List<SimpleDocument> attachments = AttachmentServiceProvider.getAttachmentService().
-        listDocumentsByForeignKey(pubPK, getLanguage());
+        listDocumentsByForeignKey(pubPK.toResourceReference(), getLanguage());
     if (attachments.size() == 1) {
       SimpleDocument document = attachments.get(0);
       return getDocumentVersionURL(document, alias);
@@ -2837,7 +2857,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
         FileRepositoryManager.copyFile(pdf.getPath(), subDirPath + File.separator + pdf.getName());
       }
       // copy files
-      new AttachmentImportExport(getUserDetail()).getAttachments(pubPK, subDirPath, USELESS, null);
+      new AttachmentImportExport(getUserDetail()).getAttachments(pubPK.toResourceReference(),
+          subDirPath, USELESS, null);
 
       String zipFileName = FileRepositoryManager.getTemporaryPath() + fileName + ".zip";
       // zip PDF and files
@@ -2925,26 +2946,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       NodeDetail nodeInPath = iterator.next();
       if ((i <= beforeAfter) || (i + beforeAfter >= nbItemInPath - 1)) {
         if (!nodeInPath.getNodePK().isRoot()) {
-          String nodeName;
-          if (nodeInPath.getNodePK().isTrash()) {
-            nodeName = getString("kmelia.basket");
-          } else {
-            if (getCurrentLanguage() != null) {
-              nodeName = nodeInPath.getName(getCurrentLanguage());
-            } else {
-              nodeName = nodeInPath.getName();
-            }
-          }
-          linkedPathString.append("<a href=\"javascript:onClick=topicGoTo('")
-              .append(nodeInPath.getNodePK().getId())
-              .append("')\">")
-              .append(Encode.forHtml(nodeName))
-              .append("</a>");
-          pathString.append(nodeName);
-          if (iterator.hasNext()) {
-            linkedPathString.append(" > ");
-            pathString.append(" > ");
-          }
+          setPathNode(linkedPathString, pathString, iterator, nodeInPath);
         }
       } else {
         if (!alreadyCut) {
@@ -2959,6 +2961,30 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       return linkedPathString.toString();
     } else {
       return pathString.toString();
+    }
+  }
+
+  private void setPathNode(final StringBuilder linkedPathString, final StringBuilder pathString,
+      final Iterator<NodeDetail> iterator, final NodeDetail nodeInPath) {
+    String nodeName;
+    if (nodeInPath.getNodePK().isTrash()) {
+      nodeName = getString("kmelia.basket");
+    } else {
+      if (getCurrentLanguage() != null) {
+        nodeName = nodeInPath.getName(getCurrentLanguage());
+      } else {
+        nodeName = nodeInPath.getName();
+      }
+    }
+    linkedPathString.append("<a href=\"javascript:onClick=topicGoTo('")
+        .append(nodeInPath.getNodePK().getId())
+        .append("')\">")
+        .append(Encode.forHtml(nodeName))
+        .append("</a>");
+    pathString.append(nodeName);
+    if (iterator.hasNext()) {
+      linkedPathString.append(" > ");
+      pathString.append(" > ");
     }
   }
 
@@ -3603,7 +3629,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     if (StringUtil.isDefined(volatileId)) {
       // Attaching all documents linked to volatile publication to the persisted one
       List<SimpleDocumentPK> movedDocumentPks = AttachmentServiceProvider.getAttachmentService()
-          .moveAllDocuments(getPublicationPK(volatileId), pubDetail.getPK());
+          .moveAllDocuments(getPublicationPK(volatileId).toResourceReference(),
+              pubDetail.getPK().toResourceReference());
       if (!movedDocumentPks.isEmpty()) {
         // Change images path in wysiwyg
         WysiwygController.wysiwygPlaceHaveChanged(getComponentId(), volatileId,

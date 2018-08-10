@@ -82,6 +82,7 @@ import static org.silverpeas.core.persistence.Transaction.performInOne;
 @Singleton
 public class DefaultQuickInfoService implements QuickInfoService {
 
+  private static final String ASSOCIATED_TO_THE_NEWS_MSG = " associated to the news ";
   @Inject
   private NewsRepository newsRepository;
 
@@ -181,7 +182,8 @@ public class DefaultQuickInfoService implements QuickInfoService {
 
     // Attaching all documents linked to volatile news to the persisted news
     List<SimpleDocumentPK> movedDocumentPks = AttachmentServiceProvider.getAttachmentService()
-        .moveAllDocuments(volatileAttachmentSourcePK, savedNews.getPublication().getPK());
+        .moveAllDocuments(volatileAttachmentSourcePK,
+            savedNews.getPublication().getPK().toResourceReference());
     if (!movedDocumentPks.isEmpty()) {
       // Change images path in wysiwyg
       WysiwygController.wysiwygPlaceHaveChanged(news.getComponentInstanceId(),
@@ -242,7 +244,7 @@ public class DefaultQuickInfoService implements QuickInfoService {
     } catch (ContentManagerException e) {
       SilverLogger.getLogger(this).error(
           "can not update the silver-content of the publication " + publication.getId() +
-              " associated to the news " + news.getId(), e);
+              ASSOCIATED_TO_THE_NEWS_MSG + news.getId(), e);
     }
 
     // Classifying new content onto taxonomy
@@ -279,14 +281,14 @@ public class DefaultQuickInfoService implements QuickInfoService {
     } catch (ContentManagerException | SQLException e) {
       SilverLogger.getLogger(this).error(
           "can not delete the silver-content of the publication " + foreignPK.getId() +
-              " associated to the news " + news.getId(), e);
+              ASSOCIATED_TO_THE_NEWS_MSG + news.getId(), e);
     }
 
 
     // Deleting all attached files (WYSIWYG, WYSIWYG images...)
     AttachmentService attachmentService = AttachmentServiceProvider.getAttachmentService();
     SimpleDocumentList<SimpleDocument> docs =
-        attachmentService.listAllDocumentsByForeignKey(foreignPK, null);
+        attachmentService.listAllDocumentsByForeignKey(foreignPK.toResourceReference(), null);
     for (SimpleDocument document : docs) {
       attachmentService.deleteAttachment(document);
     }
@@ -382,7 +384,7 @@ public class DefaultQuickInfoService implements QuickInfoService {
     } catch (ContentManagerException e) {
       SilverLogger.getLogger(this)
           .error("can not update the silver-content of the publication " + publication.getId() +
-              " associated to the news " + news.getId(), e);
+              ASSOCIATED_TO_THE_NEWS_MSG + news.getId(), e);
     }
 
     if (news.isVisible()) {

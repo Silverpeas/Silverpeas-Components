@@ -89,6 +89,7 @@ public class KmeliaPublicationSimulationElementLister
     addElement(new ThumbnailSimulationElement(publication.getThumbnail()));
 
     // Using here the default implementation of document lister
-    new AttachmentSimulationElementLister(this).listElements(publication.getPK(), language);
+    new AttachmentSimulationElementLister(this).listElements(
+        publication.getPK().toResourceReference(), language);
   }
 }

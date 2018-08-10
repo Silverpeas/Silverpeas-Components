@@ -31,13 +31,12 @@ import org.silverpeas.components.classifieds.model.Subscribe;
 import org.silverpeas.components.classifieds.notification.ClassifiedSubscriptionUserNotification;
 import org.silverpeas.components.classifieds.notification.ClassifiedSupervisorUserNotification;
 import org.silverpeas.components.classifieds.notification.ClassifiedValidationUserNotification;
-import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.RecordSet;
@@ -151,7 +150,7 @@ public class DefaultClassifiedService implements ClassifiedService {
 
     // remove attached files
     try {
-      WAPrimaryKey classifiedForeignKey = new SimpleDocumentPK(classifiedId, instanceId);
+      ResourceReference classifiedForeignKey = new ResourceReference(classifiedId, instanceId);
       List<SimpleDocument> images = AttachmentServiceProvider.getAttachmentService().
           listDocumentsByForeignKeyAndType(classifiedForeignKey, DocumentType.attachment, null);
       for (SimpleDocument classifiedImage : images) {
@@ -628,7 +627,7 @@ public class DefaultClassifiedService implements ClassifiedService {
   private void addImages(final String instanceId, final ClassifiedDetail classified) {
     try {
       String classifiedId = Integer.toString(classified.getClassifiedId());
-      WAPrimaryKey classifiedForeignKey = new SimpleDocumentPK(classifiedId, instanceId);
+      ResourceReference classifiedForeignKey = new ResourceReference(classifiedId, instanceId);
       List<SimpleDocument> listSimpleDocument = AttachmentServiceProvider.getAttachmentService().
           listDocumentsByForeignKeyAndType(classifiedForeignKey, DocumentType.attachment, null);
       classified.setImages(listSimpleDocument);

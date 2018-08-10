@@ -385,7 +385,7 @@ public class News extends SilverpeasJpaEntity<News, UuidIdentifier> implements S
 
   public int getNumberOfAttachments() {
     List<SimpleDocument> attachments = AttachmentServiceProvider.getAttachmentService().
-        listDocumentsByForeignKeyAndType(getForeignPK(), DocumentType.attachment,
+        listDocumentsByForeignKeyAndType(getForeignPK().toResourceReference(), DocumentType.attachment,
             I18NHelper.defaultLanguage);
     return attachments.size();
   }

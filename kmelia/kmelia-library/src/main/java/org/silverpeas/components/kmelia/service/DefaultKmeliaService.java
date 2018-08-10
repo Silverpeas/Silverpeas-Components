@@ -3000,7 +3000,7 @@ public class DefaultKmeliaService implements KmeliaService {
       try {
         // index all files except Wysiwyg which are already indexed as publication content
         List<SimpleDocument> documents = AttachmentServiceProvider.getAttachmentService().
-            listAllDocumentsByForeignKey(pubDetail.getPK(), null);
+            listAllDocumentsByForeignKey(pubDetail.getPK().toResourceReference(), null);
         for (SimpleDocument doc : documents) {
           if (doc.getDocumentType() != DocumentType.wysiwyg) {
             AttachmentServiceProvider.getAttachmentService().createIndex(doc, pubDetail.getBeginDate(), pubDetail.getEndDate());
@@ -3023,7 +3023,8 @@ public class DefaultKmeliaService implements KmeliaService {
 
   private void unIndexExternalElementsOfPublication(PublicationPK pubPK) {
     try {
-      AttachmentServiceProvider.getAttachmentService().unindexAttachmentsOfExternalObject(pubPK);
+      AttachmentServiceProvider.getAttachmentService()
+          .unindexAttachmentsOfExternalObject(pubPK.toResourceReference());
     } catch (Exception e) {
       SilverLogger.getLogger(this).error("Unindexing versioning documents failed for publication {0}",
           new String[] {pubPK.getId()}, e);
@@ -3041,7 +3042,7 @@ public class DefaultKmeliaService implements KmeliaService {
   private void removeExternalElementsOfPublications(PublicationPK pubPK) {
     // remove attachments and WYSIWYG
     List<SimpleDocument> documents = AttachmentServiceProvider.getAttachmentService().
-        listAllDocumentsByForeignKey(pubPK, null);
+        listAllDocumentsByForeignKey(pubPK.toResourceReference(), null);
     for (SimpleDocument doc : documents) {
       AttachmentServiceProvider.getAttachmentService().deleteAttachment(doc, false);
     }
@@ -4632,7 +4633,8 @@ public class DefaultKmeliaService implements KmeliaService {
   private Map<String, String> copyFiles(PublicationPK fromPK, PublicationPK toPK) {
     Map<String, String> fileIds = new HashMap<>();
     List<SimpleDocument> origins = AttachmentServiceProvider.getAttachmentService().
-        listDocumentsByForeignKeyAndType(fromPK, DocumentType.attachment, null);
+        listDocumentsByForeignKeyAndType(fromPK.toResourceReference(), DocumentType.attachment,
+            null);
     for (SimpleDocument origin : origins) {
       SimpleDocumentPK copyPk = AttachmentServiceProvider.getAttachmentService()
           .copyDocument(origin, new ResourceReference(toPK));

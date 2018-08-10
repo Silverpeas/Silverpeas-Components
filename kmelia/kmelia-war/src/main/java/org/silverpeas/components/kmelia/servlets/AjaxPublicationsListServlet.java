@@ -410,7 +410,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         out.write(" onmouseout=\"hidePublicationOperations(this);\">");
 
         out.write("<div class=\"firstColumn\">");
-        if (!kmeliaScc.getUserDetail().isAnonymous() && !kmeliaScc.isKmaxMode) {
+        if (!kmeliaScc.getUserDetail().isAnonymous() && !kmeliaScc.isKmaxMode()) {
           String checked = "";
           if (selectedIds != null && selectedIds.contains(pub.getPK())) {
             checked = "checked=\"checked\"";

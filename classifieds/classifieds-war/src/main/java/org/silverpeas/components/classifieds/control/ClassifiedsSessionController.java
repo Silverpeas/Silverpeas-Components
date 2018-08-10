@@ -23,36 +23,35 @@
  */
 package org.silverpeas.components.classifieds.control;
 
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.components.classifieds.model.ClassifiedDetail;
+import org.silverpeas.components.classifieds.model.Subscribe;
+import org.silverpeas.components.classifieds.service.ClassifiedService;
+import org.silverpeas.components.classifieds.service.ClassifiedServiceProvider;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.comment.service.CommentService;
+import org.silverpeas.core.comment.service.CommentServiceProvider;
+import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.model.DocumentType;
+import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
+import org.silverpeas.core.index.search.model.QueryDescription;
+import org.silverpeas.core.util.MultiSilverpeasBundle;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
-import org.silverpeas.core.contribution.attachment.model.DocumentType;
-import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.components.classifieds.model.ClassifiedDetail;
-import org.silverpeas.components.classifieds.model.Subscribe;
-import org.silverpeas.components.classifieds.service.ClassifiedService;
-import org.silverpeas.components.classifieds.service.ClassifiedServiceProvider;
-import org.silverpeas.core.comment.service.CommentService;
-import org.silverpeas.core.comment.service.CommentServiceProvider;
-import org.silverpeas.core.index.search.model.QueryDescription;
-import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.util.MultiSilverpeasBundle;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.web.util.ListIndex;
 import org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination;
 
@@ -352,7 +351,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
     getClassifiedService().deleteClassified(this.getComponentId(), classifiedId);
 
     //supprime les commentaires
-    WAPrimaryKey pk = new ResourceReference(classifiedId, getComponentId());
+    ResourceReference pk = new ResourceReference(classifiedId, getComponentId());
     getCommentService().deleteAllCommentsOnPublication(ClassifiedDetail.getResourceType(), pk);
   }
 
@@ -600,8 +599,8 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
 
   private void setImagesToClassified(ClassifiedDetail classified) {
     if (classified != null) {
-      WAPrimaryKey classifiedForeignKey =
-          new SimpleDocumentPK(classified.getId(), getComponentId());
+      ResourceReference classifiedForeignKey =
+          new ResourceReference(classified.getId(), getComponentId());
       List<SimpleDocument> listSimpleDocument =
           AttachmentServiceProvider.getAttachmentService().listDocumentsByForeignKeyAndType(
               classifiedForeignKey, DocumentType.attachment, null);

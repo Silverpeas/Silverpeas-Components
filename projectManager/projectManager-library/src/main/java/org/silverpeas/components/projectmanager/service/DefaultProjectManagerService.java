@@ -275,7 +275,7 @@ public class DefaultProjectManagerService implements ProjectManagerService {
     // supprime les fichiers joint à la tâche
     TaskPK taskPK = new TaskPK(id, instanceId);
     List<SimpleDocument> attachments = AttachmentServiceProvider.getAttachmentService().
-        listDocumentsByForeignKey(taskPK, null);
+        listDocumentsByForeignKey(taskPK.toResourceReference(), null);
     for (SimpleDocument attachment : attachments) {
       AttachmentServiceProvider.getAttachmentService().deleteAttachment(attachment);
     }
@@ -869,7 +869,8 @@ public class DefaultProjectManagerService implements ProjectManagerService {
     // index task itself
     createIndex(task);
     TaskPK taskPK = new TaskPK(task.getId(), task.getInstanceId());
-    AttachmentServiceProvider.getAttachmentService().indexAllDocuments(taskPK, null, null);
+    AttachmentServiceProvider.getAttachmentService()
+        .indexAllDocuments(taskPK.toResourceReference(), null, null);
     // index comments
     getCommentService().indexAllCommentsOnPublication(TaskDetail.getResourceType(), taskPK);
   }
