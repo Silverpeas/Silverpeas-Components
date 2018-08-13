@@ -666,19 +666,6 @@ public class WebSiteSessionController extends AbstractComponentSessionController
   }
 
   /**
-   * getCode
-   */
-  public synchronized String getCode(String filePath, String fileName) throws WebSitesException {
-
-    try {
-      return FileFolderManager.getFileContent(getFullPath(filePath), fileName);
-    } catch (Exception e) {
-      throw new WebSitesException("WebSiteSessionController.getCode()", SilverpeasException.ERROR,
-          "webSites.EX_GET_CODE_FAIL", e);
-    }
-  }
-
-  /**
    * verif
    * @param action
    * @param currentPath
