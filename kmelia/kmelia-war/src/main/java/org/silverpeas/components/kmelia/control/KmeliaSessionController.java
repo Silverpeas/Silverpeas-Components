@@ -2328,8 +2328,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   public ProfileInst getTopicProfile(String role, String topicId) {
     List<ProfileInst> profiles =
         getAdmin().getProfilesByObject(topicId, ObjectType.NODE.getCode(), getComponentId());
-    for (int p = 0; profiles != null && p < profiles.size(); p++) {
-      ProfileInst profile = profiles.get(p);
+    for (ProfileInst profile: profiles) {
       if (profile.getName().equals(role)) {
         return profile;
       }

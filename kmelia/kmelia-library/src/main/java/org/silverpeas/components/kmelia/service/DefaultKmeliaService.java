@@ -486,11 +486,9 @@ public class DefaultKmeliaService implements KmeliaService {
   }
 
   private void deleteProfiles(final List<ProfileInst> profiles) {
-    if (profiles != null) {
-      for (ProfileInst profile : profiles) {
-        if (profile != null) {
-          adminController.deleteProfileInst(profile.getId());
-        }
+    for (ProfileInst profile : profiles) {
+      if (profile != null) {
+        adminController.deleteProfileInst(profile.getId());
       }
     }
   }
@@ -4390,11 +4388,9 @@ public class DefaultKmeliaService implements KmeliaService {
           List<ProfileInst> profiles = adminController
               .getProfilesByObject(fromNode.getNodePK().getId(), ObjectType.NODE.getCode(),
                   fromNode.getNodePK().getInstanceId());
-          if (profiles != null) {
-            for (ProfileInst profile : profiles) {
-              if (profile != null && StringUtil.isDefined(profile.getId())) {
-                adminController.deleteProfileInst(profile.getId());
-              }
+          for (ProfileInst profile : profiles) {
+            if (profile != null && StringUtil.isDefined(profile.getId())) {
+              adminController.deleteProfileInst(profile.getId());
             }
           }
         }
