@@ -23,22 +23,22 @@
  */
 package org.silverpeas.components.webpages.notification;
 
+import org.silverpeas.core.admin.service.AdminController;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.notification.user.UserSubscriptionNotificationBehavior;
+import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
+import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
+import org.silverpeas.core.notification.user.client.constant.NotifAction;
+import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.subscription.constant.SubscriberType;
 import org.silverpeas.core.subscription.service.ResourceSubscriptionProvider;
 import org.silverpeas.core.subscription.util.SubscriptionSubscriberMapBySubscriberType;
-import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
-import org.silverpeas.core.notification.user.UserSubscriptionNotificationBehavior;
-import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
-import org.silverpeas.core.notification.user.model.NotificationResourceData;
-import org.silverpeas.core.notification.user.client.constant.NotifAction;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.service.AdminController;
-import org.silverpeas.core.admin.space.SpaceInstLight;
-import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.template.SilverpeasTemplate;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.Collection;
 import java.util.List;
@@ -64,8 +64,7 @@ public class WebPagesUserNotifier extends AbstractTemplateUserNotificationBuilde
     try {
       UserNotificationHelper.buildAndSend(new WebPagesUserNotifier(resource, userId));
     } catch (final Exception e) {
-      SilverTrace.warn("webPages", "WebPagesUserNotifier.notify()",
-          "webPages.EX_IMPOSSIBLE_DALERTER_LES_UTILISATEURS", "nodeId = " + resource.getId(), e);
+      SilverLogger.getLogger(WebPagesUserNotifier.class).warn(e);
     }
   }
 
@@ -125,13 +124,11 @@ public class WebPagesUserNotifier extends AbstractTemplateUserNotificationBuilde
     AdminController adminController = ServiceProvider.getService(AdminController.class);
     final List<SpaceInstLight> spaces =
         adminController.getPathToComponent(getComponentInstanceId());
-    if (spaces != null) {
-      for (final SpaceInstLight space : spaces) {
-        if (sb.length() > 0) {
-          sb.append(NotificationResourceData.LOCATION_SEPARATOR);
-        }
-        sb.append(space.getName());
+    for (final SpaceInstLight space : spaces) {
+      if (sb.length() > 0) {
+        sb.append(NotificationResourceData.LOCATION_SEPARATOR);
       }
+      sb.append(space.getName());
     }
     return sb.toString();
   }
