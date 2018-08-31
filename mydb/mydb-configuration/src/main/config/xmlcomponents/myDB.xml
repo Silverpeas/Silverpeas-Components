@@ -25,21 +25,31 @@
 
 -->
 
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
   <name>myDB</name>
   <label>
-    <message lang="fr">My DB</message>
+    <message lang="fr">My BD</message>
     <message lang="en">My DB</message>
     <message lang="de">My DB</message>
   </label>
   <description>
-    <message lang="fr">Silverpeas permet grâce à « MyDB » de définir et gérer une base de données
-		relationnelle. Le gestionnaire crée sa structure. Les contributeurs saisissent les
-		données, les lecteurs les consultent.
-	</message>
-    <message lang="en">An easy way to create tables, consult, modify or delete data stored in a database.</message>
-    <message lang="de">Ein einfacher Weg Tabellen zu erstellen, einsehen, ändern oder Löschen von Daten die in einer Datenbank gespeichert sind.</message>
+    <message lang="fr">
+      Silverpeas permet grâce à « MyDB » d'accéder à une base de données relationnelle existante
+      dans votre organisation pour consulter, créer et mettre à jour des données métiers.
+      Les contributeurs saisissent les données, les lecteurs les consultent.
+    </message>
+    <message lang="en">
+      Silverpeas provide with "MyDB" a way to access an existing relational database in your
+      organization to consult, to create and to update the business data.
+      The contributors can edit the data whereas the readers can only consult them.
+    </message>
+    <message lang="de">
+      Silverpeas bietet mit "MyDB" eine Möglichkeit, auf eine vorhandene relationale Datenbank in
+      Ihrer Organisation zuzugreifen, um die Geschäftsdaten zu konsultieren, zu erstellen und zu aktualisieren.
+      Die Mitwirkenden können die Daten bearbeiten, während die Leser sie nur konsultieren können.
+    </message>
   </description>
   <suite>
     <message lang="fr">06 Connecteurs</message>
@@ -56,9 +66,9 @@
         <message lang="de">Manager</message>
       </label>
       <help>
-        <message lang="fr">Les gestionnaires paramètrent les informations de connexion à la base de données.</message>
-        <message lang="en">Managers set up the DB connection's parameters.</message>
-        <message lang="de">Managers set up the DB connection's parameters.</message>
+        <message lang="fr">Les gestionnaires sélectionne la base de données à accéder.</message>
+        <message lang="en">Managers select the database to access.</message>
+        <message lang="de">Manager wählen die Datenbank aus, auf die zugegriffen werden soll.</message>
       </help>
     </profile>
     <profile name="publisher">
@@ -68,9 +78,9 @@
         <message lang="de">Herausgeber</message>
       </label>
       <help>
-        <message lang="fr">Les publieurs écrivent dans la base de données.</message>
-        <message lang="en">Publishers write the data base.</message>
-        <message lang="de">Herausgeber</message>
+        <message lang="fr">Les publieurs éditent les données dans la base de données.</message>
+        <message lang="en">Publishers edit the data into the database.</message>
+        <message lang="de">Publisher bearbeiten die Daten in der Datenbank.</message>
       </help>
     </profile>
     <profile name="user">
@@ -80,9 +90,9 @@
         <message lang="de">Leser</message>
       </label>
       <help>
-        <message lang="fr">Les lecteurs visualisent les données.</message>
-        <message lang="en">Readers visualize data.</message>
-        <message lang="de">Leser</message>
+        <message lang="fr">Les lecteurs consultent les données de la base de données.</message>
+        <message lang="en">Readers consult data in the database.</message>
+        <message lang="de">Leser konsultieren Daten in der Datenbank.</message>
       </help>
     </profile>
   </profiles>

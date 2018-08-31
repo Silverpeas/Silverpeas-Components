@@ -100,7 +100,11 @@ public class JdbcRequester {
    */
   public void checkConnection() throws JdbcConnectorException {
     try (Connection connection = currentConnectionInfo.openConnection()) {
-      // we check the connection can be opened without raising any exception
+      if (!connection.isValid(0)) {
+        throw new JdbcConnectorException(
+            "The connexion with the data source " + currentConnectionInfo.getDataSourceName() +
+                " is not valid");
+      }
     } catch (SQLException e) {
       throw new JdbcConnectorException(e);
     }
@@ -196,12 +200,14 @@ public class JdbcRequester {
   public List<TableRow> request(final String sqlQuery) throws JdbcConnectorException {
     final List<TableRow> rows = new ArrayList<>();
     try (Connection connection = currentConnectionInfo.openConnection();
-         PreparedStatement statement = connection.prepareStatement(sqlQuery);
-         ResultSet rs = statement.executeQuery()) {
-      while (rs.next()) {
-        rows.add(new TableRow(rs));
+         PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
+      statement.setMaxRows(currentConnectionInfo.getDataMaxNumber());
+      try (ResultSet rs = statement.executeQuery()) {
+        while (rs.next()) {
+          rows.add(new TableRow(rs));
+        }
+        return rows;
       }
-      return rows;
     } catch (SQLException e) {
       throw new JdbcConnectorException(e);
     }
