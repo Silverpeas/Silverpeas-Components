@@ -22,20 +22,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.components.mydb.service.comparators;
+package org.silverpeas.components.mydb.model.predicates;
+
+import org.silverpeas.components.mydb.model.DbColumn;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 
 /**
- * The including comparator.
+ * Identity predicate. Similar to an empty predicate as it is always true: the columns'value is
+ * compared with itself (identity).
  * @author mmoquillon
  */
-public class Inclusion implements FieldValueComparator {
+public class Identity extends AbstractColumnValuePredicate {
+
+  public Identity(final DbColumn column, final Comparable refValue) {
+    super(column, refValue);
+  }
+
+  public Identity() {
+  }
 
   @Override
-  public boolean compare(final Comparable value, final Comparable referenceValue) {
-    if (value == null) {
-      return false;
-    }
-    return value.toString().contains(referenceValue.toString());
+  public JdbcSqlQuery apply(final JdbcSqlQuery query) {
+    return query;
   }
 }
   

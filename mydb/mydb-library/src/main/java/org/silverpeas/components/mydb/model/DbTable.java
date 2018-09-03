@@ -24,12 +24,13 @@
 
 package org.silverpeas.components.mydb.model;
 
-import org.silverpeas.components.mydb.service.MyDBException;
+import org.silverpeas.components.mydb.model.predicates.AbstractColumnValuePredicate;
+import org.silverpeas.components.mydb.model.predicates.ColumnValuePredicate;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Table loaded from the database referred by a {@link MyDBConnectionInfo} instance.
@@ -38,8 +39,8 @@ import java.util.Optional;
 public class DbTable {
 
   private final String name;
-  private final List<String> columns;
-  private List<TableRow> rows;
+  private final List<DbColumn> columns = new ArrayList<>();
+  private JdbcRequester requester = null;
 
   /**
    * Loads the default table defined in the specified {@link MyDBConnectionInfo} instance.
@@ -48,11 +49,13 @@ public class DbTable {
    * database and to get the name of the table load.
    * @return optionally a {@link DbTable} instance or nothing if no default table is set in the
    * specified {@link MyDBConnectionInfo} instance.
-   * @throws MyDBException if an error occurs while requesting the data source.
    */
-  public static Optional<DbTable> defaultTable(final MyDBConnectionInfo dsInfo) throws MyDBException {
-    final JdbcRequester requester = new JdbcRequester(dsInfo);
-    return requester.loadTable();
+  public static Optional<DbTable> defaultTable(final MyDBConnectionInfo dsInfo) {
+    DbTable table = null;
+    if (dsInfo.isDefaultTableNameDefined()) {
+      table = new DbTable(dsInfo.getDefaultTableName(), dsInfo);
+    }
+    return Optional.ofNullable(table);
   }
 
   /**
@@ -69,14 +72,14 @@ public class DbTable {
   }
 
   /**
-   * Constructs a database table with the specified name and with the names of the columns that
-   * made up it.
-   * @param name the name of the table.
-   * @param columns the names of the columns of the table.
+   * Constructs a new instance for a table with the specified name and that is defined in the
+   * database referenced by the specified {@link MyDBConnectionInfo} object.
+   * @param name the name of the table
+   * @param ds the information about the database in which is defined this table.
    */
-  DbTable(final String name, final List<String> columns) {
+  public DbTable(final String name, final MyDBConnectionInfo ds) {
     this.name = name;
-    this.columns = columns;
+    setJdbcRequester(new JdbcRequester(ds));
   }
 
   /**
@@ -85,7 +88,20 @@ public class DbTable {
    */
   public DbTable(final String name) {
     this.name = name;
-    this.columns = new ArrayList<>();
+    this.columns.clear();
+  }
+
+  /**
+   * Sets a requester to access the database and performs JDBC operations for this table. Once
+   * a requester set, the columns of the table are automatically fetched.
+   * @param requester a {@link JdbcRequester} instance.
+   */
+  private void setJdbcRequester(final JdbcRequester requester) {
+    this.requester = requester;
+    this.requester.perform((r, c) -> {
+      this.columns.clear();
+      this.columns.addAll(r.getColumns(c, this.name));
+    });
   }
 
   /**
@@ -99,35 +115,48 @@ public class DbTable {
   /**
    * Gets all the columns that made up this table. If no columns were specified for this table,
    * then an empty list is returned.
-   * @return a list of column names.
+   * @return a list of columns.
    */
-  public List<String> getColumns() {
+  public List<DbColumn> getColumns() {
     return this.columns;
   }
 
   /**
-   * Gets the contents of this table as a list of rows, each of them being a tuple valuing the
-   * all the columns of this table. If this content of this table wasn't set or if the table is
-   * empty, then an empty list is returned.
-   * @return a list of table rows.
+   * Gets the column with the specified name.
+   * @param name the name of the column.
+   * @return optionally the asked column. If no such column exists then an empty optional is
+   * returned.
    */
-  public List<TableRow> getContent() {
-    if (this.rows == null) {
-      return Collections.emptyList();
-    }
-    return this.rows;
+  public Optional<DbColumn> getColumn(final String name) {
+    return this.columns.stream().filter(c -> c.name.equals(name)).findFirst();
   }
 
   /**
-   * Sets the content of this table with the specified list of rows. If this table hasn't its
-   * columns defined, then they are defined from the specified rows.
-   * @param rows a list of {@link TableRow} instances, each of them representing a row in the table.
+   * Gets the contents of this table as a list of rows, each of them being a tuple valuing the
+   * all the columns of this table. If the table is empty, then an empty list is returned.
+   * If this table hasn't yet its columns defined, then they are defined from the specified rows.
+   * @param filter a predicate to use for filtering the table content.
+   * @return a list of table rows. If a filter is set, it is then applied when requesting the
+   * content of this table. The number of table rows is limited by the
+   * {@link MyDBConnectionInfo#getDataMaxNumber()} property.
    */
-  void setContent(final List<TableRow> rows) {
-    this.rows = rows;
-    if (this.columns.isEmpty() && !this.rows.isEmpty()) {
-      this.columns.addAll(this.rows.get(0).getFieldNames());
+  public List<TableRow> getContent(final ColumnValuePredicate filter) {
+    final List<TableRow> rows = new ArrayList<>();
+    if (!(filter instanceof AbstractColumnValuePredicate)) {
+      throw new IllegalArgumentException(
+          "DbTable doesn't support predicate other than AbstractColumnValuePredicate objects");
     }
+    requester.perform(
+        (r, c) -> rows.addAll(r.request(c, this.name, (AbstractColumnValuePredicate) filter)));
+    if (this.columns.isEmpty() && !rows.isEmpty()) {
+      this.columns.addAll(rows.get(0)
+          .getFields()
+          .entrySet()
+          .stream()
+          .map(e -> new DbColumn(e.getValue().getType(), e.getKey()))
+          .collect(Collectors.toList()));
+    }
+    return rows;
   }
 }
   

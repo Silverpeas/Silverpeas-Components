@@ -22,22 +22,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.components.mydb.service.comparators;
+package org.silverpeas.components.mydb.model.predicates;
+
+import org.silverpeas.components.mydb.model.DbColumn;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 
 /**
- * A comparator of comparable values. Such comparator is a comparing predicate between two
- * comparable objects.
+ * The non-strict superiority predicate; the column'values can be equal with the reference value.
  * @author mmoquillon
  */
-@FunctionalInterface
-public interface FieldValueComparator {
+public class Superiority extends AbstractColumnValuePredicate {
 
-  /**
-   * Compares the value with the reference value. The two specified values must be comparable.
-   * @param value the value to compare.
-   * @param referenceValue the reference value the value is compared to.
-   * @return true if the comparing predicate between the two specified values is satisfied.
-   */
-  boolean compare(final Comparable value, final Comparable referenceValue);
+  public Superiority(final DbColumn column, final Comparable refValue) {
+    super(column, refValue);
+  }
+
+  @Override
+  public JdbcSqlQuery apply(final JdbcSqlQuery query) {
+    return query.where(getColumn().getName() + " > ?", getReferenceValue());
+  }
 }
   

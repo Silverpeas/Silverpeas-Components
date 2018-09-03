@@ -22,17 +22,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.components.mydb.service.comparators;
+package org.silverpeas.components.mydb.model.predicates;
+
+import org.silverpeas.components.mydb.model.DbColumn;
 
 /**
- * A builder that builds no comparing statement.
+ * A predicate the values of a given {@link org.silverpeas.components.mydb.model.DbTable}'s column
+ * must satisfy. Such predicates are used to filter the rows in the database table's content.
  * @author mmoquillon
  */
-public class NothingBuilder implements FieldValueComparator {
+public interface ColumnValuePredicate {
 
-  @Override
-  public boolean compare(final Comparable value, final Comparable referenceValue) {
-    return true;
-  }
+  /**
+   * Gets the name of the column on which the predicate should be played.
+   * @return the name of a database table's column.
+   */
+  DbColumn getColumn();
+
+  /**
+   * Gets the value with which all the column's values will be compared when playing the predicate.
+   * @return a {@link Comparable} value.
+   */
+  Comparable getReferenceValue();
+
 }
   

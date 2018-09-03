@@ -75,7 +75,7 @@ public class TableRow {
    * Gets all the fields of this table row.
    * @return a {@link Map} between a field name and its value.
    */
-  public Map<String, Object> getFields() {
+  public Map<String, TableFieldValue> getFields() {
     return Collections.unmodifiableMap(fields);
   }
 
@@ -84,7 +84,7 @@ public class TableRow {
    * @param field the name of the field.
    * @return the value of the asked field.
    */
-  public Comparable getFieldValue(final String field) {
+  public TableFieldValue getFieldValue(final String field) {
     return fields.get(field);
   }
 }

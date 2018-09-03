@@ -24,31 +24,28 @@
 
 package org.silverpeas.components.mydb.web;
 
-import org.silverpeas.components.mydb.service.comparators.Equality;
-import org.silverpeas.components.mydb.service.comparators.FieldValueComparator;
-import org.silverpeas.components.mydb.service.comparators.Inclusion;
-import org.silverpeas.components.mydb.service.comparators.Inequality;
-import org.silverpeas.components.mydb.service.comparators.Inferiority;
-import org.silverpeas.components.mydb.service.comparators.NothingBuilder;
-import org.silverpeas.components.mydb.service.comparators.StrictInferiority;
-import org.silverpeas.components.mydb.service.comparators.StrictSuperiority;
-import org.silverpeas.components.mydb.service.comparators.Superiority;
-import org.silverpeas.components.mydb.model.TableRow;
+import org.silverpeas.components.mydb.model.DbColumn;
+import org.silverpeas.components.mydb.model.predicates.ColumnValuePredicate;
+import org.silverpeas.components.mydb.model.predicates.Equality;
+import org.silverpeas.components.mydb.model.predicates.Identity;
+import org.silverpeas.components.mydb.model.predicates.Inclusion;
+import org.silverpeas.components.mydb.model.predicates.Inequality;
+import org.silverpeas.components.mydb.model.predicates.Inferiority;
+import org.silverpeas.components.mydb.model.predicates.StrictInferiority;
+import org.silverpeas.components.mydb.model.predicates.StrictSuperiority;
+import org.silverpeas.components.mydb.model.predicates.Superiority;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
+import java.util.function.BiFunction;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 /**
- * Filter of table rows by applying a {@link FieldValueComparator} predicate on them.
+ * Filter of table rows by applying a {@link ColumnValuePredicate} predicate on them.
  * @author mmoquillon
  */
 public class TableRowsFilter {
@@ -58,24 +55,24 @@ public class TableRowsFilter {
    */
   public static final String FIELD_NONE = "*";
 
-  private static final Map<String, FieldValueComparator> comparators = new LinkedHashMap<>(7);
+  private static final Map<String, BiFunction<DbColumn, Comparable, ColumnValuePredicate>>
+      comparators = new LinkedHashMap<>(7);
   private String comparator = FIELD_NONE;
-  private String fieldName = FIELD_NONE;
   private String fieldValue = EMPTY;
-  private Class<?> fieldType = null;
+  private DbColumn field = null;
 
   /**
-   * Set up the different {@link FieldValueComparator} instances supported by this filter.
+   * Set up the different {@link ColumnValuePredicate} instances supported by this filter.
    */
   static {
-    comparators.put(FIELD_NONE, new NothingBuilder());
-    comparators.put("include", new Inclusion());
-    comparators.put("=", new Equality());
-    comparators.put("!=", new Inequality());
-    comparators.put("<=", new Inferiority());
-    comparators.put(">=", new Superiority());
-    comparators.put("<", new StrictInferiority());
-    comparators.put(">", new StrictSuperiority());
+    comparators.put(FIELD_NONE, Identity::new);
+    comparators.put("include", Inclusion::new);
+    comparators.put("=", Equality::new);
+    comparators.put("!=", Inequality::new);
+    comparators.put("<=", Inferiority::new);
+    comparators.put(">=", Superiority::new);
+    comparators.put("<", StrictInferiority::new);
+    comparators.put(">", StrictSuperiority::new);
   }
 
   /**
@@ -91,32 +88,29 @@ public class TableRowsFilter {
    * @param comparatorSymbol the symbol of a supported comparator.
    */
   public void setComparator(final String comparatorSymbol) {
-    FieldValueComparator builder = comparators
-        .get(comparatorSymbol != null ? comparatorSymbol : FIELD_NONE);
-    if (builder == null) {
+    final boolean exists =
+        comparators.containsKey(comparatorSymbol != null ? comparatorSymbol : FIELD_NONE);
+    if (!exists) {
       throw new IllegalArgumentException("Comparator " + comparatorSymbol + " not supported!");
     }
     this.comparator = comparatorSymbol;
   }
 
   /**
-   * Sets the name of the field, and its concrete type, in each table row of a result to filter.
-   * @param fieldName the name of a field in the table rows of a SQL query result.
-   * @param fieldType the concrete type of the field.
+   * Sets the column of the table on which the filtering will be applied.
+   * @param column a {@link DbColumn} instance.
    */
-  public void setFieldName(final String fieldName, final Class<?> fieldType) {
-    Objects.requireNonNull(fieldName);
-    Objects.requireNonNull(fieldType);
-    this.fieldName = fieldName;
-    this.fieldType = fieldType;
+  public void setColumn(final DbColumn column) {
+    Objects.requireNonNull(column);
+    this.field = column;
   }
 
   /**
-   * Sets the value with which a field of all of the table row will be filtered.
-   * @param fieldValue the value with which the field of each table row will be compared.
+   * Sets the value on which the whole column will be filtered.
+   * @param value the value on which the filtering will be applied.
    */
-  public void setFieldValue(final String fieldValue) {
-    this.fieldValue = fieldValue != null ? fieldValue : EMPTY;
+  public void setColumnValue(final String value) {
+    this.fieldValue = value != null ? value : EMPTY;
   }
 
   /**
@@ -128,11 +122,11 @@ public class TableRowsFilter {
   }
 
   /**
-   * Gets the name of the field to filter.
-   * @return a field name.
+   * Ges the column on which the filtering will be applied.
+   * @return optionally a {@link DbColumn} instance. If no filter was set, then returns nothing.
    */
-  public String getFieldName() {
-    return fieldName;
+  public Optional<DbColumn> getColumn() {
+    return Optional.ofNullable(this.field);
   }
 
   /**
@@ -140,7 +134,7 @@ public class TableRowsFilter {
    * the result will be filtered.
    * @return the value used in the filtering as a {@link String} instance.
    */
-  public String getFieldValue() {
+  public String getColumnValue() {
     return fieldValue;
   }
 
@@ -148,45 +142,32 @@ public class TableRowsFilter {
    * Clears all the filtering parameters used by this filter.
    */
   public void clear() {
-    this.fieldName = FIELD_NONE;
     this.comparator = FIELD_NONE;
     this.fieldValue = "";
-    this.fieldType = null;
+    this.field = null;
   }
 
   /**
-   * Filters the specified table rows by applying the underlying filtering parameters that were set
-   * by the setters.
-   * @param rows the rows to filter.
-   * @return a list with all the table rows filtered according to the underlying filtering
-   * parameters.
+   * Is this filter defined?
+   * @return true if the filtering parameters are set, false otherwise.
    */
-  public List<TableRow> filter(final List<TableRow> rows) {
-    final FieldValueComparator predicate = comparators.get(comparator);
-    if (!fieldName.equals(FIELD_NONE) && predicate != null) {
-      Comparable actualValue;
-      try {
-        Method valueOf = fieldType.getMethod("valueOf", String.class);
-        actualValue = (Comparable) valueOf.invoke(fieldType, fieldValue);
-      } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException |
-          ClassCastException e) {
-        actualValue = fieldValue;
-      }
-      final Comparable refValue = actualValue;
-      return rows.stream()
-          .filter(byApplying(predicate, fieldName, refValue))
-          .collect(Collectors.toList());
-    }
-    return rows;
+  public boolean isDefined() {
+    return !FIELD_NONE.equals(this.comparator) && this.field != null && !this.fieldValue.isEmpty();
   }
 
-  @SuppressWarnings("unchecked")
-  private Predicate<TableRow> byApplying(final FieldValueComparator comparator,
-      final String fieldName, final Comparable withValue) {
-    return r -> {
-      Comparable v = r.getFieldValue(fieldName);
-      return withValue != null && comparator.compare(v, withValue);
-    };
+  /**
+   * Gets the predicate corresponding to this filtering rule.
+   * @return a {@link ColumnValuePredicate} object. If no filtering rule is defined, returns an
+   * {@link Identity} predicate.
+   */
+  public ColumnValuePredicate getFilteringPredicate() {
+    final ColumnValuePredicate predicate;
+    if (isDefined()) {
+      predicate = comparators.get(this.comparator).apply(this.field, this.fieldValue);
+    } else {
+      predicate = new Identity();
+    }
+    return predicate;
   }
 }
   

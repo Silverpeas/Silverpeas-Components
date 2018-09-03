@@ -22,21 +22,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.components.mydb.service.comparators;
+package org.silverpeas.components.mydb.model.predicates;
+
+import org.silverpeas.components.mydb.model.DbColumn;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 
 /**
- * The non-strict inferiority comparator; the two values can be equal.
+ * The inequality predicate.
  * @author mmoquillon
  */
-public class Inferiority implements FieldValueComparator {
+public class Inequality extends Equality {
 
-  @SuppressWarnings("unchecked")
+  public Inequality(final DbColumn column, final Comparable refValue) {
+    super(column, refValue);
+  }
+
   @Override
-  public boolean compare(final Comparable value, final Comparable referenceValue) {
-    if (value == null || !value.getClass().equals(referenceValue.getClass())) {
-      return false;
-    }
-    return value.compareTo(referenceValue) <= 0;
+  public JdbcSqlQuery apply(final JdbcSqlQuery query) {
+    return query.where(getColumn().getName() + " != ?", getReferenceValue());
   }
 }
   

@@ -22,28 +22,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.components.mydb.service.comparators;
+package org.silverpeas.components.mydb.model.predicates;
 
-import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static org.silverpeas.components.mydb.service.comparators.Equality.EMPTY_VALUE;
-import static org.silverpeas.components.mydb.service.comparators.Equality.NULL_VALUE;
+import org.silverpeas.components.mydb.model.DbColumn;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 
 /**
- * The inequality comparator
+ * The equality predicate.
  * @author mmoquillon
  */
-public class Inequality implements FieldValueComparator {
+public class Equality extends AbstractColumnValuePredicate {
+
+  /**
+   * Constructs a new predicate on the specified database table's column and with the given
+   * reference value.
+   * @param column the name of a column.
+   * @param refValue a reference value.
+   */
+  public Equality(final DbColumn column, final Comparable refValue) {
+    setColumn(column);
+    if (refValue == null) {
+      setValue(NULL_VALUE);
+    } else if (refValue instanceof String && refValue.toString().isEmpty()) {
+      setValue(EMPTY_VALUE);
+    } else {
+      setValue(refValue);
+    }
+  }
 
   @Override
-  public boolean compare(final Comparable value, final Comparable referenceValue) {
-    if (value == null && NULL_VALUE.equals(referenceValue)) {
-      return false;
-    } else if (value != null && !NULL_VALUE.equals(referenceValue)) {
-      final String finalReferenceValue =
-          EMPTY_VALUE.equals(referenceValue) ? EMPTY : referenceValue.toString();
-      return value.toString().compareTo(finalReferenceValue) != 0;
-    }
-    return true;
+  public JdbcSqlQuery apply(final JdbcSqlQuery query) {
+    return query.where(getColumn().getName() + " = ?", getReferenceValue());
   }
+
+
 }
   

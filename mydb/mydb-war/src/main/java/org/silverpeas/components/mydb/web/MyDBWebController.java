@@ -24,13 +24,13 @@
 
 package org.silverpeas.components.mydb.web;
 
-import org.silverpeas.components.mydb.model.MyDBConnectionInfo;
 import org.silverpeas.components.mydb.model.DataSourceDefinition;
+import org.silverpeas.components.mydb.model.DbColumn;
 import org.silverpeas.components.mydb.model.DbTable;
+import org.silverpeas.components.mydb.model.MyDBConnectionInfo;
 import org.silverpeas.components.mydb.service.MyDBException;
 import org.silverpeas.components.mydb.service.MyDBRuntimeException;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
@@ -49,7 +49,6 @@ import javax.ws.rs.Path;
 import java.util.Collections;
 import java.util.List;
 
-import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
 /**
@@ -126,7 +125,7 @@ public class MyDBWebController
         tableView.setTable(DbTable.defaultTable(connectionInfo));
       }
       setUpRequestAttributes(context.getRequest());
-    } catch (MyDBException | MyDBRuntimeException e) {
+    } catch (MyDBRuntimeException e) {
       context.getMessager().addError(e.getMessage());
     }
   }
@@ -138,12 +137,11 @@ public class MyDBWebController
   public void selectTable(final MyDBWebRequestContext context) {
     HttpRequest request = context.getRequest();
     final String tableName = request.getParameter(TABLE_VIEW);
-    if (StringUtil.isDefined(tableName)) {
-      if (!tableName.equals(connectionInfo.getDefaultTableName())) {
+    if (StringUtil.isDefined(tableName) &&
+        !tableName.equals(connectionInfo.getDefaultTableName())) {
         connectionInfo.setDefaultTableName(tableName);
         connectionInfo.save();
         clearTableView();
-      }
     }
     viewTableContent(context);
   }
@@ -205,19 +203,19 @@ public class MyDBWebController
 
   private void readRequestParameters(final HttpRequest request) {
     if (request.isParameterNotNull(COMPARING_COLUMN)) {
-      final Mutable<Object> firstNonNullValue = Mutable.of(EMPTY);
       final String fieldName = defaultStringIfNotDefined(request.getParameter(COMPARING_COLUMN),
           TableRowsFilter.FIELD_NONE);
-      if (!TableRowsFilter.FIELD_NONE.equals(fieldName)) {
-        tableView.getFirstNonNullValue(fieldName).ifPresent(firstNonNullValue::set);
+      if (TableRowsFilter.FIELD_NONE.equals(fieldName)) {
+        tableView.getFilter().clear();
+      } else {
+        tableView.filterOnColumn(fieldName);
+        if (request.isParameterNotNull(COMPARING_OPERATOR)) {
+          tableView.getFilter().setComparator(request.getParameter(COMPARING_OPERATOR));
+        }
+        if (request.isParameterNotNull(COMPARING_VALUE)) {
+          tableView.getFilter().setColumnValue(request.getParameter(COMPARING_VALUE));
+        }
       }
-      tableView.getFilter().setFieldName(fieldName, firstNonNullValue.get().getClass());
-    }
-    if (request.isParameterNotNull(COMPARING_OPERATOR)) {
-      tableView.getFilter().setComparator(request.getParameter(COMPARING_OPERATOR));
-    }
-    if (request.isParameterNotNull(COMPARING_VALUE)) {
-      tableView.getFilter().setFieldValue(request.getParameter(COMPARING_VALUE));
     }
   }
 
@@ -234,9 +232,12 @@ public class MyDBWebController
     }
     request.setAttribute(TABLE_VIEW, tableView);
     request.setAttribute(ALL_TABLES, tableNames);
-    request.setAttribute(COMPARING_COLUMN, tableView.getFilter().getFieldName());
+    request.setAttribute(COMPARING_COLUMN, tableView.getFilter()
+        .getColumn()
+        .map(DbColumn::getName)
+        .orElse(TableRowsFilter.FIELD_NONE));
     request.setAttribute(COMPARING_OPERATOR, tableView.getFilter().getComparator());
-    request.setAttribute(COMPARING_VALUE, tableView.getFilter().getFieldValue());
+    request.setAttribute(COMPARING_VALUE, tableView.getFilter().getColumnValue());
     request.setAttribute(COMPARING_OPERATORS, TableRowsFilter.getAllComparators());
   }
 

@@ -22,21 +22,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.components.mydb.service.comparators;
+package org.silverpeas.components.mydb.model.predicates;
+
+import org.silverpeas.components.mydb.model.DbColumn;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 
 /**
- * The strict superiority comparator
+ * The including predicate.
  * @author mmoquillon
  */
-public class StrictSuperiority implements FieldValueComparator {
+public class Inclusion extends AbstractColumnValuePredicate {
 
-  @SuppressWarnings("unchecked")
+  public Inclusion(final DbColumn column, final Comparable refValue) {
+    super(column, refValue);
+  }
+
   @Override
-  public boolean compare(final Comparable value, final Comparable referenceValue) {
-    if (value == null || !value.getClass().equals(referenceValue.getClass())) {
-      return false;
-    }
-    return value.compareTo(referenceValue) > 0;
+  public JdbcSqlQuery apply(final JdbcSqlQuery query) {
+    return query.where(getColumn().getName()).in(getReferenceValue());
   }
 }
   

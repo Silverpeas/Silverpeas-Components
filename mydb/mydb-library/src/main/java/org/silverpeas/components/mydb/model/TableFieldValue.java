@@ -44,6 +44,14 @@ public class TableFieldValue implements Comparable<TableFieldValue> {
     this.typeName = typeName;
   }
 
+  public String getTypeName() {
+    return typeName;
+  }
+
+  public int getType() {
+    return type;
+  }
+
   @Override
   public boolean equals(final Object o) {
     if (this == o) {

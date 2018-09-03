@@ -22,32 +22,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.components.mydb.service.comparators;
+package org.silverpeas.components.mydb.model.predicates;
 
-import static org.apache.commons.lang3.StringUtils.EMPTY;
+import org.silverpeas.components.mydb.model.DbColumn;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 
 /**
- * The equality comparator.
+ * The strict superiority predicate.
  * @author mmoquillon
  */
-public class Equality implements FieldValueComparator {
+public class StrictSuperiority extends AbstractColumnValuePredicate {
 
-  public static final String NULL = "null";
-
-  static final String NULL_VALUE = "@null@";
-  static final String EMPTY_VALUE = "@empty@";
+  public StrictSuperiority(final DbColumn column, final Comparable refValue) {
+    super(column, refValue);
+  }
 
   @Override
-  public boolean compare(final Comparable value, final Comparable referenceValue) {
-    if (value == null && NULL_VALUE.equals(referenceValue)) {
-      return true;
-    } else if (value != null && !NULL_VALUE.equals(referenceValue)) {
-      final String finalReferenceValue = EMPTY_VALUE.equals(referenceValue)
-          ? EMPTY
-          : referenceValue.toString();
-      return value.toString().compareTo(finalReferenceValue) == 0;
-    }
-    return false;
+  public JdbcSqlQuery apply(final JdbcSqlQuery query) {
+    return query.where(getColumn().getName() + " > ?", getReferenceValue());
   }
 }
   

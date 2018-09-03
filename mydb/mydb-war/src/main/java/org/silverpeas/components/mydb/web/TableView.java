@@ -24,12 +24,12 @@
 
 package org.silverpeas.components.mydb.web;
 
+import org.silverpeas.components.mydb.model.DbColumn;
 import org.silverpeas.components.mydb.model.DbTable;
 import org.silverpeas.components.mydb.model.TableRow;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -55,6 +55,15 @@ public class TableView {
    */
   TableRowsFilter getFilter() {
     return filter;
+  }
+
+  /**
+   * Sets up the underlying filter rule to filter the specified column. If this table view isn't
+   * defined or if there is no column with the given name, nothing is done.
+   * @param name the name of a column.
+   */
+  void filterOnColumn(final String name) {
+    getColumn(name).ifPresent(c -> getFilter().setColumn(c));
   }
 
   /**
@@ -89,18 +98,21 @@ public class TableView {
    * Gets field names extracted from last query result set.
    * @return the field names.
    */
-  public List<String> getColumns() {
-    final List<String> columnNames = new ArrayList<>();
-    table.ifPresent(t -> columnNames.addAll(t.getColumns()));
-    return columnNames;
+  public List<DbColumn> getColumns() {
+    final List<DbColumn> columns = new ArrayList<>();
+    table.ifPresent(t -> columns.addAll(t.getColumns()));
+    return columns;
   }
 
   /**
-   * Gets the rows after the applying the filter {@link TableRowsFilter#filter(List)}.
-   * @return the filtered rows.
+   * Gets the specified column in this table view. If the table view isn't defined or if the column
+   * doesn't exist, then nothing is returned ({@link Optional#empty()}
+   * @param name the name of a column.
+   * @return optionally the {@link DbColumn} instance with the specified name. If no such column
+   * exist or if this table view isn't defined, then nothing is returned.
    */
-  public List<TableRow> getFilteredRows() {
-    return filter.filter(getRows());
+  public Optional<DbColumn> getColumn(final String name) {
+    return table.flatMap(t -> t.getColumn(name));
   }
 
   /**
@@ -109,7 +121,7 @@ public class TableView {
    */
   public List<TableRow> getRows() {
     final List<TableRow> rows = new ArrayList<>();
-    table.ifPresent(t -> rows.addAll(t.getContent()));
+    table.ifPresent(t -> rows.addAll(t.getContent(getFilter().getFilteringPredicate())));
     return rows;
   }
 
@@ -127,18 +139,5 @@ public class TableView {
    */
   public boolean isDefined() {
     return this.table.isPresent();
-  }
-
-  /**
-   * Gets the first non null value of the column with the specified name from all the rows of the
-   * table.
-   * @param columnName a column name.
-   * @return an optional value.
-   */
-  Optional<Object> getFirstNonNullValue(final String columnName) {
-    return getRows().stream()
-        .map(r -> (Object) r.getFieldValue(columnName))
-        .filter(Objects::nonNull)
-        .findFirst();
   }
 }

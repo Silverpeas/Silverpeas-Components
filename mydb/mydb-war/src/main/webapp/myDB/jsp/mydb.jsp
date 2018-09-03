@@ -23,7 +23,8 @@
   --%>
 
 <%@ include file="head.jsp" %>
-<%@ page import="org.silverpeas.components.mydb.service.comparators.Equality" %>
+<%@ page import="org.silverpeas.components.mydb.model.predicates.Equality" %>
+<%@ page import="org.silverpeas.components.mydb.model.predicates.AbstractColumnValuePredicate" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
@@ -51,7 +52,7 @@
 <c:set var="columnValue"       value="${requestScope[comparingValue]}"/>
 <c:set var="currentTable"      value="${requestScope[tableView]}"/>
 <c:set var="tableNames"        value="${requestScope[allTables]}"/>
-<c:set var="nullValue"         value="<%=Equality.NULL%>"/>
+<c:set var="nullValue"         value="<%=AbstractColumnValuePredicate.NULL%>"/>
 <jsp:useBean id="currentTable" type="org.silverpeas.components.mydb.web.TableView"/>
 
 <fmt:message var="windowTitle"   key="mydb.mainTitle"/>
@@ -156,11 +157,11 @@
             </c:choose>
             <c:forEach var="column" items="${currentTable.columns}">
               <c:choose>
-                <c:when test="${column.equals(columnToCompare)}">
-                  <option value="${column}" selected>${column}</option>
+                <c:when test="${column.name.equals(columnToCompare)}">
+                  <option value="${column.name}" selected>${column.name}</option>
                 </c:when>
                 <c:otherwise>
-                  <option value="${column}">${column}</option>
+                  <option value="${column.name}">${column.name}</option>
                 </c:otherwise>
               </c:choose>
             </c:forEach>
@@ -197,15 +198,15 @@
       </form>
     </div>
     <div id="table-view">
-      <c:set var="columnNames" value="${currentTable.columns}"/>
+      <c:set var="columns" value="${currentTable.columns}"/>
       <view:arrayPane var="Table${componentId}" routingAddress="ViewTable" export="false" numberLinesPerPage="25">
-        <c:forEach var="fieldName" items="${columnNames}">
-          <view:arrayColumn title="${fieldName}" compareOn="${(r, i) -> r.getFieldValue(columnNames[i])}"/>
+        <c:forEach var="field" items="${columns}">
+          <view:arrayColumn title="${field.name}" compareOn="${(r, i) -> r.getFieldValue(columns[i].name)}"/>
         </c:forEach>
-        <view:arrayLines var="row" items="${currentTable.filteredRows}">
+        <view:arrayLines var="row" items="${currentTable.rows}">
           <view:arrayLine>
-            <c:forEach var="fieldName" items="${columnNames}">
-              <c:set var="currentValue" value="${row.getFieldValue(fieldName)}"/>
+            <c:forEach var="field" items="${columns}">
+              <c:set var="currentValue" value="${row.getFieldValue(field.name)}"/>
               <view:arrayCellText text="${currentValue == null ? nullValue : currentValue}" nullStringValue="${nullValue}"/>
             </c:forEach>
           </view:arrayLine>

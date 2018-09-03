@@ -24,20 +24,18 @@
 
 package org.silverpeas.components.mydb.model;
 
+import org.silverpeas.components.mydb.model.predicates.AbstractColumnValuePredicate;
 import org.silverpeas.components.mydb.service.MyDBException;
 import org.silverpeas.components.mydb.service.MyDBRuntimeException;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * A requester of a remote enterprise data source by using the yet configured
@@ -46,9 +44,7 @@ import java.util.Optional;
  * available, then no connection is established and no request can be done.
  * @author mmoquillon
  */
-public class JdbcRequester {
-
-  private static final MessageFormat TABLE_QUERY = new MessageFormat("SELECT * FROM {0}");
+class JdbcRequester {
 
   private final MyDBConnectionInfo currentConnectionInfo;
 
@@ -56,7 +52,7 @@ public class JdbcRequester {
    * Constructs a new JDBC requester with the specified {@link MyDBConnectionInfo} instance.
    * @param dsInfo a {@link MyDBConnectionInfo} instance.
    */
-  public JdbcRequester(final MyDBConnectionInfo dsInfo) {
+  JdbcRequester(final MyDBConnectionInfo dsInfo) {
     this.currentConnectionInfo = dsInfo;
   }
 
@@ -67,29 +63,8 @@ public class JdbcRequester {
    * @return true if there is a {@link MyDBConnectionInfo} instance set with this requester.
    * False otherwise.
    */
-  public boolean isDataSourceDefined() {
+  boolean isDataSourceDefined() {
     return currentConnectionInfo.isDefined();
-  }
-
-  /**
-   * Is there is any default database table set with this requester? A request is set when there
-   * is a
-   * {@link MyDBConnectionInfo} instance defined for the component instance to which this
-   * request is related and a database table has been defined for that connection information.
-   * @return true if there is a database table defined for the current underlying connection
-   * information.
-   */
-  public boolean isDefaultTableNameDefined() {
-    return StringUtil.isDefined(currentConnectionInfo.getDefaultTableName());
-  }
-
-  /**
-   * Gets the name of the default database table set with this requester.
-   * @return a name of the default table that was set in the underlying
-   * {@link MyDBConnectionInfo} instance of this requester.
-   */
-  public String getDefaultTableName() {
-    return currentConnectionInfo.getDefaultTableName();
   }
 
   /**
@@ -97,10 +72,28 @@ public class JdbcRequester {
    * occurs while requesting the data source, a {@link MyDBRuntimeException} is thrown.
    * @return a list of table names.
    */
-  public List<String> getTableNames() {
+  List<String> getTableNames() {
     try (Connection connection = currentConnectionInfo.openConnection()) {
       return getTableNames(connection);
     } catch (SQLException | MyDBException e) {
+      throw new MyDBRuntimeException(e);
+    }
+  }
+
+  /**
+   * Performs the specified database operations within the same connection to the data source. If
+   * no data source is defined, then a {@link MyDBRuntimeException} is thrown. If the database
+   * operations throw an exception, then a {@link MyDBRuntimeException} is thrown.
+   * @param operations the operation to execute on the database.
+   */
+  void perform(final DbOperation operations) {
+    Objects.requireNonNull(operations);
+    if (!isDataSourceDefined()) {
+      throw new MyDBRuntimeException("No data source defined!");
+    }
+    try(Connection connection = currentConnectionInfo.openConnection()) {
+      operations.execute(this, connection);
+    } catch (Exception e) {
       throw new MyDBRuntimeException(e);
     }
   }
@@ -116,78 +109,32 @@ public class JdbcRequester {
     return tableNames;
   }
 
-
-  /**
-   * Gets all the columns in the specified table.
-   * @param tableName a name of a table. This name must have been get by invoking
-   * {@link #getTableNames()} method. If an error
-   * occurs while requesting the data source, a {@link MyDBRuntimeException} is thrown.
-   * @return a list of column names in the given table.
-   */
-  public List<String> getColumnNames(final String tableName) {
-    try (Connection connection = currentConnectionInfo.openConnection()) {
-      return getColumnNames(connection, tableName);
-    } catch (SQLException | MyDBException e) {
-      throw new MyDBRuntimeException(e);
-    }
-  }
-
-  private List<String> getColumnNames(final Connection connection, final String tableName)
+  List<DbColumn> getColumns(final Connection connection, final String tableName)
       throws SQLException {
     Objects.requireNonNull(connection);
-    final List<String> columnNames = new ArrayList<>();
+    final List<DbColumn> dbColumns = new ArrayList<>();
     DatabaseMetaData dbMetaData = connection.getMetaData();
     ResultSet columns = dbMetaData.getColumns(null, null, tableName, null);
     while (columns.next()) {
-      columnNames.add(columns.getString("COLUMN_NAME"));
+      final String name = columns.getString("COLUMN_NAME");
+      final int type = columns.getInt("DATA_TYPE");
+      dbColumns.add(new DbColumn(type, name));
     }
-    return columnNames;
+    return dbColumns;
   }
 
-  private List<TableRow> request(final Connection connection, final String tableName)
-      throws SQLException {
+  List<TableRow> request(final Connection connection, final String tableName, final
+      AbstractColumnValuePredicate predicate) throws SQLException {
     Objects.requireNonNull(connection);
-    final List<TableRow> rows = new ArrayList<>();
-    try (PreparedStatement statement = connection.prepareStatement(
-        TABLE_QUERY.format(new Object[]{tableName}))) {
-      statement.setMaxRows(currentConnectionInfo.getDataMaxNumber());
-      try (ResultSet rs = statement.executeQuery()) {
-        while (rs.next()) {
-          rows.add(new TableRow(rs));
-        }
-        return rows;
-      }
-    }
+    Objects.requireNonNull(tableName);
+    Objects.requireNonNull(predicate);
+    JdbcSqlQuery query = JdbcSqlQuery.createSelect("*").from(tableName);
+    query = predicate.apply(query);
+    return query.executeWith(connection, TableRow::new);
   }
 
-  public Optional<DbTable> loadTable() throws MyDBException {
-    DbTable table = null;
-    try (final Connection connection = currentConnectionInfo.openConnection()) {
-      final String tableName;
-      if (isDefaultTableNameDefined()) {
-        tableName = getDefaultTableName();
-        table = loadTable(connection, tableName);
-      }
-      return Optional.ofNullable(table);
-    } catch (SQLException e) {
-      throw new MyDBException(e);
-    }
-  }
-
-  private DbTable loadTable(final Connection connection, final String tableName)
-      throws SQLException {
-    Objects.requireNonNull(connection);
-    if (StringUtil.isNotDefined(tableName)) {
-      throw new MyDBRuntimeException("The name of the table to load isn't defined!");
-    }
-    if (!isDataSourceDefined()) {
-      throw new MyDBRuntimeException("No data source defined!");
-    }
-    DbTable table;
-    final List<String> columns = getColumnNames(connection, tableName);
-    final List<TableRow> rows = request(connection, tableName);
-    table = new DbTable(tableName, columns);
-    table.setContent(rows);
-    return table;
+  @FunctionalInterface
+  interface DbOperation {
+    void execute(final JdbcRequester requester, final Connection connection) throws SQLException;
   }
 }
