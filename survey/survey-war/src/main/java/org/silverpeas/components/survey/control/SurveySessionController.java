@@ -47,9 +47,9 @@
  */
 package org.silverpeas.components.survey.control;
 
+import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.survey.SurveyException;
 import org.silverpeas.components.survey.notification.SurveyUserNotification;
-import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.admin.component.model.ComponentInst;
@@ -63,7 +63,6 @@ import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.exception.DecodingException;
-import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
@@ -119,7 +118,6 @@ import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassifica
  */
 public class SurveySessionController extends AbstractComponentSessionController {
 
-  private static final String GALLERY_COMPONENT = "gallery";
   private static final String IMAGES_SUB_DIRECTORY_KEY = "imagesSubDirectory";
   private static final String ACTION_PARAM = "Action";
   private static final String SEND_NEW_QUESTION_ACTION = "SendNewQuestion";
@@ -1154,7 +1152,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
   public List<SimpleDocument> getAllSynthesisFile(String surveyId) {
     SimpleDocumentPK surveyForeignKey = new SimpleDocumentPK(surveyId, this.getComponentId());
     return AttachmentServiceProvider.getAttachmentService()
-        .listDocumentsByForeignKey(surveyForeignKey, I18NHelper.defaultLanguage);
+        .listDocumentsByForeignKey(surveyForeignKey.toResourceReference(), I18NHelper.defaultLanguage);
   }
 
   public QuestionResult getSuggestion(String userId, String questionId, String answerId)
@@ -1196,7 +1194,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
           file = false;
         }
       }
-    } catch (UtilException | IOException e) {
+    } catch (RuntimeException | IOException e) {
       SilverLogger.getLogger(this).error(e);
     }
     return parameters;

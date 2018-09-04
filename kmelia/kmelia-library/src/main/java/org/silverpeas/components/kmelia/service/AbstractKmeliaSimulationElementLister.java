@@ -23,12 +23,12 @@
  */
 package org.silverpeas.components.kmelia.service;
 
+import org.silverpeas.core.NotSupportedException;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.process.annotation.SimulationElementLister;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.WAPrimaryKey;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * User: Yohann Chastagnier
@@ -60,6 +60,6 @@ public abstract class AbstractKmeliaSimulationElementLister extends SimulationEl
 
   @Override
   public void listElements(final Object source, final String language, final WAPrimaryKey targetPK) {
-    throw new NotImplementedException();
+    throw new NotSupportedException("This method isn't supported by this class");
   }
 }

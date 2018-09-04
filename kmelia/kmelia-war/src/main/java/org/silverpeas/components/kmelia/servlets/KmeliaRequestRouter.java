@@ -94,7 +94,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.StringTokenizer;
 
 import static org.silverpeas.core.contribution.model.CoreContributionType.NODE;
@@ -148,7 +147,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
     try {
       if ("kmax".equals(kmelia.getComponentRootName())) {
         kmaxMode = true;
-        kmelia.isKmaxMode = true;
+        kmelia.setKmaxMode(true);
       }
       request.setAttribute("KmaxMode", kmaxMode);
 
@@ -1785,7 +1784,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
   }
 
   private void processPath(KmeliaSessionController kmeliaSC, String id) {
-    if (!kmeliaSC.isKmaxMode) {
+    if (!kmeliaSC.isKmaxMode()) {
       NodePK pk;
       if (!StringUtil.isDefined(id)) {
         pk = kmeliaSC.getCurrentFolderPK();

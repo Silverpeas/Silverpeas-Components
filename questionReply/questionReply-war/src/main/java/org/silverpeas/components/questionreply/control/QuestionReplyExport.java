@@ -151,7 +151,8 @@ public class QuestionReplyExport {
     try {
       String filePath = file.getParentFile().getPath() + File.separator + "files";
       String relativeFilePath = file.getParentFile().getPath();
-      attachments = attachmentIE.getAttachments(reply.getPK(), filePath, relativeFilePath, null);
+      attachments = attachmentIE.getAttachments(reply.getPK().toResourceReference(), filePath,
+          relativeFilePath, null);
     } catch (Exception ex) {
       // En cas d"objet non trouvé: pas d'exception gérée par le système
       throw new QuestionReplyException(ex);

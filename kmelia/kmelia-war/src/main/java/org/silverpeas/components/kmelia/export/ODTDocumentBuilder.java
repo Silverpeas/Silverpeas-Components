@@ -348,7 +348,7 @@ public class ODTDocumentBuilder {
   private void buildAttachmentsSection(final TextDocument odtDocument,
       final KmeliaPublication publication) {
     List<SimpleDocument> attachments = AttachmentServiceProvider.getAttachmentService()
-        .listDocumentsByForeignKey(publication.getPk(), getLanguage());
+        .listDocumentsByForeignKey(publication.getPk().toResourceReference(), getLanguage());
     boolean hasNoAttachmentToDisplay = true;
     Table attachmentsTable = odtDocument.getTableByName(LIST_OF_ATTACHMENTS);
     int i = 1;

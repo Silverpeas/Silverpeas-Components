@@ -132,7 +132,7 @@ public class ReplyResource extends QuestionReplyBaseWebService {
     ReplyEntity entity = ReplyEntity.fromReply(reply, getUserPreferences().getLanguage()).withURI(
         replyURI).withProfile(profile);
     Collection<SimpleDocument> attachments = AttachmentServiceProvider.getAttachmentService().
-        listDocumentsByForeignKey(reply.getPK(), entity.getLanguage());
+        listDocumentsByForeignKey(reply.getPK().toResourceReference(), entity.getLanguage());
     entity.withAttachments(attachments);
     AuthorEntity author = AuthorEntity.fromUser(reply.readAuthor());
     author.setAvatar(getHttpServletRequest().getContextPath() + author.getAvatar());
@@ -162,7 +162,7 @@ public class ReplyResource extends QuestionReplyBaseWebService {
 
   List<Reply> extractVisibleReplies(long questionId, List<Reply> replies) throws
       QuestionReplyException {
-    List<Reply> visibleReplies = new ArrayList<Reply>(replies.size());
+    List<Reply> visibleReplies = new ArrayList<>(replies.size());
     String authorId = QuestionManagerProvider.getQuestionManager().getQuestion(questionId).
         getCreatorId();
     SilverpeasRole profile = getUserProfile();

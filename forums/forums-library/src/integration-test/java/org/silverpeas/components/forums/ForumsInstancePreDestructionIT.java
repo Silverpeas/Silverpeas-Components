@@ -23,11 +23,6 @@
  */
 package org.silverpeas.components.forums;
 
-import org.silverpeas.components.forums.service.ForumService;
-import org.silverpeas.components.forums.model.Forum;
-import org.silverpeas.components.forums.model.ForumPK;
-import org.silverpeas.components.forums.model.Message;
-import org.silverpeas.components.forums.model.Moderator;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -35,6 +30,12 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.components.forums.model.Forum;
+import org.silverpeas.components.forums.model.ForumPK;
+import org.silverpeas.components.forums.model.Message;
+import org.silverpeas.components.forums.model.Moderator;
+import org.silverpeas.components.forums.service.ForumService;
+import org.silverpeas.components.forums.test.WarBuilder4Forums;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.attachment.AttachmentException;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
@@ -43,10 +44,8 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.model.UnlockContext;
 import org.silverpeas.core.contribution.attachment.util.SimpleDocumentList;
-import org.silverpeas.components.forums.test.WarBuilder4Forums;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.test.rule.DbSetupRule;
-import org.silverpeas.core.WAPrimaryKey;
 
 import javax.annotation.Priority;
 import javax.enterprise.inject.Alternative;
@@ -191,8 +190,8 @@ public class ForumsInstancePreDestructionIT {
     }
 
     @Override
-    public List<SimpleDocumentPK> copyAllDocuments(final WAPrimaryKey resourceSourcePk,
-        final WAPrimaryKey targetDestinationPk) {
+    public List<SimpleDocumentPK> copyAllDocuments(final ResourceReference resourceSourcePk,
+        final ResourceReference targetDestinationPk) {
       return null;
     }
 
@@ -203,8 +202,8 @@ public class ForumsInstancePreDestructionIT {
     }
 
     @Override
-    public List<SimpleDocumentPK> moveAllDocuments(final WAPrimaryKey resourceSourcePk,
-        final WAPrimaryKey targetDestinationPk) {
+    public List<SimpleDocumentPK> moveAllDocuments(final ResourceReference resourceSourcePk,
+        final ResourceReference targetDestinationPk) {
       return null;
     }
 
@@ -298,24 +297,24 @@ public class ForumsInstancePreDestructionIT {
 
     @Override
     public SimpleDocumentList<SimpleDocument> listDocumentsByForeignKey(
-        final WAPrimaryKey foreignKey, final String lang) {
+        final ResourceReference foreignKey, final String lang) {
       return null;
     }
 
     @Override
     public SimpleDocumentList<SimpleDocument> listAllDocumentsByForeignKey(
-        final WAPrimaryKey foreignKey, final String lang) {
+        final ResourceReference foreignKey, final String lang) {
       return null;
     }
 
     @Override
     public SimpleDocumentList<SimpleDocument> listDocumentsByForeignKeyAndType(
-        final WAPrimaryKey foreignKey, final DocumentType type, final String lang) {
+        final ResourceReference foreignKey, final DocumentType type, final String lang) {
       return new SimpleDocumentList<>();
     }
 
     @Override
-    public void unindexAttachmentsOfExternalObject(final WAPrimaryKey foreignKey) {
+    public void unindexAttachmentsOfExternalObject(final ResourceReference foreignKey) {
 
     }
 
@@ -387,7 +386,7 @@ public class ForumsInstancePreDestructionIT {
     }
 
     @Override
-    public void indexAllDocuments(final WAPrimaryKey fk, final Date startOfVisibilityPeriod,
+    public void indexAllDocuments(final ResourceReference fk, final Date startOfVisibilityPeriod,
         final Date endOfVisibilityPeriod) {
 
     }
@@ -400,6 +399,11 @@ public class ForumsInstancePreDestructionIT {
     @Override
     public void switchAllowingDownloadForReaders(final SimpleDocumentPK pk,
         final boolean allowing) {
+
+    }
+
+    @Override
+    public void switchEnableDisplayAsContent(final SimpleDocumentPK pk, final boolean enable) {
 
     }
   }
