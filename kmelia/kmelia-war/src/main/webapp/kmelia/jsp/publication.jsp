@@ -364,9 +364,9 @@
       }
 
       function closeWindows() {
-        if (window.publicationWindow != null)
+        if (window.publicationWindow != null && window.publicationWindow !== window)
           window.publicationWindow.close();
-        if (window.publicVersionsWindow != null)
+        if (window.publicVersionsWindow != null && window.publicVersionsWindow !== window)
           window.publicVersionsWindow.close();
       }
 
