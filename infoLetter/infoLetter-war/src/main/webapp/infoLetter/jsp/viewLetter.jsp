@@ -46,15 +46,17 @@ function goFiles (){
 %>
 <view:frame>
 	<table width="100%">
-		<tr><td width="80%">
-		<view:displayWysiwyg objectId="<%=parution%>" componentId="<%=componentId %>" language="<%=I18NHelper.defaultLanguage %>" />
-		</td>
-		<td valign="top">
+		<tr>
+      <td>
+		    <view:displayWysiwyg objectId="<%=parution%>" componentId="<%=componentId %>" language="<%=I18NHelper.defaultLanguage %>" />
+		  </td>
+		  <td valign="top">
 			<%
 				out.flush();
 				getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachedFiles.jsp?Id="+parution+"&ComponentId="+componentId+"&Context=attachment").include(request, response);
 			%>
-		</td></tr>
+		  </td>
+    </tr>
 	</table>
 	<form name="attachedFiles" action="FilesView" method="POST">
 		<input type="hidden" name="parution" value="<%= parution %>"/>
