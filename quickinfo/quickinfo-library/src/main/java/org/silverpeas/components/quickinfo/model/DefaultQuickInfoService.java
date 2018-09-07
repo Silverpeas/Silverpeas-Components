@@ -221,7 +221,7 @@ public class DefaultQuickInfoService implements QuickInfoService {
             publication.getUpdaterId(), I18NHelper.defaultLanguage, false);
 
     // Attach uploaded files
-    Attachments.from(uploadedFiles).attachTo(news);
+    Attachments.from(uploadedFiles).attachTo(news.getPublication());
 
     // Updating the publication
     if (news.isDraft()) {
