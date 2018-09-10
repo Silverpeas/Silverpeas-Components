@@ -139,6 +139,7 @@ public class DisplayContactsHelper {
       arrayPane.setVisibleLineNumber(-1);
     }
     arrayPane.setExportData(true);
+    arrayPane.setExportDataURL("javascript:exportCSV()");
 
     // recherche des colonnes a afficher
     List<String> arrayHeaders = yellowpagesScc.getArrayHeaders();
