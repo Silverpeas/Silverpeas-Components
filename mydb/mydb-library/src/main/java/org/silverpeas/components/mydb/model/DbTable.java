@@ -26,9 +26,12 @@ package org.silverpeas.components.mydb.model;
 
 import org.silverpeas.components.mydb.model.predicates.AbstractColumnValuePredicate;
 import org.silverpeas.components.mydb.model.predicates.ColumnValuePredicate;
+import org.silverpeas.core.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -67,6 +70,7 @@ public class DbTable {
    * @return a list with the name of all the business tables in the database.
    */
   public static List<String> list(final MyDBConnectionInfo dsInfo) {
+    Objects.requireNonNull(dsInfo);
     final JdbcRequester requester = new JdbcRequester(dsInfo);
     return requester.getTableNames();
   }
@@ -77,18 +81,11 @@ public class DbTable {
    * @param name the name of the table
    * @param ds the information about the database in which is defined this table.
    */
-  public DbTable(final String name, final MyDBConnectionInfo ds) {
+  private DbTable(final String name, final MyDBConnectionInfo ds) {
+    StringUtil.requireDefined(name);
+    Objects.requireNonNull(ds);
     this.name = name;
     setJdbcRequester(new JdbcRequester(ds));
-  }
-
-  /**
-   * Constructs a database table with the specified name. Its content isn't loaded.
-   * @param name the name of the table.
-   */
-  public DbTable(final String name) {
-    this.name = name;
-    this.columns.clear();
   }
 
   /**
@@ -100,7 +97,8 @@ public class DbTable {
     this.requester = requester;
     this.requester.perform((r, c) -> {
       this.columns.clear();
-      this.columns.addAll(r.getColumns(c, this.name));
+      r.loadColumns(c, this.name, (n, t, s, p) -> this.columns.add(new DbColumn(t, n, s, p)));
+      return null;
     });
   }
 
@@ -128,35 +126,74 @@ public class DbTable {
    * returned.
    */
   public Optional<DbColumn> getColumn(final String name) {
-    return this.columns.stream().filter(c -> c.name.equals(name)).findFirst();
+    return this.columns.stream().filter(c -> c.getName().equals(name)).findFirst();
   }
 
   /**
-   * Gets the contents of this table as a list of rows, each of them being a tuple valuing the
+   * Gets the contents of this table as a list of rows, each of them being a tuple valuing
    * all the columns of this table. If the table is empty, then an empty list is returned.
-   * If this table hasn't yet its columns defined, then they are defined from the specified rows.
    * @param filter a predicate to use for filtering the table content.
    * @return a list of table rows. If a filter is set, it is then applied when requesting the
    * content of this table. The number of table rows is limited by the
    * {@link MyDBConnectionInfo#getDataMaxNumber()} property.
    */
-  public List<TableRow> getContent(final ColumnValuePredicate filter) {
-    final List<TableRow> rows = new ArrayList<>();
+  public List<TableRow> getRows(final ColumnValuePredicate filter) {
     if (!(filter instanceof AbstractColumnValuePredicate)) {
       throw new IllegalArgumentException(
           "DbTable doesn't support predicate other than AbstractColumnValuePredicate objects");
     }
-    requester.perform(
-        (r, c) -> rows.addAll(r.request(c, this.name, (AbstractColumnValuePredicate) filter)));
-    if (this.columns.isEmpty() && !rows.isEmpty()) {
-      this.columns.addAll(rows.get(0)
-          .getFields()
-          .entrySet()
-          .stream()
-          .map(e -> new DbColumn(e.getValue().getType(), e.getKey()))
-          .collect(Collectors.toList()));
+    return requester.perform((r, c) -> {
+      final JdbcRequester.DataConverters<TableFieldValue, TableRow> converters =
+          new JdbcRequester.DataConverters(TableFieldValue::new, TableRow::new);
+      return r.request(c, this.name, (AbstractColumnValuePredicate) filter, converters);
+    });
+  }
+
+  /**
+   * Deletes the specified row.
+   * @param row the row to delete in this database table.
+   */
+  public void delete(final TableRow row) {
+    requester.perform((r, c) -> {
+      final Map<String, Object> criteria = getCriteriaFrom(row);
+      r.delete(c, getName(), criteria);
+      return null;
+    });
+  }
+
+  /**
+   * Updates the specified row with the specified other row.
+   * @param actualRow the row currently in this table.
+   * @param updatedRow the row that will replace the actual one in this table.
+   */
+  public void update(final TableRow actualRow, final TableRow updatedRow) {
+    requester.perform((r, c) -> {
+      final Map<String, Object> criteria = getCriteriaFrom(actualRow);
+      final Map<String, Object> values = tableRowToMap(updatedRow);
+      r.update(c, getName(), values, criteria);
+      return null;
+    });
+  }
+
+  private Map<String, Object> getCriteriaFrom(final TableRow row) {
+    final List<DbColumn> pkColumns =
+        columns.stream().filter(DbColumn::isPrimaryKey).collect(Collectors.toList());
+    final Map<String, Object> criteria;
+    if (!pkColumns.isEmpty()) {
+      criteria = pkColumns.stream()
+          .collect(Collectors.toMap(DbColumn::getName,
+              pk -> row.getFieldValue(pk.getName()).toSQLObject()));
+    } else {
+      criteria = tableRowToMap(row);
     }
-    return rows;
+    return criteria;
+  }
+
+  private Map<String, Object> tableRowToMap(final TableRow tableRow) {
+    return tableRow.getFields()
+        .entrySet()
+        .stream()
+        .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().toSQLObject()));
   }
 }
   

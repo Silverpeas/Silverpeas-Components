@@ -28,6 +28,8 @@ import org.silverpeas.components.mydb.model.DataSourceDefinition;
 import org.silverpeas.components.mydb.model.DbColumn;
 import org.silverpeas.components.mydb.model.DbTable;
 import org.silverpeas.components.mydb.model.MyDBConnectionInfo;
+import org.silverpeas.components.mydb.model.TableFieldValue;
+import org.silverpeas.components.mydb.model.TableRow;
 import org.silverpeas.components.mydb.service.MyDBException;
 import org.silverpeas.components.mydb.service.MyDBRuntimeException;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
@@ -47,8 +49,10 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.List;
 
+import static org.silverpeas.components.mydb.web.TableRowsFilter.FIELD_NONE;
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
 /**
@@ -68,6 +72,11 @@ public class MyDBWebController
   public static final String COMPARING_OPERATOR = "currentComparator";
   public static final String COMPARING_VALUE = "columnValue";
   public static final String COMPARING_OPERATORS = "comparators";
+  public static final String ALL_COLUMNS = "tableColumns";
+  public static final String ROW_INDEX = "row";
+  public static final String ROW = "row";
+  public static final String ERROR_MESSAGE = "error";
+  private static final String ERROR_NO_SELECTED_TABLE = "mydb.error.noSelectedTable";
 
   private MyDBConnectionInfo connectionInfo;
   private TableView tableView = new TableView();
@@ -126,22 +135,96 @@ public class MyDBWebController
       }
       setUpRequestAttributes(context.getRequest());
     } catch (MyDBRuntimeException e) {
-      context.getMessager().addError(e.getMessage());
+      context.getMessager().addError(e.getLocalizedMessage());
     }
+  }
+
+  @GET
+  @Path("GetRow")
+  @RedirectToInternalJsp("updateForm.jsp")
+  @LowestRoleAccess(value = SilverpeasRole.publisher)
+  public void getTableRowForm(final MyDBWebRequestContext context) {
+    try {
+      if (tableView.isDefined()) {
+        final int rowIdx = context.getRequest().getParameterAsInteger(ROW_INDEX);
+        final List<TableRow> rows = tableView.getRows();
+        if (rowIdx >= rows.size()) {
+          context.getRequest()
+              .setAttribute(ERROR_MESSAGE, getMultilang().getString("mydb.error.invalidRow"));
+        } else {
+          context.getRequest().setAttribute(ROW, rows.get(rowIdx));
+          context.getRequest().setAttribute(ALL_COLUMNS, tableView.getColumns());
+        }
+      } else {
+        context.getRequest()
+            .setAttribute(ERROR_MESSAGE, getMultilang().getString(ERROR_NO_SELECTED_TABLE));
+      }
+    } catch (Exception e) {
+      context.getRequest().setAttribute(ERROR_MESSAGE, e.getLocalizedMessage());
+    }
+  }
+
+  @POST
+  @Path("UpdateRow")
+  @RedirectToInternalJsp("mydb.jsp")
+  @LowestRoleAccess(value = SilverpeasRole.publisher)
+  public void updateTableRow(final MyDBWebRequestContext context) {
+    try {
+      if (tableView.isDefined()) {
+        final HttpRequest request = context.getRequest();
+        final int rowIndex = request.getParameterAsInteger(ROW_INDEX);
+        final TableRow row = tableView.getRows().get(rowIndex);
+        final Enumeration<String> params = request.getParameterNames();
+        while (params.hasMoreElements()) {
+          final String paramName = params.nextElement();
+          if (!paramName.equals(ROW_INDEX)) {
+            final TableFieldValue value = row.getFieldValue(paramName);
+            final String newValue = request.getParameter(paramName);
+            if (value != null && !value.toString().equals(newValue)) {
+              value.update(newValue);
+            }
+          }
+        }
+        tableView.updateRow(rowIndex, row);
+      } else {
+        context.getMessager().addError(getMultilang().getString(ERROR_NO_SELECTED_TABLE));
+      }
+    } catch (IllegalArgumentException | MyDBRuntimeException e) {
+      context.getMessager().addError(e.getLocalizedMessage());
+    }
+    viewTableContent(context);
+  }
+
+  @POST
+  @Path("DeleteRow")
+  @RedirectToInternalJsp("mydb.jsp")
+  @LowestRoleAccess(value = SilverpeasRole.publisher)
+  public void deleteTableRow(final MyDBWebRequestContext context) {
+    try {
+      if (tableView.isDefined()) {
+        final int rowIdx = context.getRequest().getParameterAsInteger(ROW_INDEX);
+        tableView.deleteRow(rowIdx);
+      } else {
+        context.getMessager().addError(getMultilang().getString(ERROR_NO_SELECTED_TABLE));
+      }
+    } catch (MyDBRuntimeException e) {
+      context.getMessager().addError(e.getLocalizedMessage());
+    }
+    viewTableContent(context);
   }
 
   @POST
   @Path("SetTable")
   @RedirectToInternalJsp("mydb.jsp")
-  @LowestRoleAccess(value = SilverpeasRole.publisher)
+  @LowestRoleAccess(value = SilverpeasRole.reader)
   public void selectTable(final MyDBWebRequestContext context) {
     HttpRequest request = context.getRequest();
     final String tableName = request.getParameter(TABLE_VIEW);
     if (StringUtil.isDefined(tableName) &&
         !tableName.equals(connectionInfo.getDefaultTableName())) {
-        connectionInfo.setDefaultTableName(tableName);
-        connectionInfo.save();
-        clearTableView();
+      connectionInfo.setDefaultTableName(tableName);
+      connectionInfo.save();
+      clearTableView();
     }
     viewTableContent(context);
   }
@@ -157,7 +240,7 @@ public class MyDBWebController
       }
       setUpRequestAttributes(context.getRequest());
     } catch(MyDBRuntimeException e) {
-      context.getMessager().addError(e.getMessage());
+      context.getMessager().addError(e.getLocalizedMessage());
     }
   }
 
@@ -202,19 +285,21 @@ public class MyDBWebController
   }
 
   private void readRequestParameters(final HttpRequest request) {
-    if (request.isParameterNotNull(COMPARING_COLUMN)) {
+    if (request.isParameterNotNull(COMPARING_COLUMN) &&
+        request.isParameterNotNull(COMPARING_OPERATOR)) {
       final String fieldName = defaultStringIfNotDefined(request.getParameter(COMPARING_COLUMN),
-          TableRowsFilter.FIELD_NONE);
-      if (TableRowsFilter.FIELD_NONE.equals(fieldName)) {
+          FIELD_NONE);
+      final String comparator =
+          defaultStringIfNotDefined(request.getParameter(COMPARING_OPERATOR), FIELD_NONE);
+      final String value =
+          defaultStringIfNotDefined(request.getParameter(COMPARING_VALUE), FIELD_NONE);
+      if (FIELD_NONE.equals(fieldName) || FIELD_NONE.equals(comparator) ||
+          FIELD_NONE.equals(value)) {
         tableView.getFilter().clear();
       } else {
         tableView.filterOnColumn(fieldName);
-        if (request.isParameterNotNull(COMPARING_OPERATOR)) {
-          tableView.getFilter().setComparator(request.getParameter(COMPARING_OPERATOR));
-        }
-        if (request.isParameterNotNull(COMPARING_VALUE)) {
-          tableView.getFilter().setColumnValue(request.getParameter(COMPARING_VALUE));
-        }
+        tableView.getFilter().setComparator(comparator);
+        tableView.getFilter().setColumnValue(value);
       }
     }
   }
@@ -234,8 +319,7 @@ public class MyDBWebController
     request.setAttribute(ALL_TABLES, tableNames);
     request.setAttribute(COMPARING_COLUMN, tableView.getFilter()
         .getColumn()
-        .map(DbColumn::getName)
-        .orElse(TableRowsFilter.FIELD_NONE));
+        .map(DbColumn::getName).orElse(FIELD_NONE));
     request.setAttribute(COMPARING_OPERATOR, tableView.getFilter().getComparator());
     request.setAttribute(COMPARING_VALUE, tableView.getFilter().getColumnValue());
     request.setAttribute(COMPARING_OPERATORS, TableRowsFilter.getAllComparators());

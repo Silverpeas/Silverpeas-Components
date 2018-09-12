@@ -26,6 +26,11 @@ package org.silverpeas.components.mydb.model;
 
 import org.silverpeas.components.mydb.service.MyDBRuntimeException;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.sql.Date;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.Objects;
 
 /**
@@ -34,22 +39,68 @@ import java.util.Objects;
  */
 public class TableFieldValue implements Comparable<TableFieldValue> {
 
-  private final Object value;
+  private Object value;
   private final String typeName;
   private final int type;
 
+  /**
+   * Constructs a new value of a field in a database table.
+   * @see java.sql.Types for SQL type of the value.
+   * @param value the value of the field
+   * @param type the SQL type of the value
+   * @param typeName the humanly readable name of the SQL type.
+   */
   TableFieldValue(final Object value, final int type, final String typeName) {
     this.value = value;
     this.type = type;
     this.typeName = typeName;
   }
 
+  /**
+   * Gets the name of the SQL type of this value. For example "varchar" or "timstamp".
+   * @return the humanly readable of the SQL type of this value.
+   */
   public String getTypeName() {
     return typeName;
   }
 
+  /**
+   * Gets the code of the SQL type of this value.
+   * @see java.sql.Types for the available possible codes.
+   * @return the SQL type of this value as defined in {@link java.sql.Types}.
+   */
   public int getType() {
     return type;
+  }
+
+  /**
+   * Updates this value with the textual representation of the new value. If the specified value
+   * doesn't match the SQL type of this field value, then an {@link IllegalArgumentException}
+   * exception is thrown.
+   * @param value a {@link String} representation of the value.
+   */
+  public void update(final String value) {
+    if (SqlTypes.isText(this.type)) {
+      this.value = value;
+    } else if (SqlTypes.isDate(this.type)) {
+      this.value = Date.valueOf(value);
+    } else  if (SqlTypes.isTime(this.type)) {
+      this.value = Time.valueOf(value);
+    } else if (SqlTypes.isTimestamp(this.type)) {
+      this.value = Timestamp.valueOf(value);
+    } else if (SqlTypes.isBoolean(this.type)) {
+      this.value = Boolean.valueOf(value);
+    } else if (SqlTypes.isBigInteger(this.type)) {
+      this.value = BigInteger.valueOf(Long.valueOf(value));
+    } else if (SqlTypes.isDecimal(this.type)) {
+      this.value = BigDecimal.valueOf(Double.valueOf(value));
+    } else if (SqlTypes.isInteger(this.type)) {
+      this.value = Integer.valueOf(value);
+    } else if (SqlTypes.isFloat(this.type)) {
+      this.value = Float.valueOf(value);
+    } else if (SqlTypes.isDouble(this.type)) {
+      this.value = Double.valueOf(value);
+    }
   }
 
   @Override
@@ -98,6 +149,14 @@ public class TableFieldValue implements Comparable<TableFieldValue> {
       compare = toString().compareTo(o.toString());
     }
     return compare;
+  }
+
+  /**
+   * Converts this table field value to an SQL object as defined by its SQL type.
+   * @return this value as an SQL object.
+   */
+  Object toSQLObject() {
+    return value;
   }
 
   @Override

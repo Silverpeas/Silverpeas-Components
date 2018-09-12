@@ -44,6 +44,7 @@
 <view:setConstant var="comparingValue" constant="org.silverpeas.components.mydb.web.MyDBWebController.COMPARING_VALUE"/>
 <view:setConstant var="comparingOperators" constant="org.silverpeas.components.mydb.web.MyDBWebController.COMPARING_OPERATORS"/>
 <view:setConstant var="nothing" constant="org.silverpeas.components.mydb.web.TableRowsFilter.FIELD_NONE"/>
+<view:setConstant var="rowIndex" constant="org.silverpeas.components.mydb.web.MyDBWebController.ROW_INDEX"/>
 
 <c:set var="componentId"       value="${requestScope.browseContext[3]}"/>
 <c:set var="columnToCompare"   value="${requestScope[comparingColumn]}"/>
@@ -55,28 +56,41 @@
 <c:set var="nullValue"         value="<%=AbstractColumnValuePredicate.NULL%>"/>
 <jsp:useBean id="currentTable" type="org.silverpeas.components.mydb.web.TableView"/>
 
-<fmt:message var="windowTitle"   key="mydb.mainTitle"/>
-<fmt:message var="crumbTitle"    key="mydb.tableView"/>
-<fmt:message var="resultTab"     key="mydb.tableView"/>
+<c:set var="columns" value="${currentTable.columns}"/>
+<c:set var="rows" value="${currentTable.rows}"/>
+
+<fmt:message var="windowTitle" key="mydb.mainTitle"/>
+<fmt:message var="crumbTitle" key="mydb.tableView"/>
+<fmt:message var="resultTab" key="mydb.tableView"/>
 <fmt:message var="dataSourceTab" key="mydb.dataSourceSetting"/>
-<fmt:message var="all"           key="mydb.all"/>
-<fmt:message var="includes"      key="mydb.include"/>
-<fmt:message var="buttonOk"      key="GML.ok"/>
-
-<fmt:message var="columnField"         key="mydb.column"/>
-<fmt:message var="criterionField"      key="mydb.criterion"/>
+<fmt:message var="all" key="mydb.all"/>
+<fmt:message var="includes" key="mydb.include"/>
+<fmt:message var="buttonOk" key="GML.ok"/>
+<fmt:message var="columnField" key="mydb.column"/>
+<fmt:message var="criterionField" key="mydb.criterion"/>
 <fmt:message var="valueCriterionField" key="mydb.criterionValue"/>
-
 <fmt:message var="filterValueInfo" key="mydb.criterionValueExplanation"/>
+<fmt:message var="operations" key="GML.operations"/>
+<fmt:message var="deletion" key="GML.delete"/>
+<fmt:message var="deletionConfirm" key="mydb.deletion.confirmation"/>
+<fmt:message var="modify" key="GML.modify"/>
+<fmt:message var="noSelectedTable" key="mydb.error.noSelectedTable"/>
+<fmt:message var="noSelectedColumn" key="mydb.error.noSelectedColumn"/>
+<fmt:message var="noSelectedComparator" key="mydb.error.noSelectedComparator"/>
+<fmt:message var="noValue" key="mydb.error.noValue"/>
+<fmt:message var="modifyRow" key="mydb.modifyRow"/>
+<fmt:message var="primaryKeyLabel" key="mydb.primaryKey"/>
 
 <c:url var="infoIcon" value="/util/icons/info.gif"/>
+<c:url var="deleteIcon" value="/util/icons/delete.gif"/>
+<c:url var="modifyIcon" value="/util/icons/update.gif"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <title>${windowTitle}</title>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-  <view:looknfeel/>
+  <view:looknfeel withCheckFormScript="true" withFieldsetStyle="true"/>
   <script type="application/javascript">
     function filterTableRows() {
       var table = $('#table').val();
@@ -84,13 +98,10 @@
       var comparator = $('#table-filter-comparator').val();
       var value = $('#table-filter-value').val()
       if (table === null || table === '${nothing}') {
-        notyError('<fmt:message key="mydb.error.noSelectedTable"/>');
-      } else  if (column === null || column === '${nothing}') {
-        notyError('<fmt:message key="mydb.error.noSelectedColumn"/>');
-      } else  if (comparator === null || comparator === '${nothing}') {
-        notyError('<fmt:message key="mydb.error.noSelectedComparator"/>');
-      } else if (value === null || value === '') {
-        notyError('<fmt:message key="mydb.error.noValue"/>');
+        notyError('${noSelectedTable}');
+      } else if (column !== '${nothing}' && comparator !== '${nothing}' &&
+          (value === null || value === '')) {
+        notyError('${noValue}');
       } else {
         $('#table-filter').submit();
       }
@@ -99,10 +110,44 @@
     function selectTable() {
       var table = $('#table').val();
       if (table === null || table === '${nothing}') {
-        notyError('<fmt:message key="mydb.error.noSelectedTable"/>');
+        notyError('${noSelectedTable}');
       } else {
         $('#table-selection').submit();
       }
+    }
+
+    function deleteRow(rowIndex) {
+      $.popup.confirm('${deletionConfirm}', function() {
+        sp.ajaxRequest('DeleteRow').withParam('${rowIndex}', rowIndex)
+            .byPostMethod().send().then(rowsPane.refreshFromRequestResponse);
+      });
+    }
+
+    function updateRow(rowIndex, row) {
+      row['${rowIndex}'] = rowIndex;
+      sp.ajaxRequest('UpdateRow').withParams(row)
+          .byPostMethod().send().then(rowsPane.refreshFromRequestResponse);
+    }
+
+    function modifyRow(rowIndex) {
+      sp.ajaxRequest('GetRow').withParam('${rowIndex}', rowIndex).send()
+          .then(function(response) {
+            var form = $('<div>').html(response.responseText);
+            if (form.find('#error').length > 0) {
+              notyError(form.find('#error').html());
+            } else {
+              form.popup('validation', {
+                title : '${modifyRow}', callback : function() {
+                  var row = {};
+                  form.find('[id*="value"]').each(function(i, input) {
+                    var elt = $(input);
+                    row[elt.attr('name')] = elt.val();
+                  });
+                  updateRow(rowIndex, row);
+                }
+              });
+            }
+          });
     }
   </script>
 </head>
@@ -198,19 +243,30 @@
       </form>
     </div>
     <div id="table-view">
-      <c:set var="columns" value="${currentTable.columns}"/>
       <view:arrayPane var="Table${componentId}" routingAddress="ViewTable" export="false" numberLinesPerPage="25">
-        <c:forEach var="field" items="${columns}">
-          <view:arrayColumn title="${field.name}" compareOn="${(r, i) -> r.getFieldValue(columns[i].name)}"/>
+        <c:forEach var="column" items="${columns}">
+          <c:set var="columnName" value="${column.name}"/>
+          <c:if test="${column.primaryKey}">
+            <c:set var="columnName" value="${columnName} (${primaryKeyLabel})"/>
+          </c:if>
+          <view:arrayColumn title="${columnName}" compareOn="${(r, i) -> r.getFieldValue(columns[i].name)}"/>
         </c:forEach>
-        <view:arrayLines var="row" items="${currentTable.rows}">
+        <view:arrayColumn title="${operations}" sortable="false"/>
+        <c:if test="${rows.size() > 0}">
+          <view:arrayLines var="rowIndex" begin="0" end="${rows.size() - 1}">
+            <c:set var="row" value="${rows[rowIndex]}"/>
           <view:arrayLine>
             <c:forEach var="field" items="${columns}">
               <c:set var="currentValue" value="${row.getFieldValue(field.name)}"/>
               <view:arrayCellText text="${currentValue == null ? nullValue : currentValue}" nullStringValue="${nullValue}"/>
             </c:forEach>
+            <view:arrayCellText>
+              <a href="javascript:deleteRow(${rowIndex});"><img src="${deleteIcon}" alt="${deletion}"/></a>
+              <a href="javascript:modifyRow(${rowIndex});"><img src="${modifyIcon}" alt="${modify}"/></a>
+            </view:arrayCellText>
           </view:arrayLine>
         </view:arrayLines>
+        </c:if>
       </view:arrayPane>
     </div>
   </view:frame>
@@ -218,7 +274,7 @@
 <script type="text/javascript">
   whenSilverpeasReady(function() {
     TipManager.simpleHelp(".filter-info-button", "${filterValueInfo}");
-    sp.arrayPane.ajaxControls('#table-view');
+    rowsPane = sp.arrayPane.ajaxControls('#table-view');
   });
 </script>
 </body>

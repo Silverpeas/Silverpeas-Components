@@ -24,14 +24,8 @@
 
 package org.silverpeas.components.mydb.model;
 
-import org.silverpeas.components.mydb.service.MyDBRuntimeException;
-
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -43,24 +37,15 @@ import java.util.Map;
  */
 public class TableRow {
 
-  private final Map<String, TableFieldValue> fields = new LinkedHashMap<>();
+  private final Map<String, TableFieldValue> fields;
 
   /**
-   * Constructs a {@link TableRow} from the specified {@link ResultSet}.
-   * @param rs a {@link ResultSet} returned by a SQL query.
+   * Constructs the table row from the specified dictionary of fields.
+   * @param fields a {@link Map} of {@link TableFieldValue} instances, each of them mapped to the
+   * name of a table's column.
    */
-  TableRow(final ResultSet rs) {
-    try {
-      ResultSetMetaData rsMetaData = rs.getMetaData();
-      for (int i = 1; i <= rsMetaData.getColumnCount(); i++) {
-        TableFieldValue value =
-            new TableFieldValue(rs.getObject(i), rs.getMetaData().getColumnType(i),
-                rs.getMetaData().getColumnTypeName(i));
-        this.fields.put(rsMetaData.getColumnName(i), value);
-      }
-    } catch (SQLException e) {
-      throw new MyDBRuntimeException(e);
-    }
+  TableRow(final Map<String, TableFieldValue> fields) {
+    this.fields = fields;
   }
 
   /**
@@ -87,5 +72,6 @@ public class TableRow {
   public TableFieldValue getFieldValue(final String field) {
     return fields.get(field);
   }
+
 }
   
