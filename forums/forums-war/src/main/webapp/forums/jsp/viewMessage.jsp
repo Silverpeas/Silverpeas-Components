@@ -53,6 +53,7 @@
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window" %>
 <%@ page import="org.silverpeas.core.admin.user.model.User" %>
 <%@ page import="org.silverpeas.core.web.http.HttpRequest" %>
+<%@ page import="org.silverpeas.core.admin.user.model.SilverpeasRole" %>
 <%@ include file="checkForums.jsp"%>
 <%
     int messageId = 0;
@@ -428,6 +429,10 @@
                                         </c:import>
                                       </div>
                                       <%=text%>
+                                      <viewTags:viewAttachmentsAsContent componentInstanceId="${componentId}"
+                                                                         resourceType="<%=currentMessage.RESOURCE_TYPE%>"
+                                                                         resourceId="<%=String.valueOf(currentMessage.getId())%>"
+                                                                         highestUserRole="<%=SilverpeasRole.from(profile)%>"/>
                                     </div>
                                   <div class="messageFooter">
                                         <input name="checkbox" type="checkbox" <%if (isSubscriber || isMessageSubscriberByInheritance) {%>checked<%}%>

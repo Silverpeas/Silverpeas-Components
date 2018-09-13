@@ -53,6 +53,7 @@
 <head>
   <title><fmt:message key="GML.popupTitle"/></title>
   <view:looknfeel />
+  <view:includePlugin name="preview" />
   <view:includePlugin name="toggle"/>
 <script type="text/javascript">
   <!--
@@ -326,11 +327,15 @@ $(document).ready(function() {
     answerBlock.append(answerTitle);
     answerContentDiv = $('<div>').addClass('answerContent');
     answerAttachmentDiv = $('<div>').addClass('answerAttachment');
-    if(answer.attachments != null && answer.attachments.length > 0) {
+    var hasAttachments = answer.attachments != null && answer.attachments.length > 0;
+    if(hasAttachments) {
       answerAttachmentDiv.load('<c:url value="/attachment/jsp/displayAttachedFiles.jsp?Context=attachment&ComponentId=${pageScope.componentId}" />&Profile=<%=attachmentsProfile%>&Id=' + answer.id);
       answerContentDiv.append(answerAttachmentDiv);
     }
     answerContentDiv.append(answer.content);
+    if (hasAttachments) {
+      displayAttachmentsAsContent(answerContentDiv, answer.id, 'Answer');
+    }
     answerContentDiv.append("<br clear=\"right\"/>");
     answerBlock.append(answerContentDiv);
     answerAuthorBlock = $('<span>').addClass('answerAuthor txtBaseline').text(answer.creatorName);
@@ -338,6 +343,16 @@ $(document).ready(function() {
     answerAuthorBlock.append(answerDateBlock);
     answerBlock.append(answerAuthorBlock);
     return answerBlock;
+  }
+
+  function displayAttachmentsAsContent($rootContainer, resourceId, resourceType) {
+      new AttachmentsAsContentViewer({
+        parentContainer : $rootContainer,
+        highestUserRole : '<%=attachmentsProfile%>',
+        componentInstanceId : '${pageScope.componentId}',
+        resourceId : resourceId,
+        resourceType : resourceType
+      });
   }
 -->
 </script>

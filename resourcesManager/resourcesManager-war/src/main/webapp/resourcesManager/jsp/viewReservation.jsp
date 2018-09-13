@@ -29,8 +29,10 @@
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
+<%@ page import="org.silverpeas.core.admin.user.model.SilverpeasRole" %>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 <%@ include file="check.jsp" %>
 
 <fmt:setLocale value="${requestScope.resources.language}"/>
@@ -228,6 +230,10 @@ function refuseResource(resourceId, resourceName, objectView) {
 		</td>
 	</tr>
 </table>
+  <viewTags:viewAttachmentsAsContent componentInstanceId="<%=componentId%>"
+                                     resourceType="Reservation"
+                                     resourceId="<%=String.valueOf(reservationId)%>"
+                                     highestUserRole="<%=SilverpeasRole.from(profileForAttachments)%>"/>
 <br/>
 <%=buttonPane.print() %>
 </view:frame>
