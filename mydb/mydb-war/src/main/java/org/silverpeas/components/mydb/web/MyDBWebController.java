@@ -48,9 +48,13 @@ import org.silverpeas.core.web.mvc.webcomponent.annotation.WebComponentControlle
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import java.sql.JDBCType;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import static org.silverpeas.components.mydb.web.TableRowsFilter.FIELD_NONE;
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
@@ -65,6 +69,7 @@ public class MyDBWebController
     extends org.silverpeas.core.web.mvc.webcomponent.WebComponentController<MyDBWebRequestContext> {
 
   private static final String TRANSLATIONS_PATH = "org.silverpeas.mydb.multilang.mydb";
+  private static final String ICONS_PATH = "org.silverpeas.mydb.settings.mydbIcons";
 
   public static final String TABLE_VIEW = "tableView";
   public static final String ALL_TABLES = "tableNames";
@@ -89,7 +94,7 @@ public class MyDBWebController
    * @param context the context identifying among others the targeted application instance.
    */
   public MyDBWebController(final MainSessionController controller, final ComponentContext context) {
-    super(controller, context, TRANSLATIONS_PATH);
+    super(controller, context, TRANSLATIONS_PATH, ICONS_PATH);
   }
 
   @Override
@@ -140,8 +145,21 @@ public class MyDBWebController
   }
 
   @GET
+  @Path("NewRow")
+  @RedirectToInternalJsp("newRowForm.jsp")
+  @LowestRoleAccess(value = SilverpeasRole.publisher)
+  public void getNewTableRowForm(final MyDBWebRequestContext context) {
+    if (tableView.isDefined()) {
+      context.getRequest().setAttribute(ALL_COLUMNS, tableView.getColumns());
+    } else {
+      context.getRequest()
+          .setAttribute(ERROR_MESSAGE, getMultilang().getString(ERROR_NO_SELECTED_TABLE));
+    }
+  }
+
+  @GET
   @Path("GetRow")
-  @RedirectToInternalJsp("updateForm.jsp")
+  @RedirectToInternalJsp("updateRowForm.jsp")
   @LowestRoleAccess(value = SilverpeasRole.publisher)
   public void getTableRowForm(final MyDBWebRequestContext context) {
     try {
@@ -165,6 +183,42 @@ public class MyDBWebController
   }
 
   @POST
+  @Path("AddRow")
+  @RedirectToInternalJsp("mydb.jsp")
+  @LowestRoleAccess(value = SilverpeasRole.publisher)
+  public void addNewTableRow(final MyDBWebRequestContext context) {
+    try {
+      if (tableView.isDefined()) {
+        final HttpRequest request = context.getRequest();
+        final Enumeration<String> params = request.getParameterNames();
+        final Map<String, TableFieldValue> tuples = new HashMap<>();
+        while (params.hasMoreElements()) {
+          final String paramName = params.nextElement();
+          final Optional<DbColumn> column = tableView.getColumn(paramName);
+          column.ifPresent(c -> {
+            final String paramValue = request.getParameter(paramName);
+            if (paramValue == null || (paramValue.isEmpty() && !c.isOfTypeText())) {
+              throwInvalidValueType(paramName, c.getType());
+            }
+            final TableFieldValue value = TableFieldValue.fromString(paramValue, c.getType());
+            tuples.put(paramName, value);
+          });
+        }
+        if (!tuples.isEmpty()) {
+          tableView.addRow(new TableRow(tuples));
+        } else {
+          context.getMessager().addError(getMultilang().getString("mydb.error.invalidRow"));
+        }
+      } else {
+        context.getMessager().addError(getMultilang().getString(ERROR_NO_SELECTED_TABLE));
+      }
+    } catch (IllegalArgumentException | MyDBRuntimeException e) {
+      context.getMessager().addError(e.getLocalizedMessage());
+    }
+    viewTableContent(context);
+  }
+
+  @POST
   @Path("UpdateRow")
   @RedirectToInternalJsp("mydb.jsp")
   @LowestRoleAccess(value = SilverpeasRole.publisher)
@@ -180,9 +234,7 @@ public class MyDBWebController
           if (!paramName.equals(ROW_INDEX)) {
             final TableFieldValue value = row.getFieldValue(paramName);
             final String newValue = request.getParameter(paramName);
-            if (value != null && !value.toString().equals(newValue)) {
-              value.update(newValue);
-            }
+            updateValue(paramName, value, newValue);
           }
         }
         tableView.updateRow(rowIndex, row);
@@ -193,6 +245,15 @@ public class MyDBWebController
       context.getMessager().addError(e.getLocalizedMessage());
     }
     viewTableContent(context);
+  }
+
+  private void updateValue(final String name, final TableFieldValue value, final String newValue) {
+    if (value != null && !value.toString().equals(newValue)) {
+      if (newValue == null || (newValue.isEmpty() && !value.isText())) {
+        throwInvalidValueType(name, value.getType());
+      }
+      value.update(newValue);
+    }
   }
 
   @POST
@@ -325,5 +386,9 @@ public class MyDBWebController
     request.setAttribute(COMPARING_OPERATORS, TableRowsFilter.getAllComparators());
   }
 
+  private void throwInvalidValueType(final String name, final int expectedType) {
+    throw new IllegalArgumentException(getMultilang().getString("mydb.error.invalidValue") + ". " +
+        name + ": " + JDBCType.valueOf(expectedType).getName());
+  }
 }
   

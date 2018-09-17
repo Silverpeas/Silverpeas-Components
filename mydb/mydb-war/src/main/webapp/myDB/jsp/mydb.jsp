@@ -23,7 +23,6 @@
   --%>
 
 <%@ include file="head.jsp" %>
-<%@ page import="org.silverpeas.components.mydb.model.predicates.Equality" %>
 <%@ page import="org.silverpeas.components.mydb.model.predicates.AbstractColumnValuePredicate" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -34,6 +33,7 @@
 <c:set var="currentUserLanguage" value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
 <fmt:setLocale value="${currentUserLanguage}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 
 <view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.admin"/>
 <view:setConstant var="publisherRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.publisher"/>
@@ -79,11 +79,17 @@
 <fmt:message var="noSelectedComparator" key="mydb.error.noSelectedComparator"/>
 <fmt:message var="noValue" key="mydb.error.noValue"/>
 <fmt:message var="modifyRow" key="mydb.modifyRow"/>
+<fmt:message var="newRow" key="mydb.insertRow"/>
 <fmt:message var="primaryKeyLabel" key="mydb.primaryKey"/>
 
-<c:url var="infoIcon" value="/util/icons/info.gif"/>
-<c:url var="deleteIcon" value="/util/icons/delete.gif"/>
-<c:url var="modifyIcon" value="/util/icons/update.gif"/>
+<fmt:message bundle="${icons}" var="infoIcon" key="mydb.icons.info"/>
+<fmt:message bundle="${icons}" var="deleteIcon" key="mydb.icons.deleteLine"/>
+<fmt:message bundle="${icons}" var="modifyIcon" key="mydb.icons.updateLine"/>
+<fmt:message bundle="${icons}" var="createIcons" key="mydb.icons.addRecord"/>
+<c:url var="infoIcon" value="${infoIcon}"/>
+<c:url var="deleteIcon" value="${deleteIcon}"/>
+<c:url var="modifyIcon" value="${modifyIcon}"/>
+<c:url var="createIcons" value="${createIcons}"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -123,6 +129,25 @@
       });
     }
 
+    function renderRowForm(xhr, formSender) {
+      var form = $('<div>').html(xhr.responseText);
+      if (form.find('#error').length > 0) {
+        notyError(form.find('#error').html());
+      } else {
+        form.popup('validation', {
+          title : '${modifyRow}', callback : function() {
+            var row = {};
+            form.find('[id*="value"]').each(function(i, input) {
+              var elt = $(input);
+              row[elt.attr('name')] = elt.val();
+              console.log(elt.attr('name'), elt.val());
+            });
+            formSender(row);
+          }
+        });
+      }
+    }
+
     function updateRow(rowIndex, row) {
       row['${rowIndex}'] = rowIndex;
       sp.ajaxRequest('UpdateRow').withParams(row)
@@ -130,40 +155,44 @@
     }
 
     function modifyRow(rowIndex) {
-      sp.ajaxRequest('GetRow').withParam('${rowIndex}', rowIndex).send()
-          .then(function(response) {
-            var form = $('<div>').html(response.responseText);
-            if (form.find('#error').length > 0) {
-              notyError(form.find('#error').html());
-            } else {
-              form.popup('validation', {
-                title : '${modifyRow}', callback : function() {
-                  var row = {};
-                  form.find('[id*="value"]').each(function(i, input) {
-                    var elt = $(input);
-                    row[elt.attr('name')] = elt.val();
-                  });
-                  updateRow(rowIndex, row);
-                }
-              });
-            }
-          });
+      sp.ajaxRequest('GetRow').withParam('${rowIndex}', rowIndex).send().then(function(response) {
+        var sender = function(row) {
+          updateRow(rowIndex, row);
+        };
+        renderRowForm(response, sender)
+      });
+    }
+
+    function addRow(row) {
+      sp.ajaxRequest('AddRow').withParams(row)
+          .byPostMethod().send().then(rowsPane.refreshFromRequestResponse);
+    }
+
+    function newRow() {
+      sp.ajaxRequest('NewRow').send().then(function(response) {
+        renderRowForm(response, addRow)
+      });
     }
   </script>
 </head>
 <body>
 <view:browseBar componentId="${componentId}" path="${requestScope.navigationContext}" extraInformations="${crumbTitle}"/>
+<c:if test="${requestScope.highestUserRole.isGreaterThanOrEquals(publisherRole)}">
+<view:operationPane>
+  <view:operationOfCreation action="javascript:newRow()" icon="${createIcons}" altText="${newRow}"/>
+</view:operationPane>
+</c:if>
 <view:window>
   <view:componentInstanceIntro componentId="${componentId}" language="${currentUserLanguage}"/>
-  <c:if test="${requestScope.highestUserRole.isGreaterThanOrEquals(publisherRole)}">
+  <c:if test="${requestScope.highestUserRole.isGreaterThanOrEquals(adminRole)}">
     <view:tabs>
       <view:tab label="${resultTab}" action="Main" selected="true"/>
-      <c:if test="${requestScope.highestUserRole.isGreaterThanOrEquals(adminRole)}">
-        <view:tab label="${dataSourceTab}" action="ConnectionSetting" selected="false"/>
-      </c:if>
+      <view:tab label="${dataSourceTab}" action="ConnectionSetting" selected="false"/>
     </view:tabs>
   </c:if>
   <view:frame>
+    <view:areaOfOperationOfCreation/>
+    <c:if test="${requestScope.highestUserRole.isGreaterThanOrEquals(publisherRole)}">
     <div id="selection" style="padding-bottom: 10px">
       <form id="table-selection" name="table-selection" action="SetTable" method="post">
         <span class="intfdcolor selectNS" style="padding: 2px">
@@ -188,6 +217,7 @@
         </span>
       </form>
     </div>
+    </c:if>
     <div id="filtering" style="padding-bottom: 10px">
       <form id="table-filter" name="table-filter" action="FilterTable" method="post">
         <span class="intfdcolor selectNS" style="padding: 2px">
@@ -251,19 +281,23 @@
           </c:if>
           <view:arrayColumn title="${columnName}" compareOn="${(r, i) -> r.getFieldValue(columns[i].name)}"/>
         </c:forEach>
-        <view:arrayColumn title="${operations}" sortable="false"/>
+        <c:if test="${requestScope.highestUserRole.isGreaterThanOrEquals(publisherRole)}">
+          <view:arrayColumn title="${operations}" sortable="false"/>
+        </c:if>
         <c:if test="${rows.size() > 0}">
           <view:arrayLines var="rowIndex" begin="0" end="${rows.size() - 1}">
             <c:set var="row" value="${rows[rowIndex]}"/>
           <view:arrayLine>
             <c:forEach var="field" items="${columns}">
               <c:set var="currentValue" value="${row.getFieldValue(field.name)}"/>
-              <view:arrayCellText text="${currentValue == null ? nullValue : currentValue}" nullStringValue="${nullValue}"/>
+              <view:arrayCellText text="${currentValue}" nullStringValue="${nullValue}"/>
             </c:forEach>
-            <view:arrayCellText>
-              <a href="javascript:deleteRow(${rowIndex});"><img src="${deleteIcon}" alt="${deletion}"/></a>
-              <a href="javascript:modifyRow(${rowIndex});"><img src="${modifyIcon}" alt="${modify}"/></a>
-            </view:arrayCellText>
+            <c:if test="${requestScope.highestUserRole.isGreaterThanOrEquals(publisherRole)}">
+              <view:arrayCellText>
+                <a href="javascript:deleteRow(${rowIndex});"><img src="${deleteIcon}" alt="${deletion}"/></a>
+                <a href="javascript:modifyRow(${rowIndex});"><img src="${modifyIcon}" alt="${modify}"/></a>
+              </view:arrayCellText>
+            </c:if>
           </view:arrayLine>
         </view:arrayLines>
         </c:if>

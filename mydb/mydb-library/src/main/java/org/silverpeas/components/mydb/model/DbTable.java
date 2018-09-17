@@ -29,6 +29,7 @@ import org.silverpeas.components.mydb.model.predicates.ColumnValuePredicate;
 import org.silverpeas.core.util.StringUtil;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -175,6 +176,18 @@ public class DbTable {
     });
   }
 
+  /**
+   * Adds the specified row into this table. The row will be inserted into the database table.
+   * @param row the row to add into the database table.
+   */
+  public void add(final TableRow row) {
+    requester.perform((r, c) -> {
+      final Map<String, Object> values = tableRowToMap(row);
+      r.insert(c, getName(), values);
+      return null;
+    });
+  }
+
   private Map<String, Object> getCriteriaFrom(final TableRow row) {
     final List<DbColumn> pkColumns =
         columns.stream().filter(DbColumn::isPrimaryKey).collect(Collectors.toList());
@@ -190,10 +203,9 @@ public class DbTable {
   }
 
   private Map<String, Object> tableRowToMap(final TableRow tableRow) {
-    return tableRow.getFields()
-        .entrySet()
-        .stream()
-        .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().toSQLObject()));
+    final Map<String, Object> rows = new HashMap<>();
+    tableRow.getFields().forEach((key, value) -> rows.put(key, value.toSQLObject()));
+    return rows;
   }
 }
   

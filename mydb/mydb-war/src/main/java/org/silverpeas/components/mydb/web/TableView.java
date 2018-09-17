@@ -186,7 +186,16 @@ public class TableView {
     });
   }
 
+  /**
+   * Adds the specified row into the database table on which this view is.
+   * @param row the {@link TableRow} instance to add.
+   */
+  public void addRow(final TableRow row) {
+    table.ifPresent(t -> t.add(row));
+  }
+
   private List<TableRow> applyFilter(final DbTable table) {
     return table.getRows(getFilter().getFilteringPredicate());
   }
+
 }

@@ -24,6 +24,8 @@
 
 package org.silverpeas.components.mydb.model;
 
+import java.sql.JDBCType;
+
 /**
  * A column in a database table. The column doesn't contain any values, it defines the column in
  * a {@link DbTable} instance by a name and a type.
@@ -64,6 +66,15 @@ public class DbColumn {
    */
   public String getName() {
     return name;
+  }
+
+  /**
+   * Gets the name of the SQL type of the values this column can contain. The name is determined
+   * from the SQL type code by using the {@link JDBCType} class.
+   * @return the name of the column's SQL type (VARCHAR, TIMESTAMP, ...)
+   */
+  public String getTypeName() {
+    return JDBCType.valueOf(this.type).getName();
   }
 
   /**

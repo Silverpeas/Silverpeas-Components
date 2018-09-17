@@ -23,8 +23,6 @@
   --%>
 
 <%@ include file="head.jsp" %>
-<%@ page import="org.silverpeas.components.mydb.model.predicates.Equality" %>
-<%@ page import="org.silverpeas.components.mydb.model.predicates.AbstractColumnValuePredicate" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
@@ -40,7 +38,6 @@
 <view:setConstant var="paramError" constant="org.silverpeas.components.mydb.web.MyDBWebController.ERROR_MESSAGE"/>
 
 <c:set var="error" value="${requestScope[paramError]}"/>
-<c:set var="nullValue" value="<%=AbstractColumnValuePredicate.NULL%>"/>
 
 <fmt:message var="modifyRow" key="mydb.modifyRow"/>
 
@@ -60,9 +57,9 @@
             <c:set var="fieldValue" value="${row.getFieldValue(field.name)}"/>
             <jsp:useBean id="fieldValue" type="org.silverpeas.components.mydb.model.TableFieldValue"/>
             <div class="field" id="field-${field.name}">
-              <c:set var="fieldType" value="${fieldValue.typeName}"/>
+              <c:set var="fieldType" value="${field.typeName}"/>
               <c:if test="${field.ofTypeText}">
-                <c:set var="fieldType" value="${fieldValue.typeName}(${field.size})"/>
+                <c:set var="fieldType" value="${field.typeName}(${field.size})"/>
               </c:if>
               <label for="field-${field.name}-value" class="txtlibform">${field.name}&nbsp;<span><small>(<i>${fieldType}</i>)</small></span></label>
               <div class="champs">
@@ -71,14 +68,7 @@
                     <textarea id="field-${field.name}-value" name="${field.name}" cols="100" rows="${field.size / 100}" maxlength="${field.size}">${fieldValue}</textarea>
                   </c:when>
                   <c:when test="${not field.ofTypeBinary}">
-                    <c:choose>
-                      <c:when test="${field.ofTypeNumber}">
-                        <input id="field-${field.name}-value" name="${field.name}" type="number" value="${fieldValue}"/>
-                      </c:when>
-                      <c:otherwise>
-                        <input id="field-${field.name}-value" name="${field.name}" type="text" maxlength="${field.size}" value="${fieldValue}"/>
-                      </c:otherwise>
-                    </c:choose>
+                    <input id="field-${field.name}-value" name="${field.name}" type="text" maxlength="${field.size}" value="${fieldValue}"/>
                   </c:when>
                 </c:choose>
               </div>

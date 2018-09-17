@@ -41,10 +41,10 @@ public class Equality extends AbstractColumnValuePredicate {
    */
   public Equality(final DbColumn column, final Comparable refValue) {
     setColumn(column);
-    if (refValue == null) {
-      setValue(NULL_VALUE);
-    } else if (refValue instanceof String && refValue.toString().isEmpty()) {
-      setValue(EMPTY_VALUE);
+    if (NULL_VALUE.equals(refValue)) {
+      setValue(null);
+    } else if (EMPTY_VALUE.equals(refValue)) {
+      setValue("");
     } else {
       setValue(refValue);
     }
@@ -52,7 +52,14 @@ public class Equality extends AbstractColumnValuePredicate {
 
   @Override
   public JdbcSqlQuery apply(final JdbcSqlQuery query) {
-    return query.where(getColumn().getName() + " = ?", getReferenceValue());
+    final JdbcSqlQuery q;
+    final Object value = getReferenceValue();
+    if (value == null) {
+      q = query.where(getColumn().getName() + " is null");
+    } else {
+      q = query.where(getColumn().getName() + " = ?", getReferenceValue());
+    }
+    return q;
   }
 
 

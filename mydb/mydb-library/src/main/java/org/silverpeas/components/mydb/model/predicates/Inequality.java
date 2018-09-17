@@ -39,7 +39,14 @@ public class Inequality extends Equality {
 
   @Override
   public JdbcSqlQuery apply(final JdbcSqlQuery query) {
-    return query.where(getColumn().getName() + " != ?", getReferenceValue());
+    final JdbcSqlQuery q;
+    final Object value = getReferenceValue();
+    if (value == null) {
+      q = query.where(getColumn().getName() + " is not null");
+    } else {
+      q = query.where(getColumn().getName() + " != ?", getReferenceValue());
+    }
+    return q;
   }
 }
   

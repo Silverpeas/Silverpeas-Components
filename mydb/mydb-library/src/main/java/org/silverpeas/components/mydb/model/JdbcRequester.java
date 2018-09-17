@@ -28,6 +28,7 @@ import org.silverpeas.components.mydb.model.predicates.AbstractColumnValuePredic
 import org.silverpeas.components.mydb.service.MyDBException;
 import org.silverpeas.components.mydb.service.MyDBRuntimeException;
 import org.silverpeas.core.persistence.Transaction;
+import org.silverpeas.core.persistence.TransactionRuntimeException;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 
 import java.sql.Connection;
@@ -51,6 +52,7 @@ import java.util.Objects;
 class JdbcRequester {
 
   private final MyDBConnectionInfo currentConnectionInfo;
+  private String orderBy = "";
 
   /**
    * Constructs a new JDBC requester with the specified {@link MyDBConnectionInfo} instance.
@@ -96,13 +98,15 @@ class JdbcRequester {
     if (!isDataSourceDefined()) {
       throw new MyDBRuntimeException("No data source defined!");
     }
-    return Transaction.performInOne(() -> {
-      try (Connection connection = currentConnectionInfo.openConnection()) {
-        return operations.execute(this, connection);
-      } catch (Exception e) {
-        throw new MyDBRuntimeException(e);
-      }
-    });
+    try {
+      return Transaction.performInOne(() -> {
+        try (Connection connection = currentConnectionInfo.openConnection()) {
+          return operations.execute(this, connection);
+        }
+      });
+    } catch (TransactionRuntimeException e) {
+      throw new MyDBRuntimeException(e);
+    }
   }
 
   private List<String> getTableNames(final Connection connection) throws SQLException {
@@ -129,12 +133,13 @@ class JdbcRequester {
     Objects.requireNonNull(connection);
     final List<String> columnPks = new ArrayList<>(2);
     DatabaseMetaData dbMetaData = connection.getMetaData();
-    ResultSet primaryKeys = dbMetaData.getPrimaryKeys(null, null, tableName);
+    ResultSet primaryKeys =
+        dbMetaData.getPrimaryKeys(connection.getCatalog(), connection.getSchema(), tableName);
     while (primaryKeys.next()) {
       final String pk = primaryKeys.getString("COLUMN_NAME");
       columnPks.add(pk);
     }
-    ResultSet columns = dbMetaData.getColumns(null, null, tableName, null);
+    ResultSet columns = dbMetaData.getColumns(connection.getCatalog(), null, tableName, null);
     while (columns.next()) {
       final String name = columns.getString("COLUMN_NAME");
       final int type = columns.getInt("DATA_TYPE");
@@ -166,15 +171,14 @@ class JdbcRequester {
     Objects.requireNonNull(tableName);
     Objects.requireNonNull(predicate);
     JdbcSqlQuery query = JdbcSqlQuery.createSelect("*").from(tableName);
-    query = predicate.apply(query);
+    query = predicate.apply(query).orderBy(this.orderBy);
     return query.executeWith(connection, rs -> {
       try {
         final Map<String, V> row = new LinkedHashMap<>();
         ResultSetMetaData rsMetaData = rs.getMetaData();
         for (int i = 1; i <= rsMetaData.getColumnCount(); i++) {
           V value = converters.getValueConverter()
-              .convert(rs.getObject(i), rs.getMetaData().getColumnType(i),
-                  rs.getMetaData().getColumnTypeName(i));
+              .convert(rs.getObject(i), rs.getMetaData().getColumnType(i));
           row.put(rsMetaData.getColumnName(i), value);
         }
         return converters.getRowConverter().convert(row);
@@ -213,6 +217,19 @@ class JdbcRequester {
     JdbcSqlQuery query = JdbcSqlQuery.createUpdateFor(tableName);
     values.forEach(query::addUpdateParam);
     applyCriteria(query, criteria).executeWith(connection);
+  }
+
+  /**
+   * Inserts into the specified table a new row with the specified values.
+   * @param connection a connection to the database.
+   * @param tableName the name of the table into which the row will be inserted.
+   * @param values the values of the row to insert as a map of column names to column values.
+   */
+  void insert(final Connection connection, final String tableName, final Map<String, Object> values)
+      throws SQLException {
+    JdbcSqlQuery query = JdbcSqlQuery.createInsertFor(tableName);
+    values.forEach(query::addInsertParam);
+    query.executeWith(connection);
   }
 
   private JdbcSqlQuery applyCriteria(final JdbcSqlQuery query, final Map<String, Object> criteria) {
@@ -276,6 +293,6 @@ class JdbcRequester {
 
   @FunctionalInterface
   interface ValueConverter<V> {
-    V convert(final Object value, final int valueType, final String valueTypeName);
+    V convert(final Object value, final int valueType);
   }
 }

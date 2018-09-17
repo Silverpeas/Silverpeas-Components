@@ -29,6 +29,7 @@ import org.silverpeas.components.mydb.service.MyDBRuntimeException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Date;
+import java.sql.JDBCType;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Objects;
@@ -40,28 +41,34 @@ import java.util.Objects;
 public class TableFieldValue implements Comparable<TableFieldValue> {
 
   private Object value;
-  private final String typeName;
   private final int type;
+
+  /**
+   * Constructs a {@link TableFieldValue} instance from the specified value represented as a
+   * {@link String} object and according to the specified SQL type (a value among
+   * {@link java.sql.Types}). If the specified value
+   * doesn't match the SQL type of this field value, then an {@link IllegalArgumentException}
+   * exception is thrown.
+   * @param value the {@link String} representation of a value. Null value shouldn't be null but the
+   * String "null".
+   * @param sqlType the SQL type as defined in {@link java.sql.Types}.
+   * @return a {@link TableFieldValue} instance.
+   */
+  public static TableFieldValue fromString(final String value, int sqlType) {
+    TableFieldValue tableFieldValue = new TableFieldValue(null, sqlType);
+    tableFieldValue.update(value);
+    return tableFieldValue;
+  }
 
   /**
    * Constructs a new value of a field in a database table.
    * @see java.sql.Types for SQL type of the value.
    * @param value the value of the field
    * @param type the SQL type of the value
-   * @param typeName the humanly readable name of the SQL type.
    */
-  TableFieldValue(final Object value, final int type, final String typeName) {
+  TableFieldValue(final Object value, final int type) {
     this.value = value;
     this.type = type;
-    this.typeName = typeName;
-  }
-
-  /**
-   * Gets the name of the SQL type of this value. For example "varchar" or "timstamp".
-   * @return the humanly readable of the SQL type of this value.
-   */
-  public String getTypeName() {
-    return typeName;
   }
 
   /**
@@ -74,17 +81,28 @@ public class TableFieldValue implements Comparable<TableFieldValue> {
   }
 
   /**
+   * Is this value a text?
+   * @return true if the type of this value is a text, false otherwise.
+   */
+  public boolean isText() {
+    return SqlTypes.isText(this.type);
+  }
+
+  /**
    * Updates this value with the textual representation of the new value. If the specified value
    * doesn't match the SQL type of this field value, then an {@link IllegalArgumentException}
    * exception is thrown.
-   * @param value a {@link String} representation of the value.
+   * @param value a {@link String} representation of the value. Null value shouldn't be null but the
+   * String "null".
    */
   public void update(final String value) {
-    if (SqlTypes.isText(this.type)) {
+    if (value == null || value.equals("null")) {
+      this.value = null;
+    } else if (SqlTypes.isText(this.type)) {
       this.value = value;
     } else if (SqlTypes.isDate(this.type)) {
       this.value = Date.valueOf(value);
-    } else  if (SqlTypes.isTime(this.type)) {
+    } else if (SqlTypes.isTime(this.type)) {
       this.value = Time.valueOf(value);
     } else if (SqlTypes.isTimestamp(this.type)) {
       this.value = Timestamp.valueOf(value);
@@ -132,9 +150,10 @@ public class TableFieldValue implements Comparable<TableFieldValue> {
   @Override
   public int compareTo(final TableFieldValue o) {
     if (this.type != o.type) {
+      final String typeName = JDBCType.valueOf(this.type).getName();
       throw new MyDBRuntimeException(
-          "The two table field values aren't of the same type: this is of type " + this.typeName +
-              " whereas other if of type " + o.typeName);
+          "The two table field values aren't of the same type: this is of type " + typeName +
+              " whereas other if of type " + typeName);
     }
     final int compare;
     if (o.value == null && this.value == null) {
@@ -161,6 +180,6 @@ public class TableFieldValue implements Comparable<TableFieldValue> {
 
   @Override
   public String toString() {
-    return value == null ? null : value.toString();
+    return value == null ? "null" : value.toString();
   }
 }

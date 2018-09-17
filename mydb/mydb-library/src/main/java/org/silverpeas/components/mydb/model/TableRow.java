@@ -44,7 +44,7 @@ public class TableRow {
    * @param fields a {@link Map} of {@link TableFieldValue} instances, each of them mapped to the
    * name of a table's column.
    */
-  TableRow(final Map<String, TableFieldValue> fields) {
+  public TableRow(final Map<String, TableFieldValue> fields) {
     this.fields = fields;
   }
 
