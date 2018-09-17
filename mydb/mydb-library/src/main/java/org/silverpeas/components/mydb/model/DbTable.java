@@ -98,7 +98,7 @@ public class DbTable {
     this.requester = requester;
     this.requester.perform((r, c) -> {
       this.columns.clear();
-      r.loadColumns(c, this.name, (n, t, s, p) -> this.columns.add(new DbColumn(t, n, s, p)));
+      r.loadColumns(c, this.name, d -> this.columns.add(new DbColumn(d)));
       return null;
     });
   }

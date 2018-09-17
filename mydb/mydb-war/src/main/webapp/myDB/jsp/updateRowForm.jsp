@@ -32,6 +32,7 @@
 <c:set var="currentUserLanguage" value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
 <fmt:setLocale value="${currentUserLanguage}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 
 <view:setConstant var="paramColumns" constant="org.silverpeas.components.mydb.web.MyDBWebController.ALL_COLUMNS"/>
 <view:setConstant var="paramRow" constant="org.silverpeas.components.mydb.web.MyDBWebController.ROW"/>
@@ -40,6 +41,9 @@
 <c:set var="error" value="${requestScope[paramError]}"/>
 
 <fmt:message var="modifyRow" key="mydb.modifyRow"/>
+
+<fmt:message bundle="${icons}" var="mandatoryIcon" key="mydb.icons.mandatory"/>
+<c:url var="mandatoryIcon" value="${mandatoryIcon}"/>
 
 <c:choose>
   <c:when test="${silfn:isDefined(error)}">
@@ -71,11 +75,18 @@
                     <input id="field-${field.name}-value" name="${field.name}" type="text" maxlength="${field.size}" value="${fieldValue}"/>
                   </c:when>
                 </c:choose>
+                <c:if test="${not field.nullable}">
+                  <span><img border="0" src="${mandatoryIcon}" width="5" height="5"/></span>
+                </c:if>
               </div>
             </div>
           </c:if>
         </c:forEach>
       </div>
     </fieldset>
+    <div class="legend">
+      <img alt="mandatory" src="${mandatoryIcon}" width="5" height="5"/>&nbsp;
+      <fmt:message key='GML.requiredField'/>
+    </div>
   </c:otherwise>
 </c:choose>

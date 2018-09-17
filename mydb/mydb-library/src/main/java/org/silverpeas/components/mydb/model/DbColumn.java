@@ -37,18 +37,19 @@ public class DbColumn {
   private final String name;
   private final boolean pk;
   private final int size;
+  private final boolean nullable;
 
   /**
    * Constructs a new {@link DbColumn} instance of the specified SQL type and with the specified
    * name.
-   * @param type a SQL type (an integer defined in {@link java.sql.Types})
-   * @param name the name of the column.
+   * @param descriptor a descriptor of the column.
    */
-  public DbColumn(final int type, final String name, final int size, final boolean primaryKey) {
-    this.type = type;
-    this.name = name;
-    this.size = size;
-    this.pk = primaryKey;
+  public DbColumn(final JdbcRequester.ColumnDescriptor descriptor) {
+    this.type = descriptor.getType();
+    this.name = descriptor.getName();
+    this.size = descriptor.getSize();
+    this.pk = descriptor.isPrimaryKey();
+    this.nullable = descriptor.isNullable();
   }
 
   /**
@@ -92,6 +93,14 @@ public class DbColumn {
    */
   public boolean isPrimaryKey() {
     return pk;
+  }
+
+  /**
+   * Is this column accepts null values?
+   * @return true if this column is nullable. False otherwise.
+   */
+  public boolean isNullable() {
+    return nullable;
   }
 
   /**

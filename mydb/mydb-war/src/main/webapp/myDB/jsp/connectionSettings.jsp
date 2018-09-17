@@ -32,6 +32,7 @@
 <c:set var="currentUserLanguage" value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
 <fmt:setLocale value="${currentUserLanguage}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 
 <view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.admin"/>
 
@@ -55,7 +56,8 @@
 <fmt:message var="connectionSettingTitle" key="mydb.dataSourceSetting"/>
 <fmt:message var="msgMustBeField" key="GML.MustBeFilled"/>
 
-<c:url var="mandatoryIcons" value="/util/icons/mandatoryField.gif"/>
+<fmt:message bundle="${icons}" var="mandatoryIcon" key="mydb.icons.mandatory"/>
+<c:url var="mandatoryIcon" value="${mandatoryIcon}"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -176,14 +178,14 @@
             <label class="txtlibform" for="rowLimit">${maxLineField}</label>
             <div class="champs">
               <input type="text" id="rowLimit" name="RowLimit" size="50" value="${currentConnectionInfo.dataMaxNumber}"/>
-              <span><img border="0" src="${mandatoryIcons}" width="5" height="5">&nbsp;<i><fmt:message key="mydb.maxRowExplanation"/></i></span>
+              <span><img border="0" src="${mandatoryIcon}" width="5" height="5">&nbsp;<i><fmt:message key="mydb.maxRowExplanation"/></i></span>
             </div>
           </div>
         </div>
       </fieldset>
     </form>
     <div class="legend">
-      <img alt="mandatory" src="${mandatoryIcons}" width="5" height="5"/>&nbsp;
+      <img alt="mandatory" src="${mandatoryIcon}" width="5" height="5"/>&nbsp;
       <fmt:message key='GML.requiredField'/>
     </div>
     <p>

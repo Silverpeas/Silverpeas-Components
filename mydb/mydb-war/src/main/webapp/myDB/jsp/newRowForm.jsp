@@ -32,6 +32,7 @@
 <c:set var="currentUserLanguage" value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
 <fmt:setLocale value="${currentUserLanguage}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 
 <view:setConstant var="paramColumns" constant="org.silverpeas.components.mydb.web.MyDBWebController.ALL_COLUMNS"/>
 <view:setConstant var="paramError" constant="org.silverpeas.components.mydb.web.MyDBWebController.ERROR_MESSAGE"/>
@@ -39,6 +40,11 @@
 <c:set var="error" value="${requestScope[paramError]}"/>
 
 <fmt:message var="modifyRow" key="mydb.modifyRow"/>
+
+<fmt:message bundle="${icons}" var="mandatoryIcon" key="mydb.icons.mandatory"/>
+<c:url var="mandatoryIcon" value="${mandatoryIcon}"/>
+<fmt:message bundle="${icons}" var="primaryKeyIcon" key="mydb.icons.primaryKey"/>
+<c:url var="primaryKeyIcon" value="${primaryKeyIcon}"/>
 
 <c:choose>
   <c:when test="${silfn:isDefined(error)}">
@@ -65,10 +71,22 @@
                   <input id="field-${field.name}-value" name="${field.name}" type="text" maxlength="${field.size}" value=""/>
                 </c:when>
               </c:choose>
+              <c:if test="${field.primaryKey}">
+                <span><img border="0" src="${primaryKeyIcon}" width="10" height="10"/></span>
+              </c:if>
+              <c:if test="${not field.nullable}">
+                <span><img border="0" src="${mandatoryIcon}" width="5" height="5"/></span>
+              </c:if>
             </div>
           </div>
         </c:forEach>
       </div>
     </fieldset>
+    <div class="legend">
+      <img alt="mandatory" src="${mandatoryIcon}" width="5" height="5"/>&nbsp;
+      <fmt:message key='GML.requiredField'/>
+      <img alt="primary key" src="${primaryKeyIcon}" width="10" height="10"/>&nbsp;
+      <fmt:message key='mydb.primaryKey'/>
+    </div>
   </c:otherwise>
 </c:choose>

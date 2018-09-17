@@ -144,8 +144,13 @@ class JdbcRequester {
       final String name = columns.getString("COLUMN_NAME");
       final int type = columns.getInt("DATA_TYPE");
       final int size = columns.getInt("COLUMN_SIZE");
+      final boolean isNullable = columns.getInt("NULLABLE") == DatabaseMetaData.columnNullable;
       final boolean isPrimaryKey = columnPks.contains(name);
-      consumer.accept(name, type, size, isPrimaryKey);
+      consumer.accept(new ColumnDescriptor().withName(name)
+          .withType(type)
+          .withSize(size)
+          .withPrimaryKey(isPrimaryKey)
+          .withNullable(isNullable));
     }
   }
 
@@ -276,6 +281,59 @@ class JdbcRequester {
     }
   }
 
+  class ColumnDescriptor {
+    private String name;
+    private int type;
+    private int size;
+    private boolean primaryKey;
+    private boolean nullable;
+
+    public String getName() {
+      return name;
+    }
+
+    public ColumnDescriptor withName(final String name) {
+      this.name = name;
+      return this;
+    }
+
+    public int getType() {
+      return type;
+    }
+
+    public ColumnDescriptor withType(final int type) {
+      this.type = type;
+      return this;
+    }
+
+    public int getSize() {
+      return size;
+    }
+
+    public ColumnDescriptor withSize(final int size) {
+      this.size = size;
+      return this;
+    }
+
+    public boolean isPrimaryKey() {
+      return primaryKey;
+    }
+
+    public ColumnDescriptor withPrimaryKey(final boolean primaryKey) {
+      this.primaryKey = primaryKey;
+      return this;
+    }
+
+    public boolean isNullable() {
+      return nullable;
+    }
+
+    public ColumnDescriptor withNullable(final boolean nullable) {
+      this.nullable = nullable;
+      return this;
+    }
+  }
+
   @FunctionalInterface
   interface DbOperation<T> {
     T execute(final JdbcRequester requester, final Connection connection) throws SQLException;
@@ -283,7 +341,7 @@ class JdbcRequester {
 
   @FunctionalInterface
   interface ColumnConsumer {
-    void accept(final String name, final int type, final int size, final boolean primaryKey);
+    void accept(final ColumnDescriptor column);
   }
 
   @FunctionalInterface
