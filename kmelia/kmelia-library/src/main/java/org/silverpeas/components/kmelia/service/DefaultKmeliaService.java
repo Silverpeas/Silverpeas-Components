@@ -50,7 +50,6 @@ import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.notification.AttachmentRef;
-import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.content.form.RecordTemplate;
@@ -3090,8 +3089,7 @@ public class DefaultKmeliaService implements KmeliaService {
             getPublicationTemplate(pubDetail.getPK().getInstanceId() + ":" + xmlFormShortName);
 
         RecordSet set = pubTemplate.getRecordSet();
-        DataRecord data = set.getRecord(pubDetail.getPK().getId());
-        set.delete(data.getId());
+        set.delete(pubDetail.getPK().getId());
       }
     } catch (PublicationTemplateException | FormException e) {
       throw new KmeliaRuntimeException(e);
