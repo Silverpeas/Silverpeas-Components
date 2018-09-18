@@ -28,6 +28,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 
 <c:set var="currentUserLanguage" value="${requestScope.resources.language}"/>
 <fmt:setLocale value="${currentUserLanguage}"/>
@@ -35,6 +36,7 @@
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 <view:setBundle basename="org.silverpeas.calendar.multilang.calendarBundle" var="calendarBundle"/>
 <c:url var="componentUriBase" value="${requestScope.componentUriBase}"/>
+<view:setConstant var="CALENDAR_EVENT_TYPE" constant="org.silverpeas.core.calendar.CalendarEvent.TYPE"/>
 
 <c:set var="highestUserRole"        value="${requestScope.highestUserRole}"/>
 <view:setConstant var="publisherRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.publisher"/>
@@ -98,6 +100,10 @@
             ng-if="ceo.attendees && ceo.attendees.length"
             on-participation-answer="eventMng.eventAttendeeParticipationAnswer(ceo, attendee)">
         </silverpeas-calendar-event-view-attendees>
+        <viewTags:viewAttachmentsAsContent componentInstanceId="${componentId}"
+                                           resourceType="${CALENDAR_EVENT_TYPE}"
+                                           resourceId="${occurrence.eventId}"
+                                           highestUserRole="${requestScope.highestUserRole}"/>
         <view:buttonPane>
           <view:button label="${back}" action="${backUri}"/>
         </view:buttonPane>

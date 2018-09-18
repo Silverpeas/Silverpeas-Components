@@ -24,9 +24,11 @@
 
 --%>
 <%@page import="org.silverpeas.core.util.WebEncodeHelper"%>
+<%@ page import="org.silverpeas.core.admin.user.model.SilverpeasRole" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 <%@ include file="check.jsp" %>
 
 <%
@@ -200,6 +202,10 @@ out.println(tabbedPane.print());
 </table>
 </form>
 </view:board>
+<viewTags:viewAttachmentsAsContent componentInstanceId="<%= componentId %>"
+                                   resourceType="Task"
+                                   resourceId="<%=String.valueOf(task.getId())%>"
+                                   highestUserRole="<%=SilverpeasRole.from(role)%>"/>
 </td>
 <td valign="top">
 	<%

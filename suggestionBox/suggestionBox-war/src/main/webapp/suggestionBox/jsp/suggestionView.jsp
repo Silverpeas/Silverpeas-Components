@@ -140,6 +140,10 @@
             ${suggestion.content}
         </div>
       </c:if>
+      <viewTags:viewAttachmentsAsContent componentInstanceId="${componentId}"
+                                         resourceType="${suggestion.contributionType}"
+                                         resourceId="${suggestion.id}"
+                                         highestUserRole="${highestUserRole}"/>
       <c:if test="${not empty suggestion.validation.comment and (suggestion.validation.validated or suggestion.validation.refused)}">
         <div id="suggestionApprobationDetail">
           <p id="suggestionApprobationDetail-info"><span class="libelle"><fmt:message key="suggestionBox.label.suggestion.approbator.comment">
