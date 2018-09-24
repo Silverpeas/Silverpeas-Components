@@ -61,7 +61,6 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Form;
-import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
@@ -940,28 +939,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   public synchronized void deletePublication(String pubId) {
-    deletePublication(pubId, false);
-  }
-
-  public synchronized void deletePublication(String pubId, boolean kmaxMode) {
-    // récupération de la position de la publication pour savoir si elle se trouve déjà dans
-    // la corbeille node=1
-    // si elle se trouve déjà au node 1, il est nécessaire de supprimer les fichier joints
-    // sinon non
-    String nodeId = getCurrentFolderId();
-    if (NodePK.BIN_NODE_ID.equals(nodeId)) {
-      // la publication sera supprimée définitivement, il faut donc supprimer les fichiers joints
-      try {
-        WysiwygController.deleteWysiwygAttachments(getComponentId(), pubId);
-      } catch (Exception e) {
-        throw new KmeliaRuntimeException(e);
-      }
-
-      removeXMLContentOfPublication(getPublicationPK(pubId));
-      getKmeliaService().deletePublication(getPublicationPK(pubId));
-    } else {
-      getKmeliaService().sendPublicationToBasket(getPublicationPK(pubId), kmaxMode);
-    }
+    getKmeliaService()
+        .deletePublications(Collections.singletonList(pubId), getCurrentFolderPK(), getUserId());
   }
 
   public List<String> deleteSelectedPublications() {
@@ -987,7 +966,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       String cloneId = getSessionClone().getDetail().getPK().getId();
       PublicationPK clonePK = getPublicationPK(cloneId);
 
-      removeXMLContentOfPublication(clonePK);
       getKmeliaService().deletePublication(clonePK);
 
       setSessionClone(null);
@@ -1001,24 +979,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       pubDetail.setUpdateDateMustBeSet(false);
 
       getKmeliaService().updatePublication(pubDetail);
-
-    }
-  }
-
-  private void removeXMLContentOfPublication(PublicationPK pubPK) {
-    try {
-      PublicationDetail pubDetail = getKmeliaService().getPublicationDetail(pubPK);
-      String infoId = pubDetail.getInfoId();
-      if (!isInteger(infoId)) {
-        PublicationTemplate pubTemplate = getPublicationTemplateManager()
-            .getPublicationTemplate(pubDetail.getPK().getInstanceId() + ":" + infoId);
-
-        RecordSet set = pubTemplate.getRecordSet();
-        DataRecord data = set.getRecord(pubDetail.getPK().getId());
-        set.delete(data);
-      }
-    } catch (PublicationTemplateException | FormException e) {
-      throw new KmeliaRuntimeException(e);
     }
   }
 
