@@ -182,6 +182,27 @@ public class MyDBWebController
     }
   }
 
+  @GET
+  @Path("ViewTargetTable")
+  @RedirectToInternalJsp("fkTable.jsp")
+  @LowestRoleAccess(value = SilverpeasRole.publisher)
+  public void getForeignKeyTableViewFrom(final MyDBWebRequestContext context) {
+    try {
+      final String targetTableName = context.getRequest().getParameter(TABLE_VIEW);
+      final Optional<DbTable> targetTable = DbTable.table(targetTableName, connectionInfo);
+      if (targetTable.isPresent()) {
+        TableView targetTableView = new TableView();
+        targetTableView.setTable(targetTable);
+        context.getRequest().setAttribute(TABLE_VIEW, targetTableView);
+      } else {
+        context.getRequest()
+            .setAttribute(ERROR_MESSAGE, getMultilang().getString("mydb.error.nonExistingTable"));
+      }
+    } catch (Exception e) {
+      context.getRequest().setAttribute(ERROR_MESSAGE, e.getLocalizedMessage());
+    }
+  }
+
   @POST
   @Path("AddRow")
   @RedirectToInternalJsp("mydb.jsp")

@@ -26,6 +26,7 @@ package org.silverpeas.components.mydb.model;
 
 import org.silverpeas.components.mydb.model.predicates.AbstractColumnValuePredicate;
 import org.silverpeas.components.mydb.model.predicates.ColumnValuePredicate;
+import org.silverpeas.components.mydb.service.MyDBRuntimeException;
 import org.silverpeas.core.util.StringUtil;
 
 import java.util.ArrayList;
@@ -48,7 +49,8 @@ public class DbTable {
 
   /**
    * Loads the default table defined in the specified {@link MyDBConnectionInfo} instance.
-   * If no default table is defined then nothing is returned.
+   * If no default table is defined then nothing is returned. If the default table doesn't
+   * exist then a {@link org.silverpeas.components.mydb.service.MyDBRuntimeException} is thrown.
    * @param dsInfo the {@link MyDBConnectionInfo} instance with information to access the
    * database and to get the name of the table load.
    * @return optionally a {@link DbTable} instance or nothing if no default table is set in the
@@ -60,6 +62,23 @@ public class DbTable {
       table = new DbTable(dsInfo.getDefaultTableName(), dsInfo);
     }
     return Optional.ofNullable(table);
+  }
+
+  /**
+   * Gets the table with the specified name from the database referenced by the given connection
+   * information. If no such a table doesn't exist, then nothing is returned.
+   * @param tableName the name of a table in the database.
+   * @param dsInfo the {@link MyDBConnectionInfo} instance with information to access the
+   * database
+   * @return optionally a {@link DbTable} instance or nothing if no such a table exist in the
+   * database.
+   */
+  public static Optional<DbTable> table(final String tableName, final MyDBConnectionInfo dsInfo) {
+    try {
+      return Optional.of(new DbTable(tableName, dsInfo));
+    } catch (MyDBRuntimeException e) {
+      return Optional.empty();
+    }
   }
 
   /**
@@ -79,6 +98,8 @@ public class DbTable {
   /**
    * Constructs a new instance for a table with the specified name and that is defined in the
    * database referenced by the specified {@link MyDBConnectionInfo} object.
+   * If the table doesn't exist then a
+   * {@link org.silverpeas.components.mydb.service.MyDBRuntimeException} is thrown.
    * @param name the name of the table
    * @param ds the information about the database in which is defined this table.
    */

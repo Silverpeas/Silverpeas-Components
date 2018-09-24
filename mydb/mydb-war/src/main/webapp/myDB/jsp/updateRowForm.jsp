@@ -44,12 +44,16 @@
 
 <fmt:message bundle="${icons}" var="mandatoryIcon" key="mydb.icons.mandatory"/>
 <c:url var="mandatoryIcon" value="${mandatoryIcon}"/>
+<fmt:message bundle="${icons}" var="foreignKeyIcon" key="mydb.icons.foreignKey"/>
+<c:url var="foreignKeyIcon" value="${foreignKeyIcon}"/>
 
 <c:choose>
   <c:when test="${silfn:isDefined(error)}">
     <div id="error"><span>${error}</span></div>
   </c:when>
   <c:otherwise>
+    <c:set var="displayMandatoryLegend" value="false"/>
+    <c:set var="displayForeignKeyLegend" value="false"/>
     <c:set var="row" value="${requestScope[paramRow]}"/>
     <c:set var="columns" value="${requestScope[paramColumns]}"/>
     <jsp:useBean id="row" type="org.silverpeas.components.mydb.model.TableRow"/>
@@ -57,7 +61,7 @@
     <fieldset id="row-edition" class="skinFieldset">
       <div class="fields oneFieldPerLine">
         <c:forEach var="field" items="${columns}">
-          <c:if test="${not field.primaryKey}">
+          <c:if test="${not field.primaryKey and not field.autoValued}">
             <c:set var="fieldValue" value="${row.getFieldValue(field.name)}"/>
             <jsp:useBean id="fieldValue" type="org.silverpeas.components.mydb.model.TableFieldValue"/>
             <div class="field" id="field-${field.name}">
@@ -75,7 +79,12 @@
                     <input id="field-${field.name}-value" name="${field.name}" type="text" maxlength="${field.size}" value="${fieldValue}"/>
                   </c:when>
                 </c:choose>
+                <c:if test="${field.foreignKey}">
+                  <c:set var="displayForeignKeyLegend" value="true"/>
+                  <a href="javascript:window.openForeignKey('${field.referencedTable}', '${field.name}')"><img border="0" src="${foreignKeyIcon}" width="10" height="10"/></a>
+                </c:if>
                 <c:if test="${not field.nullable}">
+                  <c:set var="displayMandatoryLegend" value="true"/>
                   <span><img border="0" src="${mandatoryIcon}" width="5" height="5"/></span>
                 </c:if>
               </div>
@@ -85,8 +94,14 @@
       </div>
     </fieldset>
     <div class="legend">
-      <img alt="mandatory" src="${mandatoryIcon}" width="5" height="5"/>&nbsp;
-      <fmt:message key='GML.requiredField'/>
+      <c:if test="${displayMandatoryLegend}">
+        <img alt="mandatory" src="${mandatoryIcon}" width="5" height="5"/>&nbsp;
+        <fmt:message key='GML.requiredField'/>
+      </c:if>
+      <c:if test="${displayForeignKeyLegend}">
+        <img alt="foreign key" src="${foreignKeyIcon}" width="10" height="10"/>&nbsp;
+        <fmt:message key='mydb.foreignKey'/>
+      </c:if>
     </div>
   </c:otherwise>
 </c:choose>

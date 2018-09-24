@@ -45,48 +45,69 @@
 <c:url var="mandatoryIcon" value="${mandatoryIcon}"/>
 <fmt:message bundle="${icons}" var="primaryKeyIcon" key="mydb.icons.primaryKey"/>
 <c:url var="primaryKeyIcon" value="${primaryKeyIcon}"/>
+<fmt:message bundle="${icons}" var="foreignKeyIcon" key="mydb.icons.foreignKey"/>
+<c:url var="foreignKeyIcon" value="${foreignKeyIcon}"/>
 
 <c:choose>
   <c:when test="${silfn:isDefined(error)}">
     <div id="error"><span>${error}</span></div>
   </c:when>
   <c:otherwise>
+    <c:set var="displayMandatoryLegend" value="false"/>
+    <c:set var="displayPrimaryKeyLegend" value="false"/>
+    <c:set var="displayForeignKeyLegend" value="false"/>
     <c:set var="columns" value="${requestScope[paramColumns]}"/>
     <jsp:useBean id="columns" type="java.util.List<org.silverpeas.components.mydb.model.DbColumn>"/>
     <fieldset id="row-edition" class="skinFieldset">
       <div class="fields oneFieldPerLine">
         <c:forEach var="field" items="${columns}">
-          <div class="field" id="field-${field.name}">
-            <c:set var="fieldType" value="${field.typeName}"/>
-            <c:if test="${field.ofTypeText}">
-              <c:set var="fieldType" value="${field.typeName}(${field.size})"/>
-            </c:if>
-            <label for="field-${field.name}-value" class="txtlibform">${field.name}&nbsp;<span><small>(<i>${fieldType}</i>)</small></span></label>
-            <div class="champs">
-              <c:choose>
-                <c:when test="${field.ofTypeText and field.size / 100 > 1}">
-                  <textarea id="field-${field.name}-value" name="${field.name}" cols="100" rows="${field.size / 100}" maxlength="${field.size}"></textarea>
-                </c:when>
-                <c:when test="${not field.ofTypeBinary}">
-                  <input id="field-${field.name}-value" name="${field.name}" type="text" maxlength="${field.size}" value=""/>
-                </c:when>
-              </c:choose>
-              <c:if test="${field.primaryKey}">
-                <span><img border="0" src="${primaryKeyIcon}" width="10" height="10"/></span>
+          <c:if test="${not field.autoValued}">
+            <div class="field" id="field-${field.name}">
+              <c:set var="fieldType" value="${field.typeName}"/>
+              <c:if test="${field.ofTypeText}">
+                <c:set var="fieldType" value="${field.typeName}(${field.size})"/>
               </c:if>
-              <c:if test="${not field.nullable}">
-                <span><img border="0" src="${mandatoryIcon}" width="5" height="5"/></span>
-              </c:if>
+              <label for="field-${field.name}-value" class="txtlibform">${field.name}&nbsp;<span><small>(<i>${fieldType}</i>)</small></span></label>
+              <div class="champs">
+                <c:choose>
+                  <c:when test="${field.ofTypeText and field.size / 100 > 1}">
+                    <textarea id="field-${field.name}-value" name="${field.name}" cols="100" rows="${field.size / 100}" maxlength="${field.size}">null</textarea>
+                  </c:when>
+                  <c:when test="${not field.ofTypeBinary}">
+                    <input id="field-${field.name}-value" name="${field.name}" type="text" maxlength="${field.size}" value="null"/>
+                  </c:when>
+                </c:choose>
+                <c:if test="${field.foreignKey}">
+                  <c:set var="displayForeignKeyLegend" value="true"/>
+                  <a href="javascript:window.openForeignKey('${field.referencedTable}', '${field.name}')"><img border="0" src="${foreignKeyIcon}" width="10" height="10"/></a>
+                </c:if>
+                <c:if test="${field.primaryKey}">
+                  <c:set var="displayPrimaryKeyLegend" value="true"/>
+                  <span><img border="0" src="${primaryKeyIcon}" width="10" height="10"/></span>
+                </c:if>
+                <c:if test="${not field.nullable}">
+                  <c:set var="displayMandatoryLegend" value="true"/>
+                  <span><img border="0" src="${mandatoryIcon}" width="5" height="5"/></span>
+                </c:if>
+              </div>
             </div>
-          </div>
+          </c:if>
         </c:forEach>
       </div>
     </fieldset>
     <div class="legend">
-      <img alt="mandatory" src="${mandatoryIcon}" width="5" height="5"/>&nbsp;
-      <fmt:message key='GML.requiredField'/>
-      <img alt="primary key" src="${primaryKeyIcon}" width="10" height="10"/>&nbsp;
-      <fmt:message key='mydb.primaryKey'/>
+      <c:if test="${displayMandatoryLegend}">
+        <img alt="mandatory" src="${mandatoryIcon}" width="5" height="5"/>&nbsp;
+        <fmt:message key='GML.requiredField'/>
+      </c:if>
+      <c:if test="${displayPrimaryKeyLegend}">
+        <img alt="primary key" src="${primaryKeyIcon}" width="10" height="10"/>&nbsp;
+        <fmt:message key='mydb.primaryKey'/>
+      </c:if>
+      <c:if test="${displayForeignKeyLegend}">
+        <img alt="foreign key" src="${foreignKeyIcon}" width="10" height="10"/>&nbsp;
+        <fmt:message key='mydb.foreignKey'/>
+      </c:if>
     </div>
   </c:otherwise>
 </c:choose>

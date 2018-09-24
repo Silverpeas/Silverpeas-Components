@@ -30,6 +30,7 @@ import org.silverpeas.components.mydb.service.MyDBRuntimeException;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.TransactionRuntimeException;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
+import org.silverpeas.core.util.StringUtil;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -131,27 +132,55 @@ class JdbcRequester {
   void loadColumns(final Connection connection, final String tableName,
       final ColumnConsumer consumer) throws SQLException {
     Objects.requireNonNull(connection);
+    final DatabaseMetaData dbMetaData = connection.getMetaData();
+    final List<String> columnPks = getPrimaryKeys(connection, tableName, dbMetaData);
+    final Map<String, ForeignKeyDescriptor> columnFks =
+        getForeignKeys(connection, tableName, dbMetaData);
+    final ResultSet columns = dbMetaData.getColumns(connection.getCatalog(), null, tableName, null);
+    while (columns.next()) {
+      final String name = columns.getString("COLUMN_NAME");
+      final int type = columns.getInt("DATA_TYPE");
+      final int size = columns.getInt("COLUMN_SIZE");
+      final boolean isAutoIncremented =
+          StringUtil.getBooleanValue(columns.getString("IS_AUTOINCREMENT"));
+      final boolean isNullable = StringUtil.getBooleanValue(columns.getString("IS_NULLABLE"));
+      final boolean isPrimaryKey = columnPks.contains(name);
+      final String defaultValue = getDefaultValue(columns);
+      consumer.accept(new ColumnDescriptor().withName(name)
+          .withType(type)
+          .withSize(size)
+          .withPrimaryKey(isPrimaryKey)
+          .withForeignKey(columnFks.get(name))
+          .withNullable(isNullable)
+          .withAutoIncrement(isAutoIncremented)
+          .withDefaultValue(defaultValue));
+    }
+  }
+
+  private Map<String, ForeignKeyDescriptor> getForeignKeys(final Connection connection,
+      final String tableName, final DatabaseMetaData dbMetaData) throws SQLException {
+    final Map<String, ForeignKeyDescriptor> columnFks = new LinkedHashMap<>(4);
+    final ResultSet foreignKeys =
+        dbMetaData.getImportedKeys(connection.getCatalog(), connection.getSchema(), tableName);
+    while (foreignKeys.next()) {
+      final String columnName = foreignKeys.getString("FKCOLUMN_NAME");
+      final String targetTableName = foreignKeys.getString("PKTABLE_NAME");
+      final String targetColumnName = foreignKeys.getString("PKCOLUMN_NAME");
+      columnFks.put(columnName, new ForeignKeyDescriptor(targetTableName, targetColumnName));
+    }
+    return columnFks;
+  }
+
+  private List<String> getPrimaryKeys(final Connection connection, final String tableName,
+      final DatabaseMetaData dbMetaData) throws SQLException {
     final List<String> columnPks = new ArrayList<>(2);
-    DatabaseMetaData dbMetaData = connection.getMetaData();
-    ResultSet primaryKeys =
+    final ResultSet primaryKeys =
         dbMetaData.getPrimaryKeys(connection.getCatalog(), connection.getSchema(), tableName);
     while (primaryKeys.next()) {
       final String pk = primaryKeys.getString("COLUMN_NAME");
       columnPks.add(pk);
     }
-    ResultSet columns = dbMetaData.getColumns(connection.getCatalog(), null, tableName, null);
-    while (columns.next()) {
-      final String name = columns.getString("COLUMN_NAME");
-      final int type = columns.getInt("DATA_TYPE");
-      final int size = columns.getInt("COLUMN_SIZE");
-      final boolean isNullable = columns.getInt("NULLABLE") == DatabaseMetaData.columnNullable;
-      final boolean isPrimaryKey = columnPks.contains(name);
-      consumer.accept(new ColumnDescriptor().withName(name)
-          .withType(type)
-          .withSize(size)
-          .withPrimaryKey(isPrimaryKey)
-          .withNullable(isNullable));
-    }
+    return columnPks;
   }
 
   /**
@@ -249,6 +278,24 @@ class JdbcRequester {
     return query.where(clauses.toString(), values);
   }
 
+  private String getDefaultValue(final ResultSet resultSet) throws SQLException {
+    String defaultValue = resultSet.getString("COLUMN_DEF");
+    if (StringUtil.isDefined(defaultValue)) {
+      int index = defaultValue.indexOf("::");
+      if (index != -1) {
+        defaultValue = defaultValue.substring(0, index);
+        if (defaultValue.startsWith("'") && defaultValue.endsWith("'")) {
+          defaultValue = defaultValue.substring(1, defaultValue.length() - 1);
+        }
+      } else {
+        defaultValue = null;
+      }
+    } else {
+      defaultValue = null;
+    }
+    return defaultValue;
+  }
+
   /**
    * A provider of converters of data. They convert database data to their corresponding business
    * data.
@@ -281,74 +328,190 @@ class JdbcRequester {
     }
   }
 
+  /**
+   * Descriptor of a foreign key. It should be mapped to a column in a given table for which it
+   * references another column of another table.
+   */
+  class ForeignKeyDescriptor {
+    private final String targetTableName;
+    private final String targetColumnName;
+
+    private ForeignKeyDescriptor(final String targetTableName, final String targetColumnName) {
+      this.targetTableName = targetTableName;
+      this.targetColumnName = targetColumnName;
+    }
+
+    /**
+     * Gets the name of the table targeted by this key.
+     * @return the name of the targeted table.
+     */
+    String getTargetTableName() {
+      return targetTableName;
+    }
+
+    /**
+     * Gets the name of the column in the targeted table that is targeted by this key.
+     * @return the name of the targeted column.
+     */
+    String getTargetColumnName() {
+      return targetColumnName;
+    }
+  }
+
+  /**
+   * A descriptor of a column in a database table.
+   */
   class ColumnDescriptor {
     private String name;
     private int type;
     private int size;
     private boolean primaryKey;
+    private ForeignKeyDescriptor foreignKey;
     private boolean nullable;
+    private boolean autoIncrementable;
+    private String defaultValue;
 
-    public String getName() {
+    private ColumnDescriptor() {
+    }
+
+    /**
+     * Gets the name of the column.
+     * @return the unique name of the column in the table.
+     */
+    String getName() {
       return name;
     }
 
-    public ColumnDescriptor withName(final String name) {
+    private ColumnDescriptor withName(final String name) {
       this.name = name;
       return this;
     }
 
-    public int getType() {
+    /**
+     * Gets the SQL type code of this column.
+     * @return the code of the SQL type of the values that column accepts.
+     * @see java.sql.Types
+     */
+    int getType() {
       return type;
     }
 
-    public ColumnDescriptor withType(final int type) {
+    private ColumnDescriptor withType(final int type) {
       this.type = type;
       return this;
     }
 
-    public int getSize() {
+    /**
+     * Gets the size of the column SQL type.
+     * @return the size of the column type.
+     */
+    int getSize() {
       return size;
     }
 
-    public ColumnDescriptor withSize(final int size) {
+    private ColumnDescriptor withSize(final int size) {
       this.size = size;
       return this;
     }
 
-    public boolean isPrimaryKey() {
+    /**
+     * Is this column a primary key?
+     * @return true if the values of this column are primary keys. False otherwise.
+     */
+    boolean isPrimaryKey() {
       return primaryKey;
     }
 
-    public ColumnDescriptor withPrimaryKey(final boolean primaryKey) {
+    private ColumnDescriptor withPrimaryKey(final boolean primaryKey) {
       this.primaryKey = primaryKey;
       return this;
     }
 
-    public boolean isNullable() {
+    /**
+     * Is this column can be nullable.
+     * @return true if this column can be valued with null, false otherwise.
+     */
+    boolean isNullable() {
       return nullable;
     }
 
-    public ColumnDescriptor withNullable(final boolean nullable) {
+    private ColumnDescriptor withNullable(final boolean nullable) {
       this.nullable = nullable;
+      return this;
+    }
+
+    /**
+     * Is the valuation of this column can be incrementable?
+     * @return true of the valuation of this column is taken in charge by the database. False
+     * otherwise.
+     */
+    boolean isAutoIncrementable() {
+      return autoIncrementable;
+    }
+
+    private ColumnDescriptor withAutoIncrement(final boolean isAutoIncrement) {
+      this.autoIncrementable = isAutoIncrement;
+      return this;
+    }
+
+    /**
+     * Gets the default value of this column if any.
+     * @return the default value set with this column, null if no such a default value was set.
+     */
+    String getDefaultValue() {
+      return defaultValue;
+    }
+
+    private ColumnDescriptor withDefaultValue(final String defaultValue) {
+      this.defaultValue = defaultValue;
+      return this;
+    }
+
+    /**
+     * Gets a descriptor of the foreign key that is mapped with this column.
+     * @return a foreign key descriptor or null if this column isn't a foreign key.
+     */
+    ForeignKeyDescriptor getForeignKey() {
+      return this.foreignKey;
+    }
+
+    private ColumnDescriptor withForeignKey(final ForeignKeyDescriptor foreignKey) {
+      this.foreignKey = foreignKey;
       return this;
     }
   }
 
+  /**
+   * An operation on the behalf of the database.
+   * @param <T> the type of the result.
+   */
   @FunctionalInterface
   interface DbOperation<T> {
     T execute(final JdbcRequester requester, final Connection connection) throws SQLException;
   }
 
+  /**
+   * A consumer of a database column description.
+   */
   @FunctionalInterface
   interface ColumnConsumer {
     void accept(final ColumnDescriptor column);
   }
 
+  /**
+   * A converter of the database row to a business object.
+   * @param <V> the type of the business value in a row.
+   * @param <R> the type of the business row.
+   */
   @FunctionalInterface
   interface RowConverter<V, R> {
     R convert(final Map<String, V> row);
   }
 
+  /**
+   * A converter of a value in a column to a business object.
+   * @param <V> the type of the business value.
+   */
   @FunctionalInterface
   interface ValueConverter<V> {
     V convert(final Object value, final int valueType);

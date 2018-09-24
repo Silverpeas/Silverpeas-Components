@@ -45,6 +45,7 @@
 <view:setConstant var="comparingOperators" constant="org.silverpeas.components.mydb.web.MyDBWebController.COMPARING_OPERATORS"/>
 <view:setConstant var="nothing" constant="org.silverpeas.components.mydb.web.TableRowsFilter.FIELD_NONE"/>
 <view:setConstant var="rowIndex" constant="org.silverpeas.components.mydb.web.MyDBWebController.ROW_INDEX"/>
+<view:setConstant var="nullValue" constant="org.silverpeas.components.mydb.model.predicates.AbstractColumnValuePredicate.NULL"/>
 
 <c:set var="componentId"       value="${requestScope.browseContext[3]}"/>
 <c:set var="columnToCompare"   value="${requestScope[comparingColumn]}"/>
@@ -53,7 +54,6 @@
 <c:set var="columnValue"       value="${requestScope[comparingValue]}"/>
 <c:set var="currentTable"      value="${requestScope[tableView]}"/>
 <c:set var="tableNames"        value="${requestScope[allTables]}"/>
-<c:set var="nullValue"         value="<%=AbstractColumnValuePredicate.NULL%>"/>
 <jsp:useBean id="currentTable" type="org.silverpeas.components.mydb.web.TableView"/>
 
 <c:set var="columns" value="${currentTable.columns}"/>
@@ -80,12 +80,13 @@
 <fmt:message var="noValue" key="mydb.error.noValue"/>
 <fmt:message var="modifyRow" key="mydb.modifyRow"/>
 <fmt:message var="newRow" key="mydb.insertRow"/>
-<fmt:message var="primaryKeyLabel" key="mydb.primaryKey"/>
 
 <fmt:message bundle="${icons}" var="infoIcon" key="mydb.icons.info"/>
 <fmt:message bundle="${icons}" var="deleteIcon" key="mydb.icons.deleteLine"/>
 <fmt:message bundle="${icons}" var="modifyIcon" key="mydb.icons.updateLine"/>
 <fmt:message bundle="${icons}" var="createIcons" key="mydb.icons.addRecord"/>
+<fmt:message bundle="${icons}" var="primaryKeyIcon" key="mydb.icons.primaryKey"/>
+<c:url var="primaryKeyIcon" value="${primaryKeyIcon}"/>
 <c:url var="infoIcon" value="${infoIcon}"/>
 <c:url var="deleteIcon" value="${deleteIcon}"/>
 <c:url var="modifyIcon" value="${modifyIcon}"/>
@@ -98,6 +99,10 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   <view:looknfeel withCheckFormScript="true" withFieldsetStyle="true"/>
   <script type="application/javascript">
+    /**
+     * Filters the rows of the default table currently displayed by applying the comparator on the
+     * field against a given value.
+     */
     function filterTableRows() {
       var table = $('#table').val();
       var column = $('#table-filter-column').val();
@@ -113,6 +118,9 @@
       }
     }
 
+    /**
+     * Selects as the default one a database table.
+     */
     function selectTable() {
       var table = $('#table').val();
       if (table === null || table === '${nothing}') {
@@ -122,6 +130,10 @@
       }
     }
 
+    /**
+     * Deletes the row at the specified index in the view of the default table and then refreshes
+     * the view.
+     */
     function deleteRow(rowIndex) {
       $.popup.confirm('${deletionConfirm}', function() {
         sp.ajaxRequest('DeleteRow').withParam('${rowIndex}', rowIndex)
@@ -129,18 +141,20 @@
       });
     }
 
-    function renderRowForm(xhr, formSender) {
+    /**
+     * Renders in a popup the form for editing a row in the currently displayed table.
+     */
+    function renderRowForm(title, xhr, formSender) {
       var form = $('<div>').html(xhr.responseText);
       if (form.find('#error').length > 0) {
         notyError(form.find('#error').html());
       } else {
         form.popup('validation', {
-          title : '${modifyRow}', callback : function() {
+          title : title, callback : function() {
             var row = {};
             form.find('[id*="value"]').each(function(i, input) {
               var elt = $(input);
               row[elt.attr('name')] = elt.val();
-              console.log(elt.attr('name'), elt.val());
             });
             formSender(row);
           }
@@ -148,30 +162,75 @@
       }
     }
 
+    /**
+     * Updates the row at the specified index in the view of the default table with the values
+     * entered in given the row form.
+     */
     function updateRow(rowIndex, row) {
       row['${rowIndex}'] = rowIndex;
       sp.ajaxRequest('UpdateRow').withParams(row)
           .byPostMethod().send().then(rowsPane.refreshFromRequestResponse);
     }
 
+    /**
+     * Opens the form to modify the row at the specified index in the view of the default table.
+     */
     function modifyRow(rowIndex) {
       sp.ajaxRequest('GetRow').withParam('${rowIndex}', rowIndex).send().then(function(response) {
         var sender = function(row) {
           updateRow(rowIndex, row);
         };
-        renderRowForm(response, sender)
+        renderRowForm('${modifyRow}', response, sender)
       });
     }
 
+    /**
+     * Adds the new specified row into the default table and refreshes the view on that table.
+     */
     function addRow(row) {
       sp.ajaxRequest('AddRow').withParams(row)
           .byPostMethod().send().then(rowsPane.refreshFromRequestResponse);
     }
 
+    /**
+     * Opens the form to edit a new row to add into the default table.
+     */
     function newRow() {
       sp.ajaxRequest('NewRow').send().then(function(response) {
-        renderRowForm(response, addRow)
+        renderRowForm('${newRow}', response, addRow)
       });
+    }
+
+    /**
+     * The unique identifier of a row in another table to use as foreign key in a row currently
+     * edited.
+     */
+    var fkRowId = null;
+
+    /**
+     * Open the specified table to select a row as foreign key when inserting a new row in the
+     * current table. This function is invoked by the JSP rendered into the popup of row adding.
+     */
+    function openForeignKey(tableName, fieldName) {
+      console.log('Open table ' + tableName + ' to choose a row as foreign key for ' + fieldName);
+      fkRowId = null;
+      fkTableName = null;
+      sp.ajaxRequest('ViewTargetTable').withParam('${tableView}', tableName).send().then(
+          function(response) {
+            renderRowForm('', response, function(row) {
+              $('#field-' + fieldName + '-value').val(fkRowId);
+            })
+          });
+    }
+
+    /**
+     * A row in a table has been selected as a foreign key. This function is invoked by the JSP
+     * rendered into the popup of the row selection for foreign key setting.
+     */
+    function selectFk(rowIndex, rowId) {
+      $('#fk-table-view td.selected').removeClass('selected');
+      $('#fk-table-view #fk-row-' + rowIndex).children().addClass('selected');
+      fkRowId = rowId;
     }
   </script>
 </head>
@@ -277,7 +336,8 @@
         <c:forEach var="column" items="${columns}">
           <c:set var="columnName" value="${column.name}"/>
           <c:if test="${column.primaryKey}">
-            <c:set var="columnName" value="${columnName} (${primaryKeyLabel})"/>
+            <c:set var="columnName">${columnName}
+              <img alt="primary key" src="${primaryKeyIcon}" width="10" height="10"/></c:set>
           </c:if>
           <view:arrayColumn title="${columnName}" compareOn="${(r, i) -> r.getFieldValue(columns[i].name)}"/>
         </c:forEach>
