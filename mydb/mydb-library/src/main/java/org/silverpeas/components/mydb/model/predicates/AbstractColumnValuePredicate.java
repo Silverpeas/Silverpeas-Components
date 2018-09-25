@@ -33,9 +33,8 @@ import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
  */
 public abstract class AbstractColumnValuePredicate implements ColumnValuePredicate {
 
-  public static final String NULL = "null";
-  static final String NULL_VALUE = "@null@";
-  static final String EMPTY_VALUE = "@empty@";
+  public static final String NULL_VALUE = "null";
+  public static final String EMPTY_VALUE = "@empty@";
   private DbColumn column;
   private Comparable value;
 

@@ -24,12 +24,14 @@
 
 package org.silverpeas.components.mydb.web;
 
+import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.components.mydb.model.DataSourceDefinition;
 import org.silverpeas.components.mydb.model.DbColumn;
 import org.silverpeas.components.mydb.model.DbTable;
 import org.silverpeas.components.mydb.model.MyDBConnectionInfo;
 import org.silverpeas.components.mydb.model.TableFieldValue;
 import org.silverpeas.components.mydb.model.TableRow;
+import org.silverpeas.components.mydb.model.predicates.AbstractColumnValuePredicate;
 import org.silverpeas.components.mydb.service.MyDBException;
 import org.silverpeas.components.mydb.service.MyDBRuntimeException;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
@@ -269,11 +271,15 @@ public class MyDBWebController
   }
 
   private void updateValue(final String name, final TableFieldValue value, final String newValue) {
-    if (value != null && !value.toString().equals(newValue)) {
-      if (newValue == null || (newValue.isEmpty() && !value.isText())) {
+    String newVal = newValue;
+    if (AbstractColumnValuePredicate.EMPTY_VALUE.equals(newVal)) {
+      newVal = "";
+    }
+    if (value != null && !value.toString().equals(newVal)) {
+      if (newVal == null || (newVal.isEmpty() && !value.isText())) {
         throwInvalidValueType(name, value.getType());
       }
-      value.update(newValue);
+      value.update(newVal);
     }
   }
 
@@ -374,7 +380,7 @@ public class MyDBWebController
       final String comparator =
           defaultStringIfNotDefined(request.getParameter(COMPARING_OPERATOR), FIELD_NONE);
       final String value =
-          defaultStringIfNotDefined(request.getParameter(COMPARING_VALUE), FIELD_NONE);
+          defaultValueIfNotDefined(request.getParameter(COMPARING_VALUE), FIELD_NONE);
       if (FIELD_NONE.equals(fieldName) || FIELD_NONE.equals(comparator) ||
           FIELD_NONE.equals(value)) {
         tableView.getFilter().clear();
@@ -410,6 +416,14 @@ public class MyDBWebController
   private void throwInvalidValueType(final String name, final int expectedType) {
     throw new IllegalArgumentException(getMultilang().getString("mydb.error.invalidValue") + ". " +
         name + ": " + JDBCType.valueOf(expectedType).getName());
+  }
+
+  private static String defaultValueIfNotDefined(final String value, final String defaultValue) {
+    String val = value;
+    if (val == null || val.isEmpty()) {
+      val = null;
+    }
+    return StringUtils.defaultString(val, defaultValue);
   }
 }
   

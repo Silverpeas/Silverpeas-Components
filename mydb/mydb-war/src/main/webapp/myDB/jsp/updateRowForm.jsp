@@ -37,6 +37,7 @@
 <view:setConstant var="paramColumns" constant="org.silverpeas.components.mydb.web.MyDBWebController.ALL_COLUMNS"/>
 <view:setConstant var="paramRow" constant="org.silverpeas.components.mydb.web.MyDBWebController.ROW"/>
 <view:setConstant var="paramError" constant="org.silverpeas.components.mydb.web.MyDBWebController.ERROR_MESSAGE"/>
+<view:setConstant var="emptyString" constant="org.silverpeas.components.mydb.model.predicates.AbstractColumnValuePredicate.EMPTY_VALUE"/>
 
 <c:set var="error" value="${requestScope[paramError]}"/>
 
@@ -71,20 +72,28 @@
               </c:if>
               <label for="field-${field.name}-value" class="txtlibform">${field.name}&nbsp;<span><small>(<i>${fieldType}</i>)</small></span></label>
               <div class="champs">
+                <c:set var="readOnlyAttr" value=""/>
+                <c:set var="fieldClass"   value=""/>
+                <c:if test="${field.foreignKey}">
+                  <c:set var="readOnlyAttr" value="readonly"/>
+                  <c:set var="displayForeignKeyLegend" value="true"/>
+                </c:if>
+                <c:if test="${not field.nullable}">
+                  <c:set var="fieldClass" value='class="mandatory"'/>
+                  <c:set var="displayMandatoryLegend" value="true"/>
+                </c:if>
                 <c:choose>
                   <c:when test="${field.ofTypeText and field.size / 100 > 1}">
-                    <textarea id="field-${field.name}-value" name="${field.name}" cols="100" rows="${field.size / 100}" maxlength="${field.size}">${fieldValue}</textarea>
+                    <textarea id="field-${field.name}-value" name="${field.name}" ${fieldClass} cols="100" rows="${field.size / 100}" maxlength="${field.size}" ${readOnlyAttr}>${fieldValue.isEmpty() ? emptyString : fieldValue}</textarea>
                   </c:when>
                   <c:when test="${not field.ofTypeBinary}">
-                    <input id="field-${field.name}-value" name="${field.name}" type="text" maxlength="${field.size}" value="${fieldValue}"/>
+                    <input id="field-${field.name}-value" name="${field.name}" ${fieldClass} type="text" maxlength="${field.size}" ${readOnlyAttr} value="${fieldValue.isEmpty() ? emptyString : fieldValue}"/>
                   </c:when>
                 </c:choose>
                 <c:if test="${field.foreignKey}">
-                  <c:set var="displayForeignKeyLegend" value="true"/>
                   <a href="javascript:window.openForeignKey('${field.referencedTable}', '${field.name}')"><img border="0" src="${foreignKeyIcon}" width="10" height="10"/></a>
                 </c:if>
                 <c:if test="${not field.nullable}">
-                  <c:set var="displayMandatoryLegend" value="true"/>
                   <span><img border="0" src="${mandatoryIcon}" width="5" height="5"/></span>
                 </c:if>
               </div>
@@ -94,6 +103,8 @@
       </div>
     </fieldset>
     <div class="legend">
+      <span><code>@empty@</code></span>
+      <span><fmt:message key="mydb.emptyStringExplanation"/></span>
       <c:if test="${displayMandatoryLegend}">
         <img alt="mandatory" src="${mandatoryIcon}" width="5" height="5"/>&nbsp;
         <fmt:message key='GML.requiredField'/>

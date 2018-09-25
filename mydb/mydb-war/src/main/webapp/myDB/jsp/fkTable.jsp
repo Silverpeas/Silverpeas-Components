@@ -39,7 +39,7 @@
 
 <view:setConstant var="paramTable" constant="org.silverpeas.components.mydb.web.MyDBWebController.TABLE_VIEW"/>
 <view:setConstant var="paramError" constant="org.silverpeas.components.mydb.web.MyDBWebController.ERROR_MESSAGE"/>
-<view:setConstant var="nullValue" constant="org.silverpeas.components.mydb.model.predicates.AbstractColumnValuePredicate.NULL"/>
+<view:setConstant var="nullValue" constant="org.silverpeas.components.mydb.model.predicates.AbstractColumnValuePredicate.NULL_VALUE"/>
 
 <c:set var="error" value="${requestScope[paramError]}"/>
 

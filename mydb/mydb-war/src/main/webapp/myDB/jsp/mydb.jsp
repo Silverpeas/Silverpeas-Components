@@ -23,7 +23,6 @@
   --%>
 
 <%@ include file="head.jsp" %>
-<%@ page import="org.silverpeas.components.mydb.model.predicates.AbstractColumnValuePredicate" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
@@ -45,7 +44,7 @@
 <view:setConstant var="comparingOperators" constant="org.silverpeas.components.mydb.web.MyDBWebController.COMPARING_OPERATORS"/>
 <view:setConstant var="nothing" constant="org.silverpeas.components.mydb.web.TableRowsFilter.FIELD_NONE"/>
 <view:setConstant var="rowIndex" constant="org.silverpeas.components.mydb.web.MyDBWebController.ROW_INDEX"/>
-<view:setConstant var="nullValue" constant="org.silverpeas.components.mydb.model.predicates.AbstractColumnValuePredicate.NULL"/>
+<view:setConstant var="nullValue" constant="org.silverpeas.components.mydb.model.predicates.AbstractColumnValuePredicate.NULL_VALUE"/>
 
 <c:set var="componentId"       value="${requestScope.browseContext[3]}"/>
 <c:set var="columnToCompare"   value="${requestScope[comparingColumn]}"/>
@@ -80,6 +79,7 @@
 <fmt:message var="noValue" key="mydb.error.noValue"/>
 <fmt:message var="modifyRow" key="mydb.modifyRow"/>
 <fmt:message var="newRow" key="mydb.insertRow"/>
+<fmt:message var="nullForbidden" key="mydb.error.mandatory"/>
 
 <fmt:message bundle="${icons}" var="infoIcon" key="mydb.icons.info"/>
 <fmt:message bundle="${icons}" var="deleteIcon" key="mydb.icons.deleteLine"/>
@@ -107,7 +107,7 @@
       var table = $('#table').val();
       var column = $('#table-filter-column').val();
       var comparator = $('#table-filter-comparator').val();
-      var value = $('#table-filter-value').val()
+      var value = $('#table-filter-value').val();
       if (table === null || table === '${nothing}') {
         notyError('${noSelectedTable}');
       } else if (column !== '${nothing}' && comparator !== '${nothing}' &&
@@ -152,11 +152,23 @@
         form.popup('validation', {
           title : title, callback : function() {
             var row = {};
+            var error = '';
             form.find('[id*="value"]').each(function(i, input) {
               var elt = $(input);
-              row[elt.attr('name')] = elt.val();
+              var val = elt.val();
+              if (val === null || val.length === 0) {
+                error += elt.attr('name') + ': ${noValue}<br/>';
+              } else if (elt.hasClass('mandatory') && val === 'null') {
+                error += elt.attr('name') + ': ${nullForbidden}<br/>';
+              } else {
+                row[elt.attr('name')] = elt.val();
+              }
             });
-            formSender(row);
+            if (error.length > 0) {
+              notyError(error);
+            } else {
+              formSender(row);
+            }
           }
         });
       }
@@ -188,6 +200,13 @@
      * Adds the new specified row into the default table and refreshes the view on that table.
      */
     function addRow(row) {
+      for (var field in row) {
+        if (row[field].length === 0) {
+          row[field] = null;
+        } else if (row[field] === '@empty@') {
+          row[field] = '';
+        }
+      }
       sp.ajaxRequest('AddRow').withParams(row)
           .byPostMethod().send().then(rowsPane.refreshFromRequestResponse);
     }
@@ -214,7 +233,6 @@
     function openForeignKey(tableName, fieldName) {
       console.log('Open table ' + tableName + ' to choose a row as foreign key for ' + fieldName);
       fkRowId = null;
-      fkTableName = null;
       sp.ajaxRequest('ViewTargetTable').withParam('${tableView}', tableName).send().then(
           function(response) {
             renderRowForm('', response, function(row) {
@@ -254,6 +272,7 @@
     <c:if test="${requestScope.highestUserRole.isGreaterThanOrEquals(publisherRole)}">
     <div id="selection" style="padding-bottom: 10px">
       <form id="table-selection" name="table-selection" action="SetTable" method="post">
+        <label for="table"><fmt:message key="mydb.tables"/></label>
         <span class="intfdcolor selectNS" style="padding: 2px">
         <select id="table" name="${tableView}" size="1">
           <c:if test="${not currentTable.defined}">

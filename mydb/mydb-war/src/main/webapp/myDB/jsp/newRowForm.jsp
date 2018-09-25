@@ -69,12 +69,21 @@
               </c:if>
               <label for="field-${field.name}-value" class="txtlibform">${field.name}&nbsp;<span><small>(<i>${fieldType}</i>)</small></span></label>
               <div class="champs">
+                <c:set var="readOnlyAttr" value=""/>
+                <c:set var="fieldClass"   value=""/>
+                <c:if test="${field.foreignKey}">
+                  <c:set var="readOnlyAttr" value="readonly"/>
+                </c:if>
+                <c:if test="${not field.nullable}">
+                  <c:set var="fieldClass" value='class="mandatory"'/>
+                  <c:set var="displayMandatoryLegend" value="true"/>
+                </c:if>
                 <c:choose>
                   <c:when test="${field.ofTypeText and field.size / 100 > 1}">
-                    <textarea id="field-${field.name}-value" name="${field.name}" cols="100" rows="${field.size / 100}" maxlength="${field.size}">null</textarea>
+                    <textarea id="field-${field.name}-value" name="${field.name}" ${fieldClass} cols="100" rows="${field.size / 100}" maxlength="${field.size}" ${readOnlyAttr}></textarea>
                   </c:when>
                   <c:when test="${not field.ofTypeBinary}">
-                    <input id="field-${field.name}-value" name="${field.name}" type="text" maxlength="${field.size}" value="null"/>
+                    <input id="field-${field.name}-value" name="${field.name}" ${fieldClass} type="text" maxlength="${field.size}" ${readOnlyAttr} value=""/>
                   </c:when>
                 </c:choose>
                 <c:if test="${field.foreignKey}">
@@ -96,13 +105,21 @@
       </div>
     </fieldset>
     <div class="legend">
+      <div>
+        <span><small><code>@empty@</code></small></span>
+      <span><fmt:message key="mydb.emptyStringExplanation"/></span>
+      </div>
       <c:if test="${displayMandatoryLegend}">
+        <div>
         <img alt="mandatory" src="${mandatoryIcon}" width="5" height="5"/>&nbsp;
         <fmt:message key='GML.requiredField'/>
+        </div>
       </c:if>
       <c:if test="${displayPrimaryKeyLegend}">
+        <div>
         <img alt="primary key" src="${primaryKeyIcon}" width="10" height="10"/>&nbsp;
         <fmt:message key='mydb.primaryKey'/>
+        </div>
       </c:if>
       <c:if test="${displayForeignKeyLegend}">
         <img alt="foreign key" src="${foreignKeyIcon}" width="10" height="10"/>&nbsp;

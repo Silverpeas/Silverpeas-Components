@@ -89,6 +89,14 @@ public class TableFieldValue implements Comparable<TableFieldValue> {
   }
 
   /**
+   * Is this value an empty text?
+   * @return true if this value is a text and it is empty. False otherwise.
+   */
+  public boolean isEmpty() {
+    return isText() && toString().isEmpty();
+  }
+
+  /**
    * Updates this value with the textual representation of the new value. If the specified value
    * doesn't match the SQL type of this field value, then an {@link IllegalArgumentException}
    * exception is thrown.
