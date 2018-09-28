@@ -25,29 +25,34 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="java.util.Collections" %>
+
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 <%@ include file="check.jsp" %>
 
 <%!
-String getStatusIcon(int statut, MultiSilverpeasBundle resource)
-{
-	String icon = "";
-	switch (statut)
-	{
+String getStatusIcon(int statut, MultiSilverpeasBundle resource) {
+	String icon = resource.getIcon("projectManager.nondemarree");
+	String alt = resource.getString("projectManager.TacheAvancementND");
+	switch (statut) {
 		case 0 : 	icon = resource.getIcon("projectManager.enCours");
+		      alt = resource.getString("projectManager.TacheStatutEnCours");
 					break;
 		case 1 : 	icon = resource.getIcon("projectManager.gelee");
+          alt = resource.getString("projectManager.TacheStatutGelee");
 					break;
 		case 2 : 	icon = resource.getIcon("projectManager.abandonnee");
+          alt = resource.getString("projectManager.TacheStatutAbandonnee");
 					break;
 		case 3 : 	icon = resource.getIcon("projectManager.realisee");
+          alt = resource.getString("projectManager.TacheStatutRealisee");
 					break;
 		case 4 : 	icon = resource.getIcon("projectManager.alerte");
-					break;
-		default : 	icon = resource.getIcon("projectManager.nondemarree");
-					break;
+          alt = resource.getString("projectManager.TacheStatutEnAlerte");
 	}
-	return "<img src=\""+icon+"\" align=\"absmiddle\"/>";
+	return "<img src=\""+icon+"\" align=\"absmiddle\" alt=\""+alt+"\" title=\""+alt+"\"/>";
 }
 
 boolean otherActionOnSameLevel(List tasks, TaskDetail task, int debut)
@@ -74,7 +79,7 @@ boolean otherActionOnLowerLevel(List tasks, TaskDetail task, int debut)
 	return false;
 }
 
-ArrayLine fillArrayLine(ArrayLine arrayLine, TaskDetail task, String iconeLiaison, int userId, String role, MultiSilverpeasBundle resource, GraphicElementFactory gef)
+ArrayLine fillArrayLine(ArrayLine arrayLine, TaskDetail task, String iconeLiaison, String userId, String role, MultiSilverpeasBundle resource, GraphicElementFactory gef)
 {
 	ArrayCellText cellStatut = arrayLine.addArrayCellText(getStatusIcon(task.getStatut(), resource));
 	cellStatut.setAlignement("center");
@@ -128,7 +133,7 @@ ArrayLine fillArrayLine(ArrayLine arrayLine, TaskDetail task, String iconeLiaiso
 		if (task.isDeletionAvailable())
 		{
 		    Icon deleteIcon = iconPane.addIcon();
-		    deleteIcon.setProperties(resource.getIcon("projectManager.delete"), "","javascript:onClick=deleteTask('"+task.getId()+"')");
+		    deleteIcon.setProperties(resource.getIcon("projectManager.delete"), "","javascript:deleteTask('"+task.getId()+"')");
 		}
 		arrayLine.addArrayCellIconPane(iconPane);
 	} else if (role.equals("responsable")){
@@ -143,7 +148,7 @@ List 	tasks 	= (List) request.getAttribute("Tasks");
 String 	role 		= (String) request.getAttribute("Role");
 Boolean filtreActif = (Boolean) request.getAttribute("FiltreActif");
 Filtre	filtre		= (Filtre) request.getAttribute("Filtre");
-Integer	userId		= new Integer((String) request.getAttribute("UserId"));
+String	userId		= (String) request.getAttribute("UserId");
 
 String actionFrom 		= "";
 String actionTo			= "";
@@ -179,8 +184,9 @@ if (filtre != null)
 	responsableId	= filtre.getResponsableId();
 }
 
-String imgCollapse 	= "<img src=\""+resource.getIcon("projectManager.treePlus")+"\">";
-String imgUnfold 	= "<img src=\""+resource.getIcon("projectManager.treeMinus")+"\">";
+List<String> filterRoles = new ArrayList<>();
+filterRoles.add("admin");
+filterRoles.add("responsable");
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -188,6 +194,7 @@ String imgUnfold 	= "<img src=\""+resource.getIcon("projectManager.treeMinus")+"
 <head>
 <view:looknfeel withCheckFormScript="true"/>
 <view:includePlugin name="toggle"/>
+<view:includePlugin name="datepicker"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 <script type="text/javascript">
 function exportTasks(){
@@ -199,17 +206,6 @@ function deleteTask(id) {
     document.listForm.Id.value = id;
     document.listForm.submit();
   });
-}
-function callUserPanel()
-{
-	SP_openWindow('ToUserPanel','', '750', '550','scrollbars=yes, resizable, alwaysRaised');
-}
-function editDate(indiceElem)
-{
-		chemin = "<%=m_context%><%=URLUtil.getURL(URLUtil.CMP_AGENDA)%>calendar.jsp?indiceForm=0&indiceElem="+indiceElem;
-		largeur = "180";
-		hauteur = "200";
-		SP_openWindow(chemin,"Calendrier_Todo",largeur,hauteur,"");
 }
 function isCorrectDate(input)
 {
@@ -259,13 +255,18 @@ function sendFilterData() {
             jQuery.popup.error(errorMsg);
      }
 }
+
+function resetFilter() {
+  $("#filterFields input[type=text]").val("");
+  $("#filterFields input[type=hidden]").val("");
+  $("#filterFields select[name=Statut]").val("-1");
+  $("#filterFields .defaultCheckbox").prop("checked", true);
+  window.userSelectionAPI.removeAll();
+}
 </script>
 </head>
 <body>
 <%
-browseBar.setDomainName(spaceLabel);
-browseBar.setComponentName(componentLabel, "Main");
-
 operationPane.addOperation(resource.getIcon("projectManager.exportTaches"), resource.getString("projectManager.Export"), "javaScript:exportTasks()");
 if ("admin".equals(role)) {
 	operationPane.addOperationOfCreation(resource.getIcon("projectManager.addTache"), resource.getString("projectManager.CreerTache"), "ToAddTask");
@@ -278,10 +279,6 @@ out.println(window.printBefore());
 TabbedPane tabbedPane = gef.getTabbedPane();
 tabbedPane.addTab(resource.getString("projectManager.Projet"), "ToProject", false);
 tabbedPane.addTab(resource.getString("projectManager.Taches"), "Main", true);
-if ("admin".equals(role)) {
-	tabbedPane.addTab(resource.getString("GML.attachments"), "ToAttachments", false);
-}
-tabbedPane.addTab(resource.getString("projectManager.Commentaires"), "ToComments", false);
 tabbedPane.addTab(resource.getString("projectManager.Gantt"), "ToGantt", false);
 if ("admin".equals(role)) {
 	tabbedPane.addTab(resource.getString("projectManager.Calendrier"), "ToCalendar", false);
@@ -293,35 +290,26 @@ out.println(tabbedPane.print());
 <!--------------------------- FILTRE ----------------------------------------------->
 <!---------------------------------------------------------------------------------->
 <center>
-<form name="actionForm" method="post" action="ToFilterTasks">
-<table cellpadding=0 cellspacing=2 border=0 width="98%" class=intfdcolor>
+  <view:areaOfOperationOfCreation/>
+  <br/>
+  <form name="actionForm" method="post" action="ToFilterTasks">
+  <div class="bgDegradeGris">
+<table cellpadding="0" cellspacing="2" border="0" width="98%">
 	<tr>
-		<td class=intfdcolor4 nowrap>
-			<table cellpadding=0 cellspacing=0 border=0 width="100%">
-				<tr>
-					<td class="intfdcolor" rowspan="2" nowrap width="100%">
-						<img border="0" src="<%=resource.getIcon("projectManager.px") %>" width="5"/>
-						<span class="txtNav"><%=resource.getString("projectManager.Filtre") %></span>
-					</td>
-					<td class="intfdcolor"><img border="0" height="10" src="<%=resource.getIcon("projectManager.px") %>"/></td>
-					<td class="intfdcolor"><img border="0" height="10" src="<%=resource.getIcon("projectManager.px") %>"/></td>
-				</tr>
-				<tr>
-					<td height="0" class="intfdcolor" align="right" valign="bottom"><img border="0" src="<%=resource.getIcon("projectManager.boxAngleLeft") %>"/></td>
-					<td align="center" valign="bottom" nowrap>
-					<%if (!filtreActif.booleanValue()) {
-						out.println("<a href=\"FilterShow\"><img border=\"0\" src=\""+resource.getIcon("projectManager.boxDown")+"\"/></a>");
-					}
-					else{
-						out.println("<a href=\"FilterHide\"><img border=\"0\" src=\""+resource.getIcon("projectManager.boxUp")+"\"/></a>");
-					}
-					%>
-					<img border="0" height="1" width="3" src="<%=resource.getIcon("projectManager.px") %>"/>
-					</td>
-				</tr>
-			</table>
+		<td nowrap="nowrap">
+      <div id="filterLabel">
+        <p>
+          <%if (!filtreActif) {
+            out.println("<a href=\"FilterShow\"><img border=\"0\" src=\""+resource.getIcon("projectManager.boxDown")+"\"/></a>");
+          } else{
+            out.println("<a href=\"FilterHide\"><img border=\"0\" src=\""+resource.getIcon("projectManager.boxUp")+"\"/></a>");
+          }
+          %>
+          <%=resource.getString("projectManager.Filtre") %>
+        </p>
+      </div>
 			<% if (filtreActif.booleanValue()) { %>
-				<table cellpadding="5" cellspacing="0" border="0" width="100%">
+				<table cellpadding="5" cellspacing="0" border="0" width="100%" id="filterFields">
 					<tr>
 						<td class="txtlibform"><%=resource.getString("projectManager.TacheNumero")%> <%=resource.getString("projectManager.Tache")%></td>
 						<td><%=resource.getString("projectManager.De")%> <input type="text" name="TaskFrom" size="6" value="<%=actionFrom%>"/> <%=resource.getString("projectManager.A")%> <input type="text" name="TaskTo" size="6" value="<%=actionTo%>"/></td>
@@ -369,11 +357,11 @@ out.println(tabbedPane.print());
 					</tr>
 					<tr>
 						<td class="txtlibform"><%=resource.getString("projectManager.TacheDateDebut")%></td>
-						<td><%=resource.getString("projectManager.Du")%> <input type="text" name="DateDebutFrom" size="12" maxlength="10" value="<%=dateDebutFrom%>"/>&nbsp;<a href="javascript:onClick=editDate(4)"><img src="<%=resource.getIcon("projectManager.calendrier")%>" border=0 valign=absmiddle align="middle" alt="<%=resource.getString("GML.viewCalendar")%>"/></a>&nbsp;<span class="txtnote">(<%=resource.getString("GML.dateFormatExemple")%>)</span>&nbsp;&nbsp;&nbsp;&nbsp;<%=resource.getString("projectManager.Au")%> <input type="text" name="DateDebutTo" size="12" maxlength="10" value="<%=dateDebutTo%>"/>&nbsp;<a href="javascript:onClick=editDate(5)"><img src="<%=resource.getIcon("projectManager.calendrier")%>"  border=0 valign=absmiddle align="middle" alt="<%=resource.getString("GML.viewCalendar")%>"/></a>&nbsp;<span class="txtnote">(<%=resource.getString("GML.dateFormatExemple")%>)</span></td>
+						<td><%=resource.getString("projectManager.Du")%> <input type="text" name="DateDebutFrom" size="12" maxlength="10" value="<%=dateDebutFrom%>" class="dateToPick"/>&nbsp;<span class="txtnote">(<%=resource.getString("GML.dateFormatExemple")%>)</span>&nbsp;&nbsp;&nbsp;&nbsp;<%=resource.getString("projectManager.Au")%> <input type="text" name="DateDebutTo" size="12" maxlength="10" value="<%=dateDebutTo%>" class="dateToPick"/>&nbsp;<span class="txtnote">(<%=resource.getString("GML.dateFormatExemple")%>)</span></td>
 					</tr>
 					<tr>
 						<td class="txtlibform"><%=resource.getString("projectManager.TacheDateFin")%></td>
-						<td><%=resource.getString("projectManager.Du")%> <input type="text" name="DateFinFrom" size="12" maxlength="10" value="<%=dateFinFrom%>"/>&nbsp;<a href="javascript:onClick=editDate(6)"><img src="<%=resource.getIcon("projectManager.calendrier")%>" border=0 valign=absmiddle align="middle" alt="<%=resource.getString("GML.viewCalendar")%>"/></a>&nbsp;<span class="txtnote">(<%=resource.getString("GML.dateFormatExemple")%>)</span>&nbsp;&nbsp;&nbsp;&nbsp;<%=resource.getString("projectManager.Au")%> <input type="text" name="DateFinTo" size="12" maxlength="10" value="<%=dateFinTo%>"/>&nbsp;<a href="javascript:onClick=editDate(7)"><img src="<%=resource.getIcon("projectManager.calendrier")%>"  border=0 valign=absmiddle align="middle" alt="<%=resource.getString("GML.viewCalendar")%>"/></a>&nbsp;<span class="txtnote">(<%=resource.getString("GML.dateFormatExemple")%>)</span></td>
+						<td><%=resource.getString("projectManager.Du")%> <input type="text" name="DateFinFrom" size="12" maxlength="10" value="<%=dateFinFrom%>" class="dateToPick"/>&nbsp;<span class="txtnote">(<%=resource.getString("GML.dateFormatExemple")%>)</span>&nbsp;&nbsp;&nbsp;&nbsp;<%=resource.getString("projectManager.Au")%> <input type="text" name="DateFinTo" size="12" maxlength="10" value="<%=dateFinTo%>" class="dateToPick"/>&nbsp;<span class="txtnote">(<%=resource.getString("GML.dateFormatExemple")%>)</span></td>
 					</tr>
 					<tr>
 						<td class="txtlibform"><%=resource.getString("projectManager.Retard")%></td>
@@ -389,7 +377,7 @@ out.println(tabbedPane.print());
 								else
 									retardToutes = "checked";
 							%>
-							<input type="radio" name="Retard" value="1" <%=retardOui%>/> <%=resource.getString("GML.yes")%> <input type="radio" name="Retard" value="0" <%=retardNon%>/> <%=resource.getString("GML.no")%> <input type="radio" name="Retard" value="-1" <%=retardToutes%>/> <%=resource.getString("GML.allFP")%>
+							<input type="radio" name="Retard" value="1" <%=retardOui%>/> <%=resource.getString("GML.yes")%> <input type="radio" name="Retard" value="0" <%=retardNon%>/> <%=resource.getString("GML.no")%> <input type="radio" name="Retard" value="-1" class="defaultCheckbox" <%=retardToutes%>/> <%=resource.getString("GML.allFP")%>
 						</td>
 					</tr>
 					<tr>
@@ -406,25 +394,29 @@ out.println(tabbedPane.print());
 								else
 									avToutes = "checked";
 							%>
-							<input type="radio" name="Avancement" value="1" <%=av100%>/> 100% <input type="radio" name="Avancement" value="0" <%=av50%>/> <100% <input type="radio" name="Avancement" value="-1" <%=avToutes%>/> <%=resource.getString("GML.allFP")%>
+							<input type="radio" name="Avancement" value="1" <%=av100%>/> 100% <input type="radio" name="Avancement" value="0" <%=av50%>/> <100% <input type="radio" name="Avancement" value="-1" class="defaultCheckbox" <%=avToutes%>/> <%=resource.getString("GML.allFP")%>
 						</td>
 					</tr>
 					<tr>
 						<td class="txtlibform"><%=resource.getString("projectManager.TacheResponsable")%></td>
-						<td><input type="text" name="Responsable" value="<%=responsableName%>" size="60" disabled/><input type="hidden" name="ResponsableName" value="<%=responsableName%>"/><input type="hidden" name="ResponsableId" value="<%=responsableId%>"/>&nbsp;<a href="javascript:callUserPanel()"><img src="<%=resource.getIcon("projectManager.userPanel")%>" alt="<%=resource.getString("projectManager.SelectionnerResponsable")%>" border=0 align="absmiddle"/></a></td>
+						<td class="field">
+              <viewTags:selectUsersAndGroups selectionType="USER"
+                                             userIds="<%=Collections.singletonList(responsableId)%>"
+                                             userInputName="ResponsableId"
+                                             jsApiVar="window.userSelectionAPI"
+                                             roleFilter="<%=filterRoles%>"
+                                             componentIdFilter="<%=componentId%>"/>
+              </td>
 					</tr>
 					<tr>
 						<td colspan="2" align="center">
 						<%
 							ButtonPane buttonPane = gef.getButtonPane();
-							buttonPane.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendFilterData()", false));
-							buttonPane.addButton(gef.getFormButton(resource.getString("GML.cancel"), "Main", false));
+							buttonPane.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:sendFilterData()", false));
+							buttonPane.addButton(gef.getFormButton(resource.getString("GML.reset"), "javascript:resetFilter()", false));
 							out.println(buttonPane.print());
 						%>
 						</td>
-					</tr>
-					<tr>
-						<td colspan="2" align="right"><a href="FilterHide"><img border="0" src="<%=resource.getIcon("projectManager.boxUp") %>"/></a><img border="0" width="3" src="<%=resource.getIcon("projectManager.px") %>"/></td>
 					</tr>
 				</table>
 			<% } else { %>
@@ -433,31 +425,13 @@ out.println(tabbedPane.print());
 		</td>
 	</tr>
 </table>
+  </div>
 </form>
 </center>
 <br/>
-<view:board>
-	<center>
-	<table><tr>
-	<td><img src="<%=resource.getIcon("projectManager.nondemarree")%>" border="0" align="absmiddle"/></td><td class="txtNav"><%=resource.getString("projectManager.TacheAvancementND")%></td>
-	<td><img src="<%=resource.getIcon("projectManager.px")%>" border="0" align="absmiddle" width="20"/></td>
-	<td><img src="<%=resource.getIcon("projectManager.enCours")%>" border="0" align="absmiddle"/></td><td class="txtNav"><%=resource.getString("projectManager.TacheStatutEnCours")%></td>
-	<td><img src="<%=resource.getIcon("projectManager.px")%>" border="0" align="absmiddle" width="20"/></td>
-	<td><img src="<%=resource.getIcon("projectManager.gelee")%>" border="0" align="absmiddle"/></td><td class="txtNav"><%=resource.getString("projectManager.TacheStatutGelee")%></td>
-	<td><img src="<%=resource.getIcon("projectManager.px")%>" border="0" align="absmiddle" width="20"/></td>
-	<td><img src="<%=resource.getIcon("projectManager.realisee")%>" border="0" align="absmiddle"/></td><td class="txtNav"><%=resource.getString("projectManager.TacheStatutRealisee")%></td>
-	<td><img src="<%=resource.getIcon("projectManager.px")%>" border="0" align="absmiddle" width="20"/></td>
-	<td><img src="<%=resource.getIcon("projectManager.abandonnee")%>" border="0" align="absmiddle"/></td><td class="txtNav"><%=resource.getString("projectManager.TacheStatutAbandonnee")%></td>
-	<td><img src="<%=resource.getIcon("projectManager.px")%>" border="0" align="absmiddle" width="20"/></td>
-	<td><img src="<%=resource.getIcon("projectManager.alerte")%>" border="0" align="absmiddle"/></td><td class="txtNav"><%=resource.getString("projectManager.TacheStatutEnAlerte")%></td>
-	</tr></table>
-	</center>
-</view:board>
 <!---------------------------------------------------------------------------------->
 <!--------------------------- FILTRE (FIN) ----------------------------------------->
 <!---------------------------------------------------------------------------------->
-<view:areaOfOperationOfCreation/>
-<br/>
 <%
 
 ArrayPane arrayPane = gef.getArrayPane("actionsList", "Main", request, session);
@@ -494,7 +468,7 @@ for (int a=0; a<tasks.size(); a++)
 	if (task.getLevel()==0)
 	{
 		arrayLineRoot = arrayPane.addArrayLine();
-		arrayLineRoot = fillArrayLine(arrayLineRoot, task, "", userId.intValue(), role, resource, gef);
+		arrayLineRoot = fillArrayLine(arrayLineRoot, task, "", userId, role, resource, gef);
 	} else {
 		arrayLine = new ArrayLine(arrayPane);
 
@@ -527,13 +501,29 @@ for (int a=0; a<tasks.size(); a++)
 			}
 		}
 
-		arrayLine = fillArrayLine(arrayLine, task, ilt, userId.intValue(), role, resource, gef);
+		arrayLine = fillArrayLine(arrayLine, task, ilt, userId, role, resource, gef);
 
 		arrayLineRoot.addSubline(arrayLine);
 	}
 }
 out.println(arrayPane.print());
 %>
+    <center>
+      <table><tr>
+        <td><img src="<%=resource.getIcon("projectManager.nondemarree")%>" border="0" align="absmiddle"/></td><td class="txtNav"><%=resource.getString("projectManager.TacheAvancementND")%></td>
+        <td><img src="<%=resource.getIcon("projectManager.px")%>" border="0" align="absmiddle" width="20"/></td>
+        <td><img src="<%=resource.getIcon("projectManager.enCours")%>" border="0" align="absmiddle"/></td><td class="txtNav"><%=resource.getString("projectManager.TacheStatutEnCours")%></td>
+        <td><img src="<%=resource.getIcon("projectManager.px")%>" border="0" align="absmiddle" width="20"/></td>
+        <td><img src="<%=resource.getIcon("projectManager.gelee")%>" border="0" align="absmiddle"/></td><td class="txtNav"><%=resource.getString("projectManager.TacheStatutGelee")%></td>
+        <td><img src="<%=resource.getIcon("projectManager.px")%>" border="0" align="absmiddle" width="20"/></td>
+        <td><img src="<%=resource.getIcon("projectManager.realisee")%>" border="0" align="absmiddle"/></td><td class="txtNav"><%=resource.getString("projectManager.TacheStatutRealisee")%></td>
+        <td><img src="<%=resource.getIcon("projectManager.px")%>" border="0" align="absmiddle" width="20"/></td>
+        <td><img src="<%=resource.getIcon("projectManager.abandonnee")%>" border="0" align="absmiddle"/></td><td class="txtNav"><%=resource.getString("projectManager.TacheStatutAbandonnee")%></td>
+        <td><img src="<%=resource.getIcon("projectManager.px")%>" border="0" align="absmiddle" width="20"/></td>
+        <td><img src="<%=resource.getIcon("projectManager.alerte")%>" border="0" align="absmiddle"/></td><td class="txtNav"><%=resource.getString("projectManager.TacheStatutEnAlerte")%></td>
+      </tr></table>
+    </center>
+
 </view:frame>
 <%
 out.println(window.printAfter());

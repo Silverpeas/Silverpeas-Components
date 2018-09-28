@@ -25,9 +25,11 @@
 --%>
 <%@page import="org.silverpeas.core.util.WebEncodeHelper"%>
 <%@ page import="org.silverpeas.core.admin.user.model.SilverpeasRole" %>
+<%@ page import="org.silverpeas.core.admin.user.model.User" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 <%@ include file="check.jsp" %>
 
@@ -43,37 +45,39 @@ String		role				= (String) request.getAttribute("Role");
 <view:looknfeel withCheckFormScript="true"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 <script type="text/javascript">
-function callUserPanel() {
-	SP_openWindow('ToUserPanel','', '750', '550','scrollbars=yes, resizable, alwaysRaised');
+function deleteTask() {
+  var label = "<%=resource.getString("projectManager.SupprimerTacheConfirmation")%>";
+  jQuery.popup.confirm(label, function() {
+    document.deleteForm.submit();
+  });
 }
 </script>
 </head>
 <body>
 <%
-browseBar.setDomainName(spaceLabel);
-browseBar.setComponentName(componentLabel, "Main");
 browseBar.setExtraInformation(task.getNom());
 
-if (ableToAddSubTask.booleanValue()) {
+if (ableToAddSubTask) {
+  operationPane.addOperation(null, resource.getString("GML.update"), "ToUpdateTask?Id=" + task.getId());
+  operationPane.addOperation(null, resource.getString("GML.delete"), "javascript:deleteTask()");
+  operationPane.addLine();
 	operationPane.addOperationOfCreation(resource.getIcon("projectManager.addTache"), resource.getString("projectManager.CreerTache"), "ToAddTask");
 }
 
 out.println(window.printBefore());
-
-TabbedPane tabbedPane = gef.getTabbedPane();
-tabbedPane.addTab(resource.getString("projectManager.Definition"), "#", true);
-if (ableToAddSubTask.booleanValue()) {
-	tabbedPane.addTab(resource.getString("GML.attachments"), "ToTaskAttachments", false);
-}
-tabbedPane.addTab(resource.getString("projectManager.Commentaires"), "ToTaskComments", false);
-
-out.println(tabbedPane.print());
 %>
 <view:areaOfOperationOfCreation/>
-<view:frame>
-<center>
-<table border="0" cellspacing="5"><tr><td width="100%">
-<view:board>
+
+<div class="rightContent">
+  <c:set var="callbackUrl"><%=URLUtil.getURL("useless", componentId) + "ViewTask?Id=" + task.getId()%></c:set>
+  <viewTags:displayAttachments componentInstanceId="<%=componentId%>"
+                               resourceId="<%=String.valueOf(task.getId())%>"
+                               resourceType="<%=task.getContributionType()%>"
+                               highestUserRole="<%=SilverpeasRole.from(role)%>"
+                               reloadCallbackUrl="${callbackUrl}"/>
+</div>
+
+<div class="principalContent">
 <form name="actionForm" action="UpdateTask" method="post">
 <table cellpadding="5">
 <tr>
@@ -172,19 +176,17 @@ out.println(tabbedPane.print());
 	int occupation = 0;
 
 	if (task.getResources() != null) {
-		Iterator it = task.getResources().iterator();
 		int cpt = 0;
 		out.println("<table id=\"tableResources\">");
-		while(it.hasNext())
-		{
-			TaskResourceDetail resourceDetail = (TaskResourceDetail) it.next();
+		for (TaskResourceDetail resourceDetail : task.getResources()) {
 			resourceName = resourceDetail.getUserName();
 			resourceId = resourceDetail.getUserId();
 			resourceCharge = resourceDetail.getCharge();
 			occupation = resourceDetail.getOccupation();
 			String couleur = "green";
-			if (occupation > 100)
+			if (occupation > 100) {
 				couleur = "red";
+			}
 
 			%>
 			<tr>
@@ -201,23 +203,20 @@ out.println(tabbedPane.print());
 </tr>
 </table>
 </form>
-</view:board>
-<viewTags:viewAttachmentsAsContent componentInstanceId="<%= componentId %>"
+  <viewTags:viewAttachmentsAsContent componentInstanceId="<%= componentId %>"
                                    resourceType="Task"
                                    resourceId="<%=String.valueOf(task.getId())%>"
                                    highestUserRole="<%=SilverpeasRole.from(role)%>"/>
-</td>
-<td valign="top">
-	<%
-	    out.flush();
-		getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachedFiles.jsp?Id="+task.getId()+"&ComponentId="+componentId).include(request, response);
-	%>
-</td>
-</tr></table>
-</center>
-</view:frame>
+
+  <view:comments userId="<%=User.getCurrentRequester().getId()%>" componentId="<%=componentId%>"
+                 resourceType="<%=task.getContributionType()%>" resourceId="<%=String.valueOf(task.getId())%>" />
+
+</div>
 <%
 out.println(window.printAfter());
 %>
+<form name="deleteForm" action="RemoveTask" method="post">
+  <input type="hidden" name="Id" value="<%=task.getId()%>"/>
+</form>
 </body>
 </html>

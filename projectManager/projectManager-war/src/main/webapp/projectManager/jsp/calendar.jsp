@@ -167,9 +167,7 @@ function changeDayStatus(year, month, day)
     TabbedPane tabbedPane = gef.getTabbedPane();
 
 	tabbedPane.addTab(resource.getString("projectManager.Projet"), "ToProject", false);
-    tabbedPane.addTab(resource.getString("projectManager.Taches"), "Main", false);
-	tabbedPane.addTab(resource.getString("GML.attachments"), "ToAttachments", false);
-	tabbedPane.addTab(resource.getString("projectManager.Commentaires"), "ToComments", false);
+	tabbedPane.addTab(resource.getString("projectManager.Taches"), "Main", false);
 	tabbedPane.addTab(resource.getString("projectManager.Gantt"), "ToGantt", false);
 	tabbedPane.addTab(resource.getString("projectManager.Calendrier"), "#", true);
 

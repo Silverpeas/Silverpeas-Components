@@ -51,20 +51,14 @@ if (project != null)
 }
 %>
 
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel withCheckFormScript="true"/>
+<view:includePlugin name="datepicker"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 <script type="text/javascript">
-function editDate(indiceElem)
-{
-		chemin = "<%=m_context%><%=URLUtil.getURL(URLUtil.CMP_AGENDA)%>calendar.jsp?indiceForm=0&indiceElem="+indiceElem;
-		largeur = "180";
-		hauteur = "200";
-		SP_openWindow(chemin,"Calendrier_Todo",largeur,hauteur,"");
-}
 function sendActionData() {
-
      var errorMsg 			= "";
      var errorNb 			= 0;
      var name 				= document.projectForm.Nom.value;
@@ -111,8 +105,6 @@ if (project != null)
 	TabbedPane tabbedPane = gef.getTabbedPane();
 	tabbedPane.addTab(resource.getString("projectManager.Projet"), "ToProject", true);
 	tabbedPane.addTab(resource.getString("projectManager.Taches"), "Main", false);
-	tabbedPane.addTab(resource.getString("GML.attachments"), "ToAttachments", false);
-	tabbedPane.addTab(resource.getString("projectManager.Commentaires"), "ToComments", false);
 	tabbedPane.addTab(resource.getString("projectManager.Gantt"), "ToGantt", false);
 	tabbedPane.addTab(resource.getString("projectManager.Calendrier"), "ToCalendar", false);
 	out.println(tabbedPane.print());
@@ -139,7 +131,7 @@ out.println(board.printBefore());
 </tr>
 <tr>
 	<td class="txtlibform"><%=resource.getString("projectManager.ProjetDateDebut")%> :</td>
-    <td><input type="text" name="DateDebut" size="12" maxlength="10" value="<%=dateDebut%>">&nbsp;<img src="<%=resource.getIcon("projectManager.mandatoryField")%>" width="5" height="5">&nbsp;&nbsp;<a href="javascript:onClick=editDate(2);"><img src="<%=resource.getIcon("projectManager.calendrier")%>"  border="0" align="top" alt="<%=resource.getString("GML.viewCalendar")%>"></a>&nbsp;<span class="txtnote">(<%=resource.getString("GML.dateFormatExemple")%>)</span></td>
+    <td><input type="text" name="DateDebut" size="12" maxlength="10" value="<%=dateDebut%>" class="dateToPick">&nbsp;<span class="txtnote">(<%=resource.getString("GML.dateFormatExemple")%>)</span></td>
 </tr>
 <tr>
 	<td class="txtlibform"><%=resource.getString("projectManager.ProjetDateFin")%> :</td>
@@ -150,14 +142,14 @@ out.println(board.printBefore());
 <%
 out.println(board.printAfter());
 %>
-<center><br>
+<br/>
 <%
 ButtonPane buttonPane = gef.getButtonPane();
-buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendActionData()", false));
-buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.cancel"), "Main", false));
+buttonPane.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendActionData()", false));
+buttonPane.addButton(gef.getFormButton(resource.getString("GML.cancel"), "Main", false));
 out.println(buttonPane.print());
 %>
-<br></center>
+<br/>
 <%
 out.println(frame.printAfter());
 out.println(window.printAfter());

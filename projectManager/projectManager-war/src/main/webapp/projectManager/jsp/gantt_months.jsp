@@ -153,18 +153,11 @@ listHolidays[<c:out value="${holidayIndex.index}" />] = '<fmt:formatDate value="
 <view:window>
 <fmt:message key="projectManager.Projet" var="pmProject"  />
 <fmt:message key="projectManager.Taches" var="pmTasks"  />
-<fmt:message key="projectManager.Taches" var="pmAttachments" />
-<fmt:message key="projectManager.Commentaires" var="pmComments"  />
 <fmt:message key="projectManager.Gantt" var="pmGantt"  />
 <fmt:message key="projectManager.Calendrier" var="pmCalendar"  />
-<fmt:message key="GML.attachments" var="gmlAttachments" />
 <view:tabs>
   <view:tab label="${pmProject}" selected="false" action="ToProject"></view:tab>
   <view:tab label="${pmTasks}" selected="false" action="Main"></view:tab>
-  <c:if test="${fn:contains(requestScope['Role'],'admin')}">
-    <view:tab label="${gmlAttachments}" selected="false" action="ToAttachments"></view:tab>
-  </c:if>
-  <view:tab label="${pmComments}" selected="false" action="ToComments"></view:tab>
   <view:tab label="${pmGantt}" selected="true" action="#"></view:tab>
   <c:if test="${fn:contains(requestScope['Role'],'admin')}">
     <view:tab label="${pmCalendar}" selected="false" action="ToCalendar"></view:tab>

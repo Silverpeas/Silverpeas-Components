@@ -321,7 +321,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     return actionMere;
   }
 
-  public List<SimpleDocument> getAttachments(String id) {
+  private List<SimpleDocument> getAttachments(String id) {
     ResourceReference foreignKey = new ResourceReference(id, getComponentId());
     return AttachmentServiceProvider.getAttachmentService().listDocumentsByForeignKey(foreignKey,
         null);
@@ -369,35 +369,6 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
 
   public void updateCurrentTask() {
     getProjectManagerService().updateTask(getCurrentTask(), getUserId());
-  }
-
-  public String initUserPanel() {
-    String urlContext = URLUtil.getApplicationURL();
-    String hostUrl = urlContext + URLUtil.getURL(getSpaceId(), getComponentId())
-        + "FromUserPanel";
-    Selection sel = getSelection();
-    sel.resetAll();
-    sel.setHostSpaceName(getSpaceLabel());
-    sel.setGoBackURL(hostUrl);
-    sel.setCancelURL(hostUrl);
-    sel.setMultiSelect(false);
-    sel.setPopupMode(false);
-    sel.setSetSelectable(false);
-    Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(), null);
-    sel.setHostPath(null);
-    sel.setHostComponentName(hostComponentName);
-
-    ArrayList<String> roles = new ArrayList<>();
-    roles.add(ADMIN_ROLE);
-    roles.add(RESPONSABLE_ROLE);
-
-    // Add extra params
-    SelectionUsersGroups sug = new SelectionUsersGroups();
-    sug.setComponentId(getComponentId());
-    sug.setProfileNames(roles);
-    sel.setExtraParams(sug);
-
-    return Selection.getSelectionURL();
   }
 
   public String initUserSelect() {

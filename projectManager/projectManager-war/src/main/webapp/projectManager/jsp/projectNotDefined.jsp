@@ -24,41 +24,37 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
 
-<html>
+<c:set var="lang" value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
+<fmt:setLocale value="${lang}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+
+<fmt:message var="tabProject" key="projectManager.Projet"/>
+<fmt:message var="tabTasks" key="projectManager.Taches"/>
+<fmt:message var="tabGantt" key="projectManager.Gantt"/>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel/>
 </head>
-<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
-<%
-browseBar.setDomainName(spaceLabel);
-browseBar.setComponentName(componentLabel, "Main");
-
-out.println(window.printBefore());
-
-TabbedPane tabbedPane = gef.getTabbedPane();
-tabbedPane.addTab(resource.getString("projectManager.Projet"), "#", true);
-tabbedPane.addTab(resource.getString("projectManager.Taches"), "#", false);
-tabbedPane.addTab(resource.getString("projectManager.Commentaires"), "#", false);
-tabbedPane.addTab(resource.getString("projectManager.Gantt"), "#", false);
-out.println(tabbedPane.print());
-
-out.println(frame.printBefore());
-
-Board board = gef.getBoard();
-out.println(board.printBefore());
-%>
-<table cellpadding="5">
-<tr>
-	<td class="txtlibform"><%=resource.getString("projectManager.NotDefined")%></td>
-</tr>
-</table>
-<%
-out.println(board.printAfter());
-out.println(frame.printAfter());
-out.println(window.printAfter());
-%>
+<body>
+<view:window>
+<view:tabs>
+  <view:tab label="${tabProject}" action="#" selected="true"/>
+  <view:tab label="${tabTasks}" action="#" selected="false"/>
+  <view:tab label="${tabComments}" action="#" selected="false"/>
+  <view:tab label="${tabGantt}" action="#" selected="false"/>
+</view:tabs>
+<view:frame>
+<div class="inlineMessage">
+  <%=resource.getString("projectManager.NotDefined")%>
+</div>
+</view:frame>
+</view:window>
 </body>
 </html>

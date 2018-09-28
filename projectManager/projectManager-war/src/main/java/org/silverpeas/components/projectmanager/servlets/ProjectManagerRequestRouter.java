@@ -29,7 +29,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import org.silverpeas.components.projectmanager.control.ProjectManagerSessionController;
 import org.silverpeas.components.projectmanager.model.Filtre;
@@ -38,13 +37,11 @@ import org.silverpeas.components.projectmanager.model.TaskResourceDetail;
 import org.silverpeas.components.projectmanager.vo.MonthVO;
 import org.silverpeas.core.util.StringUtil;
 
-import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.web.selection.SelectionUsersGroups;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.web.http.HttpRequest;
@@ -87,20 +84,18 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter<ProjectM
       HttpRequest request) {
     String destination = "";
     String rootDestination = "/projectManager/jsp/";
-    SilverTrace.
-        info(COMPONENT_NAME, "ProjectManagerRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "User=" + projectManagerSC.getUserId() + " Function=" + function);
+
+    String role = projectManagerSC.getRole();
+    request.setAttribute("Role", role);
 
     try {
       if (function.startsWith("Main")) {
-        String role = projectManagerSC.getRole();
         if (projectManagerSC.isProjectDefined()) {
           List<TaskDetail> tasks = projectManagerSC.getTasks();
           Filtre filtre = projectManagerSC.getFiltre();
           boolean filtreActif = projectManagerSC.isFiltreActif();
           request.setAttribute("Tasks", tasks);
-          request.setAttribute("Role", role);
-          request.setAttribute("FiltreActif", Boolean.valueOf(filtreActif));
+          request.setAttribute("FiltreActif", filtreActif);
           request.setAttribute("Filtre", filtre);
           request.setAttribute("UserId", projectManagerSC.getUserId());
           destination = rootDestination + "tasksList.jsp";
@@ -121,17 +116,19 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter<ProjectM
         projectManagerSC.enrichirTask(project);
         request.setAttribute("Project", project);
 
-        if (projectManagerSC.getRole().equals("admin")) {
-          destination = rootDestination + "projectDefinition.jsp";
-        } else {
-          request.setAttribute("Attachments", projectManagerSC.getAttachments(String.
-              valueOf(project.getId())));
-          destination = rootDestination + "projectView.jsp";
-        }
+        destination = rootDestination + "projectView.jsp";
       } else if ("CreateProject".equals(function)) {
         TaskDetail project = request2Project(request, projectManagerSC);
         projectManagerSC.createProject(project);
         destination = getDestination("Main", projectManagerSC, request);
+      } else if ("ToUpdateProject".equals(function)) {
+        TaskDetail project = projectManagerSC.getCurrentProject();
+        project.setDateFin(projectManagerSC.getEndDateOfCurrentProjet());
+
+        projectManagerSC.enrichirTask(project);
+        request.setAttribute("Project", project);
+
+        destination = rootDestination + "projectDefinition.jsp";
       } else if ("UpdateProject".equals(function)) {
         updateCurrentProject(request, projectManagerSC);
         destination = getDestination("Main", projectManagerSC, request);
@@ -163,7 +160,6 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter<ProjectM
         TaskDetail task = projectManagerSC.getTask(id, false);
         request.setAttribute("Task", task);
         request.setAttribute("AbleToAddSubTask", isOrganiteurOrResponsable(projectManagerSC, task));
-        request.setAttribute("Role", projectManagerSC.getRole());
         destination = rootDestination + "taskView.jsp";
       } else if ("UnfoldTask".equals(function)) {
         String id = request.getParameter("Id");
@@ -216,7 +212,6 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter<ProjectM
         // ajout des pourcentages d'occupation des ressources
         projectManagerSC.updateOccupation(task);
         request.setAttribute("Task", task);
-        request.setAttribute("Role", projectManagerSC.getRole());
         request.setAttribute("PreviousTasks", previousTasks);
         destination = rootDestination + "taskUpdate.jsp";
       } else if ("UpdateTask".equals(function)) {
@@ -226,46 +221,11 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter<ProjectM
         String id = request.getParameter("Id");
         projectManagerSC.removeTask(id);
         destination = getDestination("Main", projectManagerSC, request);
-      } else if ("ToChooseDate".equals(function)) {
-        String inputId = request.getParameter("InputId");
-        String jsFunction = request.getParameter("JSFunction");
-        List<Date> holidays = projectManagerSC.getHolidayDates();
-        HttpSession session = request.getSession(true);
-        session.setAttribute("Silverpeas_NonSelectableDays", holidays);
-        destination = URLUtil.getURL(URLUtil.CMP_AGENDA, null, null)
-            + "calendar.jsp?JSCallback=" + jsFunction + "&indiceForm=0&indiceElem=" + inputId;
-      } else if ("ToUserPanel".equals(function)) {
-        try {
-          destination = projectManagerSC.initUserPanel();
-        } catch (Exception e) {
-          SilverTrace.warn(COMPONENT_NAME, "ProjectManagerRequestRouter.getDestination()",
-              "root.EX_USERPANEL_FAILED", "function = " + function, e);
-        }
-      } else if ("FromUserPanel".equals(function)) {
-        // récupération des valeurs de userPanel par userPanelPeas
-        Selection sel = projectManagerSC.getSelection();
-        // Get user selected in User Panel
-        String[] userIds = SelectionUsersGroups.getDistinctUserIds(sel.getSelectedElements(), null);
-        if (userIds.length != 0) {
-          UserDetail[] userDetails = SelectionUsersGroups.getUserDetails(userIds);
-          if (userDetails != null) {
-            UserDetail userDetail = userDetails[0];
-            request.setAttribute("ResponsableFullName", projectManagerSC.getUserFullName(
-                userDetail));
-            request.setAttribute("ResponsableId", userDetail.getId());
-          }
-        }
-        destination = rootDestination + "refreshFromUserPanel.jsp";
       } else if ("ToSelectResources".equals(function)) {
         // récupération de la liste des resources en cours
         Collection<TaskResourceDetail> currentResources = request2Resources(request);
         projectManagerSC.setCurrentResources(currentResources);
-        try {
-          destination = projectManagerSC.initUserSelect();
-        } catch (Exception e) {
-          SilverTrace.warn(COMPONENT_NAME, "ProjectManagerRequestRouter.getDestination()",
-              "root.EX_USERPANEL_FAILED", "function = " + function, e);
-        }
+        destination = projectManagerSC.initUserSelect();
       } else if ("FromUserSelect".equals(function)) {
         // récupération des valeurs de userPanel par userPanelPeas
         Selection sel = projectManagerSC.getSelection();
@@ -276,7 +236,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter<ProjectM
           // récupération de la liste des resources en cours
           Collection<TaskResourceDetail> currentResources = projectManagerSC.getCurrentResources();
           // création des resources à partir des users
-          Collection<TaskResourceDetail> resources = new ArrayList<TaskResourceDetail>();
+          Collection<TaskResourceDetail> resources = new ArrayList<>();
           for (UserDetail userDetail : userDetails) {
             TaskResourceDetail resourceDetail = new TaskResourceDetail();
             resourceDetail.setUserId(userDetail.getId());
@@ -299,39 +259,12 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter<ProjectM
           request.setAttribute("Resources", resources);
         }
         destination = rootDestination + "refreshFromUserSelect.jsp";
-      } else if ("ToAttachments".equals(function)) {
-        TaskDetail project = projectManagerSC.getCurrentProject();
-        String url = projectManagerSC.getComponentUrl() + function;
-        request.setAttribute("Task", project);
-        request.setAttribute("URL", url);
-        request.setAttribute("Role", projectManagerSC.getRole());
-        destination = rootDestination + "attachments.jsp";
-      } else if ("ToTaskAttachments".equals(function)) {
-        TaskDetail task = projectManagerSC.getCurrentTask();
-        String url = projectManagerSC.getComponentUrl() + function;
-        request.setAttribute("Task", task);
-        request.setAttribute("URL", url);
-        destination = rootDestination + "taskAttachments.jsp";
-      } else if ("ToTaskComments".equals(function)) {
-        request.setAttribute("Task", projectManagerSC.getCurrentTask());
-        request.setAttribute("URL", projectManagerSC.getComponentUrl() + function);
-        request.setAttribute("UserId", projectManagerSC.getUserId());
-        request.setAttribute("AbleToAddAttachments", isOrganiteurOrResponsable(projectManagerSC,
-            projectManagerSC.getCurrentTask()));
-        destination = rootDestination + "taskComments.jsp";
-      } else if ("ToComments".equals(function)) {
-        String url = projectManagerSC.getComponentUrl() + function;
-        request.setAttribute("Role", projectManagerSC.getRole());
-        request.setAttribute("URL", url);
-        request.setAttribute("UserId", projectManagerSC.getUserId());
-        request.setAttribute("InstanceId", projectManagerSC.getComponentId());
-        destination = rootDestination + "comments.jsp";
       } else if ("ToGantt".equals(function)) {
         // retrieve all data to display GANT diagram.
         String id = request.getParameter("Id");
         String viewMode = request.getParameter("viewMode");
         if (!StringUtil.isDefined(viewMode)) {
-          viewMode = "month";
+          viewMode = "quarter";
         }
         String startDate = request.getParameter("StartDate");
         TaskDetail actionMere = null;
@@ -382,7 +315,6 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter<ProjectM
         request.setAttribute("Tasks", tasks);
         request.setAttribute("ActionMere", actionMere);
         request.setAttribute("OldestAction", oldestAction);
-        request.setAttribute("Role", projectManagerSC.getRole());
         request.setAttribute("ViewMode", viewMode);
         // redirect to gant JSP view
         destination = rootDestination + viewDestination;
@@ -446,7 +378,6 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter<ProjectM
       destination = "/admin/jsp/errorpageMain.jsp";
     }
 
-
     return destination;
   }
 
@@ -509,7 +440,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter<ProjectM
   }
 
   private Collection<TaskResourceDetail> request2Resources(HttpServletRequest request) {
-    Collection<TaskResourceDetail> resources = new ArrayList<TaskResourceDetail>();
+    Collection<TaskResourceDetail> resources = new ArrayList<>();
     String allResources = request.getParameter("allResources");
     if (StringUtil.isDefined(allResources)) {
       String[] tabResources = allResources.split(",");
@@ -558,7 +489,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter<ProjectM
     TaskDetail oldest = null;
     TaskDetail task = null;
     for (int a = 0; a < tasks.size(); a++) {
-      task = (TaskDetail) tasks.get(a);
+      task = tasks.get(a);
       if (a == 0) {
         oldest = task;
       } else {
@@ -573,8 +504,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter<ProjectM
   private Boolean isOrganiteurOrResponsable(ProjectManagerSessionController projectManagerSC,
       TaskDetail task) {
     String role = projectManagerSC.getRole();
-    return Boolean.valueOf("admin".equals(role) || ("responsable".equals(role) && Integer.
-        parseInt(projectManagerSC.getUserId()) == task
-        .getResponsableId()));
+    return "admin".equals(role) || ("responsable".equals(role) && Integer.
+        parseInt(projectManagerSC.getUserId()) == task.getResponsableId());
   }
 }
