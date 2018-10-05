@@ -35,6 +35,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.Pair;
@@ -321,13 +322,13 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     return actionMere;
   }
 
-  public List<SimpleDocument> getAttachments(String id) {
+  private List<SimpleDocument> getAttachments(String id) {
     ResourceReference foreignKey = new ResourceReference(id, getComponentId());
     return AttachmentServiceProvider.getAttachmentService().listDocumentsByForeignKey(foreignKey,
         null);
   }
 
-  public int addTask(TaskDetail task) {
+  public int addTask(TaskDetail task, Collection<UploadedFile> uploadedFiles) {
     task.setInstanceId(getComponentId());
     task.setOrganisateurId(Integer.parseInt(getUserId()));
     task.setEstDecomposee(0);
@@ -358,7 +359,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     // reinitialise le filtre
     filtre = null;
 
-    return getProjectManagerService().addTask(task);
+    return getProjectManagerService().addTask(task, uploadedFiles);
   }
 
   public void removeTask(String id) {
@@ -369,35 +370,6 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
 
   public void updateCurrentTask() {
     getProjectManagerService().updateTask(getCurrentTask(), getUserId());
-  }
-
-  public String initUserPanel() {
-    String urlContext = URLUtil.getApplicationURL();
-    String hostUrl = urlContext + URLUtil.getURL(getSpaceId(), getComponentId())
-        + "FromUserPanel";
-    Selection sel = getSelection();
-    sel.resetAll();
-    sel.setHostSpaceName(getSpaceLabel());
-    sel.setGoBackURL(hostUrl);
-    sel.setCancelURL(hostUrl);
-    sel.setMultiSelect(false);
-    sel.setPopupMode(false);
-    sel.setSetSelectable(false);
-    Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(), null);
-    sel.setHostPath(null);
-    sel.setHostComponentName(hostComponentName);
-
-    ArrayList<String> roles = new ArrayList<>();
-    roles.add(ADMIN_ROLE);
-    roles.add(RESPONSABLE_ROLE);
-
-    // Add extra params
-    SelectionUsersGroups sug = new SelectionUsersGroups();
-    sug.setComponentId(getComponentId());
-    sug.setProfileNames(roles);
-    sel.setExtraParams(sug);
-
-    return Selection.getSelectionURL();
   }
 
   public String initUserSelect() {
@@ -488,11 +460,11 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
    *
    * @param project the new TaskDetail project
    */
-  public void createProject(TaskDetail project) {
+  public void createProject(TaskDetail project, Collection<UploadedFile> uploadedFiles) {
     project.setInstanceId(getComponentId());
     project.setOrganisateurId(getUserId());
     project.setMereId(-1);
-    int currentProjectId = getProjectManagerService().addTask(project);
+    int currentProjectId = getProjectManagerService().addTask(project, uploadedFiles);
     this.currentProject = getTask(Integer.toString(currentProjectId));
     projectDefined = Boolean.TRUE;
   }

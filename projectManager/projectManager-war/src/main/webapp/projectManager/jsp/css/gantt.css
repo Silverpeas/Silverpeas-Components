@@ -220,7 +220,7 @@ td.day { text-align:center; }
   display: block;
   float: left;
   margin-bottom: 10px;
-  width: 300px;
+  width: 240px;
 }
 #legende li div { margin-right:10px;}
 #legende li.centPourcent, .centPourcent {
@@ -291,7 +291,7 @@ td.day { text-align:center; }
 }
 
 #legende .task {
-  width:150px;
+  width:90px;
   background-position:0px 2px;
   float:left;}
 
@@ -343,7 +343,6 @@ td.day { text-align:center; }
   background-position: right -798px;
 }
 #legende .done {
-  width:150px;
   background-position:0px -797px;
   float:left;
 }
@@ -375,7 +374,6 @@ td.day { text-align:center; }
   background-position: right -898px;
 }
 #legende .not_started {
-  width:150px;
   background-position:0px -897px;
   float:left;
 }
@@ -407,7 +405,6 @@ td.day { text-align:center; }
   background-position: right -198px;
 }
 #legende .lost {
-  width:150px;
   background-position:0px -197px;
   float:left;
 }
@@ -439,7 +436,6 @@ td.day { text-align:center; }
   background-position: right -98px;
 }
 #legende .warning {
-  width:150px;
   background-position:0px -97px;
   float:left;
 }
@@ -471,7 +467,6 @@ td.day { text-align:center; }
   background-position: right -298px;
 }
 #legende .frost {
-  width:150px;
   background-position:0px -297px;
   float:left;
 }

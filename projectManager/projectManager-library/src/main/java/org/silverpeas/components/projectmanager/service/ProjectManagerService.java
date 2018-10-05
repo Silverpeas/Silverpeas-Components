@@ -20,12 +20,14 @@
  */
 package org.silverpeas.components.projectmanager.service;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
 import org.silverpeas.components.projectmanager.model.Filtre;
 import org.silverpeas.components.projectmanager.model.HolidayDetail;
 import org.silverpeas.components.projectmanager.model.TaskDetail;
+import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.util.ServiceProvider;
 
 public interface ProjectManagerService {
@@ -36,7 +38,7 @@ public interface ProjectManagerService {
 
   List<TaskDetail> getProjects(String instanceId);
 
-  int addTask(TaskDetail task);
+  int addTask(TaskDetail task, final Collection<UploadedFile> uploadedFiles);
 
   void removeTask(int id, String instanceId);
 

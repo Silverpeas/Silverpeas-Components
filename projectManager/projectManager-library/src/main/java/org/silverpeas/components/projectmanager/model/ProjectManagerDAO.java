@@ -515,7 +515,7 @@ public class ProjectManagerDAO {
         query.append("and ").append(filtreSQL);
       }
     }
-    query.append("order by dateDebut ASC");
+    query.append(" order by dateDebut ASC");
 
     PreparedStatement stmt = null;
     ResultSet rs = null;
@@ -727,7 +727,7 @@ public class ProjectManagerDAO {
       sql.append(" nom like '%").append(filtre.getActionNom()).append("%' ");
     }
 
-    if (isNotEmpty(filtre.getStatut())) {
+    if (isNotEmpty(filtre.getStatut()) && !"-1".equals(filtre.getStatut())) {
       andClause(sql);
       sql.append(" statut = ").append(filtre.getStatut());
     }

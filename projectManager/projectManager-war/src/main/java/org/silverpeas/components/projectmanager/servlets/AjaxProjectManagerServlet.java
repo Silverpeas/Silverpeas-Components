@@ -25,13 +25,14 @@ package org.silverpeas.components.projectmanager.servlets;
 
 import org.silverpeas.components.projectmanager.control.ProjectManagerSessionController;
 import org.silverpeas.components.projectmanager.model.TaskDetail;
-import org.apache.commons.lang3.CharEncoding;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.JSONCodec;
+import org.silverpeas.core.util.logging.SilverLogger;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -49,149 +50,89 @@ public class AjaxProjectManagerServlet extends HttpServlet {
   private static final long serialVersionUID = 798968548064856822L;
   private static final String ACTION_LOAD_TASK = "loadTask";
   private static final String ACTION_COLLAPSE_TASK = "collapseTask";
+  private static final String REQUEST_PARAM_TASKID = "TaskId";
+  private static final String REQUEST_PARAM_BEGINDATE = "BeginDate";
 
   @Override
-  public void doGet(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException {
+  public void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
     doPost(req, res);
   }
 
   @Override
-  public void doPost(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException {
+  public void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException {
     HttpSession session = req.getSession(true);
-    String elementId = req.getParameter("ElementId");
     String componentId = req.getParameter("ComponentId");
     // Retrieve action parameter
     String action = req.getParameter("Action");
-    boolean isJsonResult = false;
     ProjectManagerSessionController projectManagerSC = (ProjectManagerSessionController) session
         .getAttribute("Silverpeas_projectManager_" + componentId);
-    if (projectManagerSC != null) {
-      String output = "";
-      if ("ProcessUserOccupation".equals(action)) {
-        // mise à jour de la charge en tenant compte de la modification des dates de début et fin
-        String taskId = req.getParameter("TaskId");
-        String userId = req.getParameter("UserId");
-        String userCharge = req.getParameter("UserCharge");
-        String sBeginDate = req.getParameter("BeginDate");
-        String sEndDate = req.getParameter("EndDate");
-
-        Date beginDate = null;
-        try {
-          beginDate = projectManagerSC.uiDate2Date(sBeginDate);
-        } catch (ParseException ignored) {
-        }
-
-        Date endDate = null;
-        try {
-          endDate = projectManagerSC.uiDate2Date(sEndDate);
-        } catch (ParseException ignored) {
-        }
-
-
-        int occupation = projectManagerSC.checkOccupation(taskId, userId, beginDate, endDate);
-        occupation += Integer.parseInt(userCharge);
-        if (occupation > 100) {
-          output = "<font color=\"red\">" + occupation + " %</font>";
-        } else {
-          output = "<font color=\"green\">" + occupation + " %</font>";
-        }
-      } else if ("ProcessUserOccupationInit".equals(action)) {
-        // mise à jour de la charge en tenant compte de la modification des dates de début et fin
-        String userId = req.getParameter("UserId");
-        String userCharge = req.getParameter("UserCharge");
-        String sBeginDate = req.getParameter("BeginDate");
-        String sEndDate = req.getParameter("EndDate");
-
-        Date beginDate = null;
-        try {
-          beginDate = projectManagerSC.uiDate2Date(sBeginDate);
-        } catch (ParseException ignored) {
-        }
-
-
-        Date endDate = null;
-        try {
-          endDate = projectManagerSC.uiDate2Date(sEndDate);
-        } catch (ParseException ignored) {
-        }
-
-
-        int occupation = projectManagerSC.checkOccupation(userId, beginDate, endDate);
-        occupation = occupation + Integer.parseInt(userCharge);
-        if (occupation > 100) {
-          output = "<font color=\"red\">" + occupation + " %</font>";
-        } else {
-          output = "<font color=\"green\">" + occupation + " %</font>";
-        }
-      } else if ("ProcessEndDate".equals(action)) {
-        String taskId = req.getParameter("TaskId");
-        String charge = req.getParameter("Charge");
-        String sBeginDate = req.getParameter("BeginDate");
-
-        Date beginDate = null;
-        try {
-          beginDate = projectManagerSC.uiDate2Date(sBeginDate);
-        } catch (ParseException ignored) {
-        }
-        if (beginDate == null) {
-          beginDate = new Date();
-        }
-
-        Date endDate = projectManagerSC.processEndDate(taskId, charge, beginDate);
-        output = WebEncodeHelper.escapeXml(projectManagerSC.date2UIDate(endDate));
-      } else if ("ProcessEndDateInit".equals(action)) {
-        String charge = req.getParameter("Charge");
-        String sBeginDate = req.getParameter("BeginDate");
-
-        Date beginDate = null;
-        try {
-          beginDate = projectManagerSC.uiDate2Date(sBeginDate);
-        } catch (ParseException ignored) {
-        }
-        if (beginDate == null) {
-          beginDate = new Date();
-        }
-        Date endDate = projectManagerSC.processEndDate(charge, beginDate, componentId);
-        output = WebEncodeHelper.escapeXml(projectManagerSC.date2UIDate(endDate));
-      } else if (ACTION_LOAD_TASK.equals(action)) {
-        String taskId = req.getParameter("TaskId");
-        List<TaskDetail> tasks = projectManagerSC.getTasks(taskId);
-        output = JSONCodec.encodeObject(jsonResult -> {
-          jsonResult.put("success", true);
-          jsonResult.put("componentId", projectManagerSC.getComponentId());
-          jsonResult.put("tasks", getJSONTasks(tasks));
-          return jsonResult;
-        });
-        isJsonResult = true;
-      } else if (ACTION_COLLAPSE_TASK.equals(action)) {
-        String taskId = req.getParameter("TaskId");
-        isJsonResult = true;
-        output = JSONCodec.encodeObject(jsonResult -> {
-          jsonResult.put("success", true);
-          jsonResult.put("componentId", projectManagerSC.getComponentId());
-          List<Integer> listTaskIds = new ArrayList<>();
-          jsonResult.put("tasks", convertCollapsedTaskIdsIntoJSON(
-              getCollapsedTaskIds(projectManagerSC, taskId, listTaskIds)));
-          return jsonResult;
-        });
-      }
-
-      res.setContentType(FileUtil.XML_MIME_TYPE);
-      res.setHeader("charset", CharEncoding.UTF_8);
-      Writer writer = res.getWriter();
-      if (isJsonResult) {
-        writer.write(output);
-      } else {
-        writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-        writer.write("<ajax-response>");
-        writer.write("<response type=\"element\" id=\"" + elementId + "\">");
-        writer.write(output);
-        writer.write("</response>");
-        writer.write("</ajax-response>");
-      }
+    if (projectManagerSC == null) {
+      return;
     }
+    String output = "";
+    if ("ProcessUserOccupation".equals(action)) {
+      // mise à jour de la charge en tenant compte de la modification des dates de début et fin
+      String taskId = req.getParameter(REQUEST_PARAM_TASKID);
+      String userId = req.getParameter("UserId");
+      String userCharge = req.getParameter("UserCharge");
+      String sBeginDate = req.getParameter(REQUEST_PARAM_BEGINDATE);
+      String sEndDate = req.getParameter("EndDate");
+
+      Date beginDate = parseDate(sBeginDate, projectManagerSC);
+      Date endDate = parseDate(sEndDate, projectManagerSC);
+
+      int occupation = 0;
+      if (StringUtil.isDefined(taskId)) {
+        occupation = projectManagerSC.checkOccupation(taskId, userId, beginDate, endDate);
+      } else {
+        occupation = projectManagerSC.checkOccupation(userId, beginDate, endDate);
+      }
+
+      occupation += Integer.parseInt(userCharge);
+      output = formatOccupation(occupation);
+    } else if ("ProcessEndDate".equals(action)) {
+      String taskId = req.getParameter(REQUEST_PARAM_TASKID);
+      String charge = req.getParameter("Charge");
+      String sBeginDate = req.getParameter(REQUEST_PARAM_BEGINDATE);
+
+      Date beginDate = parseDate(sBeginDate, projectManagerSC);
+      if (beginDate == null) {
+        beginDate = new Date();
+      }
+
+      Date endDate;
+      if (StringUtil.isDefined(taskId)) {
+        endDate = projectManagerSC.processEndDate(taskId, charge, beginDate);
+      } else {
+        endDate = projectManagerSC.processEndDate(charge, beginDate, componentId);
+      }
+
+      output = WebEncodeHelper.escapeXml(projectManagerSC.date2UIDate(endDate));
+    } else if (ACTION_LOAD_TASK.equals(action)) {
+      String taskId = req.getParameter(REQUEST_PARAM_TASKID);
+      List<TaskDetail> tasks = projectManagerSC.getTasks(taskId);
+      output = JSONCodec.encodeObject(jsonResult -> {
+        jsonResult.put("success", true);
+        jsonResult.put("componentId", projectManagerSC.getComponentId());
+        jsonResult.putJSONArray("tasks", getJSONTasks(tasks));
+        return jsonResult;
+      });
+    } else if (ACTION_COLLAPSE_TASK.equals(action)) {
+      String taskId = req.getParameter(REQUEST_PARAM_TASKID);
+      output = JSONCodec.encodeObject(jsonResult -> {
+        jsonResult.put("success", true);
+        jsonResult.put("componentId", projectManagerSC.getComponentId());
+        List<Integer> listTaskIds = new ArrayList<>();
+        jsonResult.putJSONArray("tasks", convertCollapsedTaskIdsIntoJSON(
+            getCollapsedTaskIds(projectManagerSC, taskId, listTaskIds)));
+        return jsonResult;
+      });
+    }
+
+    res.setContentType(FileUtil.XML_MIME_TYPE);
+    res.setHeader("charset", Charsets.UTF_8.name());
+    Writer writer = res.getWriter();
+    writer.write(output);
   }
 
   private Function<JSONCodec.JSONArray, JSONCodec.JSONArray> convertCollapsedTaskIdsIntoJSON(
@@ -252,5 +193,22 @@ public class AjaxProjectManagerServlet extends HttpServlet {
       }
       return jsonTasks;
     });
+  }
+
+  private Date parseDate(String date, ProjectManagerSessionController projectManagerSC) {
+    try {
+      return projectManagerSC.uiDate2Date(date);
+    } catch (ParseException ignored) {
+      SilverLogger.getLogger(this).debug("Error when parsing date "+date);
+    }
+    return null;
+  }
+
+  private String formatOccupation(int occupation) {
+    String font = "<font color=\"green\">";
+    if (occupation > 100) {
+      font = "<font color=\"red\">";
+    }
+    return font + occupation + " %</font>";
   }
 }

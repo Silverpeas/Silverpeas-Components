@@ -23,10 +23,14 @@
  */
 package org.silverpeas.components.projectmanager.model;
 
-import org.silverpeas.core.personalorganizer.model.TodoDetail;
-import org.silverpeas.core.personalorganizer.model.Attendee;
 import org.apache.commons.lang3.StringUtils;
+import org.silverpeas.core.NotSupportedException;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.model.Contribution;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.personalorganizer.model.Attendee;
+import org.silverpeas.core.personalorganizer.model.TodoDetail;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -658,5 +662,46 @@ public class TaskDetail implements Serializable {
    */
   public static String getResourceType() {
     return TYPE;
+  }
+
+  public Contribution asContribution() {
+    return new TaskContribution(this);
+  }
+
+  private static class TaskContribution implements Contribution {
+    private static final long serialVersionUID = -6909201682577518080L;
+    private static final String NOT_SUPPORTED_MESSAGE =
+        "TaskContribution is not a real " + "Contribution for now";
+    private final TaskDetail task;
+
+    private TaskContribution(final TaskDetail task) {
+      this.task = task;
+    }
+
+    @Override
+    public ContributionIdentifier getContributionId() {
+      return ContributionIdentifier
+          .from(task.getInstanceId(), String.valueOf(task.getId()), task.getContributionType());
+    }
+
+    @Override
+    public User getCreator() {
+      throw new NotSupportedException(NOT_SUPPORTED_MESSAGE);
+    }
+
+    @Override
+    public Date getCreationDate() {
+      throw new NotSupportedException(NOT_SUPPORTED_MESSAGE);
+    }
+
+    @Override
+    public User getLastModifier() {
+      throw new NotSupportedException(NOT_SUPPORTED_MESSAGE);
+    }
+
+    @Override
+    public Date getLastModificationDate() {
+      throw new NotSupportedException(NOT_SUPPORTED_MESSAGE);
+    }
   }
 }

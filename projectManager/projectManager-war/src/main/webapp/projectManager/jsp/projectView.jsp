@@ -24,68 +24,70 @@
 
 --%>
 <%@page import="org.silverpeas.core.util.WebEncodeHelper"%>
-<%@page import="org.silverpeas.core.util.file.FileRepositoryManager"%>
-<%@page import="org.silverpeas.core.util.StringUtil"%>
-<%@page import="org.silverpeas.core.contribution.attachment.model.SimpleDocument"%>
-<%@ page import="org.silverpeas.core.admin.user.model.UserDetail" %>
+<%@ page import="org.silverpeas.core.admin.user.model.SilverpeasRole" %>
+<%@ page import="org.silverpeas.core.util.StringUtil" %>
+<%@ page import="org.silverpeas.core.admin.user.model.User" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 <%@ include file="check.jsp" %>
 
 <%
 TaskDetail	project = (TaskDetail) request.getAttribute("Project");
-List<SimpleDocument> attachments = (List<SimpleDocument>) request.getAttribute("Attachments");
+String 	role 		= (String) request.getAttribute("Role");
 
 String nom 			= project.getNom();
 String description 	= project.getDescription();
-if (description == null || description.equals("null")) {
-	description = "";
-}
 String dateDebut 	= resource.getOutputDate(project.getDateDebut());
 String dateFin 		= resource.getOutputDate(project.getDateFin());
-String orgaFullName	= project.getOrganisateurFullName();
 %>
 
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel/>
 </head>
-<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
+<body>
 <%
-browseBar.setDomainName(spaceLabel);
-browseBar.setComponentName(componentLabel, "Main");
-browseBar.setExtraInformation(resource.getString("projectManager.DefinirProjet"));
+if (role.equals("admin")) {
+  operationPane.addOperation(null, resource.getString("GML.update"), "ToUpdateProject");
+}
 
 out.println(window.printBefore());
 
 TabbedPane tabbedPane = gef.getTabbedPane();
 tabbedPane.addTab(resource.getString("projectManager.Projet"), "ToProject", true);
 tabbedPane.addTab(resource.getString("projectManager.Taches"), "Main", false);
-tabbedPane.addTab(resource.getString("projectManager.Commentaires"), "ToComments", false);
 tabbedPane.addTab(resource.getString("projectManager.Gantt"), "ToGantt", false);
+if ("admin".equals(role)) {
+  tabbedPane.addTab(resource.getString("projectManager.Calendrier"), "ToCalendar", false);
+}
 out.println(tabbedPane.print());
+%>
 
-out.println(frame.printBefore());
-%>
-<center>
-<table border="0" cellspacing="5"><tr><td width="100%" valign="top">
-<%
-Board board = gef.getBoard();
-out.println(board.printBefore());
-%>
+<div class="rightContent">
+  <viewTags:displayAttachments componentInstanceId="<%=componentId%>"
+                               resourceId="<%=String.valueOf(project.getId())%>"
+                               resourceType="<%=project.getContributionType()%>"
+                               highestUserRole="<%=SilverpeasRole.from(role)%>"/>
+</div>
+
+<div class="principalContent">
 <table cellpadding="5">
 <tr>
 	<td class="txtlibform"><%=resource.getString("projectManager.ProjetChef")%> :</td>
-    <td><%=orgaFullName%></td>
+    <td><view:username userId="<%=String.valueOf(project.getOrganisateurId())%>" /></td>
 </tr>
 <tr>
-	<td class="txtlibform"><%=resource.getString("projectManager.ProjetNom")%> <%=resource.getString("projectManager.Action")%> :</td>
+	<td class="txtlibform"><%=resource.getString("projectManager.ProjetNom")%> :</td>
     <td><%=nom%></td>
 </tr>
+  <% if (StringUtil.isDefined(description)) { %>
 <tr>
 	<td class="txtlibform" valign="top"><%=resource.getString("projectManager.TacheDescription")%> :</td>
   <td><%=WebEncodeHelper.javaStringToHtmlParagraphe(description)%></td>
 </tr>
+  <% } %>
 <tr>
 	<td class="txtlibform"><%=resource.getString("projectManager.ProjetDateDebut")%> :</td>
     <td><%=dateDebut%></td>
@@ -95,57 +97,10 @@ out.println(board.printBefore());
     <td><%=dateFin%></td>
 </tr>
 </table>
+  <view:comments userId="<%=User.getCurrentRequester().getId()%>" componentId="<%=componentId%>" resourceType="ProjectManager" resourceId="-1" indexed="true"/>
+</div>
+
 <%
-out.println(board.printAfter());
-%>
-</td>
-<td valign="top">
-	<%
-		if (attachments != null && ! attachments.isEmpty()) {
-			out.println(board.printBefore());
-			out.println("<table width=\"200\">");
-	      out.println("<tr><td align=\"center\"><img src=\""+m_context+"/util/icons/attachedFiles.gif\"></td></tr>");
-        for(SimpleDocument attachmentDetail : attachments) {
-            String title = attachmentDetail.getTitle();
-            String info = attachmentDetail.getDescription();
-            String author = "";
-            if (attachmentDetail.getCreatedBy() != null && attachmentDetail.getCreatedBy().length() > 0) {
-              UserDetail userDetail = UserDetail.getById(attachmentDetail.getCreatedBy());
-              author = "<br/><i>" + userDetail.getDisplayedName() + "</i>";
-            }
-            out.println("<tr>");
-            out.println("<td><img alt=\"\" src=\"" + FileRepositoryManager.
-                getFileIcon(attachmentDetail.getFilename()) + "\" width=20>&nbsp;");
-            out.println("<a href=\"" + m_context + attachmentDetail.getAttachmentURL()
-                + "\" target=\"_blank\">");
-            if (StringUtil.isDefined(title)) {
-              out.println(title);
-            } else {
-              out.println(attachmentDetail.getFilename());
-            }
-            out.println("</a> " + author + "<br/>");
-            if (title != null && title.length() > 0) {
-              out.println(attachmentDetail.getFilename());
-              out.println(" / ");
-            }
-            out.println(FileRepositoryManager.formatFileSize(attachmentDetail.getSize()) + " / "
-                + FileRepositoryManager.getFileDownloadTime(attachmentDetail.getSize()) + "<br/>");
-            if (info != null && info.length() > 0) {
-              out.println("<i>" + info + "</i>");
-            }
-            out.println("</td></tr>");
-            out.println("<tr><td>&nbsp;</td></tr>");
-            author = "";
-          }
-          out.println("</table>");
-          out.println(board.printAfter());
-	    }
-	%>
-</td>
-</tr></table>
-</center>
-<%
-out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
 </body>
