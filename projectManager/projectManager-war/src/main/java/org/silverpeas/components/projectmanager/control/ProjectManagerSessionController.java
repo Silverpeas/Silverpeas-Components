@@ -35,6 +35,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.Pair;
@@ -327,7 +328,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
         null);
   }
 
-  public int addTask(TaskDetail task) {
+  public int addTask(TaskDetail task, Collection<UploadedFile> uploadedFiles) {
     task.setInstanceId(getComponentId());
     task.setOrganisateurId(Integer.parseInt(getUserId()));
     task.setEstDecomposee(0);
@@ -358,7 +359,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     // reinitialise le filtre
     filtre = null;
 
-    return getProjectManagerService().addTask(task);
+    return getProjectManagerService().addTask(task, uploadedFiles);
   }
 
   public void removeTask(String id) {
@@ -459,11 +460,11 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
    *
    * @param project the new TaskDetail project
    */
-  public void createProject(TaskDetail project) {
+  public void createProject(TaskDetail project, Collection<UploadedFile> uploadedFiles) {
     project.setInstanceId(getComponentId());
     project.setOrganisateurId(getUserId());
     project.setMereId(-1);
-    int currentProjectId = getProjectManagerService().addTask(project);
+    int currentProjectId = getProjectManagerService().addTask(project, uploadedFiles);
     this.currentProject = getTask(Integer.toString(currentProjectId));
     projectDefined = Boolean.TRUE;
   }

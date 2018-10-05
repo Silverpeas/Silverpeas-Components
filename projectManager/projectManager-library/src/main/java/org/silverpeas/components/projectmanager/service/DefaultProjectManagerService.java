@@ -29,10 +29,13 @@ import org.silverpeas.components.projectmanager.model.TaskDetail;
 import org.silverpeas.components.projectmanager.model.TaskPK;
 import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.model.Attachments;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
+import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.notification.user.client.NotificationManagerException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
@@ -54,6 +57,7 @@ import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -195,7 +199,8 @@ public class DefaultProjectManagerService implements ProjectManagerService {
   }
 
   @Override
-  public int addTask(TaskDetail task) {
+  @Transactional
+  public int addTask(TaskDetail task, final Collection<UploadedFile> uploadedFiles) {
 
     Connection con = getConnection();
     try {
@@ -215,6 +220,8 @@ public class DefaultProjectManagerService implements ProjectManagerService {
       updateChargesMotherTask(con, task);
       // insertion de la tache correspondante dans le gestionnaire de taches du responsable
       addTodo(task);
+      // attachments
+      Attachments.from(uploadedFiles).attachTo(task.asContribution());
       // indexation de la task
       createIndex(task);
       if (task.getMereId() != -1) {
@@ -230,6 +237,7 @@ public class DefaultProjectManagerService implements ProjectManagerService {
   }
 
   @Override
+  @Transactional
   public void removeTask(int id, String instanceId) {
 
     Connection con = getConnection();
@@ -286,6 +294,7 @@ public class DefaultProjectManagerService implements ProjectManagerService {
   }
 
   @Override
+  @Transactional
   public void updateTask(TaskDetail task, String userId) {
 
     Connection con = getConnection();
@@ -642,6 +651,7 @@ public class DefaultProjectManagerService implements ProjectManagerService {
   }
 
   @Override
+  @Transactional
   public void calculateAllTasksDates(String instanceId, int projectId,
       String userId) {
     // récupère toutes les tâches de premier niveau sans précédence
@@ -765,6 +775,7 @@ public class DefaultProjectManagerService implements ProjectManagerService {
   }
 
   @Override
+  @Transactional
   public void addHolidayDates(List<HolidayDetail> holidayDates) {
 
     Connection con = getConnection();
@@ -780,6 +791,7 @@ public class DefaultProjectManagerService implements ProjectManagerService {
   }
 
   @Override
+  @Transactional
   public void removeHolidayDate(HolidayDetail holiday) {
 
     Connection con = getConnection();
@@ -793,6 +805,7 @@ public class DefaultProjectManagerService implements ProjectManagerService {
   }
 
   @Override
+  @Transactional
   public void removeHolidayDates(List<HolidayDetail> holidayDates) {
 
     Connection con = getConnection();

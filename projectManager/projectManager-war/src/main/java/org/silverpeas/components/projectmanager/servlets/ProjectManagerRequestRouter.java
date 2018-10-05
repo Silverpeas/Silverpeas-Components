@@ -119,7 +119,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter<ProjectM
         destination = rootDestination + "projectView.jsp";
       } else if ("CreateProject".equals(function)) {
         TaskDetail project = request2Project(request, projectManagerSC);
-        projectManagerSC.createProject(project);
+        projectManagerSC.createProject(project, request.getUploadedFiles());
         destination = getDestination("Main", projectManagerSC, request);
       } else if ("ToUpdateProject".equals(function)) {
         TaskDetail project = projectManagerSC.getCurrentProject();
@@ -182,7 +182,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter<ProjectM
         destination = rootDestination + "taskAdd.jsp";
       } else if ("AddTask".equals(function)) {
         TaskDetail task = request2TaskDetail(request, projectManagerSC);
-        projectManagerSC.addTask(task);
+        projectManagerSC.addTask(task, request.getUploadedFiles());
         destination = getDestination("Main", projectManagerSC, request);
       } else if ("ProcessEndDate".equals(function)) {
         // Création ou modification ?

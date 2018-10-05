@@ -30,6 +30,9 @@
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
+<c:url var="dummyUrl" value="/RAjaxProjectManagerServlet/dummy"/>
 
 <%@ include file="check.jsp" %>
 
@@ -74,7 +77,7 @@ roles.add("responsable");
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<view:looknfeel withCheckFormScript="true"/>
+<view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
 <view:includePlugin name="datepicker"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 <script type="text/javascript">
@@ -247,6 +250,7 @@ function extractBeginDateFromPrevious() {
 function changePrevious() {
     document.actionForm.DateDebut.value = extractBeginDateFromPrevious();
     document.actionForm.DateFin.value = "";
+    reloadDateFinAndOccupations();
 }
 </script>
 
@@ -274,13 +278,18 @@ function init() {
 }
 
 function reloadOccupation(i) {
-	var userId = document.getElementById("Resource"+i).value;
-	var charge = document.getElementById("Charge"+i).value;
-	var dateDebut = document.getElementById("DateDebut").value;
-	var dateFin = document.getElementById("DisplayDateFin").innerHTML;
-  var url = '<%=m_context%>/RAjaxProjectManagerServlet/dummy?ComponentId=<%=componentId%>';
-  url += '&UserId='+userId+'&UserCharge='+charge+'&BeginDate='+dateDebut+'&EndDate='+dateFin+'&Action=ProcessUserOccupation';
-	sp.load("#Occupation"+i, url);
+  var userId = document.getElementById("Resource" + i).value;
+  var charge = document.getElementById("Charge" + i).value;
+  var dateDebut = document.getElementById("DateDebut").value;
+  var dateFin = document.getElementById("DisplayDateFin").innerHTML;
+  sp.ajaxRequest('${dummyUrl}')
+    .withParam('ComponentId', '<%=componentId%>')
+    .withParam('UserId', userId)
+    .withParam('UserCharge', charge)
+    .withParam('BeginDate', dateDebut)
+    .withParam('EndDate', dateFin)
+    .withParam('Action', 'ProcessUserOccupation')
+    .loadTarget('#Occupation' + i);
 }
 
 function reloadOccupations() {
@@ -308,22 +317,27 @@ function reloadOccupations() {
 }
 
 function reloadDateFinAndOccupations() {
-	// mise � jour de la date de fin
-	if (isFieldDateCorrect(document.getElementById("DateDebut"))) {
-		var charge = document.getElementById("Charge").value;
-		var dateDebut = document.getElementById("DateDebut").value;
-		var url = '<%=m_context%>/RAjaxProjectManagerServlet/dummy?ComponentId=<%=componentId%>';
-		url += '&Charge='+charge+'&BeginDate='+dateDebut+'&Action=ProcessEndDate';
-		sp.load("#DisplayDateFin", url);
-
-		setTimeout("reloadOccupations();", 100);
-	} else {
-		window.alert("<%=resource.getString("GML.theField")%> '<%=resource.getString("projectManager.TacheDateDebut")%>' <%=resource.getString("GML.MustContainsCorrectDate")%>\n");
-	}
+  // end date update
+  var $dateDebut = document.getElementById("DateDebut");
+  if (isFieldDateCorrect($dateDebut)) {
+    var charge = document.getElementById("Charge").value;
+    if (charge) {
+      sp.ajaxRequest('${dummyUrl}')
+        .withParam('ComponentId', '<%=componentId%>')
+        .withParam('Charge', charge)
+        .withParam('BeginDate', $dateDebut.value)
+        .withParam('Action', 'ProcessEndDate')
+        .loadTarget('#DisplayDateFin')
+        .then(reloadOccupations);
+    }
+  } else {
+    var errorMsg = "<%=resource.getString("GML.theField")%> '<%=resource.getString("projectManager.TacheDateDebut")%>' <%=resource.getString("GML.MustContainsCorrectDate")%>\n";
+    SilverpeasError.add(errorMsg).show();
+  }
 }
 </script>
 </head>
-<body onload="init()">
+<body onload="init();changePrevious();">
 <%
 browseBar.setExtraInformation(resource.getString("projectManager.CreerTache"));
 
@@ -332,8 +346,8 @@ operationPane.addOperation(resource.getIcon("projectManager.userPanel"), resourc
 out.println(window.printBefore());
 out.println(frame.printBefore());
 %>
-<view:board>
 <form name="actionForm" action="AddTask" method="post">
+<view:board>
 <table cellpadding="5">
 <% if (task != null) { %>
 	<tr>
@@ -495,8 +509,9 @@ out.println(frame.printBefore());
 	</div></td>
 </tr>
 </table>
-</form>
 </view:board>
+<view:fileUpload fieldset="true" jqueryFormSelector="form[name='actionForm']" />
+</form>
 <br/>
 <%
 ButtonPane buttonPane = gef.getButtonPane();

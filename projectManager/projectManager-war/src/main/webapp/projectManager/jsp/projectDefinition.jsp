@@ -54,7 +54,7 @@ if (project != null)
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<view:looknfeel withCheckFormScript="true"/>
+<view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
 <view:includePlugin name="datepicker"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 <script type="text/javascript">
@@ -111,11 +111,12 @@ if (project != null)
 }
 
 out.println(frame.printBefore());
-
+%>
+<form name="projectForm" action="<%=formAction%>" method="post">
+<%
 Board board = gef.getBoard();
 out.println(board.printBefore());
 %>
-<form name="projectForm" action="<%=formAction%>" method="post">
 <table cellpadding="5">
 <tr>
 	<td class="txtlibform"><%=resource.getString("projectManager.ProjetChef")%> :</td>
@@ -138,10 +139,11 @@ out.println(board.printBefore());
     <td><%=dateFin%></td>
 </tr>
 </table>
-</form>
 <%
 out.println(board.printAfter());
 %>
+<view:fileUpload fieldset="true" jqueryFormSelector="form[name='projectForm']" />
+</form>
 <br/>
 <%
 ButtonPane buttonPane = gef.getButtonPane();
