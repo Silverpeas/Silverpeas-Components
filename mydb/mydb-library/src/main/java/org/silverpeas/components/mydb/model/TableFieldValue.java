@@ -25,6 +25,7 @@
 package org.silverpeas.components.mydb.model;
 
 import org.silverpeas.components.mydb.service.MyDBRuntimeException;
+import org.silverpeas.core.util.StringUtil;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -115,7 +116,7 @@ public class TableFieldValue implements Comparable<TableFieldValue> {
     } else if (SqlTypes.isTimestamp(this.type)) {
       this.value = Timestamp.valueOf(value);
     } else if (SqlTypes.isBoolean(this.type)) {
-      this.value = Boolean.valueOf(value);
+      this.value = StringUtil.getBooleanValue(value);
     } else if (SqlTypes.isBigInteger(this.type)) {
       this.value = BigInteger.valueOf(Long.valueOf(value));
     } else if (SqlTypes.isDecimal(this.type)) {

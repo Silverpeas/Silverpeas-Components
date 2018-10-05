@@ -71,6 +71,7 @@
               <div class="champs">
                 <c:set var="readOnlyAttr" value=""/>
                 <c:set var="fieldClass"   value=""/>
+                <c:set var="fieldValue"   value=""/>
                 <c:if test="${field.foreignKey}">
                   <c:set var="readOnlyAttr" value="readonly"/>
                 </c:if>
@@ -78,12 +79,15 @@
                   <c:set var="fieldClass" value='class="mandatory"'/>
                   <c:set var="displayMandatoryLegend" value="true"/>
                 </c:if>
+                <c:if test="${field.defaultValueDefined}">
+                  <c:set var="fieldValue" value="${field.defaultValue}"/>
+                </c:if>
                 <c:choose>
                   <c:when test="${field.ofTypeText and field.size / 100 > 1}">
-                    <textarea id="field-${field.name}-value" name="${field.name}" ${fieldClass} cols="100" rows="${field.size / 100}" maxlength="${field.size}" ${readOnlyAttr}></textarea>
+                    <textarea id="field-${field.name}-value" name="${field.name}" ${fieldClass} cols="100" rows="${field.size / 100}" maxlength="${field.size}" ${readOnlyAttr}>${fieldValue}</textarea>
                   </c:when>
                   <c:when test="${not field.ofTypeBinary}">
-                    <input id="field-${field.name}-value" name="${field.name}" ${fieldClass} type="text" maxlength="${field.size}" ${readOnlyAttr} value=""/>
+                    <input id="field-${field.name}-value" name="${field.name}" ${fieldClass} type="text" maxlength="${field.size}" ${readOnlyAttr} value="${fieldValue}"/>
                   </c:when>
                 </c:choose>
                 <c:if test="${field.foreignKey}">

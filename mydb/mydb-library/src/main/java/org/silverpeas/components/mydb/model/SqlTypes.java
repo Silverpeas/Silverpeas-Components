@@ -73,7 +73,7 @@ public class SqlTypes {
   }
 
   public static boolean isBoolean(final int type) {
-    return type == Types.BOOLEAN;
+    return type == Types.BOOLEAN || type == Types.BIT;
   }
 
   public static boolean isBigInteger(final int type) {

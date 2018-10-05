@@ -25,6 +25,7 @@
 package org.silverpeas.components.mydb.model;
 
 import java.sql.JDBCType;
+import java.sql.Types;
 import java.util.Objects;
 
 /**
@@ -77,7 +78,11 @@ public class DbColumn {
    * @return the size of this column according to its type.
    */
   public int getSize() {
-    return descriptor.getSize();
+    int size = descriptor.getSize();
+    if (getType() == Types.BIT && descriptor.getSize() == 1) {
+      size = Math.max("true".length(), "false".length());
+    }
+    return size;
   }
 
   /**

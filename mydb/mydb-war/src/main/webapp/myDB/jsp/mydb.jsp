@@ -169,6 +169,9 @@
             } else {
               formSender(row);
             }
+          },
+          callbackOnClose: function() {
+            form.remove();
           }
         });
       }
@@ -231,7 +234,6 @@
      * current table. This function is invoked by the JSP rendered into the popup of row adding.
      */
     function openForeignKey(tableName, fieldName) {
-      console.log('Open table ' + tableName + ' to choose a row as foreign key for ' + fieldName);
       fkRowId = null;
       sp.ajaxRequest('ViewTargetTable').withParam('${tableView}', tableName).send().then(
           function(response) {
