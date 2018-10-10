@@ -31,153 +31,48 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 
-<fmt:setLocale value="${sessionScope[sessionController].language}" />
+<c:set var="_userLanguage" value="${requestScope.resources.language}"/>
+<fmt:setLocale value="${_userLanguage}"/>
+
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 
-<c:set var="aggregate" value="${requestScope.aggregate}"/>
 <c:set var="rssItems" value="${requestScope.items}"/>
 <c:set var="rssChannels" value="${requestScope.allChannels}"/>
-<c:set var="role" value="${requestScope.Role}"/>
 
 <c:set var="ctxPath" value="${pageContext.request.contextPath}"/>
-<c:set var="componentId" value="<%=componentId%>"/>
 
-
-
-
-
-
-<%
-	List 	channels 	= (List) request.getAttribute("Channels");
-	String 	role 		= (String) request.getAttribute("Role");
-//  Boolean aggregate = (Boolean) request.getAttribute("aggregate");
-//  List<RSSItem> items = (List<RSSItem>) request.getAttribute("items");
-
-	SimpleDateFormat dateFormatter = new SimpleDateFormat(resource.getString("rss.dateFormat"));
-%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel/>
 <script type="text/javascript">
-var addChannelWindow = window;
-var updateChannelWindow = window;
-
-function addChannel() {
-  windowName = "addChannelWindow";
-	larg = "750";
-	haut = "280";
-  windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
-  if (!addChannelWindow.closed && addChannelWindow.name== "addChannelWindow") {
-    addChannelWindow.close();
-  }
-  addChannelWindow = SP_openWindow("ToCreateChannel", windowName, larg, haut, windowParams);
-}
-
-function updateChannel(id) {
-  windowName = "updateChannelWindow";
-	larg = "750";
-	haut = "280";
-  windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
-  if (!updateChannelWindow.closed && updateChannelWindow.name=="updateChannelWindow") {
-    updateChannelWindow.close();
-  }
-  updateChannelWindow = SP_openWindow("ToUpdateChannel?Id="+id, windowName, larg, haut, windowParams);
-}
-
-function deleteChannel(id) {
-	document.deleteChannel.Id.value = id;
-	document.deleteChannel.submit();
-}
-
-function loadChannelsItem() {
-  $.ajax({
-    url: '<c:out value="${ctxPath}/services/rss/${componentId}"/>',
-    data: { agregate: 'yes'},
-    success: function(data){
-      alert('loadChannelsItem succeeded on application id : <%=componentId%>');
-    },
-    error: function(HttpRequest, textStatus, errorThrown) {
-      //alert('XMLHttpRequest error');
-      //HttpRequest, textStatus, errorThrown
-      notyError(HttpRequest.status + " - " + textStatus+" - "+errorThrown);
-    },
-    dataType: 'json'
-  });
-}
-
 $(document).ready(function(){
 	$('.description-item-rssNews a').attr( "target" , "_blank"  ) ;
 
 	$('.deploy-item').click(function() {
 		$(this).parent().children('.itemDeploy').toggle();
 	});
-	$('.deploy-all-item').click(function() {
-		$('.itemDeploy').show();
-		$('.btn-deploy-all-item').toggle();
-	});
-	$('.bend-all-item').click(function() {
-		$('.itemDeploy').hide();
-		$('.btn-deploy-all-item').toggle();
-	});
-/*
-	$('.filter-channel').click(function() {
-		$('.item-channel').hide();
-		$('.'+this.id).show();
-	});
-*/
+
 <c:forEach var="channel" items="${rssChannels}">
   <c:if test="${channel.displayImage == 0}">$(".channel_${channel.PK.id} .img-item-rssNews").hide();</c:if>
 </c:forEach>
 
-
 });
-
-/**
- * This javascript method allow user to switch from Separated view to Aggregated view
- */
-function displayAggregatedView() {
-  $("#hiddenRssFormAction").val("<%=RSSViewType.AGGREGATED.toString()%>");
-  $.progressMessage();
-  document.rssForm.submit();
-}
-/**
- * This javascript method allow user to switch from Aggregated view to Separated view
- */
-function displaySeparatedView() {
-  $("#hiddenRssFormAction").val("<%=RSSViewType.SEPARATED.toString()%>");
-  $.progressMessage();
-  document.rssForm.submit();
-}
-
-/**
- * function that display only channelId items
- */
-function filterChannel(channelId) {
-  $("li[class^='item-channel channel_'], li[class*='item-channel']").hide();
-  $("li[class*='item-channel channel_" + channelId + "']").show();
-  $("#filterChannelAnchorId").attr("class", "");
-}
-
-function displayAll() {
-  $("li[class*='item-channel']").show();
-  $("#filterChannelAnchorId").attr("class", "active");
-}
-
 </script>
 </head>
-<body class="rssAgregator portlet" id="<%=componentId%>">
+<body class="rssAgregator portlet">
 <view:window>
 <c:if test="${not empty rssItems}">
   <div id="rssNews">
 
 	  <ul>
 
-	<jsp:useBean id="item" type="org.silverpeas.components.rssaggregator.model.RSSItem"/>
   <c:forEach var="item" items="${rssItems}">
-		<c:set var="channelName" value="${item.channelTitle}"/>
+    <jsp:useBean id="item" type="org.silverpeas.components.rssaggregator.model.RSSItem"/>
+    <c:set var="channelName" value="${item.channelTitle}"/>
 
 		<c:if test="${fn:length(channelName) gt 40}">
 		  <c:set var="channelName" value="${fn:substring(item.channelTitle, 0, 39)}..." />
@@ -194,9 +89,9 @@ function displayAll() {
 				<a href="${item.channelImage.link }" target="_blank"><img class="img-item-rssNews" src="${item.channelImage.url}" border="0" /></a>
 				</c:if>
 				<span  class="channelName-rssNews"><c:out value="${channelName}"/> </span>
-				<a href="<c:out value="${item.itemLink}"/>"><c:out value="${item.itemTitle}"/> </a>
+				<a href="<c:out value="${item.itemLink}"/>" target="_blank"><c:out value="${item.itemTitle}"/> </a>
 			</h3>
-			<div class="lastUpdate-item-rssNews"><c:out value="${dateFormatter.format(item.itemDate)}"/></div>
+			<div class="lastUpdate-item-rssNews"><c:out value="${silfn:formatDateAndHour(item.itemDate, _userLanguage)}"/></div>
 			<div class="itemDeploy" >
 				<div class="description-item-rssNews"><c:out value="${item.itemDescription}" escapeXml="false"/></div>
 				<br class="clear"/>
@@ -207,16 +102,6 @@ function displayAll() {
 	  </ul>
   </div>
 </c:if>
-
-
-<form name="refresh" action="LoadChannels" method="post"></form>
-<form name="deleteChannel" action="DeleteChannel" method="post">
-  <input type="hidden" name="Id"/>
-</form>
-<form name="rssForm" action="Main" method="post">
-  <input type="hidden" name="action" id="hiddenRssFormAction"/>
-  <input type="hidden" name="id" id="hiddenRssFormId"/>
-</form>
 
 </view:window>
 
