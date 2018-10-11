@@ -26,12 +26,12 @@
 
 package org.silverpeas.components.infoletter;
 
-import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
-import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
 import org.silverpeas.components.infoletter.model.InfoLetter;
 import org.silverpeas.components.infoletter.model.InfoLetterPublication;
 import org.silverpeas.components.infoletter.model.InfoLetterService;
 import org.silverpeas.components.infoletter.service.InfoLetterServiceProvider;
+import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
+import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -39,17 +39,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-/**
- * Class declaration
- * @author
- */
 @Singleton
 @Named("infoLetter" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
 public class InfoLetterStatistics implements ComponentStatisticsProvider {
 
   @Override
-  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
-      throws Exception {
+  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId) {
     List<InfoLetterPublication> publications = getInfoLetters(componentId);
     List<UserIdCountVolumeCouple> myArrayList = new ArrayList<>(publications.size());
 
@@ -63,7 +58,7 @@ public class InfoLetterStatistics implements ComponentStatisticsProvider {
     return myArrayList;
   }
 
-  public List<InfoLetterPublication> getInfoLetters(String componentId) {
+  private List<InfoLetterPublication> getInfoLetters(String componentId) {
     List<InfoLetterPublication> publications = new ArrayList<>();
     InfoLetterService dataInterface = InfoLetterServiceProvider.getInfoLetterData();
     List<InfoLetter> listLettres = dataInterface.getInfoLetters(componentId);
@@ -76,5 +71,4 @@ public class InfoLetterStatistics implements ComponentStatisticsProvider {
     }
     return publications;
   }
-
 }

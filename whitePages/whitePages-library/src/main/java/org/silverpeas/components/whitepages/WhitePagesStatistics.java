@@ -23,27 +23,24 @@
  */
 package org.silverpeas.components.whitepages;
 
-import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
-import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
 import org.silverpeas.components.whitepages.control.CardManager;
 import org.silverpeas.components.whitepages.model.Card;
+import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
+import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 
-/**
- * Class declaration
- * @author
- */
 @Singleton
 @Named("whitePages" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
 public class WhitePagesStatistics implements ComponentStatisticsProvider {
 
   @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
-      throws Exception {
+      throws SilverpeasException {
     Collection<Card> c = getWhitePages(componentId);
     ArrayList<UserIdCountVolumeCouple> myArrayList = new ArrayList<>(c.size());
     for (Card detail : c) {
@@ -56,8 +53,11 @@ public class WhitePagesStatistics implements ComponentStatisticsProvider {
     return myArrayList;
   }
 
-  public Collection<Card> getWhitePages(String componentId) throws WhitePagesException {
-    return CardManager.getInstance().getCards(componentId);
+  private Collection<Card> getWhitePages(String componentId) throws SilverpeasException {
+    try {
+      return CardManager.getInstance().getCards(componentId);
+    } catch (WhitePagesException e) {
+      throw new SilverpeasException(e);
+    }
   }
-
 }

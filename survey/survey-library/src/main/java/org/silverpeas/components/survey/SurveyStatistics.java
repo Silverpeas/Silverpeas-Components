@@ -60,9 +60,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-/**
- * @author
- */
 @Singleton
 @Named("survey" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
 public class SurveyStatistics implements ComponentStatisticsProvider {
@@ -70,14 +67,8 @@ public class SurveyStatistics implements ComponentStatisticsProvider {
   @Inject
   private QuestionContainerService questionContainerService;
 
-  /**
-   * @param spaceId the space identifier
-   * @param componentId the component instance identifier
-   * @return
-   */
   @Override
-  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
-      throws Exception {
+  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId) {
     List<UserIdCountVolumeCouple> myArrayList = new ArrayList<>();
 
     Collection<QuestionContainerHeader> c = getOpenedSurveys(spaceId, componentId);
@@ -99,29 +90,21 @@ public class SurveyStatistics implements ComponentStatisticsProvider {
     }
   }
 
-  /**
-   * @return
-   */
   private QuestionContainerService getQuestionContainerService() {
     return questionContainerService;
   }
 
-  /**
-   * @param spaceId the space identifier
-   * @param componentId the component instance identifier
-   * @return
-   */
-  public Collection<QuestionContainerHeader> getOpenedSurveys(String spaceId, String componentId) {
+  private Collection<QuestionContainerHeader> getOpenedSurveys(String spaceId, String componentId) {
     return getQuestionContainerService()
         .getOpenedQuestionContainers(new QuestionContainerPK(null, spaceId, componentId));
   }
 
-  public Collection<QuestionContainerHeader> getClosedSurveys(String spaceId, String componentId) {
+  private Collection<QuestionContainerHeader> getClosedSurveys(String spaceId, String componentId) {
     return getQuestionContainerService()
         .getClosedQuestionContainers(new QuestionContainerPK(null, spaceId, componentId));
   }
 
-  public Collection<QuestionContainerHeader> getInWaitSurveys(String spaceId, String componentId) {
+  private Collection<QuestionContainerHeader> getInWaitSurveys(String spaceId, String componentId) {
     return getQuestionContainerService()
         .getInWaitQuestionContainers(new QuestionContainerPK(null, spaceId, componentId));
   }

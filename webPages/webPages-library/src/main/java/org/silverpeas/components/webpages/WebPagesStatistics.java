@@ -23,8 +23,8 @@
  */
 package org.silverpeas.components.webpages;
 
-import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
 import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
+import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -36,12 +36,13 @@ import java.util.List;
 @Named("webPages" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
 public class WebPagesStatistics implements ComponentStatisticsProvider {
 
+  private static final String UNKNOWN_USER_ID = "-2";
+
   @Override
-  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
-      throws Exception {
+  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId) {
     List<UserIdCountVolumeCouple> myArrayList = new ArrayList<>();
     UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
-    myCouple.setUserId("-2"); // unknown userId
+    myCouple.setUserId(UNKNOWN_USER_ID);
     myCouple.setCountVolume(1);
     myArrayList.add(myCouple);
 

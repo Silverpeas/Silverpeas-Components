@@ -23,11 +23,11 @@
  */
 package org.silverpeas.components.classifieds;
 
-import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
-import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
 import org.silverpeas.components.classifieds.model.ClassifiedDetail;
 import org.silverpeas.components.classifieds.service.ClassifiedService;
 import org.silverpeas.components.classifieds.service.ClassifiedServiceProvider;
+import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
+import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -51,9 +51,8 @@ public class ClassifiedsStatistics implements ComponentStatisticsProvider {
     return myArrayList;
   }
 
-  public Collection<ClassifiedDetail> getElements(String componentId) {
+  private Collection<ClassifiedDetail> getElements(String componentId) {
     ClassifiedService service = ClassifiedServiceProvider.getClassifiedService();
     return service.getAllClassifieds(componentId);
   }
-
 }

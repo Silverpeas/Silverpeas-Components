@@ -23,11 +23,11 @@
  */
 package org.silverpeas.components.blog;
 
+import org.silverpeas.components.blog.model.PostDetail;
 import org.silverpeas.components.blog.service.BlogService;
 import org.silverpeas.components.blog.service.BlogServiceFactory;
-import org.silverpeas.components.blog.model.PostDetail;
-import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
 import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
+import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -39,8 +39,7 @@ import java.util.Collection;
 public class BlogStatistics implements ComponentStatisticsProvider {
 
   @Override
-  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
-      throws Exception {
+  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId) {
     ArrayList<UserIdCountVolumeCouple> myArrayList = new ArrayList<>();
     BlogService service = BlogServiceFactory.getBlogService();
     Collection<PostDetail> posts = service.getAllPosts(componentId);
@@ -53,5 +52,4 @@ public class BlogStatistics implements ComponentStatisticsProvider {
 
     return myArrayList;
   }
-
 }

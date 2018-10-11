@@ -20,11 +20,11 @@
  */
 package org.silverpeas.components.kmax;
 
-import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
-import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
-import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.publication.service.PublicationService;
+import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
+import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -33,10 +33,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-/**
- * Class declaration
- * @author
- */
 @Singleton
 @Named("kmax" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
 public class KmaxStatistics implements ComponentStatisticsProvider {
@@ -45,8 +41,7 @@ public class KmaxStatistics implements ComponentStatisticsProvider {
   private PublicationService publicationService;
 
   @Override
-  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
-      throws Exception {
+  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId) {
     Collection<PublicationDetail> publications = getPublications(spaceId, componentId);
     List<UserIdCountVolumeCouple> myArrayList = new ArrayList<>(publications.size());
     for (PublicationDetail detail : publications) {
@@ -58,19 +53,11 @@ public class KmaxStatistics implements ComponentStatisticsProvider {
     return myArrayList;
   }
 
-  /**
-   * @return
-   */
   private PublicationService getPublicationService() {
     return publicationService;
   }
 
-  /**
-   * @param spaceId the space identifier
-   * @param componentId the component identifier
-   * @return
-   */
-  public Collection<PublicationDetail> getPublications(String spaceId, String componentId) {
+  private Collection<PublicationDetail> getPublications(String spaceId, String componentId) {
     return getPublicationService()
         .getAllPublications(new PublicationPK("useless", spaceId, componentId));
   }
