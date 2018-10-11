@@ -31,8 +31,8 @@ import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsPr
 import javax.inject.Named;
 import javax.inject.Singleton;
 import java.util.Collection;
-import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Statistics about almanach application instances.
@@ -42,9 +42,8 @@ import java.util.stream.Collectors;
 public class AlmanachStatistics implements ComponentStatisticsProvider {
 
   @Override
-  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
-      throws Exception {
-    return getEvents(componentId).stream().map(e -> {
+  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId) {
+    return getEvents(componentId).map(e -> {
       UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
       myCouple.setUserId(e.getLastUpdater().getId());
       myCouple.setCountVolume(1);
@@ -52,9 +51,8 @@ public class AlmanachStatistics implements ComponentStatisticsProvider {
     }).collect(Collectors.toList());
   }
 
-  private List<CalendarEvent> getEvents(String componentId) {
+  private Stream<CalendarEvent> getEvents(String componentId) {
     return Calendar.getByComponentInstanceId(componentId).stream()
-        .flatMap(c -> Calendar.getEvents().filter(f -> f.onCalendar(c)).stream())
-        .collect(Collectors.toList());
+        .flatMap(c -> Calendar.getEvents().filter(f -> f.onCalendar(c)).stream());
   }
 }

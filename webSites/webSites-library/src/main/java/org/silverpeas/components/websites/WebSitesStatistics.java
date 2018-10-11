@@ -23,10 +23,10 @@
  */
 package org.silverpeas.components.websites;
 
-import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
-import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
 import org.silverpeas.components.websites.service.WebSiteService;
 import org.silverpeas.components.websites.siteManage.model.SiteDetail;
+import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
+import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
 import org.silverpeas.core.util.ServiceProvider;
 
 import javax.inject.Named;
@@ -40,8 +40,7 @@ import java.util.List;
 public class WebSitesStatistics implements ComponentStatisticsProvider {
 
   @Override
-  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
-      throws Exception {
+  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId) {
     List<UserIdCountVolumeCouple> myArrayList = new ArrayList<>();
     Collection<SiteDetail> websites = getWebSites(componentId);
     for (SiteDetail detail : websites) {
@@ -53,7 +52,7 @@ public class WebSitesStatistics implements ComponentStatisticsProvider {
     return myArrayList;
   }
 
-  public Collection<SiteDetail> getWebSites(String componentId) {
+  private Collection<SiteDetail> getWebSites(String componentId) {
     WebSiteService webSiteService = ServiceProvider.getService(WebSiteService.class);
     return webSiteService.getAllWebSite(componentId);
   }

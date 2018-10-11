@@ -42,7 +42,7 @@ public class ProjectManagerStatistics implements ComponentStatisticsProvider {
   @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId) {
     Collection<TaskDetail> tasks = projectManagerService.getAllTasks(componentId, null);
-    List<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>(tasks.size());
+    List<UserIdCountVolumeCouple> myArrayList = new ArrayList<>(tasks.size());
     for (TaskDetail task : tasks) {
       UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
       myCouple.setUserId(Integer.toString(task.getOrganisateurId()));
@@ -52,5 +52,4 @@ public class ProjectManagerStatistics implements ComponentStatisticsProvider {
 
     return myArrayList;
   }
-
 }

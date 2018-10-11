@@ -23,11 +23,11 @@
  */
 package org.silverpeas.components.questionreply;
 
-import org.silverpeas.components.questionreply.service.QuestionManagerProvider;
 import org.silverpeas.components.questionreply.model.Question;
-import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
+import org.silverpeas.components.questionreply.service.QuestionManagerProvider;
+import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
-import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
+import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -35,16 +35,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-/**
- * @author
- */
 @Singleton
 @Named("questionReply" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
 public class QuestionReplyStatistics implements ComponentStatisticsProvider {
 
   @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
-      throws Exception {
+      throws SilverpeasException {
     Collection<Question> questions = getQuestionReplies(componentId);
     List<UserIdCountVolumeCouple> myArrayList = new ArrayList<>(questions.size());
     for (Question detail : questions) {
@@ -56,9 +53,8 @@ public class QuestionReplyStatistics implements ComponentStatisticsProvider {
     return myArrayList;
   }
 
-  public Collection<Question> getQuestionReplies(String componentId)
-      throws QuestionReplyException, PersistenceException {
+  private Collection<Question> getQuestionReplies(String componentId)
+      throws QuestionReplyException {
     return QuestionManagerProvider.getQuestionManager().getQuestions(componentId);
   }
-
 }

@@ -29,20 +29,30 @@ import org.silverpeas.components.gallery.service.GalleryService;
 import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
 import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
+import java.io.IOException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.FileVisitor;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import static org.silverpeas.components.gallery.constant.MediaType.*;
+import static org.silverpeas.core.util.file.FileRepositoryManager.getAbsolutePath;
 
 @Singleton
 @Named("gallery" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
 public class GalleryStatistics implements ComponentStatisticsProvider {
 
   @Override
-  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
-      throws Exception {
+  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId) {
     Collection<Media> media = getGalleryService().getAllMedia(componentId,
         MediaCriteria.VISIBILITY.FORCE_GET_ALL);
     List<UserIdCountVolumeCouple> myArrayList = new ArrayList<>(media.size());
@@ -55,7 +65,138 @@ public class GalleryStatistics implements ComponentStatisticsProvider {
     return myArrayList;
   }
 
+  @Override
+  public long memorySizeOfSpecificFiles(final String componentId) {
+    final GalleryFileSizeCounter fileSizeCounter = new GalleryFileSizeCounter();
+    long result = 0L;
+    try {
+      Files.walkFileTree(Paths.get(getAbsolutePath(componentId)), fileSizeCounter);
+      result = fileSizeCounter.getSize();
+    } catch (IOException e) {
+      SilverLogger.getLogger(this).error(e);
+    }
+    return result;
+  }
+
+  @Override
+  public long countSpecificFiles(final String componentId) {
+    final GalleryFileCounter fileCounter = new GalleryFileCounter();
+    long result = 0L;
+    try {
+      Files.walkFileTree(Paths.get(getAbsolutePath(componentId)), fileCounter);
+      result = fileCounter.getCount();
+    } catch (IOException e) {
+      SilverLogger.getLogger(this).error(e);
+    }
+    return result;
+  }
+
   private GalleryService getGalleryService() {
     return ServiceProvider.getService(GalleryService.class);
+  }
+
+  private class GalleryFileCounter extends GallerySpecificFileVisitor {
+
+    private long count = 0L;
+
+    private GalleryFileCounter() {
+      super(false);
+    }
+
+    @Override
+    protected void handleDirectory(final Path file, final BasicFileAttributes attrs) {
+      count++;
+    }
+
+    @Override
+    protected void handleFile(final Path file, final BasicFileAttributes attrs) {
+      // handleDirectory is used here
+    }
+
+    long getCount() {
+      return count;
+    }
+  }
+
+  private class GalleryFileSizeCounter extends GallerySpecificFileVisitor {
+
+    private long size = 0L;
+
+    private GalleryFileSizeCounter() {
+      super(true);
+    }
+
+    @Override
+    protected void handleDirectory(final Path file, final BasicFileAttributes attrs) {
+      // handleFile is used here
+    }
+
+    @Override
+    protected void handleFile(final Path file, final BasicFileAttributes attrs) {
+      size += attrs.size();
+    }
+
+    long getSize() {
+      return size;
+    }
+  }
+
+  private abstract static class GallerySpecificFileVisitor implements FileVisitor<Path> {
+
+    private static final String PHOTO_PREFIX = Photo.getTechnicalFolder();
+    private static final String VIDEO_PREFIX = Video.getTechnicalFolder();
+    private static final String SOUND_PREFIX = Sound.getTechnicalFolder();
+    private boolean firstAccess = true;
+    private final FileVisitResult preVisitDirectoryResult;
+
+    GallerySpecificFileVisitor(final boolean visitFiles) {
+      this.preVisitDirectoryResult = visitFiles
+          ? FileVisitResult.CONTINUE
+          : FileVisitResult.SKIP_SUBTREE;
+    }
+
+    @Override
+    public final FileVisitResult preVisitDirectory(final Path dir,
+        final BasicFileAttributes attrs) {
+      FileVisitResult result = preVisitDirectoryResult;
+      if (isSpecificDirectory(dir)) {
+        handleDirectory(dir, attrs);
+      } else if (!firstAccess) {
+        result = FileVisitResult.SKIP_SUBTREE;
+      }
+      if (firstAccess) {
+        firstAccess = false;
+        return FileVisitResult.CONTINUE;
+      } else {
+        return result;
+      }
+    }
+
+    private boolean isSpecificDirectory(final Path dir) {
+      final String fileName = dir.getFileName().toString();
+      return fileName.startsWith(PHOTO_PREFIX) || fileName.startsWith(VIDEO_PREFIX) ||
+          fileName.startsWith(SOUND_PREFIX);
+    }
+
+    @Override
+    public final FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs) {
+      handleFile(file, attrs);
+      return FileVisitResult.CONTINUE;
+    }
+
+    @Override
+    public final FileVisitResult visitFileFailed(final Path file, final IOException exc) {
+      SilverLogger.getLogger(this).warn(exc);
+      return FileVisitResult.CONTINUE;
+    }
+
+    @Override
+    public final FileVisitResult postVisitDirectory(final Path dir, final IOException exc) {
+      return FileVisitResult.CONTINUE;
+    }
+
+    protected abstract void handleDirectory(final Path file, final BasicFileAttributes attrs);
+
+    protected abstract void handleFile(final Path file, final BasicFileAttributes attrs);
   }
 }

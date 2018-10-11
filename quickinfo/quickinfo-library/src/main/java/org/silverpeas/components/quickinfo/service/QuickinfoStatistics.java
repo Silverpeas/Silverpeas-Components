@@ -24,11 +24,11 @@
 
 package org.silverpeas.components.quickinfo.service;
 
-import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
-import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
-import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.publication.service.PublicationService;
+import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
+import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
 import org.silverpeas.core.util.ServiceProvider;
 
 import javax.inject.Named;
@@ -37,19 +37,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-/**
- * Class declaration
- * @author
- */
 @Singleton
-@Named("quickInfo" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
+@Named("quickinfo" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
 public class QuickinfoStatistics implements ComponentStatisticsProvider {
 
   private PublicationService publicationService = null;
 
   @Override
-  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
-      throws Exception {
+  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId) {
     Collection<PublicationDetail> infos = getQuickInfos(spaceId, componentId);
     List<UserIdCountVolumeCouple> myArrayList = new ArrayList<>(infos.size());
     for (PublicationDetail detail : infos) {
@@ -68,7 +63,7 @@ public class QuickinfoStatistics implements ComponentStatisticsProvider {
     return publicationService;
   }
 
-  public Collection<PublicationDetail> getQuickInfos(String spaceId, String componentId) {
+  private Collection<PublicationDetail> getQuickInfos(String spaceId, String componentId) {
     return getPublicationService()
         .getOrphanPublications(new PublicationPK("", spaceId, componentId));
   }

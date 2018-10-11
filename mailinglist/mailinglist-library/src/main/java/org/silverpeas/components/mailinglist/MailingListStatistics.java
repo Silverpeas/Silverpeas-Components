@@ -25,9 +25,9 @@ package org.silverpeas.components.mailinglist;
 
 import org.silverpeas.components.mailinglist.service.MailingListServicesProvider;
 import org.silverpeas.components.mailinglist.service.model.beans.MailingList;
-import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
 import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -36,15 +36,16 @@ import java.util.Collection;
 import java.util.List;
 
 @Singleton
-@Named("mailingList" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
+@Named("mailinglist" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
 public class MailingListStatistics implements ComponentStatisticsProvider {
 
+  private static final String UNKNOWN_USER_ID = "-2";
+
   @Override
-  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
-      throws Exception {
+  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId) {
     List<UserIdCountVolumeCouple> myArrayList = new ArrayList<>();
     UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
-    myCouple.setUserId("-2"); // unknown userId
+    myCouple.setUserId(UNKNOWN_USER_ID);
     MailingList ml =
         MailingListServicesProvider.getMailingListService().findMailingList(componentId);
     if (ml != null) {
@@ -52,10 +53,8 @@ public class MailingListStatistics implements ComponentStatisticsProvider {
           MailingListServicesProvider.getMessageService().getTotalNumberOfMessages(ml);
       myCouple.setCountVolume(totalNumberOfMessages);
     } else {
-      SilverTrace
-          .warn("mailinglist", "MailingListStatistics.getVolume()", "root.MSG_GEN_ENTER_METHOD",
-              "space = " + spaceId + ", componentId = " + componentId +
-                  " doesn't look like a mailinglist");
+      SilverLogger.getLogger(this)
+          .warn("space {0}, componentId {1} doesn't look like a mailinglist", spaceId, componentId);
       myCouple.setCountVolume(0);
     }
     myArrayList.add(myCouple);

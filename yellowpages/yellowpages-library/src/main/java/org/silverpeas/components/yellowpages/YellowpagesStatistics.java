@@ -23,17 +23,17 @@
  */
 package org.silverpeas.components.yellowpages;
 
-import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
-import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
-import org.silverpeas.core.contact.model.ContactDetail;
-import org.silverpeas.core.node.service.NodeService;
-import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.components.yellowpages.model.TopicDetail;
 import org.silverpeas.components.yellowpages.model.UserContact;
 import org.silverpeas.components.yellowpages.service.YellowpagesService;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.contact.model.ContactDetail;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.node.service.NodeService;
+import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
+import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -42,29 +42,19 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Class declaration
- * @author
- */
 @Singleton
 @Named("yellowpages" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
 public class YellowpagesStatistics implements ComponentStatisticsProvider {
 
+  private static final String USELESS = "useless";
   private NodeService nodeService = NodeService.get();
 
-  /**
-   * Method declaration
-   * @param spaceId
-   * @param componentId
-   * @throws Exception
-   */
   @Override
-  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
-      throws Exception {
-    Collection<NodeDetail> nodes = getNodeService().getAllNodes(new NodePK("useless", componentId));
+  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId) {
+    Collection<NodeDetail> nodes = getNodeService().getAllNodes(new NodePK(USELESS, componentId));
     List<UserIdCountVolumeCouple> myArrayList = new ArrayList<>(nodes.size());
-    if (nodes != null && !nodes.isEmpty()) {
-      Collection<UserContact> c = getContacts("0", spaceId, componentId);
+    if (!nodes.isEmpty()) {
+      Collection<UserContact> c = getContacts("0", componentId);
       for (UserContact contact : c) {
         ContactDetail detail = contact.getContact();
         UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
@@ -87,16 +77,13 @@ public class YellowpagesStatistics implements ComponentStatisticsProvider {
 
   /**
    * @param topicId the topic identifier
-   * @param spaceId the space identifier
    * @param componentId the component instance identifier
    * @return a collection of user contact
-   * @throws Exception
    */
-  private Collection<UserContact> getContacts(String topicId, String spaceId, String componentId)
-      throws Exception {
-    Collection<UserContact> c = new ArrayList<>();
+  private Collection<UserContact> getContacts(String topicId, String componentId) {
+    final Collection<UserContact> result = new ArrayList<>();
     if (topicId == null) {
-      return c;
+      return result;
     }
 
     OrganizationController organisationController =
@@ -107,18 +94,18 @@ public class YellowpagesStatistics implements ComponentStatisticsProvider {
           organisationController.getAllSubUsersNumber(topicId.substring("group_".length()));
       for (int n = 0; n < nbUsers; n++) {
         ContactDetail detail =
-            new ContactDetail("useless", "useless", "useless", "useless", "useless", "useless",
-                "useless", new Date(), "0");
+            new ContactDetail(USELESS, USELESS, USELESS, USELESS, USELESS, USELESS, USELESS,
+                new Date(), "0");
         UserContact contact = new UserContact();
         contact.setContact(detail);
-        c.add(contact);
+        result.add(contact);
       }
     } else {
       TopicDetail topic;
       try {
         topic = getYellowPagesService().goTo(new NodePK(topicId, componentId), "0");
         if (topic != null) {
-          c.addAll(topic.getContactDetails());
+          result.addAll(topic.getContactDetails());
         }
       } catch (Exception ex) {
         topic = null;
@@ -126,16 +113,12 @@ public class YellowpagesStatistics implements ComponentStatisticsProvider {
       }
       // treatment of the nodes of current topic
       if (topic != null) {
-        Collection<NodeDetail> subTopics = topic.getNodeDetail().getChildrenDetails();
-        for (NodeDetail node : subTopics) {
-          if (!(node.getNodePK().isRoot() || node.getNodePK().isTrash() ||
-              node.getNodePK().isUnclassed())) {
-            c.addAll(getContacts(node.getNodePK().getId(), spaceId, componentId));
-          }
-        }
+        topic.getNodeDetail().getChildrenDetails().stream()
+            .filter(n -> !(n.getNodePK().isRoot() || n.getNodePK().isTrash() || n.getNodePK().isUnclassed()))
+            .forEach(n -> result.addAll(getContacts(n.getNodePK().getId(), componentId)));
       }
     }
-    return c;
+    return result;
   }
 
   private NodeService getNodeService() {
