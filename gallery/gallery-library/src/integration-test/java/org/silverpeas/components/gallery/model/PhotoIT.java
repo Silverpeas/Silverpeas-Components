@@ -36,8 +36,8 @@ import org.silverpeas.components.gallery.constant.MediaResolution;
 import org.silverpeas.components.gallery.constant.MediaType;
 import org.silverpeas.core.io.media.Definition;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
 public class PhotoIT extends AbstractMediaIT {
