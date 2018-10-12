@@ -26,9 +26,9 @@ package org.silverpeas.components.gallery.model;
 import org.apache.commons.lang3.time.DateUtils;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.silverpeas.components.gallery.constant.MediaResolution;
 import org.silverpeas.components.gallery.constant.MediaType;
 import org.silverpeas.components.gallery.service.GalleryService;
@@ -39,7 +39,8 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.extention.MockedBean;
+import org.silverpeas.core.test.extention.SilverTestEnv;
 import org.silverpeas.core.util.DateUtil;
 
 import java.sql.Timestamp;
@@ -49,12 +50,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(SilverTestEnv.class)
 public class MediaTest {
-
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
-
-  private GalleryService mediaServiceMock;
   private UserDetail userForTest = new UserDetail();
   private UserDetail lastUpdaterForTest = new UserDetail();
   private Date createDate = Timestamp.valueOf("2013-02-12 14:56:38.452");
@@ -62,17 +59,10 @@ public class MediaTest {
   private Date beginVisibilityDate = DateUtils.addDays(DateUtil.getNow(), -50);
   private Date endVisibilityDate = DateUtils.addDays(DateUtil.getNow(), 50);
 
-  @SuppressWarnings("unchecked")
-  @Before
-  public void setup() {
-
-    mediaServiceMock = mock(GalleryService.class);
-    ComponentAccessControl componentAccessController = mock(ComponentAccessControl.class);
+  @BeforeEach
+  public void setup(@MockedBean final ComponentAccessControl componentAccessController) {
     when(componentAccessController.isUserAuthorized("userIdAccessTest", "instanceIdForTest"))
         .thenReturn(true);
-
-    commonAPI4Test.injectIntoMockedBeanContainer(mediaServiceMock);
-    commonAPI4Test.injectIntoMockedBeanContainer(componentAccessController);
 
     // A user for tests
     userForTest.setId("userIdAccessTest");
@@ -295,14 +285,14 @@ public class MediaTest {
   }
 
   @Test
-  public void testAddToAlbums() {
+  public void testAddToAlbums(@MockedBean GalleryService mediaServiceMock) {
     Media media = defaultMedia();
     media.addToAlbums("1", "2");
     verify(mediaServiceMock, times(1)).addMediaToAlbums(media, "1", "2");
   }
 
   @Test
-  public void testSetToAlbums() {
+  public void testSetToAlbums(@MockedBean GalleryService mediaServiceMock) {
     Media media = defaultMedia();
     media.setToAlbums("1", "2");
     verify(mediaServiceMock, times(1)).removeMediaFromAllAlbums(media);
@@ -310,7 +300,7 @@ public class MediaTest {
   }
 
   @Test
-  public void testRemoveMediaFromAllAlbums() {
+  public void testRemoveMediaFromAllAlbums(@MockedBean GalleryService mediaServiceMock) {
     Media media = defaultMedia();
     media.removeFromAllAlbums();
     verify(mediaServiceMock, times(1)).removeMediaFromAllAlbums(media);

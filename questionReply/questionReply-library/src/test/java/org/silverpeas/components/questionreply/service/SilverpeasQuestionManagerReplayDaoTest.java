@@ -25,11 +25,11 @@
 package org.silverpeas.components.questionreply.service;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAOImpl;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.extention.SilverTestEnv;
 
 import java.beans.FeatureDescriptor;
 import java.beans.PropertyDescriptor;
@@ -42,6 +42,7 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 /**
  * @author silveryocha
  */
+@ExtendWith(SilverTestEnv.class)
 public class SilverpeasQuestionManagerReplayDaoTest {
 
   private SilverpeasBeanDAOImpl replyDao;
@@ -50,10 +51,7 @@ public class SilverpeasQuestionManagerReplayDaoTest {
       {"questionId", "title", "content", "creatorId", "creationDate", "publicReply",
           "privateReply"};
 
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
-
-  @Before
+  @BeforeEach
   public void setup() throws IllegalAccessException {
     SilverpeasQuestionManager manager = new SilverpeasQuestionManager();
     replyDao = (SilverpeasBeanDAOImpl) FieldUtils.readDeclaredField(manager, "replyDao", true);

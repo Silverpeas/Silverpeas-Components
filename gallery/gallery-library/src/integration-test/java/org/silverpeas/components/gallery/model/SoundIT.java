@@ -36,10 +36,11 @@ import org.silverpeas.components.gallery.constant.MediaType;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 import static org.silverpeas.components.gallery.constant.MediaResolution.*;
+
 @RunWith(Arquillian.class)
 public class SoundIT extends AbstractMediaIT {
 
