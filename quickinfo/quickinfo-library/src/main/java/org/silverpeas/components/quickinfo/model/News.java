@@ -73,6 +73,8 @@ import java.util.List;
         ":foreignId"),
     @NamedQuery(name = "newsMandatories", query = "select n from News n where n.mandatory = " +
         ":mandatory"),
+    @NamedQuery(name = "newsAll", query = "select n from News n order by " +
+        " n.publishDate DESC, n.lastUpdateDate DESC"),
     @NamedQuery(name = "newsForTicker", query = "select n from News n where n.ticker = :ticker")})
 public class News extends SilverpeasJpaEntity<News, UuidIdentifier> implements SilverpeasContent,
     WithAttachment {
