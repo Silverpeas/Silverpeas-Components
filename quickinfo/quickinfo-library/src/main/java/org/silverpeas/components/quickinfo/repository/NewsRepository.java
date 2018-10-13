@@ -56,4 +56,9 @@ public class NewsRepository extends SilverpeasJpaEntityRepository<News> {
     return findByNamedQuery("newsForTicker", parameters);
   }
 
+  public List<News> getAllNews() {
+    NamedParameters parameters = newNamedParameters();
+    return findByNamedQuery("newsAll", parameters);
+  }
+
 }
