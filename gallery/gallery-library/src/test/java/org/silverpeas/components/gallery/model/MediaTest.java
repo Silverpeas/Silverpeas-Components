@@ -39,8 +39,8 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
-import org.silverpeas.core.test.extention.MockedBean;
-import org.silverpeas.core.test.extention.SilverTestEnv;
+import org.silverpeas.core.test.extention.TestManagedMock;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.util.DateUtil;
 
 import java.sql.Timestamp;
@@ -50,7 +50,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(SilverTestEnv.class)
+@EnableSilverTestEnv
 public class MediaTest {
   private UserDetail userForTest = new UserDetail();
   private UserDetail lastUpdaterForTest = new UserDetail();
@@ -60,7 +60,7 @@ public class MediaTest {
   private Date endVisibilityDate = DateUtils.addDays(DateUtil.getNow(), 50);
 
   @BeforeEach
-  public void setup(@MockedBean final ComponentAccessControl componentAccessController) {
+  public void setup(@TestManagedMock final ComponentAccessControl componentAccessController) {
     when(componentAccessController.isUserAuthorized("userIdAccessTest", "instanceIdForTest"))
         .thenReturn(true);
 
@@ -285,14 +285,14 @@ public class MediaTest {
   }
 
   @Test
-  public void testAddToAlbums(@MockedBean GalleryService mediaServiceMock) {
+  public void testAddToAlbums(@TestManagedMock GalleryService mediaServiceMock) {
     Media media = defaultMedia();
     media.addToAlbums("1", "2");
     verify(mediaServiceMock, times(1)).addMediaToAlbums(media, "1", "2");
   }
 
   @Test
-  public void testSetToAlbums(@MockedBean GalleryService mediaServiceMock) {
+  public void testSetToAlbums(@TestManagedMock GalleryService mediaServiceMock) {
     Media media = defaultMedia();
     media.setToAlbums("1", "2");
     verify(mediaServiceMock, times(1)).removeMediaFromAllAlbums(media);
@@ -300,7 +300,7 @@ public class MediaTest {
   }
 
   @Test
-  public void testRemoveMediaFromAllAlbums(@MockedBean GalleryService mediaServiceMock) {
+  public void testRemoveMediaFromAllAlbums(@TestManagedMock GalleryService mediaServiceMock) {
     Media media = defaultMedia();
     media.removeFromAllAlbums();
     verify(mediaServiceMock, times(1)).removeMediaFromAllAlbums(media);

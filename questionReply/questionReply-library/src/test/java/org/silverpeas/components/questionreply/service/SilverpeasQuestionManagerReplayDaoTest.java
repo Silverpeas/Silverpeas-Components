@@ -29,7 +29,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAOImpl;
-import org.silverpeas.core.test.extention.SilverTestEnv;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 
 import java.beans.FeatureDescriptor;
 import java.beans.PropertyDescriptor;
@@ -42,7 +42,7 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 /**
  * @author silveryocha
  */
-@ExtendWith(SilverTestEnv.class)
+@EnableSilverTestEnv
 public class SilverpeasQuestionManagerReplayDaoTest {
 
   private SilverpeasBeanDAOImpl replyDao;

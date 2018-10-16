@@ -32,8 +32,8 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.test.extention.MockedBean;
-import org.silverpeas.core.test.extention.SilverTestEnv;
+import org.silverpeas.core.test.extention.TestManagedMock;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.util.CollectionUtil;
 
 import java.util.ArrayList;
@@ -49,7 +49,7 @@ import static org.mockito.Mockito.when;
 /**
  * @author Yohann Chastagnier
  */
-@ExtendWith(SilverTestEnv.class)
+@EnableSilverTestEnv
 public class KmeliaUserTreeViewFilterTest {
 
   private static final String USER_ID = "26";
@@ -70,11 +70,11 @@ public class KmeliaUserTreeViewFilterTest {
   private static final int NODE_B_ID = 16;
   private static final int NODE_BA_ID = 17;
 
+  @TestManagedMock
   private OrganizationController organisationController;
 
   @BeforeEach
-  public void setup(@MockedBean OrganizationController oc) {
-    organisationController = oc;
+  public void setup() {
     // Verifying common data
     List<NodeDetail> commonTree = buildCommonTree();
 

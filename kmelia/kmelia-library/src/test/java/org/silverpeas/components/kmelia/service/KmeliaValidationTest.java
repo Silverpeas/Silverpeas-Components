@@ -29,8 +29,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
-import org.silverpeas.core.test.extention.MockedBean;
-import org.silverpeas.core.test.extention.SilverTestEnv;
+import org.silverpeas.core.test.extention.TestManagedMock;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 
 import java.util.Arrays;
 
@@ -41,20 +41,20 @@ import static org.silverpeas.core.contribution.publication.model.PublicationDeta
 /**
  * @author Yohann Chastagnier
  */
-@ExtendWith(SilverTestEnv.class)
+@EnableSilverTestEnv
 public class KmeliaValidationTest {
 
   private static final String INSTANCE_ID = "instanceId";
   private static final String VALIDATOR_ID = "26";
 
   private KmeliaValidation kmeliaValidation;
+  @TestManagedMock
   private KmeliaService kmeliaService;
   private int counter = 0;
 
   @BeforeEach
-  public void setup(@MockedBean KmeliaService service) {
+  public void setup() {
     counter = 0;
-    kmeliaService = service;
     kmeliaValidation = KmeliaValidation.by(VALIDATOR_ID);
   }
 
