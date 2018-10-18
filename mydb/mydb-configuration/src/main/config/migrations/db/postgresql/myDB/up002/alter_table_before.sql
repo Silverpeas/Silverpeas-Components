@@ -1,0 +1,1 @@
+ALTER TABLE sc_mydb_connectinfo ADD COLUMN dataSource VARCHAR(250) NULL;

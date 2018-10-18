@@ -1,0 +1,8 @@
+#fk-table-view .selected, #fk-table-view .selected a {
+  background-color: #7fd0ff !important;
+  color: #ffffff !important;
+}
+
+#fk-table-view a {
+  display: block;
+}

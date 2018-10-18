@@ -278,7 +278,7 @@
     <module>quizz</module>
     <module>jdbcConnector</module>
     <module>rssAggregator</module>
-    <!-- DEACTIVATED (to remove later): <module>mydb</module> -->
+    <module>mydb</module>
     <module>projectManager</module>
     <module>webSites</module>
     <module>whitePages</module>

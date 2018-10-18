@@ -19,10 +19,10 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.components.jdbcconnector.model;
+package org.silverpeas.components.mydb.model;
 
-import org.silverpeas.components.jdbcconnector.service.JdbcConnectorException;
-import org.silverpeas.components.jdbcconnector.service.DataSourceConnectionInfoService;
+import org.silverpeas.components.mydb.service.MyDBConnectionInfoService;
+import org.silverpeas.components.mydb.service.MyDBException;
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueIntegerIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 import org.silverpeas.core.util.StringUtil;
@@ -41,19 +41,18 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
- * Information about a JDBC connection to a data source. Such information is the name of the
+ * Information about a connexion to a data source. Such information is the name of the
  * data source and the credentials required to access that data source.
  * @author mmoquillon
  */
 @Entity
-@NamedQueries({
-    @NamedQuery(name = "DataSourceConnectionInfo.findByInstanceId", query = "from " +
-        "DataSourceConnectionInfo where instanceId = :instanceId"),
-    @NamedQuery(name = "DataSourceConnectionInfo.deleteByInstanceId", query =
-        "delete DataSourceConnectionInfo where instanceId = :instanceId")})
-@Table(name = "sc_connecteurjdbc_connectinfo")
-public class DataSourceConnectionInfo
-    extends BasicJpaEntity<DataSourceConnectionInfo, UniqueIntegerIdentifier> {
+@NamedQueries({@NamedQuery(name = "MyDBConnectionInfo.findByInstanceId",
+    query = "select ds from MyDBConnectionInfo ds where ds.instanceId = :instanceId"),
+    @NamedQuery(name = "MyDBConnectionInfo.deleteByInstanceId",
+        query = "delete MyDBConnectionInfo where instanceId = :instanceId")})
+@Table(name = "sc_mydb_connectinfo")
+public class MyDBConnectionInfo
+    extends BasicJpaEntity<MyDBConnectionInfo, UniqueIntegerIdentifier> {
 
   @Column(length = 250, nullable = false)
   @NotNull
@@ -62,29 +61,29 @@ public class DataSourceConnectionInfo
   private String login;
   @Column(length = 250)
   private String password;
-  @Column(length = 4000)
-  private String sqlreq;
+  @Column(length = 100)
+  private String tableName;
   private int rowLimit = 0;
   @Column(length = 50, nullable = false)
   @NotNull
   private String instanceId;
 
-  public static DataSourceConnectionInfo getById(String id) {
-    return DataSourceConnectionInfoService.get().getConnectionInfo(id);
+  public static MyDBConnectionInfo getById(String id) {
+    return MyDBConnectionInfoService.get().getConnectionInfo(id);
   }
 
-  public static List<DataSourceConnectionInfo> getFromComponentInstance(String instanceId) {
-    return DataSourceConnectionInfoService.get().getConnectionInfoList(instanceId);
+  public static List<MyDBConnectionInfo> getFromComponentInstance(String instanceId) {
+    return MyDBConnectionInfoService.get().getConnectionInfoList(instanceId);
   }
 
   public static void removeFromComponentInstance(String instanceId) {
-    DataSourceConnectionInfoService.get().removeConnectionInfoOfComponentInstance(instanceId);
+    MyDBConnectionInfoService.get().removeConnectionInfoOfComponentInstance(instanceId);
   }
 
-  protected DataSourceConnectionInfo() {
+  protected MyDBConnectionInfo() {
   }
 
-  public DataSourceConnectionInfo(String dataSource, String instanceId) {
+  public MyDBConnectionInfo(String dataSource, String instanceId) {
     this.dataSource = dataSource;
     this.instanceId = instanceId;
   }
@@ -100,13 +99,19 @@ public class DataSourceConnectionInfo
   }
 
   /**
-   * Sets the SQL request to used when requesting the data source and returns this connection
-   * information.
-   * @param sqlRequest a SQL request.
+   * Sets the default table to defaultTable from the database with this connection information
+   * and returns
+   * the later.
+   * @param tableName the name of the table to load by default.
    * @return itself.
    */
-  public DataSourceConnectionInfo withSqlRequest(String sqlRequest) {
-    setSqlRequest(sqlRequest.toLowerCase());
+  public MyDBConnectionInfo withDefaultTableName(String tableName) {
+    setDefaultTableName(tableName.toLowerCase());
+    return this;
+  }
+
+  public MyDBConnectionInfo withoutAnyDefaultTable() {
+    setDefaultTableName(null);
     return this;
   }
 
@@ -116,12 +121,12 @@ public class DataSourceConnectionInfo
    * @param maxNumber the maximum number of data to return. 0 means all.
    * @return itself.
    */
-  public DataSourceConnectionInfo withDataMaxNumber(int maxNumber) {
+  public MyDBConnectionInfo withDataMaxNumber(int maxNumber) {
     setDataMaxNumber(maxNumber);
     return this;
   }
 
-  public DataSourceConnectionInfo withLoginAndPassword(String login, String password) {
+  public MyDBConnectionInfo withLoginAndPassword(String login, String password) {
     setLoginAndPassword(login, password);
     return this;
   }
@@ -131,7 +136,7 @@ public class DataSourceConnectionInfo
    * @param dataSourceName the JNDI name of the data source to connect to.
    * @return itself.
    */
-  public DataSourceConnectionInfo withDataSourceName(String dataSourceName) {
+  public MyDBConnectionInfo withDataSourceName(String dataSourceName) {
     setDataSourceName(dataSourceName);
     return this;
   }
@@ -169,11 +174,11 @@ public class DataSourceConnectionInfo
   }
 
   /**
-   * Gets the SQL request used to select data from the connected data source.
-   * @return the SQL request used in this connection information.
+   * Gets the name of the table to load with this connexion information.
+   * @return the name of the default table.
    */
-  public String getSqlRequest() {
-    return sqlreq;
+  public String getDefaultTableName() {
+    return tableName;
   }
 
   /**
@@ -182,6 +187,14 @@ public class DataSourceConnectionInfo
    */
   public int getDataMaxNumber() {
     return rowLimit;
+  }
+
+  /**
+   * Is the name of the default table to load is defined?
+   * @return true if the name of a default table is set, false otherwise.
+   */
+  public boolean isDefaultTableNameDefined() {
+    return StringUtil.isDefined(tableName);
   }
 
   /**
@@ -203,11 +216,11 @@ public class DataSourceConnectionInfo
   }
 
   /**
-   * Sets the SQL request to used when requesting the data source.
-   * @param sqlRequest a SQL request.
+   * Sets the name of the default table to load with this connection information.
+   * @param tableName the name of a table in the database.
    */
-  public void setSqlRequest(String sqlRequest) {
-    this.sqlreq = sqlRequest;
+  public void setDefaultTableName(String tableName) {
+    this.tableName = tableName;
   }
 
   /**
@@ -227,26 +240,26 @@ public class DataSourceConnectionInfo
    * to retrieve it later.
    */
   public void save() {
-    DataSourceConnectionInfoService.get().saveConnectionInfo(this);
+    MyDBConnectionInfoService.get().saveConnectionInfo(this);
   }
 
   /**
    * Removes this connection information from the persistence context.
    */
   public void remove() {
-    DataSourceConnectionInfoService.get().removeConnectionInfo(this);
+    MyDBConnectionInfoService.get().removeConnectionInfo(this);
   }
 
   /**
    * Opens a connection to the data source targeted by this connection information.
    * @return a connection against the data source referred by this object.
    */
-  public Connection openConnection() throws JdbcConnectorException {
+  public Connection openConnection() throws MyDBException {
     try {
       DataSource ds = InitialContext.doLookup(getDataSourceName());
       return ds.getConnection(getLogin(), getPassword());
     } catch (NamingException | SQLException ex) {
-      throw new JdbcConnectorException(ex.getMessage());
+      throw new MyDBException(ex.getMessage());
     }
   }
 
@@ -258,5 +271,32 @@ public class DataSourceConnectionInfo
   @Override
   public int hashCode() {
     return super.hashCode();
+  }
+
+  /**
+   * Checks the connection with the remote data source referred in this
+   * {@link MyDBConnectionInfo} instance.
+   * <p>
+   * If the connection cannot be established with the data source, a
+   * {@link org.silverpeas.components.mydb.service.MyDBException}
+   * exception is thrown. This occurs when:
+   * </p>
+   * <ul>
+   * <li>no connection information is set for the underlying component instance,</li>
+   * <li>the connection information isn't correct,</li>
+   * <li>the connection information is correct but the connection with the data source fails at
+   * this time.</li>
+   * </ul>
+   * @throws MyDBException if the connection cannot be established with the data source
+   * referred by this {@link MyDBConnectionInfo} instance.
+   */
+  public void checkConnection() throws MyDBException {
+    try (Connection connection = openConnection()) {
+      if (!connection.isValid(0)) {
+        throw new MyDBException("No valid connexion with the data source " + getDataSourceName());
+      }
+    } catch (SQLException e) {
+      throw new MyDBException(e);
+    }
   }
 }

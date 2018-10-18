@@ -30,7 +30,12 @@
   <servlet>
     <display-name>MyDBRequestRouter</display-name>
     <servlet-name>MyDBRequestRouter</servlet-name>
-    <servlet-class>com.silverpeas.mydb.servlets.MyDBRequestRouter</servlet-class>
+    <servlet-class>org.silverpeas.core.web.mvc.webcomponent.WebComponentRequestRouter
+    </servlet-class>
+    <init-param>
+      <param-name>WebComponentController</param-name>
+      <param-value>org.silverpeas.components.mydb.web.MyDBWebController</param-value>
+    </init-param>
   </servlet>
   <servlet-mapping>
     <servlet-name>MyDBRequestRouter</servlet-name>

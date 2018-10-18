@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.silverpeas.components</groupId>
     <artifactId>mydb</artifactId>
-    <version>6.0-SNAPSHOT</version>
+    <version>6.1-SNAPSHOT</version>
   </parent>
 
   <groupId>org.silverpeas.components.mydb</groupId>
@@ -37,6 +37,7 @@
       <groupId>org.silverpeas.components.mydb</groupId>
       <artifactId>silverpeas-mydb</artifactId>
       <version>${project.version}</version>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
 
