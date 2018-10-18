@@ -59,9 +59,9 @@
         <message lang="de">Manager</message>
       </label>
       <help>
-        <message lang="fr">Les gestionnaires paramètrent les informations de connexion à la base de données.</message>
-        <message lang="en">Managers set up the DB connection's parameters.</message>
-        <message lang="de">Managers set up the DB connection's parameters.</message>
+        <message lang="fr">Les gestionnaires sélectionne la base de données à accéder.</message>
+        <message lang="en">Managers select the database to access.</message>
+        <message lang="de">Manager wählen die Datenbank aus, auf die zugegriffen werden soll.</message>
       </help>
     </profile>
     <profile name="publisher">
