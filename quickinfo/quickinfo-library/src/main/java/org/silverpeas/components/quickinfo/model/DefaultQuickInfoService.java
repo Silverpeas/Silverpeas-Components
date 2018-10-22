@@ -59,7 +59,6 @@ import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
-import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
@@ -76,7 +75,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import static java.util.Arrays.asList;
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
 import static org.silverpeas.core.persistence.Transaction.performInOne;
 
@@ -316,24 +317,16 @@ public class DefaultQuickInfoService implements QuickInfoService {
   @Override
   public List<News> getPlatformNews(String userId) {
     SilverLogger.getLogger(this).debug("Enter Get All Quick Info : User=" + userId);
-    List<News> result = new ArrayList<>();
-    String[] allowedComponentIds = OrganizationController.get()
+    final String[] allowedComponentIds = OrganizationController.get()
         .getComponentIdsForUser(userId, QuickInfoComponentSettings.COMPONENT_NAME);
-    List<News> allNews = newsRepository.getAllNews();
     int limit = QuickInfoComponentSettings.getSettings().getInteger("news.all.limit", 30);
-    for (News news : allNews) {
-      if (result.size() >= limit) {
-        break;
-      }
-      if (news.getPublishDate() != null &&
-          ArrayUtil.contains(allowedComponentIds, news.getPK().getInstanceId())) {
-        decorateNewsWithPublication(news, false);
-        if (news.isVisible() && !news.isDraft()) {
-          result.add(news);
-        }
-      }
-    }
-    return result;
+    return newsRepository.getByComponentIds(asList(allowedComponentIds))
+        .stream()
+        .filter(n -> n.getPublishDate() != null)
+        .peek(n -> decorateNewsWithPublication(n, false))
+        .filter(n -> n.isVisible() && !n.isDraft())
+        .limit(limit)
+        .collect(Collectors.toList());
   }
 
   @Override
