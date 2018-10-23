@@ -136,14 +136,12 @@ function chartinit()
 
   var maxWidth = 0;
   var maxHeight = 0;
-  var widthDiv = mainDiv.style.width;
   // supprime le px
-  widthDiv = widthDiv.substring(0,widthDiv.length - 2);
   for (i = 0; i < jCells.length; i++)
   {
-	  div = jCells[i].div;
+	  var div = jCells[i].div;
 	  maxWidth = Math.max(maxWidth, div.offsetLeft + div.offsetWidth + 2);
-	  height = parseInt(div.style.top.substring(0, div.style.top.indexOf('px'))) + div.offsetHeight;
+	  var height = parseInt(div.style.top.substring(0, div.style.top.indexOf('px'))) + div.offsetHeight;
 	  maxHeight = (maxHeight > height) ? maxHeight : height;
   }
 
@@ -161,16 +159,16 @@ function centerBoxesAndLinks() {
 	var offsetX = mainDiv.offsetLeft + H_MARGIN;
 	var offsetY = mainDiv.offsetTop + V_MARGIN;
 
-	  for (i = 0; i < jCells.length; i++)
+	  for (var i = 0; i < jCells.length; i++)
 	  {
-		  div = jCells[i].div;
+		  var div = jCells[i].div;
 		  div.style.marginLeft = offsetX + "px";
 		  div.style.marginTop = offsetY + "px";
 	  }
 
 	  for (i=0; i<3; i++) {
 		  var linklements = document.getElementsByClassName('link'+i);
-		  for (j = 0; j < linklements.length; j++)
+		  for (var j = 0; j < linklements.length; j++)
 		  {
 			  linklements[j].style.marginLeft = offsetX + "px";
 			  linklements[j].style.marginTop = offsetY + "px";
@@ -273,28 +271,28 @@ function buildCellDIV(jCell)
 
 		case CELL_TYPE_CATEGORY:
 			if (jCell.catMembers) {
-				for (var i = 0; i < jCell.catMembers.length; i++) {
+				for (i = 0; i < jCell.catMembers.length; i++) {
 					var memberRow = table.insertRow(-1);
 					var memberCell = memberRow.insertCell(-1);
 					memberCell.className = "cellInfos";
 					memberCell.colSpan = 2;
 					memberCell.align = "center";
-var avatar = getAvatar(jCell.catMembers[i]);
+avatar = getAvatar(jCell.catMembers[i]);
 memberCell.innerHTML = "<a target=\"_blank\" href=\"" + jCell.commonUserURL + jCell.catMembers[i]['login'] + "\">" + avatar + jCell.catMembers[i]['userFullName'] + "</a>";
 				}
 			}
 
 			if (jCell.innerUsers) {
-				for (var i = 0; i < jCell.innerUsers.length; i++) {
+				for (i = 0; i < jCell.innerUsers.length; i++) {
 					var divMembers = document.createElement("DIV");
 					divMembers.className = "innerUser";
-var avatar = getAvatar(jCell.innerUsers[i]);
+avatar = getAvatar(jCell.innerUsers[i]);
 divMembers.innerHTML = "<a target=\"_blank\" href=\"" + jCell.commonUserURL + jCell.innerUsers[i]['login'] + "\">" + avatar + jCell.innerUsers[i]['userFullName'] + "</a>";
 					div.appendChild(divMembers);
 
 					// DIV Content as a HTML table
 					var tableMembers = document.createElement("TABLE");
-					for (var j = 0; j < jCell.innerUsers[i]['userAttributes'].length; j++) {
+					for (j = 0; j < jCell.innerUsers[i]['userAttributes'].length; j++) {
 						var userAttribute = jCell.innerUsers[i]['userAttributes'][j]['value'];
 						if (userAttribute.length > 0) {
 							var userAttributeRow = tableMembers.insertRow(-1);
@@ -318,11 +316,11 @@ divMembers.innerHTML = "<a target=\"_blank\" href=\"" + jCell.commonUserURL + jC
 		default:
 			// User Attributes
 			if (jCell.userAttributes) {
-				for (var i = 0; i < jCell.userAttributes.length; i++) {
-					var userAttribute = jCell.userAttributes[i]['value'];
+				for (i = 0; i < jCell.userAttributes.length; i++) {
+					userAttribute = jCell.userAttributes[i]['value'];
 					if (userAttribute.length > 0) {
-						var userAttributeRow = table.insertRow(-1);
-						var userAttributeCell = userAttributeRow.insertCell(-1);
+						userAttributeRow = table.insertRow(-1);
+						userAttributeCell = userAttributeRow.insertCell(-1);
 						userAttributeCell.className = "celluserAttribute";
 						userAttributeCell.colSpan = 2;
 						userAttributeCell.align = "center";
@@ -424,7 +422,7 @@ function buildUpAndDownLinks() {
 	    var jLink;
   		var jCell1;
   		var jCell2;
-  		for (i = 0; i < jLinks.length; i++)
+  		for (var i = 0; i < jLinks.length; i++)
   		{
 	  		jLink = jLinks[i];
 	  		if ( (jLink.orientation != ORIENTATION_LEFT) && (jLink.orientation != ORIENTATION_RIGHT) ) {
@@ -450,9 +448,7 @@ function placeCells()
 	var i;
 	var j;
 	var topGap = mainDiv.offsetTop + V_MARGIN;
-	var leftGap = mainDiv.offsetLeft;
-	var minHeight;
-	var maxHeight;
+	var leftGap;
 	var jCell;
 	var div;
 	var jLevels = new Array(maxLevel);
@@ -492,7 +488,7 @@ function placeCells()
 			div.style.left = leftGap + "px";
 		}
 
-		topGap += V_GAP + div.offsetHeight;
+		topGap += V_GAP + (div != null ? div.offsetHeight : 0);
   }
 
    //resizeBoxes(jLevels);
@@ -569,13 +565,12 @@ moveHorizontalAndVertical(jLevels);
 	// il faut que la case supérieur (case 0) soit bien placé
 	for (i = 0; i < jLevels.length; i++)
 	{
-		leftGap = 0;
 		for (j = 0; j < jLevels[i].length; j++)
 		{
 			if(cellRightNumber != -1 && cellRightNumber == jLevels[i][j].id){
 			  // la cellule est une cellule droite
 	          div = jLevels[i][j].div;
-	          divOrigin = jCells[cellRightOrigin].div;
+	          var divOrigin = jCells[cellRightOrigin].div;
 	          // suppr le px
 	          var originLeft = divOrigin.style.left;
 	          var origin = originLeft.substring(0,originLeft.length - 2);
@@ -588,9 +583,9 @@ moveHorizontalAndVertical(jLevels);
 	          div = jLevels[i][j].div;
 	          divOrigin = jCells[cellLeftOrigin].div;
 	          // suppr le px
-	          var originLeft = divOrigin.style.left;
-	          var origin = originLeft.substring(0,originLeft.length - 2);
-	          var intOrigin = parseInt(origin);
+	          originLeft = divOrigin.style.left;
+	          origin = originLeft.substring(0,originLeft.length - 2);
+	          intOrigin = parseInt(origin);
 	          if(intOrigin > CELLSIZE){
 	               div.style.left = eval(intOrigin - CELLSIZE) + "px"; // on décalle d'une
 															// cellule si c'est
@@ -603,7 +598,7 @@ moveHorizontalAndVertical(jLevels);
 
 function moveMain(jLevels)
 {
-	for (i = 0; i < jLevels.length; i++)
+	for (var i = 0; i < jLevels.length; i++)
 	{
 		moveMain1(jLevels[i]);
 	}
@@ -665,7 +660,7 @@ function moveMain2(jLevels)
 			x1 = parseInt((getMiddleX(jCell1) + getMiddleX(jCell2)) / 2);
 			if (x0 != x1)
 			{
-				jCell = (x0 > x1 ? jCell1 : jCell0);
+				var jCell = (x0 > x1 ? jCell1 : jCell0);
 				moveRight(jCell, Math.abs(x0 - x1));
 			}
 		}
@@ -708,9 +703,9 @@ function resizeBoxes(jLevels)
 	// recuperation max
     var maxWidth = new Array(jLevels.length);
 	var maxHeight = new Array(jLevels.length);
-	for (i = 0; i < jLevels.length; i++)
+	for (var i = 0; i < jLevels.length; i++)
 	{
-		 for (j = 0; j < jLevels[i].length; j++)
+		 for (var j = 0; j < jLevels[i].length; j++)
 		 {
 			 var div = jLevels[i][j].div;
 			 //largeur max
@@ -730,7 +725,7 @@ function resizeBoxes(jLevels)
 	{
 		 for (j = 0; j < jLevels[i].length; j++)
 		 {
-			 var div = jLevels[i][j].div;
+			 div = jLevels[i][j].div;
 			 div.style.width = maxWidth[i] + "px";
 			 div.style.height = maxHeight[i] + "px";
 		 }
@@ -740,19 +735,18 @@ function resizeBoxes(jLevels)
 function moveHorizontalAndVertical(jLevels)
 {
 	var jCell;
-	var topGap;
     var leftGap;
 	var V_GAP_SAME_LEVEL = 20;
 	var H_GAP = 50;
 
-	for (i = 0; i < jLevels.length; i++)
+	for (var i = 0; i < jLevels.length; i++)
 	{
-		topGap = -1;
+		var topGap = -1;
 		leftGap = 0;
 
 		var maximumHeight = calculateMaximumHeight(jLevels[i]);
 
-        for (j = 0; j < jLevels[i].length; j++)
+        for (var j = 0; j < jLevels[i].length; j++)
 		{
             jCell = jLevels[i][j];
             jLevels[i][j].gaps["y"]=0;
@@ -763,7 +757,7 @@ function moveHorizontalAndVertical(jLevels)
 				if(jCell.upLinks[0].orientation == ORIENTATION_HORIZONTAL) // same link on one level
 				{
 					// oriention horizontal uniquement
-					div = jCell.div;
+					var div = jCell.div;
 
 					if(j%2==0 || jCell.cellType!=CELL_TYPE_ORGANIZATION){
 						if(j>0){
@@ -783,19 +777,13 @@ function moveHorizontalAndVertical(jLevels)
 					div.style.left = eval(leftGap + jCell.gaps["x"]) + "px";
 					leftGap = leftGap + div.offsetWidth + jCell.gaps["x"];
 
-	            }else if(jCell.upLinks[0].orientation == ORIENTATION_RIGHT)
+	            }else if(jCell.upLinks[0].orientation == ORIENTATION_RIGHT || jCell.upLinks[0].orientation == ORIENTATION_LEFT)
 	            {
 	            	// oriention droite -> horizontal
 	                div = jCell.div;
 	                div.style.top = H_GAP_SIDEBOX + "px";
 	                leftGap += div.offsetWidth + H_GAP;
-	            }else if(jCell.upLinks[0].orientation == ORIENTATION_LEFT)
-	            {
-	  				// oriention gauche -> horizontal
-	                div = jCell.div;
-	                div.style.top = H_GAP_SIDEBOX + "px";
-	  				leftGap += div.offsetWidth + H_GAP;
-	  			}else
+	            } else
 	  			{
 	                // orientation vertical uniquement
 	                div = jCell.div;
@@ -814,9 +802,9 @@ function moveHorizontalAndVertical(jLevels)
 function calculateMaximumHeight(jLevel)
 {
 	var maximumHeight=0;
-	for (j = 0; j < jLevel.length; j++)
+	for (var j = 0; j < jLevel.length; j++)
 	{
-		jCell = jLevel[j];
+		var jCell = jLevel[j];
 		if(jCell.div.clientHeight > maximumHeight)
 		{
 			maximumHeight=jCell.div.clientHeight;
