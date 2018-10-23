@@ -10,11 +10,11 @@ function addFavorite(name, description, url)
 }
 
 function addSubscription() {
-  url = "subscriptionsManager.jsp?Action=AddSubscription&Id=" + getCurrentNodeId();
-  windowName = "subscriptionWindow";
-  windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars=1";
-  larg = "550";
-  haut = "350";
+  var url = "subscriptionsManager.jsp?Action=AddSubscription&Id=" + getCurrentNodeId();
+  var windowName = "subscriptionWindow";
+  var windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars=1";
+  var larg = "550";
+  var haut = "350";
   if (!subscriptionWindow.closed && subscriptionWindow.name === "subscriptionWindow")
     subscriptionWindow.close();
   subscriptionWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
@@ -22,11 +22,11 @@ function addSubscription() {
 
 function importFile()
 {
-  url = "importOneFile.jsp?Action=ImportFileForm&TopicId=" + getCurrentNodeId();
-  windowName = "importFileWindow";
-  windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars=1";
-  larg = "610";
-  haut = "370";
+  var url = "importOneFile.jsp?Action=ImportFileForm&TopicId=" + getCurrentNodeId();
+  var windowName = "importFileWindow";
+  var windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars=1";
+  var larg = "610";
+  var haut = "370";
   if (!importFileWindow.closed && importFileWindow.name === "importFileWindow")
     importFileWindow.close();
   importFileWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
@@ -34,33 +34,29 @@ function importFile()
 
 function importFiles()
 {
-  url = "importMultiFiles.jsp?Action=ImportFilesForm&TopicId=" + getCurrentNodeId();
-  windowName = "importFilesWindow";
-  windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars=1";
-  larg = "610";
-  haut = "460";
+  var url = "importMultiFiles.jsp?Action=ImportFilesForm&TopicId=" + getCurrentNodeId();
+  var windowName = "importFilesWindow";
+  var windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars=1";
+  var larg = "610";
+  var haut = "460";
   if (!importFilesWindow.closed && importFilesWindow.name === "importFilesWindow")
     importFilesWindow.close();
   importFilesWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
 }
 
 function openExportPDFPopup() {
-  chemin = "ExportAttachementsToPDF?TopicId=" + getCurrentNodeId();
-  largeur = "700";
-  hauteur = "500";
+  var chemin = "ExportAttachementsToPDF?TopicId=" + getCurrentNodeId();
+  var largeur = "700";
+  var hauteur = "500";
   SP_openWindow(chemin, "ExportWindow", largeur, hauteur, "scrollbars=yes, resizable=yes");
 }
 
 function openSPWindow(fonction, windowName) {
-  pdcUtilizationWindow = SP_openWindow(fonction, windowName, '600', '400', 'scrollbars=yes, resizable, alwaysRaised');
+  window.pdcUtilizationWindow = SP_openWindow(fonction, windowName, '600', '400', 'scrollbars=yes, resizable, alwaysRaised');
 }
 
 function exportTopic() {
-  exportComponentWindow = SP_openWindow("ExportTopic?TopicId=" + getCurrentNodeId(), "exportComponentWindow", 700, 350, "scrollbars=yes, resizable=yes");
-}
-
-function openSPWindow(fonction, windowName) {
-  pdcUtilizationWindow = SP_openWindow(fonction, windowName, '600', '400', 'scrollbars=yes, resizable, alwaysRaised');
+  window.exportComponentWindow = SP_openWindow("ExportTopic?TopicId=" + getCurrentNodeId(), "exportComponentWindow", 700, 350, "scrollbars=yes, resizable=yes");
 }
 
 function openPredefinedPdCClassification(nodeId) {
@@ -329,8 +325,8 @@ function initOperations(id, op) {
   }
 
   if (op.addPubli) {
-    var label = getString('PubCreer');
-    var url = "NewPublication";
+    label = getString('PubCreer');
+    url = "NewPublication";
     menuItem = new YAHOO.widget.MenuItem(label, {url: url});
     oMenu.addItem(menuItem, groupIndex);
     groupEmpty = false;
@@ -338,8 +334,8 @@ function initOperations(id, op) {
     menuBarEmpty = false;
   }
   if (op.importFile) {
-    var label = getString('kmelia.ImportFile');
-    var url = "javascript:onclick=importFile()";
+    label = getString('kmelia.ImportFile');
+    url = "javascript:onclick=importFile()";
     menuItem = new YAHOO.widget.MenuItem(label, {url: url});
     oMenu.addItem(menuItem, groupIndex);
     groupEmpty = false;
@@ -347,8 +343,8 @@ function initOperations(id, op) {
     menuBarEmpty = false;
   }
   if (op.importFiles) {
-    var label = getString('kmelia.ImportFiles');
-    var url = "javascript:onclick=importFiles()";
+    label = getString('kmelia.ImportFiles');
+    url = "javascript:onclick=importFiles()";
     menuItem = new YAHOO.widget.MenuItem(label, {url: url});
     oMenu.addItem(menuItem, groupIndex);
     groupEmpty = false;
@@ -394,16 +390,16 @@ function initOperations(id, op) {
   }
 
   if (op.subscriptions) {
-    var label = getString('SubscriptionsAdd');
-    var url = "javascript:onclick=addSubscription()";
+    label = getString('SubscriptionsAdd');
+    url = "javascript:onclick=addSubscription()";
     menuItem = new YAHOO.widget.MenuItem(label, {url: url});
     oMenu.addItem(menuItem, groupIndex);
     groupEmpty = false;
     //addCreationItem(url, icons["operation.subscribe"], label);
   }
   if (op.favorites) {
-    var label = getString('FavoritesAdd1') + ' ' + getString('FavoritesAdd2');
-    var url = "javascript:onclick=addCurrentNodeAsFavorite()";
+    label = getString('FavoritesAdd1') + ' ' + getString('FavoritesAdd2');
+    url = "javascript:onclick=addCurrentNodeAsFavorite()";
     menuItem = new YAHOO.widget.MenuItem(label, {url: url});
     oMenu.addItem(menuItem, groupIndex);
     groupEmpty = false;
@@ -412,19 +408,12 @@ function initOperations(id, op) {
 
   if (!groupEmpty) {
     groupIndex++;
-    groupEmpty = true;
     menuEmpty = false;
   }
 
   if (op.statistics) {
     menuItem = new YAHOO.widget.MenuItem(getString('kmelia.operation.statistics'), {url: "javascript:onclick=showStats()"});
     oMenu.addItem(menuItem, groupIndex);
-    menuEmpty = false;
-  }
-
-  if (!groupEmpty) {
-    groupIndex++;
-    groupEmpty = true;
     menuEmpty = false;
   }
 
@@ -563,7 +552,6 @@ function displayTopicInformation(id) {
       var name = topic.text;
       var desc = topic.attr["description"];
       var date = $.datepicker.formatDate(getDateFormat(), new Date(topic.attr["creationDate"]));
-      ;
       var creator = topic.attr["creator"].fullName;
       $("#footer").html(getString('kmelia.topic.info') + ' ' + creator + ' - ' + date + ' - <a class="sp-permalink" id="topicPermalink" href="#"><img src="' + icons["permalink"] + '"/></a>');
       $("#footer #topicPermalink").attr("href", getWebContext() + "/Topic/" + id + "?ComponentId=" + getComponentId());
@@ -641,7 +629,7 @@ function topicAdd(topicId, isLinked) {
     $("#deleteTranslation").remove();
 
     // display path of parent
-    var url = getWebContext() + "/services/folders/" + getComponentId() + "/" + topicId + "/path?lang=" + getTranslation() + "&IEFix=" + new Date().getTime();
+    url = getWebContext() + "/services/folders/" + getComponentId() + "/" + topicId + "/path?lang=" + getTranslation() + "&IEFix=" + new Date().getTime();
     $.getJSON(url, function(data) {
       //remove topic breadcrumb
       $("#addOrUpdateNode #path").html("");
