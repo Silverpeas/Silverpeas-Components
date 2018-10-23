@@ -23,14 +23,14 @@
  */
 package org.silverpeas.components.delegatednews.service;
 
+import org.silverpeas.components.delegatednews.model.DelegatedNews;
+import org.silverpeas.core.contribution.model.SilverpeasContent;
+import org.silverpeas.core.date.period.Period;
+import org.silverpeas.core.util.ServiceProvider;
+
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-
-import org.silverpeas.components.delegatednews.model.DelegatedNews;
-import org.silverpeas.core.date.period.Period;
-
-import org.silverpeas.core.contribution.model.SilverpeasContent;
-import org.silverpeas.core.util.ServiceProvider;
 
 public interface DelegatedNewsService {
 
@@ -38,25 +38,27 @@ public interface DelegatedNewsService {
     return ServiceProvider.getService(DelegatedNewsService.class);
   }
 
-  public void submitNews(String id, SilverpeasContent news, String lastUpdaterId,
-      Period visibilityPeriod, String userId);
+  void submitNews(String id, SilverpeasContent news, String lastUpdaterId, Period visibilityPeriod,
+      String userId);
 
-  public DelegatedNews getDelegatedNews(int pubId);
+  DelegatedNews getDelegatedNews(int pubId);
 
-  public List<DelegatedNews> getAllDelegatedNews();
+  List<DelegatedNews> getDelegatedNews(Collection<String> pubIds);
 
-  public List<DelegatedNews> getAllValidDelegatedNews();
+  List<DelegatedNews> getAllDelegatedNews();
 
-  public void validateDelegatedNews(int pubId, String validatorId);
+  List<DelegatedNews> getAllValidDelegatedNews();
 
-  public void refuseDelegatedNews(int pubId, String validatorId, String refusalMotive);
+  void validateDelegatedNews(int pubId, String validatorId);
 
-  public void updateDateDelegatedNews(int pubId, Date dateHourBegin, Date dateHourEnd);
+  void refuseDelegatedNews(int pubId, String validatorId, String refusalMotive);
 
-  public void updateDelegatedNews(String id, SilverpeasContent news, String updaterId,
+  void updateDateDelegatedNews(int pubId, Date dateHourBegin, Date dateHourEnd);
+
+  void updateDelegatedNews(String id, SilverpeasContent news, String updaterId,
       Period visibilityPeriod);
 
-  public void deleteDelegatedNews(int pubId);
+  void deleteDelegatedNews(int pubId);
 
-  public DelegatedNews updateOrderDelegatedNews(int pubId, int newsOrder);
+  DelegatedNews updateOrderDelegatedNews(int pubId, int newsOrder);
 }
