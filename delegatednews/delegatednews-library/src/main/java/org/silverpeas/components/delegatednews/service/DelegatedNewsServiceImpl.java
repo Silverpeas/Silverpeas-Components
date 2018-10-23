@@ -23,33 +23,34 @@
  */
 package org.silverpeas.components.delegatednews.service;
 
-import org.silverpeas.core.contribution.model.SilverpeasContent;
-import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.components.delegatednews.dao.DelegatedNewsRepository;
 import org.silverpeas.components.delegatednews.model.DelegatedNews;
-import org.silverpeas.core.ui.DisplayI18NHelper;
+import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.model.SilverpeasContent;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.notification.user.client.NotificationManagerException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.notification.user.client.UserRecipient;
-import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.date.period.Period;
+import org.silverpeas.core.template.SilverpeasTemplate;
+import org.silverpeas.core.template.SilverpeasTemplateFactory;
+import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.Link;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.template.SilverpeasTemplateFactory;
+import org.silverpeas.core.util.URLUtil;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -93,6 +94,11 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService, Component
   @Override
   public DelegatedNews getDelegatedNews(int pubId) {
     return dao.getById(Integer.toString(pubId));
+  }
+
+  @Override
+  public List<DelegatedNews> getDelegatedNews(final Collection<String> pubIds) {
+    return dao.getById(pubIds);
   }
 
   /**
