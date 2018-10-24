@@ -33,7 +33,7 @@ import org.silverpeas.components.quickinfo.repository.NewsRepository;
 import org.silverpeas.components.quickinfo.service.QuickInfoContentManager;
 import org.silverpeas.components.quickinfo.service.QuickInfoDateComparatorDesc;
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.admin.component.model.CompoSpace;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.comment.service.CommentService;
@@ -75,7 +75,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import static java.util.Arrays.asList;
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
 import static org.silverpeas.core.persistence.Transaction.performInOne;
 
@@ -315,18 +317,16 @@ public class DefaultQuickInfoService implements QuickInfoService {
   @Override
   public List<News> getPlatformNews(String userId) {
     SilverLogger.getLogger(this).debug("Enter Get All Quick Info : User=" + userId);
-    List<News> result = new ArrayList<>();
-    CompoSpace[] compoSpaces = OrganizationControllerProvider.getOrganisationController()
-        .getCompoForUser(userId, QuickInfoComponentSettings.COMPONENT_NAME);
-    for (CompoSpace compoSpace : compoSpaces) {
-      String componentId = compoSpace.getComponentId();
-      try {
-        result.addAll(getVisibleNews(componentId));
-      } catch (Exception e) {
-        SilverLogger.getLogger(this).error("can get visible news of " + componentId, e);
-      }
-    }
-    return sortByDateDesc(result);
+    final String[] allowedComponentIds = OrganizationController.get()
+        .getComponentIdsForUser(userId, QuickInfoComponentSettings.COMPONENT_NAME);
+    int limit = QuickInfoComponentSettings.getSettings().getInteger("news.all.limit", 30);
+    return newsRepository.getByComponentIds(asList(allowedComponentIds))
+        .stream()
+        .filter(n -> n.getPublishDate() != null)
+        .peek(n -> decorateNewsWithPublication(n, false))
+        .filter(n -> n.isVisible() && !n.isDraft())
+        .limit(limit)
+        .collect(Collectors.toList());
   }
 
   @Override

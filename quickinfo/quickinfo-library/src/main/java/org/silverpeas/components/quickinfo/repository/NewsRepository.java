@@ -30,12 +30,18 @@ import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEn
 
 import java.util.List;
 
+import static java.util.Collections.singletonList;
+
 public class NewsRepository extends SilverpeasJpaEntityRepository<News> {
 
   public List<News> getByComponentId(String componentId) {
+    return getByComponentIds(singletonList(componentId));
+  }
+
+  public List<News> getByComponentIds(List<String> componentIds) {
     NamedParameters parameters = newNamedParameters();
-    parameters.add("componentInstanceId", componentId);
-    return findByNamedQuery("newsFromComponentInstance", parameters);
+    parameters.add("componentInstanceIds", componentIds);
+    return findByNamedQuery("newsFromComponentInstances", parameters);
   }
 
   public News getByForeignId(String foreignId) {
@@ -55,5 +61,4 @@ public class NewsRepository extends SilverpeasJpaEntityRepository<News> {
     parameters.add("ticker", true);
     return findByNamedQuery("newsForTicker", parameters);
   }
-
 }
