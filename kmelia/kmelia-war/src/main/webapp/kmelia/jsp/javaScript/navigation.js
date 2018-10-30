@@ -199,6 +199,8 @@ function initOperations(id, op) {
   oMenu.clearContent();
   $('#menubar-creation-actions').empty();
 
+  var label;
+  var url;
   var menuItem;
   var groupIndex = 0;
   var groupEmpty = true;
@@ -264,8 +266,8 @@ function initOperations(id, op) {
   }
 
   if (op.addTopic) {
-    var label = getString('CreerSousTheme');
-    var url = "javascript:onclick=addNodeToCurrentNode()";
+    label = getString('CreerSousTheme');
+    url = "javascript:onclick=addNodeToCurrentNode()";
     menuItem = new YAHOO.widget.MenuItem(label, {url: url});
     oMenu.addItem(menuItem, groupIndex);
     groupEmpty = false;

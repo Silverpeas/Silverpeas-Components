@@ -26,9 +26,6 @@
     $slider : initialValue
   };
 
-  // Fullscreen is a little bit difficult to handle with videos & sounds ...
-  var isFullscreen = false;
-
   $.gallerySlider = {
     webServiceContext : webContext + '/services',
     mediaType : {
