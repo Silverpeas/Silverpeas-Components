@@ -71,13 +71,15 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
 import static org.silverpeas.core.persistence.Transaction.performInOne;
 
@@ -114,11 +116,9 @@ public class DefaultQuickInfoService implements QuickInfoService {
 
   @Override
   public List<News> getAllNews(String componentId) {
-    List<News> allNews = newsRepository.getByComponentId(componentId);
-    boolean delegateNewsEnabled = isDelegatedNewsActivated(componentId);
-    for (News aNews : allNews) {
-      decorateNewsWithPublication(aNews, delegateNewsEnabled);
-    }
+    final List<News> allNews = newsRepository.getByComponentId(componentId);
+    final boolean delegateNewsEnabled = isDelegatedNewsActivated(componentId);
+    decorateNews(allNews, delegateNewsEnabled);
     return allNews;
   }
 
@@ -129,15 +129,15 @@ public class DefaultQuickInfoService implements QuickInfoService {
 
   @Override
   public News getNews(String id) {
-    News news = newsRepository.getById(id);
-    decorateNewsWithPublication(news, true);
+    final News news = newsRepository.getById(id);
+    decorateNews(singletonList(news), true);
     return news;
   }
 
   @Override
   public News getNewsByForeignId(String foreignId) {
-    News news = newsRepository.getByForeignId(foreignId);
-    decorateNewsWithPublication(news, false);
+    final News news = newsRepository.getByForeignId(foreignId);
+    decorateNews(singletonList(news), true);
     return news;
   }
 
@@ -323,7 +323,7 @@ public class DefaultQuickInfoService implements QuickInfoService {
     return newsRepository.getByComponentIds(asList(allowedComponentIds))
         .stream()
         .filter(n -> n.getPublishDate() != null)
-        .peek(n -> decorateNewsWithPublication(n, false))
+        .peek(n -> decorateNews(singletonList(n), false))
         .filter(n -> n.isVisible() && !n.isDraft())
         .limit(limit)
         .collect(Collectors.toList());
@@ -335,10 +335,9 @@ public class DefaultQuickInfoService implements QuickInfoService {
     if (tickerNews.isEmpty()) {
       return tickerNews;
     }
-
+    decorateNews(tickerNews, false);
     List<News> forTicker = new ArrayList<>();
     for (News news : tickerNews) {
-      decorateNewsWithPublication(news, false);
       if (!news.isDraft() && news.isVisible() && news.canBeAccessedBy(User.getById(userId))) {
         forTicker.add(news);
       }
@@ -352,9 +351,9 @@ public class DefaultQuickInfoService implements QuickInfoService {
     if (blockingNews.isEmpty()) {
       return blockingNews;
     }
+    decorateNews(blockingNews, false);
     List<News> result = new ArrayList<>();
     for (News news : blockingNews) {
-      decorateNewsWithPublication(news, false);
       if (!news.isDraft() && news.isVisible() && news.canBeAccessedBy(User.getById(userId)) &&
           !getStatisticService().isRead(news, userId)) {
         result.add(news);
@@ -396,13 +395,8 @@ public class DefaultQuickInfoService implements QuickInfoService {
 
   private List<News> sortByDateDesc(List<News> listOfNews) {
     Comparator<News> comparator = QuickInfoDateComparatorDesc.comparator;
-    Collections.sort(listOfNews, comparator);
+    listOfNews.sort(comparator);
     return listOfNews;
-  }
-
-  private void setDelegatedNews(News news, PublicationDetail publication) {
-    news.setDelegatedNews(
-        getDelegatedNewsService().getDelegatedNews(Integer.parseInt(publication.getId())));
   }
 
   /**
@@ -424,13 +418,26 @@ public class DefaultQuickInfoService implements QuickInfoService {
     return StringUtil.getBooleanValue(paramValue);
   }
 
-  private void decorateNewsWithPublication(News news, boolean delegated) {
-    PublicationDetail publication = getPublicationService().getDetail(news.getForeignPK());
-    news.setPublication(publication);
+  private void decorateNews(final List<News> news, final boolean delegated) {
+    final Map<String, News> mapping = mapByPublicationId(news);
+    getPublicationService().getByIds(mapping.keySet()).forEach(p -> {
+      News current = mapping.get(p.getId());
+      current.setPublication(p);
+    });
     if (delegated) {
-      setDelegatedNews(news, publication);
+      getDelegatedNewsService().getDelegatedNews(mapping.keySet()).forEach(d -> {
+        News current = mapping.get(d.getId());
+        current.setDelegatedNews(d);
+      });
     }
   }
+
+  private Map<String, News> mapByPublicationId(final List<News> news) {
+    final Map<String, News> mapping = new HashMap<>(news.size());
+    news.forEach(n -> mapping.put(n.getPublicationId(), n));
+    return mapping;
+  }
+
 
   private PublicationService getPublicationService() {
     return ServiceProvider.getService(PublicationService.class);
