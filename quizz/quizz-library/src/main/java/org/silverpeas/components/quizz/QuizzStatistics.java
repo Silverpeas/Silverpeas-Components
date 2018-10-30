@@ -24,11 +24,11 @@
 
 package org.silverpeas.components.quizz;
 
-import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
-import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
-import org.silverpeas.core.questioncontainer.container.service.QuestionContainerService;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerHeader;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerPK;
+import org.silverpeas.core.questioncontainer.container.service.QuestionContainerService;
+import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
+import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -37,11 +37,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-/**
- * Class declaration
- *
- * @author
- */
 @Singleton
 @Named("quizz" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
 public class QuizzStatistics implements ComponentStatisticsProvider {
@@ -50,8 +45,7 @@ public class QuizzStatistics implements ComponentStatisticsProvider {
   private QuestionContainerService questionContainerService;
 
   @Override
-  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
-      throws Exception {
+  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId) {
     Collection<QuestionContainerHeader> headers = getQuizz(spaceId, componentId);
     List<UserIdCountVolumeCouple> myArrayList = new ArrayList<>(headers.size());
     for (QuestionContainerHeader qcHeader : headers) {
@@ -68,8 +62,7 @@ public class QuizzStatistics implements ComponentStatisticsProvider {
     return questionContainerService;
   }
 
-  public Collection<QuestionContainerHeader> getQuizz(String spaceId, String componentId)
-      throws Exception {
+  private Collection<QuestionContainerHeader> getQuizz(String spaceId, String componentId) {
     return getQuestionContainerService().getNotClosedQuestionContainers(
         new QuestionContainerPK(null, spaceId, componentId));
   }

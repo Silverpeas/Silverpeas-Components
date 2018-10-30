@@ -20,11 +20,11 @@
  */
 package org.silverpeas.components.kmelia;
 
-import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
-import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
-import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.publication.service.PublicationService;
+import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
+import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
 import org.silverpeas.core.util.ServiceProvider;
 
 import javax.inject.Named;
@@ -33,32 +33,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-/**
- * Class declaration
- *
- * @author
- */
 @Singleton
 @Named("kmelia" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
 public class KmeliaStatistics implements ComponentStatisticsProvider {
 
   private PublicationService publicationService = null;
 
-  /**
-   * Method declaration
-   *
-   * @param spaceId
-   * @param componentId
-   * @return
-   *
-   */
   @Override
-  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
-      throws Exception {
-
+  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId) {
     Collection<PublicationDetail> details = getElements(componentId);
-    List<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>(details.
-        size());
+    List<UserIdCountVolumeCouple> myArrayList = new ArrayList<>(details.size());
     for (PublicationDetail detail : details) {
       UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
       myCouple.setUserId(detail.getCreatorId());
@@ -75,7 +59,7 @@ public class KmeliaStatistics implements ComponentStatisticsProvider {
     return publicationService;
   }
 
-  public Collection<PublicationDetail> getElements(String componentId) {
+  private Collection<PublicationDetail> getElements(String componentId) {
     return getPublicationService().getAllPublications(new PublicationPK("useless", componentId));
   }
 }

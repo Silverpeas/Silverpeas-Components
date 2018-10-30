@@ -23,9 +23,9 @@
  */
 package org.silverpeas.components.resourcesmanager;
 
-import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
-import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
 import org.silverpeas.components.resourcesmanager.model.Reservation;
+import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
+import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -38,8 +38,7 @@ import java.util.List;
 public class ResourcesManagerStatistics implements ComponentStatisticsProvider {
 
   @Override
-  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
-      throws Exception {
+  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId) {
     List<Reservation> allReservations =
         ResourcesManagerProvider.getResourcesManager().getReservations(componentId);
 
