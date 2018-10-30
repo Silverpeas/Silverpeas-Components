@@ -21,13 +21,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-(function($, undefined) {
+(function($, initialValue) {
   var context = {
-    $slider : undefined
+    $slider : initialValue
   };
-
-  // Fullscreen is a little bit difficult to handle with videos & sounds ...
-  var isFullscreen = false;
 
   $.gallerySlider = {
     webServiceContext : webContext + '/services',
@@ -83,7 +80,7 @@
 
       // Light checking
       if (!options.componentInstanceId || !options.albumId) {
-        alert("Bad component instance id or album id");
+        notyWarning("Bad component instance id or album id");
         return false;
       }
 
@@ -102,7 +99,7 @@
   $.fn.gallerySlider = function(method) {
 
     if (!$().popup) {
-      alert("Silverpeas GallerySlider JQuery Plugin is required.");
+      notyWarning("Silverpeas GallerySlider JQuery Plugin is required.");
       return false;
     }
 
@@ -131,7 +128,7 @@
 
     // Default options
     options = $.extend({
-      $elementsToHide : undefined,
+      $elementsToHide : initialValue,
       waitInSeconds : 5,
       fromMediaId : null,
       width : $(window).width() * 0.9,
@@ -164,7 +161,7 @@
         },
         error : function(jqXHR, textStatus, errorThrown) {
           $.popup.hideWaiting();
-          alert(errorThrown);
+          notyError(errorThrown);
         }
       });
     })
@@ -311,8 +308,8 @@
           };
         });
       } else {
-        context.$slider.enterMediaPlayerFullscreen = undefined;
-        context.$slider.exitMediaPlayerFullscreen = undefined;
+        context.$slider.enterMediaPlayerFullscreen = initialValue;
+        context.$slider.exitMediaPlayerFullscreen = initialValue;
       }
     });
     context.$slider.bind("play", function() {
@@ -355,7 +352,7 @@
       39 : context.$slider.next, // right
       13 : function() {
         // toggle fullscreen when return (keyCode 13) is pressed:
-        __toggleFullscreen($base, this);
+        __toggleFullscreen($base);
       },
       32 : function() {
         // toggle playing when space (keyCode 32) is pressed:
@@ -376,8 +373,8 @@
    */
   function __buildDialogContainer($sliderContainer) {
     var $base = $("#slideshow");
-    var $fullscreenSwitcher = $("#slideshow_fullscreenSwitcher");
     if ($base.length == 0) {
+      var $fullscreenSwitcher;
       $base = $("<div>").attr('id', 'slideshow').css('display', 'block').css('border',
           '0px').css('padding', '0px').css('margin', '0px auto').css('text-align',
           'center').css('background-color', 'white');
