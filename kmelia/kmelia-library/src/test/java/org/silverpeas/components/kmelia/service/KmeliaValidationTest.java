@@ -24,37 +24,37 @@
 package org.silverpeas.components.kmelia.service;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.extention.TestManagedMock;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 
 import java.util.Arrays;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 import static org.silverpeas.core.contribution.publication.model.PublicationDetail.*;
 
 /**
  * @author Yohann Chastagnier
  */
+@EnableSilverTestEnv
 public class KmeliaValidationTest {
 
   private static final String INSTANCE_ID = "instanceId";
   private static final String VALIDATOR_ID = "26";
 
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
-
   private KmeliaValidation kmeliaValidation;
+  @TestManagedMock
   private KmeliaService kmeliaService;
   private int counter = 0;
 
-  @Before
+  @BeforeEach
   public void setup() {
     counter = 0;
-    kmeliaService = commonAPI4Test.injectIntoMockedBeanContainer(mock(KmeliaService.class));
     kmeliaValidation = KmeliaValidation.by(VALIDATOR_ID);
   }
 
@@ -136,10 +136,11 @@ public class KmeliaValidationTest {
     verifyNoMoreInteractions(kmeliaService);
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void setForceAndValidatorHasNoMoreRightIsNotPossible() {
-    kmeliaValidation.forceValidation().validatorHasNoMoreRight()
-        .validate(createPublication(TO_VALIDATE_STATUS));
+    assertThrows(IllegalArgumentException.class, () -> kmeliaValidation.forceValidation()
+        .validatorHasNoMoreRight()
+        .validate(createPublication(TO_VALIDATE_STATUS)));
   }
 
   @Test

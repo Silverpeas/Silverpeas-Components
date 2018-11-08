@@ -38,8 +38,8 @@ import org.silverpeas.core.io.file.SilverpeasFile;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
 public class StreamingIT extends AbstractMediaIT {

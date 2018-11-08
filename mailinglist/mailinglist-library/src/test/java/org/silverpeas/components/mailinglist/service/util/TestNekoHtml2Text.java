@@ -20,19 +20,18 @@
  */
 package org.silverpeas.components.mailinglist.service.util;
 
+import org.apache.commons.lang3.CharEncoding;
+import org.junit.Before;
+import org.junit.Test;
+import org.silverpeas.components.mailinglist.service.util.neko.NekoHtmlCleaner;
+
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 
-import org.apache.commons.lang3.CharEncoding;
-import org.junit.Before;
-import org.junit.Test;
-
-import org.silverpeas.components.mailinglist.service.util.neko.NekoHtmlCleaner;
-
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
 
 public class TestNekoHtml2Text {
   public TestNekoHtml2Text() {

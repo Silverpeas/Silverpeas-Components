@@ -38,8 +38,8 @@ import org.silverpeas.core.util.DateUtil;
 
 import java.util.Date;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
 public class InternalMediaIT {

@@ -24,21 +24,19 @@
 
 package org.silverpeas.components.gallery.constant;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 
 import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
+@EnableSilverTestEnv
 public class MediaMimeTypeTest {
-
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
 
   @Test
   public void verifyMediaMimeTypes() {

@@ -24,15 +24,16 @@
 package org.silverpeas.components.kmelia.service;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.silverpeas.core.admin.ObjectType;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.test.extention.TestManagedMock;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.util.CollectionUtil;
 
 import java.util.ArrayList;
@@ -42,12 +43,13 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.mock;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 /**
  * @author Yohann Chastagnier
  */
+@EnableSilverTestEnv
 public class KmeliaUserTreeViewFilterTest {
 
   private static final String USER_ID = "26";
@@ -68,40 +70,29 @@ public class KmeliaUserTreeViewFilterTest {
   private static final int NODE_B_ID = 16;
   private static final int NODE_BA_ID = 17;
 
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
-
+  @TestManagedMock
   private OrganizationController organisationController;
 
-  @Before
+  @BeforeEach
   public void setup() {
-    organisationController =
-        commonAPI4Test.injectIntoMockedBeanContainer(mock(OrganizationController.class));
-
     // Verifying common data
     List<NodeDetail> commonTree = buildCommonTree();
 
-    assertTree(commonTree,
-        Pair.of(ROOT_NODE_ID, (String) null),
-        Pair.of(NODE_A_ID, (String) null),
-        Pair.of(NODE_AA_ID, (String) null),
-        Pair.of(NODE_AAA_ID, (String) null),
-        Pair.of(NODE_AAB_ID, (String) null),
-        Pair.of(NODE_AB_ID, (String) null),
-        Pair.of(NODE_ABA_ID, (String) null),
-        Pair.of(NODE_B_ID, (String) null),
-        Pair.of(NODE_BA_ID, (String) null));
+    assertTree(commonTree, Pair.of(ROOT_NODE_ID, null), Pair.of(NODE_A_ID, null),
+        Pair.of(NODE_AA_ID, null), Pair.of(NODE_AAA_ID, null), Pair.of(NODE_AAB_ID, null),
+        Pair.of(NODE_AB_ID, null), Pair.of(NODE_ABA_ID, null), Pair.of(NODE_B_ID, null),
+        Pair.of(NODE_BA_ID, null));
 
     NodeDetail node_AA = commonTree.get(2);
     assertThat(node_AA.getId(), is(NODE_AA_ID));
     assertThat(node_AA.getChildrenDetails(), hasSize(2));
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void setBestUserRoleAndFilterOnNotExistingTree() {
-    KmeliaUserTreeViewFilter
-        .from(USER_ID, INSTANCE_ID, ROOT_NODE_PK, READER_ROLE, false)
-        .setBestUserRoleAndFilter(null);
+    assertThrows(NullPointerException.class,
+        () -> KmeliaUserTreeViewFilter.from(USER_ID, INSTANCE_ID, ROOT_NODE_PK, READER_ROLE, false)
+            .setBestUserRoleAndFilter(null));
   }
 
   @Test
