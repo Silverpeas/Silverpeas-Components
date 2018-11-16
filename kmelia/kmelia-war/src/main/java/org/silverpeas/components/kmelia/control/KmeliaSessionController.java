@@ -141,6 +141,7 @@ import java.text.ParseException;
 import java.util.*;
 
 import static org.silverpeas.components.kmelia.export.KmeliaPublicationExporter.*;
+import static org.silverpeas.core.cache.service.CacheServiceProvider.getSessionCacheService;
 import static org.silverpeas.core.cache.service.VolatileIdentifierProvider.newVolatileIntegerIdentifierOn;
 import static org.silverpeas.core.contribution.attachment.AttachmentService.VERSION_MODE;
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.NONE_CLASSIFICATION;
@@ -162,6 +163,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   private static final String KMELIA = "kmelia";
   private static final String PUBLICATION = "Publication";
   private static final String USELESS = "useless";
+  private static final String PUB_LIST_SESSION_CACHE_KEY =
+      KmeliaSessionController.class.getSimpleName() + "#publicationList";
 
   // Session objects
   private TopicDetail sessionTopic = null;
@@ -174,7 +177,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   private String sessionPathString = null;
   private TopicDetail sessionTopicToLink = null;
   private boolean sessionOwner = false;
-  private List<KmeliaPublication> sessionPublicationsList = null;
   // Specific Kmax
   private List<String> sessionCombination = null;
   // Specific Kmax
@@ -263,7 +265,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     customPublicationTemplateName = "publication_" + getComponentId();
     customPublicationTemplateUsed =
         template.isCustomTemplateExists(KMELIA, customPublicationTemplateName);
-    sessionPublicationsList = Collections.emptyList();
+    cacheDirectlyPublicationsListInSession(Collections.emptyList());
 
     nbPublicationsPerPage = getSettings().getInteger("NbPublicationsParPage", 10);
     String parameterValue = getComponentParameterValue("nbPubliPerPage");
@@ -1078,25 +1080,14 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   private void applyVisibilityFilter() {
-    List<KmeliaPublication> publications = getSessionPublicationsList();
-
+    final List<KmeliaPublication> publications = getSessionPublicationsList();
     setSessionPublicationsList(getKmeliaService()
         .filterPublications(publications, getComponentId(), SilverpeasRole.from(getProfile()),
             getUserId()));
   }
 
   private synchronized void orderPubs(int sortType) {
-    sessionPublicationsList = sort(getSessionPublicationsList(), sortType);
-  }
-
-  public synchronized void orderPubsToValidate(String sortType) {
-    int sort = Integer.parseInt(defaultSortValue);
-    if (StringUtil.isDefined(sortType)) {
-      sort = Integer.parseInt(sortType);
-    }
-    List<KmeliaPublication> publications =
-        sort(getKmeliaService().getPublicationsToValidate(getComponentId(), getUserId()), sort);
-    sessionPublicationsList = publications;
+    cacheDirectlyPublicationsListInSession(sort(getSessionPublicationsList(), sortType));
   }
 
   private List<KmeliaPublication> sort(Collection<KmeliaPublication> publications, int sortType) {
@@ -1522,10 +1513,16 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   private void setSessionPublicationsList(List<KmeliaPublication> publications, boolean sort) {
-    this.sessionPublicationsList = (publications == null ? null : new ArrayList<>(publications));
+    cacheDirectlyPublicationsListInSession(publications == null
+        ? null
+        : new ArrayList<>(publications));
     if (sort) {
       orderPubs();
     }
+  }
+
+  private void cacheDirectlyPublicationsListInSession(final List<KmeliaPublication> publications) {
+    getSessionCacheService().getCache().put(PUB_LIST_SESSION_CACHE_KEY, publications);
   }
 
   public void setSessionCombination(List<String> combination) {
@@ -1614,8 +1611,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     return this.sessionOwner;
   }
 
+  @SuppressWarnings("unchecked")
   public List<KmeliaPublication> getSessionPublicationsList() {
-    return this.sessionPublicationsList;
+    return (List) getSessionCacheService().getCache().get(PUB_LIST_SESSION_CACHE_KEY);
   }
 
   public List<String> getSessionCombination() {
@@ -2052,15 +2050,15 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   public synchronized List<KmeliaPublication> search(List<String> combination) {
-    this.sessionPublicationsList =
-        new ArrayList<>(getKmeliaService().search(combination, getComponentId()));
+    cacheDirectlyPublicationsListInSession(
+        new ArrayList<>(getKmeliaService().search(combination, getComponentId())));
     applyVisibilityFilter();
     return getSessionPublicationsList();
   }
 
   public synchronized List<KmeliaPublication> search(List<String> combination, int nbDays) {
-    this.sessionPublicationsList =
-        new ArrayList<>(getKmeliaService().search(combination, nbDays, getComponentId()));
+    cacheDirectlyPublicationsListInSession(
+        new ArrayList<>(getKmeliaService().search(combination, nbDays, getComponentId())));
     applyVisibilityFilter();
     return getSessionPublicationsList();
   }

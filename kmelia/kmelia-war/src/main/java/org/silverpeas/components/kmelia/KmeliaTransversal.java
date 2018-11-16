@@ -20,23 +20,28 @@
  */
 package org.silverpeas.components.kmelia;
 
-import org.silverpeas.core.web.look.PublicationHelper;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.contribution.publication.service.PublicationService;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.publication.service.PublicationService;
+import org.silverpeas.core.util.Pagination;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.SilverpeasArrayList;
+import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.look.PublicationHelper;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+
+import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnGetting;
 
 public class KmeliaTransversal implements PublicationHelper {
 
@@ -82,24 +87,25 @@ public class KmeliaTransversal implements PublicationHelper {
   public List<PublicationDetail> getPublications(String spaceId, List<String> excluded, int nbPublis) {
     List<String> componentIds = getAvailableComponents(spaceId);
     componentIds.removeAll(excluded);
-    List<PublicationPK> publicationPKs = null;
+    final SilverpeasList<PublicationPK> filteredPublicationPKs =
+        new Pagination<PublicationPK, SilverpeasList<PublicationPK>>(new PaginationPage(1, nbPublis))
+        .paginatedDataSource(p -> {
+          try {
+            return getPublicationService().getPublicationPKsByStatus(
+                PublicationDetail.VALID_STATUS, componentIds, p);
+          } catch (Exception e) {
+            SilverLogger.getLogger(this).error(failureOnGetting("publication pks of space", spaceId));
+            return new SilverpeasArrayList<>(0);
+          }
+        })
+        .filter(p -> filterPublicationPKs(p, nbPublis))
+        .execute();
     try {
-      publicationPKs = (List<PublicationPK>) getPublicationService().getPublicationPKsByStatus(
-          PublicationDetail.VALID_STATUS, componentIds);
+      return getPublicationService().getPublications(filteredPublicationPKs);
     } catch (Exception e) {
-      SilverTrace.error("kmelia", "KmeliaTransversal.getPublications()",
-          "kmelia.CANT_GET_PUBLICATIONS_PKS", "spaceId = " + spaceId, e);
+      SilverLogger.getLogger(this).error(failureOnGetting("publications of space", spaceId));
     }
-    Collection<PublicationPK> filteredPublicationPKs = filterPublicationPKs(publicationPKs,
-        nbPublis);
-
-    try {
-      return (List<PublicationDetail>) getPublicationService().getPublications(filteredPublicationPKs);
-    } catch (Exception e) {
-      SilverTrace.error("kmelia", "KmeliaTransversal.getPublications()",
-          "kmelia.CANT_GET_PUBLICATIONS", "spaceId = " + spaceId, e);
-    }
-    return new ArrayList<PublicationDetail>();
+    return new ArrayList<>();
   }
 
   @Override
@@ -116,27 +122,29 @@ public class KmeliaTransversal implements PublicationHelper {
 
   protected List<PublicationDetail> getUpdatedPublications(String spaceId, Date since, int nbPublis) {
     List<String> componentIds = getAvailableComponents(spaceId);
-    List<PublicationPK> publicationPKs = null;
+    final SilverpeasList<PublicationPK> filteredPublicationPKs =
+        new Pagination<PublicationPK, SilverpeasList<PublicationPK>>(new PaginationPage(1, nbPublis))
+        .paginatedDataSource(p -> {
+          try {
+            return getPublicationService().getUpdatedPublicationPKsByStatus(
+                PublicationDetail.VALID_STATUS, since, componentIds, p);
+          } catch (Exception e) {
+            SilverLogger.getLogger(this).error(failureOnGetting("publication pks of space", spaceId));
+            return new SilverpeasArrayList<>(0);
+          }
+        })
+        .filter(p -> filterPublicationPKs(p, nbPublis))
+        .execute();
     try {
-      publicationPKs = (List<PublicationPK>) getPublicationService().getUpdatedPublicationPKsByStatus(
-          PublicationDetail.VALID_STATUS, since, 0, componentIds);
+      return getPublicationService().getPublications(filteredPublicationPKs);
     } catch (Exception e) {
-      SilverTrace.error("kmelia", "KmeliaTransversal.getPublications()",
-          "kmelia.CANT_GET_PUBLICATIONS_PKS", "spaceId = " + spaceId, e);
+      SilverLogger.getLogger(this).error(failureOnGetting("publications of space", spaceId));
     }
-    Collection<PublicationPK> filteredPublicationPKs = filterPublicationPKs(publicationPKs,
-        nbPublis);
-    try {
-      return (List<PublicationDetail>) getPublicationService().getPublications(filteredPublicationPKs);
-    } catch (Exception e) {
-      SilverTrace.error("kmelia", "KmeliaTransversal.getPublications()",
-          "kmelia.CANT_GET_PUBLICATIONS", "spaceId = " + spaceId, e);
-    }
-    return new ArrayList<PublicationDetail>();
+    return new ArrayList<>();
   }
 
   protected List<String> getAvailableComponents(String spaceId) {
-    List<String> componentIds = new ArrayList<String>();
+    List<String> componentIds = new ArrayList<>();
     if (!StringUtil.isDefined(spaceId)) {
       String[] cIds = getOrganizationControl().getComponentIdsForUser(userId, "kmelia");
       componentIds.addAll(Arrays.asList(cIds));
@@ -158,20 +166,19 @@ public class KmeliaTransversal implements PublicationHelper {
   public List<PublicationDetail> getPublicationsByComponentId(String componentId) {
     List<PublicationDetail> publications = null;
     try {
-      List<String> componentIds = new ArrayList<String>();
+      List<String> componentIds = new ArrayList<>();
       componentIds.add(componentId);
       publications = (List<PublicationDetail>) getPublicationService().getPublicationsByStatus("Valid",
           componentIds);
     } catch (Exception e) {
-      SilverTrace.error("kmelia", "KmeliaTransversal.getPublicationsByComponentId()",
-          "kmelia.CANT_GET_PUBLICATIONS", "componentId = " + componentId, e);
+      SilverLogger.getLogger(this).error(failureOnGetting("publications of component", componentId));
     }
     return filterPublications(publications, -1);
   }
 
   private List<PublicationDetail> filterPublications(List<PublicationDetail> publications,
       int nbPublis) {
-    List<PublicationDetail> filteredPublications = new ArrayList<PublicationDetail>();
+    List<PublicationDetail> filteredPublications = new ArrayList<>();
     KmeliaAuthorization security = new KmeliaAuthorization();
 
     PublicationDetail pub = null;
@@ -190,18 +197,15 @@ public class KmeliaTransversal implements PublicationHelper {
     return filteredPublications;
   }
 
-  private List<PublicationPK> filterPublicationPKs(List<PublicationPK> publicationPKs, int nbPublis) {
-    List<PublicationPK> filteredPublicationPKs = new ArrayList<PublicationPK>();
-    KmeliaAuthorization security = new KmeliaAuthorization();
-
-    PublicationPK pk = null;
-    for (int p = 0; publicationPKs != null && p < publicationPKs.size(); p++) {
-      pk = publicationPKs.get(p);
-      if (security.isObjectAvailable(pk.getInstanceId(), userId, pk.getId(),
-          "Publication")) {
+  private SilverpeasList<PublicationPK> filterPublicationPKs(
+      SilverpeasList<PublicationPK> publicationPKs, int nbPublis) {
+    final SilverpeasList<PublicationPK> filteredPublicationPKs = publicationPKs
+        .newEmptyListWithSameProperties();
+    final KmeliaAuthorization security = new KmeliaAuthorization();
+    for (final PublicationPK pk : publicationPKs) {
+      if (security.isObjectAvailable(pk.getInstanceId(), userId, pk.getId(), "Publication")) {
         filteredPublicationPKs.add(pk);
       }
-
       if (nbPublis != -1 && filteredPublicationPKs.size() >= nbPublis) {
         return filteredPublicationPKs;
       }
