@@ -52,7 +52,7 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.index.indexing.model.FieldDescription;
 import org.silverpeas.core.index.search.model.SearchResult;
-import org.silverpeas.core.notification.user.client.NotificationManagerException;
+import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
@@ -759,7 +759,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
     this.notifiedUserCard = card;
   }
 
-  public void sendNotification(String bodyMessage) throws NotificationManagerException {
+  public void sendNotification(String bodyMessage) throws NotificationException {
     String url = URLUtil.getURL(null, getComponentId()) + "consultIdentity?userCardId=" +
         notifiedUserCard.getPK().getId();
 

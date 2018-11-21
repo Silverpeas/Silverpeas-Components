@@ -66,7 +66,7 @@ import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.model.NodeSelection;
 import org.silverpeas.core.notification.message.MessageNotifier;
-import org.silverpeas.core.notification.user.client.NotificationManagerException;
+import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
@@ -1259,7 +1259,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
       notifMetaData.setComponentId(getComponentId());
       NotificationSender notifSender = new NotificationSender(getComponentId());
       notifSender.notifyUser(notifMetaData);
-    } catch (NotificationManagerException e) {
+    } catch (NotificationException e) {
       throw new GalleryRuntimeException(e);
     }
   }

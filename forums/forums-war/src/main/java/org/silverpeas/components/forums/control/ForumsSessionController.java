@@ -37,6 +37,7 @@ import org.silverpeas.components.forums.service.ForumService;
 import org.silverpeas.components.forums.service.ForumsException;
 import org.silverpeas.components.forums.service.ForumsServiceProvider;
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.model.Attachments;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
@@ -74,6 +75,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.*;
 import static org.silverpeas.core.admin.user.model.UserDetail.OnFirstNameAndLastName;
@@ -686,8 +689,8 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   }
 
   public String getAdminIds() {
-    return NotificationSender.getIdsLineFromUserArray(
-        getOrganisationController().getUsers(getSpaceId(), getComponentId(), "admin"));
+    User[] adminIds = getOrganisationController().getUsers(getSpaceId(), getComponentId(), "admin");
+    return Stream.of(adminIds).map(User::getId).collect(Collectors.joining("_"));
   }
 
   private String truncateTextField(String s) {

@@ -31,12 +31,11 @@ import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.Attachments;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.io.upload.UploadedFile;
-import org.silverpeas.core.notification.user.client.NotificationManagerException;
+import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
@@ -587,7 +586,7 @@ public class DefaultProjectManagerService implements ProjectManagerService {
 
     try {
       notifSender.notifyUser(notifMetaData);
-    } catch (NotificationManagerException e) {
+    } catch (NotificationException e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
   }

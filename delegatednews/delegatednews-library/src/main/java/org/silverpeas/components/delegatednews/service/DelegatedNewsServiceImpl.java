@@ -31,7 +31,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.date.period.Period;
-import org.silverpeas.core.notification.user.client.NotificationManagerException;
+import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
@@ -209,7 +209,7 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService, Component
         notifMetaData.setSender(senderId);
       }
       getNotificationSender(notifMetaData.getComponentId()).notifyUser(notifMetaData);
-    } catch (NotificationManagerException e) {
+    } catch (NotificationException e) {
       SilverTrace.warn("delegatednews", "DelegatedNewsServiceImpl.notifyUsers()",
           "delegatednews.EX_IMPOSSIBLE_DALERTER_LES_UTILISATEURS", e);
     }

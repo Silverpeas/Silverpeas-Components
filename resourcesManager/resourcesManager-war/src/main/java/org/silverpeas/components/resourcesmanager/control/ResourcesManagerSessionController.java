@@ -36,7 +36,7 @@ import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
-import org.silverpeas.core.notification.user.client.NotificationManagerException;
+import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
@@ -296,7 +296,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
   }
 
   public void sendNotificationForValidation(Long resourceId, Long reservationId)
-      throws NotificationManagerException {
+      throws NotificationException {
     Resource resource = getResource(resourceId);
     String status = ResourcesManagerProvider.getResourcesManager()
         .getResourceOfReservationStatus(resourceId, reservationId);
@@ -542,7 +542,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
   }
 
   public void validateResource(Long resourceId, Long reservationId)
-      throws NotificationManagerException {
+      throws NotificationException {
     ResourcesManagerProvider.getResourcesManager()
         .updateReservedResourceStatus(reservationId, resourceId, ResourceStatus.STATUS_VALIDATE);
     Reservation reservation = getReservation(reservationId);
@@ -554,7 +554,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
   }
 
   public void refuseResource(Long resourceId, Long reservationId, String motive)
-      throws NotificationManagerException {
+      throws NotificationException {
     ResourcesManagerProvider.getResourcesManager()
         .updateReservedResourceStatus(reservationId, resourceId, ResourceStatus.STATUS_REFUSED);
     Reservation reservation = getReservation(reservationId);
@@ -573,7 +573,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
   }
 
   public void sendNotificationValidateReservation(Reservation reservation)
-      throws NotificationManagerException {
+      throws NotificationException {
     // envoyer une notification au créateur de la réservation
     OrganizationController orga = OrganizationControllerProvider.getOrganisationController();
     String user = orga.getUserDetail(getUserId()).getDisplayedName();
@@ -619,7 +619,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
   }
 
   public void sendNotificationRefuseReservation(Reservation reservation, Long resourceId,
-      String motive) throws NotificationManagerException {
+      String motive) throws NotificationException {
     // envoyer une notification au créateur de la réservation
     OrganizationController orga = OrganizationControllerProvider.getOrganisationController();
     String user = orga.getUserDetail(getUserId()).getDisplayedName();

@@ -26,7 +26,7 @@ package org.silverpeas.components.gallery.service;
 import org.silverpeas.components.gallery.model.GalleryRuntimeException;
 import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.notification.user.client.NotificationManagerException;
+import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.notification.user.client.UserRecipient;
@@ -126,7 +126,7 @@ public class ScheduledAlertUser implements SchedulerEventListener {
     NotificationSender notifSender = new NotificationSender(componentInstanceId);
     try {
       notifSender.notifyUser(notificationMetaData);
-    } catch (NotificationManagerException e) {
+    } catch (NotificationException e) {
       SilverLogger.getLogger(this)
           .error("can not send the notification message about media which will be no more visible",
               e);

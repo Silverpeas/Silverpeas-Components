@@ -27,7 +27,7 @@ import org.silverpeas.components.questionreply.QuestionReplyException;
 import org.silverpeas.components.questionreply.model.Question;
 import org.silverpeas.components.questionreply.model.Reply;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.notification.user.client.NotificationManagerException;
+import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
@@ -95,7 +95,7 @@ public class SubscriptionNotifier extends Notifier {
         notifMetaData.setSender(sender.getId());
 
         notificationSender.notifyUser(notifMetaData);
-      } catch (NotificationManagerException e) {
+      } catch (NotificationException e) {
         throw new QuestionReplyException(e);
       }
     }
