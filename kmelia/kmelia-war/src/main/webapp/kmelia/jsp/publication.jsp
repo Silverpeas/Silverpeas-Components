@@ -89,8 +89,6 @@
   if (kmeliaScc.isIndexable(kmeliaPublication.getDetail())) {
     indexIt = "1";
   }
-  
-  List<HistoryObjectDetail> lastAccess = (List<HistoryObjectDetail>) request.getAttribute("LastAccess");
 
   if (action == null) {
     action = "View";
@@ -700,6 +698,7 @@
 					    </div>
         <%
               if (lastVisitorsEnabled) {
+                List<HistoryObjectDetail> lastAccess = (List<HistoryObjectDetail>) request.getAttribute("LastAccess");
               /*********************************************************************************************************************/
               /** Affichage des derniers visiteurs																					**/
               /*********************************************************************************************************************/

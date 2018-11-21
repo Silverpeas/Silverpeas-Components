@@ -678,9 +678,11 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           request.setAttribute("AttachmentsEnabled", kmelia.isAttachmentsEnabled());
 
           // Last vistors area must be displayed or not ?
-          request.setAttribute("LastVisitorsEnabled", kmelia.isLastVisitorsEnabled());
-
-          request.setAttribute("LastAccess", kmelia.getLastAccess(kmeliaPublication.getPk()));
+          final boolean lastVisitorsEnabled = kmelia.isLastVisitorsEnabled();
+          request.setAttribute("LastVisitorsEnabled", lastVisitorsEnabled);
+          if (lastVisitorsEnabled) {
+            request.setAttribute("LastAccess", kmelia.getLastAccess(kmeliaPublication.getPk()));
+          }
           request.setAttribute("PublicationRatingsAllowed", kmelia.isPublicationRatingAllowed());
           request.setAttribute("SeeAlsoEnabled", kmelia.isSeeAlsoEnabled());
 
