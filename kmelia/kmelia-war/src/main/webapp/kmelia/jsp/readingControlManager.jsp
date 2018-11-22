@@ -80,11 +80,10 @@ function closeWindows() {
 	  
 	out.println(frame.printBefore());
 	
-	String url = kmeliaScc.getComponentUrl()+"ReadingControl";
 	String objectType = "Publication";
 	
 	out.flush();
-	getServletConfig().getServletContext().getRequestDispatcher("/statistic/jsp/readingControl.jsp?id="+pubId+"&url="+url+"&componentId="+componentId+"&objectType="+objectType).include(request, response);
+	getServletConfig().getServletContext().getRequestDispatcher("/statistic/jsp/readingControl.jsp?id="+pubId+"&componentId="+componentId+"&objectType="+objectType).include(request, response);
 		
 	out.println(frame.printAfter());
 	out.println(window.printAfter());
