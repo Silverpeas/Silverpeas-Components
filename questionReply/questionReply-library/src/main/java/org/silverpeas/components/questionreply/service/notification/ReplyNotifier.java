@@ -78,7 +78,7 @@ public class ReplyNotifier extends Notifier {
       // Initialize templates
       Map<String, SilverpeasTemplate> templates = new HashMap<>();
       NotificationMetaData notifMetaData =
-          new NotificationMetaData(NotificationParameters.NORMAL, subject, templates, "reply");
+          new NotificationMetaData(NotificationParameters.PRIORITY_NORMAL, subject, templates, "reply");
       List<String> languages = DisplayI18NHelper.getLanguages();
       for (String language : languages) {
         LocalizationBundle message = ResourceLocator.getLocalizationBundle(RESOURCE_NAME, language);

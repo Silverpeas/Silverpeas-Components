@@ -701,7 +701,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
     String subject = message.getString("survey.notifSubject");
 
     NotificationMetaData notifMetaData =
-        new NotificationMetaData(NotificationParameters.NORMAL, subject, templates, "alertSurvey");
+        new NotificationMetaData(NotificationParameters.PRIORITY_NORMAL, subject, templates, "alertSurvey");
 
     List<String> languages = DisplayI18NHelper.getLanguages();
     for (String language : languages) {
@@ -732,8 +732,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
       Link link = new Link(url, message.getString("survey.notifSurveyLinkLabel"));
       notifMetaData.setLink(link, language);
     }
-    notifMetaData.setSource(getSpaceLabel() + " - " + getComponentLabel());
-    notifMetaData.setComponentId(pk.getInstanceId());
+    notifMetaData.setComponentId(getComponentId());
     notifMetaData.setSender(getUserId());
     notifMetaData.displayReceiversInFooter();
 

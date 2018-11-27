@@ -329,7 +329,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
             "resourcesManager.notifBody")).append(" '").append(resource.getName()).append("'");
 
         NotificationMetaData notifMetaData =
-            new NotificationMetaData(NotificationParameters.NORMAL, subject,
+            new NotificationMetaData(NotificationParameters.PRIORITY_NORMAL, subject,
                 messageBody.toString());
 
         for (String language : DisplayI18NHelper.getLanguages()) {
@@ -586,7 +586,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
 
     String subject = message.getString("resourcesManager.notifSubjectValide");
 
-    NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.NORMAL,
+    NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.PRIORITY_NORMAL,
         subject, getMessageBodyValidReservation(message, reservation));
 
     for (String language : DisplayI18NHelper.getLanguages()) {
@@ -634,7 +634,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
 
     String subject = message.getString("resourcesManager.notifSubjectRefuse");
 
-    NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.NORMAL,
+    NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.PRIORITY_NORMAL,
         subject, getMessageBodyRefusedReservation(message, resource, reservation, motive));
 
     for (String language : DisplayI18NHelper.getLanguages()) {

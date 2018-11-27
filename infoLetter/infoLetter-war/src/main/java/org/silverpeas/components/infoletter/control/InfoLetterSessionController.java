@@ -285,7 +285,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
       try {
         Map<String, SilverpeasTemplate> templates = new HashMap<>();
         NotificationMetaData notifMetaData =
-            new NotificationMetaData(NotificationParameters.NORMAL, sSubject, templates,
+            new NotificationMetaData(NotificationParameters.PRIORITY_NORMAL, sSubject, templates,
                 "infoLetterNotification");
 
         String url = "/RinfoLetter/" + getComponentId() + "/View?parution=" + ilp.getPK().getId();
@@ -313,7 +313,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
           notifMetaData.setLink(link, lang);
         }
         notifMetaData.setSender(getUserId());
-        notifMetaData.setSource(getSpaceLabel() + " - " + getComponentLabel());
+        notifMetaData.setComponentId(getComponentId());
         notifMetaData.displayReceiversInFooter();
 
         // Internal subscribers

@@ -50,7 +50,7 @@ import java.util.Map;
 
 import static org.silverpeas.components.gallery.service.MediaServiceProvider.getMediaService;
 import static org.silverpeas.core.admin.service.OrganizationControllerProvider.getOrganisationController;
-import static org.silverpeas.core.notification.user.client.NotificationParameters.NORMAL;
+import static org.silverpeas.core.notification.user.client.NotificationParameters.PRIORITY_NORMAL;
 
 public class ScheduledAlertUser implements SchedulerEventListener {
 
@@ -111,7 +111,7 @@ public class ScheduledAlertUser implements SchedulerEventListener {
       return;
     }
 
-    NotificationMetaData notificationMetaData = new NotificationMetaData(NORMAL, "", "");
+    NotificationMetaData notificationMetaData = new NotificationMetaData(PRIORITY_NORMAL, "", "");
 
     // Preparing the notification content
     localizedContent.append("\n").appendFromBundleKey("gallery.notifUserInfo").append("\n\n");

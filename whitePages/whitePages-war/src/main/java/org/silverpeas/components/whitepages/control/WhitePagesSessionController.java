@@ -769,7 +769,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
 
     String subject = message.getString("whitePages.notificationTitle");
     NotificationMetaData notifMetaData =
-        new NotificationMetaData(NotificationParameters.NORMAL, subject, bodyMessage);
+        new NotificationMetaData(NotificationParameters.PRIORITY_NORMAL, subject, bodyMessage);
 
 
     for (String language : DisplayI18NHelper.getLanguages()) {

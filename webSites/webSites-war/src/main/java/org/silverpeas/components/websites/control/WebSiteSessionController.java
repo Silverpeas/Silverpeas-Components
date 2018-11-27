@@ -757,7 +757,7 @@ public class WebSiteSessionController extends AbstractComponentSessionController
       }
 
       NotificationMetaData notifMetaData =
-          new NotificationMetaData(NotificationParameters.NORMAL, subject, messageText);
+          new NotificationMetaData(NotificationParameters.PRIORITY_NORMAL, subject, messageText);
       notifMetaData.setSender(getUserId());
       notifMetaData.addUserRecipients(recipients);
       notifMetaData.setComponentId(getComponentId());

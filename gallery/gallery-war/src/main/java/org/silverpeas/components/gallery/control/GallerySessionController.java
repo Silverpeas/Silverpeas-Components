@@ -625,7 +625,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     messageBody = messageBody.append(user).append(" ").append(
         message.getString("gallery.notifBodyAsk"));
 
-    NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.NORMAL,
+    NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.PRIORITY_NORMAL,
         subject, messageBody.toString());
 
     for (String language : DisplayI18NHelper.getLanguages()) {
@@ -665,7 +665,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     String body = getNotificationBody(media, htmlPath, message, senderName);
 
     NotificationMetaData notifMetaData =
-        new NotificationMetaData(NotificationParameters.NORMAL, subject, body);
+        new NotificationMetaData(NotificationParameters.PRIORITY_NORMAL, subject, body);
 
     for (String language : DisplayI18NHelper.getLanguages()) {
       message = ResourceLocator.getLocalizationBundle(MULTILANG_GALLERY_BUNDLE, language);
@@ -880,7 +880,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
             .append("\n");
 
     NotificationMetaData notifMetaData =
-        new NotificationMetaData(NotificationParameters.NORMAL, subject, messageBody.toString());
+        new NotificationMetaData(NotificationParameters.PRIORITY_NORMAL, subject, messageBody.toString());
 
     for (String language : DisplayI18NHelper.getLanguages()) {
       message = ResourceLocator.getLocalizationBundle(MULTILANG_GALLERY_BUNDLE, language);
@@ -922,7 +922,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
         .append(message.getString("gallery.orderNotifBodyAskOk")).append("\n");
 
     NotificationMetaData notifMetaData =
-        new NotificationMetaData(NotificationParameters.NORMAL, subject, messageBody.toString());
+        new NotificationMetaData(NotificationParameters.PRIORITY_NORMAL, subject, messageBody.toString());
 
     for (String language : DisplayI18NHelper.getLanguages()) {
       message = ResourceLocator.getLocalizationBundle(MULTILANG_GALLERY_BUNDLE, language);

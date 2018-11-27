@@ -238,7 +238,7 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService, Component
         String subject = message.getString("delegatednews.newsSuggest");
 
         NotificationMetaData notifMetaData =
-            new NotificationMetaData(NotificationParameters.NORMAL, subject, templates,
+            new NotificationMetaData(NotificationParameters.PRIORITY_NORMAL, subject, templates,
                 "delegatednewsNotificationToValidate");
         for (String lang : DisplayI18NHelper.getLanguages()) {
           SilverpeasTemplate template = getNewTemplate();
@@ -328,7 +328,7 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService, Component
         String subject = message.getString("delegatednews.newsValid");
 
         NotificationMetaData notifMetaData =
-            new NotificationMetaData(NotificationParameters.NORMAL, subject, templates,
+            new NotificationMetaData(NotificationParameters.PRIORITY_NORMAL, subject, templates,
                 "delegatednewsNotificationValid");
         for (String lang : DisplayI18NHelper.getLanguages()) {
           SilverpeasTemplate template = getNewTemplate();
@@ -375,7 +375,7 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService, Component
         String subject = message.getString("delegatednews.newsRefused");
 
         NotificationMetaData notifMetaData =
-            new NotificationMetaData(NotificationParameters.NORMAL,
+            new NotificationMetaData(NotificationParameters.PRIORITY_NORMAL,
                 subject, templates, "delegatednewsNotificationRefused");
         for (String lang : DisplayI18NHelper.getLanguages()) {
           SilverpeasTemplate template = getNewTemplate();

@@ -567,7 +567,7 @@ public class DefaultProjectManagerService implements ProjectManagerService {
     String subject = getNotificationSubject(message, onCreation);
     String body = getNotificationBody(message, onCreation, task.getNom());
 
-    NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.NORMAL,
+    NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.PRIORITY_NORMAL,
         subject, body);
 
     for (String language : DisplayI18NHelper.getLanguages()) {

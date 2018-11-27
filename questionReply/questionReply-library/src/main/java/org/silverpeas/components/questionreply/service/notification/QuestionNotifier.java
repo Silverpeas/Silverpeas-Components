@@ -75,7 +75,7 @@ public class QuestionNotifier extends Notifier {
 
       Map<String, SilverpeasTemplate> templates = new HashMap<>();
       NotificationMetaData notifMetaData =
-          new NotificationMetaData(NotificationParameters.NORMAL, subject, templates, "question");
+          new NotificationMetaData(NotificationParameters.PRIORITY_NORMAL, subject, templates, "question");
 
       List<String> languages = DisplayI18NHelper.getLanguages();
       for (String language : languages) {

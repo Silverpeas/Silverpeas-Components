@@ -72,7 +72,7 @@ public class SubscriptionNotifier extends Notifier {
         Map<String, SilverpeasTemplate> templates = new HashMap<>();
         String translation;
         translation = getNotificationTitle(message);
-        NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.NORMAL,
+        NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.PRIORITY_NORMAL,
             String.format(translation, question.getTitle()), templates, "reply_subscription");
         List<String> languages = DisplayI18NHelper.getLanguages();
         for (String language : languages) {
