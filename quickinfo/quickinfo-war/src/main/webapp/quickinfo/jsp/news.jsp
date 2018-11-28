@@ -130,6 +130,8 @@ function onDelete(id) {
 		<fmt:message var="notifyMsg" key="GML.notify"/>
 		<view:operation altText="${notifyMsg}" action="javascript:notify()"/>
 	</c:if>
+  <fmt:message var="printMsg" key="GML.print"/>
+  <view:operation altText="${printMsg}" action="javascript:window.print()"/>
 </view:operationPane>
 </c:if>
 <view:window popup="${viewOnly}">

@@ -21,13 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-.cellBrowseBar, .cellOperation, .commentaires, .sp_buttonPane, .sp_goToTop {
-  display: none;
-}
-.cellBodyWindows {
-  border-width: 0;
-}
-
 #ask-statut {
   display: block;
 }
