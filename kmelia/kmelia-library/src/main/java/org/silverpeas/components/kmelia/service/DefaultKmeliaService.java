@@ -36,6 +36,7 @@ import org.silverpeas.components.kmelia.notification.*;
 import org.silverpeas.core.ActionType;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.ObjectType;
+import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.ProfileInst;
@@ -106,13 +107,7 @@ import org.silverpeas.core.subscription.SubscriptionServiceProvider;
 import org.silverpeas.core.subscription.service.NodeSubscription;
 import org.silverpeas.core.subscription.service.NodeSubscriptionResource;
 import org.silverpeas.core.subscription.service.UserSubscriptionSubscriber;
-import org.silverpeas.core.util.ArrayUtil;
-import org.silverpeas.core.util.CollectionUtil;
-import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.*;
 import org.silverpeas.core.util.annotation.Action;
 import org.silverpeas.core.util.annotation.SourcePK;
 import org.silverpeas.core.util.annotation.TargetPK;
@@ -132,8 +127,7 @@ import java.sql.Connection;
 import java.util.*;
 
 import static org.silverpeas.components.kmelia.service.KmeliaServiceContext.*;
-import static org.silverpeas.core.admin.service.OrganizationControllerProvider
-    .getOrganisationController;
+import static org.silverpeas.core.admin.service.OrganizationControllerProvider.getOrganisationController;
 import static org.silverpeas.core.contribution.attachment.AttachmentService.VERSION_MODE;
 import static org.silverpeas.core.util.StringUtil.*;
 
@@ -2721,27 +2715,29 @@ public class DefaultKmeliaService implements KmeliaService {
 
   @Override
   public List<HistoryObjectDetail> getLastAccess(PublicationPK pk, NodePK nodePK,
-      String excludedUserId) {
-
-    Collection<HistoryObjectDetail> allAccess =
-        statisticService.getHistoryByAction(new ResourceReference(pk), 1, PUBLICATION);
-    List<String> userIds = getUserIdsOfFolder(nodePK);
-    List<String> readerIds = new ArrayList<>();
-
-    List<HistoryObjectDetail> lastAccess = new ArrayList<>();
-
-    for (HistoryObjectDetail access : allAccess) {
-      String readerId = access.getUserId();
-      if (!readerId.equals(excludedUserId) &&
-          (CollectionUtil.isEmpty(userIds) || userIds.contains(readerId)) && !readerIds.contains(readerId)) {
-        readerIds.add(readerId);
-        if (!User.getById(readerId).isAnonymous()) {
-          lastAccess.add(access);
-        }
-      }
-    }
-
-    return lastAccess;
+      String excludedUserId, final int maxResult) {
+    final List<String> userIds = getUserIdsOfFolder(nodePK);
+    final List<String> readerIds = new ArrayList<>();
+    readerIds.add(excludedUserId);
+    return new Pagination<HistoryObjectDetail, SilverpeasList<HistoryObjectDetail>>(new PaginationPage(1, maxResult))
+        .paginatedDataSource(p -> statisticService
+            .getHistoryByAction(new ResourceReference(pk), 1, PUBLICATION, readerIds,
+                p.originalSizeIsNotRequired()))
+        .filter(r -> {
+          final SilverpeasList<HistoryObjectDetail> currentLastAccess = new SilverpeasArrayList<>();
+          for (HistoryObjectDetail access : r) {
+            final String readerId = access.getUserId();
+            if ((CollectionUtil.isEmpty(userIds) || userIds.contains(readerId))
+                && !readerIds.contains(readerId)) {
+              readerIds.add(readerId);
+              if (!User.getById(readerId).isAnonymous()) {
+                currentLastAccess.add(access);
+              }
+            }
+          }
+          return currentLastAccess;
+        })
+        .execute();
   }
 
   @Override
