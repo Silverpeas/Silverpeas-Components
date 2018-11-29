@@ -70,6 +70,9 @@ public class HandlerProvider {
 
     handlerMap.put("Previous", new PreviousHandler());
     handlerMap.put("Next", new NextHandler());
+
+    handlerMap.put("ToNotifyUsers", new ClassifiedNotificationHandler());
+    handlerMap.put("ToNotifyOwner", new ClassifiedOwnerNotificationHandler());
   }
 
   private HandlerProvider() {

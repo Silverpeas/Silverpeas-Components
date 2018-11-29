@@ -80,7 +80,7 @@
 <view:includePlugin name="messageme"/>
 <fmt:message var="deletionConfirm" key="classifieds.confirmDeleteClassified" />
 <script type="text/javascript">
-	function deleteConfirm(id) {
+	function deleteConfirm() {
 		// confirmation de suppression de l'annonce
     var label = "<c:out value='${deletionConfirm}'/>";
     jQuery.popup.confirm(label, function() {
@@ -106,7 +106,7 @@
 		location.href = "<view:componentUrl componentId='${instanceId}'/>ValidateClassified?ClassifiedId=${classified.id}";
 	}
 
-	function refused(id) {
+	function refused() {
 		// open modal dialog
 		$("#refusalModalDialog").dialog({
 			modal: true,
@@ -166,6 +166,57 @@
   		}
 		SP_openWindow(url,'image','700','500','scrollbars=yes, noresize, alwaysRaised');
   	}
+
+  var notifyWindow = window;
+  function toNotify() {
+    var windowName = "notifyWindow";
+    if (!notifyWindow.closed && notifyWindow.name == "notifyWindow") {
+      notifyWindow.close();
+    }
+    var url = "ToNotifyUsers";
+    var windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
+    notifyWindow = SP_openWindow(url, windowName, "740", "600", windowParams);
+  }
+
+  function toNotifyOwner() {
+    $("#messageToOwnerDialog").dialog({
+      modal: true,
+      resizable: false,
+      width: 600,
+      buttons: {
+        "<fmt:message key="GML.ok"/>": function() {
+          sendMessageToOwner();
+        },
+        "<fmt:message key="GML.cancel"/>": function() {
+          $( this ).dialog( "close" );
+        }
+      }
+    });
+  }
+
+  function sendMessageToOwner() {
+    var errorMsg = "";
+    var errorNb = 0;
+    var message = stripInitialWhitespace(document.messageToOwnerForm.Message.value);
+    if (isWhitespace(message)) {
+      errorMsg += "  - '<fmt:message key="GML.notification.message"/>' <fmt:message key="GML.MustBeFilled"/>\n";
+      errorNb++;
+    }
+    switch (errorNb) {
+      case 0:
+        document.messageToOwnerForm.submit();
+        break;
+      case 1:
+        errorMsg = "<fmt:message key="GML.ThisFormContains"/> 1 <fmt:message key="GML.error"/> : \n"
+            + errorMsg;
+        jQuery.popup.error(errorMsg);
+        break;
+      default:
+        errorMsg = "<fmt:message key="GML.ThisFormContains"/> " + errorNb
+            + " <fmt:message key="GML.errors"/> :\n" + errorMsg;
+        jQuery.popup.error(errorMsg);
+    }
+  }
 </script>
 </head>
 <body id="classifieds">
@@ -186,7 +237,6 @@
       </c:when>
     </c:choose>
 	</view:browseBar>
-	<c:if test="${user.id == creatorId or profile.name == 'admin'}">
 		<c:if test="${'Unpublished' == classified.status}">
 			<fmt:message var="updateOp" key="classifieds.republishClassified" />
 		</c:if>
@@ -200,6 +250,7 @@
 		<fmt:message var="deleteIcon" key="classifieds.delete"
 			bundle="${icons}" />
 		<view:operationPane>
+      <c:if test="${user.id == creatorId or profile.name == 'admin'}">
 			<view:operation
 				action="javascript:updateClassified();"
 				altText="${updateOp}" icon="${updateIcon}" />
@@ -244,8 +295,13 @@
 					action="javascript:refused();"
 					altText="${refuseOp}" icon="${refuseIcon}" />
 			</c:if>
+      </c:if>
+      <c:if test="${not user.anonymous}">
+        <view:operationSeparator/>
+        <fmt:message var="notifyOp" key="GML.notify" />
+        <view:operation action="javascript:toNotify();" altText="${notifyOp}" />
+      </c:if>
 		</view:operationPane>
-	</c:if>
 
 	<view:window>
 		<view:frame>
@@ -275,7 +331,7 @@
 
                   <c:if test="${not user.anonymous && user.id != creatorId}">
                     <div id="classified_contact_link" class="bgDegradeGris">
-                     <a rel="${classified.creatorId},${classified.creatorName}" class="link notification" href="#"><fmt:message key="classifieds.contactAdvertiser"/></a>
+                     <a href="#" onclick="toNotifyOwner()"><fmt:message key="classifieds.contactAdvertiser"/></a>
                     </div>
                   </c:if>
                   <p></p>
@@ -372,13 +428,26 @@
 								<td><textarea name="Motive" rows="5" cols="55"></textarea>&nbsp;<img border="0" src="${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}"/>" width="5" height="5"/></td>
 							</tr>
 							<tr>
-								<td colspan="2">( <img border="0" src="${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}"/>" width="5" height="5"/> : <fmt:message key="GML.requiredField" /> )</td>
+								<td colspan="2"><img border="0" src="${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}"/>" width="5" height="5"/> : <fmt:message key="GML.requiredField" /></td>
 							</tr>
 						</table></td>
 				</tr>
 			</table>
 		</form>
 	</div>
+  <fmt:message var="messageToOwnerTitle" key="GML.notification.message"/>
+  <div id="messageToOwnerDialog" title="${messageToOwnerTitle}" style="display: none;">
+    <form name="messageToOwnerForm" action="ToNotifyOwner" method="post">
+        <table>
+          <tr>
+            <td><textarea name="Message" rows="6" cols="65"></textarea>&nbsp;<img border="0" src="${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}"/>" width="5" height="5"/></td>
+          </tr>
+          <tr>
+            <td><img border="0" src="${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}"/>" width="5" height="5"/> : <fmt:message key="GML.requiredField" /></td>
+          </tr>
+        </table>
+    </form>
+  </div>
 </div>	
 </body>
 </html>
