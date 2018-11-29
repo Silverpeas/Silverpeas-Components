@@ -1,0 +1,1 @@
+$senderName$ sends you the following message regarding the ad <b>$classified.title$</b>.

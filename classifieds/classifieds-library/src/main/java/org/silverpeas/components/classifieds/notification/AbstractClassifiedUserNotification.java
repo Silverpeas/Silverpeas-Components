@@ -25,6 +25,7 @@ package org.silverpeas.components.classifieds.notification;
 
 import org.silverpeas.components.classifieds.ClassifiedUtil;
 import org.silverpeas.components.classifieds.model.ClassifiedDetail;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.template.SilverpeasTemplate;
@@ -65,6 +66,7 @@ public abstract class AbstractClassifiedUserNotification extends
     getNotificationMetaData().addLanguage(language, title, "");
     template.setAttribute("classified", resource);
     template.setAttribute("classifiedName", resource.getTitle());
+    template.setAttribute("senderName", User.getById(getSender()).getDisplayedName());
   }
 
   @Override
