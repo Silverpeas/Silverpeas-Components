@@ -91,8 +91,9 @@ public class KmeliaTransversal implements PublicationHelper {
         new Pagination<PublicationPK, SilverpeasList<PublicationPK>>(new PaginationPage(1, nbPublis))
         .paginatedDataSource(p -> {
           try {
-            return getPublicationService().getPublicationPKsByStatus(
-                PublicationDetail.VALID_STATUS, componentIds, p);
+            return getPublicationService()
+                .getPublicationPKsByStatus(PublicationDetail.VALID_STATUS, componentIds,
+                    p.originalSizeIsNotRequired());
           } catch (Exception e) {
             SilverLogger.getLogger(this).error(failureOnGetting("publication pks of space", spaceId));
             return new SilverpeasArrayList<>(0);
@@ -126,8 +127,9 @@ public class KmeliaTransversal implements PublicationHelper {
         new Pagination<PublicationPK, SilverpeasList<PublicationPK>>(new PaginationPage(1, nbPublis))
         .paginatedDataSource(p -> {
           try {
-            return getPublicationService().getUpdatedPublicationPKsByStatus(
-                PublicationDetail.VALID_STATUS, since, componentIds, p);
+            return getPublicationService()
+                .getUpdatedPublicationPKsByStatus(PublicationDetail.VALID_STATUS, since,
+                    componentIds, p.originalSizeIsNotRequired());
           } catch (Exception e) {
             SilverLogger.getLogger(this).error(failureOnGetting("publication pks of space", spaceId));
             return new SilverpeasArrayList<>(0);

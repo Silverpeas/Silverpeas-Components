@@ -3373,7 +3373,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   public List<HistoryObjectDetail> getLastAccess(PublicationPK pk) {
-    return getKmeliaService().getLastAccess(pk, getCurrentFolderPK(), getUserId());
+    return getKmeliaService().getLastAccess(pk, getCurrentFolderPK(), getUserId(), 4);
   }
 
   public void setPublicationValidator(String userIds) {

@@ -658,7 +658,8 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
 
   List<String> getUserIdsOfFolder(NodePK pk);
 
-  List<HistoryObjectDetail> getLastAccess(PublicationPK pk, NodePK nodePK, String excludedUserId);
+  List<HistoryObjectDetail> getLastAccess(PublicationPK pk, NodePK nodePK, String excludedUserId,
+      final int maxResult);
 
   NodeDetail copyNode(KmeliaCopyDetail copyDetail);
 
