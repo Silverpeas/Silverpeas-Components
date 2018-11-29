@@ -23,34 +23,23 @@
  */
 package org.silverpeas.components.webpages.notification;
 
-import org.silverpeas.core.admin.service.AdminController;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.notification.user.UserSubscriptionNotificationBehavior;
-import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
-import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.subscription.constant.SubscriberType;
 import org.silverpeas.core.subscription.service.ResourceSubscriptionProvider;
 import org.silverpeas.core.subscription.util.SubscriptionSubscriberMapBySubscriberType;
-import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.Collection;
-import java.util.List;
-import java.util.MissingResourceException;
 
 /**
  * @author Yohann Chastagnier
  */
-public class WebPagesUserNotifier extends AbstractTemplateUserNotificationBuilder<NodePK>
+public class WebPagesUserNotifier extends AbstractWebPagesNotification
     implements UserSubscriptionNotificationBehavior {
-
-  private final String userId;
 
   private SubscriptionSubscriberMapBySubscriberType subscriberIdsByTypes;
 
@@ -73,8 +62,7 @@ public class WebPagesUserNotifier extends AbstractTemplateUserNotificationBuilde
    * @param resource
    */
   public WebPagesUserNotifier(final NodePK resource, final String userId) {
-    super(resource);
-    this.userId = userId;
+    super(resource, User.getById(userId));
   }
 
   @Override
@@ -88,64 +76,8 @@ public class WebPagesUserNotifier extends AbstractTemplateUserNotificationBuilde
   }
 
   @Override
-  protected void performTemplateData(final String language, final NodePK resource,
-      final SilverpeasTemplate template) {
-    String title;
-    try {
-      title = getBundle(language).getString(getBundleSubjectKey());
-    } catch (MissingResourceException ex) {
-      title = getTitle();
-    }
-    getNotificationMetaData().addLanguage(language, title, "");
-    template.setAttribute("path", "");
-    template.setAttribute("senderName", OrganizationControllerProvider.getOrganisationController().
-        getUserDetail(userId).getDisplayedName());
-  }
-
-  @Override
-  protected void performNotificationResource(final String language, final NodePK resource,
-      final NotificationResourceData notificationResourceData) {
-    // The resource name corresponds at the label of the instantiated application
-    notificationResourceData.setResourceName(OrganizationControllerProvider.
-        getOrganisationController().getComponentInstLight(getComponentInstanceId()).getLabel());
-    notificationResourceData.setResourceId(resource.getId());
-    notificationResourceData.setResourceType(getTemplatePath());
-    // Exceptionally the resource location is builded at this level
-    // Normally, the location is builded by the delayed notification mechanism
-    notificationResourceData.setResourceLocation(buildResourceLocation());
-  }
-
-  /**
-   * Builds the specific location
-   * @return the specific location
-   */
-  private String buildResourceLocation() {
-    final StringBuilder sb = new StringBuilder();
-    AdminController adminController = ServiceProvider.getService(AdminController.class);
-    final List<SpaceInstLight> spaces =
-        adminController.getPathToComponent(getComponentInstanceId());
-    for (final SpaceInstLight space : spaces) {
-      if (sb.length() > 0) {
-        sb.append(NotificationResourceData.LOCATION_SEPARATOR);
-      }
-      sb.append(space.getName());
-    }
-    return sb.toString();
-  }
-
-  @Override
-  protected String getResourceURL(final NodePK resource) {
-    return URLUtil.getURL(null, null, resource.getInstanceId()) + "Main";
-  }
-
-  @Override
   protected NotifAction getAction() {
     return NotifAction.UPDATE;
-  }
-
-  @Override
-  protected String getMultilangPropertyFile() {
-    return "org.silverpeas.webpages.multilang.webPagesBundle";
   }
 
   @Override
@@ -154,23 +86,8 @@ public class WebPagesUserNotifier extends AbstractTemplateUserNotificationBuilde
   }
 
   @Override
-  protected String getTemplatePath() {
-    return "webpages";
-  }
-
-  @Override
   protected String getTemplateFileName() {
     return "notificationUpdateContent";
-  }
-
-  @Override
-  protected String getComponentInstanceId() {
-    return getResource().getInstanceId();
-  }
-
-  @Override
-  protected String getSender() {
-    return userId;
   }
 
   @Override
@@ -183,8 +100,4 @@ public class WebPagesUserNotifier extends AbstractTemplateUserNotificationBuilde
     return subscriberIdsByTypes.get(SubscriberType.GROUP).getAllIds();
   }
 
-  @Override
-  protected String getContributionAccessLinkLabelBundleKey() {
-    return "webPages.notifWebPageLinkLabel";
-  }
 }
