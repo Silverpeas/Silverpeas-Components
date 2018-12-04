@@ -23,12 +23,11 @@
  */
 package org.silverpeas.components.quickinfo.notification;
 
-import java.util.Collection;
-
 import org.silverpeas.components.quickinfo.model.News;
-
-import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.notification.user.client.constant.NotifAction;
+
+import java.util.Collection;
 
 public class NewsManualUserNotification extends AbstractNewsUserNotification {
 
@@ -37,11 +36,6 @@ public class NewsManualUserNotification extends AbstractNewsUserNotification {
   public NewsManualUserNotification(News resource, final UserDetail sender) {
     super(resource, NotifAction.REPORT);
     this.sender = sender;
-  }
-
-  @Override
-  protected String getBundleSubjectKey() {
-    return "GML.st.notification.from";
   }
 
   @Override

@@ -698,7 +698,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
         ResourceLocator.getLocalizationBundle(resource, DisplayI18NHelper.getDefaultLanguage());
 
     Map<String, SilverpeasTemplate> templates = new HashMap<>();
-    String subject = message.getString("survey.notifSubject");
+    String subject = message.getString("custom.st.notification.subject");
 
     NotificationMetaData notifMetaData =
         new NotificationMetaData(NotificationParameters.PRIORITY_NORMAL, subject, templates, "alertSurvey");
@@ -722,7 +722,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
       templates.put(language, template);
       String translation;
       try {
-        translation = message.getString("survey.notifSubject");
+        translation = message.getString("custom.st.notification.subject");
       } catch (MissingResourceException ex) {
         SilverLogger.getLogger(this).silent(ex);
         translation = subject;

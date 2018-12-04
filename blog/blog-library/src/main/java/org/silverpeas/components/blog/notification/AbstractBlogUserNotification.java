@@ -24,6 +24,7 @@
 
 package org.silverpeas.components.blog.notification;
 
+import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.components.blog.model.Category;
 import org.silverpeas.components.blog.model.PostDetail;
 import org.silverpeas.core.admin.user.model.UserDetail;
@@ -31,6 +32,7 @@ import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotific
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.LocalizationBundle;
 
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
@@ -51,7 +53,7 @@ abstract class AbstractBlogUserNotification
   protected void performTemplateData(final String language, final PostDetail resource,
       final SilverpeasTemplate template) {
     getNotificationMetaData().addLanguage(language,
-        defaultStringIfNotDefined(getBundle(language).getString(getBundleSubjectKey()), getTitle()),
+        defaultStringIfNotDefined(getTitle(language), getTitle()),
         "");
     template.setAttribute("blog", resource);
     template.setAttribute("blogName", resource.getPublication().getName(language));
@@ -100,5 +102,17 @@ abstract class AbstractBlogUserNotification
   @Override
   protected String getContributionAccessLinkLabelBundleKey() {
     return "blog.notifPostLinkLabel";
+  }
+
+  private String getTitle(final String language) {
+    final String subjectKey = getBundleSubjectKey();
+    final LocalizationBundle bundle = getBundle(language);
+    final String subject;
+    if (StringUtils.isBlank(subjectKey) || !bundle.containsKey(subjectKey)) {
+      subject = bundle.getString(DEFAULT_NOTIFICATION_SUBJECT);
+    } else {
+      subject = bundle.getString(subjectKey);
+    }
+    return subject;
   }
 }

@@ -53,11 +53,6 @@ public abstract class AbstractScheduleEventUserNotification
   }
 
   @Override
-  protected String getBundleSubjectKey() {
-    return "scheduleevent.notifSubject";
-  }
-
-  @Override
   protected NotifAction getAction() {
     return NotifAction.REPORT;
   }

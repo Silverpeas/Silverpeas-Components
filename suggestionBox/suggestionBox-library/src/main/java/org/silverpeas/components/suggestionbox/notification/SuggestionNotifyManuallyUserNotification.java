@@ -55,11 +55,6 @@ public class SuggestionNotifyManuallyUserNotification extends AbstractSuggestion
   }
 
   @Override
-  protected String getBundleSubjectKey() {
-    return "GML.st.notification.from";
-  }
-
-  @Override
   protected String getTemplateFileName() {
     return "notification";
   }

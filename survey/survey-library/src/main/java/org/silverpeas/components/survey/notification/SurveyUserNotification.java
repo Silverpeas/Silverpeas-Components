@@ -94,11 +94,6 @@ public class SurveyUserNotification
   }
 
   @Override
-  protected String getBundleSubjectKey() {
-    return "survey.notifSubject";
-  }
-
-  @Override
   protected String getTemplateFileName() {
     return this.fileName;
   }
