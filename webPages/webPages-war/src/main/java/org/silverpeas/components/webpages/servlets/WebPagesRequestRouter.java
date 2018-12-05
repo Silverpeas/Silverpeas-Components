@@ -153,6 +153,8 @@ public class WebPagesRequestRouter extends ComponentRequestRouter<WebPagesSessio
         webPagesSC.saveDataRecord(items);
 
         destination = getDestination("Main", webPagesSC, request);
+      } else if ("ToNotifyUsers".equals(function)) {
+        destination = webPagesSC.initAlertUser();
       } else {
         destination = rootDestination + function;
       }

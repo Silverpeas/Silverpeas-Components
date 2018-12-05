@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.webpages.control;
 
+import org.silverpeas.components.webpages.notification.WebPagesUserAlertNotifier;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.FormException;
@@ -31,10 +32,13 @@ import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
+import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
+import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.subscription.SubscriptionService;
 import org.silverpeas.core.subscription.SubscriptionServiceProvider;
 import org.silverpeas.core.subscription.service.ComponentSubscription;
 import org.silverpeas.core.subscription.service.ComponentSubscriptionResource;
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -50,6 +54,7 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
+import org.silverpeas.core.web.mvc.util.AlertUser;
 import org.silverpeas.core.web.subscription.SubscriptionContext;
 
 import java.util.Date;
@@ -289,5 +294,21 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
             "template = " + getUsedXMLTemplate(), e);
       }
     }
+  }
+
+  public String initAlertUser() {
+    AlertUser sel = getAlertUser();
+    sel.resetAll();
+    sel.setHostSpaceName(getSpaceLabel());
+    sel.setHostComponentId(getComponentId());
+    Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(), null);
+    sel.setHostComponentName(hostComponentName);
+    sel.setNotificationMetaData(getAlertNotificationMetaData());
+    return AlertUser.getAlertUserURL();
+  }
+
+  private synchronized NotificationMetaData getAlertNotificationMetaData() {
+    return UserNotificationHelper
+        .build(new WebPagesUserAlertNotifier(new NodePK(null, getComponentId()), getUserDetail()));
   }
 }
