@@ -159,7 +159,7 @@ public class SurveyUserNotification
   }
 
   @Override
-  protected String getMultilangPropertyFile() {
+  protected String getLocalizationBundlePath() {
     return "org.silverpeas.survey.multilang.surveyBundle";
   }
 

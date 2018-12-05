@@ -44,7 +44,7 @@ public abstract class AbstractClassifiedUserNotification extends
   }
 
   @Override
-  protected String getMultilangPropertyFile() {
+  protected String getLocalizationBundlePath() {
     return "org.silverpeas.classifieds.multilang.classifiedsBundle";
   }
 

@@ -50,7 +50,7 @@ public abstract class AbstractKmeliaUserNotification<T> extends AbstractTemplate
   }
 
   @Override
-  protected String getMultilangPropertyFile() {
+  protected String getLocalizationBundlePath() {
     return "org.silverpeas.kmelia.multilang.kmeliaBundle";
   }
 
