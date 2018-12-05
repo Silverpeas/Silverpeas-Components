@@ -26,6 +26,8 @@ package org.silverpeas.components.classifieds.control;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.classifieds.model.ClassifiedDetail;
 import org.silverpeas.components.classifieds.model.Subscribe;
+import org.silverpeas.components.classifieds.notification.ClassifiedOwnerNotification;
+import org.silverpeas.components.classifieds.notification.ClassifiedSimpleNotification;
 import org.silverpeas.components.classifieds.service.ClassifiedService;
 import org.silverpeas.components.classifieds.service.ClassifiedServiceProvider;
 import org.silverpeas.core.ResourceReference;
@@ -45,13 +47,18 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.index.search.model.QueryDescription;
+import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
+import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.util.AlertUser;
+import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
 import org.silverpeas.core.web.util.ListIndex;
 import org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination;
 
@@ -761,5 +768,30 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
       getClassifiedsToValidate();
       processIndex(classified);
     }
+  }
+
+  public String initAlertUser() {
+    AlertUser sel = getAlertUser();
+    sel.resetAll();
+    sel.setHostSpaceName(getSpaceLabel());
+    sel.setHostComponentId(getComponentId());
+    Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(), null);
+    sel.setHostComponentName(hostComponentName);
+    sel.setNotificationMetaData(getAlertNotificationMetaData());
+    return AlertUser.getAlertUserURL();
+  }
+
+  private synchronized NotificationMetaData getAlertNotificationMetaData() {
+    return UserNotificationHelper.build(new ClassifiedSimpleNotification(getCurrentClassified()));
+  }
+
+  public ClassifiedDetail getCurrentClassified() {
+    return getSessionClassifieds().get(currentIndex.getCurrentIndex());
+  }
+
+  public void notifyOwner(String message) {
+    UserNotificationHelper.buildAndSend(new ClassifiedOwnerNotification(getCurrentClassified(),
+        getUserId(), message));
+    WebMessager.getInstance().addSuccess(getString("classifieds.notif.sent"));
   }
 }

@@ -1,0 +1,1 @@
+$senderName$ attire votre attention sur l'annonce <b>$classified.title$</b>.

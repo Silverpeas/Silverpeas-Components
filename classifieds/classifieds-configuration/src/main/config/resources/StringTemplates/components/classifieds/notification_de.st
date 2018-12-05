@@ -1,0 +1,1 @@
+$senderName$ macht Sie auf die Anzeige <b>$classified.title$</b> aufmerksam.

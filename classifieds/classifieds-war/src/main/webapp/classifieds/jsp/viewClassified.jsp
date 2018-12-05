@@ -48,6 +48,8 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 
+<fmt:message var="messageToOwnerTitle" key="GML.notification.message"/>
+
 <c:set var="browseContext" value="${requestScope.browseContext}" />
 <c:set var="componentLabel" value="${browseContext[1]}" />
 
@@ -72,7 +74,7 @@
 <c:set var="displayedDescription"><view:encodeHtmlParagraph string="${description}" /></c:set>
 <c:set var="draftOperationsEnabled" value="${user.id == creatorId and isDraftEnabled}"/>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -80,7 +82,7 @@
 <view:includePlugin name="messageme"/>
 <fmt:message var="deletionConfirm" key="classifieds.confirmDeleteClassified" />
 <script type="text/javascript">
-	function deleteConfirm(id) {
+	function deleteConfirm() {
 		// confirmation de suppression de l'annonce
     var label = "<c:out value='${deletionConfirm}'/>";
     jQuery.popup.confirm(label, function() {
@@ -106,7 +108,7 @@
 		location.href = "<view:componentUrl componentId='${instanceId}'/>ValidateClassified?ClassifiedId=${classified.id}";
 	}
 
-	function refused(id) {
+	function refused() {
 		// open modal dialog
 		$("#refusalModalDialog").dialog({
 			modal: true,
@@ -122,7 +124,7 @@
 			}
 		});
 	}
-	
+
 	function sendRefusalForm() {
 		var errorMsg = "";
 		var errorNb = 0;
@@ -146,7 +148,7 @@
       jQuery.popup.error(errorMsg);
 		}
 	}
-	
+
 	$(document).ready(function() {
 
 		  $('.classified_thumbs a').click(function() {
@@ -157,7 +159,7 @@
 		        $('.classified_selected_photo a').attr('href',"javascript:onClick=openImage('"+cheminImage+"')");
 		  });
 		});
-	
+
 	function openImage(url) {
   		var urlPart = "/size/250x/";
   		var i = url.indexOf(urlPart);
@@ -166,6 +168,40 @@
   		}
 		SP_openWindow(url,'image','700','500','scrollbars=yes, noresize, alwaysRaised');
   	}
+
+  var notifyWindow = window;
+  function toNotify() {
+    var windowName = "notifyWindow";
+    if (!notifyWindow.closed && notifyWindow.name == "notifyWindow") {
+      notifyWindow.close();
+    }
+    var url = "ToNotifyUsers";
+    var windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
+    notifyWindow = SP_openWindow(url, windowName, "740", "600", windowParams);
+  }
+
+  function toNotifyOwner() {
+    $("#messageToOwnerDialog").popup('validation', {
+      title : '${messageToOwnerTitle}',
+      width : 'auto',
+      buttonTextYes : '<fmt:message key="GML.ok"/>',
+      buttonTextNo : '<fmt:message key="GML.cancel"/>',
+      callback : sendMessageToOwner
+    });
+  }
+
+  function sendMessageToOwner() {
+    SilverpeasError.reset();
+    var message = stripInitialWhitespace(document.messageToOwnerForm.Message.value);
+    if (isWhitespace(message)) {
+      SilverpeasError.add("<b><fmt:message key="GML.notification.message"/></b> <fmt:message key="GML.MustBeFilled"/>\n");
+    }
+    if (!SilverpeasError.show()) {
+      document.messageToOwnerForm.submit();
+      return true;
+    }
+    return false;
+  }
 </script>
 </head>
 <body id="classifieds">
@@ -186,7 +222,6 @@
       </c:when>
     </c:choose>
 	</view:browseBar>
-	<c:if test="${user.id == creatorId or profile.name == 'admin'}">
 		<c:if test="${'Unpublished' == classified.status}">
 			<fmt:message var="updateOp" key="classifieds.republishClassified" />
 		</c:if>
@@ -200,6 +235,7 @@
 		<fmt:message var="deleteIcon" key="classifieds.delete"
 			bundle="${icons}" />
 		<view:operationPane>
+      <c:if test="${user.id == creatorId or profile.name == 'admin'}">
 			<view:operation
 				action="javascript:updateClassified();"
 				altText="${updateOp}" icon="${updateIcon}" />
@@ -244,8 +280,13 @@
 					action="javascript:refused();"
 					altText="${refuseOp}" icon="${refuseIcon}" />
 			</c:if>
+      </c:if>
+      <c:if test="${not user.anonymous}">
+        <view:operationSeparator/>
+        <fmt:message var="notifyOp" key="GML.notify" />
+        <view:operation action="javascript:toNotify();" altText="${notifyOp}" />
+      </c:if>
 		</view:operationPane>
-	</c:if>
 
 	<view:window>
 		<view:frame>
@@ -275,7 +316,7 @@
 
                   <c:if test="${not user.anonymous && user.id != creatorId}">
                     <div id="classified_contact_link" class="bgDegradeGris">
-                     <a rel="${classified.creatorId},${classified.creatorName}" class="link notification" href="#"><fmt:message key="classifieds.contactAdvertiser"/></a>
+                     <a href="#" onclick="toNotifyOwner()"><fmt:message key="classifieds.contactAdvertiser"/></a>
                     </div>
                   </c:if>
                   <p></p>
@@ -317,9 +358,9 @@
                   </c:if>
                   <c:if test="${classified.price > 0}">
                     <div class="classified_price">${classified.price} &euro;</div>
-                  </c:if>  
+                  </c:if>
                   <p class="classified_description">${displayedDescription}</p>
-                  
+
                   <!-- <hr class="clear" /> -->
                   <c:if test="${not empty xmlForm}">
                      <div id="classified_content_form">
@@ -337,7 +378,7 @@
               </div>
              </td>
           </tr>
-          
+
 				<tr>
 					<td>
 						<!--Afficher les commentaires-->
@@ -372,13 +413,25 @@
 								<td><textarea name="Motive" rows="5" cols="55"></textarea>&nbsp;<img border="0" src="${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}"/>" width="5" height="5"/></td>
 							</tr>
 							<tr>
-								<td colspan="2">( <img border="0" src="${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}"/>" width="5" height="5"/> : <fmt:message key="GML.requiredField" /> )</td>
+								<td colspan="2"><img border="0" src="${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}"/>" width="5" height="5"/> : <fmt:message key="GML.requiredField" /></td>
 							</tr>
 						</table></td>
 				</tr>
 			</table>
 		</form>
 	</div>
+  <div id="messageToOwnerDialog" style="display: none;">
+    <form name="messageToOwnerForm" action="ToNotifyOwner" method="post">
+        <table>
+          <tr>
+            <td><textarea name="Message" rows="7" cols="70"></textarea>&nbsp;<img border="0" src="${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}"/>" width="5" height="5"/></td>
+          </tr>
+          <tr>
+            <td><img border="0" src="${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}"/>" width="5" height="5"/> : <fmt:message key="GML.requiredField" /></td>
+          </tr>
+        </table>
+    </form>
+  </div>
 </div>	
 </body>
 </html>

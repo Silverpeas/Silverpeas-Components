@@ -1,0 +1,1 @@
+$senderName$ vous adresse le message suivant concernant l'annonce <b>$classified.title$</b>.
