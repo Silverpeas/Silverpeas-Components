@@ -38,7 +38,7 @@ public class ClassifiedOwnerNotificationHandler extends FunctionHandler {
     if (!User.getCurrentRequester().isAnonymous()) {
       String message = request.getParameter("Message");
 
-      // deny classified
+      // notify classified owner
       classifiedsSC.notifyOwner(message);
     }
 

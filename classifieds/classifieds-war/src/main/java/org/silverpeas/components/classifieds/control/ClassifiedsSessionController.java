@@ -792,8 +792,6 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
   public void notifyOwner(String message) {
     UserNotificationHelper.buildAndSend(new ClassifiedOwnerNotification(getCurrentClassified(),
         getUserId(), message));
-    WebMessager.getInstance()
-        .addSuccess("Truc ici");
-
+    WebMessager.getInstance().addSuccess(getString("classifieds.notif.sent"));
   }
 }

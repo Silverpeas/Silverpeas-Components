@@ -25,7 +25,6 @@ package org.silverpeas.components.classifieds.notification;
 
 import org.silverpeas.components.classifieds.model.ClassifiedDetail;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
-import org.silverpeas.core.template.SilverpeasTemplate;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -62,13 +61,6 @@ public class ClassifiedOwnerNotification extends AbstractClassifiedUserNotificat
     super.perform(resource);
     getNotificationMetaData().setOriginalExtraMessage(message);
   }
-
-  /*@Override
-  protected void performTemplateData(final String language, final ClassifiedDetail resource,
-      final SilverpeasTemplate template) {
-    super.performTemplateData(language, resource, template);
-    template.setAttribute("refusalMotive", refusalMotive);
-  }*/
 
   @Override
   protected NotifAction getAction() {

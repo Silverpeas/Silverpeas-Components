@@ -24,8 +24,6 @@
 package org.silverpeas.components.classifieds.notification;
 
 import org.silverpeas.components.classifieds.model.ClassifiedDetail;
-import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 
 import java.util.Collection;

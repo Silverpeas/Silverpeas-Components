@@ -48,6 +48,8 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 
+<fmt:message var="messageToOwnerTitle" key="GML.notification.message"/>
+
 <c:set var="browseContext" value="${requestScope.browseContext}" />
 <c:set var="componentLabel" value="${browseContext[1]}" />
 
@@ -72,7 +74,7 @@
 <c:set var="displayedDescription"><view:encodeHtmlParagraph string="${description}" /></c:set>
 <c:set var="draftOperationsEnabled" value="${user.id == creatorId and isDraftEnabled}"/>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -122,7 +124,7 @@
 			}
 		});
 	}
-	
+
 	function sendRefusalForm() {
 		var errorMsg = "";
 		var errorNb = 0;
@@ -146,7 +148,7 @@
       jQuery.popup.error(errorMsg);
 		}
 	}
-	
+
 	$(document).ready(function() {
 
 		  $('.classified_thumbs a').click(function() {
@@ -157,7 +159,7 @@
 		        $('.classified_selected_photo a').attr('href',"javascript:onClick=openImage('"+cheminImage+"')");
 		  });
 		});
-	
+
 	function openImage(url) {
   		var urlPart = "/size/250x/";
   		var i = url.indexOf(urlPart);
@@ -179,43 +181,26 @@
   }
 
   function toNotifyOwner() {
-    $("#messageToOwnerDialog").dialog({
-      modal: true,
-      resizable: false,
-      width: 600,
-      buttons: {
-        "<fmt:message key="GML.ok"/>": function() {
-          sendMessageToOwner();
-        },
-        "<fmt:message key="GML.cancel"/>": function() {
-          $( this ).dialog( "close" );
-        }
-      }
+    $("#messageToOwnerDialog").popup('validation', {
+      title : '${messageToOwnerTitle}',
+      width : 'auto',
+      buttonTextYes : '<fmt:message key="GML.ok"/>',
+      buttonTextNo : '<fmt:message key="GML.cancel"/>',
+      callback : sendMessageToOwner
     });
   }
 
   function sendMessageToOwner() {
-    var errorMsg = "";
-    var errorNb = 0;
+    SilverpeasError.reset();
     var message = stripInitialWhitespace(document.messageToOwnerForm.Message.value);
     if (isWhitespace(message)) {
-      errorMsg += "  - '<fmt:message key="GML.notification.message"/>' <fmt:message key="GML.MustBeFilled"/>\n";
-      errorNb++;
+      SilverpeasError.add("<b><fmt:message key="GML.notification.message"/></b> <fmt:message key="GML.MustBeFilled"/>\n");
     }
-    switch (errorNb) {
-      case 0:
-        document.messageToOwnerForm.submit();
-        break;
-      case 1:
-        errorMsg = "<fmt:message key="GML.ThisFormContains"/> 1 <fmt:message key="GML.error"/> : \n"
-            + errorMsg;
-        jQuery.popup.error(errorMsg);
-        break;
-      default:
-        errorMsg = "<fmt:message key="GML.ThisFormContains"/> " + errorNb
-            + " <fmt:message key="GML.errors"/> :\n" + errorMsg;
-        jQuery.popup.error(errorMsg);
+    if (!SilverpeasError.show()) {
+      document.messageToOwnerForm.submit();
+      return true;
     }
+    return false;
   }
 </script>
 </head>
@@ -373,9 +358,9 @@
                   </c:if>
                   <c:if test="${classified.price > 0}">
                     <div class="classified_price">${classified.price} &euro;</div>
-                  </c:if>  
+                  </c:if>
                   <p class="classified_description">${displayedDescription}</p>
-                  
+
                   <!-- <hr class="clear" /> -->
                   <c:if test="${not empty xmlForm}">
                      <div id="classified_content_form">
@@ -393,7 +378,7 @@
               </div>
              </td>
           </tr>
-          
+
 				<tr>
 					<td>
 						<!--Afficher les commentaires-->
@@ -435,12 +420,11 @@
 			</table>
 		</form>
 	</div>
-  <fmt:message var="messageToOwnerTitle" key="GML.notification.message"/>
-  <div id="messageToOwnerDialog" title="${messageToOwnerTitle}" style="display: none;">
+  <div id="messageToOwnerDialog" style="display: none;">
     <form name="messageToOwnerForm" action="ToNotifyOwner" method="post">
         <table>
           <tr>
-            <td><textarea name="Message" rows="6" cols="65"></textarea>&nbsp;<img border="0" src="${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}"/>" width="5" height="5"/></td>
+            <td><textarea name="Message" rows="7" cols="70"></textarea>&nbsp;<img border="0" src="${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}"/>" width="5" height="5"/></td>
           </tr>
           <tr>
             <td><img border="0" src="${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}"/>" width="5" height="5"/> : <fmt:message key="GML.requiredField" /></td>
