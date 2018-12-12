@@ -173,7 +173,7 @@
     });
   </script>
 </head>
-<body class="yui-skin-sam processManager-main">
+<body class="yui-skin-sam processManager-main currentProfile_${currentRole} page_processes">
 <view:operationPane>
   <c:if test="${canCreate}">
     <fmt:message key="processManager.add" var="opIcon" bundle="${icons}"/>

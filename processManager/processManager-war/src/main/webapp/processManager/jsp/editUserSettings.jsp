@@ -65,7 +65,7 @@
 //-->
 </script>
 </head>
-<body class="yui-skin-sam">
+<body class="yui-skin-sam page_userSettings">
 <%
    out.println(window.printBefore());
 %>

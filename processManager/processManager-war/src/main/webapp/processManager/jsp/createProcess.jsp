@@ -78,7 +78,7 @@
 //-->
 </script>
 </head>
-<body class="yui-skin-sam">
+<body class="yui-skin-sam currentProfile_<%=currentRole%> page_creation">
 <%
 	out.println(window.printBefore());
 %>

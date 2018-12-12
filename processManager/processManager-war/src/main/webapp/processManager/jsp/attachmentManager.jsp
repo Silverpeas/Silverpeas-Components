@@ -54,7 +54,7 @@
 <title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel/>
 </head>
-<body>
+<body class="currentProfile_<%=currentRole%> page_attachments">
 <%
 	out.println(window.printBefore());
 	out.println(tabbedPane.print());

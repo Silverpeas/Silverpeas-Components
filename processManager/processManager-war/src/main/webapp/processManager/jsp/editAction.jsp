@@ -103,7 +103,7 @@
 	}
 </script>
 </head>
-<body class="yui-skin-sam">
+<body class="yui-skin-sam currentProfile_<%=currentRole%> page_action">
 <%
    out.println(window.printBefore());
 %>

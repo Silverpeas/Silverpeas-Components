@@ -75,7 +75,7 @@
 <view:includePlugin name="wysiwyg"/>
 <view:includePlugin name="preview"/>
 </head>
-<body class="yui-skin-sam">
+<body class="yui-skin-sam currentProfile_<%=currentRole%> page_history">
 <%
 	out.println(window.printBefore());
 	out.println(tabbedPane.print());

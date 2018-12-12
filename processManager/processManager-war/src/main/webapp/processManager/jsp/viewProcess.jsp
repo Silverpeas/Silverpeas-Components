@@ -118,7 +118,7 @@ function printProcess() {
 }
 </script>
 </head>
-<body class="yui-skin-sam">
+<body class="yui-skin-sam currentProfile_<%=currentRole%> page_process">
 <div id="<%=componentId%>">
 <%
 	out.println(window.printBefore());

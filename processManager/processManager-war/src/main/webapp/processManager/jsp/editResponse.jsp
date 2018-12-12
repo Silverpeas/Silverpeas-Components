@@ -44,11 +44,11 @@
 	browseBar.setPath(process.getTitle(currentRole, language));
 
 	ButtonPane buttonPane = gef.getButtonPane();
-	buttonPane.addButton((Button) gef.getFormButton(
+	buttonPane.addButton(gef.getFormButton(
 	   generalMessage.getString("GML.validate"),
 		"javascript:onClick=B_VALIDER_ONCLICK();",
 		false));
-	buttonPane.addButton((Button) gef.getFormButton(
+	buttonPane.addButton(gef.getFormButton(
 	   generalMessage.getString("GML.cancel"),
 		"javascript:onClick=B_ANNULER_ONCLICK();",
 		false));
@@ -80,7 +80,7 @@
 </script>
 
 </head>
-<body class="yui-skin-sam">
+<body class="yui-skin-sam currentProfile_<%=currentRole%> page_response">
 <%
    out.println(window.printBefore());
    out.println(frame.printBefore());
