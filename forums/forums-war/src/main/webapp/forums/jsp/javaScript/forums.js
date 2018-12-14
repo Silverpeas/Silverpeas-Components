@@ -32,9 +32,7 @@ function resetText()
   $("#cke_messageText iframe").contents().find("body").text("");
 }
 
-function notifyPopup2(context, compoId, users, groups)
+function notifyForumPopup(compoId, users, groups)
 {
-  SP_openWindow(context + "/RnotificationUser/jsp/Main.jsp?popupMode=Yes&editTargets=No&compoId=" + compoId
-    + "&theTargetsUsers=" + users + "&theTargetsGroups=" + groups,
-    "notifyUserPopup", "700", "400", "menubar=no,scrollbars=no,statusbar=no");
+  sp.messager.open(compoId, {recipientUsers: users, recipientGroups: groups, recipientEdition: false});
 }

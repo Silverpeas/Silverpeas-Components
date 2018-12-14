@@ -373,10 +373,18 @@
       <% if (!pubDetail.isValid()) {%>
         var label = "<%=WebEncodeHelper.javaStringToJsString(resources.getString("kmelia.AlertButPubNotValid"))%>";
         jQuery.popup.confirm(label, function() {
-          goToOperationInAnotherWindow('ToAlertUser', '<%=id%>', 'ViewAlert');
+          sp.messager.open('<%= componentId %>', {
+            folderId: '<%= kmeliaScc.getCurrentFolderId() %>',
+            pubId: '<%= pubDetail.getId() %>'
+          });
+          //goToOperationInAnotherWindow('ToAlertUser', '<%=id%>', 'ViewAlert');
         });
       <% } else {%>
-          goToOperationInAnotherWindow('ToAlertUser', '<%=id%>', 'ViewAlert');
+        sp.messager.open('<%= componentId %>', {
+          folderId: '<%= kmeliaScc.getCurrentFolderId() %>',
+          pubId: '<%= pubDetail.getId() %>'
+        });
+          //goToOperationInAnotherWindow('ToAlertUser', '<%=id%>', 'ViewAlert');
       <% }%>
         }
 
@@ -385,22 +393,18 @@
       <% if (!pubDetail.isValid()) {%>
           var label = "<%=WebEncodeHelper.javaStringToJsString(resources.getString("kmelia.AlertButPubNotValid"))%>";
           jQuery.popup.confirm(label, function() {
-            goToOperationInAnotherWindow('ToAlertUserAttachment', '<%=id%>', attachmentId, 'ViewAlert');
+            sp.messager.open('<%= componentId %>', {
+              folderId: '<%= kmeliaScc.getCurrentFolderId() %>',
+              pubId: '<%= pubDetail.getId() %>',
+              docId: attachmentId
+              });
           });
       <% } else {%>
-          goToOperationInAnotherWindow('ToAlertUserAttachment', '<%=id%>', attachmentId, 'ViewAlert');
-      <% }%>
-        }
-
-        function alertUsersDocument(documentId)
-        {
-      <% if (!pubDetail.isValid()) {%>
-          var label = "<%=WebEncodeHelper.javaStringToJsString(resources.getString("kmelia.AlertButPubNotValid"))%>";
-          jQuery.popup.confirm(label, function() {
-            goToOperationInAnotherWindow('ToAlertUserDocument', '<%=id%>', documentId, 'ViewAlert');
+          sp.messager.open('<%= componentId %>', {
+            folderId: '<%= kmeliaScc.getCurrentFolderId() %>',
+            pubId: '<%= pubDetail.getId() %>',
+            docId: attachmentId
           });
-      <% } else {%>
-          goToOperationInAnotherWindow('ToAlertUserDocument', '<%=id%>', documentId, 'ViewAlert');
       <% }%>
         }
 

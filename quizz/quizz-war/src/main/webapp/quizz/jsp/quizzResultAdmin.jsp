@@ -63,8 +63,8 @@ String displayCredits(int nb_max_user_votes , int nb_user_votes) throws QuizzExc
 <title>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</title>
 <view:looknfeel/>
 <script language="javascript">
-function notifyPopup2(context,compoId,users,groups) {
-    SP_openWindow(context+'/RnotificationUser/jsp/Main.jsp?popupMode=Yes&editTargets=No&compoId=' + compoId + '&theTargetsUsers='+users+'&theTargetsGroups='+groups, 'notifyUserPopup', '700', '400', 'menubar=no,scrollbars=no,statusbar=no');
+function notifyForumPopup(compoId,users,groups) {
+  sp.messager.open(compoId, {recipientUsers: users, recipientGroups: groups, recipientEdition: false});
 }
 </script>
 </head>
@@ -133,7 +133,7 @@ function notifyPopup2(context,compoId,users,groups) {
         ArrayCellText arrayCellText2;
         if (!recipient.equals(""))
 		{
-			arrayCellText2 = arrayLine.addArrayCellText("<A HREF=\"javascript:notifyPopup2('" + m_Context + "','" + quizzScc.getComponentId() + "','" + recipient + "','')\">" + lastName + " " + firstName +"</A>");
+			arrayCellText2 = arrayLine.addArrayCellText("<A HREF=\"javascript:notifyForumPopup('" + quizzScc.getComponentId() + "','" + recipient + "','')\">" + lastName + " " + firstName +"</A>");
 		}
         else
 	         arrayCellText2 = arrayLine.addArrayCellText(lastName + " " + firstName);
