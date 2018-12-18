@@ -37,7 +37,7 @@ import org.silverpeas.core.node.coordinates.model.Coordinate;
 import org.silverpeas.core.node.coordinates.model.CoordinatePK;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.notification.user.client.NotificationMetaData;
+import org.silverpeas.core.notification.user.UserNotification;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
 import org.silverpeas.core.util.ServiceProvider;
@@ -384,20 +384,20 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
    * Send an email to alert users of a publication creation
    * @param pubPK the publication Id
    */
-  NotificationMetaData getAlertNotificationMetaData(PublicationPK pubPK, NodePK topicPK);
+  UserNotification getUserNotification(PublicationPK pubPK, NodePK topicPK);
 
   /**
    * Send an email to alert users of a attachment
    * @param pubPK the publication Id
    */
-  NotificationMetaData getAlertNotificationMetaData(PublicationPK pubPK,
+  UserNotification getUserNotification(PublicationPK pubPK,
       SimpleDocumentPK documentPk, NodePK topicPK);
 
   /**
    * Send a notification to alert users about a folder
    * @param pk the folder id
    */
-  NotificationMetaData getAlertNotificationMetaData(NodePK pk);
+  UserNotification getUserNotification(NodePK pk);
 
   /**
    * delete reading controls to a publication

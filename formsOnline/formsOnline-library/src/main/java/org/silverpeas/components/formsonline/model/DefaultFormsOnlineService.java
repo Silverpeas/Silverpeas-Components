@@ -210,7 +210,10 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
         final SilverpeasList<FormInstance> result =
             getDAO().getSentFormInstances(form.getPK(), userId, states, paginationCriterion);
         merge.accept(requests, result.stream()
-                                     .peek(l -> l.setForm(form))
+                                     .map(l -> {
+                                       l.setForm(form);
+                                       return l;
+                                     })
                                      .collect(SilverpeasList.collector(result)));
       }
     }
@@ -240,7 +243,10 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
             .getReceivedRequests(form.getPK(), filter.isAllRequests(), userId, states,
                 paginationCriterion);
         merge.accept(requests, result.stream()
-                                     .peek(l -> l.setForm(form))
+                                     .map(l -> {
+                                       l.setForm(form);
+                                       return l;
+                                     })
                                      .collect(SilverpeasList.collector(result)));
       }
     }

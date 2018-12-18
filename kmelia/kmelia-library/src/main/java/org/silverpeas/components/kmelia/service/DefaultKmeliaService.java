@@ -84,8 +84,8 @@ import org.silverpeas.core.node.coordinates.service.CoordinatesService;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
+import org.silverpeas.core.notification.user.UserNotification;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
-import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
@@ -2657,12 +2657,11 @@ public class DefaultKmeliaService implements KmeliaService {
   }
 
   @Override
-  public NotificationMetaData getAlertNotificationMetaData(PublicationPK pubPK, NodePK topicPK) {
+  public UserNotification getUserNotification(PublicationPK pubPK, NodePK topicPK) {
     final PublicationDetail pubDetail = getPublicationDetail(pubPK);
     pubDetail.setAlias(isAlias(pubDetail, topicPK));
 
-    return UserNotificationHelper
-        .build(new KmeliaNotifyPublicationUserNotification(topicPK, pubDetail));
+    return new KmeliaNotifyPublicationUserNotification(topicPK, pubDetail).build();
   }
 
   public boolean isAlias(PublicationDetail pubDetail, NodePK nodePK) {
@@ -2685,7 +2684,7 @@ public class DefaultKmeliaService implements KmeliaService {
    * @
    */
   @Override
-  public NotificationMetaData getAlertNotificationMetaData(PublicationPK pubPK,
+  public UserNotification getUserNotification(PublicationPK pubPK,
       SimpleDocumentPK documentPk, NodePK topicPK) {
     final PublicationDetail pubDetail = getPublicationDetail(pubPK);
     final SimpleDocument document = AttachmentServiceProvider.getAttachmentService().
@@ -2694,8 +2693,8 @@ public class DefaultKmeliaService implements KmeliaService {
     if (version == null) {
       version = document.getVersionMaster();
     }
-    return UserNotificationHelper.build(
-        new KmeliaDocumentSubscriptionPublicationUserNotification(topicPK, pubDetail, version));
+    return new KmeliaDocumentSubscriptionPublicationUserNotification(topicPK, pubDetail,
+        version).build();
   }
 
   /**
@@ -4753,8 +4752,8 @@ public class DefaultKmeliaService implements KmeliaService {
   }
 
   @Override
-  public NotificationMetaData getAlertNotificationMetaData(NodePK pk) {
+  public UserNotification getUserNotification(NodePK pk) {
     NodeDetail node = getNodeHeader(pk);
-    return UserNotificationHelper.build(new KmeliaNotifyTopicUserNotification(node));
+    return new KmeliaNotifyTopicUserNotification(node).build();
   }
 }

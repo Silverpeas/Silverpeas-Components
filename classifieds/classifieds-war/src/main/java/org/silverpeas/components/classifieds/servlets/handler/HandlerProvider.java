@@ -24,10 +24,10 @@
 
 package org.silverpeas.components.classifieds.servlets.handler;
 
+import org.silverpeas.components.classifieds.servlets.FunctionHandler;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import org.silverpeas.components.classifieds.servlets.FunctionHandler;
 
 public class HandlerProvider {
 
@@ -71,7 +71,6 @@ public class HandlerProvider {
     handlerMap.put("Previous", new PreviousHandler());
     handlerMap.put("Next", new NextHandler());
 
-    handlerMap.put("ToNotifyUsers", new ClassifiedNotificationHandler());
     handlerMap.put("ToNotifyOwner", new ClassifiedOwnerNotificationHandler());
   }
 

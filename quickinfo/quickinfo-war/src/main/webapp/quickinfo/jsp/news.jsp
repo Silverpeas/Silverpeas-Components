@@ -77,10 +77,7 @@ pageContext.setAttribute("componentURL", URLUtil.getFullApplicationURL(request)+
 <script type="text/javascript" src="js/quickinfo.js"></script>
 <script type="text/javascript">
 function notify() {
-  var url = "${componentURL}/Notify?Id=${news.id}";
-  var windowName = "userPanelWindow";
-  var windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars,resizable";
-  SP_openWindow(url, windowName, "740", "600", windowParams, false);
+	sp.messager.open('${news.componentInstanceId}', {newsId: '${news.id}'});
 }
 
 function publish() {

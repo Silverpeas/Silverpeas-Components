@@ -33,7 +33,7 @@ import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.exception.DecodingException;
 import org.silverpeas.core.io.media.image.thumbnail.ThumbnailSettings;
 import org.silverpeas.core.io.upload.UploadedFile;
-import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
+import org.silverpeas.core.notification.user.ManualUserNotificationSupplier;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
 import org.silverpeas.core.silvertrace.SilverTrace;
@@ -42,14 +42,11 @@ import org.silverpeas.core.subscription.SubscriptionServiceProvider;
 import org.silverpeas.core.subscription.service.ComponentSubscription;
 import org.silverpeas.core.subscription.service.ComponentSubscriptionResource;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.util.AlertUser;
-import org.silverpeas.core.web.selection.SelectionUsersGroups;
 import org.silverpeas.core.web.subscription.SubscriptionContext;
 import org.silverpeas.core.web.util.ListIndex;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
@@ -57,8 +54,7 @@ import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 import java.util.Collection;
 import java.util.List;
 
-import static org.silverpeas.core.cache.service.VolatileIdentifierProvider
-    .newVolatileIntegerIdentifierOn;
+import static org.silverpeas.core.cache.service.VolatileIdentifierProvider.newVolatileIntegerIdentifierOn;
 
 /**
  * @author squere
@@ -250,23 +246,12 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
     return subscriptionContext.getDestinationUrl();
   }
 
-  public String notify(String newsId) {
-    AlertUser sel = getAlertUser();
-    sel.resetAll();
-
-    // setting up browsebar
-    sel.setHostSpaceName(getSpaceLabel());
-    sel.setHostComponentId(getComponentId());
-    Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(), null);
-    sel.setHostComponentName(hostComponentName);
-    sel.setNotificationMetaData(UserNotificationHelper
-        .build(new NewsManualUserNotification(getNews(newsId, false), getUserDetail())));
-
-    SelectionUsersGroups sug = new SelectionUsersGroups();
-    sug.setComponentId(getComponentId());
-    sel.setSelectionUsersGroups(sug);
-
-    return AlertUser.getAlertUserURL();
+  @Override
+  public ManualUserNotificationSupplier getManualUserNotificationSupplier() {
+    return c -> {
+      final String newsId = c.get("newsId");
+      return new NewsManualUserNotification(getNews(newsId, false), getUserDetail()).build();
+    };
   }
 
   public void submitNewsOnHomepage(String id) {

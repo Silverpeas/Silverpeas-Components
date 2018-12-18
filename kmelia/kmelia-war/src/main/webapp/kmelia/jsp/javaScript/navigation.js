@@ -941,5 +941,4 @@ function setDataInFolderDialog(name, desc) {
 
 function notifyOnFolder(componentId, folderId) {
   sp.messager.open(componentId, {folderId: folderId});
-  //SP_openWindow("ToAlertUserFolder", "toAlertUserFolder", '600', '400', 'scrollbars=yes, resizable, alwaysRaised');
 }

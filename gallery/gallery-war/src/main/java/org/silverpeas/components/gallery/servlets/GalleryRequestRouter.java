@@ -48,7 +48,6 @@ import org.silverpeas.core.contribution.content.form.form.XmlSearchForm;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
-import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.importexport.report.ExportReport;
 import org.silverpeas.core.index.indexing.model.FieldDescription;
 import org.silverpeas.core.index.search.model.QueryDescription;
@@ -221,8 +220,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
       } else if ("CreateAlbum".equals(function)) {
         // check user rights
         if (!gallerySC.isAlbumAdmin(highestUserRole, null, userId)) {
-          throw new AccessForbiddenException("GalleryRequestRouter.CreateAlbum",
-              SilverpeasException.WARNING, null);
+          throw new AccessForbiddenException("Gallery creation forbidden");
         }
 
         // récupération des paramètres de l'album
@@ -241,8 +239,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
         // check user rights
         if (!gallerySC.isAlbumAdmin(highestUserRole, albumId, userId)) {
-          throw new AccessForbiddenException("GalleryRequestRouter.EditAlbum",
-              SilverpeasException.WARNING, null);
+          throw new AccessForbiddenException("Gallery edition forbidden");
         }
 
         // récupération de l'album courant
@@ -256,8 +253,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
         // check user rights
         if (!gallerySC.isAlbumAdmin(highestUserRole, albumId, userId)) {
-          throw new AccessForbiddenException("GalleryRequestRouter.UpdateAlbum",
-              SilverpeasException.WARNING, null);
+          throw new AccessForbiddenException("Gallery update forbidden");
         }
 
         // Retrieve album name and description
@@ -279,8 +275,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
         // check user rights
         if (!gallerySC.isAlbumAdmin(highestUserRole, albumId, userId)) {
-          throw new AccessForbiddenException("GalleryRequestRouter.DeleteAlbum",
-              SilverpeasException.WARNING, null);
+          throw new AccessForbiddenException("Gallery deletion forbidden");
         }
 
         gallerySC.deleteAlbum(albumId);
@@ -289,8 +284,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
       } else if ("AddMedia".equals(function)) {
         // check user rights
         if (!gallerySC.isMediaAdmin(highestUserRole, null, userId)) {
-          throw new AccessForbiddenException("GalleryRequestRouter.AddMedia",
-              SilverpeasException.WARNING, null);
+          throw new AccessForbiddenException("Media adding forbidden");
         }
         MediaType mediaType = MediaType.from(request.getParameter("type"));
 
@@ -325,8 +319,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
         // check user rights
         if (!gallerySC.isMediaAdmin(highestUserRole, null, userId)) {
-          throw new AccessForbiddenException("GalleryRequestRouter.CreateMedia",
-              SilverpeasException.WARNING, null);
+          throw new AccessForbiddenException("Media creation forbidden");
         }
 
         final String mediaId = createMediaData(request, gallerySC);
@@ -364,8 +357,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
         // check user rights
         if (!gallerySC.isMediaAdmin(highestUserRole, mediaId, userId)) {
-          throw new AccessForbiddenException("GalleryRequestRouter.DeleteMedia",
-              SilverpeasException.WARNING, null);
+          throw new AccessForbiddenException("Media deletion forbidden");
         }
         gallerySC.deleteMedia(mediaId);
 
@@ -411,8 +403,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
         // check user rights
         if (!gallerySC.isMediaAdmin(highestUserRole, mediaId, userId)) {
-          throw new AccessForbiddenException("GalleryRequestRouter.AccessPath",
-              SilverpeasException.WARNING, null);
+          throw new AccessForbiddenException("Gallery access forbidden");
         }
 
         Media media = gallerySC.getMedia(mediaId);
@@ -431,8 +422,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
         // check user rights
         if (!gallerySC.isMediaAdmin(highestUserRole, mediaId, userId)) {
-          throw new AccessForbiddenException("GalleryRequestRouter.SelectPath",
-              SilverpeasException.WARNING, null);
+          throw new AccessForbiddenException("Media access forbidden");
         }
 
         gallerySC.setMediaToAlbums(mediaId, albums);
@@ -464,17 +454,13 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
           gallerySC.setSortSearch(sort);
         }
         destination = returnToAlbum(request, gallerySC);
-      } else if ("ToAlertUser".equals(function)) {
-        String mediaId = request.getParameter("MediaId");
-        destination = processAlertUser(gallerySC, destination, mediaId);
       } else if ("EditSelectedMedia".equals(function)) {
         // traitement par lot
         String albumId = request.getParameter("AlbumId");
 
         // check user rights
         if (!highestUserRole.isGreaterThanOrEquals(SilverpeasRole.publisher)) {
-          throw new AccessForbiddenException("GalleryRequestRouter.EditSelectedMedia",
-              SilverpeasException.WARNING, null);
+          throw new AccessForbiddenException("Media edition fobidden");
         }
 
         String searchKeyWord = request.getParameter("SearchKeyWord");
@@ -578,8 +564,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         String albumId = request.getParameter("AlbumId");
         // check user rights
         if (!highestUserRole.isGreaterThanOrEquals(SilverpeasRole.publisher)) {
-          throw new AccessForbiddenException("GalleryRequestRouter.AddAlbumForSelectedMedia",
-              SilverpeasException.WARNING, null);
+          throw new AccessForbiddenException("Media adding into gallery forbidden");
         }
         processSelection(request, gallerySC);
         // liste des médias sélectionnés
@@ -1136,16 +1121,6 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
       destination = "/admin/jsp/errorpageMain.jsp";
     }
 
-    return destination;
-  }
-
-  private String processAlertUser(final GallerySessionController gallerySC, String destination,
-      final String mediaId) {
-    try {
-      destination = gallerySC.initAlertUser(mediaId);
-    } catch (Exception e) {
-      SilverLogger.getLogger(this).warn(e);
-    }
     return destination;
   }
 

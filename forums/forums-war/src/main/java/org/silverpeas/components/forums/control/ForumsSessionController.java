@@ -690,7 +690,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   public String getAdminIds() {
     User[] adminIds = getOrganisationController().getUsers(getSpaceId(), getComponentId(), "admin");
-    return Stream.of(adminIds).map(User::getId).collect(Collectors.joining("_"));
+    return Stream.of(adminIds).map(User::getId).collect(Collectors.joining(","));
   }
 
   private String truncateTextField(String s) {

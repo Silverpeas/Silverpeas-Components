@@ -28,6 +28,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 
 import java.util.Collection;
+import java.util.Collections;
 
 public class NewsManualUserNotification extends AbstractNewsUserNotification {
 
@@ -41,7 +42,7 @@ public class NewsManualUserNotification extends AbstractNewsUserNotification {
   @Override
   protected Collection<String> getUserIdsToNotify() {
     // Users to notify are not handled here.
-    return null;
+    return Collections.emptyList();
   }
 
   @Override

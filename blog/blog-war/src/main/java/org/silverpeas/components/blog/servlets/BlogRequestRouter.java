@@ -30,7 +30,6 @@ import org.silverpeas.components.blog.model.PostDetail;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
@@ -300,14 +299,6 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         blogSC.deleteCategory(categoryId);
 
         destination = getDestination("ViewCategory", blogSC, request);
-      } else if ("ToAlertUser".equals(function)) {
-        String postId = request.getParameter("PostId");
-        try {
-          destination = blogSC.initAlertUser(postId);
-        } catch (Exception e) {
-          SilverTrace.warn("blog", "BlogRequestRouter.getDestination()", "root.EX_USERPANEL_FAILED",
-              "function = " + function, e);
-        }
       } else if ("Search".equals(function)) {
         String wordSearch = request.getParameter("WordSearch");
 

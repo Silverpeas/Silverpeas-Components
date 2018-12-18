@@ -74,7 +74,7 @@ StyleSheet styleSheet = (StyleSheet) request.getAttribute("StyleSheet");
   }
   if (!m_MainSessionCtrl.getCurrentUserDetail().isAccessGuest()) {
     operationPane.addOperation("useless", resource.getString("GML.notify"),
-        "javaScript:onClick=goToNotify('ToAlertUser?PostId=" + postId + "')");
+        "javaScript:onClick=sp.messager.open('" + instanceId + "', {postId: '" + postId + "'});");
   }
 %>
 
@@ -99,18 +99,6 @@ StyleSheet styleSheet = (StyleSheet) request.getAttribute("StyleSheet");
 </style>
 <% } %>
 <script type="text/javascript">
-	var notifyWindow = window;
-		
-	function goToNotify(url) 
-	{
-		windowName = "notifyWindow";
-		larg = "740";
-		haut = "600";
-	    windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
-	    if (!notifyWindow.closed && notifyWindow.name == "notifyWindow")
-	        notifyWindow.close();
-	    notifyWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
-	}
 
 	function deletePost(postId) {
     var label = "<%=resource.getString("blog.confirmDeletePost")%>";

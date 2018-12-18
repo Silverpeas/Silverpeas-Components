@@ -83,15 +83,8 @@
     $("a[href='javascript:removeSubscription()']").first().attr('href', "javascript:addSubscription()").text("<%=labelSubscribe%>");
   }
 
-  var notifyWindow = window;
   function toNotify() {
-    var windowName = "notifyWindow";
-    if (!notifyWindow.closed && notifyWindow.name == "notifyWindow") {
-      notifyWindow.close();
-    }
-    var url = "ToNotifyUsers";
-    var windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
-    notifyWindow = SP_openWindow(url, windowName, "740", "600", windowParams);
+  	sp.messager.open('<%= componentId %>');
   }
 </script>
 </head>

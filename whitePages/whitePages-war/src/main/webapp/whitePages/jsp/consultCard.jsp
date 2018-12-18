@@ -107,7 +107,6 @@
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
-<view:includePlugin name="messageme"/>
 <script type="text/javascript">
 function openSPWindow(fonction,windowName){
 		SP_openWindow(fonction, windowName, '600', '400','scrollbars=yes, resizable, alwaysRaised');

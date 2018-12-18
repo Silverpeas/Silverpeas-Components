@@ -28,6 +28,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * @author Yohann Chastagnier
@@ -51,7 +52,7 @@ public class SuggestionNotifyManuallyUserNotification extends AbstractSuggestion
   @Override
   protected Collection<String> getUserIdsToNotify() {
     // Users to notify are not handled here.
-    return null;
+    return Collections.emptyList();
   }
 
   @Override

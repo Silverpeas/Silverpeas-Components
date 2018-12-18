@@ -63,7 +63,7 @@ String displayCredits(int nb_max_user_votes , int nb_user_votes) throws QuizzExc
 <title>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</title>
 <view:looknfeel/>
 <script language="javascript">
-function notifyForumPopup(compoId,users,groups) {
+function notifyQuizzPopup(compoId,users,groups) {
   sp.messager.open(compoId, {recipientUsers: users, recipientGroups: groups, recipientEdition: false});
 }
 </script>
@@ -133,7 +133,7 @@ function notifyForumPopup(compoId,users,groups) {
         ArrayCellText arrayCellText2;
         if (!recipient.equals(""))
 		{
-			arrayCellText2 = arrayLine.addArrayCellText("<A HREF=\"javascript:notifyForumPopup('" + quizzScc.getComponentId() + "','" + recipient + "','')\">" + lastName + " " + firstName +"</A>");
+			arrayCellText2 = arrayLine.addArrayCellText("<A HREF=\"javascript:notifyQuizzPopup('" + quizzScc.getComponentId() + "','" + recipient + "','')\">" + lastName + " " + firstName +"</A>");
 		}
         else
 	         arrayCellText2 = arrayLine.addArrayCellText(lastName + " " + firstName);

@@ -52,6 +52,7 @@ import org.silverpeas.components.survey.SurveyException;
 import org.silverpeas.components.survey.notification.SurveyUserNotification;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationController;
@@ -64,6 +65,8 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.exception.DecodingException;
 import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.notification.user.DefaultUserNotification;
+import org.silverpeas.core.notification.user.ManualUserNotificationSupplier;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
@@ -88,7 +91,6 @@ import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.Link;
 import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
@@ -101,7 +103,6 @@ import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.util.AlertUser;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 
 import javax.servlet.http.HttpServletRequest;
@@ -659,33 +660,20 @@ public class SurveySessionController extends AbstractComponentSessionController 
     }
   }
 
-  // pour la notification
-  public String initAlertUser(String surveyId) throws SurveyException {
-    AlertUser sel = getAlertUser();
-    // Initialisation de AlertUser
-    sel.resetAll();
-    // set nom de l'espace pour browsebar
-    sel.setHostSpaceName(getSpaceLabel());
-    // set id du composant pour appel selectionPeas (extra param permettant de filtrer les users
-    // ayant acces au composant)
-    sel.setHostComponentId(getComponentId());
-    // set nom du composant pour browsebar (PairObject(nom_composant, lien_vers_composant))
-    // NB : seul le 1er element est actuellement utilisé (alertUserPeas est toujours présenté en
-    // popup => pas de lien sur nom du composant)
-    Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(), null);
-    sel.setHostComponentName(hostComponentName);
-    sel.setNotificationMetaData(getAlertNotificationMetaData(surveyId));
-    // set NotificationMetaData
-    // contenant les informations à notifier
-    // fin initialisation de AlertUser l'url de nav vers alertUserPeas et demandée à AlertUser et
-    // retournée
-
-    return AlertUser.getAlertUserURL();
+  @Override
+  public ManualUserNotificationSupplier getManualUserNotificationSupplier() {
+    return c -> {
+      final String surveyId = c.get("surveyId");
+      try {
+        return new DefaultUserNotification(getAlertNotificationMetaData(surveyId));
+      } catch (SurveyException e) {
+        throw new SilverpeasRuntimeException(e);
+      }
+    };
   }
 
   private synchronized NotificationMetaData getAlertNotificationMetaData(String surveyId)
       throws SurveyException {
-    QuestionContainerPK pk = new QuestionContainerPK(surveyId);
     UserDetail curUser = getUserDetail();
     String senderName = curUser.getDisplayedName();
     QuestionContainerDetail questionDetail = getSurvey(surveyId);

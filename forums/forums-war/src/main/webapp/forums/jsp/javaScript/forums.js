@@ -32,7 +32,7 @@ function resetText()
   $("#cke_messageText iframe").contents().find("body").text("");
 }
 
-function notifyForumPopup(compoId, users, groups)
+function notifyForumPopup(users)
 {
-  sp.messager.open(compoId, {recipientUsers: users, recipientGroups: groups, recipientEdition: false});
+  sp.messager.open(null, {recipientUsers: users, recipientEdition: false});
 }

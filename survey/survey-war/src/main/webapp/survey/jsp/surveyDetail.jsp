@@ -276,9 +276,8 @@
 
     // notification
     OperationPane operationPane = window.getOperationPane();
-    String url = "ToAlertUser?SurveyId=" + surveyId;
     operationPane.addOperation(alertSrc, resources.getString("GML.notify"),
-        "javaScript:onClick=goToNotify('" + url + "')");
+        "javaScript:onClick=sp.messager.open('" + componentId + "', {surveyId: '" + surveyId + "'});");
 
     window.addBody(surveyPart);
     %>
@@ -434,19 +433,6 @@ function checkButton(input) {
         input.click();
 }
 
-var notifyWindow = window;
-
-function goToNotify(url)
-{
-	windowName = "notifyWindow";
-	larg = "740";
-	haut = "600";
-    windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
-    if (!notifyWindow.closed && notifyWindow.name == "notifyWindow")
-        notifyWindow.close();
-    notifyWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
-}
-
 function clipboardCopy() {
     top.IdleFrame.location.href = '../..<%=surveyScc.getComponentUrl()%>copy?Id=<%=survey.getHeader().getId()%>';
 }
@@ -470,9 +456,8 @@ function clipboardCopy() {
   
     // notification
     OperationPane operationPane = window.getOperationPane();
-    String url = "ToAlertUser?SurveyId=" + surveyId;
     operationPane.addOperation(alertSrc, resources.getString("GML.notify"),
-        "javaScript:onClick=goToNotify('" + url + "')");
+        "javaScript:onClick=sp.messager.open('" + componentId + "', {surveyId: '" + surveyId + "'});");
   
     // copier
     operationPane.addOperation(copySrc, resources.getString("GML.copy"),
@@ -506,20 +491,8 @@ function clipboardCopy() {
  		    suggestions.focus();
  		}
 
- 		var notifyWindow = window;
  		var usersWindow = window;
  	  var exportWindow = window;
-
- 		function goToNotify(url)
-    {
- 			  windowName = "notifyWindow";
-        larg = "740";
-        haut = "600";
-        windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
-        if (!notifyWindow.closed && notifyWindow.name == "notifyWindow")
-                notifyWindow.close();
-            notifyWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
-    }
 
  		function Export(url)
     {
@@ -611,7 +584,7 @@ function clipboardCopy() {
 </view:browseBar>
 <view:operationPane>
   <fmt:message key="GML.notify" var="notifyUserMsg" />
-  <c:set var="notifyUserAction">javaScript:onClick=goToNotify('ToAlertUser?SurveyId=<%=surveyId%>');</c:set>
+  <c:set var="notifyUserAction">javaScript:onClick=sp.messager.open('<%= componentId %>', {surveyId: '<%=surveyId%>'});</c:set>
   <view:operation altText="${notifyUserMsg}" icon="${alertSrc}" action="${notifyUserAction}" />
   
   <%

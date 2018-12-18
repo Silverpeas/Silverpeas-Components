@@ -258,8 +258,7 @@ $(document).ready(function() {
         OperationPane operationPane = window.getOperationPane();
         operationPane.addOperation(context + "/util/icons/forums_mailtoAdmin.gif",
             resource.getString("mailAdmin"),
-            "javascript:notifyForumPopup('" + fsc.getComponentId() + "','"
-                + fsc.getAdminIds() + "','');");
+            "javascript:notifyForumPopup('"+ fsc.getAdminIds() + "');");
     }
 
     out.println(window.printBefore());

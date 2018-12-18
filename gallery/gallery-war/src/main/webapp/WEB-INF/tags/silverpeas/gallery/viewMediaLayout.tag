@@ -109,19 +109,6 @@
   <view:includePlugin name="userZoom"/>
   <view:includePlugin name="embedPlayer"/>
   <script language="javascript">
-
-    var notifyWindow = window;
-
-    function goToNotify(url) {
-      windowName = "notifyWindow";
-      larg = "740";
-      haut = "600";
-      windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
-      if (!notifyWindow.closed && notifyWindow.name == "notifyWindow")
-        notifyWindow.close();
-      notifyWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
-    }
-
     <c:if test="${requestScope.UpdateMediaAllowed}">
     function deleteConfirm() {
       var label = $('#deleteConfirmationDialog').text();
@@ -162,7 +149,7 @@
   <fmt:message key="GML.notify" var="notifLabel"/>
   <fmt:message key="gallery.alert" var="notifIcon" bundle="${icons}"/>
   <c:url value="${notifIcon}" var="notifIcon"/>
-  <view:operation altText="${notifLabel}" action="javaScript:onClick=goToNotify('ToAlertUser?MediaId=${mediaId}')" icon="${notifIcon}"/>
+  <view:operation altText="${notifLabel}" action="javaScript:onClick=sp.messager.open('${instanceId}', {mediaId: '${mediaId}'});" icon="${notifIcon}"/>
   <view:operationSeparator/>
   <c:if test="${requestScope.UpdateMediaAllowed}">
     <fmt:message key="GML.modify" var="modifyLabel"/>

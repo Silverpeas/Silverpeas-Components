@@ -46,7 +46,6 @@
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel withCheckFormScript="true"/>
-<view:includePlugin name="messageme"/>
 <view:includePlugin name="toggle"/>
 <view:script src="/util/javaScript/silverpeas-pdc-widgets.js" />
 <view:script src="/util/javaScript/silverpeas-pdc.js" />

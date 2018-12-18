@@ -65,8 +65,10 @@ import org.silverpeas.core.index.search.model.QueryDescription;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.model.NodeSelection;
-import org.silverpeas.core.notification.message.MessageNotifier;
 import org.silverpeas.core.notification.NotificationException;
+import org.silverpeas.core.notification.message.MessageNotifier;
+import org.silverpeas.core.notification.user.DefaultUserNotification;
+import org.silverpeas.core.notification.user.ManualUserNotificationSupplier;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
@@ -76,7 +78,6 @@ import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.Link;
 import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
@@ -88,7 +89,6 @@ import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.util.AlertUser;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
@@ -568,23 +568,12 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     indexOfCurrentPage = 0;
   }
 
-  public String initAlertUser(String mediaId) {
-    AlertUser sel = getAlertUser();
-    // Initialisation de AlertUser
-    sel.resetAll();
-    // set space name for browsebar
-    sel.setHostSpaceName(getSpaceLabel());
-    sel.setHostComponentId(getComponentId());
-    // selectionPeas (extra param which allow to filter user with right access to application)
-    Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(), null); // set
-    // nom du composant pour browsebar (PairObject(nom_composant, lien_vers_composant))
-    // NB : seul le 1er element est actuellement utilisé (alertUserPeas est toujours
-    // présenté en popup => pas de lien sur nom du composant)
-    sel.setHostComponentName(hostComponentName);
-    sel.setNotificationMetaData(getAlertNotificationMetaData(mediaId)); // set
-    // NotificationMetaData contenant les informations à notifier fin initialisation de
-    // AlertUser l'url de nav vers alertUserPeas et demandée à AlertUser et retournée
-    return AlertUser.getAlertUserURL();
+  @Override
+  public ManualUserNotificationSupplier getManualUserNotificationSupplier() {
+    return c -> {
+      final String mediaId = c.get("mediaId");
+      return new DefaultUserNotification(getAlertNotificationMetaData(mediaId));
+    };
   }
 
   public Collection<Media> search(QueryDescription query) {

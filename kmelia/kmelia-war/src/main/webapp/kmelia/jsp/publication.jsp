@@ -377,14 +377,12 @@
             folderId: '<%= kmeliaScc.getCurrentFolderId() %>',
             pubId: '<%= pubDetail.getId() %>'
           });
-          //goToOperationInAnotherWindow('ToAlertUser', '<%=id%>', 'ViewAlert');
         });
       <% } else {%>
         sp.messager.open('<%= componentId %>', {
           folderId: '<%= kmeliaScc.getCurrentFolderId() %>',
           pubId: '<%= pubDetail.getId() %>'
         });
-          //goToOperationInAnotherWindow('ToAlertUser', '<%=id%>', 'ViewAlert');
       <% }%>
         }
 

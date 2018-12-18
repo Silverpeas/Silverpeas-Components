@@ -102,9 +102,8 @@ import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.model.NodeSelection;
 import org.silverpeas.core.node.service.NodeService;
-import org.silverpeas.core.notification.user.DefaultUserNotification;
 import org.silverpeas.core.notification.user.ManualUserNotificationSupplier;
-import org.silverpeas.core.notification.user.client.NotificationMetaData;
+import org.silverpeas.core.notification.user.UserNotification;
 import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
@@ -128,7 +127,6 @@ import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.util.AlertUser;
 import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.web.selection.SelectionUsersGroups;
 import org.silverpeas.core.web.subscription.SubscriptionContext;
@@ -1430,29 +1428,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     refreshSessionPubliAndClone();
   }
 
-  private synchronized NotificationMetaData getAlertNotificationMetaData(String pubId) {
-    NodePK nodePK = null;
-    if (!isKmaxMode) {
-      nodePK = getCurrentFolderPK();
-    }
-    return getKmeliaService().getAlertNotificationMetaData(getPublicationPK(pubId), nodePK);
-  }
-
-  private synchronized NotificationMetaData getAlertNotificationMetaData(String pubId,
-      String attachmentId) {
-    NodePK nodePK = null;
-    if (!isKmaxMode) {
-      nodePK = getCurrentFolderPK();
-    }
-    SimpleDocumentPK documentPk = new SimpleDocumentPK(attachmentId, getComponentId());
-    return getKmeliaService()
-        .getAlertNotificationMetaData(getPublicationPK(pubId), documentPk, nodePK);
-  }
-
-  private synchronized NotificationMetaData getAlertNotificationMetaData(NodePK pk) {
-    return getKmeliaService().getAlertNotificationMetaData(pk);
-  }
-
   public boolean isIndexable(PublicationDetail pubDetail) {
     return KmeliaHelper.isIndexable(pubDetail);
   }
@@ -1663,13 +1638,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       formElementId = "ValideurId";
     }
     sel.setHtmlFormElementId(formElementId);
-
-    // Contraintes
-    if (isTargetMultiValidationEnable()) {
-      sel.setMultiSelect(true);
-    } else {
-      sel.setMultiSelect(false);
-    }
+    sel.setMultiSelect(isTargetMultiValidationEnable());
     sel.setPopupMode(true);
     sel.setSetSelectable(false);
 
@@ -1696,64 +1665,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     sel.setExtraParams(sug);
 
     return Selection.getSelectionURL();
-  }
-
-  public String initAlertUser() {
-    String pubId = getSessionPublication().getDetail().getPK().getId();
-    AlertUser sel = preInitAlertUser();
-    sel.setNotificationMetaData(getAlertNotificationMetaData(pubId));
-    return AlertUser.getAlertUserURL();
-  }
-
-  public String initAlertUserAttachment(String attachmentOrDocumentId) {
-    AlertUser sel = preInitAlertUser();
-    String pubId = getSessionPublication().getDetail().getPK().getId();
-    sel.setNotificationMetaData(getAlertNotificationMetaData(pubId, attachmentOrDocumentId));
-    return AlertUser.getAlertUserURL();
-  }
-
-  public String initAlertUserFolder() {
-    AlertUser sel = preInitAlertUser();
-    sel.setNotificationMetaData(getAlertNotificationMetaData(getCurrentFolderPK()));
-    return AlertUser.getAlertUserURL();
-  }
-
-  private AlertUser preInitAlertUser() {
-    AlertUser sel = getAlertUser();
-    sel.resetAll();
-    // Set space name inside browsebar
-    sel.setHostSpaceName(getSpaceLabel());
-    // Set componentId for selectionPeas call (filter user who can access component)
-    sel.setHostComponentId(getComponentId());
-    // Initialize PairObject link (component, link-to-component), only first element is used by
-    // alertUserPeas
-    Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(), null);
-    sel.setHostComponentName(hostComponentName);
-    sel.setHostPath(getCurrentFolderPath());
-    SelectionUsersGroups sug = new SelectionUsersGroups();
-    sug.setComponentId(getComponentId());
-    if (!isKmaxMode && isRightsOnTopicsEnabled()) {
-      NodeDetail node = getNodeHeader(getCurrentFolderId());
-      if (node.haveRights()) {
-        sug.setObjectId(ObjectType.NODE.getCode() + node.getRightsDependsOn());
-      }
-    }
-    sel.setSelectionUsersGroups(sug);
-    return sel;
-  }
-
-  private List<String> getCurrentFolderPath() {
-    List<String> result = new ArrayList<>();
-    if (isKmaxMode) {
-      return result;
-    }
-    List<NodeDetail> path = getTopicPath(getCurrentFolder().getNodePK().getId());
-    for (NodeDetail node : path) {
-      if (!node.getNodePK().isRoot()) {
-        result.add(node.getName(getLanguage()));
-      }
-    }
-    return result;
   }
 
   public boolean isVersionControlled() {
@@ -1883,14 +1794,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   /**
    * @param fileUploaded : File uploaded in temp directory
-   * @param fileType
    * @param importMode
    * @param draftMode
    * @param versionType
    * @return a report of the import
    * @throws ImportExportException
    */
-  public ImportReport importFile(File fileUploaded, String fileType, String importMode,
+  public ImportReport importFile(File fileUploaded, String importMode,
       boolean draftMode, int versionType) throws ImportExportException {
     ImportReport importReport = null;
     FileImport fileImport = new FileImport(this, fileUploaded);
@@ -3627,40 +3537,40 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     return c -> {
       final String componentId = c.get("componentId");
       final String folderId = c.get("folderId");
-      final NotificationMetaData metaData;
+      final UserNotification notification;
       if (c.containsKey("pubId")) {
         final String pubId = c.get("pubId");
         if (c.containsKey("docId")) {
           final String docId = c.get("docId");
-          metaData = getNotificationMetaData(componentId, folderId, pubId, docId);
+          notification = getUserNotification(componentId, folderId, pubId, docId);
         } else {
-          metaData = getNotificationMetaData(componentId, folderId, pubId);
+          notification = getUserNotification(componentId, folderId, pubId);
         }
       } else {
-        metaData = getNotificationMetaData(componentId, folderId);
+        notification = getUserNotification(componentId, folderId);
       }
-      return new DefaultUserNotification(metaData);
+      return notification;
     };
   }
 
-  private NotificationMetaData getNotificationMetaData(final String cmpId, final String nodeId,
+  private UserNotification getUserNotification(final String cmpId, final String nodeId,
       final String pubId, final String docId) {
     final NodePK nodePK = getNodePK(cmpId, nodeId);
     final PublicationPK pubPk = new PublicationPK(pubId, cmpId);
     SimpleDocumentPK documentPk = new SimpleDocumentPK(docId, cmpId);
-    return getKmeliaService().getAlertNotificationMetaData(pubPk, documentPk, nodePK);
+    return getKmeliaService().getUserNotification(pubPk, documentPk, nodePK);
   }
 
-  private NotificationMetaData getNotificationMetaData(final String cmpId, final String nodeId,
+  private UserNotification getUserNotification(final String cmpId, final String nodeId,
       final String pubId) {
     final NodePK nodePK = getNodePK(cmpId, nodeId);
     final PublicationPK pubPk = new PublicationPK(pubId, cmpId);
-    return getKmeliaService().getAlertNotificationMetaData(pubPk, nodePK);
+    return getKmeliaService().getUserNotification(pubPk, nodePK);
   }
 
-  private NotificationMetaData getNotificationMetaData(final String cmpId, final String nodeId) {
+  private UserNotification getUserNotification(final String cmpId, final String nodeId) {
     final NodePK nodePK = new NodePK(nodeId, cmpId);
-    return getKmeliaService().getAlertNotificationMetaData(nodePK);
+    return getKmeliaService().getUserNotification(nodePK);
   }
 
   private static NodePK getNodePK(final String cmpId, final String nodeId) {

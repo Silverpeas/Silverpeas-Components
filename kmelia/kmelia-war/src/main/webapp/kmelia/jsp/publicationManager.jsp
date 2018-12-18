@@ -316,10 +316,16 @@
       <% if (!"Valid".equals(pubDetail.getStatus())) { %>
           var label = "<%=WebEncodeHelper.javaStringToJsString(resources.getString("kmelia.AlertButPubNotValid"))%>";
           jQuery.popup.confirm(label, function() {
-            goToOperationInAnotherWindow('ToAlertUser', '<%=id%>', 'ViewAlert');
+            sp.messager.open('<%= componentId %>', {
+              folderId: '<%= kmeliaScc.getCurrentFolderId()%>',
+              pubId: '<%= id %>'
+            });
           });
       <% } else { %>
-          goToOperationInAnotherWindow('ToAlertUser', '<%=id%>', 'ViewAlert');
+          sp.messager.open('<%= componentId %>', {
+            folderId: '<%= kmeliaScc.getCurrentFolderId()%>',
+            pubId: '<%= id %>'
+        });
       <% } %>
       }
 
