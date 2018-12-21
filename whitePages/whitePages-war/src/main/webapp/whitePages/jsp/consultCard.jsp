@@ -196,7 +196,7 @@ String firstName = userRecord.getField("FirstName").getValue(language);
 
 	    <!-- action  -->
         <div class="action">
-		<a rel="<%=card.getUserId()%>,<%=lastName + " " + firstName%>" class="link notification" href="#"><fmt:message key="whitePages.sendNotif"/></a>
+		<a onclick="sp.messager.open(null, {recipientUsers: <%=card.getUserId()%>, recipientEdition: false});" class="link notification" href="#"><fmt:message key="whitePages.sendNotif"/></a>
         </div> <!-- /action  -->
 
         <!-- profilPhoto  -->
