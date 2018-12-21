@@ -29,8 +29,6 @@ import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.template.SilverpeasTemplate;
 
-import java.util.MissingResourceException;
-
 /**
  * @author Yohann Chastagnier
  */
@@ -48,13 +46,7 @@ public abstract class AbstractSuggestionUserNotification
   @Override
   protected void performTemplateData(final String language, final Suggestion resource,
       final SilverpeasTemplate template) {
-    String title;
-    try {
-      title = getBundle(language).getString(getBundleSubjectKey());
-    } catch (MissingResourceException ex) {
-      title = getTitle();
-    }
-    getNotificationMetaData().addLanguage(language, title, "");
+    getNotificationMetaData().addLanguage(language, getTitle(language), "");
     template.setAttribute("title", resource.getTitle());
     template.setAttribute("content", resource.getContent());
     template.setAttribute("authorName", resource.getCreator().getDisplayedName());

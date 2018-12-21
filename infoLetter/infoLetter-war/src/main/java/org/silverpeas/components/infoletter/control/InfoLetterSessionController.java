@@ -44,7 +44,7 @@ import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.notification.user.client.GroupRecipient;
-import org.silverpeas.core.notification.user.client.NotificationManagerException;
+import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
@@ -285,7 +285,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
       try {
         Map<String, SilverpeasTemplate> templates = new HashMap<>();
         NotificationMetaData notifMetaData =
-            new NotificationMetaData(NotificationParameters.NORMAL, sSubject, templates,
+            new NotificationMetaData(NotificationParameters.PRIORITY_NORMAL, sSubject, templates,
                 "infoLetterNotification");
 
         String url = "/RinfoLetter/" + getComponentId() + "/View?parution=" + ilp.getPK().getId();
@@ -313,7 +313,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
           notifMetaData.setLink(link, lang);
         }
         notifMetaData.setSender(getUserId());
-        notifMetaData.setSource(getSpaceLabel() + " - " + getComponentLabel());
+        notifMetaData.setComponentId(getComponentId());
         notifMetaData.displayReceiversInFooter();
 
         // Internal subscribers
@@ -326,7 +326,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
 
         ns.notifyUser(notifMetaData);
 
-      } catch (NotificationManagerException e) {
+      } catch (NotificationException e) {
         throw new InfoLetterException(e);
       }
     }

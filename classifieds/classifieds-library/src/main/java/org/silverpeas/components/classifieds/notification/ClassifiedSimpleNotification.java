@@ -36,11 +36,6 @@ public class ClassifiedSimpleNotification extends AbstractClassifiedUserNotifica
   }
 
   @Override
-  protected String getBundleSubjectKey() {
-    return "classifieds.notif.subject";
-  }
-
-  @Override
   protected String getTemplateFileName() {
     return "notification";
   }

@@ -167,9 +167,6 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
         }
         request.setAttribute("News", news);
         destination = getDestination("View", quickInfo, request);
-      } else if ("Notify".equals(function)) {
-        String id = request.getParameter("Id");
-        destination = quickInfo.notify(id);
       } else if ("SubmitOnHomepage".equals(function)) {
         if (!isContributor(flag)) {
           throwHttpForbiddenError();

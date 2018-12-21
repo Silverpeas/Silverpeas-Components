@@ -12,7 +12,6 @@ import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.URLUtil;
 
 import java.util.List;
-import java.util.MissingResourceException;
 
 abstract class AbstractWebPagesNotification extends AbstractTemplateUserNotificationBuilder<NodePK>{
 
@@ -29,13 +28,7 @@ abstract class AbstractWebPagesNotification extends AbstractTemplateUserNotifica
   @Override
   protected void performTemplateData(final String language, final NodePK resource,
       final SilverpeasTemplate template) {
-    String title;
-    try {
-      title = getBundle(language).getString(getBundleSubjectKey());
-    } catch (MissingResourceException ex) {
-      title = getTitle();
-    }
-    getNotificationMetaData().addLanguage(language, title, "");
+    getNotificationMetaData().addLanguage(language, getTitle(language), "");
     template.setAttribute("path", "");
     template.setAttribute("senderName", user.getDisplayedName());
     template.setAttribute("pageName", pageName);
@@ -82,7 +75,7 @@ abstract class AbstractWebPagesNotification extends AbstractTemplateUserNotifica
   }
 
   @Override
-  protected String getMultilangPropertyFile() {
+  protected String getLocalizationBundlePath() {
     return "org.silverpeas.webpages.multilang.webPagesBundle";
   }
 

@@ -107,7 +107,6 @@
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
-<view:includePlugin name="messageme"/>
 <script type="text/javascript">
 function openSPWindow(fonction,windowName){
 		SP_openWindow(fonction, windowName, '600', '400','scrollbars=yes, resizable, alwaysRaised');
@@ -197,7 +196,7 @@ String firstName = userRecord.getField("FirstName").getValue(language);
 
 	    <!-- action  -->
         <div class="action">
-		<a rel="<%=card.getUserId()%>,<%=lastName + " " + firstName%>" class="link notification" href="#"><fmt:message key="whitePages.sendNotif"/></a>
+		<a onclick="sp.messager.open(null, {recipientUsers: <%=card.getUserId()%>, recipientEdition: false});" class="link notification" href="#"><fmt:message key="whitePages.sendNotif"/></a>
         </div> <!-- /action  -->
 
         <!-- profilPhoto  -->

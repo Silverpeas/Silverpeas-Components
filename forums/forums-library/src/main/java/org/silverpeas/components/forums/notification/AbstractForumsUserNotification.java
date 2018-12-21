@@ -42,7 +42,7 @@ public abstract class AbstractForumsUserNotification<T>
   }
 
   @Override
-  protected String getMultilangPropertyFile() {
+  protected String getLocalizationBundlePath() {
     return "org.silverpeas.forums.multilang.forumsBundle";
   }
 

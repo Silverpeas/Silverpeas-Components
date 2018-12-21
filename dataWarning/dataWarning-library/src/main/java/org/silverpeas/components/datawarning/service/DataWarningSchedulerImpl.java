@@ -305,7 +305,7 @@ public class DataWarningSchedulerImpl {
   private void sendMessage(String title, String msgToSend, String uid) {
     try {
       NotificationMetaData notificationMetaData =
-          new NotificationMetaData(NotificationParameters.NORMAL, title, msgToSend);
+          new NotificationMetaData(NotificationParameters.PRIORITY_NORMAL, title, msgToSend);
       notificationMetaData.addUserRecipient(new UserRecipient(uid));
       notificationMetaData.setSender("0");
       NotificationSender notificationSender = new NotificationSender(instanceId);

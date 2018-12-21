@@ -725,8 +725,6 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
         destination = URLUtil.getURL(URLUtil.CMP_CLIPBOARD, null, null) +
             "Idle.jsp?message=REFRESHCLIPBOARD";
-      } else if (function.startsWith("ToAlertUser")) {
-        destination = toAlertUsers(function, request, kmelia);
       } else if (function.equals("ReadingControl")) {
         PublicationDetail publication = kmelia.getSessionPublication().getDetail();
         request.setAttribute("LinkedPathString", kmelia.getSessionPath());
@@ -1696,7 +1694,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           } else {
             // Import !!
             ImportReport importReport =
-                kmeliaScc.importFile(fileUploaded, fileType, importMode, draftMode, versionType);
+                kmeliaScc.importFile(fileUploaded, importMode, draftMode, versionType);
             long processDuration = new Date().getTime() - processStart;
 
             // Compute nbPublication created
@@ -1960,21 +1958,6 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
       pks.add(new ResourceReference(oneId, instanceId));
     }
     return pks;
-  }
-
-  private String toAlertUsers(String function, HttpRequest request,
-      KmeliaSessionController kmelia) {
-    // utilisation de alertUser et alertUserPeas
-    if (function.startsWith("ToAlertUserAttachment") ||
-        function.startsWith("ToAlertUserDocument")) {
-      String documentId = request.getParameter("AttachmentOrDocumentId");
-      return kmelia.initAlertUserAttachment(documentId);
-    } else if (function.startsWith("ToAlertUserFolder")) {
-      return kmelia.initAlertUserFolder();
-    } else if (function.startsWith("ToAlertUser")) {
-      return kmelia.initAlertUser();
-    }
-    return "";
   }
 
 }

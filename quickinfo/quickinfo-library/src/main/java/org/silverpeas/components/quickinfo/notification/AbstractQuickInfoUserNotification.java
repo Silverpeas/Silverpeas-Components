@@ -36,7 +36,7 @@ public abstract class AbstractQuickInfoUserNotification<T> extends
   }
 
   @Override
-  protected String getMultilangPropertyFile() {
+  protected String getLocalizationBundlePath() {
     return QuickInfoComponentSettings.MESSAGES_PATH;
   }
 

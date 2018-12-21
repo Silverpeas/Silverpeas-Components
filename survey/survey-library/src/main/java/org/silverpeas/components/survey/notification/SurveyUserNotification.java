@@ -54,11 +54,9 @@ import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerDetail;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.MissingResourceException;
 
 /**
  * The centralization of the construction of the survey notifications
@@ -94,11 +92,6 @@ public class SurveyUserNotification
   }
 
   @Override
-  protected String getBundleSubjectKey() {
-    return "survey.notifSubject";
-  }
-
-  @Override
   protected String getTemplateFileName() {
     return this.fileName;
   }
@@ -116,14 +109,7 @@ public class SurveyUserNotification
   @Override
   protected void performTemplateData(final String language, final QuestionContainerDetail resource,
       final SilverpeasTemplate template) {
-    String title;
-    try {
-      title = getBundle(language).getString(getBundleSubjectKey());
-    } catch (MissingResourceException ex) {
-      SilverLogger.getLogger(this).silent(ex);
-      title = getTitle();
-    }
-    getNotificationMetaData().addLanguage(language, title, "");
+    getNotificationMetaData().addLanguage(language, getTitle(language), "");
     template.setAttribute("UserDetail", this.userDetail);
     template.setAttribute("userName",
         this.userDetail != null ? this.userDetail.getDisplayedName() : "");
@@ -164,7 +150,7 @@ public class SurveyUserNotification
   }
 
   @Override
-  protected String getMultilangPropertyFile() {
+  protected String getLocalizationBundlePath() {
     return "org.silverpeas.survey.multilang.surveyBundle";
   }
 

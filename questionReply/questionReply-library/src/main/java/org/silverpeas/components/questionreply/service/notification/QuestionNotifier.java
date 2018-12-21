@@ -26,7 +26,7 @@ package org.silverpeas.components.questionreply.service.notification;
 import org.silverpeas.components.questionreply.QuestionReplyException;
 import org.silverpeas.components.questionreply.model.Question;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.notification.user.client.NotificationManagerException;
+import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
@@ -75,7 +75,7 @@ public class QuestionNotifier extends Notifier {
 
       Map<String, SilverpeasTemplate> templates = new HashMap<>();
       NotificationMetaData notifMetaData =
-          new NotificationMetaData(NotificationParameters.NORMAL, subject, templates, "question");
+          new NotificationMetaData(NotificationParameters.PRIORITY_NORMAL, subject, templates, "question");
 
       List<String> languages = DisplayI18NHelper.getLanguages();
       for (String language : languages) {
@@ -100,7 +100,7 @@ public class QuestionNotifier extends Notifier {
       notifMetaData.addUserRecipients(users);
 
       notifSender.notifyUser(notifMetaData);
-    } catch (NotificationManagerException e) {
+    } catch (NotificationException e) {
       throw new QuestionReplyException(e);
     }
   }

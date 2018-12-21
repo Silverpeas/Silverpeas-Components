@@ -43,18 +43,13 @@ public abstract class AbstractScheduleEventUserNotification
   }
 
   @Override
-  protected String getMultilangPropertyFile() {
+  protected String getLocalizationBundlePath() {
     return "org.silverpeas.components.scheduleevent.multilang.ScheduleEventBundle";
   }
 
   @Override
   protected String getTemplatePath() {
     return "scheduleevent";
-  }
-
-  @Override
-  protected String getBundleSubjectKey() {
-    return "scheduleevent.notifSubject";
   }
 
   @Override

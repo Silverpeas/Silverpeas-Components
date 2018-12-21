@@ -89,10 +89,7 @@
       $('#actions').attr('method', 'GET').attr('action', '${backUri}').submit();
     }
     function notify() {
-      var url = "${componentUriBase}suggestions/${target}/notify";
-      var windowName = "userPanelWindow";
-      var windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars,resizable";
-      SP_openWindow(url, windowName, "740", "600", windowParams, false);
+      sp.messager.open('${componentId}', {suggestionId: '${target}'});
     }
   </script>
 </head>

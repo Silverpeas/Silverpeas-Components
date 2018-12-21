@@ -51,7 +51,7 @@ abstract class AbstractBlogUserNotification
   protected void performTemplateData(final String language, final PostDetail resource,
       final SilverpeasTemplate template) {
     getNotificationMetaData().addLanguage(language,
-        defaultStringIfNotDefined(getBundle(language).getString(getBundleSubjectKey()), getTitle()),
+        defaultStringIfNotDefined(getTitle(language), getTitle()),
         "");
     template.setAttribute("blog", resource);
     template.setAttribute("blogName", resource.getPublication().getName(language));
@@ -93,7 +93,7 @@ abstract class AbstractBlogUserNotification
   }
 
   @Override
-  protected String getMultilangPropertyFile() {
+  protected String getLocalizationBundlePath() {
     return "org.silverpeas.blog.multilang.blogBundle";
   }
 

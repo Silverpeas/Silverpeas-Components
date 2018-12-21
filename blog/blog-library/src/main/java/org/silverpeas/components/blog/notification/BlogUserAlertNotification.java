@@ -41,11 +41,6 @@ public class BlogUserAlertNotification extends AbstractBlogUserNotification {
   }
 
   @Override
-  protected String getBundleSubjectKey() {
-    return "blog.notifSubject";
-  }
-
-  @Override
   protected String getTemplateFileName() {
     return "blogNotification";
   }

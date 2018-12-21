@@ -757,10 +757,10 @@ public class WebSiteSessionController extends AbstractComponentSessionController
       }
 
       NotificationMetaData notifMetaData =
-          new NotificationMetaData(NotificationParameters.NORMAL, subject, messageText);
+          new NotificationMetaData(NotificationParameters.PRIORITY_NORMAL, subject, messageText);
       notifMetaData.setSender(getUserId());
       notifMetaData.addUserRecipients(recipients);
-      notifMetaData.setSource(getSpaceLabel() + " - " + getComponentLabel());
+      notifMetaData.setComponentId(getComponentId());
       getNotificationSender().notifyUser(notifMetaData);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e);

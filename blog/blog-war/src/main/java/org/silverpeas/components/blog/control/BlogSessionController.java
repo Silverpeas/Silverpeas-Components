@@ -46,14 +46,12 @@ import org.silverpeas.core.mylinks.model.LinkDetail;
 import org.silverpeas.core.mylinks.service.MyLinksService;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
-import org.silverpeas.core.notification.user.client.NotificationMetaData;
+import org.silverpeas.core.notification.user.ManualUserNotificationSupplier;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.subscription.service.ComponentSubscriptionResource;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.JSONCodec;
-import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.UtilException;
 import org.silverpeas.core.util.file.FileFolderManager;
@@ -64,7 +62,6 @@ import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.util.AlertUser;
 import org.silverpeas.core.web.subscription.SubscriptionContext;
 import org.silverpeas.core.webapi.node.NodeEntity;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
@@ -254,30 +251,12 @@ public final class BlogSessionController extends AbstractComponentSessionControl
     draftOutPost(postId);
   }
 
-  public String initAlertUser(String postId) {
-    AlertUser sel = getAlertUser();
-    // Initialisation de AlertUser
-    sel.resetAll();
-    // set nom de l'espace pour browsebar
-    sel.setHostSpaceName(getSpaceLabel());
-    // set id du composant pour appel selectionPeas (extra param permettant de filtrer les users
-    // ayant acces au composant)
-    sel.setHostComponentId(getComponentId());
-    Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(), null);
-    // set nom du
-    // composant pour browsebar (PairObject(nom_composant, lien_vers_composant))
-    // NB : seul le 1er element est actuellement utilisé (alertUserPeas est toujours présenté en
-    // popup => pas de lien sur nom du composant)
-    sel.setHostComponentName(hostComponentName);
-    // set NotificationMetaData contenant les informations à notifier fin initialisation de
-    // AlertUser l'url de nav vers alertUserPeas et demandée à AlertUser et retournée
-    sel.setNotificationMetaData(getAlertNotificationMetaData(postId));
-    return AlertUser.getAlertUserURL();
-  }
-
-  private synchronized NotificationMetaData getAlertNotificationMetaData(String postId) {
-    return UserNotificationHelper
-        .build(new BlogUserAlertNotification(getPost(postId), getUserDetail()));
+  @Override
+  public ManualUserNotificationSupplier getManualUserNotificationSupplier() {
+    return c -> {
+      final String postId = c.get("postId");
+      return new BlogUserAlertNotification(getPost(postId), getUserDetail()).build();
+    };
   }
 
   public synchronized void deletePost(String postId) {

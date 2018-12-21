@@ -47,17 +47,18 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.index.search.model.QueryDescription;
+import org.silverpeas.core.notification.user.ManualUserNotificationSupplier;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
-import org.silverpeas.core.notification.user.client.NotificationMetaData;
+import org.silverpeas.core.security.session.SessionInfo;
+import org.silverpeas.core.security.session.SessionManagement;
+import org.silverpeas.core.security.session.SessionManagementProvider;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
-import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.util.AlertUser;
 import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
 import org.silverpeas.core.web.util.ListIndex;
 import org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination;
@@ -770,19 +771,20 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
     }
   }
 
-  public String initAlertUser() {
-    AlertUser sel = getAlertUser();
-    sel.resetAll();
-    sel.setHostSpaceName(getSpaceLabel());
-    sel.setHostComponentId(getComponentId());
-    Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(), null);
-    sel.setHostComponentName(hostComponentName);
-    sel.setNotificationMetaData(getAlertNotificationMetaData());
-    return AlertUser.getAlertUserURL();
-  }
-
-  private synchronized NotificationMetaData getAlertNotificationMetaData() {
-    return UserNotificationHelper.build(new ClassifiedSimpleNotification(getCurrentClassified()));
+  @Override
+  public ManualUserNotificationSupplier getManualUserNotificationSupplier() {
+    return c -> {
+      final String instanceId = c.get("componentId");
+      final String sessionKey = c.get("usk");
+      final SessionManagement sessionManagement = SessionManagementProvider.getSessionManagement();
+      final SessionInfo sessionInfo = sessionManagement.getSessionInfo(sessionKey);
+      ClassifiedsSessionController controller =
+          sessionInfo.getAttribute("Silverpeas_classifieds_" + instanceId);
+      if (controller == null) {
+        throw new SilverpeasRuntimeException("No such classified application: " + instanceId);
+      }
+      return new ClassifiedSimpleNotification(controller.getCurrentClassified()).build();
+    };
   }
 
   public ClassifiedDetail getCurrentClassified() {

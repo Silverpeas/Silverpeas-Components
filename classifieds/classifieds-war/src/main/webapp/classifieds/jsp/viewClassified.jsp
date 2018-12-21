@@ -79,7 +79,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel />
-<view:includePlugin name="messageme"/>
 <fmt:message var="deletionConfirm" key="classifieds.confirmDeleteClassified" />
 <script type="text/javascript">
 	function deleteConfirm() {
@@ -169,15 +168,8 @@
 		SP_openWindow(url,'image','700','500','scrollbars=yes, noresize, alwaysRaised');
   	}
 
-  var notifyWindow = window;
   function toNotify() {
-    var windowName = "notifyWindow";
-    if (!notifyWindow.closed && notifyWindow.name == "notifyWindow") {
-      notifyWindow.close();
-    }
-    var url = "ToNotifyUsers";
-    var windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
-    notifyWindow = SP_openWindow(url, windowName, "740", "600", windowParams);
+    sp.messager.open('${instanceId}', {usk: '${pageContext.session.id}'});
   }
 
   function toNotifyOwner() {

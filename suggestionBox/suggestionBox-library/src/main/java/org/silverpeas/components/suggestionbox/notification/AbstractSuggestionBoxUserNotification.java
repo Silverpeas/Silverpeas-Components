@@ -45,7 +45,7 @@ public abstract class AbstractSuggestionBoxUserNotification<T>
   }
 
   @Override
-  protected String getMultilangPropertyFile() {
+  protected String getLocalizationBundlePath() {
     return "org.silverpeas.components.suggestionbox.multilang.SuggestionBoxBundle";
   }
 

@@ -323,7 +323,10 @@ public class DefaultQuickInfoService implements QuickInfoService {
     return newsRepository.getByComponentIds(asList(allowedComponentIds))
         .stream()
         .filter(n -> n.getPublishDate() != null)
-        .peek(n -> decorateNews(singletonList(n), false))
+        .map(n -> {
+          decorateNews(singletonList(n), false);
+          return n;
+        })
         .filter(n -> n.isVisible() && !n.isDraft())
         .limit(limit)
         .collect(Collectors.toList());

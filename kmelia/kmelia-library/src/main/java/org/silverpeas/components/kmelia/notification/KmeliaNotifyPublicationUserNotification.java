@@ -53,11 +53,6 @@ public class KmeliaNotifyPublicationUserNotification
   }
 
   @Override
-  protected String getBundleSubjectKey() {
-    return "Alert";
-  }
-
-  @Override
   protected String getTemplateFileName() {
     return "notification";
   }

@@ -418,10 +418,10 @@ function initOperations(id, op) {
     oMenu.addItem(menuItem, groupIndex);
     menuEmpty = false;
   }
-
   if (op.notify) {
     menuItem = new YAHOO.widget.MenuItem(getString('GML.notify'), {
-      url: "javascript:onclick=notifyOnFolder()"
+      url: "javascript:onclick=notifyOnFolder('" + op.context.componentId + "', '" +
+        op.context.nodeId + "')"
     });
     oMenu.addItem(menuItem, groupIndex);
   }
@@ -939,6 +939,6 @@ function setDataInFolderDialog(name, desc) {
   $("#addOrUpdateNode #folderDescription").val(desc.unescapeHTML());
 }
 
-function notifyOnFolder() {
-  SP_openWindow("ToAlertUserFolder", "toAlertUserFolder", '600', '400', 'scrollbars=yes, resizable, alwaysRaised');
+function notifyOnFolder(componentId, folderId) {
+  sp.messager.open(componentId, {folderId: folderId});
 }

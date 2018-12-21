@@ -203,13 +203,6 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
       List<SimpleDocument> listDocument = surveySC.getAllSynthesisFile(id);
       request.setAttribute(LIST_DOCUMENT, listDocument);
       destination = rootDest + "surveyDetail.jsp?Action=ViewCurrentQuestions&SurveyId=" + id;
-    } else if ("ToAlertUser".equals(function)) {
-      String surveyId = request.getParameter(SURVEY_ID);
-      try {
-        destination = surveySC.initAlertUser(surveyId);
-      } catch (Exception e) {
-        SilverLogger.getLogger(this).warn(e);
-      }
     } else if ("ExportCSV".equals(function)) {
       String surveyId = request.getParameter(SURVEY_ID);
       String csvFilename = surveySC.exportSurveyCSV(surveyId);

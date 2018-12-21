@@ -26,7 +26,7 @@ package org.silverpeas.components.gallery.service;
 import org.silverpeas.components.gallery.model.GalleryRuntimeException;
 import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.notification.user.client.NotificationManagerException;
+import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.notification.user.client.UserRecipient;
@@ -50,7 +50,7 @@ import java.util.Map;
 
 import static org.silverpeas.components.gallery.service.MediaServiceProvider.getMediaService;
 import static org.silverpeas.core.admin.service.OrganizationControllerProvider.getOrganisationController;
-import static org.silverpeas.core.notification.user.client.NotificationParameters.NORMAL;
+import static org.silverpeas.core.notification.user.client.NotificationParameters.PRIORITY_NORMAL;
 
 public class ScheduledAlertUser implements SchedulerEventListener {
 
@@ -111,7 +111,7 @@ public class ScheduledAlertUser implements SchedulerEventListener {
       return;
     }
 
-    NotificationMetaData notificationMetaData = new NotificationMetaData(NORMAL, "", "");
+    NotificationMetaData notificationMetaData = new NotificationMetaData(PRIORITY_NORMAL, "", "");
 
     // Preparing the notification content
     localizedContent.append("\n").appendFromBundleKey("gallery.notifUserInfo").append("\n\n");
@@ -126,7 +126,7 @@ public class ScheduledAlertUser implements SchedulerEventListener {
     NotificationSender notifSender = new NotificationSender(componentInstanceId);
     try {
       notifSender.notifyUser(notificationMetaData);
-    } catch (NotificationManagerException e) {
+    } catch (NotificationException e) {
       SilverLogger.getLogger(this)
           .error("can not send the notification message about media which will be no more visible",
               e);

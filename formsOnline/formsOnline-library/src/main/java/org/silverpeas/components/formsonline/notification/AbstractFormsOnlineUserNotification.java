@@ -36,7 +36,7 @@ public abstract class AbstractFormsOnlineUserNotification<T>
   }
 
   @Override
-  protected String getMultilangPropertyFile() {
+  protected String getLocalizationBundlePath() {
     return "org.silverpeas.formsonline.multilang.formsOnlineBundle";
   }
 

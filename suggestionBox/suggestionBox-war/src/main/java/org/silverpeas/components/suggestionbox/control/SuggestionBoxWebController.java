@@ -27,21 +27,19 @@ import org.silverpeas.components.suggestionbox.SuggestionBoxComponentSettings;
 import org.silverpeas.components.suggestionbox.common.SuggestionBoxWebManager;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
-import org.silverpeas.components.suggestionbox.notification
-    .SuggestionNotifyManuallyUserNotification;
+import org.silverpeas.components.suggestionbox.notification.SuggestionNotifyManuallyUserNotification;
 import org.silverpeas.components.suggestionbox.web.SuggestionEntity;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.notification.user.ManualUserNotificationSupplier;
 import org.silverpeas.core.subscription.SubscriptionService;
 import org.silverpeas.core.subscription.SubscriptionServiceProvider;
 import org.silverpeas.core.subscription.service.ComponentSubscription;
 import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.util.AlertUser;
 import org.silverpeas.core.web.mvc.webcomponent.AbstractNavigationContextListener;
 import org.silverpeas.core.web.mvc.webcomponent.Navigation;
 import org.silverpeas.core.web.mvc.webcomponent.NavigationContext;
@@ -54,7 +52,6 @@ import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToInternal;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToInternalJsp;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToPreviousNavigationStep;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.WebComponentController;
-import org.silverpeas.core.web.selection.SelectionUsersGroups;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -63,23 +60,22 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 import java.util.List;
 
-import static org.silverpeas.components.suggestionbox.SuggestionBoxComponentSettings
-    .getUserNotificationDisplayLiveTimeForLongMessage;
-import static org.silverpeas.components.suggestionbox.common.SuggestionBoxWebManager
-    .checkAdminAccessOrUserIsCreator;
-import static org.silverpeas.components.suggestionbox.common.SuggestionBoxWebManager
-    .checkAdminAccessOrUserIsModerator;
+import static org.silverpeas.components.suggestionbox.SuggestionBoxComponentSettings.getUserNotificationDisplayLiveTimeForLongMessage;
+import static org.silverpeas.components.suggestionbox.common.SuggestionBoxWebManager.checkAdminAccessOrUserIsCreator;
+import static org.silverpeas.components.suggestionbox.common.SuggestionBoxWebManager.checkAdminAccessOrUserIsModerator;
 import static org.silverpeas.core.contribution.model.CoreContributionType.COMPONENT_INSTANCE;
 
 @WebComponentController(SuggestionBoxComponentSettings.COMPONENT_NAME)
 public class SuggestionBoxWebController extends
     org.silverpeas.core.web.mvc.webcomponent.WebComponentController<SuggestionBoxWebRequestContext> {
 
+  private static final String SUGGESTIONS_ATTR = "suggestions";
+
   /**
    * A context on the viewing of suggestions. It is used to parametrize the rendering of the
    * suggestions in a JSP.
    */
-  public static enum ViewContext {
+  public enum ViewContext {
     /**
      * The suggestions to render are all the suggestions in a suggestion box the user can see.
      */
@@ -239,7 +235,7 @@ public class SuggestionBoxWebController extends
   public void listAllSuggestions(SuggestionBoxWebRequestContext context) {
     List<SuggestionEntity> suggestions = getWebServiceProvider().getAllSuggestionsFor(context.
         getSuggestionBox(), context.getUser());
-    context.getRequest().setAttribute("suggestions", suggestions);
+    context.getRequest().setAttribute(SUGGESTIONS_ATTR, suggestions);
   }
 
   /**
@@ -254,7 +250,7 @@ public class SuggestionBoxWebController extends
   public void listPublishedSuggestions(SuggestionBoxWebRequestContext context) {
     List<SuggestionEntity> suggestions = getWebServiceProvider().getPublishedSuggestions(context.
         getSuggestionBox());
-    context.getRequest().setAttribute("suggestions", suggestions);
+    context.getRequest().setAttribute(SUGGESTIONS_ATTR, suggestions);
   }
 
   /**
@@ -270,7 +266,7 @@ public class SuggestionBoxWebController extends
   public void listSuggestionsInPendingValidation(SuggestionBoxWebRequestContext context) {
     List<SuggestionEntity> suggestions =
         getWebServiceProvider().getSuggestionsForValidation(context.getSuggestionBox());
-    context.getRequest().setAttribute("suggestions", suggestions);
+    context.getRequest().setAttribute(SUGGESTIONS_ATTR, suggestions);
   }
 
   /**
@@ -287,7 +283,7 @@ public class SuggestionBoxWebController extends
   public void listCurrentUserSuggestions(SuggestionBoxWebRequestContext context) {
     List<SuggestionEntity> suggestions = getWebServiceProvider()
         .getAllSuggestionsProposedBy(context.getSuggestionBox(), context.getUser());
-    context.getRequest().setAttribute("suggestions", suggestions);
+    context.getRequest().setAttribute(SUGGESTIONS_ATTR, suggestions);
   }
 
   /**
@@ -342,6 +338,7 @@ public class SuggestionBoxWebController extends
   @RedirectToInternalJsp("suggestionEdit.jsp")
   @LowestRoleAccess(SilverpeasRole.writer)
   public void newSuggestion(SuggestionBoxWebRequestContext context) {
+    // just go to the JSP view
   }
 
   /**
@@ -508,30 +505,15 @@ public class SuggestionBoxWebController extends
         .refuseSuggestion(suggestionBox, suggestion, validationComment, context.getUser());
   }
 
-  @GET
-  @Path("suggestions/{id}/notify")
-  public Navigation notifyManuallyUsersGroups(SuggestionBoxWebRequestContext context) {
-    String id = context.getPathVariables().get("id");
-    SuggestionBox suggestionBox = context.getSuggestionBox();
-    Suggestion suggestion = suggestionBox.getSuggestions().get(id);
-
-    AlertUser sel = context.getUserManualNotificationForParameterization();
-    sel.resetAll();
-
-    // Browsebar settings
-    sel.setHostSpaceName(context.getSpaceLabel());
-    sel.setHostComponentId(context.getComponentInstanceId());
-    Pair<String, String> hostComponentName =
-        new Pair<>(context.getComponentInstanceLabel(), null);
-    sel.setHostComponentName(hostComponentName);
-
-    // The notification
-    sel.setNotificationMetaData(UserNotificationHelper
-        .build(new SuggestionNotifyManuallyUserNotification(suggestion, context.getUser())));
-
-    SelectionUsersGroups sug = new SelectionUsersGroups();
-    sug.setComponentId(context.getComponentInstanceId());
-    sel.setSelectionUsersGroups(sug);
-    return context.redirectToNotifyManuallyUsers();
+  @Override
+  public ManualUserNotificationSupplier getManualUserNotificationSupplier() {
+    return c -> {
+      final String boxId = c.get("componentId");
+      final String suggestionId = c.get("suggestionId");
+      final SuggestionBox box = SuggestionBox.getByComponentInstanceId(boxId);
+      final Suggestion suggestion = box.getSuggestions().get(suggestionId);
+      return new SuggestionNotifyManuallyUserNotification(suggestion,
+          UserDetail.getCurrentRequester()).build();
+    };
   }
 }

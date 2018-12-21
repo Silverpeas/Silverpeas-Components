@@ -29,7 +29,6 @@ import org.silverpeas.components.webpages.model.WebPagesException;
 import org.silverpeas.core.ActionType;
 import org.silverpeas.core.contribution.ContributionStatus;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.subscription.service.ComponentSubscriptionResource;
 import org.silverpeas.core.subscription.util.SubscriptionManagementContext;
 import org.silverpeas.core.util.URLUtil;
@@ -52,6 +51,9 @@ public class WebPagesRequestRouter extends ComponentRequestRouter<WebPagesSessio
 
   private static final long serialVersionUID = -707071668797781762L;
   private static final String USER = "user";
+  private static final String FUNCTION_PREVIEW = "Preview";
+  private static final String FUNCTION_EDIT = "Edit";
+  private static final String ACTION_ATTR = "Action";
 
   /**
    * This method has to be implemented in the component request rooter class. returns the session
@@ -94,12 +96,12 @@ public class WebPagesRequestRouter extends ComponentRequestRouter<WebPagesSessio
         boolean haveGotContent = processHaveGotContent(webPagesSC, request);
         if (!profile.equals(USER) && !haveGotContent) {
           // Si le role est publieur, le composant s'ouvre en edition
-          destination = getDestination("Edit", webPagesSC, request);
+          destination = getDestination(FUNCTION_EDIT, webPagesSC, request);
         } else {
           // affichage de la page wysiwyg si le role est lecteur ou si il y a un contenu
-          destination = getDestination("Preview", webPagesSC, request);
+          destination = getDestination(FUNCTION_PREVIEW, webPagesSC, request);
         }
-      } else if ("Edit".equals(function)) {
+      } else if (FUNCTION_EDIT.equals(function)) {
         if (webPagesSC.isXMLTemplateUsed()) {
           destination = getDestination("EditXMLContent", webPagesSC, request);
         } else {
@@ -114,7 +116,7 @@ public class WebPagesRequestRouter extends ComponentRequestRouter<WebPagesSessio
 
           destination = routing.getWysiwygEditorPath(context, request);
         }
-      } else if ("Preview".equals(function)) {
+      } else if (FUNCTION_PREVIEW.equals(function)) {
         processHaveGotContent(webPagesSC, request);
 
         request.setAttribute("IsSubscriber", webPagesSC.isSubscriber());
@@ -124,19 +126,19 @@ public class WebPagesRequestRouter extends ComponentRequestRouter<WebPagesSessio
           request.setAttribute("Data", webPagesSC.getDataRecord());
         }
 
-        if (!"Portlet".equals(request.getAttribute("Action"))) {
+        if (!"Portlet".equals(request.getAttribute(ACTION_ATTR))) {
           if (!USER.equals(webPagesSC.getProfile())) {
-            request.setAttribute("Action", "Preview");
+            request.setAttribute(ACTION_ATTR, FUNCTION_PREVIEW);
           } else {
-            request.setAttribute("Action", "Display");
+            request.setAttribute(ACTION_ATTR, "Display");
           }
         }
 
         request.setAttribute("AnonymousAccess", isAnonymousAccess(request));
         destination = rootDestination + "display.jsp";
       } else if (function.startsWith("portlet")) {
-        request.setAttribute("Action", "Portlet");
-        destination = getDestination("Preview", webPagesSC, request);
+        request.setAttribute(ACTION_ATTR, "Portlet");
+        destination = getDestination(FUNCTION_PREVIEW, webPagesSC, request);
       } else if ("ManageSubscriptions".equals(function)) {
         destination = webPagesSC.manageSubscriptions();
       } else if ("EditXMLContent".equals(function)) {
@@ -153,8 +155,6 @@ public class WebPagesRequestRouter extends ComponentRequestRouter<WebPagesSessio
         webPagesSC.saveDataRecord(items);
 
         destination = getDestination("Main", webPagesSC, request);
-      } else if ("ToNotifyUsers".equals(function)) {
-        destination = webPagesSC.initAlertUser();
       } else {
         destination = rootDestination + function;
       }
@@ -163,9 +163,6 @@ public class WebPagesRequestRouter extends ComponentRequestRouter<WebPagesSessio
       destination = "/admin/jsp/errorpageMain.jsp";
     }
 
-    SilverTrace
-        .info("webPages", "WebPagesRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
-            "Destination=" + destination);
     return destination;
   }
 

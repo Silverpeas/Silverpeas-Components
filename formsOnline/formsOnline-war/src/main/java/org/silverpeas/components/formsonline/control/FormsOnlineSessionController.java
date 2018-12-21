@@ -193,13 +193,11 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
     return Selection.getSelectionURL();
   }
 
-  public String initSelectionSenders(List<String> userIds, List<String> groupIds)
-      throws FormsOnlineDatabaseException {
+  public String initSelectionSenders(List<String> userIds, List<String> groupIds) {
     return initSelection(userIds, groupIds, USER_PANEL_SENDERS_PREFIX);
   }
 
-  public String initSelectionReceivers(List<String> userIds, List<String> groupIds)
-      throws FormsOnlineDatabaseException {
+  public String initSelectionReceivers(List<String> userIds, List<String> groupIds) {
     return initSelection(userIds, groupIds, USER_PANEL_RECEIVERS_PREFIX);
   }
 
@@ -490,8 +488,8 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
   }
 
   private void throwForbiddenException(String method) {
-    throw new ForbiddenRuntimeException("FormsOnlineSessionController." + method,
-        ForbiddenRuntimeException.WARNING, "User is not allowed to do this operation !");
+    throw new ForbiddenRuntimeException(
+        "User is not allowed to do the following operation: " + method);
   }
 
   /* getFlag */

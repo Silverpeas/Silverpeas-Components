@@ -46,7 +46,6 @@
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel withCheckFormScript="true"/>
-<view:includePlugin name="messageme"/>
 <view:includePlugin name="toggle"/>
 <view:script src="/util/javaScript/silverpeas-pdc-widgets.js" />
 <view:script src="/util/javaScript/silverpeas-pdc.js" />
@@ -287,7 +286,7 @@ if(cards != null && !cards.isEmpty()){
                    </ul>
                  </div>
                 <div class="action">
-			  <a rel="<%=card.getUserId()%>,<%=lastName + " " + firstName%>" class="link notification" href="#"><fmt:message key="whitePages.sendNotif"/></a> <a onclick="javascript:consult(<%=card.getPK().getId()%>)" class="link goToWhitepages" href="javascript:consult(<%=card.getPK().getId()%>)"><fmt:message key="whitePages.seeCard"/></a>
+			  <a onclick="sp.messager.open(null, {recipientUsers: <%=card.getUserId()%>, recipientEdition: false});" class="link notification" href="#"><fmt:message key="whitePages.sendNotif"/></a> <a onclick="javascript:consult(<%=card.getPK().getId()%>)" class="link goToWhitepages" href="javascript:consult(<%=card.getPK().getId()%>)"><fmt:message key="whitePages.seeCard"/></a>
                 </div>
                <br clear="all" />
             </li><%

@@ -60,9 +60,9 @@ function deleteQuizz(quizz_id)
   if (rep==true)
     self.location="deleteQuizz.jsp?quizz_id="+quizz_id
 }
-function notifyPopup(context,compoId,users,groups)
+function notifyQuizzPopup(compoId,users,groups)
 {
-    SP_openWindow(context+'/RnotificationUser/jsp/Main.jsp?popupMode=Yes&editTargets=No&compoId=' + compoId + '&theTargetsUsers='+users+'&theTargetsGroups='+groups, 'notifyUserPopup', '700', '400', 'menubar=no,scrollbars=no,statusbar=no');
+  sp.messager.open(compoId, {recipientUsers: users, recipientGroups: groups, recipientEdition: false});
 }
 </script>
 </head>
@@ -171,7 +171,7 @@ out.println("<br>&nbsp;&nbsp;<span class=sousTitreFenetre>"+resources.getString(
       ArrayCellText arrayCellText2;
       if (!recipient.equals(""))
 		  {
-			arrayCellText2 = arrayLine.addArrayCellText("<A HREF=\"javascript:notifyPopup('" + m_Context + "','" + quizzScc.getComponentId() + "','" + recipient + "','')\">" + lastName + " " + firstName +"</A>");
+			arrayCellText2 = arrayLine.addArrayCellText("<A HREF=\"javascript:notifyQuizzPopup('" + quizzScc.getComponentId() + "','" + recipient + "','')\">" + lastName + " " + firstName +"</A>");
 		  }
       else {
         arrayCellText2 = arrayLine.addArrayCellText(lastName + " " + firstName);

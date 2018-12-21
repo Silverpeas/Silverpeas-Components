@@ -93,6 +93,8 @@ public class JSONServlet extends HttpServlet {
         NodeDetail node = kmeliaSC.getNodeHeader(id);
         UserDetail user = kmeliaSC.getUserDetail();
         // general operations
+        operations.putJSONObject("context",
+            c -> c.put("componentId", kmeliaSC.getComponentId()).put("nodeId", node.getId()));
         operations.put("admin", kmeliaSC.isComponentManageable());
         operations.put("pdc", isRoot && kmeliaSC.isPdcUsed() && isAdmin);
         operations.put("predefinedPdcPositions", kmeliaSC.isPdcUsed() && isAdmin);

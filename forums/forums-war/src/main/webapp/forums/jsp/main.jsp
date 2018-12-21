@@ -159,7 +159,7 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
           <view:operation altText="${pdcUtilisation}" icon="${pdcUtilisationIconUrl}" action="${pdcUtilisationOperation}" />
         </c:if>
         <fmt:message key="mailAdmin" var="mail2AdminAltText" />
-        <c:set var="mail2AdminOperation">javascript:notifyPopup2('<c:out value="${pageContext.request.contextPath}"/>', '<c:out value="${sessionController.componentId}" />','<c:out value="${sessionController.adminIds}" />', '');</c:set>
+        <c:set var="mail2AdminOperation">javascript:notifyForumPopup('<c:out value="${sessionController.adminIds}" />');</c:set>
         <c:url var="mail2AdminIconUrl" value="/util/icons/forums_mailtoAdmin.gif" />
         <view:operation altText="${mail2AdminAltText}" icon="${mail2AdminIconUrl}" action="${mail2AdminOperation}" />
         <c:if test="${isAdmin}">
@@ -173,7 +173,7 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
           <c:url var="addForumIconUrl" value="/util/icons/create-action/add-forum.png" />
           <view:operationOfCreation altText="${addForumAltText}" icon="${addForumIconUrl}" action="${addForumOperation}" />
           <fmt:message key="forums.addCategory" var="addCategoryAltText" />
-          <c:set var="addCategoryOperation">javascript:notifyPopup2('<c:out value="${pageContext.request.contextPath}"/>','<c:out value="${sessionController.componentId}" />','<c:out value="${sessionController.adminIds}" />', '');</c:set>
+          <c:set var="addCategoryOperation">javascript:notifyForumPopup('<c:out value="${sessionController.adminIds}" />');</c:set>
           <c:url var="addCategoryIconUrl" value="/util/icons/create-action/add-folder.png" />
           <view:operationOfCreation altText="${addCategoryAltText}" icon="${addCategoryIconUrl}" action="NewCategory" />
         </c:if>
