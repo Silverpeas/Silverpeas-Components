@@ -32,6 +32,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 
 <c:set var="ctxPath" value="${pageContext.request.contextPath}" />
 <%-- Set resource bundle --%>
@@ -113,6 +114,8 @@ function sendData() {
     ifCorrectAnswersExecute(function() {
       if ($('input[name=suggestion]').is(':checked')) {
         $("#hiddenSuggestionAllowedId").val("1");
+      } else {
+        $("#suggestionTRId").remove();
       }
       document.surveyForm.submit();
     });
@@ -186,10 +189,7 @@ function ifCorrectAnswersExecute(callback) {
         }
     </c:if>
         jQuery.popup.error("<fmt:message key="EmptyAnswerNotAllowed" /> \n" + errorMsg);
-        result = false;
-        break;
   }
-  return result;
 }
 
 function ifCorrectFormExecute(callback) {
@@ -425,9 +425,10 @@ function insertHTMLAnswer(answerId) {
   <c:set var="gallery" value="${requestScope['Gallery']}" />
       <c:if test="${not empty(gallery)}">
   htmlAnswer +=  '<select id="galleries" name="galleries" onchange="javascript:choixGallery(this, \'' + answerId + '\');this.selectedIndex=0;">';
-  htmlAnswer +=  '<option selected><fmt:message key="GML.thumbnail.galleries" /></option>';
+  <fmt:message key="GML.thumbnail.galleries" var="labelGalleries" />
+  htmlAnswer +=  '<option selected=\"selected\">${silfn:escapeJs(labelGalleries)}</option>';
         <c:forEach var="curGal" items="${gallery}" varStatus="galIndex">
-  htmlAnswer +=  '<option value="<c:out value="${curGal.id}"/>"><c:out value="${curGal.label}"/></option>'; 
+  htmlAnswer +=  '<option value="<c:out value="${curGal.id}"/>">${silfn:escapeJs(curGal.label)}</option>';
         </c:forEach>
   htmlAnswer +=  '      </select>';
       </c:if>

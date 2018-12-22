@@ -121,7 +121,7 @@ String surveyTabPanelLabel = resources.getString("SurveyQuestions");
 if (surveyScc.isPollingStationMode()) {
   surveyTabPanelLabel = resources.getString("SurveyQuestion");
 }
-tabbedPane.addTab(surveyTabPanelLabel, "questionsUpdate.jsp?Action=UpdateQuestions&SurveyId="+surveyId, "UpdateQuestions".equals(action), false);
+tabbedPane.addTab(surveyTabPanelLabel, "questionsUpdate.jsp?Action=UpdateQuestions&SurveyId="+surveyId, true, true);
 out.println(tabbedPane.print());
 
 String questionUpSrc = "icons/arrowUp.gif";

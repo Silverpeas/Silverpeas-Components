@@ -276,7 +276,7 @@ function reallyUpdateQuestions(surveyId) {
         out.println(window.printBefore());
 
         TabbedPane tabbedPane = gef.getTabbedPane();
-        tabbedPane.addTab(resources.getString("GML.head"), "surveyUpdate.jsp?Action=UpdateSurveyHeader&SurveyId="+surveyId, action.equals("UpdateSurveyHeader"), false);
+        tabbedPane.addTab(resources.getString("GML.head"), "surveyUpdate.jsp?Action=UpdateSurveyHeader&SurveyId="+surveyId, action.equals("UpdateSurveyHeader"), true);
         String surveyTabPanelLabel = resources.getString("SurveyQuestions");
         if (surveyScc.isPollingStationMode()) {
           surveyTabPanelLabel = resources.getString("SurveyQuestion");
