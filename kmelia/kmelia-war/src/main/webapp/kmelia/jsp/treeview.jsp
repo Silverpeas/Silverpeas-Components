@@ -161,7 +161,7 @@ var searchInProgress = <%=searchContext != null%>;
 var searchFolderId = "<%=id%>";
 </script>
 </head>
-<body id="kmelia" onunload="closeWindows()" class="yui-skin-sam">
+<body id="kmelia" onunload="closeWindows()" class="yui-skin-sam treeView">
 <div compile-directive style="display: none"></div>
 <div id="<%=componentId %>" class="<%=profile%>">
 <%
@@ -401,10 +401,6 @@ function displayTopicContent(id) {
 		displayOperations(id);
 		$("#searchZone").css({'display':'block'});
 	}
-
-  displayPublicationPromise.then(function() {
-    resizePart("#treeDiv1");
-  });
 
 	//display topic information
 	displayTopicInformation(id);
@@ -784,28 +780,6 @@ function getString(key) {
 	return window.i18n.prop(key)
 }
 
-function resizePart(idPart) {
-  $(idPart).css("height","auto");
-  
-  /* initialisation de la hauteur par celle de la frame*/
-  var frame = window.frameElement;
-  var hauteur = frame.scrollHeight ;
-  
-  var hauteurBody = $("#kmelia").height();
-  
-  var hauteurFilAriane = $(".cellBrowseBar").height();
-  
-  if(hauteurBody >= hauteur){
-   /*ascenseur */
-    hauteur = hauteurBody-hauteurFilAriane-70;
-  }else {
-    /* si pas d'ascenseur*/
-    hauteur = hauteur-hauteurFilAriane-70;
-  }
-
-  $(idPart).css("height",hauteur);
-}
-
 $(document).ready(function() {
   //build the tree
   $("#treeDiv1").jstree({
@@ -943,14 +917,6 @@ $(document).ready(function() {
       }
     });
 
-  var timer_resize;
-  window.addEventListener('resize', function(){
-    clearTimeout(timer_resize);
-    timer_resize = setTimeout(function(){
-      resizePart("#treeDiv1");
-    }, 75);
-  });
-
 	window.i18n.properties({
         name: 'kmeliaBundle',
         path: webContext + '/services/bundles/org/silverpeas/kmelia/multilang/',
@@ -966,7 +932,7 @@ $(document).ready(function() {
 		//Right-click concerns only admins
 		showRightClickHelp();
 	<% } %>
-	}
+  }
 );
 
 // starts the dragging when a publication is holden to be dragged off

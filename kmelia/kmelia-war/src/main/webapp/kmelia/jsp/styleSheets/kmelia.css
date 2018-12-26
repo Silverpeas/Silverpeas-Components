@@ -22,6 +22,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+html , body.treeView,
+body.treeView > div,
+body.treeView > div > div,
+body.treeView > div > div #topPage,
+body.treeView > div > div #topPage .cellBodyWindows,
+body.treeView > div > div #topPage .cellBodyWindows .tableFrame,
+body.treeView > div > div #topPage .cellBodyWindows .tableFrame .hautFrame{
+	height:100%
+}
+
+body.treeView {
+	overflow:hidden;
+}
 
 /* Search zone */
 #searchZone {
@@ -727,30 +740,46 @@ a.button.refuse span {
 }
 
 /*** rightPane ****/
-#treeDiv1 {
-  overflow:auto;
-}
 
 .wrap{
   width: 100%;
   border: 0;
   font-size: 0;
+  height:100%
 }
 
 .wrap .resizable{
-  width:30%;
-  padding:0;
-  display:block;
-  float:left;
+	width:30%;
+	overflow:auto;
+	padding-right: 2em;
 }
-
+.resizable1{	
+	z-index:10;
+	position:relative;
+	height:100%;
+}
+.resizable1 #treeDiv1{	
+	z-index:10;
+	position: fixed;
+	top:4em;
+	bottom: 0;
+	overflow:auto;
+	width: inherit;
+}
 .wrap .resizable.resizable2{
-  width:70%;
+	width:70%;
+	padding:0;
+	display:block;
+	position: fixed;
+	top:4em;
+	bottom: 0;
+	overflow:auto;
+	right:0;
+	z-index:5;
 }
 
 .wrap #rightSide.resizable > div {
-  margin-left:2em;
-  margin-right:1em;
+  margin:0 2em 1em 4em;
 }
 
 .wrap .ui-resizable-e{
@@ -758,7 +787,7 @@ a.button.refuse span {
   width: 7px;
   display:block !important;
   cursor: e-resize;
-  right: -9px;
+  right:0;
   top: 0;
   bottom: 0;
   z-index: inherit !important;
