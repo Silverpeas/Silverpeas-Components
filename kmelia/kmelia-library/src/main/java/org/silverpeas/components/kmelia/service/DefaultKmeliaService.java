@@ -1637,6 +1637,8 @@ public class DefaultKmeliaService implements KmeliaService {
 
     try {
       publicationService.addFather(pubPK, fatherPK);
+      // index publication to index path
+      publicationService.createIndex(pubPK);
     } catch (Exception e) {
       throw new KmeliaRuntimeException(e);
     }
