@@ -131,7 +131,7 @@
               <%=I18NHelper.getFormLine(resources, null, kmeliaScc.getLanguage())%>
               <tr>
                 <td class="txtlibform"><fmt:message key="TopicTitle"/> :</td>
-                <td><input type="text" name="Name" size="60" maxlength="60"/><input type="hidden" name="ParentId" value="<c:out value="${requestScope.Parent.id}"/>"/>&nbsp;<img border="0" src="<c:out value="${mandatoryFieldUrl}" />" width="5" height="5"/></td>
+                <td><input type="text" name="Name" size="60" maxlength="60" autofocus="autofocus"/><input type="hidden" name="ParentId" value="<c:out value="${requestScope.Parent.id}"/>"/>&nbsp;<img border="0" src="<c:out value="${mandatoryFieldUrl}" />" width="5" height="5"/></td>
               </tr>
               <c:choose>
                 <c:when test="${true eq requestScope.IsLink}">
@@ -191,7 +191,4 @@
       </view:frame>
     </view:window>
   </body>
-  <script language="javascript">
-      document.topicForm.Name.focus();
-  </script>
 </html>

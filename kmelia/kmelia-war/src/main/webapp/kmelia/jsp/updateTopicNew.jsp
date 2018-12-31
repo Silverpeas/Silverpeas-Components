@@ -176,7 +176,7 @@
                 <%=I18NHelper.getFormLine(resources, node, translation)%>
                 <tr>
                   <td class="txtlibform"><fmt:message key="TopicTitle"/> :</td>
-                  <td><input type="text" name="Name" id="nodeNameValue" value="<%=WebEncodeHelper.javaStringToHtmlString(name)%>" size="60" maxlength="50">&nbsp;<img border="0" alt="mandatory" src="<c:out value="${mandatoryFieldUrl}" />" width="5" height="5"/></td>
+                  <td><input type="text" name="Name" id="nodeNameValue" value="<%=WebEncodeHelper.javaStringToHtmlString(name)%>" size="60" maxlength="60" autofocus="autofocus">&nbsp;<img border="0" alt="mandatory" src="<c:out value="${mandatoryFieldUrl}" />" width="5" height="5"/></td>
                 </tr>
                 <c:choose>
                   <c:when test="${true eq requestScope.IsLink}">
