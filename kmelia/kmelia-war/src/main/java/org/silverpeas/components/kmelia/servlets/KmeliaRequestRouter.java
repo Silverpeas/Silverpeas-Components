@@ -933,7 +933,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         List<FileItem> parameters = request.getFileItems();
 
         // create publication
-        String positions = FileUploadUtil.getParameter(parameters, "Positions");
+        String positions = FileUploadUtil.getParameter(parameters, "KmeliaPubPositions");
         PdcClassificationEntity withClassification =
             PdcClassificationEntity.undefinedClassification();
         if (StringUtil.isDefined(positions)) {
@@ -956,7 +956,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         Collection<UploadedFile> attachments = request.getUploadedFiles();
         kmelia.addUploadedFilesToPublication(attachments, pubDetail);
 
-        String volatileId = FileUploadUtil.getParameter(parameters, "VolatileId");
+        String volatileId = FileUploadUtil.getParameter(parameters, "KmeliaPubVolatileId");
         if (StringUtil.isDefined(volatileId)) {
           //process extra form
           kmelia.saveXMLFormToPublication(pubDetail, parameters, false);
@@ -1542,22 +1542,22 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
   private PublicationDetail getPublicationDetail(List<FileItem> parameters,
       KmeliaSessionController kmelia) throws Exception {
-    String id = FileUploadUtil.getParameter(parameters, "PubId");
-    String status = FileUploadUtil.getParameter(parameters, "Status");
-    String name = FileUploadUtil.getParameter(parameters, "Name");
-    String description = FileUploadUtil.getParameter(parameters, "Description");
-    String keywords = FileUploadUtil.getParameter(parameters, "Keywords");
-    String beginDate = FileUploadUtil.getParameter(parameters, "BeginDate");
-    String endDate = FileUploadUtil.getParameter(parameters, "EndDate");
-    String version = FileUploadUtil.getParameter(parameters, "Version");
-    String importance = FileUploadUtil.getParameter(parameters, "Importance");
-    String beginHour = FileUploadUtil.getParameter(parameters, "BeginHour");
-    String endHour = FileUploadUtil.getParameter(parameters, "EndHour");
-    String author = FileUploadUtil.getParameter(parameters, "Author");
-    String targetValidatorId = FileUploadUtil.getParameter(parameters, "ValideurId");
-    String tempId = FileUploadUtil.getParameter(parameters, "TempId");
-    String infoId = FileUploadUtil.getParameter(parameters, "InfoId");
-    String draftOutDate = FileUploadUtil.getParameter(parameters, "DraftOutDate");
+    String id = FileUploadUtil.getParameter(parameters, "KmeliaPubId");
+    String status = FileUploadUtil.getParameter(parameters, "KmeliaPubStatus");
+    String name = FileUploadUtil.getParameter(parameters, "KmeliaPubName");
+    String description = FileUploadUtil.getParameter(parameters, "KmeliaPubDescription");
+    String keywords = FileUploadUtil.getParameter(parameters, "KmeliaPubKeywords");
+    String beginDate = FileUploadUtil.getParameter(parameters, "KmeliaPubBeginDate");
+    String endDate = FileUploadUtil.getParameter(parameters, "KmeliaPubEndDate");
+    String version = FileUploadUtil.getParameter(parameters, "KmeliaPubVersion");
+    String importance = FileUploadUtil.getParameter(parameters, "KmeliaPubImportance");
+    String beginHour = FileUploadUtil.getParameter(parameters, "KmeliaPubBeginHour");
+    String endHour = FileUploadUtil.getParameter(parameters, "KmeliaPubEndHour");
+    String author = FileUploadUtil.getParameter(parameters, "KmeliaPubAuthor");
+    String targetValidatorId = FileUploadUtil.getParameter(parameters, "KmeliaPubValideurId");
+    String tempId = FileUploadUtil.getParameter(parameters, "KmeliaPubTempId");
+    String infoId = FileUploadUtil.getParameter(parameters, "KmeliaPubInfoId");
+    String draftOutDate = FileUploadUtil.getParameter(parameters, "KmeliaPubDraftOutDate");
 
     Date jBeginDate = null;
     Date jEndDate = null;

@@ -347,7 +347,7 @@
 
       function reallySendData() {
         <% if(!kmaxMode && "New".equals(action)) { %>
-          <view:pdcPositions setIn="document.pubForm.Positions.value"/>
+          <view:pdcPositions setIn="document.pubForm.KmeliaPubPositions.value"/>
         <% } %>
         document.pubForm.action = "<%=nextAction%>";
         $.progressMessage();
@@ -364,7 +364,7 @@
       function isCorrectHeaderForm() {
         var errorMsg = "";
         var errorNb = 0;
-        var title = stripInitialWhitespace(document.pubForm.Name.value);
+        var title = stripInitialWhitespace(document.pubForm.KmeliaPubName.value);
 
         if (isWhitespace(title)) {
           errorMsg+=" - '<%=resources.getString("PubTitre")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
@@ -372,7 +372,7 @@
         }
 
       <% if (isFieldDescriptionVisible) {%>
-        var description = document.pubForm.Description;
+        var description = document.pubForm.KmeliaPubDescription;
       <% if (isFieldDescriptionMandatory) {%>
             if (isWhitespace(description.value)) {
               errorMsg+=" - '<%=resources.getString("PubDescription")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
@@ -386,7 +386,7 @@
       <% }%>
 
       <% if ("writer".equals(profile) && (kmeliaScc.isTargetValidationEnable() || kmeliaScc.isTargetMultiValidationEnable())) {%>
-          var validatorId = stripInitialWhitespace(document.pubForm.ValideurId.value);
+          var validatorId = stripInitialWhitespace(document.pubForm.KmeliaPubValideurId.value);
           if (isWhitespace(validatorId)) {
             errorMsg+=" - '<%=resources.getString("kmelia.Valideur")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
             errorNb++;
@@ -478,7 +478,7 @@
         }
 
         $(document).ready(function(){
-          	document.pubForm.Name.focus();
+          	document.pubForm.KmeliaPubName.focus();
 
 	        $("#publication-draftout").dialog({
 	            autoOpen: false,
@@ -502,8 +502,6 @@
 
         Frame frame = gef.getFrame();
         BrowseBar browseBar = window.getBrowseBar();
-        browseBar.setDomainName(spaceLabel);
-        browseBar.setComponentName(componentLabel, "Main");
         browseBar.setPath(linkedPathString);
         browseBar.setExtraInformation(name);
 
@@ -558,11 +556,11 @@
   <div id="header">
   <form name="pubForm" action="#" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
   	<input type="hidden" name="Action"/>
-    <input type="hidden" name="Positions"/>
-  	<input type="hidden" name="PubId" value="<%=id%>"/>
-  	<input type="hidden" name="Status" value="<%=status%>"/>
-  	<input type="hidden" name="TempId" value="<%=tempId%>"/>
-  	<input type="hidden" name="InfoId" value="<%=infoId%>"/>
+    <input type="hidden" name="KmeliaPubPositions"/>
+  	<input type="hidden" name="KmeliaPubId" value="<%=id%>"/>
+  	<input type="hidden" name="KmeliaPubStatus" value="<%=status%>"/>
+  	<input type="hidden" name="KmeliaPubTempId" value="<%=tempId%>"/>
+  	<input type="hidden" name="KmeliaPubInfoId" value="<%=infoId%>"/>
 
     <fieldset id="pubInfo" class="skinFieldset">
 			<legend><%=resources.getString("kmelia.header.fieldset.main") %></legend>
@@ -604,7 +602,7 @@
 				<div class="field" id="pubNameArea">
 					<label for="pubName" class="txtlibform"><%=resources.getString("PubTitre")%></label>
 					<div class="champs">
-						<input type="text" name="Name" id="pubName" value="<%=name%>" size="68" maxlength="150" />&nbsp;<img src="<%=mandatorySrc%>" width="5" height="5" border="0"/>
+						<input type="text" name="KmeliaPubName" id="pubName" value="<%=name%>" size="68" maxlength="150" />&nbsp;<img src="<%=mandatorySrc%>" width="5" height="5" border="0"/>
 					</div>
 				</div>
 
@@ -612,7 +610,7 @@
 				<div class="field" id="descriptionArea">
 					<label for="pubDesc" class="txtlibform"><%=resources.getString("PubDescription")%></label>
 					<div class="champs">
-						<textarea rows="4" cols="65" name="Description" id="pubDesc"><%=description%></textarea>
+						<textarea rows="4" cols="65" name="KmeliaPubDescription" id="pubDesc"><%=description%></textarea>
 						<% if (isFieldDescriptionMandatory) {%>
           					<img src="<%=mandatorySrc%>" width="5" height="5" border="0"/>
           				<% }%>
@@ -624,7 +622,7 @@
 				<div class="field" id="keywordsArea">
 					<label for="pubKeys" class="txtlibform"><%=resources.getString("PubMotsCles")%></label>
 					<div class="champs">
-						<input type="text" name="Keywords" id="pubKeys" value="<%=keywords%>" size="68" maxlength="1000" />
+						<input type="text" name="KmeliaPubKeywords" id="pubKeys" value="<%=keywords%>" size="68" maxlength="1000" />
 					</div>
 				</div>
 				<% } %>
@@ -632,7 +630,7 @@
 				<div class="field" id="authorArea">
 					<label for="author" class="txtlibform"><%=resources.getString("GML.author")%></label>
 					<div class="champs">
-						<input type="text" id="author" name="Author" value="<%=author%>" size="68" maxlength="50" />
+						<input type="text" id="author" name="KmeliaPubAuthor" value="<%=author%>" size="68" maxlength="50" />
 					</div>
 				</div>
 				<% } %>
@@ -641,7 +639,7 @@
 				<div class="field" id="versionArea">
 					<label for="version" class="txtlibform"><%=resources.getString("PubVersion")%></label>
 					<div class="champs">
-						<input type="text" id="version" name="Version" value="<%=WebEncodeHelper.javaStringToHtmlString(version)%>" size="5" maxlength="30" />
+						<input type="text" id="version" name="KmeliaPubVersion" value="<%=WebEncodeHelper.javaStringToHtmlString(version)%>" size="5" maxlength="30" />
 					</div>
 				</div>
 				<% } %>
@@ -650,7 +648,7 @@
 				<div class="field" id="importanceArea">
 					<label for="importance" class="txtlibform"><%=resources.getString("PubImportance")%></label>
 					<div class="champs">
-						<select id="importance" name="Importance">
+						<select id="importance" name="KmeliaPubImportance">
 							<% 	if (importance.equals("")) {
                  					importance = "1";
                					}
@@ -667,7 +665,7 @@
 					</div>
 				</div>
 				<% } else {%>
-      				<input type="hidden" name="Importance" value="1" />
+      				<input type="hidden" name="KmeliaPubImportance" value="1" />
       			<% } %>
 
       			<% if ("writer".equals(profile) && (kmeliaScc.isTargetValidationEnable() || kmeliaScc.isTargetMultiValidationEnable())) {
@@ -687,7 +685,7 @@
           				<% } else {%>
           					<textarea name="Valideur" id="Valideur" rows="4" cols="40" readonly="readonly"><%=targetValidatorName%></textarea>
           				<% }%>
-          				<input type="hidden" name="ValideurId" id="ValideurId" value="<%=targetValidatorId%>"/><%=link%>&nbsp;<img src="<%=mandatorySrc%>" width="5" height="5" border="0"/>
+          				<input type="hidden" name="KmeliaPubValideurId" id="ValideurId" value="<%=targetValidatorId%>"/><%=link%>&nbsp;<img src="<%=mandatorySrc%>" width="5" height="5" border="0"/>
 					</div>
 				</div>
 				<% } %>
@@ -722,24 +720,24 @@
 					<div class="field" id="draftOutArea">
 						<label for="draftOutDate" class="txtlibform"><%=resources.getString("kmelia.automaticDraftOutDate")%></label>
 						<div class="champs">
-							<input id="draftOutDate" type="text" class="dateToPick" name="DraftOutDate" value="<%=draftOutDate%>" size="12" maxlength="10"/>
+							<input id="draftOutDate" type="text" class="dateToPick" name="KmeliaPubDraftOutDate" value="<%=draftOutDate%>" size="12" maxlength="10"/>
 						</div>
 					</div>
 					<% } %>
 					<div class="field" id="beginArea">
 						<label for="beginDate" class="txtlibform"><%=resources.getString("PubDateDebut")%></label>
 						<div class="champs">
-							<input id="beginDate" type="text" class="dateToPick" name="BeginDate" value="<%=beginDate%>" size="12" maxlength="10"/>
+							<input id="beginDate" type="text" class="dateToPick" name="KmeliaPubBeginDate" value="<%=beginDate%>" size="12" maxlength="10"/>
 							<span class="txtsublibform">&nbsp;<%=resources.getString("ToHour")%>&nbsp;</span>
-							<input id="beginHour" class="inputHour" type="text" name="BeginHour" value="<%=beginHour%>" size="5" maxlength="5" /> <i>(hh:mm)</i>
+							<input id="beginHour" class="inputHour" type="text" name="KmeliaPubBeginHour" value="<%=beginHour%>" size="5" maxlength="5" /> <i>(hh:mm)</i>
 						</div>
 					</div>
 					<div class="field" id="endArea">
 						<label for="endDate" class="txtlibform"><%=resources.getString("PubDateFin")%></label>
 						<div class="champs">
-							<input id="endDate" type="text" class="dateToPick" name="EndDate" value="<%=endDate %>" size="12" maxlength="10"/>
+							<input id="endDate" type="text" class="dateToPick" name="KmeliaPubEndDate" value="<%=endDate %>" size="12" maxlength="10"/>
 							<span class="txtsublibform">&nbsp;<%=resources.getString("ToHour")%>&nbsp;</span>
-							<input id="endHour" class="inputHour" type="text" name="EndHour" value="<%=endHour %>" size="5" maxlength="5" /> <i>(hh:mm)</i>
+							<input id="endHour" class="inputHour" type="text" name="KmeliaPubEndHour" value="<%=endHour %>" size="5" maxlength="5" /> <i>(hh:mm)</i>
 						</div>
 					</div>
 				</div>
@@ -771,8 +769,8 @@
     <% if (extraForm != null) { %>
     <fieldset id="pubExtraForm" class="skinFieldset">
       <legend><%=resources.getString("Model")%></legend>
-      <input type="hidden" name="FormName" value="<%=extraForm.getFormName()%>"/>
-      <input type="hidden" name="VolatileId" value="<%=volatilePublication.getId()%>"/>
+      <input type="hidden" name="KmeliaPubFormName" value="<%=extraForm.getFormName()%>"/>
+      <input type="hidden" name="KmeliaPubVolatileId" value="<%=volatilePublication.getId()%>"/>
       <%
         extraForm.display(out, extraFormPageContext);
       %>

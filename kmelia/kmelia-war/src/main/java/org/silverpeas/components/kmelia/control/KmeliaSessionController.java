@@ -3447,7 +3447,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     // Is it the creation of the content or an update ?
     String infoId = pubDetail.getInfoId();
     if (infoId == null || "0".equals(infoId)) {
-      xmlFormShortName = FileUploadUtil.getParameter(items, "FormName");
+      xmlFormShortName = FileUploadUtil.getParameter(items, "KmeliaPubFormName");
 
       // The publication have no content
       // We have to register xmlForm to publication

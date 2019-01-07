@@ -148,7 +148,7 @@
       <%
             formUpdate.display(out, context, data);
       %>
-      <input type="hidden" name="FormName" value="<%=formUpdate.getFormName()%>"/>
+      <input type="hidden" name="KmeliaPubFormName" value="<%=formUpdate.getFormName()%>"/>
     </form>
     <%
           out.println(board.printAfter());
