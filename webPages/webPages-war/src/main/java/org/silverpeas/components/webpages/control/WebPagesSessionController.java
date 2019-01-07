@@ -44,6 +44,7 @@ import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.notification.user.ManualUserNotificationSupplier;
+import org.silverpeas.core.notification.user.NotificationContext;
 import org.silverpeas.core.subscription.SubscriptionService;
 import org.silverpeas.core.subscription.SubscriptionServiceProvider;
 import org.silverpeas.core.subscription.service.ComponentSubscription;
@@ -247,7 +248,7 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
   @Override
   public ManualUserNotificationSupplier getManualUserNotificationSupplier() {
     return c -> {
-      final String componentId = c.get("componentId");
+      final String componentId = c.get(NotificationContext.COMPONENT_ID);
       return new WebPagesUserAlertNotifier(new NodePK(null, componentId),
           User.getCurrentRequester()).build();
     };

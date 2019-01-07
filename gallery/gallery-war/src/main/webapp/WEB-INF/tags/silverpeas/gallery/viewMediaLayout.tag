@@ -1,6 +1,7 @@
 <%@ tag import="org.silverpeas.core.contribution.content.form.DataRecord" %>
 <%@ tag import="org.silverpeas.core.contribution.content.form.Form" %>
 <%@ tag import="org.silverpeas.core.contribution.content.form.PagesContext" %>
+<%@ tag import="org.silverpeas.core.notification.user.NotificationContext" %>
 <%--
   Copyright (C) 2000 - 2018 Silverpeas
 
@@ -94,7 +95,7 @@
 <jsp:useBean id="albumId" type="java.lang.String"/>
 
 <c:set var="callback">function( event ) { if (event.type === 'listing') { commentCount = event.comments.length; $('#comment-tab').html('<c:out value="${commentTab}"/> ( ' + event.comments.length + ')'); } else if (event.type === 'deletion') { commentCount--; $('#comment-tab').html('<c:out value="${commentTab}"/> ( ' + commentCount + ')'); } else if (event.type === 'addition') { commentCount++; $('#comment-tab').html('<c:out value="${commentTab}"/> ( ' + commentCount + ')'); } }</c:set>
-
+<c:set var="contributionIdKey"><%=NotificationContext.CONTRIBUTION_ID%></c:set>
 <c:set var="mediaSrcValue" value="${not empty internalMedia ? internalMedia.fileName : media.streaming.homepageUrl}"/>
 <c:set var="mediaTitle" value="${(not empty media.title and media.title != mediaSrcValue) ? media.title : mediaSrcValue}"/>
 
@@ -149,7 +150,7 @@
   <fmt:message key="GML.notify" var="notifLabel"/>
   <fmt:message key="gallery.alert" var="notifIcon" bundle="${icons}"/>
   <c:url value="${notifIcon}" var="notifIcon"/>
-  <view:operation altText="${notifLabel}" action="javaScript:onClick=sp.messager.open('${instanceId}', {mediaId: '${mediaId}'});" icon="${notifIcon}"/>
+  <view:operation altText="${notifLabel}" action="javaScript:onClick=sp.messager.open('${instanceId}', {${contributionIdKey}: '${mediaId}'});" icon="${notifIcon}"/>
   <view:operationSeparator/>
   <c:if test="${requestScope.UpdateMediaAllowed}">
     <fmt:message key="GML.modify" var="modifyLabel"/>

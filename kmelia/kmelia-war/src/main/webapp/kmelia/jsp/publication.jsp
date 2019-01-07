@@ -23,8 +23,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="org.silverpeas.core.admin.user.model.SilverpeasRole"%>
-<%@page import="org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail"%>
+<%@page import="org.silverpeas.components.kmelia.KmeliaPublicationHelper"%>
+<%@page import="org.silverpeas.components.kmelia.SearchContext"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
@@ -42,17 +42,16 @@
 <%@ include file="checkKmelia.jsp" %>
 <%@ include file="topicReport.jsp" %>
 
-<%@page import="org.silverpeas.components.kmelia.jstl.KmeliaDisplayHelper"%>
-<%@page import="org.silverpeas.components.kmelia.SearchContext"%>
-<%@page import="org.silverpeas.core.util.URLUtil"%>
-<%@page import="org.silverpeas.components.kmelia.KmeliaPublicationHelper"%>
-<%@page import="org.silverpeas.core.webapi.rating.RaterRatingEntity" %>
-<%@ page import="org.silverpeas.components.kmelia.model.KmeliaPublication" %>
-<%@ page import="org.silverpeas.core.contribution.content.form.Form" %>
-<%@ page import="org.silverpeas.core.contribution.content.form.DataRecord" %>
+<%@page import="org.silverpeas.components.kmelia.model.KmeliaPublication"%>
+<%@page import="org.silverpeas.core.admin.user.model.SilverpeasRole"%>
+<%@page import="org.silverpeas.core.admin.user.model.User"%>
+<%@page import="org.silverpeas.core.contribution.content.form.DataRecord"%>
+<%@page import="org.silverpeas.core.contribution.content.form.Form" %>
 <%@ page import="org.silverpeas.core.contribution.content.form.PagesContext" %>
-<%@ page import="org.silverpeas.core.admin.user.model.User" %>
 <%@ page import="org.silverpeas.core.contribution.publication.model.Link" %>
+<%@ page import="org.silverpeas.core.notification.user.NotificationContext" %>
+<%@ page import="org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail" %>
+<%@ page import="org.silverpeas.core.webapi.rating.RaterRatingEntity" %>
 
 <c:set var="userLanguage" value="${requestScope.resources.language}"/>
 <c:set var="contentLanguage" value="${requestScope.Language}"/>
@@ -375,13 +374,13 @@
         jQuery.popup.confirm(label, function() {
           sp.messager.open('<%= componentId %>', {
             folderId: '<%= kmeliaScc.getCurrentFolderId() %>',
-            pubId: '<%= pubDetail.getId() %>'
+          <%= NotificationContext.CONTRIBUTION_ID %>: '<%= pubDetail.getId() %>'
           });
         });
       <% } else {%>
         sp.messager.open('<%= componentId %>', {
           folderId: '<%= kmeliaScc.getCurrentFolderId() %>',
-          pubId: '<%= pubDetail.getId() %>'
+         <%= NotificationContext.CONTRIBUTION_ID %>: '<%= pubDetail.getId() %>'
         });
       <% }%>
         }
@@ -393,14 +392,14 @@
           jQuery.popup.confirm(label, function() {
             sp.messager.open('<%= componentId %>', {
               folderId: '<%= kmeliaScc.getCurrentFolderId() %>',
-              pubId: '<%= pubDetail.getId() %>',
+             <%= NotificationContext.CONTRIBUTION_ID %>: '<%= pubDetail.getId() %>',
               docId: attachmentId
               });
           });
       <% } else {%>
           sp.messager.open('<%= componentId %>', {
             folderId: '<%= kmeliaScc.getCurrentFolderId() %>',
-            pubId: '<%= pubDetail.getId() %>',
+           <%= NotificationContext.CONTRIBUTION_ID %>: '<%= pubDetail.getId() %>',
             docId: attachmentId
           });
       <% }%>

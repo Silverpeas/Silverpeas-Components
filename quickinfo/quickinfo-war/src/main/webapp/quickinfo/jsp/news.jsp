@@ -26,6 +26,7 @@
 <%@page import="org.silverpeas.components.quickinfo.model.News"%>
 <%@page import="org.silverpeas.core.admin.user.model.SilverpeasRole" %>
 <%@ page import="org.silverpeas.core.util.URLUtil" %>
+<%@ page import="org.silverpeas.core.notification.user.NotificationContext" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
@@ -77,7 +78,7 @@ pageContext.setAttribute("componentURL", URLUtil.getFullApplicationURL(request)+
 <script type="text/javascript" src="js/quickinfo.js"></script>
 <script type="text/javascript">
 function notify() {
-	sp.messager.open('${news.componentInstanceId}', {newsId: '${news.id}'});
+	sp.messager.open('${news.componentInstanceId}', {<%= NotificationContext.CONTRIBUTION_ID %>: '${news.id}'});
 }
 
 function publish() {

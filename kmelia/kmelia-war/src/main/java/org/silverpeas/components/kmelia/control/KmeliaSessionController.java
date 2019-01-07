@@ -103,6 +103,7 @@ import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.model.NodeSelection;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.notification.user.ManualUserNotificationSupplier;
+import org.silverpeas.core.notification.user.NotificationContext;
 import org.silverpeas.core.notification.user.UserNotification;
 import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
@@ -3535,11 +3536,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   @Override
   public ManualUserNotificationSupplier getManualUserNotificationSupplier() {
     return c -> {
-      final String componentId = c.get("componentId");
+      final String componentId = c.get(NotificationContext.COMPONENT_ID);
       final String folderId = c.get("folderId");
       final UserNotification notification;
-      if (c.containsKey("pubId")) {
-        final String pubId = c.get("pubId");
+      if (c.containsKey(NotificationContext.CONTRIBUTION_ID)) {
+        final String pubId = c.get(NotificationContext.CONTRIBUTION_ID);
         if (c.containsKey("docId")) {
           final String docId = c.get("docId");
           notification = getUserNotification(componentId, folderId, pubId, docId);

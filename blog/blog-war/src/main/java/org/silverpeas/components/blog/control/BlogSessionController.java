@@ -47,6 +47,7 @@ import org.silverpeas.core.mylinks.service.MyLinksService;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.notification.user.ManualUserNotificationSupplier;
+import org.silverpeas.core.notification.user.NotificationContext;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.subscription.service.ComponentSubscriptionResource;
@@ -254,7 +255,7 @@ public final class BlogSessionController extends AbstractComponentSessionControl
   @Override
   public ManualUserNotificationSupplier getManualUserNotificationSupplier() {
     return c -> {
-      final String postId = c.get("postId");
+      final String postId = c.get(NotificationContext.CONTRIBUTION_ID);
       return new BlogUserAlertNotification(getPost(postId), getUserDetail()).build();
     };
   }
