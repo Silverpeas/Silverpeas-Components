@@ -22,6 +22,7 @@
 
 package org.silverpeas.components.kmelia.service;
 
+import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.node.model.NodeDetail;
@@ -54,6 +55,9 @@ public class KmeliaHelper implements Serializable {
   }
 
   public static String getProfile(String[] profiles) {
+    if (ArrayUtil.isEmpty(profiles)) {
+      return null;
+    }
     SilverpeasRole flag = SilverpeasRole.user;
     for (String profile : profiles) {
       SilverpeasRole role = SilverpeasRole.valueOf(profile);
