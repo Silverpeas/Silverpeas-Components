@@ -3300,8 +3300,12 @@ public class KmeliaSessionController extends AbstractComponentSessionController
    * @return true if current user has admin access on topic given in parameter
    */
   public boolean isTopicAdmin(final String nodeId) {
-    return SilverpeasRole.getHighestFrom(SilverpeasRole.from(getUserTopicProfile(nodeId)))
-        .isGreaterThanOrEquals(SilverpeasRole.admin);
+    String profile = getUserTopicProfile(nodeId);
+    if (profile != null) {
+      return SilverpeasRole.getHighestFrom(SilverpeasRole.from(profile))
+          .isGreaterThanOrEquals(SilverpeasRole.admin);
+    }
+    return isUserComponentAdmin();
   }
 
   /*

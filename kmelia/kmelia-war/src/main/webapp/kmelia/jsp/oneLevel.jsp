@@ -88,12 +88,6 @@ String userId = kmeliaScc.getUserId();
 <view:script src="javaScript/searchInTopic.js"/>
 <view:script src="javaScript/publications.js"/>
 
-<style type="text/css">
-.invisibleTopic {
-	color: #BBB;
-}
-</style>
-
 <script type="text/javascript">
 
   <%--The below triggered function has to be defined as soon as possible in HTML code in order to
@@ -313,27 +307,34 @@ function displaySubTopics(id) {
 		 async : false,
 		 cache : false,
 		 success : function(data){
-			$("#subTopics").empty();
-			$("#subTopics").append("<ul>");
-			var basket = "";
-			var tovalidate = "";
-			$.each(data, function(i, folder) {
-					var folderId = folder.attr["id"];
-					if (folderId === "1") {
-						basket = getSubFolder(folder);
-					} else if (folderId === getToValidateFolderId()) {
-						tovalidate = getSubFolder(folder);
-					} else if (folderId !== "2") {
-						$("#subTopics ul").append(getSubFolder(folder));
-					}
-			});
-			if (id === "0") {
-				$("#subTopics ul").append(tovalidate);
-				$("#subTopics ul").append(basket);
-			}
-			$("#subTopics").append("</ul>");
-			$("#subTopics").append("<br clear=\"all\">");
-		}
+        $("#subTopics").empty();
+        $("#subTopics").append("<ul>");
+        var basket = "";
+        var tovalidate = "";
+        $.each(data, function(i, folder) {
+            var folderId = folder.attr["id"];
+            if (folderId === "1") {
+              basket = getSubFolder(folder);
+            } else if (folderId === getToValidateFolderId()) {
+              tovalidate = getSubFolder(folder);
+            } else if (folderId !== "2") {
+              $("#subTopics ul").append(getSubFolder(folder));
+            }
+        });
+        if (id === "0") {
+          $("#subTopics ul").append(tovalidate);
+          $("#subTopics ul").append(basket);
+        }
+        $("#subTopics").append("</ul>");
+        if ($("#subTopics ul li").length > 0) {
+          $("#subTopics").append("<br clear=\"all\">");
+        } else {
+          $("#subTopics").empty();
+        }
+      },
+    error : function(data) {
+		   //alert("error");
+    }
 	});
 }
 

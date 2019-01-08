@@ -218,16 +218,10 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       res.setHeader("charset", "UTF-8");
 
       Writer writer = res.getWriter();
-      if (kmeliaSC.isRightsOnTopicsEnabled() && kmeliaSC.isUserComponentAdmin() &&
-          !kmeliaSC.isCurrentTopicAvailable()) {
-        Board board = gef.getBoard();
-        writer.write(board.printBefore());
-        writer.write("<table width=\"100%\" border=\"0\" cellspacing=\"0\" align=\"center\">");
-        writer.write("<tr>");
-        writer.write("<td>" + resources.getString("GML.ForbiddenAccessContent") + "</td>");
-        writer.write("</tr>");
-        writer.write("</table>");
-        writer.write(board.printAfter());
+      if (kmeliaSC.isRightsOnTopicsEnabled() && !kmeliaSC.isCurrentTopicAvailable()) {
+        writer.write("<div class=\"inlineMessage-nok\">");
+        writer.write(resources.getString("GML.ForbiddenAccessContent"));
+        writer.write("</div>");
       } else if (NodePK.ROOT_NODE_ID.equals(kmeliaSC.getCurrentFolderId()) && kmeliaSC.
           getNbPublicationsOnRoot() != 0 && kmeliaSC.isTreeStructure() && !searchInProgress) {
         try {
