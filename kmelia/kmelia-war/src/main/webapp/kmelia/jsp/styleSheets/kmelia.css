@@ -36,6 +36,10 @@ body.treeView {
 	overflow:hidden;
 }
 
+.vakata-context, .vakata-context ul {
+  z-index:20;
+}
+
 /* Search zone */
 #searchZone {
   margin: 1em;
@@ -749,7 +753,7 @@ a.button.refuse span {
 }
 
 .wrap .resizable{
-	width:30%;
+	width:28%;
 	overflow:auto;
 	padding-right: 2em;
 }
@@ -777,6 +781,24 @@ a.button.refuse span {
 	right:0;
 	z-index:5;
 }
+ @media only screen and (max-width: 1100px) { 
+	 .wrap .resizable{
+		width:38%;
+	 }
+	.wrap .resizable.resizable2{
+		width:60%;
+	}
+	
+ }
+ @media only screen and (min-width: 1500px) { 
+	 .wrap .resizable{
+		width:18%;
+	 }
+	.wrap .resizable.resizable2{
+		width:80%;
+	}
+	
+ }
 
 .wrap #rightSide.resizable > div {
   margin:0 2em 1em 4em;
