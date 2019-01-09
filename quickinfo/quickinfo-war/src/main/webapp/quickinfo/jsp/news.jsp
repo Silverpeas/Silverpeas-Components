@@ -78,7 +78,7 @@ pageContext.setAttribute("componentURL", URLUtil.getFullApplicationURL(request)+
 <script type="text/javascript" src="js/quickinfo.js"></script>
 <script type="text/javascript">
 function notify() {
-	sp.messager.open('${news.componentInstanceId}', {<%= NotificationContext.CONTRIBUTION_ID %>: '${news.id}'});
+	sp.messager.open('${news.componentInstanceId}', {<%= NotificationContext.CONTRIBUTION_ID %>: '${news.id}', <%= NotificationContext.PUBLICATION_ID %>: '${news.publicationId}'});
 }
 
 function publish() {

@@ -48,7 +48,7 @@
 <%@page import="org.silverpeas.core.contribution.content.form.DataRecord"%>
 <%@page import="org.silverpeas.core.contribution.content.form.Form" %>
 <%@ page import="org.silverpeas.core.contribution.content.form.PagesContext" %>
-<%@ page import="org.silverpeas.core.contribution.publication.model.Link" %>
+<%@ page import="org.silverpeas.core.contribution.publication.model.PublicationLink" %>
 <%@ page import="org.silverpeas.core.notification.user.NotificationContext" %>
 <%@ page import="org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail" %>
 <%@ page import="org.silverpeas.core.webapi.rating.RaterRatingEntity" %>
@@ -129,7 +129,7 @@
   List<String> availableFormats = kmeliaScc.getAvailableFormats();
 
   boolean sharingAllowed = kmeliaPublication.getDetail().isSharingAllowedForRolesFrom(currentUser);
-  List<Link> linkedPublications = pubComplete.getLinkedPublications(user_id);
+  List<PublicationLink> linkedPublications = pubComplete.getLinkedPublications(user_id);
 
   //Vrai si le user connecte est le createur de cette publication ou si il est admin
   boolean isOwner = false;

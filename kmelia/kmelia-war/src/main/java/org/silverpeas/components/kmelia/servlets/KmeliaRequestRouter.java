@@ -47,7 +47,7 @@ import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygControlle
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.publication.model.Alias;
 import org.silverpeas.core.contribution.publication.model.CompletePublication;
-import org.silverpeas.core.contribution.publication.model.Link;
+import org.silverpeas.core.contribution.publication.model.PublicationLink;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
@@ -621,9 +621,9 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           request.setAttribute("Languages", publicationLanguages);
 
           // see also management
-          List<Link> links = kmeliaPublication.getCompleteDetail().getLinkList();
+          List<PublicationLink> links = kmeliaPublication.getCompleteDetail().getLinkList();
           HashSet<String> linkedList = new HashSet<>(links.size());
-          for (Link link : links) {
+          for (PublicationLink link : links) {
             linkedList.add(link.getTarget().getId() + "-" + link.getTarget().getComponentInstanceId());
           }
           // put into session the current list of selected publications (see also)

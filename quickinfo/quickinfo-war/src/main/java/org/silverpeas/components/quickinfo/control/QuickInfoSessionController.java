@@ -251,7 +251,8 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
   public ManualUserNotificationSupplier getManualUserNotificationSupplier() {
     return c -> {
       final String newsId = c.get(NotificationContext.CONTRIBUTION_ID);
-      return new NewsManualUserNotification(getNews(newsId, false), getUserDetail()).build();
+      final News news = getNews(newsId, false);
+      return new NewsManualUserNotification(news, getUserDetail()).build();
     };
   }
 

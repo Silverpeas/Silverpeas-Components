@@ -61,8 +61,9 @@ import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygControlle
 import org.silverpeas.core.contribution.publication.datereminder.PublicationNoteReference;
 import org.silverpeas.core.contribution.publication.model.Alias;
 import org.silverpeas.core.contribution.publication.model.CompletePublication;
-import org.silverpeas.core.contribution.publication.model.Link;
+import org.silverpeas.core.contribution.publication.model.PublicationLink;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationLink;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.model.ValidationStep;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
@@ -1940,9 +1941,9 @@ public class DefaultKmeliaService implements KmeliaService {
   @Override
   public List<KmeliaPublication> getLinkedPublications(KmeliaPublication publication,
       String userId) {
-    List<Link> allLinks = publication.getCompleteDetail().getLinkedPublications(userId);
+    List<PublicationLink> allLinks = publication.getCompleteDetail().getLinkedPublications(userId);
     List<KmeliaPublication> authorizedLinks = new ArrayList<>();
-    for (Link link : allLinks) {
+    for (PublicationLink link : allLinks) {
       authorizedLinks.add(KmeliaPublication.aKmeliaPublicationWithPk(link.getPubPK()));
     }
     return authorizedLinks;

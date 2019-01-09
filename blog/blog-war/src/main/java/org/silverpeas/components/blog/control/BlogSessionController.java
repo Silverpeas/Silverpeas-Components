@@ -256,7 +256,9 @@ public final class BlogSessionController extends AbstractComponentSessionControl
   public ManualUserNotificationSupplier getManualUserNotificationSupplier() {
     return c -> {
       final String postId = c.get(NotificationContext.CONTRIBUTION_ID);
-      return new BlogUserAlertNotification(getPost(postId), getUserDetail()).build();
+      final PostDetail post = getPost(postId);
+      c.put(NotificationContext.PUBLICATION_ID, post.getPublication().getId());
+      return new BlogUserAlertNotification(post, getUserDetail()).build();
     };
   }
 
