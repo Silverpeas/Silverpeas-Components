@@ -429,7 +429,7 @@
         }
 
         function addFavorite() {
-          var name = $("#breadCrumb").text() + " > " + $(".publiName").text();
+          var name = $("#breadCrumb").text();
           var description = "<%=WebEncodeHelper.javaStringToJsString(pubDetail.getDescription(language))%>";
           var url = "<%=URLUtil.getSimpleURL(URLUtil.URL_PUBLI, pubDetail.getPK().getId())%>";
           postNewLink(name, url, description);
