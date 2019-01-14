@@ -69,6 +69,7 @@ import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.message.MessageNotifier;
 import org.silverpeas.core.notification.user.DefaultUserNotification;
 import org.silverpeas.core.notification.user.ManualUserNotificationSupplier;
+import org.silverpeas.core.notification.user.NotificationContext;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
@@ -571,7 +572,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   @Override
   public ManualUserNotificationSupplier getManualUserNotificationSupplier() {
     return c -> {
-      final String mediaId = c.get("mediaId");
+      final String mediaId = c.get(NotificationContext.CONTRIBUTION_ID);
       return new DefaultUserNotification(getAlertNotificationMetaData(mediaId));
     };
   }

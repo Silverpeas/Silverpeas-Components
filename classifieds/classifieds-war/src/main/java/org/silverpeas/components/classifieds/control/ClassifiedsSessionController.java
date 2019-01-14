@@ -48,6 +48,7 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.index.search.model.QueryDescription;
 import org.silverpeas.core.notification.user.ManualUserNotificationSupplier;
+import org.silverpeas.core.notification.user.NotificationContext;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.session.SessionManagement;
@@ -774,7 +775,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
   @Override
   public ManualUserNotificationSupplier getManualUserNotificationSupplier() {
     return c -> {
-      final String instanceId = c.get("componentId");
+      final String instanceId = c.get(NotificationContext.COMPONENT_ID);
       final String sessionKey = c.get("usk");
       final SessionManagement sessionManagement = SessionManagementProvider.getSessionManagement();
       final SessionInfo sessionInfo = sessionManagement.getSessionInfo(sessionKey);

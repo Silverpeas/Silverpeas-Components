@@ -1,4 +1,4 @@
-<%--
+<%@ page import="org.silverpeas.core.notification.user.NotificationContext" %><%--
   Copyright (C) 2000 - 2018 Silverpeas
 
   This program is free software: you can redistribute it and/or modify
@@ -89,7 +89,7 @@
       $('#actions').attr('method', 'GET').attr('action', '${backUri}').submit();
     }
     function notify() {
-      sp.messager.open('${componentId}', {suggestionId: '${target}'});
+      sp.messager.open('${componentId}', {<%=NotificationContext.CONTRIBUTION_ID%>: '${target}'});
     }
   </script>
 </head>

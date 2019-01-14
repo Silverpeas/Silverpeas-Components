@@ -67,6 +67,7 @@ import org.silverpeas.core.exception.DecodingException;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.notification.user.DefaultUserNotification;
 import org.silverpeas.core.notification.user.ManualUserNotificationSupplier;
+import org.silverpeas.core.notification.user.NotificationContext;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
@@ -663,7 +664,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
   @Override
   public ManualUserNotificationSupplier getManualUserNotificationSupplier() {
     return c -> {
-      final String surveyId = c.get("surveyId");
+      final String surveyId = c.get(NotificationContext.CONTRIBUTION_ID);
       try {
         return new DefaultUserNotification(getAlertNotificationMetaData(surveyId));
       } catch (SurveyException e) {
