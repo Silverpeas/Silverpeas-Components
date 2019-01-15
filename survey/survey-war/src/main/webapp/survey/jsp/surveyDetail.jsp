@@ -1,6 +1,7 @@
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane" %>
-<%@ page import="org.silverpeas.core.util.SettingBundle" %><%--
+<%@ page import="org.silverpeas.core.util.SettingBundle" %>
+<%@ page import="org.silverpeas.core.notification.user.NotificationContext" %><%--
 
     Copyright (C) 2000 - 2018 Silverpeas
 
@@ -277,7 +278,7 @@
     // notification
     OperationPane operationPane = window.getOperationPane();
     operationPane.addOperation(alertSrc, resources.getString("GML.notify"),
-        "javaScript:onClick=sp.messager.open('" + componentId + "', {surveyId: '" + surveyId + "'});");
+        "javaScript:onClick=sp.messager.open('" + componentId + "', {" + NotificationContext.CONTRIBUTION_ID + ": '" + surveyId + "'});");
 
     window.addBody(surveyPart);
     %>
@@ -457,7 +458,7 @@ function clipboardCopy() {
     // notification
     OperationPane operationPane = window.getOperationPane();
     operationPane.addOperation(alertSrc, resources.getString("GML.notify"),
-        "javaScript:onClick=sp.messager.open('" + componentId + "', {surveyId: '" + surveyId + "'});");
+        "javaScript:onClick=sp.messager.open('" + componentId + "', {" + NotificationContext.CONTRIBUTION_ID + ": '" + surveyId + "'});");
   
     // copier
     operationPane.addOperation(copySrc, resources.getString("GML.copy"),
@@ -584,7 +585,7 @@ function clipboardCopy() {
 </view:browseBar>
 <view:operationPane>
   <fmt:message key="GML.notify" var="notifyUserMsg" />
-  <c:set var="notifyUserAction">javaScript:onClick=sp.messager.open('<%= componentId %>', {surveyId: '<%=surveyId%>'});</c:set>
+  <c:set var="notifyUserAction">javaScript:onClick=sp.messager.open('<%= componentId %>', {<%=NotificationContext.CONTRIBUTION_ID%>: '<%=surveyId%>'});</c:set>
   <view:operation altText="${notifyUserMsg}" icon="${alertSrc}" action="${notifyUserAction}" />
   
   <%

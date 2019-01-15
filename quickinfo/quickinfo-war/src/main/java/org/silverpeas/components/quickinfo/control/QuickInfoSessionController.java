@@ -34,6 +34,7 @@ import org.silverpeas.core.exception.DecodingException;
 import org.silverpeas.core.io.media.image.thumbnail.ThumbnailSettings;
 import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.notification.user.ManualUserNotificationSupplier;
+import org.silverpeas.core.notification.user.NotificationContext;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
 import org.silverpeas.core.silvertrace.SilverTrace;
@@ -249,8 +250,9 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
   @Override
   public ManualUserNotificationSupplier getManualUserNotificationSupplier() {
     return c -> {
-      final String newsId = c.get("newsId");
-      return new NewsManualUserNotification(getNews(newsId, false), getUserDetail()).build();
+      final String newsId = c.get(NotificationContext.CONTRIBUTION_ID);
+      final News news = getNews(newsId, false);
+      return new NewsManualUserNotification(news, getUserDetail()).build();
     };
   }
 

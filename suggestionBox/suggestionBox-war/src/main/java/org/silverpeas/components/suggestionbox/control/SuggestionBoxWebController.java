@@ -32,6 +32,7 @@ import org.silverpeas.components.suggestionbox.web.SuggestionEntity;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.notification.user.ManualUserNotificationSupplier;
+import org.silverpeas.core.notification.user.NotificationContext;
 import org.silverpeas.core.subscription.SubscriptionService;
 import org.silverpeas.core.subscription.SubscriptionServiceProvider;
 import org.silverpeas.core.subscription.service.ComponentSubscription;
@@ -508,8 +509,8 @@ public class SuggestionBoxWebController extends
   @Override
   public ManualUserNotificationSupplier getManualUserNotificationSupplier() {
     return c -> {
-      final String boxId = c.get("componentId");
-      final String suggestionId = c.get("suggestionId");
+      final String boxId = c.get(NotificationContext.COMPONENT_ID);
+      final String suggestionId = c.get(NotificationContext.CONTRIBUTION_ID);
       final SuggestionBox box = SuggestionBox.getByComponentInstanceId(boxId);
       final Suggestion suggestion = box.getSuggestions().get(suggestionId);
       return new SuggestionNotifyManuallyUserNotification(suggestion,

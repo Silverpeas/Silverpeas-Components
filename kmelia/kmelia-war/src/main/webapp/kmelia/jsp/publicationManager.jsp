@@ -30,19 +30,16 @@
 <%@taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 
-<%@page import="org.silverpeas.core.io.media.image.thumbnail.ThumbnailSettings"%>
-<%@page import="org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail"%>
-<%@page import="org.silverpeas.components.kmelia.jstl.KmeliaDisplayHelper"%>
-<%@page import="org.silverpeas.components.kmelia.model.KmeliaPublication" %>
+<%@page import="org.silverpeas.components.kmelia.model.KmeliaPublication"%>
+<%@page import="org.silverpeas.core.admin.user.model.User"%>
+<%@page import="org.silverpeas.core.contribution.content.form.Form"%>
+<%@page import="org.silverpeas.core.contribution.content.form.PagesContext" %>
 <%@page import="org.silverpeas.core.i18n.I18NHelper" %>
-<%@ page import="java.util.StringTokenizer" %>
+<%@ page import="org.silverpeas.core.io.media.image.thumbnail.ThumbnailSettings" %>
+<%@ page import="org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail" %>
+<%@ page import="org.silverpeas.core.notification.user.NotificationContext" %>
 <%@ page import="java.util.Date" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame" %>
-<%@ page import="org.silverpeas.core.admin.user.model.User" %>
-<%@ page import="org.silverpeas.core.contribution.content.form.Form" %>
-<%@ page import="org.silverpeas.core.contribution.content.form.PagesContext" %>
+<%@ page import="java.util.StringTokenizer" %>
 
 <c:set var="userLanguage" value="${requestScope.resources.language}"/>
 <fmt:setLocale value="${userLanguage}"/>
@@ -318,13 +315,13 @@
           jQuery.popup.confirm(label, function() {
             sp.messager.open('<%= componentId %>', {
               folderId: '<%= kmeliaScc.getCurrentFolderId()%>',
-              pubId: '<%= id %>'
+             <%= NotificationContext.CONTRIBUTION_ID %>: '<%= id %>'
             });
           });
       <% } else { %>
           sp.messager.open('<%= componentId %>', {
             folderId: '<%= kmeliaScc.getCurrentFolderId()%>',
-            pubId: '<%= id %>'
+            <%= NotificationContext.CONTRIBUTION_ID %>: '<%= id %>'
         });
       <% } %>
       }

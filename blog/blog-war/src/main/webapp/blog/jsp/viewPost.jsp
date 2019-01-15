@@ -31,6 +31,7 @@
 <%@ page import="org.silverpeas.components.blog.model.PostDetail" %>
 <%@page import="org.silverpeas.components.blog.control.StyleSheet"%>
 <%@page import="org.silverpeas.components.blog.control.WallPaper"%>
+<%@ page import="org.silverpeas.core.notification.user.NotificationContext" %>
 <%@ include file="check.jsp" %>
 
 <% 
@@ -74,7 +75,7 @@ StyleSheet styleSheet = (StyleSheet) request.getAttribute("StyleSheet");
   }
   if (!m_MainSessionCtrl.getCurrentUserDetail().isAccessGuest()) {
     operationPane.addOperation("useless", resource.getString("GML.notify"),
-        "javaScript:onClick=sp.messager.open('" + instanceId + "', {postId: '" + postId + "'});");
+        "javaScript:onClick=sp.messager.open('" + instanceId + "', {" + NotificationContext.CONTRIBUTION_ID + ": '" + postId + "'});");
   }
 %>
 
