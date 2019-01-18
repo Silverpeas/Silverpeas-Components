@@ -386,7 +386,10 @@ function initOperations(id, op) {
   }
 
   if (op.exportSelection) {
-    menuItem = new YAHOO.widget.MenuItem(getString('kmelia.operation.exportSelection'), {url: "javascript:onclick=exportPublications()"});
+    menuItem = new YAHOO.widget.MenuItem(getString('kmelia.operation.exportSelection'), {
+      id: "operation-publications-select",
+      url: "javascript:onclick=exportPublications()"
+    });
     oMenu.addItem(menuItem, groupIndex);
     groupEmpty = false;
   }
@@ -428,7 +431,7 @@ function initOperations(id, op) {
 
   if (op.mylinks) {
     menuItem = new YAHOO.widget.MenuItem(getString('GML.favorite.application.add'), {
-      classname: 'space-or-application-favorites-operation',
+      id: 'space-or-application-favorites-operation',
       url: "javascript:onclick=addAppAsFavorite()"
     });
     oMenu.addItem(menuItem, groupIndex);
@@ -436,7 +439,7 @@ function initOperations(id, op) {
 
   if (op.responsibles) {
     menuItem = new YAHOO.widget.MenuItem(getString('GML.component.responsibles'), {
-      classname: 'space-or-component-responsibles-operation',
+      id: 'space-or-component-responsibles-operation',
       url: "javascript:onclick=displayResponsibles()"
     });
     oMenu.addItem(menuItem, groupIndex);

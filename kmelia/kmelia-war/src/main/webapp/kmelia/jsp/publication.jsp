@@ -471,13 +471,13 @@
 
         OperationPane operationPane = window.getOperationPane();
 
-        operationPane.addOperation("useless", resources.getString("GML.print"), "javaScript:print();");
+        operationPane.addOperation("useless", resources.getString("GML.print"), "javaScript:print();", "operation-publi-print");
         if (notificationAllowed && !currentUser.isAnonymous()) {
           operationPane.addOperation(alertSrc, resources.getString("GML.notify"), "javaScript:alertUsers()");
         }
 
         if (!toolboxMode && !exportFormats.isEmpty()) {
-          operationPane.addOperation(pdfSrc, resources.getString("kmelia.ExportPublication"), "javascript:exportPublication()");
+          operationPane.addOperation(pdfSrc, resources.getString("kmelia.ExportPublication"), "javascript:exportPublication()", "operation-publi-export");
         }
         if (sharingAllowed) {
           operationPane.addOperation("useless", resources.getString("GML.share"), "javascript:pubShare()");
@@ -517,7 +517,7 @@
         }
         if (!kmaxMode) {
           if (!currentUser.isAnonymous()) {
-            operationPane.addOperation(resources.getIcon("kmelia.copy"), resources.getString("GML.copy"), "javascript:clipboardCopy()");
+            operationPane.addOperation(resources.getIcon("kmelia.copy"), resources.getString("GML.copy"), "javascript:clipboardCopy()", "operation-publi-copy");
           }
           if (isOwner) {
             operationPane.addOperation(resources.getIcon("kmelia.cut"), resources.getString("GML.cut"), "javascript:clipboardCut()");
