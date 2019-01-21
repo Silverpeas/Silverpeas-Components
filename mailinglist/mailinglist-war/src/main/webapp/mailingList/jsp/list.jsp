@@ -114,10 +114,10 @@
                 <c:param name="ascendant"><c:choose><c:when test="${requestScope['attachmentsSize'] != null}"><c:out value="${requestScope['attachmentsSize']}" /></c:when><c:otherwise>true</c:otherwise></c:choose></c:param></c:url>"><fmt:message
               key="mailingList.list.attachments.title" /></a></td>
             <td class="ArrayColumn" align="center" nowrap="nowrap"><a
-              href="<c:out value="${pageContext.request.contextPath}"/>/Rmailinglist/<c:out value="${componentId}"/>/list/<c:out value="${componentId}"/>?orderBy=sender&ascendant=<c:choose><c:when test="${requestScope['sender'] != null}"><c:out value="${requestScope['sender']}" /></c:when><c:otherwise>true</c:otherwise></c:choose>" /><fmt:message
+              href="<c:out value="${pageContext.request.contextPath}"/>/Rmailinglist/<c:out value="${componentId}"/>/list/<c:out value="${componentId}"/>?orderBy=sender&ascendant=<c:choose><c:when test="${requestScope['sender'] != null}"><c:out value="${requestScope['sender']}" /></c:when><c:otherwise>true</c:otherwise></c:choose>"><fmt:message
               key="mailingList.list.sender.title" /></a></td>
             <td class="ArrayColumn" align="center" nowrap="nowrap"><a
-              href="<c:out value="${pageContext.request.contextPath}"/>/Rmailinglist/<c:out value="${componentId}"/>/list/<c:out value="${componentId}"/>?orderBy=sentDate&ascendant=<c:choose><c:when test="${requestScope['sentDate'] != null}"><c:out value="${requestScope['sentDate']}" /></c:when><c:otherwise>true</c:otherwise></c:choose>" /><fmt:message
+              href="<c:out value="${pageContext.request.contextPath}"/>/Rmailinglist/<c:out value="${componentId}"/>/list/<c:out value="${componentId}"/>?orderBy=sentDate&ascendant=<c:choose><c:when test="${requestScope['sentDate'] != null}"><c:out value="${requestScope['sentDate']}" /></c:when><c:otherwise>true</c:otherwise></c:choose>"><fmt:message
               key="mailingList.list.sentDate.title" /></a></td>
           </tr>
           <c:forEach items="${requestScope.currentMessageList}" var="message" varStatus="messageIndex">
@@ -155,7 +155,7 @@
                 <c:param name="currentYear" value="${param.currentYear}" />
               </c:if>
               <c:if test="${param.currentMonth != null}">
-                <c:param name="currentYear" value="${params.currentMonth}" />
+                <c:param name="currentYear" value="${param.currentMonth}" />
               </c:if>
               <c:if test="${param.orderBy != null}">
                 <c:param name="orderBy" value="${param.orderBy}" />
@@ -164,8 +164,7 @@
                 <c:param name="ascendant" value="${param.ascendant}" />
               </c:if>
             </c:url>
-            <td colspan="<c:out value="${paginationColspan}"/>"><view:pagination currentPage="${requestScope.currentPage}" nbPages="${requestScope.nbPages}" action="${paginationAction}"
-              pageParam="currentPage" /></td>
+            <td colspan="<c:out value="${paginationColspan}"/>"><view:pagination currentPage="${requestScope.currentPage}" totalNumberOfItems="${requestScope.nbPages}" action="${paginationAction}" /></td>
           </tr>
         </table>
         </td>

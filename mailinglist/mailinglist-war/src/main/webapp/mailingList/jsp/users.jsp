@@ -105,7 +105,7 @@
       </c:forEach>
       <tr>
         <c:url var="paginationAction" value="/Rmailinglist/${componentId}/users/${componentId}" />
-        <td colspan="2"><view:pagination currentPage="${requestScope.currentPage}" nbPages="${requestScope.nbPages}" action="${paginationAction}" pageParam="currentPage" /></td>
+        <td colspan="2"><view:pagination currentPage="${requestScope.currentPage}" totalNumberOfItems="${requestScope.nbPages}" action="${paginationAction}" /></td>
       </tr>
     </table>
     </form>
