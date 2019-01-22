@@ -147,6 +147,10 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         request.setAttribute("IsBasket", gallerySC.isBasket());
         request.setAttribute("IsOrder", gallerySC.isOrder());
         destination = rootDest + "welcome.jsp";
+      } else if ("ManageSubscriptions".equals(function)) {
+        destination = gallerySC.manageSubscriptions();
+      } else if ("ManageAlbumSubscriptions".equals(function)) {
+        destination = gallerySC.manageAlbumSubscriptions();
       } else if ("ViewAlbum".equals(function)) {
         if (StringUtil.isDefined(request.getParameter("deselectAll"))) {
           deselectAll(gallerySC);

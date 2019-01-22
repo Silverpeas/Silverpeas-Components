@@ -48,6 +48,7 @@
 
 <c:set var="componentId" value="${requestScope.browseContext[3]}"/>
 
+<fmt:message key="GML.manageSubscriptions" var="actionLabelManageSubscriptions"/>
 <fmt:message key="gallery.addSubAlbum" var="addAlbumLabel"/>
 <fmt:message key="gallery.addAlbum" var="addAlbumIcon" bundle="${icons}"/>
 <c:url value="${addAlbumIcon}" var="addAlbumIcon"/>
@@ -161,6 +162,7 @@
   <view:includePlugin name="qtip"/>
   <view:includePlugin name="popup"/>
   <view:includePlugin name="embedPlayer"/>
+  <view:includePlugin name="subscription"/>
   <view:progressMessage/>
   <script type="text/javascript">
 var currentGallery = {
@@ -345,6 +347,13 @@ function CutSelectedMedia() {
   }
 }
 </c:if>
+
+SUBSCRIPTION_PROMISE.then(function() {
+  window.spSubManager = new SilverpeasSubscriptionManager({
+    componentInstanceId : '${componentId}',
+    topicId : '${currentAlbum.id}'
+  });
+});
   </script>
 <c:if test="${not empty currentAlbum.media}">
   <gallery:handleMediaPreview jquerySelector="${'.mediaPreview'}" />
@@ -354,6 +363,10 @@ function CutSelectedMedia() {
 <body>
 <gallery:browseBar albumPath="${path}"/>
 <view:operationPane>
+  <c:if test="${highestUserRole.isGreaterThanOrEquals(adminRole)}">
+    <view:operation altText="${actionLabelManageSubscriptions}" action="ManageAlbumSubscriptions"/>
+    <view:operationSeparator/>
+  </c:if>
   <c:if test="${highestUserRole.isGreaterThanOrEquals(publisherRole)}">
     <%-- Actions on album --%>
     <view:operationOfCreation action="javaScript:openGalleryEditor()" altText="${addAlbumLabel}" icon="${addAlbumIcon}"/>
@@ -416,6 +429,8 @@ function CutSelectedMedia() {
     <c:set var="tmpDesc"><c:out value="${currentAlbum.description}"/></c:set>
     <view:operation action="javaScript:addFavorite($('#breadCrumb').text(),'${silfn:escapeJs(tmpDesc)}','${currentAlbum.link}')" altText="${addFavoriteLabel}" icon="${addFavoriteIcon}"/>
   </c:if>
+  <view:operationSeparator/>
+  <view:operation action="javascript:spSubManager.switchUserSubscription()" altText="<span id='subscriptionMenuLabel'></span>" icon=""/>
   <%-- Private search --%>
   <c:if test="${isPrivateSearch}">
     <view:operationSeparator/>
