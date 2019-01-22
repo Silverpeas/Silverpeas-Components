@@ -29,6 +29,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.util.JSONCodec;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -89,7 +90,7 @@ public class JSONServlet extends HttpServlet {
         operations.put("copyPublications", binOperationsAllowed);
         operations.put("cutPublications", binOperationsAllowed);
         operations.put("deletePublications", binOperationsAllowed);
-      } else {
+      } else if (StringUtil.isDefined(profile)){
         NodeDetail node = kmeliaSC.getNodeHeader(id);
         UserDetail user = kmeliaSC.getUserDetail();
         // general operations

@@ -34,6 +34,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/kmelia" prefix="kmelia" %>
 
 <c:url var="mandatoryFieldUrl" value="/util/icons/mandatoryField.gif"/>
@@ -42,6 +43,8 @@
 
 <c:set var='highestUserRole' value='<%=SilverpeasRole.from((String) request.getAttribute("Profile"))%>'/>
 <view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.admin"/>
+
+<fmt:message key="GML.ForbiddenAccessContent" var="labelForbiddenAccess"/>
 
 <%
 String		rootId				= "0";
@@ -877,7 +880,12 @@ $(document).ready(function() {
     console.info('jstree loaded');
   }).on("ready.jstree", function(event, data) {
     var node = data.instance.get_node('#' + getCurrentFolderId());
-    data.instance.select_node(node);
+    if (node) {
+      data.instance.select_node(node);
+    } else {
+      $('#pubList').html('<div class=\"inlineMessage-nok\">${silfn:escapeJs(labelForbiddenAccess)}</div>');
+      $("#searchZone").css({'display':'none'}); //hide search
+    }
   }).on("select_node.jstree", function(e, data) {
     // data.inst is the instance which triggered this event
     var nodeId = data.node.id;
