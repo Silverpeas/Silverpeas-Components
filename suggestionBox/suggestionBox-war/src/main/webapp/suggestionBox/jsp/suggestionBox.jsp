@@ -85,29 +85,18 @@
   <view:includePlugin name="popup"/>
   <view:includePlugin name="toggle"/>
   <view:includePlugin name="rating"/>
+  <view:includePlugin name="subscription"/>
   <script type="text/javascript" src="${suggestionBoxServicesJS}"></script>
   <script type="application/javascript">
-    function successUnsubscribe() {
-      setSubscriptionMenu('<view:encodeJs string="${subscribeToSuggestionBoxLabel}" />', 'subscribe');
-    }
-
-    function successSubscribe() {
-      setSubscriptionMenu('<view:encodeJs string="${unsubscribeFromSuggestionBoxLabel}" />', 'unsubscribe');
-    }
-    function setSubscriptionMenu(label, actionMethodName) {
-      var $menuLabel = $("#subscriptionMenuLabel");
-      $menuLabel.html(label);
-      $menuLabel.parents('a').attr('href', "javascript:" + actionMethodName + "();");
-    }
-
-    function unsubscribe() {
-      $.post('<c:url value="/services/unsubscribe/${componentId}" />', successUnsubscribe(),
-          'json');
-    }
-
-    function subscribe() {
-      $.post('<c:url value="/services/subscribe/${componentId}" />', successSubscribe(), 'json');
-    }
+    SUBSCRIPTION_PROMISE.then(function() {
+      window.spSubManager = new SilverpeasSubscriptionManager({
+        componentInstanceId : '${componentId}',
+        labels : {
+          subscribe : '${silfn:escapeJs(subscribeToSuggestionBoxLabel)}',
+          unsubscribe : '${silfn:escapeJs(unsubscribeFromSuggestionBoxLabel)}'
+        }
+      });
+    });
   </script>
 </head>
 <body ng-controller="mainController">
@@ -122,14 +111,8 @@
   </c:if>
   <view:operation action="${componentUriBase}suggestions/all" altText="${allSuggestionsLabel}"/>
   <c:if test="${isUserSubscribed != null}">
-    <c:choose>
-      <c:when test="${isUserSubscribed}">
-        <view:operation altText="<span id='subscriptionMenuLabel'>${unsubscribeFromSuggestionBoxLabel}</span>" icon="" action="javascript:unsubscribe();"/>
-      </c:when>
-      <c:otherwise>
-        <view:operation altText="<span id='subscriptionMenuLabel'>${subscribeToSuggestionBoxLabel}</span>" icon="" action="javascript:subscribe();"/>
-      </c:otherwise>
-    </c:choose>
+    <view:operationSeparator/>
+    <view:operation altText="<span id='subscriptionMenuLabel'></span>" icon="" action="javascript:spSubManager.switchUserSubscription()"/>
   </c:if>
 </view:operationPane>
 <view:window>
