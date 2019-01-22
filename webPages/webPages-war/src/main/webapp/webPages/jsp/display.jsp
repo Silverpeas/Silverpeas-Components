@@ -51,9 +51,6 @@
 	context.setBorderPrinted(false);
 
 	boolean operationsVisibles = !action.equals("Portlet") && !isAnonymous;
-
-  String labelSubscribe = resource.getString("GML.subscribe");
-  String labelUnsubscribe = resource.getString("GML.unsubscribe");
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -64,24 +61,11 @@
 <view:includePlugin name="popup"/>
 <view:includePlugin name="preview"/>
 <view:includePlugin name="toggle"/>
+<view:includePlugin name="subscription"/>
 <script type="text/javascript">
-  function addSubscription() {
-    $.post(webContext+"/services/subscribe/<%=componentId%>", successSubscribe(), 'json');
-  }
-
-  function successSubscribe() {
-    // changing label and href of operation on-the-fly
-    $("a[href='javascript:addSubscription()']").first().attr('href', "javascript:removeSubscription()").text("<%=labelUnsubscribe%>");
-  }
-
-  function removeSubscription() {
-    $.post(webContext+"/services/unsubscribe/<%=componentId%>", successUnsubscribe(), 'json');
-  }
-
-  function successUnsubscribe() {
-    //changing label and href of operation on-the-fly
-    $("a[href='javascript:removeSubscription()']").first().attr('href', "javascript:addSubscription()").text("<%=labelSubscribe%>");
-  }
+  SUBSCRIPTION_PROMISE.then(function() {
+    window.spSubManager = new SilverpeasSubscriptionManager('<%=componentId%>');
+  });
 
   function toNotify() {
   	sp.messager.open('<%= componentId %>');
@@ -99,11 +83,8 @@
       operationPane.addLine();
     }
     if (subscriptionEnabled) {
-      if (!isSubscriber) {
-        operationPane.addOperation("useless", labelSubscribe, "javascript:addSubscription()");
-      } else {
-        operationPane.addOperation("useless", labelUnsubscribe, "javascript:removeSubscription()");
-      }
+      operationPane.addLine();
+      operationPane.addOperation("useless", "<span id='subscriptionMenuLabel'></span>", "javascript:spSubManager.switchUserSubscription()");
     }
     operationPane.addOperation("useless", resource.getString("GML.notify"), "javascript:toNotify();");
     operationPane.addOperation("useless", resource.getString("GML.print"), "javascript:print();");

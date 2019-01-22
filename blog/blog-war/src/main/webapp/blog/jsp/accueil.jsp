@@ -59,9 +59,6 @@ WallPaper wallPaper = (WallPaper) request.getAttribute("WallPaper");
 StyleSheet styleSheet = (StyleSheet) request.getAttribute("StyleSheet");
 Date dateCalendar = DateUtil.parse(dateCal);
 
-String labelSubscribe = resource.getString("GML.subscribe");
-String labelUnsubscribe = resource.getString("GML.unsubscribe");
-
 if (SilverpeasRole.admin.equals(SilverpeasRole.valueOf(profile)) || SilverpeasRole.publisher.equals(SilverpeasRole.valueOf(profile))) {
   if (SilverpeasRole.admin.equals(SilverpeasRole.valueOf(profile))) {
     if (isPdcUsed) {
@@ -86,11 +83,7 @@ if (SilverpeasRole.admin.equals(SilverpeasRole.valueOf(profile)) || SilverpeasRo
 }
 
 if (!m_MainSessionCtrl.getCurrentUserDetail().isAccessGuest() && isUserSubscribed != null) {
-  if (!isUserSubscribed) {
-    operationPane.addOperation("useless", labelSubscribe, "javascript:addSubscription()");
-  } else {
-    operationPane.addOperation("useless", labelUnsubscribe, "javascript:removeSubscription()");
-  }
+  operationPane.addOperation("useless", "<span id='subscriptionMenuLabel'></span>", "javascript:spSubManager.switchUserSubscription()");
 }
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -99,11 +92,17 @@ if (!m_MainSessionCtrl.getCurrentUserDetail().isAccessGuest() && isUserSubscribe
 <title><%=componentLabel%></title>
 <view:looknfeel withCheckFormScript="true"/>
 <view:includePlugin name="toggle"/>
+<view:includePlugin name="subscription"/>
 <% if (StringUtil.isDefined(rssURL)) { %>
 <link rel="alternate" type="application/rss+xml" title="<%=componentLabel%> : <%=resource.getString("blog.rssLast")%>" href="<%=m_context+rssURL%>"/>
 <% } %>
 <script type="text/javascript">
 <!--
+
+SUBSCRIPTION_PROMISE.then(function() {
+  window.spSubManager = new SilverpeasSubscriptionManager('<%=instanceId%>');
+});
+
 function openSPWindow(fonction, windowName) {
   pdcUtilizationWindow = SP_openWindow(fonction, windowName, '600', '400','scrollbars=yes, resizable, alwaysRaised');
 }
@@ -112,24 +111,6 @@ function sendData() {
   window.document.searchForm.action = "Search";
   window.document.searchForm.WordSearch.value = document.searchForm.WordSearch.value;
   window.document.searchForm.submit();
-}
-
-function addSubscription() {
-  $.post(webContext+"/services/subscribe/<%=instanceId%>", successSubscribe(), 'json');
-}
-
-function successSubscribe() {
-  // changing label and href of operation on-the-fly
-  $("a[href='javascript:addSubscription()']").first().attr('href', "javascript:removeSubscription()").text("<%=labelUnsubscribe%>");
-}
-
-function removeSubscription() {
-  $.post(webContext+"/services/unsubscribe/<%=instanceId%>", successUnsubscribe(), 'json');
-}
-
-function successUnsubscribe() {
-  //changing label and href of operation on-the-fly
-  $("a[href='javascript:removeSubscription()']").first().attr('href', "javascript:addSubscription()").text("<%=labelSubscribe%>");
 }
 
 function customize() {
