@@ -36,6 +36,15 @@ public class Photo extends InternalMedia {
 
   private Definition definition = Definition.fromZero();
 
+  public Photo() {
+    super();
+  }
+
+  protected Photo(final Photo other) {
+    super(other);
+    this.definition = other.definition;
+  }
+
   @Override
   public MediaType getType() {
     return MediaType.Photo;
@@ -73,5 +82,10 @@ public class Photo extends InternalMedia {
   @Override
   public String getApplicationEmbedUrl(final MediaResolution mediaResolution) {
     return "";
+  }
+
+  @Override
+  public Photo getCopy() {
+    return new Photo(this);
   }
 }

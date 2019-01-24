@@ -24,8 +24,10 @@
 package org.silverpeas.components.gallery.process.media;
 
 import org.silverpeas.components.gallery.dao.MediaDAO;
+import org.silverpeas.components.gallery.model.AlbumMedia;
 import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.components.gallery.model.MediaPK;
+import org.silverpeas.components.gallery.notification.AlbumMediaEventNotifier;
 import org.silverpeas.components.gallery.process.AbstractGalleryDataProcess;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.comment.service.CommentServiceProvider;
@@ -34,6 +36,7 @@ import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.content.form.record.GenericRecordSet;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
+import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.pdc.PdcServiceProvider;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.process.management.ProcessExecutionContext;
@@ -42,6 +45,7 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.sql.SQLException;
+import java.util.Collection;
 
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
@@ -55,6 +59,7 @@ public class GalleryPasteMediaDataProcess extends AbstractGalleryDataProcess {
    * Id of the album (Node)
    */
   private final String albumId;
+  private Collection<String> albumIdsForDeletion;
 
   private final MediaPK fromMediaPk;
   private final boolean isCutted;
@@ -63,6 +68,7 @@ public class GalleryPasteMediaDataProcess extends AbstractGalleryDataProcess {
   private ResourceReference fromResourceReference = null;
   private ResourceReference toResourceReference = null;
   private MediaPK toMediaPK = null;
+  private final Media mediaBeforeChanges;
 
   /**
    * Default hidden constructor
@@ -77,6 +83,7 @@ public class GalleryPasteMediaDataProcess extends AbstractGalleryDataProcess {
     this.albumId = albumId;
     this.fromMediaPk = fromMediaPk;
     this.isCutted = isCutted;
+    this.mediaBeforeChanges = media.getCopy();
   }
 
   /**
@@ -101,6 +108,9 @@ public class GalleryPasteMediaDataProcess extends AbstractGalleryDataProcess {
   @Override
   protected void processData(final ProcessExecutionContext context,
       final ProcessSession session) throws Exception {
+    // Gets the albums
+    albumIdsForDeletion = MediaDAO.getAlbumIdsOf(mediaBeforeChanges);
+    albumIdsForDeletion.remove(albumId);
 
     // Initializing variables
     isSameComponentInstanceDestination =
@@ -212,5 +222,18 @@ public class GalleryPasteMediaDataProcess extends AbstractGalleryDataProcess {
         SilverLogger.getLogger(this).warn(e);
       }
     }
+  }
+
+  @Override
+  public void onSuccessful() throws Exception {
+    super.onSuccessful();
+    final AlbumMediaEventNotifier notifier = AlbumMediaEventNotifier.get();
+    if (isCutted) {
+      for (final String albumIdForDeletion : albumIdsForDeletion) {
+        notifier.notifyEventOn(ResourceEvent.Type.DELETION,
+            new AlbumMedia(albumIdForDeletion, mediaBeforeChanges));
+      }
+    }
+    notifier.notifyEventOn(ResourceEvent.Type.CREATION, new AlbumMedia(albumId, getMedia()));
   }
 }

@@ -28,9 +28,9 @@ import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.silverpeas.components.gallery.constant.MediaResolution;
 import org.silverpeas.components.gallery.constant.MediaType;
+import org.silverpeas.components.gallery.notification.AlbumMediaEventNotifier;
 import org.silverpeas.components.gallery.service.GalleryService;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
@@ -39,8 +39,9 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
-import org.silverpeas.core.test.extention.TestManagedMock;
 import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.extention.TestManagedBeans;
+import org.silverpeas.core.test.extention.TestManagedMock;
 import org.silverpeas.core.util.DateUtil;
 
 import java.sql.Timestamp;
@@ -51,6 +52,7 @@ import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.*;
 
 @EnableSilverTestEnv
+@TestManagedBeans(AlbumMediaEventNotifier.class)
 public class MediaTest {
   private UserDetail userForTest = new UserDetail();
   private UserDetail lastUpdaterForTest = new UserDetail();
@@ -309,6 +311,14 @@ public class MediaTest {
   private static class MediaForTest extends Media {
     private static final long serialVersionUID = 7114643185671416374L;
 
+    public MediaForTest() {
+      super();
+    }
+
+    protected MediaForTest(final Media other) {
+      super(other);
+    }
+
     @Override
     public MediaType getType() {
       return MediaType.Photo;
@@ -327,6 +337,11 @@ public class MediaTest {
     @Override
     public SilverpeasFile getFile(final MediaResolution mediaResolution, final String size) {
       return null;
+    }
+
+    @Override
+    public Media getCopy() {
+      return new MediaForTest(this);
     }
   }
 }

@@ -26,6 +26,7 @@ package org.silverpeas.components.gallery.model;
 
 import org.silverpeas.components.gallery.model.MediaCriteria.VISIBILITY;
 import org.silverpeas.core.node.model.NodeDetail;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -34,6 +35,7 @@ import static org.silverpeas.components.gallery.service.MediaServiceProvider.get
 
 public class AlbumDetail extends NodeDetail {
 
+  public static final String RESOURCE_TYPE = "Album";
   private static final long serialVersionUID = 1L;
   private VISIBILITY mediaVisibility = VISIBILITY.BY_DEFAULT;
   private List<Media> media = null;
@@ -97,4 +99,13 @@ public class AlbumDetail extends NodeDetail {
    return albums;
   }
 
+  @Override
+  public boolean equals(final Object other) {
+    return super.equals(other);
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
+  }
 }

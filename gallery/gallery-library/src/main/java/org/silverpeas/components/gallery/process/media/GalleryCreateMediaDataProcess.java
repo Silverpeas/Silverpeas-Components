@@ -25,9 +25,12 @@ package org.silverpeas.components.gallery.process.media;
 
 import org.silverpeas.components.gallery.GalleryComponentSettings;
 import org.silverpeas.components.gallery.delegate.MediaDataCreateDelegate;
+import org.silverpeas.components.gallery.model.AlbumMedia;
 import org.silverpeas.components.gallery.model.Media;
+import org.silverpeas.components.gallery.notification.AlbumMediaEventNotifier;
 import org.silverpeas.components.gallery.process.AbstractGalleryDataProcess;
 import org.silverpeas.core.contribution.content.form.PagesContext;
+import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.process.management.ProcessExecutionContext;
@@ -122,5 +125,12 @@ public class GalleryCreateMediaDataProcess extends AbstractGalleryDataProcess {
         curClassification.classifyContent(getMedia());
       }
     }
+  }
+
+  @Override
+  public void onSuccessful() throws Exception {
+    super.onSuccessful();
+    final AlbumMediaEventNotifier notifier = AlbumMediaEventNotifier.get();
+    notifier.notifyEventOn(ResourceEvent.Type.CREATION, new AlbumMedia(albumId, getMedia()));
   }
 }

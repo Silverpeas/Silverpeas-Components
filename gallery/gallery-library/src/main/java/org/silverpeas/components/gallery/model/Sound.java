@@ -34,6 +34,16 @@ public class Sound extends InternalMedia {
   private long bitrate = 0;
   private long duration = 0;
 
+  public Sound() {
+    super();
+  }
+
+  protected Sound(final Sound other) {
+    super(other);
+    this.bitrate = other.bitrate;
+    this.duration = other.duration;
+  }
+
   @Override
   public MediaType getType() {
     return MediaType.Sound;
@@ -77,5 +87,10 @@ public class Sound extends InternalMedia {
    */
   public static String getResourceType() {
     return MediaType.Sound.name();
+  }
+
+  @Override
+  public Sound getCopy() {
+    return new Sound(this);
   }
 }

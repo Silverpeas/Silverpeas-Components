@@ -322,7 +322,6 @@ public class DefaultGalleryService implements GalleryService {
     }
   }
 
-  @SuppressWarnings("EjbProhibitedPackageUsageInspection")
   @Override
   @Transactional(Transactional.TxType.SUPPORTS)
   public void importFromRepository(final UserDetail user, final String componentInstanceId,
