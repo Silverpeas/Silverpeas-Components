@@ -24,9 +24,11 @@
 package org.silverpeas.components.gallery.process.media;
 
 import org.silverpeas.components.gallery.dao.MediaDAO;
+import org.silverpeas.components.gallery.model.AlbumMedia;
 import org.silverpeas.components.gallery.model.GalleryRuntimeException;
 import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.components.gallery.model.MediaPK;
+import org.silverpeas.components.gallery.notification.AlbumMediaEventNotifier;
 import org.silverpeas.components.gallery.process.AbstractGalleryDataProcess;
 import org.silverpeas.core.comment.service.CommentServiceProvider;
 import org.silverpeas.core.contribution.content.form.DataRecord;
@@ -34,8 +36,11 @@ import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
+import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.process.management.ProcessExecutionContext;
 import org.silverpeas.core.process.session.ProcessSession;
+
+import java.util.Collection;
 
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
@@ -44,6 +49,8 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
  * @author Yohann Chastagnier
  */
 public class GalleryDeleteMediaDataProcess extends AbstractGalleryDataProcess {
+
+  private Collection<String> albumIds;
 
   /**
    * Default hidden constructor
@@ -71,6 +78,10 @@ public class GalleryDeleteMediaDataProcess extends AbstractGalleryDataProcess {
   @Override
   protected void processData(final ProcessExecutionContext context,
       final ProcessSession session) throws Exception {
+    // Gets the albums
+    albumIds = MediaDAO.getAlbumIdsOf(getMedia());
+
+    // Deletes the media
     MediaDAO.deleteMedia(getMedia());
 
     // Delete form data
@@ -109,6 +120,15 @@ public class GalleryDeleteMediaDataProcess extends AbstractGalleryDataProcess {
       }
     } catch (final PublicationTemplateException | FormException e) {
       throw new GalleryRuntimeException(e);
+    }
+  }
+
+  @Override
+  public void onSuccessful() throws Exception {
+    super.onSuccessful();
+    final AlbumMediaEventNotifier notifier = AlbumMediaEventNotifier.get();
+    for (final String albumId : albumIds) {
+      notifier.notifyEventOn(ResourceEvent.Type.DELETION, new AlbumMedia(albumId, getMedia()));
     }
   }
 }

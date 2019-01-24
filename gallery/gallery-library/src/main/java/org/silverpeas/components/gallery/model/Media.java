@@ -28,6 +28,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.components.gallery.constant.GalleryResourceURIs;
 import org.silverpeas.components.gallery.constant.MediaResolution;
 import org.silverpeas.components.gallery.constant.MediaType;
+import org.silverpeas.components.gallery.notification.AlbumMediaEventNotifier;
 import org.silverpeas.components.gallery.service.MediaServiceProvider;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
@@ -35,15 +36,21 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
 import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.io.file.SilverpeasFile;
+import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.process.io.file.FileBasePath;
+import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * This class represents a Media and provides all the common data.
@@ -70,6 +77,25 @@ public abstract class Media implements SilverContentInterface, Serializable {
 
   public Media() {
     mediaPK = new MediaPK(null);
+  }
+
+  protected Media(final Media other) {
+    if (other.mediaPK != null) {
+      this.mediaPK = new MediaPK(other.mediaPK.getId(), other.mediaPK.getInstanceId());
+    }
+    this.title = other.title;
+    this.description = other.description;
+    this.author = other.author;
+    this.keyWord = other.keyWord;
+    this.visibilityPeriod = other.visibilityPeriod;
+    this.createDate = other.createDate;
+    this.createdBy = other.createdBy;
+    this.creator = other.creator;
+    this.lastUpdateDate = other.lastUpdateDate;
+    this.lastUpdatedBy = other.lastUpdatedBy;
+    this.lastUpdater = other.lastUpdater;
+    this.silverpeasContentId = other.silverpeasContentId;
+    this.iconUrl = other.iconUrl;
   }
 
   public MediaPK getMediaPK() {
@@ -506,8 +532,24 @@ public abstract class Media implements SilverContentInterface, Serializable {
    * @param albumIds the identifier of albums.
    */
   public void setToAlbums(String... albumIds) {
+    final Collection<String> previousAlbumIds = MediaServiceProvider.getMediaService().getAlbumIdsOf(this);
+    final List<String> newAlbumIdsToNotify = Stream
+        .of(albumIds)
+        .filter(i -> !previousAlbumIds.contains(i))
+        .collect(Collectors.toList());
+    final List<String> oldAlbumIdsToNotify = previousAlbumIds
+        .stream()
+        .filter(i -> ArrayUtil.indexOf(albumIds, i) < 0)
+        .collect(Collectors.toList());
     removeFromAllAlbums();
     addToAlbums(albumIds);
+    final AlbumMediaEventNotifier notifier = AlbumMediaEventNotifier.get();
+    for (final String albumId : oldAlbumIdsToNotify) {
+      notifier.notifyEventOn(ResourceEvent.Type.DELETION, new AlbumMedia(albumId, this));
+    }
+    for (final String albumId : newAlbumIdsToNotify) {
+      notifier.notifyEventOn(ResourceEvent.Type.CREATION, new AlbumMedia(albumId, this));
+    }
   }
 
   /**
@@ -521,4 +563,10 @@ public abstract class Media implements SilverContentInterface, Serializable {
             .getUserProfiles(user.getId(), getComponentInstanceId()));
     return SilverpeasRole.getHighestFrom(userRoles);
   }
+
+  /**
+   * Creates a copy of the instance.
+   * @return the new instance.
+   */
+  public abstract Media getCopy();
 }

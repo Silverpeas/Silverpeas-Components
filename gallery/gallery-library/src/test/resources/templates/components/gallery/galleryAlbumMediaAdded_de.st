@@ -1,0 +1,1 @@
+Dem Album <b>$path$</b> wurde $if(severalMedia)$Medien$else$ein Medium$endif$ hinzugefügt.

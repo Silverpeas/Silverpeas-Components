@@ -23,9 +23,6 @@
  */
 package org.silverpeas.components.gallery.model;
 
-import org.silverpeas.components.gallery.GalleryWarBuilder;
-import org.silverpeas.components.gallery.constant.MediaMimeType;
-import org.silverpeas.components.gallery.constant.MediaType;
 import org.apache.commons.lang3.time.DateUtils;
 import org.hamcrest.Matchers;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -33,6 +30,9 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.components.gallery.GalleryWarBuilder;
+import org.silverpeas.components.gallery.constant.MediaMimeType;
+import org.silverpeas.components.gallery.constant.MediaType;
 import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.util.DateUtil;
 
@@ -165,9 +165,22 @@ public class InternalMediaIT {
   private class InternalMediaForTest extends InternalMedia {
     private static final long serialVersionUID = -5052581924414692298L;
 
+    public InternalMediaForTest() {
+      super();
+    }
+
+    public InternalMediaForTest(final InternalMediaForTest other) {
+      super(other);
+    }
+
     @Override
     public MediaType getType() {
       return MediaType.Unknown;
+    }
+
+    @Override
+    public Media getCopy() {
+      return new InternalMediaForTest(this);
     }
   }
 }

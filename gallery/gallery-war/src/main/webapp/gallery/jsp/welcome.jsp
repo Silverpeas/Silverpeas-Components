@@ -199,7 +199,7 @@ SUBSCRIPTION_PROMISE.then(function() {
     <view:operation action="javascript:onClick=openSPWindow('${tmpUrl}','utilizationPdc1')" altText="${pdcLabel}" icon="${pdcIcon}"/>
   </c:if>
   <c:if test="${highestUserRole.isGreaterThanOrEquals(adminRole)}">
-    <view:operation altText="${actionLabelManageSubscriptions}" action="ManageSubscriptions"/>
+    <view:operation altText="${actionLabelManageSubscriptions}" action="ManageComponentSubscriptions"/>
   </c:if>
   <view:operationSeparator/>
   <c:if test="${highestUserRole.isGreaterThanOrEquals(publisherRole)}">

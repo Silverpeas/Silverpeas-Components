@@ -1,0 +1,1 @@
+$if(severalMedia)$Media have$else$A media has$endif$ been added into album <b>$path$</b>.

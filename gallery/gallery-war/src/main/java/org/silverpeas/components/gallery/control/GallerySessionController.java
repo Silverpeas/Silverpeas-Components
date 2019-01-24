@@ -1387,7 +1387,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     return pub;
   }
 
-  public String manageSubscriptions() {
+  public String manageComponentSubscriptions() {
     final SubscriptionContext subscriptionContext = getSubscriptionContext();
     subscriptionContext.initialize(ComponentSubscriptionResource.from(getComponentId()));
     return subscriptionContext.getDestinationUrl();
