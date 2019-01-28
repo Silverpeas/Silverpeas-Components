@@ -405,7 +405,7 @@ List<String> displayQuestionResult(QuestionContainerDetail quizz, Question quest
 					r += "</td>";
 					if (solutionAllowed){
    						r += "</tr><tr>";
-						r += "<td align=\"left\" colspan=2>";
+						r += "<td align=\"left\" colspan=\"3\">";
 						r += "<b>"+WebEncodeHelper.javaStringToHtmlParagraphe(answer.getComment())+"</b></td>";
 					}
 				}
