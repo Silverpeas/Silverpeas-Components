@@ -119,7 +119,7 @@
       });
     }
     function manageLocations() {
-      displaySingleFreePopupFrom('<c:url value="${silfn:componentURL(componentId)}/AccessPath?MediaId=${mediaId}"/>', {
+      jQuery.popup.load('<c:url value="${silfn:componentURL(componentId)}/AccessPath?MediaId=${mediaId}"/>').show('free', {
         title : '${manageLocationLabel}'
       });
     }

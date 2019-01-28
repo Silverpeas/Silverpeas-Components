@@ -85,7 +85,8 @@
     }
 
     function launchSQLRequestEditor() {
-      displaySingleFreePopupFrom('${requestScope.editorUrl}', {
+      window.requestEditorDialog = jQuery.popup.load('${requestScope.editorUrl}');
+      window.requestEditorDialog.show('free', {
         title: '${popupTitle}',
         closeOnEscape: true,
         resizable: true,

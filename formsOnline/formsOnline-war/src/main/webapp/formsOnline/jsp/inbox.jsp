@@ -104,7 +104,7 @@
       }
 
       $("#link-export").click(function() {
-        displaySingleFreePopupFrom("Export", {
+        jQuery.popup.load("Export").show('free', {
           title : '${silfn:escapeJs(labelExport)}'
         });
       });

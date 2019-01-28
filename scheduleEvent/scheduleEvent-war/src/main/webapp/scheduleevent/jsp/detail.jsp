@@ -80,7 +80,7 @@
 	}
 
   function exportICal() {
-    displaySingleFreePopupFrom('<c:url value="/Rscheduleevent/jsp/ExportToICal"/>', {
+    jQuery.popup.load('<c:url value="/Rscheduleevent/jsp/ExportToICal"/>').show('free', {
       title : '${silfn:escapeJs(scheduleEventDetail.title)}',
       width : '500'
     });

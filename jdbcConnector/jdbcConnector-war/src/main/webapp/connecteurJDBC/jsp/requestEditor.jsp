@@ -183,11 +183,11 @@
       query += ' where ' + criteria.join(' and ');
     }
     $('#SQLReq').val(query.trim());
-    closeSingleFreePopup();
+    window.requestEditorDialog.close();
   }
 
   function close() {
-    closeSingleFreePopup();
+    window.requestEditorDialog.close();
   }
 
   function addCriterion() {
