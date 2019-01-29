@@ -2127,30 +2127,30 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     try {
       Field field = instance.getFullProcessInstance().getField(fieldName);
       fieldString = field.getValue(getLanguage());
-      if (StringUtil.isDefined(fieldString) && field.getTypeName().equals(DateField.TYPE)) {
-        // do nothing
-      } else {
+      if (!StringUtil.isDefined(fieldString) || !field.getTypeName().equals(DateField.TYPE)) {
         ItemImpl item = (ItemImpl) getItem(items, fieldName);
         if (item != null) {
           Hashtable<String, String> keyValuePairs = item.getKeyValuePairs();
           if (keyValuePairs != null && keyValuePairs.size() > 0) {
             String newValue = "";
-            if (fieldString.indexOf("##") != -1) {
-              // Try to display a checkbox list
-              StringTokenizer tokenizer = new StringTokenizer(fieldString, "##");
-              String t = null;
-              while (tokenizer.hasMoreTokens()) {
-                t = tokenizer.nextToken();
+            if (StringUtil.isDefined(fieldString)) {
+              if (fieldString.contains("##")) {
+                // Try to display a checkbox list
+                StringTokenizer tokenizer = new StringTokenizer(fieldString, "##");
+                String t = null;
+                while (tokenizer.hasMoreTokens()) {
+                  t = tokenizer.nextToken();
 
-                t = keyValuePairs.get(t);
-                newValue += t;
+                  t = keyValuePairs.get(t);
+                  newValue += t;
 
-                if (tokenizer.hasMoreTokens()) {
-                  newValue += ", ";
+                  if (tokenizer.hasMoreTokens()) {
+                    newValue += ", ";
+                  }
                 }
+              } else {
+                newValue = keyValuePairs.get(fieldString);
               }
-            } else if (fieldString != null && fieldString.length() > 0) {
-              newValue = keyValuePairs.get(fieldString);
             }
             fieldString = newValue;
           }
