@@ -537,7 +537,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
       if (fatherPKs != null) {
         // For each topic, get the path to it
         for (NodePK pk : fatherPKs) {
-          Collection<NodeDetail> path = nodeService.getAnotherPath(pk);
+          Collection<NodeDetail> path = nodeService.getPath(pk);
           // add this path
           pathList.add(path);
         }

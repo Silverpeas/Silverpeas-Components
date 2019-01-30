@@ -29,7 +29,6 @@ import org.silverpeas.components.yellowpages.YellowpagesException;
 import org.silverpeas.components.yellowpages.model.TopicDetail;
 import org.silverpeas.components.yellowpages.model.UserContact;
 import org.silverpeas.components.yellowpages.model.YellowPagesGroupDetail;
-import org.silverpeas.components.yellowpages.model.YellowpagesRuntimeException;
 import org.silverpeas.components.yellowpages.service.YellowpagesService;
 import org.silverpeas.core.admin.component.model.CompoSpace;
 import org.silverpeas.core.admin.component.model.GlobalContext;
@@ -55,7 +54,6 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.exception.UtilTrappedException;
 import org.silverpeas.core.index.search.SearchEngineProvider;
 import org.silverpeas.core.index.search.model.MatchingIndexEntry;
@@ -91,8 +89,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.MissingResourceException;
 
-import static org.silverpeas.components.yellowpages.YellowpagesComponentSettings
-    .areUserExtraDataRequired;
+import static org.silverpeas.components.yellowpages.YellowpagesComponentSettings.areUserExtraDataRequired;
 import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnGetting;
 
 public class YellowpagesSessionController extends AbstractComponentSessionController {
@@ -201,7 +198,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
 
   public TopicDetail getTopic(String id) {
     TopicDetail topic = getYellowpagesService().goTo(getNodePK(id), getUserId());
-    List<NodeDetail> thePath = (List<NodeDetail>) getNodeBm().getAnotherPath(getNodePK(id));
+    List<NodeDetail> thePath = (List<NodeDetail>) getNodeService().getPath(getNodePK(id));
     Collections.reverse(thePath);
     topic.setPath(thePath);
     return topic;
@@ -353,7 +350,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     if (contacts != null) {
       // get users of groups contained in subtree
       List<NodeDetail> tree =
-          getNodeBm().getSubTree(new NodePK(fatherPK.getId(), getComponentId()));
+          getNodeService().getSubTree(new NodePK(fatherPK.getId(), getComponentId()));
       for (int t = 0; tree != null && t < tree.size(); t++) {
         NodeDetail node = tree.get(t);
         contacts.addAll(getAllUsers(node.getNodePK().getId()));
@@ -794,13 +791,8 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     this.portletMode = portletMode;
   }
 
-  public NodeService getNodeBm() {
-    try {
-      return NodeService.get();
-    } catch (Exception re) {
-      throw new YellowpagesRuntimeException("YellowpagesSessionController.getNodeService()",
-          SilverpeasRuntimeException.ERROR, "yellowpages.EX_GET_NODEBM_HOME_FAILED", re);
-    }
+  public NodeService getNodeService() {
+    return NodeService.get();
   }
 
   public int getNbContactPerPage() {
@@ -912,7 +904,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     ContactDetail contact = contactFatherDetail.getContactDetail();
     try {
       modelId =
-          getNodeBm().getDetail(new NodePK(contactFatherDetail.getNodeId(), getComponentId()))
+          getNodeService().getDetail(new NodePK(contactFatherDetail.getNodeId(), getComponentId()))
               .getModelId();
       if (StringUtil.isDefined(modelId) && modelId.endsWith(".xml")) {
         String xmlFormName = modelId;

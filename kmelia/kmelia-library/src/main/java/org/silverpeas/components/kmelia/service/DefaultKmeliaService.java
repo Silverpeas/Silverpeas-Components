@@ -926,7 +926,7 @@ public class DefaultKmeliaService implements KmeliaService {
       if (fatherPKs != null) {
         // For each topic, get the path to it
         for (NodePK pk : fatherPKs) {
-          Collection<NodeDetail> path = nodeService.getAnotherPath(pk);
+          Collection<NodeDetail> path = nodeService.getPath(pk);
           // add this path
           pathList.add(path);
         }
@@ -3202,8 +3202,10 @@ public class DefaultKmeliaService implements KmeliaService {
   public NodePK addAxis(NodeDetail axis, String componentId) {
     NodePK axisPK = new NodePK("toDefine", componentId);
     NodeDetail rootDetail =
-        new NodeDetail(new NodePK("0"), "Root", "desc", UNKNOWN, UNKNOWN, "/0", 1,
-            new NodePK("-1"), null);
+        new NodeDetail("0", "Root", "desc", 1,"-1");
+    rootDetail.setCreationDate(UNKNOWN);
+    rootDetail.setCreatorId(UNKNOWN);
+    rootDetail.setPath("/0");
     rootDetail.setStatus(NodeDetail.STATUS_VISIBLE);
     axis.setNodePK(axisPK);
     CoordinatePK coordinatePK = new CoordinatePK(USELESS, axisPK);
@@ -4425,7 +4427,7 @@ public class DefaultKmeliaService implements KmeliaService {
 
     // paste topic
     NodePK nodePK = new NodePK(UNKNOWN, targetPK);
-    NodeDetail node = nodeToCopy.clone();
+    NodeDetail node = new NodeDetail(nodeToCopy);
     node.setNodePK(nodePK);
     node.setCreatorId(userId);
     node.setRightsDependsOn(father.getRightsDependsOn());
