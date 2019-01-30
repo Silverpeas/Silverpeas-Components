@@ -2512,9 +2512,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     List<String> languages = new ArrayList<>();
     PublicationDetail pubDetail = getSessionPubliOrClone().getDetail();
     // get publicationdetail languages
-    Iterator<String> itLanguages = pubDetail.getLanguages();
-    while (itLanguages.hasNext()) {
-      languages.add(itLanguages.next());
+    Collection<String> pubLanguages = pubDetail.getLanguages();
+    for (String language : pubLanguages) {
+      languages.add(language);
     }
 
     if (languages.size() == I18NHelper.getNumberOfLanguages()) {

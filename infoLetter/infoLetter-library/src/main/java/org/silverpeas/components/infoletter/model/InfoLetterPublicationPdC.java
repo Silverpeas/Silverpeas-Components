@@ -28,7 +28,8 @@ import org.silverpeas.components.infoletter.InfoLetterContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
 import org.silverpeas.core.util.ServiceProvider;
 
-import java.util.Iterator;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * @author lbertin
@@ -121,8 +122,8 @@ public class InfoLetterPublicationPdC extends InfoLetterPublication
   }
 
   @Override
-  public Iterator<String> getLanguages() {
-    return null;
+  public Collection<String> getLanguages() {
+    return Collections.emptyList();
   }
 
   @Override
@@ -141,5 +142,15 @@ public class InfoLetterPublicationPdC extends InfoLetterPublication
   @Override
   public String getContributionType() {
     return TYPE;
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    return super.equals(o);
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
   }
 }

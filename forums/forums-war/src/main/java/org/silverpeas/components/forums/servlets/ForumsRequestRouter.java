@@ -150,7 +150,7 @@ public class ForumsRequestRouter extends ComponentRequestRouter<ForumsSessionCon
         String name = request.getParameter("Name");
         String description = request.getParameter("Description");
         NodeDetail category =
-            new NodeDetail("unknown", name, description, null, null, null, "0", "unknown");
+            new NodeDetail("unknown", name, description, 0, "unknown");
         forumsSC.createCategory(category);
 
         destination = getDestination("ViewCategory", forumsSC, request);

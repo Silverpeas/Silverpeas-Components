@@ -45,8 +45,8 @@ import org.silverpeas.core.util.URLUtil;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -426,8 +426,8 @@ public abstract class Media implements SilverContentInterface, Serializable {
   }
 
   @Override
-  public Iterator<String> getLanguages() {
-    return null;
+  public Collection<String> getLanguages() {
+    return Collections.emptyList();
   }
 
   public String toString() {
@@ -438,10 +438,6 @@ public abstract class Media implements SilverContentInterface, Serializable {
   public boolean equals(Object o) {
     if (o instanceof Media) {
       Media anotherPhoto = (Media) o;
-      return getMediaPK().equals(anotherPhoto.getMediaPK());
-    } else if (o instanceof PhotoDetail) {
-      // TODO this case must be deleted after the end of work of Gallery to Media migration
-      PhotoDetail anotherPhoto = (PhotoDetail) o;
       return getMediaPK().equals(anotherPhoto.getMediaPK());
     }
     return false;

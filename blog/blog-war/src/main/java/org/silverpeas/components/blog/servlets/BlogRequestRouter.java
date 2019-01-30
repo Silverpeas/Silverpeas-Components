@@ -281,7 +281,7 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         String name = request.getParameter("Name");
         String description = request.getParameter("Description");
         NodeDetail node =
-            new NodeDetail("unknown", name, description, null, null, null, "0", "unknown");
+            new NodeDetail("unknown", name, description, 0, "unknown");
         Category category = new Category(node);
         blogSC.createCategory(category);
 

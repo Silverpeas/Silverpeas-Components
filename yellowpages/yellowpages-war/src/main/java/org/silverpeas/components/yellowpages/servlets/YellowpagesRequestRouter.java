@@ -240,7 +240,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
         String description = request.getParameter("Description");
         String modelId = request.getParameter("FormId");
 
-        NodeDetail topic = new NodeDetail("-1", name, description, null, null, null, "0", "X");
+        NodeDetail topic = new NodeDetail("-1", name, description, 0, "X");
         topic.setModelId(modelId);
 
         scc.addSubTopic(topic);
@@ -262,7 +262,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
         String description = request.getParameter("Description");
         String modelId = request.getParameter("FormId");
 
-        NodeDetail topic = new NodeDetail(id, name, description, null, null, null, "0", "X");
+        NodeDetail topic = new NodeDetail(id, name, description, 0, "X");
         topic.setModelId(modelId);
 
         scc.updateTopicHeader(topic);

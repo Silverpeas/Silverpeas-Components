@@ -89,6 +89,8 @@ public class DefaultGalleryService implements GalleryService {
   private OrganizationController organizationController;
   @Inject
   private GalleryContentManager galleryContentManager;
+  @Inject
+  private NodeDAO nodeDAO;
 
   @Override
   public Media getContentById(final String contentId) {
@@ -733,7 +735,7 @@ public class DefaultGalleryService implements GalleryService {
   @Override
   public void sortAlbums(final List<NodePK> nodePKs) {
     try (final Connection con = openConnection()) {
-      NodeDAO.sortNodes(con, nodePKs);
+      nodeDAO.sortNodes(con, nodePKs);
     } catch (final SQLException e) {
       throw new GalleryRuntimeException(e);
     }
