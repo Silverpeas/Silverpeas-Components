@@ -21,6 +21,7 @@
 package org.silverpeas.components.kmelia.service;
 
 import org.silverpeas.components.kmelia.KmeliaCopyDetail;
+import org.silverpeas.components.kmelia.KmeliaPasteDetail;
 import org.silverpeas.components.kmelia.model.KmeliaPublication;
 import org.silverpeas.components.kmelia.model.TopicDetail;
 import org.silverpeas.core.ApplicationService;
@@ -364,11 +365,9 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
 
   void draftInPublication(PublicationPK pubPK, String userId);
 
-  void movePublication(PublicationPK pubPK, NodePK to, String userId);
+  void movePublication(PublicationPK pubPK, NodePK to, KmeliaPasteDetail pasteContext);
 
-  void movePublicationInSameApplication(PublicationPK pubPK, NodePK from, NodePK to, String userId);
-
-  void movePublicationInAnotherApplication(PublicationDetail pub, NodePK to, String userId);
+  void movePublicationInSameApplication(PublicationPK pubPK, NodePK from, KmeliaPasteDetail pasteContext);
 
   /**
    * alert that an external elements of publication (wysiwyg, attachment, versioning) has been
@@ -667,7 +666,7 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
 
   PublicationPK copyPublication(PublicationDetail publi, KmeliaCopyDetail copyDetail);
 
-  NodeDetail moveNode(NodePK nodePK, NodePK to, String userId);
+  NodeDetail moveNode(NodePK nodePK, NodePK to, KmeliaPasteDetail pasteContext);
 
   List<KmeliaPublication> filterPublications(List<KmeliaPublication> publications,
       String instanceId, SilverpeasRole profile, String userId);
@@ -677,4 +676,6 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
   void userHaveBeenDeleted(String userId);
 
   public void onDocumentDeletion(AttachmentRef attachment);
+
+  public List<String> getActiveValidatorIds(PublicationPK pk);
 }

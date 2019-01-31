@@ -45,16 +45,14 @@
 
 <view:setConstant var="writerRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.writer"/>
 <jsp:useBean id="writerRole" type="org.silverpeas.core.admin.user.model.SilverpeasRole"/>
-<c:if test="${highestUserRole.isGreaterThanOrEquals(writerRole)}">
 
   <c:set var="targetValidationEnabled" value="${kmeliaCtrl.targetValidationEnable || kmeliaCtrl.targetMultiValidationEnable}"/>
-  <c:set var="validationMandatory" value="${targetValidationEnabled && highestUserRole.equals(writerRole)}"/>
   <c:set var="draftEnabled" value="${kmeliaCtrl.draftEnabled}"/>
   <fmt:message var="ValidatorLabel" key="kmelia.Valideur"/>
 
     <div id="pasteDialog" class="form-container" style="display: none;">
       <div id="pasteCaption"><fmt:message key="kmelia.paste.popin.caption"/></div>
-      <c:if test="${draftEnabled}">
+      <div id="paste-draft">
         <br/>
         <span class="label"><fmt:message key="PubState"/></span>
         <div>
@@ -63,8 +61,8 @@
           <input value="NotDraft" type="radio" name="PastePublicationState" id="PastePublishedState"/>
           <label for="PastePublishedState"><fmt:message key="PubStatePublished"/></label>
         </div>
-      </c:if>
-      <c:if test="${validationMandatory}">
+      </div>
+      <div id="paste-validators">
         <c:set var="oneValidator" value="${kmeliaCtrl.targetValidationEnable}"/>
         <c:url var="validatorIcon" value="/util/icons/user.gif"/>
         <br/>
@@ -81,53 +79,69 @@
           </c:choose>
           <input type="hidden" name="ValideurId" id="ValideurId" value=""/>
           <fmt:message var="selectLabel" key="kmelia.SelectValidator"/>
-          <a href="#" onclick="javascript:SP_openWindow('SelectValidator','selectUser',800,600,'');">
+          <a href="#">
             <img src="${validatorIcon}" width="15" height="15" border="0" alt="${selectLabel}" title="${selectLabel}" align="absmiddle"/>
           </a>
         </div>
-      </c:if>
+      </div>
     </div>
 
     <script type="text/JavaScript">
       function checkOnPaste(folderId) {
-        if (${draftEnabled} || ${validationMandatory}) {
-          var url = "<c:url value="/KmeliaAJAXServlet?Action=IsClipboardContainsCopiedItems&ComponentId=${componentInstanceId}"/>";
-          silverpeasAjax(url).then(function(request) {
-            var result = request.responseText;
-            if (result === "true") {
-              // some items are copied
-              displayPasteDialog(folderId);
-            } else {
-              sendPasteAction(folderId, "");
-            }
-          });
+        var currentUserProfile = getUserProfile(folderId);
+        var draftEnabled = ${draftEnabled};
+        var validatorsMustBeSet = ${targetValidationEnabled} && (currentUserProfile === "writer");
+        var params = {
+          "dnd" : false,
+          "targetId" : folderId
+        };
+        if (draftEnabled || validatorsMustBeSet) {
+          displayPasteDialog(draftEnabled, validatorsMustBeSet, params);
         } else {
-          sendPasteAction(folderId, "");
+          sendPasteAction(folderId, extraParams);
         }
       }
 
-      function displayPasteDialog(folderId){
+      function displayPasteDialog(draftEnabled, validatorsMustBeSet, params){
+        if (validatorsMustBeSet) {
+          $("#paste-validators").show();
+          $("#paste-validators a").click(function() {
+            SP_openWindow('SelectValidator?FolderId='+params.targetId,'selectUser',800,600,'');
+          });
+        } else {
+          $("#paste-validators").hide();
+        }
+        if (draftEnabled) {
+          $("#paste-draft").show();
+        } else {
+          $("#paste-draft").hide();
+        }
+
         jQuery('#pasteDialog').popup('validation', {
           title : '<fmt:message key="kmelia.paste.popin.title" />',
           buttonDisplayed : true,
           isMaxWidth : true,
           callback : function() {
             var extraParams = "";
-            <c:if test="${draftEnabled}">
+            if (draftEnabled) {
               var state = jQuery('input[name=PastePublicationState]:checked', this).val();
               extraParams += "&State=" + state;
-            </c:if>
-            <c:if test="${validationMandatory}">
+            }
+            if (validatorsMustBeSet) {
               var userId = jQuery('#ValideurId', this).val();
               if (StringUtil.isNotDefined(userId)) {
                 SilverpeasError.add("<fmt:message key="GML.thefield"/> <b>${ValidatorLabel}</b> <fmt:message key="GML.MustBeFilled"/>");
               } else {
                 extraParams += "&ValidatorIds=" + userId;
               }
-            </c:if>
+            }
 
             if (!SilverpeasError.show()) {
-              sendPasteAction(folderId, extraParams);
+              if (params.dnd) {
+                sendMovePublication(params, extraParams);
+              } else {
+                sendPasteAction(params.targetId, extraParams);
+              }
               return true;
             }
             return false;
@@ -157,4 +171,3 @@
         });
       }
     </script>
-</c:if>
