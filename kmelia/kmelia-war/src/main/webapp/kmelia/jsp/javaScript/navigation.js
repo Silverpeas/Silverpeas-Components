@@ -918,23 +918,43 @@ function _updateTopicStatus(nodeId, status, recursive) {
   }, 'text');
 }
 
-function movePublication(id, sourceId, targetId) {
+function movePublication(id, sourceId, targetId, targetValidationEnabled) {
+  var params = {
+    "dnd" : true,
+    "pubId" : id,
+    "sourceId" : sourceId,
+    "targetId" : targetId
+  };
+  var currentUserProfile = getUserProfile(targetId);
+  var validatorsMustBeSet = targetValidationEnabled && (currentUserProfile === "writer");
+  if (validatorsMustBeSet) {
+    displayPasteDialog(false, validatorsMustBeSet, params);
+  } else {
+    sendMovePublication(params);
+  }
+}
+
+function sendMovePublication(params, extraParams) {
   var componentId = getComponentId();
-  var url = getWebContext() + '/KmeliaAJAXServlet';
-  $.post(url, {Id: id, SourceNodeId: sourceId, TargetNodeId: targetId, ComponentId: componentId, Action: 'MovePublication'},
-  function(data) {
-    //data = "erreur en votre faveur zlekfj kjf kjh kjsdh fkjshdjfkhsdjkhf fjkshd kjfhsd kjfhsdkjhf"
-    if (data === "ok") {
-      // fires event
+  var targetId = params.targetId;
+  var pubId = params.pubId;
+  var url = getWebContext() + '/KmeliaAJAXServlet?Action=MovePublication&ComponentId='+componentId;
+  url += "&Id="+pubId+"&SourceNodeId="+params.sourceId+"&TargetNodeId="+targetId;
+  if (StringUtil.isDefined(extraParams)) {
+    url += extraParams;
+  }
+  silverpeasAjax(url).then(function(request) {
+    var result = request.responseText;
+    if (result === "ok") {
       try {
-        publicationMovedSuccessfully(id, targetId);
+        publicationMovedSuccessfully(pubId, targetId);
       } catch (e) {
         writeInConsole(e);
       }
     } else {
-      publicationMovedInError(id, data);
+      publicationMovedInError(pubId, result);
     }
-  }, 'text');
+  });
 }
 
 function setDataInFolderDialog(name, desc) {

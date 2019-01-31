@@ -46,8 +46,7 @@ public enum AjaxOperation {
   MovePublication(new MovePublicationHandler(), true),
   DeletePublications(new DeletePublicationsHandler(), true),
   CopyPublications(new CopyPublicationsHandler(), true),
-  CutPublications(new CutPublicationsHandler(), true),
-  IsClipboardContainsCopiedItems(new IsClipboardContainsCopiedItemsHandler(), true);
+  CutPublications(new CutPublicationsHandler(), true);
 
   private AjaxHandler handler;
   private boolean controllerRequired;

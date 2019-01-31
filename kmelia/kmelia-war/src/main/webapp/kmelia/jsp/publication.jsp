@@ -153,21 +153,25 @@
     if (pubDetail.isRefused()) {
 	    screenMessage = "<div class=\"inlineMessage-nok\">" + resources.getString("PublicationRefused") + "</div>";
 	  } else if (pubDetail.isValidationRequired()) {
-	    screenMessage = "<div class=\"inlineMessage\">";
-      if ((validationType == KmeliaHelper.VALIDATION_TARGET_1 ||
-          validationType == KmeliaHelper.VALIDATION_TARGET_N) &&
-          StringUtil.isDefined(pubDetail.getTargetValidatorId())) {
-        String validatorNames = pubDetail.getTargetValidatorNames();
-        screenMessage += resources.getStringWithParams("kmelia.publication.tovalidate.state.by", validatorNames);
-      } else {
-        screenMessage += resources.getString("kmelia.publication.tovalidate.state");
+      if (validatorsOK) {
+        if ((validationType == KmeliaHelper.VALIDATION_TARGET_1 ||
+            validationType == KmeliaHelper.VALIDATION_TARGET_N) &&
+            StringUtil.isDefined(pubDetail.getTargetValidatorId())) {
+          String validatorNames = pubDetail.getTargetValidatorNames();
+          screenMessage = resources
+              .getStringWithParams("kmelia.publication.tovalidate.state.by", validatorNames);
+        } else {
+          screenMessage = resources.getString("kmelia.publication.tovalidate.state");
+        }
       }
       if (userCanValidate) {
         screenMessage += "<br/>" + resources.getString("kmelia.publication.tovalidate.action")+"<br/>";
         screenMessage += "<a href=\"javascript:onclick=pubValidate()\" class=\"button validate\"><span>"+resources.getString("PubValidate?")+"</span></a>";
         screenMessage += "<a href=\"javascript:onclick=pubUnvalidate()\" class=\"button refuse\"><span>"+resources.getString("PubUnvalidate?")+"</span></a>";
       }
-      screenMessage += "</div>";
+      if (StringUtil.isDefined(screenMessage)) {
+        screenMessage = "<div class=\"inlineMessage\">"+screenMessage+"</div>";
+      }
   	}
   }
 

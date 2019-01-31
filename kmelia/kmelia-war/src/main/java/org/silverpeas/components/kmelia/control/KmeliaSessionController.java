@@ -1317,7 +1317,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   public boolean isPublicationValidatorsOK() {
     if (getSessionPubliOrClone() != null && SilverpeasRole.writer.isInRole(getUserTopicProfile()) &&
         (isTargetValidationEnable() || isTargetMultiValidationEnable())) {
-      return StringUtil.isDefined(getSessionPubliOrClone().getDetail().getTargetValidatorId());
+      return CollectionUtil
+          .isNotEmpty(getKmeliaService().getActiveValidatorIds(getSessionPubliOrClone().getPk()));
     }
     return true;
   }
@@ -1613,7 +1614,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     setSessionPublicationsList(null);
   }
 
-  public String initUPToSelectValidator(String formElementName, String formElementId) {
+  public String initUPToSelectValidator(String formElementName, String formElementId, String folderId) {
     String mContext = URLUtil.getApplicationURL();
     Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(), "");
     Pair<String, String>[] hostPath = new Pair[1];
@@ -1644,7 +1645,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     sel.setSetSelectable(false);
 
     if (getSessionPubliOrClone() != null) {
-      String[] userIds = getSessionPubliOrClone().getDetail().getTargetValidatorIds();
+      String[] userIds = getKmeliaService().getActiveValidatorIds(getSessionPubliOrClone().getPk())
+          .toArray(new String[0]);
       sel.setSelectedElements(userIds);
     }
 
@@ -1657,6 +1659,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     profiles.add(SilverpeasRole.admin.toString());
 
     NodeDetail node = getNodeHeader(getCurrentFolderId());
+    if (StringUtil.isDefined(folderId) && !getCurrentFolderId().equals(folderId)) {
+      node = getNodeHeader(folderId);
+    }
     boolean haveRights = isRightsOnTopicsEnabled() && node.haveRights();
     if (haveRights) {
       sug.setObjectId(ObjectType.NODE.getCode() + node.getRightsDependsOn());
@@ -2435,7 +2440,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       PublicationDetail pub = (PublicationDetail) selection.getTransferData(
           PublicationSelection.PublicationDetailFlavor);
       if (selection.isCutted()) {
-        movePublication(pub.getPK(), folder.getNodePK());
+        movePublication(pub.getPK(), folder.getNodePK(), pasteDetail);
       } else {
         KmeliaCopyDetail copyDetail = KmeliaCopyDetail.fromPasteDetail(pasteDetail);
         getKmeliaService().copyPublication(pub, copyDetail);
@@ -2448,7 +2453,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       if (pasteAllowed) {
         if (selection.isCutted()) {
           // move node
-          getKmeliaService().moveNode(node.getNodePK(), folder.getNodePK(), getUserId());
+          getKmeliaService().moveNode(node.getNodePK(), folder.getNodePK(), pasteDetail);
         } else {
           // copy node
           KmeliaCopyDetail copyDetail = KmeliaCopyDetail.fromPasteDetail(pasteDetail);
@@ -2461,26 +2466,25 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     return null;
   }
 
-  public boolean isClipboardContainsSomeCopiedItems() {
+  public boolean isClipboardEmpty() {
     try {
       Collection<ClipboardSelection> clipObjects = getClipboardSelectedObjects();
       for (ClipboardSelection clipObject : clipObjects) {
         if (clipObject == null) {
           continue;
         }
-        if ((clipObject.isDataFlavorSupported(PublicationSelection.PublicationDetailFlavor) ||
-            clipObject.isDataFlavorSupported(NodeSelection.NodeDetailFlavor)) &&
-            !clipObject.isCutted()) {
-          return true;
+        if (clipObject.isDataFlavorSupported(PublicationSelection.PublicationDetailFlavor) ||
+            clipObject.isDataFlavorSupported(NodeSelection.NodeDetailFlavor)) {
+          return false;
         }
       }
     } catch (ClipboardException e) {
       throw new KmeliaRuntimeException(e);
     }
-    return false;
+    return true;
   }
 
-  private void movePublication(PublicationPK pubPK, NodePK nodePK) {
+  private void movePublication(PublicationPK pubPK, NodePK nodePK, KmeliaPasteDetail pasteContext) {
     try {
       NodePK currentNodePK = nodePK;
       if (currentNodePK == null) {
@@ -2488,7 +2492,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
         currentNodePK = getCurrentFolderPK();
       }
 
-      getKmeliaService().movePublication(pubPK, currentNodePK, getUserId());
+      getKmeliaService().movePublication(pubPK, currentNodePK, pasteContext);
     } catch (Exception ex) {
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     }

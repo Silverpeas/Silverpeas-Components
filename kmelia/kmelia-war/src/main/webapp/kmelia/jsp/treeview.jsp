@@ -77,6 +77,7 @@ String userId = kmeliaScc.getUserId();
 
 boolean userCanManageRoot = "admin".equalsIgnoreCase(profile);
 boolean userCanManageTopics = rightsOnTopics.booleanValue() || "admin".equalsIgnoreCase(profile) || kmeliaScc.isTopicManagementDelegated();
+boolean targetValidationEnabled = kmeliaScc.isTargetValidationEnable() || kmeliaScc.isTargetMultiValidationEnable();
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -902,7 +903,7 @@ $(document).ready(function() {
     var targetId = data.parent;
 
     // store new parent of publication
-    movePublication(pubId, getCurrentNodeId(), targetId);
+    movePublication(pubId, getCurrentNodeId(), targetId, <%=targetValidationEnabled%>);
   });
 
     // init splitter
@@ -961,7 +962,7 @@ $(document).on("dnd_stop.vakata", function(event, data) {
     var targetId = extractFolderId(target.attr('id'));
     var pubId = extractPublicationId(data.data.nodes[0].id);
     // store new parent of publication
-    movePublication(pubId, getCurrentNodeId(), targetId);
+    movePublication(pubId, getCurrentNodeId(), targetId, <%=targetValidationEnabled%>);
   }
 }).on("dnd_move.vakata", function(event, data) {
   var target = $(data.event.target);
