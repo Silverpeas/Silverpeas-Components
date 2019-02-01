@@ -137,61 +137,73 @@ public class ResultSearchRenderer extends AbstractResultDisplayer {
     // get user language
     String language = getUserPreferences(searchResult.getUserId()).getLanguage();
     if (WysiwygController.haveGotWysiwyg(componentId, id, language)) {
-
-      // WYSIWYG content to add inside template
-      String content = WysiwygController.load(componentId, id, language);
-
-      // if content not found in specified language, check other ones
-      if (!StringUtil.isDefined(content)) {
-        Iterator<String> languages = I18NHelper.getLanguages();
-        while (languages.hasNext() && !StringUtil.isDefined(content)) {
-          language = languages.next();
-          content = WysiwygController.load(componentId, id, language);
-        }
-      }
-
-      // Add to template only if defined
-      if (StringUtil.isDefined(content)) {
-        template.setAttribute("wysiwygContent", content);
-      }
+      setWysiwygContent(template, id, componentId, language);
     } else {
       String infoId = pubDetail.getInfoId();
-      String pubId = pubDetail.getPK().getId();
       if (!StringUtil.isInteger(infoId)) {
-        try {
-          PublicationTemplateImpl pubTemplate =
-              (PublicationTemplateImpl) PublicationTemplateManager.getInstance().
-              getPublicationTemplate(pubDetail.getPK().getInstanceId() + ":" + infoId);
+        setXmlFormContent(searchResult, pubDetail, template, id, componentId, infoId, language);
+      }
+    }
+  }
 
-          // RecordTemplate recordTemplate = pubTemplate.getRecordTemplate();
-          Form xmlForm = pubTemplate.getSearchResultForm();
+  private void setXmlFormContent(final SearchResultContentVO searchResult,
+      final PublicationDetail pubDetail, final SilverpeasTemplate template, final String id,
+      final String componentId, final String infoId, final String language) {
+    try {
+      PublicationTemplateImpl pubTemplate =
+          (PublicationTemplateImpl) PublicationTemplateManager.getInstance().
+          getPublicationTemplate(pubDetail.getPK().getInstanceId() + ":" + infoId);
+      String pubId = pubDetail.getPK().getId();
+      DataRecord data = getDataRecord(pubTemplate, pubId, language);
+      Form xmlForm = pubTemplate.getSearchResultForm();
+      if (xmlForm != null) {
+        PagesContext xmlContext = new PagesContext("myForm", "0", language,
+            false, componentId, searchResult.getUserId());
+        xmlContext.setObjectId(id);
+        xmlContext.setBorderPrinted(false);
+        xmlContext.setContentLanguage(language);
 
-          RecordSet recordSet = pubTemplate.getRecordSet();
-          DataRecord data = recordSet.getRecord(pubId, language);
-          if (data == null) {
-            data = recordSet.getEmptyRecord();
-            data.setId(pubId);
-          }
-
-          if (xmlForm != null) {
-            PagesContext xmlContext = new PagesContext("myForm", "0", language,
-                false, componentId, searchResult.getUserId());
-            xmlContext.setObjectId(id);
-            xmlContext.setBorderPrinted(false);
-            xmlContext.setContentLanguage(language);
-
-            String content = xmlForm.toString(xmlContext, data);
-            // Add to template only if defined
-            if (StringUtil.isDefined(content)) {
-              template.setAttribute("xmlFormContent", content);
-            }
-          }
-        } catch (PublicationTemplateException e) {
-          SilverLogger.getLogger(this).error("Failed to load publication template", e);
-        } catch (FormException e) {
-          SilverLogger.getLogger(this).error("Failed to load publication form", e);
+        String content = xmlForm.toString(xmlContext, data);
+        // Add to template only if defined
+        if (StringUtil.isDefined(content)) {
+          template.setAttribute("xmlFormContent", content);
         }
       }
+    } catch (PublicationTemplateException e) {
+      SilverLogger.getLogger(this).error("Failed to load publication template", e);
+    } catch (FormException e) {
+      SilverLogger.getLogger(this).error("Failed to load publication form", e);
+    }
+  }
+
+  private DataRecord getDataRecord(final PublicationTemplateImpl pubTemplate, final String pubId,
+      final String language) throws PublicationTemplateException, FormException {
+    RecordSet recordSet = pubTemplate.getRecordSet();
+    DataRecord data = recordSet.getRecord(pubId, language);
+    if (data == null) {
+      data = recordSet.getEmptyRecord();
+      data.setId(pubId);
+    }
+    return data;
+  }
+
+  private void setWysiwygContent(final SilverpeasTemplate template, final String id,
+      final String componentId, String language) {
+    // WYSIWYG content to add inside template
+    String content = WysiwygController.load(componentId, id, language);
+
+    // if content not found in specified language, check other ones
+    if (!StringUtil.isDefined(content)) {
+      Iterator<String> languages = I18NHelper.getLanguages().iterator();
+      while (languages.hasNext() && !StringUtil.isDefined(content)) {
+        language = languages.next();
+        content = WysiwygController.load(componentId, id, language);
+      }
+    }
+
+    // Add to template only if defined
+    if (StringUtil.isDefined(content)) {
+      template.setAttribute("wysiwygContent", content);
     }
   }
 

@@ -955,7 +955,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         // create thumbnail if exists
         boolean newThumbnail = ThumbnailController
             .processThumbnail(new ResourceReference(newPubId, kmelia.getComponentId()),
-                PublicationDetail.getResourceType(), parameters);
+                parameters);
 
         //process files
         Collection<UploadedFile> attachments = request.getUploadedFiles();
@@ -983,7 +983,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         PublicationDetail pubDetail = getPublicationDetail(parameters, kmelia);
         String pubId = pubDetail.getPK().getId();
         ThumbnailController.processThumbnail(new ResourceReference(pubId, kmelia.getComponentId()),
-            PublicationDetail.getResourceType(), parameters);
+            parameters);
 
         kmelia.updatePublication(pubDetail);
 
