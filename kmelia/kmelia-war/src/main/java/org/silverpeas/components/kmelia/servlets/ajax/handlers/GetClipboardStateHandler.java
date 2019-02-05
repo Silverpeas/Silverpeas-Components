@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2018 Silverpeas
+ * Copyright (C) 2000 - 2019 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,34 +23,15 @@
  */
 package org.silverpeas.components.kmelia.servlets.ajax.handlers;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.silverpeas.components.kmelia.KmeliaPasteDetail;
-
 import org.silverpeas.components.kmelia.control.KmeliaSessionController;
 import org.silverpeas.components.kmelia.servlets.ajax.AjaxHandler;
-import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.clipboard.ClipboardException;
-import org.silverpeas.core.util.logging.SilverLogger;
 
-public class PasteHandler implements AjaxHandler {
+import javax.servlet.http.HttpServletRequest;
+
+public class GetClipboardStateHandler implements AjaxHandler {
 
   @Override
-  public String handleRequest(HttpServletRequest request, KmeliaSessionController controller) {
-    String id = request.getParameter("Id");
-    String state = request.getParameter("State");
-    String validatorIds = request.getParameter("ValidatorIds");
-    try {
-      NodePK toPK = new NodePK(id, controller.getComponentId());
-      KmeliaPasteDetail pasteDetail = new KmeliaPasteDetail(toPK);
-      pasteDetail.setUserId(controller.getUserId());
-      pasteDetail.setStatus(state);
-      pasteDetail.setTargetValidatorIds(validatorIds);
-      controller.paste(pasteDetail);
-      return "ok";
-    } catch (ClipboardException e) {
-      SilverLogger.getLogger(this).error("error during paste operation", e);
-      return e.getMessage();
-    }
+  public String handleRequest(HttpServletRequest request, KmeliaSessionController kmelia) {
+    return kmelia.getClipboardState().name();
   }
 }

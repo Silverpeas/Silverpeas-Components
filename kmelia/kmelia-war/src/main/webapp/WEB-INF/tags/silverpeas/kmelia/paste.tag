@@ -46,128 +46,153 @@
 <view:setConstant var="writerRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.writer"/>
 <jsp:useBean id="writerRole" type="org.silverpeas.core.admin.user.model.SilverpeasRole"/>
 
-  <c:set var="targetValidationEnabled" value="${kmeliaCtrl.targetValidationEnable || kmeliaCtrl.targetMultiValidationEnable}"/>
-  <c:set var="draftEnabled" value="${kmeliaCtrl.draftEnabled}"/>
-  <fmt:message var="ValidatorLabel" key="kmelia.Valideur"/>
+<view:setConstant constant="org.silverpeas.components.kmelia.control.KmeliaSessionController.CLIPBOARD_STATE.IS_EMPTY" var="IS_EMPTY_CLIPBOARD_STATE"/>
+<view:setConstant constant="org.silverpeas.components.kmelia.control.KmeliaSessionController.CLIPBOARD_STATE.HAS_CUTS" var="HAS_CUTS_CLIPBOARD_STATE"/>
+<view:setConstant constant="org.silverpeas.components.kmelia.control.KmeliaSessionController.CLIPBOARD_STATE.HAS_COPIES_AND_CUTS" var="HAS_COPIES_AND_CUTS_CLIPBOARD_STATE"/>
 
-    <div id="pasteDialog" class="form-container" style="display: none;">
-      <div id="pasteCaption"><fmt:message key="kmelia.paste.popin.caption"/></div>
-      <div id="paste-draft">
-        <br/>
-        <span class="label"><fmt:message key="PubState"/></span>
-        <div>
-          <input value="Draft" type="radio" name="PastePublicationState" id="PasteDraftState" checked="checked"/>
-          <label for="PasteDraftState"><fmt:message key="PubStateDraft"/></label><br/>
-          <input value="NotDraft" type="radio" name="PastePublicationState" id="PastePublishedState"/>
-          <label for="PastePublishedState"><fmt:message key="PubStatePublished"/></label>
-        </div>
-      </div>
-      <div id="paste-validators">
-        <c:set var="oneValidator" value="${kmeliaCtrl.targetValidationEnable}"/>
-        <c:url var="validatorIcon" value="/util/icons/user.gif"/>
-        <br/>
-        <span class="label">${ValidatorLabel}</span>
-        <div>
-          <c:choose>
-            <c:when test="${oneValidator}">
-              <input type="text" name="Valideur" id="Valideur" value="" size="50" readonly="readonly"/>
-            </c:when>
-            <c:otherwise>
-              <c:url var="validatorIcon" value="/util/icons/groupe.gif"/>
-              <textarea name="Valideur" id="Valideur" rows="3" cols="40" readonly="readonly"></textarea>
-            </c:otherwise>
-          </c:choose>
-          <input type="hidden" name="ValideurId" id="ValideurId" value=""/>
-          <fmt:message var="selectLabel" key="kmelia.SelectValidator"/>
-          <a href="#">
-            <img src="${validatorIcon}" width="15" height="15" border="0" alt="${selectLabel}" title="${selectLabel}" align="absmiddle"/>
-          </a>
-        </div>
-      </div>
+<c:set var="targetValidationEnabled" value="${kmeliaCtrl.targetValidationEnable || kmeliaCtrl.targetMultiValidationEnable}"/>
+<c:set var="draftEnabled" value="${kmeliaCtrl.draftEnabled}"/>
+<fmt:message var="ValidatorLabel" key="kmelia.Valideur"/>
+<fmt:message var="copyStateHelpLabel" key="kmelia.copy.state.help"/>
+
+<div id="pasteDialog" class="form-container" style="display: none;">
+  <div id="pasteCaption"><fmt:message key="kmelia.paste.popin.caption"/></div>
+  <div id="paste-draft">
+    <br/>
+    <span class="label"><fmt:message key="PubState"/></span>
+    <div id="paste-copy-state-help" class="Titre">
+      (${silfn:escapeHtml(copyStateHelpLabel)})
     </div>
+    <div>
+      <input value="Draft" type="radio" name="PastePublicationState" id="PasteDraftState" checked="checked"/>
+      <label for="PasteDraftState"><fmt:message key="PubStateDraft"/></label><br/>
+      <input value="NotDraft" type="radio" name="PastePublicationState" id="PastePublishedState"/>
+      <label for="PastePublishedState"><fmt:message key="PubStatePublished"/></label>
+    </div>
+  </div>
+  <div id="paste-validators">
+    <c:set var="oneValidator" value="${kmeliaCtrl.targetValidationEnable}"/>
+    <c:url var="validatorIcon" value="/util/icons/user.gif"/>
+    <br/>
+    <span class="label">${ValidatorLabel}</span>
+    <div>
+      <c:choose>
+        <c:when test="${oneValidator}">
+          <input type="text" name="Valideur" id="Valideur" value="" size="50" readonly="readonly"/>
+        </c:when>
+        <c:otherwise>
+          <c:url var="validatorIcon" value="/util/icons/groupe.gif"/>
+          <textarea name="Valideur" id="Valideur" rows="3" cols="40" readonly="readonly"></textarea>
+        </c:otherwise>
+      </c:choose>
+      <input type="hidden" name="ValideurId" id="ValideurId" value=""/>
+      <fmt:message var="selectLabel" key="kmelia.SelectValidator"/>
+      <a href="#">
+        <img src="${validatorIcon}" width="15" height="15" border="0" alt="${selectLabel}" title="${selectLabel}" align="absmiddle"/>
+      </a>
+    </div>
+  </div>
+</div>
 
-    <script type="text/JavaScript">
-      function checkOnPaste(folderId) {
-        var currentUserProfile = getUserProfile(folderId);
-        var draftEnabled = ${draftEnabled};
-        var validatorsMustBeSet = ${targetValidationEnabled} && (currentUserProfile === "writer");
-        var params = {
-          "dnd" : false,
-          "targetId" : folderId
-        };
-        if (draftEnabled || validatorsMustBeSet) {
-          displayPasteDialog(draftEnabled, validatorsMustBeSet, params);
-        } else {
-          sendPasteAction(folderId, extraParams);
-        }
+<script type="text/javascript">
+  function checkOnPaste(topicId) {
+    var params = {
+      "dnd" : false,
+      "targetId" : topicId
+    };
+    kmeliaWebService.getClipboardState().then(function(clipboardState) {
+      if (clipboardState !== '${IS_EMPTY_CLIPBOARD_STATE}') {
+        params.clipboardState = clipboardState;
+        displayPasteDialog(params, function() {
+          sendPasteAction(topicId);
+        });
       }
+    });
+  }
 
-      function displayPasteDialog(draftEnabled, validatorsMustBeSet, params){
+  function displayPasteDialog(params, callbackWhenNoOptionToAskToUser){
+    var stateMustBeSet = false;
+    var stateCopyHelpMustBeSet = false;
+    if (!params.dnd) {
+      if (!params.clipboardState || params.clipboardState === '${IS_EMPTY_CLIPBOARD_STATE}') {
+        sp.log.warning("calling displayPasteDialog method whereas it does not exist element to paste");
+        return;
+      }
+      stateMustBeSet = !!${draftEnabled} && params.clipboardState !== '${HAS_CUTS_CLIPBOARD_STATE}';
+      stateCopyHelpMustBeSet = stateMustBeSet && params.clipboardState === '${HAS_COPIES_AND_CUTS_CLIPBOARD_STATE}';
+    }
+    var topicId = params.targetId;
+    var currentUserProfile = kmeliaWebService.getUserProfileSynchronously(topicId);
+    var validatorsMustBeSet = !!${targetValidationEnabled} && currentUserProfile === "writer" && topicId !== '1';
+    if (!stateMustBeSet && !validatorsMustBeSet) {
+      if (typeof callbackWhenNoOptionToAskToUser === 'function') {
+        callbackWhenNoOptionToAskToUser();
+      }
+      return;
+    }
+    if (validatorsMustBeSet) {
+      $("#paste-validators").show();
+      $("#paste-validators a").click(function() {
+        SP_openWindow('SelectValidator?FolderId='+topicId,'selectUser',800,600,'');
+      });
+    } else {
+      $("#paste-validators").hide();
+    }
+    if (stateMustBeSet) {
+      $("#paste-draft").show();
+    } else {
+      $("#paste-draft").hide();
+    }
+    if (stateCopyHelpMustBeSet) {
+      $("#paste-copy-state-help").show();
+    } else {
+      $("#paste-copy-state-help").hide();
+    }
+
+    jQuery('#pasteDialog').popup('validation', {
+      title : '<fmt:message key="kmelia.paste.popin.title" />',
+      buttonDisplayed : true,
+      isMaxWidth : true,
+      callback : function() {
+        var extraParams = {};
+        if (stateMustBeSet) {
+          extraParams.State = jQuery('input[name=PastePublicationState]:checked', this).val();
+        }
         if (validatorsMustBeSet) {
-          $("#paste-validators").show();
-          $("#paste-validators a").click(function() {
-            SP_openWindow('SelectValidator?FolderId='+params.targetId,'selectUser',800,600,'');
-          });
-        } else {
-          $("#paste-validators").hide();
-        }
-        if (draftEnabled) {
-          $("#paste-draft").show();
-        } else {
-          $("#paste-draft").hide();
-        }
-
-        jQuery('#pasteDialog').popup('validation', {
-          title : '<fmt:message key="kmelia.paste.popin.title" />',
-          buttonDisplayed : true,
-          isMaxWidth : true,
-          callback : function() {
-            var extraParams = "";
-            if (draftEnabled) {
-              var state = jQuery('input[name=PastePublicationState]:checked', this).val();
-              extraParams += "&State=" + state;
-            }
-            if (validatorsMustBeSet) {
-              var userId = jQuery('#ValideurId', this).val();
-              if (StringUtil.isNotDefined(userId)) {
-                SilverpeasError.add("<fmt:message key="GML.thefield"/> <b>${ValidatorLabel}</b> <fmt:message key="GML.MustBeFilled"/>");
-              } else {
-                extraParams += "&ValidatorIds=" + userId;
-              }
-            }
-
-            if (!SilverpeasError.show()) {
-              if (params.dnd) {
-                sendMovePublication(params, extraParams);
-              } else {
-                sendPasteAction(params.targetId, extraParams);
-              }
-              return true;
-            }
-            return false;
-          },
-          callbackOnClose : function() {
-            jQuery('#ValideurId', this).val("");
-            jQuery('#Valideur', this).val("");
-          }
-        });
-      }
-
-      function sendPasteAction(folderId, extraParams) {
-        var url = "<c:url value="/KmeliaAJAXServlet?Action=Paste&ComponentId=${componentInstanceId}"/>";
-        url += "&Id="+folderId;
-        if (StringUtil.isDefined(extraParams)) {
-          url += extraParams;
-        }
-        $.progressMessage();
-        silverpeasAjax(url).then(function(request) {
-          $.closeProgressMessage();
-          var result = request.responseText;
-          if (result === "ok") {
-            pasteDone(folderId);
+          var userId = jQuery('#ValideurId', this).val();
+          if (StringUtil.isNotDefined(userId)) {
+            SilverpeasError.add("<fmt:message key="GML.thefield"/> <b>${ValidatorLabel}</b> <fmt:message key="GML.MustBeFilled"/>");
           } else {
-            SilverpeasError.add(result).show();
+            extraParams.ValidatorIds = userId;
           }
-        });
+        }
+
+        if (!SilverpeasError.show()) {
+          if (params.dnd) {
+            sendMovePublication(params, extraParams);
+          } else {
+            sendPasteAction(topicId, extraParams);
+          }
+          return true;
+        }
+        return false;
+      },
+      callbackOnClose : function() {
+        jQuery('#ValideurId', this).val("");
+        jQuery('#Valideur', this).val("");
       }
-    </script>
+    });
+  }
+
+  function sendPasteAction(topicId, extraParams) {
+    $.progressMessage();
+    kmeliaWebService.pastePublications(topicId, extraParams).then(function(result) {
+      $.closeProgressMessage();
+      if (result === "ok") {
+        pasteDone(topicId);
+      } else {
+        SilverpeasError.add(result).show();
+      }
+    });
+  }
+</script>

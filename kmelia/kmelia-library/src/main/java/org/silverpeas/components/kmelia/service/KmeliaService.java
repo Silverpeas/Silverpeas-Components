@@ -675,7 +675,7 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
 
   void userHaveBeenDeleted(String userId);
 
-  public void onDocumentDeletion(AttachmentRef attachment);
+  void onDocumentDeletion(AttachmentRef attachment);
 
-  public List<String> getActiveValidatorIds(PublicationPK pk);
+  List<String> getActiveValidatorIds(PublicationPK pk);
 }

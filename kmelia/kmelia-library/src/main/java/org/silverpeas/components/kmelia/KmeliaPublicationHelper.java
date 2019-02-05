@@ -53,9 +53,7 @@ public class KmeliaPublicationHelper {
       boolean removeOnlyForAdmin =
           StringUtil.getBooleanValue(getParameterValue(instanceId,
           InstanceParameters.suppressionOnlyForAdmin));
-      if (!removeOnlyForAdmin || ("admin".equals(profile) && removeOnlyForAdmin)) {
-        return true;
-      }
+      return !removeOnlyForAdmin || "admin".equals(profile);
     }
     return false;
   }

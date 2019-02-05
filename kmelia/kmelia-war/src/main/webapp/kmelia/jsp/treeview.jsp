@@ -77,7 +77,6 @@ String userId = kmeliaScc.getUserId();
 
 boolean userCanManageRoot = "admin".equalsIgnoreCase(profile);
 boolean userCanManageTopics = rightsOnTopics.booleanValue() || "admin".equalsIgnoreCase(profile) || kmeliaScc.isTopicManagementDelegated();
-boolean targetValidationEnabled = kmeliaScc.isTargetValidationEnable() || kmeliaScc.isTargetMultiValidationEnable();
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -582,7 +581,7 @@ function customMenu(node) {
 
     if (userRole == "admin") {
     	// all actions are allowed
-    } else if (getUserProfile("0") == "admin") {
+    } else if (kmeliaWebService.getUserProfileSynchronously("0") == "admin") {
       // a minimal contextual menu is always available for app admins
       getMinimalContextualMenuForAdmins(items);
     } else if (userRole == "user") {
@@ -667,26 +666,6 @@ function spreadNbItems(children) {
       }
     }
   }
-}
-
-function getUserProfile(id) {
-	var componentId = getComponentId();
-	var result = "";
-    $.ajax({
-      url: getWebContext()+'/KmeliaAJAXServlet',
-      data : {Id:id,Action:'GetProfile',ComponentId:componentId},
-      type : 'GET',
-      dataType : 'text',
-      cache : false,
-      async : false,
-      success : function(data, status, jqXHR) {
-        result = data;
-      },
-      error : function(jqXHR, textStatus, errorThrown) {
-        alert(errorThrown);
-      }
-    });
-    return result;
 }
 
 function publicationMovedInError(id, data) {
@@ -903,7 +882,7 @@ $(document).ready(function() {
     var targetId = data.parent;
 
     // store new parent of publication
-    movePublication(pubId, getCurrentNodeId(), targetId, <%=targetValidationEnabled%>);
+    movePublication(pubId, getCurrentNodeId(), targetId);
   });
 
     // init splitter
@@ -955,14 +934,22 @@ $(document).on('mousedown', '.jstree-draggable', function(e) {
         $(this).text() + '</div>');
 });
 
+window.__spTreeviewDndContext = {
+  lastTarget : {
+    id : undefined,
+    canDrop : undefined
+  }
+};
+
 $(document).on("dnd_stop.vakata", function(event, data) {
+  window.__spTreeviewDndContext.lastTarget = {};
   var treeview = getTreeview();
   if (!treeview.settings.dnd.check_while_dragging) {
     var target = $(data.event.target);
     var targetId = extractFolderId(target.attr('id'));
     var pubId = extractPublicationId(data.data.nodes[0].id);
     // store new parent of publication
-    movePublication(pubId, getCurrentNodeId(), targetId, <%=targetValidationEnabled%>);
+    movePublication(pubId, getCurrentNodeId(), targetId);
   }
 }).on("dnd_move.vakata", function(event, data) {
   var target = $(data.event.target);
@@ -970,23 +957,29 @@ $(document).on("dnd_stop.vakata", function(event, data) {
   var treeview = getTreeview();
   if (target.closest('#treeDiv1').length && target.hasClass('jstree-anchor')) {
     var targetId = extractFolderId(target.attr('id'));
-    if (targetId) {
+    if (targetId && targetId !== window.__spTreeviewDndContext.lastTarget.id) {
       target = treeview.get_node('#' + targetId);
       if (targetId == getToValidateFolderId() || targetId == getCurrentNodeId()) {
         canBeDropped = false;
       } else if (target.type !== 'root' || arePublicationsOnRootAllowed()) {
-        var profile = getUserProfile(targetId);
-        if (profile != "<%=SilverpeasRole.user.toString()%>") {
-          canBeDropped = true;
+        var pubId = extractPublicationId(data.data.nodes[0].id);
+        var sourceFolderAuthorizations = kmeliaWebService.getPublicationUserAuthorizationsSynchronously(pubId);
+        if (targetId === '1') {
+          canBeDropped = sourceFolderAuthorizations.canBeDeleted;
+        } else {
+          var targetFolderAuthorizations = kmeliaWebService.getPublicationUserAuthorizationsSynchronously(pubId, targetId);
+          canBeDropped = sourceFolderAuthorizations.canBeCut && targetFolderAuthorizations.canBeCut;
         }
       }
+      window.__spTreeviewDndContext.lastTarget = {
+        id : targetId,
+        canDrop : canBeDropped
+      };
+    } else if (targetId) {
+      canBeDropped = window.__spTreeviewDndContext.lastTarget.canDrop;
     }
   }
-  if (canBeDropped) {
-    treeview.settings.dnd.check_while_dragging = false;
-  } else {
-    treeview.settings.dnd.check_while_dragging = true;
-  }
+  treeview.settings.dnd.check_while_dragging = !canBeDropped;
 });
 </script>
 </div>

@@ -140,7 +140,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.text.ParseException;
 import java.util.*;
+import java.util.stream.Collectors;
 
+import static org.silverpeas.components.kmelia.control.KmeliaSessionController.CLIPBOARD_STATE.*;
 import static org.silverpeas.components.kmelia.export.KmeliaPublicationExporter.*;
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getSessionCacheService;
 import static org.silverpeas.core.cache.service.VolatileIdentifierProvider.newVolatileIntegerIdentifierOn;
@@ -2466,22 +2468,26 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     return null;
   }
 
-  public boolean isClipboardEmpty() {
+  public CLIPBOARD_STATE getClipboardState() {
     try {
-      Collection<ClipboardSelection> clipObjects = getClipboardSelectedObjects();
-      for (ClipboardSelection clipObject : clipObjects) {
-        if (clipObject == null) {
-          continue;
-        }
-        if (clipObject.isDataFlavorSupported(PublicationSelection.PublicationDetailFlavor) ||
-            clipObject.isDataFlavorSupported(NodeSelection.NodeDetailFlavor)) {
-          return false;
-        }
+      final Set<CLIPBOARD_STATE> states = getClipboardSelectedObjects().stream()
+          .filter(Objects::nonNull)
+          .filter(c -> c.isDataFlavorSupported(PublicationSelection.PublicationDetailFlavor)
+                    || c.isDataFlavorSupported(NodeSelection.NodeDetailFlavor))
+          .map(c -> c.isCutted() ? HAS_CUTS : HAS_COPIES)
+          .collect(Collectors.toSet());
+      final CLIPBOARD_STATE state;
+      if (states.size() == 1) {
+        state = states.iterator().next();
+      } else if (states.size() > 1) {
+        state = HAS_COPIES_AND_CUTS;
+      } else {
+        state = IS_EMPTY;
       }
+      return state;
     } catch (ClipboardException e) {
       throw new KmeliaRuntimeException(e);
     }
-    return true;
   }
 
   private void movePublication(PublicationPK pubPK, NodePK nodePK, KmeliaPasteDetail pasteContext) {
@@ -2781,8 +2787,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   public List<NodeDetail> getTopicPath(String topicId) {
     try {
-      List<NodeDetail> pathInReverse =
-          (List<NodeDetail>) getNodeService().getPath(new NodePK(topicId, getComponentId()));
+      List<NodeDetail> pathInReverse = getNodeService().getPath(new NodePK(topicId, getComponentId()));
       Collections.reverse(pathInReverse);
       return pathInReverse;
     } catch (Exception e) {
@@ -2979,8 +2984,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     fileName.append(getComponentLabel());
 
     if (!isKmaxMode) {
-      List<NodeDetail> path =
-          (List<NodeDetail>) getNodeService().getPath(getCurrentFolder().getNodePK());
+      List<NodeDetail> path = getNodeService().getPath(getCurrentFolder().getNodePK());
       Collections.reverse(path);
       path.remove(0); // remove root folder
       for (NodeDetail node : path) {
@@ -3588,5 +3592,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       nodePK = new NodePK(nodeId, cmpId);
     }
     return nodePK;
+  }
+
+  public enum CLIPBOARD_STATE {
+    IS_EMPTY, HAS_COPIES, HAS_CUTS, HAS_COPIES_AND_CUTS
   }
 }

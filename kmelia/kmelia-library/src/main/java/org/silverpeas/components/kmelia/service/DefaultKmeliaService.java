@@ -63,6 +63,7 @@ import org.silverpeas.core.contribution.publication.datereminder.PublicationNote
 import org.silverpeas.core.contribution.publication.model.Alias;
 import org.silverpeas.core.contribution.publication.model.CompletePublication;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationLink;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.model.ValidationStep;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
@@ -1243,7 +1244,7 @@ public class DefaultKmeliaService implements KmeliaService {
     PublicationDetail pub = getPublicationDetail(pubPK);
     if (pub != null) {
       if (pubPK.getInstanceId().equals(to.getInstanceId())) {
-        movePublicationInSameApplication(pub, pasteContext);
+        movePublicationInSameApplication(pub, to, pasteContext);
       } else {
         movePublicationInAnotherApplication(pub, to, pasteContext);
       }
@@ -1269,12 +1270,12 @@ public class DefaultKmeliaService implements KmeliaService {
     boolean pasteAllowed = KmeliaPublicationHelper.isCreationAllowed(to, profileInTarget);
 
     if (cutAllowed && pasteAllowed) {
-      movePublicationInSameApplication(pub, pasteContext);
+      movePublicationInSameApplication(pub, to, pasteContext);
     }
   }
 
-  private void movePublicationInSameApplication(PublicationDetail pub, KmeliaPasteDetail pasteContext) {
-    NodePK to = pasteContext.getToPK();
+  private void movePublicationInSameApplication(PublicationDetail pub, NodePK to,
+      KmeliaPasteDetail pasteContext) {
     if (to.isTrash()) {
       sendPublicationToBasket(pub.getPK());
     } else {
@@ -1299,12 +1300,8 @@ public class DefaultKmeliaService implements KmeliaService {
    * <li>moving the statistics</li>
    * </ul>
    */
-
-  @SimulationActionProcess(elementLister = KmeliaPublicationSimulationElementLister.class)
-  @Action(ActionType.MOVE)
-  private void movePublicationInAnotherApplication(@SourcePK PublicationDetail pub,
-      @TargetPK NodePK to, KmeliaPasteDetail pasteContext) {
-
+  private void movePublicationInAnotherApplication(PublicationDetail pub, NodePK to,
+      KmeliaPasteDetail pasteContext) {
     try {
       ResourceReference fromResourceReference = new ResourceReference(pub.getPK());
       String fromComponentId = pub.getInstanceId();
@@ -1371,7 +1368,6 @@ public class DefaultKmeliaService implements KmeliaService {
       publicationService.movePublication(pub.getPK(), to, false);
       pub.getPK().setComponentName(to.getInstanceId());
 
-      pub.setStatus(pasteContext.getStatus());
       pub.setTargetValidatorId(pasteContext.getTargetValidatorIds());
 
       processPublicationAfterMove(pub, to, pasteContext.getUserId());

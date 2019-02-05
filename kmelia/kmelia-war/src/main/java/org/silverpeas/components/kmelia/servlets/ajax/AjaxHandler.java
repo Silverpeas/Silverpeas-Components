@@ -23,11 +23,10 @@
  */
 package org.silverpeas.components.kmelia.servlets.ajax;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.silverpeas.components.kmelia.control.KmeliaSessionController;
 
+import javax.servlet.http.HttpServletRequest;
 
 public interface AjaxHandler {
-  public String handleRequest(HttpServletRequest request, KmeliaSessionController controller);
+  String handleRequest(HttpServletRequest request, KmeliaSessionController controller);
 }

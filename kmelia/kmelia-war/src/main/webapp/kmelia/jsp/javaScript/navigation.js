@@ -918,33 +918,23 @@ function _updateTopicStatus(nodeId, status, recursive) {
   }, 'text');
 }
 
-function movePublication(id, sourceId, targetId, targetValidationEnabled) {
+function movePublication(id, sourceId, targetId) {
   var params = {
     "dnd" : true,
     "pubId" : id,
     "sourceId" : sourceId,
     "targetId" : targetId
   };
-  var currentUserProfile = getUserProfile(targetId);
-  var validatorsMustBeSet = targetValidationEnabled && (currentUserProfile === "writer");
-  if (validatorsMustBeSet) {
-    displayPasteDialog(false, validatorsMustBeSet, params);
-  } else {
+  displayPasteDialog(params, function() {
     sendMovePublication(params);
-  }
+  });
 }
 
 function sendMovePublication(params, extraParams) {
-  var componentId = getComponentId();
-  var targetId = params.targetId;
   var pubId = params.pubId;
-  var url = getWebContext() + '/KmeliaAJAXServlet?Action=MovePublication&ComponentId='+componentId;
-  url += "&Id="+pubId+"&SourceNodeId="+params.sourceId+"&TargetNodeId="+targetId;
-  if (StringUtil.isDefined(extraParams)) {
-    url += extraParams;
-  }
-  silverpeasAjax(url).then(function(request) {
-    var result = request.responseText;
+  var sourceId = params.sourceId;
+  var targetId = params.targetId;
+  kmeliaWebService.movePublication(pubId, sourceId, targetId, extraParams).then(function(result) {
     if (result === "ok") {
       try {
         publicationMovedSuccessfully(pubId, targetId);
