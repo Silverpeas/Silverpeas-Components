@@ -75,6 +75,8 @@ import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.notification.user.client.UserRecipient;
 import org.silverpeas.core.pdc.pdc.model.SearchContext;
+import org.silverpeas.core.subscription.service.ComponentSubscriptionResource;
+import org.silverpeas.core.subscription.service.NodeSubscriptionResource;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.Link;
@@ -90,6 +92,7 @@ import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.subscription.SubscriptionContext;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
@@ -427,7 +430,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     return MediaServiceProvider.getMediaService();
   }
 
-  public Collection<NodeDetail> getPath(NodePK nodePK) {
+  public List<NodeDetail> getPath(NodePK nodePK) {
     List<NodeDetail> path = (List<NodeDetail>) getMediaService().getPath(nodePK);
     Collections.reverse(path);
     return path;
@@ -1384,4 +1387,18 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     return pub;
   }
 
+  public String manageComponentSubscriptions() {
+    final SubscriptionContext subscriptionContext = getSubscriptionContext();
+    subscriptionContext.initialize(ComponentSubscriptionResource.from(getComponentId()));
+    return subscriptionContext.getDestinationUrl();
+  }
+
+  public String manageAlbumSubscriptions() {
+    final SubscriptionContext subscriptionContext = getSubscriptionContext();
+    final NodePK albumPK = currentAlbum.getNodePK();
+    final List<NodeDetail> albumPath = getPath(albumPK);
+    albumPath.remove(0);
+    subscriptionContext.initializeFromNode(NodeSubscriptionResource.from(albumPK), albumPath);
+    return subscriptionContext.getDestinationUrl();
+  }
 }

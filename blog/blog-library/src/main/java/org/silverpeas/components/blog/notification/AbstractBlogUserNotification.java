@@ -68,6 +68,7 @@ abstract class AbstractBlogUserNotification
   @Override
   protected void performNotificationResource(final String language, final PostDetail resource,
       final NotificationResourceData notificationResourceData) {
+    notificationResourceData.setFeminineGender(false);
     notificationResourceData.setResourceName(resource.getPublication().getName(language));
   }
 

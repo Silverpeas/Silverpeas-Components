@@ -53,6 +53,16 @@ public class Streaming extends Media {
     return MediaType.Streaming;
   }
 
+  public Streaming() {
+    super();
+  }
+
+  protected Streaming(final Streaming other) {
+    super(other);
+    this.homepageUrl = other.homepageUrl;
+    this.provider = other.provider;
+  }
+
   /**
    * Gets the provider URL that permits to access to the video play.
    * @return the provider URL that permits to access to the video play.
@@ -141,5 +151,10 @@ public class Streaming extends Media {
     } finally {
       httpGet.releaseConnection();
     }
+  }
+
+  @Override
+  public Streaming getCopy() {
+    return new Streaming(this);
   }
 }

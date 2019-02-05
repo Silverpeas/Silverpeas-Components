@@ -36,6 +36,17 @@ public class Video extends InternalMedia {
   private long bitrate = 0;
   private long duration = 0;
 
+  public Video() {
+    super();
+  }
+
+  protected Video(final Video other) {
+    super(other);
+    this.definition = other.definition;
+    this.bitrate = other.bitrate;
+    this.duration = other.duration;
+  }
+
   @Override
   public MediaType getType() {
     return MediaType.Video;
@@ -95,5 +106,10 @@ public class Video extends InternalMedia {
    */
   public static String getResourceType() {
     return MediaType.Video.name();
+  }
+
+  @Override
+  public Video getCopy() {
+    return new Video(this);
   }
 }

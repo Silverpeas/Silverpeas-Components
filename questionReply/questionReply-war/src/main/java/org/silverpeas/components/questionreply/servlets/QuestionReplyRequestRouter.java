@@ -30,8 +30,6 @@ import org.silverpeas.components.questionreply.model.Reply;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.importexport.report.ExportReport;
 import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.core.subscription.SubscriptionServiceProvider;
-import org.silverpeas.core.subscription.service.ComponentSubscription;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.http.HttpRequest;
@@ -100,9 +98,6 @@ public class QuestionReplyRequestRouter
         flag = scc.getUserProfil();
         request.setAttribute("Flag", flag);
         request.setAttribute("Categories", scc.getAllCategories());
-        request.setAttribute("userAlreadySubscribed",
-            SubscriptionServiceProvider.getSubscribeService().existsSubscription(
-                new ComponentSubscription(scc.getUserId(), scc.getComponentId())));
         request.setAttribute("PDCUsed", scc.isPDCUsed());
         if (request.getAttribute("QuestionId") != null) {
           Question question =

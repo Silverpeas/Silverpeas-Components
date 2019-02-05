@@ -23,12 +23,20 @@
  */
 package org.silverpeas.components.gallery.process.media;
 
+import org.silverpeas.components.gallery.dao.MediaDAO;
 import org.silverpeas.components.gallery.delegate.MediaDataUpdateDelegate;
+import org.silverpeas.components.gallery.model.AlbumMedia;
 import org.silverpeas.components.gallery.model.Media;
+import org.silverpeas.components.gallery.notification.AlbumMediaEventNotifier;
 import org.silverpeas.components.gallery.process.AbstractGalleryDataProcess;
 import org.silverpeas.core.contribution.content.form.PagesContext;
+import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.process.management.ProcessExecutionContext;
 import org.silverpeas.core.process.session.ProcessSession;
+
+import java.util.Collection;
+
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * Process to update a media in Database
@@ -41,6 +49,8 @@ public class GalleryUpdateMediaDataProcess extends AbstractGalleryDataProcess {
    */
   private final MediaDataUpdateDelegate delegate;
   private final boolean updateTechnicalData;
+  private final Media mediaBeforeChanges;
+  private Collection<String> albumIds;
 
   /**
    * Gets an instance
@@ -73,6 +83,7 @@ public class GalleryUpdateMediaDataProcess extends AbstractGalleryDataProcess {
     super(media);
     this.delegate = delegate;
     this.updateTechnicalData = updateTechnicalData;
+    this.mediaBeforeChanges = media.getCopy();
   }
 
   /*
@@ -87,6 +98,9 @@ public class GalleryUpdateMediaDataProcess extends AbstractGalleryDataProcess {
 
     // Sets functional data media
     if (delegate != null) {
+      // Gets the albums
+      albumIds = MediaDAO.getAlbumIdsOf(getMedia());
+
       if (delegate.isHeaderData()) {
         delegate.updateHeader(getMedia());
       }
@@ -108,5 +122,18 @@ public class GalleryUpdateMediaDataProcess extends AbstractGalleryDataProcess {
 
     // Update media
     updateMedia(updateTechnicalData, context);
+  }
+
+  @Override
+  public void onSuccessful() throws Exception {
+    super.onSuccessful();
+    if (isDefined(mediaBeforeChanges.getId()) && albumIds != null) {
+      final AlbumMediaEventNotifier notifier = AlbumMediaEventNotifier.get();
+      for (final String albumId : albumIds) {
+        notifier.notifyEventOn(ResourceEvent.Type.UPDATE,
+            new AlbumMedia(albumId, mediaBeforeChanges),
+            new AlbumMedia(albumId, getMedia()));
+      }
+    }
   }
 }

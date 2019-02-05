@@ -34,9 +34,6 @@
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 <fmt:setLocale value="{sessionScope.SilverSessionController.favoriteLanguage}" />
 
-<fmt:message key="GML.subscribe" var="labelSubscribe"/>
-<fmt:message key="GML.unsubscribe" var="labelUnsubscribe"/>
-
 <%
 	// recuperation des parametres
 	String		profil		= (String) request.getAttribute("Flag");
@@ -55,6 +52,7 @@
   <view:looknfeel />
   <view:includePlugin name="preview" />
   <view:includePlugin name="toggle"/>
+  <view:includePlugin name="subscription"/>
 <script type="text/javascript">
   <!--
 
@@ -484,26 +482,9 @@ function confirmDeleteCategory(categoryId) {
 	});
 }
 
-function successUnsubscribe() {
-  setSubscriptionMenu('<view:encodeJs string="${labelSubscribe}" />', 'subscribe');
-}
-function successSubscribe() {
-  setSubscriptionMenu('<view:encodeJs string="${labelUnsubscribe}" />', 'unsubscribe');
-}
-
-function setSubscriptionMenu(label, actionMethodName) {
-  var $menuLabel = $("#subscriptionMenuLabel");
-  $menuLabel.html(label);
-  $menuLabel.parents('a').attr('href', "javascript:" + actionMethodName + "();");
-}
-
-function unsubscribe() {
-  $.post('<c:url value="/services/unsubscribe/${pageScope.componentId}" />',successUnsubscribe(), 'json');
-}
-
-function subscribe() {
-  $.post('<c:url value="/services/subscribe/${pageScope.componentId}" />', successSubscribe(), 'json');
-}
+SUBSCRIPTION_PROMISE.then(function() {
+  window.spSubManager = new SilverpeasSubscriptionManager('${pageScope.componentId}');
+});
 
 function addCategory() {
   document.categoryForm.action = "CreateCategory";
@@ -713,15 +694,10 @@ function filterAll() {
   operationPane.addOperation(resource.getIcon("questionReply.export"), resource.getString(
           "questionReply.export"), "javascript:onClick=openSPWindow('Export','export')");
 
-  if(((Boolean)request.getAttribute("userAlreadySubscribed"))) {
-    operationPane.addOperation(resource.getIcon("GML.unsubscribe"),
-        "<span id='subscriptionMenuLabel'>" + resource.getString("GML.unsubscribe") + "</span>",
-        "javascript:unsubscribe();");
-  }else {
-    operationPane.addOperation(resource.getIcon("questionReply.subscribe"),
-        "<span id='subscriptionMenuLabel'>" + resource.getString("GML.subscribe") + "</span>",
-        "javascript:subscribe();");
-  }
+  operationPane.addLine();
+  operationPane.addOperation(resource.getIcon("GML.unsubscribe"),
+      "<span id='subscriptionMenuLabel'></span>",
+      "javascript:spSubManager.switchUserSubscription()");
 
   out.println(window.printBefore());
 %>

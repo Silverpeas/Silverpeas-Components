@@ -36,8 +36,6 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <c:set var="componentId" value="${requestScope.browseContext[3]}"/>
 
-<fmt:message key="GML.subscribe" var="actionLabelSubscribe"/>
-<fmt:message key="GML.unsubscribe" var="actionLabelUnsubscribe"/>
 <fmt:message key="GML.manageSubscriptions" var="actionLabelManageSubscriptions"/>
 <fmt:message key="quickinfo.news.broadcast.mode.major" var="labelModeMajor"/>
 <fmt:message key="GML.attachments" var="labelFiles"/>
@@ -60,6 +58,7 @@
 <title>QuickInfo - Home</title>
 <view:looknfeel/>
   <view:includePlugin name="toggle"/>
+  <view:includePlugin name="subscription"/>
 <script type="text/javascript" src="js/quickinfo.js"></script>
 <script type="text/javascript">
 function openPDCSetup() {
@@ -67,23 +66,9 @@ function openPDCSetup() {
   SP_openWindow(url, 'utilizationPdc1', '600', '400','scrollbars=yes, resizable, alwaysRaised');
 }
 
-function successSubscribe() {
-  // changing label and href of operation on-the-fly
-  $("a[href='javascript:subscribe();']").first().attr('href', "javascript:unsubscribe();").text("${actionLabelUnsubscribe}");
-}
-
-function subscribe() {
-  $.post('<c:url value="/services/subscribe/${componentId}" />', successSubscribe(), 'json');
-}
-
-function successUnsubscribe() {
-  //changing label and href of operation on-the-fly
-  $("a[href='javascript:unsubscribe();']").first().attr('href', "javascript:subscribe();").text("${actionLabelSubscribe}");
-}
-
-function unsubscribe() {
-  $.post('<c:url value="/services/unsubscribe/${componentId}" />', successUnsubscribe(), 'json');
-}
+SUBSCRIPTION_PROMISE.then(function() {
+  window.spSubManager = new SilverpeasSubscriptionManager('${componentId}');
+});
 
 function onDelete(id) {
   $("#news-"+id).remove();
@@ -106,14 +91,7 @@ function onDelete(id) {
 	  <view:operationOfCreation altText="${addMsg}" icon="${addIcon}" action="Add"></view:operationOfCreation>
   </c:if>
   <c:if test="${isSubscriberUser != null}">
-    <c:choose>
-      <c:when test="${isSubscriberUser}">
-        <view:operation altText="${actionLabelUnsubscribe}" action="javascript:unsubscribe();"/>
-      </c:when>
-      <c:otherwise>
-        <view:operation altText="${actionLabelSubscribe}" action="javascript:subscribe();"/>
-      </c:otherwise>
-    </c:choose>
+    <view:operation altText="<span id='subscriptionMenuLabel'></span>" action="javascript:spSubManager.switchUserSubscription()"/>
   </c:if>
 </view:operationPane>
 <view:window>

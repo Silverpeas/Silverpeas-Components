@@ -23,11 +23,11 @@
  */
 package org.silverpeas.components.forums.notification;
 
-import org.silverpeas.core.notification.user.model.NotificationResourceData;
-import org.silverpeas.core.notification.user.client.constant.NotifAction;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.components.forums.model.Message;
+import org.silverpeas.core.notification.user.client.constant.NotifAction;
+import org.silverpeas.core.notification.user.model.NotificationResourceData;
+import org.silverpeas.core.template.SilverpeasTemplate;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.HashMap;
@@ -80,6 +80,7 @@ public abstract class AbstractForumsMessageUserNotification
   @Override
   protected void performNotificationResource(final String language, final Message resource,
       final NotificationResourceData notificationResourceData) {
+    notificationResourceData.setFeminineGender(false);
     notificationResourceData.setResourceId(resource.getId());
     notificationResourceData.setResourceType(resource.getResourceType());
     notificationResourceData.setResourceName(resource.getTitle());

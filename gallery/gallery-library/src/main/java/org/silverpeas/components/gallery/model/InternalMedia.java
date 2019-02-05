@@ -65,6 +65,22 @@ public abstract class InternalMedia extends Media {
 
   private LinkedHashMap<String, MetaData> metaData = null;
 
+  public InternalMedia() {
+    super();
+  }
+
+  protected InternalMedia(final InternalMedia other) {
+    super(other);
+    this.downloadAuthorized = other.downloadAuthorized;
+    this.fileName = other.fileName;
+    this.fileSize = other.fileSize;
+    this.fileMimeType = other.fileMimeType;
+    this.downloadPeriod = other.downloadPeriod;
+    if (other.metaData != null) {
+      this.metaData = new LinkedHashMap<>(other.metaData);
+    }
+  }
+
   /**
    * Indicates if the media is marked as downloadable. The visibility period is not taken into
    * account here.

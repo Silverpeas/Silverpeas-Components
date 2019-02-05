@@ -62,6 +62,7 @@
 <c:set var="Silverpeas_Album_ComponentId" value="${componentId}" scope="session"/>
 
 <fmt:message key="GML.PDCParam" var="pdcLabel"/>
+<fmt:message key="GML.manageSubscriptions" var="actionLabelManageSubscriptions"/>
 <fmt:message key="gallery.pdcUtilizationSrc" var="pdcIcon" bundle="${icons}"/>
 <c:url value="${pdcIcon}" var="pdcIcon"/>
 <fmt:message key="gallery.addAlbum" var="addAlbumLabel"/>
@@ -92,6 +93,7 @@
   <view:looknfeel withCheckFormScript="true"/>
   <view:includePlugin name="qtip"/>
   <view:includePlugin name="toggle"/>
+  <view:includePlugin name="subscription"/>
   <script type="text/javascript" src="<c:url value="/util/javaScript/lucene/luceneQueryValidator.js"/>"></script>
   <script type="text/javascript" src="<c:url value="/util/javaScript/jquery/jquery.cookie.js"/>"></script>
   <script type="text/javascript">
@@ -181,6 +183,10 @@ function checkLuceneQuery(query) {
   }
   return false;
 }
+
+SUBSCRIPTION_PROMISE.then(function() {
+  window.spSubManager = new SilverpeasSubscriptionManager('${componentId}');
+});
   </script>
 <c:if test="${not empty mediaList}">
   <gallery:handleMediaPreview jquerySelector="${'.mediaPreview'}"/>
@@ -191,8 +197,11 @@ function checkLuceneQuery(query) {
   <c:if test="${highestUserRole.isGreaterThanOrEquals(adminRole) and isPdcUsed}">
     <c:url value="/RpdcUtilization/jsp/Main?ComponentId=${componentId}" var="tmpUrl"/>
     <view:operation action="javascript:onClick=openSPWindow('${tmpUrl}','utilizationPdc1')" altText="${pdcLabel}" icon="${pdcIcon}"/>
-    <view:operationSeparator/>
   </c:if>
+  <c:if test="${highestUserRole.isGreaterThanOrEquals(adminRole)}">
+    <view:operation altText="${actionLabelManageSubscriptions}" action="ManageComponentSubscriptions"/>
+  </c:if>
+  <view:operationSeparator/>
   <c:if test="${highestUserRole.isGreaterThanOrEquals(publisherRole)}">
     <view:operationOfCreation action="javaScript:openGalleryEditor()" altText="${addAlbumLabel}" icon="${addAlbumIcon}"/>
     <view:operationSeparator/>
@@ -214,7 +223,9 @@ function checkLuceneQuery(query) {
     <view:operation action="javascript:onClick=clipboardPaste()" altText="${pasteLabel}" icon="${pasteIcon}"/>
     <view:operationSeparator/>
   </c:if>
+  <view:operation action="javascript:spSubManager.switchUserSubscription()" altText="<span id='subscriptionMenuLabel'></span>" icon=""/>
   <c:if test="${isPrivateSearch}">
+    <view:operationSeparator/>
     <view:operation action="LastResult" altText="${lastResultLabel}" icon="${lastResultIcon}"/>
   </c:if>
 </view:operationPane>
