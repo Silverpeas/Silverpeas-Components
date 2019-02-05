@@ -1013,12 +1013,9 @@ else if (action.equals("ViewResult")) {
   }
 
   if (userId == null) {
-    participationId += 1;
     quizz = quizzScc.getQuestionContainerForCurrentUserByParticipationId(quizzId, participationId);
-  }
-  else
-  {
-      quizz = quizzScc.getQuestionContainerByParticipationId(quizzId, userId, participationId);
+  } else {
+    quizz = quizzScc.getQuestionContainerByParticipationId(quizzId, userId, participationId);
   }
 
   Window window = gef.getWindow();
