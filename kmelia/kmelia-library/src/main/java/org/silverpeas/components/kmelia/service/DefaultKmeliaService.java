@@ -1009,10 +1009,10 @@ public class DefaultKmeliaService implements KmeliaService {
             .getUserProfiles(userId, nodePK.getInstanceId(), topic.getRightsDependsOn(),
                 ObjectType.NODE));
       } else {
-        profile = KmeliaHelper.getProfile(orgCtrl.getUserProfiles(userId, nodePK.getInstanceId()));
+        profile = KmeliaHelper.getProfile(getUserRoles(nodePK.getInstanceId(), userId));
       }
     } else {
-      profile = KmeliaHelper.getProfile(orgCtrl.getUserProfiles(userId, nodePK.getInstanceId()));
+      profile = KmeliaHelper.getProfile(getUserRoles(nodePK.getInstanceId(), userId));
     }
     return profile;
   }
@@ -1175,8 +1175,7 @@ public class DefaultKmeliaService implements KmeliaService {
     // la publication a été modifié par un superviseur
     // le créateur de la publi doit être averti
     String profile = KmeliaHelper.getProfile(
-        getOrganisationController().getUserProfiles(pubDetail.getUpdaterId(),
-            pubDetail.getPK().getInstanceId()));
+        getUserRoles(pubDetail.getPK().getInstanceId(), pubDetail.getUpdaterId()));
     if ("supervisor".equals(profile)) {
       sendModificationAlert(updateScope, pubDetail.getPK());
     }
@@ -1809,8 +1808,7 @@ public class DefaultKmeliaService implements KmeliaService {
     // fetch one of the publication fathers
     NodePK fatherPK =
         getPublicationFatherPK(pubPK, isTreeStructureUsed, userId, isRightsOnTopicsUsed);
-    String profile = KmeliaHelper
-        .getProfile(getOrganisationController().getUserProfiles(userId, pubPK.getInstanceId()));
+    String profile = KmeliaHelper.getProfile(getUserRoles(pubPK.getInstanceId(), userId));
     return goTo(fatherPK, userId, isTreeStructureUsed, profile, isRightsOnTopicsUsed);
   }
 
@@ -4160,7 +4158,13 @@ public class DefaultKmeliaService implements KmeliaService {
   }
 
   private String[] getUserRoles(String componentId, String userId) {
-    return getOrganisationController().getUserProfiles(userId, componentId);
+    OrganizationController oc = getOrganisationController();
+    String[] profiles = oc.getUserProfiles(userId, componentId);
+    if (ArrayUtil.isEmpty(profiles) && oc.getComponentInstLight(componentId).isPublic()) {
+      profiles = new String[1];
+      Arrays.fill(profiles, KmeliaHelper.ROLE_READER);
+    }
+    return profiles;
   }
 
   private NodePK getRootPK(String componentId) {
