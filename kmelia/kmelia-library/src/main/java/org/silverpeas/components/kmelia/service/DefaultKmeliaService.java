@@ -61,7 +61,6 @@ import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygControlle
 import org.silverpeas.core.contribution.publication.datereminder.PublicationNoteReference;
 import org.silverpeas.core.contribution.publication.model.Alias;
 import org.silverpeas.core.contribution.publication.model.CompletePublication;
-import org.silverpeas.core.contribution.publication.model.PublicationLink;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationLink;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
@@ -99,6 +98,10 @@ import org.silverpeas.core.personalorganizer.model.Attendee;
 import org.silverpeas.core.personalorganizer.model.TodoDetail;
 import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
 import org.silverpeas.core.process.annotation.SimulationActionProcess;
+import org.silverpeas.core.security.authorization.AccessControlContext;
+import org.silverpeas.core.security.authorization.AccessController;
+import org.silverpeas.core.security.authorization.AccessControllerProvider;
+import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
 import org.silverpeas.core.subscription.Subscription;
@@ -1009,10 +1012,10 @@ public class DefaultKmeliaService implements KmeliaService {
             .getUserProfiles(userId, nodePK.getInstanceId(), topic.getRightsDependsOn(),
                 ObjectType.NODE));
       } else {
-        profile = KmeliaHelper.getProfile(orgCtrl.getUserProfiles(userId, nodePK.getInstanceId()));
+        profile = KmeliaHelper.getProfile(getUserRoles(nodePK.getInstanceId(), userId));
       }
     } else {
-      profile = KmeliaHelper.getProfile(orgCtrl.getUserProfiles(userId, nodePK.getInstanceId()));
+      profile = KmeliaHelper.getProfile(getUserRoles(nodePK.getInstanceId(), userId));
     }
     return profile;
   }
@@ -1175,8 +1178,7 @@ public class DefaultKmeliaService implements KmeliaService {
     // la publication a été modifié par un superviseur
     // le créateur de la publi doit être averti
     String profile = KmeliaHelper.getProfile(
-        getOrganisationController().getUserProfiles(pubDetail.getUpdaterId(),
-            pubDetail.getPK().getInstanceId()));
+        getUserRoles(pubDetail.getPK().getInstanceId(), pubDetail.getUpdaterId()));
     if ("supervisor".equals(profile)) {
       sendModificationAlert(updateScope, pubDetail.getPK());
     }
@@ -1809,8 +1811,7 @@ public class DefaultKmeliaService implements KmeliaService {
     // fetch one of the publication fathers
     NodePK fatherPK =
         getPublicationFatherPK(pubPK, isTreeStructureUsed, userId, isRightsOnTopicsUsed);
-    String profile = KmeliaHelper
-        .getProfile(getOrganisationController().getUserProfiles(userId, pubPK.getInstanceId()));
+    String profile = KmeliaHelper.getProfile(getUserRoles(pubPK.getInstanceId(), userId));
     return goTo(fatherPK, userId, isTreeStructureUsed, profile, isRightsOnTopicsUsed);
   }
 
@@ -4160,7 +4161,12 @@ public class DefaultKmeliaService implements KmeliaService {
   }
 
   private String[] getUserRoles(String componentId, String userId) {
-    return getOrganisationController().getUserProfiles(userId, componentId);
+    final AccessController<String> accessController =
+        AccessControllerProvider.getAccessController(ComponentAccessControl.class);
+    return accessController.getUserRoles(userId, componentId, AccessControlContext.init())
+        .stream()
+        .map(SilverpeasRole::name)
+        .toArray(String[]::new);
   }
 
   private NodePK getRootPK(String componentId) {
