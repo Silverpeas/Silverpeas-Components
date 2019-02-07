@@ -61,7 +61,6 @@ import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygControlle
 import org.silverpeas.core.contribution.publication.datereminder.PublicationNoteReference;
 import org.silverpeas.core.contribution.publication.model.Alias;
 import org.silverpeas.core.contribution.publication.model.CompletePublication;
-import org.silverpeas.core.contribution.publication.model.PublicationLink;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationLink;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
@@ -99,6 +98,10 @@ import org.silverpeas.core.personalorganizer.model.Attendee;
 import org.silverpeas.core.personalorganizer.model.TodoDetail;
 import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
 import org.silverpeas.core.process.annotation.SimulationActionProcess;
+import org.silverpeas.core.security.authorization.AccessControlContext;
+import org.silverpeas.core.security.authorization.AccessController;
+import org.silverpeas.core.security.authorization.AccessControllerProvider;
+import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
 import org.silverpeas.core.subscription.Subscription;
@@ -4158,13 +4161,12 @@ public class DefaultKmeliaService implements KmeliaService {
   }
 
   private String[] getUserRoles(String componentId, String userId) {
-    OrganizationController oc = getOrganisationController();
-    String[] profiles = oc.getUserProfiles(userId, componentId);
-    if (ArrayUtil.isEmpty(profiles) && oc.getComponentInstLight(componentId).isPublic()) {
-      profiles = new String[1];
-      Arrays.fill(profiles, KmeliaHelper.ROLE_READER);
-    }
-    return profiles;
+    final AccessController<String> accessController =
+        AccessControllerProvider.getAccessController(ComponentAccessControl.class);
+    return accessController.getUserRoles(userId, componentId, AccessControlContext.init())
+        .stream()
+        .map(SilverpeasRole::name)
+        .toArray(String[]::new);
   }
 
   private NodePK getRootPK(String componentId) {
