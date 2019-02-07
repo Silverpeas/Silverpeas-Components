@@ -98,10 +98,6 @@ import org.silverpeas.core.personalorganizer.model.Attendee;
 import org.silverpeas.core.personalorganizer.model.TodoDetail;
 import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
 import org.silverpeas.core.process.annotation.SimulationActionProcess;
-import org.silverpeas.core.security.authorization.AccessControlContext;
-import org.silverpeas.core.security.authorization.AccessController;
-import org.silverpeas.core.security.authorization.AccessControllerProvider;
-import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
 import org.silverpeas.core.subscription.Subscription;
@@ -4161,12 +4157,12 @@ public class DefaultKmeliaService implements KmeliaService {
   }
 
   private String[] getUserRoles(String componentId, String userId) {
-    final AccessController<String> accessController =
-        AccessControllerProvider.getAccessController(ComponentAccessControl.class);
-    return accessController.getUserRoles(userId, componentId, AccessControlContext.init())
-        .stream()
-        .map(SilverpeasRole::name)
-        .toArray(String[]::new);
+    final OrganizationController oc = getOrganisationController();
+    String[] profiles = oc.getUserProfiles(userId, componentId);
+    if (ArrayUtil.isEmpty(profiles) && oc.getComponentInstLight(componentId).isPublic()) {
+      profiles = new String[]{KmeliaHelper.ROLE_READER};
+    }
+    return profiles;
   }
 
   private NodePK getRootPK(String componentId) {
