@@ -4177,7 +4177,7 @@ public class DefaultKmeliaService implements KmeliaService {
       // publication is not in a state which allow a validation
       return false;
     }
-    List<String> validatorIds = getActiveValidatorIds(pubPK);
+    final List<String> validatorIds = getAllValidators(pubPK);
     if (!validatorIds.contains(userId)) {
       // current user is not part of users who are able to validate this publication
       return false;
