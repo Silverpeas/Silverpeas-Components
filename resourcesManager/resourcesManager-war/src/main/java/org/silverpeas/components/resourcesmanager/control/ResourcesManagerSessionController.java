@@ -345,9 +345,8 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
           notifMetaData.setLink(link, language);
         }
 
-        notifMetaData.setComponentId(getComponentId());
         notifMetaData.addUserRecipients(managers);
-        notifMetaData.setSender(user);
+        setMetaData(notifMetaData);
         // 2. envoie de la notification aux responsables
         getNotificationSender().notifyUser(notifMetaData);
       }
@@ -599,9 +598,9 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
       notifMetaData.setLink(link, language);
     }
 
-    notifMetaData.setComponentId(getComponentId());
     notifMetaData.addUserRecipient(new UserRecipient(reservation.getUserId()));
-    notifMetaData.setSender(user);
+    setMetaData(notifMetaData);
+
     // 2. envoie de la notification
     getNotificationSender().notifyUser(notifMetaData);
   }
@@ -614,6 +613,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
     messageBody.append(message.getString("resourcesManager.notifBodyRefuseMiddle")).append(" '");
     messageBody.append(reservation.getEvent()).append("' ");
     messageBody.append(message.getString("resourcesManager.notifBodyRefuseEnd"));
+    messageBody.append(" ");
     messageBody.append(message.getString("resourcesManager.notifBodyRefuseMotive"));
     return messageBody.toString();
   }
@@ -651,11 +651,16 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
       notifMetaData.setLink(link, language);
     }
 
-    notifMetaData.setComponentId(getComponentId());
     notifMetaData.addUserRecipient(new UserRecipient(reservation.getUserId()));
-    notifMetaData.setSender(user);
+    setMetaData(notifMetaData);
+
     // 2. envoie de la notification
     getNotificationSender().notifyUser(notifMetaData);
+  }
+
+  private void setMetaData(NotificationMetaData notifMetaData) {
+    notifMetaData.setComponentId(getComponentId());
+    notifMetaData.setSender(getUserId());
   }
 
   /**
