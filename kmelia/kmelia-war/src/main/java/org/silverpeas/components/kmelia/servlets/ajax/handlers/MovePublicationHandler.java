@@ -21,6 +21,7 @@
 package org.silverpeas.components.kmelia.servlets.ajax.handlers;
 
 
+import org.silverpeas.components.kmelia.KmeliaPasteDetail;
 import org.silverpeas.components.kmelia.control.KmeliaSessionController;
 import org.silverpeas.components.kmelia.service.KmeliaService;
 import org.silverpeas.components.kmelia.servlets.ajax.AjaxHandler;
@@ -39,11 +40,15 @@ public class MovePublicationHandler implements AjaxHandler {
     String id = request.getParameter("Id");
     String sourceId = request.getParameter("SourceNodeId");
     String targetId = request.getParameter("TargetNodeId");
+    String validatorIds = request.getParameter("ValidatorIds");
     try {
       PublicationPK pubPK = new PublicationPK(id, controller.getComponentId());
       NodePK from = new NodePK(sourceId, controller.getComponentId());
       NodePK to = new NodePK(targetId, controller.getComponentId());
-      getKmeliaService().movePublicationInSameApplication(pubPK, from, to, controller.getUserId());
+      KmeliaPasteDetail pasteDetail = new KmeliaPasteDetail(to);
+      pasteDetail.setUserId(controller.getUserId());
+      pasteDetail.setTargetValidatorIds(validatorIds);
+      getKmeliaService().movePublicationInSameApplication(pubPK, from, pasteDetail);
       return "ok";
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e);

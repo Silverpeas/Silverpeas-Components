@@ -23,10 +23,10 @@
  */
 package org.silverpeas.components.kmelia.servlets.ajax;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.silverpeas.components.kmelia.control.KmeliaSessionController;
 import org.silverpeas.components.kmelia.servlets.ajax.handlers.*;
+
+import javax.servlet.http.HttpServletRequest;
 
 public enum AjaxOperation {
 
@@ -47,12 +47,13 @@ public enum AjaxOperation {
   DeletePublications(new DeletePublicationsHandler(), true),
   CopyPublications(new CopyPublicationsHandler(), true),
   CutPublications(new CutPublicationsHandler(), true),
-  IsClipboardContainsCopiedItems(new IsClipboardContainsCopiedItemsHandler(), true);
+  GetClipboardState(new GetClipboardStateHandler(), true),
+  GetPublicationAuthorizations(new GetPublicationAuthorizationsHandler(), true);
 
   private AjaxHandler handler;
   private boolean controllerRequired;
 
-  private AjaxOperation(AjaxHandler handler, boolean controllerRequired) {
+  AjaxOperation(AjaxHandler handler, boolean controllerRequired) {
     this.handler = handler;
     this.controllerRequired = controllerRequired;
   }

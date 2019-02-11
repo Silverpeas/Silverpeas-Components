@@ -133,3 +133,103 @@ function cutPublications() {
     }
   }, 'text');
 }
+
+(function($) {
+  window.kmeliaWebService = new function() {
+    var __serviceUrl = webContext + '/KmeliaAJAXServlet';
+    var __computeRequestParams = function(action, params) {
+      var componentId = getComponentId();
+      if (!componentId) {
+        throw new Error("component id must exist")
+      }
+      return extendsObject({}, params, {Action : action, ComponentId : componentId});
+    };
+    var __getBySyncRequest = function(action, params) {
+      var result = "";
+      $.ajax({
+        url : __serviceUrl,
+        data : __computeRequestParams(action, params),
+        type : 'GET',
+        dataType : 'text',
+        cache : false,
+        async : false,
+        success : function(data, status, jqXHR) {
+          result = data;
+        },
+        error : function(jqXHR, textStatus, errorThrown) {
+          sp.log.error(errorThrown);
+        }
+      });
+      return result;
+    };
+    var __ajaxRequest = function(action, params) {
+      return sp.ajaxRequest(__serviceUrl).withParams(__computeRequestParams(action, params));
+    };
+    var __asText = function(request) {
+      return request.responseText;
+    };
+
+    /**
+     * Gets the clipboard state about kmelia instances.
+     * @returns {*}
+     */
+    this.getClipboardState = function() {
+      return __ajaxRequest('GetClipboardState').send().then(__asText);
+    };
+
+    /**
+     * Gets the user profile about a folder represented by the given identifier.
+     * @param folderId identifier of a folder.
+     * @returns {string}
+     */
+    this.getUserProfileSynchronously = function(folderId) {
+      return __getBySyncRequest('GetProfile', {Id : folderId});
+    };
+
+    /**
+     * Gets the authorizations about the manipulation of a publication represented by the given
+     * identifier. An optional identifier of topic can be found if the verification is about an
+     * other folder than the current one.
+     * @param pubId identifier of a publication.
+     * @param topicId (optional) an identifier of folder. If none, the current folder os taken into
+     *     account by services.
+     * @returns {any}
+     */
+    this.getPublicationUserAuthorizationsSynchronously = function(pubId, topicId) {
+      var _params = {pubId : pubId, nodeId : topicId};
+      var authorizations = __getBySyncRequest('GetPublicationAuthorizations', _params);
+      return extendsObject({
+        canBeCut : false,
+        canBeDeleted : false
+      }, JSON.parse(authorizations));
+    };
+
+    /**
+     * Moves the publication represented by the given identifier from a folder to another one.
+     * Some additional parameters can be given to services in order to set validators, state, etc.
+     * @param pubId the identifier of the publication to move.
+     * @param sourceNodeId the identifier of the source folder.
+     * @param targetNodeId the identifier of the target folder.
+     * @param extraParams additional parameters.
+     * @returns {*}
+     */
+    this.movePublication = function(pubId, sourceNodeId, targetNodeId, extraParams) {
+      var _params = extendsObject({}, extraParams, {
+        Id : pubId, SourceNodeId : sourceNodeId, TargetNodeId : targetNodeId
+      });
+      return __ajaxRequest('MovePublication', _params).byPostMethod().send().then(__asText);
+    };
+
+    /**
+     * Pastes publication copies and/or cuts into folder represented by given identifier.
+     * Some additional parameters can be given to services in order to set validators, state, etc.
+     * @param folderId identifier of a target folder.
+     * @param extraParams additional parameters.
+     * @returns {*}
+     */
+    this.pastePublications = function(folderId, extraParams) {
+      var _params = extendsObject({}, extraParams, {Id : folderId});
+      return __ajaxRequest('Paste', _params).byPostMethod().send().then(__asText);
+    };
+  };
+})(jQuery);

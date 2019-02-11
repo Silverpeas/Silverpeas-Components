@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2018 Silverpeas
+ * Copyright (C) 2000 - 2019 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -28,11 +28,10 @@ import org.silverpeas.components.kmelia.servlets.ajax.AjaxHandler;
 
 import javax.servlet.http.HttpServletRequest;
 
-public class IsClipboardContainsCopiedItemsHandler implements AjaxHandler {
+public class GetClipboardStateHandler implements AjaxHandler {
 
   @Override
-  public String handleRequest(HttpServletRequest request, KmeliaSessionController controller) {
-    return Boolean.toString(controller.isClipboardContainsSomeCopiedItems());
+  public String handleRequest(HttpServletRequest request, KmeliaSessionController kmelia) {
+    return kmelia.getClipboardState().name();
   }
-
 }

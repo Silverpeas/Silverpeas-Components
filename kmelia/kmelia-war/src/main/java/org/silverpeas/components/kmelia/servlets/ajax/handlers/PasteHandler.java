@@ -43,6 +43,7 @@ public class PasteHandler implements AjaxHandler {
     try {
       NodePK toPK = new NodePK(id, controller.getComponentId());
       KmeliaPasteDetail pasteDetail = new KmeliaPasteDetail(toPK);
+      pasteDetail.setUserId(controller.getUserId());
       pasteDetail.setStatus(state);
       pasteDetail.setTargetValidatorIds(validatorIds);
       controller.paste(pasteDetail);

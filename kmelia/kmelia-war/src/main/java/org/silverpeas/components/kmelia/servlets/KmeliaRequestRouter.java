@@ -1001,7 +1001,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
       } else if (function.equals("SelectValidator")) {
         String formElementName = request.getParameter("FormElementName");
         String formElementId = request.getParameter("FormElementId");
-        destination = kmelia.initUPToSelectValidator(formElementName, formElementId);
+        String folderId = request.getParameter("FolderId");
+        destination = kmelia.initUPToSelectValidator(formElementName, formElementId, folderId);
       } else if (function.equals("PublicationPaths")) {
         PublicationDetail publication = kmelia.getSessionPublication().getDetail();
         String pubId = publication.getPK().getId();

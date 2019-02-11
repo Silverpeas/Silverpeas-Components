@@ -25,6 +25,7 @@ import org.silverpeas.components.kmelia.InstanceParameters;
 import org.silverpeas.components.kmelia.KmeliaAuthorization;
 import org.silverpeas.components.kmelia.KmeliaContentManager;
 import org.silverpeas.components.kmelia.KmeliaCopyDetail;
+import org.silverpeas.components.kmelia.KmeliaPasteDetail;
 import org.silverpeas.components.kmelia.KmeliaPublicationHelper;
 import org.silverpeas.components.kmelia.PublicationImport;
 import org.silverpeas.components.kmelia.model.KmaxRuntimeException;
@@ -1238,13 +1239,14 @@ public class DefaultKmeliaService implements KmeliaService {
   @SimulationActionProcess(elementLister = KmeliaPublicationSimulationElementLister.class)
   @Action(ActionType.MOVE)
   @Override
-  public void movePublication(@SourcePK PublicationPK pubPK, @TargetPK NodePK to, String userId) {
+  public void movePublication(@SourcePK PublicationPK pubPK, @TargetPK NodePK to,
+      KmeliaPasteDetail pasteContext) {
     PublicationDetail pub = getPublicationDetail(pubPK);
     if (pub != null) {
       if (pubPK.getInstanceId().equals(to.getInstanceId())) {
-        movePublicationInSameApplication(pub, to, userId);
+        movePublicationInSameApplication(pub, to, pasteContext);
       } else {
-        movePublicationInAnotherApplication(pub, to, userId);
+        movePublicationInAnotherApplication(pub, to, pasteContext);
       }
     }
   }
@@ -1253,8 +1255,10 @@ public class DefaultKmeliaService implements KmeliaService {
   @Action(ActionType.MOVE)
   @Override
   public void movePublicationInSameApplication(@SourcePK PublicationPK pubPK, @TargetPK NodePK from,
-      NodePK to, String userId) {
+      KmeliaPasteDetail pasteContext) {
     PublicationDetail pub = getPublicationDetail(pubPK);
+    String userId = pasteContext.getUserId();
+    NodePK to = pasteContext.getToPK();
 
     // check if user can cut publication from source folder
     String profile = getUserTopicProfile(from, userId);
@@ -1266,18 +1270,20 @@ public class DefaultKmeliaService implements KmeliaService {
     boolean pasteAllowed = KmeliaPublicationHelper.isCreationAllowed(to, profileInTarget);
 
     if (cutAllowed && pasteAllowed) {
-      movePublicationInSameApplication(pub, to, userId);
+      movePublicationInSameApplication(pub, to, pasteContext);
     }
   }
 
-  private void movePublicationInSameApplication(PublicationDetail pub, NodePK to, String userId) {
+  private void movePublicationInSameApplication(PublicationDetail pub, NodePK to,
+      KmeliaPasteDetail pasteContext) {
     if (to.isTrash()) {
       sendPublicationToBasket(pub.getPK());
     } else {
       // update parent
       publicationService.removeAllFather(pub.getPK());
       publicationService.addFather(pub.getPK(), to);
-      processPublicationAfterMove(pub, to, userId);
+      pub.setTargetValidatorId(pasteContext.getTargetValidatorIds());
+      processPublicationAfterMove(pub, to, pasteContext.getUserId());
     }
   }
 
@@ -1294,13 +1300,8 @@ public class DefaultKmeliaService implements KmeliaService {
    * <li>moving the statistics</li>
    * </ul>
    */
-
-  @SimulationActionProcess(elementLister = KmeliaPublicationSimulationElementLister.class)
-  @Action(ActionType.MOVE)
-  @Override
-  public void movePublicationInAnotherApplication(@SourcePK PublicationDetail pub,
-      @TargetPK NodePK to, String userId) {
-
+  private void movePublicationInAnotherApplication(PublicationDetail pub, NodePK to,
+      KmeliaPasteDetail pasteContext) {
     try {
       ResourceReference fromResourceReference = new ResourceReference(pub.getPK());
       String fromComponentId = pub.getInstanceId();
@@ -1367,7 +1368,9 @@ public class DefaultKmeliaService implements KmeliaService {
       publicationService.movePublication(pub.getPK(), to, false);
       pub.getPK().setComponentName(to.getInstanceId());
 
-      processPublicationAfterMove(pub, to, userId);
+      pub.setTargetValidatorId(pasteContext.getTargetValidatorIds());
+
+      processPublicationAfterMove(pub, to, pasteContext.getUserId());
 
       // index moved publication
       if (KmeliaHelper.isIndexable(pub)) {
@@ -2041,24 +2044,12 @@ public class DefaultKmeliaService implements KmeliaService {
     return value == KmeliaHelper.VALIDATION_TARGET_N || value == KmeliaHelper.VALIDATION_TARGET_1;
   }
 
-  private List<String> getValidatorIds(PublicationDetail publi) {
-    List<String> allValidators = new ArrayList<>();
-    if (isDefined(publi.getTargetValidatorId())) {
-      StringTokenizer tokenizer = new StringTokenizer(publi.getTargetValidatorId(), ",");
-      while (tokenizer.hasMoreTokens()) {
-        allValidators.add(tokenizer.nextToken());
-      }
-    }
-    return allValidators;
-  }
-
   @Override
   public List<String> getAllValidators(PublicationPK pubPK) {
     // get all users who have to validate
     List<String> allValidators = new ArrayList<>();
     if (isTargetedValidationEnabled(pubPK.getInstanceId())) {
-      PublicationDetail publi = publicationService.getDetail(pubPK);
-      allValidators = getValidatorIds(publi);
+      allValidators = getActiveValidatorIds(pubPK);
     }
     if (allValidators.isEmpty()) {
       // It's not a targeted validation or it is but no validators has
@@ -4186,7 +4177,7 @@ public class DefaultKmeliaService implements KmeliaService {
       // publication is not in a state which allow a validation
       return false;
     }
-    List<String> validatorIds = getAllValidators(pubPK);
+    final List<String> validatorIds = getAllValidators(pubPK);
     if (!validatorIds.contains(userId)) {
       // current user is not part of users who are able to validate this publication
       return false;
@@ -4372,7 +4363,8 @@ public class DefaultKmeliaService implements KmeliaService {
   @SimulationActionProcess(elementLister = KmeliaNodeSimulationElementLister.class)
   @Action(ActionType.MOVE)
   @Override
-  public NodeDetail moveNode(@SourcePK NodePK nodePK, @TargetPK NodePK to, String userId) {
+  public NodeDetail moveNode(@SourcePK NodePK nodePK, @TargetPK NodePK to,
+      KmeliaPasteDetail pasteContext) {
     List<NodeDetail> treeToPaste = nodeService.getSubTree(nodePK);
 
     // move node and subtree
@@ -4401,7 +4393,7 @@ public class DefaultKmeliaService implements KmeliaService {
         }
 
         // move publications of node
-        movePublicationsOfTopic(fromNode.getNodePK(), toNodePK, userId);
+        movePublicationsOfTopic(fromNode.getNodePK(), toNodePK, pasteContext);
       }
     }
 
@@ -4409,10 +4401,10 @@ public class DefaultKmeliaService implements KmeliaService {
     return getNodeHeader(nodePK);
   }
 
-  private void movePublicationsOfTopic(NodePK fromPK, NodePK toPK, String userId) {
+  private void movePublicationsOfTopic(NodePK fromPK, NodePK toPK, KmeliaPasteDetail pasteContext) {
     Collection<PublicationDetail> publications = publicationService.getDetailsByFatherPK(fromPK);
     for (PublicationDetail publi : publications) {
-      movePublication(publi.getPK(), toPK, userId);
+      movePublication(publi.getPK(), toPK, pasteContext);
     }
   }
 
@@ -4760,5 +4752,23 @@ public class DefaultKmeliaService implements KmeliaService {
   public UserNotification getUserNotification(NodePK pk) {
     NodeDetail node = getNodeHeader(pk);
     return new KmeliaNotifyTopicUserNotification(node).build();
+  }
+
+  @Override
+  public List<String> getActiveValidatorIds(PublicationPK pk) {
+    PublicationDetail pub = getPublicationDetail(pk);
+    List<String> activeValidatorIds = new ArrayList<>();
+    String[] validatorIds = pub.getTargetValidatorIds();
+    if (validatorIds == null) {
+      return activeValidatorIds;
+    }
+    for (String userId : validatorIds) {
+      String profile = getProfileOnPublication(userId, pk);
+      if (profile != null &&
+          SilverpeasRole.from(profile).isGreaterThanOrEquals(SilverpeasRole.publisher)) {
+        activeValidatorIds.add(userId);
+      }
+    }
+    return activeValidatorIds;
   }
 }
