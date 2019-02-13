@@ -114,7 +114,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
     boolean inList = isInList(userId, users);
     if (!inList) {
       for (Group group : groups) {
-        inList = isInList(userId, group.getAllUsers());
+        inList = group != null && isInList(userId, group.getAllUsers());
         if (inList) {
           return true;
         }
@@ -125,7 +125,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
 
   private boolean isInList(String userId, List<? extends User> users) {
     for (User user : users) {
-      if (user.getId().equals(userId)) {
+      if (user != null && user.getId().equals(userId)) {
         return true;
       }
     }
@@ -420,9 +420,12 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
     List<String> userIds = getDAO().getReceiversAsUsers(pk);
     List<String> groupIds = getDAO().getReceiversAsGroups(pk);
     for (String groupId : groupIds) {
-      List<User> users = Group.getById(groupId).getAllUsers();
-      for (User user : users) {
-        userIds.add(user.getId());
+      Group group = Group.getById(groupId);
+      if (group != null) {
+        List<User> users = group.getAllUsers();
+        for (User user : users) {
+          userIds.add(user.getId());
+        }
       }
     }
     return userIds;
