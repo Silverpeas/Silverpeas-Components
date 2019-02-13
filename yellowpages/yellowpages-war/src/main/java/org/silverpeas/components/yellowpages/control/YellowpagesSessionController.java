@@ -583,7 +583,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
       return users;
     }
 
-    UserDetail[] userDetails = getOrganisationController().getFiltredDirectUsers(groupId, "");
+    UserDetail[] userDetails = getOrganisationController().getFilteredDirectUsers(groupId, "");
 
     for (UserDetail userDetail : userDetails) {
       ContactFatherDetail contactFather = getContactFatherDetail(userDetail.getId(), groupDetail);
