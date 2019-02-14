@@ -32,10 +32,7 @@ import com.lowagie.text.pdf.PdfWriter;
 import net.htmlparser.jericho.Source;
 import org.silverpeas.components.kmelia.service.KmeliaService;
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.AttachmentException;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
@@ -56,8 +53,9 @@ import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
+import org.silverpeas.core.persistence.Transaction;
+import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.workflow.api.WorkflowException;
@@ -69,6 +67,7 @@ import org.silverpeas.core.workflow.api.model.Parameter;
 import org.silverpeas.core.workflow.api.model.State;
 import org.silverpeas.core.workflow.external.impl.ExternalActionImpl;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import java.awt.*;
 import java.io.ByteArrayOutputStream;
@@ -84,93 +83,36 @@ import java.util.Map;
 public class SendInKmelia extends ExternalActionImpl {
 
   private static final String UNKNOWN = "unknown";
-  private String targetId = UNKNOWN;
-  private String topicId = UNKNOWN;
-  private String pubDesc = null;
-  private String role = UNKNOWN;
-  private String xmlFormName = null;
-  private boolean addPDFHistory = true;
-  // Add pdf history before instance attachments
-  private boolean addPDFHistoryFirst = true;
-  private String pdfHistoryName = null;
-  private String userId = null;
-  private static final String ADMIN_ID = "0";
+
+  @Inject
+  private NodeService nodeService;
+  @Inject
+  private KmeliaService kmeliaService;
 
   @Override
   public void execute() {
-    setRole(getEvent().getUserRoleName());
-
-    Parameter parameter = getTriggerParameter("explorerFieldName");
-    if (parameter != null && StringUtil.isDefined(parameter.getValue())) {
-      String explorerFieldName = parameter.getValue();
-      // getting place to create publication from explorer field
-      try {
-        ExplorerField explorer = (ExplorerField) getProcessInstance().getField(explorerFieldName);
-        ResourceReference pk = (ResourceReference) explorer.getObjectValue();
-        targetId = pk.getInstanceId();
-        topicId = pk.getId();
-      } catch (WorkflowException e) {
-        SilverLogger.getLogger(this).error(e.getMessage(), e);
-      }
-    } else {
-      targetId = getTriggerParameter("targetComponentId").getValue();
-      Parameter paramTopicPath = getTriggerParameter("targetFolderPath");
-      if (paramTopicPath != null && StringUtil.isDefined(paramTopicPath.getValue())) {
-        try {
-          String path = DataRecordUtil.applySubstitution(paramTopicPath.getValue(),
-              getProcessInstance().getAllDataRecord(role, "fr"), "fr");
-          topicId = getNodeId(path);
-        } catch (WorkflowException e) {
-          SilverLogger.getLogger(this).error(e.getMessage(), e);
-          topicId = "0";
-        }
-      } else {
-        topicId = getTriggerParameter("targetTopicId").getValue();
-      }
-    }
-    final String pubTitle = getTriggerParameter("pubTitle").getValue();
-    Parameter paramDescription = getTriggerParameter("pubDescription");
-    if (paramDescription != null && StringUtil.isDefined(paramDescription.getValue())) {
-      pubDesc = paramDescription.getValue();
-    }
-    if (getTriggerParameter("xmlFormName") != null) {
-      xmlFormName = getTriggerParameter("xmlFormName").getValue();
-      if (StringUtil.isDefined(xmlFormName) && xmlFormName.lastIndexOf(".xml") != -1) {
-        xmlFormName = xmlFormName.substring(0, xmlFormName.lastIndexOf(".xml"));
-      }
-    }
-    boolean formIsUsed = StringUtil.isDefined(xmlFormName);
-    if (getTriggerParameter("addPDFHistory") != null) {
-      addPDFHistory = StringUtil.getBooleanValue(getTriggerParameter("addPDFHistory").getValue());
-      if (getTriggerParameter("addPDFHistoryFirst") != null) {
-        addPDFHistoryFirst = StringUtil.getBooleanValue(getTriggerParameter("addPDFHistoryFirst").getValue());
-      }
-      Parameter paramPDFName = getTriggerParameter("pdfHistoryName");
-      if (paramPDFName != null) {
-        pdfHistoryName = getTriggerParameter("pdfHistoryName").getValue();
-      }
-    }
+    final String role = getEvent().getUserRoleName();
+    final String userId = OperationContext.getFromCache().getUser().getId();
+    final Parameter parameter = getTriggerParameter("explorerFieldName");
+    final Target target = new Target(role, userId, parameter).invoke();
+    final String targetId = target.getTargetId();
+    final String topicId = target.getTopicId();
+    final String pubTitle = getPublicationTitle();
+    final String pubDesc = getPublicationDescription();
+    final String xmlFormName = getXmlFormName();
+    final boolean formIsUsed = StringUtil.isDefined(xmlFormName);
+    final PdfHistory pdfHistory = new PdfHistory().invoke();
+    final boolean isHistoryEnable = pdfHistory.isEnable();
+    final boolean isHistoryFirstAdding = pdfHistory.isFirstAdding();
+    final String pdfHistoryName = pdfHistory.getFileName();
 
     // 1 - Create publication
-    PublicationPK pubPK = new PublicationPK("0", getTargetId());
+    PublicationPK pubPK = new PublicationPK("0", targetId);
     Date now = new Date();
-    String pubName = getProcessInstance().getTitle(getRole(), getLanguage());
-    if (StringUtil.isDefined(pubTitle)) {
-      try {
-        pubName = DataRecordUtil.applySubstitution(pubTitle, getProcessInstance().getAllDataRecord(role, "fr"), "fr");
-      } catch (WorkflowException e) {
-        SilverLogger.getLogger(this).error(e.getMessage(), e);
-      }
-    }
+    String pubName = getProcessInstance().getTitle(role, getLanguage());
+    pubName = applySubstitution(role, pubTitle, pubName);
     String desc = "";
-    if (StringUtil.isDefined(pubDesc)) {
-      try {
-        desc = DataRecordUtil.applySubstitution(pubDesc, getProcessInstance().getAllDataRecord(role, "fr"), "fr");
-      } catch (WorkflowException e) {
-        SilverLogger.getLogger(this).error(e.getMessage(), e);
-      }
-    }
-    userId = getBestUserDetail().getId();
+    desc = applySubstitution(role, pubDesc, desc);
     PublicationDetail pubDetail = new PublicationDetail(pubPK, pubName, desc, now, now, null, userId, 1, null, null, null);
 
     if (formIsUsed) {
@@ -178,13 +120,13 @@ public class SendInKmelia extends ExternalActionImpl {
     }
 
     KmeliaService kmelia = getKmeliaService();
-    NodePK nodePK = new NodePK(getTopicId(), getTargetId());
+    NodePK nodePK = new NodePK(topicId, targetId);
     String pubId = kmelia.createPublicationIntoTopic(pubDetail, nodePK);
     pubPK.setId(pubId);
 
     // 2 - Attach history as pdf file
-    if (addPDFHistory && addPDFHistoryFirst) {
-      addPdfHistory(pubPK, userId);
+    if (isHistoryEnable && isHistoryFirstAdding) {
+      addPdfHistory(pdfHistoryName, role, pubPK, userId);
     }
 
     // 3 - Copy all instance regular files to publication
@@ -193,14 +135,14 @@ public class SendInKmelia extends ExternalActionImpl {
     ResourceReference toPK = new ResourceReference(pubPK);
     copyFiles(fromPK, toPK, DocumentType.attachment, DocumentType.attachment);
 
-    if (addPDFHistory && !addPDFHistoryFirst) {
-      addPdfHistory(pubPK, userId);
+    if (isHistoryEnable && !isHistoryFirstAdding) {
+      addPdfHistory(pdfHistoryName, role, pubPK, userId);
     }
 
     // process form content
     if (formIsUsed) {
       // target app use form : populate form fields
-      populateFields(pubId, fromPK, toPK);
+      populateFields(pubId, fromPK, toPK, xmlFormName);
     } else {
       // target app do not use form : copy files of worflow folder
       copyFiles(fromPK, toPK, DocumentType.form, DocumentType.attachment);
@@ -212,15 +154,57 @@ public class SendInKmelia extends ExternalActionImpl {
     }
   }
 
-  public void populateFields(String pubId, ResourceReference fromPK, ResourceReference toPK) {
+  private String getXmlFormName() {
+    String xmlFormName = null;
+    if (getTriggerParameter("xmlFormName") != null) {
+      xmlFormName = getTriggerParameter("xmlFormName").getValue();
+      if (StringUtil.isDefined(xmlFormName) && xmlFormName.lastIndexOf(".xml") != -1) {
+        xmlFormName = xmlFormName.substring(0, xmlFormName.lastIndexOf(".xml"));
+      }
+    }
+    return xmlFormName;
+  }
+
+  private String getPublicationTitle() {
+    return getTriggerParameter("pubTitle").getValue();
+  }
+
+  private String getPublicationDescription() {
+    final String pubDesc;
+    final Parameter paramDescription = getTriggerParameter("pubDescription");
+    if (paramDescription != null && StringUtil.isDefined(paramDescription.getValue())) {
+      pubDesc = paramDescription.getValue();
+    } else {
+      pubDesc = null;
+    }
+    return pubDesc;
+  }
+
+  private String applySubstitution(final String role, final String text, final String defaultText) {
+    String result = defaultText;
+    if (StringUtil.isDefined(text)) {
+      try {
+        result = DataRecordUtil.applySubstitution(text,
+            getProcessInstance().getAllDataRecord(role, "fr"), "fr");
+      } catch (WorkflowException e) {
+        SilverLogger.getLogger(this).error(e.getMessage(), e);
+      }
+    }
+    return result;
+  }
+
+  public void populateFields(String pubId, ResourceReference fromPK, ResourceReference toPK, String xmlFormName) {
     // Get the current instance
     UpdatableProcessInstance currentProcessInstance = (UpdatableProcessInstance) getProcessInstance();
     try {
       // register xmlForm of publication
-      PublicationTemplateManager.getInstance().addDynamicPublicationTemplate(targetId + ":" + xmlFormName, xmlFormName + ".xml");
+      PublicationTemplateManager.getInstance()
+          .addDynamicPublicationTemplate(toPK.getComponentInstanceId() + ":" + xmlFormName,
+              xmlFormName + ".xml");
 
       PublicationTemplateImpl pubTemplate =
-          (PublicationTemplateImpl) PublicationTemplateManager.getInstance().getPublicationTemplate(targetId + ":" + xmlFormName);
+          (PublicationTemplateImpl) PublicationTemplateManager.getInstance()
+              .getPublicationTemplate(toPK.getComponentInstanceId() + ":" + xmlFormName);
       DataRecord record = pubTemplate.getRecordSet().getEmptyRecord();
       record.setId(pubId);
       for (String fieldName : record.getFieldNames()) {
@@ -302,7 +286,7 @@ public class SendInKmelia extends ExternalActionImpl {
     return AttachmentServiceProvider.getAttachmentService().copyDocument(file, toPK);
   }
 
-  private byte[] generatePDF(ProcessInstance instance) {
+  private byte[] generatePDF(final String role, ProcessInstance instance) {
     com.lowagie.text.Document document = new com.lowagie.text.Document();
 
     try {
@@ -312,7 +296,7 @@ public class SendInKmelia extends ExternalActionImpl {
 
       HistoryStep[] steps = instance.getHistorySteps();
       for (HistoryStep historyStep : steps) {
-        generatePDFStep(historyStep, document);
+        generatePDFStep(role, historyStep, document);
       }
 
       document.close();
@@ -324,23 +308,24 @@ public class SendInKmelia extends ExternalActionImpl {
     return new byte[0];
   }
 
-  private void generatePDFStep(HistoryStep step, com.lowagie.text.Document document) {
+  private void generatePDFStep(final String role, HistoryStep step, com.lowagie.text.Document document) {
     if (step != null) {
-      generatePDFStepHeader(step, document);
-      generatePDFStepContent(step, document);
+      generatePDFStepHeader(role, step, document);
+      generatePDFStepContent(role, step, document);
     }
   }
 
-  private void generatePDFStepHeader(HistoryStep step, com.lowagie.text.Document document) {
+  private void generatePDFStepHeader(final String role, HistoryStep step,
+      com.lowagie.text.Document document) {
     try {
       String activity = "";
       if (step.getResolvedState() != null) {
         State resolvedState =
             step.getProcessInstance().getProcessModel().getState(step.getResolvedState());
-        activity = resolvedState.getLabel(getRole(), getLanguage());
+        activity = resolvedState.getLabel(role, getLanguage());
       }
 
-      String sAction = getAction(step);
+      String sAction = getAction(role, step);
 
       String actor = step.getUser().getFullName();
 
@@ -369,7 +354,7 @@ public class SendInKmelia extends ExternalActionImpl {
     }
   }
 
-  private String getAction(final HistoryStep step) {
+  private String getAction(final String role, final HistoryStep step) {
     try {
       final String sAction;
       if ("#question#".equals(step.getAction())) {
@@ -380,7 +365,7 @@ public class SendInKmelia extends ExternalActionImpl {
         sAction = getString("processManager.reAffectation");
       } else {
         Action action = step.getProcessInstance().getProcessModel().getAction(step.getAction());
-        sAction = action.getLabel(getRole(), getLanguage());
+        sAction = action.getLabel(role, getLanguage());
       }
       return sAction;
     } catch (WorkflowException we) {
@@ -388,14 +373,14 @@ public class SendInKmelia extends ExternalActionImpl {
     }
   }
 
-  private void generatePDFStepContent(HistoryStep step, com.lowagie.text.Document document) {
+  private void generatePDFStepContent(final String role, HistoryStep step,
+      com.lowagie.text.Document document) {
     try {
       Form form;
       if ("#question#".equals(step.getAction()) || "#response#".equals(step.getAction())) {
-        // TODO
         form = null;
       } else {
-        form = getProcessInstance().getProcessModel().getPresentationForm(step.getAction(), getRole(), getLanguage());
+        form = getProcessInstance().getProcessModel().getPresentationForm(step.getAction(), role, getLanguage());
       }
 
       if (form != null && step.getActionRecord() != null) {
@@ -408,62 +393,9 @@ public class SendInKmelia extends ExternalActionImpl {
         float[] colsWidth = {25, 75};
         PdfPTable tableContent = new PdfPTable(colsWidth);
         tableContent.setWidthPercentage(100);
-        String fieldValue = "";
-        Font fontLabel = new Font(Font.HELVETICA, 10, Font.BOLD);
-        Font fontValue = new Font(Font.HELVETICA, 10, Font.NORMAL);
         List<FieldTemplate> fieldTemplates = form.getFieldTemplates();
-        for (FieldTemplate fieldTemplate1 : fieldTemplates) {
-          try {
-            GenericFieldTemplate fieldTemplate = (GenericFieldTemplate) fieldTemplate1;
-
-            String fieldLabel = fieldTemplate.getLabel("fr");
-            Field field = data.getField(fieldTemplate.getFieldName());
-            String componentId = step.getProcessInstance().getProcessModel().getModelId();
-
-            // wysiwyg field
-            if ("wysiwyg".equals(fieldTemplate.getDisplayerName())) {
-              String file = WysiwygFCKFieldDisplayer
-                  .getFile(componentId, getProcessInstance().getInstanceId(), fieldTemplate.getFieldName(), getLanguage());
-
-              // Extract the text content of the html code
-              Source source = new Source(new FileInputStream(file));
-              fieldValue = source.getTextExtractor().toString();
-            } // Field file type
-            else if (FileField.TYPE.equals(fieldTemplate.getDisplayerName()) && StringUtil.
-                isDefined(field.getValue())) {
-              SimpleDocument doc = AttachmentServiceProvider.getAttachmentService().
-                  searchDocumentById(new SimpleDocumentPK(field.getValue(), componentId), null);
-              if (doc != null) {
-                fieldValue = doc.getFilename();
-              }
-            } else {
-              // Other field types
-              FieldDisplayer fieldDisplayer = TypeManager.getInstance().getDisplayer(fieldTemplate.getTypeName(), "simpletext");
-              StringWriter sw = new StringWriter();
-              PrintWriter out = new PrintWriter(sw);
-              fieldDisplayer.display(out, field, fieldTemplate, pageContext);
-              fieldValue = sw.toString();
-            }
-
-            boolean displayField = true;
-            if (!Util.isEmptyFieldsDisplayed() && !StringUtil.isDefined(fieldValue)) {
-              displayField = false;
-            }
-
-            if (displayField) {
-              PdfPCell cell = new PdfPCell(new Phrase(fieldLabel, fontLabel));
-              cell.setBorderWidth(0);
-              cell.setPaddingBottom(5);
-              tableContent.addCell(cell);
-
-              cell = new PdfPCell(new Phrase(fieldValue, fontValue));
-              cell.setBorderWidth(0);
-              cell.setPaddingBottom(5);
-              tableContent.addCell(cell);
-            }
-          } catch (Exception e) {
-            SilverLogger.getLogger(this).error(e.getMessage(), e);
-          }
+        for (FieldTemplate fieldTemplate : fieldTemplates) {
+          generatePdfFieldContent(step, data, pageContext, tableContent, (GenericFieldTemplate) fieldTemplate);
         }
         document.add(tableContent);
       }
@@ -472,99 +404,234 @@ public class SendInKmelia extends ExternalActionImpl {
     }
   }
 
-  private OrganizationController getOrganizationController() {
-    return OrganizationControllerProvider.getOrganisationController();
+  private void generatePdfFieldContent(final HistoryStep step, final DataRecord data,
+      final PagesContext pageContext, final PdfPTable tableContent,
+      final GenericFieldTemplate fieldTemplate) {
+    try {
+      Font fontLabel = new Font(Font.HELVETICA, 10, Font.BOLD);
+      Font fontValue = new Font(Font.HELVETICA, 10, Font.NORMAL);
+      String fieldLabel = fieldTemplate.getLabel(getLanguage());
+      String fieldValue = null;
+      Field field = data.getField(fieldTemplate.getFieldName());
+      String componentId = step.getProcessInstance().getProcessModel().getModelId();
+
+      // wysiwyg field
+      if ("wysiwyg".equals(fieldTemplate.getDisplayerName())) {
+        String file = WysiwygFCKFieldDisplayer
+            .getFile(componentId, getProcessInstance().getInstanceId(), fieldTemplate.getFieldName(), getLanguage());
+
+        // Extract the text content of the html code
+        Source source = new Source(new FileInputStream(file));
+        fieldValue = source.getTextExtractor().toString();
+      } // Field file type
+      else if (FileField.TYPE.equals(fieldTemplate.getDisplayerName()) && StringUtil.
+          isDefined(field.getValue())) {
+        SimpleDocument doc = AttachmentServiceProvider.getAttachmentService().
+            searchDocumentById(new SimpleDocumentPK(field.getValue(), componentId), null);
+        if (doc != null) {
+          fieldValue = doc.getFilename();
+        }
+      } else {
+        // Other field types
+        FieldDisplayer fieldDisplayer = TypeManager.getInstance().getDisplayer(fieldTemplate.getTypeName(), "simpletext");
+        StringWriter sw = new StringWriter();
+        PrintWriter out = new PrintWriter(sw);
+        fieldDisplayer.display(out, field, fieldTemplate, pageContext);
+        fieldValue = sw.toString();
+      }
+
+      boolean displayField = true;
+      if (!Util.isEmptyFieldsDisplayed() && !StringUtil.isDefined(fieldValue)) {
+        displayField = false;
+      }
+
+      if (displayField) {
+        PdfPCell cell = new PdfPCell(new Phrase(fieldLabel, fontLabel));
+        cell.setBorderWidth(0);
+        cell.setPaddingBottom(5);
+        tableContent.addCell(cell);
+
+        cell = new PdfPCell(new Phrase(fieldValue, fontValue));
+        cell.setBorderWidth(0);
+        cell.setPaddingBottom(5);
+        tableContent.addCell(cell);
+      }
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
+    }
   }
 
   private String getString(String key) {
     return key;
   }
 
-  private String getTargetId() {
-    return targetId;
-  }
-
-  private String getTopicId() {
-    return topicId;
-  }
-
   private String getLanguage() {
-    return "fr";
-  }
-
-  public String getRole() {
-    return role;
-  }
-
-  public void setRole(String role) {
-    this.role = role;
+    return I18NHelper.defaultLanguage;
   }
 
   private KmeliaService getKmeliaService() {
-    return ServiceProvider.getService(KmeliaService.class);
+    return kmeliaService;
   }
 
-  /**
-   * Get actor if exist, admin otherwise
-   * @return UserDetail
-   */
-  private UserDetail getBestUserDetail() {
-    String currentUserId = ADMIN_ID;
-    // For a manual action (event)
-    if (getEvent().getUser() != null) {
-      currentUserId = getEvent().getUser().getUserId();
-    }
-    return getOrganizationController().getUserDetail(currentUserId);
-  }
-
-  private void addPdfHistory(PublicationPK pubPK, String userId) {
-    String fileName = "processHistory_" + getProcessInstance().getInstanceId() + ".pdf";
-    if (StringUtil.isDefined(pdfHistoryName)) {
-      fileName = pdfHistoryName;
-      if (!fileName.endsWith(".pdf")) {
-        fileName += ".pdf";
+  private void addPdfHistory(final String pdfHistoryName, final String role, PublicationPK pubPK, String userId) {
+    final String fileName;
+    if (pdfHistoryName != null && !pdfHistoryName.trim().isEmpty()) {
+      if (!pdfHistoryName.endsWith(".pdf")) {
+        fileName = pdfHistoryName + ".pdf";
+      } else {
+        fileName = pdfHistoryName;
       }
+    } else {
+      fileName = "processHistory_" + getProcessInstance().getInstanceId() + ".pdf";
     }
-    byte[] pdf = generatePDF(getProcessInstance());
+    byte[] pdf = generatePDF(role, getProcessInstance());
     getKmeliaService().addAttachmentToPublication(pubPK, userId, fileName, "", pdf);
   }
 
-  private String getNodeId(String explicitPath) {
-    String[] path = explicitPath.substring(1).split("/");
-    NodePK nodePK = new NodePK(UNKNOWN, targetId);
-    String parentId = NodePK.ROOT_NODE_ID;
-    for (String name : path) {
-      NodeDetail existingNode = null;
-      try {
-        existingNode = getNodeBm().getDetailByNameAndFatherId(nodePK, name, Integer.parseInt(parentId));
-      } catch (Exception e) {
-        SilverLogger.getLogger(this).warn("Node named {0} in path {1} doesn't exist", name,
-            explicitPath);
-      }
-      if (existingNode != null) {
-        // topic exists
-        parentId = existingNode.getNodePK().getId();
-      } else {
-        // topic does not exists, creating it
-        NodeDetail newNode = new NodeDetail();
-        newNode.setName(name);
-        newNode.setNodePK(new NodePK(UNKNOWN, targetId));
-        newNode.setFatherPK(new NodePK(parentId, targetId));
-        newNode.setCreatorId(userId);
-        NodePK newNodePK;
-        try {
-          newNodePK = getNodeBm().createNode(newNode);
-        } catch (Exception e) {
-          SilverLogger.getLogger(this).error("Cannot create node {0} in path {1}", new String[] {name, explicitPath}, e);
-          return "-1";
-        }
-        parentId = newNodePK.getId();
-      }
+  private class Target {
+    private final String role;
+    private final String userId;
+    private final Parameter parameter;
+    private String targetId;
+    private String topicId;
+
+    public Target(final String role, final String userId, final Parameter parameter) {
+      this.role = role;
+      this.userId = userId;
+      this.parameter = parameter;
     }
-    return parentId;
+
+    public String getTargetId() {
+      return targetId;
+    }
+
+    public String getTopicId() {
+      return topicId;
+    }
+
+    public Target invoke() {
+      if (parameter != null && StringUtil.isDefined(parameter.getValue())) {
+        String explorerFieldName = parameter.getValue();
+        // getting place to create publication from explorer field
+        try {
+          ExplorerField explorer = (ExplorerField) getProcessInstance().getField(explorerFieldName);
+          ResourceReference pk = (ResourceReference) explorer.getObjectValue();
+          targetId = pk.getInstanceId();
+          topicId = pk.getId();
+        } catch (WorkflowException e) {
+          SilverLogger.getLogger(SendInKmelia.this).error(e.getMessage(), e);
+          targetId = UNKNOWN;
+          topicId = UNKNOWN;
+        }
+      } else {
+        targetId = getTriggerParameter("targetComponentId").getValue();
+        Parameter paramTopicPath = getTriggerParameter("targetFolderPath");
+        if (paramTopicPath != null && StringUtil.isDefined(paramTopicPath.getValue())) {
+          try {
+            String path = DataRecordUtil.applySubstitution(paramTopicPath.getValue(),
+                getProcessInstance().getAllDataRecord(role, "fr"), "fr");
+            topicId = getNodeId(path, targetId, userId);
+          } catch (WorkflowException e) {
+            SilverLogger.getLogger(SendInKmelia.this).error(e.getMessage(), e);
+            topicId = "0";
+          }
+        } else {
+          topicId = getTriggerParameter("targetTopicId").getValue();
+        }
+      }
+      return this;
+    }
+
+    /**
+     * Creates the identifier of the last node in the specified path. If some of the nodes in the
+     * path doesn't exist, then creates them. In case of a node creation, the following requirements
+     * are satisfied:
+     * <ul>
+     *   <li>if the creation fails, the root node is returned and the current transaction isn't
+     *   rollbacked so that the publication can be put into the returned node,</li>
+     *   <li>the node creation is effectively applied and not just put in the current transaction's
+     *   cache so that the node can be get later in the treatment.</li>
+     * </ul>
+     * @param explicitPath the path of the topic in which the publication will be put.
+     * @return the unique identifier of the topic referred by the given path.
+     */
+    private String getNodeId(String explicitPath, final String targetId, final String userId) {
+      return Transaction.performInNew(() -> {
+        String[] path = explicitPath.substring(1).split("/");
+        NodePK nodePK = new NodePK(UNKNOWN, targetId);
+        String parentId = NodePK.ROOT_NODE_ID;
+        for (String name : path) {
+          NodeDetail existingNode =
+              getNodeService().getDetailByNameAndFatherId(nodePK, name, Integer.parseInt(parentId));
+          if (existingNode != null) {
+            // topic exists
+            parentId = existingNode.getNodePK().getId();
+          } else {
+            // topic does not exists, creating it
+            NodeDetail newNode = new NodeDetail();
+            newNode.setName(name);
+            newNode.setNodePK(new NodePK(UNKNOWN, targetId));
+            newNode.setFatherPK(new NodePK(parentId, targetId));
+            newNode.setCreatorId(userId);
+            NodePK newNodePK;
+            try {
+              newNodePK = getNodeService().createNode(newNode);
+            } catch (Exception e) {
+              SilverLogger.getLogger(this)
+                  .warn("Cannot create node {0} in path {1}: {2}",
+                      name, explicitPath, e.getMessage());
+              return "0";
+            }
+            parentId = newNodePK.getId();
+          }
+        }
+        return parentId;
+      });
+    }
+
+    private NodeService getNodeService() {
+      return nodeService;
+    }
   }
 
-  protected NodeService getNodeBm() {
-    return ServiceProvider.getService(NodeService.class);
+  private class PdfHistory {
+    private boolean addPDFHistory;
+    private boolean addPDFHistoryFirst;
+    private String pdfHistoryName;
+
+    public boolean isEnable() {
+      return addPDFHistory;
+    }
+
+    public boolean isFirstAdding() {
+      return addPDFHistoryFirst;
+    }
+
+    public String getFileName() {
+      return pdfHistoryName;
+    }
+
+    public PdfHistory invoke() {
+      // Add pdf history before instance attachments
+      if (getTriggerParameter("addPDFHistory") != null) {
+        addPDFHistory = StringUtil.getBooleanValue(getTriggerParameter("addPDFHistory").getValue());
+        if (getTriggerParameter("addPDFHistoryFirst") != null) {
+          addPDFHistoryFirst = StringUtil.getBooleanValue(getTriggerParameter("addPDFHistoryFirst").getValue());
+        } else {
+          addPDFHistoryFirst = true;
+        }
+        Parameter paramPDFName = getTriggerParameter("pdfHistoryName");
+        if (paramPDFName != null) {
+          pdfHistoryName = getTriggerParameter("pdfHistoryName").getValue();
+        } else {
+          pdfHistoryName = null;
+        }
+      } else {
+        addPDFHistory = true;
+        addPDFHistoryFirst = true;
+        pdfHistoryName = null;
+      }
+      return this;
+    }
   }
 }
