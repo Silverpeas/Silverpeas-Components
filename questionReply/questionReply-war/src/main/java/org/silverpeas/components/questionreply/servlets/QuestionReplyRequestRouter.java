@@ -306,7 +306,7 @@ public class QuestionReplyRequestRouter
         String name = request.getParameter("Name");
         String description = request.getParameter("Description");
         NodeDetail node =
-            new NodeDetail("unknown", name, description, null, null, null, "0", "unknown");
+            new NodeDetail("unknown", name, description, 0, "unknown");
         Category category = new Category(node);
         scc.createCategory(category);
         destination = getDestination("Main", scc, request);

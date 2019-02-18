@@ -467,7 +467,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         String path = request.getParameter("Path");
         String parentId = request.getParameter("ParentId");
 
-        NodeDetail topic = new NodeDetail("-1", name, description, null, null, null, "0", "X");
+        NodeDetail topic = new NodeDetail("-1", name, description, 0, "X");
         I18NHelper.setI18NInfo(topic, request);
 
         if (StringUtil.isDefined(path)) {
@@ -505,7 +505,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         }
         String id = request.getParameter("ChildId");
         String path = request.getParameter("Path");
-        NodeDetail topic = new NodeDetail(id, name, description, null, null, null, "0", "X");
+        NodeDetail topic = new NodeDetail(id, name, description, 0, "X");
         I18NHelper.setI18NInfo(topic, request);
         if (StringUtil.isDefined(path)) {
           topic.setType(NodeDetail.FILE_LINK_TYPE);
@@ -955,7 +955,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         // create thumbnail if exists
         boolean newThumbnail = ThumbnailController
             .processThumbnail(new ResourceReference(newPubId, kmelia.getComponentId()),
-                PublicationDetail.getResourceType(), parameters);
+                parameters);
 
         //process files
         Collection<UploadedFile> attachments = request.getUploadedFiles();
@@ -983,7 +983,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         PublicationDetail pubDetail = getPublicationDetail(parameters, kmelia);
         String pubId = pubDetail.getPK().getId();
         ThumbnailController.processThumbnail(new ResourceReference(pubId, kmelia.getComponentId()),
-            PublicationDetail.getResourceType(), parameters);
+            parameters);
 
         kmelia.updatePublication(pubDetail);
 
@@ -1342,8 +1342,9 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         String newAxisName = request.getParameter("Name");
         String newAxisDescription = request.getParameter("Description");
         NodeDetail axis =
-            new NodeDetail("-1", newAxisName, newAxisDescription, DateUtil.today2SQLDate(),
-                kmelia.getUserId(), null, "0", "X");
+            new NodeDetail("-1", newAxisName, newAxisDescription, 0, "X");
+        axis.setCreationDate(DateUtil.today2SQLDate());
+        axis.setCreatorId(kmelia.getUserId());
         // I18N
         I18NHelper.setI18NInfo(axis, request);
         kmelia.addAxis(axis);
@@ -1355,7 +1356,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         String newAxisName = request.getParameter("AxisName");
         String newAxisDescription = request.getParameter("AxisDescription");
         NodeDetail axis =
-            new NodeDetail(axisId, newAxisName, newAxisDescription, null, null, null, "0", "X");
+            new NodeDetail(axisId, newAxisName, newAxisDescription, 0, "X");
         // I18N
         I18NHelper.setI18NInfo(axis, request);
         kmelia.updateAxis(axis);
@@ -1382,8 +1383,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         String newPositionDescription = request.getParameter("Description");
         String translation = request.getParameter("Translation");
         NodeDetail position =
-            new NodeDetail("toDefine", newPositionName, newPositionDescription, null, null, null,
-                "0", "X");
+            new NodeDetail("toDefine", newPositionName, newPositionDescription, 0, "X");
         // I18N
         I18NHelper.setI18NInfo(position, request);
         kmelia.addPosition(axisId, position);
@@ -1395,8 +1395,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         String positionName = request.getParameter("PositionName");
         String positionDescription = request.getParameter("PositionDescription");
         NodeDetail position =
-            new NodeDetail(positionId, positionName, positionDescription, null, null, null, "0",
-                "X");
+            new NodeDetail(positionId, positionName, positionDescription, 0,"X");
         // I18N
         I18NHelper.setI18NInfo(position, request);
         kmelia.updatePosition(position);

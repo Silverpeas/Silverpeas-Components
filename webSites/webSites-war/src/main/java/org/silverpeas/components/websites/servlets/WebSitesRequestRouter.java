@@ -467,7 +467,7 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
     String newTopicDescription = request.getParameter(DESCRIPTION_PARAM);
 
     NodeDetail folder =
-        new NodeDetail("X", newTopicName, newTopicDescription, null, null, null, "0", "X");
+        new NodeDetail("X", newTopicName, newTopicDescription, 0, "X");
     scc.addFolder(folder, "");
 
     return "/webSites/jsp/addTopic.jsp?Action=" + action + "&Id=" + fatherId;
@@ -486,7 +486,7 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
       String name = request.getParameter("Name");
       String description = request.getParameter(DESCRIPTION_PARAM);
       NodeDetail folder =
-          new NodeDetail(childId, name, description, null, null, null, "0", "X");
+          new NodeDetail(childId, name, description, 0, "X");
       scc.updateFolderHeader(folder, "");
       action = "Search";
     } else if ("Delete".equals(action)) {

@@ -346,7 +346,7 @@ public class PublicationImport {
    * @return The id of the newly created topic.
    */
   public String createTopic(String name, String description) {
-    NodeDetail topic = new NodeDetail("-1", name, description, null, null, null, "0", "X");
+    NodeDetail topic = new NodeDetail("-1", name, description, 0, "X");
     topic.getNodePK().setSpace(spaceId);
     topic.getNodePK().setComponentName(componentId);
     topic.setCreatorId(userId);

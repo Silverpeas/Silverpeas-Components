@@ -233,7 +233,7 @@ public class GalleryProcessManagement {
   private static AlbumDetail createAlbum(final UserDetail user, final String componentInstanceId,
       final String name, final String albumId) {
     final AlbumDetail newAlbum =
-        new AlbumDetail(new NodeDetail(UNKNOWN, name, null, null, null, null, "0", UNKNOWN));
+        new AlbumDetail(new NodeDetail(UNKNOWN, name, null, 0, UNKNOWN));
     newAlbum.setCreationDate(DateUtil.date2SQLDate(new Date()));
     newAlbum.setCreatorId(user.getId());
     newAlbum.getNodePK().setComponentName(componentInstanceId);

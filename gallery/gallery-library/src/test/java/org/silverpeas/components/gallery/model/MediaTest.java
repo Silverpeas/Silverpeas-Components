@@ -114,7 +114,7 @@ public class MediaTest {
     assertThat(media.getIconUrl(), nullValue());
     assertThat(media.isDownloadable(), is(true));
     assertThat(media.getURL(), is("searchResult?Type=Photo&Id=null"));
-    assertThat(media.getLanguages(), nullValue());
+    assertThat(media.getLanguages(), hasSize(0));
     assertThat(media.toString(), is("(pk = (id = null, instanceId = null), name = )"));
   }
 
@@ -281,7 +281,7 @@ public class MediaTest {
     assertThat(media.getIconUrl(), is("iconUrl"));
     assertThat(media.isDownloadable(), is(true));
     assertThat(media.getURL(), is("searchResult?Type=Photo&Id=mediaId"));
-    assertThat(media.getLanguages(), nullValue());
+    assertThat(media.getLanguages(), hasSize(0));
     assertThat(media.toString(),
         is("(pk = (id = mediaId, instanceId = instanceId), name = A title)"));
   }

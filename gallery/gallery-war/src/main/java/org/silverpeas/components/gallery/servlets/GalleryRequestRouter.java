@@ -232,7 +232,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         String description = request.getParameter("Description");
         // création de l'album
         NodeDetail node =
-            new NodeDetail("unknown", name, description, null, null, null, "0", "unknown");
+            new NodeDetail("unknown", name, description, 0, "unknown");
         AlbumDetail album = new AlbumDetail(node);
         gallerySC.createAlbum(album);
         // retour à l'album courant
