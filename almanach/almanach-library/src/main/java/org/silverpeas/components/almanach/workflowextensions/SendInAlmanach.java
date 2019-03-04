@@ -24,13 +24,11 @@
 package org.silverpeas.components.almanach.workflowextensions;
 
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.Priority;
 import org.silverpeas.core.contribution.content.form.DataRecordUtil;
 import org.silverpeas.core.date.Period;
-import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.workflow.api.WorkflowException;
@@ -105,7 +103,6 @@ public class SendInAlmanach extends ExternalActionImpl {
         event.withPriority(Priority.HIGH);
       }
 
-      OperationContext.fromUser(getBestUser());
       event.planOn(almanach);
     } else {
       StringBuilder warnMsg = new StringBuilder();
@@ -206,19 +203,6 @@ public class SendInAlmanach extends ExternalActionImpl {
 
   private void setRole(String role) {
     this.role = role;
-  }
-
-  /**
-   * Get actor if exist, admin otherwise
-   * @return {@link User} instance.
-   */
-  private User getBestUser() {
-    String currentUserId = ADMIN_ID;
-    // For a manual action (event)
-    if (getEvent().getUser() != null) {
-      currentUserId = getEvent().getUser().getUserId();
-    }
-    return User.getById(currentUserId);
   }
 
   private OrganizationController getOrganizationController() {
