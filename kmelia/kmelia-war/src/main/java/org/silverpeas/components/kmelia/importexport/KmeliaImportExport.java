@@ -199,14 +199,8 @@ public class KmeliaImportExport extends GEDImportExport {
   @Override
   protected NodePK addSubTopicToTopic(NodeDetail nodeDetail, int topicId,
       MassiveReport massiveReport) throws ImportExportException {
-    NodePK nodePK = null;
-    try {
-      // On renvoie le topic déjà existant si c'est le cas
-      nodePK = getNodeService().getDetailByNameAndFatherId(new NodePK("unKnown", null,
+    NodePK nodePK = getNodeService().getDetailByNameAndFatherId(new NodePK("unKnown", null,
           getCurrentComponentId()), nodeDetail.getName(), topicId).getNodePK();
-    } catch (Exception ex) {
-
-    }
     if (nodePK == null) {
       try {
         // Il n'y a pas de topic, on le crée
