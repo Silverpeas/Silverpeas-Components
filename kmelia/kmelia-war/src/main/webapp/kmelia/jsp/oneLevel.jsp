@@ -95,11 +95,9 @@ String userId = kmeliaScc.getUserId();
   $(document).ready(function() {
     menuRenderedPromise.then(function(){
 
-      window.i18n.properties({
-        name: 'kmeliaBundle',
-        path: webContext + '/services/bundles/org/silverpeas/kmelia/multilang/',
-        language: '<%=language%>',
-        mode: 'map'
+      sp.i18n.load({
+        bundle : 'org.silverpeas.kmelia.multilang.kmeliaBundle',
+        language : '<%=language%>'
       });
 
       displayTopicContent('<%=id%>');
@@ -371,7 +369,7 @@ function getSubFolder(folder) {
 }
 
 function getString(key) {
-	return window.i18n.prop(key);
+	return sp.i18n.get(key);
 }
 </script>
 </div>

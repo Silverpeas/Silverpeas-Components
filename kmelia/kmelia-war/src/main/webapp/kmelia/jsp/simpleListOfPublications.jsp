@@ -85,15 +85,13 @@ boolean userCanSeeStats = kmeliaScc.isStatisticAllowed();
 <view:script src="javaScript/publications.js"/>
 <script type="text/javascript">
 
-window.i18n.properties({
-  name: 'kmeliaBundle',
-  path: webContext + '/services/bundles/org/silverpeas/kmelia/multilang/',
-  language: '<%=language%>',
-  mode: 'map'
+sp.i18n.load({
+  bundle : 'org.silverpeas.kmelia.multilang.kmeliaBundle',
+  language : '<%=language%>'
 });
 
 function getString(key) {
-	return window.i18n.prop(key);
+	return sp.i18n.get(key);
 }
 
 function getCurrentNodeId() {

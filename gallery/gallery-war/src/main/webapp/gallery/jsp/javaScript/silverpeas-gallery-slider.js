@@ -38,12 +38,7 @@
     doInitialize : function() {
       if (!$.gallerySlider.initialized) {
         $.gallerySlider.initialized = true;
-        window.i18n.properties({
-          name : 'galleryBundle',
-          path : webContext + '/services/bundles/org/silverpeas/gallery/multilang/',
-          language : '$$', /* by default the language of the user in the current session */
-          mode : 'map'
-        });
+        sp.i18n.load('org.silverpeas.gallery.multilang.galleryBundle');
       }
     }
   };
@@ -210,7 +205,7 @@
 
           // Popup
           var settings = {
-            title : window.i18n.prop('gallery.diaporama'),
+            title : sp.i18n.get('gallery.diaporama'),
             width : options.width,
             height : options.height,
             callbackOnClose : function() {
@@ -562,11 +557,11 @@
         buttonHelpPrefix = 'gallery.run.play';
       }
       $buttonContainer.attr('title',
-          window.i18n.prop(buttonHelpPrefix) + '\n' + window.i18n.prop('gallery.run.play.help'));
+          sp.i18n.get(buttonHelpPrefix) + '\n' + sp.i18n.get('gallery.run.play.help'));
     } else {
       iconFileName = 'fullscreen.png';
-      $buttonContainer.attr('title', window.i18n.prop('gallery.display.fullscreen') + '\n' +
-          window.i18n.prop('gallery.display.fullscreen.help'));
+      $buttonContainer.attr('title', sp.i18n.get('gallery.display.fullscreen') + '\n' +
+          sp.i18n.get('gallery.display.fullscreen.help'));
     }
 
     // Setting the image source attribute
