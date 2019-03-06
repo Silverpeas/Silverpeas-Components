@@ -376,13 +376,13 @@
       <% if (!pubDetail.isValid()) {%>
         var label = "<%=WebEncodeHelper.javaStringToJsString(resources.getString("kmelia.AlertButPubNotValid"))%>";
         jQuery.popup.confirm(label, function() {
-          sp.messager.open('<%= componentId %>', {
+          sp.messager.open('<%= contextComponentId %>', {
             folderId: '<%= kmeliaScc.getCurrentFolderId() %>',
           <%= NotificationContext.CONTRIBUTION_ID %>: '<%= pubDetail.getId() %>'
           });
         });
       <% } else {%>
-        sp.messager.open('<%= componentId %>', {
+        sp.messager.open('<%= contextComponentId %>', {
           folderId: '<%= kmeliaScc.getCurrentFolderId() %>',
          <%= NotificationContext.CONTRIBUTION_ID %>: '<%= pubDetail.getId() %>'
         });
@@ -394,14 +394,14 @@
       <% if (!pubDetail.isValid()) {%>
           var label = "<%=WebEncodeHelper.javaStringToJsString(resources.getString("kmelia.AlertButPubNotValid"))%>";
           jQuery.popup.confirm(label, function() {
-            sp.messager.open('<%= componentId %>', {
+            sp.messager.open('<%= contextComponentId %>', {
               folderId: '<%= kmeliaScc.getCurrentFolderId() %>',
              <%= NotificationContext.CONTRIBUTION_ID %>: '<%= pubDetail.getId() %>',
               docId: attachmentId
               });
           });
       <% } else {%>
-          sp.messager.open('<%= componentId %>', {
+          sp.messager.open('<%= contextComponentId %>', {
             folderId: '<%= kmeliaScc.getCurrentFolderId() %>',
            <%= NotificationContext.CONTRIBUTION_ID %>: '<%= pubDetail.getId() %>',
             docId: attachmentId
