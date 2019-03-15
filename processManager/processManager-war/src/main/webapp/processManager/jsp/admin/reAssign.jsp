@@ -36,65 +36,58 @@
 	PagesContext context = (PagesContext) request.getAttribute("context");
 	DataRecord data = (DataRecord) request.getAttribute("data");
 
-	browseBar.setDomainName(spaceLabel);
+	String processURI = "viewProcess?processId=" + process.getInstanceId()+"&force=true";
 	browseBar.setComponentName(componentLabel,"adminListProcess");
 	browseBar.setPath(process.getTitle(currentRole, language));
 
-	tabbedPane.addTab(resource.getString("processManager.details"), "adminViewProcess?processId=" + process.getInstanceId()+"&force=true", false, true);
+	tabbedPane.addTab(resource.getString("processManager.details"), processURI, false, true);
 	tabbedPane.addTab(resource.getString("processManager.history"), "", true, false);
 
 	ButtonPane buttonPane = gef.getButtonPane();
-	buttonPane.addButton((Button) gef.getFormButton(
+	buttonPane.addButton(gef.getFormButton(
 	   generalMessage.getString("GML.validate"),
-		"javascript:onClick=B_VALIDER_ONCLICK();",
+		"javascript:onclick=B_VALIDER_ONCLICK();",
 		false));
-	buttonPane.addButton((Button) gef.getFormButton(
+	buttonPane.addButton(gef.getFormButton(
 	   generalMessage.getString("GML.cancel"),
-		"javascript:onClick=B_ANNULER_ONCLICK();",
+		"javascript:onclick=B_ANNULER_ONCLICK();",
 		false));
 %>
 
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel/>
 <%
 	form.displayScripts(out, context);
 %>
 
-<SCRIPT language="JavaScript">
-<!--
-	function B_VALIDER_ONCLICK()
-	{
+<script type="text/javascript">
+	function B_VALIDER_ONCLICK() {
 		ifCorrectFormExecute(function() {
 			document.<%=context.getFormName()%>.submit();
 		});
 	}
 
 	function B_ANNULER_ONCLICK() {
-		location.href = "adminViewProcess";
+		location.href = "<%=processURI%>";
 	}
-//-->
-</SCRIPT>
-</HEAD>
-<BODY class="yui-skin-sam">
+</script>
+</head>
+<body class="yui-skin-sam">
 <%
 	out.println(window.printBefore());
 	out.println(tabbedPane.print());
-	out.println(frame.printBefore());
 %>
-<FORM NAME="<%=context.getFormName()%>" METHOD="POST" ACTION="adminDoReAssign" ENCTYPE="multipart/form-data">
-<CENTER>
+<view:frame>
+<form name="<%=context.getFormName()%>" method="post" action="adminDoReAssign" enctype="multipart/form-data">
 <%
    form.display(out, context, data);
+   out.println(buttonPane.print());
 %>
-   <BR>
+</view:frame>
 <%
-	out.println(buttonPane.print());
+	out.println(window.printAfter());
 %>
-</CENTER>
-<%
-   out.println(frame.printAfter());
-   out.println(window.printAfter());
-%>
-</BODY>
+</body>
