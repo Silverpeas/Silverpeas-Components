@@ -22,6 +22,8 @@ package com.stratelia.webactiv.kmelia.control.ejb;
 
 import com.silverpeas.SilverpeasComponentService;
 import com.silverpeas.component.kmelia.KmeliaCopyDetail;
+import com.silverpeas.component.kmelia.KmeliaPaste;
+import com.silverpeas.component.kmelia.KmeliaPasteDetail;
 import com.silverpeas.form.importExport.XMLField;
 import com.silverpeas.pdc.model.PdcClassification;
 import com.silverpeas.util.ForeignPK;
@@ -400,12 +402,10 @@ public interface KmeliaBm extends SilverpeasComponentService<KmeliaPublication> 
 
   public void draftInPublication(PublicationPK pubPK, String userId);
   
-  public void movePublication(PublicationPK pubPK, NodePK to, String userId);
+  public void movePublication(PublicationPK pubPK, NodePK to, KmeliaPasteDetail pasteContext);
 
-  public void movePublicationInSameApplication(PublicationPK pubPK, NodePK from, NodePK to,
-      String userId);
-
-  public void movePublicationInAnotherApplication(PublicationDetail pub, NodePK to, String userId);
+  public void movePublicationInSameApplication(PublicationPK pubPK, NodePK from,
+      KmeliaPasteDetail pasteContext);
 
   /**
    * alert that an external elements of publication (wysiwyg, attachment, versioning) has been
@@ -727,7 +727,7 @@ public interface KmeliaBm extends SilverpeasComponentService<KmeliaPublication> 
   
   public PublicationPK copyPublication(PublicationDetail publi, KmeliaCopyDetail copyDetail);
   
-  public NodeDetail moveNode(NodePK nodePK, NodePK to, String userId);
+  public NodeDetail moveNode(NodePK nodePK, NodePK to, KmeliaPasteDetail pasteContext);
   
   public List<KmeliaPublication> filterPublications(List<KmeliaPublication> publications,
       String instanceId, SilverpeasRole profile, String userId);
@@ -736,5 +736,7 @@ public interface KmeliaBm extends SilverpeasComponentService<KmeliaPublication> 
       String userId);
 
   public void userHaveBeenDeleted(String userId);
+
+  public List<String> getActiveValidatorIds(PublicationPK pk);
 
 }

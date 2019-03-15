@@ -139,7 +139,7 @@ public class JSONServlet extends HttpServlet {
       operations.put("importFiles", addPublicationAllowed && kmeliaSC.isImportFilesAllowed());
       operations.put("copyPublications", operationsOnSelectionAllowed);
       operations.put("cutPublications", operationsOnSelectionAllowed);
-      operations.put("paste", addPublicationAllowed);
+      operations.put("paste", addPublicationAllowed && !kmeliaSC.isClipboardEmpty());
 
       operations.put("sortPublications", isAdmin && publicationsInTopic);
       operations.put("updateChain", isAdmin && publicationsInTopic && kmeliaSC.

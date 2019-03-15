@@ -21,6 +21,7 @@
 package com.stratelia.webactiv.kmelia.servlets.ajax.handlers;
 
 
+import com.silverpeas.component.kmelia.KmeliaPasteDetail;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
@@ -42,11 +43,15 @@ public class MovePublicationHandler implements AjaxHandler {
     String id = request.getParameter("Id");
     String sourceId = request.getParameter("SourceNodeId");
     String targetId = request.getParameter("TargetNodeId");
+    String validatorIds = request.getParameter("ValidatorIds");
     try {
       PublicationPK pubPK = new PublicationPK(id, controller.getComponentId());
       NodePK from = new NodePK(sourceId, controller.getComponentId());
       NodePK to = new NodePK(targetId, controller.getComponentId());
-      getKmeliaBm().movePublicationInSameApplication(pubPK, from, to, controller.getUserId());
+      KmeliaPasteDetail pasteDetail = new KmeliaPasteDetail(to);
+      pasteDetail.setUserId(controller.getUserId());
+      pasteDetail.setTargetValidatorIds(validatorIds);
+      getKmeliaBm().movePublicationInSameApplication(pubPK, from, pasteDetail);
       return "ok";
     } catch (Exception e) {
       SilverTrace.error("kmelia", "PasteHandler.handleRequest", "root.MSG_GEN_PARAM_VALUE", e);

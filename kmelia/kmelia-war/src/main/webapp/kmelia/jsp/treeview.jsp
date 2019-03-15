@@ -71,6 +71,7 @@ String userId = kmeliaScc.getUserId();
 
 boolean userCanManageRoot = "admin".equalsIgnoreCase(profile);
 boolean userCanManageTopics = rightsOnTopics.booleanValue() || "admin".equalsIgnoreCase(profile) || kmeliaScc.isTopicManagementDelegated();
+boolean targetValidationEnabled = kmeliaScc.isTargetValidationEnable() || kmeliaScc.isTargetMultiValidationEnable();
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -934,7 +935,7 @@ $(document).ready(
 				var targetId = data.r.attr("id");
 
 				// store new parent of publication
-				movePublication(pubId, getCurrentNodeId(), targetId);
+				movePublication(pubId, getCurrentNodeId(), targetId, <%=targetValidationEnabled%>);
 			}
 		},
 		// the `plugins` array allows you to configure the active plugins on this instance
