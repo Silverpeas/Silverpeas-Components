@@ -1039,3 +1039,14 @@ a.button.refuse span {
 .publistDisplay {
   min-width: 480px;
 }
+/* fix bug#10485 */
+body.treeView .ui-dialog {
+	overflow:inherit !important;
+	height:600px !important;
+	max-height:90% !important;
+}
+body.treeView .ui-dialog .ui-dialog-content {
+	overflow:auto;
+	max-height: calc(100% - 100px) !important;
+	height: auto;
+}
