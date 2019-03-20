@@ -24,10 +24,10 @@
 package org.silverpeas.components.hyperlink.servlets;
 
 import org.silverpeas.components.hyperlink.control.HyperlinkSessionController;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -37,6 +37,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+
+import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 public class HyperlinkRequestRouter extends ComponentRequestRouter<HyperlinkSessionController> {
 
@@ -53,6 +56,11 @@ public class HyperlinkRequestRouter extends ComponentRequestRouter<HyperlinkSess
   private static final String SESSION_ID = "%ST_SESSION_ID%";
   private static final String USER_PROPERTY_PREFIX = "%ST_USER_PROPERTY_";
   private static final String ENCODING = "UTF-8";
+  private static final String SSO_DEST = "/hyperlink/jsp/sso.jsp";
+  private static final String CURRENT_TAB_DEST = "/hyperlink/jsp/internal.jsp";
+  private static final String NEW_TAB_DEST = "/hyperlink/jsp/redirect.jsp";
+  private static final String AUTHENTICATION_DEST = "/RwebConnections/jsp/Connection";
+  public static final String GO_TO_URL_ACTION = "GoToURL";
 
   @Override
   public HyperlinkSessionController createComponentSessionController(
@@ -82,74 +90,71 @@ public class HyperlinkRequestRouter extends ComponentRequestRouter<HyperlinkSess
   public String getDestination(String function, HyperlinkSessionController hyperlinkSCC,
       HttpRequest request) {
     String destination = "";
-
     if (function.startsWith("Main") || function.startsWith("portlet")) {
-      // Retrieves first the openNewWindow parameter
-      String winParam = hyperlinkSCC.getComponentParameterValue("openNewWindow");
-
-      // Test the parameter
+      final String winParam = hyperlinkSCC.getComponentParameterValue("openNewWindow");
       if (StringUtil.getBooleanValue(winParam)) {
         if (hyperlinkSCC.isClientSSOWithoutDefinedConnection()) {
-          return getDestination("GoToURL", hyperlinkSCC, request);
+          return getDestination(GO_TO_URL_ACTION, hyperlinkSCC, request);
         }
-        return "/hyperlink/jsp/redirect.jsp";
+        return NEW_TAB_DEST;
       }
-      return getDestination("GoToURL", hyperlinkSCC, request);
-    } else if (function.startsWith("GoToURL")) {
-      // Get the URL Parameter
-      String urlParameter = hyperlinkSCC.getURL();
-      String sso = hyperlinkSCC.getComponentParameterValue("SSO");
-
-      String internalLinkParameter = hyperlinkSCC.getComponentParameterValue("isInternalLink");
+      return getDestination(GO_TO_URL_ACTION, hyperlinkSCC, request);
+    } else if (function.startsWith(GO_TO_URL_ACTION)) {
+      final String urlParameter = hyperlinkSCC.getURL();
+      final String sso = hyperlinkSCC.getComponentParameterValue("SSO");
+      final String internalLinkParameter = hyperlinkSCC.getComponentParameterValue("isInternalLink");
       boolean isInternalLink = StringUtil.getBooleanValue(internalLinkParameter);
-
-      if (StringUtil.isDefined(urlParameter)) {
-        destination = parseDestination(urlParameter, isInternalLink, request);
-        UserDetail userDetail = hyperlinkSCC.getUserDetail();
+      if (isDefined(urlParameter)) {
+        final String aimedUrl = parseDestination(urlParameter, isInternalLink, request);
         if (StringUtil.getBooleanValue(sso)) {
-          request.setAttribute("Login", userDetail.getLogin());
+          request.setAttribute("Login", hyperlinkSCC.getUserDetail().getLogin());
           request.setAttribute("Domain", hyperlinkSCC.getComponentParameterValue("domain"));
-          HttpSession session = request.getSession(false);
+          final HttpSession session = request.getSession(false);
           request.setAttribute("Password", session.getAttribute("Silverpeas_pwdForHyperlink"));
-          request.setAttribute("URL", destination);
-          return "/hyperlink/jsp/sso.jsp";
+          request.setAttribute("URL", aimedUrl);
+          destination = SSO_DEST;
         } else if (hyperlinkSCC.isClientSSO()) {
           request.setAttribute("ComponentId", hyperlinkSCC.getComponentId());
-          String methodType = hyperlinkSCC.getMethodType();
+          final String methodType = hyperlinkSCC.getMethodType();
           request.setAttribute("Method", methodType);
-          destination = "/RwebConnections/jsp/Connection";
+          destination = AUTHENTICATION_DEST;
         } else {
-          destination =
-              getParsedDestination(destination, USER_LOGIN, encode(userDetail.getLogin()));
-          destination =
-              getParsedDestination(destination, USER_EMAIL, encode(userDetail.geteMail()));
-          destination =
-              getParsedDestination(destination, USER_FIRST_NAME, encode(userDetail.getFirstName()));
-          destination =
-              getParsedDestination(destination, USER_LAST_NAME, encode(userDetail.getLastName()));
-          destination = getParsedDestination(destination, USER_FULL_NAME,
-              encode(userDetail.getDisplayedName()));
-          destination =
-              getParsedDestination(destination, USER_ID, encode(hyperlinkSCC.getUserId()));
-          destination =
-              getParsedDestination(destination, SESSION_ID, encode(request.getSession().getId()));
-
-          if (hyperlinkSCC.getSettings().getBoolean("PasswordKeyEnable", true)) {
-            // !!!! Add the password : this is an ugly patch that use a
-            // session variable set in the "AuthenticationServlet" servlet
-            HttpSession session = request.getSession(false);
-            String clearPassword = (String) session.getAttribute("Silverpeas_pwdForHyperlink");
-            destination = getParsedDestination(destination, USER_PASSWORD, encode(clearPassword));
-            destination = getParsedDestination(destination, USER_ENCODED_PASSWORD,
-                encode(hyperlinkSCC.getUserFull().getPassword()));
+          final String finalAimedUrl = formatAimedUrl(hyperlinkSCC, request, aimedUrl);
+          if(request.getParameterAsBoolean("fromRedirect")) {
+            destination = finalAimedUrl;
           } else {
-            destination = getParsedDestination(destination, USER_PASSWORD, encode("??????"));
+            request.setAttribute("URL", finalAimedUrl);
+            destination = CURRENT_TAB_DEST;
           }
-          destination = getParsedDestinationWithExtraInfos(destination, hyperlinkSCC);
         }
       }
     }
     return destination;
+  }
+
+  private String formatAimedUrl(final HyperlinkSessionController hyperlinkSCC,
+      final HttpRequest request, final String originalAimedUrl) {
+    final User user = hyperlinkSCC.getUserDetail();
+    String aimedUrl = originalAimedUrl;
+    aimedUrl = getParsedDestination(aimedUrl, USER_LOGIN, encode(user.getLogin()));
+    aimedUrl = getParsedDestination(aimedUrl, USER_EMAIL, encode(user.geteMail()));
+    aimedUrl = getParsedDestination(aimedUrl, USER_FIRST_NAME, encode(user.getFirstName()));
+    aimedUrl = getParsedDestination(aimedUrl, USER_LAST_NAME, encode(user.getLastName()));
+    aimedUrl = getParsedDestination(aimedUrl, USER_FULL_NAME, encode(user.getDisplayedName()));
+    aimedUrl = getParsedDestination(aimedUrl, USER_ID, encode(hyperlinkSCC.getUserId()));
+    aimedUrl = getParsedDestination(aimedUrl, SESSION_ID, encode(request.getSession().getId()));
+    if (hyperlinkSCC.getSettings().getBoolean("PasswordKeyEnable", true)) {
+      // !!!! Add the password : this is an ugly patch that use a
+      // session variable set in the "AuthenticationServlet" servlet
+      final HttpSession session = request.getSession(false);
+      final String clearPassword = (String) session.getAttribute("Silverpeas_pwdForHyperlink");
+      aimedUrl = getParsedDestination(aimedUrl, USER_PASSWORD, encode(clearPassword));
+      aimedUrl = getParsedDestination(aimedUrl, USER_ENCODED_PASSWORD,encode(hyperlinkSCC.getUserFull().getPassword()));
+    } else {
+      aimedUrl = getParsedDestination(aimedUrl, USER_PASSWORD, encode("??????"));
+    }
+    aimedUrl = getParsedDestinationWithExtraInfos(aimedUrl, hyperlinkSCC);
+    return aimedUrl;
   }
 
   /**
@@ -223,14 +228,13 @@ public class HyperlinkRequestRouter extends ComponentRequestRouter<HyperlinkSess
   }
 
   private String encode(String str) {
-    if (!StringUtil.isDefined(str)) {
+    if (!isDefined(str)) {
       return "";
     }
     try {
       return URLEncoder.encode(str, ENCODING);
     } catch (UnsupportedEncodingException e) {
-      SilverTrace.error("hyperlink", "HyperlinkRequestRooter.encode()", "root.CANT_ENCODE_STRING",
-          "str = " + str, e);
+      SilverLogger.getLogger(this).error("str = " + str, e);
     }
     return "";
   }

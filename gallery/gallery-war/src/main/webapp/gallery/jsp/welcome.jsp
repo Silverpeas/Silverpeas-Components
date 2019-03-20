@@ -117,7 +117,7 @@ function showAlbumsHelp() {
       dialogClass : 'help-modal-message',
       buttons : {
         "<fmt:message key="gallery.help.albums.buttons.ok"/>" : function() {
-          $.cookie(albumsCookieName, "IKnowIt", { expires : 3650, path : '/' });
+          $.cookie(albumsCookieName, "IKnowIt", { expires : 3650, path : '/', secure: ${pageContext.request.secure} });
           $(this).dialog("close");
         },
         "<fmt:message key="gallery.help.albums.buttons.remind"/>" : function() {

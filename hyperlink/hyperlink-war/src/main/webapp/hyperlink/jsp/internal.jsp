@@ -22,42 +22,15 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 <%@ include file="check.jsp" %>
-<c:set var="login" value="${requestScope.Login}"/>
-<c:set var="password" value="${requestScope.Password}"/>
-<c:set var="domain" value="${requestScope.Domain}"/>
-<c:set var="url" value="${requestScope.URL}"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <title></title>
-  <view:looknfeel/>
-  <script type="text/javascript">
-    (function() {
-      var xhr = new XMLHttpRequest();
-      xhr.open("get", "${silfn:escapeJs(url)}", false, "${domain}\\${login}", "${silfn:escapeJs(password)}");
-      xhr.send("");
-      if (xhr.status < 400) {
-        sp.formRequest('${silfn:escapeJs(url)}').toTarget('SpExternalFullIFrameContainer').submit();
-      } else {
-        SilverpeasError.add("Login et/ou Mot de passe incorrect !").show();
-      }
-      spProgressMessage.hide();
-    })();
-  </script>
 </head>
 <body>
-<viewTags:displayExternalFullIframe url="javacript:void(0)"/>
-<view:progressMessage/>
-<script type="text/javascript">
-  (function() {
-    spProgressMessage.show();
-  })();
-</script>
+<viewTags:displayExternalFullIframe url="${requestScope.URL}"/>
 </body>
 </html>

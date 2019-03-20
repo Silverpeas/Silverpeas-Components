@@ -425,7 +425,7 @@ function showRightClickHelp() {
 			dialogClass: 'help-modal-message',
 			buttons: {
 				"<%=resources.getString("kmelia.help.rightclick.buttons.ok") %>": function() {
-					$.cookie(rightClickCookieName, "IKnowIt", { expires: 3650, path: '/' });
+					$.cookie(rightClickCookieName, "IKnowIt", { expires: 3650, path: '/', secure: ${pageContext.request.secure} });
 					$( this ).dialog( "close" );
 				},
 				"<%=resources.getString("kmelia.help.rightclick.buttons.remind") %>": function() {

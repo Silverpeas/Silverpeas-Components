@@ -48,15 +48,14 @@
 
 package org.silverpeas.components.survey.servlets;
 
-import java.io.IOException;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.silverpeas.core.util.URLUtil;
+import java.io.IOException;
 
 public class RecordParticipation extends HttpServlet {
   private static final long serialVersionUID = -1833168544559333059L;
@@ -64,38 +63,43 @@ public class RecordParticipation extends HttpServlet {
   /**
    * Method invoked when called from a form or directly by URL
    */
-  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+  @Override
+  public void doPost(HttpServletRequest request, HttpServletResponse response) {
+    try {
+      // Cookie Validity
+      int cookieDuration = 3650;
+      if (request.getParameter("duration") != null) {
+        cookieDuration = Integer.parseInt(request.getParameter("duration"));
+      }
 
-    // Cookie Validity
-    int cookieDuration = 3650;
-    if (request.getParameter("duration") != null) {
-      cookieDuration = Integer.parseInt(request.getParameter("duration"));
+      String componentId = request.getParameter("cid");
+      String surveyId = request.getParameter("sid");
+
+      // write cookie for this vote or survey
+      Cookie cookieIp = new Cookie("surpoll" + surveyId, request.getRemoteAddr());
+      cookieIp.setMaxAge(86400 * cookieDuration);
+      cookieIp.setPath("/");
+      cookieIp.setSecure(request.isSecure());
+      response.addCookie(cookieIp);
+
+      // Get the context
+      String sRequestURL = request.getRequestURL().toString();
+      String urlAbsolute = sRequestURL.substring(0, sRequestURL.length() - request.getRequestURI().length());
+
+      response.sendRedirect(response.encodeRedirectURL(
+          urlAbsolute + URLUtil.getApplicationURL() + URLUtil.getURL(null, null, componentId) +
+              "surveyDetail.jsp?Action=ViewResult&SurveyId=" + surveyId));
+    } catch (NumberFormatException | IOException e) {
+      SilverLogger.getLogger(this).error(e);
+      response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
-
-    String componentId = request.getParameter("cid");
-    String surveyId = request.getParameter("sid");
-
-    // write cookie for this vote or survey
-    Cookie cookieIp = new Cookie("surpoll" + surveyId, request.getRemoteAddr());
-    cookieIp.setMaxAge(86400 * cookieDuration);
-    cookieIp.setPath("/");
-    response.addCookie(cookieIp);
-
-    // Get the context
-    String sRequestURL = request.getRequestURL().toString();
-    String urlAbsolute =
-        sRequestURL.substring(0, sRequestURL.length() - request.getRequestURI().length());
-
-    response.sendRedirect(response.encodeRedirectURL(
-        urlAbsolute + URLUtil.getApplicationURL() + URLUtil.getURL(null, null, componentId) +
-            "surveyDetail.jsp?Action=ViewResult&SurveyId=" + surveyId));
   }
 
   /**
    * Method invoked when called from a form or directly by URL
    */
-  public void doGet(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
+  @Override
+  public void doGet(HttpServletRequest request, HttpServletResponse response) {
     doPost(request, response);
   }
 }
