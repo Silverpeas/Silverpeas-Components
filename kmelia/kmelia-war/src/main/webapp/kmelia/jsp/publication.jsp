@@ -765,7 +765,7 @@
               <div><%=resources.getString("kmelia.publication.shortcut.source.label")%>
                 <view:componentPath componentId="<%=originalFatherPK.getInstanceId()%>" nodeId="<%=originalFatherPK.getId()%>" language="<%=language%>" link="true"/>
               </div>
-              <a href="<%=kmeliaPublication.getDetail().getPermalink()%>" class="button"><span><%=resources.getString("kmelia.publication.shortcut.source.go")%></span></a>
+              <a href="<%=kmeliaPublication.getDetail().getPermalink()%>" class="button sp-permalink"><span><%=resources.getString("kmelia.publication.shortcut.source.go")%></span></a>
             </div>
          <% }
       	   }
