@@ -376,13 +376,13 @@
       <% if (!pubDetail.isValid()) {%>
         var label = "<%=WebEncodeHelper.javaStringToJsString(resources.getString("kmelia.AlertButPubNotValid"))%>";
         jQuery.popup.confirm(label, function() {
-          sp.messager.open('<%= componentId %>', {
+          sp.messager.open('<%= contextComponentId %>', {
             folderId: '<%= kmeliaScc.getCurrentFolderId() %>',
           <%= NotificationContext.CONTRIBUTION_ID %>: '<%= pubDetail.getId() %>'
           });
         });
       <% } else {%>
-        sp.messager.open('<%= componentId %>', {
+        sp.messager.open('<%= contextComponentId %>', {
           folderId: '<%= kmeliaScc.getCurrentFolderId() %>',
          <%= NotificationContext.CONTRIBUTION_ID %>: '<%= pubDetail.getId() %>'
         });
@@ -394,14 +394,14 @@
       <% if (!pubDetail.isValid()) {%>
           var label = "<%=WebEncodeHelper.javaStringToJsString(resources.getString("kmelia.AlertButPubNotValid"))%>";
           jQuery.popup.confirm(label, function() {
-            sp.messager.open('<%= componentId %>', {
+            sp.messager.open('<%= contextComponentId %>', {
               folderId: '<%= kmeliaScc.getCurrentFolderId() %>',
              <%= NotificationContext.CONTRIBUTION_ID %>: '<%= pubDetail.getId() %>',
               docId: attachmentId
               });
           });
       <% } else {%>
-          sp.messager.open('<%= componentId %>', {
+          sp.messager.open('<%= contextComponentId %>', {
             folderId: '<%= kmeliaScc.getCurrentFolderId() %>',
            <%= NotificationContext.CONTRIBUTION_ID %>: '<%= pubDetail.getId() %>',
             docId: attachmentId
@@ -765,7 +765,7 @@
               <div><%=resources.getString("kmelia.publication.shortcut.source.label")%>
                 <view:componentPath componentId="<%=originalFatherPK.getInstanceId()%>" nodeId="<%=originalFatherPK.getId()%>" language="<%=language%>" link="true"/>
               </div>
-              <a href="<%=kmeliaPublication.getDetail().getPermalink()%>" class="button"><span><%=resources.getString("kmelia.publication.shortcut.source.go")%></span></a>
+              <a href="<%=kmeliaPublication.getDetail().getPermalink()%>" class="button sp-permalink"><span><%=resources.getString("kmelia.publication.shortcut.source.go")%></span></a>
             </div>
          <% }
       	   }

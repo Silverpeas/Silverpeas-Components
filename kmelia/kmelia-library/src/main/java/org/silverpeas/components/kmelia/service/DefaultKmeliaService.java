@@ -2671,6 +2671,8 @@ public class DefaultKmeliaService implements KmeliaService {
   public UserNotification getUserNotification(PublicationPK pubPK,
       SimpleDocumentPK documentPk, NodePK topicPK) {
     final PublicationDetail pubDetail = getPublicationDetail(pubPK);
+    // componentId of document is always the same than its publication (case of alias)
+    documentPk.setComponentName(pubDetail.getInstanceId());
     final SimpleDocument document = AttachmentServiceProvider.getAttachmentService().
         searchDocumentById(documentPk, null);
     SimpleDocument version = document.getLastPublicVersion();
