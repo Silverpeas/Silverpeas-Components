@@ -111,7 +111,7 @@ public abstract class AbstractKmeliaPublicationUserNotification
 
   @Override
   protected String getComponentInstanceId() {
-    return getNodePK().getInstanceId();
+    return getNodePK() != null ? getNodePK().getInstanceId() : getResource().getInstanceId();
   }
 
   @Override
