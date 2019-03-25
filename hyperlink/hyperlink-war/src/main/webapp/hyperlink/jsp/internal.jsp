@@ -23,6 +23,7 @@
   --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ include file="check.jsp" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -31,6 +32,13 @@
   <title></title>
 </head>
 <body>
-<viewTags:displayExternalFullIframe url="${requestScope.URL}"/>
+<c:choose>
+  <c:when test="${requestScope.IsInternalLink}">
+    <c:redirect url="${requestScope.URL}"/>
+  </c:when>
+  <c:otherwise>
+    <viewTags:displayExternalFullIframe url="${requestScope.URL}"/>
+  </c:otherwise>
+</c:choose>
 </body>
 </html>

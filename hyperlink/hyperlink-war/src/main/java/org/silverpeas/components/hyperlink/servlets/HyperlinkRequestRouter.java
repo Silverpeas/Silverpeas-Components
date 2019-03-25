@@ -38,7 +38,6 @@ import javax.servlet.http.HttpSession;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 public class HyperlinkRequestRouter extends ComponentRequestRouter<HyperlinkSessionController> {
@@ -89,7 +88,7 @@ public class HyperlinkRequestRouter extends ComponentRequestRouter<HyperlinkSess
   @Override
   public String getDestination(String function, HyperlinkSessionController hyperlinkSCC,
       HttpRequest request) {
-    String destination = "";
+    final String destination;
     if (function.startsWith("Main") || function.startsWith("portlet")) {
       final String winParam = hyperlinkSCC.getComponentParameterValue("openNewWindow");
       if (StringUtil.getBooleanValue(winParam)) {
@@ -100,34 +99,46 @@ public class HyperlinkRequestRouter extends ComponentRequestRouter<HyperlinkSess
       }
       return getDestination(GO_TO_URL_ACTION, hyperlinkSCC, request);
     } else if (function.startsWith(GO_TO_URL_ACTION)) {
-      final String urlParameter = hyperlinkSCC.getURL();
-      final String sso = hyperlinkSCC.getComponentParameterValue("SSO");
-      final String internalLinkParameter = hyperlinkSCC.getComponentParameterValue("isInternalLink");
-      boolean isInternalLink = StringUtil.getBooleanValue(internalLinkParameter);
-      if (isDefined(urlParameter)) {
-        final String aimedUrl = parseDestination(urlParameter, isInternalLink, request);
-        if (StringUtil.getBooleanValue(sso)) {
-          request.setAttribute("Login", hyperlinkSCC.getUserDetail().getLogin());
-          request.setAttribute("Domain", hyperlinkSCC.getComponentParameterValue("domain"));
-          final HttpSession session = request.getSession(false);
-          request.setAttribute("Password", session.getAttribute("Silverpeas_pwdForHyperlink"));
-          request.setAttribute("URL", aimedUrl);
-          destination = SSO_DEST;
-        } else if (hyperlinkSCC.isClientSSO()) {
-          request.setAttribute("ComponentId", hyperlinkSCC.getComponentId());
-          final String methodType = hyperlinkSCC.getMethodType();
-          request.setAttribute("Method", methodType);
-          destination = AUTHENTICATION_DEST;
+      destination = getHyperlinkTarget(request, hyperlinkSCC);
+    } else {
+      destination = "";
+    }
+    return destination;
+  }
+
+  private String getHyperlinkTarget(final HttpRequest request,
+      final HyperlinkSessionController hyperlinkSCC) {
+    final String destination;
+    final String urlParameter = hyperlinkSCC.getURL();
+    final String sso = hyperlinkSCC.getComponentParameterValue("SSO");
+    final String internalLinkParameter = hyperlinkSCC.getComponentParameterValue("isInternalLink");
+    boolean isInternalLink = StringUtil.getBooleanValue(internalLinkParameter);
+    if (isDefined(urlParameter)) {
+      final String aimedUrl = parseDestination(urlParameter, isInternalLink, request);
+      if (StringUtil.getBooleanValue(sso)) {
+        request.setAttribute("Login", hyperlinkSCC.getUserDetail().getLogin());
+        request.setAttribute("Domain", hyperlinkSCC.getComponentParameterValue("domain"));
+        final HttpSession session = request.getSession(false);
+        request.setAttribute("Password", session.getAttribute("Silverpeas_pwdForHyperlink"));
+        request.setAttribute("URL", aimedUrl);
+        destination = SSO_DEST;
+      } else if (hyperlinkSCC.isClientSSO()) {
+        request.setAttribute("ComponentId", hyperlinkSCC.getComponentId());
+        final String methodType = hyperlinkSCC.getMethodType();
+        request.setAttribute("Method", methodType);
+        destination = AUTHENTICATION_DEST;
+      } else {
+        final String finalAimedUrl = formatAimedUrl(hyperlinkSCC, request, aimedUrl);
+        request.setAttribute("IsInternalLink", isInternalLink);
+        if(request.getParameterAsBoolean("fromRedirect")) {
+          destination = finalAimedUrl;
         } else {
-          final String finalAimedUrl = formatAimedUrl(hyperlinkSCC, request, aimedUrl);
-          if(request.getParameterAsBoolean("fromRedirect")) {
-            destination = finalAimedUrl;
-          } else {
-            request.setAttribute("URL", finalAimedUrl);
-            destination = CURRENT_TAB_DEST;
-          }
+          request.setAttribute("URL", finalAimedUrl);
+          destination = CURRENT_TAB_DEST;
         }
       }
+    } else {
+      destination = "";
     }
     return destination;
   }
