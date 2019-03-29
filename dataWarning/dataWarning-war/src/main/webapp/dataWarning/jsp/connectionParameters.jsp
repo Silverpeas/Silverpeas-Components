@@ -138,7 +138,7 @@ DataWarningDBDriver currentDBDriver = (DataWarningDBDriver)request.getAttribute(
 				<TR>
 					<TD class="txtlibform"><%=resource.getString("champMotDePasse")%> :</TD>
 					<TD>
-						<input type="password" autocomplete="false" name="Password" size="100" maxlength="<%=DBUtil.getTextFieldLength()%>" value="<%=dataWarningObject.getPwd()%>">
+						<input type="password" autocomplete="off" name="Password" size="100" maxlength="<%=DBUtil.getTextFieldLength()%>" value="<%=dataWarningObject.getPwd()%>">
 					</TD>
 				</TR>
 				<TR>

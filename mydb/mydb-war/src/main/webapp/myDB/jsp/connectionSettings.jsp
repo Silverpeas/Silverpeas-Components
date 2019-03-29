@@ -171,7 +171,7 @@
           <div class="field">
             <label class="txtlibform" for="password">${passwordField}</label>
             <div class="champs">
-              <input type="password" autocomplete="false" id="password" name="Password" size="50" value="${currentConnectionInfo.password}"/>
+              <input type="password" autocomplete="off" id="password" name="Password" size="50" value="${currentConnectionInfo.password}"/>
             </div>
           </div>
           <div class="field">
