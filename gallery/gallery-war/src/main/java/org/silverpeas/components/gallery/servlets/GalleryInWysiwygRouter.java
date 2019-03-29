@@ -144,6 +144,9 @@ public class GalleryInWysiwygRouter extends HttpServlet {
   private void displayImage(HttpServletResponse res, Photo image, String size, boolean useOriginal)
       throws IOException {
     res.setContentType(image.getFileMimeType().getMimeType());
+    res.setHeader("Cache-Control", "no-store"); //HTTP 1.1
+    res.setHeader("Pragma", "no-cache");
+    res.setDateHeader("Expires", -1);
     OutputStream out2 = res.getOutputStream();
     int read;
     final MediaResolution mediaResolution = useOriginal

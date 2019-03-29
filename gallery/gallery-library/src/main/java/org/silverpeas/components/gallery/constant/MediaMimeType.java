@@ -27,6 +27,8 @@ package org.silverpeas.components.gallery.constant;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileUtil;
 
+import javax.activation.MimeType;
+import javax.activation.MimeTypeParseException;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -62,8 +64,14 @@ public enum MediaMimeType {
   private final List<String> extensions;
 
   MediaMimeType(String... otherExtensions) {
-    mimeType = ("ERROR".equals(this.name()) ? "" :
-        FileUtil.getMimeType("file." + this.name().toLowerCase()));
+    String identifiedMimeType;
+    try {
+      identifiedMimeType = ("ERROR".equals(this.name()) ? "" :
+          new MimeType(FileUtil.getMimeType("file." + this.name().toLowerCase()))).toString();
+    } catch (MimeTypeParseException e) {
+      identifiedMimeType = javax.ws.rs.core.MediaType.APPLICATION_OCTET_STREAM;
+    }
+    mimeType = identifiedMimeType;
     extensions = new ArrayList<>();
     extensions.add(name().toLowerCase());
     Collections.addAll(extensions, otherExtensions);
