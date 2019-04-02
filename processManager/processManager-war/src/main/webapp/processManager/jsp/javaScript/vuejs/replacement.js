@@ -32,6 +32,93 @@
     replacement.canBeDeleted = true;
   };
 
+  /**
+   * This filter permits to get label of role data.
+   * It is able to perform an array of roles or a role directly.
+   */
+  Vue.filter('mapRoleLabel', function(value) {
+    if (Array.isArray(value)) {
+      return value.map(function(v) {
+        return v.label;
+      })
+    }
+    return value ? value.label : '';
+  });
+
+  /**
+   * This filter permits to get name of role data.
+   * It is able to perform an array of roles or a role directly.
+   */
+  Vue.filter('mapRoleName', function(value) {
+    if (Array.isArray(value)) {
+      return value.map(function(v) {
+        return v.name;
+      })
+    }
+    return value ? value.name : '';
+  });
+
+  var ReplacementRoleManagerMixin = {
+    inject : ['context', 'replacementService'],
+    props : {
+      computedTrigger : {
+        'type' : Number,
+        'default' : 1
+      }
+    },
+    data : function() {
+      return {
+        computedRoleManagerMixinTrigger : 1,
+        roleManager : undefined
+      }
+    },
+    created : function() {
+      this.replacementService.promiseRoleManager().then(function(roleManager) {
+        this.roleManager = roleManager;
+      }.bind(this));
+    },
+    methods : {
+      refreshComputedRoleManagerData : function() {
+        this.computedRoleManagerMixinTrigger++;
+      }
+    },
+    computed : {
+      incumbentRoleFilter : function() {
+        var roles;
+        if (this.roleManager) {
+          roles = this.roleManager.getRolesOfComponentInstance();
+        }
+        return roles;
+      },
+      substituteRoleFilter : function() {
+        var roles;
+        if (this.computedTrigger && this.computedRoleManagerMixinTrigger && this.roleManager) {
+          if (this.replacement.incumbent && this.replacement.incumbent.id) {
+            roles = this.roleManager.getRolesOfUser(this.replacement.incumbent.id);
+          } else {
+            roles = this.roleManager.getRolesOfUser(this.context.currentUser.id);
+          }
+        }
+        return roles;
+      },
+      matchingRoles : function() {
+        var roles;
+        if (this.computedTrigger && this.computedRoleManagerMixinTrigger && this.roleManager) {
+          roles = this.roleManager.getMatchingRoles(this.replacement);
+        }
+        return roles;
+      }
+    }
+  };
+
+  var ReplacementEntityMixin = {
+    computed : {
+      isCreation : function() {
+        return StringUtil.isNotDefined(this.replacement.uri);
+      }
+    }
+  };
+
   Vue.component('workflow-replacement-module',
     replacementAsyncComponentRepository.get('module', {
       mixins : [VuejsApiMixin, VuejsProgressMessageMixin],
@@ -85,14 +172,6 @@
         }
       }
     }));
-
-  var ReplacementEntityMixin = {
-    computed : {
-      isCreation : function() {
-        return StringUtil.isNotDefined(this.replacement.uri);
-      }
-    }
-  };
 
   Vue.component('workflow-replacement-management',
     replacementAsyncComponentRepository.get('management', {
@@ -181,7 +260,7 @@
 
   Vue.component('workflow-replacement-form',
     replacementAsyncComponentRepository.get('form', {
-      mixins : [VuejsFormApiMixin, VuejsI18nTemplateMixin, ReplacementEntityMixin],
+      mixins : [VuejsFormApiMixin, VuejsI18nTemplateMixin, ReplacementRoleManagerMixin, ReplacementEntityMixin],
       inject : ['context', 'rootFormMessages'],
       props : {
         replacement : Object,
@@ -190,7 +269,8 @@
       data : function() {
         return {
           selectIncumbentApi : undefined,
-          selectSubstituteApi : undefined
+          selectSubstituteApi : undefined,
+          substituteRoleFilterItems : undefined
         };
       },
       created : function() {
@@ -207,6 +287,10 @@
                   this.formatMessage(this.rootFormMessages.correctEndDateIncludedPeriod,
                       [this.messages.startDateLabel, this.messages.endDateLabel]));
             }
+            if (!this.matchingRoles.length) {
+              this.rootFormApi.errorMessage().add(
+                  this.formatMessage(this.messages.noMatchingRoleError));
+            }
             return this.rootFormApi.errorMessage().none();
           },
           updateFormData : function(replacementToUpdate) {
@@ -221,8 +305,17 @@
             __promises.push(this.selectIncumbentApi.refresh());
             __promises.push(this.selectSubstituteApi.refresh());
             sp.promise.whenAllResolved(__promises).then(function() {
-              this.contentReadyDeferred.resolve();
-              this.selectSubstituteApi.focus();
+              this.updateSubstituteRoleFilterItems();
+              if (this.contentReadyDeferred) {
+                this.contentReadyDeferred.resolve();
+              }
+              if (this.roleManager) {
+                this.selectSubstituteApi.focus();
+              } else {
+                setTimeout(function() {
+                  this.$el.querySelector('#sp_wf_replacement_form_sd').focus();
+                }.bind(this), 0);
+              }
             }.bind(this));
           }.bind(this));
         }
@@ -230,28 +323,42 @@
       methods : {
         incumbentChanged : function(userIds) {
           this.replacement.incumbent.id = userIds.length ? userIds[0] : '';
+          this.updateSubstituteRoleFilterItems();
+          this.refreshComputedRoleManagerData();
         },
         substituteChanged : function(userIds) {
           this.replacement.substitute.id = userIds.length ? userIds[0] : '';
+          this.refreshComputedRoleManagerData();
+        },
+        updateSubstituteRoleFilterItems : function() {
+          if (this.roleManager) {
+            this.substituteRoleFilterItems = this.substituteRoleFilter.map(function(r) {
+              var item = extendsObject({}, r);
+              item.selected = true;
+              return item;
+            });
+          }
         }
       },
       computed : {
-        roleFilter : function() {
-          var roles = [];
-          if (this.context.currentUser.isSupervisor) {
-            for (var roleName in this.context.replacementHandledRoles) {
-              roles.push(roleName);
+        selectedSubstituteFilterRoles : function() {
+          var roles;
+          if (this.roleManager) {
+            if (!this.substituteRoleFilterItems) {
+              this.updateSubstituteRoleFilterItems();
             }
-          } else {
-            roles.push(this.context.currentUser.role);
+            roles = this.substituteRoleFilterItems.filter(function(i) {
+              return i.selected;
+            });
           }
-          return roles;
+          return roles || [];
         }
       }
     }));
 
   Vue.component('workflow-replacement-list-item',
     replacementAsyncComponentRepository.get('list-item', {
+      mixins : [ReplacementRoleManagerMixin],
       props : {
         replacement : Object
       },
@@ -273,4 +380,12 @@
         }
       }
     }));
+
+  Vue.component('workflow-replacement-matching-roles',
+      replacementAsyncComponentRepository.get('matching-roles', {
+        mixins : [ReplacementRoleManagerMixin],
+        props : {
+          replacement : Object
+        }
+      }));
 })();

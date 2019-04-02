@@ -35,11 +35,91 @@
     replacement.endDate = sp.moment.formatAsLocalDate(newEndMoment);
   };
 
+  /**
+   * Gets user identifiers mapped with the related given roles.
+   * @param context the replacement module context.
+   * @returns {*}
+   */
+  var __initRoleManager = function(context) {
+    var mappingOfUserRoles = {};
+    var promises = [];
+    var __load = function(roleName) {
+      return User.get({
+        component : context.componentInstanceId,
+        userStatesToExclude : ['DEACTIVATED'],
+        roles : roleName
+      }).then(function(users) {
+        users.forEach(function(user) {
+          var userRoles = mappingOfUserRoles[user.id];
+          if (!userRoles) {
+            userRoles = [];
+            mappingOfUserRoles[user.id] = userRoles;
+          }
+          userRoles.push(roleName);
+        });
+      });
+    };
+    for (var roleName in context.replacementHandledRoles) {
+      context.replacementHandledRoles[roleName].name = roleName;
+      promises.push(__load(roleName));
+    }
+    return sp.promise.whenAllResolved(promises).then(function() {
+      return new function() {
+
+        /**
+         * Gets roles of the component instance into context of replacement.
+         * @returns {*}
+         */
+        this.getRolesOfComponentInstance = function() {
+          var roles = [];
+          for (var roleName in context.replacementHandledRoles) {
+            roles.push(extendsObject({}, context.replacementHandledRoles[roleName]));
+          }
+          return roles;
+        };
+
+        /**
+         * Gets roles of the given user into context of replacement.
+         * @param userId identifier of a user for which are requested.
+         * @returns {*}
+         */
+        this.getRolesOfUser = function(userId) {
+          var roles = [];
+          var mappingOfUserRole = mappingOfUserRoles[userId] || [];
+          mappingOfUserRole.forEach(function(roleName) {
+            roles.push(extendsObject({}, context.replacementHandledRoles[roleName]));
+          });
+          return roles;
+        };
+
+        /**
+         * Gets matching roles between the substitute and the incumbent. No roles if one of both is
+         * not filled.
+         * @param replacement the object representing replacement data.
+         * @returns {*}
+         */
+        this.getMatchingRoles = function(replacement) {
+          var roles;
+          if (replacement.incumbent && replacement.incumbent.id &&
+              replacement.substitute && replacement.substitute.id) {
+            roles = this.getRolesOfUser(replacement.incumbent.id);
+            var substituteRoles = this.getRolesOfUser(replacement.substitute.id);
+            roles = roles.filter(function(role) {
+              return substituteRoles.indexOfElement(role, 'name') >= 0;
+            });
+          }
+          return roles;
+        };
+      };
+    });
+  };
+
   window.ReplacementService = SilverpeasClass.extend({
     initialize : function(context) {
       this.context = context;
       var baseUri = webContext + '/services/workflow/' + this.context.componentInstanceId + '/replacements';
       this.baseAdapter = RESTAdapter.get(baseUri, Replacement);
+      this.roleManagerPromise = __initRoleManager(this.context);
     },
 
     getTools : function() {
@@ -70,6 +150,14 @@
           return newReplacement;
         }.bind(this)
       };
+    },
+
+    /**
+     * Gets the role manager.
+     * @returns {*}
+     */
+    promiseRoleManager : function() {
+      return this.roleManagerPromise;
     },
 
     /**

@@ -143,6 +143,11 @@
 #all-remplacement .header.title h3 {
   margin: 1em 0 1em;
 }
+
+.ui-dialog .replacement-form {
+  width: 550px;
+}
+
 .replacement-form label {
   white-space: nowrap;
 }
@@ -176,6 +181,96 @@
 
 .replacement-module li .period {
   font-weight: bold;
+}
+
+#replacement-module .silverpeas-list-item .replacement-item {
+  display: flex;
+  flex-flow: row wrap;
+}
+
+#replacement-module .silverpeas-list-item .replacement-matching-roles {
+  flex-basis: 50%;
+}
+
+#replacement-module .silverpeas-list-item .substitute,
+#replacement-module .silverpeas-list-item .incumbent {
+  flex-basis: 50%;
+}
+
+#replacement-module .silverpeas-list-item .period {
+  order: 8
+}
+
+#replacement-module #all-remplacement .silverpeas-list-item .substitute {
+  flex-basis: 35%;
+}
+
+#replacement-module #all-remplacement .silverpeas-list-item .incumbent {
+  flex-basis: 30%;
+}
+
+#replacement-module #all-remplacement .silverpeas-list-item .replacement-matching-roles {
+  flex-basis: 35%;
+}
+
+.replacement-role-filter .label {
+  font-style: italic;
+  padding: 5px;
+}
+
+.replacement-role-filter ul {
+  display: inline;
+  padding: 5px;
+  margin: 0;
+  list-style-type: none;
+}
+
+.replacement-role-filter ul li {
+  display: inline;
+  padding: 0;
+  margin: 0;
+}
+
+.replacement-role-filter li a {
+  cursor: pointer;
+  background-color: #FFF;
+  color: #8f8f8f;
+  border: 1px solid #8f8f8f;
+  padding: 2.5px 5px;
+  margin-right: 5px;
+  border-radius: 4px;
+  display: inline-block;
+  margin: 0.25em;
+}
+
+.replacement-role-filter li a:hover,
+.replacement-role-filter li a:focus {
+  border: 1px solid #5c5c5c;
+  background-color: #EEE;
+  color: #5c5c5c;
+}
+
+.replacement-role-filter li a.item-selected {
+  background-color: #5c5c5c;
+  border: 1px solid #5c5c5c;
+  color: #FFF;
+  padding-right: 1.5em;
+  position: relative;
+}
+
+.replacement-role-filter li a.item-selected:hover::after,
+.replacement-role-filter li a.item-selected:focus::after {
+  content: 'x';
+  font-family: Comic Sans Ms;
+  font-weight: 600;
+  position: absolute;
+  right: 0.5em;
+  top: 1px;
+}
+
+.replacement-matching-roles .error {
+  font-weight: bold;
+  color: #CE6F6F;
 }
 
 #replacement-module .inlineMessage {

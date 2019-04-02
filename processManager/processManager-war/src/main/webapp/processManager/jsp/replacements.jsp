@@ -43,10 +43,11 @@
 
 <fmt:message var="manageReplacementLabel" key="processManager.replacements.manage"/>
 <fmt:message var="addReplacementLabel" key="processManager.replacements.add"/>
-<fmt:message var="yourCurrentRoleIsLabel" key="processManager.yourCurrentRoleIs"/>
 
-<c:set var="jsRoles" value="${requestScope.jsRoles}"/>
+<c:set var="jsUserRoles" value="${requestScope.jsUserRoles}"/>
+<c:set var="jsComponentInstanceRoles" value="${requestScope.jsComponentInstanceRoles}"/>
 <c:set var="currentRole" value="${requestScope.currentRole}"/>
+<c:set var="currentRoleLabel" value="${requestScope.currentRoleLabel}"/>
 <c:set var="isCurrentRoleSupervisor" value="${'supervisor' eq fn:toLowerCase(currentRole)}"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -59,12 +60,12 @@
   <view:script src="/processManager/jsp/javaScript/vuejs/replacement.service.js"/>
   <view:script src="/processManager/jsp/javaScript/vuejs/replacement.js"/>
   <script type="text/javascript">
-    var workflowRoles = ${jsRoles};
+    var componentInstanceRoles = ${jsComponentInstanceRoles};
+    var userRoles = ${jsUserRoles};
     window.replacementHandledRoles = {};
-    for (var roleName in workflowRoles) {
-      var role = workflowRoles[roleName];
-      if (!role.creationOne) {
-        window.replacementHandledRoles[roleName] = role;
+    for (var roleName in componentInstanceRoles) {
+      if ((${isCurrentRoleSupervisor} || userRoles[roleName]) && roleName !== 'supervisor') {
+        window.replacementHandledRoles[roleName] = componentInstanceRoles[roleName];
       }
     }
   </script>
@@ -82,9 +83,6 @@
 <view:window>
   <view:frame>
     <div id="replacement-module">
-      <silverpeas-inline-message>
-        <span class="your-role-label">${yourCurrentRoleIsLabel}</span> <span class="your-role">{{context.currentUser.roleLabel}}</span>
-      </silverpeas-inline-message>
       <workflow-replacement-module v-on:api="api = $event">
         <template slot="header">
           <silverpeas-operation-creation-area></silverpeas-operation-creation-area>
@@ -106,7 +104,7 @@
       context : {
         currentUser : extendsObject({
           role : '${currentRole}',
-          roleLabel : replacementHandledRoles['${currentRole}'].label,
+          roleLabel : componentInstanceRoles['${currentRole}'].label,
           isSupervisor : ${isCurrentRoleSupervisor}
         }, currentUser),
         componentInstanceId : '${componentId}',

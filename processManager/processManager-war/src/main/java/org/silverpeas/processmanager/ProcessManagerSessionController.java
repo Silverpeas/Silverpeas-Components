@@ -711,31 +711,41 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    * Returns the user roles as a list of (name, label) pair.
    */
   public NamedValue[] getUserRoleLabels() {
-    if (userRoleLabels == null) {
-      String lang = getLanguage();
-      Role[] roles = processModel.getRoles();
-      List<NamedValue> labels = new ArrayList<>();
+    final String lang = getLanguage();
+    final Role[] roles = processModel.getRoles();
+    final List<NamedValue> labels = new ArrayList<>();
 
-      List<Replacement> replacements = getUserReplacements();
-      for (final Replacement replacement : replacements) {
-        final List<String> incumbentRoles = getSubstituteRolesOf(replacement.getIncumbent());
-        for (final String roleName : incumbentRoles) {
-          getRoleLabel(replacement, roles, roleName, lang)
-            .filter(n -> labels.stream().noneMatch(l -> Objects.equals(n.getValue(), l.getValue())))
-            .ifPresent(labels::add);
-        }
+    final List<Replacement> replacements = getUserReplacements();
+    for (final Replacement replacement : replacements) {
+      final List<String> incumbentRoles = getSubstituteRolesOf(replacement.getIncumbent());
+      for (final String roleName : incumbentRoles) {
+        getRoleLabel(replacement, roles, roleName, lang)
+          .filter(n -> labels.stream().noneMatch(l -> Objects.equals(n.getValue(), l.getValue())))
+          .ifPresent(labels::add);
       }
-
-      // quadratic search ! but it's ok : the list are about 3 or 4 length.
-      for (final String userRole : userRoles) {
-        getRoleLabel(null, roles, userRole, lang).ifPresent(labels::add);
-      }
-
-      labels.sort(NamedValue.ascendingValues);
-      userRoleLabels = labels.toArray(new NamedValue[0]);
     }
 
-    return userRoleLabels;
+    // quadratic search ! but it's ok : the list are about 3 or 4 length.
+    for (final String userRole : userRoles) {
+      getRoleLabel(null, roles, userRole, lang).ifPresent(labels::add);
+    }
+
+    labels.sort(NamedValue.ascendingValues);
+    return labels.toArray(new NamedValue[0]);
+  }
+
+  /**
+   * Returns the component instance roles as a list of (name, label) pair.
+   */
+  public NamedValue[] getComponentInstanceRoleLabels() {
+    String lang = getLanguage();
+    Role[] roles = processModel.getRoles();
+    List<NamedValue> labels = new ArrayList<>();
+    for (final Role role : roles) {
+      getRoleLabel(null, roles, role.getName(), lang).ifPresent(labels::add);
+    }
+    labels.sort(NamedValue.ascendingValues);
+    return  labels.toArray(new NamedValue[0]);
   }
 
   /**
@@ -2121,9 +2131,8 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    * @return a list of roles.
    */
   private List<String> getSubstituteRolesOf(final User user) {
-    final List<String> creationRoles = getCreationRoles();
     final List<String> listOfUserRoles = Stream.of(userRoles)
-        .filter(r -> !creationRoles.contains(r))
+        .filter(r -> !SUPERVISOR_ROLE.equals(r))
         .collect(Collectors.toList());
     final String[] roles = getOrganisationController().getUserProfiles(user.getUserId(), peasId);
     return Stream.of(roles)
@@ -2217,7 +2226,6 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    * The session saves a list of user roles.
    */
   private String[] userRoles = null;
-  private NamedValue[] userRoleLabels = null;
   /**
    * The current enabled replacement if any. By default none.
    */

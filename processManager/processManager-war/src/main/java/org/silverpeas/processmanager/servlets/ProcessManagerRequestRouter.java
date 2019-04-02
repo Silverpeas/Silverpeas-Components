@@ -52,6 +52,7 @@ import org.silverpeas.core.workflow.api.task.Task;
 import org.silverpeas.core.workflow.engine.model.StateImpl;
 import org.silverpeas.processmanager.CurrentState;
 import org.silverpeas.processmanager.LockVO;
+import org.silverpeas.processmanager.NamedValue;
 import org.silverpeas.processmanager.ProcessFilter;
 import org.silverpeas.processmanager.ProcessManagerException;
 import org.silverpeas.processmanager.ProcessManagerSessionController;
@@ -65,6 +66,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 public class ProcessManagerRequestRouter
@@ -1050,18 +1052,20 @@ public class ProcessManagerRequestRouter
    */
   private static void setSharedAttributes(ProcessManagerSessionController session,
       HttpServletRequest request) {
+    final Function<NamedValue[],String> jsRoleEncoder = a -> JSONCodec.encodeObject(o -> {
+      Stream.of(a).forEach(l ->
+          o.putJSONObject(l.getName(), r ->
+              r.put("label", l.getValue()).put("creationOne", l.isCreationOne())));
+      return o;
+    });
     final String canCreate = session.getCreationRights() ? "1" : "0";
     final boolean isVersionControlled = session.isVersionControlled();
     final String isVersionControlledAsString = isVersionControlled ? "1" : "0";
-
     request.setAttribute("isVersionControlled", isVersionControlledAsString);
     request.setAttribute("language", session.getLanguage());
     request.setAttribute("roles", session.getUserRoleLabels());
-    request.setAttribute("jsRoles", JSONCodec.encodeObject(o -> {
-      Stream.of(session.getUserRoleLabels()).forEach(l -> o.putJSONObject(l.getName(),
-          r -> r.put("label", l.getValue()).put("creationOne", l.isCreationOne())));
-      return o;
-    }));
+    request.setAttribute("jsUserRoles", jsRoleEncoder.apply(session.getUserRoleLabels()));
+    request.setAttribute("jsComponentInstanceRoles", jsRoleEncoder.apply(session.getComponentInstanceRoleLabels()));
     request.setAttribute("replacements", session.getUserReplacements());
     request.setAttribute("currentRole", session.getCurrentRole());
     request.setAttribute("currentReplacement", session.getCurrentReplacement());

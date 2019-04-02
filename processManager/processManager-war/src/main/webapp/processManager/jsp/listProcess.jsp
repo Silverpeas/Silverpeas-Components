@@ -177,7 +177,7 @@
 </head>
 <body class="yui-skin-sam processManager-main currentProfile_${currentRole} page_processes">
 <view:operationPane>
-  <c:if test="${not canCreate and currentReplacement == null}">
+  <c:if test="${currentReplacement == null}">
     <fmt:message key="processManager.replacements.manage" var="opIcon" bundle="${icons}"/>
     <c:url var="opIcon" value="${opIcon}"/>
     <view:operation action="manageReplacements" altText="${manageReplacementLabel}" icon="${opIcon}"/>

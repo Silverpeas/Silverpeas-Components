@@ -192,6 +192,8 @@
       <span v-if="!isOneDay">${toLabel} </span>
       <span v-if="!isOneDay" class="date">{{replacement.endDate | displayAsDate}}</span>
     </div>
+    <workflow-replacement-matching-roles
+        v-bind:replacement="replacement"></workflow-replacement-matching-roles>
   </div>
 </silverpeas-component-template>
 
@@ -199,40 +201,61 @@
 <c:set var="substituteLabel"><fmt:message key='processManager.replacements.substitute'/></c:set>
 <c:set var="startDateLabel"><fmt:message key='processManager.replacements.startDate'/></c:set>
 <c:set var="endDateLabel"><fmt:message key='processManager.replacements.endDate'/></c:set>
+<c:set var="filterRoleLabel"><fmt:message key='processManager.replacements.roles.filter.label'/></c:set>
+<c:set var="noMatchingRoleError"><fmt:message key='processManager.replacements.errors.noMatchingRole'/></c:set>
 
 <!-- ########################################################################################### -->
 <silverpeas-component-template name="form">
   <div class="table replacement-form">
-    <div v-init>
+    <div v-sp-init>
       {{addMessages({
       incumbentLabel : '${silfn:escapeJs(incumbentLabel)}',
       substituteLabel : '${silfn:escapeJs(substituteLabel)}',
       startDateLabel : '${silfn:escapeJs(startDateLabel)}',
-      endDateLabel : '${silfn:escapeJs(endDateLabel)}'
+      endDateLabel : '${silfn:escapeJs(endDateLabel)}',
+      noMatchingRoleError : '${silfn:escapeJs(noMatchingRoleError)}'
       })}}
     </div>
-    <label class="label-ui-dialog" for="sp_wf_replacement_form_s">${substituteLabel}</label>
-    <div class="champ-ui-dialog">
-      <silverpeas-user-group-select
-          id="sp_wf_replacement_form_s"
-          v-on:api="selectSubstituteApi = $event"
-          v-on:selection-change="substituteChanged($event.selectedUserIds)"
-          v-bind:initial-user-ids="replacement.substitute && replacement.substitute.id"
-          v-bind:mandatory="true"
-          v-bind:role-filter="roleFilter"
-          v-bind:component-id-filter="context.componentInstanceId"></silverpeas-user-group-select>
+    <div v-sp-disable-if="!roleManager">
+      <label class="label-ui-dialog" for="sp_wf_replacement_form_i">${incumbentLabel}</label>
+      <div class="champ-ui-dialog">
+        <silverpeas-user-group-select
+            id="sp_wf_replacement_form_i"
+            v-on:api="selectIncumbentApi = $event"
+            v-on:selection-change="incumbentChanged($event.selectedUserIds)"
+            v-bind:initial-user-ids="replacement.incumbent && replacement.incumbent.id"
+            v-bind:mandatory="true"
+            v-bind:read-only="!context.currentUser.isSupervisor"
+            v-bind:role-filter="incumbentRoleFilter | mapRoleName"
+            v-bind:component-id-filter="context.componentInstanceId"></silverpeas-user-group-select>
+      </div>
     </div>
-    <label class="label-ui-dialog" for="sp_wf_replacement_form_i">${incumbentLabel}</label>
-    <div class="champ-ui-dialog">
-      <silverpeas-user-group-select
-          id="sp_wf_replacement_form_i"
-          v-on:api="selectIncumbentApi = $event"
-          v-on:selection-change="incumbentChanged($event.selectedUserIds)"
-          v-bind:initial-user-ids="replacement.incumbent && replacement.incumbent.id"
-          v-bind:mandatory="true"
-          v-bind:read-only="!context.currentUser.isSupervisor"
-          v-bind:role-filter="roleFilter"
-          v-bind:component-id-filter="context.componentInstanceId"></silverpeas-user-group-select>
+    <div v-sp-disable-if="!roleManager || !(replacement.incumbent && replacement.incumbent.id)">
+      <label class="label-ui-dialog" for="sp_wf_replacement_form_s">${substituteLabel}</label>
+      <div class="champ-ui-dialog replacement-role-filter" v-if="roleManager && substituteRoleFilterItems">
+        <span class="label">${filterRoleLabel} </span>
+        <ul>
+          <li v-for="role in substituteRoleFilterItems" v-bind:key="role.name">
+            <a href="javascript:void(0)"
+               v-bind:class="{'item-selected':role.selected}"
+               v-on:click.stop.prevent="role.selected=!role.selected">{{role.label}}</a></li>
+        </ul>
+      </div>
+      <div class="champ-ui-dialog" v-sp-disable-if="!selectedSubstituteFilterRoles.length">
+        <silverpeas-user-group-select
+            id="sp_wf_replacement_form_s"
+            v-on:api="selectSubstituteApi = $event"
+            v-on:selection-change="substituteChanged($event.selectedUserIds)"
+            v-bind:initial-user-ids="replacement.substitute && replacement.substitute.id"
+            v-bind:mandatory="true"
+            v-bind:role-filter="selectedSubstituteFilterRoles | mapRoleName"
+            v-bind:component-id-filter="context.componentInstanceId"></silverpeas-user-group-select>
+      </div>
+      <div class="champ-ui-dialog">
+        <workflow-replacement-matching-roles
+            v-bind:replacement="replacement"
+            v-bind:computed-trigger="computedRoleManagerMixinTrigger"></workflow-replacement-matching-roles>
+      </div>
     </div>
     <label class="label-ui-dialog" for="sp_wf_replacement_form_sd">${startDateLabel}</label>
     <div class="champ-ui-dialog">
@@ -250,5 +273,19 @@
                               v-bind:mandatory="true"
                               v-model="replacement.endDate"></silverpeas-date-picker>
     </div>
+  </div>
+</silverpeas-component-template>
+
+
+<c:set var="andLabel"><fmt:message key='GML.and'/></c:set>
+<c:set var="forRoleLabel"><fmt:message key='processManager.replacements.forRole'/></c:set>
+<c:set var="forRolesLabel"><fmt:message key='processManager.replacements.forRoles'/></c:set>
+
+<!-- ########################################################################################### -->
+<silverpeas-component-template name="matching-roles">
+  <div class="replacement-matching-roles" v-if="roleManager && matchingRoles">
+    <span v-if="matchingRoles.length === 1">${forRoleLabel} {{matchingRoles | mapRoleLabel | joinWith({separator:', ',lastSeparator:' ${andLabel} '})}}</span>
+    <span v-if="matchingRoles.length > 1">${forRolesLabel} {{matchingRoles | mapRoleLabel | joinWith({separator:', ',lastSeparator:' ${andLabel} '})}}</span>
+    <span v-if="!matchingRoles.length" class="error">${noMatchingRoleError}</span>
   </div>
 </silverpeas-component-template>
