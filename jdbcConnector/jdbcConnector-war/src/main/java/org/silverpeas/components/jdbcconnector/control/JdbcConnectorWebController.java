@@ -49,7 +49,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
@@ -221,8 +220,7 @@ public class JdbcConnectorWebController extends
     try {
       List<String> tableNames = requester.getTableNames();
       Map<String, String> tables = new LinkedHashMap<>(tableNames.size());
-      tableNames.forEach(t -> tables.put(t,
-          requester.getColumnNames(t).stream().collect(Collectors.joining(","))));
+      tableNames.forEach(t -> tables.put(t, String.join(",", requester.getColumnNames(t))));
       request.setAttribute("tables", tables);
       request.setAttribute(COMPARING_OPERATORS, TableRowsFilter.getAllComparators());
     } catch (JdbcConnectorRuntimeException e) {
@@ -233,16 +231,15 @@ public class JdbcConnectorWebController extends
 
   private Optional<String> validateSQLRequest(String request) {
     Optional<String> validationFailure = Optional.empty();
-    String sqlQuery = request.trim();
     if (!requester.isDataSourceDefined()) {
       validationFailure = Optional.of(getString("erreurParametresConnectionIncorrects"));
     } else if (StringUtil.isNotDefined(request)) {
       validationFailure = Optional.of(getString("erreurRequeteVide"));
-    } else if (!sqlQuery.toLowerCase().startsWith("select")) {
+    } else if (!request.trim().toLowerCase().startsWith("select")) {
       validationFailure = Optional.of(getString("erreurModifTable"));
     } else {
       try {
-        queryResult.setNewResult(requester.request(sqlQuery));
+        queryResult.setNewResult(requester.request(request.trim()));
       } catch (JdbcConnectorException e) {
         SilverLogger.getLogger(this).error("Error while validating SQL request: " + request, e);
         validationFailure = Optional.of(e.getLocalizedMessage());

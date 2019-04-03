@@ -106,7 +106,7 @@ public class DataSourceConnectionInfo
    * @return itself.
    */
   public DataSourceConnectionInfo withSqlRequest(String sqlRequest) {
-    setSqlRequest(sqlRequest.toLowerCase());
+    setSqlRequest(sqlRequest);
     return this;
   }
 
