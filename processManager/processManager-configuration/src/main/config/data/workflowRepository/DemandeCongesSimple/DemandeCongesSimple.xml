@@ -124,6 +124,7 @@
 			<label>En attente d'acceptation par responsable</label>
 			<workingUsers>
 				<relatedUser participant="Demandeur" relation="responsable" role="Responsable"/>
+        <relatedUser participant="Demandeur" role="Employe"/>
 			</workingUsers>
 			<interestedUsers>
 				<relatedUser participant="Demandeur" role="Employe"/>
@@ -131,6 +132,7 @@
 			<allowedActions>
 				<allow action="Accepter"/>
 				<allow action="Refuser"/>
+        <allow action="Annuler"/>
 			</allowedActions>
 			<timeOutActions>
 			  <timeOutAction action="Relancer" delay="3d" order="1"/>
@@ -165,6 +167,19 @@
 				<allow action="Supprimer"/>
 			</allowedActions>-->
 		</state>
+
+    <state name="Annulee">
+      <label>Annulée</label>
+      <workingUsers>
+        <relatedUser participant="Demandeur" role="Employe"/>
+      </workingUsers>
+      <interestedUsers>
+        <relatedUser participant="Demandeur" relation="responsable" role="Responsable"/>
+      </interestedUsers>
+      <allowedActions>
+        <allow action="Supprimer"/>
+      </allowedActions>
+    </state>
 
 	</states>
 
@@ -239,6 +254,33 @@
 				</consequence>
 			</consequences>
 		</action>
+
+    <action name="Annuler">
+      <label>Annuler</label>
+      <allowedUsers>
+        <relatedUser participant="Demandeur" role="Employe"/>
+      </allowedUsers>
+      <consequences>
+        <consequence>
+          <set state="Annulee"/>
+          <notify message="La demande de ${action.Creation.actor} vient d'être annulée">
+            <relatedUser participant="Demandeur" relation="responsable" role="Responsable"/>
+          </notify>
+        </consequence>
+      </consequences>
+    </action>
+
+    <action name="Supprimer" kind="delete">
+      <label>Supprimer</label>
+      <allowedUsers>
+        <relatedUser participant="Demandeur" role="Employe"/>
+      </allowedUsers>
+      <consequences>
+        <consequence>
+          <kill>true</kill>
+        </consequence>
+      </consequences>
+    </action>
 	</actions>
 
 	<!-- DEFINITION DES FORMULAIRES -->

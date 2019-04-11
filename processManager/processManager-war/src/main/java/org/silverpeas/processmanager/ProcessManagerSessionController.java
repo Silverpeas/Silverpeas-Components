@@ -40,6 +40,7 @@ import org.silverpeas.core.contribution.content.form.field.UserField;
 import org.silverpeas.core.contribution.content.form.form.XmlForm;
 import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
 import org.silverpeas.core.contribution.content.form.record.GenericRecordTemplate;
+import org.silverpeas.core.date.Period;
 import org.silverpeas.core.notification.message.MessageNotifier;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.MapUtil;
@@ -358,7 +359,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       return false;
     }
     for (String state : states) {
-      if (getActiveUsers(state).contains(getUserId())) {
+      if (getActiveUsers(state).contains(getActiveUser().getUserId())) {
         return true;
       }
     }
@@ -524,7 +525,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       try {
         users = currentProcessInstance.getWorkingUsers(state);
         for (final Actor user : users) {
-          if (getUserId().equals(user.getUser().getUserId())) {
+          if (getActiveUser().getUserId().equals(user.getUser().getUserId())) {
             return true;
           }
         }
@@ -547,11 +548,11 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     return activeUsers;
   }
 
-  public List<String> getUsers(QualifiedUsers qualifiedUsers) {
+  private List<String> getUsers(QualifiedUsers qualifiedUsers) {
     return getUsers(qualifiedUsers, false);
   }
 
-  public List<String> getUsers(QualifiedUsers qualifiedUsers, boolean useCurrentRole) {
+  private List<String> getUsers(QualifiedUsers qualifiedUsers, boolean useCurrentRole) {
     List<String> users = new ArrayList<>();
     RelatedUser[] relatedUsers = qualifiedUsers.getRelatedUsers();
     RelatedUser relatedUser;
@@ -1077,7 +1078,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    */
   public Task[] getTasks() throws ProcessManagerException {
     try {
-      return Workflow.getTaskManager().getTasks(currentUser, currentRole, currentProcessInstance);
+      return Workflow.getTaskManager().getTasks(getActiveUser(), currentRole, currentProcessInstance);
     } catch (WorkflowException e) {
       throw new ProcessManagerException("SessionController", "processManager.GET_TASKS_FAILED", e);
     }
@@ -1092,7 +1093,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
         QualifiedUsers qualifiedUsers = action.getAction().getAllowedUsers();
 
         List<String> grantedUserIds = getUsers(qualifiedUsers, true);
-        if (grantedUserIds.contains(getUserId())) {
+        if (grantedUserIds.contains(getActiveUser().getUserId())) {
           filteredActions.addAllowedAction(action);
         }
       }
@@ -1205,6 +1206,9 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
         Workflow.getWorkflowEngine().process(tse);
       } else {
         TaskDoneEvent event = task.buildTaskDoneEvent(actionName, data);
+        if (getCurrentReplacement() != null) {
+          event.setSubstitute(getCurrentReplacement().getSubstitute());
+        }
         event.setResumingAction(this.isResumingInstance);
         Workflow.getWorkflowEngine().process(event);
         feedbackUser("processManager.action.feedback");
@@ -1313,7 +1317,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     try {
       State state = processModel.getState(stateName);
       ((UpdatableProcessInstanceManager) Workflow.getProcessInstanceManager())
-          .lock(currentProcessInstance, state, currentUser);
+          .lock(currentProcessInstance, state, getActiveUser());
     } catch (WorkflowException e) {
       throw new ProcessManagerException("SessionController", "processManager.LOCK_FAILED", e);
     }
@@ -1374,12 +1378,13 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
       // Actor Full Name
       stepVO.setActorFullName(getStepActor(step));
+      stepVO.setSubstituteFullName(getStepSubstitute(step));
 
       // Action name
       stepVO.setActionName(getStepAction(step));
 
       // Step date
-      stepVO.setStepDate(DateUtil.getOutputDate(step.getActionDate(), getLanguage()));
+      stepVO.setStepDate(DateUtil.getOutputDateAndHour(step.getActionDate(), getLanguage()));
 
       // visibility
       stepVO.setVisible(isStepVisible(step));
@@ -1431,14 +1436,13 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     return steps;
   }
 
-  public boolean isStepVisible(HistoryStep step) {
+  private boolean isStepVisible(HistoryStep step) {
     boolean visible = true;
-    String stateName = null;
     if (filterHistory()) {
       visible = false;
-      stateName = step.getResolvedState();
+      String stateName = step.getResolvedState();
       if (stateName != null) {
-        if (getActiveUsers(stateName).contains(getUserId())) {
+        if (getActiveUsers(stateName).contains(getActiveUser().getUserId())) {
           visible = true;
         }
       } else {
@@ -1446,7 +1450,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
         try {
           Action createAction = processModel.getCreateAction(currentRole);
           QualifiedUsers qualifiedUsers = createAction.getAllowedUsers();
-          if (getUsers(qualifiedUsers).contains(getUserId())) {
+          if (getUsers(qualifiedUsers).contains(getActiveUser().getUserId())) {
             visible = true;
           }
         } catch (WorkflowException we) {
@@ -1473,6 +1477,14 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       SilverLogger.getLogger(this).warn(we);
     }
     return actorFullName;
+  }
+
+  public String getStepSubstitute(HistoryStep step) {
+    String substituteId = step.getSubstituteId();
+    if (StringUtil.isDefined(substituteId)) {
+      return org.silverpeas.core.admin.user.model.User.getById(substituteId).getDisplayedName();
+    }
+    return null;
   }
 
   /**
@@ -2217,6 +2229,23 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       }
     }
     return activeUser;
+  }
+
+  public List<Replacement> getUserReplacementsAsIncumbent() {
+    ReplacementList<Replacement> replacements = Replacement.getAllOf(currentUser, peasId);
+    List<Replacement> notExpiredReplacements = new ArrayList<>();
+    LocalDate now = LocalDate.now();
+    for (Replacement replacement : replacements) {
+      Period period = replacement.getPeriod();
+      if (period.includes(now) || period.startsAfter(now)) {
+        notExpiredReplacements.add(replacement);
+      }
+    }
+    return notExpiredReplacements;
+  }
+
+  public String getCurrentRoleLabel() {
+    return processModel.getRole(currentRole).getLabel(currentRole, getLanguage());
   }
 
   /**

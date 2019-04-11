@@ -107,7 +107,11 @@
 						if ( StringUtil.isDefined( step.getActivity() ) )
 							out.println(step.getActivity()+" - ");
 						%>
-						<%= step.getActionName()%> (<%=step.getActorFullName()%> - <%=step.getStepDate()%>)
+						<%= step.getActionName()%> (
+              <% if (StringUtil.isDefined(step.getSubstituteFullName())) { %>
+              <%=step.getSubstituteFullName()%> <%=resource.getString("processManager.replacements.replacing")%>
+              <% } %>
+              <%=step.getActorFullName()%> - <%=step.getStepDate()%>)
 						</p>
 						<%
 						if ( (step.isVisible()) || ("supervisor".equalsIgnoreCase(currentRole)) )

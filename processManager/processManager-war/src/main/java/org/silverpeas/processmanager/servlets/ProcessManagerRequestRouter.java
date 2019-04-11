@@ -49,6 +49,7 @@ import org.silverpeas.core.workflow.api.instance.Question;
 import org.silverpeas.core.workflow.api.model.Item;
 import org.silverpeas.core.workflow.api.model.State;
 import org.silverpeas.core.workflow.api.task.Task;
+import org.silverpeas.core.workflow.api.user.Replacement;
 import org.silverpeas.core.workflow.engine.model.StateImpl;
 import org.silverpeas.processmanager.CurrentState;
 import org.silverpeas.processmanager.LockVO;
@@ -187,6 +188,10 @@ public class ProcessManagerRequestRouter
         processList = session.getCurrentProcessList();
       }
       request.setAttribute("processList", processList);
+
+      List<Replacement> replacements = session.getUserReplacementsAsIncumbent();
+      request.setAttribute("ReplacementsAsIncumbent", replacements);
+
       setProcessFilterAttributes(session, request);
       setSharedAttributes(session, request);
       return "/processManager/jsp/listProcess.jsp";
@@ -1067,6 +1072,7 @@ public class ProcessManagerRequestRouter
     request.setAttribute("jsUserRoles", jsRoleEncoder.apply(session.getUserRoleLabels()));
     request.setAttribute("jsComponentInstanceRoles", jsRoleEncoder.apply(session.getComponentInstanceRoleLabels()));
     request.setAttribute("currentRole", session.getCurrentRole());
+    request.setAttribute("currentRoleLabel", session.getCurrentRoleLabel());
     request.setAttribute("currentReplacement", session.getCurrentReplacement());
     request.setAttribute("canCreate", canCreate);
     request.setAttribute("process", session.getCurrentProcessInstance());
