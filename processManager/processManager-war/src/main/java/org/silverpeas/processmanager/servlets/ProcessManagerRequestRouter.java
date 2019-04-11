@@ -1066,7 +1066,6 @@ public class ProcessManagerRequestRouter
     request.setAttribute("roles", session.getUserRoleLabels());
     request.setAttribute("jsUserRoles", jsRoleEncoder.apply(session.getUserRoleLabels()));
     request.setAttribute("jsComponentInstanceRoles", jsRoleEncoder.apply(session.getComponentInstanceRoleLabels()));
-    request.setAttribute("replacements", session.getUserReplacements());
     request.setAttribute("currentRole", session.getCurrentRole());
     request.setAttribute("currentReplacement", session.getCurrentReplacement());
     request.setAttribute("canCreate", canCreate);

@@ -67,6 +67,7 @@ import org.silverpeas.core.workflow.api.instance.UpdatableProcessInstance;
 import org.silverpeas.core.workflow.api.model.*;
 import org.silverpeas.core.workflow.api.task.Task;
 import org.silverpeas.core.workflow.api.user.Replacement;
+import org.silverpeas.core.workflow.api.user.ReplacementList;
 import org.silverpeas.core.workflow.api.user.User;
 import org.silverpeas.core.workflow.api.user.UserInfo;
 import org.silverpeas.core.workflow.api.user.UserSettings;
@@ -83,11 +84,13 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
 import static org.silverpeas.core.contribution.attachment.AttachmentService.VERSION_MODE;
 import static org.silverpeas.core.workflow.util.WorkflowUtil.getItemByName;
 
@@ -711,27 +714,35 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    * Returns the user roles as a list of (name, label) pair.
    */
   public NamedValue[] getUserRoleLabels() {
-    final String lang = getLanguage();
-    final Role[] roles = processModel.getRoles();
-    final List<NamedValue> labels = new ArrayList<>();
+    return getRequestCacheService()
+        .getCache()
+        .computeIfAbsent("ProcessManagerSC.getUserRoleLabels" + getComponentId(), NamedValue[].class, () -> {
+      final String lang = getLanguage();
+      final Role[] roles = processModel.getRoles();
+      final List<NamedValue> labels = new ArrayList<>();
 
-    final List<Replacement> replacements = getUserReplacements();
-    for (final Replacement replacement : replacements) {
-      final List<String> incumbentRoles = getSubstituteRolesOf(replacement.getIncumbent());
-      for (final String roleName : incumbentRoles) {
-        getRoleLabel(replacement, roles, roleName, lang)
-          .filter(n -> labels.stream().noneMatch(l -> Objects.equals(n.getValue(), l.getValue())))
-          .ifPresent(labels::add);
+      final List<Replacement> replacements = getUserReplacements()
+          .stream()
+          .filterAt(LocalDate.now())
+          .filterOnAtLeastOneRole(userRoles)
+          .collect(Collectors.toList());
+      for (final Replacement replacement : replacements) {
+        final List<String> incumbentRoles = getSubstituteRolesOf(replacement.getIncumbent());
+        for (final String roleName : incumbentRoles) {
+          getRoleLabel(replacement, roles, roleName, lang)
+              .filter(n -> labels.stream().noneMatch(l -> Objects.equals(n.getValue(), l.getValue())))
+              .ifPresent(labels::add);
+        }
       }
-    }
 
-    // quadratic search ! but it's ok : the list are about 3 or 4 length.
-    for (final String userRole : userRoles) {
-      getRoleLabel(null, roles, userRole, lang).ifPresent(labels::add);
-    }
+      // quadratic search ! but it's ok : the list are about 3 or 4 length.
+      for (final String userRole : userRoles) {
+        getRoleLabel(null, roles, userRole, lang).ifPresent(labels::add);
+      }
 
-    labels.sort(NamedValue.ascendingValues);
-    return labels.toArray(new NamedValue[0]);
+      labels.sort(NamedValue.ascendingValues);
+      return labels.toArray(new NamedValue[0]);
+    });
   }
 
   /**
@@ -2119,7 +2130,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    * Gets all the replacements in which the current user can play as a substitute in the workflow.
    * @return a list of possible replacements.
    */
-  public List<Replacement> getUserReplacements() {
+  public ReplacementList<Replacement> getUserReplacements() {
     return Replacement.getAllBy(currentUser, peasId);
   }
 
