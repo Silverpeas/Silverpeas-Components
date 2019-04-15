@@ -188,10 +188,8 @@ public class ProcessManagerRequestRouter
         processList = session.getCurrentProcessList();
       }
       request.setAttribute("processList", processList);
-
-      List<Replacement> replacements = session.getUserReplacementsAsIncumbent();
-      request.setAttribute("ReplacementsAsIncumbent", replacements);
-
+      final List<Replacement> replacements = session.getCurrentAndNextUserReplacementsAsIncumbent();
+      request.setAttribute("CurrentAndNextReplacementsAsIncumbent", replacements);
       setProcessFilterAttributes(session, request);
       setSharedAttributes(session, request);
       return "/processManager/jsp/listProcess.jsp";
@@ -1076,8 +1074,7 @@ public class ProcessManagerRequestRouter
     request.setAttribute("currentReplacement", session.getCurrentReplacement());
     request.setAttribute("canCreate", canCreate);
     request.setAttribute("process", session.getCurrentProcessInstance());
-    request.setAttribute("isActiveUser", session.isActiveUser());
-    request.setAttribute("isAttachmentTabEnable", session.isAttachmentTabEnable());
+    request.setAttribute("isAttachmentTabEnabled", session.isAttachmentTabEnabled());
     request.setAttribute("isHistoryTabEnable", session.isHistoryTabVisible());
     request.setAttribute("isProcessIdVisible", session.isProcessIdVisible());
     request.setAttribute("isPrintButtonEnabled", session.isPrintButtonEnabled());

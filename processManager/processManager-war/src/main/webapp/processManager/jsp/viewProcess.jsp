@@ -39,8 +39,7 @@
 	DataRecord 					data 						= (DataRecord) request.getAttribute("data");
 	String[] 					deleteAction 				= (String[]) request.getAttribute("deleteAction");
 	List<CurrentState> activeStates 				= (List<CurrentState>) request.getAttribute("activeStates");
-	boolean 					isActiveUser 				= (Boolean) request.getAttribute("isActiveUser");
-	boolean 					isAttachmentTabEnable 		= (Boolean) request.getAttribute("isAttachmentTabEnable");
+	boolean 					isAttachmentTabEnabled 		= (Boolean) request.getAttribute("isAttachmentTabEnabled");
   boolean 					isHistoryTabEnable 			= (Boolean) request.getAttribute("isHistoryTabEnable");
 	boolean 					isProcessIdVisible 			= (Boolean) request.getAttribute("isProcessIdVisible");
 	boolean 					isPrintButtonEnabled 		= (Boolean) request.getAttribute("isPrintButtonEnabled");
@@ -87,7 +86,7 @@
           "editAction?state="+deleteAction[1]+"&action="+deleteAction[0]);
 		}
 
-		if (isAttachmentTabEnable && isActiveUser) {
+		if (isAttachmentTabEnabled) {
       tabbedPane.addTab(resource.getString("processManager.attachments"),
           "attachmentManager?processId=" + process.getInstanceId(), false, true);
     }

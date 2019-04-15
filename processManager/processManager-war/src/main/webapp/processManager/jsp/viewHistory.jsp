@@ -33,8 +33,7 @@
 	ProcessInstance process 				= (ProcessInstance) request.getAttribute("process");
 	List 			steps 					= (List) request.getAttribute("steps");
 	String   		enlightedStep 			= (String) request.getAttribute("enlightedStep");
-	Boolean 		isActiveUser 			= (Boolean) request.getAttribute("isActiveUser");
-	Boolean 		isAttachmentTabEnable 	= (Boolean) request.getAttribute("isAttachmentTabEnable");
+	Boolean 		isAttachmentTabEnabled 	= (Boolean) request.getAttribute("isAttachmentTabEnabled");
 	boolean 		isProcessIdVisible 		= (Boolean) request.getAttribute("isProcessIdVisible");
   boolean			isReturnEnabled = (Boolean) request.getAttribute("isReturnEnabled");
   int nbEntriesAboutQuestions = (Integer) request.getAttribute("NbEntriesAboutQuestions");
@@ -52,7 +51,7 @@
 		tabbedPane.addTab(resource.getString("processManager.history"), "#", true, true);
 		tabbedPane.addTab(resource.getString("processManager.errors"), "adminViewErrors?processId=" + process.getInstanceId(), false, true);
   } else {
-		if (isAttachmentTabEnable && isActiveUser != null && isActiveUser)
+		if (isAttachmentTabEnabled)
 			tabbedPane.addTab(resource.getString("processManager.attachments"), "attachmentManager?processId=" + process.getInstanceId(), false, true);
 		if (isReturnEnabled & nbEntriesAboutQuestions > 0) {
 			tabbedPane.addTab(resource.getString("processManager.questions")+" ("+nbEntriesAboutQuestions+")", "listQuestions?processId=" + process.getInstanceId(), false, true);

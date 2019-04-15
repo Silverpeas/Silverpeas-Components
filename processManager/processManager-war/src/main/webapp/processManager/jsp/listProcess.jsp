@@ -100,7 +100,7 @@
 <c:set var="currentReplacement" value="${requestScope.currentReplacement}"/>
 <c:set var="isCurrentRoleSupervisor" value="${'supervisor' eq fn:toLowerCase(currentRole)}"/>
 <c:set var="collapse" value="${silfn:booleanValue(empty requestScope.collapse ? 'true' : requestScope.collapse)}"/>
-<c:set var="replacementsAsIncumbent" value="${requestScope.ReplacementsAsIncumbent}"/>
+<c:set var="currentAndNextReplacementsAsIncumbent" value="${requestScope.CurrentAndNextReplacementsAsIncumbent}"/>
 
 <fmt:message key="processManager.boxDown" var="iconBoxDown" bundle="${icons}"/>
 <c:url var="iconBoxDown" value="${iconBoxDown}"/>
@@ -203,10 +203,10 @@
 </view:operationPane>
 <view:window>
   <view:frame>
-    <c:if test="${fn:length(replacementsAsIncumbent) > 0}">
+    <c:if test="${currentReplacement == null and fn:length(currentAndNextReplacementsAsIncumbent) > 0}">
       <div class="inlineMessage">
         <c:set var="incumbentMessage"><fmt:message key="processManager.replacements.incumbent.overview">
-          <fmt:param value="${fn:length(replacementsAsIncumbent)}"/>
+          <fmt:param value="${fn:length(currentAndNextReplacementsAsIncumbent)}"/>
         </fmt:message></c:set>
         ${incumbentMessage} <a href="manageReplacements">${manageReplacementLabel}</a>
       </div>

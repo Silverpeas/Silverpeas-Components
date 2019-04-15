@@ -225,7 +225,7 @@
             v-on:selection-change="incumbentChanged($event.selectedUserIds)"
             v-bind:initial-user-ids="replacement.incumbent && replacement.incumbent.id"
             v-bind:mandatory="true"
-            v-bind:read-only="!context.currentUser.isSupervisor"
+            v-bind:read-only="!(context.currentUser.isSupervisor && isCreation)"
             v-bind:role-filter="incumbentRoleFilter | mapRoleName"
             v-bind:component-id-filter="context.componentInstanceId"></silverpeas-user-group-select>
       </div>

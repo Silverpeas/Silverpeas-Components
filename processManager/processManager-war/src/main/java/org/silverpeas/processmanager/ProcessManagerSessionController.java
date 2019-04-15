@@ -40,7 +40,6 @@ import org.silverpeas.core.contribution.content.form.field.UserField;
 import org.silverpeas.core.contribution.content.form.form.XmlForm;
 import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
 import org.silverpeas.core.contribution.content.form.record.GenericRecordTemplate;
-import org.silverpeas.core.date.Period;
 import org.silverpeas.core.notification.message.MessageNotifier;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.MapUtil;
@@ -68,7 +67,6 @@ import org.silverpeas.core.workflow.api.instance.UpdatableProcessInstance;
 import org.silverpeas.core.workflow.api.model.*;
 import org.silverpeas.core.workflow.api.task.Task;
 import org.silverpeas.core.workflow.api.user.Replacement;
-import org.silverpeas.core.workflow.api.user.ReplacementList;
 import org.silverpeas.core.workflow.api.user.User;
 import org.silverpeas.core.workflow.api.user.UserInfo;
 import org.silverpeas.core.workflow.api.user.UserSettings;
@@ -510,32 +508,21 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   /**
    * Get the active user names
    */
-  public boolean isActiveUser() {
+  private boolean isActiveUser() {
     if (currentProcessInstance == null) {
       return false;
     }
-
-    String[] states = currentProcessInstance.getActiveStates();
-    if (states == null) {
-      return false;
-    }
-
-    Actor[] users;
-    for (final String state : states) {
-      try {
-        users = currentProcessInstance.getWorkingUsers(state);
-        for (final Actor user : users) {
-          if (getActiveUser().getUserId().equals(user.getUser().getUserId())) {
-            return true;
+    final String[] states = currentProcessInstance.getActiveStates();
+    return states != null && Stream.of(states)
+        .flatMap(s -> {
+          try {
+            return Stream.of(currentProcessInstance.getWorkingUsers(s));
+          } catch (WorkflowException ignored) {
+            // ignore unknown state
           }
-        }
-      } catch (WorkflowException ignored) {
-        // ignore unknown state
-        continue;
-      }
-    }
-
-    return false;
+          return Stream.empty();
+        })
+        .anyMatch(u -> getActiveUser().getUserId().equals(u.getUser().getUserId()));
   }
 
   private List<String> getActiveUsers(String stateName) {
@@ -718,32 +705,28 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     return getRequestCacheService()
         .getCache()
         .computeIfAbsent("ProcessManagerSC.getUserRoleLabels" + getComponentId(), NamedValue[].class, () -> {
-      final String lang = getLanguage();
-      final Role[] roles = processModel.getRoles();
-      final List<NamedValue> labels = new ArrayList<>();
+          final String lang = getLanguage();
+          final Role[] roles = processModel.getRoles();
+          final List<NamedValue> labels = new ArrayList<>();
 
-      final List<Replacement> replacements = getUserReplacements()
-          .stream()
-          .filterAt(LocalDate.now())
-          .filterOnAtLeastOneRole(userRoles)
-          .collect(Collectors.toList());
-      for (final Replacement replacement : replacements) {
-        final List<String> incumbentRoles = getSubstituteRolesOf(replacement.getIncumbent());
-        for (final String roleName : incumbentRoles) {
-          getRoleLabel(replacement, roles, roleName, lang)
-              .filter(n -> labels.stream().noneMatch(l -> Objects.equals(n.getValue(), l.getValue())))
-              .ifPresent(labels::add);
-        }
-      }
+          final List<Replacement> replacements = getCurrentUserReplacements();
+          for (final Replacement replacement : replacements) {
+            final List<String> incumbentRoles = getSubstituteRolesOf(replacement.getIncumbent());
+            for (final String roleName : incumbentRoles) {
+              getRoleLabel(replacement, roles, roleName, lang)
+                  .filter(n -> labels.stream().noneMatch(l -> Objects.equals(n.getValue(), l.getValue())))
+                  .ifPresent(labels::add);
+            }
+          }
 
-      // quadratic search ! but it's ok : the list are about 3 or 4 length.
-      for (final String userRole : userRoles) {
-        getRoleLabel(null, roles, userRole, lang).ifPresent(labels::add);
-      }
+          // quadratic search ! but it's ok : the list are about 3 or 4 length.
+          for (final String userRole : userRoles) {
+            getRoleLabel(null, roles, userRole, lang).ifPresent(labels::add);
+          }
 
-      labels.sort(NamedValue.ascendingValues);
-      return labels.toArray(new NamedValue[0]);
-    });
+          labels.sort(NamedValue.ascendingValues);
+          return labels.toArray(new NamedValue[0]);
+        });
   }
 
   /**
@@ -1807,9 +1790,10 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     return StringUtil.getBooleanValue(getComponentParameterValue(VERSION_MODE));
   }
 
-  public boolean isAttachmentTabEnable() {
-    String param = this.getComponentParameterValue("attachmentTabEnable");
-    return param == null || (!("").equals(param) && !("no").equalsIgnoreCase(param));
+  public boolean isAttachmentTabEnabled() {
+    final String param = this.getComponentParameterValue("attachmentTabEnable");
+    final boolean decodedParam = param == null || (!("").equals(param) && !("no").equalsIgnoreCase(param));
+    return decodedParam && isActiveUser();
   }
 
   public boolean isProcessIdVisible() {
@@ -2139,11 +2123,16 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   }
 
   /**
-   * Gets all the replacements in which the current user can play as a substitute in the workflow.
+   * Gets current replacements at date of day in which the current user can play as a substitute in
+   * the workflow.
    * @return a list of possible replacements.
    */
-  public ReplacementList<Replacement> getUserReplacements() {
-    return Replacement.getAllBy(currentUser, peasId);
+  private List<Replacement> getCurrentUserReplacements() {
+    return Replacement.getAllBy(currentUser, peasId)
+        .stream()
+        .filterCurrentAt(LocalDate.now())
+        .filterOnAtLeastOneRole(userRoles)
+        .collect(Collectors.toList());
   }
 
   /**
@@ -2231,17 +2220,17 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     return activeUser;
   }
 
-  public List<Replacement> getUserReplacementsAsIncumbent() {
-    ReplacementList<Replacement> replacements = Replacement.getAllOf(currentUser, peasId);
-    List<Replacement> notExpiredReplacements = new ArrayList<>();
-    LocalDate now = LocalDate.now();
-    for (Replacement replacement : replacements) {
-      Period period = replacement.getPeriod();
-      if (period.includes(now) || period.startsAfter(now)) {
-        notExpiredReplacements.add(replacement);
-      }
-    }
-    return notExpiredReplacements;
+  /**
+   * Gets current and next replacements at date of day in which the current user can be replaced
+   * in the workflow.
+   * @return a list of possible replacements.
+   */
+  public List<Replacement> getCurrentAndNextUserReplacementsAsIncumbent() {
+    return Replacement.getAllOf(currentUser, peasId)
+        .stream()
+        .filterCurrentAndNextAt(LocalDate.now())
+        .filterOnAtLeastOneRole(SUPERVISOR_ROLE.equals(currentRole) ? userRoles : new String[]{currentRole})
+        .collect(Collectors.toList());
   }
 
   public String getCurrentRoleLabel() {
