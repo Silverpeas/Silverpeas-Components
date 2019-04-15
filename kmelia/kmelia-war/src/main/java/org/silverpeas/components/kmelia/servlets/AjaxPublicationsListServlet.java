@@ -1123,6 +1123,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         }
         writer.write("<p class=\"publication-description\">"+WebEncodeHelper.convertWhiteSpacesForHTMLDisplay(Encode.forHtml(pub.
         getDescription(language))));
+        writer.write("</p>");
         writer.write("</li>");
       }
       
