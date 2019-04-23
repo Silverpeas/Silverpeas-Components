@@ -1047,13 +1047,8 @@ public class ProcessManagerRequestRouter
     request.setAttribute("currentRole", session.getCurrentRole());
     request.setAttribute("canCreate", canCreate);
     request.setAttribute("process", session.getCurrentProcessInstance());
-
-    boolean attachmentTabEnable = new Boolean(session.isAttachmentTabEnable());
-    request.setAttribute("isAttachmentTabEnable", attachmentTabEnable);
-    if (attachmentTabEnable) {
-      request.setAttribute("isActiveUser", new Boolean(session.isActiveUser()));
-    }
-
+    request.setAttribute("isActiveUser", session.isActiveUser());
+    request.setAttribute("isAttachmentTabEnable", session.isAttachmentTabEnable());
     request.setAttribute("isHistoryTabEnable", session.isHistoryTabVisible());
     request.setAttribute("isProcessIdVisible", session.isProcessIdVisible());
     request.setAttribute("isPrintButtonEnabled", session.isPrintButtonEnabled());
