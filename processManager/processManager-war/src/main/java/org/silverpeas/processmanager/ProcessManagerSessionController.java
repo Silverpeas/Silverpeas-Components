@@ -798,9 +798,9 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   /**
    * Returns the creation task.
    */
-  public Task getCreationTask() throws ProcessManagerException {
+  private Task getCreationTask() throws ProcessManagerException {
     try {
-      return Workflow.getTaskManager().getCreationTask(currentUser, currentRole, processModel);
+      return Workflow.getTaskManager().getCreationTask(getActiveUser(), currentRole, processModel);
     } catch (WorkflowException e) {
       throw new ProcessManagerException("SessionController",
           "processManager.CREATION_TASK_UNAVAILABLE", e);
@@ -1022,6 +1022,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       GenericEvent event =
           (isDraft) ? getCreationTask().buildTaskSavedEvent(creation.getName(), data) :
               getCreationTask().buildTaskDoneEvent(creation.getName(), data);
+      setSubstituteToEvent(event);
 
       // Is a validate or a "save as draft" action ?
       if (isDraft) {
@@ -1037,6 +1038,12 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     } catch (WorkflowException e) {
       throw new ProcessManagerException("SessionController",
           "processManager.CREATION_PROCESSING_FAILED", e);
+    }
+  }
+
+  private void setSubstituteToEvent(GenericEvent event) {
+    if (getCurrentReplacement() != null) {
+      event.setSubstitute(getCurrentReplacement().getSubstitute());
     }
   }
 
@@ -1186,13 +1193,12 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       if (isDraft) {
         TaskSavedEvent tse = task.buildTaskSavedEvent(actionName, data);
         tse.setFirstTimeSaved(isFirstTimeSaved);
+        setSubstituteToEvent(tse);
         Workflow.getWorkflowEngine().process(tse);
       } else {
         TaskDoneEvent event = task.buildTaskDoneEvent(actionName, data);
-        if (getCurrentReplacement() != null) {
-          event.setSubstitute(getCurrentReplacement().getSubstitute());
-        }
         event.setResumingAction(this.isResumingInstance);
+        setSubstituteToEvent(event);
         Workflow.getWorkflowEngine().process(event);
         feedbackUser("processManager.action.feedback");
       }
@@ -1223,6 +1229,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     try {
       Task task = getTask(state);
       QuestionEvent event = task.buildQuestionEvent(stepId, data);
+      setSubstituteToEvent(event);
       Workflow.getWorkflowEngine().process(event);
     } catch (WorkflowException e) {
       throw new ProcessManagerException("SessionController",
@@ -1238,6 +1245,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       Question question = getQuestion(questionId);
       Task task = getTask(question.getTargetState().getName());
       ResponseEvent event = task.buildResponseEvent(questionId, data);
+      setSubstituteToEvent(event);
       Workflow.getWorkflowEngine().process(event);
     } catch (WorkflowException e) {
       throw new ProcessManagerException("SessionController",
@@ -1264,7 +1272,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
                 (currentProcessInstance.getSavedStep(lockingUser.getUserId()) != null);
             lockingUsers.add(new LockVO(user, lockingUser.getLockDate(), lockingUser.getState(),
                 !isDraftPending));
-            if (lockingUser.getUserId().equals(getUserId())) {
+            if (lockingUser.getUserId().equals(getActiveUser().getUserId())) {
               this.currentUserIsLockingUser = true;
             }
           }
@@ -1279,7 +1287,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
             (currentProcessInstance.getSavedStep(lockingUser.getUserId()) != null);
         lockingUsers.add(
             new LockVO(user, lockingUser.getLockDate(), lockingUser.getState(), !isDraftPending));
-        if (lockingUser.getUserId().equals(getUserId())) {
+        if (lockingUser.getUserId().equals(getActiveUser().getUserId())) {
           this.currentUserIsLockingUser = true;
         }
       }
@@ -1330,7 +1338,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     try {
       State state = processModel.getState(stateName);
       ((UpdatableProcessInstanceManager) Workflow.getProcessInstanceManager())
-          .unlock(currentProcessInstance, state, currentUser);
+          .unlock(currentProcessInstance, state, getActiveUser());
     } catch (WorkflowException e) {
       throw new ProcessManagerException("SessionController", "processManager.LOCK_FAILED", e);
     }
@@ -1554,7 +1562,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    */
   public HistoryStep getSavedStep() throws ProcessManagerException {
     try {
-      return currentProcessInstance.getSavedStep(getUserId());
+      return currentProcessInstance.getSavedStep(getActiveUser().getUserId());
     } catch (WorkflowException e) {
       throw new ProcessManagerException(PROCESS_MANAGER_SESSION_CONTROLLER,
           "processManager.GET_SAVED_STEP_FAILED", e);

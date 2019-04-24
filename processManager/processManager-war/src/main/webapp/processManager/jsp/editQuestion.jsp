@@ -33,12 +33,10 @@
 	String stepId = (String) request.getAttribute("stepId");
 	HistoryStep step  = (HistoryStep) request.getAttribute("step");
 
-   Form form
-	   = (Form) request.getAttribute("form");
+   Form form = (Form) request.getAttribute("form");
    PagesContext context = (PagesContext) request.getAttribute("context");
    DataRecord data = (DataRecord) request.getAttribute("data");
 
-	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel,"listProcess");
 	browseBar.setPath(process.getTitle(currentRole, language));
 
@@ -53,14 +51,15 @@
 		false));
 %>
 
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel/>
 <%
 	form.displayScripts(out, context);
 %>
-<SCRIPT language="JavaScript">
+<script type="text/javascript">
 <!--
 	function B_VALIDER_ONCLICK()
 	{
@@ -74,40 +73,32 @@
 	}
 
 //-->
-</SCRIPT>
+</script>
 
-</HEAD>
-<BODY class="yui-skin-sam currentProfile_<%=currentRole%> page_question">
+</head>
+<body class="yui-skin-sam currentProfile_<%=currentRole%> page_question">
 <%
    out.println(window.printBefore());
    out.println(frame.printBefore());
 %>
-<FORM NAME="<%=context.getFormName()%>" METHOD="POST" ACTION="saveQuestion" ENCTYPE="multipart/form-data">
+<p class="txtnav">
+  <%= resource.getString("processManager.backTo")+" "+ step.getUser().getFullName()%>
+</p>
+<form name="<%=context.getFormName()%>" method="post" action="saveQuestion" enctype="multipart/form-data">
 <input type="hidden" name="processManagertokenId" value="${currentTokenId}"/>
-<CENTER>
-	<table CELLPADDING=0 CELLSPACING=0 BORDER=0 WIDTH="98%">
-	<tr>
-		<td class="intfdcolor" nowrap width="100%">
-			<img border="0" src="<%=resource.getIcon("processManager.px") %>" width="5"><span class="txtNav">
-				  <%= resource.getString("processManager.backTo")+" "+ step.getUser().getFullName()%>
-			</span>
-		</td>
-	</tr>
-	</table>
 <%
    form.display(out, context, data);
 %>
 
-   <INPUT type="hidden" name="state" value="<%=state%>">
-   <INPUT type="hidden" name="stepId" value="<%=stepId%>">
+   <input type="hidden" name="state" value="<%=state%>"/>
+   <input type="hidden" name="stepId" value="<%=stepId%>"/>
 <BR>
 <%
 	out.println(buttonPane.print());
 %>
-</CENTER>
-</FORM>
+</form>
 <%
    out.println(frame.printAfter());
    out.println(window.printAfter());
 %>
-</BODY>
+</body>
