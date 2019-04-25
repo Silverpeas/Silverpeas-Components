@@ -99,7 +99,7 @@
         if (draftEnabled || validatorsMustBeSet) {
           displayPasteDialog(draftEnabled, validatorsMustBeSet, params);
         } else {
-          sendPasteAction(folderId, extraParams);
+          sendPasteAction(folderId, "");
         }
       }
 
