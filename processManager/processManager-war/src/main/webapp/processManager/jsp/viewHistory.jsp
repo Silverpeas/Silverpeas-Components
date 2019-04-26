@@ -101,17 +101,24 @@
 <input type="hidden" name="enlightedStep" value="<%=enlightedStep %>"/>
 
 			<div class="bgDegradeGris ">
-						<p class="txtnav">
-						<% 
-						if ( StringUtil.isDefined( step.getActivity() ) )
-							out.println(step.getActivity()+" - ");
-						%>
-						<%= step.getActionName()%> (
-              <% if (StringUtil.isDefined(step.getSubstituteFullName())) { %>
-              <%=step.getSubstituteFullName()%> <%=resource.getString("processManager.replacements.replacing")%>
-              <% } %>
-              <%=step.getActorFullName()%> - <%=step.getStepDate()%>)
-						</p>
+        <%
+          final StringBuilder sb = new StringBuilder();
+          if (StringUtil.isDefined(step.getActivity())) {
+            sb.append(step.getActivity() + " - ");
+          }
+          sb.append(step.getActionName())
+            .append(" (");
+          if (StringUtil.isDefined(step.getSubstituteFullName())) {
+            sb.append(step.getSubstituteFullName())
+              .append(" ")
+              .append(resource.getString("processManager.replacements.replacing"))
+              .append(" ");
+          }
+          sb.append(step.getActorFullName())
+            .append(" - ")
+            .append(step.getStepDate())
+            .append(")");
+        %><p class="txtnav"><%=sb.toString()%></p>
 						<%
 						if ( (step.isVisible()) || ("supervisor".equalsIgnoreCase(currentRole)) )
 						{

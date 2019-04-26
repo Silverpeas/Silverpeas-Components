@@ -127,5 +127,21 @@
         <message lang="en">The fields to be exported.</message>
       </help>
     </parameter>
+    <parameter>
+      <name>hideReturn</name>
+      <label>
+        <message lang="fr">Masquer les retours (O/N)</message>
+        <message lang="en">Hide return (Y/N)</message>
+      </label>
+      <order>4</order>
+      <mandatory>false</mandatory>
+      <value>yes</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Permet aux utilisateurs de ne plus voir l'action "Retour à..."</message>
+        <message lang="en"></message>
+      </help>
+    </parameter>
   </parameters>
 </WAComponent>

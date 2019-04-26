@@ -498,14 +498,9 @@ public class ProcessManagerRequestRouter
       // retrieve state name and action name
       HistoryStep savedStep = session.getSavedStep();
       String stateName = savedStep.getResolvedState();
-      String actionName = savedStep.getAction();
-
-      // Assume that user switch to same role as saved action
-      //String roleName = savedStep.getUserRoleName();
-      //session.resetCurrentRole(roleName);
       State state = (stateName == null) ? new StateImpl("") : session.getState(stateName);
-
       request.setAttribute("state", state);
+      String actionName = savedStep.getAction();
       request.setAttribute("action", session.getAction(actionName));
 
       // Get the associated form
