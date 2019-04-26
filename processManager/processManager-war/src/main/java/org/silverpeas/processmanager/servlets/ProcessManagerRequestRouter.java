@@ -356,7 +356,12 @@ public class ProcessManagerRequestRouter
       } else {
         String roleName = request.getParameter("role");
         if (roleName != null) {
-          session.resetCurrentRole(roleName);
+          String incumbentId = request.getParameter("IncumbentId");
+          if (StringUtil.isDefined(incumbentId)) {
+            session.resetCurrentRoleAsSubstitute(roleName, incumbentId);
+          } else {
+            session.resetCurrentRole(roleName);
+          }
         }
       }
 

@@ -41,6 +41,7 @@ import org.silverpeas.core.contribution.content.form.form.XmlForm;
 import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
 import org.silverpeas.core.contribution.content.form.record.GenericRecordTemplate;
 import org.silverpeas.core.notification.message.MessageNotifier;
+import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.MapUtil;
 import org.silverpeas.core.util.StringUtil;
@@ -672,6 +673,14 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    */
   public Replacement getCurrentReplacement() {
     return currentReplacement;
+  }
+
+  public void resetCurrentRoleAsSubstitute(String role, String incumbentId)
+      throws ProcessManagerException {
+    Replacement replacement = getCurrentUserReplacement(incumbentId, role);
+    if (replacement != null) {
+      resetCurrentRole(getRoleNameForSubstitute(replacement, role));
+    }
   }
 
   /**
@@ -2144,6 +2153,24 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   }
 
   /**
+   * Gets current replacement at date of day in which the current user can play as a substitute
+   * of the given user.
+   * @return the current replacement.
+   */
+  private Replacement getCurrentUserReplacement(String incumbentId, String role) {
+    List<Replacement> replacements = Replacement.getAllBy(currentUser, peasId)
+        .stream()
+        .filterOnIncumbent(incumbentId)
+        .filterCurrentAt(LocalDate.now())
+        .filterOnAtLeastOneRole(role)
+        .collect(Collectors.toList());
+    if (CollectionUtil.isNotEmpty(replacements)) {
+      return replacements.get(0);
+    }
+    return null;
+  }
+
+  /**
    * Gets the roles of the specified user in the underlying workflow the current user can play as
    * a substitute of him. The current user can play the roles of the specified user only and only
    * if he has the same role in the workflow.
@@ -2182,7 +2209,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       if (replacement != null) {
         rLabel = getMultilang().getStringWithParams("processManager.substituteRoleLabel", l,
             replacement.getIncumbent().getFullName());
-        rName = replacement.getId() + ":" + roleName;
+        rName = getRoleNameForSubstitute(replacement, roleName);
       }
       return new NamedValue(rName, rLabel, creationRoles.contains(rName));
     };
@@ -2197,6 +2224,10 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       }
     }
     return Optional.ofNullable(label);
+  }
+
+  private String getRoleNameForSubstitute(final Replacement replacement, final String roleName) {
+    return replacement.getId() + ":" + roleName;
   }
 
   private List<String> getCreationRoles() {
