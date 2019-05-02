@@ -899,7 +899,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
             getFilename()));
         String size = FileRepositoryManager.formatFileSize(attachment.getSize());
         String downloadTime = FileRepositoryManager.getFileDownloadTime(attachment.getSize());
-        String permalink = URLUtil.getSimpleURL(URLUtil.URL_DOCUMENT, document.getId());
+        String permalink = URLUtil.getSimpleURL(URLUtil.URL_FILE, document.getId());
         String url = FileServerUtils.getApplicationContext() + attachment.getAttachmentURL();
 
         if (alias) {
