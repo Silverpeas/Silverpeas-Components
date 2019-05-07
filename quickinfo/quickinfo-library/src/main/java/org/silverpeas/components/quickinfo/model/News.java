@@ -34,6 +34,7 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.contribution.model.WithAttachment;
+import org.silverpeas.core.contribution.model.WithThumbnail;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.date.period.Period;
@@ -76,7 +77,7 @@ import java.util.List;
         ":mandatory"),
     @NamedQuery(name = "newsForTicker", query = "select n from News n where n.ticker = :ticker")})
 public class News extends SilverpeasJpaEntity<News, UuidIdentifier> implements SilverpeasContent,
-    WithAttachment {
+    WithAttachment, WithThumbnail {
 
   public static final String CONTRIBUTION_TYPE = "News";
 

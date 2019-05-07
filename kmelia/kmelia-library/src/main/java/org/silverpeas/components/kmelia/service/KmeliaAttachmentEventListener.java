@@ -38,7 +38,7 @@ import javax.inject.Inject;
 public class KmeliaAttachmentEventListener extends CDIResourceEventListener<AttachmentEvent> {
 
   @Inject
-  private KmeliaService kmeliaService;
+  private DefaultKmeliaService kmeliaService;
 
   @Override
   public void onDeletion(final AttachmentEvent event) throws Exception {
@@ -50,10 +50,7 @@ public class KmeliaAttachmentEventListener extends CDIResourceEventListener<Atta
 
   @Override
   public void onUpdate(final AttachmentEvent event) throws Exception {
-    AttachmentRef attachment = event.getTransition().getAfter();
-    if (attachment != null) {
-      anExternalPublicationElementHaveChanged(attachment, attachment.getUserId());
-    }
+    onCreation(event);
   }
 
   @Override

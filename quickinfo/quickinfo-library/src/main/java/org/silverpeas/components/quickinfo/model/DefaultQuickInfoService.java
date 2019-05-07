@@ -37,12 +37,9 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.comment.service.CommentService;
-import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.Attachments;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.contribution.attachment.util.SimpleDocumentList;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
@@ -50,8 +47,6 @@ import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.model.IndexManager;
-import org.silverpeas.core.io.media.image.thumbnail.control.ThumbnailController;
-import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
 import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
@@ -286,21 +281,7 @@ public class DefaultQuickInfoService implements QuickInfoService {
               ASSOCIATED_TO_THE_NEWS_MSG + news.getId(), e);
     }
 
-
-    // Deleting all attached files (WYSIWYG, WYSIWYG images...)
-    AttachmentService attachmentService = AttachmentServiceProvider.getAttachmentService();
-    SimpleDocumentList<SimpleDocument> docs =
-        attachmentService.listAllDocumentsByForeignKey(foreignPK.toResourceReference(), null);
-    for (SimpleDocument document : docs) {
-      attachmentService.deleteAttachment(document);
-    }
-
-    // Deleting thumbnail
-    ThumbnailDetail thumbnail =
-        new ThumbnailDetail(foreignPK.getInstanceId(), Integer.parseInt(foreignPK.getId()),
-            ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
-    ThumbnailController.deleteThumbnail(thumbnail);
-
+    // TODO: all the 3 below stuff should be done by using the CDI notification for a better decoupling
     // Deleting comments
     commentService.deleteAllCommentsOnPublication(News.CONTRIBUTION_TYPE, news.getPK());
 
