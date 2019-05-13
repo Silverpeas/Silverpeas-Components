@@ -629,7 +629,7 @@ String displayQuizzResult(QuestionContainerDetail quizz, GraphicElementFactory g
 		return r;
 }
 
-  String displayQuizzResultAdmin(QuestionContainerDetail quizz, GraphicElementFactory gef, String m_context,QuizzSessionController quizzScc, MultiSilverpeasBundle resources, SettingBundle settings, int nb_user_votes) throws QuizzException {
+  String displayQuizzResultAdmin(QuestionContainerDetail quizz, GraphicElementFactory gef, String m_context,QuizzSessionController quizzScc, MultiSilverpeasBundle resources, SettingBundle settings) throws QuizzException {
         String r = "";
         List<String> function = null;
         int quizzUserScore = 0;
@@ -701,7 +701,6 @@ String displayQuizzResult(QuestionContainerDetail quizz, GraphicElementFactory g
 //Retrieve parameter
 String action = request.getParameter("Action");
 String quizzId = request.getParameter("QuizzId");
-String participationIdSTR =  request.getParameter("ParticipationId");
 String userId = request.getParameter("UserId");
 String roundId = request.getParameter("RoundId");
 String origin = request.getParameter("Page");
@@ -712,21 +711,12 @@ if (roundId == null) {
   roundId = "1";
 }
 
-if (participationIdSTR != null) {
-  session.setAttribute("currentParticipationId", participationIdSTR);
-}
 SettingBundle settings = quizzScc.getSettings();
-
-//Icons
-String topicAddSrc = m_context + "/util/icons/folderAdd.gif";
-String ligne = m_context + "/util/icons/colorPix/1px.gif";
 
 //Html
 List<String> html_string = null;
 
 QuestionContainerDetail quizz = null;
-
-boolean isClosed = false;
 
 if (action.equals("PreviewQuizz")) {
       quizz = (QuestionContainerDetail) session.getAttribute("quizzUnderConstruction");
@@ -750,8 +740,6 @@ else {
   if (quizz.getHeader().getEndDate() != null) {
           endDateReached = (quizz.getHeader().getEndDate().compareTo(resources.getDBDate(new Date())) < 0);
   }
-  if (endDateReached || quizz.getHeader().isClosed())
-        isClosed = true;
   if (action == null) {
           action = "ViewQuizz";
   }
@@ -999,15 +987,16 @@ else if (action.equals("ViewCurrentQuestions")) {
   out.println(window.printAfter());
 }
 else if (action.equals("ViewResult")) {
-  out.println("<body marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor=\"#FFFFFF\">");
-  String participation=(String) session.getAttribute("currentParticipationId");
+  out.println("<body>");
+  String participation = request.getParameter("ParticipationId");
   int nb_user_votes = 0;
   Collection<ScoreDetail> userScores = quizzScc.getUserScoresByFatherId(quizzId);
-  if (userScores != null)
-  nb_user_votes = userScores.size();
+  if (userScores != null) {
+    nb_user_votes = userScores.size();
+  }
 
-  if ((participation!=null)&&(!participation.equals(""))) {
-    participationId = Integer.parseInt((String) session.getAttribute("currentParticipationId"));
+  if (StringUtil.isDefined(participation)) {
+    participationId = Integer.parseInt(participation);
   } else {
 	  participationId=nb_user_votes;
   }
@@ -1063,21 +1052,8 @@ else if (action.equals("ViewResult")) {
 }
 else if (action.equals("ViewResultAdmin")) {
   out.println("<body>");
-  String participation= (String) session.getAttribute("currentParticipationId");
-  if ((participation!=null)&&(!participation.equals("")))
-    participationId = new Integer((String) session.getAttribute("currentParticipationId")).intValue();
-  if (userId == null) {
-    participationId += 1;
-    quizz = quizzScc.getQuestionContainerForCurrentUserByParticipationId(quizzId, participationId);
-  } else{
-       participationId = new Integer((String) session.getAttribute("currentParticipationId")).intValue();
-       quizz = quizzScc.getQuestionContainerByParticipationId(quizzId, userId, participationId);
-  }
-  int nb_user_votes = 0;
-  Collection<ScoreDetail> userScores = quizzScc.getUserScoresByFatherId(quizzId);
-  if (userScores != null) {
-    nb_user_votes = userScores.size();
-  }
+  participationId = Integer.parseInt(request.getParameter("ParticipationId"));
+  quizz = quizzScc.getQuestionContainerByParticipationId(quizzId, userId, participationId);
 
   Window window = gef.getWindow();
   BrowseBar browseBar = window.getBrowseBar();
@@ -1093,14 +1069,9 @@ else if (action.equals("ViewResultAdmin")) {
   out.println(window.printBefore());
   Frame frame = gef.getFrame();
   out.println(frame.printBefore());
-  String quizzPart = displayQuizzResultAdmin(quizz, gef, m_context, quizzScc, resources, settings, nb_user_votes);
-  ScoreDetail userScoreDetail = null;
+  String quizzPart = displayQuizzResultAdmin(quizz, gef, m_context, quizzScc, resources, settings);
   //Suggestion pedagogique
-  if (userId == null) {
-    userScoreDetail= quizzScc.getCurrentUserScoreByFatherIdAndParticipationId(quizzId, participationId);
-  } else {
-    userScoreDetail= quizzScc.getUserScoreByFatherIdAndParticipationId(quizzId, userId, participationId);
-  }
+  ScoreDetail userScoreDetail= quizzScc.getUserScoreByFatherIdAndParticipationId(quizzId, userId, participationId);
 
   quizzPart += "<table width=\"98%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><tr align=center><td><table border=\"0\" cellspacing=\"0\" cellpadding=\"5\" class=\"contourintfdcolor\" width=\"100%\"><tr><td valign=\"top\"><img src=\"icons/silverProf_SuggPedago.gif\" align=\"left\"><span class=\"txtnav\">";
   quizzPart += resources.getString("EducationSuggestion") + " :</span><br>";
@@ -1111,6 +1082,7 @@ else if (action.equals("ViewResultAdmin")) {
   quizzPart += "</textarea>";
   quizzPart += "</td></tr></table></td></tr></table>";
   quizzPart += "<input type=\"hidden\" name=\"UserId\" value=\""+userId+"\">";
+  quizzPart += "<input type=\"hidden\" name=\"ParticipationId\" value=\""+participationId+"\">";
   quizzPart += "<input type=\"hidden\" name=\"Page\" value=\""+origin+"\">";
 
   out.println(quizzPart);
@@ -1130,11 +1102,9 @@ else if (action.equals("ViewResultAdmin")) {
 }
 else if (action.equals("UpdateSuggestion")) {
   String suggestion = request.getParameter("txa_suggestion");
-  participationId = new Integer((String) session.getAttribute("currentParticipationId")).intValue();
-  quizz = quizzScc.getQuestionContainerByParticipationId(quizzId, userId, participationId);
-  ScoreDetail userScoreDetail = null;
+  participationId = Integer.parseInt(request.getParameter("ParticipationId"));
   //Suggestion pedagogique
-  userScoreDetail = quizzScc.getUserScoreByFatherIdAndParticipationId(quizzId, userId, participationId);
+  ScoreDetail userScoreDetail = quizzScc.getUserScoreByFatherIdAndParticipationId(quizzId, userId, participationId);
   userScoreDetail.setSuggestion(suggestion);
   quizzScc.updateScore(userScoreDetail);
 
