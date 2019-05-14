@@ -34,6 +34,7 @@ import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.silverpeas.core.util.CollectionUtil;
+import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileServerUtils;
@@ -48,9 +49,11 @@ import org.silverpeas.core.workflow.api.instance.Question;
 import org.silverpeas.core.workflow.api.model.Item;
 import org.silverpeas.core.workflow.api.model.State;
 import org.silverpeas.core.workflow.api.task.Task;
+import org.silverpeas.core.workflow.api.user.Replacement;
 import org.silverpeas.core.workflow.engine.model.StateImpl;
 import org.silverpeas.processmanager.CurrentState;
 import org.silverpeas.processmanager.LockVO;
+import org.silverpeas.processmanager.NamedValue;
 import org.silverpeas.processmanager.ProcessFilter;
 import org.silverpeas.processmanager.ProcessManagerException;
 import org.silverpeas.processmanager.ProcessManagerSessionController;
@@ -64,6 +67,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 public class ProcessManagerRequestRouter
     extends ComponentRequestRouter<ProcessManagerSessionController> {
@@ -183,6 +188,8 @@ public class ProcessManagerRequestRouter
         processList = session.getCurrentProcessList();
       }
       request.setAttribute("processList", processList);
+      final List<Replacement> replacements = session.getCurrentAndNextUserReplacementsAsIncumbent();
+      request.setAttribute("CurrentAndNextReplacementsAsIncumbent", replacements);
       setProcessFilterAttributes(session, request);
       setSharedAttributes(session, request);
       return "/processManager/jsp/listProcess.jsp";
@@ -349,7 +356,12 @@ public class ProcessManagerRequestRouter
       } else {
         String roleName = request.getParameter("role");
         if (roleName != null) {
-          session.resetCurrentRole(roleName);
+          String incumbentId = request.getParameter("IncumbentId");
+          if (StringUtil.isDefined(incumbentId)) {
+            session.resetCurrentRoleAsSubstitute(roleName, incumbentId);
+          } else {
+            session.resetCurrentRole(roleName);
+          }
         }
       }
 
@@ -486,14 +498,9 @@ public class ProcessManagerRequestRouter
       // retrieve state name and action name
       HistoryStep savedStep = session.getSavedStep();
       String stateName = savedStep.getResolvedState();
-      String actionName = savedStep.getAction();
-
-      // Assume that user switch to same role as saved action
-      String roleName = savedStep.getUserRoleName();
-      session.resetCurrentRole(roleName);
       State state = (stateName == null) ? new StateImpl("") : session.getState(stateName);
-
       request.setAttribute("state", state);
+      String actionName = savedStep.getAction();
       request.setAttribute("action", session.getAction(actionName));
 
       // Get the associated form
@@ -791,6 +798,16 @@ public class ProcessManagerRequestRouter
   /**
    * The editUserSetting handler
    */
+  private static FunctionHandler manageReplacementsHandler = new SessionSafeFunctionHandler() {
+    protected String computeDestination(String function, ProcessManagerSessionController session,
+        HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
+      setSharedAttributes(session, request);
+      return "/processManager/jsp/replacements.jsp";
+    }
+  };
+  /**
+   * The editUserSetting handler
+   */
   private static FunctionHandler editUserSettingsHandler = new SessionSafeFunctionHandler() {
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
@@ -945,6 +962,7 @@ public class ProcessManagerRequestRouter
     handlerMap.put("cancelResponse", cancelResponseHandler);
     handlerMap.put("saveResponse", saveResponseHandler);
     handlerMap.put("listQuestions", listQuestionsHandler);
+    handlerMap.put("manageReplacements", manageReplacementsHandler);
     handlerMap.put("editUserSettings", editUserSettingsHandler);
     handlerMap.put("saveUserSettings", saveUserSettingsHandler);
     handlerMap.put("searchResult.jsp", searchResultHandler);
@@ -1037,18 +1055,26 @@ public class ProcessManagerRequestRouter
    */
   private static void setSharedAttributes(ProcessManagerSessionController session,
       HttpServletRequest request) {
-    String canCreate = session.getCreationRights() ? "1" : "0";
-    boolean isVersionControlled = session.isVersionControlled();
-    String s_isVersionControlled = isVersionControlled ? "1" : "0";
-
-    request.setAttribute("isVersionControlled", s_isVersionControlled);
+    final Function<NamedValue[],String> jsRoleEncoder = a -> JSONCodec.encodeObject(o -> {
+      Stream.of(a).forEach(l ->
+          o.putJSONObject(l.getName(), r ->
+              r.put("label", l.getValue()).put("creationOne", l.isCreationOne())));
+      return o;
+    });
+    final String canCreate = session.getCreationRights() ? "1" : "0";
+    final boolean isVersionControlled = session.isVersionControlled();
+    final String isVersionControlledAsString = isVersionControlled ? "1" : "0";
+    request.setAttribute("isVersionControlled", isVersionControlledAsString);
     request.setAttribute("language", session.getLanguage());
     request.setAttribute("roles", session.getUserRoleLabels());
+    request.setAttribute("jsUserRoles", jsRoleEncoder.apply(session.getUserRoleLabels()));
+    request.setAttribute("jsComponentInstanceRoles", jsRoleEncoder.apply(session.getComponentInstanceRoleLabels()));
     request.setAttribute("currentRole", session.getCurrentRole());
+    request.setAttribute("currentRoleLabel", session.getCurrentRoleLabel());
+    request.setAttribute("currentReplacement", session.getCurrentReplacement());
     request.setAttribute("canCreate", canCreate);
     request.setAttribute("process", session.getCurrentProcessInstance());
-    request.setAttribute("isActiveUser", session.isActiveUser());
-    request.setAttribute("isAttachmentTabEnable", session.isAttachmentTabEnable());
+    request.setAttribute("isAttachmentTabEnabled", session.isAttachmentTabEnabled());
     request.setAttribute("isHistoryTabEnable", session.isHistoryTabVisible());
     request.setAttribute("isProcessIdVisible", session.isProcessIdVisible());
     request.setAttribute("isPrintButtonEnabled", session.isPrintButtonEnabled());

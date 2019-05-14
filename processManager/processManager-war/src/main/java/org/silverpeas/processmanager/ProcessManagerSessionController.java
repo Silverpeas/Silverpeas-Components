@@ -23,6 +23,7 @@
  */
 package org.silverpeas.processmanager;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.content.form.DataRecord;
@@ -42,12 +43,14 @@ import org.silverpeas.core.contribution.content.form.record.GenericRecordTemplat
 import org.silverpeas.core.notification.message.MessageNotifier;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.MapUtil;
+import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
 import org.silverpeas.core.workflow.api.UpdatableProcessInstanceManager;
 import org.silverpeas.core.workflow.api.Workflow;
 import org.silverpeas.core.workflow.api.WorkflowEngine;
@@ -65,6 +68,7 @@ import org.silverpeas.core.workflow.api.instance.Question;
 import org.silverpeas.core.workflow.api.instance.UpdatableProcessInstance;
 import org.silverpeas.core.workflow.api.model.*;
 import org.silverpeas.core.workflow.api.task.Task;
+import org.silverpeas.core.workflow.api.user.Replacement;
 import org.silverpeas.core.workflow.api.user.User;
 import org.silverpeas.core.workflow.api.user.UserInfo;
 import org.silverpeas.core.workflow.api.user.UserSettings;
@@ -77,11 +81,22 @@ import org.silverpeas.core.workflow.engine.user.UserSettingsService;
 import org.silverpeas.processmanager.record.QuestionRecord;
 import org.silverpeas.processmanager.record.QuestionTemplate;
 
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
+import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
 import static org.silverpeas.core.contribution.attachment.AttachmentService.VERSION_MODE;
+import static org.silverpeas.core.util.CollectionUtil.asList;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 import static org.silverpeas.core.workflow.util.WorkflowUtil.getItemByName;
 
 /**
@@ -91,6 +106,10 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   private static final String PROCESS_MANAGER_SESSION_CONTROLLER =
       "ProcessManagerSessionController";
+  private static final String SUPERVISOR_ROLE = "supervisor";
+  private static final String QUESTION_ACTION = "#question#";
+  private static final String RESPONSE_ACTION = "#response#";
+  private static final String RE_ASSIGN_ACTION = "#reAssign#";
 
   /**
    * Builds and init a new session controller
@@ -121,8 +140,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     // Reset the user rights for creation
     resetCreationRights();
 
-
-    // Load user informations
+    // Load user information
     userSettings = UserSettingsService.get().get(mainSessionCtrl.getUserId(), peasId);
   }
 
@@ -140,7 +158,6 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
         "org.silverpeas.processManager.multilang.processManagerBundle",
         "org.silverpeas.processManager.settings.processManagerIcons",
         "org.silverpeas.processManager.settings.processManagerSettings");
-
     fatalException = fatal;
   }
 
@@ -182,7 +199,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   public boolean isHistoryTabVisible() {
     String parameterValue = this.getComponentParameterValue("historyTabEnable");
-    if (StringUtil.isDefined(parameterValue)) {
+    if (isDefined(parameterValue)) {
       return "yes".equalsIgnoreCase(parameterValue);
     }
     return true;
@@ -299,9 +316,10 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     }
 
     try {
-      String[] groupIds = getOrganisationController().getAllGroupIdsOfUser(getUserId());
+      User activeUser = getActiveUser();
+      String[] groupIds = getOrganisationController().getAllGroupIdsOfUser(activeUser.getUserId());
       List<ProcessInstance> processList = Workflow.getProcessInstanceManager()
-          .getProcessInstances(peasId, currentUser, currentRole, getUserRoles(), groupIds);
+          .getProcessInstances(peasId, activeUser, currentRole, getUserRoles(), groupIds);
       currentProcessList = getCurrentFilter().filter(processList, currentRole, getLanguage());
     } catch (WorkflowException e) {
       throw new ProcessManagerException(PROCESS_MANAGER_SESSION_CONTROLLER,
@@ -345,7 +363,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       return false;
     }
     for (String state : states) {
-      if (getActiveUsers(state).contains(getUserId())) {
+      if (getActiveUsers(state).contains(getActiveUser().getUserId())) {
         return true;
       }
     }
@@ -359,7 +377,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   public List<CurrentState> getActiveStates() throws ProcessManagerException {
     String[] stateNames = currentProcessInstance.getActiveStates();
     if (stateNames == null) {
-      return Collections.emptyList();
+      return emptyList();
     }
 
     Map<String, List<Task>> tasksByStates = getTasksByStates();
@@ -496,36 +514,25 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   /**
    * Get the active user names
    */
-  public boolean isActiveUser() {
+  private boolean isActiveUser() {
     if (currentProcessInstance == null) {
       return false;
     }
-
-    String[] states = currentProcessInstance.getActiveStates();
-    if (states == null) {
-      return false;
-    }
-
-    Actor[] users;
-    for (final String state : states) {
-      try {
-        users = currentProcessInstance.getWorkingUsers(state);
-        for (final Actor user : users) {
-          if (getUserId().equals(user.getUser().getUserId())) {
-            return true;
+    final String[] states = currentProcessInstance.getActiveStates();
+    return states != null && Stream.of(states)
+        .flatMap(s -> {
+          try {
+            return Stream.of(currentProcessInstance.getWorkingUsers(s));
+          } catch (WorkflowException ignored) {
+            // ignore unknown state
           }
-        }
-      } catch (WorkflowException ignored) {
-        // ignore unknown state
-        continue;
-      }
-    }
-
-    return false;
+          return Stream.empty();
+        })
+        .anyMatch(u -> getActiveUser().getUserId().equals(u.getUser().getUserId()));
   }
 
   private List<String> getActiveUsers(String stateName) {
-    List<String> activeUsers = new ArrayList<String>();
+    List<String> activeUsers = new ArrayList<>();
     State state = getState(stateName);
     if (state != null) {
       activeUsers.addAll(getUsers(state.getWorkingUsers()));
@@ -534,11 +541,11 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     return activeUsers;
   }
 
-  public List<String> getUsers(QualifiedUsers qualifiedUsers) {
+  private List<String> getUsers(QualifiedUsers qualifiedUsers) {
     return getUsers(qualifiedUsers, false);
   }
 
-  public List<String> getUsers(QualifiedUsers qualifiedUsers, boolean useCurrentRole) {
+  private List<String> getUsers(QualifiedUsers qualifiedUsers, boolean useCurrentRole) {
     List<String> users = new ArrayList<>();
     RelatedUser[] relatedUsers = qualifiedUsers.getRelatedUsers();
     RelatedUser relatedUser;
@@ -550,7 +557,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       String relation = relatedUser.getRelation();
       if (participant != null && relation == null) {
         if (currentRole.equals(relatedUser.getRole())) {
-          users.add(getUserId());
+          users.add(getActiveUser().getUserId());
         }
       } else if (participant != null && relation != null) {
         String requesterId = getCreatorIdOfCurrentProcessInstance();
@@ -569,13 +576,13 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
           Field field = currentProcessInstance.getField(item.getName());
           String role = relatedUser.getRole();
           if (field instanceof UserField) {
-            if ((StringUtil.isDefined(role) && currentRole.equals(role)) ||
+            if ((isDefined(role) && currentRole.equals(role)) ||
                 StringUtil.isNotDefined(role)) {
               users.add(field.getStringValue());
             }
           } else if (field instanceof MultipleUserField) {
             MultipleUserField multipleUserField = (MultipleUserField) field;
-            if ((StringUtil.isDefined(role) && currentRole.equals(role)) ||
+            if ((isDefined(role) && currentRole.equals(role)) ||
                 StringUtil.isNotDefined(role)) {
               users.addAll(Arrays.asList(multipleUserField.getUserIds()));
             }
@@ -667,13 +674,42 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   }
 
   /**
+   * @return the current replacement if any.
+   */
+  public Replacement getCurrentReplacement() {
+    return currentReplacement;
+  }
+
+  public void resetCurrentRoleAsSubstitute(String role, String incumbentId)
+      throws ProcessManagerException {
+    final Mutable<String> finalRole = Mutable.of(role);
+    final Optional<Replacement> replacement = getCurrentUserReplacement(incumbentId, role);
+    replacement.ifPresent(r -> finalRole.set(getRoleNameForSubstitute(r, role)));
+    if (!replacement.isPresent()) {
+      WebMessager.getInstance().addWarning(getMultilang()
+          .getStringWithParams("processManager.replacements.errors.noMoreValid",
+              getUser(incumbentId).getFullName()));
+    }
+    resetCurrentRole(finalRole.get());
+  }
+
+  /**
    * Returns the current role name.
    * @param role a role
    * @throws ProcessManagerException
    */
   public void resetCurrentRole(String role) throws ProcessManagerException {
     if (role != null && role.length() > 0) {
-      this.currentRole = role;
+      final String[] roleCtx = role.split(":");
+      if (roleCtx.length == 2) {
+        Replacement.get(roleCtx[0]).ifPresent(r -> {
+          this.currentReplacement = r;
+          this.currentRole = roleCtx[1];
+        });
+      } else {
+        this.currentReplacement = null;
+        this.currentRole = role;
+      }
     }
     resetCreationRights();
     resetProcessFilter();
@@ -685,33 +721,45 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    * Returns the user roles as a list of (name, label) pair.
    */
   public NamedValue[] getUserRoleLabels() {
-    if (userRoleLabels == null) {
-      String lang = getLanguage();
-      Role[] roles = processModel.getRoles();
+    return getRequestCacheService()
+        .getCache()
+        .computeIfAbsent("ProcessManagerSC.getUserRoleLabels" + getComponentId(), NamedValue[].class, () -> {
+          final String lang = getLanguage();
+          final Role[] roles = processModel.getRoles();
+          final List<NamedValue> labels = new ArrayList<>();
 
-      List<NamedValue> labels = new ArrayList<>();
-      NamedValue label;
-
-      // quadratic search ! but it's ok : the list are about 3 or 4 length.
-      for (final String userRole : userRoles) {
-        if ("supervisor".equals(userRole)) {
-          label = new NamedValue("supervisor", getString("processManager.supervisor"));
-          labels.add(label);
-        } else {
-          for (final Role role : roles) {
-            if (userRole.equals(role.getName())) {
-              label = new NamedValue(userRole, role.getLabel(currentRole, lang));
-              labels.add(label);
+          final List<Replacement> replacements = getCurrentUserReplacements();
+          for (final Replacement replacement : replacements) {
+            final List<String> incumbentRoles = getSubstituteRolesOf(replacement.getIncumbent());
+            for (final String roleName : incumbentRoles) {
+              getRoleLabel(replacement, roles, roleName, lang)
+                  .filter(n -> labels.stream().noneMatch(l -> Objects.equals(n.getValue(), l.getValue())))
+                  .ifPresent(labels::add);
             }
           }
-        }
-      }
 
-      Collections.sort(labels, NamedValue.ascendingValues);
-      userRoleLabels = labels.toArray(new NamedValue[labels.size()]);
+          // quadratic search ! but it's ok : the list are about 3 or 4 length.
+          for (final String userRole : userRoles) {
+            getRoleLabel(null, roles, userRole, lang).ifPresent(labels::add);
+          }
+
+          labels.sort(NamedValue.ascendingValues);
+          return labels.toArray(new NamedValue[0]);
+        });
+  }
+
+  /**
+   * Returns the component instance roles as a list of (name, label) pair.
+   */
+  public NamedValue[] getComponentInstanceRoleLabels() {
+    String lang = getLanguage();
+    Role[] roles = processModel.getRoles();
+    List<NamedValue> labels = new ArrayList<>();
+    for (final Role role : roles) {
+      getRoleLabel(null, roles, role.getName(), lang).ifPresent(labels::add);
     }
-
-    return userRoleLabels;
+    labels.sort(NamedValue.ascendingValues);
+    return  labels.toArray(new NamedValue[0]);
   }
 
   /**
@@ -736,7 +784,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     }
   }
 
-  public Item[] getFolderItems() throws ProcessManagerException {
+  public Item[] getFolderItems() {
     return processModel.getDataFolder().getItems();
   }
 
@@ -769,12 +817,9 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   /**
    * Returns the creation task.
    */
-  public Task getCreationTask() throws ProcessManagerException {
+  private Task getCreationTask() throws ProcessManagerException {
     try {
-      Task creationTask =
-          Workflow.getTaskManager().getCreationTask(currentUser, currentRole, processModel);
-
-      return creationTask;
+      return Workflow.getTaskManager().getCreationTask(getActiveUser(), currentRole, processModel);
     } catch (WorkflowException e) {
       throw new ProcessManagerException("SessionController",
           "processManager.CREATION_TASK_UNAVAILABLE", e);
@@ -820,7 +865,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   /**
    * Returns the an empty question record which will be filled with the question form.
    */
-  public DataRecord getEmptyQuestionRecord() throws ProcessManagerException {
+  public DataRecord getEmptyQuestionRecord() {
     return new QuestionRecord("");
   }
 
@@ -845,7 +890,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   /**
    * Returns the an empty question record which will be filled with the question form.
    */
-  public DataRecord getQuestionRecord(String questionId) throws ProcessManagerException {
+  public DataRecord getQuestionRecord(String questionId) {
     Question question = getQuestion(questionId);
     return new QuestionRecord(question.getQuestionText());
   }
@@ -926,7 +971,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     Actor[] oldUsers;
     List<Actor> oldActors = new ArrayList<>();
     List<Actor> newActors = new ArrayList<>();
-    Map<String, String> changes = new HashMap<String, String>();
+    Map<String, String> changes = new HashMap<>();
 
     try {
       WorkflowEngine wfEngine = Workflow.getWorkflowEngine();
@@ -996,6 +1041,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       GenericEvent event =
           (isDraft) ? getCreationTask().buildTaskSavedEvent(creation.getName(), data) :
               getCreationTask().buildTaskDoneEvent(creation.getName(), data);
+      setSubstituteToEvent(event);
 
       // Is a validate or a "save as draft" action ?
       if (isDraft) {
@@ -1011,6 +1057,12 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     } catch (WorkflowException e) {
       throw new ProcessManagerException("SessionController",
           "processManager.CREATION_PROCESSING_FAILED", e);
+    }
+  }
+
+  private void setSubstituteToEvent(GenericEvent event) {
+    if (getCurrentReplacement() != null) {
+      event.setSubstitute(getCurrentReplacement().getSubstitute());
     }
   }
 
@@ -1035,7 +1087,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    */
   public Task[] getTasks() throws ProcessManagerException {
     try {
-      return Workflow.getTaskManager().getTasks(currentUser, currentRole, currentProcessInstance);
+      return Workflow.getTaskManager().getTasks(getActiveUser(), currentRole, currentProcessInstance);
     } catch (WorkflowException e) {
       throw new ProcessManagerException("SessionController", "processManager.GET_TASKS_FAILED", e);
     }
@@ -1050,7 +1102,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
         QualifiedUsers qualifiedUsers = action.getAction().getAllowedUsers();
 
         List<String> grantedUserIds = getUsers(qualifiedUsers, true);
-        if (grantedUserIds.contains(getUserId())) {
+        if (grantedUserIds.contains(getActiveUser().getUserId())) {
           filteredActions.addAllowedAction(action);
         }
       }
@@ -1149,7 +1201,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     try {
       Task task;
 
-      if (StringUtil.isDefined(stateName)) {
+      if (isDefined(stateName)) {
         task = getTask(stateName);
       } else {
         task = getCreationTask();
@@ -1160,10 +1212,12 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       if (isDraft) {
         TaskSavedEvent tse = task.buildTaskSavedEvent(actionName, data);
         tse.setFirstTimeSaved(isFirstTimeSaved);
+        setSubstituteToEvent(tse);
         Workflow.getWorkflowEngine().process(tse);
       } else {
         TaskDoneEvent event = task.buildTaskDoneEvent(actionName, data);
         event.setResumingAction(this.isResumingInstance);
+        setSubstituteToEvent(event);
         Workflow.getWorkflowEngine().process(event);
         feedbackUser("processManager.action.feedback");
       }
@@ -1194,6 +1248,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     try {
       Task task = getTask(state);
       QuestionEvent event = task.buildQuestionEvent(stepId, data);
+      setSubstituteToEvent(event);
       Workflow.getWorkflowEngine().process(event);
     } catch (WorkflowException e) {
       throw new ProcessManagerException("SessionController",
@@ -1209,6 +1264,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       Question question = getQuestion(questionId);
       Task task = getTask(question.getTargetState().getName());
       ResponseEvent event = task.buildResponseEvent(questionId, data);
+      setSubstituteToEvent(event);
       Workflow.getWorkflowEngine().process(event);
     } catch (WorkflowException e) {
       throw new ProcessManagerException("SessionController",
@@ -1222,39 +1278,26 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    */
   public List<LockVO> getLockingUsers() throws ProcessManagerException {
     this.currentUserIsLockingUser = false;
-
     try {
-      List<LockVO> lockingUsers = new ArrayList<>();
-      String[] states = currentProcessInstance.getActiveStates();
-      if (states != null) {
-        for (String stateName : states) {
-          LockingUser lockingUser = currentProcessInstance.getLockingUser(stateName);
-          if (lockingUser != null) {
-            User user = WorkflowHub.getUserManager().getUser(lockingUser.getUserId());
-            boolean isDraftPending =
-                (currentProcessInstance.getSavedStep(lockingUser.getUserId()) != null);
-            lockingUsers.add(new LockVO(user, lockingUser.getLockDate(), lockingUser.getState(),
-                !isDraftPending));
-            if (lockingUser.getUserId().equals(getUserId())) {
+      final List<LockVO> lockingUsers = new ArrayList<>();
+      final String[] activeStates = currentProcessInstance.getActiveStates();
+      final List<String> states = activeStates != null ? asList(activeStates) : new ArrayList<>(1);
+      // special case : instance saved in creation step
+      states.add("");
+      for (final String stateName : states) {
+        LockingUser lockingUser = currentProcessInstance.getLockingUser(stateName);
+        if (lockingUser != null) {
+          final User user = WorkflowHub.getUserManager().getUser(lockingUser.getUserId());
+          final HistoryStep savedStep = currentProcessInstance.getSavedStep(lockingUser.getUserId());
+          if (savedStep == null || currentRole.equals(savedStep.getUserRoleName())) {
+            final boolean isDraftPending = savedStep != null;
+            lockingUsers.add(new LockVO(user, lockingUser.getLockDate(), lockingUser.getState(), !isDraftPending));
+            if (lockingUser.getUserId().equals(getActiveUser().getUserId())) {
               this.currentUserIsLockingUser = true;
             }
           }
         }
       }
-
-      // special case : instance saved in creation step
-      LockingUser lockingUser = currentProcessInstance.getLockingUser("");
-      if (lockingUser != null) {
-        User user = WorkflowHub.getUserManager().getUser(lockingUser.getUserId());
-        boolean isDraftPending =
-            (currentProcessInstance.getSavedStep(lockingUser.getUserId()) != null);
-        lockingUsers.add(
-            new LockVO(user, lockingUser.getLockDate(), lockingUser.getState(), !isDraftPending));
-        if (lockingUser.getUserId().equals(getUserId())) {
-          this.currentUserIsLockingUser = true;
-        }
-      }
-
       return lockingUsers;
     } catch (WorkflowException e) {
       throw new ProcessManagerException("SessionController",
@@ -1271,7 +1314,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     try {
       State state = processModel.getState(stateName);
       ((UpdatableProcessInstanceManager) Workflow.getProcessInstanceManager())
-          .lock(currentProcessInstance, state, currentUser);
+          .lock(currentProcessInstance, state, getActiveUser());
     } catch (WorkflowException e) {
       throw new ProcessManagerException("SessionController", "processManager.LOCK_FAILED", e);
     }
@@ -1301,14 +1344,14 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     try {
       State state = processModel.getState(stateName);
       ((UpdatableProcessInstanceManager) Workflow.getProcessInstanceManager())
-          .unlock(currentProcessInstance, state, currentUser);
+          .unlock(currentProcessInstance, state, getActiveUser());
     } catch (WorkflowException e) {
       throw new ProcessManagerException("SessionController", "processManager.LOCK_FAILED", e);
     }
   }
 
   public List<StepVO> getSteps(String strEnlightedStep) {
-    List<StepVO> stepsVO = new ArrayList<StepVO>();
+    List<StepVO> stepsVO = new ArrayList<>();
 
     // get step from last recent to older
     HistoryStep[] steps = getSortedHistorySteps(false);
@@ -1332,12 +1375,13 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
       // Actor Full Name
       stepVO.setActorFullName(getStepActor(step));
+      stepVO.setSubstituteFullName(getStepSubstitute(step));
 
       // Action name
       stepVO.setActionName(getStepAction(step));
 
       // Step date
-      stepVO.setStepDate(DateUtil.getOutputDate(step.getActionDate(), getLanguage()));
+      stepVO.setStepDate(DateUtil.getOutputDateAndHour(step.getActionDate(), getLanguage()));
 
       // visibility
       stepVO.setVisible(isStepVisible(step));
@@ -1349,8 +1393,8 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
           Form form = getStepForm(step);
 
           // Context
-          PagesContext context =
-              new PagesContext("dummy", "0", getLanguage(), false, getComponentId(), getUserId());
+          PagesContext context = new PagesContext("dummy", "0", getLanguage(), false,
+              getComponentId(), getUserId());
           context.setVersioningUsed(isVersionControlled());
           if (currentProcessInstance != null) {
             context.setObjectId("Step" + step.getId());
@@ -1389,14 +1433,13 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     return steps;
   }
 
-  public boolean isStepVisible(HistoryStep step) {
+  private boolean isStepVisible(HistoryStep step) {
     boolean visible = true;
-    String stateName = null;
     if (filterHistory()) {
       visible = false;
-      stateName = step.getResolvedState();
+      String stateName = step.getResolvedState();
       if (stateName != null) {
-        if (getActiveUsers(stateName).contains(getUserId())) {
+        if (getActiveUsers(stateName).contains(getActiveUser().getUserId())) {
           visible = true;
         }
       } else {
@@ -1404,7 +1447,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
         try {
           Action createAction = processModel.getCreateAction(currentRole);
           QualifiedUsers qualifiedUsers = createAction.getAllowedUsers();
-          if (getUsers(qualifiedUsers).contains(getUserId())) {
+          if (getUsers(qualifiedUsers).contains(getActiveUser().getUserId())) {
             visible = true;
           }
         } catch (WorkflowException we) {
@@ -1433,6 +1476,14 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     return actorFullName;
   }
 
+  public String getStepSubstitute(HistoryStep step) {
+    String substituteId = step.getSubstituteId();
+    if (isDefined(substituteId)) {
+      return org.silverpeas.core.admin.user.model.User.getById(substituteId).getDisplayedName();
+    }
+    return null;
+  }
+
   /**
    * Get the list of actions in History Step of current process instance
    * @return an array of string containing actions names
@@ -1442,11 +1493,11 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     String actionName = null;
 
     try {
-      if ("#question#".equals(step.getAction())) {
+      if (QUESTION_ACTION.equals(step.getAction())) {
         actionName = getString("processManager.question");
-      } else if ("#response#".equals(step.getAction())) {
+      } else if (RESPONSE_ACTION.equals(step.getAction())) {
         actionName = getString("processManager.response");
-      } else if ("#reAssign#".equals(step.getAction())) {
+      } else if (RE_ASSIGN_ACTION.equals(step.getAction())) {
         actionName = getString("processManager.reAffectation");
       } else {
         action = processModel.getAction(step.getAction());
@@ -1465,7 +1516,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    */
   public Form getStepForm(HistoryStep step) throws ProcessManagerException {
     try {
-      if ("#question#".equals(step.getAction()) || "#response#".equals(step.getAction())) {
+      if (QUESTION_ACTION.equals(step.getAction()) || RESPONSE_ACTION.equals(step.getAction())) {
         return getQuestionForm(true);
       } else {
         return processModel.getPresentationForm(step.getAction(), currentRole, getLanguage());
@@ -1482,7 +1533,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   private DataRecord getStepRecord(HistoryStep step) {
     try {
       final Date actionDate = step.getActionDate();
-      if ("#question#".equals(step.getAction())) {
+      if (QUESTION_ACTION.equals(step.getAction())) {
         final Optional<Question> question = Arrays.stream(currentProcessInstance.getQuestions()).filter(q-> {
           if (step.getResolvedState().equals(q.getFromState().getName())) {
             final Date questionDate = q.getQuestionDate();
@@ -1492,7 +1543,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
           return false;
         }).findFirst();
         return question.<DataRecord>map(q -> new QuestionRecord(q.getQuestionText())).orElse(null);
-      } else if ("#response#".equals(step.getAction())) {
+      } else if (RESPONSE_ACTION.equals(step.getAction())) {
         final Optional<Question> question = Arrays.stream(currentProcessInstance.getQuestions()).filter(q -> {
           if (step.getResolvedState().equals(q.getTargetState().getName())) {
             final Date responseDate = q.getResponseDate();
@@ -1517,7 +1568,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    */
   public HistoryStep getSavedStep() throws ProcessManagerException {
     try {
-      return currentProcessInstance.getSavedStep(getUserId());
+      return currentProcessInstance.getSavedStep(getActiveUser().getUserId());
     } catch (WorkflowException e) {
       throw new ProcessManagerException(PROCESS_MANAGER_SESSION_CONTROLLER,
           "processManager.GET_SAVED_STEP_FAILED", e);
@@ -1707,11 +1758,11 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   }
 
   private boolean checkUserIsInstanceSupervisor(String processId) throws ProcessManagerException {
-    if ("supervisor".equalsIgnoreCase(getCurrentRole())) {
+    if (SUPERVISOR_ROLE.equalsIgnoreCase(getCurrentRole())) {
       try {
         ProcessInstance processInstance =
             Workflow.getProcessInstanceManager().getProcessInstance(processId);
-        List<User> users = processInstance.getUsersInRole("supervisor");
+        List<User> users = processInstance.getUsersInRole(SUPERVISOR_ROLE);
         if (users != null && !users.isEmpty()) {
           for (User user : users) {
             if (user.getUserId().equals(getUserId())) {
@@ -1731,13 +1782,8 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   /**
    * Get all the errors occured while processing the current process instance
    */
-  public WorkflowError[] getProcessInstanceErrors(String processId) throws ProcessManagerException {
-    try {
-      return Workflow.getErrorManager().getErrorsOfInstance(processId);
-    } catch (WorkflowException we) {
-      throw new ProcessManagerException(PROCESS_MANAGER_SESSION_CONTROLLER,
-          "processManager.GET_PROCESS_ERRORS_FAILED", we);
-    }
+  public WorkflowError[] getProcessInstanceErrors(String processId) {
+    return Workflow.getErrorManager().getErrorsOfInstance(processId);
   }
 
   /**
@@ -1758,9 +1804,10 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     return StringUtil.getBooleanValue(getComponentParameterValue(VERSION_MODE));
   }
 
-  public boolean isAttachmentTabEnable() {
-    String param = this.getComponentParameterValue("attachmentTabEnable");
-    return param == null || (!("").equals(param) && !("no").equalsIgnoreCase(param));
+  public boolean isAttachmentTabEnabled() {
+    final String param = this.getComponentParameterValue("attachmentTabEnable");
+    final boolean decodedParam = param == null || (!("").equals(param) && !("no").equalsIgnoreCase(param));
+    return decodedParam && isActiveUser();
   }
 
   public boolean isProcessIdVisible() {
@@ -1785,7 +1832,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   public String exportListAsCSV() throws ProcessManagerException {
     String fieldsToExport = getComponentParameterValue("fieldsToExport");
     List<StringBuilder> csvRows;
-    if (StringUtil.isDefined(fieldsToExport)) {
+    if (isDefined(fieldsToExport)) {
       csvRows = exportDefinedItemsAsCSV();
     } else {
       csvRows = exportAllFolderAsCSV();
@@ -1863,7 +1910,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       return csvRows;
     } catch (FormException e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      return Collections.emptyList();
+      return emptyList();
     }
   }
 
@@ -1938,7 +1985,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       return csvRows;
     } catch (FormException e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      return Collections.emptyList();
+      return emptyList();
     }
   }
 
@@ -1963,13 +2010,13 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     try {
       Field field = instance.getFullProcessInstance().getField(fieldName);
       fieldString = field.getValue(getLanguage());
-      if (!StringUtil.isDefined(fieldString) || !field.getTypeName().equals(DateField.TYPE)) {
+      if (!isDefined(fieldString) || !field.getTypeName().equals(DateField.TYPE)) {
         ItemImpl item = (ItemImpl) getItemByName(items, fieldName);
         if (item != null) {
           Map<String, String> keyValuePairs = item.getKeyValuePairs();
           if (keyValuePairs != null && keyValuePairs.size() > 0) {
             StringBuilder newValue = new StringBuilder();
-            if (StringUtil.isDefined(fieldString)) {
+            if (isDefined(fieldString)) {
               if (fieldString.contains("##")) {
                 // Try to display a checkbox list
                 StringTokenizer tokenizer = new StringTokenizer(fieldString, "##");
@@ -2014,7 +2061,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     return csvFilename;
   }
 
-  private List<String> getCSVCols() throws ProcessManagerException, FormException {
+  private List<String> getCSVCols() throws FormException {
     List<String> csvCols = new ArrayList<>();
     Item[] items = getFolderItems();
     RecordTemplate listHeaders = getProcessListHeaders();
@@ -2090,6 +2137,141 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   }
 
   /**
+   * Gets current replacements at date of day in which the current user can play as a substitute in
+   * the workflow.
+   * @return a list of possible replacements.
+   */
+  private List<Replacement> getCurrentUserReplacements() {
+    return Replacement.getAllBy(currentUser, peasId)
+        .stream()
+        .filterCurrentAt(LocalDate.now())
+        .filterOnAtLeastOneRole(userRoles)
+        .collect(Collectors.toList());
+  }
+
+  /**
+   * Gets current replacement at date of day in which the current user can play as a substitute
+   * according to the given incumbent and the given role.
+   * @param incumbentId the identifier of the incumbent the current user can replace.
+   * @param role the role the current user and the incumbent must have.
+   * @return the optional current replacement.
+   */
+  private Optional<Replacement> getCurrentUserReplacement(String incumbentId, String role) {
+    return Replacement.getAllBy(currentUser, peasId)
+        .stream()
+        .filterOnIncumbent(incumbentId)
+        .filterCurrentAt(LocalDate.now())
+        .filterOnAtLeastOneRole(role)
+        .findFirst();
+  }
+
+  /**
+   * Gets the roles of the specified user in the underlying workflow the current user can play as
+   * a substitute of him. The current user can play the roles of the specified user only and only
+   * if he has the same role in the workflow.
+   * @param user a user of the workflow.
+   * @return a list of roles.
+   */
+  private List<String> getSubstituteRolesOf(final User user) {
+    final List<String> listOfUserRoles = Stream.of(userRoles)
+        .filter(r -> !SUPERVISOR_ROLE.equals(r))
+        .collect(Collectors.toList());
+    final String[] roles = getOrganisationController().getUserProfiles(user.getUserId(), peasId);
+    return Stream.of(roles)
+        .filter(listOfUserRoles::contains)
+        .collect(Collectors.toList());
+  }
+
+  /**
+   * Gets among the roles available in the current process, the label of the specified role in the
+   * given language.
+   * @param replacement a possible replacement for which the role is looking for. Null if the search
+   * isn't done in the context of a replacement.
+   * @param roles the roles the current process supports.
+   * @param roleName the name of a role in the supported roles of the current process.
+   * @param lang an ISO-601 code of the language in which the label should be.
+   * @return optionally a {@link NamedValue} with as name the name of the
+   * role and as value the label of the role. If no role with the specified name is present
+   * in the given list of roles, then nothing is returned.
+   */
+  private Optional<NamedValue> getRoleLabel(final Replacement replacement, final Role[] roles,
+      final String roleName, final String lang) {
+    final List<String> creationRoles = getCreationRoles();
+    NamedValue label = null;
+    final Function<String, NamedValue> getRoleNamedValue = l -> {
+      String rName = roleName;
+      String rLabel = l;
+      if (replacement != null) {
+        rLabel = getMultilang().getStringWithParams("processManager.substituteRoleLabel", l,
+            replacement.getIncumbent().getFullName());
+        rName = getRoleNameForSubstitute(replacement, roleName);
+      }
+      return new NamedValue(rName, rLabel, creationRoles.contains(rName));
+    };
+    if (SUPERVISOR_ROLE.equals(roleName)) {
+      label = getRoleNamedValue.apply(getString("processManager.supervisor"));
+    } else {
+      for (final Role role : roles) {
+        if (roleName.equals(role.getName())) {
+          label = getRoleNamedValue.apply(role.getLabel(currentRole, lang));
+          break;
+        }
+      }
+    }
+    return ofNullable(label);
+  }
+
+  private String getRoleNameForSubstitute(final Replacement replacement, final String roleName) {
+    return replacement.getId() + ":" + roleName;
+  }
+
+  private List<String> getCreationRoles() {
+    final List<String> creationRoles;
+    try {
+      creationRoles = Stream.of(processModel.getCreationRoles()).collect(Collectors.toList());
+    } catch (WorkflowException e) {
+      throw new SilverpeasRuntimeException(e);
+    }
+    return creationRoles;
+  }
+
+  /**
+   * Gets the current active user. It takes into account any enabled replacement. It such a
+   * replacement exists, then the replaced user is returned as the current user is being him.
+   * @return the current active user: either the current user behind the session or a replaced user
+   * from the enabled replacement.
+   */
+  private User getActiveUser() {
+    User activeUser = currentUser;
+    if (currentReplacement != null) {
+      activeUser = currentReplacement.getIncumbent();
+      // verifying the role, technical security in case an HTTP request is performed manually
+      final List<String> incumbentRoles = getSubstituteRolesOf(activeUser);
+      if (!incumbentRoles.contains(currentRole)) {
+        throw new WebApplicationException(Response.Status.FORBIDDEN);
+      }
+    }
+    return activeUser;
+  }
+
+  /**
+   * Gets current and next replacements at date of day in which the current user can be replaced
+   * in the workflow.
+   * @return a list of possible replacements.
+   */
+  public List<Replacement> getCurrentAndNextUserReplacementsAsIncumbent() {
+    return Replacement.getAllOf(currentUser, peasId)
+        .stream()
+        .filterCurrentAndNextAt(LocalDate.now())
+        .filterOnAtLeastOneRole(SUPERVISOR_ROLE.equals(currentRole) ? userRoles : new String[]{currentRole})
+        .collect(Collectors.toList());
+  }
+
+  public String getCurrentRoleLabel() {
+    return processModel.getRole(currentRole).getLabel(currentRole, getLanguage());
+  }
+
+  /**
    * The session controller saves any fatal exception.
    */
   private ProcessManagerException fatalException = null;
@@ -2107,7 +2289,10 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    * The session saves a list of user roles.
    */
   private String[] userRoles = null;
-  private NamedValue[] userRoleLabels = null;
+  /**
+   * The current enabled replacement if any. By default none.
+   */
+  private Replacement currentReplacement = null;
   /**
    * The session saves a current User role.
    */
@@ -2148,5 +2333,4 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    * Current token Id prevents users to use several windows with the same session.
    */
   private String currentTokenId = null;
-
 }

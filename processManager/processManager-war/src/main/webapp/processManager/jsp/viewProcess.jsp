@@ -39,8 +39,7 @@
 	DataRecord 					data 						= (DataRecord) request.getAttribute("data");
 	String[] 					deleteAction 				= (String[]) request.getAttribute("deleteAction");
 	List<CurrentState> activeStates 				= (List<CurrentState>) request.getAttribute("activeStates");
-	boolean 					isActiveUser 				= (Boolean) request.getAttribute("isActiveUser");
-	boolean 					isAttachmentTabEnable 		= (Boolean) request.getAttribute("isAttachmentTabEnable");
+	boolean 					isAttachmentTabEnabled 		= (Boolean) request.getAttribute("isAttachmentTabEnabled");
   boolean 					isHistoryTabEnable 			= (Boolean) request.getAttribute("isHistoryTabEnable");
 	boolean 					isProcessIdVisible 			= (Boolean) request.getAttribute("isProcessIdVisible");
 	boolean 					isPrintButtonEnabled 		= (Boolean) request.getAttribute("isPrintButtonEnabled");
@@ -51,6 +50,8 @@
 	String 						versionning 				= (String) request.getAttribute("isVersionControlled");
 	boolean isVersionControlled = "1".equals(versionning);
 	int nbEntriesAboutQuestions = (Integer) request.getAttribute("NbEntriesAboutQuestions");
+	String currentRoleLabel = (String) request.getAttribute("currentRoleLabel");
+  Replacement currentReplacement = (Replacement) request.getAttribute("currentReplacement");
 
 	browseBar.setComponentName(componentLabel,"listProcess");
 
@@ -85,7 +86,7 @@
           "editAction?state="+deleteAction[1]+"&action="+deleteAction[0]);
 		}
 
-		if (isAttachmentTabEnable && isActiveUser) {
+		if (isAttachmentTabEnabled) {
       tabbedPane.addTab(resource.getString("processManager.attachments"),
           "attachmentManager?processId=" + process.getInstanceId(), false, true);
     }
@@ -104,6 +105,8 @@
 <%@ page import="org.silverpeas.processmanager.CurrentState" %>
 <%@ page import="org.silverpeas.core.util.CollectionUtil" %>
 <%@ page import="org.silverpeas.core.util.StringUtil" %>
+<%@ page import="org.silverpeas.core.workflow.api.user.Replacement" %>
+<%@ page import="java.util.ArrayList" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -125,8 +128,18 @@ function printProcess() {
 	out.println(tabbedPane.print());
 %>
 <view:frame>
+
+    <% if (currentReplacement != null) {
+      List<String> labelParams = new ArrayList<String>();
+      labelParams.add(currentReplacement.getIncumbent().getFullName());
+      labelParams.add(currentRoleLabel);
+      %>
+      <div class="inlineMessage-neutral">
+        <%=resource.getStringWithParams("processManager.replacements.process.replacement", labelParams.toArray(new String[0]))%>
+      </div>
+    <% } %>
+
 			<% if (hasLockingUsers) {%>
-			
 		<div class="inlineMessage" id="actionsInProgress">
 			<p class="txtnav"><%=resource.getString("processManager.actionInProgress") %> </p>
 				<c:choose>

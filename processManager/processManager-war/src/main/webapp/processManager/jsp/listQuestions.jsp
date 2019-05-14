@@ -32,8 +32,7 @@
     Form form 					= (Form) request.getAttribute("form");
     PagesContext 				context 				= (PagesContext) request.getAttribute("context");
 	Task[] 						tasks 					= (Task[]) request.getAttribute("tasks");
-	Boolean 					isActiveUser 			= (Boolean) request.getAttribute("isActiveUser");
-	Boolean 					isAttachmentTabEnable 	= (Boolean) request.getAttribute("isAttachmentTabEnable");
+	Boolean 					isAttachmentTabEnabled 	= (Boolean) request.getAttribute("isAttachmentTabEnabled");
 	Boolean 					isHistoryTabEnable 		= (Boolean) request.getAttribute("isHistoryTabEnable");
 	boolean 					isProcessIdVisible 		= (Boolean) request.getAttribute("isProcessIdVisible");
   int nbEntriesAboutQuestions = (Integer) request.getAttribute("NbEntriesAboutQuestions");
@@ -46,7 +45,7 @@
 	browseBar.setPath(processId+process.getTitle(currentRole, language));
 
 	tabbedPane.addTab(resource.getString("processManager.details"), "viewProcess?processId=" + process.getInstanceId()+"&force=true", false, true);
-	if (isAttachmentTabEnable && isActiveUser != null && isActiveUser)
+	if (isAttachmentTabEnabled)
 		tabbedPane.addTab(resource.getString("processManager.attachments"), "attachmentManager?processId=" + process.getInstanceId(), false, true);
 	tabbedPane.addTab(resource.getString("processManager.questions")+"("+nbEntriesAboutQuestions+")", "#" , true, true);
 	if (isHistoryTabEnable)

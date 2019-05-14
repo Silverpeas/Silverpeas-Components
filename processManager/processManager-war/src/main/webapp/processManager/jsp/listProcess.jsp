@@ -45,6 +45,7 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 
+<fmt:message var="manageReplacementLabel" key="processManager.replacements.manage"/>
 <fmt:message var="createProcessLabel" key="processManager.createProcess"/>
 <fmt:message var="userSettingsLabel" key="processManager.userSettings"/>
 <fmt:message var="csvExportLabel" key="processManager.csvExport"/>
@@ -96,8 +97,10 @@
 <c:set var="hasUserSettings" value="${silfn:booleanValue(requestScope.hasUserSettings)}"/>
 <c:set var="isCSVExportEnabled" value="${silfn:booleanValue(requestScope.isCSVExportEnabled)}"/>
 <c:set var="currentRole" value="${requestScope.currentRole}"/>
+<c:set var="currentReplacement" value="${requestScope.currentReplacement}"/>
 <c:set var="isCurrentRoleSupervisor" value="${'supervisor' eq fn:toLowerCase(currentRole)}"/>
 <c:set var="collapse" value="${silfn:booleanValue(empty requestScope.collapse ? 'true' : requestScope.collapse)}"/>
+<c:set var="currentAndNextReplacementsAsIncumbent" value="${requestScope.CurrentAndNextReplacementsAsIncumbent}"/>
 
 <fmt:message key="processManager.boxDown" var="iconBoxDown" bundle="${icons}"/>
 <c:url var="iconBoxDown" value="${iconBoxDown}"/>
@@ -175,6 +178,11 @@
 </head>
 <body class="yui-skin-sam processManager-main currentProfile_${currentRole} page_processes">
 <view:operationPane>
+  <c:if test="${currentReplacement == null}">
+    <fmt:message key="processManager.replacements.manage" var="opIcon" bundle="${icons}"/>
+    <c:url var="opIcon" value="${opIcon}"/>
+    <view:operation action="manageReplacements" altText="${manageReplacementLabel}" icon="${opIcon}"/>
+  </c:if>
   <c:if test="${canCreate}">
     <fmt:message key="processManager.add" var="opIcon" bundle="${icons}"/>
     <c:url var="opIcon" value="${opIcon}"/>
@@ -195,13 +203,25 @@
 </view:operationPane>
 <view:window>
   <view:frame>
+    <c:if test="${currentReplacement == null and fn:length(currentAndNextReplacementsAsIncumbent) > 0}">
+      <div class="inlineMessage">
+        <c:set var="incumbentMessage"><fmt:message key="processManager.replacements.incumbent.overview">
+          <fmt:param value="${fn:length(currentAndNextReplacementsAsIncumbent)}"/>
+        </fmt:message></c:set>
+        ${incumbentMessage} <a href="manageReplacements">${manageReplacementLabel}</a>
+      </div>
+    </c:if>
     <c:if test="${fn:length(roles) > 1}">
+      <c:set var="currentSelectedRole" value="${currentRole}"/>
+      <c:if test="${currentReplacement != null}">
+        <c:set var="currentSelectedRole" value="${currentReplacement.id}:${currentSelectedRole}"/>
+      </c:if>
       <div id="roles">
         <form name="roleChoice" method="post" action="changeRole">
           <label class="textePetitBold" for="current-role">${yourRoleLabel} :&nbsp;</label>
           <select id="current-role" name="role" onchange="spProgressMessage.show();document.roleChoice.submit()">
             <c:forEach var="role" items="${roles}">
-              <option ${role.name eq currentRole ? 'selected' : ''} value="${role.name}">${role.value}</option>
+              <option ${role.name eq currentSelectedRole ? 'selected' : ''} value="${role.name}">${role.value}</option>
             </c:forEach>
           </select>
         </form>

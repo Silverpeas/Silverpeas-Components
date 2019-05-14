@@ -33,6 +33,7 @@ import net.htmlparser.jericho.Source;
 import org.silverpeas.components.kmelia.service.KmeliaService;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.attachment.AttachmentException;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
@@ -328,6 +329,10 @@ public class SendInKmelia extends ExternalActionImpl {
       String sAction = getAction(role, step);
 
       String actor = step.getUser().getFullName();
+      String substituteId = step.getSubstituteId();
+      if (StringUtil.isDefined(substituteId)) {
+        actor = User.getById(substituteId).getDisplayedName() + " >> " + actor;
+      }
 
       String date = DateUtil.getOutputDateAndHour(step.getActionDate(), getLanguage());
 

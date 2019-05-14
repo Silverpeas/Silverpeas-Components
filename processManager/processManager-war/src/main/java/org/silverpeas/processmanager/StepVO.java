@@ -32,6 +32,7 @@ public class StepVO {
   String stepDate = null;
   boolean visible = false;
   HistoryStepContent content = null;
+  String substituteFullName = null;
 
   /**
    * @return the stepId
@@ -131,4 +132,11 @@ public class StepVO {
     this.visible = visible;
   }
 
+  public String getSubstituteFullName() {
+    return substituteFullName;
+  }
+
+  public void setSubstituteFullName(final String substituteFullName) {
+    this.substituteFullName = substituteFullName;
+  }
 }

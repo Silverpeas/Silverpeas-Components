@@ -24,15 +24,16 @@
 
 package org.silverpeas.processmanager.servlets;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.silverpeas.processmanager.ProcessManagerException;
 import org.silverpeas.processmanager.ProcessManagerSessionController;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
- * A functio handler is associated to a peas function and is called by the request router when this
+ * A function handler is associated to a peas function and is called by the request router when this
  * function has to be processed.
  */
+@FunctionalInterface
 public interface FunctionHandler {
   /**
    * Process the request and returns the response url.
@@ -40,7 +41,7 @@ public interface FunctionHandler {
    * @param request the user request params
    * @param session the user request context
    */
-  public String getDestination(String function,
+  String getDestination(String function,
       ProcessManagerSessionController session, HttpServletRequest request)
       throws ProcessManagerException;
 }

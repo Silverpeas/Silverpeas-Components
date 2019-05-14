@@ -33,8 +33,7 @@
 	ProcessInstance process 				= (ProcessInstance) request.getAttribute("process");
 	List 			steps 					= (List) request.getAttribute("steps");
 	String   		enlightedStep 			= (String) request.getAttribute("enlightedStep");
-	Boolean 		isActiveUser 			= (Boolean) request.getAttribute("isActiveUser");
-	Boolean 		isAttachmentTabEnable 	= (Boolean) request.getAttribute("isAttachmentTabEnable");
+	Boolean 		isAttachmentTabEnabled 	= (Boolean) request.getAttribute("isAttachmentTabEnabled");
 	boolean 		isProcessIdVisible 		= (Boolean) request.getAttribute("isProcessIdVisible");
   boolean			isReturnEnabled = (Boolean) request.getAttribute("isReturnEnabled");
   int nbEntriesAboutQuestions = (Integer) request.getAttribute("NbEntriesAboutQuestions");
@@ -52,7 +51,7 @@
 		tabbedPane.addTab(resource.getString("processManager.history"), "#", true, true);
 		tabbedPane.addTab(resource.getString("processManager.errors"), "adminViewErrors?processId=" + process.getInstanceId(), false, true);
   } else {
-		if (isAttachmentTabEnable && isActiveUser != null && isActiveUser)
+		if (isAttachmentTabEnabled)
 			tabbedPane.addTab(resource.getString("processManager.attachments"), "attachmentManager?processId=" + process.getInstanceId(), false, true);
 		if (isReturnEnabled & nbEntriesAboutQuestions > 0) {
 			tabbedPane.addTab(resource.getString("processManager.questions")+" ("+nbEntriesAboutQuestions+")", "listQuestions?processId=" + process.getInstanceId(), false, true);
@@ -102,13 +101,24 @@
 <input type="hidden" name="enlightedStep" value="<%=enlightedStep %>"/>
 
 			<div class="bgDegradeGris ">
-						<p class="txtnav">
-						<% 
-						if ( StringUtil.isDefined( step.getActivity() ) )
-							out.println(step.getActivity()+" - ");
-						%>
-						<%= step.getActionName()%> (<%=step.getActorFullName()%> - <%=step.getStepDate()%>)
-						</p>
+        <%
+          final StringBuilder sb = new StringBuilder();
+          if (StringUtil.isDefined(step.getActivity())) {
+            sb.append(step.getActivity() + " - ");
+          }
+          sb.append(step.getActionName())
+            .append(" (");
+          if (StringUtil.isDefined(step.getSubstituteFullName())) {
+            sb.append(step.getSubstituteFullName())
+              .append(" ")
+              .append(resource.getString("processManager.replacements.replacing"))
+              .append(" ");
+          }
+          sb.append(step.getActorFullName())
+            .append(" - ")
+            .append(step.getStepDate())
+            .append(")");
+        %><p class="txtnav"><%=sb.toString()%></p>
 						<%
 						if ( (step.isVisible()) || ("supervisor".equalsIgnoreCase(currentRole)) )
 						{
