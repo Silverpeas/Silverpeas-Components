@@ -46,6 +46,7 @@ import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.TimeZone;
 
 import static javax.interceptor.Interceptor.Priority.APPLICATION;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -90,6 +91,7 @@ public abstract class BaseGalleryIT extends DataSetTest {
   protected UserDetail publisherUser;
   protected UserDetail writerUser;
   protected UserDetail userUser;
+  private TimeZone defaultTimeZone;
 
   @Deployment
   public static Archive<?> createTestArchive() {
@@ -112,6 +114,9 @@ public abstract class BaseGalleryIT extends DataSetTest {
 
   @Before
   public void setUp() throws Exception {
+
+    this.defaultTimeZone = TimeZone.getDefault();
+    TimeZone.setDefault(TimeZone.getTimeZone("Europe/Paris"));
 
     verifyDataBeforeTest();
 
@@ -147,7 +152,8 @@ public abstract class BaseGalleryIT extends DataSetTest {
   }
 
   @After
-  public void tearDown() throws Exception {
+  public void tearDown() {
+    TimeZone.setDefault(defaultTimeZone);
     CacheServiceProvider.clearAllThreadCaches();
   }
 

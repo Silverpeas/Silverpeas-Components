@@ -95,7 +95,7 @@ public class SoundIT extends AbstractMediaIT {
     assertThat(sound.getBitrate(), is(2048L));
     assertThat(sound.getDuration(), is(72000000L));
     assertThat(sound.getApplicationOriginalUrl(),
-        is(GALLERY_REST_WEB_SERVICE_BASE_URI + "sounds/mediaId/content?_t=1393628400000"));
+        is(GALLERY_REST_WEB_SERVICE_BASE_URI + "sounds/mediaId/content?_t=" + timestamp()));
     assertThat(FilenameUtils.normalize(sound.getFile(MediaResolution.ORIGINAL).getPath(), true),
         endsWith("/instanceId/soundmediaId/soundFile.mp3"));
   }

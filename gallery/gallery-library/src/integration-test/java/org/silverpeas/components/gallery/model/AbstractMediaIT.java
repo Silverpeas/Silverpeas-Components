@@ -36,4 +36,9 @@ public abstract class AbstractMediaIT {
 
   protected final static String GALLERY_REST_WEB_SERVICE_BASE_URI =
       SilverpeasWebResource.getBasePath() + "/gallery/instanceId/";
+
+  protected static String timestamp() {
+    final long timestamp = TODAY.getTime();
+    return String.valueOf(timestamp);
+  }
 }

@@ -80,7 +80,7 @@ public class PhotoIT extends AbstractMediaIT {
     assertThat(photo.isPreviewable(), is(true));
     assertThat(photo.getApplicationThumbnailUrl(MediaResolution.LARGE),
         is(GALLERY_REST_WEB_SERVICE_BASE_URI +
-            "photos/mediaId/content?_t=1393628400000&resolution=LARGE"));
+            "photos/mediaId/content?_t=" + timestamp() + "&resolution=LARGE"));
   }
 
   private Photo defaultPhoto() {
@@ -98,6 +98,7 @@ public class PhotoIT extends AbstractMediaIT {
   }
 
   private void assertDefaultPhoto(Photo photo) {
+    final String timestamp = timestamp();
     assertThat(photo.getType(), is(MediaType.Photo));
     assertThat(photo.getWorkspaceSubFolderName(), is("imagemediaId"));
     assertThat(photo.getDefinition().getWidth(), is(800));
@@ -107,9 +108,9 @@ public class PhotoIT extends AbstractMediaIT {
         is("ok"));
     assertThat(photo.getApplicationThumbnailUrl(MediaResolution.PREVIEW),
         is(GALLERY_REST_WEB_SERVICE_BASE_URI +
-            "photos/mediaId/content?_t=1393628400000&resolution=PREVIEW"));
+            "photos/mediaId/content?_t=" + timestamp + "&resolution=PREVIEW"));
     assertThat(photo.getApplicationOriginalUrl(),
-        is(GALLERY_REST_WEB_SERVICE_BASE_URI + "photos/mediaId/content?_t=1393628400000"));
+        is(GALLERY_REST_WEB_SERVICE_BASE_URI + "photos/mediaId/content?_t=" + timestamp));
     assertThat(FilenameUtils.normalize(photo.getFile(MediaResolution.ORIGINAL).getPath(), true),
         endsWith("/instanceId/imagemediaId/photoFile.jpg"));
   }

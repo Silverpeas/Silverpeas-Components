@@ -101,7 +101,7 @@ public class VideoIT extends AbstractMediaIT {
     assertThat(video.getBitrate(), is(1024L));
     assertThat(video.getDuration(), is(36000000L));
     assertThat(video.getApplicationOriginalUrl(),
-        is(GALLERY_REST_WEB_SERVICE_BASE_URI + "videos/mediaId/content?_t=1393628400000"));
+        is(GALLERY_REST_WEB_SERVICE_BASE_URI + "videos/mediaId/content?_t=" + timestamp()));
     assertThat(FilenameUtils.normalize(video.getFile(MediaResolution.ORIGINAL).getPath(), true),
         endsWith("/instanceId/videomediaId/videoFile.mp4"));
   }
