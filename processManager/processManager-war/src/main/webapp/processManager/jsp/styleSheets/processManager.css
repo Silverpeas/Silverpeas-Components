@@ -236,8 +236,7 @@
   background-color: #FFF;
   color: #8f8f8f;
   border: 1px solid #8f8f8f;
-  padding: 2.5px 5px;
-  margin-right: 5px;
+  padding: 3px 5px;
   border-radius: 4px;
   display: inline-block;
   margin: 0.25em;
@@ -261,7 +260,7 @@
 .replacement-role-filter li a.item-selected:hover::after,
 .replacement-role-filter li a.item-selected:focus::after {
   content: 'x';
-  font-family: Comic Sans Ms;
+  font-family: Comic Sans Ms, sans-serif;
   font-weight: 600;
   position: absolute;
   right: 0.5em;
