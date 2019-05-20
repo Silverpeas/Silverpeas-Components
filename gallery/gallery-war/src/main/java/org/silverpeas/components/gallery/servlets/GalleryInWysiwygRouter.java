@@ -31,13 +31,17 @@ import org.silverpeas.components.gallery.model.MediaPK;
 import org.silverpeas.components.gallery.model.Photo;
 import org.silverpeas.components.gallery.service.GalleryService;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.contribution.content.LinkUrlDataSource;
+import org.silverpeas.core.contribution.content.LinkUrlDataSourceScanner;
+import org.silverpeas.core.contribution.content.wysiwyg.service.directive.ImageUrlAccordingToHtmlSizeDirective;
 import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
-import javax.inject.Inject;
+import javax.activation.FileDataSource;
+import javax.inject.Singleton;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -47,7 +51,18 @@ import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
+
+import static java.util.Collections.singletonList;
+import static org.silverpeas.core.util.StringDataExtractor.RegexpPatternDirective.regexp;
+import static org.silverpeas.core.util.StringDataExtractor.from;
+import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
 /**
  * This servlet is used in order to list image media for other components which handle WYSIWYG
@@ -56,9 +71,24 @@ import java.util.Collection;
 public class GalleryInWysiwygRouter extends HttpServlet {
 
   private static final long serialVersionUID = 1L;
+  private static final String AMP = "&amp;";
 
-  @Inject
-  private OrganizationController organizationController;
+  private static SilverpeasFile getSilverpeasFile(final Photo image, final String size,
+      final boolean useOriginal) {
+    final MediaResolution mediaResolution = useOriginal
+        ? MediaResolution.ORIGINAL
+        : MediaResolution.PREVIEW;
+    return image.getFile(mediaResolution, size);
+  }
+
+  private static boolean isViewInWysiwyg(final String componentId) {
+    return "yes".equalsIgnoreCase(OrganizationController.get()
+        .getComponentParameterValue(componentId, "viewInWysiwyg"));
+  }
+
+  private static GalleryService getGalleryService() {
+    return ServiceProvider.getService(GalleryService.class);
+  }
 
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res)
@@ -78,8 +108,7 @@ public class GalleryInWysiwygRouter extends HttpServlet {
     boolean useOriginal = Boolean.parseBoolean(request.getParameter("UseOriginal"));
 
     // Check component instance application parameter viewInWysiwyg (shared picture) is activated
-    boolean isViewInWysiwyg = "yes".equalsIgnoreCase(getOrganisationController()
-        .getComponentParameterValue(componentId, "viewInWysiwyg"));
+    boolean isViewInWysiwyg = isViewInWysiwyg(componentId);
     if (isViewInWysiwyg) {
 
 
@@ -149,10 +178,7 @@ public class GalleryInWysiwygRouter extends HttpServlet {
     res.setDateHeader("Expires", -1);
     OutputStream out2 = res.getOutputStream();
     int read;
-    final MediaResolution mediaResolution = useOriginal
-        ? MediaResolution.ORIGINAL
-        : MediaResolution.PREVIEW;
-    final SilverpeasFile imageFile = image.getFile(mediaResolution, size);
+    final SilverpeasFile imageFile = getSilverpeasFile(image, size, useOriginal);
     try (BufferedInputStream input = new BufferedInputStream(new FileInputStream(imageFile))) {
       read = input.read();
       while (read != -1) {
@@ -173,11 +199,67 @@ public class GalleryInWysiwygRouter extends HttpServlet {
     }
   }
 
-  private GalleryService getGalleryService() {
-    return ServiceProvider.getService(GalleryService.class);
+  @Singleton
+  public static class ImageUrlToDataSourceScanner implements LinkUrlDataSourceScanner {
+
+    private static final Pattern GALLERY_CONTENT_LINK_PATTERN =
+        Pattern.compile("(?i)=\"([^\"]*/GalleryInWysiwyg/[^\"]+)");
+
+    @Override
+    public List<LinkUrlDataSource> scanHtml(final String htmlContent) {
+      final List<LinkUrlDataSource> result = new ArrayList<>();
+      from(htmlContent).withDirectives(singletonList(regexp(GALLERY_CONTENT_LINK_PATTERN, 1))).extract().forEach(l -> {
+        final Map<String, String> params = new HashMap<>();
+        Stream.of(l.substring(l.indexOf('?') + 1).replace(AMP, "&").split("[&]"))
+              .forEach(p -> {
+                final String[] nameValue = p.split("[=]");
+                params.put(nameValue[0], nameValue[1]);
+              });
+        final String componentId = params.get("ComponentId");
+        // Check component instance application parameter viewInWysiwyg (shared picture) is activated
+        boolean isViewInWysiwyg = isViewInWysiwyg(componentId);
+        if (isViewInWysiwyg) {
+          final String imageId = params.get("ImageId");
+          final String size = params.get("Size");
+          final boolean useOriginal = Boolean.parseBoolean(params.get("UseOriginal"));
+          final Photo image = getGalleryService().getPhoto(new MediaPK(imageId, componentId));
+          final SilverpeasFile imageFile = getSilverpeasFile(image, size, useOriginal);
+          if (imageFile.exists()) {
+            result.add(new LinkUrlDataSource(l, () -> new FileDataSource(imageFile)));
+          }
+        }
+      });
+      return result;
+    }
   }
 
-  private OrganizationController getOrganisationController() {
-    return organizationController;
+  @Singleton
+  public static class ImageUrlAccordingToHtmlSizeDirectiveTranslator implements
+      ImageUrlAccordingToHtmlSizeDirective.SrcTranslator {
+
+    @Override
+    public boolean isCompliantUrl(final String url) {
+      return defaultStringIfNotDefined(url).contains("/GalleryInWysiwyg/");
+    }
+
+    @Override
+    public String translateUrl(final String url, final String width, final String height) {
+      // Computing the new src URL
+      // at first, removing the size from the URL
+      String newUrl = url.replaceFirst("(?i)(&|&amp;)size[ ]*=[ ]*[0-9 x]+", "");
+      // then guessing the new src URL
+      StringBuilder sizeUrlPart = new StringBuilder().append(width).append("x").append(height);
+      if (sizeUrlPart.length() > 1) {
+        final String separator;
+        if (url.indexOf('?') < 0) {
+          separator = "?";
+        } else {
+          separator = url.contains(AMP) ? AMP : "&";
+        }
+        sizeUrlPart.insert(0, separator + "Size=");
+        newUrl += sizeUrlPart;
+      }
+      return newUrl;
+    }
   }
 }
