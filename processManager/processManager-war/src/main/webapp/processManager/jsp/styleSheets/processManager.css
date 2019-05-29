@@ -173,7 +173,7 @@
   position: relative;
 }
 
-.replacement-module li .actions {
+.replacement-module li .silverpeas-list-item-actions {
   position: absolute;
   right: 13px;
   top: 13px;
