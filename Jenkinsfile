@@ -1,3 +1,5 @@
+import java.util.regex.Matcher
+
 node {
   catchError {
     def nexusRepo = 'https://www.silverpeas.org/nexus/content/repositories/snapshots/'
@@ -7,7 +9,15 @@ node {
         checkout scm
       }
       stage('Build') {
-        sh "mvn clean install -Pdeployment -Djava.awt.headless=true -Dcontext=ci"
+        def pom = readMavenPom()
+        def current = pom.version
+        def version = computeSnapshotVersion(pom)
+        sh """
+curl -fsSLI ${nexusRepo}/org/silverpeas/core/${version} &> /dev/null
+test \$? -eq 0 || sed -i -e "s/<core.version>[\${}0-9a-zA-Z.-]\\+/<core.version>${current}/g" pom.xml
+mvn -U versions:set -DgenerateBackupPoms=false -DnewVersion=${version}
+mvn clean install -Pdeployment -Djava.awt.headless=true -Dcontext=ci
+"""
       }
       stage('Quality Analysis') {
         // quality analyse with our SonarQube service is performed only for PR against our main
@@ -40,4 +50,11 @@ mvn ${SONAR_MAVEN_GOAL} -Dsonar.analysis.mode=issues \\
         notifyEveryUnstableBuild: true,
         recipients              : "miguel.moquillon@silverpeas.org, yohann.chastagnier@silverpeas.org, nicolas.eysseric@silverpeas.org",
         sendToIndividuals       : true])
+}
+
+def computeSnapshotVersion(pom) {
+  Matcher m = env.CHANGE_TITLE =~ /^(Bug #\d+|Feature #\d+).*$/
+  final String snapshot =
+      m.matches() ? m.group(1).toLowerCase().replaceAll(' #', '') : env.BRANCH_NAME
+  return "${pom.properties['next.release']}-${snapshot}"
 }
