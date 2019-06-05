@@ -2,16 +2,19 @@ import java.util.regex.Matcher
 
 node {
   catchError {
-    def nexusRepo = 'https://www.silverpeas.org/nexus/content/repositories/snapshots/'
+    def baseNexusRepo = 'https://www.silverpeas.org/nexus/content/repositories/'
+    def version
     docker.image('silverpeas/silverbuild')
         .inside('-u root -v $HOME/.m2/settings.xml:/root/.m2/settings.xml -v $HOME/.m2/settings-security.xml:/root/.m2/settings-security.xml -v $HOME/.gitconfig:/root/.gitconfig -v $HOME/.ssh:/root/.ssh -v $HOME/.gnupg:/root/.gnupg') {
       stage('Preparation') {
+        sh "rm -rf *"
         checkout scm
       }
       stage('Build') {
+        version = computeSnapshotVersion()
         def pom = readMavenPom()
         def current = pom.version
-        def version = computeSnapshotVersion(pom)
+        def nexusRepo = nexusRepoUrl(baseNexusRepo, version)
         sh """
 curl -fsSLI ${nexusRepo}/org/silverpeas/core/${version} &> /dev/null
 test \$? -eq 0 || sed -i -e "s/<core.version>[\${}0-9a-zA-Z.-]\\+/<core.version>${current}/g" pom.xml
@@ -42,6 +45,7 @@ mvn ${SONAR_MAVEN_GOAL} -Dsonar.analysis.mode=issues \\
         // deployment to ensure dependencies on this snapshot version of Silverpeas Core for other
         // projects to build downstream. By doing so, we keep clean the local maven repository for
         // reproducibility reason
+        def nexusRepo = nexusRepoUrl(baseNexusRepo, version)
         sh "mvn deploy -DaltDeploymentRepository=silverpeas::default::${nexusRepo} -Pdeployment -Djava.awt.headless=true -Dmaven.test.skip=true"
       }
     }
@@ -52,9 +56,17 @@ mvn ${SONAR_MAVEN_GOAL} -Dsonar.analysis.mode=issues \\
         sendToIndividuals       : true])
 }
 
-def computeSnapshotVersion(pom) {
+def computeSnapshotVersion() {
+  def pom = readMavenPom()
+  final String version = pom.version
+  final String defaultVersion = env.BRANCH_NAME == 'master' ? version : env.BRANCH_NAME
   Matcher m = env.CHANGE_TITLE =~ /^(Bug #\d+|Feature #\d+).*$/
   final String snapshot =
-      m.matches() ? m.group(1).toLowerCase().replaceAll(' #', '') : env.BRANCH_NAME
-  return "${pom.properties['next.release']}-${snapshot}"
+      m.matches() ? m.group(1).toLowerCase().replaceAll(' #', '') : ''
+  return snapshot.isEmpty() ? defaultVersion : "${pom.properties['next.release']}-${snapshot}"
+}
+
+@NonCPS
+def nexusRepoUrl(baseNexusRepo, version) {
+  return baseNexusRepo + (version.endsWith('SNAPSHOT') ? 'snapshots/' : 'dev/')
 }
