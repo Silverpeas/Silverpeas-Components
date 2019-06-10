@@ -55,6 +55,6 @@ public class GoToQuizz extends GoTo {
   }
 
   private QuestionContainerService getQuestionContainerService() {
-    return QuestionContainerService.getInstance();
+    return QuestionContainerService.get();
   }
 }
