@@ -67,7 +67,7 @@ import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassifica
 public final class QuizzSessionController extends AbstractComponentSessionController {
 
   private QuestionContainerService questionContainerService =
-      QuestionContainerService.getInstance();
+      QuestionContainerService.get();
   private SettingBundle settings = null;
   private int nbTopScores = 0;
   private boolean isAllowedTopScores = false;

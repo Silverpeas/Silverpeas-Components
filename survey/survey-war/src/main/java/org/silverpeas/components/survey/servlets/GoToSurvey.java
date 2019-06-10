@@ -82,6 +82,6 @@ public class GoToSurvey extends GoTo {
   }
 
   private QuestionContainerService getQuestionContainerBm() {
-    return QuestionContainerService.getInstance();
+    return QuestionContainerService.get();
   }
 }
