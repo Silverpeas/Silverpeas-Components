@@ -239,6 +239,17 @@ div.tableBoard {
 	overflow:hidden;
   max-width: 50%;
 }
+
+/*hack css for IE11 **/
+@media all and (-ms-high-contrast:none)    {
+	:root #classifieds_rich_list {
+	  display: block;
+	}
+	:root #classifieds_rich_list li{
+		width:calc( 33% - 3em );
+		min-width:320px;
+	}
+}
 #classifieds_rich_list li:hover{
 	background-color:#EFEFEF;
 }
