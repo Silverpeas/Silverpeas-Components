@@ -400,7 +400,6 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
       setPageContext(contactId, request, ysc);
 
       request.setAttribute("Contact", contact);
-      request.setAttribute("ExternalView", true);
       return "/yellowpages/jsp/contact.jsp";
     } else if ("ContactNew".equals(function)) {
       String modelId = ysc.getCurrentTopic().getNodeDetail().getModelId();

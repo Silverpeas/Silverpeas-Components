@@ -23,7 +23,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="org.apache.commons.lang3.BooleanUtils"%>
 <%@page import="org.silverpeas.core.contribution.content.form.PagesContext"%>
 <%@page import="org.silverpeas.core.contribution.content.form.Form"%>
 <%@ page import="org.silverpeas.core.contact.model.CompleteContact" %>
@@ -49,31 +48,9 @@ ContactDetail contact = fullContact.getContactDetail();
 
 Form formView    = fullContact.getViewForm();
 PagesContext context = (PagesContext) request.getAttribute("PagesContext");
-
-boolean externalView = BooleanUtils.isTrue((Boolean) request.getAttribute("ExternalView"));
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title><%=resources.getString("GML.popupTitle")%></title>
-<view:looknfeel withFieldsetStyle="true"/>
-<link type="text/css" href="<c:url value='/util/styleSheets/fieldset.css'/>" rel="stylesheet" />
-<style type="text/css">
-<% if (externalView) { %>
-.cellBrowseBar, .cellOperation {
-  display: none;
-}
-<% } %>
-</style>
-</head>
-<body>
-<view:browseBar path='<%=resources.getString("BBarconsultManager")%>'/>
-<view:operationPane>
-<view:operation altText='<%=resources.getString("GML.print")%>' action='javaScript:window.print();'/>
-</view:operationPane>
-<view:window popup="true">
-<view:frame>
+<view:link href="/util/styleSheets/fieldset.css"/>
 
   <fieldset id="identity-base" class="skinFieldset">
     <legend class="without-img"><%=WebEncodeHelper.javaStringToHtmlString(contact.getFirstName()) %> <%= WebEncodeHelper.javaStringToHtmlString(
@@ -111,8 +88,3 @@ boolean externalView = BooleanUtils.isTrue((Boolean) request.getAttribute("Exter
 	      %>
   </fieldset>
 <% } %>
-
-</view:frame>
-</view:window>
-</body>
-</html>

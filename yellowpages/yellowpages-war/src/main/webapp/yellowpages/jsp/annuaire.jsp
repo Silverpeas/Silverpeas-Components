@@ -152,7 +152,12 @@ function contactGoToUserInTopic(id,topic){
     width = <%=resources.getSetting("popupWidth", 600)%>;
     height = <%=resources.getSetting("popupHeight", 480)%>;
 	url = "ContactView?ContactId="+id+"&TopicId="+topic;
-    contactWindow = SP_openWindow(url, windowName, width, height, windowParams);
+  jQuery.popup.load(url).show('free', {
+    title : 'Contact',
+    width : width,
+    height : height
+  });
+    //contactWindow = SP_openWindow(url, windowName, width, height, windowParams);
 }
 
 function goToUser(id){
