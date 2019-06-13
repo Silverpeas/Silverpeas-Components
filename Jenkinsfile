@@ -15,10 +15,17 @@ node {
         def pom = readMavenPom()
         def current = pom.version
         def nexusRepo = nexusRepoUrl(baseNexusRepo, version)
+        def code = new URL("${nexusRepo}/org/silverpeas/core/${version}").openConnection().with {
+          it.requestMethod = 'HEAD'
+          it.connect()
+          it.responseCode
+        }
+        if (code == 404) {
+          sh """
+sed -i -e "s/<core.version>[\\\${}0-9a-zA-Z.-]\\+/<core.version>${current}/g" pom.xml
+"""
+        }
         sh """
-curl -iL ${nexusRepo}/org/silverpeas/core/${version} > result.txt
-grep '404 Not Found' result.txt
-test \$? -eq 0 && sed -i -e "s/<core.version>[\\\${}0-9a-zA-Z.-]\\\\+/<core.version>${current}/g" pom.xml
 mvn -U versions:set -DgenerateBackupPoms=false -DnewVersion=${version}
 mvn clean install -Pdeployment -Djava.awt.headless=true -Dcontext=ci
 """
