@@ -20,7 +20,6 @@
  */
 package com.stratelia.webactiv.kmelia.control.ejb;
 
-import com.silverpeas.admin.components.PasteDetail;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceFactory;
 import com.silverpeas.component.kmelia.KmeliaCopyDetail;
@@ -1380,7 +1379,7 @@ public class KmeliaBmEJB implements KmeliaBm {
     PublicationDetail pub = getPublicationDetail(pubPK);
     if (pub != null) {
       if (pubPK.getInstanceId().equals(to.getInstanceId())) {
-        movePublicationInSameApplication(pub, pasteContext);
+        movePublicationInSameApplication(pub, to , pasteContext);
       } else {
         movePublicationInAnotherApplication(pub, to, pasteContext);
       }
@@ -1407,13 +1406,12 @@ public class KmeliaBmEJB implements KmeliaBm {
     boolean pasteAllowed = KmeliaPublicationHelper.isCreationAllowed(to, profileInTarget);
 
     if (cutAllowed && pasteAllowed) {
-      movePublicationInSameApplication(pub, pasteContext);
+      movePublicationInSameApplication(pub, to, pasteContext);
     }
   }
 
-  private void movePublicationInSameApplication(PublicationDetail pub,
+  private void movePublicationInSameApplication(PublicationDetail pub, NodePK to,
       KmeliaPasteDetail pasteContext) {
-    NodePK to = pasteContext.getToPK();
     if (to.isTrash()) {
       sendPublicationToBasket(pub.getPK());
     } else {
@@ -1520,7 +1518,6 @@ public class KmeliaBmEJB implements KmeliaBm {
       publicationBm.movePublication(pub.getPK(), to, false);
       pub.getPK().setComponentName(to.getInstanceId());
 
-      pub.setStatus(pasteContext.getStatus());
       pub.setTargetValidatorId(pasteContext.getTargetValidatorIds());
 
       processPublicationAfterMove(pub, to, pasteContext.getUserId());
