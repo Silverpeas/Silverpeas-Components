@@ -51,6 +51,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <view:looknfeel/>
+  <view:includePlugin name="wysiwyg"/>
   <% formUpdate.displayScripts(out, context);%>
   <script type="text/javascript">
     function isCorrectForm() {
