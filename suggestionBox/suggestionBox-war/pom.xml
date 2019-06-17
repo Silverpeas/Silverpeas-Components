@@ -67,7 +67,7 @@
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
       <artifactId>silverpeas-core-comment</artifactId>
-      <version>${project.version}</version>
+      <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -79,7 +79,7 @@
     <dependency>
       <groupId>org.silverpeas.core.services</groupId>
       <artifactId>silverpeas-core-pdc</artifactId>
-      <version>${project.version}</version>
+      <version>${core.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
