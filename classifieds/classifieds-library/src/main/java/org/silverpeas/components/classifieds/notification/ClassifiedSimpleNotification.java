@@ -24,6 +24,7 @@
 package org.silverpeas.components.classifieds.notification;
 
 import org.silverpeas.components.classifieds.model.ClassifiedDetail;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 
 import java.util.Collection;
@@ -31,8 +32,11 @@ import java.util.Collections;
 
 public class ClassifiedSimpleNotification extends AbstractClassifiedUserNotification {
 
-  public ClassifiedSimpleNotification(final ClassifiedDetail resource) {
+  private final User sender;
+
+  public ClassifiedSimpleNotification(final ClassifiedDetail resource, final User sender) {
     super(resource);
+    this.sender = sender;
   }
 
   @Override
@@ -51,10 +55,13 @@ public class ClassifiedSimpleNotification extends AbstractClassifiedUserNotifica
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   protected Collection<String> getUserIdsToNotify() {
     // Users to notify are not handled here.
     return Collections.emptyList();
   }
 
+  @Override
+  protected String getSender() {
+    return sender.getId();
+  }
 }

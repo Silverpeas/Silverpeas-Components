@@ -30,7 +30,6 @@ import org.silverpeas.components.blog.model.Archive;
 import org.silverpeas.components.blog.model.BlogRuntimeException;
 import org.silverpeas.components.blog.model.Category;
 import org.silverpeas.components.blog.model.PostDetail;
-import org.silverpeas.components.blog.notification.BlogUserAlertNotification;
 import org.silverpeas.components.blog.service.BlogService;
 import org.silverpeas.components.blog.service.BlogServiceFactory;
 import org.silverpeas.core.admin.domain.model.Domain;
@@ -46,8 +45,6 @@ import org.silverpeas.core.mylinks.model.LinkDetail;
 import org.silverpeas.core.mylinks.service.MyLinksService;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.notification.user.ManualUserNotificationSupplier;
-import org.silverpeas.core.notification.user.NotificationContext;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.subscription.service.ComponentSubscriptionResource;
@@ -250,16 +247,6 @@ public final class BlogSessionController extends AbstractComponentSessionControl
 
     //draft out poste
     draftOutPost(postId);
-  }
-
-  @Override
-  public ManualUserNotificationSupplier getManualUserNotificationSupplier() {
-    return c -> {
-      final String postId = c.get(NotificationContext.CONTRIBUTION_ID);
-      final PostDetail post = getPost(postId);
-      c.put(NotificationContext.PUBLICATION_ID, post.getPublication().getId());
-      return new BlogUserAlertNotification(post, getUserDetail()).build();
-    };
   }
 
   public synchronized void deletePost(String postId) {

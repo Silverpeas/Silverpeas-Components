@@ -314,14 +314,14 @@
           var label = "<%=WebEncodeHelper.javaStringToJsString(resources.getString("kmelia.AlertButPubNotValid"))%>";
           jQuery.popup.confirm(label, function() {
             sp.messager.open('<%= componentId %>', {
-              folderId: '<%= kmeliaScc.getCurrentFolderId()%>',
-             <%= NotificationContext.CONTRIBUTION_ID %>: '<%= id %>'
+              nodeId: '<%= kmeliaScc.getCurrentFolderId()%>',
+             <%= NotificationContext.PUBLICATION_ID %>: '<%= id %>'
             });
           });
       <% } else { %>
           sp.messager.open('<%= componentId %>', {
-            folderId: '<%= kmeliaScc.getCurrentFolderId()%>',
-            <%= NotificationContext.CONTRIBUTION_ID %>: '<%= id %>'
+            nodeId: '<%= kmeliaScc.getCurrentFolderId()%>',
+            <%= NotificationContext.PUBLICATION_ID %>: '<%= id %>'
         });
       <% } %>
       }

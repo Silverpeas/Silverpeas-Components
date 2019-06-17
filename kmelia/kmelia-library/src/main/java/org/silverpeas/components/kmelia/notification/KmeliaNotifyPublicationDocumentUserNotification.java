@@ -42,12 +42,12 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
 /**
  * @author Yohann Chastagnier
  */
-public class KmeliaDocumentSubscriptionPublicationUserNotification extends
+public class KmeliaNotifyPublicationDocumentUserNotification extends
     AbstractKmeliaPublicationUserNotification {
 
   private final SimpleDocument document;
 
-  public KmeliaDocumentSubscriptionPublicationUserNotification(final NodePK nodePK, final PublicationDetail resource,
+  public KmeliaNotifyPublicationDocumentUserNotification(final NodePK nodePK, final PublicationDetail resource,
       final SimpleDocument document) {
     super(nodePK, resource, NotifAction.REPORT);
     this.document = document;

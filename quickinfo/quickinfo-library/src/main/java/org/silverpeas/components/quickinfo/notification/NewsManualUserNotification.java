@@ -24,7 +24,7 @@
 package org.silverpeas.components.quickinfo.notification;
 
 import org.silverpeas.components.quickinfo.model.News;
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 
 import java.util.Collection;
@@ -32,9 +32,9 @@ import java.util.Collections;
 
 public class NewsManualUserNotification extends AbstractNewsUserNotification {
 
-  private UserDetail sender;
+  private User sender;
 
-  public NewsManualUserNotification(News resource, final UserDetail sender) {
+  public NewsManualUserNotification(News resource, final User sender) {
     super(resource, NotifAction.REPORT);
     this.sender = sender;
   }

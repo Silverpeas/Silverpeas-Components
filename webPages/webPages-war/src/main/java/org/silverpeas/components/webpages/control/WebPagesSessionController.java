@@ -25,10 +25,8 @@ package org.silverpeas.components.webpages.control;
 
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.webpages.model.WebPagesException;
-import org.silverpeas.components.webpages.notification.WebPagesUserAlertNotifier;
 import org.silverpeas.components.webpages.notification.WebPagesUserNotifier;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.FormException;
@@ -43,8 +41,6 @@ import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.notification.user.ManualUserNotificationSupplier;
-import org.silverpeas.core.notification.user.NotificationContext;
 import org.silverpeas.core.subscription.SubscriptionService;
 import org.silverpeas.core.subscription.SubscriptionServiceProvider;
 import org.silverpeas.core.subscription.service.ComponentSubscription;
@@ -243,15 +239,6 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
 
     // index updated data
     indexForm(set);
-  }
-
-  @Override
-  public ManualUserNotificationSupplier getManualUserNotificationSupplier() {
-    return c -> {
-      final String componentId = c.get(NotificationContext.COMPONENT_ID);
-      return new WebPagesUserAlertNotifier(new NodePK(null, componentId),
-          User.getCurrentRequester()).build();
-    };
   }
 
   private void indexForm(RecordSet recordSet) throws WebPagesException {

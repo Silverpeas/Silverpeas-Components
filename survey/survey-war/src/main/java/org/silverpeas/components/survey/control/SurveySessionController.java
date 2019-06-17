@@ -28,7 +28,6 @@ import org.silverpeas.components.survey.SurveyException;
 import org.silverpeas.components.survey.notification.SurveyUserNotification;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.SilverpeasException;
-import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationController;
@@ -41,12 +40,7 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.exception.DecodingException;
 import org.silverpeas.core.i18n.I18NHelper;
-import org.silverpeas.core.notification.user.DefaultUserNotification;
-import org.silverpeas.core.notification.user.ManualUserNotificationSupplier;
-import org.silverpeas.core.notification.user.NotificationContext;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
-import org.silverpeas.core.notification.user.client.NotificationMetaData;
-import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
@@ -62,15 +56,8 @@ import org.silverpeas.core.questioncontainer.question.model.Question;
 import org.silverpeas.core.questioncontainer.question.model.QuestionPK;
 import org.silverpeas.core.questioncontainer.result.model.QuestionResult;
 import org.silverpeas.core.questioncontainer.result.service.QuestionResultService;
-import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.template.SilverpeasTemplateFactory;
-import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.Link;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.util.file.FileUploadUtil;
@@ -87,7 +74,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
 
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
@@ -630,77 +624,6 @@ public class SurveySessionController extends AbstractComponentSessionController 
     return newSurveyPositions;
   }
 
-  @Override
-  public ManualUserNotificationSupplier getManualUserNotificationSupplier() {
-    return c -> {
-      final String surveyId = c.get(NotificationContext.CONTRIBUTION_ID);
-      try {
-        return new DefaultUserNotification(getAlertNotificationMetaData(surveyId));
-      } catch (SurveyException e) {
-        throw new SilverpeasRuntimeException(e);
-      }
-    };
-  }
-
-  private synchronized NotificationMetaData getAlertNotificationMetaData(String surveyId)
-      throws SurveyException {
-    UserDetail curUser = getUserDetail();
-    String senderName = curUser.getDisplayedName();
-    QuestionContainerDetail questionDetail = getSurvey(surveyId);
-    String url = getSurveyUrl(questionDetail);
-    String htmlPath = getQuestionContainerService().getHTMLQuestionPath(questionDetail);
-
-    // Get default resource bundle
-    String resource = "org.silverpeas.survey.multilang.surveyBundle";
-    LocalizationBundle message =
-        ResourceLocator.getLocalizationBundle(resource, DisplayI18NHelper.getDefaultLanguage());
-
-    Map<String, SilverpeasTemplate> templates = new HashMap<>();
-    String subject = message.getString("custom.st.notification.subject");
-
-    NotificationMetaData notifMetaData =
-        new NotificationMetaData(NotificationParameters.PRIORITY_NORMAL, subject, templates, "alertSurvey");
-
-    List<String> languages = DisplayI18NHelper.getLanguages();
-    for (String language : languages) {
-      // initialize new resource locator
-      message = ResourceLocator.getLocalizationBundle(resource, language);
-
-      // Create a new silverpeas template
-      SilverpeasTemplate template = getNewTemplate();
-      template.setAttribute("UserDetail", curUser);
-      template.setAttribute("userName", senderName);
-      template.setAttribute("SurveyDetail", questionDetail);
-      template.setAttribute("surveyName", questionDetail.getHeader().getName());
-      String surveyDesc = questionDetail.getHeader().getDescription();
-      if (StringUtil.isDefined(surveyDesc)) {
-        template.setAttribute("surveyDesc", surveyDesc);
-      }
-      template.setAttribute("htmlPath", htmlPath);
-      templates.put(language, template);
-      String translation;
-      try {
-        translation = message.getString("custom.st.notification.subject");
-      } catch (MissingResourceException ex) {
-        SilverLogger.getLogger(this).silent(ex);
-        translation = subject;
-      }
-      notifMetaData.addLanguage(language, translation, "");
-
-      Link link = new Link(url, message.getString("survey.notifSurveyLinkLabel"));
-      notifMetaData.setLink(link, language);
-    }
-    notifMetaData.setComponentId(getComponentId());
-    notifMetaData.setSender(getUserId());
-    notifMetaData.displayReceiversInFooter();
-
-    return notifMetaData;
-  }
-
-  private String getSurveyUrl(QuestionContainerDetail questionDetail) {
-    return URLUtil.getURL(null, getComponentId()) + questionDetail.getHeader().getURL();
-  }
-
   public boolean isPollingStationMode() {
     return pollingStationMode;
   }
@@ -822,13 +745,6 @@ public class SurveySessionController extends AbstractComponentSessionController 
     PdcManager.get()
         .copyPositions(fromSilverObjectId, survey.getHeader().getInstanceId(), toSilverObjectId,
             componentId);
-  }
-
-  /**
-   * @return a SilverpeasTemplate
-   */
-  protected SilverpeasTemplate getNewTemplate() {
-    return SilverpeasTemplateFactory.createSilverpeasTemplateOnComponents("survey");
   }
 
   /**
@@ -1058,19 +974,15 @@ public class SurveySessionController extends AbstractComponentSessionController 
       userDetail = getOrganisationController().getUserDetail(idUser);
       participants[i++] = userDetail;
     }
-    String htmlPath = getQuestionContainerService().getHTMLQuestionPath(surveyDetail);
     UserNotificationHelper.buildAndSend(
-        new SurveyUserNotification(getComponentId(), surveyDetail, htmlPath, getUserDetail(),
-            participants));
+        new SurveyUserNotification(surveyDetail, getUserDetail(), participants));
   }
 
   //pour la notification des résultats
   public void initAlertResultUsers(QuestionContainerDetail surveyDetail) {
     UserDetail[] users = getOrganisationController().getAllUsers(getComponentId());
-    String htmlPath = getQuestionContainerService().getHTMLQuestionPath(surveyDetail);
     UserNotificationHelper.buildAndSend(
-        new SurveyUserNotification(getComponentId(), surveyDetail, htmlPath, getUserDetail(),
-            users));
+        new SurveyUserNotification(surveyDetail, getUserDetail(), users));
   }
 
   public void saveSynthesisFile(FileItem fileSynthesis) throws SurveyException {

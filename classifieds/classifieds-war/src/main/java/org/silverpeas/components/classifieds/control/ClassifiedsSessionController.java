@@ -27,7 +27,6 @@ import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.classifieds.model.ClassifiedDetail;
 import org.silverpeas.components.classifieds.model.Subscribe;
 import org.silverpeas.components.classifieds.notification.ClassifiedOwnerNotification;
-import org.silverpeas.components.classifieds.notification.ClassifiedSimpleNotification;
 import org.silverpeas.components.classifieds.service.ClassifiedService;
 import org.silverpeas.components.classifieds.service.ClassifiedServiceProvider;
 import org.silverpeas.core.ResourceReference;
@@ -47,12 +46,7 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.index.search.model.QueryDescription;
-import org.silverpeas.core.notification.user.ManualUserNotificationSupplier;
-import org.silverpeas.core.notification.user.NotificationContext;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
-import org.silverpeas.core.security.session.SessionInfo;
-import org.silverpeas.core.security.session.SessionManagement;
-import org.silverpeas.core.security.session.SessionManagementProvider;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileUtil;
@@ -770,22 +764,6 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
       getClassifiedsToValidate();
       processIndex(classified);
     }
-  }
-
-  @Override
-  public ManualUserNotificationSupplier getManualUserNotificationSupplier() {
-    return c -> {
-      final String instanceId = c.get(NotificationContext.COMPONENT_ID);
-      final String sessionKey = c.get("usk");
-      final SessionManagement sessionManagement = SessionManagementProvider.getSessionManagement();
-      final SessionInfo sessionInfo = sessionManagement.getSessionInfo(sessionKey);
-      ClassifiedsSessionController controller =
-          sessionInfo.getAttribute("Silverpeas_classifieds_" + instanceId);
-      if (controller == null) {
-        throw new SilverpeasRuntimeException("No such classified application: " + instanceId);
-      }
-      return new ClassifiedSimpleNotification(controller.getCurrentClassified()).build();
-    };
   }
 
   public ClassifiedDetail getCurrentClassified() {
