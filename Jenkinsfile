@@ -1,40 +1,54 @@
 import java.util.regex.Matcher
 
-node {
-  def lockFilePath
-  try {
-    def version
-    docker.image('silverpeas/silverbuild')
-        .inside('-u root -v $HOME/.m2:/root/.m2 -v $HOME/.gitconfig:/root/.gitconfig -v $HOME/.ssh:/root/.ssh -v $HOME/.gnupg:/root/.gnupg') {
-      stage('Preparation') {
-        sh "rm -rf *"
-        checkout scm
+pipeline {
+  environment {
+    lockFilePath = null
+    version = null
+  }
+  agent {
+    docker {
+      image 'silverpeas/silverbuild'
+      args '-v $HOME/.m2:/home/silverbuild/.m2 -v $HOME/.gitconfig:/home/silverbuild/.gitconfig -v $HOME/.ssh:/home/silverbuild/.ssh -v $HOME/.gnupg:/home/silverbuild/.gnupg'
+    }
+  }
+  stages {
+    stage('Waiting for core running build if any') {
+      steps {
+        script {
+          version = computeSnapshotVersion()
+          lockFilePath = createLockFile(version, 'components')
+          waitForDependencyRunningBuildIfAny(version, 'core')
+        }
       }
-      stage('Build') {
-        version = computeSnapshotVersion()
-        lockFilePath = createLockFile(version, 'components')
-        waitForDependencyRunningBuildIfAny(version, 'core')
-        def pom = readMavenPom()
-        def current = pom.version
-        boolean coreDependencyExists = existsDependency(version, 'core')
-        if (!coreDependencyExists) {
-          sh """
+    }
+    stage('Build') {
+      steps {
+        script {
+          def pom = readMavenPom()
+          def current = pom.version
+          boolean coreDependencyExists = existsDependency(version, 'core')
+          if (!coreDependencyExists) {
+            sh """
 sed -i -e "s/<core.version>[\\\${}0-9a-zA-Z.-]\\+/<core.version>${current}/g" pom.xml
 """
-        }
-        sh """
+          }
+          sh """
 mvn -U versions:set -DgenerateBackupPoms=false -DnewVersion=${version}
 mvn clean install -Pdeployment -Djava.awt.headless=true -Dcontext=ci
 """
-        deleteLockFile(lockFilePath)
+          deleteLockFile(lockFilePath)
+        }
       }
-      stage('Quality Analysis') {
-        // quality analyse with our SonarQube service is performed only for PR against our main
-        // repository
-        if (env.BRANCH_NAME.startsWith('PR') &&
-            env.CHANGE_URL?.startsWith('https://github.com/Silverpeas')) {
-          withSonarQubeEnv {
-            sh """
+    }
+    stage('Quality Analysis') {
+      steps {
+        script {
+          // quality analyse with our SonarQube service is performed only for PR against our main
+          // repository
+          if (env.BRANCH_NAME.startsWith('PR') &&
+              env.CHANGE_URL?.startsWith('https://github.com/Silverpeas')) {
+            withSonarQubeEnv {
+              sh """
 mvn ${SONAR_MAVEN_GOAL} -Dsonar.projectKey=Silverpeas_Silverpeas-Components \\
     -Dsonar.organization=silverpeas \\
     -Dsonar.pullrequest.branch=${env.BRANCH_NAME} \\
@@ -44,22 +58,23 @@ mvn ${SONAR_MAVEN_GOAL} -Dsonar.projectKey=Silverpeas_Silverpeas-Components \\
     -Dsonar.host.url=${SONAR_HOST_URL} \\
     -Dsonar.login=${SONAR_AUTH_TOKEN}
 """
+            }
+          } else {
+            echo "It isn't a PR validation for the Silverpeas organization. Nothing to analyse."
           }
-        } else {
-          echo "It isn't a PR validation for the Silverpeas organization. Nothing to analyse."
         }
       }
     }
-  } catch (err) {
-    echo "Caught: ${err}"
-    currentBuild.result = 'FAILURE'
-  } finally {
-    deleteLockFile(lockFilePath)
   }
-  step([$class                  : 'Mailer',
-        notifyEveryUnstableBuild: true,
-        recipients              : "miguel.moquillon@silverpeas.org, yohann.chastagnier@silverpeas.org, nicolas.eysseric@silverpeas.org",
-        sendToIndividuals       : true])
+  post {
+    always {
+      deleteLockFile(lockFilePath)
+      step([$class                  : 'Mailer',
+            notifyEveryUnstableBuild: true,
+            recipients              : "miguel.moquillon@silverpeas.org, yohann.chastagnier@silverpeas.org, nicolas.eysseric@silverpeas.org",
+            sendToIndividuals       : true])
+    }
+  }
 }
 
 def computeSnapshotVersion() {
@@ -68,8 +83,15 @@ def computeSnapshotVersion() {
   final String defaultVersion = env.BRANCH_NAME == 'master' ? version :
       env.BRANCH_NAME.toLowerCase().replaceAll('[# -]', '')
   Matcher m = env.CHANGE_TITLE =~ /^(Bug #\d+|Feature #\d+).*$/
-  final String snapshot =
-      m.matches() ? m.group(1).toLowerCase().replaceAll(' #', '') : ''
+  String snapshot = m.matches()
+      ? m.group(1).toLowerCase().replaceAll(' #', '')
+      : ''
+  if (snapshot.isEmpty()) {
+    m = env.CHANGE_TITLE =~ /^\[([^\[\]]+)].*$/
+    snapshot = m.matches()
+        ? m.group(1).toLowerCase().replaceAll('[/><|:&?!;,*%$=}{#~\'"\\\\°)(\\[\\]]', '').trim().replaceAll('[ @]', '-')
+        : ''
+  }
   return snapshot.isEmpty() ? defaultVersion : "${pom.properties['next.release']}-${snapshot}"
 }
 
