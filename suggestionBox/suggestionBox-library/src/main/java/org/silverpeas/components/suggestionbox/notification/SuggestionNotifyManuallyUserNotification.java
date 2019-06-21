@@ -23,9 +23,9 @@
  */
 package org.silverpeas.components.suggestionbox.notification;
 
-import org.silverpeas.core.notification.user.client.constant.NotifAction;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.notification.user.client.constant.NotifAction;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -35,10 +35,10 @@ import java.util.Collections;
  */
 public class SuggestionNotifyManuallyUserNotification extends AbstractSuggestionUserNotification {
 
-  private UserDetail sender;
+  private User sender;
 
   public SuggestionNotifyManuallyUserNotification(final Suggestion resource,
-      final UserDetail sender) {
+      final User sender) {
     super(resource, NotifAction.REPORT);
     this.sender = sender;
   }
@@ -61,7 +61,7 @@ public class SuggestionNotifyManuallyUserNotification extends AbstractSuggestion
   }
 
   @Override
-  protected UserDetail getSenderDetail() {
+  protected User getSenderDetail() {
     return sender;
   }
 }

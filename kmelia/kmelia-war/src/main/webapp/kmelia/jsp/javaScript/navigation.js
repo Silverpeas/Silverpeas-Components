@@ -953,5 +953,5 @@ function setDataInFolderDialog(name, desc) {
 }
 
 function notifyOnFolder(componentId, folderId) {
-  sp.messager.open(componentId, {folderId: folderId});
+  sp.messager.open(componentId, {nodeId: folderId});
 }

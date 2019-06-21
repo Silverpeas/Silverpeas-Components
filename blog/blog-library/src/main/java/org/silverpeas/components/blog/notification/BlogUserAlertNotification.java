@@ -24,7 +24,7 @@
 package org.silverpeas.components.blog.notification;
 
 import org.silverpeas.components.blog.model.PostDetail;
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 
 import java.util.Collection;
@@ -36,8 +36,8 @@ import java.util.Collections;
  */
 public class BlogUserAlertNotification extends AbstractBlogUserNotification {
 
-  public BlogUserAlertNotification(final PostDetail postDetail, final UserDetail userDetail) {
-    super(postDetail, userDetail);
+  public BlogUserAlertNotification(final PostDetail postDetail, final User user) {
+    super(postDetail, user);
   }
 
   @Override
@@ -56,7 +56,6 @@ public class BlogUserAlertNotification extends AbstractBlogUserNotification {
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   protected Collection<String> getUserIdsToNotify() {
     // Users to notify are not handled here.
     return Collections.emptyList();

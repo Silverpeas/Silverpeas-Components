@@ -29,6 +29,7 @@
 <%@page import="org.silverpeas.core.contribution.content.form.Form"%>
 <%@page import="org.silverpeas.core.contribution.content.form.PagesContext"%>
 <%@page import="org.silverpeas.core.contribution.content.form.DataRecord"%>
+<%@ page import="org.silverpeas.core.notification.user.NotificationContext" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
@@ -73,6 +74,7 @@
 <c:set var="displayedTitle"><view:encodeHtml string="${title}" /></c:set>
 <c:set var="displayedDescription"><view:encodeHtmlParagraph string="${description}" /></c:set>
 <c:set var="draftOperationsEnabled" value="${user.id == creatorId and isDraftEnabled}"/>
+<c:set var="contributionIdKey"><%=NotificationContext.CONTRIBUTION_ID%></c:set>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -169,7 +171,7 @@
   	}
 
   function toNotify() {
-    sp.messager.open('${instanceId}', {usk: '${pageContext.session.id}'});
+    sp.messager.open('${instanceId}', {${contributionIdKey}: '${classified.id}'});
   }
 
   function toNotifyOwner() {

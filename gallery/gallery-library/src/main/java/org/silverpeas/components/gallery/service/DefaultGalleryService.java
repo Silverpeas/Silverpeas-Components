@@ -43,9 +43,6 @@ import org.silverpeas.components.gallery.model.Order;
 import org.silverpeas.components.gallery.model.OrderRow;
 import org.silverpeas.components.gallery.model.Photo;
 import org.silverpeas.components.gallery.process.GalleryProcessManagement;
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.index.search.model.QueryDescription;
@@ -69,7 +66,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -85,8 +81,7 @@ public class DefaultGalleryService implements GalleryService {
 
   @Inject
   private NodeService nodeService;
-  @Inject
-  private OrganizationController organizationController;
+
   @Inject
   private GalleryContentManager galleryContentManager;
   @Inject
@@ -210,7 +205,7 @@ public class DefaultGalleryService implements GalleryService {
       final MediaCriteria.VISIBILITY visibility) {
     try {
       return MediaDAO.findByCriteria(MediaCriteria.fromComponentInstanceId(componentInstanceId)
-          .identifierIsOneOf(mediaIds.toArray(new String[mediaIds.size()]))
+          .identifierIsOneOf(mediaIds.toArray(new String[0]))
           .withVisibility(visibility));
     } catch (final Exception e) {
       throw new GalleryRuntimeException(e);
@@ -414,7 +409,7 @@ public class DefaultGalleryService implements GalleryService {
     }
   }
 
-  protected Connection openConnection() {
+  private Connection openConnection() {
     try {
       return DBUtil.openConnection();
     } catch (final SQLException e) {
@@ -462,72 +457,6 @@ public class DefaultGalleryService implements GalleryService {
     } catch (final Exception e) {
       throw new GalleryRuntimeException(e);
     }
-  }
-
-  @Override
-  public String getHTMLNodePath(final NodePK nodePK) {
-    String htmlPath;
-    try {
-      final List<NodeDetail> path = (List<NodeDetail>) getPath(nodePK);
-      if (!path.isEmpty()) {
-        path.remove(path.size() - 1);
-      }
-      htmlPath = getSpacesPath(nodePK.getInstanceId()) + getComponentLabel(nodePK.getInstanceId())
-          + " > "
-          + displayPath(path, 10);
-    } catch (final Exception e) {
-      throw new GalleryRuntimeException(e);
-    }
-    return htmlPath;
-  }
-
-  private String getSpacesPath(final String componentId) {
-    StringBuilder spacesPath = new StringBuilder();
-    final List<SpaceInstLight> spaces = getOrganizationController().getPathToComponent(componentId);
-    for (final SpaceInstLight spaceInst : spaces) {
-      spacesPath.append(spaceInst.getName()).append(" > ");
-    }
-    return spacesPath.toString();
-  }
-
-  private String getComponentLabel(final String componentId) {
-    final ComponentInstLight component = getOrganizationController().getComponentInstLight(
-        componentId);
-    String componentLabel = "";
-    if (component != null) {
-      componentLabel = component.getLabel();
-    }
-    return componentLabel;
-  }
-
-  private OrganizationController getOrganizationController() {
-    return organizationController;
-  }
-
-  private String displayPath(final Collection<NodeDetail> path, final int beforeAfter) {
-    String pathString = "";
-    final int nbItemInPath = path.size();
-    final Iterator<NodeDetail> iterator = path.iterator();
-    boolean alreadyCut = false;
-    int nb = 0;
-
-    NodeDetail nodeInPath;
-    while (iterator.hasNext()) {
-      nodeInPath = iterator.next();
-      if ((nb <= beforeAfter) || (nb + beforeAfter >= nbItemInPath - 1)) {
-        pathString = nodeInPath.getName() + " " + pathString;
-        if (iterator.hasNext()) {
-          pathString = " > " + pathString;
-        }
-      } else {
-        if (!alreadyCut) {
-          pathString += " ... > ";
-          alreadyCut = true;
-        }
-      }
-      nb++;
-    }
-    return pathString;
   }
 
   @Override

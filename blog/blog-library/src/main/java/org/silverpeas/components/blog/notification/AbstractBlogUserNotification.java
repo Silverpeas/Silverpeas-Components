@@ -26,7 +26,7 @@ package org.silverpeas.components.blog.notification;
 
 import org.silverpeas.components.blog.model.Category;
 import org.silverpeas.components.blog.model.PostDetail;
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.template.SilverpeasTemplate;
@@ -40,11 +40,11 @@ import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 abstract class AbstractBlogUserNotification
     extends AbstractTemplateUserNotificationBuilder<PostDetail> {
 
-  private final UserDetail userDetail;
+  private final User user;
 
-  AbstractBlogUserNotification(final PostDetail postDetail, final UserDetail userDetail) {
+  AbstractBlogUserNotification(final PostDetail postDetail, final User user) {
     super(postDetail);
-    this.userDetail = userDetail;
+    this.user = user;
   }
 
   @Override
@@ -62,7 +62,7 @@ abstract class AbstractBlogUserNotification
       categorieName = categorie.getName(language);
     }
     template.setAttribute("blogCategorie", categorieName);
-    template.setAttribute("senderName", (userDetail != null ? userDetail.getDisplayedName() : ""));
+    template.setAttribute("senderName", (user != null ? user.getDisplayedName() : ""));
   }
 
   @Override
@@ -90,7 +90,7 @@ abstract class AbstractBlogUserNotification
 
   @Override
   protected String getSender() {
-    return userDetail.getId();
+    return user.getId();
   }
 
   @Override

@@ -67,9 +67,6 @@ import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.model.NodeSelection;
 import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.message.MessageNotifier;
-import org.silverpeas.core.notification.user.DefaultUserNotification;
-import org.silverpeas.core.notification.user.ManualUserNotificationSupplier;
-import org.silverpeas.core.notification.user.NotificationContext;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
@@ -572,14 +569,6 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     indexOfCurrentPage = 0;
   }
 
-  @Override
-  public ManualUserNotificationSupplier getManualUserNotificationSupplier() {
-    return c -> {
-      final String mediaId = c.get(NotificationContext.CONTRIBUTION_ID);
-      return new DefaultUserNotification(getAlertNotificationMetaData(mediaId));
-    };
-  }
-
   public Collection<Media> search(QueryDescription query) {
     query.setSearchingUser(getUserId());
     query.addComponent(getComponentId());
@@ -641,59 +630,6 @@ public final class GallerySessionController extends AbstractComponentSessionCont
 
     // 2. envoie de la notification aux admin
     notifyUsers(notifMetaData);
-  }
-
-  private synchronized NotificationMetaData getAlertNotificationMetaData(String mediaId) {
-    MediaPK mediaPK = new MediaPK(mediaId, getSpaceId(), getComponentId());
-    NodePK nodePK = currentAlbum.getNodePK();
-    String senderName = getUserDetail().getDisplayedName();
-    Media media = getMedia(mediaPK.getId());
-    String htmlPath = getMediaService().getHTMLNodePath(nodePK);
-    String url = getMediaUrl(media);
-
-    LocalizationBundle message = ResourceLocator.getLocalizationBundle(MULTILANG_GALLERY_BUNDLE,
-        DisplayI18NHelper.getDefaultLanguage());
-
-    String subject = message.getString("gallery.notifSubject");
-    String body = getNotificationBody(media, htmlPath, message, senderName);
-
-    NotificationMetaData notifMetaData =
-        new NotificationMetaData(NotificationParameters.PRIORITY_NORMAL, subject, body);
-
-    for (String language : DisplayI18NHelper.getLanguages()) {
-      message = ResourceLocator.getLocalizationBundle(MULTILANG_GALLERY_BUNDLE, language);
-      subject = message.getString("gallery.notifSubject");
-      body = getNotificationBody(media, htmlPath, message, senderName);
-      notifMetaData.addLanguage(language, subject, body);
-
-      Link link = new Link(url, message.getString("gallery.notifLinkLabel"));
-      notifMetaData.setLink(link, language);
-    }
-
-    notifMetaData.setComponentId(mediaPK.getInstanceId());
-    notifMetaData.setSender(getUserId());
-    notifMetaData.displayReceiversInFooter();
-
-    return notifMetaData;
-  }
-
-  private String getNotificationBody(Media media, String htmlPath, LocalizationBundle message,
-      String senderName) {
-    StringBuilder messageText = new StringBuilder();
-    messageText.append(senderName).append(" ");
-    messageText.append(message.getString("gallery.notifInfo")).append("\n\n");
-    messageText.append(message.getString("gallery.notifName")).append(" : ").append(media.getName())
-        .append("\n");
-    if (StringUtil.isDefined(media.getDescription())) {
-      messageText.append(message.getString("gallery.notifDesc")).append(" : ")
-          .append(media.getDescription()).append("\n");
-    }
-    messageText.append(message.getString("gallery.path")).append(" : ").append(htmlPath);
-    return messageText.toString();
-  }
-
-  private String getMediaUrl(Media media) {
-    return URLUtil.getURL(null, getComponentId()) + media.getURL();
   }
 
   public Collection<String> getListSelected() {

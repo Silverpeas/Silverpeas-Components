@@ -1,0 +1,1 @@
+<b>$senderName$</b> teilt Ihnen mit, dass Ihnen ein Medien <b>$mediaTitle$</b> zur Verfügung steht hier : $path$

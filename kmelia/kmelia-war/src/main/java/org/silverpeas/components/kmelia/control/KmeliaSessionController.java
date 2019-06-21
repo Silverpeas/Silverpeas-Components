@@ -102,9 +102,6 @@ import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.model.NodeSelection;
 import org.silverpeas.core.node.service.NodeService;
-import org.silverpeas.core.notification.user.ManualUserNotificationSupplier;
-import org.silverpeas.core.notification.user.NotificationContext;
-import org.silverpeas.core.notification.user.UserNotification;
 import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
@@ -3543,55 +3540,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     PublicationDetail publication = new PublicationDetail();
     publication.setPk(getPublicationPK(volatileId));
     return publication;
-  }
-
-  @Override
-  public ManualUserNotificationSupplier getManualUserNotificationSupplier() {
-    return c -> {
-      final String componentId = c.get(NotificationContext.COMPONENT_ID);
-      final String folderId = c.get("folderId");
-      final UserNotification notification;
-      if (c.containsKey(NotificationContext.CONTRIBUTION_ID)) {
-        final String pubId = c.get(NotificationContext.CONTRIBUTION_ID);
-        if (c.containsKey("docId")) {
-          final String docId = c.get("docId");
-          notification = getUserNotification(componentId, folderId, pubId, docId);
-        } else {
-          notification = getUserNotification(componentId, folderId, pubId);
-        }
-      } else {
-        notification = getUserNotification(componentId, folderId);
-      }
-      return notification;
-    };
-  }
-
-  private UserNotification getUserNotification(final String cmpId, final String nodeId,
-      final String pubId, final String docId) {
-    final NodePK nodePK = getNodePK(cmpId, nodeId);
-    final PublicationPK pubPk = new PublicationPK(pubId, cmpId);
-    SimpleDocumentPK documentPk = new SimpleDocumentPK(docId, cmpId);
-    return getKmeliaService().getUserNotification(pubPk, documentPk, nodePK);
-  }
-
-  private UserNotification getUserNotification(final String cmpId, final String nodeId,
-      final String pubId) {
-    final NodePK nodePK = getNodePK(cmpId, nodeId);
-    final PublicationPK pubPk = new PublicationPK(pubId, cmpId);
-    return getKmeliaService().getUserNotification(pubPk, nodePK);
-  }
-
-  private UserNotification getUserNotification(final String cmpId, final String nodeId) {
-    final NodePK nodePK = new NodePK(nodeId, cmpId);
-    return getKmeliaService().getUserNotification(nodePK);
-  }
-
-  private static NodePK getNodePK(final String cmpId, final String nodeId) {
-    NodePK nodePK = null;
-    if (!cmpId.startsWith("kmax") && StringUtil.isDefined(nodeId)) {
-      nodePK = new NodePK(nodeId, cmpId);
-    }
-    return nodePK;
   }
 
   public enum CLIPBOARD_STATE {

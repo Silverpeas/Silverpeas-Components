@@ -116,8 +116,6 @@ public interface GalleryService extends ApplicationService<Media> {
 
   Collection<String> getAlbumIdsOf(Media media);
 
-  String getHTMLNodePath(NodePK nodePK);
-
   void indexGallery(final UserDetail user, String instanceId);
 
   int getSilverObjectId(MediaPK mediaPK);

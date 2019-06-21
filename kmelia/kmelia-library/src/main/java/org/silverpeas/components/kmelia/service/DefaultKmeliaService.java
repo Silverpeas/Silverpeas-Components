@@ -2693,7 +2693,7 @@ public class DefaultKmeliaService implements KmeliaService {
     if (version == null) {
       version = document.getVersionMaster();
     }
-    return new KmeliaDocumentSubscriptionPublicationUserNotification(topicPK, pubDetail,
+    return new KmeliaNotifyPublicationDocumentUserNotification(topicPK, pubDetail,
         version).build();
   }
 

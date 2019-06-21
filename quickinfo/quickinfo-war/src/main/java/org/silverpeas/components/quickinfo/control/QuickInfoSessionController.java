@@ -25,7 +25,6 @@ import org.silverpeas.components.quickinfo.QuickInfoComponentSettings;
 import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.components.quickinfo.model.QuickInfoService;
 import org.silverpeas.components.quickinfo.model.QuickInfoServiceProvider;
-import org.silverpeas.components.quickinfo.notification.NewsManualUserNotification;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
@@ -33,8 +32,6 @@ import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.exception.DecodingException;
 import org.silverpeas.core.io.media.image.thumbnail.ThumbnailSettings;
 import org.silverpeas.core.io.upload.UploadedFile;
-import org.silverpeas.core.notification.user.ManualUserNotificationSupplier;
-import org.silverpeas.core.notification.user.NotificationContext;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
 import org.silverpeas.core.silvertrace.SilverTrace;
@@ -245,15 +242,6 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
     SubscriptionContext subscriptionContext = getSubscriptionContext();
     subscriptionContext.initialize(ComponentSubscriptionResource.from(getComponentId()));
     return subscriptionContext.getDestinationUrl();
-  }
-
-  @Override
-  public ManualUserNotificationSupplier getManualUserNotificationSupplier() {
-    return c -> {
-      final String newsId = c.get(NotificationContext.CONTRIBUTION_ID);
-      final News news = getNews(newsId, false);
-      return new NewsManualUserNotification(news, getUserDetail()).build();
-    };
   }
 
   public void submitNewsOnHomepage(String id) {
