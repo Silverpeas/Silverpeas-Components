@@ -25,7 +25,7 @@
 package org.silverpeas.components.webpages;
 
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.contribution.content.form.RecordSet;
@@ -58,7 +58,7 @@ public class WebPagesIndexer implements ComponentIndexation {
 
   @Override
   public void index(SilverpeasComponentInstance componentInst) {
-    FullIndexEntry indexEntry = getFullIndexEntry((ComponentInstLight) componentInst);
+    FullIndexEntry indexEntry = getFullIndexEntry((ComponentInst) componentInst);
     if (isXMLTemplateUsed(componentInst.getId())) {
       indexForm(componentInst.getId(), indexEntry);
     } else {
@@ -81,19 +81,13 @@ public class WebPagesIndexer implements ComponentIndexation {
     }
   }
 
-  private FullIndexEntry getFullIndexEntry(ComponentInstLight component) {
+  private FullIndexEntry getFullIndexEntry(ComponentInst component) {
     FullIndexEntry indexEntry =
         new FullIndexEntry(component.getId(), "Component", component.getId());
     indexEntry.setCreationDate(component.getCreateDate());
-    int createdBy = component.getCreatedBy();
-    if (createdBy != -1) {
-      indexEntry.setCreationUser(String.valueOf(createdBy));
-    }
+    indexEntry.setCreationUser(component.getCreatorUserId());
     indexEntry.setLastModificationDate(component.getUpdateDate());
-    int updatedBy = component.getUpdatedBy();
-    if (updatedBy != -1) {
-      indexEntry.setLastModificationUser(String.valueOf(createdBy));
-    }
+    indexEntry.setLastModificationUser(component.getUpdaterUserId());
     indexEntry.setTitle(component.getLabel());
     indexEntry.setPreview(component.getDescription());
     return indexEntry;
@@ -109,7 +103,7 @@ public class WebPagesIndexer implements ComponentIndexation {
 
   private String getShortNameOfXMLTemplateUsedFor(String componentId) {
     String xmlFormName = getXMLTemplateUsedFor(componentId);
-    return xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
+    return xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName.indexOf('.'));
   }
 
 }
