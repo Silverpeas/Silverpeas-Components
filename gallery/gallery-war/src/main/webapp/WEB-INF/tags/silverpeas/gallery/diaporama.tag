@@ -40,9 +40,9 @@
 <c:set var="wait" value="${requestScope.wait}"/>
 <c:set var="currentUserSort" value="${requestScope.Sort}"/>
 
-<view:link href="/gallery/jsp/styleSheets/slider/themes/classic/galleria.classic.css"/>
+<view:link href="/gallery/jsp/styleSheets/slider/themes/classic/galleria.classic.min.css"/>
 <view:includePlugin name="qtip"/>
-<view:script src="/gallery/jsp/javaScript/slider/galleria-1.4.2.min.js"/>
+<view:script src="/gallery/jsp/javaScript/slider/galleria-1.5.7.min.js"/>
 <view:script src="/gallery/jsp/styleSheets/slider/themes/classic/galleria.classic.min.js"/>
 <view:script src="/gallery/jsp/javaScript/silverpeas-gallery-slider.js"/>
 <script type="text/JavaScript">

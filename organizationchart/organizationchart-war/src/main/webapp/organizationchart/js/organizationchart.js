@@ -480,7 +480,8 @@ function placeCells()
 
 			div = jLevels[i][j].div;
 			if ( (jLevels[i][j].className==3) || (jLevels[i][j].className==4) ) {
-				div.style.top = eval(topGap - H_GAP_SIDEBOX) + "px";
+				var x = topGap - H_GAP_SIDEBOX;
+				div.style.top = x + "px";
 			} else {
 				div.style.top = topGap + "px";
 			}
@@ -494,12 +495,13 @@ function placeCells()
    //resizeBoxes(jLevels);
 
 moveHorizontalAndVertical(jLevels);
-
-	mainDiv.style.height = eval(topGap + V_MARGIN * 3) + "px";
+	var x = topGap + V_MARGIN * 3;
+	mainDiv.style.height = x + "px";
 
 	var lastLevel = jLevels[jLevels.length-1];
 	var chartWidth = lastLevel[lastLevel.length-1].div.offsetLeft + lastLevel[lastLevel.length-1].div.offsetWidth - lastLevel[0].div.offsetLeft;
-	mainDiv.style.width = eval(chartWidth + (H_MARGIN*2)) + "px";
+	x = chartWidth + (H_MARGIN*2);
+	mainDiv.style.width = x + "px";
 
 	moveMain(jLevels);
   	var maxLevelWidth = 0;
@@ -513,7 +515,8 @@ moveHorizontalAndVertical(jLevels);
 		var marginWidth = parseInt((mainDiv.offsetWidth - maxLevelWidth) / 2);
 		for (i = 0; i < cellsCount; i++)
 		{
-			jCells[i].div.style.left = eval(jCells[i].div.offsetLeft + marginWidth) + "px";
+			x = jCells[i].div.offsetLeft + marginWidth
+			jCells[i].div.style.left = x + "px";
 		}
 	}
 	else
@@ -575,7 +578,8 @@ moveHorizontalAndVertical(jLevels);
 	          var originLeft = divOrigin.style.left;
 	          var origin = originLeft.substring(0,originLeft.length - 2);
 	          var intOrigin = parseInt(origin);
-	          div.style.left =  eval(intOrigin + CELLSIZE) + "px"; // on décalle d'une
+	          x = intOrigin + CELLSIZE;
+	          div.style.left =  x + "px"; // on décalle d'une
 														// cellule si c'est
 														// possible
 	        }else if(cellLeftNumber != -1 && cellLeftNumber == jLevels[i][j].id){
@@ -587,7 +591,8 @@ moveHorizontalAndVertical(jLevels);
 	          origin = originLeft.substring(0,originLeft.length - 2);
 	          intOrigin = parseInt(origin);
 	          if(intOrigin > CELLSIZE){
-	               div.style.left = eval(intOrigin - CELLSIZE) + "px"; // on décalle d'une
+	          		x = intOrigin - CELLSIZE;
+	               div.style.left = x + "px"; // on décalle d'une
 															// cellule si c'est
 															// possible
 	          }
@@ -675,12 +680,14 @@ function getMiddleX(jCell)
 function moveRight(jCell, gap)
 {
 	var div = jCell.div;
-	div.style.left = eval(div.offsetLeft + gap) + "px";
+	var x = div.offsetLeft + gap;
+	div.style.left = x + "px";
 	jCell = jCell.rightCell;
 	while (jCell != null)
 	{
 		div = jCell.div;
-		div.style.left = eval(div.offsetLeft + gap) + "px";
+		x = div.offsetLeft + gap;
+		div.style.left = x + "px";
 		jCell = jCell.rightCell;
 	}
 }
@@ -772,9 +779,11 @@ function moveHorizontalAndVertical(jLevels)
 					else{
 						jLevels[i][j].gaps["y"]=maximumHeight;
 						jLevels[i][j].gaps["x"] = -1*parseInt(jLevels[i][j-1].div.style.width) / 2.5;
-						div.style.top= eval(parseInt(div.style.top) + maximumHeight + H_MARGIN) + "px";
+						var x = parseInt(div.style.top) + maximumHeight + H_MARGIN;
+						div.style.top= x + "px";
 					}
-					div.style.left = eval(leftGap + jCell.gaps["x"]) + "px";
+					var xx = leftGap + jCell.gaps["x"];
+					div.style.left = xx + "px";
 					leftGap = leftGap + div.offsetWidth + jCell.gaps["x"];
 
 	            }else if(jCell.upLinks[0].orientation == ORIENTATION_RIGHT || jCell.upLinks[0].orientation == ORIENTATION_LEFT)
