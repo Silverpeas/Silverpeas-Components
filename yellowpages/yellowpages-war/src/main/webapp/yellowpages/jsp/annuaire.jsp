@@ -23,339 +23,332 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 <%@ page import="org.silverpeas.components.yellowpages.control.DisplayContactsHelper" %>
-<%@ page import="org.silverpeas.components.yellowpages.control.YellowpagesSessionController" %>
-<%@ page import="org.silverpeas.components.yellowpages.model.YellowPagesGroupDetail" %>
 <%@ page import="org.silverpeas.components.yellowpages.model.TopicDetail" %>
-<%@ page import="java.util.List" %>
-<%@ page import="org.silverpeas.core.node.model.NodeDetail" %>
-<%@ page import="java.util.Collection" %>
-<%@ page import="org.silverpeas.core.contact.model.ContactFatherDetail" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.board.Board" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.tabs.TabbedPane" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane" %>
+<%@ page import="org.silverpeas.components.yellowpages.model.YellowPagesGroupDetail" %>
 <%@ page import="org.silverpeas.core.admin.component.model.CompoSpace" %>
+<%@ page import="org.silverpeas.core.contact.model.ContactFatherDetail" %>
+<%@ page import="org.silverpeas.core.node.model.NodeDetail" %>
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.board.Board" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.tabs.TabbedPane" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window" %>
+<%@ page import="java.util.Collection" %>
+<%@ page import="java.util.List" %>
 
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%
   response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
-			response.setHeader("Pragma", "no-cache"); //HTTP 1.0
-			response.setDateHeader("Expires", -1); //prevents caching at the proxy server
+  response.setHeader("Pragma", "no-cache"); //HTTP 1.0
+  response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ include file="checkYellowpages.jsp"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ include file="checkYellowpages.jsp" %>
 <%!
-private String afficheArbo(String idNodeSelected,
-			YellowpagesSessionController yellowpagesScc, int nbEsp)
-			throws Exception {
-		StringBuffer resultat = new StringBuffer();
-		List<NodeDetail> tree = yellowpagesScc.getTree();
-		StringBuffer espace = new StringBuffer();
+  private String afficheArbo(String idNodeSelected, YellowpagesSessionController yellowpagesScc,
+      int nbEsp) throws Exception {
+    StringBuffer resultat = new StringBuffer();
+    List<NodeDetail> tree = yellowpagesScc.getTree();
+    StringBuffer espace = new StringBuffer();
 
-		NodeDetail nodeDetail = null;
-		String nodeId = null;
-		int nodeLevel = 0;
-		for (int i = 0; i < tree.size(); i++) {
-			nodeDetail = (NodeDetail) tree.get(i);
-			nodeId = nodeDetail.getNodePK().getId();
-			if (nodeId.equals("1") || nodeId.equals("2")) {
-				//on affiche pas ces deux rubriques
-			} else {
-				if (i == 0) {
-					resultat.append("<option value=\"").append(nodeId).append(
-							"\">").append(yellowpagesScc.getComponentLabel())
-							.append("</option>");
-				} else {
-					nodeLevel = nodeDetail.getLevel();
-					espace = new StringBuffer();
-					for (int j = 0; j < nodeLevel - 1; j++) {
-						espace.append("&nbsp;&nbsp;&nbsp;");
-					}
-					resultat.append("<option value=\"").append(nodeId).append(
-							"\"");
-					if (idNodeSelected.equals(nodeId))
-						resultat.append("selected");
-					resultat.append(">").append(espace.toString()).append(
-							nodeDetail.getName()).append("</option>");
-				}
-			}
-		}
-		return resultat.toString();
-	}
+    NodeDetail nodeDetail = null;
+    String nodeId = null;
+    int nodeLevel = 0;
+    for (int i = 0; i < tree.size(); i++) {
+      nodeDetail = (NodeDetail) tree.get(i);
+      nodeId = nodeDetail.getNodePK().getId();
+      if (nodeId.equals("1") || nodeId.equals("2")) {
+        //on affiche pas ces deux rubriques
+      } else {
+        if (i == 0) {
+          resultat.append("<option value=\"").append(nodeId).append("\">")
+              .append(yellowpagesScc.getComponentLabel()).append("</option>");
+        } else {
+          nodeLevel = nodeDetail.getLevel();
+          espace = new StringBuffer();
+          for (int j = 0; j < nodeLevel - 1; j++) {
+            espace.append("&nbsp;&nbsp;&nbsp;");
+          }
+          resultat.append("<option value=\"").append(nodeId).append("\"");
+          if (idNodeSelected.equals(nodeId)) {
+            resultat.append("selected");
+          }
+          resultat.append(">").append(espace.toString()).append(nodeDetail.getName())
+              .append("</option>");
+        }
+      }
+    }
+    return resultat.toString();
+  }
 %>
 <%
   Collection<ContactFatherDetail> contacts = (Collection) request.getAttribute("Contacts");
-			TopicDetail currentTopic = (TopicDetail) request
-					.getAttribute("CurrentTopic");
-			YellowPagesGroupDetail group = (YellowPagesGroupDetail) request.getAttribute("Group");
-			Boolean bPortletMode = (Boolean) request
-					.getAttribute("PortletMode");
-			boolean portletMode = (bPortletMode != null && bPortletMode
-					.booleanValue());
-			String searchCriteria = (String) request.getAttribute("SearchCriteria");
+  TopicDetail currentTopic = (TopicDetail) request.getAttribute("CurrentTopic");
+  YellowPagesGroupDetail group = (YellowPagesGroupDetail) request.getAttribute("Group");
+  Boolean bPortletMode = (Boolean) request.getAttribute("PortletMode");
+  boolean portletMode = (bPortletMode != null && bPortletMode.booleanValue());
+  String searchCriteria = (String) request.getAttribute("SearchCriteria");
 
-			String profile = request.getParameter("Profile");
-			String action = request.getParameter("Action");
+  String profile = request.getParameter("Profile");
+  String action = request.getParameter("Action");
 
-			if (action == null)
-				action = "GoTo";
+  if (action == null) {
+    action = "GoTo";
+  }
 
-			String id = null;
-			if (currentTopic != null) {
-				id = currentTopic.getNodePK().getId();
-			} else {
-				id = "group_" + group.getId();
-			}
+  String id = null;
+  if (currentTopic != null) {
+    id = currentTopic.getNodePK().getId();
+  } else {
+    id = "group_" + group.getId();
+  }
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.yellowpages">
 <head>
-<view:looknfeel/>
-<view:includePlugin name="toggle"/>
-<script type="text/javascript">
-var printWindow = window;
-var contactWindow = window;
-function printList(){
-	printWindow = SP_openWindow("PrintList", "printWindow", '800', '600', 'scrollbars=yes, alwayRaised');
-}
+  <view:looknfeel/>
+  <view:includePlugin name="toggle"/>
+  <script type="text/javascript">
+    var printWindow = window;
+    var contactWindow = window;
 
-function closeWindows()
-{
-	if (!printWindow.closed && printWindow.name== "printWindow")
-    	printWindow.close(); 
-    if (!contactWindow.closed &&  contactWindow.name== "contactWindow")
-    	contactWindow.close(); 
-}
-
-function topicGoToSelected() {
-    var id = document.topicDetailForm.selectTopic.options[document.topicDetailForm.selectTopic.selectedIndex].value;    
-    document.topicDetailForm.Id.value = id;
-    document.topicDetailForm.Action.value = "GoTo";
-    document.topicDetailForm.action = "GoTo";
-    document.topicDetailForm.submit();
-}
-
-function search() {
-    document.topicDetailForm.action = "Search";
-    document.topicDetailForm.submit();
-}
-
-function contactGoToUserInTopic(id,topic){
-    windowName = "contactWindow";
-    windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised, scrollbars=yes, resizable=yes";
-    width = <%=resources.getSetting("popupWidth", 600)%>;
-    height = <%=resources.getSetting("popupHeight", 480)%>;
-	url = "ContactView?ContactId="+id+"&TopicId="+topic;
-  jQuery.popup.load(url).show('free', {
-    title : 'Contact',
-    width : width,
-    height : height
-  });
-    //contactWindow = SP_openWindow(url, windowName, width, height, windowParams);
-}
-
-function goToUser(id){
-    closeWindows();
-    windowName = "contactWindow";
-    windowParams = "directories=0,menubar=0,toolbar=0,height=400,width=600,alwaysRaised,scrollbars=yes";
-    width = <%=resources.getSetting("popupWidth", 600)%>;
-    height = <%=resources.getSetting("popupHeight", 480)%>;
-    contactWindow = SP_openWindow("ViewUserFull?Id="+id, windowName, width, height, windowParams);
-}
-
-function topicGoTo(id) {
-    document.topicDetailForm.action = "GoTo";
-    document.topicDetailForm.Id.value = id;
-    document.topicDetailForm.submit();
-}
-
-function manage(profile) {
-    closeWindows();
-	location.href = "topicManager.jsp?Profile=" + profile;
-}
-
-function exportCSV(){
-	printWindow = SP_openWindow("ExportCSV", "printWindow", '400', '200', 'scrollbars=yes, alwayRaised');
-}
-
-whenSilverpeasReady(function() {
-  $("#searchButton a").click(function() {
-    search();
-  });
-
-  $("#searchInput").keypress(function(e) {
-    if (e.which === 13) {
-      e.preventDefault();
-      search();
-      return false;
+    function printList() {
+      printWindow =
+          SP_openWindow("PrintList", "printWindow", '800', '600', 'scrollbars=yes, alwayRaised');
     }
-    return true;
-  });
-});
-</script>
+
+    function closeWindows() {
+      if (!printWindow.closed && printWindow.name == "printWindow") printWindow.close();
+      if (!contactWindow.closed && contactWindow.name == "contactWindow") contactWindow.close();
+    }
+
+    function topicGoToSelected() {
+      var id = document.topicDetailForm.selectTopic.options[document.topicDetailForm.selectTopic.selectedIndex].value;
+      document.topicDetailForm.Id.value = id;
+      document.topicDetailForm.Action.value = "GoTo";
+      document.topicDetailForm.action = "GoTo";
+      document.topicDetailForm.submit();
+    }
+
+    function search() {
+      document.topicDetailForm.action = "Search";
+      document.topicDetailForm.submit();
+    }
+
+    function contactGoToUserInTopic(id, topic) {
+      windowName = "contactWindow";
+      windowParams =
+          "directories=0,menubar=0,toolbar=0,alwaysRaised, scrollbars=yes, resizable=yes";
+      width = <%=resources.getSetting("popupWidth", 600)%>;
+      height = <%=resources.getSetting("popupHeight", 480)%>;
+      url = "ContactView?ContactId=" + id + "&TopicId=" + topic;
+      jQuery.popup.load(url).show('free', {
+        title : 'Contact', width : width, height : height
+      });
+    }
+
+    function goToUser(id) {
+      closeWindows();
+      windowName = "contactWindow";
+      windowParams =
+          "directories=0,menubar=0,toolbar=0,height=400,width=600,alwaysRaised,scrollbars=yes";
+      width = <%=resources.getSetting("popupWidth", 600)%>;
+      height = <%=resources.getSetting("popupHeight", 480)%>;
+      contactWindow =
+          SP_openWindow("ViewUserFull?Id=" + id, windowName, width, height, windowParams);
+    }
+
+    function topicGoTo(id) {
+      document.topicDetailForm.action = "GoTo";
+      document.topicDetailForm.Id.value = id;
+      document.topicDetailForm.submit();
+    }
+
+    function manage(profile) {
+      closeWindows();
+      location.href = "topicManager.jsp?Profile=" + profile;
+    }
+
+    function exportCSV() {
+      printWindow =
+          SP_openWindow("ExportCSV", "printWindow", '400', '200', 'scrollbars=yes, alwayRaised');
+    }
+
+    whenSilverpeasReady(function() {
+      $("#searchButton a").click(function() {
+        search();
+      });
+
+      $("#searchInput").keypress(function(e) {
+        if (e.which === 13) {
+          e.preventDefault();
+          search();
+          return false;
+        }
+        return true;
+      });
+    });
+  </script>
 </head>
 <body id="<%=componentId %>" class="yellowpages">
 <%
   Window window = gef.getWindow();
 
-			if (!portletMode) {
-				BrowseBar browseBar = window.getBrowseBar();
-				browseBar.setDomainName(spaceLabel);
-				browseBar.setComponentName(componentLabel);
-				browseBar.setPath(resources.getString("Consultation"));
+  if (!portletMode) {
+    BrowseBar browseBar = window.getBrowseBar();
+    browseBar.setDomainName(spaceLabel);
+    browseBar.setComponentName(componentLabel);
+    browseBar.setPath(resources.getString("Consultation"));
 
-				OperationPane operationPane = window.getOperationPane();
-				operationPane.addOperation(resources
-						.getIcon("yellowpages.printPage"), resources
-						.getString("GML.print"), "javaScript:printList();");
-				
-				operationPane.addOperation("useless", resources.getString("GML.ExportCSV"), "javaScript:exportCSV();");
-			}
+    OperationPane operationPane = window.getOperationPane();
+    operationPane
+        .addOperation(resources.getIcon("yellowpages.printPage"), resources.getString("GML.print"),
+            "javaScript:printList();");
 
-			Frame frame = gef.getFrame();
-			Board board = gef.getBoard();
-			out.println(window.printBefore());
+    operationPane
+        .addOperation("useless", resources.getString("GML.ExportCSV"), "javaScript:exportCSV();");
+  }
 
-			if (!portletMode) {
-			%>
+  Frame frame = gef.getFrame();
+  Board board = gef.getBoard();
+  out.println(window.printBefore());
+
+  if (!portletMode) {
+%>
 <view:componentInstanceIntro componentId="<%=componentId%>" language="<%=resources.getLanguage()%>"/>
 <%
-      if ("admin".equals(profile) || "publisher".equals(profile)) {
-				//Onglets
-				TabbedPane tabbedPane = gef.getTabbedPane();
-				tabbedPane.addTab(resources.getString("Consultation"), "#",	true);
-				tabbedPane.addTab(resources.getString("GML.management"), "javascript:manage('" + profile + "');", false);
-				out.println(tabbedPane.print());
-			}
+    if ("admin".equals(profile) || "publisher".equals(profile)) {
+      //Onglets
+      TabbedPane tabbedPane = gef.getTabbedPane();
+      tabbedPane.addTab(resources.getString("Consultation"), "#", true);
+      tabbedPane
+          .addTab(resources.getString("GML.management"), "javascript:manage('" + profile + "');",
+              false);
+      out.println(tabbedPane.print());
+    }
   }
-			out.println(frame.printBefore());
-			out.println(board.printBefore());
+  out.println(frame.printBefore());
+  out.println(board.printBefore());
 %>
 <form name="topicDetailForm" action="" method="post">
-<input type="hidden" name="Action"/> <input type="hidden" name="Id" value="<%=id%>"/>
-<table cellpadding="1" cellspacing="0" border="0" width="98%">
-	<tr>
-		<td><!--Recherche-->
-		<table cellpadding="5" cellspacing="2" border="0" width="98%">
-			<tr>
-				<td class="intfdcolor4" nowrap="nowrap">
-				<table cellpadding="0" cellspacing="0" border="0" width="100%">
-					<tr>
-						<td nowrap="nowrap" valign="middle"><input type="text" name="SearchCriteria"
-							id="searchInput" size="50" placeholder="<%=resources.getString("GML.search")%>"
-							value="<%if (searchCriteria != null) {
+  <input type="hidden" name="Action"/> <input type="hidden" name="Id" value="<%=id%>"/>
+  <table cellpadding="1" cellspacing="0" border="0" width="98%">
+    <tr>
+      <td><!--Recherche-->
+        <table cellpadding="5" cellspacing="2" border="0" width="98%">
+          <tr>
+            <td class="intfdcolor4" nowrap="nowrap">
+              <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                <tr>
+                  <td nowrap="nowrap" valign="middle"><input type="text" name="SearchCriteria"
+                                                             id="searchInput" size="50" placeholder="<%=resources.getString("GML.search")%>"
+                                                             value="<%if (searchCriteria != null) {
 				out.print(searchCriteria);
 			}%>"/>
-						</td>
-						<td valign="middle" id="searchButton">
-              <a class="sp_button" href="#">Ok</a>
-						</td>
-					</tr>
-				</table>
-				</td>
-			</tr>
-		</table>
-		<!--***************************--></td>
-		<%
-		  CompoSpace[] instances = yellowpagesScc.getYellowPagesInstances();
-					if ((instances != null) && (instances.length > 1)) {
-		%>
-		<td><!--Container--> <!--Acc�s aux autres annuaires-->
-		<table cellpadding="2" cellspacing="1" border="0" width="100%" id="otherComponents">
-			<tr>
-				<td align="center" nowrap="nowrap" width="100%" height="24"><span
-					class="selectNS"> <select name="select2"
-					onchange="window.open(this.options[this.selectedIndex].value,'_self')">
+                  </td>
+                  <td valign="middle" id="searchButton">
+                    <a class="sp_button" href="#">Ok</a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+        <!--***************************--></td>
+      <%
+        CompoSpace[] instances = yellowpagesScc.getYellowPagesInstances();
+        if ((instances != null) && (instances.length > 1)) {
+      %>
+      <td><!--Container--> <!--Acc�s aux autres annuaires-->
+        <table cellpadding="2" cellspacing="1" border="0" width="100%" id="otherComponents">
+          <tr>
+            <td align="center" nowrap="nowrap" width="100%" height="24"><span
+                class="selectNS"> <select name="select2"
+                                          onchange="window.open(this.options[this.selectedIndex].value,'_self')">
 					<option selected><%=resources.getString("Access")%></option>
 					<%
-					  for (int i = 0; i < instances.length; i++) {
+            for (int i = 0; i < instances.length; i++) {
 
-										if (!instances[i].getComponentId().equals(
-												yellowpagesScc.getComponentId())) {
-											if (!portletMode)
-												out.println("<option value=\"" + m_context
-														+ "/Ryellowpages/"
-														+ instances[i].getComponentId()
-														+ "/Main\">" + instances[i].getSpaceLabel()
-														+ " - " + instances[i].getComponentLabel()
-														+ "</option>");
-											else
-												out.println("<option value=\"" + m_context
-														+ "/Ryellowpages/"
-														+ instances[i].getComponentId()
-														+ "/portlet\">"
-														+ instances[i].getSpaceLabel() + " - "
-														+ instances[i].getComponentLabel()
-														+ "</option>");
-										}
-									}
-					%>
+              if (!instances[i].getComponentId().equals(yellowpagesScc.getComponentId())) {
+                if (!portletMode) {
+                  out.println("<option value=\"" + m_context + "/Ryellowpages/" +
+                      instances[i].getComponentId() + "/Main\">" + instances[i].getSpaceLabel() +
+                      " - " + instances[i].getComponentLabel() + "</option>");
+                } else {
+                  out.println("<option value=\"" + m_context + "/Ryellowpages/" +
+                      instances[i].getComponentId() + "/portlet\">" + instances[i].getSpaceLabel() +
+                      " - " + instances[i].getComponentLabel() + "</option>");
+                }
+              }
+            }
+          %>
 				</select> </span></td>
-			</tr>
-		</table>
-		<!--***************************--></td>
-		<%
-		  }
-		%>
-		<td><!--Acces aux categories-->
-		<table cellpadding="2" cellspacing="1" border="0" width="100%">
-			<tr>
-				<td align="center" nowrap="nowrap" width="100%" height="24"><span
-					class="selectNS"> <select name="selectTopic"
-					onchange="topicGoToSelected()">
+          </tr>
+        </table>
+        <!--***************************--></td>
+      <%
+        }
+      %>
+      <td><!--Acces aux categories-->
+        <table cellpadding="2" cellspacing="1" border="0" width="100%">
+          <tr>
+            <td align="center" nowrap="nowrap" width="100%" height="24"><span
+                class="selectNS"> <select name="selectTopic"
+                                          onchange="topicGoToSelected()">
 					<%=afficheArbo(id, yellowpagesScc, 0)%>
 				</select> </span></td>
-			</tr>
-		</table>
-		<!--***************************--></td>
-		<td width="100%">&nbsp;</td>
-	</tr>
-</table>
+          </tr>
+        </table>
+        <!--***************************--></td>
+      <td width="100%">&nbsp;</td>
+    </tr>
+  </table>
 </form>
 <!--Description de la categorie-->
 <%
   String nodeName = null;
-			String nodeDesc = null;
-			if (group != null) {
-				nodeName = group.getName();
-				nodeDesc = group.getDescription();
-			} else {
-				if (!"0".equals(id)) {
-					NodeDetail nodeDetail = currentTopic.getNodeDetail();
-					nodeName = WebEncodeHelper.javaStringToHtmlString(nodeDetail.getName().toUpperCase());
-					nodeDesc = WebEncodeHelper.javaStringToHtmlString(nodeDetail.getDescription());
-				}
-			}
-			if (nodeDesc != null && !nodeDesc.equals("")) {
+  String nodeDesc = null;
+  if (group != null) {
+    nodeName = group.getName();
+    nodeDesc = group.getDescription();
+  } else {
+    if (!"0".equals(id)) {
+      NodeDetail nodeDetail = currentTopic.getNodeDetail();
+      nodeName = WebEncodeHelper.javaStringToHtmlString(nodeDetail.getName().toUpperCase());
+      nodeDesc = WebEncodeHelper.javaStringToHtmlString(nodeDetail.getDescription());
+    }
+  }
+  if (nodeDesc != null && !nodeDesc.equals("")) {
 %>
-<div align="left">&nbsp;&nbsp;<b><%=nodeName%>&nbsp;:&nbsp;</b><%=nodeDesc%></div>
+<div align="left">&nbsp;&nbsp;<b><%=nodeName%>&nbsp;:&nbsp;</b><%=nodeDesc%>
+</div>
 <br/>
 <%
   }
 
-			out.println(board.printAfter());
-			out.println("<br/>");
-			DisplayContactsHelper.displayContactsUser(yellowpagesScc, contacts, id, componentLabel, gef, request, session, resources, out);
+  out.println(board.printAfter());
+  out.println("<br/>");
+  DisplayContactsHelper
+      .displayContactsUser(yellowpagesScc, contacts, id, componentLabel, gef, request, session,
+          resources, out);
 
-			out.println(frame.printAfter());
-			out.println(window.printAfter());
+  out.println(frame.printAfter());
+  out.println(window.printAfter());
 %>
 <form name="contactForm" action="contactManager.jsp" target="contactWindow" method="post">
-	<input type="hidden" name="Action"/> 
-	<input type="hidden" name="ContactId"/> 
-	<input type="hidden" name="TopicId"/> 
-	<input type="hidden" name="Path"/>
+  <input type="hidden" name="Action"/>
+  <input type="hidden" name="ContactId"/>
+  <input type="hidden" name="TopicId"/>
+  <input type="hidden" name="Path"/>
 </form>
 
 <script type="text/javascript">
   /* declare the module myapp and its dependencies (here in the silverpeas module) */
-  var myapp = angular.module('silverpeas.yellowpages', ['silverpeas.services', 'silverpeas.directives']);
+  var myapp = angular.module('silverpeas.yellowpages',
+      ['silverpeas.services', 'silverpeas.directives']);
 </script>
 
 </body>
