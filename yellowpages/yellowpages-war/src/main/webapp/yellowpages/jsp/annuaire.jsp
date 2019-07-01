@@ -323,7 +323,7 @@
   }
   if (nodeDesc != null && !nodeDesc.equals("")) {
 %>
-<div align="left">&nbsp;&nbsp;<b><%=nodeName%>&nbsp;:&nbsp;</b><%=nodeDesc%>
+<div align="left">&nbsp;&nbsp;<strong><%=nodeName%>&nbsp;:&nbsp;</strong><%=nodeDesc%>
 </div>
 <br/>
 <%
