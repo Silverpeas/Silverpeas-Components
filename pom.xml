@@ -31,7 +31,7 @@
 
   <groupId>com.silverpeas</groupId>
   <artifactId>components</artifactId>
-  <version>5.15.10</version>
+  <version>5.15.11-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Silverpeas Components</name>
   <url>http://www.silverpeas.org/docs/components</url>
@@ -44,7 +44,7 @@
     <test.jdbc.user>postgres</test.jdbc.user>
     <test.jdbc.password>postgres</test.jdbc.password>
     <!-- Version of Silverpeas-Core on which it depends -->
-    <core.version>5.15.10</core.version>
+    <core.version>5.15.11-SNAPSHOT</core.version>
   </properties>
 
   <dependencies>
