@@ -28,20 +28,28 @@ import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
+import org.apache.http.HttpHeaders;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.silverpeas.components.rssaggregator.model.RSSItem;
 import org.silverpeas.components.rssaggregator.model.RssAgregatorException;
 import org.silverpeas.components.rssaggregator.model.SPChannel;
 import org.silverpeas.components.rssaggregator.model.SPChannelPK;
+import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
-import java.net.URL;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import static org.silverpeas.core.util.HttpUtil.httpClient;
+import static org.silverpeas.core.util.HttpUtil.httpClientTrustingAnySslContext;
 
 @Singleton
 public class DefaultRSSService implements RSSService {
@@ -62,18 +70,15 @@ public class DefaultRSSService implements RSSService {
   public List<SPChannel> getAllChannels(String applicationId) throws RssAgregatorException {
     List<SPChannel> channelsFromDB = this.rssAggregator.getChannels(applicationId);
     List<SPChannel> channels = new ArrayList<>();
-    SyndFeed feed = null;
     for (SPChannel channel : channelsFromDB) {
       SPChannelPK channelPK = (SPChannelPK) channel.getPK();
       if (cache.isContentNeedToRefresh(channelPK)) {
         try {
-          feed = getFeedFromUrl(channel.getUrl());
+          applyFeedTo(channel);
         } catch (Exception e) {
           SilverLogger.getLogger(this).error("Syndication feed fetching error with channel " +
               channelPK + " at " + channel.getUrl(), e);
-          feed = null;
         } finally {
-          channel.setFeed(feed);
           cache.addChannelToCache(channel);
         }
       } else {
@@ -84,30 +89,27 @@ public class DefaultRSSService implements RSSService {
     return channels;
   }
 
-  @Override
-  public SPChannel getChannel(final String url) throws RssAgregatorException {
-    SPChannel channel = new SPChannel(url);
-    channel.setFeed(getFeedFromUrl(url));
-    return channel;
-  }
-
   /**
-   * Retrieve channel from URL string parameter
-   * @param sUrl the url string parameter
-   * @return RSS channel from URL
+   * Applies {@link SyndFeed} from {@link SPChannel} data.
+   * @param channel the channel with all necessary data to perform connexion.
    * @throws RssAgregatorException if MalformedURL or Parse or IO problem occur
    */
-  private SyndFeed getFeedFromUrl(String sUrl) throws RssAgregatorException {
-    SyndFeed feed = null;
-    if (StringUtil.isDefined(sUrl)) {
+  private void applyFeedTo(final SPChannel channel) throws RssAgregatorException {
+    final String channelUrl = channel.getUrl();
+    if (StringUtil.isDefined(channelUrl)) {
       try {
-        SyndFeedInput input = new SyndFeedInput();
-        feed = input.build(new XmlReader(new URL(sUrl)));
-      } catch (IOException|FeedException e) {
+        final HttpGet httpGet = new HttpGet(channelUrl);
+        httpGet.addHeader(HttpHeaders.ACCEPT, MimeTypes.RSS_MIME_TYPE);
+        try (CloseableHttpClient httpClient = channel.isSafeUrl() ? httpClientTrustingAnySslContext() : httpClient();
+             CloseableHttpResponse response = httpClient.execute(httpGet)) {
+          final SyndFeedInput input = new SyndFeedInput();
+          final SyndFeed feed = input.build(new XmlReader(response.getEntity().getContent()));
+          channel.setFeed(feed);
+        }
+      } catch (IOException | FeedException | GeneralSecurityException e) {
         throw new RssAgregatorException(e.getMessage(), e);
       }
     }
-    return feed;
   }
 
   /**

@@ -1,0 +1,2 @@
+ALTER TABLE SC_Rss_Channels
+    ADD safeUrl NUMBER(1, 0) DEFAULT 0 NOT NULL;

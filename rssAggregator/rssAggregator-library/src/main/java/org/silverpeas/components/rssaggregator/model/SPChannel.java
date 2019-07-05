@@ -41,6 +41,7 @@ public class SPChannel extends SilverpeasBean implements Serializable {
   private int nbDisplayedItems = 100;
   private int refreshRate;
   private int displayImage = 0;
+  private boolean safeUrl = false;
   private String creatorId;
   private String creationDate;
   private SyndFeed feed;
@@ -144,40 +145,38 @@ public class SPChannel extends SilverpeasBean implements Serializable {
     this.instanceId = instanceId;
   }
 
+  @Override
   public int _getConnectionType() {
     return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
   }
 
+  @Override
   public String _getTableName() {
     return "SC_Rss_Channels";
   }
 
-  /**
-   * @return
-   */
   public int getRefreshRate() {
     return refreshRate;
   }
 
-  /**
-   * @param i
-   */
   public void setRefreshRate(int i) {
     refreshRate = i;
   }
 
-  /**
-   * @return
-   */
   public int getDisplayImage() {
     return displayImage;
   }
 
-  /**
-   * @param i
-   */
   public void setDisplayImage(int i) {
     displayImage = i;
+  }
+
+  public boolean isSafeUrl() {
+    return safeUrl;
+  }
+
+  public void setSafeUrl(final boolean safeUrl) {
+    this.safeUrl = safeUrl;
   }
 
   public SyndFeed getFeed() {

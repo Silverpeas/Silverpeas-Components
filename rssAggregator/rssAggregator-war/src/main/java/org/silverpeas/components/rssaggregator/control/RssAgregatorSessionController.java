@@ -121,6 +121,7 @@ public class RssAgregatorSessionController extends AbstractComponentSessionContr
       currentChannel.setNbDisplayedItems(channel.getNbDisplayedItems());
       currentChannel.setRefreshRate(channel.getRefreshRate());
       currentChannel.setDisplayImage(channel.getDisplayImage());
+      currentChannel.setSafeUrl(channel.isSafeUrl());
     }
     getRssAggregator().updateChannel(currentChannel);
 
@@ -149,7 +150,11 @@ public class RssAgregatorSessionController extends AbstractComponentSessionContr
   }
 
   public SPChannel getChannel(String id) throws RssAgregatorException {
-    currentChannel = getRssAggregator().getChannel(new SPChannelPK(id, getComponentId()));
+    final SPChannelPK channelPK = new SPChannelPK(id, getComponentId());
+    currentChannel = cache.getChannelFromCache(channelPK);
+    if (currentChannel == null) {
+      currentChannel = getRssAggregator().getChannel(channelPK);
+    }
     return currentChannel;
   }
 

@@ -1,7 +1,4 @@
-<%@ page import="com.rometools.rome.feed.synd.SyndFeed" %>
-<%@ page import="com.rometools.rome.feed.synd.SyndImage" %>
-<%@ page import="com.rometools.rome.feed.synd.SyndEntry" %>
-<%@ page import="org.silverpeas.components.rssaggregator.service.FeedComparator" %><%--
+<%--
 
     Copyright (C) 2000 - 2019 Silverpeas
 
@@ -26,6 +23,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@ page import="com.rometools.rome.feed.synd.SyndEntry" %>
+<%@ page import="com.rometools.rome.feed.synd.SyndFeed" %>
+<%@ page import="com.rometools.rome.feed.synd.SyndImage" %>
+<%@ page import="org.silverpeas.components.rssaggregator.service.FeedComparator" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="check.jsp" %>
@@ -39,6 +40,10 @@
 <fmt:setLocale value="${language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
+
+<fmt:message key="rss.addChannel" var="addChannelLabel" />
+<fmt:message key="GML.modify" var="modifyLabel" />
+<fmt:message key="GML.delete" var="deleteLabel" />
 
 <c:set var="aggregate" value="${requestScope.aggregate}"/>
 <c:set var="rssItems" value="${requestScope.items}"/>
@@ -127,10 +132,6 @@ void displayChannel(SPChannel spChannel, SimpleDateFormat dateFormatter, String 
 }
 %>
 
-
-
-
-
 <%
 	List 	channels 	= (List) request.getAttribute("Channels");
 	String 	role 		= (String) request.getAttribute("Role");
@@ -143,23 +144,6 @@ void displayChannel(SPChannel spChannel, SimpleDateFormat dateFormatter, String 
 <view:looknfeel withCheckFormScript="true"/>
 <view:includePlugin name="toggle"/>
 <script type="text/javascript">
-var updateChannelWindow = window;
-
-function updateChannel(id) {
-  windowName = "updateChannelWindow";
-	larg = "750";
-	haut = "280";
-  windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
-  if (!updateChannelWindow.closed && updateChannelWindow.name=="updateChannelWindow") {
-    updateChannelWindow.close();
-  }
-  updateChannelWindow = SP_openWindow("ToUpdateChannel?Id="+id, windowName, larg, haut, windowParams);
-}
-
-function deleteChannel(id) {
-	document.deleteChannel.Id.value = id;
-	document.deleteChannel.submit();
-}
 /**
  * This method is only use to test RSS REST service inside displayRSS view
  * change agregate options in order to sort result (yes) or not (no)
@@ -169,11 +153,9 @@ function loadChannelsItem() {
     url: '<c:out value="${ctxPath}/services/rss/${componentId}"/>',
     data: { agregate: 'yes'},
     success: function(data){
-      alert('loadChannelsItem succeeded on application id : <%=componentId%>');
+      notySuccess('loadChannelsItem succeeded on application id : <%=componentId%>');
     },
     error: function(HttpRequest, textStatus, errorThrown) {
-      //alert('XMLHttpRequest error');
-      //HttpRequest, textStatus, errorThrown
       notyError(HttpRequest.status + " - " + textStatus+" - "+errorThrown);
     },
     dataType: 'json'
@@ -238,6 +220,33 @@ function displayAll() {
   $("#filterChannelAnchorId").attr("class", "active");
 }
 
+function addChannel() {
+  jQuery.popup.load('ToCreateChannel').show('validation', {
+    title : "${addChannelLabel}",
+    callback : function() {
+      validateChannelForm();
+    }
+  });
+}
+
+function updateChannel(id) {
+  jQuery.popup.load('ToUpdateChannel', {params : {'Id' : id}}).show('validation', {
+    title : "${modifyLabel}",
+    callback : function() {
+      validateChannelForm();
+    }
+  });
+}
+
+function deleteChannel(id) {
+  jQuery.popup.load('ToDeleteChannel', {params : {'Id' : id}}).show('confirmation', {
+    title : "${deleteLabel}",
+    callback : function() {
+      validateChannelForm();
+    }
+  });
+}
+
 </script>
 </head>
 <body class="rssAgregator" id="<%=componentId%>">
@@ -272,9 +281,6 @@ function displayAll() {
     <a id="aggregate-displaying" class="<c:if test='${aggregate}'>active</c:if>" href="javascript:displayAggregatedView();"><fmt:message key="rss.filter.agregate.view.on"/></a>
     <a id="no-aggregate-displaying" class="<c:if test='${not aggregate}'>active</c:if>" href="javascript:displaySeparatedView();"><fmt:message key="rss.filter.agregate.view.off"/></a>
   </div>
-  <!--
-  <a id="dynamicalLoad" class="bgDegradeGris" href="javascript:loadChannelsItem();"><span><fmt:message key="rss.filter.agregate.refresh"/></span></a>
-  -->
 <c:choose>
   <c:when test="${aggregate}">
 
@@ -389,19 +395,16 @@ function displayAll() {
 
 <%
 if (nbChannelsToLoad > 0) { %>
-<view:form name="loadChannels" action="LoadChannels" method="post"><!----></view:form>
 <script language="javascript" type="text/javascript">
-  window.setTimeout("document.loadChannels.submit()", 500);
+  window.setTimeout(function() {
+    sp.formRequest("LoadChannels").submit();
+  }, 500);
 </script>
 <% } %>
 
   </c:otherwise>
 </c:choose>
 
-<view:form name="refresh" action="LoadChannels" method="post"><!----></view:form>
-<view:form name="deleteChannel" action="DeleteChannel" method="post">
-  <input type="hidden" name="Id"/>
-</view:form>
 <view:form name="rssForm" action="Main" method="post">
   <input type="hidden" name="action" id="hiddenRssFormAction"/>
   <input type="hidden" name="id" id="hiddenRssFormId"/>
@@ -410,8 +413,6 @@ if (nbChannelsToLoad > 0) { %>
 </view:window>
 
 <view:progressMessage/>
-
-<%@include file="channelManager.jsp" %>
 
 <script type="text/javascript">
   /* declare the module myapp and its dependencies (here in the silverpeas module) */
