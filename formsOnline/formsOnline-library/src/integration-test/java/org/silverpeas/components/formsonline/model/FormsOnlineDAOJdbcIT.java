@@ -107,7 +107,6 @@ public class FormsOnlineDAOJdbcIT {
     FormDetail expResult = new FormDetail();
     expResult.setId(1000);
     expResult.setCreatorId("0");
-    expResult.setAlreadyUsed(true);
     expResult.setCreationDate(DateUtil.parse("2012/01/09"));
     expResult.setDescription("Formulaire de description d'une salle");
     expResult.setInstanceId("formsOnline100");

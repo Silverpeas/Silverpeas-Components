@@ -35,6 +35,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 
 <c:set var="lang" value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
 <c:set var="currentUser" value="${sessionScope['SilverSessionController'].currentUserDetail}"/>
@@ -46,6 +47,8 @@
 <c:set var="validationEnabled" value="${requestScope['ValidationEnabled']}"/>
 <c:set var="form" value="${requestScope['FormDetail']}"/>
 <c:set var="origin" value="${requestScope['Origin']}"/>
+
+<c:set var="formNameParts" value="${silfn:split(form.xmlFormName, '.')}"/>
 
 <fmt:message var="buttonBack" key="GML.back"/>
 
@@ -87,7 +90,7 @@
     }
   </script>
 </head>
-<body>
+<body class="${formNameParts[0]}">
     <view:operationPane>
       <c:choose>
         <c:when test="${userRequest.creatorId == currentUser.id}">
@@ -114,6 +117,9 @@
       <fmt:message key="formsOnline.request.from"/> <view:username userId="${userRequest.creatorId}"/>
       <div class="profilPhoto"><view:image src="${userRequest.creator.avatar}" alt="" type="avatar" /></div>
       <div class="ask-date"><fmt:message key="GML.date.the"/> <view:formatDate value="${userRequest.creationDate}"/></div>
+      <div>
+        <viewTags:displayUserExtraProperties user="${userRequest.creator}" readOnly="true" linear="true" includeEmail="true" displayLabels="false"/>
+      </div>
     </div>
 
     <c:choose>
@@ -121,26 +127,44 @@
         <div id="ask-statut" class="inlineMessage"><fmt:message key="GML.contribution.validation.status.PENDING_VALIDATION"/></div>
       </c:when>
       <c:when test="${userRequest.validated}">
-        <div id="ask-statut" class="commentaires">
-          <div class="inlineMessage-ok oneComment">
-            <p class="author"><fmt:message key="GML.contribution.validation.status.VALIDATED"/> <fmt:message key="GML.date.the"/> <view:formatDate value="${userRequest.validationDate}"/> <fmt:message key="GML.by"/> <view:username userId="${userRequest.validatorId}"/></p>
-            <div class="avatar"><view:image src="${userRequest.validator.avatar}" alt="" type="avatar" /></div>
-            <div>
-              <p>${silfn:escapeHtmlWhitespaces(userRequest.comments)}</p>
+        <c:choose>
+          <c:when test="${silfn:isDefined(userRequest.comments)}">
+            <div id="ask-statut" class="commentaires">
+              <div class="inlineMessage-ok oneComment">
+                <p class="author"><fmt:message key="GML.contribution.validation.status.VALIDATED"/> <fmt:message key="GML.date.the"/> <view:formatDate value="${userRequest.validationDate}"/> <fmt:message key="GML.by"/> <view:username userId="${userRequest.validatorId}"/></p>
+                <div class="avatar"><view:image src="${userRequest.validator.avatar}" alt="" type="avatar" /></div>
+                <div>
+                  <p>${silfn:escapeHtmlWhitespaces(userRequest.comments)}</p>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          </c:when>
+          <c:otherwise>
+            <div id="ask-statut" class="inlineMessage-ok">
+              <fmt:message key="GML.contribution.validation.status.VALIDATED"/> <fmt:message key="GML.date.the"/> <view:formatDate value="${userRequest.validationDate}"/> <fmt:message key="GML.by"/> <view:username userId="${userRequest.validatorId}"/>
+            </div>
+          </c:otherwise>
+        </c:choose>
       </c:when>
       <c:when test="${userRequest.denied}">
-        <div id="ask-statut" class="commentaires">
-          <div class="inlineMessage-nok oneComment">
-            <p class="author"><fmt:message key="GML.contribution.validation.status.REFUSED"/> <fmt:message key="GML.date.the"/> <view:formatDate value="${userRequest.validationDate}"/> <fmt:message key="GML.by"/> <view:username userId="${userRequest.validatorId}"/></p>
-            <div class="avatar"><view:image src="${userRequest.validator.avatar}" alt="" type="avatar" /></div>
-            <div>
-              <p>${silfn:escapeHtmlWhitespaces(userRequest.comments)}</p>
+        <c:choose>
+          <c:when test="${silfn:isDefined(userRequest.comments)}">
+            <div id="ask-statut" class="commentaires">
+              <div class="inlineMessage-nok oneComment">
+                <p class="author"><fmt:message key="GML.contribution.validation.status.REFUSED"/> <fmt:message key="GML.date.the"/> <view:formatDate value="${userRequest.validationDate}"/> <fmt:message key="GML.by"/> <view:username userId="${userRequest.validatorId}"/></p>
+                <div class="avatar"><view:image src="${userRequest.validator.avatar}" alt="" type="avatar" /></div>
+                <div>
+                  <p>${silfn:escapeHtmlWhitespaces(userRequest.comments)}</p>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          </c:when>
+          <c:otherwise>
+            <div id="ask-statut" class="inlineMessage-nok">
+              <fmt:message key="GML.contribution.validation.status.REFUSED"/> <fmt:message key="GML.date.the"/> <view:formatDate value="${userRequest.validationDate}"/> <fmt:message key="GML.by"/> <view:username userId="${userRequest.validatorId}"/>
+            </div>
+          </c:otherwise>
+        </c:choose>
       </c:when>
     </c:choose>
   </div>

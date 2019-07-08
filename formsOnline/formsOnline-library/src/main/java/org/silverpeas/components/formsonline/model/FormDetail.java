@@ -44,10 +44,10 @@ public class FormDetail {
   private String creatorId = null;
   private Date creationDate = new Date();
   private String instanceId = null;
-  private boolean alreadyUsed = false;
   private int state = STATE_NOT_YET_PUBLISHED;
 
-  private transient boolean sendable = true;
+  private boolean sendable = true;
+  private int nbRequests = 0;
 
   List<User> sendersAsUsers;
   List<Group> sendersAsGroups;
@@ -180,14 +180,6 @@ public class FormDetail {
     this.instanceId = instanceId;
   }
 
-  public void setAlreadyUsed(boolean alreadyUsed) {
-    this.alreadyUsed = alreadyUsed;
-  }
-
-  public boolean isAlreadyUsed() {
-    return alreadyUsed;
-  }
-
   @Override
   public boolean equals(Object obj) {
     if (obj == null) {
@@ -214,9 +206,6 @@ public class FormDetail {
         (this.creationDate == null || !this.creationDate.equals(other.creationDate))) {
       return false;
     }
-    if (this.alreadyUsed != other.alreadyUsed) {
-      return false;
-    }
     if ((this.xmlFormName == null) ? (other.xmlFormName != null) :
         !this.xmlFormName.equals(other.xmlFormName)) {
       return false;
@@ -232,7 +221,7 @@ public class FormDetail {
   public int hashCode() {
     return new HashCodeBuilder(7, 17).append(this.id).append(this.xmlFormName).append(this.name)
         .append(this.description).append(this.title).append(this.creatorId).append(this.instanceId)
-        .append(this.alreadyUsed).append(this.state).toHashCode();
+        .append(this.state).toHashCode();
   }
 
   public boolean isPublished() {
@@ -340,5 +329,13 @@ public class FormDetail {
 
   public void setReceiversAsGroups(final List<Group> receiversAsGroups) {
     this.receiversAsGroups = receiversAsGroups;
+  }
+
+  public int getNbRequests() {
+    return nbRequests;
+  }
+
+  public void setNbRequests(final int nbRequests) {
+    this.nbRequests = nbRequests;
   }
 }
