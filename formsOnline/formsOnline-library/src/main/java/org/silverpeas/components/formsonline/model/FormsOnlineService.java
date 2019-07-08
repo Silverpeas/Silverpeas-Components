@@ -46,7 +46,7 @@ public interface FormsOnlineService extends ApplicationService<FormInstance> {
   FormDetail storeForm(FormDetail form, String[] senderUserIds, String[] senderGroupIds,
       String[] receiverUserIds, String[] receiverGroupIds) throws FormsOnlineDatabaseException;
 
-  void deleteForm(FormPK pk) throws FormsOnlineDatabaseException;
+  boolean deleteForm(FormPK pk) throws FormsOnlineDatabaseException;
 
   void publishForm(FormPK pk) throws FormsOnlineDatabaseException;
 

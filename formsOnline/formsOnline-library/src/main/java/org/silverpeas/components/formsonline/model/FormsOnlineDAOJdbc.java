@@ -41,7 +41,9 @@ import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery.createSelect;
 
@@ -60,12 +62,12 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
       "select * from " + FORMS_TABLENAME + " where instanceId = ? and id = ?";
   private static final String QUERY_INSERT_FORM = "INSERT INTO " +
       FORMS_TABLENAME +
-      "(id, xmlFormName, name, description, title, creatorId, creationDate, state, alreadyUsed, " +
-      "instanceId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+      "(id, xmlFormName, name, description, title, creatorId, creationDate, state, " +
+      "instanceId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
   private static final String QUERY_UPDATE_FORM = "update " +
       FORMS_TABLENAME +
       " set xmlFormName = ?, name = ?, description = ?, title = ?, creatorId = ?, creationDate = " +
-      "?, state = ?, alreadyUsed = ? where instanceId = ? and id= ? ";
+      "?, state = ? where instanceId = ? and id= ? ";
   private static final String QUERY_DELETE_FORM =
       "delete from " + FORMS_TABLENAME + " where instanceId = ? and id = ? ";
 
@@ -83,6 +85,9 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
 
   private static final String QUERY_DELETE_FORM_INSTANCE =
       "delete from " + FORMS_INSTANCES_TABLENAME + " where instanceId = ? and id = ? ";
+
+  private static final String COUNT_REQUESTS_BY_FORM =
+      "select formid, count(*) from " + FORMS_INSTANCES_TABLENAME + " where instanceId = ? group by formid";
 
   // Queries about Rights
   private static final String QUERY_LOAD_USER_RIGHTS = "select * from " + USER_RIGHTS_TABLENAME +
@@ -114,8 +119,7 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
       stmt.setString(6, formDetail.getCreatorId());
       prepareDateStatement(stmt, 7, formDetail.getCreationDate());
       stmt.setInt(8, formDetail.getState());
-      stmt.setInt(9, (formDetail.isAlreadyUsed()) ? 1 : 0);
-      stmt.setString(10, formDetail.getInstanceId());
+      stmt.setString(9, formDetail.getInstanceId());
 
       stmt.executeUpdate();
       formDetail.setId(id);
@@ -205,9 +209,8 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
       stmt.setString(5, formDetail.getCreatorId());
       prepareDateStatement(stmt, 6, formDetail.getCreationDate());
       stmt.setInt(7, formDetail.getState());
-      stmt.setInt(8, (formDetail.isAlreadyUsed()) ? 1 : 0);
-      stmt.setString(9, formDetail.getInstanceId());
-      stmt.setInt(10, formDetail.getId());
+      stmt.setString(8, formDetail.getInstanceId());
+      stmt.setInt(9, formDetail.getId());
       stmt.executeUpdate();
     } catch (SQLException se) {
       throw new FormsOnlineDatabaseException("FormsOnlineDAOJdbc.updateForm()",
@@ -597,7 +600,6 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
     form.setCreationDate(new Date(rs.getTimestamp("creationDate").getTime()));
     form.setInstanceId(rs.getString("instanceId"));
     form.setState(rs.getInt(STATE_FIELD));
-    form.setAlreadyUsed((rs.getInt("alreadyUsed") != 0));
     return form;
   }
 
@@ -689,6 +691,37 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
     } finally {
       freeConnection(con);
     }
+  }
+
+  @Override
+  public Map<Integer, Integer> getNumberOfRequestsByForm(String instanceId)
+      throws FormsOnlineDatabaseException {
+    Connection con = getConnection();
+    Map<Integer, Integer> map = new HashMap<>();
+    try (PreparedStatement stmt = con.prepareStatement(COUNT_REQUESTS_BY_FORM)) {
+      stmt.setString(1, instanceId);
+      try (ResultSet rs = stmt.executeQuery()) {
+        while (rs.next()) {
+          map.put(rs.getInt(1), rs.getInt(2));
+        }
+      }
+    } catch (SQLException se) {
+      throw new FormsOnlineDatabaseException("FormsOnlineDAOJdbc.getNumberOfRequestsByForm()",
+          SilverpeasException.ERROR, "formsOnline.GET_FORM_FAILED", "instanceId = "+instanceId, se);
+    } finally {
+      freeConnection(con);
+    }
+    return map;
+  }
+
+  @Override
+  public SilverpeasList<FormInstance> getAllRequests(FormPK pk) {
+    JdbcSqlQuery query = createSelect("*")
+        .from(FORMS_INSTANCES_TABLENAME)
+        .where("instanceid = ?", pk.getInstanceId())
+        .and("formId = ?", Integer.parseInt(pk.getId()));
+
+    return getFormInstances(query, null, PaginationCriterion.NO_PAGINATION);
   }
 
   private FormInstance fetchFormInstance(ResultSet rs) throws SQLException {

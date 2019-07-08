@@ -158,7 +158,12 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
     if (!isAdmin()) {
       throwForbiddenException(UPDATE_CURRENT_FORM);
     }
-    getService().deleteForm(getFormPK(formId));
+    boolean reallyDeleted = getService().deleteForm(getFormPK(formId));
+    if (!reallyDeleted) {
+      MessageNotifier.addError(getString("formsOnline.form.deletion.failed"));
+    } else {
+      MessageNotifier.addSuccess(getString("formsOnline.form.deletion.succeed"));
+    }
   }
 
   // initialisation de Selection pour nav vers SelectionPeas

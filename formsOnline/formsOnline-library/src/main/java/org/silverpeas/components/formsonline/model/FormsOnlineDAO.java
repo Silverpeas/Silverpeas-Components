@@ -27,6 +27,7 @@ import org.silverpeas.core.persistence.datasource.repository.PaginationCriterion
 import org.silverpeas.core.util.SilverpeasList;
 
 import java.util.List;
+import java.util.Map;
 
 public interface FormsOnlineDAO {
 
@@ -171,4 +172,9 @@ public interface FormsOnlineDAO {
   void updateRequest(FormInstance instance) throws FormsOnlineDatabaseException;
 
   void deleteRequest(RequestPK pk) throws FormsOnlineDatabaseException;
+
+  Map<Integer, Integer> getNumberOfRequestsByForm(String instanceId)
+      throws FormsOnlineDatabaseException;
+
+  SilverpeasList<FormInstance> getAllRequests(FormPK pk);
 }

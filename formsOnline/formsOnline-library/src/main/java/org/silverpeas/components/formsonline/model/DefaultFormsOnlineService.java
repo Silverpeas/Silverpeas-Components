@@ -58,6 +58,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiConsumer;
 
 @Singleton
@@ -70,8 +71,13 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
   public List<FormDetail> getAllForms(final String appId, final String userId,
       final boolean withSendInfo) throws FormsOnlineDatabaseException {
     List<FormDetail> forms = getDAO().findAllForms(appId);
-    if (withSendInfo) {
-      for (FormDetail form : forms) {
+    Map<Integer, Integer> numbersOfRequests = getDAO().getNumberOfRequestsByForm(appId);
+    for (FormDetail form : forms) {
+      Integer numberOfRequests = numbersOfRequests.get(form.getId());
+      if (numberOfRequests != null) {
+        form.setNbRequests(numberOfRequests);
+      }
+      if (withSendInfo) {
         form.setSendable(isSender(form.getPK(), userId));
       }
     }
@@ -166,8 +172,30 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
   }
 
   @Override
-  public void deleteForm(FormPK pk) throws FormsOnlineDatabaseException {
-    getDAO().deleteForm(pk);
+  public boolean deleteForm(FormPK pk) throws FormsOnlineDatabaseException {
+    // delete all associated requests
+    SilverpeasList<FormInstance> requests = getDAO().getAllRequests(pk);
+
+    boolean reallyDeleteForm = true;
+    for (FormInstance request : requests) {
+      try {
+        deleteRequest(request.getPK());
+      } catch (Exception e) {
+        SilverLogger.getLogger(this).error(
+            "Unable to delete request #" + request.getId() + " in component " +
+                request.getComponentInstanceId(), e);
+        reallyDeleteForm = false;
+      }
+    }
+
+    if (reallyDeleteForm) {
+      // delete form itself
+      getDAO().deleteForm(pk);
+
+      removeIndex(pk);
+    }
+
+    return reallyDeleteForm;
   }
 
   @Override
@@ -310,12 +338,6 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
 
     FormDetail formDetail = getDAO().getForm(pk);
     request.setForm(formDetail);
-
-    // Mise a jour du formulaire pour indiquer qu'il a ete utilise
-    if (!formDetail.isAlreadyUsed()) {
-      formDetail.setAlreadyUsed(true);
-      getDAO().updateForm(formDetail);
-    }
 
     String xmlFormName = formDetail.getXmlFormName();
     String xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName.indexOf('.'));
@@ -468,8 +490,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
   }
 
   private void index(FormDetail form) {
-    IndexEntryKey key =
-        new IndexEntryKey(form.getInstanceId(), "FormOnline", String.valueOf(form.getId()));
+    IndexEntryKey key = getIndexEntryKey(form.getPK());
     if (form.isPublished()) {
       FullIndexEntry fie = new FullIndexEntry(key);
       fie.setTitle(form.getTitle());
@@ -480,6 +501,14 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
     } else {
       IndexEngineProxy.removeIndexEntry(key);
     }
+  }
+
+  private void removeIndex(FormPK pk) {
+    IndexEngineProxy.removeIndexEntry(getIndexEntryKey(pk));
+  }
+
+  private IndexEntryKey getIndexEntryKey(FormPK pk) {
+   return new IndexEntryKey(pk.getInstanceId(), "FormOnline", pk.getId());
   }
 
   public void index(String componentId) {
