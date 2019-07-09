@@ -199,11 +199,6 @@ fieldset {
   border-left: 1px solid #ccc;
 }
 
-#my-formsOnline #menubar-creation-actions {
-  margin: 1em 0;
-}
-
-
 @media screen and (max-width: 800px) {
   #my-formsOnline,
   #all-formsOnline	 {
@@ -226,10 +221,6 @@ fieldset {
     margin-right: 2%;
     padding-top: 0;
     border-left: 1px solid #ccc;
-  }
-
-  #my-formsOnline #menubar-creation-actions {
-    margin: 1em 0;
   }
 
   /*** lecteur view *****/
@@ -273,7 +264,7 @@ fieldset {
 
 
 #all-formsOnline #menubar-creation-actions {
-  margin:1em 2% 1em 0
+  margin:0 0 1em 0
 }
 
 #all-formsOnline ul li  span {
@@ -290,7 +281,8 @@ fieldset {
   font-size:130%;
 }
 
-#all-formsOnline .form-description {
+#all-formsOnline .form-description,
+#all-formsOnline .form-nbRequests {
   color:#87888a;
   font-size:90%;
 }
@@ -382,8 +374,14 @@ fieldset {
 	width:auto;
 }
 
+#ask-by .oneFieldPerLine .field {
+  display:none;
+}
+
 #header-OnlineForm .commentaires,
-#header-OnlineForm #ask-statut.inlineMessage{
+#header-OnlineForm #ask-statut.inlineMessage,
+#header-OnlineForm #ask-statut.inlineMessage-ok,
+#header-OnlineForm #ask-statut.inlineMessage-nok {
 	margin:1em 340px 1em 0;
 }
 

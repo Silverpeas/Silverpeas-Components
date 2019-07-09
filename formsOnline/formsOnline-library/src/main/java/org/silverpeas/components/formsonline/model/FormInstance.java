@@ -269,4 +269,8 @@ public class FormInstance implements SilverpeasContent {
   public void setFormWithData(final Form formWithData) {
     this.formWithData = formWithData;
   }
+
+  public RequestPK getPK() {
+    return new RequestPK(getId(), getComponentInstanceId());
+  }
 }

@@ -31,6 +31,7 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
+<%@ taglib prefix="vien" uri="http://www.silverpeas.com/tld/viewGenerator" %>
 
 <c:set var="lang" value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
 <c:set var="componentId" value="${requestScope.browseContext[3]}"/>
@@ -57,9 +58,13 @@
 <view:looknfeel/>
 <view:includePlugin name="toggle"/>
 <script type="text/javascript">
-  function deleteForm(idModel) {
+  function deleteForm(idModel, nbRequests) {
     var label = "<fmt:message key="formsOnline.deleteFormConfirm"/>";
+    if (nbRequests > 0) {
+      label = "<fmt:message key="formsOnline.deleteFormAndRequestsConfirm"/>";
+    }
     jQuery.popup.confirm(label, function() {
+      spProgressMessage.show();
       document.deleteForm.FormId.value = idModel;
       document.deleteForm.submit();
     });
@@ -238,12 +243,15 @@
         <c:forEach items="${forms}" var="form">
           <li class="showActionsOnMouseOver">
             <c:if test="${form.sendable}">
-            <a href="NewRequest?FormId=${form.id}">
-              </c:if>
+              <a href="NewRequest?FormId=${form.id}">
+            </c:if>
               <span class="form-title">${form.title}</span>
               <span class="form-description">${silfn:escapeHtmlWhitespaces(form.description)}</span>
-              <c:if test="${form.sendable}">
-            </a>
+              <c:if test="${role == 'admin'}">
+                <span class="form-nbRequests">${form.nbRequests} <fmt:message key="formsOnline.home.form.requests.number"><fmt:param value="${form.nbRequests}"/></fmt:message></span>
+              </c:if>
+            <c:if test="${form.sendable}">
+              </a>
             </c:if>
             <c:if test="${role == 'admin'}">
               <div class="operation actionShownOnMouseOver">
@@ -259,9 +267,7 @@
                     <a href="PublishForm?Id=${form.id}" title="<fmt:message key="formsOnline.republishForm"/>"><img border="0" src="${iconPublish}" alt="<fmt:message key="formsOnline.republishForm"/>" title="<fmt:message key="formsOnline.republishForm"/>" /></a>
                   </c:when>
                 </c:choose>
-                <c:if test="${not form.alreadyUsed}">
-                  <a href="javascript:onclick=deleteForm('${form.id}')" title="<fmt:message key="GML.delete"/>"><img border="0" src="${iconDelete}" alt="<fmt:message key="GML.delete"/>" title="<fmt:message key="GML.delete"/>" /></a>
-                </c:if>
+                <a href="javascript:onclick=deleteForm('${form.id}',${form.nbRequests})" title="<fmt:message key="GML.delete"/>"><img border="0" src="${iconDelete}" alt="<fmt:message key="GML.delete"/>" title="<fmt:message key="GML.delete"/>" /></a>
               </div>
             </c:if>
           </li>
@@ -279,6 +285,6 @@
   /* declare the module myapp and its dependencies (here in the silverpeas module) */
   var myapp = angular.module('silverpeas.formsOnline', ['silverpeas.services', 'silverpeas.directives']);
 </script>
-
+<view:progressMessage/>
 </body>
 </html>
