@@ -112,23 +112,22 @@ public class RssAgregatorSessionController extends AbstractComponentSessionContr
   }
 
   public void updateChannel(SPChannel channel) throws RssAgregatorException {
-    boolean urlHaveChanged = true;
+    boolean reloadChannel = false;
     if (currentChannel != null && currentChannel.getPK().getId().equals(channel.getPK().getId())) {
-      urlHaveChanged = !currentChannel.getUrl().equals(channel.getUrl());
-      if (urlHaveChanged) {
-        currentChannel.setUrl(channel.getUrl());
-      }
+      reloadChannel = !currentChannel.getUrl().equals(channel.getUrl());
+      currentChannel.setUrl(channel.getUrl());
       currentChannel.setNbDisplayedItems(channel.getNbDisplayedItems());
       currentChannel.setRefreshRate(channel.getRefreshRate());
       currentChannel.setDisplayImage(channel.getDisplayImage());
+      reloadChannel = reloadChannel || (currentChannel.isSafeUrl() != channel.isSafeUrl());
       currentChannel.setSafeUrl(channel.isSafeUrl());
     }
     getRssAggregator().updateChannel(currentChannel);
 
     SyndFeed feed;
-    if (urlHaveChanged) {
+    if (reloadChannel) {
       // L'url a change, il faut recharger le channel
-      cache.removeChannelFromCache((SPChannelPK) channel.getPK());
+      cache.removeChannelFromCache((SPChannelPK) currentChannel.getPK());
     } else {
       // L'url n'a pas change, il n'est pas necessaire de recharger le channel
       feed = cache.getChannelFromCache((SPChannelPK) currentChannel.getPK()).getFeed();
@@ -169,10 +168,7 @@ public class RssAgregatorSessionController extends AbstractComponentSessionContr
     return RSSServiceProvider.getRSSService();
   }
 
-  /**
-   * @return
-   */
-  public SimpleDateFormat getDateFormatter() {
+  private SimpleDateFormat getDateFormatter() {
     if (dateFormatter == null) {
       dateFormatter = new SimpleDateFormat("yyyy/MM/dd");
     }
