@@ -2,6 +2,7 @@ CREATE TABLE SC_Rss_Channels
 (
   id               INT           NOT NULL,
   url              VARCHAR(1000) NOT NULL,
+  safeUrl          BOOLEAN       DEFAULT FALSE NOT NULL,
   refreshRate      INT           NOT NULL,
   nbDisplayedItems INT           NOT NULL,
   displayImage     INT           NOT NULL,

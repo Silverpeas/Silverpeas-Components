@@ -313,3 +313,9 @@ hr#sep-no-agregate {
 body.portlet .cellBrowseBar, body.portlet .cellOperation {
   display: none;
 }
+
+#modal-channel .infoBulle {
+  height: 15px;
+  margin-bottom: 7px;
+  padding-left: 5px;
+}

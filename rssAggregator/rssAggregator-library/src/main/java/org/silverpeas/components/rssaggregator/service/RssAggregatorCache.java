@@ -28,8 +28,8 @@ import org.silverpeas.components.rssaggregator.model.SPChannelPK;
 import org.silverpeas.core.util.ServiceProvider;
 
 import javax.inject.Singleton;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author sv
@@ -37,9 +37,9 @@ import java.util.Map;
 @Singleton
 public class RssAggregatorCache {
   // content of cache
-  private Map<SPChannelPK, SPChannel> cache = new HashMap<>();
+  private Map<SPChannelPK, SPChannel> cache = new ConcurrentHashMap<>();
   // informations about cache refresh
-  private Map<SPChannelPK, Long> cacheNextRefresh = new HashMap<>();
+  private Map<SPChannelPK, Long> cacheNextRefresh = new ConcurrentHashMap<>();
 
   /**
    * Default constructor

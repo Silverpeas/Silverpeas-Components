@@ -1,0 +1,2 @@
+ALTER TABLE sc_rss_channels
+    ADD safeUrl BOOLEAN DEFAULT FALSE NOT NULL;

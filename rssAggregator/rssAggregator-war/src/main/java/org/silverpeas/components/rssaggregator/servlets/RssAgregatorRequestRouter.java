@@ -28,8 +28,8 @@ import org.silverpeas.components.rssaggregator.model.RSSViewType;
 import org.silverpeas.components.rssaggregator.model.RssAgregatorException;
 import org.silverpeas.components.rssaggregator.model.SPChannel;
 import org.silverpeas.components.rssaggregator.service.RSSServiceProvider;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -37,6 +37,8 @@ import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 public class RssAgregatorRequestRouter
     extends ComponentRequestRouter<RssAgregatorSessionController> {
@@ -56,13 +58,10 @@ public class RssAgregatorRequestRouter
   public String getDestination(String function, RssAgregatorSessionController rssSC,
       HttpRequest request) {
     String destination = "";
-
-
     String action = request.getParameter("action");
     if (StringUtil.isDefined(action)) {
       rssSC.setViewMode(RSSViewType.valueOf(action.toUpperCase()));
     }
-
     try {
       if (function.startsWith("Main")) {
         request.setAttribute("Role", rssSC.getHighestRole());
@@ -76,42 +75,44 @@ public class RssAgregatorRequestRouter
         destination = prepareAggregatedView(rssSC, request, true);
       } else if (function.equals("LoadChannels")) {
         rssSC.getChannelsContent();
-
         destination = getDestination("Main", rssSC, request);
+      } else if (function.equals("ToCreateChannel")) {
+        destination = getChannelManagerDestination(rssSC, request);
       } else if (function.equals("CreateChannel")) {
-        SPChannel channel = buildSPChannelFromRequest(request);
-
+        final SPChannel channel = buildSPChannelFromRequest(request);
         rssSC.addChannel(channel);
-
         destination = getDestination("Main", rssSC, request);
       } else if (function.equals("ToUpdateChannel")) {
-        String id = request.getParameter("Id");
-        SPChannel channel = rssSC.getChannel(id);
-
-        request.setAttribute("Channel", channel);
-
-        destination = "/rssAgregator/jsp/updateChannel.jsp";
+        destination = getChannelManagerDestination(rssSC, request);
       } else if (function.equals("UpdateChannel")) {
-        SPChannel channel = buildSPChannelFromRequest(request);
-
+        final SPChannel channel = buildSPChannelFromRequest(request);
         rssSC.updateChannel(channel);
-
-        destination = "/rssAgregator/jsp/reload.jsp";
+        destination = getDestination("LoadChannels", rssSC, request);
+      } else if (function.equals("ToDeleteChannel")) {
+        request.setAttribute("DeletionMode", true);
+        destination = getChannelManagerDestination(rssSC, request);
       } else if (function.equals("DeleteChannel")) {
         String id = request.getParameter("Id");
-
         rssSC.deleteChannel(id);
-
         destination = getDestination("Main", rssSC, request);
       }
     } catch (Exception e) {
-      SilverTrace.error(getSessionControlBeanName(), RssAgregatorRequestRouter.class.getName(),
-          "getDestination error", e);
+      SilverLogger.getLogger(this).error(e);
       request.setAttribute("javax.servlet.jsp.jspException", e);
       destination = "/admin/jsp/errorpageMain.jsp";
     }
 
     return destination;
+  }
+
+  private String getChannelManagerDestination(final RssAgregatorSessionController rssSC,
+      final HttpRequest request) throws RssAgregatorException {
+    final String id = request.getParameter("Id");
+    if (isDefined(id)) {
+      final SPChannel channel = rssSC.getChannel(id);
+      request.setAttribute("Channel", channel);
+    }
+    return "/rssAgregator/jsp/channelManager.jsp";
   }
 
   /**
@@ -126,7 +127,7 @@ public class RssAgregatorRequestRouter
       HttpServletRequest request, boolean isPortletView) throws RssAgregatorException {
     String destination;
     List<SPChannel> channels = rssSC.getAvailableChannels();
-    if (channels.size() != 0) {
+    if (!channels.isEmpty()) {
       request.setAttribute("Channels", channels);
       request.setAttribute("aggregate", true);
       request.setAttribute("allChannels",
@@ -156,7 +157,7 @@ public class RssAgregatorRequestRouter
       HttpServletRequest request) throws RssAgregatorException {
     String destination;
     List<SPChannel> channels = rssSC.getAvailableChannels();
-    if (channels.size() != 0) {
+    if (!channels.isEmpty()) {
       request.setAttribute("Channels", channels);
       destination = "/rssAgregator/jsp/displayRSS.jsp";
     } else {
@@ -171,14 +172,14 @@ public class RssAgregatorRequestRouter
    * @param request the HttpServletRequest
    * @return a new SPChannel
    */
-  private SPChannel buildSPChannelFromRequest(HttpServletRequest request) {
+  private SPChannel buildSPChannelFromRequest(final HttpRequest request) {
     // Retrieve request parameter
     String id = request.getParameter("Id");
     String url = request.getParameter("Url");
+    boolean safeUrl = request.getParameter("SafeUrl") != null;
     String refreshRate = request.getParameter("RefreshRate");
     String nbItems = request.getParameter("NbItems");
     String displayImage = request.getParameter("DisplayImage");
-
     // Return object declaration
     SPChannel channel;
     if (StringUtil.isDefined(id)) {
@@ -186,7 +187,6 @@ public class RssAgregatorRequestRouter
     } else {
       channel = new SPChannel(url);
     }
-
     if (StringUtil.isDefined(nbItems)) {
       channel.setNbDisplayedItems(Integer.parseInt(nbItems));
     }
@@ -194,7 +194,7 @@ public class RssAgregatorRequestRouter
     if (displayImage != null) {
       channel.setDisplayImage(1);
     }
+    channel.setSafeUrl(safeUrl);
     return channel;
   }
-
 }

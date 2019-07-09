@@ -47,13 +47,4 @@ public interface RSSService {
    * @throws RssAgregatorException if an error occurs.
    */
   List<SPChannel> getAllChannels(String applicationId) throws RssAgregatorException;
-
-  /**
-   * Retrieve the syndication channel at the specified URL.
-   * @param url the URL of the syndication feed source.
-   * @return the syndication channel through which feeds can be read.
-   * @throws RssAgregatorException if an error occurs.
-   */
-  SPChannel getChannel(String url) throws RssAgregatorException;
-
 }
