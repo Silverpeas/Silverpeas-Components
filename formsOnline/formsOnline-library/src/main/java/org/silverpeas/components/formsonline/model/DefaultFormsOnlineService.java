@@ -56,6 +56,7 @@ import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -151,6 +152,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
   }
 
   @Override
+  @Transactional
   public FormDetail storeForm(FormDetail form, String[] senderUserIds, String[] senderGroupIds,
       String[] receiverUserIds, String[] receiverGroupIds) throws FormsOnlineDatabaseException {
     FormDetail theForm = form;
@@ -172,14 +174,14 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
   }
 
   @Override
+  @Transactional
   public boolean deleteForm(FormPK pk) throws FormsOnlineDatabaseException {
     // delete all associated requests
-    SilverpeasList<FormInstance> requests = getDAO().getAllRequests(pk);
-
+    final SilverpeasList<FormInstance> requests = getDAO().getAllRequests(pk);
     boolean reallyDeleteForm = true;
     for (FormInstance request : requests) {
       try {
-        deleteRequest(request.getPK());
+        FormsOnlineService.get().deleteRequest(request.getPK());
       } catch (Exception e) {
         SilverLogger.getLogger(this).error(
             "Unable to delete request #" + request.getId() + " in component " +
@@ -187,18 +189,16 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
         reallyDeleteForm = false;
       }
     }
-
     if (reallyDeleteForm) {
       // delete form itself
       getDAO().deleteForm(pk);
-
       removeIndex(pk);
     }
-
     return reallyDeleteForm;
   }
 
   @Override
+  @Transactional
   public void publishForm(FormPK pk) throws FormsOnlineDatabaseException {
     FormDetail form = getDAO().getForm(pk);
     form.setState(FormDetail.STATE_PUBLISHED);
@@ -207,6 +207,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
   }
 
   @Override
+  @Transactional
   public void unpublishForm(FormPK pk) throws FormsOnlineDatabaseException {
     FormDetail form = getDAO().getForm(pk);
     form.setState(FormDetail.STATE_UNPUBLISHED);
@@ -327,6 +328,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
   }
 
   @Override
+  @Transactional
   public void saveRequest(FormPK pk, String userId, List<FileItem> items)
       throws FormsOnlineDatabaseException, PublicationTemplateException, FormException {
     FormInstance request = new FormInstance();
@@ -363,6 +365,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
   }
 
   @Override
+  @Transactional
   public void setValidationStatus(RequestPK pk, String userId, String decision, String comments)
       throws FormsOnlineDatabaseException {
     FormInstance request = getDAO().getRequest(pk);
@@ -405,6 +408,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
   }
 
   @Override
+  @Transactional
   public void deleteRequest(RequestPK pk)
       throws FormsOnlineDatabaseException, FormException, PublicationTemplateException {
     // delete form data
@@ -424,6 +428,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
   }
 
   @Override
+  @Transactional
   public void archiveRequest(RequestPK pk) throws FormsOnlineDatabaseException {
     FormInstance request = getDAO().getRequest(pk);
     request.setState(FormInstance.STATE_ARCHIVED);

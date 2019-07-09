@@ -24,7 +24,6 @@
 package org.silverpeas.components.formsonline.model;
 
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 
@@ -239,7 +238,7 @@ public class FormInstance implements SilverpeasContent {
 
   @Override
   public User getCreator() {
-    return UserFull.getById(getCreatorId());
+    return User.getById(getCreatorId());
   }
 
   @Override

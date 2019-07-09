@@ -31,6 +31,7 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
+<%@ taglib prefix="vien" uri="http://www.silverpeas.com/tld/viewGenerator" %>
 
 <c:set var="lang" value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
 <c:set var="componentId" value="${requestScope.browseContext[3]}"/>
@@ -60,9 +61,10 @@
   function deleteForm(idModel, nbRequests) {
     var label = "<fmt:message key="formsOnline.deleteFormConfirm"/>";
     if (nbRequests > 0) {
-      var label = "<fmt:message key="formsOnline.deleteFormAndRequestsConfirm"/>";
+      label = "<fmt:message key="formsOnline.deleteFormAndRequestsConfirm"/>";
     }
     jQuery.popup.confirm(label, function() {
+      spProgressMessage.show();
       document.deleteForm.FormId.value = idModel;
       document.deleteForm.submit();
     });
@@ -283,6 +285,6 @@
   /* declare the module myapp and its dependencies (here in the silverpeas module) */
   var myapp = angular.module('silverpeas.formsOnline', ['silverpeas.services', 'silverpeas.directives']);
 </script>
-
+<view:progressMessage/>
 </body>
 </html>
