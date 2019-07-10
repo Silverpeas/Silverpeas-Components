@@ -187,7 +187,7 @@
     kmeliaScc.setSessionOwner(isOwner && validatorsOK);
   }
 
-  if (!toolboxMode && isOwner && kmeliaScc.isDraftEnabled() && !pubDetail.haveGotClone() && pubDetail.isDraft()) {
+  if (validatorsOK && !toolboxMode && isOwner && kmeliaScc.isDraftEnabled() && !pubDetail.haveGotClone() && pubDetail.isDraft()) {
     screenMessage = "<div class=\"inlineMessage\">" + resources.getString(
         "kmelia.publication.draft.info") + "</div>";
   }
