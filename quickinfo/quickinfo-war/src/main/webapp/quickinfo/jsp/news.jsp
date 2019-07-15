@@ -137,7 +137,7 @@ function onDelete(id) {
 <!--INTEGRATION  UNE ACTU -->
 <div class="rightContent">
 
-  <c:if test="${not empty index}">
+  <c:if test="${not empty index && not viewOnly}">
     <viewTags:displayIndex nbItems="${index.nbItems}" index="${index.currentIndex}" />
   </c:if>
 
