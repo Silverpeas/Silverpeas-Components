@@ -26,6 +26,7 @@ package org.silverpeas.components.mydb.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -73,5 +74,10 @@ public class TableRow {
     return fields.get(field);
   }
 
+  public TableRow getCopy() {
+    final Map<String, TableFieldValue> copyOfFields = new HashMap<>();
+    fields.forEach((key, value) -> copyOfFields.put(key, value.getCopy()));
+    return new TableRow(copyOfFields);
+  }
 }
   

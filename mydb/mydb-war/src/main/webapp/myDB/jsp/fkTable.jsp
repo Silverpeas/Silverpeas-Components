@@ -37,6 +37,7 @@
 <fmt:message bundle="${icons}" var="primaryKeyIcon" key="mydb.icons.primaryKey"/>
 <c:url var="primaryKeyIcon" value="${primaryKeyIcon}"/>
 
+<view:setConstant var="paramFkArrayPaneName" constant="org.silverpeas.components.mydb.web.MyDBWebController.FK_ARRAY_PANE_NAME"/>
 <view:setConstant var="paramTable" constant="org.silverpeas.components.mydb.web.MyDBWebController.TABLE_VIEW"/>
 <view:setConstant var="paramError" constant="org.silverpeas.components.mydb.web.MyDBWebController.ERROR_MESSAGE"/>
 <view:setConstant var="nullValue" constant="org.silverpeas.components.mydb.model.predicates.AbstractColumnValuePredicate.NULL_VALUE"/>
@@ -53,28 +54,36 @@
     <c:set var="columns" value="${table.columns}"/>
     <c:set var="rows" value="${table.rows}"/>
     <div id="fk-table-view">
-      <view:arrayPane var="Table${table.name}" routingAddress="ViewTargetTable" export="false" numberLinesPerPage="25">
+      <view:arrayPane var="${requestScope[paramFkArrayPaneName]}" routingAddress="ViewTargetTable?${paramTable}=${table.name}" export="false" numberLinesPerPage="${table.pagination.pageSize}">
         <c:forEach var="column" items="${columns}">
           <c:set var="columnName" value="${column.name}"/>
           <c:if test="${column.primaryKey}">
             <c:set var="columnName">${columnName} <img alt="primary key" src="${primaryKeyIcon}" width="10" height="10"/></c:set>
           </c:if>
-          <view:arrayColumn title="${columnName}" sortable="false"/>
+          <view:arrayColumn title="${columnName}" compareOn="${(r, i) -> r.data.getFieldValue(columns[i].name)}"/>
         </c:forEach>
-        <view:arrayLines var="rowIndex" begin="0" end="${rows.size() - 1}">
-          <view:arrayLine id="fk-row-${rowIndex}">
-            <c:set var="selectionLink" value=""/>
+        <view:arrayLines var="row" items="${rows}">
+          <view:arrayLine id="fk-row-${row.pkValue}">
             <c:forEach var="field" items="${columns}">
-              <c:set var="currentValue" value="${rows[rowIndex].getFieldValue(field.name)}"/>
-              <c:if test="${field.primaryKey and not silfn:isDefined(selectionLink)}">
-                <c:set var="selectionLink"><a href="javascript:window.selectFk('${rowIndex}', '${currentValue}');"></c:set>
+              <c:set var="valueToRender"/>
+              <c:if test="${not empty row.pkValue}">
+                <c:set var="valueToRender"><a href='javascript:window.selectFk(${row.jsonPkValue});'></c:set>
               </c:if>
-              <c:set var="valueToRender">${selectionLink}${currentValue}</a></c:set>
+              <c:set var="valueToRender">${valueToRender}${row.data.getFieldValue(field.name)}</c:set>
+              <c:if test="${not empty row.pkValue}">
+                <c:set var="valueToRender">${valueToRender}</a></c:set>
+              </c:if>
               <view:arrayCellText text="${valueToRender}" nullStringValue="${nullValue}"/>
             </c:forEach>
           </view:arrayLine>
         </view:arrayLines>
       </view:arrayPane>
+      <script type="text/javascript">
+        whenSilverpeasReady(function() {
+          sp.arrayPane.ajaxControls('#fk-table-view');
+          selectCurrentFk()
+        });
+      </script>
     </div>
   </c:otherwise>
 </c:choose>

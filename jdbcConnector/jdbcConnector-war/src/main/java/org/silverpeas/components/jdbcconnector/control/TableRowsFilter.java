@@ -25,15 +25,7 @@
 package org.silverpeas.components.jdbcconnector.control;
 
 import org.silverpeas.components.jdbcconnector.service.TableRow;
-import org.silverpeas.components.jdbcconnector.service.comparators.Equality;
-import org.silverpeas.components.jdbcconnector.service.comparators.FieldValueComparator;
-import org.silverpeas.components.jdbcconnector.service.comparators.Inclusion;
-import org.silverpeas.components.jdbcconnector.service.comparators.Inequality;
-import org.silverpeas.components.jdbcconnector.service.comparators.Inferiority;
-import org.silverpeas.components.jdbcconnector.service.comparators.NothingBuilder;
-import org.silverpeas.components.jdbcconnector.service.comparators.StrictInferiority;
-import org.silverpeas.components.jdbcconnector.service.comparators.StrictSuperiority;
-import org.silverpeas.components.jdbcconnector.service.comparators.Superiority;
+import org.silverpeas.components.jdbcconnector.service.comparators.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -70,6 +62,7 @@ public class TableRowsFilter {
   static {
     comparators.put(FIELD_NONE, new NothingBuilder());
     comparators.put("include", new Inclusion());
+    comparators.put("like", new Like());
     comparators.put("=", new Equality());
     comparators.put("!=", new Inequality());
     comparators.put("<=", new Inferiority());

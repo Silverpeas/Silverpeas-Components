@@ -36,15 +36,18 @@
 
 <view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.admin"/>
 <view:setConstant var="publisherRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.publisher"/>
+<view:setConstant var="mainArrayPaneName" constant="org.silverpeas.components.mydb.web.MyDBWebController.MAIN_ARRAY_PANE_NAME"/>
 <view:setConstant var="tableView" constant="org.silverpeas.components.mydb.web.MyDBWebController.TABLE_VIEW"/>
+<view:setConstant var="useLastLoadedRows" constant="org.silverpeas.components.mydb.web.MyDBWebController.USE_LAST_LOADED_ROWS"/>
 <view:setConstant var="allTables" constant="org.silverpeas.components.mydb.web.MyDBWebController.ALL_TABLES"/>
 <view:setConstant var="comparingColumn" constant="org.silverpeas.components.mydb.web.MyDBWebController.COMPARING_COLUMN"/>
 <view:setConstant var="comparingOperator" constant="org.silverpeas.components.mydb.web.MyDBWebController.COMPARING_OPERATOR"/>
 <view:setConstant var="comparingValue" constant="org.silverpeas.components.mydb.web.MyDBWebController.COMPARING_VALUE"/>
 <view:setConstant var="comparingOperators" constant="org.silverpeas.components.mydb.web.MyDBWebController.COMPARING_OPERATORS"/>
 <view:setConstant var="nothing" constant="org.silverpeas.components.mydb.web.TableRowsFilter.FIELD_NONE"/>
-<view:setConstant var="rowIndex" constant="org.silverpeas.components.mydb.web.MyDBWebController.ROW_INDEX"/>
+<view:setConstant var="uiRowId" constant="org.silverpeas.components.mydb.web.MyDBWebController.UI_ROW_ID"/>
 <view:setConstant var="nullValue" constant="org.silverpeas.components.mydb.model.predicates.AbstractColumnValuePredicate.NULL_VALUE"/>
+<view:setConstant var="emptyString" constant="org.silverpeas.components.mydb.model.predicates.AbstractColumnValuePredicate.EMPTY_VALUE"/>
 
 <c:set var="componentId"       value="${requestScope.browseContext[3]}"/>
 <c:set var="columnToCompare"   value="${requestScope[comparingColumn]}"/>
@@ -52,11 +55,14 @@
 <c:set var="currentComparator" value="${requestScope[comparingOperator]}"/>
 <c:set var="columnValue"       value="${requestScope[comparingValue]}"/>
 <c:set var="currentTable"      value="${requestScope[tableView]}"/>
+<c:set var="currentTable"      value="${requestScope[tableView]}"/>
 <c:set var="tableNames"        value="${requestScope[allTables]}"/>
+<c:set var="useLastLoadedRows" value="${silfn:booleanValue(requestScope[useLastLoadedRows])}"/>
 <jsp:useBean id="currentTable" type="org.silverpeas.components.mydb.web.TableView"/>
 
 <c:set var="columns" value="${currentTable.columns}"/>
-<c:set var="rows" value="${currentTable.rows}"/>
+<c:set var="rows" value="${useLastLoadedRows ? currentTable.lastRows : currentTable.rows}"/>
+<c:set var="currentUserCanManageRows" value="${requestScope.highestUserRole.isGreaterThanOrEquals(publisherRole)}"/>
 
 <fmt:message var="windowTitle" key="mydb.mainTitle"/>
 <fmt:message var="crumbTitle" key="mydb.tableView"/>
@@ -69,7 +75,6 @@
 <fmt:message var="criterionField" key="mydb.criterion"/>
 <fmt:message var="valueCriterionField" key="mydb.criterionValue"/>
 <fmt:message var="filterValueInfo" key="mydb.criterionValueExplanation"/>
-<fmt:message var="operations" key="GML.operations"/>
 <fmt:message var="deletion" key="GML.delete"/>
 <fmt:message var="deletionConfirm" key="mydb.deletion.confirmation"/>
 <fmt:message var="modify" key="GML.modify"/>
@@ -99,6 +104,8 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   <view:looknfeel withCheckFormScript="true" withFieldsetStyle="true"/>
   <script type="application/javascript">
+    var rowsPane;
+
     /**
      * Filters the rows of the default table currently displayed by applying the comparator on the
      * field against a given value.
@@ -114,19 +121,8 @@
           (value === null || value === '')) {
         notyError('${noValue}');
       } else {
+        spProgressMessage.show();
         $('#table-filter').submit();
-      }
-    }
-
-    /**
-     * Selects as the default one a database table.
-     */
-    function selectTable() {
-      var table = $('#table').val();
-      if (table === null || table === '${nothing}') {
-        notyError('${noSelectedTable}');
-      } else {
-        $('#table-selection').submit();
       }
     }
 
@@ -134,9 +130,9 @@
      * Deletes the row at the specified index in the view of the default table and then refreshes
      * the view.
      */
-    function deleteRow(rowIndex) {
+    function deleteRow(uiRowId) {
       $.popup.confirm('${deletionConfirm}', function() {
-        sp.ajaxRequest('DeleteRow').withParam('${rowIndex}', rowIndex)
+        sp.ajaxRequest('DeleteRow').withParam('${uiRowId}', uiRowId)
             .byPostMethod().send().then(rowsPane.refreshFromRequestResponse);
       });
     }
@@ -152,22 +148,22 @@
         form.popup('validation', {
           title : title, callback : function() {
             var row = {};
-            var error = '';
-            form.find('[id*="value"]').each(function(i, input) {
+            form.find("[id*='value']").filter('.field-value-input').each(function(i, input) {
               var elt = $(input);
               var val = elt.val();
-              if (val === null || val.length === 0) {
-                error += elt.attr('name') + ': ${noValue}<br/>';
+              var emptyValue = val === null || val.length === 0;
+              if (emptyValue && input.classList.contains('mandatory')) {
+                SilverpeasError.add('<strong>' + elt.attr('name') + '</strong>: ${noValue}');
               } else if (elt.hasClass('mandatory') && val === 'null') {
-                error += elt.attr('name') + ': ${nullForbidden}<br/>';
+                SilverpeasError.add('<strong>' + elt.attr('name') + '</strong>: ${nullForbidden}');
               } else {
                 row[elt.attr('name')] = elt.val();
               }
             });
-            if (error.length > 0) {
-              notyError(error);
+            if (SilverpeasError.show()) {
+              return false;
             } else {
-              formSender(row);
+              return formSender(row);
             }
           },
           callbackOnClose: function() {
@@ -181,36 +177,41 @@
      * Updates the row at the specified index in the view of the default table with the values
      * entered in given the row form.
      */
-    function updateRow(rowIndex, row) {
-      row['${rowIndex}'] = rowIndex;
-      sp.ajaxRequest('UpdateRow').withParams(row)
+    function updateRow(uiRowId, row) {
+      row['${uiRowId}'] = uiRowId;
+      return sp.ajaxRequest('UpdateRow').withParams(row)
           .byPostMethod().send().then(rowsPane.refreshFromRequestResponse);
     }
 
     /**
      * Opens the form to modify the row at the specified index in the view of the default table.
      */
-    function modifyRow(rowIndex) {
-      sp.ajaxRequest('GetRow').withParam('${rowIndex}', rowIndex).send().then(function(response) {
+    function modifyRow(uiRowId) {
+      sp.ajaxRequest('GetRow').withParam('${uiRowId}', uiRowId).send().then(function(response) {
         var sender = function(row) {
-          updateRow(rowIndex, row);
+          normalizeFieldValues(row);
+          return updateRow(uiRowId, row);
         };
         renderRowForm('${modifyRow}', response, sender)
       });
     }
 
+    var normalizeFieldValues = function(row) {
+      for (var field in row) {
+        if (row[field].length === 0) {
+          row[field] = '${nullValue}';
+        } else if (row[field] === '${emptyString}') {
+          row[field] = '';
+        }
+      }
+    };
+
     /**
      * Adds the new specified row into the default table and refreshes the view on that table.
      */
     function addRow(row) {
-      for (var field in row) {
-        if (row[field].length === 0) {
-          row[field] = null;
-        } else if (row[field] === '@empty@') {
-          row[field] = '';
-        }
-      }
-      sp.ajaxRequest('AddRow').withParams(row)
+      normalizeFieldValues(row);
+      return sp.ajaxRequest('AddRow').withParams(row)
           .byPostMethod().send().then(rowsPane.refreshFromRequestResponse);
     }
 
@@ -224,39 +225,98 @@
     }
 
     /**
+     * Sets null value on input of given fieldName.
+     */
+    function setNullValue(fieldName) {
+      sp.element.querySelector("#field-" + fieldName + "-value").value = '${nullValue}';
+    }
+
+    /**
+     * Sets empty string on input of given fieldName.
+     */
+    function setEmptyValue(fieldName) {
+      sp.element.querySelector("#field-" + fieldName + "-value").value = '${emptyString}';
+    }
+
+    /**
      * The unique identifier of a row in another table to use as foreign key in a row currently
      * edited.
      */
-    var fkRowId = null;
+    var jsonFkRowId = null;
 
     /**
      * Open the specified table to select a row as foreign key when inserting a new row in the
      * current table. This function is invoked by the JSP rendered into the popup of row adding.
      */
-    function openForeignKey(tableName, fieldName) {
-      fkRowId = null;
-      sp.ajaxRequest('ViewTargetTable').withParam('${tableView}', tableName).send().then(
-          function(response) {
-            renderRowForm('', response, function(row) {
-              $('#field-' + fieldName + '-value').val(fkRowId);
-            })
+    function openForeignKey(refTableName) {
+      jsonFkRowId = sp.element.querySelectorAll('.field-fk-reftable-' + refTableName)
+          .map(function(i) {
+            return {
+              'f' : i.getAttribute('rel').replace(/field-fk-refcolumn-(.+)/gi, '$1'),
+              'v' : i.value
+            }
           });
+      sp.ajaxRequest('ViewTargetTable').withParam('${tableView}', refTableName).send().then(
+        function(response) {
+          renderRowForm(refTableName, response, function(row) {
+            jsonFkRowId.forEach(function(fieldValue) {
+              sp.element.querySelector(".field-fk-reftable-" + refTableName + "[rel='field-fk-refcolumn-" + fieldValue.f + "']").value = fieldValue.v;
+            });
+          });
+        });
     }
 
     /**
      * A row in a table has been selected as a foreign key. This function is invoked by the JSP
      * rendered into the popup of the row selection for foreign key setting.
      */
-    function selectFk(rowIndex, rowId) {
-      $('#fk-table-view td.selected').removeClass('selected');
-      $('#fk-table-view #fk-row-' + rowIndex).children().addClass('selected');
-      fkRowId = rowId;
+    function selectFk(fkValue) {
+      jsonFkRowId = fkValue;
+      selectCurrentFk();
     }
+
+    /**
+     * This function is invoked by the JSP rendered into the popup of the current row selection for
+     * foreign key setting.
+     */
+    function selectCurrentFk() {
+      sp.element.querySelectorAll('#fk-table-view td.selected').forEach(function(e) {
+        e.classList.remove('selected');
+      });
+      if (jsonFkRowId) {
+        var selectedPkValue = jsonFkRowId.map(function(fieldValue) {
+          return fieldValue.f + '-' + fieldValue.v;
+        }).join('-');
+        sp.element.querySelectorAll('#fk-table-view #fk-row-' + selectedPkValue + " td").forEach(
+            function(e) {
+              e.classList.add('selected');
+            });
+      }
+    }
+
+    function refreshDataArray() {
+      sp.navRequest('ViewTable').go();
+    }
+
+    whenSilverpeasReady(function() {
+      jQuery('#table').selectize({
+        plugins : ['SelectOnTabulationKeyDown', 'KeepLastSelectedValueIfEmptyWhenLeaving'],
+        wrapperClass : 'selectize-control silverpeas-selectize',
+        placeholder : '${currentTable.defined ? currentTable.name : ''}'
+      }).on('change', function() {
+        if (this.value && this.value !== '${currentTable.defined ? currentTable.name : ''}') {
+          spProgressMessage.show();
+          sp.ajaxRequest('SetTable')
+            .withParam('${tableView}', this.value)
+            .byPostMethod().send().then(refreshDataArray);
+        }
+      });
+    });
   </script>
 </head>
 <body>
 <view:browseBar componentId="${componentId}" path="${requestScope.navigationContext}" extraInformations="${crumbTitle}"/>
-<c:if test="${requestScope.highestUserRole.isGreaterThanOrEquals(publisherRole)}">
+<c:if test="${currentUserCanManageRows}">
 <view:operationPane>
   <view:operationOfCreation action="javascript:newRow()" icon="${createIcons}" altText="${newRow}"/>
 </view:operationPane>
@@ -271,32 +331,27 @@
   </c:if>
   <view:frame>
     <view:areaOfOperationOfCreation/>
-    <c:if test="${requestScope.highestUserRole.isGreaterThanOrEquals(publisherRole)}">
-    <div id="selection" style="padding-bottom: 10px">
-      <form id="table-selection" name="table-selection" action="SetTable" method="post">
+    <c:if test="${currentUserCanManageRows}">
+      <div id="selection" style="padding-bottom: 10px">
         <label for="table"><fmt:message key="mydb.tables"/></label>
-        <span class="intfdcolor selectNS" style="padding: 2px">
-        <select id="table" name="${tableView}" size="1">
-          <c:if test="${not currentTable.defined}">
-            <option value="${nothing}" selected>&nbsp;</option>
-          </c:if>
-          <c:forEach var="tableName" items="${tableNames}">
-            <c:choose>
-              <c:when test="${tableName.equals(currentTable.name)}">
-                <option value="${tableName}" selected>${tableName}</option>
-              </c:when>
-              <c:otherwise>
-                <option value="${tableName}">${tableName}</option>
-              </c:otherwise>
-            </c:choose>
-          </c:forEach>
-        </select>
-        </span>
-        <span class="intfdcolor selectNS">
-          <view:button label="${buttonOk}" action="javascript:onclick=selectTable()"/>
-        </span>
-      </form>
-    </div>
+        <div class="intfdcolor selectNS" style="padding: 2px">
+          <select id="table" name="${tableView}" size="1" class="">
+            <c:if test="${not currentTable.defined}">
+              <option value="${nothing}" selected>&nbsp;</option>
+            </c:if>
+            <c:forEach var="tableName" items="${tableNames}">
+              <c:choose>
+                <c:when test="${tableName.equals(currentTable.name)}">
+                  <option value="${tableName}" selected>${tableName}</option>
+                </c:when>
+                <c:otherwise>
+                  <option value="${tableName}">${tableName}</option>
+                </c:otherwise>
+              </c:choose>
+            </c:forEach>
+          </select>
+        </div>
+      </div>
     </c:if>
     <div id="filtering" style="padding-bottom: 10px">
       <form id="table-filter" name="table-filter" action="FilterTable" method="post">
@@ -348,48 +403,45 @@
         </span>
         <span class="intfdcolor selectNS">
           <img class="filter-info-button" src="${infoIcon}" alt="info"/>
-          <view:button label="${buttonOk}" action="javascript:onclick=filterTableRows()"/>
+          <view:button classes="linked-to-input" label="${buttonOk}" action="javascript:onclick=filterTableRows()"/>
         </span>
       </form>
     </div>
     <div id="table-view">
-      <view:arrayPane var="Table${componentId}" routingAddress="ViewTable" export="false" numberLinesPerPage="25">
+      <view:arrayPane var="${requestScope[mainArrayPaneName]}" routingAddress="ViewTable" export="true" numberLinesPerPage="${currentTable.pagination.pageSize}">
         <c:forEach var="column" items="${columns}">
           <c:set var="columnName" value="${column.name}"/>
           <c:if test="${column.primaryKey}">
-            <c:set var="columnName">${columnName}
-              <img alt="primary key" src="${primaryKeyIcon}" width="10" height="10"/></c:set>
+            <c:set var="columnName">${columnName} <img alt="primary key" src="${primaryKeyIcon}" width="10" height="10"/></c:set>
           </c:if>
-          <view:arrayColumn title="${columnName}" compareOn="${(r, i) -> r.getFieldValue(columns[i].name)}"/>
+          <view:arrayColumn title="${columnName}" compareOn="${(r, i) -> r.data.getFieldValue(columns[i].name)}"/>
         </c:forEach>
-        <c:if test="${requestScope.highestUserRole.isGreaterThanOrEquals(publisherRole)}">
-          <view:arrayColumn title="${operations}" sortable="false"/>
+        <c:if test="${currentUserCanManageRows}">
+          <view:arrayColumn title="" sortable="false"/>
         </c:if>
-        <c:if test="${rows.size() > 0}">
-          <view:arrayLines var="rowIndex" begin="0" end="${rows.size() - 1}">
-            <c:set var="row" value="${rows[rowIndex]}"/>
+        <view:arrayLines var="row" items="${rows}">
           <view:arrayLine>
             <c:forEach var="field" items="${columns}">
-              <c:set var="currentValue" value="${row.getFieldValue(field.name)}"/>
-              <view:arrayCellText text="${currentValue}" nullStringValue="${nullValue}"/>
+              <c:set var="currentValue" value="${row.data.getFieldValue(field.name)}"/>
+              <view:arrayCellText text="${silfn:escapeHtml(currentValue)}" nullStringValue="${nullValue}"/>
             </c:forEach>
-            <c:if test="${requestScope.highestUserRole.isGreaterThanOrEquals(publisherRole)}">
+            <c:if test="${currentUserCanManageRows}">
               <view:arrayCellText>
-                <a href="javascript:deleteRow(${rowIndex});"><img src="${deleteIcon}" alt="${deletion}"/></a>
-                <a href="javascript:modifyRow(${rowIndex});"><img src="${modifyIcon}" alt="${modify}"/></a>
+                <a href="javascript:modifyRow('${row.id}');" title="${modify}"><img src="${modifyIcon}" alt="${modify}"/></a>
+                <a href="javascript:deleteRow('${row.id}');" title="${deletion}"><img src="${deleteIcon}" alt="${deletion}"/></a>
               </view:arrayCellText>
             </c:if>
           </view:arrayLine>
         </view:arrayLines>
-        </c:if>
       </view:arrayPane>
+      <script type="text/javascript">
+        whenSilverpeasReady(function() {
+          TipManager.simpleHelp(".filter-info-button", "${filterValueInfo}");
+          rowsPane = sp.arrayPane.ajaxControls('#table-view');
+        });
+      </script>
     </div>
   </view:frame>
 </view:window>
-<script type="text/javascript">
-  whenSilverpeasReady(function() {
-    TipManager.simpleHelp(".filter-info-button", "${filterValueInfo}");
-    rowsPane = sp.arrayPane.ajaxControls('#table-view');
-  });
-</script>
+<view:progressMessage/>
 </body>

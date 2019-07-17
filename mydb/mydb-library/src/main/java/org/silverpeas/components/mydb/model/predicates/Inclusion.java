@@ -33,13 +33,18 @@ import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
  */
 public class Inclusion extends AbstractColumnValuePredicate {
 
-  public Inclusion(final DbColumn column, final Comparable refValue) {
+  public Inclusion(final DbColumn column, final String refValue) {
     super(column, refValue);
   }
 
   @Override
   public JdbcSqlQuery apply(final JdbcSqlQuery query) {
-    return query.where(getColumn().getName()).in(getReferenceValue());
+    final Object normalizedValue = getNormalizedValue();
+    if (normalizedValue instanceof Object[]) {
+      return query.where(getColumn().getName()).in((Object[]) normalizedValue);
+    } else {
+      return query.where(getColumn().getName()).in(normalizedValue);
+    }
   }
 }
   

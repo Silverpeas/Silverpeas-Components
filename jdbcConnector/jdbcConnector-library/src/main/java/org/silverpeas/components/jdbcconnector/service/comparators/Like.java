@@ -22,24 +22,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.components.mydb.model.predicates;
+package org.silverpeas.components.jdbcconnector.service.comparators;
 
-import org.silverpeas.components.mydb.model.DbColumn;
-import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
+import static org.silverpeas.core.util.StringUtil.like;
 
 /**
- * The non-strict inferiority predicates; the column'values can be equal with the reference value.
- * @author mmoquillon
+ * The equality comparator.
+ * @author silveryocha
  */
-public class Inferiority extends AbstractColumnValuePredicate {
-
-  public Inferiority(final DbColumn column, final String refValue) {
-    super(column, refValue);
-  }
+public class Like extends Equality {
 
   @Override
-  public JdbcSqlQuery apply(final JdbcSqlQuery query) {
-    return query.where(getColumn().getName() + " <= ?", getNormalizedValue());
+  public boolean compare(final Comparable value, final Comparable referenceValue) {
+    boolean result = super.compare(value, referenceValue);
+    if (!result && value != null && referenceValue != null) {
+      return like(value.toString(), referenceValue.toString());
+    }
+    return result;
   }
 }
   

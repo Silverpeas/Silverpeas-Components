@@ -33,13 +33,13 @@ import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
  */
 public class Superiority extends AbstractColumnValuePredicate {
 
-  public Superiority(final DbColumn column, final Comparable refValue) {
+  public Superiority(final DbColumn column, final String refValue) {
     super(column, refValue);
   }
 
   @Override
   public JdbcSqlQuery apply(final JdbcSqlQuery query) {
-    return query.where(getColumn().getName() + " > ?", getReferenceValue());
+    return query.where(getColumn().getName() + " >= ?", getNormalizedValue());
   }
 }
   

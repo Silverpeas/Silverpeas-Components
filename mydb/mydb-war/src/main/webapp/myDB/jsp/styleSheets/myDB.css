@@ -6,3 +6,29 @@
 #fk-table-view a {
   display: block;
 }
+
+#fk-table-view .pageNav a {
+  display: inline;
+}
+
+.foreign-key-value {
+  cursor: pointer;
+}
+
+#row-edition .champs {
+  white-space: nowrap;
+}
+
+#selection {
+  display: table;
+}
+
+#table-selection {
+  display: inline-table;
+}
+
+#selection label,
+#selection .selectNS {
+  display: table-cell;
+  vertical-align: middle;
+}

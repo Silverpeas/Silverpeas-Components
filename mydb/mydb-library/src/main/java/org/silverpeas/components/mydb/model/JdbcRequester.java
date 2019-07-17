@@ -27,9 +27,11 @@ package org.silverpeas.components.mydb.model;
 import org.silverpeas.components.mydb.model.predicates.AbstractColumnValuePredicate;
 import org.silverpeas.components.mydb.service.MyDBException;
 import org.silverpeas.components.mydb.service.MyDBRuntimeException;
+import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.TransactionRuntimeException;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
+import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.util.StringUtil;
 
 import java.sql.Connection;
@@ -43,6 +45,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import static org.silverpeas.core.util.StringUtil.isDefined;
+
 /**
  * A requester of a remote enterprise data source by using the yet configured
  * {@link MyDBConnectionInfo} instance. If
@@ -53,7 +57,6 @@ import java.util.Objects;
 class JdbcRequester {
 
   private final MyDBConnectionInfo currentConnectionInfo;
-  private String orderBy = "";
 
   /**
    * Constructs a new JDBC requester with the specified {@link MyDBConnectionInfo} instance.
@@ -187,25 +190,31 @@ class JdbcRequester {
    * Requests the content of the specified table by applying the given predicate and uses the
    * specified converters to convert each row and each row's value to their corresponding business
    * object, ready to be handled by the caller.
+   * @param <V> the type of the business objects representing the row's values.
+   * @param <R> the type of the business objects representing the rows.
    * @param connection a connection to the database.
    * @param tableName the name of the table to request.
    * @param predicate a predicate to use to filter the table's content.
+   * @param orderBy a order by directive already built (without the clause key words).
    * @param converters the converters to use to convert each row and each row's value to a business
    * object.
-   * @param <V> the type of the business objects representing the row's values.
-   * @param <R> the type of the business objects representing the rows.
+   * @param pagination a pagination in order to avoid bad performances.
    * @return a list of rows, matching the given predicate, in their business representation. If no
    * rows match the specified predicate or if the table is empty, an empty list is returned.
    * @throws SQLException if an error occurs while requesting the database.
    */
-  <V, R> List<R> request(final Connection connection, final String tableName,
-      final AbstractColumnValuePredicate predicate, final DataConverters<V, R> converters)
+  <V, R> SilverpeasList<R> request(final Connection connection, final String tableName,
+      final AbstractColumnValuePredicate predicate, final String orderBy, final DataConverters<V, R> converters,
+      final PaginationPage pagination)
       throws SQLException {
     Objects.requireNonNull(connection);
     Objects.requireNonNull(tableName);
     Objects.requireNonNull(predicate);
     JdbcSqlQuery query = JdbcSqlQuery.createSelect("*").from(tableName);
-    query = predicate.apply(query).orderBy(this.orderBy);
+    query = predicate.apply(query).orderBy(orderBy);
+    if (pagination != null) {
+      query.withPagination(pagination.asCriterion());
+    }
     return query.executeWith(connection, rs -> {
       try {
         final Map<String, V> row = new LinkedHashMap<>();
@@ -230,11 +239,10 @@ class JdbcRequester {
    * @param criteria the criteria the rows to delete have to match.
    * @throws SQLException if an error occurs while deleting the rows in the specified table.
    */
-  void delete(final Connection connection, final String tableName,
+  long delete(final Connection connection, final String tableName,
       final Map<String, Object> criteria) throws SQLException {
     final JdbcSqlQuery query = JdbcSqlQuery.createDeleteFor(tableName);
-    applyCriteria(query, criteria)
-        .executeWith(connection);
+    return applyCriteria(query, criteria).executeWith(connection);
   }
 
   /**
@@ -246,11 +254,11 @@ class JdbcRequester {
    * @param criteria the criteria the rows have to match.
    * @throws SQLException if an error occurs while updating the rows in the specified table.
    */
-  void update(final Connection connection, final String tableName, final Map<String, Object> values,
+  long update(final Connection connection, final String tableName, final Map<String, Object> values,
       Map<String, Object> criteria) throws SQLException {
-    JdbcSqlQuery query = JdbcSqlQuery.createUpdateFor(tableName);
+    final JdbcSqlQuery query = JdbcSqlQuery.createUpdateFor(tableName);
     values.forEach(query::addUpdateParam);
-    applyCriteria(query, criteria).executeWith(connection);
+    return applyCriteria(query, criteria).executeWith(connection);
   }
 
   /**
@@ -261,7 +269,7 @@ class JdbcRequester {
    */
   void insert(final Connection connection, final String tableName, final Map<String, Object> values)
       throws SQLException {
-    JdbcSqlQuery query = JdbcSqlQuery.createInsertFor(tableName);
+    final JdbcSqlQuery query = JdbcSqlQuery.createInsertFor(tableName);
     values.forEach(query::addInsertParam);
     query.executeWith(connection);
   }
@@ -271,8 +279,12 @@ class JdbcRequester {
     final List<Object> values = new ArrayList<>(criteria.size());
     final String conjunction = " and ";
     criteria.forEach((key, value) -> {
-      clauses.append(key).append(" = ?").append(conjunction);
-      values.add(value);
+      if (value == null) {
+        clauses.append(key).append(" is null").append(conjunction);
+      } else {
+        clauses.append(key).append(" = ?").append(conjunction);
+        values.add(value);
+      }
     });
     clauses.setLength(clauses.length() - conjunction.length());
     return query.where(clauses.toString(), values);
@@ -280,7 +292,7 @@ class JdbcRequester {
 
   private String getDefaultValue(final ResultSet resultSet) throws SQLException {
     String defaultValue = resultSet.getString("COLUMN_DEF");
-    if (StringUtil.isDefined(defaultValue)) {
+    if (isDefined(defaultValue)) {
       int index = defaultValue.indexOf("::");
       if (index != -1) {
         defaultValue = defaultValue.substring(0, index);

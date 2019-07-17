@@ -28,18 +28,24 @@ import org.silverpeas.components.mydb.model.DbColumn;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 
 /**
- * The non-strict inferiority predicates; the column'values can be equal with the reference value.
- * @author mmoquillon
+ * The like predicate.
+ * @author silveryocha
  */
-public class Inferiority extends AbstractColumnValuePredicate {
+public class Like extends AbstractColumnValuePredicate {
 
-  public Inferiority(final DbColumn column, final String refValue) {
+  /**
+   * Constructs a new predicate on the specified database table's column and with the given
+   * reference value.
+   * @param column the name of a column.
+   * @param refValue a reference value.
+   */
+  public Like(final DbColumn column, final String refValue) {
     super(column, refValue);
   }
 
   @Override
   public JdbcSqlQuery apply(final JdbcSqlQuery query) {
-    return query.where(getColumn().getName() + " <= ?", getNormalizedValue());
+    return query.where(getColumn().getName() + " like ?", getNormalizedValue());
   }
 }
   

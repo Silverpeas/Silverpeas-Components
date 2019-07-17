@@ -106,7 +106,7 @@
   <view:frame>
     <div id="filtering" style="padding-bottom: 10px">
       <form id="result-filter" name="result-set_filtering" action="DoRequest" method="post">
-        <span class="intfdcolor selectNS" style="padding: 2px">
+        <div class="intfdcolor selectNS" style="padding: 2px">
           <select id="result-filter-column" name="${comparingColumn}" size="1">
             <c:choose>
               <c:when test="${nothing.equals(columnToCompare)}">
@@ -127,8 +127,8 @@
               </c:choose>
             </c:forEach>
           </select>
-        </span>
-        <span class="intfdcolor selectNS" style="padding: 2px">
+        </div>
+        <div class="intfdcolor selectNS" style="padding: 2px">
           <select id="result-filter-comparator" name="${comparingOperator}" size="1">
             <c:forEach var="comparator" items="${comparators}">
               <c:set var="comparatorLabel" value="${comparator}"/>
@@ -148,14 +148,14 @@
               </c:choose>
             </c:forEach>
           </select>
-        </span>
-        <span class="intfdcolor selectNS" style="padding: 2px">
+        </div>
+        <div class="intfdcolor selectNS" style="padding: 2px">
           ${valueCriterionField}&nbsp;: <input id="result-filter-value" type="text" name="${comparingValue}" size="30" value="${columnValue}"/>
-        </span>
-        <span class="intfdcolor selectNS">
+        </div>
+        <div class="intfdcolor selectNS">
           <img class="filter-info-button" src="${infoIcon}" alt="info"/>
-          <view:button label="${buttonOk}" action="javascript:onclick=restrictResults()"/>
-        </span>
+          <view:button classes="linked-to-input" label="${buttonOk}" action="javascript:onclick=restrictResults()"/>
+        </div>
       </form>
     </div>
     <div id="result-set">

@@ -36,7 +36,8 @@ public abstract class AbstractColumnValuePredicate implements ColumnValuePredica
   public static final String NULL_VALUE = "null";
   public static final String EMPTY_VALUE = "@empty@";
   private DbColumn column;
-  private Comparable value;
+  private String value;
+  private Object normalizedValue;
 
   /**
    * Constructs a new predicate on the specified database table's column and with the given
@@ -44,9 +45,10 @@ public abstract class AbstractColumnValuePredicate implements ColumnValuePredica
    * @param column the column.
    * @param refValue a reference value.
    */
-  public AbstractColumnValuePredicate(final DbColumn column, final Comparable refValue) {
+  public AbstractColumnValuePredicate(final DbColumn column, final String refValue) {
     this.column = column;
     this.value = refValue;
+    this.normalizedValue = normalizeValue(column, refValue);
   }
 
   /**
@@ -57,14 +59,20 @@ public abstract class AbstractColumnValuePredicate implements ColumnValuePredica
     // dedicated to the implementors
   }
 
-  final AbstractColumnValuePredicate setColumn(final DbColumn column) {
-    this.column = column;
-    return this;
+  private static Object normalizeValue(final DbColumn column, final String value) {
+    final Object normalizedValue;
+    if (NULL_VALUE.equals(value)) {
+      normalizedValue = null;
+    } else if (EMPTY_VALUE.equals(value)) {
+      normalizedValue = "";
+    } else {
+      normalizedValue = column.getJdbcValueOf(value);
+    }
+    return normalizedValue;
   }
 
-  final AbstractColumnValuePredicate setValue(final Comparable value) {
-    this.value = value;
-    return this;
+  Object getNormalizedValue() {
+    return this.normalizedValue;
   }
 
   @Override

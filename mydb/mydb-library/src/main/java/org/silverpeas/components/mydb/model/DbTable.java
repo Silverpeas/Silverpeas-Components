@@ -27,6 +27,8 @@ package org.silverpeas.components.mydb.model;
 import org.silverpeas.components.mydb.model.predicates.AbstractColumnValuePredicate;
 import org.silverpeas.components.mydb.model.predicates.ColumnValuePredicate;
 import org.silverpeas.components.mydb.service.MyDBRuntimeException;
+import org.silverpeas.core.admin.PaginationPage;
+import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.util.StringUtil;
 
 import java.util.ArrayList;
@@ -155,11 +157,15 @@ public class DbTable {
    * Gets the contents of this table as a list of rows, each of them being a tuple valuing
    * all the columns of this table. If the table is empty, then an empty list is returned.
    * @param filter a predicate to use for filtering the table content.
+   * @param orderBy a order by directive already built (without the clause key words).
+   * @param pagination a pagination in order to avoid bad performances.
    * @return a list of table rows. If a filter is set, it is then applied when requesting the
    * content of this table. The number of table rows is limited by the
    * {@link MyDBConnectionInfo#getDataMaxNumber()} property.
    */
-  public List<TableRow> getRows(final ColumnValuePredicate filter) {
+  @SuppressWarnings("unchecked")
+  public SilverpeasList<TableRow> getRows(final ColumnValuePredicate filter, final String orderBy,
+      final PaginationPage pagination) {
     if (!(filter instanceof AbstractColumnValuePredicate)) {
       throw new IllegalArgumentException(
           "DbTable doesn't support predicate other than AbstractColumnValuePredicate objects");
@@ -167,7 +173,8 @@ public class DbTable {
     return requester.perform((r, c) -> {
       final JdbcRequester.DataConverters<TableFieldValue, TableRow> converters =
           new JdbcRequester.DataConverters(TableFieldValue::new, TableRow::new);
-      return r.request(c, this.name, (AbstractColumnValuePredicate) filter, converters);
+      return r.request(c, this.name, (AbstractColumnValuePredicate) filter, orderBy, converters,
+          pagination);
     });
   }
 
@@ -175,11 +182,10 @@ public class DbTable {
    * Deletes the specified row.
    * @param row the row to delete in this database table.
    */
-  public void delete(final TableRow row) {
-    requester.perform((r, c) -> {
+  public long delete(final TableRow row) {
+    return requester.perform((r, c) -> {
       final Map<String, Object> criteria = getCriteriaFrom(row);
-      r.delete(c, getName(), criteria);
-      return null;
+      return r.delete(c, getName(), criteria);
     });
   }
 
@@ -188,12 +194,11 @@ public class DbTable {
    * @param actualRow the row currently in this table.
    * @param updatedRow the row that will replace the actual one in this table.
    */
-  public void update(final TableRow actualRow, final TableRow updatedRow) {
-    requester.perform((r, c) -> {
+  public long update(final TableRow actualRow, final TableRow updatedRow) {
+    return requester.perform((r, c) -> {
       final Map<String, Object> criteria = getCriteriaFrom(actualRow);
       final Map<String, Object> values = tableRowToMap(updatedRow);
-      r.update(c, getName(), values, criteria);
-      return null;
+      return r.update(c, getName(), values, criteria);
     });
   }
 

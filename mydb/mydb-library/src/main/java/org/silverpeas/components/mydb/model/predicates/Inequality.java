@@ -31,20 +31,20 @@ import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
  * The inequality predicate.
  * @author mmoquillon
  */
-public class Inequality extends Equality {
+public class Inequality extends AbstractColumnValuePredicate {
 
-  public Inequality(final DbColumn column, final Comparable refValue) {
+  public Inequality(final DbColumn column, final String refValue) {
     super(column, refValue);
   }
 
   @Override
   public JdbcSqlQuery apply(final JdbcSqlQuery query) {
     final JdbcSqlQuery q;
-    final Object value = getReferenceValue();
+    final Object value = getNormalizedValue();
     if (value == null) {
       q = query.where(getColumn().getName() + " is not null");
     } else {
-      q = query.where(getColumn().getName() + " != ?", getReferenceValue());
+      q = query.where(getColumn().getName() + " != ?", value);
     }
     return q;
   }
