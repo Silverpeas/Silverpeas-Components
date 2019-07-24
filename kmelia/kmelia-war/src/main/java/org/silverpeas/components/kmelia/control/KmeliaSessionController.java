@@ -1543,11 +1543,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       indexOfFirstPubToDisplay = 0;
       resetSelectedPublicationPKs();
       if (!KmeliaHelper.SPECIALFOLDER_TOVALIDATE.equalsIgnoreCase(id)) {
-        Collection<NodeDetail> pathColl = getTopicPath(id);
-        String linkedPathString = displayPath(pathColl, true, 3);
-        String pathString = displayPath(pathColl, false, 3);
-        setSessionPath(linkedPathString);
-        setSessionPathString(pathString);
+        processBreadcrumb(id);
       }
     }
     if (resetSessionPublication) {
@@ -2127,6 +2123,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   public void setCurrentLanguage(String currentLanguage) {
     this.currentLanguage = currentLanguage;
+    processBreadcrumb(getCurrentFolderId());
   }
 
   public String initUserPanelForTopicProfile(String role, String nodeId, String[] groupIds,
@@ -3544,5 +3541,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   public enum CLIPBOARD_STATE {
     IS_EMPTY, HAS_COPIES, HAS_CUTS, HAS_COPIES_AND_CUTS
+  }
+
+  private void processBreadcrumb(String id) {
+    Collection<NodeDetail> pathColl = getTopicPath(id);
+    String linkedPathString = displayPath(pathColl, true, 3);
+    String pathString = displayPath(pathColl, false, 3);
+    setSessionPath(linkedPathString);
+    setSessionPathString(pathString);
   }
 }
