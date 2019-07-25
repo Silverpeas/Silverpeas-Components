@@ -47,5 +47,4 @@ public class DelegatedNewsValidationNotification extends AbstractDelegatedNewsUs
   protected NotifAction getAction() {
     return NotifAction.VALIDATE;
   }
-
 }

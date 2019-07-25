@@ -33,17 +33,18 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.date.period.Period;
-import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
-import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Stream;
+
+import static java.util.Collections.singletonList;
+import static org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper.buildAndSend;
 
 @Singleton
 @Transactional
@@ -161,29 +162,26 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService, Component
   }
 
   private String getAppId() {
-    String[] instanceIds = getOrganisationController().getCompoId("delegatednews");
-    if (ArrayUtil.isNotEmpty(instanceIds)) {
-      return "delegatednews"+instanceIds[0];
-    }
-    SilverLogger.getLogger(this).warn("No instance of 'DelegatedNews' found !");
-    return null;
+    final String componentName = "delegatednews";
+    return Stream.of(getOrganisationController().getCompoId(componentName))
+        .map(i -> componentName + i)
+        .findFirst()
+        .orElseGet(() -> {
+          SilverLogger.getLogger(this).warn("No instance of 'DelegatedNews' found !");
+          return null;
+        });
   }
 
   /**
    * Notifie l'Equipe éditoriale d'une actualité à valider
    */
   private void notifyDelegatedNewsToValidate(DelegatedNews news, String senderId) {
-    String delegatednewsInstanceId = getAppId();
-    // Notification des membres de l'équipe éditoriale
-    if (delegatednewsInstanceId != null) {
-      List<String> roles = new ArrayList<>();
-      roles.add("admin");
-      String[] editors = getOrganisationController().getUsersIdsByRoleNames(
-          delegatednewsInstanceId, roles);
-
-      UserNotificationHelper.buildAndSend(
-          new DelegatedNewsToValidateNotification(news, User.getById(senderId), editors,
-              delegatednewsInstanceId));
+    final String delegatedNewsInstanceId = getAppId();
+    if (delegatedNewsInstanceId != null) {
+      final String[] editors = getOrganisationController()
+          .getUsersIdsByRoleNames(delegatedNewsInstanceId, singletonList("admin"));
+      buildAndSend(new DelegatedNewsToValidateNotification(news, User.getById(senderId), editors,
+          delegatedNewsInstanceId));
     }
   }
 
@@ -206,7 +204,6 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService, Component
       delegatedNews.setBeginDate(visibilityPeriod.getBeginDate());
       delegatedNews.setEndDate(visibilityPeriod.getEndDate());
       dao.saveAndFlush(delegatedNews);
-
       notifyDelegatedNewsToValidate(delegatedNews, updaterId);
     }
   }
@@ -227,11 +224,10 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService, Component
    * Notifie le dernier contributeur que l'actualité est validée
    */
   private void notifyValidation(DelegatedNews news, String senderId) {
-    String delegatednewsInstanceId = getAppId();
+    String delegatedNewsInstanceId = getAppId();
     // Notification du dernier contributeur
-    if (delegatednewsInstanceId != null) {
-      UserNotificationHelper
-          .buildAndSend(new DelegatedNewsValidationNotification(news, User.getById(senderId)));
+    if (delegatedNewsInstanceId != null) {
+      buildAndSend(new DelegatedNewsValidationNotification(news, User.getById(senderId)));
     }
   }
 
@@ -239,11 +235,10 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService, Component
    * Notifie le dernier contributeur que l'actualité est refusée
    */
   private void notifyDelegatedNewsRefused(DelegatedNews news, String refusalMotive, String userId) {
-    String delegatednewsInstanceId = getAppId();
+    String delegatedNewsInstanceId = getAppId();
     // Notification du dernier contributeur
-    if (delegatednewsInstanceId != null) {
-      UserNotificationHelper.buildAndSend(
-          new DelegatedNewsDeniedNotification(news, User.getById(userId), refusalMotive));
+    if (delegatedNewsInstanceId != null) {
+      buildAndSend(new DelegatedNewsDeniedNotification(news, User.getById(userId), refusalMotive));
     }
   }
 

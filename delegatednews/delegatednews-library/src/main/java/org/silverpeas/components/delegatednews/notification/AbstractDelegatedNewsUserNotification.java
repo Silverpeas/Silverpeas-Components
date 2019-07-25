@@ -32,8 +32,8 @@ import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.util.URLUtil;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
@@ -52,10 +52,8 @@ abstract class AbstractDelegatedNewsUserNotification
   @Override
   protected void performTemplateData(final String language, final DelegatedNews resource,
       final SilverpeasTemplate template) {
-    getNotificationMetaData().addLanguage(language,
-        defaultStringIfNotDefined(getTitle(language), getTitle()),
-        "");
-
+    final String title = defaultStringIfNotDefined(getTitle(language), getTitle());
+    getNotificationMetaData().addLanguage(language, title, "");
     template.setAttribute("publicationId", publication.getId());
     template.setAttribute("publicationName", publication.getName(language));
     template.setAttribute("senderName", (user != null ? user.getDisplayedName() : ""));
@@ -111,11 +109,15 @@ abstract class AbstractDelegatedNewsUserNotification
 
   @Override
   protected Collection<String> getUserIdsToNotify() {
-    return Arrays.asList(getPublication().getUpdaterId());
+    return Collections.singletonList(getPublication().getUpdaterId());
   }
 
   protected PublicationDetail getPublication() {
     return publication;
   }
 
+  @Override
+  protected boolean isSendImmediately() {
+    return true;
+  }
 }

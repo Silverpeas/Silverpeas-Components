@@ -65,5 +65,4 @@ public class DelegatedNewsDeniedNotification extends AbstractDelegatedNewsUserNo
     super.performTemplateData(language, resource, template);
     template.setAttribute("refusalMotive", reasonForRefusal);
   }
-
 }

@@ -82,10 +82,4 @@ public class DelegatedNewsToValidateNotification extends AbstractDelegatedNewsUs
     }
     return new ArrayList<>(Arrays.asList(usersToBeNotified));
   }
-
-  @Override
-  protected boolean isSendImmediately() {
-    return true;
-  }
-
 }
