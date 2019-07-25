@@ -108,7 +108,7 @@
         resizable: false,
         modal: true,
         height: "auto",
-        width: 500,
+        width: 520,
         buttons: {
           "<fmt:message key="GML.ok"/>": function() {
             var message = $("#txtMessage").val();
