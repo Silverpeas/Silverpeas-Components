@@ -860,14 +860,14 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
         NodeDetail topic = kmelia.getSubTopicDetail(subTopicId);
         String browseInfo = kmelia.getSessionPathString();
-        if (browseInfo != null && !browseInfo.contains(topic.getName())) {
-          browseInfo += topic.getName();
+        final String topicName = topic.getName(kmelia.getCurrentLanguage());
+        if (browseInfo != null && !browseInfo.contains(topicName)) {
+          browseInfo +=  " > " + topicName;
         }
-        if (!StringUtil.isDefined(browseInfo)) {
-          browseInfo = kmelia.getString("TopicWysiwyg");
-        } else {
-          browseInfo += " > " + kmelia.getString("TopicWysiwyg");
+        if (StringUtil.isDefined(browseInfo)) {
+          browseInfo += " > ";
         }
+        browseInfo += kmelia.getString("TopicWysiwyg");
 
         WysiwygRouting routing = new WysiwygRouting();
         WysiwygRouting.WysiwygRoutingContext context =

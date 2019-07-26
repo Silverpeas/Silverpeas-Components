@@ -857,7 +857,7 @@ $(document).ready(function() {
     // the `plugins` array allows you to configure the active plugins on this instance
     "plugins" : ["types", "contextmenu", "dnd"]
   }).on("loaded.jstree", function(event, data) {
-    console.info('jstree loaded');
+    sp.log.debug('jstree loaded');
   }).on("ready.jstree", function(event, data) {
     var node = data.instance.get_node('#' + getCurrentFolderId());
     if (node) {
