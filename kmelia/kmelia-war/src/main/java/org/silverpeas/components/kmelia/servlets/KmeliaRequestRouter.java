@@ -860,9 +860,9 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
         NodeDetail topic = kmelia.getSubTopicDetail(subTopicId);
         String browseInfo = kmelia.getSessionPathString();
-        if (browseInfo != null &&
-            !browseInfo.contains(topic.getName(kmelia.getCurrentLanguage()))) {
-          browseInfo += topic.getName();
+        final String topicName = topic.getName(kmelia.getCurrentLanguage());
+        if (browseInfo != null && !browseInfo.contains(topicName)) {
+          browseInfo +=  " > " + topicName;
         }
         if (StringUtil.isDefined(browseInfo)) {
           browseInfo += " > ";

@@ -752,7 +752,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     if (isTopicAdmin(nd.getNodePK().getId())) {
       nd.setCreatorId(getUserId());
       nd.setCreationDate(DateUtil.today2SQLDate());
-      return getKmeliaService().updateTopic(nd, alertType);
+      final NodePK updatedNodePK = getKmeliaService().updateTopic(nd, alertType);
+      if (updatedNodePK.getId().equals(getCurrentFolderId())) {
+        processBreadcrumb(getCurrentFolderId());
+      }
+      return updatedNodePK;
     }
     SilverLogger.getLogger(this).warn("Security alert from {0}", getUserId());
     return null;
