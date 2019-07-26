@@ -92,7 +92,7 @@
     }
 
     function cancel() {
-      sp.formRequest('Main').submit();
+      sp.navRequest('Main').go();
     }
   </script>
 </head>

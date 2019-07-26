@@ -150,7 +150,7 @@
 
     function refreshList() {
       spProgressMessage.show();
-      sp.formRequest('listProcess').submit();
+      sp.navRequest('listProcess').go();
     }
 
     function removeProcessInstance(id) {

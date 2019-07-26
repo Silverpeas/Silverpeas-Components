@@ -43,7 +43,7 @@
       xhr.open("get", "${silfn:escapeJs(url)}", false, "${domain}\\${login}", "${silfn:escapeJs(password)}");
       xhr.send("");
       if (xhr.status < 400) {
-        sp.formRequest('${silfn:escapeJs(url)}').toTarget('SpExternalFullIFrameContainer').submit();
+        sp.navRequest('${silfn:escapeJs(url)}').toTarget('SpExternalFullIFrameContainer').go();
       } else {
         SilverpeasError.add("Login et/ou Mot de passe incorrect !").show();
       }

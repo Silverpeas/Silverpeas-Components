@@ -397,7 +397,7 @@ function deleteChannel(id) {
 if (nbChannelsToLoad > 0) { %>
 <script language="javascript" type="text/javascript">
   window.setTimeout(function() {
-    sp.formRequest("LoadChannels").submit();
+    sp.navRequest("LoadChannels").go();
   }, 500);
 </script>
 <% } %>
