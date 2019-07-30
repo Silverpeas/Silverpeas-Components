@@ -3185,6 +3185,7 @@ public class DefaultKmeliaService implements KmeliaService {
     NodePK axisPK = new NodePK("toDefine", componentId);
     NodeDetail rootDetail =
         new NodeDetail("0", "Root", "desc", 1,"-1");
+    rootDetail.getNodePK().setComponentName(componentId);
     rootDetail.setCreationDate(UNKNOWN);
     rootDetail.setCreatorId(UNKNOWN);
     rootDetail.setPath("/0");
@@ -3206,6 +3207,8 @@ public class DefaultKmeliaService implements KmeliaService {
   @Override
   public void updateAxis(NodeDetail axis, String componentId) {
     axis.getNodePK().setComponentName(componentId);
+    final NodeDetail previousNode = nodeService.getDetail(axis.getNodePK());
+    axis.setOrder(previousNode.getOrder());
     try {
       nodeService.setDetail(axis);
     } catch (Exception e) {
