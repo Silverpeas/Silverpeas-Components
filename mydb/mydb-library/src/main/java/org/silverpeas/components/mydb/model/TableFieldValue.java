@@ -191,4 +191,8 @@ public class TableFieldValue implements Comparable<TableFieldValue> {
   public String toString() {
     return value == null ? "null" : value.toString();
   }
+
+  public TableFieldValue getCopy() {
+    return new TableFieldValue(value, type);
+  }
 }

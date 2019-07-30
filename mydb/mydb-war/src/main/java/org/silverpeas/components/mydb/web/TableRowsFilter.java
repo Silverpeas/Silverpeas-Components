@@ -25,15 +25,7 @@
 package org.silverpeas.components.mydb.web;
 
 import org.silverpeas.components.mydb.model.DbColumn;
-import org.silverpeas.components.mydb.model.predicates.ColumnValuePredicate;
-import org.silverpeas.components.mydb.model.predicates.Equality;
-import org.silverpeas.components.mydb.model.predicates.Identity;
-import org.silverpeas.components.mydb.model.predicates.Inclusion;
-import org.silverpeas.components.mydb.model.predicates.Inequality;
-import org.silverpeas.components.mydb.model.predicates.Inferiority;
-import org.silverpeas.components.mydb.model.predicates.StrictInferiority;
-import org.silverpeas.components.mydb.model.predicates.StrictSuperiority;
-import org.silverpeas.components.mydb.model.predicates.Superiority;
+import org.silverpeas.components.mydb.model.predicates.*;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -55,18 +47,19 @@ public class TableRowsFilter {
    */
   public static final String FIELD_NONE = "*";
 
-  private static final Map<String, BiFunction<DbColumn, Comparable, ColumnValuePredicate>>
+  private static final Map<String, BiFunction<DbColumn, String, ColumnValuePredicate>>
       comparators = new LinkedHashMap<>(7);
   private String comparator = FIELD_NONE;
   private String fieldValue = EMPTY;
   private DbColumn field = null;
 
-  /**
+  /*
    * Set up the different {@link ColumnValuePredicate} instances supported by this filter.
    */
   static {
     comparators.put(FIELD_NONE, Identity::new);
     comparators.put("include", Inclusion::new);
+    comparators.put("like", Like::new);
     comparators.put("=", Equality::new);
     comparators.put("!=", Inequality::new);
     comparators.put("<=", Inferiority::new);

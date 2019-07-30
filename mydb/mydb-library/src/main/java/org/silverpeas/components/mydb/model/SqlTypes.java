@@ -37,7 +37,8 @@ public class SqlTypes {
 
   public static boolean isText(final int type) {
     return type == Types.CLOB || type == Types.NCLOB || type == Types.VARCHAR ||
-        type == Types.LONGNVARCHAR || type == Types.LONGVARCHAR || type == Types.NVARCHAR;
+        type == Types.LONGNVARCHAR || type == Types.LONGVARCHAR || type == Types.NVARCHAR ||
+        type == Types.CHAR || type == Types.NCHAR;
   }
 
   public static boolean isBinary(final int type) {

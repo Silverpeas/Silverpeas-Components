@@ -24,14 +24,29 @@
 
 package org.silverpeas.components.mydb.web;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.components.mydb.model.DbColumn;
 import org.silverpeas.components.mydb.model.DbTable;
 import org.silverpeas.components.mydb.model.TableRow;
+import org.silverpeas.components.mydb.service.MyDBRuntimeException;
+import org.silverpeas.core.admin.PaginationPage;
+import org.silverpeas.core.util.Mutable;
+import org.silverpeas.core.util.SilverpeasArrayList;
+import org.silverpeas.core.util.SilverpeasList;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
+
+import static java.text.MessageFormat.format;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.emptySet;
+import static org.silverpeas.components.mydb.web.TableRowUIEntity.convertList;
+import static org.silverpeas.core.util.Mutable.empty;
 
 /**
  * A view on one given database table loaded from a data source. The view wraps the table and it
@@ -41,13 +56,33 @@ import java.util.stream.Collectors;
  */
 public class TableView {
 
+  private final Map<Integer, Pair<String, String>> orderBies = new HashMap<>(50);
   private Optional<DbTable> table = Optional.empty();
   private TableRowsFilter filter = new TableRowsFilter();
+  private String orderBy = null;
+  private PaginationPage pagination = null;
+  private SilverpeasList<TableRowUIEntity> lastRows = SilverpeasList.wrap(emptyList());
 
   /**
    * Constructs an empty table view. This view is on nothing.
    */
   TableView() {
+  }
+
+  public PaginationPage getPagination() {
+    return pagination;
+  }
+
+  void setPagination(final PaginationPage pagination) {
+    this.pagination = pagination;
+  }
+
+  Map<Integer, Pair<String, String>> getOrderBies() {
+    return orderBies;
+  }
+
+  void setOrderBy(final String orderBy) {
+    this.orderBy = orderBy;
   }
 
   /**
@@ -71,8 +106,11 @@ public class TableView {
    * Clears this table view.
    */
   void clear() {
+    orderBies.clear();
     table = Optional.empty();
     filter.clear();
+    orderBy = null;
+    lastRows = SilverpeasList.wrap(emptyList());
   }
 
   /**
@@ -80,7 +118,12 @@ public class TableView {
    * @param table the table on which this view will be defined.
    */
   void setTable(final Optional<DbTable> table) {
+    clear();
     this.table = table;
+    int i = 1;
+    for (final DbColumn column : getColumns()) {
+      orderBies.put(i++, Pair.of(column.getName() + " asc", column.getName() + " desc"));
+    }
   }
 
   /**
@@ -106,47 +149,38 @@ public class TableView {
   }
 
   /**
-   * Gets the names of the columns that made up the primary key (simple or composite) in this table.
-   * @return a list with the primary key names or an empty list if there is no view on a given
-   * database table or if there is no primary key.
-   */
-  public List<String> getPrimaryKeyNames() {
-    final List<String> colNames = new ArrayList<>();
-    table.ifPresent(t -> colNames.addAll(t.getColumns()
-        .stream()
-        .filter(DbColumn::isPrimaryKey)
-        .map(DbColumn::getName)
-        .collect(Collectors.toList())));
-    return colNames;
-  }
-
-  /**
    * Gets the specified column in this table view. If the table view isn't defined or if the column
    * doesn't exist, then nothing is returned ({@link Optional#empty()}
    * @param name the name of a column.
    * @return optionally the {@link DbColumn} instance with the specified name. If no such column
    * exist or if this table view isn't defined, then nothing is returned.
    */
-  public Optional<DbColumn> getColumn(final String name) {
+  Optional<DbColumn> getColumn(final String name) {
     return table.flatMap(t -> t.getColumn(name));
   }
 
   /**
    * Gets the rows without applying any filter.
-   * @return the rows (not filtered).
+   * @return the rows.
    */
-  public List<TableRow> getRows() {
-    final List<TableRow> rows = new ArrayList<>();
-    table.ifPresent(t -> rows.addAll(applyFilter(t)));
-    return rows;
+  public SilverpeasList<TableRowUIEntity> getRows() {
+    final Mutable<SilverpeasList<TableRow>> rows = empty();
+    try {
+      table.ifPresent(t -> rows.set(applyFilter(t)));
+    } catch (final MyDBRuntimeException e) {
+      WebMessager.getInstance().addSevere(e.getMessage());
+      SilverLogger.getLogger(this).error(e);
+    }
+    lastRows = convertList(this, rows.orElseGet(SilverpeasArrayList::new), emptySet());
+    return lastRows;
   }
 
   /**
-   * Indicates if the wrapped table is empty without taking into account any filtering.
-   * @return true if the table has rows, false otherwise.
+   * Gets the last rows loaded by {@link #getRows()}.
+   * @return the last loaded rows.
    */
-  public boolean isEmpty() {
-    return getRows().isEmpty();
+  public SilverpeasList<TableRowUIEntity> getLastRows() {
+    return lastRows;
   }
 
   /**
@@ -163,39 +197,54 @@ public class TableView {
    * <p>
    * If this view in on no database table, then nothing is done.
    * </p>
-   * @param rowIdx the index of the row in the list of the table's rows returned by the
+   * @param uiRowId the UI row id of the row in the list of the table's rows returned by the
    * {@link TableView#getRows()} method that takes into account the filtering criteria.
    */
-  public void deleteRow(final int rowIdx) {
+  long deleteRow(final String uiRowId) {
+    final Mutable<Long> result = empty();
     table.ifPresent(t -> {
-      TableRow row = applyFilter(t).get(rowIdx);
-      t.delete(row);
+      final TableRow previousRow = getTableRowFromUiId(uiRowId);
+      result.set(t.delete(previousRow));
     });
+    return result.orElse(0L);
   }
 
   /**
    * Updates the row at the specified index with the given {@link TableRow} instance.
-   * @param rowIdx the index of the row in the list of the table's row returned by the
+   * @param uiRowId the UI row id of the row in the list of the table's row returned by the
    * {@link TableView#getRows()} method that takes into account the filtering criteria.
    * @param row the new row with which the table row at the given index has to be updated.
    */
-  public void updateRow(final int rowIdx, final TableRow row) {
+  long updateRow(final String uiRowId, final TableRow row) {
+    final Mutable<Long> result = empty();
     table.ifPresent(t -> {
-      TableRow previous = applyFilter(t).get(rowIdx);
-      t.update(previous, row);
+      final TableRow previousRow = getTableRowFromUiId(uiRowId);
+      if (previousRow == row) {
+        throw new IllegalArgumentException("the row with new values must be a copy of previous row");
+      }
+      result.set(t.update(previousRow, row));
     });
+    return result.orElse(0L);
+  }
+
+  private TableRow getTableRowFromUiId(final String uiRowId) {
+    return lastRows.stream()
+        .filter(r -> r.getId().equals(uiRowId))
+        .map(TableRowUIEntity::getData)
+        .findFirst()
+        .orElseThrow(() -> new IllegalStateException(
+            format("previous row with UI ID {0} has not been found", uiRowId)));
   }
 
   /**
    * Adds the specified row into the database table on which this view is.
    * @param row the {@link TableRow} instance to add.
    */
-  public void addRow(final TableRow row) {
+  void addRow(final TableRow row) {
     table.ifPresent(t -> t.add(row));
   }
 
-  private List<TableRow> applyFilter(final DbTable table) {
-    return table.getRows(getFilter().getFilteringPredicate());
+  private SilverpeasList<TableRow> applyFilter(final DbTable table) {
+    return table.getRows(getFilter().getFilteringPredicate(), orderBy , pagination);
   }
-
 }

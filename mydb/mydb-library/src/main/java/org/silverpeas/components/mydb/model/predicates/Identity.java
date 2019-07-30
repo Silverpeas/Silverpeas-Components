@@ -34,7 +34,7 @@ import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
  */
 public class Identity extends AbstractColumnValuePredicate {
 
-  public Identity(final DbColumn column, final Comparable refValue) {
+  public Identity(final DbColumn column, final String refValue) {
     super(column, refValue);
   }
 

@@ -24,9 +24,14 @@
 
 package org.silverpeas.components.mydb.model;
 
+import org.silverpeas.core.util.logging.SilverLogger;
+
 import java.sql.JDBCType;
 import java.sql.Types;
 import java.util.Objects;
+import java.util.stream.Stream;
+
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * A column in a database table. The column doesn't contain any values, it defines the column in
@@ -188,6 +193,31 @@ public class DbColumn {
    */
   public boolean isOfTypeDateTime() {
     return SqlTypes.isTimestamp(getType());
+  }
+
+  /**
+   * Gets a JDBC value of given value. The aim is to get a value to fill into
+   * JDBC query criteria filters.
+   * <p>
+   * Comma character is used to define a list of values.
+   * </p>
+   * @param value a value to convert.
+   * @return a JDBC value according to the SQL type of the column.
+   */
+  public Object getJdbcValueOf(final String value) {
+    try {
+      if (isDefined(value)) {
+        final Object[] values = Stream
+            .of(value.replace("\\,", "\\@@##@@").split(","))
+            .map(v -> v.replace("\\@@##@@", "\\,"))
+            .map(v -> TableFieldValue.fromString(v, getType()).toSQLObject())
+            .toArray();
+        return values.length == 1 ? values[0] : values;
+      }
+    } catch (final Exception e) {
+      SilverLogger.getLogger(this).warn(e);
+    }
+    return value;
   }
 }
   

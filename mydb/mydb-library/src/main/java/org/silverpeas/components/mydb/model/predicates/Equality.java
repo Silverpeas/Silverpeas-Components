@@ -39,25 +39,18 @@ public class Equality extends AbstractColumnValuePredicate {
    * @param column the name of a column.
    * @param refValue a reference value.
    */
-  public Equality(final DbColumn column, final Comparable refValue) {
-    setColumn(column);
-    if (NULL_VALUE.equals(refValue)) {
-      setValue(null);
-    } else if (EMPTY_VALUE.equals(refValue)) {
-      setValue("");
-    } else {
-      setValue(refValue);
-    }
+  public Equality(final DbColumn column, final String refValue) {
+    super(column, refValue);
   }
 
   @Override
   public JdbcSqlQuery apply(final JdbcSqlQuery query) {
     final JdbcSqlQuery q;
-    final Object value = getReferenceValue();
+    final Object value = getNormalizedValue();
     if (value == null) {
       q = query.where(getColumn().getName() + " is null");
     } else {
-      q = query.where(getColumn().getName() + " = ?", getReferenceValue());
+      q = query.where(getColumn().getName() + " = ?", value);
     }
     return q;
   }
