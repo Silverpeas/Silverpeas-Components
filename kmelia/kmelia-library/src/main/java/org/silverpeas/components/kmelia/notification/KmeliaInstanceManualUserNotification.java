@@ -25,8 +25,10 @@
 package org.silverpeas.components.kmelia.notification;
 
 import org.silverpeas.components.kmelia.service.KmeliaService;
+import org.silverpeas.core.admin.ObjectType;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.notification.user.AbstractComponentInstanceManualUserNotification;
 import org.silverpeas.core.notification.user.NotificationContext;
@@ -46,10 +48,16 @@ public class KmeliaInstanceManualUserNotification extends
 
   @Override
   public UserNotification createUserNotification(final NotificationContext context) {
+    final UserNotification notification;
     final String componentId = context.getComponentId();
     final String folderId = context.getNodeId();
-    final UserNotification notification;
     final String pubId = context.getPublicationId();
+    if (!NodePK.ROOT_NODE_ID.equals(folderId)) {
+      final NodeDetail node = getKmeliaService().getNodeHeader(folderId, componentId);
+      if (node.haveRights()) {
+        context.put(NotificationContext.RESOURCE_ID, asResourceId(node.getRightsDependsOn()));
+      }
+    }
     if (isDefined(pubId)) {
       final String docId = context.get("docId");
       if (isDefined(docId)) {
@@ -88,5 +96,9 @@ public class KmeliaInstanceManualUserNotification extends
 
   private KmeliaService getKmeliaService() {
     return KmeliaService.get();
+  }
+
+  private String asResourceId(final int folderId) {
+    return ObjectType.NODE.getCode() + folderId;
   }
 }
