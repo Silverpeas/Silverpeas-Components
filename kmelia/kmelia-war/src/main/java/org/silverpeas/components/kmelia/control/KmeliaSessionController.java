@@ -40,7 +40,8 @@ import org.silverpeas.components.kmelia.search.KmeliaSearchServiceProvider;
 import org.silverpeas.components.kmelia.service.KmeliaHelper;
 import org.silverpeas.components.kmelia.service.KmeliaService;
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.admin.ObjectType;
+import org.silverpeas.core.admin.ProfiledObjectId;
+import org.silverpeas.core.admin.ProfiledObjectType;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.GlobalContext;
 import org.silverpeas.core.admin.service.AdminController;
@@ -643,8 +644,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       NodeDetail node = getNodeHeader(getCurrentFolderId());
       if (node.haveRights()) {
         int rightsDependsOn = node.getRightsDependsOn();
-        return getOrganisationController()
-            .isObjectAvailable(rightsDependsOn, ObjectType.NODE, getComponentId(), getUserId());
+        return getOrganisationController().isObjectAvailable(rightsDependsOn,
+            ProfiledObjectType.NODE, getComponentId(), getUserId());
       }
     }
     return true;
@@ -1650,7 +1651,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     }
     boolean haveRights = isRightsOnTopicsEnabled() && node.haveRights();
     if (haveRights) {
-      sug.setObjectId(ObjectType.NODE.getCode() + node.getRightsDependsOn());
+      sug.setObjectId(ProfiledObjectType.NODE.getCode() + node.getRightsDependsOn());
     }
     sug.setProfileNames(profiles);
 
@@ -2140,7 +2141,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     sel.setHtmlFormName("dummy");
 
     List<ProfileInst> profiles =
-        getAdmin().getProfilesByObject(nodeId, ObjectType.NODE.getCode(), getComponentId());
+        getAdmin().getProfilesByObject(nodeId, ProfiledObjectType.NODE.getCode(), getComponentId());
     ProfileInst topicProfile = getProfile(profiles, role);
 
     SelectionUsersGroups sug = new SelectionUsersGroups();
@@ -2181,9 +2182,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     topic.setRightsDependsOnMe();
     getNodeService().updateRightsDependency(topic);
 
-    profile.removeAllGroups();
-    profile.removeAllUsers();
-    profile.setGroupsAndUsers(groupIds, userIds);
+    profile.setUsers(Arrays.asList(userIds));
+    profile.setGroups(Arrays.asList(groupIds));
 
     if (StringUtil.isDefined(profile.getId())) {
       if (profile.isEmpty()) {
@@ -2193,8 +2193,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
         getAdmin().updateProfileInst(profile);
       }
     } else {
-      profile.setObjectId(Integer.parseInt(nodeId));
-      profile.setObjectType(ObjectType.NODE.getCode());
+      profile.setObjectId(new ProfiledObjectId(ProfiledObjectType.NODE, nodeId));
       profile.setComponentFatherId(getComponentId());
       // Create the profile
       getAdmin().addProfileInst(profile);
@@ -2203,7 +2202,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   public ProfileInst getTopicProfile(String role, String topicId) {
     List<ProfileInst> profiles =
-        getAdmin().getProfilesByObject(topicId, ObjectType.NODE.getCode(), getComponentId());
+        getAdmin().getProfilesByObject(topicId, ProfiledObjectType.NODE.getCode(),
+            getComponentId());
     for (ProfileInst profile: profiles) {
       if (profile.getName().equals(role)) {
         return profile;
@@ -2235,11 +2235,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       return inheritedProfile;
     } else {
       // merge des profiles
-      ProfileInst newProfile = (ProfileInst) profile.clone();
-      newProfile.setObjectFatherId(profile.getObjectFatherId());
-      newProfile.setObjectType(profile.getObjectType());
-      newProfile.setInherited(profile.isInherited());
-
+      ProfileInst newProfile = profile.copy();
       newProfile.addGroups(inheritedProfile.getAllGroups());
       newProfile.addUsers(inheritedProfile.getAllUsers());
 

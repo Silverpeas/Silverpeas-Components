@@ -23,17 +23,17 @@
  */
 package org.silverpeas.components.kmelia.notification;
 
+import org.silverpeas.core.admin.ProfiledObjectType;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.notification.user.UserSubscriptionNotificationBehavior;
+import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.subscription.constant.SubscriberType;
 import org.silverpeas.core.subscription.service.NodeSubscriptionResource;
 import org.silverpeas.core.subscription.service.ResourceSubscriptionProvider;
 import org.silverpeas.core.subscription.util.SubscriptionSubscriberMapBySubscriberType;
-import org.silverpeas.core.notification.user.client.constant.NotifAction;
-import org.silverpeas.core.admin.ObjectType;
-import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.admin.service.OrganizationController;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -74,7 +74,7 @@ public class KmeliaSubscriptionPublicationUserNotification
       for (final String userId : allUserSubscriberIds) {
         if (!orgaController.isComponentAvailable(getNodePK().getInstanceId(), userId) || (node.
             haveRights() && !orgaController
-            .isObjectAvailable(node.getRightsDependsOn(), ObjectType.NODE,
+            .isObjectAvailable(node.getRightsDependsOn(), ProfiledObjectType.NODE,
                 getNodePK().getInstanceId(), userId))) {
           userIdsToExcludeFromNotifying.add(userId);
         }

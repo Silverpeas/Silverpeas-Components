@@ -26,8 +26,7 @@ package org.silverpeas.components.kmelia.service;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.silverpeas.core.admin.ObjectType;
+import org.silverpeas.core.admin.ProfiledObjectType;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.node.model.NodeDetail;
@@ -231,7 +230,7 @@ public class KmeliaUserTreeViewFilterTest {
     assertThat(node_AAB.haveRights(), is(true));
     assertThat(node_AAB.getChildrenDetails(), empty());
 
-    when(organisationController.getUserObjectProfiles(USER_ID, INSTANCE_ID, ObjectType.NODE))
+    when(organisationController.getUserObjectProfiles(USER_ID, INSTANCE_ID, ProfiledObjectType.NODE))
         .thenReturn(UserNodeRoleMapping.from(NODE_AAB_ID, READER_ROLE, WRITER_ROLE));
 
     KmeliaUserTreeViewFilter
@@ -278,7 +277,7 @@ public class KmeliaUserTreeViewFilterTest {
       node.setRightsDependsOnMe();
     }
 
-    when(organisationController.getUserObjectProfiles(USER_ID, INSTANCE_ID, ObjectType.NODE))
+    when(organisationController.getUserObjectProfiles(USER_ID, INSTANCE_ID, ProfiledObjectType.NODE))
         .thenReturn(UserNodeRoleMapping.from(NODE_AAA_ID, READER_ROLE, WRITER_ROLE));
 
     KmeliaUserTreeViewFilter
@@ -299,7 +298,7 @@ public class KmeliaUserTreeViewFilterTest {
       node.setRightsDependsOnMe();
     }
 
-    when(organisationController.getUserObjectProfiles(USER_ID, INSTANCE_ID, ObjectType.NODE))
+    when(organisationController.getUserObjectProfiles(USER_ID, INSTANCE_ID, ProfiledObjectType.NODE))
         .thenReturn(UserNodeRoleMapping.from(NODE_BA_ID, READER_ROLE, WRITER_ROLE));
 
     KmeliaUserTreeViewFilter
@@ -359,7 +358,7 @@ public class KmeliaUserTreeViewFilterTest {
       }
     }
 
-    when(organisationController.getUserObjectProfiles(USER_ID, INSTANCE_ID, ObjectType.NODE))
+    when(organisationController.getUserObjectProfiles(USER_ID, INSTANCE_ID, ProfiledObjectType.NODE))
         .thenReturn(UserNodeRoleMapping.from(NODE_A_ID, ADMIN_ROLE, WRITER_ROLE)
             .put(NODE_AA_ID, WRITER_ROLE));
 
