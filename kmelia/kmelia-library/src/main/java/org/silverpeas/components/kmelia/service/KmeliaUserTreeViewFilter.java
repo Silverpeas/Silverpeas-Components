@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.kmelia.service;
 
-import org.silverpeas.core.admin.ObjectType;
+import org.silverpeas.core.admin.ProfiledObjectType;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
@@ -173,7 +173,7 @@ class KmeliaUserTreeViewFilter {
    */
   private String[] getNodeUserRoles(Integer nodeId) {
     if (nodeUserRoles == null) {
-      nodeUserRoles = orga.getUserObjectProfiles(userId, instanceId, ObjectType.NODE);
+      nodeUserRoles = orga.getUserObjectProfiles(userId, instanceId, ProfiledObjectType.NODE);
     }
     List<String> roles = nodeUserRoles.get(nodeId);
     return (roles != null) ? roles.toArray(new String[roles.size()]) : new String[0];
