@@ -25,7 +25,7 @@ import org.silverpeas.core.importexport.model.ImportExportException;
 import org.silverpeas.core.importexport.report.MassiveReport;
 import org.silverpeas.core.importexport.report.UnitReport;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.ObjectType;
+import org.silverpeas.core.admin.ProfiledObjectType;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.components.kmelia.KmeliaException;
 import org.silverpeas.components.kmelia.service.KmeliaService;
@@ -107,7 +107,7 @@ public class KmeliaImportExport extends GEDImportExport {
         NodeDetail topic = getNodeService().getHeader(topicPK);
         if (topic.haveRights()) {
           profile = KmeliaHelper.getProfile(orgnaisationController.getUserProfiles(userDetail
-              .getId(), topicPK.getInstanceId(), topic.getRightsDependsOn(), ObjectType.NODE));
+              .getId(), topicPK.getInstanceId(), topic.getRightsDependsOn(), ProfiledObjectType.NODE));
         } else {
           profile = KmeliaHelper.getProfile(orgnaisationController.getUserProfiles(userDetail
               .getId(), topicPK.getInstanceId()));

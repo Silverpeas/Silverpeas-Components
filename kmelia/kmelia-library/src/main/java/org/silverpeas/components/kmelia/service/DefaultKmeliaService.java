@@ -36,8 +36,9 @@ import org.silverpeas.components.kmelia.model.TopicDetail;
 import org.silverpeas.components.kmelia.notification.*;
 import org.silverpeas.core.ActionType;
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.admin.ObjectType;
 import org.silverpeas.core.admin.PaginationPage;
+import org.silverpeas.core.admin.ProfiledObjectId;
+import org.silverpeas.core.admin.ProfiledObjectType;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.ProfileInst;
@@ -220,8 +221,9 @@ public class DefaultKmeliaService implements KmeliaService {
       nodeDetail = nodeService.getDetail(pk);
       if (isRightsOnTopicsUsed) {
         OrganizationController orga = getOrganisationController();
-        if (nodeDetail.haveRights() && !orga
-            .isObjectAvailable(nodeDetail.getRightsDependsOn(), ObjectType.NODE, pk.getInstanceId(),
+        if (nodeDetail.haveRights() &&
+            !orga.isObjectAvailable(nodeDetail.getRightsDependsOn(), ProfiledObjectType.NODE,
+                pk.getInstanceId(),
                 userId)) {
           nodeDetail.setUserRole("noRights");
         }
@@ -322,7 +324,7 @@ public class DefaultKmeliaService implements KmeliaService {
       final List<NodeDetail> availableChildren, final NodeDetail child) {
     int rightsDependsOn = child.getRightsDependsOn();
     boolean nodeAvailable =
-        getOrganisationController().isObjectAvailable(rightsDependsOn, ObjectType.NODE, pk.
+        getOrganisationController().isObjectAvailable(rightsDependsOn, ProfiledObjectType.NODE, pk.
             getInstanceId(), userId);
     if (nodeAvailable) {
       availableChildren.add(child);
@@ -340,7 +342,7 @@ public class DefaultKmeliaService implements KmeliaService {
       NodeDetail descendant = descendants.next();
       if (descendant.getRightsDependsOn() != rightsDependsOn &&
           getOrganisationController().isObjectAvailable(descendant.getRightsDependsOn(),
-              ObjectType.NODE, pk.
+              ProfiledObjectType.NODE, pk.
                   getInstanceId(), userId)) {
         // different rights of father check if it is available
         childAllowed = true;
@@ -470,7 +472,7 @@ public class DefaultKmeliaService implements KmeliaService {
         // Topic profiles must be removed
         List<ProfileInst> profiles =
             adminController.getProfilesByObject(newNode.getNodePK().getId(),
-                ObjectType.NODE.getCode(), newNode.getNodePK().getInstanceId());
+                ProfiledObjectType.NODE.getCode(), newNode.getNodePK().getInstanceId());
         deleteProfiles(profiles);
       } else {
         newNode.setRightsDependsOnMe();
@@ -812,8 +814,9 @@ public class DefaultKmeliaService implements KmeliaService {
       Collection<Collection<NodeDetail>> detailedList = new ArrayList<>();
       // For each favorite, get the path from root to favorite
       for (Subscription subscription : list) {
-        Collection<NodeDetail> path =
-            nodeService.getPath((NodePK) subscription.getResource().getPK());
+        Collection<NodeDetail> path = nodeService.getPath(
+            new NodePK(subscription.getResource().getId(),
+                subscription.getResource().getInstanceId()));
         detailedList.add(path);
       }
       return detailedList;
@@ -1008,7 +1011,7 @@ public class DefaultKmeliaService implements KmeliaService {
       if (topic.haveRights()) {
         profile = KmeliaHelper.getProfile(orgCtrl
             .getUserProfiles(userId, nodePK.getInstanceId(), topic.getRightsDependsOn(),
-                ObjectType.NODE));
+                ProfiledObjectType.NODE));
       } else {
         profile = KmeliaHelper.getProfile(getUserRoles(nodePK.getInstanceId(), userId));
       }
@@ -1846,7 +1849,7 @@ public class DefaultKmeliaService implements KmeliaService {
       NodeDetail father = getNodeHeader(fatherPK);
       if (!father.haveRights() ||
           getOrganisationController().isObjectAvailable(father.getRightsDependsOn(),
-              ObjectType.NODE, fatherPK.getInstanceId(), userId)) {
+              ProfiledObjectType.NODE, fatherPK.getInstanceId(), userId)) {
         allowedFather = father;
       }
     }
@@ -2092,7 +2095,7 @@ public class DefaultKmeliaService implements KmeliaService {
         } else {
           allValidators.addAll(Arrays.asList(
               getOrganisationController().getUsersIdsByRoleNames(pubPK.getInstanceId(),
-                  Integer.toString(node.getRightsDependsOn()), ObjectType.NODE, roles)));
+                  Integer.toString(node.getRightsDependsOn()), ProfiledObjectType.NODE, roles)));
         }
       }
     }
@@ -2757,7 +2760,7 @@ public class DefaultKmeliaService implements KmeliaService {
       profileNames.add(KmeliaHelper.ROLE_READER);
       String[] userIds = getOrganisationController()
           .getUsersIdsByRoleNames(pk.getInstanceId(), Integer.toString(rightsDependsOn),
-              ObjectType.NODE, profileNames);
+              ProfiledObjectType.NODE, profileNames);
       return Arrays.asList(userIds);
     } else {
       return Collections.emptyList();
@@ -4131,8 +4134,9 @@ public class DefaultKmeliaService implements KmeliaService {
     // check if we have to take care of topic's rights
     if (node != null && node.haveRights()) {
       int rightsDependsOn = node.getRightsDependsOn();
-      return KmeliaHelper.getProfile(getOrganisationController()
-          .getUserProfiles(userId, pk.getInstanceId(), rightsDependsOn, ObjectType.NODE));
+      return KmeliaHelper.getProfile(
+          getOrganisationController().getUserProfiles(userId, pk.getInstanceId(), rightsDependsOn,
+              ProfiledObjectType.NODE));
     } else {
       return KmeliaHelper.getProfile(getUserRoles(pk.getInstanceId(), userId));
     }
@@ -4218,8 +4222,8 @@ public class DefaultKmeliaService implements KmeliaService {
         NodeDetail descendant = descendants.next();
         if (descendant.haveLocalRights()) {
           // check if user is admin, publisher or writer on this topic
-          String[] profiles = adminController
-              .getProfilesByObjectAndUserId(descendant.getId(), ObjectType.NODE.getCode(),
+          String[] profiles = adminController.getProfilesByObjectAndUserId(descendant.getId(),
+              ProfiledObjectType.NODE.getCode(),
                   componentId, userId);
           if (profiles != null && profiles.length > 0) {
             userProfile = SilverpeasRole.from(KmeliaHelper.getProfile(profiles));
@@ -4383,8 +4387,8 @@ public class DefaultKmeliaService implements KmeliaService {
 
   private void removeNodeRights(final NodeDetail node) {
     if (node.haveLocalRights()) {
-      List<ProfileInst> profiles =
-          adminController.getProfilesByObject(node.getNodePK().getId(), ObjectType.NODE.getCode(),
+      List<ProfileInst> profiles = adminController.getProfilesByObject(node.getNodePK().getId(),
+          ProfiledObjectType.NODE.getCode(),
               node.getNodePK().getInstanceId());
       for (ProfileInst profile : profiles) {
         if (profile != null && StringUtil.isDefined(profile.getId())) {
@@ -4431,16 +4435,19 @@ public class DefaultKmeliaService implements KmeliaService {
       setNodeRightDependency(oldAndNewIds, nodeToCopy, nodePK, node);
       // Set topic rights if necessary
       if (nodeToCopy.haveLocalRights()) {
-        List<ProfileInst> topicProfiles = adminController
-            .getProfilesByObject(nodeToCopy.getNodePK().getId(), ObjectType.NODE.getCode(),
+        List<ProfileInst> topicProfiles =
+            adminController.getProfilesByObject(nodeToCopy.getNodePK().getId(),
+                ProfiledObjectType.NODE.getCode(),
                 nodeToCopy.getNodePK().getInstanceId());
         for (ProfileInst nodeToPasteProfile : topicProfiles) {
           if (nodeToPasteProfile != null) {
-            ProfileInst nodeProfileInst = (ProfileInst) nodeToPasteProfile.clone();
+            ProfileInst nodeProfileInst = nodeToPasteProfile.copy();
             nodeProfileInst.setId("-1");
             nodeProfileInst.setComponentFatherId(nodePK.getInstanceId());
-            nodeProfileInst.setObjectId(Integer.parseInt(nodePK.getId()));
-            nodeProfileInst.setObjectFatherId(father.getId());
+            nodeProfileInst.setObjectId(
+                new ProfiledObjectId(ProfiledObjectType.NODE, nodePK.getId()));
+            nodeProfileInst.setParentObjectId(
+                new ProfiledObjectId(ProfiledObjectType.NODE, father.getNodePK().getId()));
             // Add the profile
             adminController.addProfileInst(nodeProfileInst, userId);
           }

@@ -31,7 +31,7 @@ import org.silverpeas.components.blog.model.Category;
 import org.silverpeas.components.blog.model.PostDetail;
 import org.silverpeas.components.blog.notification.BlogUserSubscriptionNotification;
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.admin.ObjectType;
+import org.silverpeas.core.admin.ProfiledObjectType;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.model.CommentPK;
@@ -191,7 +191,7 @@ public class DefaultBlogService implements BlogService {
       for (String userId : subscriberIds) {
         if (organizationController.isComponentAvailable(fatherPK.getInstanceId(), userId) &&
             (!node.haveRights() ||
-                organizationController.isObjectAvailable(node.getRightsDependsOn(), ObjectType.NODE,
+                organizationController.isObjectAvailable(node.getRightsDependsOn(), ProfiledObjectType.NODE,
                     fatherPK.getInstanceId(), userId))) {
           newSubscribers.add(userId);
         }

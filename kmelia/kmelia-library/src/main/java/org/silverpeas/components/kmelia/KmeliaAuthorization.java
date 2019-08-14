@@ -23,7 +23,7 @@ package org.silverpeas.components.kmelia;
 import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
 import org.silverpeas.components.kmelia.service.KmeliaHelper;
 import org.silverpeas.components.kmelia.service.KmeliaService;
-import org.silverpeas.core.admin.ObjectType;
+import org.silverpeas.core.admin.ProfiledObjectType;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
@@ -364,7 +364,7 @@ public class KmeliaAuthorization implements ComponentAuthorization {
         if (!node.haveRights()) {
           objectAvailable = true;
         } else {
-          objectAvailable = controller.isObjectAvailable(node.getRightsDependsOn(), ObjectType.NODE,
+          objectAvailable = controller.isObjectAvailable(node.getRightsDependsOn(), ProfiledObjectType.NODE,
               nodePK.getInstanceId(), userId);
         }
       } else {
@@ -393,7 +393,7 @@ public class KmeliaAuthorization implements ComponentAuthorization {
             lProfiles.addAll(Arrays.asList(getAppProfiles(userId, pubPK.getInstanceId())));
           } else {
             lProfiles.addAll(Arrays.asList(controller.getUserProfiles(userId,
-                pubPK.getInstanceId(), node.getRightsDependsOn(), ObjectType.NODE)));
+                pubPK.getInstanceId(), node.getRightsDependsOn(), ProfiledObjectType.NODE)));
           }
         }
       }
