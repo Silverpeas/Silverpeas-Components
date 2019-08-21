@@ -50,14 +50,17 @@ import java.util.stream.Stream;
  */
 public class ProcessFilter {
 
-  private FilterManager filter = null;
+  private static final String PROCESS_FILTER = "ProcessFilter";
+  private static final String FAIL_TO_CREATE_CRITERIA_FORM =
+      "processFilter.FAIL_TO_CREATE_CRITERIA_FORM";
+  private final FilterManager filter;
   private boolean collapse = false;
   private DataRecord criteria;
 
   /**
    * Builds a process filter which can be used to select process intance of a given process model.
    */
-  ProcessFilter(ProcessModel model, String role, String lang)
+  public ProcessFilter(ProcessModel model, String role, String lang)
       throws ProcessManagerException {
     RecordTemplate rowTemplate = model.getRowTemplate(role, lang);
     filter = new FilterManager(rowTemplate, lang);
@@ -66,8 +69,7 @@ public class ProcessFilter {
     try {
       folderTemplate = model.getDataFolder().toRecordTemplate(role, lang, false);
     } catch (WorkflowException e1) {
-      throw new ProcessManagerException("ProcessFilter",
-          "processFilter.FAIL_TO_CREATE_CRITERIA_FORM", e1);
+      throw new ProcessManagerException(PROCESS_FILTER, FAIL_TO_CREATE_CRITERIA_FORM, e1);
     }
 
     try {
@@ -97,8 +99,7 @@ public class ProcessFilter {
         }
       }
     } catch (FormException e) {
-      throw new ProcessManagerException("ProcessFilter",
-          "processFilter.FAIL_TO_CREATE_CRITERIA_FORM", e);
+      throw new ProcessManagerException(PROCESS_FILTER, FAIL_TO_CREATE_CRITERIA_FORM, e);
     }
   }
 
@@ -109,8 +110,7 @@ public class ProcessFilter {
     try {
       return filter.getCriteriaForm();
     } catch (FormException e) {
-      throw new ProcessManagerException("ProcessFilter",
-          "processFilter.FAIL_TO_CREATE_CRITERIA_FORM", e);
+      throw new ProcessManagerException(PROCESS_FILTER, FAIL_TO_CREATE_CRITERIA_FORM, e);
     }
   }
 
@@ -122,7 +122,7 @@ public class ProcessFilter {
       try {
         criteria = filter.getEmptyCriteriaRecord();
       } catch (FormException e) {
-        throw new ProcessManagerException("ProcessFilter",
+        throw new ProcessManagerException(PROCESS_FILTER,
             "processFilter.FAIL_TO_CREATE_CRITERIA_RECORD", e);
       }
     }
@@ -192,7 +192,7 @@ public class ProcessFilter {
       }
       return stream.collect(Collectors.toList());
     } catch (SilverpeasRuntimeException | FormException e) {
-      throw new ProcessManagerException("ProcessFilter",
+      throw new ProcessManagerException(PROCESS_FILTER,
           "processFilter.FAIL_TO_USE_CRITERIA_RECORD", e);
     }
   }
