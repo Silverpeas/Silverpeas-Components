@@ -114,6 +114,7 @@ import org.silverpeas.core.security.authorization.NodeAccessController;
 import org.silverpeas.core.security.authorization.PublicationAccessController;
 import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
+import org.silverpeas.core.subscription.service.ComponentSubscriptionResource;
 import org.silverpeas.core.subscription.service.NodeSubscriptionResource;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
@@ -3162,11 +3163,15 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   public String manageSubscriptions() {
-    SubscriptionContext subscriptionContext = getSubscriptionContext();
-    List<NodeDetail> nodePath = getTopicPath(getCurrentFolderId());
-    nodePath.remove(0);
-    subscriptionContext
-        .initializeFromNode(NodeSubscriptionResource.from(getCurrentFolderPK()), nodePath);
+    final SubscriptionContext subscriptionContext = getSubscriptionContext();
+    if (getCurrentFolder().getNodePK().isRoot()) {
+      subscriptionContext.initialize(ComponentSubscriptionResource.from(getComponentId()));
+    } else {
+      List<NodeDetail> nodePath = getTopicPath(getCurrentFolderId());
+      nodePath.remove(0);
+      subscriptionContext.initializeFromNode(NodeSubscriptionResource.from(getCurrentFolderPK()),
+          nodePath);
+    }
     return subscriptionContext.getDestinationUrl();
   }
 
