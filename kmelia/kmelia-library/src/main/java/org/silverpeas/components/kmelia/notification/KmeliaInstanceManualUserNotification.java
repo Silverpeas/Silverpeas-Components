@@ -25,7 +25,7 @@
 package org.silverpeas.components.kmelia.notification;
 
 import org.silverpeas.components.kmelia.service.KmeliaService;
-import org.silverpeas.core.admin.ObjectType;
+import org.silverpeas.core.admin.ProfiledObjectType;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.node.model.NodeDetail;
@@ -99,6 +99,6 @@ public class KmeliaInstanceManualUserNotification extends
   }
 
   private String asResourceId(final int folderId) {
-    return ObjectType.NODE.getCode() + folderId;
+    return ProfiledObjectType.NODE.getCode() + folderId;
   }
 }

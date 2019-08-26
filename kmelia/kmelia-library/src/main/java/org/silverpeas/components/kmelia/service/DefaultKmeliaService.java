@@ -108,6 +108,8 @@ import org.silverpeas.core.subscription.Subscription;
 import org.silverpeas.core.subscription.SubscriptionResource;
 import org.silverpeas.core.subscription.SubscriptionService;
 import org.silverpeas.core.subscription.SubscriptionServiceProvider;
+import org.silverpeas.core.subscription.service.ComponentSubscription;
+import org.silverpeas.core.subscription.service.ComponentSubscriptionResource;
 import org.silverpeas.core.subscription.service.NodeSubscription;
 import org.silverpeas.core.subscription.service.NodeSubscriptionResource;
 import org.silverpeas.core.subscription.service.UserSubscriptionSubscriber;
@@ -819,7 +821,12 @@ public class DefaultKmeliaService implements KmeliaService {
   @Override
   public void removeSubscriptionToCurrentUser(NodePK topicPK, String userId) {
     try {
-      getSubscribeService().unsubscribe(new NodeSubscription(userId, topicPK));
+      if (topicPK.isRoot()) {
+        getSubscribeService().unsubscribe(
+            new ComponentSubscription(userId, topicPK.getInstanceId()));
+      } else {
+        getSubscribeService().unsubscribe(new NodeSubscription(userId, topicPK));
+      }
     } catch (Exception e) {
       throw new KmeliaRuntimeException(e);
     }
@@ -834,7 +841,12 @@ public class DefaultKmeliaService implements KmeliaService {
     try {
       Collection<SubscriptionResource> subscriptionResourcesToDelete = new ArrayList<>();
       for (NodePK topicPK : topicPKsToDelete) {
-        subscriptionResourcesToDelete.add(NodeSubscriptionResource.from(topicPK));
+        if (topicPK.isRoot()) {
+          subscriptionResourcesToDelete.add(
+              ComponentSubscriptionResource.from(topicPK.getInstanceId()));
+        } else {
+          subscriptionResourcesToDelete.add(NodeSubscriptionResource.from(topicPK));
+        }
       }
       getSubscribeService().unsubscribeByResources(subscriptionResourcesToDelete);
     } catch (Exception e) {
@@ -850,7 +862,11 @@ public class DefaultKmeliaService implements KmeliaService {
    */
   @Override
   public void addSubscription(NodePK topicPK, String userId) {
-    getSubscribeService().subscribe(new NodeSubscription(userId, topicPK));
+    if (topicPK.isRoot()) {
+      getSubscribeService().subscribe(new ComponentSubscription(userId, topicPK.getInstanceId()));
+    } else {
+      getSubscribeService().subscribe(new NodeSubscription(userId, topicPK));
+    }
   }
 
   /**
@@ -860,7 +876,15 @@ public class DefaultKmeliaService implements KmeliaService {
    */
   @Override
   public boolean checkSubscription(NodePK topicPK, String userId) {
-    return !getSubscribeService().existsSubscription(new NodeSubscription(userId, topicPK));
+    final boolean alreadyExist;
+    if (topicPK.isRoot()) {
+      alreadyExist = getSubscribeService().existsSubscription(
+          new ComponentSubscription(userId, topicPK.getInstanceId()));
+    } else {
+      alreadyExist =
+          getSubscribeService().existsSubscription(new NodeSubscription(userId, topicPK));
+    }
+    return !alreadyExist;
   }
 
   private List<KmeliaPublication> asRankedKmeliaPublication(NodePK fatherPK, Collection<PublicationDetail> pubDetails) {
