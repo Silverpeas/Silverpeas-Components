@@ -31,7 +31,7 @@ import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.notification.user.UserSubscriptionNotificationBehavior;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.subscription.constant.SubscriberType;
-import org.silverpeas.core.subscription.service.NodeSubscriptionResource;
+import org.silverpeas.core.subscription.constant.SubscriptionResourceType;
 import org.silverpeas.core.subscription.service.ResourceSubscriptionProvider;
 import org.silverpeas.core.subscription.util.SubscriptionSubscriberMapBySubscriberType;
 
@@ -62,8 +62,13 @@ public class KmeliaSubscriptionPublicationUserNotification
     // Subscribers
     // ###########
 
-    subscriberIdsByTypes.addAll(ResourceSubscriptionProvider
-        .getSubscribersOfSubscriptionResource(NodeSubscriptionResource.from(getNodePK())));
+    if (getNodePK().isRoot()) {
+      subscriberIdsByTypes.addAll(ResourceSubscriptionProvider
+          .getSubscribersOfComponent(getComponentInstanceId()));
+    } else {
+      subscriberIdsByTypes.addAll(ResourceSubscriptionProvider
+          .getSubscribersOfComponentAndTypedResource(getComponentInstanceId(), SubscriptionResourceType.NODE, getNodePK().getId()));
+    }
 
     Collection<String> allUserSubscriberIds = subscriberIdsByTypes.getAllUserIds();
     if (!allUserSubscriberIds.isEmpty()) {
