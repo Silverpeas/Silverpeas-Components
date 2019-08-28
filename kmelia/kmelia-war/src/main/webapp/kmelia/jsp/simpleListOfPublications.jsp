@@ -73,9 +73,10 @@ boolean userCanSeeStats = kmeliaScc.isStatisticAllowed();
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.kmelia">
+<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.kmelia" xml:lang="<%=language%>">
 <head>
 <view:looknfeel/>
+	<title></title>
 <view:includePlugin name="popup"/>
 <view:includePlugin name="preview"/>
 <view:includePlugin name="rating" />
@@ -199,7 +200,7 @@ $(document).ready(function() {
 
     	if (!isGuest) {
     	  	operationPane.addOperation("useless", resources.getString("kmelia.operation.exportSelection"), "javascript:onclick=exportPublications()");
-    		operationPane.addOperation("useless", resources.getString("kmelia.folderSubscription"), "javascript:onClick=addSubscription()");
+    		operationPane.addOperation("useless", resources.getString("GML.subscribe"), "javascript:onClick=addSubscription()");
       		operationPane.addOperation("useless", resources.getString("FavoritesAdd1")+" "+kmeliaScc.getString("FavoritesAdd2"), "javaScript:addFavorite('"+
               WebEncodeHelper.javaStringToHtmlString(WebEncodeHelper.javaStringToJsString(namePath))+"','','"+urlTopic+"')");
     	}
@@ -223,7 +224,8 @@ $(document).ready(function() {
 						Button searchButton = gef.getFormButton(resources.getString("GML.search"), "javascript:onClick=searchInTopic();", false); %>
 						<div id="searchZone">
 						<view:board>
-						<table id="searchLine">
+						<table id="searchLine"  aria-describedby="search">
+							<th id="searchHeader"></th>
 						<tr><td><div id="searchLabel"><%=resources.getString("kmelia.SearchInTopics") %></div>&nbsp;<input type="text" id="topicQuery" size="50" value="<%=query%>" onkeydown="checkSubmitToSearch(event)"/></td><td><%=searchButton.print() %></td></tr>
 						</table>
 						</view:board>
@@ -236,8 +238,8 @@ $(document).ready(function() {
               <br/>
               <view:board>
                 <br/>
-                <center><%=resources.getString("kmelia.inProgressPublications") %>
-                  <br/><br/><img src="<%=resources.getIcon("kmelia.progress") %>"/></center>
+                <span text-align="center"><%=resources.getString("kmelia.inProgressPublications") %>
+                  <br/><br/><img alt="progress..." src="<%=resources.getIcon("kmelia.progress") %>"/></span>
                 <br/>
               </view:board>
             </div>
