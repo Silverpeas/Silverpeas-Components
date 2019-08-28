@@ -144,7 +144,8 @@ public class JSONServlet extends HttpServlet {
 
         operations.put("exportSelection", !user.isAnonymous());
         operations.put("manageSubscriptions", isAdmin);
-        operations.put("subscriptions", !user.isAnonymous());
+        operations.put("subscriptions", isRoot && !user.isAnonymous());
+        operations.put("topicSubscriptions", !isRoot && !user.isAnonymous());
         operations.put("favorites", !isRoot && !user.isAnonymous());
         if (isRoot && canShowStats) {
           operations.put("statistics", true);
