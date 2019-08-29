@@ -72,6 +72,7 @@
 <head>
 <title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel/>
+<view:includePlugin name="preview"/>
 <%
 	if (form != null) form.displayScripts(out, context);
 %>
