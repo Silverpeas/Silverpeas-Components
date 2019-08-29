@@ -65,7 +65,7 @@ public class KmeliaImportExport extends GEDImportExport {
    * @return KmeliaService service
    * @throws ImportExportException
    */
-  protected KmeliaService getKmeliaService() throws ImportExportException {
+  protected KmeliaService getKmeliaService() {
     return ServiceProvider.getService(KmeliaService.class);
   }
 
@@ -224,15 +224,14 @@ public class KmeliaImportExport extends GEDImportExport {
    *
    * @param id - id de la publication
    * @return le silverObjectId de l'objet d'id id
-   * @throws ImportExportException
    */
   @Override
-  public int getSilverObjectId(String id) throws Exception {
+  public int getSilverObjectId(String id) {
     return getKmeliaService().getSilverObjectId(new PublicationPK(id, getCurrentComponentId()));
   }
 
   @Override
-  protected CompletePublication getCompletePublication(PublicationPK pk) throws Exception {
+  protected CompletePublication getCompletePublication(PublicationPK pk) {
     return getKmeliaService().getCompletePublication(pk);
   }
 
