@@ -82,6 +82,8 @@
 	<form name="SubscriptionForm" action="AddSubscription" method="post" enctype="multipart/form-data">
 	<c:if test="${not empty formSearch}">
 		<table border="0" width="100%" align="center">
+			<caption></caption>
+			<th id="subscriptionFormHeader"></th>
 			<!-- AFFICHAGE du formulaire -->
 			<tr>
 				<td colspan="2">

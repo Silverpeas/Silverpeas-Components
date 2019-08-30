@@ -23,30 +23,28 @@
  */
 package org.silverpeas.components.yellowpages.service;
 
-import org.silverpeas.core.contribution.template.form.dao.ModelDAO;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.admin.user.model.Group;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.contact.service.ContactService;
-import org.silverpeas.core.contact.model.CompleteContact;
-import org.silverpeas.core.contact.model.ContactDetail;
-import org.silverpeas.core.contact.model.ContactFatherDetail;
-import org.silverpeas.core.contact.model.ContactPK;
-import org.silverpeas.core.node.service.NodeService;
-import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.contact.model.Contact;
+import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.components.yellowpages.dao.GroupDAO;
 import org.silverpeas.components.yellowpages.model.TopicDetail;
 import org.silverpeas.components.yellowpages.model.UserContact;
 import org.silverpeas.components.yellowpages.model.YellowpagesRuntimeException;
-import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contact.model.CompleteContact;
+import org.silverpeas.core.contact.model.Contact;
+import org.silverpeas.core.contact.model.ContactDetail;
+import org.silverpeas.core.contact.model.ContactFatherDetail;
+import org.silverpeas.core.contact.model.ContactPK;
+import org.silverpeas.core.contact.service.ContactService;
+import org.silverpeas.core.contribution.template.form.dao.ModelDAO;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
@@ -69,15 +67,14 @@ import static org.silverpeas.components.yellowpages.YellowpagesComponentSettings
 @Transactional(Transactional.TxType.NOT_SUPPORTED)
 public class DefaultYellowpagesService implements YellowpagesService {
 
+  private static final String GROUP_PREFIX = "group_";
+  private static final String NO_ID = "unknown";
   @Inject
   private OrganizationController organizationController;
   @Inject
   private NodeService nodeService;
   @Inject
   private ContactService contactService;
-
-  public DefaultYellowpagesService() {
-  }
 
   private OrganizationController getOrganisationController() {
     return this.organizationController;
@@ -90,43 +87,44 @@ public class DefaultYellowpagesService implements YellowpagesService {
     if (childrenPKs != null) {
       // get groups
       // add groups to nodeDetail.childrens
-      List<String> groupIds = getGroupIds(nodeDetail.getNodePK());
-      for (String groupId : groupIds) {
-        Group group = getOrganisationController().getGroup(groupId);
-        if (group != null) {
-          NodeDetail nodeGroup = new NodeDetail();
-          nodeGroup.getNodePK().setId("group_" + group.getId());
-          nodeGroup.setName(group.getName());
-          nodeGroup.setDescription(group.getDescription());
-          childrenPKs.add(nodeGroup);
-        }
-      }
+      addNodeDetailGroups(nodeDetail, childrenPKs);
 
       int nbContacts;
       List<Integer> nbContactsBySubTopic;
-      Iterator<Integer> itSub;
-      int nbSubContact;
       for (NodeDetail child : childrenPKs) {
         NodePK childPK = child.getNodePK();
-        if (!childPK.getId().startsWith("group_")) {
+        if (!childPK.getId().startsWith(GROUP_PREFIX)) {
           String childPath = child.getPath();
           nbContacts = contactService.getNbPubByFatherPath(childPK, childPath);
           // traitement des sous-rubriques et des sous-groupes
           nbContactsBySubTopic = getRecursiveNbContact(nodeService.getDetail(childPK));
-          itSub = nbContactsBySubTopic.iterator();
-          while (itSub.hasNext()) {
-            nbSubContact = itSub.next();
+          for (Integer nbSubContact : nbContactsBySubTopic) {
             nbContacts += nbSubContact;
           }
         } else { // groupe
           String groupId =
-              childPK.getId().substring(childPK.getId().indexOf("_") + 1, childPK.getId().length());
+              childPK.getId().substring(childPK.getId().indexOf('_') + 1, childPK.getId().length());
           nbContacts = getOrganisationController().getAllSubUsersNumber(groupId);
         }
         nbContactsByTopic.add(nbContacts);
       }
     }
     return nbContactsByTopic;
+  }
+
+  private void addNodeDetailGroups(final NodeDetail nodeDetail,
+      final Collection<NodeDetail> childrenPKs) {
+    List<String> groupIds = getGroupIds(nodeDetail.getNodePK());
+    for (String groupId : groupIds) {
+      Group group = getOrganisationController().getGroup(groupId);
+      if (group != null) {
+        NodeDetail nodeGroup = new NodeDetail();
+        nodeGroup.getNodePK().setId(GROUP_PREFIX + group.getId());
+        nodeGroup.setName(group.getName());
+        nodeGroup.setDescription(group.getDescription());
+        childrenPKs.add(nodeGroup);
+      }
+    }
   }
 
   /**
@@ -144,36 +142,17 @@ public class DefaultYellowpagesService implements YellowpagesService {
       NodeDetail nodeDetail = nodeService.getDetail(pk);
       Collection<ContactDetail> contactDetails;
       if (pk.isUnclassed()) {
-        ContactPK contactPK = new ContactPK("unknown", pk);
+        ContactPK contactPK = new ContactPK(NO_ID, pk);
         contactDetails = contactService.getOrphanContacts(contactPK);
       } else if (pk.isTrash()) {
-        ContactPK contactPK = new ContactPK("unknown", pk);
+        ContactPK contactPK = new ContactPK(NO_ID, pk);
         contactDetails = contactService.getUnavailableContactsByPublisherId(contactPK, userId, "1");
       } else {
         contactDetails = contactService.getDetailsByFatherPK(nodeDetail.getNodePK());
       }
 
       if (contactDetails != null) {
-        OrganizationController orga = getOrganisationController();
-        for (ContactDetail contactDetail : contactDetails) {
-          if (contactDetail.getUserId() != null) {// contact de type user Silverpeas
-            try {
-              UserDetail userDetail = orga.getUserDetail(contactDetail.getUserId());
-              if (userDetail != null) {
-                setContactAttributes(contactDetail, userDetail, true);
-                contactDetailsR.add(contactDetail);
-              } else {
-                contactDetail.setUserId(null);
-                updateContact(contactDetail);
-                sendContactToBasket(contactDetail.getPK());
-              }
-            } catch (Exception e) {
-              SilverLogger.getLogger(this).error("contactDetail = " + contactDetail, e);
-            }
-          } else {
-            contactDetailsR.add(contactDetail);
-          }
-        }
+        fillContactDetails(contactDetails, contactDetailsR);
       }
 
       List<Integer> nbContactsByTopic = getRecursiveNbContact(nodeDetail);
@@ -181,8 +160,31 @@ public class DefaultYellowpagesService implements YellowpagesService {
       return new TopicDetail(newPath, nodeDetail, contactDetails2userPubs(contactDetailsR),
           nbContactsByTopic);
     } catch (Exception re) {
-      throw new YellowpagesRuntimeException("DefaultYellowpagesService.goTo()",
-          SilverpeasRuntimeException.ERROR, "yellowpages.EX_GET_NODEBM_HOME_FAILED", re);
+      throw new YellowpagesRuntimeException(re);
+    }
+  }
+
+  private void fillContactDetails(final Collection<ContactDetail> contactDetails,
+      final List<ContactDetail> contactDetailsR) {
+    OrganizationController orga = getOrganisationController();
+    for (ContactDetail contactDetail : contactDetails) {
+      if (contactDetail.getUserId() != null) {// contact de type user Silverpeas
+        try {
+          UserDetail userDetail = orga.getUserDetail(contactDetail.getUserId());
+          if (userDetail != null) {
+            setContactAttributes(contactDetail, userDetail, true);
+            contactDetailsR.add(contactDetail);
+          } else {
+            contactDetail.setUserId(null);
+            updateContact(contactDetail);
+            sendContactToBasket(contactDetail.getPK());
+          }
+        } catch (Exception e) {
+          SilverLogger.getLogger(this).error("contactDetail = " + contactDetail, e);
+        }
+      } else {
+        contactDetailsR.add(contactDetail);
+      }
     }
   }
 
@@ -203,8 +205,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
         }
       }
     } catch (Exception re) {
-      throw new YellowpagesRuntimeException("DefaultYellowpagesService.getTree()",
-          SilverpeasRuntimeException.ERROR, "yellowpages.EX_GET_TREE_FAILED", re);
+      throw new YellowpagesRuntimeException(re);
     }
     return result;
   }
@@ -214,7 +215,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
       NodeDetail nGroup = new NodeDetail();
       nGroup.setName(group.getName());
       nGroup.setDescription(group.getDescription());
-      nGroup.getNodePK().setId("group_" + group.getId());
+      nGroup.getNodePK().setId(GROUP_PREFIX + group.getId());
       nGroup.setLevel(level);
       tree.add(nGroup);
 
@@ -253,8 +254,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
         }
         return nodeService.createNode(subTopic, father);
       } catch (Exception re) {
-        throw new YellowpagesRuntimeException("DefaultYellowpagesService.addToTopic()",
-            SilverpeasRuntimeException.ERROR, "yellowpages.EX_GET_NODEBM_HOME_FAILED", re);
+        throw new YellowpagesRuntimeException(re);
       }
     }
   }
@@ -269,8 +269,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
     try {
       return nodeService.isSameNameSameLevelOnCreation(subTopic);
     } catch (Exception re) {
-      throw new YellowpagesRuntimeException("DefaultYellowpagesService.isSameNameSameLevelOnCreation()",
-          SilverpeasRuntimeException.ERROR, "yellowpages.EX_GET_NODEBM_HOME_FAILED", re);
+      throw new YellowpagesRuntimeException(re);
     }
   }
 
@@ -284,8 +283,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
     try {
       return nodeService.isSameNameSameLevelOnUpdate(subTopic);
     } catch (Exception re) {
-      throw new YellowpagesRuntimeException("DefaultYellowpagesService.isSameTopicSameLevelOnUpdate()",
-          SilverpeasRuntimeException.ERROR, "yellowpages.EX_GET_NODEBM_HOME_FAILED", re);
+      throw new YellowpagesRuntimeException(re);
     }
   }
 
@@ -313,9 +311,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
         }
         nodeService.setDetail(topic);
       } catch (Exception re) {
-        throw new YellowpagesRuntimeException("DefaultYellowpagesService.updateTopic()",
-            SilverpeasRuntimeException.ERROR, "root.EX_UPDATE_TOPIC_FAILED", "topic = " + topic,
-            re);
+        throw new YellowpagesRuntimeException(re);
       }
 
 
@@ -340,25 +336,21 @@ public class DefaultYellowpagesService implements YellowpagesService {
 
 
     // Fictive contact to obtain the correct tableName
-    ContactPK contactPK = new ContactPK("unknown", pkToDelete);
+    ContactPK contactPK = new ContactPK(NO_ID, pkToDelete);
 
     // Delete all entries in the table which link pub to topic
     try {
       contactService.removeAllIssue(pkToDelete, contactPK);
       unreferenceOrphanContacts(contactPK);
     } catch (Exception re) {
-      throw new YellowpagesRuntimeException("DefaultYellowpagesService.deleteTopic()",
-          SilverpeasRuntimeException.ERROR, "yellowpages.EX_DELETE_CONTACTS_FAILED",
-          "pkToDelete=" + pkToDelete.toString(), re);
+      throw new YellowpagesRuntimeException(re);
     }
 
     // Delete the topic
     try {
       nodeService.removeNode(pkToDelete);
     } catch (Exception re) {
-      throw new YellowpagesRuntimeException("DefaultYellowpagesService.deleteTopic()",
-          SilverpeasRuntimeException.ERROR, "root.EX_DELETE_TOPIC_FAILED",
-          "pk = " + pkToDelete.toString(), re);
+      throw new YellowpagesRuntimeException(re);
     }
 
   }
@@ -413,9 +405,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
       }
       return contactDetail;
     } catch (Exception re) {
-      throw new YellowpagesRuntimeException("DefaultYellowpagesService.getContactDetail()",
-          SilverpeasRuntimeException.ERROR, "root.EX_GET_CONTACT_FAILED",
-          "pk = " + contactPK.toString(), re);
+      throw new YellowpagesRuntimeException(re);
     }
   }
 
@@ -433,8 +423,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
     try {
       return contactService.getDetailsByLastName(pk, query);
     } catch (Exception e) {
-      throw new YellowpagesRuntimeException("DefaultYellowpagesService.getContactDetailsByLastName()",
-          SilverpeasRuntimeException.ERROR, "root.EX_GET_CONTACTS_FAILED", e);
+      throw new YellowpagesRuntimeException(e);
     }
   }
 
@@ -447,9 +436,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
     try {
       contactDetails = contactService.getDetailsByLastNameOrFirstName(pk, query);
     } catch (Exception e) {
-      throw new YellowpagesRuntimeException(
-          "DefaultYellowpagesService.getContactDetailsByLastNameOrFirstName()",
-          SilverpeasRuntimeException.ERROR, "root.EX_GET_CONTACTS_FAILED", e);
+      throw new YellowpagesRuntimeException(e);
     }
     return contactDetails;
   }
@@ -461,9 +448,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
     try {
       return contactService.getDetailsByLastNameAndFirstName(pk, lastName, firstName);
     } catch (Exception e) {
-      throw new YellowpagesRuntimeException(
-          "DefaultYellowpagesService.getContactDetailsByLastNameAndFirstName()",
-          SilverpeasRuntimeException.ERROR, "root.EX_GET_CONTACTS_FAILED", e);
+      throw new YellowpagesRuntimeException(e);
     }
   }
 
@@ -480,38 +465,42 @@ public class DefaultYellowpagesService implements YellowpagesService {
           nodePKsWithout12.add(pk);
         }
       }
-      ContactPK pk = new ContactPK("unknown", nodePK);
+      ContactPK pk = new ContactPK(NO_ID, nodePK);
       Collection<ContactFatherDetail> contactDetails =
           contactService.getDetailsByFatherPKs(nodePKsWithout12, pk, nodePK);
       if (contactDetails != null) {
-        for (ContactFatherDetail contactFatherDetail : contactDetails) {
-          ContactDetail contactDetail = contactFatherDetail.getContactDetail();
-          // contact de type user Silverpeas
-          if (contactDetail.getUserId() != null) {
-            try {
-              OrganizationController orga = getOrganisationController();
-              UserDetail userDetail = orga.getUserDetail(contactDetail.getUserId());
-              if (userDetail != null) {
-                setContactAttributes(contactDetail, userDetail, true);
-                contactDetailsR.add(contactFatherDetail);
-              } else {
-                contactDetail.setUserId(null);
-                updateContact(contactDetail);
-                sendContactToBasket(contactDetail.getPK());
-              }
-            } catch (Exception e) {
-              SilverLogger.getLogger(this).error("contactDetail = " + contactDetail, e);
-            }
-          } else {
-            contactDetailsR.add(contactFatherDetail);
-          }
-        }
+        fillContactFatherDetails(contactDetails, contactDetailsR);
       }
 
       return contactDetailsR;
     } catch (Exception re) {
-      throw new YellowpagesRuntimeException("DefaultYellowpagesService.getAllContactDetails()",
-          SilverpeasRuntimeException.ERROR, "root.EX_GET_CONTACTS_FAILED", re);
+      throw new YellowpagesRuntimeException(re);
+    }
+  }
+
+  private void fillContactFatherDetails(final Collection<ContactFatherDetail> contactDetails,
+      final ArrayList<ContactFatherDetail> contactDetailsR) {
+    for (ContactFatherDetail contactFatherDetail : contactDetails) {
+      ContactDetail contactDetail = contactFatherDetail.getContactDetail();
+      // contact de type user Silverpeas
+      if (contactDetail.getUserId() != null) {
+        try {
+          OrganizationController orga = getOrganisationController();
+          UserDetail userDetail = orga.getUserDetail(contactDetail.getUserId());
+          if (userDetail != null) {
+            setContactAttributes(contactDetail, userDetail, true);
+            contactDetailsR.add(contactFatherDetail);
+          } else {
+            contactDetail.setUserId(null);
+            updateContact(contactDetail);
+            sendContactToBasket(contactDetail.getPK());
+          }
+        } catch (Exception e) {
+          SilverLogger.getLogger(this).error("contactDetail = " + contactDetail, e);
+        }
+      } else {
+        contactDetailsR.add(contactFatherDetail);
+      }
     }
   }
 
@@ -529,8 +518,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
       // get all nodePK whick contains this contact
       fatherPKs = contactService.getAllFatherPK(contactPK);
     } catch (Exception re) {
-      throw new YellowpagesRuntimeException("DefaultYellowpagesService.getPathList()",
-          SilverpeasRuntimeException.ERROR, "yellowpages.EX_GET_CONTACTBM_HOME_FAILED", re);
+      throw new YellowpagesRuntimeException(re);
     }
     try {
       List<Collection<NodeDetail>> pathList = new ArrayList<>();
@@ -545,8 +533,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
 
       return pathList;
     } catch (Exception re) {
-      throw new YellowpagesRuntimeException("DefaultYellowpagesService.getPathList()",
-          SilverpeasRuntimeException.ERROR, "yellowpages.EX_GET_NODEBM_HOME_FAILED", re);
+      throw new YellowpagesRuntimeException(re);
     }
   }
 
@@ -570,8 +557,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
       // add this contact to the current topic
       addContactToTopic(contactPK, nodePK.getId());
     } catch (Exception re) {
-      throw new YellowpagesRuntimeException("DefaultYellowpagesService.createContact()",
-          SilverpeasRuntimeException.ERROR, "yellowpages.EX_CREATE_CONTACT_FAILED", re);
+      throw new YellowpagesRuntimeException(re);
     }
 
     return contactPK.getId();
@@ -600,8 +586,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
       }
 
     } catch (Exception re) {
-      throw new YellowpagesRuntimeException("DefaultYellowpagesService.updateContact()",
-          SilverpeasRuntimeException.ERROR, "yellowpages.EX_UPDATE_CONTACT_FAILED", re);
+      throw new YellowpagesRuntimeException(re);
     }
 
   }
@@ -625,8 +610,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
         // delete the contact
         contactService.removeContact(contactPK);
       } catch (Exception re) {
-        throw new YellowpagesRuntimeException("DefaultYellowpagesService.deleteContact()",
-            SilverpeasRuntimeException.ERROR, "yellowpages.EX_DELETE_CONTACT_FAILED", re);
+        throw new YellowpagesRuntimeException(re);
       }
     } else {
       // the contact is in another topic than basket or DZ
@@ -649,8 +633,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
       contactService.addFather(contactPK, new NodePK(NodePK.BIN_NODE_ID, contactPK));
       deleteIndex(contactPK);
     } catch (Exception re) {
-      throw new YellowpagesRuntimeException("DefaultYellowpagesService.sendContactToBasket()",
-          SilverpeasRuntimeException.ERROR, "yellowpages.EX_SEND_CONTACT_TO_BASKET_FAILED", re);
+      throw new YellowpagesRuntimeException(re);
     }
   }
 
@@ -661,8 +644,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
       // delete all current user orphan contacts
       contactService.deleteOrphanContactsByCreatorId(contactPK, userId);
     } catch (Exception re) {
-      throw new YellowpagesRuntimeException("DefaultYellowpagesService.emptyDZByUserId()",
-          SilverpeasRuntimeException.ERROR, "yellowpages.EX_DELETE_ORPHEAN_CONTACTS_FAILED", re);
+      throw new YellowpagesRuntimeException(re);
     }
   }
 
@@ -693,8 +675,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
         contactService.index(contactPK);
       }
     } catch (Exception re) {
-      throw new YellowpagesRuntimeException("DefaultYellowpagesService.addContactToTopic()",
-          SilverpeasRuntimeException.ERROR, "yellowpages.EX_ADD_CONTACT_TO_TOPIC_FAILED", re);
+      throw new YellowpagesRuntimeException(re);
     }
   }
 
@@ -709,8 +690,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
     try {
       contactService.removeFather(contactPK, fatherPK);
     } catch (Exception re) {
-      throw new YellowpagesRuntimeException("DefaultYellowpagesService.deleteContactFromTopic()",
-          SilverpeasRuntimeException.ERROR, "yellowpages.EX_DELETE_CONTACT_FROM_TOPIC_FAILED", re);
+      throw new YellowpagesRuntimeException(re);
     }
 
   }
@@ -725,8 +705,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
     try {
       contactService.createInfoModel(contactPK, modelId);
     } catch (Exception re) {
-      throw new YellowpagesRuntimeException("DefaultYellowpagesService.createInfoModel()",
-          SilverpeasRuntimeException.ERROR, "yellowpages.EX_CREATE_INFO_MODEL_DETAIL_FAILED", re);
+      throw new YellowpagesRuntimeException(re);
     }
   }
 
@@ -747,8 +726,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
       String modelId = nodeDetail.getModelId();
       completeContact = contactService.getCompleteContact(contactPK, modelId);
     } catch (Exception re) {
-      throw new YellowpagesRuntimeException("DefaultYellowpagesService.getCompleteContactInNode()",
-          SilverpeasRuntimeException.ERROR, "yellowpages.EX_GET_CONTACT_FAILED", re);
+      throw new YellowpagesRuntimeException(re);
     }
     checkContactAsUser(completeContact);
 
@@ -800,32 +778,10 @@ public class DefaultYellowpagesService implements YellowpagesService {
     try {
       Collection<ContactDetail> contacts = contactService.getContacts(contactPKs);
       if (contacts != null) {
-        for (ContactDetail contactDetail : contacts) {
-          if (contactDetail.getUserId() != null) {
-            // contact de type user Silverpeas
-            try {
-              OrganizationController orga = getOrganisationController();
-              UserDetail userDetail = orga.getUserDetail(contactDetail.getUserId());
-              if (userDetail != null) {
-                setContactAttributes(contactDetail, userDetail, true);
-                contactDetailsR.add(contactDetail);
-              } else {
-                contactDetail.setUserId(null);
-                updateContact(contactDetail);
-                sendContactToBasket(contactDetail.getPK());
-              }
-            } catch (Exception e) {
-              SilverLogger.getLogger(this)
-                  .error("contactDetail.getUserId() = " + contactDetail.getUserId(), e);
-            }
-          } else {
-            contactDetailsR.add(contactDetail);
-          }
-        }
+        fillContactDetails(contacts, contactDetailsR);
       }
     } catch (Exception re) {
-      throw new YellowpagesRuntimeException("DefaultYellowpagesService.getContacts()",
-          SilverpeasRuntimeException.ERROR, "yellowpages.EX_GET_ALL_CONTACTS_FAILED", re);
+      throw new YellowpagesRuntimeException(re);
     }
 
     return contactDetails2userPubs(contactDetailsR);
@@ -837,11 +793,11 @@ public class DefaultYellowpagesService implements YellowpagesService {
       // fetch contact fathers
       return contactService.getAllFatherPK(contactPK);
     } catch (Exception re) {
-      throw new YellowpagesRuntimeException("DefaultYellowpagesService.getContactFathers()",
-          SilverpeasRuntimeException.ERROR, "yellowpages.EX_GET_CONTACT_FATHERS_FAILED", re);
+      throw new YellowpagesRuntimeException(re);
     }
   }
 
+  @Transactional(Transactional.TxType.REQUIRED)
   public void unreferenceOrphanContacts(ContactPK contactPK) {
     try {
       Collection<ContactDetail> orphanContacts = contactService.getOrphanContacts(contactPK);
@@ -851,9 +807,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
         deleteIndex(contactDetail.getPK());
       }
     } catch (Exception e) {
-      throw new YellowpagesRuntimeException("DefaultYellowpagesService.unreferenceOrphanContacts()",
-          SilverpeasRuntimeException.ERROR, "yellowpages.EX_UNREFERENCE_ORPHEAN_CONTACTS_FAILED",
-          e);
+      throw new YellowpagesRuntimeException(e);
     }
   }
 
@@ -866,9 +820,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
     try (Connection con = getConnection()) {
       return (List<String>) GroupDAO.getGroupIds(con, pk.getId(), pk.getInstanceId());
     } catch (Exception e) {
-      throw new YellowpagesRuntimeException("DefaultYellowpagesService.addGroup()",
-          SilverpeasRuntimeException.ERROR, "yellowpages.EX_UNREFERENCE_ORPHEAN_CONTACTS_FAILED",
-          e);
+      throw new YellowpagesRuntimeException(e);
     }
   }
 
@@ -877,9 +829,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
     try (Connection con = getConnection()) {
       GroupDAO.addGroup(con, groupId, nodePK.getId(), nodePK.getInstanceId());
     } catch (Exception e) {
-      throw new YellowpagesRuntimeException("DefaultYellowpagesService.addGroup()",
-          SilverpeasRuntimeException.ERROR, "yellowpages.EX_UNREFERENCE_ORPHEAN_CONTACTS_FAILED",
-          e);
+      throw new YellowpagesRuntimeException(e);
     }
   }
 
@@ -889,8 +839,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
     try {
       GroupDAO.removeGroup(con, groupId);
     } catch (Exception e) {
-      throw new YellowpagesRuntimeException("DefaultYellowpagesService.removeGroup()",
-          SilverpeasRuntimeException.ERROR, "yellowpages.EX_REMOVE_GROUP_FAILED", e);
+      throw new YellowpagesRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -901,8 +850,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
     try (Connection con = getConnection()) {
       GroupDAO.removeGroup(con, groupId, nodePK.getId(), nodePK.getInstanceId());
     } catch (Exception e) {
-      throw new YellowpagesRuntimeException("DefaultYellowpagesService.removeGroup()",
-          SilverpeasRuntimeException.ERROR, "yellowpages.EX_REMOVE_GROUP_FAILED", e);
+      throw new YellowpagesRuntimeException(e);
     }
   }
 
@@ -912,8 +860,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
       return DBUtil.openConnection();
     } catch (SQLException e) {
       // traitement des exceptions
-      throw new YellowpagesRuntimeException("DefaultYellowpagesService.getConnection()",
-          SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
+      throw new YellowpagesRuntimeException(e);
     }
   }
 
@@ -927,8 +874,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
         }
       }
     } catch (Exception e) {
-      throw new YellowpagesRuntimeException("DefaultYellowpagesService.addModelUsed()",
-          SilverpeasRuntimeException.ERROR, "kmelia.IMPOSSIBLE_D_AJOUTER_LES_MODELES", e);
+      throw new YellowpagesRuntimeException(e);
     }
   }
 
@@ -937,8 +883,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
     try (Connection con = getConnection()) {
       return ModelDAO.getModelUsed(con, instanceId);
     } catch (Exception e) {
-      throw new YellowpagesRuntimeException("DefaultYellowpagesService.getModelUsed()",
-          SilverpeasRuntimeException.ERROR, "kmelia.IMPOSSIBLE_DE_RECUPERER_LES_MODELES", e);
+      throw new YellowpagesRuntimeException(e);
     }
   }
 

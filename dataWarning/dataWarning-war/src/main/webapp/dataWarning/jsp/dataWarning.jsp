@@ -38,8 +38,11 @@
 
     String textFrequenceScheduler = (String)request.getAttribute("textFrequenceScheduler");
 %>
-<HTML>
-<HEAD>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<%=resource.getLanguage()%>">
+<head>
+	<title></title>
 <view:looknfeel/>
 </HEAD>
 <BODY marginwidth=5 marginheight=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">

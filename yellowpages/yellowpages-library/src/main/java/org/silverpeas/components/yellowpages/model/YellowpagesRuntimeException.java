@@ -24,7 +24,7 @@
 
 package org.silverpeas.components.yellowpages.model;
 
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.SilverpeasRuntimeException;
 
 /**
  * Class declaration
@@ -32,58 +32,15 @@ import org.silverpeas.core.exception.SilverpeasRuntimeException;
  */
 public class YellowpagesRuntimeException extends SilverpeasRuntimeException {
 
-  private static final long serialVersionUID = -5684033042863074906L;
-
-  /**
-   * --------------------------------------------------------------------------
-   * constructors constructors
-   */
-  public YellowpagesRuntimeException(String callingClass, int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
+  public YellowpagesRuntimeException(final String message) {
+    super(message);
   }
 
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param extraParams
-   */
-  public YellowpagesRuntimeException(String callingClass, int errorLevel, String message,
-      String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public YellowpagesRuntimeException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param nested
-   */
-  public YellowpagesRuntimeException(String callingClass, int errorLevel, String message,
-      Exception nested) {
-    super(callingClass, errorLevel, message, nested);
+  public YellowpagesRuntimeException(final Throwable cause) {
+    super(cause);
   }
-
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param extraParams
-   * @param nested
-   */
-  public YellowpagesRuntimeException(String callingClass, int errorLevel, String message,
-      String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  /**
-   * @return
-   */
-  public String getModule() {
-    return "yellowpages";
-  }
-
 }

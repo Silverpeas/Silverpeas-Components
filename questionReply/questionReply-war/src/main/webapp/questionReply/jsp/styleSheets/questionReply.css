@@ -220,7 +220,7 @@ h5.answerTitle {
 
 .updateR input{
   width:70%;
-  maw-width:500px;
+  max-width:500px;
 }
 
 /* Ajout quand une seule action */

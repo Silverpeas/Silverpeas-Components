@@ -23,36 +23,21 @@
  */
 package org.silverpeas.components.websites.siteManage.model;
 
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.SilverpeasRuntimeException;
 
 public class WebSitesRuntimeException extends SilverpeasRuntimeException {
 
-  /**
-   *
-   */
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 623321175232812644L;
 
-  public WebSitesRuntimeException(String callingClass, int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
+  public WebSitesRuntimeException(final String message) {
+    super(message);
   }
 
-  public WebSitesRuntimeException(String callingClass, int errorLevel, String message,
-      String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public WebSitesRuntimeException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  public WebSitesRuntimeException(String callingClass, int errorLevel, String message,
-      Exception nested) {
-    super(callingClass, errorLevel, message, nested);
+  public WebSitesRuntimeException(final Throwable cause) {
+    super(cause);
   }
-
-  public WebSitesRuntimeException(String callingClass, int errorLevel, String message,
-      String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  public String getModule() {
-    return "webSites";
-  }
-
 }

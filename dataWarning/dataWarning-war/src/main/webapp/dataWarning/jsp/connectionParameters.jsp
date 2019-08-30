@@ -33,8 +33,11 @@ DataWarning dataWarningObject = (DataWarning)request.getAttribute("dataWarningOb
 DataWarningDBDriver[] dataWarningDBDrivers = (DataWarningDBDriver[])request.getAttribute("dataWarningDBDrivers");
 DataWarningDBDriver currentDBDriver = (DataWarningDBDriver)request.getAttribute("currentDBDriver");
 %>
-<HTML>
-<HEAD>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<%=resource.getLanguage()%>">
+<head>
+	<title></title>
 <view:looknfeel withCheckFormScript="true"/>
 </HEAD>
 <Script language="JavaScript">

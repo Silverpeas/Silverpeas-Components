@@ -25,7 +25,10 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<HTML>
+<!DOCTYPE html>
+<HTML lang="en">
+<HEAD>
+  <TITLE></TITLE>
 <script language="javascript">
 	function chargement()
 	{
@@ -33,6 +36,7 @@
 		window.close();
 	}
 </script>
+</HEAD>
 <BODY onLoad="javascript:chargement()">
 </BODY>
 </HTML>

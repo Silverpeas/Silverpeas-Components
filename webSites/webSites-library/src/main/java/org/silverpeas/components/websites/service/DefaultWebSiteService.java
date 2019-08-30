@@ -41,13 +41,10 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.DateUtil;
 
 import javax.inject.Inject;
@@ -61,6 +58,8 @@ import java.util.List;
 @Singleton
 @Transactional(Transactional.TxType.SUPPORTS)
 public class DefaultWebSiteService implements WebSiteService {
+
+  private static final String NO_ID = "useless";
 
   @Inject
   private NodeService nodeService;
@@ -84,8 +83,7 @@ public class DefaultWebSiteService implements WebSiteService {
     try {
       nodeDetail = nodeService.getDetail(pk);
     } catch (Exception re) {
-      throw new WebSitesRuntimeException("DefaultWebSiteService.goTo()", SilverpeasRuntimeException.ERROR,
-          "webSites.EX_NODEBM_DETAIL_FAILED", " pk = " + pk.toString(), re);
+      throw new WebSitesRuntimeException(re);
     }
 
     Collection<PublicationDetail> pubDetails;
@@ -94,8 +92,7 @@ public class DefaultWebSiteService implements WebSiteService {
       // get the publication details linked to this topic
       pubDetails = publicationService.getDetailsByFatherPK(nodeDetail.getNodePK());
     } catch (Exception re) {
-      throw new WebSitesRuntimeException("DefaultWebSiteService.goTo()", SilverpeasRuntimeException.ERROR,
-          "webSites.EX_PUBLICATIONBM_DETAIL_FAILED", " pk = " + pk.toString(), re);
+      throw new WebSitesRuntimeException(re);
     }
 
     // get the path to this topic
@@ -121,8 +118,7 @@ public class DefaultWebSiteService implements WebSiteService {
         // topics
         nbPub = publicationService.getNbPubByFatherPath(childPK, childPath);
       } catch (Exception re) {
-        throw new WebSitesRuntimeException("DefaultWebSiteService.goTo()", SilverpeasRuntimeException.ERROR,
-            "webSites.EX_GET_NB_PUBLICATIONS_FAILED", re);
+        throw new WebSitesRuntimeException(re);
       }
       // add this total to the collection
       nbPubByTopic.add(nbPub);
@@ -139,15 +135,13 @@ public class DefaultWebSiteService implements WebSiteService {
     Collection<NodeDetail> newPath = new ArrayList<>();
 
     try {
-      List<NodeDetail> pathInReverse = (List<NodeDetail>) nodeService.getPath(nd.getNodePK());
+      List<NodeDetail> pathInReverse = nodeService.getPath(nd.getNodePK());
       // reverse the path from root to leaf
       for (int i = pathInReverse.size() - 1; i >= 0; i--) {
         newPath.add(pathInReverse.get(i));
       }
     } catch (Exception re) {
-      throw new WebSitesRuntimeException("DefaultWebSiteService.getPathFromAToZ()",
-          SilverpeasRuntimeException.ERROR, "webSites.EX_NODE_GETPATH_FAILED",
-          " pk = " + nd.getNodePK().toString(), re);
+      throw new WebSitesRuntimeException(re);
     }
     return newPath;
   }
@@ -158,8 +152,7 @@ public class DefaultWebSiteService implements WebSiteService {
       NodeDetail father = nodeService.getDetail(fatherId);
       return nodeService.createNode(subTopic, father);
     } catch (Exception re) {
-      throw new WebSitesRuntimeException("DefaultWebSiteService.addToFolder()",
-          SilverpeasRuntimeException.ERROR, "webSites.EX_NODE_CREATE_FAILED", re);
+      throw new WebSitesRuntimeException(re);
     }
   }
 
@@ -172,10 +165,7 @@ public class DefaultWebSiteService implements WebSiteService {
   @Override
   public NodePK addFolder(NodeDetail subFolder, NodePK fatherId, UserDetail currentUser) {
     if (subFolder == null) {
-      SilverTrace.error("webSites", "DefaultWebSiteService.addFolder()", "root.MSG_GEN_PARAM_VALUE",
-          "subFolder to add is null");
-      throw new WebSitesRuntimeException("DefaultWebSiteService.addFolder()", SilverpeasException.ERROR,
-          "unexisting subfolder node detail to add");
+      throw new WebSitesRuntimeException("Non existing subfolder node detail to add");
     }
     // add current space and component to subTopic detail
     subFolder.getNodePK().setComponentName(fatherId.getInstanceId());
@@ -185,9 +175,7 @@ public class DefaultWebSiteService implements WebSiteService {
     subFolder.setCreationDate(creationDate);
     subFolder.setCreatorId(currentUser.getId());
     // add new topic to current topic
-    NodePK pk = addToFolder(fatherId, subFolder);
-
-    return pk;
+    return addToFolder(fatherId, subFolder);
   }
 
   /**
@@ -204,9 +192,7 @@ public class DefaultWebSiteService implements WebSiteService {
       topic.getNodePK().setComponentName(fatherPK.getComponentName());
       nodeService.setDetail(topic);
     } catch (Exception re) {
-      throw new WebSitesRuntimeException("DefaultWebSiteService.updateFolder()",
-          SilverpeasRuntimeException.ERROR, "webSites.EX_NODE_UPDATE_FAILED", "topic = " + topic,
-          re);
+      throw new WebSitesRuntimeException(re);
     }
     return topic.getNodePK();
   }
@@ -221,8 +207,7 @@ public class DefaultWebSiteService implements WebSiteService {
     try {
       return nodeService.getDetail(pk);
     } catch (Exception re) {
-      throw new WebSitesRuntimeException("DefaultWebSiteService.getFolderDetail()",
-          SilverpeasRuntimeException.ERROR, "webSites.EX_GET_NODE_DETAIL_FAILED", "pk = " + pk, re);
+      throw new WebSitesRuntimeException(re);
     }
   }
 
@@ -249,9 +234,7 @@ public class DefaultWebSiteService implements WebSiteService {
       // Delete the topic
       nodeService.removeNode(pkToDelete);
     } catch (Exception re) {
-      throw new WebSitesRuntimeException("DefaultWebSiteService.deleteFolder()",
-          SilverpeasRuntimeException.ERROR, "webSites.EX_NODE_DELETE_FAILED", "pk = " + pkToDelete,
-          re);
+      throw new WebSitesRuntimeException(re);
     }
 
   }
@@ -310,8 +293,7 @@ public class DefaultWebSiteService implements WebSiteService {
           nodeDetail.setOrder(i);
           nodeService.setDetail(nodeDetail);
         } catch (Exception e) {
-          throw new WebSitesRuntimeException("DefaultWebSiteService.changeTopicsOrder()",
-              SilverpeasRuntimeException.ERROR, "webSites.EX_NODE_UPDATE_FAILED", e);
+          throw new WebSitesRuntimeException(e);
         }
       }
     }
@@ -323,14 +305,10 @@ public class DefaultWebSiteService implements WebSiteService {
    */
   @Override
   public PublicationDetail getPublicationDetail(PublicationPK pk) {
-    SilverTrace
-        .info("webSites", "DefaultWebSiteService.getPublicationDetail()", "root.MSG_GEN_ENTER_METHOD");
     try {
       return publicationService.getDetail(pk);
     } catch (Exception re) {
-      throw new WebSitesRuntimeException("DefaultWebSiteService.getPublicationDetail()",
-          SilverpeasRuntimeException.ERROR, "webSites.EX_GET_PUBLICATION_DETAIL_FAILED",
-          "pubId = " + pk, re);
+      throw new WebSitesRuntimeException(re);
     }
   }
 
@@ -351,9 +329,7 @@ public class DefaultWebSiteService implements WebSiteService {
       pubDetail.getPK().setId(pubPK.getId());
       return pubPK.getId();
     } catch (Exception re) {
-      throw new WebSitesRuntimeException("DefaultWebSiteService.createPublication()",
-          SilverpeasRuntimeException.ERROR, "webSites.EX_PUBLICATION_CREATE_FAILED",
-          "pubDetail = " + pubDetail, re);
+      throw new WebSitesRuntimeException(re);
     }
   }
 
@@ -367,9 +343,7 @@ public class DefaultWebSiteService implements WebSiteService {
     try {
       publicationService.setDetail(pubDetail);
     } catch (Exception re) {
-      throw new WebSitesRuntimeException("DefaultWebSiteService.updatePublication()",
-          SilverpeasRuntimeException.ERROR, "webSites.EX_PUBLICATION_UPDATE_FAILED",
-          "pubDetail = " + pubDetail, re);
+      throw new WebSitesRuntimeException(re);
     }
   }
 
@@ -384,9 +358,7 @@ public class DefaultWebSiteService implements WebSiteService {
       publicationService.removeAllFather(pubPK);
       publicationService.removePublication(pubPK);
     } catch (Exception re) {
-      throw new WebSitesRuntimeException("DefaultWebSiteService.deletePublication()",
-          SilverpeasRuntimeException.ERROR, "webSites.EX_PUBLICATION_DELETE_FAILED",
-          "pubPK = " + pubPK, re);
+      throw new WebSitesRuntimeException(re);
     }
   }
 
@@ -396,27 +368,19 @@ public class DefaultWebSiteService implements WebSiteService {
    */
   @Override
   public void addPublicationToTopic(PublicationPK pubPK, NodePK fatherPK) {
-    SilverTrace
-        .info("webSites", "DefaultWebSiteService.addPublicationToTopic()", "root.MSG_GEN_ENTER_METHOD");
     try {
       publicationService.addFather(pubPK, fatherPK);
     } catch (Exception re) {
-      throw new WebSitesRuntimeException("DefaultWebSiteService.addPublicationToTopic()",
-          SilverpeasRuntimeException.ERROR, "webSites.EX_PUBLICATION_ADD_TO_NODE_FAILED",
-          "pubPK = " + pubPK + " - fatherPK = " + fatherPK, re);
+      throw new WebSitesRuntimeException(re);
     }
   }
 
   @Override
   public void removePublicationFromTopic(PublicationPK pubPK, NodePK fatherPK) {
-    SilverTrace
-        .info("webSites", "DefaultWebSiteService.removePublicationToTopic()", "root.MSG_GEN_ENTER_METHOD");
     try {
       publicationService.removeFather(pubPK, fatherPK);
     } catch (Exception re) {
-      throw new WebSitesRuntimeException("DefaultWebSiteService.removePublicationToTopic()",
-          SilverpeasRuntimeException.ERROR, "webSites.EX_PUBLICATION_DELETE_TO_NODE_FAILED",
-          "pubPK = " + pubPK + " - fatherPK = " + fatherPK, re);
+      throw new WebSitesRuntimeException(re);
     }
   }
 
@@ -430,9 +394,7 @@ public class DefaultWebSiteService implements WebSiteService {
     try {
       return publicationService.getAllFatherPK(pubPK);
     } catch (Exception re) {
-      throw new WebSitesRuntimeException("DefaultWebSiteService.getAllFatherPK()",
-          SilverpeasRuntimeException.ERROR, "webSites.EX_GET_PUBLICATION_FATHER_FAILED",
-          "pubId = " + pubPK, re);
+      throw new WebSitesRuntimeException(re);
     }
   }
 
@@ -446,16 +408,12 @@ public class DefaultWebSiteService implements WebSiteService {
       SiteDAO dao = new SiteDAO(componentId);
       return dao.getIdPublication(idSite);
     } catch (Exception e) {
-      throw new WebSitesRuntimeException("DefaultWebSiteService.getIdPublication()",
-          SilverpeasRuntimeException.ERROR, "webSites.EX_GET_PUBLICATION_FAILED",
-          "idSite = " + idSite, e);
+      throw new WebSitesRuntimeException(e);
     }
   }
 
   @Override
   public void updateClassification(PublicationPK pubPK, List<String> arrayTopic) {
-    SilverTrace
-        .info("webSites", "DefaultWebSiteService.updateClassification()", "root.MSG_GEN_ENTER_METHOD");
     Collection<NodePK> oldFathersColl = publicationService.getAllFatherPK(pubPK);
 
     List<NodePK> oldFathers = new ArrayList<>();
@@ -505,8 +463,7 @@ public class DefaultWebSiteService implements WebSiteService {
       SiteDAO dao = new SiteDAO(componentId);
       return dao.getAllWebSite();
     } catch (Exception e) {
-      throw new WebSitesRuntimeException("DefaultWebSiteService.getAllWebSite()",
-          SilverpeasRuntimeException.ERROR, "webSites.EX_GET_WEBSITES_FAILED", e);
+      throw new WebSitesRuntimeException(e);
     }
   }
 
@@ -522,8 +479,7 @@ public class DefaultWebSiteService implements WebSiteService {
       SiteDAO dao = new SiteDAO(componentId);
       return dao.getWebSite(pk);
     } catch (Exception e) {
-      throw new WebSitesRuntimeException("DefaultWebSiteService.getWebSite()",
-          SilverpeasRuntimeException.ERROR, "webSites.EX_GET_WEBSITE_FAILED", "id = " + id, e);
+      throw new WebSitesRuntimeException(e);
     }
   }
 
@@ -537,8 +493,7 @@ public class DefaultWebSiteService implements WebSiteService {
       SiteDAO dao = new SiteDAO(componentId);
       return dao.getWebSites(ids);
     } catch (Exception e) {
-      throw new WebSitesRuntimeException("DefaultWebSiteService.getWebSite()",
-          SilverpeasRuntimeException.ERROR, "webSites.EX_GET_WEBSITE_FAILED", "ids = " + ids, e);
+      throw new WebSitesRuntimeException(e);
     }
   }
 
@@ -552,8 +507,7 @@ public class DefaultWebSiteService implements WebSiteService {
       SiteDAO dao = new SiteDAO(componentId);
       return dao.getIcons(pk);
     } catch (Exception e) {
-      throw new WebSitesRuntimeException("DefaultWebSiteService.getIcons()",
-          SilverpeasRuntimeException.ERROR, "webSites.EX_GET_ICONS_FAILED", "id = " + id, e);
+      throw new WebSitesRuntimeException(e);
     }
   }
 
@@ -564,8 +518,7 @@ public class DefaultWebSiteService implements WebSiteService {
       SiteDAO dao = new SiteDAO(componentId);
       return dao.getNextId();
     } catch (Exception e) {
-      throw new WebSitesRuntimeException("DefaultWebSiteService.getNextId()",
-          SilverpeasRuntimeException.ERROR, "root.EX_GET_NEXTID_FAILED", e);
+      throw new WebSitesRuntimeException(e);
     }
   }
 
@@ -576,12 +529,12 @@ public class DefaultWebSiteService implements WebSiteService {
       SiteDAO dao = new SiteDAO(componentId);
       return dao.getAllIcons();
     } catch (Exception e) {
-      throw new WebSitesRuntimeException("DefaultWebSiteService.getAllIcons()",
-          SilverpeasRuntimeException.ERROR, "webSites.EX_GET_ALL_ICONS_FAILED", e);
+      throw new WebSitesRuntimeException(e);
     }
   }
 
   @Override
+  @Transactional(Transactional.TxType.REQUIRED)
   public String createWebSite(String componentId, SiteDetail description, UserDetail currentUser) {
 
     try (Connection con = getConnection()) {
@@ -593,9 +546,7 @@ public class DefaultWebSiteService implements WebSiteService {
       createSilverContent(con, description, currentUser.getId());
       return pubPk;
     } catch (Exception e) {
-      throw new WebSitesRuntimeException("DefaultWebSiteService.createWebSite()",
-          SilverpeasRuntimeException.ERROR, "webSites.EX_CREATE_WEBSITE_FAILED",
-          " SiteDetail = " + description.toString(), e);
+      throw new WebSitesRuntimeException(e);
     }
   }
 
@@ -606,8 +557,7 @@ public class DefaultWebSiteService implements WebSiteService {
       SiteDAO dao = new SiteDAO(componentId);
       dao.associateIcons(id, liste);
     } catch (Exception e) {
-      throw new WebSitesRuntimeException("DefaultWebSiteService.associateIcons()",
-          SilverpeasRuntimeException.ERROR, "webSites.EX_ASSOCIATE_ICONS_FAILED", " id = " + id, e);
+      throw new WebSitesRuntimeException(e);
     }
   }
 
@@ -623,8 +573,7 @@ public class DefaultWebSiteService implements WebSiteService {
         updateSilverContentVisibility(siteDetail);
       }
     } catch (Exception e) {
-      throw new WebSitesRuntimeException("DefaultWebSiteService.publish()", SilverpeasRuntimeException.ERROR,
-          "webSites.EX_PUBLISH_FAILED", e);
+      throw new WebSitesRuntimeException(e);
     }
   }
 
@@ -642,8 +591,7 @@ public class DefaultWebSiteService implements WebSiteService {
         updateSilverContentVisibility(siteDetail);
       }
     } catch (Exception e) {
-      throw new WebSitesRuntimeException("DefaultWebSiteService.dePublish()",
-          SilverpeasRuntimeException.ERROR, "webSites.EX_DEPUBLISH_FAILED", e);
+      throw new WebSitesRuntimeException(e);
     }
   }
 
@@ -663,28 +611,26 @@ public class DefaultWebSiteService implements WebSiteService {
         deleteSilverContent(con, sitePK);
       }
     } catch (Exception e) {
-      throw new WebSitesRuntimeException("DefaultWebSiteService.deleteWebSites()",
-          SilverpeasRuntimeException.ERROR, "webSites.EX_DELETE_WEBSITES_FAILED", e);
+      throw new WebSitesRuntimeException( e);
     }
   }
 
   public void index(String componentId) {
     try {
       // index all topics
-      NodePK rootPK = new NodePK("0", "useless", componentId);
+      NodePK rootPK = new NodePK("0", NO_ID, componentId);
       List<NodeDetail> tree = nodeService.getSubTree(rootPK);
       for (NodeDetail node : tree) {
         nodeService.createIndex(node);
       }
       // index all publications
-      PublicationPK pubPK = new PublicationPK("useless", "useless", componentId);
+      PublicationPK pubPK = new PublicationPK(NO_ID, NO_ID, componentId);
       Collection<PublicationDetail> publications = publicationService.getAllPublications(pubPK);
       for (final PublicationDetail pub : publications) {
         publicationService.createIndex(pub);
       }
     } catch (Exception e) {
-      throw new WebSitesRuntimeException("DefaultWebSiteService.index(" + componentId + ")",
-          SilverpeasRuntimeException.ERROR, "webSites.EX_INDEXING_COMPONENT_FAILED", e);
+      throw new WebSitesRuntimeException(e);
     }
   }
 
@@ -697,9 +643,7 @@ public class DefaultWebSiteService implements WebSiteService {
       SiteDAO dao = new SiteDAO(componentId);
       dao.updateWebSite(description);
     } catch (Exception e) {
-      throw new WebSitesRuntimeException("DefaultWebSiteService.updateWebSite()",
-          SilverpeasRuntimeException.ERROR, "webSites.EX_UPDATE_WEBSITE_FAILED",
-          " SiteDetail = " + description, e);
+      throw new WebSitesRuntimeException(e);
     }
   }
 
@@ -716,8 +660,7 @@ public class DefaultWebSiteService implements WebSiteService {
         silverObjectId = createSilverContent(null, siteDetail, "-1");
       }
     } catch (Exception e) {
-      throw new WebSitesRuntimeException("DefaultWebSiteService.getSilverObjectId()",
-          SilverpeasRuntimeException.ERROR, "webSites.EX_IMPOSSIBLE_DOBTENIR_LE_SILVEROBJECTID", e);
+      throw new WebSitesRuntimeException(e);
     }
     return silverObjectId;
   }
@@ -727,8 +670,7 @@ public class DefaultWebSiteService implements WebSiteService {
     try {
       return getWebSitesContentManager().createSilverContent(con, siteDetail, creator);
     } catch (Exception e) {
-      throw new WebSitesRuntimeException("DefaultWebSiteService.createSilverContent()",
-          SilverpeasRuntimeException.ERROR, "webSites.EX_IMPOSSIBLE_DOBTENIR_LE_SILVEROBJECTID", e);
+      throw new WebSitesRuntimeException(e);
     }
   }
 
@@ -740,8 +682,7 @@ public class DefaultWebSiteService implements WebSiteService {
     try {
       getWebSitesContentManager().deleteSilverContent(con, sitePK);
     } catch (Exception e) {
-      throw new WebSitesRuntimeException("DefaultWebSiteService.deleteSilverContent()",
-          SilverpeasRuntimeException.ERROR, "webSites.EX_IMPOSSIBLE_DOBTENIR_LE_SILVEROBJECTID", e);
+      throw new WebSitesRuntimeException(e);
     }
   }
 
@@ -753,8 +694,7 @@ public class DefaultWebSiteService implements WebSiteService {
     try {
       getWebSitesContentManager().updateSilverContentVisibility(siteDetail);
     } catch (Exception e) {
-      throw new WebSitesRuntimeException("DefaultWebSiteService.updateSilverContent()",
-          SilverpeasRuntimeException.ERROR, "webSites.EX_IMPOSSIBLE_DOBTENIR_LE_SILVEROBJECTID", e);
+      throw new WebSitesRuntimeException(e);
     }
   }
 
@@ -772,8 +712,7 @@ public class DefaultWebSiteService implements WebSiteService {
     try {
       return DBUtil.openConnection();
     } catch (Exception e) {
-      throw new WebSitesRuntimeException("DefaultWebSiteService.getConnection()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
+      throw new WebSitesRuntimeException(e);
     }
   }
 }

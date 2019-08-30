@@ -98,6 +98,8 @@
       <view:form name="channel" action="${addMode ? 'CreateChannel' : 'UpdateChannel'}" method="post">
         <input type="hidden" name="Id" value="${not addMode ? channel.getPK().id : ''}"/>
         <table>
+          <caption></caption>
+          <th id="channel-data"></th>
           <tr>
             <td class="txtlibform"><label for="url-input">${urlLabel} :</label></td>
             <td><input type="text" id="url-input" name="Url" maxlength="1000" size="55" value="${addMode ? '' : channel.url}"/>&nbsp;<img src="${mandatoryIcon}" width="5px" alt=""/></td>

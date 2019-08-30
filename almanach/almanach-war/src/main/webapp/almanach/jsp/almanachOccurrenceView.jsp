@@ -59,10 +59,11 @@
 <c:url var="backUri" value="${requestScope.navigationContext.previousNavigationStep.uri}"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.almanachcalendar">
+<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.almanachcalendar" xml:lang="${currentUserLanguage}">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   <view:looknfeel withFieldsetStyle="true"/>
+  <title></title>
   <view:includePlugin name="calendar"/>
   <view:script src="/almanach/jsp/javaScript/angularjs/services/almanachcalendar.js"/>
   <view:script src="/almanach/jsp/javaScript/angularjs/almanachcalendar.js"/>

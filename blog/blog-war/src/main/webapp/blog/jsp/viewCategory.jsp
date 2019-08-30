@@ -37,7 +37,7 @@ Collection<NodeDetail>	categories	= (Collection<NodeDetail>) request.getAttribut
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<%=language%>">
 <head>
 <title></title>
 <view:looknfeel withCheckFormScript="true"/>
@@ -171,7 +171,7 @@ function sortNode(updatedNodeJSON)
     out.println(frame.printBefore());
 %>
 <div class="inlineMessage"><fmt:message key="blog.homePageMessage"/></div>
-<br clear="all"/>
+<br />
 <%  
 	ArrayPane arrayPane = gef.getArrayPane("categoryList", "ViewCategory", request, session);
 	arrayPane.setSortable(false);
@@ -219,6 +219,8 @@ function sortNode(updatedNodeJSON)
 <div id="categoryManager" style="display: none;">
 	<form name="categoryForm" action="CreateCategory" method="post">
 		<table cellpadding="5" width="100%">
+			<caption></caption>
+			<th id="categoryFormHeader"></th>
 			<tr>
 				<td class="txtlibform"><%=resource.getString("GML.title")%> :</td>
 				<td><input type="text" name="Name" id="Name" size="60" maxlength="150" value=""/>

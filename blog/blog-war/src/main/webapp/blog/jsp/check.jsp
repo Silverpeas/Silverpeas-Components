@@ -82,6 +82,7 @@ MainSessionController 	m_MainSessionCtrl 	= (MainSessionController) session.getA
 String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 
 MultiSilverpeasBundle resource = (MultiSilverpeasBundle)request.getAttribute("resources");
+String language = resource.getLanguage();
 
 Window window = gef.getWindow();
 BrowseBar browseBar = window.getBrowseBar();

@@ -78,8 +78,9 @@
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="${language}">
 <head>
+  <title></title>
 <view:looknfeel />
 <fmt:message var="deletionConfirm" key="classifieds.confirmDeleteClassified" />
 <script type="text/javascript">
@@ -285,6 +286,8 @@
 	<view:window>
 		<view:frame>
 			  <table cellpadding="5" width="100%">
+          <caption></caption>
+          <th id="classified-view-header"></th>
 			  <tr>
             <td valign="top">
               <div class="rightContent">
@@ -391,6 +394,8 @@
 	<div id="refusalModalDialog" title="${refuseOp}" style="display: none;">
 		<form name="refusalForm" action="RefusedClassified" method="post">
 			<table>
+        <caption></caption>
+        <th id="refusal-form-header"></th>
 				<tr>
 					<td>
 						<table>
@@ -417,6 +422,8 @@
   <div id="messageToOwnerDialog" style="display: none;">
     <form name="messageToOwnerForm" action="ToNotifyOwner" method="post">
         <table>
+          <caption></caption>
+          <th id="messageToOnwerFormHeader"></th>
           <tr>
             <td><textarea name="Message" rows="7" cols="70"></textarea>&nbsp;<img border="0" src="${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}"/>" width="5" height="5"/></td>
           </tr>

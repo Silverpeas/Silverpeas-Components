@@ -93,8 +93,8 @@
 	background-image: url(../../../util/icons/gradientSVG.jsp?from=ffffff&to=DDD&vertical=0&horizontal=100);
 		-moz-background-size: 100%;
 	border-radius:0 9px 0 0;
-		moz-border-radius:0 9px 0 0;
-		webkit-border-radius:0 9px 0 0;
+		-moz-border-radius:0 9px 0 0;
+		-webkit-border-radius:0 9px 0 0;
 }
 #classifieds #categories .ViewAllClassifiedsByCategory a{
 	background:transparent url(../../../util/icons/component/classifiedsSmall.gif) top left no-repeat;
@@ -110,8 +110,8 @@
 	background-image: url(../../../util/icons/gradientSVG.jsp?from=ffffff&to=DDD&vertical=0&horizontal=100);
 		-moz-background-size: 100%;
 	border-radius:9px 0 0 0;
-		moz-border-radius:9px 0 0 0;
-		webkit-border-radius:9px 0 0 0;
+		-moz-border-radius:9px 0 0 0;
+		-webkit-border-radius:9px 0 0 0;
 }
 #classifieds #categories .newClassified a{
 	background:transparent url(../../../util/icons/newsFeed_publication.gif) top left no-repeat;
@@ -516,7 +516,7 @@ div.tableBoard {
 
 
 .rightContent .other_classified {
-	paddin-bottom:11px;
+	padding-bottom:11px;
 }
 
 /**  formulaire de creation **/

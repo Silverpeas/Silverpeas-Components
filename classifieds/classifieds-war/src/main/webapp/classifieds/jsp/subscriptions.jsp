@@ -49,8 +49,9 @@
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="${language}">
 <head>
+	<title></title>
 <view:looknfeel withCheckFormScript="true"/>
 </head>
 <body>
@@ -74,12 +75,14 @@
 				<jsp:include page="subscriptionManager.jsp" />
 
 				<table>
+					<caption></caption>
+					<th id="subedition"></th>
 					<c:if test="${not empty subscribes}">
 						<c:forEach items="${subscribes}" var="subscribe">
 							<tr>
 								<td>
 									<p>
-										&nbsp; &#149; &nbsp;&nbsp;<b>${subscribe.fieldName1} - ${subscribe.fieldName2}</b>
+										&nbsp; &#149; &nbsp;&nbsp;<strong>${subscribe.fieldName1} - ${subscribe.fieldName2}</strong>
 										<a href="DeleteSubscription?SubscribeId=${subscribe.subscribeId}">
 											<fmt:message var="iconDelete" key="classifieds.smallDelete" bundle="${icons}" />
 											<c:url var="iconDeleteUrl" value="${iconDelete}"/>
