@@ -56,6 +56,7 @@ public class KmeliaCopyDetail extends PasteDetailFromToPK<NodePK, NodePK> {
       KmeliaCopyDetail copyDetail = (KmeliaCopyDetail) pasteDetail;
       setPublicationStatus(copyDetail.getPublicationStatus());
       setPublicationTargetValidatorIds(copyDetail.getPublicationValidatorIds());
+      setFromComponentId(copyDetail.getFromComponentId());
     }
   }
 

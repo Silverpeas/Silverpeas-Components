@@ -646,7 +646,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           request.setAttribute("NotificationAllowed", kmelia.isNotificationAllowed());
 
           // check is requested publication is an alias
-          boolean alias = checkAlias(kmelia, kmeliaPublication);
+          boolean alias = kmeliaPublication.isAlias();
 
           if (alias) {
             request.setAttribute("Profile", "user");
@@ -1880,14 +1880,6 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
   private String checkLanguage(KmeliaSessionController kmelia, PublicationDetail pubDetail) {
     return pubDetail.getLanguageToDisplay(kmelia.getCurrentLanguage());
-  }
-
-  private boolean checkAlias(KmeliaSessionController kmelia, KmeliaPublication publication) {
-    if (!kmelia.getComponentId().equals(publication.getDetail().getPK().getInstanceId())) {
-      publication.asAlias();
-      return true;
-    }
-    return false;
   }
 
   /**

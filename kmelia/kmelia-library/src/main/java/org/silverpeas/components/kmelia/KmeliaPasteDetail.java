@@ -9,11 +9,12 @@ public class KmeliaPasteDetail {
 
   private String userId;
   private NodePK toPK;
+  private NodePK fromPK;
   private String targetValidatorIds;
   private String status;
 
-  public KmeliaPasteDetail(NodePK pk) {
-    toPK = pk;
+  public KmeliaPasteDetail(final NodePK toNode) {
+    toPK = toNode;
   }
 
   public String getUserId() {
@@ -26,6 +27,14 @@ public class KmeliaPasteDetail {
 
   public NodePK getToPK() {
     return toPK;
+  }
+
+  public NodePK getFromPK() {
+    return fromPK;
+  }
+
+  public void setFromPK(final NodePK fromPK) {
+    this.fromPK = fromPK;
   }
 
   public String getTargetValidatorIds() {

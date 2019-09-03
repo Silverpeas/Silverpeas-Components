@@ -46,6 +46,7 @@ public class MovePublicationHandler implements AjaxHandler {
       NodePK from = new NodePK(sourceId, controller.getComponentId());
       NodePK to = new NodePK(targetId, controller.getComponentId());
       KmeliaPasteDetail pasteDetail = new KmeliaPasteDetail(to);
+      pasteDetail.setFromPK(from);
       pasteDetail.setUserId(controller.getUserId());
       pasteDetail.setTargetValidatorIds(validatorIds);
       getKmeliaService().movePublicationInSameApplication(pubPK, from, pasteDetail);

@@ -24,14 +24,13 @@
 
 package org.silverpeas.components.delegatednews.model;
 
-import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.model.PublicationRuntimeException;
+import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.persistence.datasource.model.identifier.ExternalIntegerIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.Column;
@@ -41,6 +40,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
 @Entity
 @Table(name = "sc_delegatednews_news")
@@ -199,9 +199,7 @@ public class DelegatedNews extends BasicJpaEntity<DelegatedNews, ExternalInteger
       PublicationPK pubPk = new PublicationPK(getId(), this.instanceId);
       return publicationService.getDetail(pubPk);
     } catch (Exception e) {
-      throw new PublicationRuntimeException("DelegatedNews.getPublicationDetail()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", "pubId = " + getId(),
-          e);
+      throw new PublicationRuntimeException(e);
     }
   }
 
@@ -217,30 +215,25 @@ public class DelegatedNews extends BasicJpaEntity<DelegatedNews, ExternalInteger
     if (this.getPubId() != other.getPubId()) {
       return false;
     }
-    if ((this.instanceId == null) ? (other.instanceId != null) :
-        !this.instanceId.equals(other.instanceId)) {
+    if (!Objects.equals(this.instanceId, other.instanceId)) {
       return false;
     }
-    if ((this.status == null) ? (other.status != null) : !this.status.equals(other.status)) {
+    if (!Objects.equals(this.status, other.status)) {
       return false;
     }
-    if ((this.contributorId == null) ? (other.contributorId != null) :
-        !this.contributorId.equals(other.contributorId)) {
+    if (!Objects.equals(this.contributorId, other.contributorId)) {
       return false;
     }
-    if ((this.validatorId == null) ? (other.validatorId != null) :
-        !this.validatorId.equals(other.validatorId)) {
+    if (!Objects.equals(this.validatorId, other.validatorId)) {
       return false;
     }
-    if ((this.validationDate == null) ? (other.validationDate != null) :
-        !this.validationDate.equals(other.validationDate)) {
+    if (!Objects.equals(this.validationDate, other.validationDate)) {
       return false;
     }
-    if ((this.beginDate == null) ? (other.beginDate != null) :
-        !this.beginDate.equals(other.beginDate)) {
+    if (!Objects.equals(this.beginDate, other.beginDate)) {
       return false;
     }
-    if ((this.endDate == null) ? (other.endDate != null) : !this.endDate.equals(other.endDate)) {
+    if (!Objects.equals(this.endDate, other.endDate)) {
       return false;
     }
     return this.newsOrder == -1 ? other.newsOrder == -1 : this.newsOrder == other.newsOrder;

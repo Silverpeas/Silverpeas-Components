@@ -2330,7 +2330,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     PublicationAccessController publicationAccessController =
         ServiceProvider.getService(PublicationAccessController.class);
     if (publicationAccessController.isUserAuthorized(getUserId(), pub.getPK())) {
-      PublicationSelection pubSelect = new PublicationSelection(pub);
+      PublicationSelection pubSelect = new PublicationSelection(pub, getComponentId());
       addClipboardSelection(pubSelect);
     } else {
       SilverLogger.getLogger(this)
@@ -2357,7 +2357,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     PublicationAccessController publicationAccessController =
         ServiceProvider.getService(PublicationAccessController.class);
     if (publicationAccessController.isUserAuthorized(getUserId(), pub.getPK())) {
-      PublicationSelection pubSelect = new PublicationSelection(pub);
+      PublicationSelection pubSelect = new PublicationSelection(pub, getComponentId());
       pubSelect.setCutted(true);
 
       addClipboardSelection(pubSelect);
@@ -2437,12 +2437,15 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       KmeliaPasteDetail pasteDetail) throws UnsupportedFlavorException {
     NodeDetail folder = getNodeHeader(pasteDetail.getToPK().getId());
     if (selection.isDataFlavorSupported(PublicationSelection.PublicationDetailFlavor)) {
-      PublicationDetail pub = (PublicationDetail) selection.getTransferData(
+      PublicationSelection.TransferData data = (PublicationSelection.TransferData) selection.getTransferData(
           PublicationSelection.PublicationDetailFlavor);
+      PublicationDetail pub = data.getPublicationDetail();
       if (selection.isCutted()) {
         movePublication(pub.getPK(), folder.getNodePK(), pasteDetail);
       } else {
         KmeliaCopyDetail copyDetail = KmeliaCopyDetail.fromPasteDetail(pasteDetail);
+        copyDetail.setFromNodePK(pasteDetail.getFromPK());
+        copyDetail.setFromComponentId(data.getInstanceId());
         getKmeliaService().copyPublication(pub, copyDetail);
       }
       return pub;
@@ -2458,6 +2461,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
           // copy node
           KmeliaCopyDetail copyDetail = KmeliaCopyDetail.fromPasteDetail(pasteDetail);
           copyDetail.setFromNodePK(node.getNodePK());
+          copyDetail.setFromComponentId(node.getNodePK().getInstanceId());
           getKmeliaService().copyNode(copyDetail);
         }
         return node;

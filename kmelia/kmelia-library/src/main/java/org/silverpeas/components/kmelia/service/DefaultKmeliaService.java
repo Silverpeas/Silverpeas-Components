@@ -813,7 +813,7 @@ public class DefaultKmeliaService implements KmeliaService {
       // For each favorite, get the path from root to favorite
       for (Subscription subscription : list) {
         Collection<NodeDetail> path =
-            nodeService.getPath((NodePK) subscription.getResource().getPK());
+            nodeService.getPath(subscription.getResource().getPK());
         detailedList.add(path);
       }
       return detailedList;
@@ -1256,9 +1256,14 @@ public class DefaultKmeliaService implements KmeliaService {
   @Override
   public void movePublication(@SourcePK PublicationPK pubPK, @TargetPK NodePK to,
       KmeliaPasteDetail pasteContext) {
+    NodePK fromNode = pasteContext.getFromPK();
     PublicationDetail pub = getPublicationDetail(pubPK);
     if (pub != null) {
-      if (pubPK.getInstanceId().equals(to.getInstanceId())) {
+      if (KmeliaPublication.isAnAlias(pub, fromNode)) {
+        Alias alias = new Alias(to.getId(), to.getInstanceId());
+        alias.setUserId(pasteContext.getUserId());
+        publicationService.addAlias(pubPK, Collections.singletonList(alias));
+      } else if (fromNode.getInstanceId().equals(to.getInstanceId())) {
         movePublicationInSameApplication(pub, to, pasteContext);
       } else {
         movePublicationInAnotherApplication(pub, to, pasteContext);
@@ -4396,6 +4401,7 @@ public class DefaultKmeliaService implements KmeliaService {
 
   private void movePublicationsOfTopic(NodePK fromPK, NodePK toPK, KmeliaPasteDetail pasteContext) {
     Collection<PublicationDetail> publications = publicationService.getDetailsByFatherPK(fromPK);
+    pasteContext.setFromPK(fromPK);
     for (PublicationDetail publi : publications) {
       movePublication(publi.getPK(), toPK, pasteContext);
     }
@@ -4509,85 +4515,94 @@ public class DefaultKmeliaService implements KmeliaService {
       KmeliaCopyDetail copyDetail) {
     NodePK nodePK = copyDetail.getToNodePK();
     String userId = copyDetail.getUserId();
+    final String toComponentId = nodePK.getInstanceId();
+    final NodePK fromNodePK = copyDetail.getFromNodePK() != null ? copyDetail.getFromNodePK() :
+        new NodePK("0", copyDetail.getFromComponentId());
     try {
-      ResourceReference toResourceReference =
-          new ResourceReference(ResourceReference.UNKNOWN_ID, nodePK.getInstanceId());
-      PublicationPK toPubPK = new PublicationPK(UNKNOWN, nodePK);
-      String toComponentId = nodePK.getInstanceId();
+      if (KmeliaPublication.isAnAlias(publiToCopy, fromNodePK)) {
+        Alias alias = new Alias(copyDetail.getToNodePK().getId(), toComponentId);
+        alias.setUserId(copyDetail.getUserId());
+        publicationService.addAlias(publiToCopy.getPK(), Collections.singletonList(alias));
+        return publiToCopy.getPK();
+      } else {
+        ResourceReference toResourceReference =
+            new ResourceReference(ResourceReference.UNKNOWN_ID, nodePK.getInstanceId());
+        PublicationPK toPubPK = new PublicationPK(UNKNOWN, nodePK);
 
-      // Handle duplication as a creation, ignore initial parameters
-      PublicationDetail newPubli = new PublicationDetail();
-      newPubli.setPk(toPubPK);
-      newPubli.setLanguage(publiToCopy.getLanguage());
-      newPubli.setName(publiToCopy.getName());
-      newPubli.setDescription(publiToCopy.getDescription());
-      newPubli.setKeywords(publiToCopy.getKeywords());
-      newPubli.setTranslations(publiToCopy.getClonedTranslations());
-      newPubli.setAuthor(publiToCopy.getAuthor());
-      newPubli.setCreatorId(userId);
-      newPubli.setBeginDate(publiToCopy.getBeginDate());
-      newPubli.setBeginHour(publiToCopy.getBeginHour());
-      newPubli.setEndDate(publiToCopy.getEndDate());
-      newPubli.setEndHour(publiToCopy.getEndHour());
-      newPubli.setImportance(publiToCopy.getImportance());
-      if (copyDetail.isPublicationContentMustBeCopied()) {
-        newPubli.setInfoId(publiToCopy.getInfoId());
-      }
-      // use validators selected via UI
-      newPubli.setTargetValidatorId(copyDetail.getPublicationValidatorIds());
-
-      // manage status explicitly to bypass Draft mode
-      setToByPassDraftMode(copyDetail, nodePK, newPubli, userId);
-
-      String fromId = publiToCopy.getPK().getId();
-      String fromComponentId = publiToCopy.getPK().getInstanceId();
-      ResourceReference fromResourceReference =
-          new ResourceReference(publiToCopy.getPK().getId(), fromComponentId);
-      PublicationPK fromPubPK = new PublicationPK(publiToCopy.getPK().getId(), fromComponentId);
-
-      if (copyDetail.isAdministrativeOperation()) {
-        newPubli.setCreatorId(publiToCopy.getCreatorId());
-        newPubli.setCreationDate(publiToCopy.getCreationDate());
-        newPubli.setUpdaterId(publiToCopy.getUpdaterId());
-        newPubli.setUpdateDate(publiToCopy.getUpdateDate());
-        newPubli.setStatus(publiToCopy.getStatus());
-      }
-
-      String id = createPublicationIntoTopic(newPubli, nodePK);
-      // update id cause new publication is created
-      toPubPK.setId(id);
-      toResourceReference.setId(id);
-
-      // Copy vignette
-      ThumbnailController.copyThumbnail(fromResourceReference, toResourceReference);
-
-      // Copy positions on Pdc
-      if (copyDetail.isPublicationPositionsMustBeCopied()) {
-        copyPdcPositions(fromPubPK, toPubPK);
-      }
-
-      // Copy files
-      Map<String, String> fileIds = new HashMap<>();
-      if (copyDetail.isPublicationFilesMustBeCopied()) {
-        fileIds.putAll(copyFiles(fromPubPK, toPubPK));
-      }
-
-      // Copy content
-      if (copyDetail.isPublicationContentMustBeCopied()) {
-        String xmlFormShortName = newPubli.getInfoId();
-        if (xmlFormShortName != null && !"0".equals(xmlFormShortName)) {
-          registerXmlForm(fromComponentId, fromResourceReference, toComponentId,
-              toResourceReference, xmlFormShortName, fileIds);
-        } else {
-          // paste wysiwyg
-          WysiwygController.copy(fromComponentId, fromId, toPubPK.getInstanceId(), id, userId);
+        // Handle duplication as a creation, ignore initial parameters
+        PublicationDetail newPubli = new PublicationDetail();
+        newPubli.setPk(toPubPK);
+        newPubli.setLanguage(publiToCopy.getLanguage());
+        newPubli.setName(publiToCopy.getName());
+        newPubli.setDescription(publiToCopy.getDescription());
+        newPubli.setKeywords(publiToCopy.getKeywords());
+        newPubli.setTranslations(publiToCopy.getClonedTranslations());
+        newPubli.setAuthor(publiToCopy.getAuthor());
+        newPubli.setCreatorId(userId);
+        newPubli.setBeginDate(publiToCopy.getBeginDate());
+        newPubli.setBeginHour(publiToCopy.getBeginHour());
+        newPubli.setEndDate(publiToCopy.getEndDate());
+        newPubli.setEndHour(publiToCopy.getEndHour());
+        newPubli.setImportance(publiToCopy.getImportance());
+        if (copyDetail.isPublicationContentMustBeCopied()) {
+          newPubli.setInfoId(publiToCopy.getInfoId());
         }
+        // use validators selected via UI
+        newPubli.setTargetValidatorId(copyDetail.getPublicationValidatorIds());
+
+        // manage status explicitly to bypass Draft mode
+        setToByPassDraftMode(copyDetail, nodePK, newPubli, userId);
+
+        String fromId = publiToCopy.getPK().getId();
+        String fromComponentId = publiToCopy.getPK().getInstanceId();
+        ResourceReference fromResourceReference =
+            new ResourceReference(publiToCopy.getPK().getId(), fromComponentId);
+        PublicationPK fromPubPK = new PublicationPK(publiToCopy.getPK().getId(), fromComponentId);
+
+        if (copyDetail.isAdministrativeOperation()) {
+          newPubli.setCreatorId(publiToCopy.getCreatorId());
+          newPubli.setCreationDate(publiToCopy.getCreationDate());
+          newPubli.setUpdaterId(publiToCopy.getUpdaterId());
+          newPubli.setUpdateDate(publiToCopy.getUpdateDate());
+          newPubli.setStatus(publiToCopy.getStatus());
+        }
+
+        String id = createPublicationIntoTopic(newPubli, nodePK);
+        // update id cause new publication is created
+        toPubPK.setId(id);
+        toResourceReference.setId(id);
+
+        // Copy vignette
+        ThumbnailController.copyThumbnail(fromResourceReference, toResourceReference);
+
+        // Copy positions on Pdc
+        if (copyDetail.isPublicationPositionsMustBeCopied()) {
+          copyPdcPositions(fromPubPK, toPubPK);
+        }
+
+        // Copy files
+        Map<String, String> fileIds = new HashMap<>();
+        if (copyDetail.isPublicationFilesMustBeCopied()) {
+          fileIds.putAll(copyFiles(fromPubPK, toPubPK));
+        }
+
+        // Copy content
+        if (copyDetail.isPublicationContentMustBeCopied()) {
+          String xmlFormShortName = newPubli.getInfoId();
+          if (xmlFormShortName != null && !"0".equals(xmlFormShortName)) {
+            registerXmlForm(fromComponentId, fromResourceReference, toComponentId,
+                toResourceReference, xmlFormShortName, fileIds);
+          } else {
+            // paste wysiwyg
+            WysiwygController.copy(fromComponentId, fromId, toPubPK.getInstanceId(), id, userId);
+          }
+        }
+
+        // Index publication to index its files and content
+        publicationService.createIndex(toPubPK);
+
+        return newPubli.getPK();
       }
-
-      // Index publication to index its files and content
-      publicationService.createIndex(toPubPK);
-
-      return newPubli.getPK();
     } catch (Exception ex) {
       SilverLogger.getLogger(this).error("Publication copy failure", ex);
     }
@@ -4727,15 +4742,6 @@ public class DefaultKmeliaService implements KmeliaService {
       }
     }
     return false;
-  }
-
-  /**
-   * Gets a business service of dateReminder.
-   *
-   * @return a DefaultDateReminderService instance.
-   */
-  private PersistentDateReminderService getDateReminderService() {
-    return dateReminderService;
   }
 
   private PublicationDetail clonePublication(String cloneId, PublicationPK pubPK,
