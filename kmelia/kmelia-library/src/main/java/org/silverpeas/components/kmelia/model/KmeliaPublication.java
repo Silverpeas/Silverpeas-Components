@@ -62,7 +62,6 @@ public class KmeliaPublication implements SilverpeasContent {
   private static final long serialVersionUID = 4861635754389280165L;
   private PublicationDetail detail;
   private CompletePublication completeDetail;
-  private boolean alias = false;
   private final PublicationPK pk;
   private int rank;
   private boolean read = false;
@@ -86,7 +85,7 @@ public class KmeliaPublication implements SilverpeasContent {
    */
   public static KmeliaPublication aKmeliaPublicationWithPk(final PublicationPK pk) {
     KmeliaPublication publication = new KmeliaPublication(pk);
-    publication.getDetail();
+    publication.loadPublicationDetail();
     return publication;
   }
 
@@ -121,13 +120,16 @@ public class KmeliaPublication implements SilverpeasContent {
   }
 
   /**
-   * Sets this Kmelia publication as an alias one.
-   *
-   * @return itself.
+   * Is the specified publication located in the given Kmelia topic an alias?
+   * @param pub the publication. In the case of an alias, it is the original publication referred
+   * by the alias.
+   * @param topicPK the identifying key of a topic in a Kmelia instance that contains the
+   * publication.
+   * @return true if the specified publication located in the given topic is in fact an alias of
+   * an original publication. False otherwise.
    */
-  public KmeliaPublication asAlias() {
-    this.alias = true;
-    return this;
+  public static boolean isAnAlias(final PublicationDetail pub, final NodePK topicPK) {
+    return !pub.getPK().getInstanceId().equals(topicPK.getInstanceId());
   }
 
   public boolean isRead() {
@@ -144,7 +146,7 @@ public class KmeliaPublication implements SilverpeasContent {
    * @return true if this publication is an alias, false otherwise.
    */
   public boolean isAlias() {
-    return this.alias;
+    return isAnAlias(getDetail(), new NodePK(null, getPk().getInstanceId()));
   }
 
   /**
@@ -186,7 +188,7 @@ public class KmeliaPublication implements SilverpeasContent {
    */
   public PublicationDetail getDetail() {
     if (detail == null) {
-      setPublicationDetail(getKmeliaService().getPublicationDetail(pk));
+      loadPublicationDetail();
     }
     return detail;
   }
@@ -313,6 +315,10 @@ public class KmeliaPublication implements SilverpeasContent {
 
   private OrganizationController getOrganizationController() {
     return OrganizationControllerProvider.getOrganisationController();
+  }
+
+  private void loadPublicationDetail() {
+    setPublicationDetail(getKmeliaService().getPublicationDetail(pk));
   }
 
   @Override

@@ -1141,7 +1141,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     String spaceLabel = Encode.forHtml(orga.
         getSpaceInstLightById(compoInstLight.getDomainFatherId())
         .getName(kmelia.getCurrentLanguage()));
-    List<NodePK> nodesPK = (List<NodePK>) pub.getPublicationBm().getAllFatherPK(pub.getPK());
+    List<NodePK> nodesPK = (List<NodePK>) pub.getPublicationService().getAllFatherPK(pub.getPK());
     if (nodesPK != null) {
       NodePK firstNodePK = nodesPK.get(0);
       String topicPathName = spaceLabel + " > " + componentLabel + " > " + kmelia.displayPath(
