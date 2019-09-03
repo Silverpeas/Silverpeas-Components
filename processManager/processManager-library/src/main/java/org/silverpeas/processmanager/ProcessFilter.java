@@ -182,7 +182,7 @@ public class ProcessFilter {
   /**
    * Returns only the process instance matching the filter.
    */
-  List<DataRecord> filter(List<ProcessInstance> allInstances, String role, String lang)
+  public List<DataRecord> filter(List<ProcessInstance> allInstances, String role, String lang)
       throws ProcessManagerException {
     try {
       Stream<DataRecord> stream = allInstances.stream().map(p -> getDataRecord(p, role, lang));
