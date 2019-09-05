@@ -179,6 +179,7 @@ function printProcess() {
           <% } else {
 							for (CurrentState currentState : activeStates) {
 							%>
+                <p class="activeState">
                  <c:set var="currentState" value="<%=currentState%>"/>
 								 <span class="textePetitBold">&#149;&nbsp;<%=currentState.getLabel()%></span>
 								<% if (StringUtil.isDefined(currentState.getWorkingUsersAsString())) { %>
@@ -205,6 +206,7 @@ function printProcess() {
                    <%}
                    }
                 %>
+                </p>
 							<%
 							}
 						}
