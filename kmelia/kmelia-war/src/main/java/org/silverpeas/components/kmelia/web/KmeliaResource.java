@@ -87,7 +87,7 @@ public class KmeliaResource extends RESTWebService {
 
       NodePK nodePK = getNodePK(nodeId);
 
-      String pubId = getKmeliaBm().createPublicationIntoTopic(publication, nodePK);
+      String pubId = getKmeliaService().createPublicationIntoTopic(publication, nodePK);
       publication.getPK().setId(pubId);
 
       URI publicationURI = getUri().getRequestUriBuilder().path(publication.getPK().getId())
@@ -117,10 +117,10 @@ public class KmeliaResource extends RESTWebService {
       // Publication status is a mandatory data into the context of publication update.
       // As this data is not handled by this service, it is retrieved from the silverpeas data
       // before performing the update.
-      publication.setStatus(getKmeliaBm().getPublicationDetail(publication.getPK()).getStatus());
+      publication.setStatus(getKmeliaService().getPublicationDetail(publication.getPK()).getStatus());
 
       // Now, the update can be performed
-      getKmeliaBm().updatePublication(publication);
+      getKmeliaService().updatePublication(publication);
 
       URI publicationURI = getUri().getRequestUriBuilder().path(publication.getPK().getId())
           .build();
@@ -145,7 +145,7 @@ public class KmeliaResource extends RESTWebService {
     return PublicationEntity.fromPublicationDetail(publication, publicationURI);
   }
 
-  private KmeliaService getKmeliaBm() {
+  private KmeliaService getKmeliaService() {
     try {
       return ServiceProvider.getService(KmeliaService.class);
     } catch (Exception e) {

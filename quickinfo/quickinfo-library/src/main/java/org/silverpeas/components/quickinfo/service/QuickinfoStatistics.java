@@ -25,7 +25,6 @@
 package org.silverpeas.components.quickinfo.service;
 
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
 import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
@@ -45,7 +44,7 @@ public class QuickinfoStatistics implements ComponentStatisticsProvider {
 
   @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId) {
-    Collection<PublicationDetail> infos = getQuickInfos(spaceId, componentId);
+    Collection<PublicationDetail> infos = getQuickInfos(componentId);
     List<UserIdCountVolumeCouple> myArrayList = new ArrayList<>(infos.size());
     for (PublicationDetail detail : infos) {
       UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
@@ -63,8 +62,7 @@ public class QuickinfoStatistics implements ComponentStatisticsProvider {
     return publicationService;
   }
 
-  private Collection<PublicationDetail> getQuickInfos(String spaceId, String componentId) {
-    return getPublicationService()
-        .getOrphanPublications(new PublicationPK("", spaceId, componentId));
+  private Collection<PublicationDetail> getQuickInfos(String componentId) {
+    return getPublicationService().getOrphanPublications(componentId);
   }
 }

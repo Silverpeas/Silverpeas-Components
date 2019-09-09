@@ -314,14 +314,12 @@ public class DefaultBlogService implements BlogService {
 
   @Override
   public Collection<PostDetail> getAllPosts(String instanceId) {
-    PublicationPK pubPK = new PublicationPK(USELESS, instanceId);
-
     Collection<PostDetail> posts = new ArrayList<>();
     try(Connection con = openConnection()) {
       // rechercher les publications classée par date d'évènement
       Collection<String> lastEvents = PostDAO.getAllEvents(con, instanceId);
       Collection<PublicationDetail> publications =
-          getPublicationService().getAllPublications(pubPK);
+          getPublicationService().getAllPublications(instanceId);
       for (String pubId : lastEvents) {
         for (PublicationDetail publication : publications) {
           if (publication.getPK().getId().equals(pubId)) {
@@ -337,15 +335,13 @@ public class DefaultBlogService implements BlogService {
 
   @Override
   public Collection<PostDetail> getAllValidPosts(String instanceId, int nbReturned) {
-    PublicationPK pubPK = new PublicationPK(USELESS, instanceId);
-
     Collection<PostDetail> posts = new ArrayList<>();
     int count = nbReturned;
     try (Connection con = openConnection()) {
       // rechercher les publications classées par date d'évènement
       Collection<String> lastEvents = PostDAO.getAllEvents(con, instanceId);
       Collection<PublicationDetail> publications =
-          getPublicationService().getAllPublications(pubPK);
+          getPublicationService().getAllPublications(instanceId);
       for (String pubId : lastEvents) {
         for (PublicationDetail publication : publications) {
           if (publication.getPK().getId().equals(pubId) && PublicationDetail.VALID_STATUS.
@@ -398,16 +394,13 @@ public class DefaultBlogService implements BlogService {
   @Override
   public Collection<PostDetail> getPostsByArchive(String beginDate, String endDate,
       String instanceId) {
-
-
-    PublicationPK pubPK = new PublicationPK(USELESS, instanceId);
     Collection<PostDetail> posts = new ArrayList<>();
     try (Connection con = openConnection()) {
       // rechercher les publications classée par date d'évènement
       Collection<String> lastEvents = PostDAO.getEventsByDates(con, instanceId, beginDate, endDate);
 
       Collection<PublicationDetail> publications =
-          getPublicationService().getAllPublications(pubPK);
+          getPublicationService().getAllPublications(instanceId);
       for (String pubId : lastEvents) {
         // pour chaque publication, créer le post correspondant
         for (PublicationDetail publication : publications) {
@@ -544,16 +537,16 @@ public class DefaultBlogService implements BlogService {
   @Override
   public void indexBlog(String componentId) {
     indexTopics(new NodePK(USELESS, componentId));
-    indexPublications(new PublicationPK(USELESS, componentId));
+    indexPublications(componentId);
   }
 
-  private void indexPublications(PublicationPK pubPK) {
+  private void indexPublications(String componentId) {
     Collection<PublicationDetail> pubs;
     try {
-      pubs = getPublicationService().getAllPublications(pubPK);
+      pubs = getPublicationService().getAllPublications(componentId);
     } catch (Exception e) {
       throw new BlogRuntimeException(
-          failureOnGetting("[INDEXING] all publications in blog", pubPK.getInstanceId()), e);
+          failureOnGetting("[INDEXING] all publications in blog", componentId), e);
     }
 
     if (pubs != null) {
@@ -561,7 +554,7 @@ public class DefaultBlogService implements BlogService {
         try {
           indexPublication(pub.getPK());
         } catch (Exception e) {
-          throw new BlogRuntimeException(failureOnIndexing("publication", pubPK.toString()), e);
+          throw new BlogRuntimeException(failureOnIndexing("publication", pub.getPK().toString()), e);
         }
       }
     }

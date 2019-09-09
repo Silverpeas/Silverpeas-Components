@@ -32,12 +32,12 @@ import java.util.HashMap;
 
 public class KmeliaCopyDetail extends PasteDetailFromToPK<NodePK, NodePK> {
 
-  public final static String PUBLICATION_HEADER = PasteDetail.OPTION_PREFIX + "PublicationHeader";
-  public final static String PUBLICATION_CONTENT = PasteDetail.OPTION_PREFIX + "PublicationContent";
-  public final static String PUBLICATION_FILES = PasteDetail.OPTION_PREFIX + "PublicationFiles";
-  public final static String PUBLICATION_PDC = PasteDetail.OPTION_PREFIX + "PublicationPDC";
-  public final static String NODE_RIGHTS = PasteDetail.OPTION_PREFIX + "NodeRights";
-  public final static String ADMINISTRATIVE_OPERATION =
+  public static final String PUBLICATION_HEADER = PasteDetail.OPTION_PREFIX + "PublicationHeader";
+  public static final String PUBLICATION_CONTENT = PasteDetail.OPTION_PREFIX + "PublicationContent";
+  public static final String PUBLICATION_FILES = PasteDetail.OPTION_PREFIX + "PublicationFiles";
+  public static final String PUBLICATION_PDC = PasteDetail.OPTION_PREFIX + "PublicationPDC";
+  public static final String NODE_RIGHTS = PasteDetail.OPTION_PREFIX + "NodeRights";
+  public static final String ADMINISTRATIVE_OPERATION =
       PasteDetail.OPTION_PREFIX + "AdministrativeOperation";
 
   private String publicationTargetValidatorIds;
@@ -70,6 +70,7 @@ public class KmeliaCopyDetail extends PasteDetailFromToPK<NodePK, NodePK> {
 
   public void setFromNodePK(NodePK fromNodePK) {
     setFromPK(fromNodePK);
+    setFromComponentId(fromNodePK.getInstanceId());
   }
 
   public NodePK getFromNodePK() {

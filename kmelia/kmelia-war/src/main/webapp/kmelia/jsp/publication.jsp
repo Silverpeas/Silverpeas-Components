@@ -101,11 +101,11 @@
   String id = pubDetail.getPK().getId();
 
   String contextComponentId = componentId;
-  //surcharge le componentId du composant courant (cas de l'alias)
+  //surcharge le componentId du composant courant (cas de l'locations)
   componentId = pubDetail.getPK().getInstanceId();
-  String alias = "";
+  String locations = "";
   if (kmeliaPublication.isAlias()) {
-    alias = contextComponentId;
+    locations = contextComponentId;
   }
 
   String linkedPathString = kmeliaScc.getSessionPath();
@@ -629,7 +629,7 @@
         <c:set var="attachmentPosition"><%=resources.getSetting("attachmentPosition")%></c:set>
         <c:set var="callbackUrl"><%=URLUtil.getURL("useless", componentId) + "ViewPublication"%></c:set>
         <viewTags:displayAttachments componentInstanceId="<%=componentId%>"
-                                     componentInstanceIdAlias="<%=alias%>"
+                                     componentInstanceIdAlias="<%=locations%>"
                                      resourceId="<%=id%>"
                                      resourceType="<%=resourceType%>"
                                      contentLanguage="<%=language%>"

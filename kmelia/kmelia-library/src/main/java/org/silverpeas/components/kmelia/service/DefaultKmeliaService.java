@@ -21,6 +21,7 @@
 package org.silverpeas.components.kmelia.service;
 
 import org.apache.commons.io.FilenameUtils;
+import org.jetbrains.annotations.NotNull;
 import org.silverpeas.components.kmelia.InstanceParameters;
 import org.silverpeas.components.kmelia.KmeliaAuthorization;
 import org.silverpeas.components.kmelia.KmeliaContentManager;
@@ -55,12 +56,11 @@ import org.silverpeas.core.contribution.attachment.notification.AttachmentRef;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.content.form.RecordTemplate;
-import org.silverpeas.core.contribution.content.form.XMLField;
 import org.silverpeas.core.contribution.content.form.record.GenericRecordSet;
 import org.silverpeas.core.contribution.content.wysiwyg.WysiwygException;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
-import org.silverpeas.core.contribution.publication.model.Alias;
 import org.silverpeas.core.contribution.publication.model.CompletePublication;
+import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationLink;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
@@ -125,6 +125,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.silverpeas.components.kmelia.service.KmeliaOperationContext.OperationType.*;
 import static org.silverpeas.components.kmelia.service.KmeliaServiceContext.*;
@@ -277,16 +278,16 @@ public class DefaultKmeliaService implements KmeliaService {
         throw new KmeliaRuntimeException(e);
       }
     }
-    return pubDetails2userPubs(pubDetails);
+    return pubDetails2userPubs(pk, pubDetails);
   }
 
   @Override
   public List<KmeliaPublication> getLatestPublications(String instanceId, int nbPublisOnRoot,
       boolean isRightsOnTopicsUsed, String userId) {
-    PublicationPK pubPK = new PublicationPK(UNKNOWN, instanceId);
+    NodePK fatherPK = new NodePK(NodePK.ROOT_NODE_ID, instanceId);
     Collection<PublicationDetail> pubDetails = publicationService.
-        getDetailsByBeginDateDescAndStatusAndNotLinkedToFatherId(pubPK, PublicationDetail.VALID_STATUS,
-            nbPublisOnRoot, NodePK.BIN_NODE_ID);
+        getDetailsByBeginDateDescAndStatusAndNotLinkedToFatherId(fatherPK,
+            PublicationDetail.VALID_STATUS, nbPublisOnRoot);
     if (isRightsOnTopicsUsed) {// The list of publications must be filtered
       List<PublicationDetail> filteredList = new ArrayList<>();
       KmeliaAuthorization security = new KmeliaAuthorization();
@@ -299,7 +300,7 @@ public class DefaultKmeliaService implements KmeliaService {
       pubDetails.clear();
       pubDetails.addAll(filteredList);
     }
-    return pubDetails2userPubs(pubDetails);
+    return pubDetails2userPubs(fatherPK, pubDetails);
   }
 
   @Override
@@ -522,7 +523,7 @@ public class DefaultKmeliaService implements KmeliaService {
       // publication
       PublicationPK onePubToCheck; // current pub to check
       Iterator<NodePK> itNode = nodesToDelete.iterator();
-      List<Alias> aliases = new ArrayList<>();
+      List<Location> locations = new ArrayList<>();
       while (itNode.hasNext()) {
         oneNodeToDelete = itNode.next();
         // get pubs linked to current node (includes alias)
@@ -543,9 +544,9 @@ public class DefaultKmeliaService implements KmeliaService {
             }
           } else {
             // remove alias
-            aliases.clear();
-            aliases.add(new Alias(oneNodeToDelete.getId(), oneNodeToDelete.getInstanceId()));
-            publicationService.removeAlias(onePubToCheck, aliases);
+            locations.clear();
+            locations.add(new Location(oneNodeToDelete.getId(), oneNodeToDelete.getInstanceId()));
+            publicationService.removeAliases(onePubToCheck, locations);
           }
         }
       }
@@ -880,13 +881,17 @@ public class DefaultKmeliaService implements KmeliaService {
    * Interface - Gestion des publications
    * **********************************************************************************
    */
-  private List<KmeliaPublication> pubDetails2userPubs(Collection<PublicationDetail> pubDetails) {
+  private List<KmeliaPublication> pubDetails2userPubs(NodePK fatherPK, Collection<PublicationDetail> pubDetails) {
     List<KmeliaPublication> publications = new ArrayList<>();
     int i = -1;
     for (PublicationDetail publicationDetail : pubDetails) {
-      publications.add(KmeliaPublication.aKmeliaPublicationFromDetail(publicationDetail, i++));
+      publications.add(KmeliaPublication.fromDetail(publicationDetail, fatherPK, i++));
     }
     return publications;
+  }
+
+  private List<KmeliaPublication> pubDetails2userPubs(Collection<PublicationDetail> pubDetails) {
+    return pubDetails.stream().map(KmeliaPublication::fromDetail).collect(Collectors.toList());
   }
 
   /**
@@ -1257,17 +1262,16 @@ public class DefaultKmeliaService implements KmeliaService {
   public void movePublication(@SourcePK PublicationPK pubPK, @TargetPK NodePK to,
       KmeliaPasteDetail pasteContext) {
     NodePK fromNode = pasteContext.getFromPK();
-    PublicationDetail pub = getPublicationDetail(pubPK);
-    if (pub != null) {
-      if (KmeliaPublication.isAnAlias(pub, fromNode)) {
-        Alias alias = new Alias(to.getId(), to.getInstanceId());
-        alias.setUserId(pasteContext.getUserId());
-        publicationService.addAlias(pubPK, Collections.singletonList(alias));
-      } else if (fromNode.getInstanceId().equals(to.getInstanceId())) {
-        movePublicationInSameApplication(pub, to, pasteContext);
-      } else {
-        movePublicationInAnotherApplication(pub, to, pasteContext);
-      }
+    KmeliaPublication publication = KmeliaPublication.withPK(pubPK, fromNode);
+    if (publication.isAlias()) {
+      Location newLocation = new Location(to.getId(), to.getInstanceId());
+      newLocation.setAsAlias(pasteContext.getUserId());
+      publicationService.removeAliases(pubPK, Collections.singletonList(publication.getLocation()));
+      publicationService.addAliases(pubPK, Collections.singletonList(newLocation));
+    } else if (fromNode.getInstanceId().equals(to.getInstanceId())) {
+      movePublicationInSameApplication(publication.getDetail(), to, pasteContext);
+    } else {
+      movePublicationInAnotherApplication(publication.getDetail(), to, pasteContext);
     }
   }
 
@@ -1692,9 +1696,9 @@ public class DefaultKmeliaService implements KmeliaService {
       }
 
       // Subscriptions related to aliases
-      List<Alias> aliases = (List<Alias>) getAlias(pubDetail.getPK());
+      List<Location> locations = (List<Location>) getAlias(pubDetail.getPK());
       sendSubscriptionNotificationForAliases(pubDetail, action, sendOnlyToAliases, fathers,
-          aliases);
+          locations);
 
       // PDC subscriptions
       try {
@@ -1719,16 +1723,16 @@ public class DefaultKmeliaService implements KmeliaService {
 
   private void sendSubscriptionNotificationForAliases(final PublicationDetail pubDetail,
       final NotifAction action, final boolean sendOnlyToAliases, final Collection<NodePK> fathers,
-      final List<Alias> aliases) {
-    for (Alias alias : aliases) {
+      final List<Location> locations) {
+    for (Location location : locations) {
       // Transform the current alias to a NodePK (even if Alias is extending NodePK) in the aim
       // to execute the equals method of NodePK
-      NodePK aliasNodePk = new NodePK(alias.getId(), alias.getInstanceId());
-      if ((sendOnlyToAliases && alias.getDate() != null) || !fathers.contains(aliasNodePk)) {
+      NodePK aliasNodePk = new NodePK(location.getId(), location.getInstanceId());
+      if ((sendOnlyToAliases && location.isAlias()) || !fathers.contains(aliasNodePk)) {
         // Perform subscription notification sendings when the alias is not the one of the
         // original publication
         pubDetail.setAlias(true);
-        sendSubscriptionsNotification(alias, pubDetail, action);
+        sendSubscriptionsNotification(location, pubDetail, action);
       }
     }
   }
@@ -1810,9 +1814,13 @@ public class DefaultKmeliaService implements KmeliaService {
     return completePublication;
   }
 
+  private KmeliaPublication getPublication(PublicationPK pubPK) {
+    return KmeliaPublication.withPK(pubPK);
+  }
+
   @Override
-  public KmeliaPublication getPublication(PublicationPK pubPK) {
-    return KmeliaPublication.aKmeliaPublicationWithPk(pubPK);
+  public KmeliaPublication getPublication(final PublicationPK pubPK, final NodePK topicPK) {
+    return KmeliaPublication.withPK(pubPK, topicPK);
   }
 
   @Override
@@ -1955,7 +1963,7 @@ public class DefaultKmeliaService implements KmeliaService {
     List<PublicationLink> allLinks = publication.getCompleteDetail().getLinkedPublications(userId);
     List<KmeliaPublication> authorizedLinks = new ArrayList<>();
     for (PublicationLink link : allLinks) {
-      authorizedLinks.add(KmeliaPublication.aKmeliaPublicationWithPk(link.getPubPK()));
+      authorizedLinks.add(KmeliaPublication.withPK(link.getPubPK()));
     }
     return authorizedLinks;
   }
@@ -1963,10 +1971,10 @@ public class DefaultKmeliaService implements KmeliaService {
   @Override
   public List<KmeliaPublication> getPublicationsToValidate(String componentId, String userId) {
     Collection<PublicationDetail> publications = new ArrayList<>();
-    PublicationPK pubPK = new PublicationPK(USELESS, componentId);
     try {
       Collection<PublicationDetail> temp =
-          publicationService.getPublicationsByStatus(PublicationDetail.TO_VALIDATE_STATUS, pubPK);
+          publicationService.getPublicationsByStatus(PublicationDetail.TO_VALIDATE_STATUS,
+              componentId);
       // only publications which must be validated by current user must be returned
       for (PublicationDetail publi : temp) {
         addPublicationsToValidate(userId, publications, publi);
@@ -2024,19 +2032,6 @@ public class DefaultKmeliaService implements KmeliaService {
       } catch (Exception e) {
         SilverLogger.getLogger(this).error("Supervisors notification failure about publication {0}",
             new String[]{pubDetail.getPK().getId()}, e);
-      }
-    }
-  }
-
-  private void sendNoMoreValidatorNotification(final NodePK fatherPK,
-      final PublicationDetail pubDetail) {
-    if (pubDetail.isValidationRequired() || pubDetail.isValid()) {
-      try {
-        UserNotificationHelper.buildAndSend(
-            new KmeliaNoMoreValidatorPublicationUserNotification(fatherPK, pubDetail));
-      } catch (Exception e) {
-        SilverLogger.getLogger(this).error("fatherId = {0}, pubPK = {1}",
-            new String[]{fatherPK.getId(), pubDetail.getPK().toString()}, e);
       }
     }
   }
@@ -2170,126 +2165,27 @@ public class DefaultKmeliaService implements KmeliaService {
 
       String validatorUserId = userId;
       Date validationDate = new Date();
-
       if (force) {
         validationComplete = true;
       } else if (!hasUserNoMoreValidationRight) {
-        int validationType = getValidationType(pubPK.getInstanceId());
-        if (validationType == KmeliaHelper.VALIDATION_CLASSIC ||
-            validationType == KmeliaHelper.VALIDATION_TARGET_1) {
-          validationComplete = true;
-        } else {
-          if (validationType == KmeliaHelper.VALIDATION_TARGET_N) {
-            // check that validators are well defined
-            // If not, considering validation as classic one
-            PublicationDetail publi = publicationService.getDetail(validatedPK);
-            if (!isDefined(publi.getTargetValidatorId())) {
-              validationComplete = true;
-            }
-          }
-          if (!validationComplete) {
-            // get all users who have to validate
-            List<String> allValidators = getAllValidators(validatedPK);
-            if (allValidators.size() == 1) {
-              // special case : only once user is concerned by validation
-              validationComplete = true;
-            } else if (allValidators.size() > 1) {
-              // remove it for this user. His job is done !
-              removeTodoForPublication(validatedPK, userId);
-              if (validationOnClone) {
-                removeTodoForPublication(pubPK, userId);
-              }
-              // save his decision
-
-              ValidationStep validation =
-                  new ValidationStep(validatedPK, userId, PublicationDetail.VALID_STATUS);
-              publicationService.addValidationStep(validation);
-              // check if all validators have give their decision
-              validationComplete = isValidationComplete(validatedPK, allValidators);
-            }
-          }
-        }
-
+        validationComplete = completeValidation(pubPK, validatedPK, userId, validationOnClone);
       } else {
-
-        // User has no more validation right
-        int validationType = getValidationType(pubPK.getInstanceId());
-
-        boolean alertPublicationOwnerThereIsNoMoreValidator = false;
-
-        switch (validationType) {
-          case KmeliaHelper.VALIDATION_CLASSIC:
-          case KmeliaHelper.VALIDATION_TARGET_1:
-            alertPublicationOwnerThereIsNoMoreValidator = true;
-            break;
-          default:
-            // get all users who have to validate
-            List<String> allValidators = getAllValidators(validatedPK);
-
-            if (allValidators.isEmpty()) {
-              alertPublicationOwnerThereIsNoMoreValidator = true;
-            } else {
-
-              // check if all validators have give their decision
-              validationComplete = isValidationComplete(validatedPK, allValidators);
-              if (validationComplete) {
-
-                // taking the last effective validator for the state change.
-                validationDate = new Date(0);
-                for (ValidationStep validationStep : publicationService
-                    .getValidationSteps(validatedPK)) {
-                  final String validationStepUserId = validationStep.getUserId();
-                  if (!validationStepUserId.equals(userId) &&
-                      validationStep.getValidationDate().compareTo(validationDate) > 0) {
-                    validationDate = validationStep.getValidationDate();
-                    validatorUserId = validationStepUserId;
-                  }
-                }
-              } else if (validationType == KmeliaHelper.VALIDATION_TARGET_N &&
-                  StringUtil.isNotDefined(currentPubOrCloneDetail.getTargetValidatorId())) {
-                // Case of fallback solution when no more validator is defined, all publishers
-                // must validate (as collegiate method)
-                alertPublicationOwnerThereIsNoMoreValidator = true;
-              }
-            }
-        }
-
-        if (alertPublicationOwnerThereIsNoMoreValidator) {
-          Collection<NodePK> fatherPks = getPublicationFathers(currentPubDetail.getPK());
-          if (!fatherPks.isEmpty()) {
-            sendNoMoreValidatorNotification(fatherPks.iterator().next(), currentPubDetail);
-          }
-        }
+        ValidationChecker validationChecker = new ValidationChecker().setPubPK(pubPK)
+            .setUserId(userId)
+            .setCurrentPubDetail(currentPubDetail)
+            .setCurrentPubOrCloneDetail(currentPubOrCloneDetail)
+            .setValidatedPK(validatedPK)
+            .setValidationDate(validationDate)
+            .setValidatorUserId(validatorUserId)
+            .check();
+        validationComplete = validationChecker.isValidationComplete();
+        validatorUserId = validationChecker.getValidatorUserId();
+        validationDate = validationChecker.getValidationDate();
       }
 
       if (validationComplete) {
-        removeAllTodosForPublication(validatedPK);
-        if (validationOnClone) {
-          removeAllTodosForPublication(pubPK);
-        }
-        if (currentPubDetail.haveGotClone()) {
-          currentPubDetail = mergeClone(currentPub, validatorUserId, validationDate);
-        } else if (currentPubDetail.isValidationRequired()) {
-          currentPubDetail.setValidatorId(validatorUserId);
-          currentPubDetail.setValidateDate(validationDate);
-          currentPubDetail.setStatus(PublicationDetail.VALID_STATUS);
-        }
-        KmeliaHelper.checkIndex(currentPubDetail);
-        publicationService.setDetail(currentPubDetail);
-        updateSilverContentVisibility(currentPubDetail);
-        // index all publication's elements
-        indexExternalElementsOfPublication(currentPubDetail);
-
-        // the publication has been validated
-        // all subscribers of the different topics must be alerted
-        NodePK oneFather =
-            sendSubscriptionsNotification(currentPubDetail, NotifAction.PUBLISHED, false);
-
-        // publication's creator must be alerted
-        sendValidationNotification(oneFather, currentPubDetail, null, validatorUserId);
-
-        // alert supervisors
-        sendAlertToSupervisors(oneFather, currentPubDetail);
+        applyValidation(pubPK, currentPub, currentPubDetail, validatedPK, validatorUserId,
+            validationDate, validationOnClone);
       }
     } catch (Exception e) {
       throw new KmeliaRuntimeException(e);
@@ -2297,69 +2193,111 @@ public class DefaultKmeliaService implements KmeliaService {
     return validationComplete;
   }
 
+  private void applyValidation(final PublicationPK pubPK, final CompletePublication currentPub,
+      PublicationDetail currentPubDetail, final PublicationPK validatedPK,
+      final String validatorUserId, final Date validationDate, final boolean validationOnClone)
+      throws FormException, PublicationTemplateException {
+    removeAllTodosForPublication(validatedPK);
+    if (validationOnClone) {
+      removeAllTodosForPublication(pubPK);
+    }
+    if (currentPubDetail.haveGotClone()) {
+      currentPubDetail = mergeClone(currentPub, validatorUserId, validationDate);
+    } else if (currentPubDetail.isValidationRequired()) {
+      currentPubDetail.setValidatorId(validatorUserId);
+      currentPubDetail.setValidateDate(validationDate);
+      currentPubDetail.setStatus(PublicationDetail.VALID_STATUS);
+    }
+    KmeliaHelper.checkIndex(currentPubDetail);
+    publicationService.setDetail(currentPubDetail);
+    updateSilverContentVisibility(currentPubDetail);
+    // index all publication's elements
+    indexExternalElementsOfPublication(currentPubDetail);
+
+    // the publication has been validated
+    // all subscribers of the different topics must be alerted
+    NodePK oneFather =
+        sendSubscriptionsNotification(currentPubDetail, NotifAction.PUBLISHED, false);
+
+    // publication's creator must be alerted
+    sendValidationNotification(oneFather, currentPubDetail, null, validatorUserId);
+
+    // alert supervisors
+    sendAlertToSupervisors(oneFather, currentPubDetail);
+  }
+
+  private boolean completeValidation(final PublicationPK pubPK, final PublicationPK validatedPK,
+      final String userId, final boolean validationOnClone) {
+    boolean validationComplete = false;
+    int validationType = getValidationType(pubPK.getInstanceId());
+    if (validationType == KmeliaHelper.VALIDATION_CLASSIC ||
+        validationType == KmeliaHelper.VALIDATION_TARGET_1) {
+      validationComplete = true;
+    } else {
+      if (validationType == KmeliaHelper.VALIDATION_TARGET_N) {
+        // check that validators are well defined
+        // If not, considering validation as classic one
+        PublicationDetail publi = publicationService.getDetail(validatedPK);
+        validationComplete = !isDefined(publi.getTargetValidatorId());
+      }
+      if (!validationComplete) {
+        // get all users who have to validate
+        List<String> allValidators = getAllValidators(validatedPK);
+        if (allValidators.size() == 1) {
+          // special case : only once user is concerned by validation
+          validationComplete = true;
+        } else if (allValidators.size() > 1) {
+          // remove it for this user. His job is done !
+          removeTodoForPublication(validatedPK, userId);
+          if (validationOnClone) {
+            removeTodoForPublication(pubPK, userId);
+          }
+          // save his decision
+
+          ValidationStep validation =
+              new ValidationStep(validatedPK, userId, PublicationDetail.VALID_STATUS);
+          publicationService.addValidationStep(validation);
+          // check if all validators have give their decision
+          validationComplete = isValidationComplete(validatedPK, allValidators);
+        }
+      }
+    }
+    return validationComplete;
+  }
+
   private PublicationDetail getClone(PublicationDetail refPub) {
     PublicationDetail clone = new PublicationDetail();
-    if (refPub.getAuthor() != null) {
-      clone.setAuthor(refPub.getAuthor());
-    }
+    clone.setAuthor(refPub.getAuthor());
     if (refPub.getBeginDate() != null) {
       clone.setBeginDate(new Date(refPub.getBeginDate().getTime()));
     }
-    if (refPub.getBeginHour() != null) {
-      clone.setBeginHour(refPub.getBeginHour());
-    }
-    if (refPub.getContentPagePath() != null) {
-      clone.setContentPagePath(refPub.getContentPagePath());
-    }
+    clone.setBeginHour(refPub.getBeginHour());
+    clone.setContentPagePath(refPub.getContentPagePath());
     clone.setCreationDate(new Date(refPub.getCreationDate().getTime()));
     clone.setCreatorId(refPub.getCreatorId());
-    if (refPub.getDescription() != null) {
-      clone.setDescription(refPub.getDescription());
-    }
+    clone.setDescription(refPub.getDescription());
     if (refPub.getEndDate() != null) {
       clone.setEndDate(new Date(refPub.getEndDate().getTime()));
     }
-    if (refPub.getEndHour() != null) {
-      clone.setEndHour(refPub.getEndHour());
-    }
+    clone.setEndHour(refPub.getEndHour());
     clone.setImportance(refPub.getImportance());
-    if (refPub.getInfoId() != null) {
-      clone.setInfoId(refPub.getInfoId());
-    }
-    if (refPub.getKeywords() != null) {
-      clone.setKeywords(refPub.getKeywords());
-    }
-    if (refPub.getName() != null) {
-      clone.setName(refPub.getName());
-    }
+    clone.setInfoId(refPub.getInfoId());
+    clone.setKeywords(refPub.getKeywords());
+    clone.setName(refPub.getName());
     clone.setPk(new PublicationPK(refPub.getPK().getId(), refPub.getPK().getInstanceId()));
-    if (refPub.getStatus() != null) {
-      clone.setStatus(refPub.getStatus());
-    }
-    if (refPub.getTargetValidatorId() != null) {
-      clone.setTargetValidatorId(refPub.getTargetValidatorId());
-    }
-    if (refPub.getCloneId() != null) {
-      clone.setCloneId(refPub.getCloneId());
-    }
+    clone.setStatus(refPub.getStatus());
+    clone.setTargetValidatorId(refPub.getTargetValidatorId());
+    clone.setCloneId(refPub.getCloneId());
     if (refPub.getUpdateDate() != null) {
       clone.setUpdateDate(new Date(refPub.getUpdateDate().getTime()));
     }
-    if (refPub.getUpdaterId() != null) {
-      clone.setUpdaterId(refPub.getUpdaterId());
-    }
+    clone.setUpdaterId(refPub.getUpdaterId());
     if (refPub.getValidateDate() != null) {
       clone.setValidateDate(new Date(refPub.getValidateDate().getTime()));
     }
-    if (refPub.getValidatorId() != null) {
-      clone.setValidatorId(refPub.getValidatorId());
-    }
-    if (refPub.getVersion() != null) {
-      clone.setVersion(refPub.getVersion());
-    }
-    if (refPub.getLanguage() != null) {
-      clone.setLanguage(refPub.getLanguage());
-    }
+    clone.setValidatorId(refPub.getValidatorId());
+    clone.setVersion(refPub.getVersion());
+    clone.setLanguage(refPub.getLanguage());
 
     return clone;
   }
@@ -2661,22 +2599,8 @@ public class DefaultKmeliaService implements KmeliaService {
 
   @Override
   public UserNotification getUserNotification(PublicationPK pubPK, NodePK topicPK) {
-    final PublicationDetail pubDetail = getPublicationDetail(pubPK);
-    pubDetail.setAlias(isAlias(pubDetail, topicPK));
-
-    return new KmeliaNotifyPublicationUserNotification(topicPK, pubDetail).build();
-  }
-
-  public boolean isAlias(PublicationDetail pubDetail, NodePK nodePK) {
-    boolean result = false;
-    Collection<Alias> aliases = getAlias(pubDetail.getPK());
-    for (Alias alias : aliases) {
-      if (!alias.getInstanceId().equals(pubDetail.getInstanceId()) && nodePK.equals(alias)) {
-        result = true;
-        break;
-      }
-    }
-    return result;
+    final KmeliaPublication publication = KmeliaPublication.withPK(pubPK, topicPK);
+    return new KmeliaNotifyPublicationUserNotification(topicPK, publication.getDetail()).build();
   }
 
   /**
@@ -2772,13 +2696,13 @@ public class DefaultKmeliaService implements KmeliaService {
   @Override
   public void indexKmelia(String componentId) {
     indexTopics(new NodePK(USELESS, componentId));
-    indexPublications(new PublicationPK(USELESS, componentId));
+    indexPublications(componentId);
   }
 
-  private void indexPublications(final PublicationPK pubPK) {
+  private void indexPublications(String componentId) {
     final Collection<PublicationDetail> pubs;
     try {
-      pubs = publicationService.getAllPublications(pubPK);
+      pubs = publicationService.getAllPublications(componentId);
     } catch (Exception e) {
       throw new KmeliaRuntimeException(e);
     }
@@ -3417,7 +3341,8 @@ public class DefaultKmeliaService implements KmeliaService {
               .getCoordinatesByFatherPaths((ArrayList<String>) combination, coordinatePK);
         if (coordinates != null && !coordinates.isEmpty()) {
           publications =
-              publicationService.getDetailsByFatherIds((ArrayList<String>) coordinates, pk, false);
+              publicationService.getDetailsByFatherIds((ArrayList<String>) coordinates, componentId,
+                  false);
         }
       }
     } catch (Exception e) {
@@ -3428,10 +3353,9 @@ public class DefaultKmeliaService implements KmeliaService {
 
   @Override
   public Collection<KmeliaPublication> getUnbalancedPublications(String componentId) {
-    PublicationPK pk = new PublicationPK(USELESS, componentId);
-    Collection<PublicationDetail> publications = null;
+    Collection<PublicationDetail> publications;
     try {
-      publications = publicationService.getOrphanPublications(pk);
+      publications = publicationService.getOrphanPublications(componentId);
     } catch (Exception e) {
       throw new KmaxRuntimeException(e);
     }
@@ -3470,7 +3394,7 @@ public class DefaultKmeliaService implements KmeliaService {
   @Override
   public void indexKmax(String componentId) {
     indexAxis(componentId);
-    indexPublications(new PublicationPK(USELESS, componentId));
+    indexPublications(componentId);
   }
 
   private void indexAxis(String componentId) {
@@ -3594,11 +3518,6 @@ public class DefaultKmeliaService implements KmeliaService {
   }
 
   @Override
-  public void deleteCoordinates(CoordinatePK coordinatePK, List<String> coordinates) {
-    coordinatesService.deleteCoordinates(coordinatePK, coordinates);
-  }
-
-  @Override
   public void deletePublicationFromCombination(String pubId, String combinationId,
       String componentId) {
     PublicationPK pubPK = new PublicationPK(pubId, componentId);
@@ -3648,18 +3567,18 @@ public class DefaultKmeliaService implements KmeliaService {
   }
 
   @Override
-  public Collection<Alias> getAlias(PublicationPK pubPK) {
+  public Collection<Location> getAlias(PublicationPK pubPK) {
     try {
-      return publicationService.getAlias(pubPK);
+      return publicationService.getLocations(pubPK);
     } catch (Exception e) {
       throw new KmeliaRuntimeException(e);
     }
   }
 
   @Override
-  public void setAlias(PublicationPK pubPK, List<Alias> alias) {
+  public void setAlias(PublicationPK pubPK, List<Location> locations) {
 
-    publicationService.setAlias(pubPK, alias);
+    publicationService.setAliases(pubPK, locations);
 
     // Send subscriptions to aliases subscribers
     PublicationDetail pubDetail = getPublicationDetail(pubPK);
@@ -3694,144 +3613,12 @@ public class DefaultKmeliaService implements KmeliaService {
     }
   }
 
-  /**
-   * Creates or updates a publication.
-   * @param componentId The id of the component containing the publication.
-   * @param topicId The id of the topic containing the publication.
-   * @param spaceId The id of the space containing the publication.
-   * @param userId The id of the user creating or updating the publication.
-   * @param publiParams The publication's parameters.
-   * @param formParams The parameters of the publication's form.
-   * @param language The language of the publication.
-   * @param xmlFormName The name of the publication's form.
-   * @param discrimatingParameterName The name of the field included in the form which allowes to
-   * retrieve the eventually existing publication to update.
-   * @param userProfile The user's profile used to draft out the publication.
-   * @return True if the publication is created, false if it is updated.
-   * @
-   */
-  @Override
-  public boolean importPublication(String componentId, String topicId, String spaceId,
-      String userId, Map<String, String> publiParams, Map<String, String> formParams,
-      String language, String xmlFormName, String discrimatingParameterName, String userProfile) {
-    PublicationImport publicationImport =
-        new PublicationImport(this, componentId, topicId, spaceId, userId);
-    return publicationImport.importPublication(publiParams, formParams, language, xmlFormName,
-        discrimatingParameterName, userProfile);
-  }
-
-  @Override
-  public boolean importPublication(String componentId, String topicId, String userId,
-      Map<String, String> publiParams, Map<String, String> formParams, String language,
-      String xmlFormName, String discriminantParameterName, String userProfile,
-      boolean ignoreMissingFormFields) {
-    PublicationImport publicationImport =
-        new PublicationImport(this, componentId, topicId, null, userId);
-    publicationImport.setIgnoreMissingFormFields(ignoreMissingFormFields);
-    return publicationImport.importPublication(publiParams, formParams, language, xmlFormName,
-        discriminantParameterName, userProfile);
-  }
-
-  /**
-   * Creates or updates a publication.
-   * @param publicationId The id of the publication to update.
-   * @param componentId The id of the component containing the publication.
-   * @param topicId The id of the topic containing the publication.
-   * @param spaceId The id of the space containing the publication.
-   * @param userId The id of the user creating or updating the publication.
-   * @param publiParams The publication's parameters.
-   * @param formParams The parameters of the publication's form.
-   * @param language The language of the publication.
-   * @param xmlFormName The name of the publication's form.
-   * @param userProfile The user's profile used to draft out the publication.
-   * @return True if the publication is created, false if it is updated.
-   * @
-   */
-  @Override
-  public boolean importPublication(String publicationId, String componentId, String topicId,
-      String spaceId, String userId, Map<String, String> publiParams,
-      Map<String, String> formParams, String language, String xmlFormName, String userProfile) {
-    PublicationImport publicationImport =
-        new PublicationImport(this, componentId, topicId, spaceId, userId);
-    return publicationImport
-        .importPublication(publicationId, publiParams, formParams, language, xmlFormName,
-            userProfile);
-  }
-
-  @Override
-  public void importPublications(String componentId, String topicId, String spaceId, String userId,
-      List<Map<String, String>> publiParamsList, List<Map<String, String>> formParamsList,
-      String language, String xmlFormName, String discrimatingParameterName, String userProfile) {
-    PublicationImport publicationImport =
-        new PublicationImport(this, componentId, topicId, spaceId, userId);
-    publicationImport.importPublications(publiParamsList, formParamsList, language, xmlFormName,
-        discrimatingParameterName, userProfile);
-  }
-
-  @Override
-  public List<XMLField> getPublicationXmlFields(String publicationId, String componentId,
-      String spaceId, String userId) {
-    PublicationImport publicationImport =
-        new PublicationImport(this, componentId, null, spaceId, userId);
-    return publicationImport.getPublicationXmlFields(publicationId);
-  }
-
-  @Override
-  public List<XMLField> getPublicationXmlFields(String publicationId, String componentId,
-      String spaceId, String userId, String language) {
-    PublicationImport publicationImport =
-        new PublicationImport(this, componentId, null, spaceId, userId);
-    return publicationImport.getPublicationXmlFields(publicationId, language);
-  }
-
   @Override
   public String createTopic(String componentId, String topicId, String spaceId, String userId,
       String name, String description) {
     PublicationImport publicationImport =
         new PublicationImport(this, componentId, topicId, spaceId, userId);
     return publicationImport.createTopic(name, description);
-  }
-
-  @Override
-  public Collection<String> getPublicationsSpecificValues(String componentId, String xmlFormName,
-      String fieldName) {
-    PublicationImport publicationImport = new PublicationImport(this, componentId);
-    return publicationImport.getPublicationsSpecificValues(componentId, xmlFormName, fieldName);
-  }
-
-  @Override
-  public void draftInPublication(String componentId, String xmlFormName, String fieldName,
-      String fieldValue) {
-    PublicationImport publicationImport = new PublicationImport(this, componentId);
-    publicationImport.draftInPublication(xmlFormName, fieldName, fieldValue);
-  }
-
-  @Override
-  public void updatePublicationEndDate(String componentId, String spaceId, String userId,
-      String xmlFormName, String fieldName, String fieldValue, Date endDate) {
-    PublicationImport publicationImport =
-        new PublicationImport(this, componentId, null, spaceId, userId);
-    publicationImport.updatePublicationEndDate(xmlFormName, fieldName, fieldValue, endDate);
-  }
-
-  /**
-   * Find a publication imported only by a xml field (old id for example)
-   * @param componentId
-   * @param xmlFormName
-   * @param fieldName
-   * @param fieldValue
-   * @param topicId
-   * @param spaceId
-   * @param userId
-   * @return pubId
-   * @
-   */
-  @Override
-  public String findPublicationIdBySpecificValue(String componentId, String xmlFormName,
-      String fieldName, String fieldValue, String topicId, String spaceId, String userId) {
-    PublicationImport publicationImport =
-        new PublicationImport(this, componentId, topicId, spaceId, userId);
-    return publicationImport.getPublicationId(xmlFormName, fieldName, fieldValue);
   }
 
   @Override
@@ -4513,100 +4300,109 @@ public class DefaultKmeliaService implements KmeliaService {
   @Transactional(Transactional.TxType.REQUIRED)
   public PublicationPK copyPublication(@SourcePK PublicationDetail publiToCopy, @TargetPK
       KmeliaCopyDetail copyDetail) {
-    NodePK nodePK = copyDetail.getToNodePK();
+    NodePK toNodePK = copyDetail.getToNodePK();
     String userId = copyDetail.getUserId();
-    final String toComponentId = nodePK.getInstanceId();
+    final String toComponentId = toNodePK.getInstanceId();
     final NodePK fromNodePK = copyDetail.getFromNodePK() != null ? copyDetail.getFromNodePK() :
         new NodePK("0", copyDetail.getFromComponentId());
+    final KmeliaPublication publication = KmeliaPublication.fromDetail(publiToCopy, fromNodePK);
     try {
-      if (KmeliaPublication.isAnAlias(publiToCopy, fromNodePK)) {
-        Alias alias = new Alias(copyDetail.getToNodePK().getId(), toComponentId);
-        alias.setUserId(copyDetail.getUserId());
-        publicationService.addAlias(publiToCopy.getPK(), Collections.singletonList(alias));
+      if (publication.isAlias()) {
+        Location location = new Location(copyDetail.getToNodePK().getId(), toComponentId);
+        location.setAsAlias(userId);
+        publicationService.addAliases(publiToCopy.getPK(), Collections.singletonList(location));
         return publiToCopy.getPK();
       } else {
-        ResourceReference toResourceReference =
-            new ResourceReference(ResourceReference.UNKNOWN_ID, nodePK.getInstanceId());
-        PublicationPK toPubPK = new PublicationPK(UNKNOWN, nodePK);
-
-        // Handle duplication as a creation, ignore initial parameters
-        PublicationDetail newPubli = new PublicationDetail();
-        newPubli.setPk(toPubPK);
-        newPubli.setLanguage(publiToCopy.getLanguage());
-        newPubli.setName(publiToCopy.getName());
-        newPubli.setDescription(publiToCopy.getDescription());
-        newPubli.setKeywords(publiToCopy.getKeywords());
-        newPubli.setTranslations(publiToCopy.getClonedTranslations());
-        newPubli.setAuthor(publiToCopy.getAuthor());
-        newPubli.setCreatorId(userId);
-        newPubli.setBeginDate(publiToCopy.getBeginDate());
-        newPubli.setBeginHour(publiToCopy.getBeginHour());
-        newPubli.setEndDate(publiToCopy.getEndDate());
-        newPubli.setEndHour(publiToCopy.getEndHour());
-        newPubli.setImportance(publiToCopy.getImportance());
-        if (copyDetail.isPublicationContentMustBeCopied()) {
-          newPubli.setInfoId(publiToCopy.getInfoId());
-        }
-        // use validators selected via UI
-        newPubli.setTargetValidatorId(copyDetail.getPublicationValidatorIds());
-
-        // manage status explicitly to bypass Draft mode
-        setToByPassDraftMode(copyDetail, nodePK, newPubli, userId);
-
-        String fromId = publiToCopy.getPK().getId();
-        String fromComponentId = publiToCopy.getPK().getInstanceId();
-        ResourceReference fromResourceReference =
-            new ResourceReference(publiToCopy.getPK().getId(), fromComponentId);
-        PublicationPK fromPubPK = new PublicationPK(publiToCopy.getPK().getId(), fromComponentId);
-
-        if (copyDetail.isAdministrativeOperation()) {
-          newPubli.setCreatorId(publiToCopy.getCreatorId());
-          newPubli.setCreationDate(publiToCopy.getCreationDate());
-          newPubli.setUpdaterId(publiToCopy.getUpdaterId());
-          newPubli.setUpdateDate(publiToCopy.getUpdateDate());
-          newPubli.setStatus(publiToCopy.getStatus());
-        }
-
-        String id = createPublicationIntoTopic(newPubli, nodePK);
-        // update id cause new publication is created
-        toPubPK.setId(id);
-        toResourceReference.setId(id);
-
-        // Copy vignette
-        ThumbnailController.copyThumbnail(fromResourceReference, toResourceReference);
-
-        // Copy positions on Pdc
-        if (copyDetail.isPublicationPositionsMustBeCopied()) {
-          copyPdcPositions(fromPubPK, toPubPK);
-        }
-
-        // Copy files
-        Map<String, String> fileIds = new HashMap<>();
-        if (copyDetail.isPublicationFilesMustBeCopied()) {
-          fileIds.putAll(copyFiles(fromPubPK, toPubPK));
-        }
-
-        // Copy content
-        if (copyDetail.isPublicationContentMustBeCopied()) {
-          String xmlFormShortName = newPubli.getInfoId();
-          if (xmlFormShortName != null && !"0".equals(xmlFormShortName)) {
-            registerXmlForm(fromComponentId, fromResourceReference, toComponentId,
-                toResourceReference, xmlFormShortName, fileIds);
-          } else {
-            // paste wysiwyg
-            WysiwygController.copy(fromComponentId, fromId, toPubPK.getInstanceId(), id, userId);
-          }
-        }
-
-        // Index publication to index its files and content
-        publicationService.createIndex(toPubPK);
-
+        PublicationDetail newPubli =
+            copyPublication(publiToCopy, toNodePK, toComponentId, copyDetail, userId);
         return newPubli.getPK();
       }
     } catch (Exception ex) {
       SilverLogger.getLogger(this).error("Publication copy failure", ex);
     }
     return null;
+  }
+
+  @NotNull
+  private PublicationDetail copyPublication(final PublicationDetail publiToCopy,
+      final NodePK toNodePK, final String toComponentId, final KmeliaCopyDetail copyDetail,
+      final String userId) throws PdcException, PublicationTemplateException, FormException {
+    ResourceReference toResourceReference =
+        new ResourceReference(ResourceReference.UNKNOWN_ID, toNodePK.getInstanceId());
+    PublicationPK toPubPK = new PublicationPK(UNKNOWN, toNodePK);
+
+    // Handle duplication as a creation, ignore initial parameters
+    PublicationDetail newPubli = new PublicationDetail();
+    newPubli.setPk(toPubPK);
+    newPubli.setLanguage(publiToCopy.getLanguage());
+    newPubli.setName(publiToCopy.getName());
+    newPubli.setDescription(publiToCopy.getDescription());
+    newPubli.setKeywords(publiToCopy.getKeywords());
+    newPubli.setTranslations(publiToCopy.getClonedTranslations());
+    newPubli.setAuthor(publiToCopy.getAuthor());
+    newPubli.setCreatorId(userId);
+    newPubli.setBeginDate(publiToCopy.getBeginDate());
+    newPubli.setBeginHour(publiToCopy.getBeginHour());
+    newPubli.setEndDate(publiToCopy.getEndDate());
+    newPubli.setEndHour(publiToCopy.getEndHour());
+    newPubli.setImportance(publiToCopy.getImportance());
+    if (copyDetail.isPublicationContentMustBeCopied()) {
+      newPubli.setInfoId(publiToCopy.getInfoId());
+    }
+    // use validators selected via UI
+    newPubli.setTargetValidatorId(copyDetail.getPublicationValidatorIds());
+
+    // manage status explicitly to bypass Draft mode
+    setToByPassDraftMode(copyDetail, toNodePK, newPubli, userId);
+
+    String fromId = publiToCopy.getPK().getId();
+    String fromComponentId = publiToCopy.getPK().getInstanceId();
+    ResourceReference fromResourceReference =
+        new ResourceReference(publiToCopy.getPK().getId(), fromComponentId);
+    PublicationPK fromPubPK = new PublicationPK(publiToCopy.getPK().getId(), fromComponentId);
+
+    if (copyDetail.isAdministrativeOperation()) {
+      newPubli.setCreatorId(publiToCopy.getCreatorId());
+      newPubli.setCreationDate(publiToCopy.getCreationDate());
+      newPubli.setUpdaterId(publiToCopy.getUpdaterId());
+      newPubli.setUpdateDate(publiToCopy.getUpdateDate());
+      newPubli.setStatus(publiToCopy.getStatus());
+    }
+
+    String id = createPublicationIntoTopic(newPubli, toNodePK);
+    // update id cause new publication is created
+    toPubPK.setId(id);
+    toResourceReference.setId(id);
+
+    // Copy vignette
+    ThumbnailController.copyThumbnail(fromResourceReference, toResourceReference);
+
+    // Copy positions on Pdc
+    if (copyDetail.isPublicationPositionsMustBeCopied()) {
+      copyPdcPositions(fromPubPK, toPubPK);
+    }
+
+    // Copy files
+    Map<String, String> fileIds = new HashMap<>();
+    if (copyDetail.isPublicationFilesMustBeCopied()) {
+      fileIds.putAll(copyFiles(fromPubPK, toPubPK));
+    }
+
+    // Copy content
+    if (copyDetail.isPublicationContentMustBeCopied()) {
+      String xmlFormShortName = newPubli.getInfoId();
+      if (xmlFormShortName != null && !"0".equals(xmlFormShortName)) {
+        registerXmlForm(fromComponentId, fromResourceReference, toComponentId, toResourceReference,
+            xmlFormShortName, fileIds);
+      } else {
+        // paste wysiwyg
+        WysiwygController.copy(fromComponentId, fromId, toPubPK.getInstanceId(), id, userId);
+      }
+    }
+
+    // Index publication to index its files and content
+    publicationService.createIndex(toPubPK);
+    return newPubli;
   }
 
   private void setToByPassDraftMode(@TargetPK final KmeliaCopyDetail copyDetail,
@@ -4842,6 +4638,130 @@ public class DefaultKmeliaService implements KmeliaService {
     public boolean isPublicationNotDefined() {
       return pubDetail == null || (StringUtil.isDefined(pubPK.getInstanceId()) && !pubDetail.
           getInstanceId().equals(pubPK.getInstanceId()));
+    }
+  }
+
+  private class ValidationChecker {
+    private PublicationPK pubPK;
+    private String userId;
+    private PublicationDetail currentPubDetail;
+    private PublicationDetail currentPubOrCloneDetail;
+    private PublicationPK validatedPK;
+    private boolean validationComplete = false;
+    private String validatorUserId;
+    private Date validationDate;
+
+    public ValidationChecker setPubPK(final PublicationPK pubPK) {
+      this.pubPK = pubPK;
+      return this;
+    }
+
+    public ValidationChecker setUserId(final String userId) {
+      this.userId = userId;
+      return this;
+    }
+
+    public ValidationChecker setCurrentPubDetail(final PublicationDetail currentPubDetail) {
+      this.currentPubDetail = currentPubDetail;
+      return this;
+    }
+
+    public ValidationChecker setCurrentPubOrCloneDetail(
+        final PublicationDetail currentPubOrCloneDetail) {
+      this.currentPubOrCloneDetail = currentPubOrCloneDetail;
+      return this;
+    }
+
+    public ValidationChecker setValidatedPK(final PublicationPK validatedPK) {
+      this.validatedPK = validatedPK;
+      return this;
+    }
+
+    public ValidationChecker setValidatorUserId(final String validatorUserId) {
+      this.validatorUserId = validatorUserId;
+      return this;
+    }
+
+    public ValidationChecker setValidationDate(final Date validationDate) {
+      this.validationDate = validationDate;
+      return this;
+    }
+
+    public boolean isValidationComplete() {
+      return validationComplete;
+    }
+
+    public String getValidatorUserId() {
+      return validatorUserId;
+    }
+
+    public Date getValidationDate() {
+      return validationDate;
+    }
+
+    public ValidationChecker check() {
+      // User has no more validation right
+      final int validationType = getValidationType(pubPK.getInstanceId());
+      boolean alertPublicationOwnerThereIsNoMoreValidator = false;
+      switch (validationType) {
+        case KmeliaHelper.VALIDATION_CLASSIC:
+        case KmeliaHelper.VALIDATION_TARGET_1:
+          alertPublicationOwnerThereIsNoMoreValidator = true;
+          break;
+        default:
+          // get all users who have to validate
+          List<String> allValidators = getAllValidators(validatedPK);
+          if (allValidators.isEmpty()) {
+            alertPublicationOwnerThereIsNoMoreValidator = true;
+          } else {
+            // check if all validators have give their decision
+            validationComplete =
+                DefaultKmeliaService.this.isValidationComplete(validatedPK, allValidators);
+            if (validationComplete) {
+              findLastValidation();
+            } else if (validationType == KmeliaHelper.VALIDATION_TARGET_N &&
+                StringUtil.isNotDefined(currentPubOrCloneDetail.getTargetValidatorId())) {
+              // Case of fallback solution when no more validator is defined, all publishers
+              // must validate (as collegiate method)
+              alertPublicationOwnerThereIsNoMoreValidator = true;
+            }
+          }
+      }
+
+      if (alertPublicationOwnerThereIsNoMoreValidator) {
+        Collection<NodePK> fatherPks = getPublicationFathers(currentPubDetail.getPK());
+        if (!fatherPks.isEmpty()) {
+          sendNoMoreValidatorNotification(fatherPks.iterator().next(), currentPubDetail);
+        }
+      }
+      return this;
+    }
+
+    private void findLastValidation() {
+      // taking the last effective validator for the state change.
+      validationDate = new Date(0);
+      for (ValidationStep validationStep : publicationService.getValidationSteps(validatedPK)) {
+        final String validationStepUserId = validationStep.getUserId();
+        if (!validationStepUserId.equals(userId) &&
+            validationStep.getValidationDate().compareTo(validationDate) > 0) {
+          validationDate = validationStep.getValidationDate();
+          validatorUserId = validationStepUserId;
+        }
+      }
+    }
+
+    private void sendNoMoreValidatorNotification(final NodePK fatherPK,
+        final PublicationDetail pubDetail) {
+      if (pubDetail.isValidationRequired() || pubDetail.isValid()) {
+        try {
+          UserNotificationHelper.buildAndSend(
+              new KmeliaNoMoreValidatorPublicationUserNotification(fatherPK, pubDetail));
+        } catch (Exception e) {
+          SilverLogger.getLogger(this)
+              .error("fatherId = {0}, pubPK = {1}",
+                  new String[]{fatherPK.getId(), pubDetail.getPK().toString()}, e);
+        }
+      }
     }
   }
 }

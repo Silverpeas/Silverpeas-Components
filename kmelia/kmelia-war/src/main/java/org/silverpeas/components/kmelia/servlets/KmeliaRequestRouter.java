@@ -45,7 +45,7 @@ import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
-import org.silverpeas.core.contribution.publication.model.Alias;
+import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.CompletePublication;
 import org.silverpeas.core.contribution.publication.model.PublicationLink;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
@@ -1013,9 +1013,9 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         if (toolboxMode) {
           request.setAttribute("Topics", kmelia.getAllTopics());
         } else {
-          List<Alias> aliases = kmelia.getAliases();
-          request.setAttribute("Aliases", aliases);
-          request.setAttribute("Components", kmelia.getComponents(aliases));
+          Collection<Location> locations = kmelia.getAliases();
+          request.setAttribute("Aliases", locations);
+          request.setAttribute("Components", kmelia.getComponents(locations));
         }
 
         destination = rootDestination + "publicationPaths.jsp";
@@ -1023,29 +1023,29 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         String[] topics = request.getParameterValues("topicChoice");
         String loadedComponentIds = request.getParameter("LoadedComponentIds");
 
-        Alias alias;
-        List<Alias> aliases = new ArrayList<Alias>();
+        Location location;
+        List<Location> locations = new ArrayList<>();
         for (int i = 0; topics != null && i < topics.length; i++) {
           String topicId = topics[i];
           StringTokenizer tokenizer = new StringTokenizer(topicId, ",");
           String nodeId = tokenizer.nextToken();
           String instanceId = tokenizer.nextToken();
 
-          alias = new Alias(nodeId, instanceId);
-          alias.setUserId(kmelia.getUserId());
-          aliases.add(alias);
+          location = new Location(nodeId, instanceId);
+          location.setAsAlias(kmelia.getUserId());
+          locations.add(location);
         }
 
         // Tous les composants ayant un alias n'ont pas forcément été chargés
-        List<Alias> oldAliases = kmelia.getAliases();
-        for (Alias oldAlias : oldAliases) {
-          if (!loadedComponentIds.contains(oldAlias.getInstanceId())) {
+        Collection<Location> oldLocations = kmelia.getAliases();
+        for (Location oldLocation : oldLocations) {
+          if (!loadedComponentIds.contains(oldLocation.getInstanceId())) {
             // le composant de l'alias n'a pas été chargé
-            aliases.add(oldAlias);
+            locations.add(oldLocation);
           }
         }
 
-        kmelia.setAliases(aliases);
+        kmelia.setAliases(locations);
 
         destination = getDestination("ViewPublication", kmelia, request);
       } else if (function.equals("ShowAliasTree")) {

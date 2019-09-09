@@ -28,7 +28,7 @@ import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.contribution.publication.model.Alias;
+import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.silvertrace.SilverTrace;
@@ -101,17 +101,17 @@ public class AliasFileServer extends HttpServlet {
 
     if (foreignKey != null) {
       PublicationPK pubPK = new PublicationPK(foreignKey.getId(), foreignKey.getInstanceId());
-      List<Alias> aliases = (List<Alias>) getPublicationService().getAlias(pubPK);
+      List<Location> locations = (List<Location>) getPublicationService().getLocations(pubPK);
 
       // check if user have rights to see alias files
       boolean rightsOK = false;
       KmeliaAuthorization security = new KmeliaAuthorization();
-      for (int a = 0; !rightsOK && a < aliases.size(); a++) {
-        Alias alias = aliases.get(a);
-        if (!foreignKey.getInstanceId().equals(alias.getInstanceId())) {
+      for (int a = 0; !rightsOK && a < locations.size(); a++) {
+        Location location = locations.get(a);
+        if (!foreignKey.getInstanceId().equals(location.getInstanceId())) {
           // it's an alias
           // Check if user is allowed to see topic's content
-          rightsOK = security.isAccessAuthorized(alias.getInstanceId(), userId, alias.getId(),
+          rightsOK = security.isAccessAuthorized(location.getInstanceId(), userId, location.getId(),
               KmeliaAuthorization.NODE_TYPE);
         }
       }

@@ -624,8 +624,8 @@ public class DefaultWebSiteService implements WebSiteService {
         nodeService.createIndex(node);
       }
       // index all publications
-      PublicationPK pubPK = new PublicationPK(NO_ID, NO_ID, componentId);
-      Collection<PublicationDetail> publications = publicationService.getAllPublications(pubPK);
+      Collection<PublicationDetail> publications =
+          publicationService.getAllPublications(componentId);
       for (final PublicationDetail pub : publications) {
         publicationService.createIndex(pub);
       }
