@@ -28,13 +28,11 @@ import org.silverpeas.core.ApplicationService;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.contribution.content.form.XMLField;
-import org.silverpeas.core.contribution.publication.model.Alias;
+import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.CompletePublication;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.node.coordinates.model.Coordinate;
-import org.silverpeas.core.node.coordinates.model.CoordinatePK;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.notification.user.UserNotification;
@@ -44,9 +42,7 @@ import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /**
  * This is the Service interface controller of the MVC. It controls all the activities that happen
@@ -283,9 +279,24 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
    */
   void addInfoLinks(PublicationPK pubPK, List<ResourceReference> links);
 
+  /**
+   * Gets the complete details about the publication referred by the specified unique identifier.
+   * @param pubPK the unique identifier of a Kmelia publication.
+   * @return a {@link CompletePublication} object.
+   */
   CompletePublication getCompletePublication(PublicationPK pubPK);
 
-  KmeliaPublication getPublication(PublicationPK pubPK);
+  /**
+   * Gets the Kmelia publication identified by the specified identifying key and that is located
+   * into the specified topic. As a Kmelia publication can be in different locations, all
+   * publications other than the original father of the publication are considered as an alias of
+   * that original publication. This is why it is required to know the father of the asked
+   * publication.
+   * @param pubPK identifier of the publication to get.
+   * @param topicPK identifier of the topic in which the publication is located.
+   * @return the asked {@link KmeliaPublication} instance.
+   */
+  KmeliaPublication getPublication(PublicationPK pubPK, NodePK topicPK);
 
   TopicDetail getPublicationFather(PublicationPK pubPK, boolean isTreeStructureUsed, String userId,
       boolean isRightsOnTopicsUsed);
@@ -572,57 +583,15 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
    */
   String createKmaxPublication(PublicationDetail pubDetail);
 
-  /**
-   * Delete coordinates of a publication (ie: when publication is deleted)
-   * @param coordinatePK
-   * @param coordinates
-   */
-  void deleteCoordinates(CoordinatePK coordinatePK, List<String> coordinates);
+  Collection<Location> getAlias(PublicationPK pubPK);
 
-  Collection<Alias> getAlias(PublicationPK pubPK);
-
-  void setAlias(PublicationPK pubPK, List<Alias> alias);
+  void setAlias(PublicationPK pubPK, List<Location> locations);
 
   void addAttachmentToPublication(PublicationPK pubPK, String userId, String filename,
       String description, byte[] contents);
 
-  boolean importPublication(String componentId, String topicId, String spaceId, String userId,
-      Map<String, String> publiParams, Map<String, String> formParams, String language,
-      String xmlFormName, String discrimatingParameterName, String userProfile);
-
-  boolean importPublication(String componentId, String topicId, String userId,
-      Map<String, String> publiParams, Map<String, String> formParams, String language,
-      String xmlFormName, String discriminantParameterName, String userProfile,
-      boolean ignoreMissingFormFields);
-
-  boolean importPublication(String publicationId, String componentId, String topicId,
-      String spaceId, String userId, Map<String, String> publiParams,
-      Map<String, String> formParams, String language, String xmlFormName, String userProfile);
-
-  void importPublications(String componentId, String topicId, String spaceId, String userId,
-      List<Map<String, String>> publiParamsList, List<Map<String, String>> formParamsList,
-      String language, String xmlFormName, String discrimatingParameterName, String userProfile);
-
-  List<XMLField> getPublicationXmlFields(String publicationId, String componentId, String spaceId,
-      String userId);
-
-  List<XMLField> getPublicationXmlFields(String publicationId, String componentId, String spaceId,
-      String userId, String language);
-
   String createTopic(String componentId, String topicId, String spaceId, String userId, String name,
       String description);
-
-  Collection<String> getPublicationsSpecificValues(String componentId, String xmlFormName,
-      String fieldName);
-
-  void draftInPublication(String componentId, String xmlFormName, String fieldName,
-      String fieldValue);
-
-  void updatePublicationEndDate(String componentId, String spaceId, String userId,
-      String xmlFormName, String fieldName, String fieldValue, Date endDate);
-
-  String findPublicationIdBySpecificValue(String componentId, String xmlFormName, String fieldName,
-      String fieldValue, String topicId, String spaceId, String userId);
 
   void doAutomaticDraftOut();
 

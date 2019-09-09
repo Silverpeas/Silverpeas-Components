@@ -26,7 +26,6 @@ import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
@@ -161,7 +160,7 @@ public class StatisticServiceImpl implements
       }
       validPubli =
           getPublicationService().getDetailsByFatherIdsAndStatus(fatherIds,
-          new PublicationPK("", statFilter.getInstanceId()), null, "Valid");
+              statFilter.getInstanceId(), null, "Valid");
       publis.addAll(validPubli);
     }
     return publis;

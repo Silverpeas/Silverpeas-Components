@@ -28,26 +28,24 @@
 <%@ page import="java.util.List"%>
 <%@ page import="java.util.Iterator"%>
 <%@ page import="org.silverpeas.core.node.model.NodeDetail"%>
-<%@ page import="org.silverpeas.core.contribution.publication.model.Alias" %>
+<%@ page import="org.silverpeas.core.contribution.publication.model.Location" %>
 <%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
-<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 
 <%
 MultiSilverpeasBundle resources = (MultiSilverpeasBundle)request.getAttribute("resources");
 
-List 	otherTree 	= (List) request.getAttribute("Tree");
+List<NodeDetail> 	otherTree 	= (List<NodeDetail>) request.getAttribute("Tree");
 String	currentLang = (String) request.getAttribute("Language");
-List	aliases		= (List) request.getAttribute("Aliases");
+List<Location>	locations		= (List<Location>) request.getAttribute("Aliases");
 %>
 
-<table border="0" width="100%">
+<table>
+	<caption></caption>
+	<th id="locations"></th>
 <%
-Iterator otherTopics = otherTree.iterator();
-while(otherTopics.hasNext())
+for(NodeDetail topic: otherTree)
 {
-	NodeDetail topic = (NodeDetail) otherTopics.next();
-
 	if (topic.getId() != 1 && topic.getId() != 2)
 	{
 			String name = WebEncodeHelper.convertHTMLEntities(topic.getName(currentLang));
@@ -69,16 +67,15 @@ while(otherTopics.hasNext())
 			// recherche si ce th�me est dans la liste des th�mes de la publication
 			String aliasDecoration = "&nbsp;";
 			String checked = "";
-			Iterator it = aliases.iterator();
-			while (it.hasNext())
+			for(Location location: locations)
 			{
-				Alias alias = (Alias) it.next();
-				String nodeId = alias.getId();
+				String nodeId = location.getId();
 
-				if (Integer.toString(topic.getId()).equals(nodeId) && topic.getNodePK().getInstanceId().equals(alias.getInstanceId()))
+				if (location.isNode(topic))
 				{
 					checked = " checked";
-					aliasDecoration = "<i>"+WebEncodeHelper.convertHTMLEntities(alias.getUserName())+" - "+resources.getOutputDateAndHour(alias.getDate())+"</i>";
+					aliasDecoration = "<i>"+WebEncodeHelper.convertHTMLEntities(location.getAlias().getUserName())+" - "+resources.getOutputDateAndHour(
+              location.getAlias().getDate())+"</i>";
 				}
 			}
 			boolean displayCheckbox = false;

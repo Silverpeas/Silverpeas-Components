@@ -21,7 +21,6 @@
 package org.silverpeas.components.kmax;
 
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
 import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
@@ -42,7 +41,7 @@ public class KmaxStatistics implements ComponentStatisticsProvider {
 
   @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId) {
-    Collection<PublicationDetail> publications = getPublications(spaceId, componentId);
+    Collection<PublicationDetail> publications = getPublications(componentId);
     List<UserIdCountVolumeCouple> myArrayList = new ArrayList<>(publications.size());
     for (PublicationDetail detail : publications) {
       UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
@@ -57,8 +56,8 @@ public class KmaxStatistics implements ComponentStatisticsProvider {
     return publicationService;
   }
 
-  private Collection<PublicationDetail> getPublications(String spaceId, String componentId) {
+  private Collection<PublicationDetail> getPublications(String componentId) {
     return getPublicationService()
-        .getAllPublications(new PublicationPK("useless", spaceId, componentId));
+        .getAllPublications(componentId);
   }
 }

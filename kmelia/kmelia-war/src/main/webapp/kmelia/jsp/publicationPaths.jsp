@@ -25,7 +25,7 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ page import="org.silverpeas.core.contribution.publication.model.Alias" %>
+<%@ page import="org.silverpeas.core.contribution.publication.model.Location" %>
 <%@ page import="org.silverpeas.components.kmelia.model.Treeview" %>
 <%@page import="org.silverpeas.components.kmelia.jstl.KmeliaDisplayHelper"%>
 <%
@@ -43,7 +43,7 @@ String 				linkedPathString 	= (String) request.getAttribute("LinkedPathString")
 Collection<NodeDetail> topics			= (Collection<NodeDetail>) request.getAttribute("Topics");
 String				currentLang 		= (String) request.getAttribute("Language");
 List<Treeview>		components			= (List<Treeview>) request.getAttribute("Components");
-List<Alias>			aliases				= (List<Alias>) request.getAttribute("Aliases");
+List<Location> locations = (List<Location>) request.getAttribute("Aliases");
 
 String pubName 	= publication.getName(currentLang);
 String id 		= publication.getPK().getId();
@@ -53,7 +53,7 @@ Button cancelButton = gef.getFormButton(resources.getString("GML.cancel"), "View
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html>
+<html xml:lang="<%=currentLang%>%>">
 <head>
 <title></title>
 <view:looknfeel/>
@@ -206,7 +206,7 @@ function getObjects(selected) {
     				}
     				name = ind + name;	
     				
-    				// recherche si ce th�me est dans la liste des alias de la publication
+    				// recherche si ce th�me est dans la liste des locations de la publication
 					  String usedCheck = "";
     				for (NodePK node : pathList) {
 	    				String nodeId = node.getId();
@@ -254,12 +254,12 @@ function getObjects(selected) {
 	    			nbAliases = "<span align=\"right\">"+treeview.getNbAliases()+" "+resources.getString("kmelia.paths.paths")+"</span>";
 	    		}  
 	%>
-				<a href="javascript: void(0)" id="<%=treeview.getComponentId()%>"><table width="100%" cellspacing="0" cellpadding="0"><tr><td><%=panelTitle%></td><td align="right"><%=nbAliases%></td></tr></table></a>
+				<a href="javascript: void(0)" id="<%=treeview.getComponentId()%>"><table><caption></caption><th id="all-locations"></th><tr><td><%=panelTitle%></td><td text-align="right"><%=nbAliases%></td></tr></table></a>
 					<div id="content_<%=treeview.getComponentId()%>" class="content">
 	<%
 					out.println("<table border=\"0\">");
 					if (t == 0) {
-		    			List<NodeDetail> otherTree = (List<NodeDetail>) treeview.getTree();
+		    			List<NodeDetail> otherTree = treeview.getTree();
 		    			for (NodeDetail topic : otherTree) {
 		        			if (topic.getId() != 1 && topic.getId() != 2) {
 	    	    				String name = topic.getName(currentLang);
@@ -278,13 +278,18 @@ function getObjects(selected) {
 	    	    				// recherche si ce dossier est dans la liste des dossiers de la publication
 	    	    				String aliasDecoration = "&nbsp;";
 	    	    				String checked = "";
-	    	    				for (Alias alias : aliases) {
-	    		    				String nodeId = alias.getId();	    		    				
-	    		    				if (Integer.toString(topic.getId()).equals(nodeId) && topic.getNodePK().getInstanceId().equals(alias.getInstanceId())) {
+	    	    				String readonly = "";
+	    	    				for (Location location : locations) {
+	    		    				String nodeId = location.getId();
+	    		    				if (Integer.toString(topic.getId()).equals(nodeId) && topic.getNodePK().getInstanceId().equals(
+													location.getInstanceId())) {
 	    		    					checked = " checked=\"checked\"";
-	    		    					if (!alias.getInstanceId().equals(componentId)) {
-	    		    						aliasDecoration = "<i>"+alias.getUserName()+" - "+resources.getOutputDateAndHour(alias.getDate())+"</i>";
-	    		    					}
+	    		    					if (location.isAlias()) {
+	    		    						aliasDecoration = "<i>"+
+															location.getAlias().getUserName()+" - "+resources.getOutputDateAndHour(location.getAlias().getDate())+"</i>";
+	    		    					} else {
+	    		    						readonly = "readonly=\"readonly\" disabled=\"disabled\"";
+												}
 	    		    				}
 	    		    			}
 	    	    				boolean displayCheckbox = false;
@@ -297,7 +302,7 @@ function getObjects(selected) {
 	    	    				}
 	    	    	        	out.println("<tr><td width=\"10px\">");
 	    	    	        	if (displayCheckbox) {
-	    	    	        		out.println("<input type=\"checkbox\" valign=\"absmiddle\" name=\"topicChoice\" value=\""+topic.getId()+","+topic.getNodePK().getInstanceId()+"\""+checked+readonlyCheckbox+">");
+	    	    	        		out.println("<input type=\"checkbox\" valign=\"absmiddle\" name=\"topicChoice\" value=\""+topic.getId()+","+topic.getNodePK().getInstanceId()+"\""+checked+readonlyCheckbox+readonly+">");
 	    	    	        	} else {
 	    	    	        		out.println("&nbsp;");
 	    	    	        	}

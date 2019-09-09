@@ -385,7 +385,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
           }
         }
 
-        if (!pub.getPK().getInstanceId().equals(kmeliaScc.getComponentId())) {
+        if (pub.isAlias()) {
           pubState = resources.getString("kmelia.Shortcut");
         }
 
@@ -503,7 +503,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     boolean canBeCut = KmeliaPublicationHelper
         .isCanBeCut(kmeliaScc.getComponentId(), userId, kmeliaScc.getUserTopicProfile(),
             aPub.getCreator());
-    boolean alias = isAlias(kmeliaScc, aPub.getDetail());
+    boolean alias = aPub.isAlias();
     fragmentSettings.draggable = canBeCut && !alias && !KmeliaHelper.isToValidateFolder(topicId);
 
     if (specificTemplateUsed) {
@@ -719,16 +719,12 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     if (displayFiles) {
       sb.append("<span class=\"files\">");
       // Can be a shortcut. Must check attachment mode according to publication source.
-      boolean alias = isAlias(kmeliaScc, pub);
+      boolean alias = pub.isAlias();
       sb.append(displayAttachments(kmeliaScc, pub, resources, linkAttachment, alias));
 
       sb.append("</span>");
     }
     return sb.toString();
-  }
-
-  private boolean isAlias(KmeliaSessionController kmeliaScc, PublicationDetail pub) {
-    return !kmeliaScc.getComponentId().equalsIgnoreCase(pub.getPK().getInstanceId());
   }
 
   private void displayThumbnail(PublicationDetail pub, KmeliaSessionController ksc,
@@ -1097,7 +1093,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         KmeliaPublication kmeliaPub = iterator.next();
         PublicationDetail pub = kmeliaPub.getDetail();
         String shortcut;
-        if (!pub.getPK().getInstanceId().equals(kmeliaScc.getComponentId())) {
+        if (pub.isAlias()) {
           shortcut = " (" + resources.getString("kmelia.Shortcut") + ")";
         } else {
           shortcut = "";
