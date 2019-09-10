@@ -824,10 +824,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     return getKmeliaService().getPathList(pk);
   }
 
-  public synchronized Collection<NodePK> getPublicationFathers(String pubId) {
-    return getKmeliaService().getPublicationFathers(getPublicationPK(pubId));
-  }
-
   public NodePK getAllowedPublicationFather(String pubId) {
     return getKmeliaService()
         .getPublicationFatherPK(getPublicationPK(pubId), isTreeStructure(), getUserId(),
@@ -2546,16 +2542,12 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     return languages;
   }
 
-  public void setAliases(List<Location> locations) {
-    getKmeliaService().setAlias(getSessionPublication().getDetail().getPK(), locations);
+  public void setPublicationAliases(List<Location> locations) {
+    getKmeliaService().setAliases(getSessionPublication().getDetail().getPK(), locations);
   }
 
-  public void setAliases(PublicationPK pubPK, List<Location> locations) {
-    getKmeliaService().setAlias(pubPK, locations);
-  }
-
-  public Collection<Location> getAliases() {
-    return getKmeliaService().getAlias(getSessionPublication().getDetail().getPK());
+  public Collection<Location> getPublicationLocations() {
+    return getKmeliaService().getLocations(getSessionPublication().getDetail().getPK());
   }
 
   /**

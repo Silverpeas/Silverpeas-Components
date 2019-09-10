@@ -211,7 +211,7 @@ public class DefaultBlogService implements BlogService {
       PublicationDetail pub = post.getPublication();
 
       // Remove last category
-      getPublicationService().removeAllFather(pubPk);
+      getPublicationService().removeAllFathers(pubPk);
 
       // Save the publication
       getPublicationService().setDetail(pub);
@@ -251,7 +251,7 @@ public class DefaultBlogService implements BlogService {
     try (Connection con = openConnection()) {
       PublicationPK pubPK = new PublicationPK(postId, instanceId);
       // Delete link with categorie
-      getPublicationService().removeAllFather(pubPK);
+      getPublicationService().removeAllFathers(pubPK);
       // Delete date event
       PostDAO.deleteDateEvent(con, pubPK.getId());
       // Delete comments

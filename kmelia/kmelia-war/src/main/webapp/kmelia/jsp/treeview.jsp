@@ -277,14 +277,21 @@ function nodeDeleted(nodeId) {
 		// change nb publications on each parent of deleted node (except root)
 		var nbPublisRemoved = getNbPublis(nodeId);
 		var path = getTreeview().get_path("#"+nodeId, false, true);
-		for (i=0; i<path.length; i++) {
-			var elementId = path[i];
-			if (elementId != "0" && elementId != nodeId) {
-				addNbPublis(elementId, 0-nbPublisRemoved);
-			}
-		}
-		// add nb of removed publis in bin
-		addNbPublis("1", nbPublisRemoved);
+		path.forEach(function(elementId, index) {
+       if (elementId !== nodeId) {
+          applyWithNode(elementId, function(data) {
+             var nodeTitle = getNodeTitle(elementId);
+             var nbPublis = data.attr.nbItems;
+             getTreeview().rename_node("#"+elementId, nodeTitle+" ("+nbPublis+")");
+          });
+       }
+     });
+     var binId = '1';
+     applyWithNode(binId, function(data) {
+        var nodeTitle = getNodeTitle(binId);
+        var nbPublis = data.attr.nbItems;
+        getTreeview().rename_node("#"+binId, nodeTitle+" ("+nbPublis+")");
+     });
 	}
 	getTreeview().delete_node("#"+nodeId);
 }
