@@ -197,7 +197,14 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
    */
   Collection<Collection<NodeDetail>> getPathList(PublicationPK pubPK);
 
-  Collection<NodePK> getPublicationFathers(PublicationPK pubPK);
+  /**
+   * Gets the father of the specified publication. If the publication is a clone of a main one, then
+   * gets the father of the cloned publication. The father returned should be the main location of
+   * the publication. It the publication is an orphaned one, null is returned.
+   * @param pubPK the identifying key of the publication.
+   * @return the father of the publication or null if the publication is an orphaned one.
+   */
+  NodePK getPublicationFatherPK(PublicationPK pubPK);
 
   /**
    * Create a new Publication (only the header - parameters) to the current Topic
@@ -297,9 +304,33 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
    */
   KmeliaPublication getPublication(PublicationPK pubPK, NodePK topicPK);
 
+  /**
+   * Gets the details about the father from which the specified publication is accessible to the
+   * given user. If the main location of the publication isn't accessible by the user, then the
+   * first accessible alias of the publication is returned. If no aliases are accessible or defined,
+   * the the details of the root topic is returned.
+   * @param pubPK the unique identifier of the publication.
+   * @param isTreeStructureUsed is the tree view of the topics enabled?
+   * @param userId the unique identifier of a user.
+   * @param isRightsOnTopicsUsed is the rights on the topics enabled in the component instance
+   * in which is defined the publication?
+   * @return the details of the topic in which the publication is accessible by the given user.
+   */
   TopicDetail getPublicationFather(PublicationPK pubPK, boolean isTreeStructureUsed, String userId,
       boolean isRightsOnTopicsUsed);
 
+  /**
+   * Gets the father of the specified publication according to the rights of the user. If the main
+   * location of the publication isn't accessible by the user, then the first accessible alias of
+   * the publication is returned. If no aliases are accessible or defined, the the root topic is
+   * returned.
+   * @param pubPK the unique identifier of the publication
+   * @param isTreeStructureUsed is the tree view of the topics is used?
+   * @param userId the unique identifier of a user.
+   * @param isRightsOnTopicsUsed is the rights on the topics enabled in the component instance
+   * in which is defined the publication?
+   * @return a topic in which the publication is accessible by the given user.
+   */
   NodePK getPublicationFatherPK(PublicationPK pubPK, boolean isTreeStructureUsed, String userId,
       boolean isRightsOnTopicsUsed);
 
@@ -582,9 +613,15 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
    */
   String createKmaxPublication(PublicationDetail pubDetail);
 
-  Collection<Location> getAlias(PublicationPK pubPK);
+  /**
+   * Gets all the locations of the specified publication. If the given publication is a clone, then
+   * gets all the locations of the main publication.
+   * @param pubPK the unique identifier of the publication.
+   * @return a collection of the locations of the given publication.
+   */
+  Collection<Location> getLocations(PublicationPK pubPK);
 
-  void setAlias(PublicationPK pubPK, List<Location> locations);
+  void setAliases(PublicationPK pubPK, List<Location> locations);
 
   void addAttachmentToPublication(PublicationPK pubPK, String userId, String filename,
       String description, byte[] contents);
@@ -610,6 +647,16 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
   NodeDetail getRoot(String componentId, String userId);
 
   Collection<NodeDetail> getFolderChildren(NodePK nodePK, String userId);
+
+  /**
+   * Gets the details about the specified folder. The difference with
+   * {@link KmeliaService#getNodeHeader(String, String)} is that the children are also set as well
+   * as other information like the number of publications.
+   * @param nodePK the unique identifier of the folder.
+   * @param userId the unique identifier of the user for which the folder is asked.
+   * @return the {@link NodeDetail} instance corresponding to the folder.
+   */
+  NodeDetail getFolder(NodePK nodePK, String userId);
 
   NodeDetail getExpandedPathToNode(NodePK pk, String userId);
 

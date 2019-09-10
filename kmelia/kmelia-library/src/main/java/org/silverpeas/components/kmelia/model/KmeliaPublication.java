@@ -46,7 +46,6 @@ import org.silverpeas.core.security.authorization.AccessController;
 import org.silverpeas.core.security.authorization.AccessControllerProvider;
 import org.silverpeas.core.security.authorization.NodeAccessControl;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
-import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.URLUtil;
@@ -55,6 +54,7 @@ import org.silverpeas.core.util.logging.SilverLogger;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 /**
@@ -122,18 +122,21 @@ public class KmeliaPublication implements SilverpeasContent {
 
   private Location findLocation(final NodePK pk) {
     final Predicate<Location> predicate;
+    final String nodeIMsg;
     if (pk != null) {
       predicate = pk::equals;
+      nodeIMsg = " in node " + pk.getId() + "(Kmelia " + pk.getInstanceId() + ")";
     } else {
       predicate = l -> !l.isAlias();
+      nodeIMsg = "";
     }
     return PublicationService.get()
-        .getLocations(getDetail().getPK())
+        .getAllLocations(getDetail().getPK())
         .stream()
         .filter(predicate)
         .findFirst()
         .orElseThrow(() -> new KmeliaRuntimeException(
-            "Unable to find the location of the publication " + getId()));
+            "Unable to find the location of the publication " + getId() + nodeIMsg));
   }
 
   public Location getLocation() {
@@ -152,6 +155,20 @@ public class KmeliaPublication implements SilverpeasContent {
    */
   public static KmeliaPublication fromDetail(final PublicationDetail detail) {
     KmeliaPublication publication = new KmeliaPublication(detail.getPK());
+    publication.setPublicationDetail(detail);
+    return publication;
+  }
+
+  /**
+   * Gets the Kmelia publication from the specified publication detail and with the given rank.
+   * The publication is by default the original one and not an alias.
+   *
+   * @param detail the detail about the publication to get.
+   * @param rank the rank of the publication among others ones.
+   * @return the Kmelia publication matching the specified publication detail.
+   */
+  public static KmeliaPublication fromDetail(final PublicationDetail detail, int rank) {
+    KmeliaPublication publication = new KmeliaPublication(detail.getPK(), rank);
     publication.setPublicationDetail(detail);
     return publication;
   }
@@ -462,18 +479,25 @@ public class KmeliaPublication implements SilverpeasContent {
         getPk());
   }
 
-  @SuppressWarnings("unchecked")
-  public NodePK getOriginalLocation(String userId) {
-    List<NodePK> fatherPKs = (List) getKmeliaService().getPublicationFathers(detail.getPK());
-    if (CollectionUtil.isNotEmpty(fatherPKs)) {
-      AccessController<NodePK> accessController =
-          AccessControllerProvider.getAccessController(NodeAccessControl.class);
-      for (NodePK fatherPK : fatherPKs) {
-        if (accessController.isUserAuthorized(userId, fatherPK)) {
-          return fatherPK;
-        }
-      }
+  /**
+   * Gets the original location of this alias according to the access right the of the specified
+   * user. If this location isn't an alias, then returns itself. If the user has no access right
+   * to the original location, then returns nothing.
+   * If no original location can be found, whatever the access right of the user, a
+   * {@link KmeliaRuntimeException} is thrown.
+   * @param userId the unique identifier of the user for which the access right on the original
+   * location has to be checked.
+   * @return either the original location (itself if this location is already the original one) or
+   * nothing whether the given user has no access right on it.
+   */
+  public Optional<Location> getOriginalLocation(String userId) {
+    final Location originalLocation = findLocation(null);
+    AccessController<NodePK> accessController =
+        AccessControllerProvider.getAccessController(NodeAccessControl.class);
+    if (accessController.isUserAuthorized(userId, originalLocation)) {
+      return Optional.of(originalLocation);
+    } else {
+      return Optional.empty();
     }
-    return null;
   }
 }

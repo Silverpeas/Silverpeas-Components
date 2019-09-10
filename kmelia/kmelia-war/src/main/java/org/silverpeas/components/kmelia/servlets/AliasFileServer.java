@@ -24,66 +24,48 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.components.kmelia.KmeliaAuthorization;
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.List;
+import java.util.Collection;
 
 import static org.silverpeas.core.web.http.FileResponse.encodeInlineFilenameAsUtf8;
 
-/**
- * @author
- */
 public class AliasFileServer extends HttpServlet {
 
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 6848143585037987355L;
 
   @Inject
   private PublicationService publicationService;
 
   @Override
-  public void doGet(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException {
+  public void doGet(HttpServletRequest req, HttpServletResponse res) {
     doPost(req, res);
   }
 
   @Override
-  public void doPost(HttpServletRequest req, HttpServletResponse response)
-      throws ServletException, IOException {
+  public void doPost(HttpServletRequest req, HttpServletResponse response) {
+    User currentUser = User.getCurrentRequester();
+    String userId = currentUser == null ? "undefined" : currentUser.getId();
 
-
-    String userId = "undefined";
-    HttpSession session = req.getSession(true);
-    MainSessionController mainSessionCtrl = (MainSessionController) session
-        .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-    if (mainSessionCtrl != null) {
-      userId = mainSessionCtrl.getUserId();
-    }
-
-    WAPrimaryKey foreignKey = null;
-
+    ResourceReference foreignKey = null;
     String attachmentId = req.getParameter("AttachmentId");
     if (!StringUtil.isDefined(attachmentId)) {
       attachmentId = req.getParameter("VersionId");
@@ -101,18 +83,18 @@ public class AliasFileServer extends HttpServlet {
 
     if (foreignKey != null) {
       PublicationPK pubPK = new PublicationPK(foreignKey.getId(), foreignKey.getInstanceId());
-      List<Location> locations = (List<Location>) getPublicationService().getLocations(pubPK);
+      Collection<Location> locations = getPublicationService().getAllAliases(pubPK);
 
       // check if user have rights to see alias files
       boolean rightsOK = false;
       KmeliaAuthorization security = new KmeliaAuthorization();
-      for (int a = 0; !rightsOK && a < locations.size(); a++) {
-        Location location = locations.get(a);
-        if (!foreignKey.getInstanceId().equals(location.getInstanceId())) {
-          // it's an alias
-          // Check if user is allowed to see topic's content
-          rightsOK = security.isAccessAuthorized(location.getInstanceId(), userId, location.getId(),
-              KmeliaAuthorization.NODE_TYPE);
+      for (Location location : locations) {
+        // it's an alias
+        // Check if user is allowed to see topic's content
+        rightsOK = security.isAccessAuthorized(location.getInstanceId(), userId, location.getId(),
+            KmeliaAuthorization.NODE_TYPE);
+        if (rightsOK) {
+          break;
         }
       }
 
@@ -134,7 +116,7 @@ public class AliasFileServer extends HttpServlet {
    * this String is null that an exception had been catched the html document generated is empty !!
    * also, we display a warning html page
    */
-  private void display(HttpServletResponse res, String filePath) throws IOException {
+  private void display(HttpServletResponse res, String filePath) {
     File file = new File(filePath);
 
     try {
@@ -145,28 +127,22 @@ public class AliasFileServer extends HttpServlet {
         res.getOutputStream().flush();
       }
     } catch (Exception e) {
-      SilverTrace.warn("kmelia", "AliasFileServer.doPost",
-          "root.EX_CANT_READ_FILE", "filePath = " + filePath);
+      SilverLogger.getLogger(this).error(e);
       displayWarningHtmlCode(res);
     }
   }
 
   // Add By Mohammed Hguig
-  private void displayWarningHtmlCode(HttpServletResponse res) throws IOException {
-    OutputStream out = res.getOutputStream();
-    LocalizationBundle messages = ResourceLocator.getLocalizationBundle(
-        "org.silverpeas.util.peasUtil.multiLang.fileServerBundle");
-
-    InputStream in = new ByteArrayInputStream(messages.getString("warning").
-        getBytes(Charsets.UTF_8));
-    try {
-      IOUtils.copy(in, out);
-    } catch (Exception e) {
-      SilverTrace.warn("kmelia", "AliasFileServer.displayWarningHtmlCode",
-          "root.EX_CANT_READ_FILE", "warning properties");
-    } finally {
-      IOUtils.closeQuietly(in);
-    }
+  private void displayWarningHtmlCode(HttpServletResponse res) {
+      LocalizationBundle messages = ResourceLocator.getLocalizationBundle(
+          "org.silverpeas.util.peasUtil.multiLang.fileServerBundle");
+      try (InputStream in = new ByteArrayInputStream(messages.getString("warning").
+          getBytes(Charsets.UTF_8))) {
+        IOUtils.copy(in, res.getOutputStream());
+      } catch (Exception e) {
+        SilverLogger.getLogger(this).error(e);
+        res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+      }
   }
 
   private PublicationService getPublicationService() {

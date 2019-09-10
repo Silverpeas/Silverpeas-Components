@@ -28,6 +28,7 @@
 <%@ page import="org.silverpeas.core.contribution.publication.model.Location" %>
 <%@ page import="org.silverpeas.components.kmelia.model.Treeview" %>
 <%@page import="org.silverpeas.components.kmelia.jstl.KmeliaDisplayHelper"%>
+<%@ page import="org.silverpeas.components.kmelia.model.KmeliaPublication" %>
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache"); //HTTP 1.0
@@ -37,16 +38,15 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ include file="checkKmelia.jsp" %>
 
 <%
-PublicationDetail 	publication 		= (PublicationDetail) request.getAttribute("Publication");
-Collection<NodePK>	pathList 			= (Collection<NodePK>) request.getAttribute("PathList");
+KmeliaPublication publication 		= (KmeliaPublication) request.getAttribute("Publication");
 String 				linkedPathString 	= (String) request.getAttribute("LinkedPathString");
 Collection<NodeDetail> topics			= (Collection<NodeDetail>) request.getAttribute("Topics");
 String				currentLang 		= (String) request.getAttribute("Language");
 List<Treeview>		components			= (List<Treeview>) request.getAttribute("Components");
-List<Location> locations = (List<Location>) request.getAttribute("Aliases");
+Collection<Location> locations = (Collection<Location>) request.getAttribute("Locations");
 
-String pubName 	= publication.getName(currentLang);
-String id 		= publication.getPK().getId();
+String pubName 	= publication.getDetail().getName(currentLang);
+String id 		= publication.getDetail().getPK().getId();
 
 Button validateButton = gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendData();", false);
 Button cancelButton = gef.getFormButton(resources.getString("GML.cancel"), "ViewPublication?PubId="+id, false);
@@ -176,12 +176,10 @@ function getObjects(selected) {
         out.println(board.printBefore());
         
      	//regarder si la publication est dans la corbeille
-		for (NodePK node : pathList) {
-    		if ("1".equals(node.getId())) {
+    		if (NodePK.BIN_NODE_ID.equals(publication.getLocation().getId())) {
     			//la publi est dans la corbeille
         		out.println(kmeliaScc.getString("kmelia.PubInBasket")+"<br/><br/>");
     		}
-    	}
         %>
         <form name="paths" action="SetPath" method="post">
         	<input type="hidden" name="PubId" value="<%=id%>"/>
@@ -208,7 +206,7 @@ function getObjects(selected) {
     				
     				// recherche si ce th�me est dans la liste des locations de la publication
 					  String usedCheck = "";
-    				for (NodePK node : pathList) {
+    				for (Location node : locations) {
 	    				String nodeId = node.getId();
 	    				if (Integer.toString(topic.getId()).equals(nodeId)) {
 	    					usedCheck = " checked=\"checked\"";

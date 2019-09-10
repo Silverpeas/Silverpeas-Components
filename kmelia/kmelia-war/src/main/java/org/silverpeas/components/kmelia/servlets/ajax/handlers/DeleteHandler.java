@@ -33,6 +33,6 @@ public class DeleteHandler implements AjaxHandler {
   @Override
   public String handleRequest(HttpServletRequest request, KmeliaSessionController controller) {
     String id = request.getParameter("Id");
-      return controller.deleteTopic(id);
-    }
+    return controller.deleteTopic(id);
+  }
 }

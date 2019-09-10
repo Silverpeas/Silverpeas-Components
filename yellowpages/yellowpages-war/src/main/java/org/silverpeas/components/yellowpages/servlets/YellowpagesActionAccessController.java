@@ -43,10 +43,10 @@ public class YellowpagesActionAccessController {
 
 
   /**
-   * Check if user role has right access to the given action
+   * Check if user role has access right to the given action
    * @param action the checked action
    * @param role the highest user role
-   * @return true if given role has right access to the action
+   * @return true if given role has access right to the action
    */
   public boolean hasRightAccess(String action, SilverpeasRole role) {
     boolean actionExist = actionRole.containsKey(action);

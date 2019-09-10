@@ -52,6 +52,8 @@
 <%@ page import="org.silverpeas.core.notification.user.NotificationContext" %>
 <%@ page import="org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail" %>
 <%@ page import="org.silverpeas.core.webapi.rating.RaterRatingEntity" %>
+<%@ page import="java.util.Optional" %>
+<%@ page import="org.silverpeas.core.contribution.publication.model.Location" %>
 
 <c:set var="userLanguage" value="${requestScope.resources.language}"/>
 <c:set var="contentLanguage" value="${requestScope.Language}"/>
@@ -758,12 +760,13 @@
          }
 
          if (kmeliaPublication.isAlias()) {
-      	   NodePK originalFatherPK = kmeliaPublication.getOriginalLocation(user_id);
-      	   if (originalFatherPK != null) {
+      	   Optional<Location> originalLocation = kmeliaPublication.getOriginalLocation(user_id);
+      	   if (originalLocation.isPresent()) {
+      	     Location original = originalLocation.get();
         %>
             <div class="inlineMessage">
               <div><%=resources.getString("kmelia.publication.shortcut.source.label")%>
-                <view:componentPath componentId="<%=originalFatherPK.getInstanceId()%>" nodeId="<%=originalFatherPK.getId()%>" language="<%=language%>" link="true"/>
+                <view:componentPath componentId="<%=original.getInstanceId()%>" nodeId="<%=original.getId()%>" language="<%=language%>" link="true"/>
               </div>
               <a href="<%=kmeliaPublication.getDetail().getPermalink()%>" class="button sp-permalink"><span><%=resources.getString("kmelia.publication.shortcut.source.go")%></span></a>
             </div>

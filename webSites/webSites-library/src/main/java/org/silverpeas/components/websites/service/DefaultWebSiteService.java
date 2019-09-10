@@ -355,7 +355,7 @@ public class DefaultWebSiteService implements WebSiteService {
   public void deletePublication(PublicationPK pubPK) {
 
     try {
-      publicationService.removeAllFather(pubPK);
+      publicationService.removeAllFathers(pubPK);
       publicationService.removePublication(pubPK);
     } catch (Exception re) {
       throw new WebSitesRuntimeException(re);
