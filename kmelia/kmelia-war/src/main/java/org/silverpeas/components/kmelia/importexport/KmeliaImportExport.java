@@ -20,25 +20,25 @@
  */
 package org.silverpeas.components.kmelia.importexport;
 
+import org.silverpeas.components.kmelia.KmeliaException;
+import org.silverpeas.components.kmelia.service.KmeliaHelper;
+import org.silverpeas.components.kmelia.service.KmeliaService;
+import org.silverpeas.core.admin.ObjectType;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.publication.model.CompletePublication;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.importexport.control.GEDImportExport;
 import org.silverpeas.core.importexport.model.ImportExportException;
 import org.silverpeas.core.importexport.report.MassiveReport;
 import org.silverpeas.core.importexport.report.UnitReport;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.ObjectType;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.components.kmelia.KmeliaException;
-import org.silverpeas.components.kmelia.service.KmeliaService;
-import org.silverpeas.components.kmelia.service.KmeliaHelper;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.contribution.publication.model.CompletePublication;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
-import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.Date;
 
@@ -50,6 +50,8 @@ import static org.silverpeas.core.contribution.publication.model.PublicationDeta
  * @author sDevolder.
  */
 public class KmeliaImportExport extends GEDImportExport {
+
+  private static final String NODE_ERR_MSG = "importExport.EX_NODE_CREATE";
 
   /**
    * Constructeur public de la classe
@@ -101,7 +103,7 @@ public class KmeliaImportExport extends GEDImportExport {
     OrganizationController orgnaisationController = OrganizationControllerProvider
         .getOrganisationController();
     if (pubDetTemp.isStatusMustBeChecked()) {
-      String profile = "writer";
+      final String profile;
       if ("yes".equalsIgnoreCase(orgnaisationController.getComponentParameterValue(topicPK
           .getInstanceId(), "rightsOnTopics"))) {
         NodeDetail topic = getNodeService().getHeader(topicPK);
@@ -149,38 +151,41 @@ public class KmeliaImportExport extends GEDImportExport {
   protected NodePK addSubTopicToTopic(NodeDetail nodeDetail, int topicId, UnitReport unitReport)
       throws ImportExportException {
     try {
-      NodePK nodePk = nodeDetail.getNodePK();
+      final NodePK nodePk = nodeDetail.getNodePK();
       nodePk.setComponentName(getCurrentComponentId());
       nodeDetail.setCreatorId(getCurrentUserDetail().getId());
 
       // Recherche si le noeud existe déjà, on s'arrête si c'est le cas
-      try {
-        NodeDetail header = getNodeService().getHeader(nodePk);
-        if (header != null) {
-          return header.getNodePK();
-        }
-      } catch (Exception ex) {
+      final NodeDetail header = getNodeDetail(nodePk);
+      if (header != null) {
+        return header.getNodePK();
       }
       // S'il n'existe pas encore, on le crée et on le configure
-      NodePK parentTopicPk = new NodePK(Integer.toString(topicId), getCurrentComponentId());
-      NodePK newTopicPk = getKmeliaService().addSubTopic(parentTopicPk, nodeDetail, "None");
+      final NodePK parentTopicPk = new NodePK(Integer.toString(topicId), getCurrentComponentId());
+      final NodePK newTopicPk = getKmeliaService().addSubTopic(parentTopicPk, nodeDetail, "None");
       if (Integer.parseInt(newTopicPk.getId()) < 0) {
         unitReport.setError(UnitReport.ERROR_ERROR);
-        SilverTrace.error("importExport", "KmeliaImportExport.addSubTopicToTopic()",
-            "root.EX_NO_MESSAGE");
-        throw new ImportExportException("KmeliaImportExport.addSubTopicToTopic",
-            "importExport.EX_NODE_CREATE");
+        SilverLogger.getLogger(this).error("Bad node identifier retrieved");
+        throw new ImportExportException("KmeliaImportExport.addSubTopicToTopic", NODE_ERR_MSG);
       }
       unitReport.setStatus(UnitReport.STATUS_TOPIC_CREATED);
       return newTopicPk;
     } catch (Exception ex) {
       unitReport.setError(UnitReport.ERROR_INCORRECT_CLASSIFICATION_ON_COMPONENT);
       unitReport.setStatus(UnitReport.STATUS_PUBLICATION_NOT_CREATED);
-      SilverTrace.error("importExport", "KmeliaImportExport.addSubTopicToTopic()",
-          "root.EX_NO_MESSAGE", ex);
-      throw new ImportExportException("KmeliaImportExport.addSubTopicToTopic",
-          "importExport.EX_NODE_CREATE", ex);
+      SilverLogger.getLogger(this).error("Node can't be technically created", ex);
+      throw new ImportExportException("KmeliaImportExport.addSubTopicToTopic", NODE_ERR_MSG, ex);
     }
+  }
+
+  private NodeDetail getNodeDetail(final NodePK nodePk) {
+    NodeDetail header = null;
+    try {
+      header = getNodeService().getHeader(nodePk);
+    } catch (Exception ex) {
+      SilverLogger.getLogger(this).silent(ex);
+    }
+    return header;
   }
 
   /**
@@ -199,23 +204,24 @@ public class KmeliaImportExport extends GEDImportExport {
   @Override
   protected NodePK addSubTopicToTopic(NodeDetail nodeDetail, int topicId,
       MassiveReport massiveReport) throws ImportExportException {
-    NodePK nodePK = getNodeService().getDetailByNameAndFatherId(new NodePK("unKnown", null,
-          getCurrentComponentId()), nodeDetail.getName(), topicId).getNodePK();
-    if (nodePK == null) {
+    final NodeDetail existingNodeDetail = getNodeService()
+        .getDetailByNameAndFatherId(new NodePK("unKnown", null, getCurrentComponentId()),
+            nodeDetail.getName(), topicId);
+    final NodePK nodePK;
+    if (existingNodeDetail != null) {
+      nodePK = existingNodeDetail.getNodePK();
+    } else {
       try {
         // Il n'y a pas de topic, on le crée
-        NodePK topicPK = new NodePK(Integer.toString(topicId), getCurrentComponentId());
+        final NodePK topicPK = new NodePK(Integer.toString(topicId), getCurrentComponentId());
         nodeDetail.getNodePK().setComponentName(getCurrentComponentId());
         nodeDetail.setCreatorId(getCurrentUserDetail().getId());
         nodePK = getKmeliaService().addSubTopic(topicPK, nodeDetail, "None");
         massiveReport.addOneTopicCreated();
-
       } catch (Exception ex) {
-        throw new ImportExportException("GEDImportExport.addSubTopicToTopic",
-            "importExport.EX_NODE_CREATE", ex);
+        throw new ImportExportException("GEDImportExport.addSubTopicToTopic", NODE_ERR_MSG, ex);
       }
     }
-
     return nodePK;
   }
 
