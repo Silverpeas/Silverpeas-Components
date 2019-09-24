@@ -2542,6 +2542,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     return languages;
   }
 
+  public Collection<Location> getPublicationAliases() {
+    return getKmeliaService().getAliases(getSessionPublication().getDetail().getPK());
+  }
+
   public void setPublicationAliases(List<Location> locations) {
     getKmeliaService().setAliases(getSessionPublication().getDetail().getPK(), locations);
   }

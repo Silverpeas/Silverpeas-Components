@@ -615,12 +615,22 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
   String createKmaxPublication(PublicationDetail pubDetail);
 
   /**
-   * Gets all the locations of the specified publication. If the given publication is a clone, then
-   * gets all the locations of the main publication.
+   * Gets all the locations of the specified publication; whatever the component instance.
+   * If the given publication is a clone, then gets all the locations of the main
+   * publication.
    * @param pubPK the unique identifier of the publication.
    * @return a collection of the locations of the given publication.
    */
   Collection<Location> getLocations(PublicationPK pubPK);
+
+  /**
+   * Gets all the aliases of the specified publication, whatever the component instance and without
+   * taking into account the publication is a clone or not. If the publication is a clone, then
+   * nothing will be returned.
+   * @param pubPK the unique identifier of the publication.
+   * @return a collection of locations that are all the aliases for the given publication.
+   */
+  Collection<Location> getAliases(PublicationPK pubPK);
 
   void setAliases(PublicationPK pubPK, List<Location> locations);
 

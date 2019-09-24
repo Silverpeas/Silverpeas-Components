@@ -44,6 +44,7 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.contribution.ContributionManager;
 import org.silverpeas.core.contribution.attachment.AttachmentException;
@@ -83,6 +84,7 @@ import org.silverpeas.core.node.coordinates.model.CoordinatePoint;
 import org.silverpeas.core.node.coordinates.service.CoordinatesService;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.node.model.NodePath;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.notification.user.UserNotification;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
@@ -153,6 +155,7 @@ public class DefaultKmeliaService implements KmeliaService {
   private static final String USELESS = "useless";
   private static final String NODE_PREFIX = "Node_";
   private static final String ADMIN_ROLE = "admin";
+  private static final String ALIASES_CACHE_KEY = "NEW_PUB_ALIASES";
   @Inject
   private NodeService nodeService;
   @Inject
@@ -799,8 +802,9 @@ public class DefaultKmeliaService implements KmeliaService {
       Collection<Collection<NodeDetail>> detailedList = new ArrayList<>();
       // For each favorite, get the path from root to favorite
       for (Subscription subscription : list) {
-        Collection<NodeDetail> path =
-            nodeService.getPath(subscription.getResource().getPK());
+        final SubscriptionResource resource = subscription.getResource();
+        final NodePK nodePK = new NodePK(resource.getId(), resource.getInstanceId());
+        final NodePath path = NodeService.get().getPath((NodePK) resource.getPK());
         detailedList.add(path);
       }
       return detailedList;
@@ -1673,6 +1677,7 @@ public class DefaultKmeliaService implements KmeliaService {
     return false;
   }
 
+  @SuppressWarnings("unchecked")
   private NodePK sendSubscriptionsNotification(PublicationDetail pubDetail, NotifAction action,
       final boolean sendOnlyToAliases) {
     NodePK father = null;
@@ -1685,7 +1690,13 @@ public class DefaultKmeliaService implements KmeliaService {
       }
 
       // Subscriptions related to aliases
-      Collection<Location> locations = publicationService.getAllAliases(pubDetail.getPK());
+      Collection<Location> locations =
+          (Collection<Location>) CacheServiceProvider.getRequestCacheService()
+              .getCache()
+              .get(ALIASES_CACHE_KEY);
+      if (locations == null) {
+        locations = getAliases(pubDetail.getPK());
+      }
       sendSubscriptionNotificationForAliases(pubDetail, action, sendOnlyToAliases, locations);
 
       // PDC subscriptions
@@ -1696,14 +1707,13 @@ public class DefaultKmeliaService implements KmeliaService {
                 getInstanceId());
         if (positions != null) {
           for (ClassifyPosition position : positions) {
-            pdcSubscriptionManager
-                .checkSubscriptions(position.getValues(), pubDetail.getPK().getInstanceId(),
-                    silverObjectId);
+            pdcSubscriptionManager.checkSubscriptions(position.getValues(),
+                pubDetail.getPK().getInstanceId(), silverObjectId);
           }
         }
       } catch (PdcException e) {
-        SilverLogger.getLogger(this).error("PdC subscriptions notification failure for publication {0}",
-            new String[] {pubDetail.getPK().getId()}, e);
+        SilverLogger.getLogger(this)
+            .error("PdC subscriptions notification failure for publication {0}", new String[] {pubDetail.getPK().getId()}, e);
       }
     } else {
       KmeliaDelayedVisibilityUserNotificationReminder.get().setAbout(pubDetail);
@@ -3544,6 +3554,15 @@ public class DefaultKmeliaService implements KmeliaService {
   }
 
   @Override
+  public Collection<Location> getAliases(final PublicationPK pubPK) {
+    try {
+      return publicationService.getAllAliases(pubPK);
+    } catch (Exception e) {
+      throw new KmeliaRuntimeException(e);
+    }
+  }
+
+  @Override
   public Collection<Location> getLocations(PublicationPK pubPK) {
     try {
       Collection<Location> locations = publicationService.getAllLocations(pubPK);
@@ -3570,9 +3589,13 @@ public class DefaultKmeliaService implements KmeliaService {
   @Override
   public void setAliases(PublicationPK pubPK, List<Location> locations) {
 
-    publicationService.setAliases(pubPK, locations);
+    Pair<Collection<Location>, Collection<Location>> result =
+        publicationService.setAliases(pubPK, locations);
 
     // Send subscriptions to aliases subscribers
+    CacheServiceProvider.getRequestCacheService()
+        .getCache()
+        .put(ALIASES_CACHE_KEY, result.getFirst());
     PublicationDetail pubDetail = getPublicationDetail(pubPK);
     sendSubscriptionsNotification(pubDetail, NotifAction.PUBLISHED, true);
   }

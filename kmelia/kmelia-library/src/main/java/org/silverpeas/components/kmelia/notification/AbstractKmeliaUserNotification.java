@@ -88,7 +88,7 @@ public abstract class AbstractKmeliaUserNotification<T> extends AbstractTemplate
       htmlPath = getSpacesPath(nodePK.getInstanceId(), language)
           + getComponentLabel(nodePK.getInstanceId(), language);
       if (!nodePK.isRoot() && !nodePK.getId().equals("-1")) {
-        final List<NodeDetail> path = (List<NodeDetail>) getNodeService().getPath(nodePK);
+        final List<NodeDetail> path = getNodeService().getPath(nodePK);
         if (!path.isEmpty()) {
           // remove root topic "Accueil"
           path.remove(path.size() - 1);
