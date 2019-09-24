@@ -1034,9 +1034,9 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         }
 
         // Tous les composants ayant un alias n'ont pas forcément été chargés
-        Collection<Location> oldLocations = kmelia.getPublicationLocations();
+        Collection<Location> oldLocations = kmelia.getPublicationAliases();
         for (Location oldLocation : oldLocations) {
-          if (!loadedComponentIds.contains(oldLocation.getInstanceId())) {
+          if (!loadedComponentIds.contains(oldLocation.getInstanceId()) && oldLocation.isAlias()) {
             // le composant de l'alias n'a pas été chargé
             locations.add(oldLocation);
           }
@@ -1049,7 +1049,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         String componentId = request.getParameter("ComponentId");
 
         request.setAttribute("Tree", kmelia.getAliasTreeview(componentId));
-        request.setAttribute("Aliases", kmelia.getPublicationLocations());
+        request.setAttribute("Aliases", kmelia.getPublicationAliases());
 
         destination = rootDestination + "treeview4PublicationPaths.jsp";
       } else if (function.equals("AddLinksToPublication")) {
