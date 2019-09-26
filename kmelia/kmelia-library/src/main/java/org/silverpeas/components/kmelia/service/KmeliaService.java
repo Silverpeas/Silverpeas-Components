@@ -39,6 +39,7 @@ import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.notification.user.UserNotification;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
+import org.silverpeas.core.reminder.Reminder;
 import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
 import org.silverpeas.core.util.ServiceProvider;
 
@@ -675,4 +676,11 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
   void userHaveBeenDeleted(String userId);
 
   List<String> getActiveValidatorIds(PublicationPK pk);
+
+  /**
+   * Performs processes about kmelia linked to given reminder.<br/>
+   * If kmelia is not concerned, nothing is performed.
+   * @param reminder a {@link Reminder} instance.
+   */
+  void performReminder(final Reminder reminder);
 }

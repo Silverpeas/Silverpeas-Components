@@ -21,17 +21,25 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package org.silverpeas.components.quickinfo.notification;
 
-package org.silverpeas.components.almanach;
-
-import org.silverpeas.core.calendar.AbstractCalendarComponentInstanceContributionManager;
-import org.silverpeas.core.contribution.ComponentInstanceContributionManager;
-
-import javax.inject.Named;
+import org.silverpeas.components.quickinfo.model.News;
+import org.silverpeas.core.notification.system.CDIResourceEventNotifier;
+import org.silverpeas.core.notification.system.ResourceEvent;
 
 /**
+ * An synchronous notifier of change on a news in Silverpeas.
  * @author silveryocha
  */
-@Named("almanach" + ComponentInstanceContributionManager.Constants.NAME_SUFFIX)
-public class AlmanachInstanceContributionManager
-    extends AbstractCalendarComponentInstanceContributionManager {}
+public class NewsEventNotifier
+    extends CDIResourceEventNotifier<News, NewsEvent> {
+
+  private NewsEventNotifier() {
+  }
+
+  @Override
+  protected NewsEvent createResourceEventFrom(final ResourceEvent.Type type,
+      final News... resource) {
+    return new NewsEvent(type, resource);
+  }
+}

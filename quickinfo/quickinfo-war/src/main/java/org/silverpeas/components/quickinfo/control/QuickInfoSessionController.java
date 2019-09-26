@@ -49,6 +49,7 @@ import org.silverpeas.core.web.subscription.SubscriptionContext;
 import org.silverpeas.core.web.util.ListIndex;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -307,8 +308,10 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
     } else if (news.isNoMoreVisible()) {
       currentList = noMoreVisibleList;
     }
-    currentIndex.setCurrentIndex(currentList.indexOf(news));
-    currentIndex.setNbItems(currentList.size());
+    if (currentList != null) {
+      currentIndex.setCurrentIndex(currentList.indexOf(news));
+      currentIndex.setNbItems(currentList.size());
+    }
   }
 
   /**

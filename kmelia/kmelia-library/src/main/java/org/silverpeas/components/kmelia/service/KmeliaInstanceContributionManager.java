@@ -22,16 +22,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.components.almanach;
+package org.silverpeas.components.kmelia.service;
 
-import org.silverpeas.core.calendar.AbstractCalendarComponentInstanceContributionManager;
 import org.silverpeas.core.contribution.ComponentInstanceContributionManager;
+import org.silverpeas.core.contribution.model.Contribution;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
 
 import javax.inject.Named;
+import java.text.MessageFormat;
+import java.util.Optional;
 
 /**
+ * Contribution manager centralization about the kmelia contributions.
  * @author silveryocha
  */
-@Named("almanach" + ComponentInstanceContributionManager.Constants.NAME_SUFFIX)
-public class AlmanachInstanceContributionManager
-    extends AbstractCalendarComponentInstanceContributionManager {}
+@Named("kmelia" + ComponentInstanceContributionManager.Constants.NAME_SUFFIX)
+public class KmeliaInstanceContributionManager implements ComponentInstanceContributionManager {
+
+  @Override
+  public Optional<Contribution> getById(final ContributionIdentifier contributionId) {
+    if (PublicationDetail.TYPE.equals(contributionId.getType())) {
+      final String localId = contributionId.getLocalId();
+      final String componentInstanceId = contributionId.getComponentInstanceId();
+      final PublicationPK pubPK = new PublicationPK(localId, componentInstanceId);
+      return Optional.ofNullable(KmeliaService.get().getPublicationDetail(pubPK));
+    }
+    throw new IllegalStateException(
+        MessageFormat.format("type {0} is not handled", contributionId.getType()));
+  }
+}

@@ -32,6 +32,7 @@ import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -187,16 +188,16 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService, Component
 
   /**
    * Update delegated news identified by id
-   * @param id delegated news identifier
-   * @param news the news content
+   * @param publicationPK delegated news identifier
    * @param updaterId updater identifier
    * @param visibilityPeriod the visibility period to update
    */
   @Override
-  public void updateDelegatedNews(String id, SilverpeasContent news, String updaterId, Period visibilityPeriod) {
-    DelegatedNews delegatedNews = dao.getById(id);
+  public void updateDelegatedNews(PublicationPK publicationPK, String updaterId,
+      Period visibilityPeriod) {
+    final DelegatedNews delegatedNews = dao.getById(publicationPK.getId());
     if (delegatedNews != null) {
-      delegatedNews.setInstanceId(news.getComponentInstanceId());
+      delegatedNews.setInstanceId(publicationPK.getInstanceId());
       delegatedNews.setStatus(DelegatedNews.NEWS_TO_VALIDATE);
       delegatedNews.setContributorId(updaterId);
       delegatedNews.setValidatorId(null);

@@ -22,16 +22,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.components.almanach;
+package org.silverpeas.components.quickinfo.model;
 
-import org.silverpeas.core.calendar.AbstractCalendarComponentInstanceContributionManager;
-import org.silverpeas.core.contribution.ComponentInstanceContributionManager;
+import org.silverpeas.core.contribution.model.ContributionModel;
+import org.silverpeas.core.contribution.model.DefaultContributionModel;
 
-import javax.inject.Named;
+import static org.silverpeas.core.contribution.publication.model.PublicationDetail.DELAYED_VISIBILITY_AT_MODEL_PROPERTY;
 
 /**
+ * The default implementation of the {@link News} entity which is extending the default one.
  * @author silveryocha
+ * @see ContributionModel
+ * @see DefaultContributionModel
  */
-@Named("almanach" + ComponentInstanceContributionManager.Constants.NAME_SUFFIX)
-public class AlmanachInstanceContributionManager
-    extends AbstractCalendarComponentInstanceContributionManager {}
+public class NewsModel extends DefaultContributionModel<News> {
+
+  NewsModel(final News contribution) {
+    super(contribution);
+  }
+
+  @Override
+  public <T> T getProperty(final String property, final Object... parameters) {
+    if (DELAYED_VISIBILITY_AT_MODEL_PROPERTY.equals(property)) {
+      return getContribution().getPublication().getModel().getProperty(property, parameters);
+    }
+    return super.getProperty(property, parameters);
+  }
+}

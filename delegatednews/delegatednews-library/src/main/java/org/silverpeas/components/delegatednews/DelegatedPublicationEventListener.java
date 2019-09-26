@@ -25,39 +25,49 @@ package org.silverpeas.components.delegatednews;
 
 import org.silverpeas.components.delegatednews.model.DelegatedNews;
 import org.silverpeas.components.delegatednews.service.DelegatedNewsService;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.notification.PublicationEvent;
+import org.silverpeas.core.notification.system.CDIResourceEventListener;
+import org.silverpeas.core.util.StringUtil;
 
-import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+
+import static org.silverpeas.components.delegatednews.service.DelegatedNewsService.Constants.DELEGATED_COMPONENT_PARAM;
 
 /**
  * @author mmoquillon
  */
-public class DelegatedPublicationEventListener {
+public class DelegatedPublicationEventListener extends CDIResourceEventListener<PublicationEvent> {
 
   @Inject
   private DelegatedNewsService delegatedNewsService;
 
-  public void onPublicationUpdate(@Observes PublicationEvent event) {
-    PublicationDetail pubDetail = event.getTransition().getBefore();
-    int pubId = Integer.parseInt(pubDetail.getId());
-    if (event.isOnUpdate()) {
-      DelegatedNews delegatedNews = delegatedNewsService.getDelegatedNews(pubId);
+  @Override
+  public void onUpdate(PublicationEvent event) {
+    final PublicationDetail pubDetail = event.getTransition().getAfter();
+    if (isDelegatedNewsActivated(pubDetail.getInstanceId())) {
+      final int pubId = Integer.parseInt(pubDetail.getId());
+      final DelegatedNews delegatedNews = delegatedNewsService.getDelegatedNews(pubId);
       if (delegatedNews != null) {
-        // remove the news whether the publication isn't more accessible (the access dates have been
-        // modified).
-        if (!pubDetail.isVisible()) {
-          delegatedNewsService.deleteDelegatedNews(pubId);
-        } else {
-          // update the news.
-          delegatedNewsService
-              .updateDelegatedNews(pubDetail.getId(), pubDetail, pubDetail.getUpdaterId(),
-                  pubDetail.getVisibilityPeriod());
-        }
+        delegatedNewsService.updateDelegatedNews(pubDetail.getPK(), pubDetail.getUpdaterId(),
+            pubDetail.getVisibilityPeriod());
       }
-    } else if (event.isOnDeletion()) {
+    }
+  }
+
+  @Override
+  public void onDeletion(final PublicationEvent event) {
+    final PublicationDetail pubDetail = event.getTransition().getBefore();
+    if (isDelegatedNewsActivated(pubDetail.getInstanceId())) {
+      final int pubId = Integer.parseInt(pubDetail.getId());
       delegatedNewsService.deleteDelegatedNews(pubId);
     }
+  }
+
+  private boolean isDelegatedNewsActivated(String componentId) {
+    final String paramValue = OrganizationControllerProvider.getOrganisationController()
+        .getComponentParameterValue(componentId, DELEGATED_COMPONENT_PARAM);
+    return StringUtil.getBooleanValue(paramValue);
   }
 }
