@@ -303,19 +303,13 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
   }
 
   public void indexPathSelected(Collection<String> dirToIndex) {
-
-
     for (final String name : dirToIndex) {
-
       indexPath(name);
     }
   }
 
   public void indexSelectedFiles(Collection<String> fileToIndex) {
-
-
     for (final String name : fileToIndex) {
-
       indexFile(name);
     }
   }
@@ -324,14 +318,14 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
 
     Collection<FileDetail> docs = new ArrayList<>();
     try {
-      if (word != null && !"*".equals(word.trim()) && !word.trim().isEmpty()) {
+      if (StringUtil.isDefined(word) && !"*".equals(word.trim())) {
         QueryDescription query = new QueryDescription(word);
+        query.setRequestedLanguage("*");
         query.setSearchingUser(getUserId());
         query.addComponent(getComponentId());
 
         List<MatchingIndexEntry> result =
             SearchEngineProvider.getSearchEngine().search(query).getEntries();
-
 
         FileDetail file;
         for (MatchingIndexEntry matchIndex : result) {
@@ -351,11 +345,9 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
                   new FileDetail(matchIndex.getTitle(), path, absolutePath, fileOnServer.length(),
                       false);
               docs.add(file);
-
             } else if ("LinkedDir".equals(type)) {//Directory
               file = new FileDetail(matchIndex.getTitle(), path, absolutePath, 0, true);
               docs.add(file);
-
             }
           } else {
             // l'objet n'existe plus, suppression de son index
