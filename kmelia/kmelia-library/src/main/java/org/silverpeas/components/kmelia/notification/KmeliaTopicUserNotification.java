@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.kmelia.notification;
 
-import org.silverpeas.core.admin.ProfiledObjectType;
+import org.silverpeas.core.admin.ProfiledObjectId;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.node.model.NodeDetail;
@@ -91,11 +91,11 @@ public class KmeliaTopicUserNotification extends AbstractKmeliaFolderUserNotific
       profileNames.add("user");
       users =
           getOrganisationController().getUsersIdsByRoleNames(getComponentInstanceId(),
-              String.valueOf(rightsDependOn), ProfiledObjectType.NODE, profileNames);
+              ProfiledObjectId.fromNode(rightsDependOn), profileNames);
     } else if (alertType.equals("Publisher")) {
       users =
           getOrganisationController().getUsersIdsByRoleNames(getComponentInstanceId(),
-              String.valueOf(rightsDependOn), ProfiledObjectType.NODE, profileNames);
+              ProfiledObjectId.fromNode(rightsDependOn), profileNames);
     } else {
       users = null;
     }
