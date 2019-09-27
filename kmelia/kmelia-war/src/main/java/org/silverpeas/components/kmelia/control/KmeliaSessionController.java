@@ -645,8 +645,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       NodeDetail node = getNodeHeader(getCurrentFolderId());
       if (node.haveRights()) {
         int rightsDependsOn = node.getRightsDependsOn();
-        return getOrganisationController().isObjectAvailable(rightsDependsOn,
-            ProfiledObjectType.NODE, getComponentId(), getUserId());
+        ProfiledObjectId nodeRef = ProfiledObjectId.fromNode(rightsDependsOn);
+        return getOrganisationController().isObjectAvailable(nodeRef, getComponentId(), getUserId());
       }
     }
     return true;
@@ -2142,7 +2142,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     sel.setHtmlFormName("dummy");
 
     List<ProfileInst> profiles =
-        getAdmin().getProfilesByObject(nodeId, ProfiledObjectType.NODE.getCode(), getComponentId());
+        getAdmin().getProfilesByObject(ProfiledObjectId.fromNode(nodeId), getComponentId());
     ProfileInst topicProfile = getProfile(profiles, role);
 
     SelectionUsersGroups sug = new SelectionUsersGroups();
@@ -2203,8 +2203,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   public ProfileInst getTopicProfile(String role, String topicId) {
     List<ProfileInst> profiles =
-        getAdmin().getProfilesByObject(topicId, ProfiledObjectType.NODE.getCode(),
-            getComponentId());
+        getAdmin().getProfilesByObject(ProfiledObjectId.fromNode(topicId), getComponentId());
     for (ProfileInst profile: profiles) {
       if (profile.getName().equals(role)) {
         return profile;

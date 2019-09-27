@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.kmelia.notification;
 
-import org.silverpeas.core.admin.ProfiledObjectType;
+import org.silverpeas.core.admin.ProfiledObjectId;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.node.model.NodeDetail;
@@ -78,9 +78,9 @@ public class KmeliaSubscriptionPublicationUserNotification
       final NodeDetail node = getNodeHeader(getNodePK());
       for (final String userId : allUserSubscriberIds) {
         if (!orgaController.isComponentAvailable(getNodePK().getInstanceId(), userId) || (node.
-            haveRights() && !orgaController
-            .isObjectAvailable(node.getRightsDependsOn(), ProfiledObjectType.NODE,
-                getNodePK().getInstanceId(), userId))) {
+            haveRights() && !orgaController.isObjectAvailable(
+            ProfiledObjectId.fromNode(node.getRightsDependsOn()), getNodePK().getInstanceId(),
+            userId))) {
           userIdsToExcludeFromNotifying.add(userId);
         }
       }
