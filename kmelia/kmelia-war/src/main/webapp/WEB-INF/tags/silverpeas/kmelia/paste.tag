@@ -88,6 +88,27 @@
     </div>
 
     <script type="text/JavaScript">
+
+function getUserProfile(id) {
+	var componentId = getComponentId();
+	var result = "";
+    $.ajax({
+      url: getWebContext()+'/KmeliaAJAXServlet',
+      data : {Id:id,Action:'GetProfile',ComponentId:componentId},
+      type : 'GET',
+      dataType : 'text',
+      cache : false,
+      async : false,
+      success : function(data, status, jqXHR) {
+        result = data;
+      },
+      error : function(jqXHR, textStatus, errorThrown) {
+        alert(errorThrown);
+      }
+    });
+    return result;
+}
+
       function checkOnPaste(folderId) {
         var currentUserProfile = getUserProfile(folderId);
         var draftEnabled = ${draftEnabled};
