@@ -67,8 +67,8 @@ import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygControlle
 import org.silverpeas.core.contribution.converter.DocumentFormat;
 import org.silverpeas.core.contribution.model.LocalizedContribution;
 import org.silverpeas.core.contribution.publication.datereminder.PublicationNoteReference;
-import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.CompletePublication;
+import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.model.PublicationSelection;
@@ -988,23 +988,15 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     return StringUtil.isInteger(id);
   }
 
-  public synchronized void addPublicationToTopic(String pubId, String fatherId) {
-    getKmeliaService().addPublicationToTopic(getPublicationPK(pubId), getNodePK(fatherId), false);
-  }
-
-  public synchronized void deletePublicationFromAllTopics(String pubId) {
-    getKmeliaService().deletePublicationFromAllTopics(getPublicationPK(pubId));
-  }
-
   public void refreshSessionPubliAndClone() {
-    if (getSessionClone() != null) {
+    final KmeliaPublication sessionPubClone = getSessionClone();
+    // Master refresh
+    final String pubId = getSessionPublication().getDetail().getPK().getId();
+    setSessionPublication(getPublication(pubId));
+    if (sessionPubClone != null) {
       // Clone refresh
-      KmeliaPublication pub = getPublication(getSessionClone().getDetail().getPK().getId());
-      setSessionClone(pub);
-    } else {
-      // refresh publication master
-      KmeliaPublication pub = getPublication(getSessionPublication().getDetail().getPK().getId());
-      setSessionPublication(pub);
+      final String cloneId = sessionPubClone.getDetail().getPK().getId();
+      setSessionClone(getPublication(cloneId));
     }
   }
 
@@ -2436,6 +2428,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
           PublicationSelection.PublicationDetailFlavor);
       PublicationDetail pub = data.getPublicationDetail();
       if (selection.isCutted()) {
+        pasteDetail.setFromPK(data.getFatherPK());
         movePublication(pub.getPK(), folder.getNodePK(), pasteDetail);
       } else {
         KmeliaCopyDetail copyDetail = KmeliaCopyDetail.fromPasteDetail(pasteDetail);
@@ -2880,7 +2873,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     }
 
     // Insert this new search inside persistence layer in order to compute statistics
-    TopicSearch newTS = new TopicSearch(getComponentId(), Integer.parseInt(getCurrentFolderId()),
+    final NodeDetail currentFolder = getCurrentFolder();
+    final String nodePathSep = "/";
+    final String safeCurrentFolderPath = getCurrentFolder().getFullPath().replaceFirst("[/]+$", "") + nodePathSep;
+    TopicSearch newTS = new TopicSearch(getComponentId(), currentFolder.getId(),
         Integer.parseInt(getUserId()), getLanguage(), query.toLowerCase(), new Date());
     KmeliaSearchServiceProvider.getTopicSearchService().createTopicSearch(newTS);
 
@@ -2891,28 +2887,24 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     queryDescription.addComponent(getComponentId());
 
     try {
-
-      List<MatchingIndexEntry> results =
+      final List<MatchingIndexEntry> results =
           SearchEngineProvider.getSearchEngine().search(queryDescription).getEntries();
-
-      List<String> pubIds = new ArrayList<>();
-      KmeliaAuthorization security = new KmeliaAuthorization();
+      final KmeliaAuthorization security = new KmeliaAuthorization();
       security.enableCache();
-      for (MatchingIndexEntry result : results) {
-        if (PUBLICATION.equals(result.getObjectType()) &&
-            security.isObjectAvailable(getComponentId(), getUserId(), result.getObjectId(),
-                PUBLICATION)) {
-          // Add the publications
-          // return publication if user can consult it only (check rights on folder)
-            pubIds.add(result.getObjectId());
-        }
-      }
-      for (String pubId : pubIds) {
-        KmeliaPublication publication =
-            KmeliaPublication.fromDetail(getPublicationDetail(pubId),
-                getCurrentFolderPK());
-        userPublications.add(publication);
-      }
+      results.stream()
+        .filter(i -> PUBLICATION.equals(i.getObjectType()))
+        .filter(i -> security.isObjectAvailable(getComponentId(), getUserId(), i.getObjectId(), PUBLICATION))
+        .forEach(i -> {
+          final String pubId = i.getObjectId();
+          final KmeliaPublication kPub = KmeliaPublication.fromDetail(getPublicationDetail(pubId));
+          if (i.isAlias()
+              || (i.getPaths() != null
+                  && !i.getPaths().isEmpty()
+                  && !(i.getPaths().get(0) + nodePathSep).startsWith(safeCurrentFolderPath))) {
+            kPub.getDetail().setAlias(true);
+          }
+          userPublications.add(kPub);
+        });
     } catch (Exception pe) {
       throw new KmeliaRuntimeException(pe);
     }

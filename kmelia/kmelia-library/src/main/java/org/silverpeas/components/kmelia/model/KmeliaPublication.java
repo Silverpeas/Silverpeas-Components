@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.kmelia.model;
 
+import org.silverpeas.components.kmelia.service.KmeliaHelper;
 import org.silverpeas.components.kmelia.service.KmeliaService;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.SilverpeasExceptionMessages;
@@ -117,7 +118,9 @@ public class KmeliaPublication implements SilverpeasContent {
 
   private void setFather(final NodePK fatherPk) {
     location = findLocation(fatherPk);
-    getDetail().setAlias(location.isAlias());
+    if (location != null) {
+      getDetail().setAlias(location.isAlias());
+    }
   }
 
   private Location findLocation(final NodePK pk) {
@@ -130,13 +133,21 @@ public class KmeliaPublication implements SilverpeasContent {
       predicate = l -> !l.isAlias();
       nodeIMsg = "";
     }
+    final PublicationPK mainPubPk = getDetail().isClone()
+        ? getDetail().getClonePK()
+        : getDetail().getPK();
     return PublicationService.get()
-        .getAllLocations(getDetail().getPK())
+        .getAllLocations(mainPubPk)
         .stream()
         .filter(predicate)
         .findFirst()
-        .orElseThrow(() -> new KmeliaRuntimeException(
-            "Unable to find the location of the publication " + getId() + nodeIMsg));
+        .orElseGet(() ->  {
+          if (pk == null || !KmeliaHelper.isKmax(pk.getInstanceId())) {
+            throw new KmeliaRuntimeException(
+                "Unable to find the location of the publication " + getId() + nodeIMsg);
+          }
+          return null;
+        });
   }
 
   public Location getLocation() {
@@ -494,7 +505,7 @@ public class KmeliaPublication implements SilverpeasContent {
     final Location originalLocation = findLocation(null);
     AccessController<NodePK> accessController =
         AccessControllerProvider.getAccessController(NodeAccessControl.class);
-    if (accessController.isUserAuthorized(userId, originalLocation)) {
+    if (originalLocation != null && accessController.isUserAuthorized(userId, originalLocation)) {
       return Optional.of(originalLocation);
     } else {
       return Optional.empty();

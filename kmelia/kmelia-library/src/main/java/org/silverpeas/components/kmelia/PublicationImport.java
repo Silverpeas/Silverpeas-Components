@@ -367,7 +367,7 @@ public class PublicationImport {
     while (iter.hasNext()) {
       PublicationDetail publication = iter.next();
       if (publication.getInfoId().equals(xmlFormName)) {
-        Collection<NodePK> fatherPKs = publicationService.getAllFatherPK(publication.getPK());
+        Collection<NodePK> fatherPKs = publicationService.getAllFatherPKInSamePublicationComponentInstance(publication.getPK());
         if (!fatherPKs.isEmpty()) {
           NodePK fatherPK = fatherPKs.iterator().next();
           if (!fatherPK.isTrash()) {

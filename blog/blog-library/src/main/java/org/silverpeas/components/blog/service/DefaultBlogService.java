@@ -71,6 +71,7 @@ import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -140,11 +141,13 @@ public class DefaultBlogService implements BlogService {
     }
   }
 
+  @Transactional
   @Override
   public String createPost(PostDetail post) {
     return createPost(post, null);
   }
 
+  @Transactional
   @Override
   public String createPost(final PostDetail post, PdcClassification classification) {
     try (Connection con = openConnection()) {
@@ -204,6 +207,7 @@ public class DefaultBlogService implements BlogService {
     }
   }
 
+  @Transactional
   @Override
   public void updatePost(PostDetail post) {
     try (Connection con = openConnection()) {
@@ -245,6 +249,7 @@ public class DefaultBlogService implements BlogService {
     getPublicationService().addFather(pk, nodePK);
   }
 
+  @Transactional
   @Override
   public void deletePost(String postId, String instanceId) {
 
@@ -282,7 +287,7 @@ public class DefaultBlogService implements BlogService {
 
   private PostDetail getPost(PublicationDetail publication) {
     try {
-      Collection<NodePK> allCat = getPublicationService().getAllFatherPK(publication.getPK());
+      Collection<NodePK> allCat = getPublicationService().getAllFatherPKInSamePublicationComponentInstance(publication.getPK());
       // la collection des catégories contient en fait une seule catégorie, la récupérer
       Category cat = null;
       if (!allCat.isEmpty()) {
@@ -451,6 +456,7 @@ public class DefaultBlogService implements BlogService {
     return posts;
   }
 
+  @Transactional
   @Override
   public String createCategory(Category category) {
     try {
@@ -461,6 +467,7 @@ public class DefaultBlogService implements BlogService {
     }
   }
 
+  @Transactional
   @Override
   public void updateCategory(Category category) {
     try {
@@ -470,6 +477,7 @@ public class DefaultBlogService implements BlogService {
     }
   }
 
+  @Transactional
   @Override
   public void deleteCategory(String id, String instanceId) {
     try {

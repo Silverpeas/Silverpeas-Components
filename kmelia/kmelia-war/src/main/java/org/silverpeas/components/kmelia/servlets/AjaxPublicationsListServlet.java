@@ -1134,17 +1134,16 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     OrganizationController orga = kmelia.getOrganisationController();
     ComponentInstLight compoInstLight = orga.getComponentInstLight(pub.getInstanceId());
     String componentLabel = compoInstLight.getLabel(kmelia.getCurrentLanguage());
-    String spaceLabel = Encode.forHtml(orga.
-        getSpaceInstLightById(compoInstLight.getDomainFatherId())
-        .getName(kmelia.getCurrentLanguage()));
-    List<NodePK> nodesPK = (List<NodePK>) pub.getPublicationService().getAllFatherPK(pub.getPK());
-    if (nodesPK != null) {
-      NodePK firstNodePK = nodesPK.get(0);
-      String topicPathName = spaceLabel + " > " + componentLabel + " > " + kmelia.displayPath(
-          kmelia.getKmeliaService().getPath(firstNodePK.getId(), firstNodePK.getInstanceId()), false, 3);
-      return "<div class=\"publiPath\">" + topicPathName + "</div>";
-    }
-    return "";
+    String spaceLabel = Encode.forHtml(
+        orga.getSpaceInstLightById(compoInstLight.getDomainFatherId())
+            .getName(kmelia.getCurrentLanguage()));
+    return pub.getPublicationService().getMainLocation(pub.getPK())
+        .map(m -> {
+          String topicPathName = spaceLabel + " > " + componentLabel + " > " + kmelia.displayPath(
+              kmelia.getKmeliaService().getPath(m.getId(), m.getInstanceId()), false, 3);
+          return "<div class=\"publiPath\">" + topicPathName + "</div>";
+        })
+        .orElse(StringUtil.EMPTY);
   }
   
 }

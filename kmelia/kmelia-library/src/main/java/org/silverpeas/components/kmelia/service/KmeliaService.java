@@ -28,8 +28,8 @@ import org.silverpeas.core.ApplicationService;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.CompletePublication;
+import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.node.coordinates.model.Coordinate;
@@ -271,13 +271,6 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
    * @since 1.0
    */
   void deletePublicationFromTopic(PublicationPK pubPK, NodePK fatherPK);
-
-  /**
-   * Delete a path of publication
-   * @param pubPK the id of the publication
-   * @since 1.0
-   */
-  void deletePublicationFromAllTopics(PublicationPK pubPK);
 
   /**
    * Updates the publication links

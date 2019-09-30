@@ -569,15 +569,6 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           }
         }
 
-        if (!kmaxMode) {
-          boolean checkPath = StringUtil.getBooleanValue(request.getParameter("CheckPath"));
-          if (checkPath || KmeliaHelper.isToValidateFolder(kmelia.getCurrentFolderId())) {
-            processPath(kmelia, id);
-          } else {
-            processPath(kmelia, null);
-          }
-        }
-
         // view publication from global search ?
         Integer searchScope = (Integer) request.getAttribute("SearchScope");
         if (searchScope == null) {
@@ -585,6 +576,16 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
             request.setAttribute("SearchScope", SearchContext.LOCAL);
           } else {
             request.setAttribute("SearchScope", SearchContext.NONE);
+          }
+        }
+
+        if (!kmaxMode) {
+          boolean checkPath = StringUtil.getBooleanValue(request.getParameter("CheckPath"));
+          boolean fromSearch = searchScope != null || kmelia.getSearchContext() != null;
+          if (fromSearch || checkPath || KmeliaHelper.isToValidateFolder(kmelia.getCurrentFolderId())) {
+            processPath(kmelia, id);
+          } else {
+            processPath(kmelia, null);
           }
         }
 
@@ -1007,11 +1008,11 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         KmeliaPublication publication = kmelia.getSessionPublication();
         request.setAttribute("Publication", publication);
         request.setAttribute("LinkedPathString", kmelia.getSessionPath());
+        Collection<Location> locations = kmelia.getPublicationLocations();
+        request.setAttribute("Locations", locations);
         if (toolboxMode) {
           request.setAttribute("Topics", kmelia.getAllTopics());
         } else {
-          Collection<Location> locations = kmelia.getPublicationLocations();
-          request.setAttribute("Locations", locations);
           request.setAttribute("Components", kmelia.getComponents(locations));
         }
 

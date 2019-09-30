@@ -130,6 +130,8 @@ import java.sql.Connection;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.util.Collections.singletonList;
+import static org.silverpeas.components.kmelia.model.KmeliaPublication.fromDetail;
 import static org.silverpeas.components.kmelia.notification.KmeliaDelayedVisibilityUserNotificationReminder.KMELIA_DELAYED_VISIBILITY_USER_NOTIFICATION;
 import static org.silverpeas.components.kmelia.service.KmeliaOperationContext.OperationType.*;
 import static org.silverpeas.components.kmelia.service.KmeliaServiceContext.*;
@@ -516,27 +518,22 @@ public class DefaultKmeliaService implements KmeliaService {
   public void deleteTopic(NodePK pkToDelete) {
     try {
       // get all nodes which will be deleted
-      Collection<NodePK> nodesToDelete = nodeService.getDescendantPKs(pkToDelete);
+      final Collection<NodePK> nodesToDelete = nodeService.getDescendantPKs(pkToDelete);
       nodesToDelete.add(pkToDelete);
-      for (NodePK oneNodeToDelete : nodesToDelete) {
+      for (final NodePK oneNodeToDelete : nodesToDelete) {
         // get pubs linked to current node (includes alias)
-        Collection<PublicationDetail> pubsToCheck =
+        final Collection<PublicationDetail> pubsToCheck =
             publicationService.getDetailsByFatherPK(oneNodeToDelete);
         // check each pub contained in current node
         for (PublicationDetail onePubToCheck : pubsToCheck) {
-          KmeliaPublication kmeliaPub =
-              KmeliaPublication.fromDetail(onePubToCheck, oneNodeToDelete);
-          final Collection<Location> aliases;
+          final KmeliaPublication kmeliaPub = fromDetail(onePubToCheck, oneNodeToDelete);
           if (!kmeliaPub.isAlias()) {
-            // remove all aliases of the publication and send it into the basket
-            aliases = publicationService.getAllAliases(kmeliaPub.getPk());
             sendPublicationToBasket(kmeliaPub.getPk());
           } else {
             // remove only the alias
-            aliases = Collections.singletonList(
-                new Location(oneNodeToDelete.getId(), oneNodeToDelete.getInstanceId()));
+            final Collection<Location> aliases = singletonList(kmeliaPub.getLocation());
+            publicationService.removeAliases(kmeliaPub.getPk(), aliases);
           }
-          publicationService.removeAliases(kmeliaPub.getPk(), aliases);
         }
       }
 
@@ -804,7 +801,7 @@ public class DefaultKmeliaService implements KmeliaService {
       for (Subscription subscription : list) {
         final SubscriptionResource resource = subscription.getResource();
         final NodePK nodePK = new NodePK(resource.getId(), resource.getInstanceId());
-        final NodePath path = NodeService.get().getPath((NodePK) resource.getPK());
+        final NodePath path = NodeService.get().getPath(nodePK);
         detailedList.add(path);
       }
       return detailedList;
@@ -870,7 +867,7 @@ public class DefaultKmeliaService implements KmeliaService {
     List<KmeliaPublication> publications = new ArrayList<>();
     int i = -1;
     for (PublicationDetail publicationDetail : pubDetails) {
-      publications.add(KmeliaPublication.fromDetail(publicationDetail, fatherPK, i++));
+      publications.add(fromDetail(publicationDetail, fatherPK, i++));
     }
 
     return publications;
@@ -880,7 +877,7 @@ public class DefaultKmeliaService implements KmeliaService {
     List<KmeliaPublication> publications = new ArrayList<>();
     int i = -1;
     for (PublicationDetail publicationDetail : pubDetails) {
-      publications.add(KmeliaPublication.fromDetail(publicationDetail, i++));
+      publications.add(fromDetail(publicationDetail, i++));
     }
 
     return publications;
@@ -918,7 +915,7 @@ public class DefaultKmeliaService implements KmeliaService {
     Collection<NodePK> fatherPKs = null;
     try {
       // get all nodePK whick contains this publication
-      fatherPKs = publicationService.getAllFatherPK(pubPK);
+      fatherPKs = publicationService.getAllFatherPKInSamePublicationComponentInstance(pubPK);
     } catch (Exception e) {
       throw new KmeliaRuntimeException(e);
     }
@@ -1257,13 +1254,13 @@ public class DefaultKmeliaService implements KmeliaService {
   @Override
   public void movePublication(@SourcePK PublicationPK pubPK, @TargetPK NodePK to,
       KmeliaPasteDetail pasteContext) {
-    NodePK fromNode = pasteContext.getFromPK();
-    KmeliaPublication publication = KmeliaPublication.withPK(pubPK, fromNode);
+    final NodePK fromNode = pasteContext.getFromPK();
+    final KmeliaPublication publication = KmeliaPublication.withPK(pubPK, fromNode);
     if (publication.isAlias()) {
-      Location newLocation = new Location(to.getId(), to.getInstanceId());
+      final Location newLocation = new Location(to.getId(), to.getInstanceId());
       newLocation.setAsAlias(pasteContext.getUserId());
-      publicationService.removeAliases(pubPK, Collections.singletonList(publication.getLocation()));
-      publicationService.addAliases(pubPK, Collections.singletonList(newLocation));
+      publicationService.removeAliases(pubPK, singletonList(publication.getLocation()));
+      publicationService.addAliases(pubPK, singletonList(newLocation));
     } else if (fromNode.getInstanceId().equals(to.getInstanceId())) {
       movePublicationInSameApplication(publication.getDetail(), to, pasteContext);
     } else {
@@ -1550,9 +1547,12 @@ public class DefaultKmeliaService implements KmeliaService {
   }
 
   /**
-   * Send the publication in the basket topic
+   * Send the publication in the basket topic.
+   * <p>
+   * All aliases of the publication are deleted if exist.
+   * </p>
    * @param pubPK the id of the publication
-   * @param kmaxMode
+   * @param kmaxMode true to indicate a use from kmax application
    * @see TopicDetail
    * @since 1.0
    */
@@ -1565,7 +1565,7 @@ public class DefaultKmeliaService implements KmeliaService {
         CoordinatePK coordinatePK = new CoordinatePK(UNKNOWN, pubPK.getSpaceId(), pubPK.
             getComponentName());
 
-        Collection<NodePK> fatherPKs = publicationService.getAllFatherPK(pubPK);
+        Collection<NodePK> fatherPKs = publicationService.getAllFatherPKInSamePublicationComponentInstance(pubPK);
         // delete publication coordinates
         Iterator<NodePK> it = fatherPKs.iterator();
         List<String> coordinates = new ArrayList<>();
@@ -1619,11 +1619,12 @@ public class DefaultKmeliaService implements KmeliaService {
   public void addPublicationToTopicWithoutNotifications(PublicationPK pubPK, NodePK fatherPK,
       boolean isACreation) {
     PublicationDetail pubDetail = getPublicationDetail(pubPK);
+    Optional<Location> mainPubLocation = publicationService.getMainLocation(pubPK);
     if (!isACreation) {
       try {
-        Collection<NodePK> fathers = publicationService.getAllFatherPK(pubPK);
-        if (isPublicationInBasket(pubPK, fathers)) {
-          publicationService.removeFather(pubPK, new NodePK(NodePK.BIN_NODE_ID, fatherPK));
+        if (mainPubLocation.filter(NodePK::isTrash).isPresent()) {
+          publicationService.removeFather(pubPK, mainPubLocation.get());
+          mainPubLocation = Optional.empty();
           if (PublicationDetail.VALID_STATUS.equalsIgnoreCase(pubDetail.getStatus())) {
             // index publication
             publicationService.createIndex(pubPK);
@@ -1635,7 +1636,7 @@ public class DefaultKmeliaService implements KmeliaService {
             // create validation todos for publishers
             createTodosForPublication(pubDetail, true);
           }
-        } else if (fathers.isEmpty()) {
+        } else if (!mainPubLocation.isPresent()) {
           // The publi have got no father
           // change the end date to make this publi visible
           pubDetail.setEndDate(null);
@@ -1649,7 +1650,13 @@ public class DefaultKmeliaService implements KmeliaService {
     }
 
     try {
-      publicationService.addFather(pubPK, fatherPK);
+      if (mainPubLocation.isPresent()) {
+        final Location alias = new Location(fatherPK.getId(), fatherPK.getInstanceId());
+        alias.setAsAlias(User.getCurrentRequester().getId());
+        publicationService.addAliases(pubPK, singletonList(alias));
+      } else {
+        publicationService.addFather(pubPK, fatherPK);
+      }
       // index publication to index path
       publicationService.createIndex(pubPK);
     } catch (Exception e) {
@@ -1658,23 +1665,7 @@ public class DefaultKmeliaService implements KmeliaService {
   }
 
   private boolean isPublicationInBasket(PublicationPK pubPK) {
-    return isPublicationInBasket(pubPK, null);
-  }
-
-  private boolean isPublicationInBasket(PublicationPK pubPK, Collection<NodePK> fathers) {
-    if (fathers == null) {
-      fathers = publicationService.getAllFatherPK(pubPK);
-    }
-    if (fathers.size() == 1) {
-      Iterator<NodePK> iterator = fathers.iterator();
-      if (iterator.hasNext()) {
-        NodePK pk = iterator.next();
-        if (pk.isTrash()) {
-          return true;
-        }
-      }
-    }
-    return false;
+    return publicationService.getMainLocation(pubPK).filter(NodePK::isTrash).isPresent();
   }
 
   @SuppressWarnings("unchecked")
@@ -1697,7 +1688,7 @@ public class DefaultKmeliaService implements KmeliaService {
       if (locations == null) {
         locations = getAliases(pubDetail.getPK());
       }
-      sendSubscriptionNotificationForAliases(pubDetail, action, sendOnlyToAliases, locations);
+      sendSubscriptionNotificationForAliases(pubDetail, action, locations);
 
       // PDC subscriptions
       try {
@@ -1722,16 +1713,13 @@ public class DefaultKmeliaService implements KmeliaService {
   }
 
   private void sendSubscriptionNotificationForAliases(final PublicationDetail pubDetail,
-      final NotifAction action, final boolean sendOnlyToAliases,
-      final Collection<Location> aliases) {
-    for (Location location : aliases) {
-      // Transform the current alias to a NodePK (even if Alias is extending NodePK) in the aim
-      // to execute the equals method of NodePK
-      if (sendOnlyToAliases && location.isAlias() || location.isAlias()) {
-        pubDetail.setAlias(true);
-        sendSubscriptionsNotification(location, pubDetail, action);
-      }
-    }
+      final NotifAction action, final Collection<Location> locations) {
+    // Transform the current alias to a NodePK (even if Alias is extending NodePK) in the aim
+    // to execute the equals method of NodePK
+    locations.stream().filter(Location::isAlias).forEach(a -> {
+      pubDetail.setAlias(true);
+      sendSubscriptionsNotification(a, pubDetail, action);
+    });
   }
 
   private void sendSubscriptionsNotification(NodePK fatherPK, PublicationDetail pubDetail,
@@ -1747,35 +1735,15 @@ public class DefaultKmeliaService implements KmeliaService {
     }
   }
 
-  /**
-   * Delete a path between publication and topic
-   * @param pubPK
-   * @param fatherPK
-   */
   @Override
   public void deletePublicationFromTopic(PublicationPK pubPK, NodePK fatherPK) {
     try {
-      Collection<NodePK> pubFathers = publicationService.getAllFatherPK(pubPK);
-      if (pubFathers.size() >= 2) {
-        publicationService.removeFather(pubPK, fatherPK);
-      } else {
-        // la publication n'a qu'un seul emplacement
-        // elle est donc placée dans la corbeille du créateur
+      final Optional<Location> mainLocation = publicationService.getMainLocation(pubPK);
+      if (mainLocation.filter(fatherPK::equals).isPresent()) {
         sendPublicationToBasket(pubPK);
+      } else {
+        publicationService.removeFather(pubPK, fatherPK);
       }
-    } catch (Exception e) {
-      throw new KmeliaRuntimeException(e);
-    }
-  }
-
-  @Override
-  public void deletePublicationFromAllTopics(PublicationPK pubPK) {
-    try {
-      publicationService.removeAllFathers(pubPK);
-
-      // la publication n'a qu'un seul emplacement
-      // elle est donc placée dans la corbeille du créateur
-      sendPublicationToBasket(pubPK);
     } catch (Exception e) {
       throw new KmeliaRuntimeException(e);
     }
@@ -1832,11 +1800,11 @@ public class DefaultKmeliaService implements KmeliaService {
       String userId, boolean isRightsOnTopicsUsed) {
     final NodePK fatherPK;
     final Location root = new Location(NodePK.ROOT_NODE_ID, pubPK.getInstanceId());
-    Collection<Location> locations = getPublicationLocations(pubPK);
+    final List<Location> locations = getPublicationLocations(pubPK);
     if (locations.isEmpty()) {
       fatherPK = root;
     } else if (!isRightsOnTopicsUsed) {
-      fatherPK = locations.stream().filter(l -> !l.isAlias()).findFirst().orElse(root);
+      fatherPK = locations.stream().filter(l -> !l.isAlias()).findFirst().orElse(locations.get(0));
     } else {
       fatherPK = getAllowedFather(userId, root, locations);
     }
@@ -1870,8 +1838,8 @@ public class DefaultKmeliaService implements KmeliaService {
    * @param pubPK the identifying key of the publication
    * @return a collection of {@link Location} objects.
    */
-  private Collection<Location> getPublicationLocations(PublicationPK pubPK) {
-    Collection<Location> locations =
+  private List<Location> getPublicationLocations(PublicationPK pubPK) {
+    List<Location> locations =
         publicationService.getLocationsInComponentInstance(pubPK, pubPK.getInstanceId());
     if (locations.isEmpty()) {
       // This publication have got no father!
@@ -2702,25 +2670,11 @@ public class DefaultKmeliaService implements KmeliaService {
   }
 
   private void processPublicationIndexation(final PublicationDetail pub) {
-    PublicationPK pk = pub.getPK();
+    final PublicationPK pk = pub.getPK();
     try {
-      // index only valid publications
-      if (pub.getStatus() != null && pub.isValid()) {
-        List<NodePK> pubFathers = (List<NodePK>) publicationService.getAllFatherPK(pk);
-        // index only valid publications which are not only in
-        // dz or basket
-        if (pubFathers.size() >= 2) {
-          indexPublication(pub);
-        } else if (pubFathers.size() == 1) {
-          NodePK nodePK = pubFathers.get(0);
-          // index the valid publication if it is not in the
-          // basket
-          if (!nodePK.isTrash()) {
-            indexPublication(pub);
-          }
-        } else {
-          // don't index publications in the dz
-        }
+      // index only valid publications which are not an alias and not in trash
+      if (pub.isValid() && !isPublicationInBasket(pub.getPK())) {
+        indexPublication(pub);
       }
     } catch (Exception e) {
       SilverLogger.getLogger(this)
@@ -3135,22 +3089,21 @@ public class DefaultKmeliaService implements KmeliaService {
   @Override
   public void deleteAxis(String axisId, String componentId) {
     NodePK pkToDelete = new NodePK(axisId, componentId);
-    PublicationPK pubPK = new PublicationPK(USELESS);
 
     CoordinatePK coordinatePK = new CoordinatePK(USELESS, pkToDelete);
-    List<String> fatherIds = new ArrayList<>();
-    Collection<String> coordinateIds;
     // Delete the axis
     try {
       // delete publicationFathers
-      if (getAxisHeaders(componentId).size() == 1) {
-        coordinateIds = coordinatesService.getCoordinateIdsByNodeId(coordinatePK, axisId);
-        Iterator<String> coordinateIdsIt = coordinateIds.iterator();
-        String coordinateId;
-        while (coordinateIdsIt.hasNext()) {
-          coordinateId = coordinateIdsIt.next();
-          fatherIds.add(coordinateId);
-        }
+      final long nbAxisHeaders = getAxisHeaders(componentId).stream()
+          .map(NodeDetail::getNodePK)
+          .filter(n -> !n.isUnclassed() && !n.isTrash())
+          .count();
+      if (nbAxisHeaders == 1) {
+        final PublicationPK pubPK = new PublicationPK(USELESS, componentId);
+        final List<String> fatherIds = coordinatesService.getCoordinateIdsByNodeId(coordinatePK, axisId)
+            .stream()
+            .filter(f -> !NodePK.UNCLASSED_NODE_ID.equals(f) && !NodePK.BIN_NODE_ID.equals(f))
+            .collect(Collectors.toList());
         if (!fatherIds.isEmpty()) {
           publicationService.removeFathers(pubPK, fatherIds);
         }
@@ -3834,7 +3787,7 @@ public class DefaultKmeliaService implements KmeliaService {
 
     // set nb objects in nodes
     final List<NodeDetail> treeView = getTreeview(nodePK, userId);
-    setNbItemsOfFolders(node.getNodePK().getInstanceId(), Collections.singletonList(node),
+    setNbItemsOfFolders(node.getNodePK().getInstanceId(), singletonList(node),
         treeView);
     setNbItemsOfSubfolders(node, treeView, userId);
     return node;
@@ -4116,7 +4069,7 @@ public class DefaultKmeliaService implements KmeliaService {
       PublicationPK pk = new PublicationPK(id, nodePK);
       if (isUserCanDeletePublication(new PublicationPK(id, nodePK), profile, userId)) {
         try {
-          if (nodePK.isTrash()) {
+          if (nodePK.isTrash() && isPublicationInBasket(pk)) {
             deletePublication(pk);
           } else {
             sendPublicationToBasket(pk);
@@ -4327,12 +4280,12 @@ public class DefaultKmeliaService implements KmeliaService {
     String userId = copyDetail.getUserId();
     final String toComponentId = toNodePK.getInstanceId();
     final NodePK fromNodePK = copyDetail.getFromNodePK();
-    final KmeliaPublication publication = KmeliaPublication.fromDetail(publiToCopy, fromNodePK);
+    final KmeliaPublication publication = fromDetail(publiToCopy, fromNodePK);
     try {
       if (publication.isAlias()) {
         Location location = new Location(copyDetail.getToNodePK().getId(), toComponentId);
         location.setAsAlias(userId);
-        publicationService.addAliases(publiToCopy.getPK(), Collections.singletonList(location));
+        publicationService.addAliases(publiToCopy.getPK(), singletonList(location));
         return publiToCopy.getPK();
       } else {
         PublicationDetail newPubli =

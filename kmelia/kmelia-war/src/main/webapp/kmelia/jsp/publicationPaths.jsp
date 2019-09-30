@@ -25,10 +25,11 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ page import="org.silverpeas.core.contribution.publication.model.Location" %>
-<%@ page import="org.silverpeas.components.kmelia.model.Treeview" %>
-<%@page import="org.silverpeas.components.kmelia.jstl.KmeliaDisplayHelper"%>
+<%@ page import="org.apache.ecs.xhtml.input" %>
 <%@ page import="org.silverpeas.components.kmelia.model.KmeliaPublication" %>
+<%@page import="org.silverpeas.components.kmelia.model.Treeview"%>
+<%@ page import="org.silverpeas.core.contribution.publication.model.Location" %>
+<%@ page import="org.silverpeas.core.util.Mutable" %>
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache"); //HTTP 1.0
@@ -204,29 +205,32 @@ function getObjects(selected) {
     				}
     				name = ind + name;	
     				
-    				// recherche si ce th�me est dans la liste des locations de la publication
-					  String usedCheck = "";
-    				for (Location node : locations) {
-	    				String nodeId = node.getId();
-	    				if (Integer.toString(topic.getId()).equals(nodeId)) {
-	    					usedCheck = " checked=\"checked\"";
-	    				}
-	    			}
-    				
-    				boolean displayCheckbox = false;
-    				if (topic.getUserRole() == null || !topic.getUserRole().equals("user")) {
-    					displayCheckbox = true;
-    				}
-    				
-    	        	out.println("<tr><td width=\"10px\">");
-    	        	if (displayCheckbox) {
-    	        		out.println("<input type=\"checkbox\" valign=\"absmiddle\" name=\"topicChoice\" value=\""+topic.getId()+","+topic.getNodePK().getInstanceId()+"\""+usedCheck+"/>");
-    	        	} else {
-    	        		out.println("&nbsp;");
-    	        	}
-    		    		    					
-    	        	out.println("</td><td>"+name+"</td></tr>");
-    			}
+    				// recherche si ce thème est dans la liste des locations de la publication
+            final input topicChoiceInput = new input().setType("checkbox").setName("topicChoice").setValue(topic.getId()+","+topic.getNodePK().getInstanceId());
+            topicChoiceInput.addAttribute("valign","absmiddle");
+            locations.stream()
+              .filter(l -> Integer.toString(topic.getId()).equals(l.getId()))
+              .findFirst()
+              .ifPresent(l -> {
+                topicChoiceInput.setChecked(true);
+                if (!l.isAlias()) {
+                  topicChoiceInput.setReadOnly(true);
+                  topicChoiceInput.setDisabled(true);
+                  topicChoiceInput.setOnClick("return false");
+                }
+              });
+            boolean displayCheckbox = false;
+            if (topic.getUserRole() == null || !topic.getUserRole().equals("user")) {
+              displayCheckbox = true;
+            }
+            out.println("<tr><td width=\"10px\">");
+            if (displayCheckbox) {
+              out.println(topicChoiceInput.toString());
+            } else {
+              out.println("&nbsp;");
+            }
+            out.println("</td><td>"+name+"</td></tr>");
+          }
     		}
     		out.println("</table>");
     	} else {
@@ -274,37 +278,38 @@ function getObjects(selected) {
 	    	    				name = ind + name;
 	    	    				
 	    	    				// recherche si ce dossier est dans la liste des dossiers de la publication
-	    	    				String aliasDecoration = "&nbsp;";
-	    	    				String checked = "";
-	    	    				String readonly = "";
-	    	    				for (Location location : locations) {
-	    		    				String nodeId = location.getId();
-	    		    				if (Integer.toString(topic.getId()).equals(nodeId) && topic.getNodePK().getInstanceId().equals(
-													location.getInstanceId())) {
-	    		    					checked = " checked=\"checked\"";
-	    		    					if (location.isAlias()) {
-	    		    						aliasDecoration = "<i>"+
-															location.getAlias().getUserName()+" - "+resources.getOutputDateAndHour(location.getAlias().getDate())+"</i>";
-	    		    					} else {
-	    		    						readonly = "readonly=\"readonly\" disabled=\"disabled\"";
-												}
-	    		    				}
-	    		    			}
-	    	    				boolean displayCheckbox = false;
-                    String readonlyCheckbox = "";
-	    	    				if (topic.getUserRole()==null || !topic.getUserRole().equals("user")) {
-	    	    					displayCheckbox = true;
+                    final Mutable<String> aliasDecoration = Mutable.of("");
+                    final input topicChoiceInput = new input().setType("checkbox").setName("topicChoice").setValue(topic.getId()+","+topic.getNodePK().getInstanceId());
+                    topicChoiceInput.addAttribute("valign","absmiddle");
+                    locations.stream()
+                      .filter(l -> Integer.toString(topic.getId()).equals(l.getId()) && topic.getNodePK().getInstanceId().equals(l.getInstanceId()))
+                      .findFirst()
+                      .ifPresent(l -> {
+                        topicChoiceInput.setChecked(true);
+                        if (l.isAlias()) {
+                          aliasDecoration.set("<span>&nbsp;</span><i>"+l.getAlias().getUserName()+" - "+resources.getOutputDateAndHour(l.getAlias().getDate())+"</i>");
+                        } else {
+                          topicChoiceInput.setReadOnly(true);
+                          topicChoiceInput.setDisabled(true);
+                          topicChoiceInput.setOnClick("return false");
+                        }
+                      });
+                    boolean displayCheckbox = false;
+                    if (topic.getUserRole()==null || !topic.getUserRole().equals("user")) {
+                      displayCheckbox = true;
                       if ("writer".equals(topic.getUserRole())) {
-                        readonlyCheckbox = " onclick=\"return false\"";
+                        topicChoiceInput.setReadOnly(true);
+                        topicChoiceInput.setDisabled(true);
+                        topicChoiceInput.setOnClick("return false");
                       }
-	    	    				}
-	    	    	        	out.println("<tr><td width=\"10px\">");
-	    	    	        	if (displayCheckbox) {
-	    	    	        		out.println("<input type=\"checkbox\" valign=\"absmiddle\" name=\"topicChoice\" value=\""+topic.getId()+","+topic.getNodePK().getInstanceId()+"\""+checked+readonlyCheckbox+readonly+">");
-	    	    	        	} else {
-	    	    	        		out.println("&nbsp;");
-	    	    	        	}
-	    	    	        	out.println("</td><td nowrap=\"nowrap\">"+name+"</td><td align=\"right\">"+aliasDecoration+"</td></tr>");
+                    }
+                    out.println("<tr><td width=\"10px\">");
+                    if (displayCheckbox) {
+                      out.println(topicChoiceInput.toString());
+                    } else {
+                      out.println("&nbsp;");
+                    }
+                    out.println("</td><td nowrap=\"nowrap\">"+name+"</td><td align=\"right\">"+aliasDecoration.get()+"</td></tr>");
 		        			}
 		        			
 		        		}
