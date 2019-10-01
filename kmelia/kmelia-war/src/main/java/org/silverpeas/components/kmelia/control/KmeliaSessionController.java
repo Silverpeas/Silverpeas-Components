@@ -646,7 +646,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       if (node.haveRights()) {
         int rightsDependsOn = node.getRightsDependsOn();
         ProfiledObjectId nodeRef = ProfiledObjectId.fromNode(rightsDependsOn);
-        return getOrganisationController().isObjectAvailable(nodeRef, getComponentId(), getUserId());
+        return getOrganisationController().isObjectAvailableToUser(nodeRef, getComponentId(), getUserId());
       }
     }
     return true;

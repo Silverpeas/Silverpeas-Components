@@ -90,7 +90,7 @@ public class AjaxServlet extends HttpServlet {
         MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     if (msc != null) {
       ComponentContext componentContext = msc.createComponentContext(null, componentId);
-      if (organizationController.isComponentAvailable(componentId, msc.getUserId())) {
+      if (organizationController.isComponentAvailableToUser(componentId, msc.getUserId())) {
         return new KmeliaSessionController(msc, componentContext);
       }
     }

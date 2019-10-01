@@ -211,7 +211,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
 
     UserDetail user = getUserDetail();
     if (user.isAnonymous() && (getComponentId() != null &&
-        getOrganisationController().isComponentAvailable(getComponentId(), user.getId()))) {
+        getOrganisationController().isComponentAvailableToUser(getComponentId(), user.getId()))) {
       userIsAnonymous = true;
     }
     return userIsAnonymous;

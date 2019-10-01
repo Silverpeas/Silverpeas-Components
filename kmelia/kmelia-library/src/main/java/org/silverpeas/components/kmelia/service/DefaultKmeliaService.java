@@ -230,7 +230,7 @@ public class DefaultKmeliaService implements KmeliaService {
       if (isRightsOnTopicsUsed) {
         OrganizationController orga = getOrganisationController();
         if (nodeDetail.haveRights() &&
-            !orga.isObjectAvailable(ProfiledObjectId.fromNode(nodeDetail.getRightsDependsOn()),
+            !orga.isObjectAvailableToUser(ProfiledObjectId.fromNode(nodeDetail.getRightsDependsOn()),
                 pk.getInstanceId(),
                 userId)) {
           nodeDetail.setUserRole("noRights");
@@ -332,9 +332,8 @@ public class DefaultKmeliaService implements KmeliaService {
       final List<NodeDetail> availableChildren, final NodeDetail child) {
     int rightsDependsOn = child.getRightsDependsOn();
     boolean nodeAvailable =
-        getOrganisationController().isObjectAvailable(ProfiledObjectId.fromNode(rightsDependsOn),
-            pk.
-            getInstanceId(), userId);
+        getOrganisationController().isObjectAvailableToUser(ProfiledObjectId.fromNode(rightsDependsOn),
+            pk.getInstanceId(), userId);
     if (nodeAvailable) {
       availableChildren.add(child);
     } else { // check if at least one descendant is available
@@ -350,7 +349,7 @@ public class DefaultKmeliaService implements KmeliaService {
     while (!childAllowed && descendants.hasNext()) {
       NodeDetail descendant = descendants.next();
       if (descendant.getRightsDependsOn() != rightsDependsOn &&
-          getOrganisationController().isObjectAvailable(
+          getOrganisationController().isObjectAvailableToUser(
               ProfiledObjectId.fromNode(descendant.getRightsDependsOn()), pk.
                   getInstanceId(), userId)) {
         // different rights of father check if it is available

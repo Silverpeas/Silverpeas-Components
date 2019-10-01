@@ -251,7 +251,7 @@ public class KmeliaAuthorization implements ComponentAuthorization {
       return fromCache.get();
     }
 
-    boolean available = controller.isComponentAvailable(componentId, userId);
+    boolean available = controller.isComponentAvailableToUser(componentId, userId);
     writeInCache(componentId, available);
     return available;
   }
@@ -365,7 +365,7 @@ public class KmeliaAuthorization implements ComponentAuthorization {
           objectAvailable = true;
         } else {
           objectAvailable =
-              controller.isObjectAvailable(ProfiledObjectId.fromNode(node.getRightsDependsOn()),
+              controller.isObjectAvailableToUser(ProfiledObjectId.fromNode(node.getRightsDependsOn()),
                   nodePK.getInstanceId(), userId);
         }
       } else {

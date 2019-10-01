@@ -77,8 +77,8 @@ public class KmeliaSubscriptionPublicationUserNotification
       // Get only subscribers who have sufficient rights to read pubDetail
       final NodeDetail node = getNodeHeader(getNodePK());
       for (final String userId : allUserSubscriberIds) {
-        if (!orgaController.isComponentAvailable(getNodePK().getInstanceId(), userId) || (node.
-            haveRights() && !orgaController.isObjectAvailable(
+        if (!orgaController.isComponentAvailableToUser(getNodePK().getInstanceId(), userId) || (node.
+            haveRights() && !orgaController.isObjectAvailableToUser(
             ProfiledObjectId.fromNode(node.getRightsDependsOn()), getNodePK().getInstanceId(),
             userId))) {
           userIdsToExcludeFromNotifying.add(userId);
