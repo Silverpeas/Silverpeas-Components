@@ -96,7 +96,6 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
         "org.silverpeas.silvercrawler.multilang.silverCrawlerBundle",
         "org.silverpeas.silvercrawler.settings.silverCrawlerIcons",
         "org.silverpeas.silvercrawler.settings.silverCrawlerSettings");
-    rootPath = new File(getComponentParameterValue("directory"));
     setRootPath();
   }
 
@@ -116,16 +115,13 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
   }
 
   public void setRootPath() {
+    rootPath = new File(getComponentParameterValue("directory"));
     currentPath = rootPath;
     paths = new ArrayList<>();
   }
 
-  public long getSizeMax() {
+  private long getSizeMax() {
     return Long.parseLong(getComponentParameterValue("maxiSize"));
-  }
-
-  public Long getSizeMaxString() {
-    return Long.valueOf(getComponentParameterValue("maxiSize"));
   }
 
   public String getNbMaxDirectoriesByPage() {
@@ -170,11 +166,6 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
     return download;
   }
 
-  public Boolean isPrivateSearch() {
-    // retourne true si on utilise le moteur de recherche dédié
-    return "yes".equalsIgnoreCase(getComponentParameterValue("privateSearch"));
-  }
-
   public Boolean isAllowedNav() {
     // retourne true si les lecteurs ont le droit de naviguer dans l'arborescence
     return "yes".equalsIgnoreCase(getComponentParameterValue("allowedNav"));
@@ -210,7 +201,7 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
     return currentPath.getPath();
   }
 
-  public String getFullPath(String directory) {
+  private String getFullPath(String directory) {
     return FileUtils.getFile(currentPath, directory).getPath();
   }
 
@@ -232,6 +223,8 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
         .getFile(FileRepositoryManager.getTemporaryPath(), folderName + "_" + date + ".zip");
 
     long sizeMax = UnitUtil.convertTo(getSizeMax(), MemoryUnit.MB, MemoryUnit.B);
+    zipInfo.setMaxiSize(sizeMax);
+
     long zipSize = 0;
     String url = "";
 
@@ -245,20 +238,15 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
         url = FileServerUtils
             .getSilverCrawlerUrl(zipFile.getName(), zipFile.getName(), getComponentId(),
                 downloadPath.getPath().substring(getRootPath().length()));
+        zipInfo.setFileZip(zipFile.getName());
+        zipInfo.setSize(zipSize);
+        zipInfo.setUrl(url);
       } catch (Exception e) {
         throw new SilverCrawlerRuntimeException(e);
       }
     } else {
-      zipFile = FileUtils.getFile("");
+      zipInfo.setMaxSizeReached(true);
     }
-
-    // Fill in ZipFolderInfo object
-    zipInfo.setFileZip(zipFile.getName());
-    zipInfo.setSize(zipSize);
-    zipInfo.setMaxiSize(getSizeMaxString());
-    zipInfo.setUrl(url);
-
-
 
     return zipInfo;
   }

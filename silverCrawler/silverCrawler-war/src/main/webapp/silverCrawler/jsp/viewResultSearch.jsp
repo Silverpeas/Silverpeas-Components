@@ -27,20 +27,27 @@
 <%@page import="java.net.URLEncoder"%>
 <%@ page import="org.silverpeas.core.util.file.FileRepositoryManager" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.Encode" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="check.jsp" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/silverCrawler" prefix="silverCrawler" %>
+
+<%-- Set resource bundle --%>
+<fmt:setLocale value="${requestScope.resources.language}"/>
+<view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
+
+<fmt:message var="labelSearch" key="GML.search"/>
+
 <%
 Collection docs 			= (Collection) request.getAttribute("Docs");
 String profile 				= (String) request.getAttribute("Profile");
 String word 				= (String) request.getAttribute("Word");
 %>
 
-
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel withCheckFormScript="true"/>
 <script type="text/javascript">
@@ -85,46 +92,19 @@ function checkSubmitToSearch(ev)
 out.println(window.printBefore());
 out.println(frame.printBefore());
 
-Board	board		 = gef.getBoard();
-
-out.println(board.printBefore());
-
 // affichage de la zone de recherche
 // ---------------------------------
-Button validateButton 	= (Button) gef.getFormButton("OK", "javascript:onClick=sendData();", false);
 %>
-<center>
-<table border="0" cellpadding="0" cellspacing="0">
-	<form Name="searchForm" action="Search" Method="POST" onSubmit="sendData()">
-		<tr>
-			<td valign="middle" align="left" class="txtlibform" width="30%"><%=resource.getString("GML.search")%></td>
-			<td align="left" valign="middle">
-				<table border="0" cellspacing="0" cellpadding="0">
-					<tr valign="middle">
-						<td valign="middle"><input type="text" name="WordSearch" size="36" onkeydown="checkSubmitToSearch(event)"></td>
-						<td valign="middle">&nbsp;</td>
-						<td valign="middle" align="left" width="100%"><% out.println(validateButton.print());%></td>
-					</tr>
-				</table>
-			</td>
-		</tr>
+	<form name="searchForm" action="Search" method="post" onsubmit="sendData()">
+    <div id="searchLine">
+      <input type="text" name="WordSearch" size="50" value="<%=word%>" onkeydown="checkSubmitToSearch(event)"/>
+      <view:button classes="linked-to-input" label="${labelSearch}" action="javascript:onclick=sendData()"/>
+    </div>
 	</form>
-</table>
-</center>
-<%
-out.println(board.printAfter());
-out.println("<br>");
 
-%>
-
-<table align="center" border="0" cellspacing="0" cellpadding="0" width="98%">
-	<tr valign="middle" class="intfdcolor">
-		<td align="center" class="ArrayNavigation">
-			<% out.println(docs.size());%> <%=resource.getString("silverCrawler.nbResult")%> <%=word%>
-        </td>
-    </tr>
-    <tr class=intfdcolor4><td>&nbsp;</td></tr>
-</table>
+<div class="inlineMessage">
+  <% out.println(docs.size());%> <%=resource.getString("silverCrawler.nbResult")%> <%=word%>
+</div>
 
 <%
 // affichage des fichiers, r�sultats de la recherche
@@ -224,9 +204,6 @@ out.println(frame.printAfter());
 out.println(window.printAfter());
 
 %>
-<FORM name="folderDetailForm" action="viewDirectory" method=post >
-<input type="hidden" name="FolderName">
-</FORM>
 <view:progressMessage/>
 </body>
 </html>

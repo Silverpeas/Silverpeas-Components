@@ -24,7 +24,6 @@
 
 package org.silverpeas.components.silvercrawler.servlets.handlers;
 
-import org.silverpeas.components.silvercrawler.control.FolderZIPInfo;
 import org.silverpeas.components.silvercrawler.control.SilverCrawlerSessionController;
 
 import javax.servlet.http.HttpServletRequest;
@@ -39,16 +38,10 @@ public class DownloadFolderHandler extends FunctionHandler {
   public String getDestination(SilverCrawlerSessionController sessionController,
       HttpServletRequest request) throws Exception {
     // Get requested folder name
-    String folderName = (String) request.getParameter("FolderName");
-
-    // Generate ZIP file
-    FolderZIPInfo zipInfo = sessionController.zipFolder(folderName);
+    String folderName = request.getParameter("FolderName");
 
     // Store objects in request as attributes
-    request.setAttribute("Name", zipInfo.getFileZip());
-    request.setAttribute("ZipURL", zipInfo.getUrl());
-    request.setAttribute("Size", zipInfo.getSize());
-    request.setAttribute("SizeMax", zipInfo.getMaxiSize());
+    request.setAttribute("ZipInfo", sessionController.zipFolder(folderName));
 
     // return page to redirect to
     return "download.jsp";

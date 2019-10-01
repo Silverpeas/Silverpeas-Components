@@ -46,6 +46,8 @@
 <c:set var="componentId" value="${requestScope.browseContext[3]}"/>
 <c:set var="highestUserRole" value='<%=SilverpeasRole.from((String)request.getAttribute("Profile"))%>'/>
 
+<fmt:message var="labelSearch" key="GML.search"/>
+
 <%@ include file="check.jsp" %>
 <%
 FileFolder folder = (FileFolder) request.getAttribute("Folder");
@@ -434,41 +436,26 @@ if (StringUtil.isDefined(successMessage)) {
 %>
 <view:frame>
   <view:componentInstanceIntro componentId="<%=componentId%>" language="<%=resource.getLanguage()%>"/>
-<view:board>
 <%
 // affichage de la zone de recherche
 // ---------------------------------
-Button validateButton 	= gef.getFormButton("OK", "javascript:onClick=sendData();", false);
 %>
-<center>
-	<form name="searchForm" action="Search" method="post" onsubmit="javascript:sendData();">
-	<table border="0" cellpadding="0" cellspacing="0">
-			<tr>
-				<td valign="middle" align="left" class="txtlibform" width="30%"><%=resource.getString("GML.search")%></td>
-				<td align="left" valign="middle">
-					<table border="0" cellspacing="0" cellpadding="0">
-						<tr valign="middle">
-							<td valign="middle"><input type="text" name="WordSearch" size="36" onkeydown="checkSubmitToSearch(event)"/></td>
-							<td valign="middle">&nbsp;</td>
-							<td valign="middle" align="left" width="100%"><% out.println(validateButton.print());%></td>
-						</tr>
-					</table>
-				</td>
-			</tr>
-    </table>
-    </form>
-</center>
-</view:board>
-<view:areaOfOperationOfCreation/>
+	<form name="searchForm" action="Search" method="post" onsubmit="sendData();">
+    <div id="searchLine">
+        <input type="text" name="WordSearch" size="50" onkeydown="checkSubmitToSearch(event)"/>
+        <view:button classes="linked-to-input" label="${labelSearch}" action="javascript:onclick=sendData()"/>
+    </div>
+  </form>
+
+  <view:areaOfOperationOfCreation/>
 
 <% if (userAllowedToLANAccess && readWriteActivated) {%>
 <div id="physical-path"><%=resource.getString("silverCrawler.physicalPath")%> : ${Folder.path}</div>
 <% } %>
 
   <div class="dragAndDropUpload">
-    <view:board>
       <div style="margin: 25px 0 25px 0">
-<form name="liste_dir" action="#" method="POST">
+<form name="liste_dir" id="foldersList" action="#" method="post">
 <%
 
 // remplissage de l'ArrayPane avec la liste des sous répertoires
@@ -588,7 +575,7 @@ if (nav || (!nav && !isRootPath))
 	}
 	%>
 	</form>
-	<form name="liste_file" action="#" method="POST">
+	<form name="liste_file" id="filesList" action="#" method="post">
 	<%
 
 	//affichage des fichiers
@@ -699,7 +686,6 @@ if (nav || (!nav && !isRootPath))
 %>
 </form>
       </div>
-    </view:board>
   </div>
 </view:frame>
 <%

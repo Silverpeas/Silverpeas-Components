@@ -112,13 +112,13 @@
 			<size>5</size>
 			<updatable>always</updatable>
 			<help>
-				<message lang="fr">Taille maximale (en Mo) autorisée lors du téléchargement d'un répertoire.
+				<message lang="fr">Taille maximale (en Mo) autorisée lors du téléchargement d'un répertoire au format ZIP.
         Indiquer 0 pour interdire le téléchargement des répertoires.
         </message>
-				<message lang="en">Maximum size (in Mo) allowed during directory download. Enter 0 if you want
+				<message lang="en">Maximum size (in Mo) allowed during directory download (ZIP format). Enter 0 if you want
         to forbid the download of directories.
         </message>
-				<message lang="de">Maximale Größe (in Mo) die Sie herunterladen dürfen. Geben Sie 0, wenn Sie
+				<message lang="de">Maximale Größe (in Mo) die Sie herunterladen dürfen (ZIP format). Geben Sie 0, wenn Sie
         den Download von Verzeichnissen oder Dateien verbieten wollen.</message>
       </help>
     </parameter>

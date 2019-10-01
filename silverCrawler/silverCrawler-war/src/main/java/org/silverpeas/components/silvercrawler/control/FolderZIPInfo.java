@@ -33,6 +33,7 @@ public class FolderZIPInfo {
   long size = 0;
   long maxiSize = 0;
   String url = null;
+  boolean maxSizeReached = false;
 
   public String getFileZip() {
     return fileZip;
@@ -64,5 +65,13 @@ public class FolderZIPInfo {
 
   public void setUrl(String url) {
     this.url = url;
+  }
+
+  public boolean isMaxSizeReached() {
+    return maxSizeReached;
+  }
+
+  public void setMaxSizeReached(final boolean maxSizeReached) {
+    this.maxSizeReached = maxSizeReached;
   }
 }

@@ -1,4 +1,5 @@
 <%@ page import="org.silverpeas.core.util.file.FileRepositoryManager" %>
+<%@ page import="org.silverpeas.components.silvercrawler.control.FolderZIPInfo" %>
 <%--
 
     Copyright (C) 2000 - 2019 Silverpeas
@@ -31,55 +32,43 @@
 <head>
 <view:looknfeel/>
 <%
-	String zipUrl = (String) request.getAttribute("ZipURL");
-	String name = (String) request.getAttribute("Name");
-	Long sizeZipP = (Long) request.getAttribute("Size");
-
-	Long sizeMaxP = (Long) request.getAttribute("SizeMax");
-
-	long sizeZip = sizeZipP.longValue();
-	long sizeMax = sizeMaxP.longValue();
+  FolderZIPInfo zipInfo = (FolderZIPInfo) request.getAttribute("ZipInfo");
+	String zipUrl = zipInfo.getUrl();
+	String name = zipInfo.getFileZip();
+	long sizeZip = zipInfo.getSize();
+	long sizeMax = zipInfo.getMaxiSize();
 %>
 </head>
 <body>
 <view:window popup="true">
 <view:frame>
-<view:board>
-<table>
-<tr>
-	<td class="txtlibform">
-		<%=resource.getString("silverCrawler.fileZip")%> :
-	</td>
-	<td>
-		<img border="0" src="<%=resource.getIcon("silverCrawler.zip")%>" >
-	</td>
-	<td>
-	<%
-		if (name == null || name.equals("null"))
-		{%>
-			<%=resource.getString("silverCrawler.sizeMax")%> (<%=sizeMax%> Mo)
-		<%}
-		else
-		{
-			if ("".equals(name))
-			{%>
-				<%=resource.getString("silverCrawler.noFileZip")%>
-			<%}
-			else
-			{%>
-				<a href="<%=zipUrl%>"><%=name%></a>&nbsp;(<%=FileRepositoryManager.formatFileSize(sizeZip)%>)
-			<%}
-		}%>
-	</td>
-</tr>
-</table>
-</view:board>
-
+  <% if (zipInfo.isMaxSizeReached()) { %>
+    <div class="inlineMessage-nok"><%=resource.getString("silverCrawler.sizeMax")%> (<%=FileRepositoryManager.formatFileSize(sizeMax)%>)</div>
+  <% } else if ("".equals(name)){ %>
+    <div class="inlineMessage-nok"><%=resource.getString("silverCrawler.noFileZip")%></div>
+  <% } else { %>
+  <view:board>
+    <table>
+      <tr>
+        <td class="txtlibform">
+          <%=resource.getString("silverCrawler.fileZip")%> :
+        </td>
+        <td>
+          <img border="0" src="<%=resource.getIcon("silverCrawler.zip")%>"/>
+        </td>
+        <td>
+          <a href="<%=zipUrl%>"><%=name%>
+          </a>&nbsp;(<%=FileRepositoryManager.formatFileSize(sizeZip)%>)
+        </td>
+      </tr>
+    </table>
+  </view:board>
+<% } %>
 <%
 ButtonPane buttonPane = gef.getButtonPane();
 Button button = gef.getFormButton(resource.getString("GML.close"), "javaScript:window.close();", false);
 buttonPane.addButton(button);
-out.println("<BR><center>"+buttonPane.print()+"</center>");
+out.println(buttonPane.print());
 %>
 </view:frame>
 </view:window>

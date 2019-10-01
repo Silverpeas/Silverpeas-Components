@@ -53,3 +53,11 @@ table.arrayPane {
 	font-weight: bold;
 	padding: 20px;
 }
+
+#foldersList {
+  margin-bottom: 20px;
+}
+
+#searchLine {
+  text-align: center;
+}
