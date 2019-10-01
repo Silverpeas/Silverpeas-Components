@@ -192,8 +192,8 @@ public class DefaultBlogService implements BlogService {
       NodeDetail node = getNodeBm().getHeader(fatherPK);
       final List<String> newSubscribers = new ArrayList<>(subscriberIds.size());
       for (String userId : subscriberIds) {
-        if (organizationController.isComponentAvailable(fatherPK.getInstanceId(), userId) &&
-            (!node.haveRights() || organizationController.isObjectAvailable(
+        if (organizationController.isComponentAvailableToUser(fatherPK.getInstanceId(), userId) &&
+            (!node.haveRights() || organizationController.isObjectAvailableToUser(
                 ProfiledObjectId.fromNode(node.getRightsDependsOn()), fatherPK.getInstanceId(),
                 userId))) {
           newSubscribers.add(userId);

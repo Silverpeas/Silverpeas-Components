@@ -97,7 +97,7 @@ public class SilverCrawlerFileServer extends SilverpeasAuthenticatedHttpServlet 
 
     // Check user rights on identified component
     if (!OrganizationControllerProvider.getOrganisationController()
-        .isComponentAvailable(componentId, userId)) {
+        .isComponentAvailableToUser(componentId, userId)) {
       throwHttpForbiddenError();
     }
 
