@@ -54,6 +54,7 @@
 <%@ page import="org.silverpeas.core.webapi.rating.RaterRatingEntity" %>
 <%@ page import="java.util.Optional" %>
 <%@ page import="org.silverpeas.core.contribution.publication.model.Location" %>
+<%@ page import="org.silverpeas.components.kmelia.model.ValidatorsList" %>
 
 <c:set var="userLanguage" value="${requestScope.resources.language}"/>
 <c:set var="contentLanguage" value="${requestScope.Language}"/>
@@ -61,8 +62,6 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 
 <%
-  SettingBundle publicationSettings = ResourceLocator.getSettingBundle("org.silverpeas.publication.publicationSettings");
-
   //Recuperation des parametres
   String profile = (String) request.getAttribute("Profile");
   String action = (String) request.getAttribute("Action");
@@ -83,7 +82,6 @@
   boolean seeAlsoEnabled = (Boolean) request.getAttribute("SeeAlsoEnabled");
   boolean lastVisitorsEnabled = (Boolean) request.getAttribute("LastVisitorsEnabled");
   boolean draftOutTaxonomyOK = (Boolean) request.getAttribute("TaxonomyOK");
-  boolean validatorsOK = (Boolean) request.getAttribute("ValidatorsOK");
   int searchScope = (Integer) request.getAttribute("SearchScope");
   boolean isBasket = false;
   String indexIt = "0";
@@ -133,6 +131,11 @@
   boolean sharingAllowed = kmeliaPublication.getDetail().isSharingAllowedForRolesFrom(currentUser);
   List<PublicationLink> linkedPublications = pubComplete.getLinkedPublications(user_id);
 
+  ValidatorsList validatorsList = kmeliaPublication.getValidators();
+  boolean validatorsOK = validatorsList.isValidationOperational();
+  boolean modificationAllowed = (SilverpeasRole.writer.isInRole(profile) && validatorsOK) ||
+      SilverpeasRole.from(profile).isGreaterThanOrEquals(SilverpeasRole.publisher);
+
   //Vrai si le user connecte est le createur de cette publication ou si il est admin
   boolean isOwner = false;
 
@@ -155,15 +158,12 @@
     if (pubDetail.isRefused()) {
 	    screenMessage = "<div class=\"inlineMessage-nok\">" + resources.getString("PublicationRefused") + "</div>";
 	  } else if (pubDetail.isValidationRequired()) {
+      screenMessage = resources.getString("kmelia.publication.tovalidate.state");
       if (validatorsOK) {
-        if ((validationType == KmeliaHelper.VALIDATION_TARGET_1 ||
-            validationType == KmeliaHelper.VALIDATION_TARGET_N) &&
-            StringUtil.isDefined(pubDetail.getTargetValidatorId())) {
-          String validatorNames = pubDetail.getTargetValidatorNames();
+        if (validatorsList.isTargetedValidation() && validatorsList.isAtLeastOnceValidatorActive()) {
+          String validatorNames = validatorsList.getValidatorNames();
           screenMessage = resources
               .getStringWithParams("kmelia.publication.tovalidate.state.by", validatorNames);
-        } else {
-          screenMessage = resources.getString("kmelia.publication.tovalidate.state");
         }
       }
       if (userCanValidate) {
@@ -186,7 +186,7 @@
     suppressionAllowed = KmeliaPublicationHelper.isRemovable(contextComponentId, currentUser.getId(), profile, ownerDetail);
 
     //modification pour acceder e l'onglet voir aussi
-    kmeliaScc.setSessionOwner(isOwner && validatorsOK);
+    kmeliaScc.setSessionOwner(isOwner && modificationAllowed);
   }
 
   if (validatorsOK && !toolboxMode && isOwner && kmeliaScc.isDraftEnabled() && !pubDetail.haveGotClone() && pubDetail.isDraft()) {
@@ -216,6 +216,8 @@
     screenMessage += "<a href=\"#\" onclick=\"javascript:$('#validationArea').hide('slow');\" class=\"button\"><span>"+resources.getString("GML.close")+"</span></a>";
     screenMessage += "</div>";
     attachmentsUpdatable = false;
+  } else if (isOwner && !validatorsOK) {
+    screenMessage += "<div class=\"inlineMessage-nok\">"+resources.getString("kmelia.publication.validators.nomore")+"</div>";
   }
 
   String updaterId = pubDetail.getUpdaterId();
@@ -493,7 +495,7 @@
         }
         operationPane.addLine();
 
-        if (isOwner && validatorsOK) {
+        if (isOwner && modificationAllowed) {
           if (!"supervisor".equals(profile)) {
             if (attachmentsUpdatable) {
             	operationPane.addOperation("#", resources.getString("kmelia.AddFile"), "javascript:addAttachment('" +pubDetail.getId() + "')");
@@ -544,7 +546,7 @@
 
         out.println(window.printBefore());
         action = "View";
-        if (isOwner && validatorsOK) {
+        if (isOwner && modificationAllowed) {
           KmeliaDisplayHelper.displayAllOperations(id, kmeliaScc, gef, action, resources, out, kmaxMode);
         } else {
           KmeliaDisplayHelper.displayUserOperations(kmeliaScc, out);

@@ -541,4 +541,8 @@ public class KmeliaPublication implements SilverpeasContent {
       return Optional.empty();
     }
   }
+
+  public ValidatorsList getValidators() {
+    return getKmeliaService().getAllValidators(getPk());
+  }
 }

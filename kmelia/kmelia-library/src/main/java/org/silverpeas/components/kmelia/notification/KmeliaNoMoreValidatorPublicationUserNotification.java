@@ -26,6 +26,7 @@ package org.silverpeas.components.kmelia.notification;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
+import org.silverpeas.core.util.StringUtil;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -36,9 +37,17 @@ import java.util.Collections;
 public class KmeliaNoMoreValidatorPublicationUserNotification
     extends AbstractKmeliaActionPublicationUserNotification {
 
+  private String userToNotify;
+
   public KmeliaNoMoreValidatorPublicationUserNotification(final NodePK nodePK,
       final PublicationDetail resource) {
     super(nodePK, resource, null);
+  }
+
+  public KmeliaNoMoreValidatorPublicationUserNotification(final NodePK nodePK,
+      final PublicationDetail resource, final String userToNotify) {
+    super(nodePK, resource, null);
+    this.userToNotify = userToNotify;
   }
 
   @Override
@@ -48,17 +57,23 @@ public class KmeliaNoMoreValidatorPublicationUserNotification
 
   @Override
   protected String getTemplateFileName() {
+    if (StringUtil.isDefined(userToNotify)) {
+      return "notificationNoMoreValidatorToNonContributor";
+    }
     return "notificationNoMoreValidator";
   }
 
   @Override
   protected Collection<String> getUserIdsToNotify() {
+    if (StringUtil.isDefined(userToNotify)) {
+      return Collections.singletonList(userToNotify);
+    }
     return Collections.singletonList(getMostRecentPublicationUpdater());
   }
 
   @Override
   protected String getSender() {
-    return "-1";
+    return "";
   }
 
   @Override

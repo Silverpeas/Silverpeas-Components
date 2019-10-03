@@ -46,10 +46,9 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="org.silverpeas.core.util.URLUtil" %>
 <%@ page import="org.silverpeas.core.admin.user.model.User" %>
 <%@ page import="org.silverpeas.core.admin.user.model.SilverpeasRole" %>
+<%@ page import="org.silverpeas.components.kmelia.model.ValidatorsList" %>
 
 <%
-	SettingBundle publicationSettings = ResourceLocator.getSettingBundle("org.silverpeas.util.publication.publicationSettings");
-
 	//Recuperation des parametres
 	String 					profile 		= (String) request.getAttribute("Profile");
 	String 					action 			= (String) request.getAttribute("Action");
@@ -82,6 +81,9 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 	String screenMessage = "";
 
+  ValidatorsList validatorsList = kmeliaPublication.getValidators();
+  boolean validatorsOK = validatorsList.isValidationOperational();
+
 	//Vrai si le user connecte est le createur de cette publication ou si il est admin
 	boolean isOwner = false;
 
@@ -104,21 +106,22 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
     if (pubDetail.isRefused()) {
 	    screenMessage = "<div class=\"inlineMessage-nok\">" + resources.getString("PublicationRefused") + "</div>";
     } else if (pubDetail.isValidationRequired()) {
-	    screenMessage = "<div class=\"inlineMessage\">";
-      if ((validationType == KmeliaHelper.VALIDATION_TARGET_1 ||
-          validationType == KmeliaHelper.VALIDATION_TARGET_N) &&
-          StringUtil.isDefined(pubDetail.getTargetValidatorId())) {
-        String validatorNames = pubDetail.getTargetValidatorNames();
-        screenMessage += resources.getStringWithParams("kmelia.publication.tovalidate.state.by", validatorNames);
-      } else {
-        screenMessage += resources.getString("kmelia.publication.tovalidate.state");
+      screenMessage = resources.getString("kmelia.publication.tovalidate.state");
+      if (validatorsOK) {
+        if (validatorsList.isTargetedValidation() && validatorsList.isAtLeastOnceValidatorActive()) {
+          String validatorNames = validatorsList.getValidatorNames();
+          screenMessage = resources
+              .getStringWithParams("kmelia.publication.tovalidate.state.by", validatorNames);
+        }
       }
 	  	if (userCanValidate) {
 	  	  screenMessage += "<br/>" + resources.getString("kmelia.publication.tovalidate.action")+"<br/>";
 	 	    screenMessage += "<a href=\"javascript:onclick=pubValidate()\" class=\"button validate\"><span>"+resources.getString("PubValidate?")+"</span></a>";
 	 	    screenMessage += "<a href=\"javascript:onclick=pubUnvalidate()\" class=\"button refuse\"><span>"+resources.getString("PubUnvalidate?")+"</span></a>";
       }
-      screenMessage += "</div>";
+      if (StringUtil.isDefined(screenMessage)) {
+        screenMessage = "<div class=\"inlineMessage\">"+screenMessage+"</div>";
+      }
     }
 	}
 

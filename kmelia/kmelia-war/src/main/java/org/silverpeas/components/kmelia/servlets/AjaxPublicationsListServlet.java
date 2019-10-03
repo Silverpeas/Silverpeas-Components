@@ -33,6 +33,7 @@ import org.silverpeas.components.kmelia.control.KmeliaSessionController;
 import org.silverpeas.components.kmelia.model.KmeliaPublication;
 import org.silverpeas.components.kmelia.model.KmeliaPublicationComparator;
 import org.silverpeas.components.kmelia.model.TopicDetail;
+import org.silverpeas.components.kmelia.model.ValidatorsList;
 import org.silverpeas.components.kmelia.service.KmeliaHelper;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
@@ -331,8 +332,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
               pubColor = "red";
               pubState = resources.getString("kmelia.PubStateToValidate");
               if (targetValidationEnabled) {
-                pubState = resources.getStringWithParams("kmelia.PubStateToValidateBy",
-                    pubOrClone.getTargetValidatorNames());
+                ValidatorsList validatorsList = aPub.getValidators();
+                pubState = getTargetedValidationInfo(validatorsList, resources);
               }
             }
           } else {
@@ -378,8 +379,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
             } else {
               pubState = resources.getString("kmelia.PubStateToValidate");
               if (targetValidationEnabled) {
-                pubState = resources.getStringWithParams("kmelia.PubStateToValidateBy",
-                    pubOrClone.getTargetValidatorNames());
+                ValidatorsList validatorsList = aPub.getValidators();
+                pubState = getTargetedValidationInfo(validatorsList, resources);
               }
             }
           }
@@ -1137,6 +1138,16 @@ public class AjaxPublicationsListServlet extends HttpServlet {
           return "<div class=\"publiPath\">" + topicPathName + "</div>";
         })
         .orElse(StringUtil.EMPTY);
+  }
+
+  private String getTargetedValidationInfo(ValidatorsList validatorsList,
+      MultiSilverpeasBundle resources) {
+    if (validatorsList.isAtLeastOnceValidatorActive()) {
+      return resources.getStringWithParams("kmelia.PubStateToValidateBy",
+          validatorsList.getValidatorNames());
+    } else {
+      return resources.getString("kmelia.publication.validators.nomore");
+    }
   }
   
 }

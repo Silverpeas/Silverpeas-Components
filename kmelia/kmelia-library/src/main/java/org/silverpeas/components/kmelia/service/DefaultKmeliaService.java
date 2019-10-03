@@ -33,6 +33,7 @@ import org.silverpeas.components.kmelia.model.KmeliaPublication;
 import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
 import org.silverpeas.components.kmelia.model.TopicComparator;
 import org.silverpeas.components.kmelia.model.TopicDetail;
+import org.silverpeas.components.kmelia.model.ValidatorsList;
 import org.silverpeas.components.kmelia.notification.*;
 import org.silverpeas.core.ActionType;
 import org.silverpeas.core.ResourceReference;
@@ -87,6 +88,7 @@ import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.model.NodePath;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.notification.user.UserNotification;
+import org.silverpeas.core.notification.user.builder.UserNotificationBuilder;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
@@ -987,22 +989,17 @@ public class DefaultKmeliaService implements KmeliaService {
   }
 
   private String getProfile(String userId, NodePK nodePK) {
-    String profile;
     OrganizationController orgCtrl = getOrganisationController();
     if (isRightsOnTopicsEnabled(nodePK.getInstanceId())) {
       NodeDetail topic = nodeService.getHeader(nodePK);
       if (topic.haveRights()) {
         ProfiledObjectId nodeId =
             ProfiledObjectId.fromNode(topic.getRightsDependsOn());
-        profile = KmeliaHelper.getProfile(
+        return KmeliaHelper.getProfile(
             orgCtrl.getUserProfiles(userId, nodePK.getInstanceId(), nodeId));
-      } else {
-        profile = KmeliaHelper.getProfile(getUserRoles(nodePK.getInstanceId(), userId));
       }
-    } else {
-      profile = KmeliaHelper.getProfile(getUserRoles(nodePK.getInstanceId(), userId));
     }
-    return profile;
+    return KmeliaHelper.getProfile(getUserRoles(nodePK.getInstanceId(), userId));
   }
 
   private String getProfileOnPublication(String userId, PublicationPK pubPK) {
@@ -1213,8 +1210,8 @@ public class DefaultKmeliaService implements KmeliaService {
 
       // Computing identifiers of removed validators, and the ones of added validators.
       List<String> toRemoveToDo = new ArrayList<>(oldValidatorIds);
-      List<String> toAlert = new ArrayList<>(newValidatorIds);
       toRemoveToDo.removeAll(newValidatorIds);
+      ValidatorsList toAlert = new ValidatorsList(getActiveValidatorIds(currentPublication));
       toAlert.removeAll(oldValidatorIds);
 
       // Performing the actions.
@@ -1971,15 +1968,13 @@ public class DefaultKmeliaService implements KmeliaService {
   }
 
   @Override
-  public List<String> getAllValidators(PublicationPK pubPK) {
+  public ValidatorsList getAllValidators(PublicationPK pubPK) {
     // get all users who have to validate
-    List<String> allValidators = new ArrayList<>();
+    ValidatorsList allValidators = new ValidatorsList(getValidationType(pubPK.getInstanceId()));
     if (isTargetedValidationEnabled(pubPK.getInstanceId())) {
-      allValidators = getActiveValidatorIds(pubPK);
-    }
-    if (allValidators.isEmpty()) {
-      // It's not a targeted validation or it is but no validators has
-      // been selected !
+      allValidators.addAll(getActiveValidatorIds(pubPK));
+    } else {
+      // It's not a targeted validation
       List<String> roles = new ArrayList<>(2);
       roles.add(SilverpeasRole.admin.name());
       roles.add(SilverpeasRole.publisher.name());
@@ -2683,18 +2678,32 @@ public class DefaultKmeliaService implements KmeliaService {
         // removing potential older validation decision
         publicationService.removeValidationSteps(pubDetail.getPK());
       }
-      List<String> validators = getAllValidators(pubDetail.getPK());
+      ValidatorsList validators = getAllValidators(pubDetail.getPK());
       addTodoAndSendNotificationToValidators(pubDetail, validators);
     }
   }
 
   private void addTodoAndSendNotificationToValidators(PublicationDetail pub,
-      List<String> validators) {
-    if (validators != null && !validators.isEmpty()) {
-      String[] users = validators.toArray(new String[validators.size()]);
+      ValidatorsList validators) {
+    if (CollectionUtil.isNotEmpty(validators)) {
+      String[] users = validators.getUserIds();
       addTodo(pub, users);
-      // Send a notification to alert admins and publishers
+      // Send a notification to alert validators
       sendValidationAlert(pub, users);
+    } else if (validators.isTargetedValidation()) {
+      // targeted validation is enabled but there is no validators to notify
+      UserNotificationBuilder notification;
+      // tries to notify updater
+      String profile = getProfileOnPublication(pub.getMostRecentUpdater(), pub.getPK());
+      if (profile != null &&
+          SilverpeasRole.from(profile).isGreaterThanOrEquals(SilverpeasRole.writer)) {
+        notification = new KmeliaNoMoreValidatorPublicationUserNotification(null, pub);
+      } else {
+        // notify current user
+        notification = new KmeliaNoMoreValidatorPublicationUserNotification(null, pub,
+            User.getCurrentRequester().getId());
+      }
+      UserNotificationHelper.buildAndSend(notification);
     }
   }
 
@@ -2715,11 +2724,7 @@ public class DefaultKmeliaService implements KmeliaService {
       }
     }
     todo.setAttendees(new ArrayList<>(attendees));
-    if (isDefined(pubDetail.getUpdaterId())) {
-      todo.setDelegatorId(pubDetail.getUpdaterId());
-    } else {
-      todo.setDelegatorId(pubDetail.getCreatorId());
-    }
+    todo.setDelegatorId(pubDetail.getMostRecentUpdater());
     todo.setExternalId(pubDetail.getPK().getId());
 
     return calendar.addToDo(todo);
@@ -3896,13 +3901,13 @@ public class DefaultKmeliaService implements KmeliaService {
       // publication is not in a state which allow a validation
       return false;
     }
-    final List<String> validatorIds = getAllValidators(pubPK);
-    if (!validatorIds.contains(userId)) {
+    final ValidatorsList validators = getAllValidators(pubPK);
+    if (!validators.contains(userId)) {
       // current user is not part of users who are able to validate this publication
       return false;
     }
 
-    if (getValidationType(pubPK.getInstanceId()) == KmeliaHelper.VALIDATION_TARGET_N) {
+    if (validators.getValidationType() == KmeliaHelper.VALIDATION_TARGET_N) {
       ValidationStep validationStep = publicationService.getValidationStepByUser(pubPK, userId);
       // user has not yet validated publication, so validation is allowed
       return validationStep == null;
@@ -4285,17 +4290,6 @@ public class DefaultKmeliaService implements KmeliaService {
     if (copyDetail.isPublicationContentMustBeCopied()) {
       newPubli.setInfoId(publiToCopy.getInfoId());
     }
-    // use validators selected via UI
-    newPubli.setTargetValidatorId(copyDetail.getPublicationValidatorIds());
-
-    // manage status explicitly to bypass Draft mode
-    setToByPassDraftMode(copyDetail, toNodePK, newPubli, userId);
-
-    String fromId = publiToCopy.getPK().getId();
-    String fromComponentId = publiToCopy.getPK().getInstanceId();
-    ResourceReference fromResourceReference =
-        new ResourceReference(publiToCopy.getPK().getId(), fromComponentId);
-    PublicationPK fromPubPK = new PublicationPK(publiToCopy.getPK().getId(), fromComponentId);
 
     if (copyDetail.isAdministrativeOperation()) {
       newPubli.setCreatorId(publiToCopy.getCreatorId());
@@ -4303,7 +4297,20 @@ public class DefaultKmeliaService implements KmeliaService {
       newPubli.setUpdaterId(publiToCopy.getUpdaterId());
       newPubli.setUpdateDate(publiToCopy.getUpdateDate());
       newPubli.setStatus(publiToCopy.getStatus());
+      newPubli.setTargetValidatorId(publiToCopy.getTargetValidatorId());
+    } else {
+      // use validators selected via UI
+      newPubli.setTargetValidatorId(copyDetail.getPublicationValidatorIds());
+
+      // manage status explicitly to bypass Draft mode
+      setToByPassDraftMode(copyDetail, toNodePK, newPubli, userId);
     }
+
+    String fromId = publiToCopy.getPK().getId();
+    String fromComponentId = publiToCopy.getPK().getInstanceId();
+    ResourceReference fromResourceReference =
+        new ResourceReference(publiToCopy.getPK().getId(), fromComponentId);
+    PublicationPK fromPubPK = new PublicationPK(publiToCopy.getPK().getId(), fromComponentId);
 
     String id = createPublicationIntoTopic(newPubli, toNodePK);
     // update id cause new publication is created
@@ -4523,13 +4530,17 @@ public class DefaultKmeliaService implements KmeliaService {
   @Override
   public List<String> getActiveValidatorIds(PublicationPK pk) {
     PublicationDetail pub = getPublicationDetail(pk);
+    return getActiveValidatorIds(pub);
+  }
+
+  private List<String> getActiveValidatorIds(PublicationDetail publication) {
     List<String> activeValidatorIds = new ArrayList<>();
-    String[] validatorIds = pub.getTargetValidatorIds();
+    String[] validatorIds = publication.getTargetValidatorIds();
     if (validatorIds == null) {
       return activeValidatorIds;
     }
     for (String userId : validatorIds) {
-      String profile = getProfileOnPublication(userId, pk);
+      String profile = getProfileOnPublication(userId, publication.getPK());
       if (profile != null &&
           SilverpeasRole.from(profile).isGreaterThanOrEquals(SilverpeasRole.publisher)) {
         activeValidatorIds.add(userId);

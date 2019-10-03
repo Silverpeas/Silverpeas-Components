@@ -24,6 +24,7 @@ import org.silverpeas.components.kmelia.KmeliaCopyDetail;
 import org.silverpeas.components.kmelia.KmeliaPasteDetail;
 import org.silverpeas.components.kmelia.model.KmeliaPublication;
 import org.silverpeas.components.kmelia.model.TopicDetail;
+import org.silverpeas.components.kmelia.model.ValidatorsList;
 import org.silverpeas.core.ApplicationService;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
@@ -366,7 +367,7 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
 
   boolean isUserCanValidatePublication(PublicationPK pubPK, String userId);
 
-  List<String> getAllValidators(PublicationPK pubPK);
+  ValidatorsList getAllValidators(PublicationPK pubPK);
 
   void setValidators(PublicationPK pubPK, String userIds);
 
