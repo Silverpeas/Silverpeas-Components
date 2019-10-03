@@ -22,16 +22,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.components.almanach;
+package org.silverpeas.components.quickinfo.model;
 
-import org.silverpeas.core.calendar.AbstractCalendarComponentInstanceContributionManager;
 import org.silverpeas.core.contribution.ComponentInstanceContributionManager;
+import org.silverpeas.core.contribution.model.Contribution;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 
 import javax.inject.Named;
+import java.text.MessageFormat;
+import java.util.Optional;
 
 /**
+ * Contribution manager centralization about the kmelia contributions.
  * @author silveryocha
  */
-@Named("almanach" + ComponentInstanceContributionManager.Constants.NAME_SUFFIX)
-public class AlmanachInstanceContributionManager
-    extends AbstractCalendarComponentInstanceContributionManager {}
+@Named("quickinfo" + ComponentInstanceContributionManager.Constants.NAME_SUFFIX)
+public class QuickInfoInstanceContributionManager implements ComponentInstanceContributionManager {
+
+  @Override
+  public Optional<Contribution> getById(final ContributionIdentifier contributionId) {
+    if (News.CONTRIBUTION_TYPE.equals(contributionId.getType())) {
+      final String localId = contributionId.getLocalId();
+      return Optional.ofNullable(QuickInfoService.get().getNews(localId));
+    }
+    throw new IllegalStateException(
+        MessageFormat.format("type {0} is not handled", contributionId.getType()));
+  }
+}

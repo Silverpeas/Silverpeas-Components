@@ -24,15 +24,15 @@
 
 package org.silverpeas.components.quickinfo.model;
 
+import org.silverpeas.components.quickinfo.NewsByStatus;
+import org.silverpeas.core.ApplicationService;
+import org.silverpeas.core.io.upload.UploadedFile;
+import org.silverpeas.core.pdc.pdc.model.PdcPosition;
+import org.silverpeas.core.reminder.Reminder;
+import org.silverpeas.core.util.ServiceProvider;
+
 import java.util.Collection;
 import java.util.List;
-
-import org.silverpeas.core.ApplicationService;
-import org.silverpeas.components.quickinfo.NewsByStatus;
-
-import org.silverpeas.core.pdc.pdc.model.PdcPosition;
-import org.silverpeas.core.io.upload.UploadedFile;
-import org.silverpeas.core.util.ServiceProvider;
 
 public interface QuickInfoService extends ApplicationService<News> {
 
@@ -40,33 +40,39 @@ public interface QuickInfoService extends ApplicationService<News> {
     return ServiceProvider.getService(QuickInfoService.class);
   }
 
-  public News create(News news);
+  News create(News news);
 
-  public void publish(String id, String userId);
+  void publish(String id, String userId);
 
-  public void update(final News news, List<PdcPosition> positions,
-      Collection<UploadedFile> uploadedFiles, final boolean forcePublishing);
+  void update(final News news, List<PdcPosition> positions, Collection<UploadedFile> uploadedFiles,
+      final boolean forcePublishing);
 
-  public void removeNews(String id);
+  void removeNews(String id);
 
-  public List<News> getAllNews(String componentId);
+  List<News> getAllNews(String componentId);
 
-  public NewsByStatus getAllNewsByStatus(String componentId, String userId);
+  NewsByStatus getAllNewsByStatus(String componentId, String userId);
 
-  public List<News> getVisibleNews(String componentId);
+  List<News> getVisibleNews(String componentId);
 
-  public List<News> getPlatformNews(String userId);
+  List<News> getPlatformNews(String userId);
 
-  public List<News> getNewsForTicker(String userId);
+  List<News> getNewsForTicker(String userId);
 
-  public List<News> getUnreadBlockingNews(String userId);
+  List<News> getUnreadBlockingNews(String userId);
 
-  public void acknowledgeNews(String id, String userId);
+  void acknowledgeNews(String id, String userId);
 
-  public News getNews(String id);
+  News getNews(String id);
 
-  public News getNewsByForeignId(String id);
+  News getNewsByForeignId(String id);
 
-  public void submitNewsOnHomepage(String id, String userId);
+  void submitNewsOnHomepage(String id, String userId);
 
+  /**
+   * Performs processes about news linked to given reminder.<br/>
+   * If news is not concerned, nothing is performed.
+   * @param reminder a {@link Reminder} instance.
+   */
+  void performReminder(final Reminder reminder);
 }

@@ -32,6 +32,7 @@ import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.model.ContributionModel;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.contribution.model.WithAttachment;
 import org.silverpeas.core.contribution.model.WithThumbnail;
@@ -46,6 +47,7 @@ import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
+import org.silverpeas.core.reminder.WithReminder;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ServiceProvider;
@@ -77,7 +79,7 @@ import java.util.List;
         ":mandatory"),
     @NamedQuery(name = "newsForTicker", query = "select n from News n where n.ticker = :ticker")})
 public class News extends SilverpeasJpaEntity<News, UuidIdentifier> implements SilverpeasContent,
-    WithAttachment, WithThumbnail {
+    WithAttachment, WithThumbnail, WithReminder {
 
   public static final String CONTRIBUTION_TYPE = "News";
 
@@ -416,5 +418,10 @@ public class News extends SilverpeasJpaEntity<News, UuidIdentifier> implements S
   @Override
   public boolean equals(final Object obj) {
     return super.equals(obj);
+  }
+
+  @Override
+  public ContributionModel getModel() {
+    return new NewsModel(this);
   }
 }

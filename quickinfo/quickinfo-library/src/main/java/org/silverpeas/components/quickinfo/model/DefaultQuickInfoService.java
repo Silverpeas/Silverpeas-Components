@@ -28,6 +28,8 @@ import org.silverpeas.components.delegatednews.service.DelegatedNewsService;
 import org.silverpeas.components.delegatednews.service.DelegatedNewsServiceProvider;
 import org.silverpeas.components.quickinfo.NewsByStatus;
 import org.silverpeas.components.quickinfo.QuickInfoComponentSettings;
+import org.silverpeas.components.quickinfo.notification.NewsEventNotifier;
+import org.silverpeas.components.quickinfo.notification.QuickInfoDelayedVisibilityUserNotificationReminder;
 import org.silverpeas.components.quickinfo.notification.QuickInfoSubscriptionUserNotification;
 import org.silverpeas.components.quickinfo.repository.NewsRepository;
 import org.silverpeas.components.quickinfo.service.QuickInfoContentManager;
@@ -36,7 +38,7 @@ import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.comment.service.CommentService;
+import org.silverpeas.core.contribution.ContributionManager;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.Attachments;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
@@ -48,11 +50,13 @@ import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.model.IndexManager;
 import org.silverpeas.core.io.upload.UploadedFile;
-import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
+import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
+import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.reminder.Reminder;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ServiceProvider;
@@ -71,10 +75,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
+import static org.silverpeas.components.quickinfo.notification.QuickInfoDelayedVisibilityUserNotificationReminder.QUICKINFO_DELAYED_VISIBILITY_USER_NOTIFICATION;
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
 import static org.silverpeas.core.persistence.Transaction.performInOne;
 
@@ -82,14 +88,13 @@ import static org.silverpeas.core.persistence.Transaction.performInOne;
 public class DefaultQuickInfoService implements QuickInfoService {
 
   private static final String ASSOCIATED_TO_THE_NEWS_MSG = " associated to the news ";
+
   @Inject
   private NewsRepository newsRepository;
-
-  @Inject
-  private CommentService commentService;
-
   @Inject
   private QuickInfoContentManager quickInfoContentManager;
+  @Inject
+  private NewsEventNotifier notifier;
 
   @Override
   public News getContentById(String contentId) {
@@ -210,6 +215,8 @@ public class DefaultQuickInfoService implements QuickInfoService {
   @Override
   public void update(final News news, List<PdcPosition> positions,
       Collection<UploadedFile> uploadedFiles, final boolean forcePublishing) {
+    final News before = Transaction.performInNew(() -> getNews(news.getId()));
+
     final PublicationDetail publication = news.getPublication();
 
     // saving WYSIWYG content
@@ -247,33 +254,23 @@ public class DefaultQuickInfoService implements QuickInfoService {
     // Classifying new content onto taxonomy
     classifyQuickInfo(publication, positions);
 
-    if (!news.isDraft() && news.isVisible()) {
-      // Sending notifications to subscribers
-      NotifAction action = NotifAction.UPDATE;
-      if (forcePublishing) {
-        action = NotifAction.CREATE;
-      }
-      UserNotificationHelper.buildAndSend(new QuickInfoSubscriptionUserNotification(news, action));
-    }
+    notifier.notifyEventOn(ResourceEvent.Type.UPDATE, before, news);
 
-    if (isDelegatedNewsActivated(news.getComponentInstanceId())) {
-      getDelegatedNewsService()
-          .updateDelegatedNews(publication.getId(), news, publication.getUpdaterId(),
-              news.getVisibilityPeriod());
-    }
+    // Sending notifications to subscribers
+    sendSubscriptionsNotification(news, forcePublishing ? NotifAction.CREATE: NotifAction.UPDATE);
   }
 
   @Override
   public void removeNews(final String id) {
-    News news = getNews(id);
+    final News news = getNews(id);
 
-    PublicationPK foreignPK = news.getForeignPK();
+    final PublicationPK foreignPK = news.getForeignPK();
 
     // Deleting publication
     getPublicationService().removePublication(foreignPK);
 
     // De-reffering contribution in taxonomy
-    try (Connection connection = DBUtil.openConnection()) {
+    try (final Connection connection = DBUtil.openConnection()) {
       quickInfoContentManager.deleteSilverContent(connection, foreignPK);
     } catch (ContentManagerException | SQLException e) {
       SilverLogger.getLogger(this).error(
@@ -281,18 +278,15 @@ public class DefaultQuickInfoService implements QuickInfoService {
               ASSOCIATED_TO_THE_NEWS_MSG + news.getId(), e);
     }
 
-    // TODO: all the 3 below stuff should be done by using the CDI notification for a better decoupling
-    // Deleting comments
-    commentService.deleteAllCommentsOnPublication(News.CONTRIBUTION_TYPE, news.getPK());
+    // TODO: the statistic deletion should be done by using the CDI notification for a better decoupling
 
     // deleting statistics
     getStatisticService().deleteStats(news);
 
-    // deleting delegated news
-    getDelegatedNewsService().deleteDelegatedNews(Integer.parseInt(foreignPK.getId()));
-
     // deleting news itself
     performInOne(() -> newsRepository.deleteById(id));
+
+    notifier.notifyEventOn(ResourceEvent.Type.DELETION, news);
   }
 
   @Override
@@ -304,10 +298,7 @@ public class DefaultQuickInfoService implements QuickInfoService {
     return newsRepository.getByComponentIds(asList(allowedComponentIds))
         .stream()
         .filter(n -> n.getPublishDate() != null)
-        .map(n -> {
-          decorateNews(singletonList(n), false);
-          return n;
-        })
+        .peek(n -> decorateNews(singletonList(n), false))
         .filter(n -> n.isVisible() && !n.isDraft())
         .limit(limit)
         .collect(Collectors.toList());
@@ -346,11 +337,20 @@ public class DefaultQuickInfoService implements QuickInfoService {
     return sortByDateDesc(result);
   }
 
+  @Override
   public void submitNewsOnHomepage(String id, String userId) {
     News news = getNews(id);
     getDelegatedNewsService()
         .submitNews(news.getPublicationId(), news, news.getUpdaterId(), news.getVisibilityPeriod(),
             userId);
+  }
+
+  @Override
+  public void performReminder(final Reminder reminder) {
+    if (QUICKINFO_DELAYED_VISIBILITY_USER_NOTIFICATION.asString().equals(reminder.getProcessName())) {
+      ContributionManager.get().getById(reminder.getContributionId()).ifPresent(
+          p -> sendSubscriptionsNotification((News) p, NotifAction.CREATE));
+    }
   }
 
   private void publish(final News news) {
@@ -369,11 +369,16 @@ public class DefaultQuickInfoService implements QuickInfoService {
           .error("can not update the silver-content of the publication " + publication.getId() +
               ASSOCIATED_TO_THE_NEWS_MSG + news.getId(), e);
     }
+    sendSubscriptionsNotification(news, NotifAction.CREATE);
+  }
 
-    if (news.isVisible()) {
-      // Sending notifications to subscribers
-      UserNotificationHelper.buildAndSend(
-          new QuickInfoSubscriptionUserNotification(news, NotifAction.CREATE));
+  private void sendSubscriptionsNotification(final News news, final NotifAction notifAction) {
+    if (!news.isDraft()) {
+      if (news.isVisible()) {
+        new QuickInfoSubscriptionUserNotification(news, notifAction).build().send();
+      } else {
+        QuickInfoDelayedVisibilityUserNotificationReminder.get().setAbout(news);
+      }
     }
   }
 
@@ -418,7 +423,7 @@ public class DefaultQuickInfoService implements QuickInfoService {
 
   private Map<String, News> mapByPublicationId(final List<News> news) {
     final Map<String, News> mapping = new HashMap<>(news.size());
-    news.forEach(n -> mapping.put(n.getPublicationId(), n));
+    news.stream().filter(Objects::nonNull).forEach(n -> mapping.put(n.getPublicationId(), n));
     return mapping;
   }
 

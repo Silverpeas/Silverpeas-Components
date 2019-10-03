@@ -28,6 +28,8 @@ import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 
+import static org.silverpeas.components.delegatednews.service.DelegatedNewsService.Constants.DELEGATED_COMPONENT_PARAM;
+
 public class QuickInfoComponentSettings {
 
   private String description;
@@ -41,7 +43,7 @@ public class QuickInfoComponentSettings {
 
   public static final String PARAM_COMMENTS = "comments";
   public static final String PARAM_TAXONOMY = "usePdc";
-  public static final String PARAM_DELEGATED = "delegatedNews";
+  public static final String PARAM_DELEGATED = DELEGATED_COMPONENT_PARAM;
 
   public static final String PARAM_BROADCAST = "broadcasting";
   public static final String VALUE_BROADCAST_TICKER = "ticker";

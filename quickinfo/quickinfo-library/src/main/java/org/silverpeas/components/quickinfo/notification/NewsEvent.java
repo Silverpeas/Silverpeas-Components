@@ -21,17 +21,27 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package org.silverpeas.components.quickinfo.notification;
 
-package org.silverpeas.components.almanach;
-
-import org.silverpeas.core.calendar.AbstractCalendarComponentInstanceContributionManager;
-import org.silverpeas.core.contribution.ComponentInstanceContributionManager;
-
-import javax.inject.Named;
+import org.silverpeas.components.quickinfo.model.News;
+import org.silverpeas.core.notification.system.AbstractResourceEvent;
 
 /**
+ * Event about a news. This event can be about a creation, an update or a deletion of a
+ * news.
  * @author silveryocha
  */
-@Named("almanach" + ComponentInstanceContributionManager.Constants.NAME_SUFFIX)
-public class AlmanachInstanceContributionManager
-    extends AbstractCalendarComponentInstanceContributionManager {}
+public class NewsEvent extends AbstractResourceEvent<News> {
+  private static final long serialVersionUID = -7045004689604288651L;
+
+  protected NewsEvent() {
+    super();
+  }
+
+  /**
+   * @see AbstractResourceEvent#AbstractResourceEvent(Type, Object[])
+   */
+  public NewsEvent(Type type, News... news) {
+    super(type, news);
+  }
+}

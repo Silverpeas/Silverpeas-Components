@@ -25,6 +25,7 @@ package org.silverpeas.components.delegatednews.service;
 
 import org.silverpeas.components.delegatednews.model.DelegatedNews;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.util.ServiceProvider;
 
@@ -33,6 +34,13 @@ import java.util.Date;
 import java.util.List;
 
 public interface DelegatedNewsService {
+
+  class Constants {
+    public static final String DELEGATED_COMPONENT_PARAM = "delegatedNews";
+
+    private Constants() {
+    }
+  }
 
   static DelegatedNewsService get() {
     return ServiceProvider.getService(DelegatedNewsService.class);
@@ -55,8 +63,7 @@ public interface DelegatedNewsService {
 
   void updateDateDelegatedNews(int pubId, Date dateHourBegin, Date dateHourEnd);
 
-  void updateDelegatedNews(String id, SilverpeasContent news, String updaterId,
-      Period visibilityPeriod);
+  void updateDelegatedNews(PublicationPK publicationPK, String updaterId, Period visibilityPeriod);
 
   void deleteDelegatedNews(int pubId);
 

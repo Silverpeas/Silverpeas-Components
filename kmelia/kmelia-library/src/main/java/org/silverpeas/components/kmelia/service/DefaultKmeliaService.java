@@ -44,6 +44,7 @@ import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.comment.service.CommentService;
+import org.silverpeas.core.contribution.ContributionManager;
 import org.silverpeas.core.contribution.attachment.AttachmentException;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
@@ -70,7 +71,6 @@ import org.silverpeas.core.contribution.template.form.dao.ModelDAO;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.datereminder.persistence.service.PersistentDateReminderService;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.model.IndexManager;
 import org.silverpeas.core.io.media.image.thumbnail.ThumbnailException;
@@ -98,6 +98,7 @@ import org.silverpeas.core.personalorganizer.model.Attendee;
 import org.silverpeas.core.personalorganizer.model.TodoDetail;
 import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
 import org.silverpeas.core.process.annotation.SimulationActionProcess;
+import org.silverpeas.core.reminder.Reminder;
 import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
 import org.silverpeas.core.subscription.Subscription;
@@ -126,6 +127,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.util.*;
 
+import static org.silverpeas.components.kmelia.notification.KmeliaDelayedVisibilityUserNotificationReminder.KMELIA_DELAYED_VISIBILITY_USER_NOTIFICATION;
 import static org.silverpeas.components.kmelia.service.KmeliaOperationContext.OperationType.*;
 import static org.silverpeas.components.kmelia.service.KmeliaServiceContext.*;
 import static org.silverpeas.core.admin.service.OrganizationControllerProvider.getOrganisationController;
@@ -170,8 +172,6 @@ public class DefaultKmeliaService implements KmeliaService {
   private PdcClassificationService pdcClassificationService;
   @Inject
   private PdcSubscriptionManager pdcSubscriptionManager;
-  @Inject
-  private PersistentDateReminderService dateReminderService;
   @Inject
   private KmeliaContentManager kmeliaContentManager;
 
@@ -1708,6 +1708,8 @@ public class DefaultKmeliaService implements KmeliaService {
         SilverLogger.getLogger(this).error("PdC subscriptions notification failure for publication {0}",
             new String[] {pubDetail.getPK().getId()}, e);
       }
+    } else {
+      KmeliaDelayedVisibilityUserNotificationReminder.get().setAbout(pubDetail);
     }
     return oneFather;
   }
@@ -4729,15 +4731,6 @@ public class DefaultKmeliaService implements KmeliaService {
     return false;
   }
 
-  /**
-   * Gets a business service of dateReminder.
-   *
-   * @return a DefaultDateReminderService instance.
-   */
-  private PersistentDateReminderService getDateReminderService() {
-    return dateReminderService;
-  }
-
   private PublicationDetail clonePublication(String cloneId, PublicationPK pubPK,
       String validatorUserId, Date validationDate) {
     PublicationPK tempPK = new PublicationPK(cloneId, pubPK);
@@ -4798,6 +4791,18 @@ public class DefaultKmeliaService implements KmeliaService {
       }
     }
     return activeValidatorIds;
+  }
+
+  @Override
+  public void performReminder(final Reminder reminder) {
+    if (KMELIA_DELAYED_VISIBILITY_USER_NOTIFICATION.asString().equals(reminder.getProcessName())) {
+      ContributionManager.get().getById(reminder.getContributionId()).ifPresent(p -> {
+        final PublicationDetail publication = (PublicationDetail) p;
+        if (!isPublicationInBasket(publication.getPK())) {
+          sendSubscriptionsNotification(publication, NotifAction.PUBLISHED, false);
+        }
+      });
+    }
   }
 
   private class PublicationConcernedByUpdate {
