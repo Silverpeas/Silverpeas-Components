@@ -49,7 +49,7 @@ import java.util.List;
 public class KmeliaDelayedVisibilityUserNotificationReminderInitializer
     implements Initialization {
 
-  private File logFilePath = new File(FileRepositoryManager.getUploadPath(),
+  private File dataFile = new File(FileRepositoryManager.getInitDataDirPath(),
       "kmeliaDelayedVisibilityReminderInitialization");
 
   @Inject
@@ -57,7 +57,7 @@ public class KmeliaDelayedVisibilityUserNotificationReminderInitializer
 
   @Override
   public void init() throws Exception {
-    if (!logFilePath.exists()) {
+    if (!dataFile.exists()) {
       final List<PublicationPK> potentialPubIds = JdbcSqlQuery.createSelect("pubId, instanceId")
           .from("sb_publication_publi")
           .where("instanceId like 'kmelia%'")
@@ -81,7 +81,7 @@ public class KmeliaDelayedVisibilityUserNotificationReminderInitializer
           });
         }
       } finally {
-        FileUtils.write(logFilePath, report.toString(), Charsets.UTF_8);
+        FileUtils.write(dataFile, report.toString(), Charsets.UTF_8);
       }
     }
   }

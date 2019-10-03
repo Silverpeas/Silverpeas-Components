@@ -48,7 +48,7 @@ import java.util.List;
 public class QuickInfoDelayedVisibilityUserNotificationReminderInitializer
     implements Initialization {
 
-  private File logFilePath = new File(FileRepositoryManager.getUploadPath(),
+  private File dataFile = new File(FileRepositoryManager.getInitDataDirPath(),
       "quickInfoDelayedVisibilityReminderInitialization");
 
   @Inject
@@ -56,7 +56,7 @@ public class QuickInfoDelayedVisibilityUserNotificationReminderInitializer
 
   @Override
   public void init() throws Exception {
-    if (!logFilePath.exists()) {
+    if (!dataFile.exists()) {
       final List<String> potentialNewsIds = JdbcSqlQuery.createSelect("n.id")
           .from("sc_quickinfo_news n, sb_publication_publi p")
           .where("CAST(n.foreignid AS INT) = p.pubid")
@@ -81,7 +81,7 @@ public class QuickInfoDelayedVisibilityUserNotificationReminderInitializer
           });
         }
       } finally {
-        FileUtils.write(logFilePath, report.toString(), Charsets.UTF_8);
+        FileUtils.write(dataFile, report.toString(), Charsets.UTF_8);
       }
     }
   }

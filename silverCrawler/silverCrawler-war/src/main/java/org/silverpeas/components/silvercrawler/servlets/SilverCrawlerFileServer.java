@@ -121,7 +121,7 @@ public class SilverCrawlerFileServer extends SilverpeasAuthenticatedHttpServlet 
     } else {
       type = Statistic.DIRECTORY;
       fileToSend =
-          FileUtils.getFile(FileRepositoryManager.getTemporaryPath(null, componentId), sourceFile);
+          FileUtils.getFile(FileRepositoryManager.getTemporaryPath(), sourceFile);
       fileStat = FileUtils.getFile(rootPath, path);
     }
 
