@@ -586,7 +586,7 @@ function deleteFolder(nodeId, nodeLabel) {
     var url = getWebContext() + '/KmeliaAJAXServlet';
     $.post(url, {Id: nodeId, ComponentId: componentId, Action: 'Delete'},
     function(data) {
-      if ((data - 0) == data && data.length > 0) {
+      if (data !== null && data.length > 0 && !isNaN(data)) {
         // fires event
         try {
           nodeDeleted(nodeId);
@@ -616,6 +616,20 @@ function addNodeToCurrentNode() {
   topicAdd(getCurrentNodeId(), false);
 }
 
+function applyWithNodePath(path, operation) {
+  var url = getWebContext() + "/services/folders/" + getComponentId() + "/" + path + "/path?lang=" + getTranslation() + "&IEFix=" + new Date().getTime();
+  $.getJSON(url, function(data) {
+    operation(data);
+  });
+}
+
+function applyWithNode(nodeId, operation) {
+  var url = getWebContext() + "/services/folders/" + getComponentId() + "/" + nodeId + "?lang=" + getTranslation() + "&IEFix=" + new Date().getTime();
+  $.getJSON(url, function(data) {
+    operation(data);
+  });
+}
+
 function topicAdd(topicId, isLinked) {
   var translation = getTranslation();
   var rightsOnTopic = params["rightsOnTopic"];
@@ -634,8 +648,7 @@ function topicAdd(topicId, isLinked) {
     $("#deleteTranslation").remove();
 
     // display path of parent
-    url = getWebContext() + "/services/folders/" + getComponentId() + "/" + topicId + "/path?lang=" + getTranslation() + "&IEFix=" + new Date().getTime();
-    $.getJSON(url, function(data) {
+    applyWithNodePath(topicId, function(data) {
       //remove topic breadcrumb
       $("#addOrUpdateNode #path").html("");
       $(data).each(function(i, topic) {

@@ -23,8 +23,10 @@
  */
 package org.silverpeas.components.kmelia.model;
 
+import org.silverpeas.components.kmelia.service.KmeliaHelper;
 import org.silverpeas.components.kmelia.service.KmeliaService;
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.SilverpeasExceptionMessages;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.User;
@@ -33,8 +35,10 @@ import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.comment.service.CommentServiceProvider;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.contribution.publication.model.CompletePublication;
+import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
@@ -43,7 +47,6 @@ import org.silverpeas.core.security.authorization.AccessController;
 import org.silverpeas.core.security.authorization.AccessControllerProvider;
 import org.silverpeas.core.security.authorization.NodeAccessControl;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
-import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.URLUtil;
@@ -52,20 +55,28 @@ import org.silverpeas.core.util.logging.SilverLogger;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
 
 /**
- * A publication as defined in a Kmelia component. A publication in Kmelia can be positionned in the
- * PDC, it can have attachments and it can be commented.
+ * A publication as defined in a Kmelia component. A publication in Kmelia is a publication that
+ * is always in a given topic (the father of the publication), and that can be positioned in the
+ * PDC, can have attachments, and can be commented.
+ * <p>
+ * In Kmelia, a publication can be in one or more topics. In such a case, a Kmelia publication that
+ * is in a topic other that the original one is said to be an alias of the publication in the
+ * original topic: any changes are done in the true publication.
+ * </p>
  */
 public class KmeliaPublication implements SilverpeasContent {
 
   private static final long serialVersionUID = 4861635754389280165L;
   private PublicationDetail detail;
   private CompletePublication completeDetail;
-  private boolean alias = false;
   private final PublicationPK pk;
   private int rank;
   private boolean read = false;
+  private Location location;
 
   private KmeliaPublication(PublicationPK id) {
     this.pk = id;
@@ -79,36 +90,134 @@ public class KmeliaPublication implements SilverpeasContent {
   /**
    * Gets the Kmelia publication with the specified primary key identifying it uniquely. If no such
    * publication exists with the specified key, then the runtime exception
-   * SilverpeasRuntimeException is thrown.
+   * {@link KmeliaRuntimeException} is thrown. The publication is by default the original one and
+   * hence not an alias.
    *
    * @param pk the primary key of the publication to get.
    * @return the Kmelia publication matching the primary key.
    */
-  public static KmeliaPublication aKmeliaPublicationWithPk(final PublicationPK pk) {
+  public static KmeliaPublication withPK(final PublicationPK pk) {
     KmeliaPublication publication = new KmeliaPublication(pk);
-    publication.getDetail();
+    publication.loadPublicationDetail();
     return publication;
   }
 
   /**
+   * Gets the Kmelia publication with the specified primary key and that is in the topic specified
+   * by its primary key. If no such publication exists with the specified key or if the publication
+   * has no such father, then the runtime exception {@link KmeliaRuntimeException} is thrown.
+   * @param pk the primary key of the publication to get.
+   * @param fatherPk the primary key of the topic that is the father of the publication.
+   * @return the Kmelia publication matching the primary key.
+   */
+  public static KmeliaPublication withPK(final PublicationPK pk, final NodePK fatherPk) {
+    KmeliaPublication publication = withPK(pk);
+    publication.setFather(fatherPk);
+    return publication;
+  }
+
+  private void setFather(final NodePK fatherPk) {
+    location = findLocation(fatherPk);
+    if (location != null) {
+      getDetail().setAlias(location.isAlias());
+    }
+  }
+
+  private Location findLocation(final NodePK pk) {
+    final Predicate<Location> predicate;
+    final String nodeIMsg;
+    if (pk != null) {
+      predicate = pk::equals;
+      nodeIMsg = " in node " + pk.getId() + "(Kmelia " + pk.getInstanceId() + ")";
+    } else {
+      predicate = l -> !l.isAlias();
+      nodeIMsg = "";
+    }
+    final PublicationPK mainPubPk = getDetail().isClone()
+        ? getDetail().getClonePK()
+        : getDetail().getPK();
+    return PublicationService.get()
+        .getAllLocations(mainPubPk)
+        .stream()
+        .filter(predicate)
+        .findFirst()
+        .orElseGet(() ->  {
+          if (pk == null || !KmeliaHelper.isKmax(pk.getInstanceId())) {
+            throw new KmeliaRuntimeException(
+                "Unable to find the location of the publication " + getId() + nodeIMsg);
+          }
+          return null;
+        });
+  }
+
+  public Location getLocation() {
+    if (location == null) {
+      location = findLocation(null);
+    }
+    return location;
+  }
+
+  /**
    * Gets the Kmelia publication from the specified publication detail.
+   * The publication is by default the original one and not an alias.
    *
    * @param detail the detail about the publication to get.
    * @return the Kmelia publication matching the specified publication detail.
    */
-  public static KmeliaPublication aKmeliaPublicationFromDetail(final PublicationDetail detail) {
-    return aKmeliaPublicationFromDetail(detail, 0);
+  public static KmeliaPublication fromDetail(final PublicationDetail detail) {
+    KmeliaPublication publication = new KmeliaPublication(detail.getPK());
+    publication.setPublicationDetail(detail);
+    return publication;
   }
 
-  public static KmeliaPublication aKmeliaPublicationFromDetail(final PublicationDetail detail,
-      int rank) {
+  /**
+   * Gets the Kmelia publication from the specified publication detail and with the given rank.
+   * The publication is by default the original one and not an alias.
+   *
+   * @param detail the detail about the publication to get.
+   * @param rank the rank of the publication among others ones.
+   * @return the Kmelia publication matching the specified publication detail.
+   */
+  public static KmeliaPublication fromDetail(final PublicationDetail detail, int rank) {
     KmeliaPublication publication = new KmeliaPublication(detail.getPK(), rank);
     publication.setPublicationDetail(detail);
     return publication;
   }
 
   /**
+   * Gets the Kmelia publication in the given topic from the specified publication detail.
+   *
+   * @param detail the detail about the publication to get.
+   * @param fatherPK the primary key of the topic that is father of the publication to get.
+   * @return the Kmelia publication matching the specified publication detail.
+   */
+  public static KmeliaPublication fromDetail(final PublicationDetail detail,
+      final NodePK fatherPK) {
+    final KmeliaPublication publication = fromDetail(detail, fatherPK, 0);
+    publication.setFather(fatherPK);
+    return publication;
+  }
+
+  /**
+   * Gets the Kmelia publication in the given topic from the specified publication detail and
+   * with the given rank.
+   *
+   * @param detail the detail about the publication to get.
+   * @param fatherPK the primary key of the topic that is father of the publication to get.
+   * @param rank the rank of the publication among others ones.
+   * @return the Kmelia publication matching the specified publication detail.
+   */
+  public static KmeliaPublication fromDetail(final PublicationDetail detail, final NodePK fatherPK,
+      int rank) {
+    final KmeliaPublication publication = new KmeliaPublication(detail.getPK(), rank);
+    publication.setPublicationDetail(detail);
+    publication.setFather(fatherPK);
+    return publication;
+  }
+
+  /**
    * Gets the Kmelia publication from the specified complete publication detail.
+   * The publication is by default the original one and not an alias.
    *
    * @param detail the complete detail about the publication to get.
    * @return the Kmelia publication matching the specified complete publication detail.
@@ -118,16 +227,6 @@ public class KmeliaPublication implements SilverpeasContent {
     KmeliaPublication publication = new KmeliaPublication(detail.getPublicationDetail().getPK());
     publication.setPublicationCompleteDetail(detail);
     return publication;
-  }
-
-  /**
-   * Sets this Kmelia publication as an alias one.
-   *
-   * @return itself.
-   */
-  public KmeliaPublication asAlias() {
-    this.alias = true;
-    return this;
   }
 
   public boolean isRead() {
@@ -144,7 +243,7 @@ public class KmeliaPublication implements SilverpeasContent {
    * @return true if this publication is an alias, false otherwise.
    */
   public boolean isAlias() {
-    return this.alias;
+    return getDetail().isAlias();
   }
 
   /**
@@ -186,7 +285,7 @@ public class KmeliaPublication implements SilverpeasContent {
    */
   public PublicationDetail getDetail() {
     if (detail == null) {
-      setPublicationDetail(getKmeliaService().getPublicationDetail(pk));
+      loadPublicationDetail();
     }
     return detail;
   }
@@ -287,11 +386,17 @@ public class KmeliaPublication implements SilverpeasContent {
   }
 
   private void setPublicationDetail(final PublicationDetail detail) {
+    if (detail == null) {
+      throw new KmeliaRuntimeException(
+          SilverpeasExceptionMessages.failureOnGetting("publication detail", getId()));
+    }
     this.detail = detail;
   }
 
   private void setPublicationCompleteDetail(final CompletePublication detail) {
-    setPublicationDetail(detail.getPublicationDetail());
+    if (this.detail == null) {
+      setPublicationDetail(detail.getPublicationDetail());
+    }
     this.completeDetail = detail;
   }
 
@@ -313,6 +418,10 @@ public class KmeliaPublication implements SilverpeasContent {
 
   private OrganizationController getOrganizationController() {
     return OrganizationControllerProvider.getOrganisationController();
+  }
+
+  private void loadPublicationDetail() {
+    setPublicationDetail(getKmeliaService().getPublicationDetail(pk));
   }
 
   @Override
@@ -381,18 +490,25 @@ public class KmeliaPublication implements SilverpeasContent {
         getPk());
   }
 
-  @SuppressWarnings("unchecked")
-  public NodePK getOriginalLocation(String userId) {
-    List<NodePK> fatherPKs = (List) getKmeliaService().getPublicationFathers(detail.getPK());
-    if (CollectionUtil.isNotEmpty(fatherPKs)) {
-      AccessController<NodePK> accessController =
-          AccessControllerProvider.getAccessController(NodeAccessControl.class);
-      for (NodePK fatherPK : fatherPKs) {
-        if (accessController.isUserAuthorized(userId, fatherPK)) {
-          return fatherPK;
-        }
-      }
+  /**
+   * Gets the original location of this alias according to the access right the of the specified
+   * user. If this location isn't an alias, then returns itself. If the user has no access right
+   * to the original location, then returns nothing.
+   * If no original location can be found, whatever the access right of the user, a
+   * {@link KmeliaRuntimeException} is thrown.
+   * @param userId the unique identifier of the user for which the access right on the original
+   * location has to be checked.
+   * @return either the original location (itself if this location is already the original one) or
+   * nothing whether the given user has no access right on it.
+   */
+  public Optional<Location> getOriginalLocation(String userId) {
+    final Location originalLocation = findLocation(null);
+    AccessController<NodePK> accessController =
+        AccessControllerProvider.getAccessController(NodeAccessControl.class);
+    if (originalLocation != null && accessController.isUserAuthorized(userId, originalLocation)) {
+      return Optional.of(originalLocation);
+    } else {
+      return Optional.empty();
     }
-    return null;
   }
 }

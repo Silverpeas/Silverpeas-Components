@@ -328,7 +328,7 @@ public class KmeliaAuthorization implements ComponentAuthorization {
   private Collection<NodePK> getPublicationFolderPKs(PublicationPK pk) {
     Collection<NodePK> fatherPKs = null;
     try {
-      fatherPKs = getPublicationService().getAllFatherPK(pk);
+      fatherPKs = getPublicationService().getAllFatherPKInSamePublicationComponentInstance(pk);
     } catch (Exception e) {
       SilverLogger.getLogger(this).warn(e);
     }
@@ -384,7 +384,7 @@ public class KmeliaAuthorization implements ComponentAuthorization {
       profiles = getAppProfiles(userId, pubPK.getInstanceId());
     } else {
       // get topic-level profiles
-      Collection<NodePK> nodePKs = getPublicationService().getAllFatherPK(pubPK);
+      Collection<NodePK> nodePKs = getPublicationService().getAllFatherPKInSamePublicationComponentInstance(pubPK);
       List<String> lProfiles = new ArrayList<>();
       for (NodePK nodePK : nodePKs) {
         NodeDetail node = getNodeService().getHeader(nodePK);

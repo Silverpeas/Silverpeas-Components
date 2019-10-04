@@ -45,7 +45,7 @@ import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
-import org.silverpeas.core.contribution.publication.model.Alias;
+import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.CompletePublication;
 import org.silverpeas.core.contribution.publication.model.PublicationLink;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
@@ -569,15 +569,6 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           }
         }
 
-        if (!kmaxMode) {
-          boolean checkPath = StringUtil.getBooleanValue(request.getParameter("CheckPath"));
-          if (checkPath || KmeliaHelper.isToValidateFolder(kmelia.getCurrentFolderId())) {
-            processPath(kmelia, id);
-          } else {
-            processPath(kmelia, null);
-          }
-        }
-
         // view publication from global search ?
         Integer searchScope = (Integer) request.getAttribute("SearchScope");
         if (searchScope == null) {
@@ -585,6 +576,16 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
             request.setAttribute("SearchScope", SearchContext.LOCAL);
           } else {
             request.setAttribute("SearchScope", SearchContext.NONE);
+          }
+        }
+
+        if (!kmaxMode) {
+          boolean checkPath = StringUtil.getBooleanValue(request.getParameter("CheckPath"));
+          boolean fromSearch = searchScope != null || kmelia.getSearchContext() != null;
+          if (fromSearch || checkPath || KmeliaHelper.isToValidateFolder(kmelia.getCurrentFolderId())) {
+            processPath(kmelia, id);
+          } else {
+            processPath(kmelia, null);
           }
         }
 
@@ -646,7 +647,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           request.setAttribute("NotificationAllowed", kmelia.isNotificationAllowed());
 
           // check is requested publication is an alias
-          boolean alias = checkAlias(kmelia, kmeliaPublication);
+          boolean alias = kmeliaPublication.isAlias();
 
           if (alias) {
             request.setAttribute("Profile", "user");
@@ -1004,18 +1005,15 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         String folderId = request.getParameter("FolderId");
         destination = kmelia.initUPToSelectValidator(formElementName, formElementId, folderId);
       } else if (function.equals("PublicationPaths")) {
-        PublicationDetail publication = kmelia.getSessionPublication().getDetail();
-        String pubId = publication.getPK().getId();
+        KmeliaPublication publication = kmelia.getSessionPublication();
         request.setAttribute("Publication", publication);
         request.setAttribute("LinkedPathString", kmelia.getSessionPath());
-        request.setAttribute("PathList", kmelia.getPublicationFathers(pubId));
-
+        Collection<Location> locations = kmelia.getPublicationLocations();
+        request.setAttribute("Locations", locations);
         if (toolboxMode) {
           request.setAttribute("Topics", kmelia.getAllTopics());
         } else {
-          List<Alias> aliases = kmelia.getAliases();
-          request.setAttribute("Aliases", aliases);
-          request.setAttribute("Components", kmelia.getComponents(aliases));
+          request.setAttribute("Components", kmelia.getComponents(locations));
         }
 
         destination = rootDestination + "publicationPaths.jsp";
@@ -1023,36 +1021,36 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         String[] topics = request.getParameterValues("topicChoice");
         String loadedComponentIds = request.getParameter("LoadedComponentIds");
 
-        Alias alias;
-        List<Alias> aliases = new ArrayList<Alias>();
+        Location location;
+        List<Location> locations = new ArrayList<>();
         for (int i = 0; topics != null && i < topics.length; i++) {
           String topicId = topics[i];
           StringTokenizer tokenizer = new StringTokenizer(topicId, ",");
           String nodeId = tokenizer.nextToken();
           String instanceId = tokenizer.nextToken();
 
-          alias = new Alias(nodeId, instanceId);
-          alias.setUserId(kmelia.getUserId());
-          aliases.add(alias);
+          location = new Location(nodeId, instanceId);
+          location.setAsAlias(kmelia.getUserId());
+          locations.add(location);
         }
 
         // Tous les composants ayant un alias n'ont pas forcément été chargés
-        List<Alias> oldAliases = kmelia.getAliases();
-        for (Alias oldAlias : oldAliases) {
-          if (!loadedComponentIds.contains(oldAlias.getInstanceId())) {
+        Collection<Location> oldLocations = kmelia.getPublicationAliases();
+        for (Location oldLocation : oldLocations) {
+          if (!loadedComponentIds.contains(oldLocation.getInstanceId()) && oldLocation.isAlias()) {
             // le composant de l'alias n'a pas été chargé
-            aliases.add(oldAlias);
+            locations.add(oldLocation);
           }
         }
 
-        kmelia.setAliases(aliases);
+        kmelia.setPublicationAliases(locations);
 
         destination = getDestination("ViewPublication", kmelia, request);
       } else if (function.equals("ShowAliasTree")) {
         String componentId = request.getParameter("ComponentId");
 
         request.setAttribute("Tree", kmelia.getAliasTreeview(componentId));
-        request.setAttribute("Aliases", kmelia.getAliases());
+        request.setAttribute("Aliases", kmelia.getPublicationAliases());
 
         destination = rootDestination + "treeview4PublicationPaths.jsp";
       } else if (function.equals("AddLinksToPublication")) {
@@ -1880,14 +1878,6 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
   private String checkLanguage(KmeliaSessionController kmelia, PublicationDetail pubDetail) {
     return pubDetail.getLanguageToDisplay(kmelia.getCurrentLanguage());
-  }
-
-  private boolean checkAlias(KmeliaSessionController kmelia, KmeliaPublication publication) {
-    if (!kmelia.getComponentId().equals(publication.getDetail().getPK().getInstanceId())) {
-      publication.asAlias();
-      return true;
-    }
-    return false;
   }
 
   /**

@@ -71,6 +71,7 @@ import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -140,11 +141,13 @@ public class DefaultBlogService implements BlogService {
     }
   }
 
+  @Transactional
   @Override
   public String createPost(PostDetail post) {
     return createPost(post, null);
   }
 
+  @Transactional
   @Override
   public String createPost(final PostDetail post, PdcClassification classification) {
     try (Connection con = openConnection()) {
@@ -204,6 +207,7 @@ public class DefaultBlogService implements BlogService {
     }
   }
 
+  @Transactional
   @Override
   public void updatePost(PostDetail post) {
     try (Connection con = openConnection()) {
@@ -211,7 +215,7 @@ public class DefaultBlogService implements BlogService {
       PublicationDetail pub = post.getPublication();
 
       // Remove last category
-      getPublicationService().removeAllFather(pubPk);
+      getPublicationService().removeAllFathers(pubPk);
 
       // Save the publication
       getPublicationService().setDetail(pub);
@@ -245,13 +249,14 @@ public class DefaultBlogService implements BlogService {
     getPublicationService().addFather(pk, nodePK);
   }
 
+  @Transactional
   @Override
   public void deletePost(String postId, String instanceId) {
 
     try (Connection con = openConnection()) {
       PublicationPK pubPK = new PublicationPK(postId, instanceId);
       // Delete link with categorie
-      getPublicationService().removeAllFather(pubPK);
+      getPublicationService().removeAllFathers(pubPK);
       // Delete date event
       PostDAO.deleteDateEvent(con, pubPK.getId());
       // Delete comments
@@ -282,7 +287,7 @@ public class DefaultBlogService implements BlogService {
 
   private PostDetail getPost(PublicationDetail publication) {
     try {
-      Collection<NodePK> allCat = getPublicationService().getAllFatherPK(publication.getPK());
+      Collection<NodePK> allCat = getPublicationService().getAllFatherPKInSamePublicationComponentInstance(publication.getPK());
       // la collection des catégories contient en fait une seule catégorie, la récupérer
       Category cat = null;
       if (!allCat.isEmpty()) {
@@ -314,14 +319,12 @@ public class DefaultBlogService implements BlogService {
 
   @Override
   public Collection<PostDetail> getAllPosts(String instanceId) {
-    PublicationPK pubPK = new PublicationPK(USELESS, instanceId);
-
     Collection<PostDetail> posts = new ArrayList<>();
     try(Connection con = openConnection()) {
       // rechercher les publications classée par date d'évènement
       Collection<String> lastEvents = PostDAO.getAllEvents(con, instanceId);
       Collection<PublicationDetail> publications =
-          getPublicationService().getAllPublications(pubPK);
+          getPublicationService().getAllPublications(instanceId);
       for (String pubId : lastEvents) {
         for (PublicationDetail publication : publications) {
           if (publication.getPK().getId().equals(pubId)) {
@@ -337,15 +340,13 @@ public class DefaultBlogService implements BlogService {
 
   @Override
   public Collection<PostDetail> getAllValidPosts(String instanceId, int nbReturned) {
-    PublicationPK pubPK = new PublicationPK(USELESS, instanceId);
-
     Collection<PostDetail> posts = new ArrayList<>();
     int count = nbReturned;
     try (Connection con = openConnection()) {
       // rechercher les publications classées par date d'évènement
       Collection<String> lastEvents = PostDAO.getAllEvents(con, instanceId);
       Collection<PublicationDetail> publications =
-          getPublicationService().getAllPublications(pubPK);
+          getPublicationService().getAllPublications(instanceId);
       for (String pubId : lastEvents) {
         for (PublicationDetail publication : publications) {
           if (publication.getPK().getId().equals(pubId) && PublicationDetail.VALID_STATUS.
@@ -398,16 +399,13 @@ public class DefaultBlogService implements BlogService {
   @Override
   public Collection<PostDetail> getPostsByArchive(String beginDate, String endDate,
       String instanceId) {
-
-
-    PublicationPK pubPK = new PublicationPK(USELESS, instanceId);
     Collection<PostDetail> posts = new ArrayList<>();
     try (Connection con = openConnection()) {
       // rechercher les publications classée par date d'évènement
       Collection<String> lastEvents = PostDAO.getEventsByDates(con, instanceId, beginDate, endDate);
 
       Collection<PublicationDetail> publications =
-          getPublicationService().getAllPublications(pubPK);
+          getPublicationService().getAllPublications(instanceId);
       for (String pubId : lastEvents) {
         // pour chaque publication, créer le post correspondant
         for (PublicationDetail publication : publications) {
@@ -458,6 +456,7 @@ public class DefaultBlogService implements BlogService {
     return posts;
   }
 
+  @Transactional
   @Override
   public String createCategory(Category category) {
     try {
@@ -468,6 +467,7 @@ public class DefaultBlogService implements BlogService {
     }
   }
 
+  @Transactional
   @Override
   public void updateCategory(Category category) {
     try {
@@ -477,6 +477,7 @@ public class DefaultBlogService implements BlogService {
     }
   }
 
+  @Transactional
   @Override
   public void deleteCategory(String id, String instanceId) {
     try {
@@ -544,16 +545,16 @@ public class DefaultBlogService implements BlogService {
   @Override
   public void indexBlog(String componentId) {
     indexTopics(new NodePK(USELESS, componentId));
-    indexPublications(new PublicationPK(USELESS, componentId));
+    indexPublications(componentId);
   }
 
-  private void indexPublications(PublicationPK pubPK) {
+  private void indexPublications(String componentId) {
     Collection<PublicationDetail> pubs;
     try {
-      pubs = getPublicationService().getAllPublications(pubPK);
+      pubs = getPublicationService().getAllPublications(componentId);
     } catch (Exception e) {
       throw new BlogRuntimeException(
-          failureOnGetting("[INDEXING] all publications in blog", pubPK.getInstanceId()), e);
+          failureOnGetting("[INDEXING] all publications in blog", componentId), e);
     }
 
     if (pubs != null) {
@@ -561,7 +562,7 @@ public class DefaultBlogService implements BlogService {
         try {
           indexPublication(pub.getPK());
         } catch (Exception e) {
-          throw new BlogRuntimeException(failureOnIndexing("publication", pubPK.toString()), e);
+          throw new BlogRuntimeException(failureOnIndexing("publication", pub.getPK().toString()), e);
         }
       }
     }

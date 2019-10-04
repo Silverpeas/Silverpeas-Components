@@ -28,13 +28,11 @@ import org.silverpeas.core.ApplicationService;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.contribution.content.form.XMLField;
-import org.silverpeas.core.contribution.publication.model.Alias;
 import org.silverpeas.core.contribution.publication.model.CompletePublication;
+import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.node.coordinates.model.Coordinate;
-import org.silverpeas.core.node.coordinates.model.CoordinatePK;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.notification.user.UserNotification;
@@ -44,9 +42,7 @@ import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /**
  * This is the Service interface controller of the MVC. It controls all the activities that happen
@@ -202,7 +198,14 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
    */
   Collection<Collection<NodeDetail>> getPathList(PublicationPK pubPK);
 
-  Collection<NodePK> getPublicationFathers(PublicationPK pubPK);
+  /**
+   * Gets the father of the specified publication. If the publication is a clone of a main one, then
+   * gets the father of the cloned publication. The father returned should be the main location of
+   * the publication. It the publication is an orphaned one, null is returned.
+   * @param pubPK the identifying key of the publication.
+   * @return the father of the publication or null if the publication is an orphaned one.
+   */
+  NodePK getPublicationFatherPK(PublicationPK pubPK);
 
   /**
    * Create a new Publication (only the header - parameters) to the current Topic
@@ -270,26 +273,58 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
   void deletePublicationFromTopic(PublicationPK pubPK, NodePK fatherPK);
 
   /**
-   * Delete a path of publication
-   * @param pubPK the id of the publication
-   * @since 1.0
-   */
-  void deletePublicationFromAllTopics(PublicationPK pubPK);
-
-  /**
    * Updates the publication links
    * @param pubPK publication identifier which you want to update links
    * @param links list of publication to link with current.
    */
   void addInfoLinks(PublicationPK pubPK, List<ResourceReference> links);
 
+  /**
+   * Gets the complete details about the publication referred by the specified unique identifier.
+   * @param pubPK the unique identifier of a Kmelia publication.
+   * @return a {@link CompletePublication} object.
+   */
   CompletePublication getCompletePublication(PublicationPK pubPK);
 
-  KmeliaPublication getPublication(PublicationPK pubPK);
+  /**
+   * Gets the Kmelia publication identified by the specified identifying key and that is located
+   * into the specified topic. As a Kmelia publication can be in different locations, all
+   * publications other than the original father of the publication are considered as an alias of
+   * that original publication. This is why it is required to know the father of the asked
+   * publication.
+   * @param pubPK identifier of the publication to get.
+   * @param topicPK identifier of the topic in which the publication is located.
+   * @return the asked {@link KmeliaPublication} instance.
+   */
+  KmeliaPublication getPublication(PublicationPK pubPK, NodePK topicPK);
 
+  /**
+   * Gets the details about the father from which the specified publication is accessible to the
+   * given user. If the main location of the publication isn't accessible by the user, then the
+   * first accessible alias of the publication is returned. If no aliases are accessible or defined,
+   * the the details of the root topic is returned.
+   * @param pubPK the unique identifier of the publication.
+   * @param isTreeStructureUsed is the tree view of the topics enabled?
+   * @param userId the unique identifier of a user.
+   * @param isRightsOnTopicsUsed is the rights on the topics enabled in the component instance
+   * in which is defined the publication?
+   * @return the details of the topic in which the publication is accessible by the given user.
+   */
   TopicDetail getPublicationFather(PublicationPK pubPK, boolean isTreeStructureUsed, String userId,
       boolean isRightsOnTopicsUsed);
 
+  /**
+   * Gets the father of the specified publication according to the rights of the user. If the main
+   * location of the publication isn't accessible by the user, then the first accessible alias of
+   * the publication is returned. If no aliases are accessible or defined, the the root topic is
+   * returned.
+   * @param pubPK the unique identifier of the publication
+   * @param isTreeStructureUsed is the tree view of the topics is used?
+   * @param userId the unique identifier of a user.
+   * @param isRightsOnTopicsUsed is the rights on the topics enabled in the component instance
+   * in which is defined the publication?
+   * @return a topic in which the publication is accessible by the given user.
+   */
   NodePK getPublicationFatherPK(PublicationPK pubPK, boolean isTreeStructureUsed, String userId,
       boolean isRightsOnTopicsUsed);
 
@@ -573,56 +608,30 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
   String createKmaxPublication(PublicationDetail pubDetail);
 
   /**
-   * Delete coordinates of a publication (ie: when publication is deleted)
-   * @param coordinatePK
-   * @param coordinates
+   * Gets all the locations of the specified publication; whatever the component instance.
+   * If the given publication is a clone, then gets all the locations of the main
+   * publication.
+   * @param pubPK the unique identifier of the publication.
+   * @return a collection of the locations of the given publication.
    */
-  void deleteCoordinates(CoordinatePK coordinatePK, List<String> coordinates);
+  Collection<Location> getLocations(PublicationPK pubPK);
 
-  Collection<Alias> getAlias(PublicationPK pubPK);
+  /**
+   * Gets all the aliases of the specified publication, whatever the component instance and without
+   * taking into account the publication is a clone or not. If the publication is a clone, then
+   * nothing will be returned.
+   * @param pubPK the unique identifier of the publication.
+   * @return a collection of locations that are all the aliases for the given publication.
+   */
+  Collection<Location> getAliases(PublicationPK pubPK);
 
-  void setAlias(PublicationPK pubPK, List<Alias> alias);
+  void setAliases(PublicationPK pubPK, List<Location> locations);
 
   void addAttachmentToPublication(PublicationPK pubPK, String userId, String filename,
       String description, byte[] contents);
 
-  boolean importPublication(String componentId, String topicId, String spaceId, String userId,
-      Map<String, String> publiParams, Map<String, String> formParams, String language,
-      String xmlFormName, String discrimatingParameterName, String userProfile);
-
-  boolean importPublication(String componentId, String topicId, String userId,
-      Map<String, String> publiParams, Map<String, String> formParams, String language,
-      String xmlFormName, String discriminantParameterName, String userProfile,
-      boolean ignoreMissingFormFields);
-
-  boolean importPublication(String publicationId, String componentId, String topicId,
-      String spaceId, String userId, Map<String, String> publiParams,
-      Map<String, String> formParams, String language, String xmlFormName, String userProfile);
-
-  void importPublications(String componentId, String topicId, String spaceId, String userId,
-      List<Map<String, String>> publiParamsList, List<Map<String, String>> formParamsList,
-      String language, String xmlFormName, String discrimatingParameterName, String userProfile);
-
-  List<XMLField> getPublicationXmlFields(String publicationId, String componentId, String spaceId,
-      String userId);
-
-  List<XMLField> getPublicationXmlFields(String publicationId, String componentId, String spaceId,
-      String userId, String language);
-
   String createTopic(String componentId, String topicId, String spaceId, String userId, String name,
       String description);
-
-  Collection<String> getPublicationsSpecificValues(String componentId, String xmlFormName,
-      String fieldName);
-
-  void draftInPublication(String componentId, String xmlFormName, String fieldName,
-      String fieldValue);
-
-  void updatePublicationEndDate(String componentId, String spaceId, String userId,
-      String xmlFormName, String fieldName, String fieldValue, Date endDate);
-
-  String findPublicationIdBySpecificValue(String componentId, String xmlFormName, String fieldName,
-      String fieldValue, String topicId, String spaceId, String userId);
 
   void doAutomaticDraftOut();
 
@@ -642,6 +651,16 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
   NodeDetail getRoot(String componentId, String userId);
 
   Collection<NodeDetail> getFolderChildren(NodePK nodePK, String userId);
+
+  /**
+   * Gets the details about the specified folder. The difference with
+   * {@link KmeliaService#getNodeHeader(String, String)} is that the children are also set as well
+   * as other information like the number of publications.
+   * @param nodePK the unique identifier of the folder.
+   * @param userId the unique identifier of the user for which the folder is asked.
+   * @return the {@link NodeDetail} instance corresponding to the folder.
+   */
+  NodeDetail getFolder(NodePK nodePK, String userId);
 
   NodeDetail getExpandedPathToNode(NodePK pk, String userId);
 

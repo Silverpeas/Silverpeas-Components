@@ -21,7 +21,6 @@
 package org.silverpeas.components.kmelia;
 
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
 import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
@@ -60,6 +59,6 @@ public class KmeliaStatistics implements ComponentStatisticsProvider {
   }
 
   private Collection<PublicationDetail> getElements(String componentId) {
-    return getPublicationService().getAllPublications(new PublicationPK("useless", componentId));
+    return getPublicationService().getAllPublications(componentId);
   }
 }

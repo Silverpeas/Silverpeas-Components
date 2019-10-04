@@ -355,7 +355,7 @@ public class DefaultWebSiteService implements WebSiteService {
   public void deletePublication(PublicationPK pubPK) {
 
     try {
-      publicationService.removeAllFather(pubPK);
+      publicationService.removeAllFathers(pubPK);
       publicationService.removePublication(pubPK);
     } catch (Exception re) {
       throw new WebSitesRuntimeException(re);
@@ -392,7 +392,7 @@ public class DefaultWebSiteService implements WebSiteService {
   public Collection<NodePK> getAllFatherPK(PublicationPK pubPK) {
 
     try {
-      return publicationService.getAllFatherPK(pubPK);
+      return publicationService.getAllFatherPKInSamePublicationComponentInstance(pubPK);
     } catch (Exception re) {
       throw new WebSitesRuntimeException(re);
     }
@@ -414,7 +414,7 @@ public class DefaultWebSiteService implements WebSiteService {
 
   @Override
   public void updateClassification(PublicationPK pubPK, List<String> arrayTopic) {
-    Collection<NodePK> oldFathersColl = publicationService.getAllFatherPK(pubPK);
+    Collection<NodePK> oldFathersColl = publicationService.getAllFatherPKInSamePublicationComponentInstance(pubPK);
 
     List<NodePK> oldFathers = new ArrayList<>();
     List<NodePK> newFathers = new ArrayList<>();
@@ -624,8 +624,8 @@ public class DefaultWebSiteService implements WebSiteService {
         nodeService.createIndex(node);
       }
       // index all publications
-      PublicationPK pubPK = new PublicationPK(NO_ID, NO_ID, componentId);
-      Collection<PublicationDetail> publications = publicationService.getAllPublications(pubPK);
+      Collection<PublicationDetail> publications =
+          publicationService.getAllPublications(componentId);
       for (final PublicationDetail pub : publications) {
         publicationService.createIndex(pub);
       }

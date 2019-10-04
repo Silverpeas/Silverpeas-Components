@@ -36,7 +36,7 @@ import javax.inject.Singleton;
  * A controller of write access on a blog. It controls the user can access the blog and have enough
  * privileges to contribute in the blog.
  * <p>
- * With right accesses, a user can create/modify/delete a post.
+ * With access rights, a user can create/modify/delete a post.
  * @author mmoquillon
  */
 @Singleton

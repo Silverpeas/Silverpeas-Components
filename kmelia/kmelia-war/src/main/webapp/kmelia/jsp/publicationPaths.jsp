@@ -25,9 +25,11 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ page import="org.silverpeas.core.contribution.publication.model.Alias" %>
-<%@ page import="org.silverpeas.components.kmelia.model.Treeview" %>
-<%@page import="org.silverpeas.components.kmelia.jstl.KmeliaDisplayHelper"%>
+<%@ page import="org.apache.ecs.xhtml.input" %>
+<%@ page import="org.silverpeas.components.kmelia.model.KmeliaPublication" %>
+<%@page import="org.silverpeas.components.kmelia.model.Treeview"%>
+<%@ page import="org.silverpeas.core.contribution.publication.model.Location" %>
+<%@ page import="org.silverpeas.core.util.Mutable" %>
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache"); //HTTP 1.0
@@ -37,23 +39,22 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ include file="checkKmelia.jsp" %>
 
 <%
-PublicationDetail 	publication 		= (PublicationDetail) request.getAttribute("Publication");
-Collection<NodePK>	pathList 			= (Collection<NodePK>) request.getAttribute("PathList");
+KmeliaPublication publication 		= (KmeliaPublication) request.getAttribute("Publication");
 String 				linkedPathString 	= (String) request.getAttribute("LinkedPathString");
 Collection<NodeDetail> topics			= (Collection<NodeDetail>) request.getAttribute("Topics");
 String				currentLang 		= (String) request.getAttribute("Language");
 List<Treeview>		components			= (List<Treeview>) request.getAttribute("Components");
-List<Alias>			aliases				= (List<Alias>) request.getAttribute("Aliases");
+Collection<Location> locations = (Collection<Location>) request.getAttribute("Locations");
 
-String pubName 	= publication.getName(currentLang);
-String id 		= publication.getPK().getId();
+String pubName 	= publication.getDetail().getName(currentLang);
+String id 		= publication.getDetail().getPK().getId();
 
 Button validateButton = gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendData();", false);
 Button cancelButton = gef.getFormButton(resources.getString("GML.cancel"), "ViewPublication?PubId="+id, false);
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html>
+<html xml:lang="<%=currentLang%>%>">
 <head>
 <title></title>
 <view:looknfeel/>
@@ -176,12 +177,10 @@ function getObjects(selected) {
         out.println(board.printBefore());
         
      	//regarder si la publication est dans la corbeille
-		for (NodePK node : pathList) {
-    		if ("1".equals(node.getId())) {
+    		if (NodePK.BIN_NODE_ID.equals(publication.getLocation().getId())) {
     			//la publi est dans la corbeille
         		out.println(kmeliaScc.getString("kmelia.PubInBasket")+"<br/><br/>");
     		}
-    	}
         %>
         <form name="paths" action="SetPath" method="post">
         	<input type="hidden" name="PubId" value="<%=id%>"/>
@@ -206,29 +205,32 @@ function getObjects(selected) {
     				}
     				name = ind + name;	
     				
-    				// recherche si ce th�me est dans la liste des alias de la publication
-					  String usedCheck = "";
-    				for (NodePK node : pathList) {
-	    				String nodeId = node.getId();
-	    				if (Integer.toString(topic.getId()).equals(nodeId)) {
-	    					usedCheck = " checked=\"checked\"";
-	    				}
-	    			}
-    				
-    				boolean displayCheckbox = false;
-    				if (topic.getUserRole() == null || !topic.getUserRole().equals("user")) {
-    					displayCheckbox = true;
-    				}
-    				
-    	        	out.println("<tr><td width=\"10px\">");
-    	        	if (displayCheckbox) {
-    	        		out.println("<input type=\"checkbox\" valign=\"absmiddle\" name=\"topicChoice\" value=\""+topic.getId()+","+topic.getNodePK().getInstanceId()+"\""+usedCheck+"/>");
-    	        	} else {
-    	        		out.println("&nbsp;");
-    	        	}
-    		    		    					
-    	        	out.println("</td><td>"+name+"</td></tr>");
-    			}
+    				// recherche si ce thème est dans la liste des locations de la publication
+            final input topicChoiceInput = new input().setType("checkbox").setName("topicChoice").setValue(topic.getId()+","+topic.getNodePK().getInstanceId());
+            topicChoiceInput.addAttribute("valign","absmiddle");
+            locations.stream()
+              .filter(l -> Integer.toString(topic.getId()).equals(l.getId()))
+              .findFirst()
+              .ifPresent(l -> {
+                topicChoiceInput.setChecked(true);
+                if (!l.isAlias()) {
+                  topicChoiceInput.setReadOnly(true);
+                  topicChoiceInput.setDisabled(true);
+                  topicChoiceInput.setOnClick("return false");
+                }
+              });
+            boolean displayCheckbox = false;
+            if (topic.getUserRole() == null || !topic.getUserRole().equals("user")) {
+              displayCheckbox = true;
+            }
+            out.println("<tr><td width=\"10px\">");
+            if (displayCheckbox) {
+              out.println(topicChoiceInput.toString());
+            } else {
+              out.println("&nbsp;");
+            }
+            out.println("</td><td>"+name+"</td></tr>");
+          }
     		}
     		out.println("</table>");
     	} else {
@@ -254,12 +256,12 @@ function getObjects(selected) {
 	    			nbAliases = "<span align=\"right\">"+treeview.getNbAliases()+" "+resources.getString("kmelia.paths.paths")+"</span>";
 	    		}  
 	%>
-				<a href="javascript: void(0)" id="<%=treeview.getComponentId()%>"><table width="100%" cellspacing="0" cellpadding="0"><tr><td><%=panelTitle%></td><td align="right"><%=nbAliases%></td></tr></table></a>
+				<a href="javascript: void(0)" id="<%=treeview.getComponentId()%>"><table><caption></caption><th id="all-locations"></th><tr><td><%=panelTitle%></td><td text-align="right"><%=nbAliases%></td></tr></table></a>
 					<div id="content_<%=treeview.getComponentId()%>" class="content">
 	<%
 					out.println("<table border=\"0\">");
 					if (t == 0) {
-		    			List<NodeDetail> otherTree = (List<NodeDetail>) treeview.getTree();
+		    			List<NodeDetail> otherTree = treeview.getTree();
 		    			for (NodeDetail topic : otherTree) {
 		        			if (topic.getId() != 1 && topic.getId() != 2) {
 	    	    				String name = topic.getName(currentLang);
@@ -276,32 +278,38 @@ function getObjects(selected) {
 	    	    				name = ind + name;
 	    	    				
 	    	    				// recherche si ce dossier est dans la liste des dossiers de la publication
-	    	    				String aliasDecoration = "&nbsp;";
-	    	    				String checked = "";
-	    	    				for (Alias alias : aliases) {
-	    		    				String nodeId = alias.getId();	    		    				
-	    		    				if (Integer.toString(topic.getId()).equals(nodeId) && topic.getNodePK().getInstanceId().equals(alias.getInstanceId())) {
-	    		    					checked = " checked=\"checked\"";
-	    		    					if (!alias.getInstanceId().equals(componentId)) {
-	    		    						aliasDecoration = "<i>"+alias.getUserName()+" - "+resources.getOutputDateAndHour(alias.getDate())+"</i>";
-	    		    					}
-	    		    				}
-	    		    			}
-	    	    				boolean displayCheckbox = false;
-                    String readonlyCheckbox = "";
-	    	    				if (topic.getUserRole()==null || !topic.getUserRole().equals("user")) {
-	    	    					displayCheckbox = true;
+                    final Mutable<String> aliasDecoration = Mutable.of("");
+                    final input topicChoiceInput = new input().setType("checkbox").setName("topicChoice").setValue(topic.getId()+","+topic.getNodePK().getInstanceId());
+                    topicChoiceInput.addAttribute("valign","absmiddle");
+                    locations.stream()
+                      .filter(l -> Integer.toString(topic.getId()).equals(l.getId()) && topic.getNodePK().getInstanceId().equals(l.getInstanceId()))
+                      .findFirst()
+                      .ifPresent(l -> {
+                        topicChoiceInput.setChecked(true);
+                        if (l.isAlias()) {
+                          aliasDecoration.set("<span>&nbsp;</span><i>"+l.getAlias().getUserName()+" - "+resources.getOutputDateAndHour(l.getAlias().getDate())+"</i>");
+                        } else {
+                          topicChoiceInput.setReadOnly(true);
+                          topicChoiceInput.setDisabled(true);
+                          topicChoiceInput.setOnClick("return false");
+                        }
+                      });
+                    boolean displayCheckbox = false;
+                    if (topic.getUserRole()==null || !topic.getUserRole().equals("user")) {
+                      displayCheckbox = true;
                       if ("writer".equals(topic.getUserRole())) {
-                        readonlyCheckbox = " onclick=\"return false\"";
+                        topicChoiceInput.setReadOnly(true);
+                        topicChoiceInput.setDisabled(true);
+                        topicChoiceInput.setOnClick("return false");
                       }
-	    	    				}
-	    	    	        	out.println("<tr><td width=\"10px\">");
-	    	    	        	if (displayCheckbox) {
-	    	    	        		out.println("<input type=\"checkbox\" valign=\"absmiddle\" name=\"topicChoice\" value=\""+topic.getId()+","+topic.getNodePK().getInstanceId()+"\""+checked+readonlyCheckbox+">");
-	    	    	        	} else {
-	    	    	        		out.println("&nbsp;");
-	    	    	        	}
-	    	    	        	out.println("</td><td nowrap=\"nowrap\">"+name+"</td><td align=\"right\">"+aliasDecoration+"</td></tr>");
+                    }
+                    out.println("<tr><td width=\"10px\">");
+                    if (displayCheckbox) {
+                      out.println(topicChoiceInput.toString());
+                    } else {
+                      out.println("&nbsp;");
+                    }
+                    out.println("</td><td nowrap=\"nowrap\">"+name+"</td><td align=\"right\">"+aliasDecoration.get()+"</td></tr>");
 		        			}
 		        			
 		        		}
