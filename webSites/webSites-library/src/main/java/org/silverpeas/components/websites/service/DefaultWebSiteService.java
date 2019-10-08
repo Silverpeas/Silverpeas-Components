@@ -418,12 +418,12 @@ public class DefaultWebSiteService implements WebSiteService {
 
     List<NodePK> oldFathers = new ArrayList<>();
     List<NodePK> newFathers = new ArrayList<>();
-    Collection<String> remFathers = new ArrayList<>();
+    List<NodePK> remFathers = new ArrayList<>();
 
     // Compute the remove list
     for (NodePK nodePK : oldFathersColl) {
       if (arrayTopic.indexOf(nodePK.getId()) == -1) {
-        remFathers.add(nodePK.getId());
+        remFathers.add(new NodePK(nodePK.getId(), pubPK));
       }
       oldFathers.add(nodePK);
     }
@@ -439,7 +439,9 @@ public class DefaultWebSiteService implements WebSiteService {
     for (NodePK newFather : newFathers) {
       publicationService.addFather(pubPK, newFather);
     }
-    publicationService.removeFathers(pubPK, remFathers);
+    for (NodePK remFather : remFathers) {
+      publicationService.removeFather(pubPK, remFather);
+    }
   }
 
   /**
