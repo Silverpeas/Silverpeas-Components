@@ -30,8 +30,6 @@ import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.rating.service.RatingService;
-import org.silverpeas.core.subscription.SubscriptionServiceProvider;
-import org.silverpeas.core.subscription.service.ComponentSubscriptionResource;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.SettingBundle;
 
@@ -88,10 +86,6 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService {
     // Deletion of all attachments, WYSIWYG comprised.
     AttachmentService attachmentService = AttachmentServiceProvider.getAttachmentService();
     attachmentService.deleteAllAttachments(box.getComponentInstanceId());
-
-    // Deleting all component subscriptions
-    SubscriptionServiceProvider.getSubscribeService()
-        .unsubscribeByResource(ComponentSubscriptionResource.from(box.getComponentInstanceId()));
 
     // Deleting all user ratings
     RatingService.get().deleteComponentRatings(box.getComponentInstanceId());
