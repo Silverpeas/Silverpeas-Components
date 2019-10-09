@@ -55,7 +55,6 @@
 <c:set var="currentComparator" value="${requestScope[comparingOperator]}"/>
 <c:set var="columnValue"       value="${requestScope[comparingValue]}"/>
 <c:set var="currentTable"      value="${requestScope[tableView]}"/>
-<c:set var="currentTable"      value="${requestScope[tableView]}"/>
 <c:set var="tableNames"        value="${requestScope[allTables]}"/>
 <c:set var="useLastLoadedRows" value="${silfn:booleanValue(requestScope[useLastLoadedRows])}"/>
 <jsp:useBean id="currentTable" type="org.silverpeas.components.mydb.web.TableView"/>

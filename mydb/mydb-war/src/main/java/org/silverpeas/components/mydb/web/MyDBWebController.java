@@ -97,7 +97,7 @@ public class MyDBWebController
   private static final String ERROR_INVALID_ROW_KEY = "mydb.error.invalidRow";
 
   private MyDBConnectionInfo connectionInfo;
-  private TableView tableView = new TableView();
+  private transient TableView tableView = new TableView();
   private String mainArrayPaneName;
 
   /**
@@ -135,13 +135,24 @@ public class MyDBWebController
   @RedirectToInternal("{nextView}")
   @LowestRoleAccess(value = SilverpeasRole.reader)
   public void home(final MyDBWebRequestContext context) {
-    final String nextView;
+    String nextView = "ConnectionSetting";
     if (this.connectionInfo.isDefined()) {
-      nextView = "ViewTable";
-    } else {
-      nextView = "ConnectionSetting";
+      if (connectionInfoIsValid(context)) {
+        nextView = "ViewTable";
+      } else if (!context.getHighestUserRole().isGreaterThanOrEquals(SilverpeasRole.admin)) {
+        nextView = "Error";
+        context.getRequest().setAttribute("errorMessageKey", "mydb.error.dataSource");
+      }
     }
     context.addRedirectVariable("nextView", nextView);
+  }
+
+  @GET
+  @Path("Error")
+  @RedirectToInternalJsp("error.jsp")
+  @LowestRoleAccess(value = SilverpeasRole.reader)
+  public void error(final MyDBWebRequestContext context) {
+    // nothing to do. Just redirect to the JSP
   }
 
   @GET
@@ -410,7 +421,6 @@ public class MyDBWebController
   @RedirectToInternal("{nextView}")
   @LowestRoleAccess(value = SilverpeasRole.publisher, onError = @RedirectTo("Main"))
   public void saveConnection(final MyDBWebRequestContext context) {
-    String nextView = "ViewTable";
     String dataSource = context.getRequest().getParameter("DataSource");
     String login = context.getRequest().getParameter("Login");
     String password = context.getRequest().getParameter("Password");
@@ -422,18 +432,28 @@ public class MyDBWebController
         .withLoginAndPassword(login, password)
         .withDataMaxNumber(rowLimit)
         .withoutAnyDefaultTable();
+    final String nextView;
     // we check the connection: it is saved only if the connection with the data source can be
     // established. In that case, the current table view is cleared.
-    try {
-      connectionInfo.checkConnection();
+    if (connectionInfoIsValid(context)) {
       connectionInfo.save();
       clearTableView();
-    } catch (MyDBException e) {
-      SilverLogger.getLogger(this).error(e);
-      context.getMessager().addError(getString("mydb.error.invalidConnectionSettings"));
+      nextView = "ViewTable";
+    } else {
       nextView = "ConnectionSetting";
     }
     context.addRedirectVariable("nextView", nextView);
+  }
+
+  private boolean connectionInfoIsValid(final MyDBWebRequestContext context) {
+    try {
+      connectionInfo.checkConnection();
+      return true;
+    } catch (MyDBException e) {
+      SilverLogger.getLogger(this).error(e);
+      context.getMessager().addError(getString("mydb.error.invalidConnectionSettings"));
+      return false;
+    }
   }
 
   private void readRequestParameters(final HttpRequest request) {
