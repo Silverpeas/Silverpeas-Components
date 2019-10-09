@@ -109,9 +109,7 @@ import org.silverpeas.core.subscription.SubscriptionResource;
 import org.silverpeas.core.subscription.SubscriptionService;
 import org.silverpeas.core.subscription.SubscriptionServiceProvider;
 import org.silverpeas.core.subscription.service.ComponentSubscription;
-import org.silverpeas.core.subscription.service.ComponentSubscriptionResource;
 import org.silverpeas.core.subscription.service.NodeSubscription;
-import org.silverpeas.core.subscription.service.NodeSubscriptionResource;
 import org.silverpeas.core.subscription.service.UserSubscriptionSubscriber;
 import org.silverpeas.core.util.*;
 import org.silverpeas.core.util.annotation.Action;
@@ -541,9 +539,6 @@ public class DefaultKmeliaService implements KmeliaService {
         }
       }
 
-      // Delete all subscriptions on this topic and on its descendants
-      removeSubscriptionsByTopic(nodesToDelete);
-
       // Delete the topic
       nodeService.removeNode(pkToDelete);
     } catch (Exception e) {
@@ -829,28 +824,6 @@ public class DefaultKmeliaService implements KmeliaService {
       } else {
         getSubscribeService().unsubscribe(new NodeSubscription(userId, topicPK));
       }
-    } catch (Exception e) {
-      throw new KmeliaRuntimeException(e);
-    }
-  }
-
-  /**
-   * Subscriptions - remove all subscriptions from topic
-   * @param topicPKsToDelete the subscription topic Ids to remove
-   * @since 1.0
-   */
-  private void removeSubscriptionsByTopic(Collection<NodePK> topicPKsToDelete) {
-    try {
-      Collection<SubscriptionResource> subscriptionResourcesToDelete = new ArrayList<>();
-      for (NodePK topicPK : topicPKsToDelete) {
-        if (topicPK.isRoot()) {
-          subscriptionResourcesToDelete.add(
-              ComponentSubscriptionResource.from(topicPK.getInstanceId()));
-        } else {
-          subscriptionResourcesToDelete.add(NodeSubscriptionResource.from(topicPK));
-        }
-      }
-      getSubscribeService().unsubscribeByResources(subscriptionResourcesToDelete);
     } catch (Exception e) {
       throw new KmeliaRuntimeException(e);
     }
@@ -1744,8 +1717,10 @@ public class DefaultKmeliaService implements KmeliaService {
     // Transform the current alias to a NodePK (even if Alias is extending NodePK) in the aim
     // to execute the equals method of NodePK
     locations.stream().filter(Location::isAlias).forEach(a -> {
-      pubDetail.setAlias(true);
-      sendSubscriptionsNotification(a, pubDetail, action);
+      // we copy the publication detail to avoid overriding attributes of the original one
+      final PublicationDetail copy = pubDetail.copy();
+      copy.setAlias(true);
+      sendSubscriptionsNotification(a, copy, action);
     });
   }
 
