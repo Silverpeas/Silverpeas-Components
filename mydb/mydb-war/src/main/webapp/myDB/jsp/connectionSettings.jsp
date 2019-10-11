@@ -60,7 +60,7 @@
 <c:url var="mandatoryIcon" value="${mandatoryIcon}"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="${currentUserLanguage}">
 <head>
   <title><fmt:message key="mydb.dataSourceSetting"/></title>
   <view:looknfeel withCheckFormScript="true" withFieldsetStyle="true"/>
@@ -136,6 +136,7 @@
   <view:frame>
     <form id="processForm" name="processForm" action="UpdateConnection" method="post">
       <fieldset class="skinFieldset">
+        <legend></legend>
         <div class="fields oneFieldPerLine">
           <div class="field">
             <label class="txtlibform" for="dataSource">${dataSourceField}</label>
@@ -178,7 +179,8 @@
             <label class="txtlibform" for="rowLimit">${maxLineField}</label>
             <div class="champs">
               <input type="text" id="rowLimit" name="RowLimit" size="50" value="${currentConnectionInfo.dataMaxNumber}"/>
-              <span><img border="0" src="${mandatoryIcon}" width="5" height="5">&nbsp;<i><fmt:message key="mydb.maxRowExplanation"/></i></span>
+              <fmt:message var="maxRowExplanation" key="mydb.maxRowExplanation"/>
+              <span><img alt="${maxRowExplanation}" border="0" src="${mandatoryIcon}" width="5" height="5">&nbsp;<em>${maxRowExplanation}</em></span>
             </div>
           </div>
         </div>

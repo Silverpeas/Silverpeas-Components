@@ -110,7 +110,7 @@
                 </c:choose>
                 <c:if test="${field.foreignKey}">
                   <c:set var="readOnlyAttr" value="readonly"/>
-                  <c:set var="foreignKeyOpening" value="window.openForeignKey('${field.referencedTable}')"/>
+                  <c:set var="foreignKeyOpening" value="window.openForeignKey('${field.referencedTable}', '${field.referencedColumn}')"/>
                   <c:set var="displayForeignKeyLegend" value="true"/>
                   <c:set var="fieldClass" value="${fieldClass} foreign-key-value field-fk-reftable-${field.referencedTable}"/>
                   <c:set var="fieldRefColumn" value="field-fk-refcolumn-${field.referencedColumn}"/>
@@ -124,6 +124,7 @@
                     <textarea id="${fieldInputId}" name="${field.name}" class="${fieldClass}"
                               cols="100" rows="${field.size / 100}"
                               maxlength="${field.size}" ${readOnlyAttr}
+                              onclick="${foreignKeyOpening}"
                               rel="${fieldRefColumn}">${formatFieldValue(field, fieldValue)}</textarea>
                   </c:when>
                   <c:when test="${not field.ofTypeBinary}">

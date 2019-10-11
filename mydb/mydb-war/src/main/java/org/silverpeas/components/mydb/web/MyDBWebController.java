@@ -83,6 +83,7 @@ public class MyDBWebController
   public static final String MAIN_ARRAY_PANE_NAME = "mainArrayPaneName";
   public static final String FK_ARRAY_PANE_NAME = "fkArrayPaneName";
   public static final String TABLE_VIEW = "tableView";
+  public static final String FOREIGN_KEY_TARGET = "fkTarget";
   public static final String USE_LAST_LOADED_ROWS = "useLastLoadedRows";
   public static final String ALL_TABLES = "tableNames";
   public static final String COMPARING_COLUMN = "comparingColumn";
@@ -168,9 +169,9 @@ public class MyDBWebController
       if (context.getRequest().getParameterAsBoolean(AJAX_EXPORT_PARAMETER_NAME)) {
         tableView.setPagination(null);
       } else {
-        tableView.setPagination(getPaginationPageFrom(request, mainArrayPaneName));
+        tableView.setPagination(getPaginationPageFrom(request, getSessionTableViewId()));
       }
-      tableView.setOrderBy(getOrderByFrom(request, tableView.getOrderBies(), mainArrayPaneName));
+      tableView.setOrderBy(getOrderByFrom(request, tableView.getOrderBies(), getSessionTableViewId()));
       setUpRequestAttributes(request);
     } catch (MyDBRuntimeException e) {
       context.getMessager().addError(e.getLocalizedMessage());
@@ -223,12 +224,14 @@ public class MyDBWebController
   public void getForeignKeyTableViewFrom(final MyDBWebRequestContext context) {
     try {
       final String targetTableName = context.getRequest().getParameter(TABLE_VIEW);
+      final String targetColumnName = context.getRequest().getParameter(FOREIGN_KEY_TARGET);
       final Optional<DbTable> targetTable = DbTable.table(targetTableName, connectionInfo);
       if (targetTable.isPresent()) {
         final TableView targetTableView = new TableView();
         targetTableView.setTable(targetTable);
         final HttpRequest request = context.getRequest();
         final String fkArrayPaneName = "FkTable@" + targetTableName;
+        targetTableView.setColumnTargetedByForeignKey(targetColumnName);
         targetTableView.setPagination(getPaginationPageFrom(request, fkArrayPaneName));
         targetTableView.setOrderBy(getOrderByFrom(request, targetTableView.getOrderBies(), fkArrayPaneName));
         request.setAttribute(TABLE_VIEW, targetTableView);
@@ -487,7 +490,7 @@ public class MyDBWebController
     } else {
       tableNames = Collections.emptyList();
     }
-    request.setAttribute(MAIN_ARRAY_PANE_NAME, mainArrayPaneName);
+    request.setAttribute(MAIN_ARRAY_PANE_NAME, getSessionTableViewId());
     request.setAttribute(TABLE_VIEW, tableView);
     request.setAttribute(ALL_TABLES, tableNames);
     request.setAttribute(COMPARING_COLUMN, tableView.getFilter()
@@ -496,6 +499,10 @@ public class MyDBWebController
     request.setAttribute(COMPARING_OPERATOR, tableView.getFilter().getComparator());
     request.setAttribute(COMPARING_VALUE, tableView.getFilter().getColumnValue());
     request.setAttribute(COMPARING_OPERATORS, TableRowsFilter.getAllComparators());
+  }
+
+  private String getSessionTableViewId() {
+    return this.mainArrayPaneName + tableView.getName();
   }
 
   private void throwInvalidValueType(final String name, final int expectedType) {
