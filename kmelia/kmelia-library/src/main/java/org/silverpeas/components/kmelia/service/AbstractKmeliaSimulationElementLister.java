@@ -24,11 +24,10 @@
 package org.silverpeas.components.kmelia.service;
 
 import org.silverpeas.core.NotSupportedException;
-import org.silverpeas.core.node.service.NodeService;
-import org.silverpeas.core.contribution.publication.service.PublicationService;
-import org.silverpeas.core.process.annotation.SimulationElementLister;
-import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.contribution.publication.service.PublicationService;
+import org.silverpeas.core.node.service.NodeService;
+import org.silverpeas.core.process.annotation.SimulationElementLister;
 
 /**
  * User: Yohann Chastagnier
@@ -53,7 +52,7 @@ public abstract class AbstractKmeliaSimulationElementLister extends SimulationEl
 
   public PublicationService getPublicationService() {
     if (publicationService == null) {
-      publicationService = ServiceProvider.getService(PublicationService.class);
+      publicationService = PublicationService.get();
     }
     return publicationService;
   }

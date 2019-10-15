@@ -45,10 +45,10 @@ import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
-import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.CompletePublication;
-import org.silverpeas.core.contribution.publication.model.PublicationLink;
+import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationLink;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
@@ -61,7 +61,7 @@ import org.silverpeas.core.io.media.image.thumbnail.control.ThumbnailController;
 import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.security.authorization.PublicationAccessController;
+import org.silverpeas.core.security.authorization.PublicationAccessControl;
 import org.silverpeas.core.subscription.service.NodeSubscriptionResource;
 import org.silverpeas.core.subscription.util.SubscriptionManagementContext;
 import org.silverpeas.core.util.DateUtil;
@@ -593,8 +593,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         if (StringUtil.isDefined(id)) {
           kmeliaPublication = kmelia.getPublication(id, true);
           // Check user publication access
-          PublicationAccessController publicationAccessController =
-              ServiceProvider.getService(PublicationAccessController.class);
+          PublicationAccessControl publicationAccessController = PublicationAccessControl.get();
           if (!publicationAccessController
               .isUserAuthorized(kmelia.getUserId(), kmeliaPublication.getPk())) {
             SilverLogger.getLogger(this).warn("Security alert from {0} with publication {1}",
@@ -1533,7 +1532,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
   protected boolean checkUserAuthorization(final String function,
       final KmeliaSessionController kmelia) {
     KmeliaActionAccessController actionAccessController =
-        ServiceProvider.getService(KmeliaActionAccessController.class);
+        ServiceProvider.getSingleton(KmeliaActionAccessController.class);
     return actionAccessController.hasRightAccess(function, kmelia.getHighestSilverpeasUserRole());
   }
 

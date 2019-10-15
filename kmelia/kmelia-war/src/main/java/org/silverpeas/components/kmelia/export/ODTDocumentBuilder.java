@@ -60,7 +60,6 @@ import org.silverpeas.core.pdc.pdc.model.Value;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.UnitUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
@@ -517,7 +516,7 @@ public class ODTDocumentBuilder {
    * @return an instance of KmeliaService.
    */
   protected KmeliaService getKmeliaService() {
-    return ServiceProvider.getService(KmeliaService.class);
+    return KmeliaService.get();
   }
 
   /**

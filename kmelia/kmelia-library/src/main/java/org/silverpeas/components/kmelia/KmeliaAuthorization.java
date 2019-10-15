@@ -35,7 +35,6 @@ import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.security.authorization.ComponentAuthorization;
 import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -409,7 +408,7 @@ public class KmeliaAuthorization implements ComponentAuthorization {
 
   private PublicationService getPublicationService() {
     if (publicationService == null) {
-        setPublicationService(ServiceProvider.getService(PublicationService.class));
+        setPublicationService(PublicationService.get());
     }
     return publicationService;
   }
@@ -420,7 +419,7 @@ public class KmeliaAuthorization implements ComponentAuthorization {
 
   public KmeliaService getKmeliaService() {
     if (kmeliaService == null) {
-      kmeliaService = ServiceProvider.getService(KmeliaService.class);
+      kmeliaService = KmeliaService.get();
     }
     return kmeliaService;
   }

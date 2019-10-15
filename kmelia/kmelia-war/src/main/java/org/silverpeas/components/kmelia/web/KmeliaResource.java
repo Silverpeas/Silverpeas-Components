@@ -20,17 +20,16 @@
  */
 package org.silverpeas.components.kmelia.web;
 
+import org.silverpeas.components.kmelia.service.KmeliaService;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.webapi.base.annotation.Authorized;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.webapi.base.RESTWebService;
-import org.silverpeas.components.kmelia.service.KmeliaService;
-import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationRuntimeException;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.webapi.base.RESTWebService;
+import org.silverpeas.core.webapi.base.annotation.Authorized;
 import org.silverpeas.core.webapi.publication.PublicationEntity;
-import org.silverpeas.core.util.ServiceProvider;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -147,7 +146,7 @@ public class KmeliaResource extends RESTWebService {
 
   private KmeliaService getKmeliaService() {
     try {
-      return ServiceProvider.getService(KmeliaService.class);
+      return KmeliaService.get();
     } catch (Exception e) {
       throw new WebApplicationException(e, Status.INTERNAL_SERVER_ERROR);
     }

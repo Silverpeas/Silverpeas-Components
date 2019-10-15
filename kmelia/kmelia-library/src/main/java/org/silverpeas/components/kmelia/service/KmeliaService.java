@@ -52,7 +52,7 @@ import java.util.List;
 public interface KmeliaService extends ApplicationService<KmeliaPublication> {
 
   static KmeliaService get() {
-    return ServiceProvider.getService(KmeliaService.class);
+    return ServiceProvider.getSingleton(KmeliaService.class);
   }
 
   /**

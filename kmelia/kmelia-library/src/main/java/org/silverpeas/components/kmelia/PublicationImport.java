@@ -43,7 +43,6 @@ import org.silverpeas.core.index.search.model.QueryDescription;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -484,6 +483,6 @@ public class PublicationImport {
   }
 
   private PublicationService getPublicationService() {
-    return ServiceProvider.getService(PublicationService.class);
+    return PublicationService.get();
   }
 }

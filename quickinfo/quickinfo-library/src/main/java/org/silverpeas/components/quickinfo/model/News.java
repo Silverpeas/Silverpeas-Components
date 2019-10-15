@@ -50,7 +50,6 @@ import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
 import org.silverpeas.core.reminder.WithReminder;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 
@@ -403,7 +402,7 @@ public class News extends SilverpeasJpaEntity<News, UuidIdentifier> implements S
   }
 
   private StatisticService getStatisticService() {
-    return ServiceProvider.getService(StatisticService.class);
+    return StatisticService.get();
   }
 
   private PdcManager getTaxonomyService() {

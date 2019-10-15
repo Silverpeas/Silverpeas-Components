@@ -43,18 +43,17 @@ import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
-import org.silverpeas.core.security.authorization.AccessController;
-import org.silverpeas.core.security.authorization.AccessControllerProvider;
 import org.silverpeas.core.security.authorization.NodeAccessControl;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
 import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 
@@ -112,18 +111,18 @@ public class KmeliaPublication implements SilverpeasContent {
    */
   public static KmeliaPublication withPK(final PublicationPK pk, final NodePK fatherPk) {
     KmeliaPublication publication = withPK(pk);
-    publication.setFather(fatherPk);
+    publication.setFather(fatherPk, null);
     return publication;
   }
 
-  private void setFather(final NodePK fatherPk) {
-    location = findLocation(fatherPk);
+  private void setFather(final NodePK fatherPk, final Map<String, List<Location>> locationCache) {
+    location = findLocation(fatherPk, locationCache);
     if (location != null) {
       getDetail().setAlias(location.isAlias());
     }
   }
 
-  private Location findLocation(final NodePK pk) {
+  private Location findLocation(final NodePK pk, final Map<String, List<Location>> locationCache) {
     final Predicate<Location> predicate;
     final String nodeIMsg;
     if (pk != null) {
@@ -136,8 +135,7 @@ public class KmeliaPublication implements SilverpeasContent {
     final PublicationPK mainPubPk = getDetail().isClone()
         ? getDetail().getClonePK()
         : getDetail().getPK();
-    return PublicationService.get()
-        .getAllLocations(mainPubPk)
+    return getAllLocations(mainPubPk, locationCache)
         .stream()
         .filter(predicate)
         .findFirst()
@@ -150,9 +148,17 @@ public class KmeliaPublication implements SilverpeasContent {
         });
   }
 
+  private Collection<Location> getAllLocations(final PublicationPK mainPubPk,
+      Map<String, List<Location>> locationCache) {
+    if (locationCache != null) {
+      return locationCache.getOrDefault(mainPubPk.getId(), Collections.emptyList());
+    }
+    return PublicationService.get().getAllLocations(mainPubPk);
+  }
+
   public Location getLocation() {
     if (location == null) {
-      location = findLocation(null);
+      location = findLocation(null, null);
     }
     return location;
   }
@@ -193,9 +199,20 @@ public class KmeliaPublication implements SilverpeasContent {
    */
   public static KmeliaPublication fromDetail(final PublicationDetail detail,
       final NodePK fatherPK) {
-    final KmeliaPublication publication = fromDetail(detail, fatherPK, 0);
-    publication.setFather(fatherPK);
-    return publication;
+    return fromDetail(detail, fatherPK, 0);
+  }
+
+  /**
+   * Gets the Kmelia publication in the given topic from the specified publication detail.
+   *
+   * @param detail the detail about the publication to get.
+   * @param fatherPK the primary key of the topic that is father of the publication to get.
+   * @param locationCache cache of locations already loaded.
+   * @return the Kmelia publication matching the specified publication detail.
+   */
+  public static KmeliaPublication fromDetail(final PublicationDetail detail,
+      final NodePK fatherPK, final Map<String, List<Location>> locationCache) {
+    return fromDetail(detail, fatherPK, 0, locationCache);
   }
 
   /**
@@ -209,9 +226,24 @@ public class KmeliaPublication implements SilverpeasContent {
    */
   public static KmeliaPublication fromDetail(final PublicationDetail detail, final NodePK fatherPK,
       int rank) {
+    return fromDetail(detail, fatherPK, rank, null);
+  }
+
+  /**
+   * Gets the Kmelia publication in the given topic from the specified publication detail and
+   * with the given rank.
+   *
+   * @param detail the detail about the publication to get.
+   * @param fatherPK the primary key of the topic that is father of the publication to get.
+   * @param rank the rank of the publication among others ones.
+   * @param locationCache cache of locations already loaded.
+   * @return the Kmelia publication matching the specified publication detail.
+   */
+  public static KmeliaPublication fromDetail(final PublicationDetail detail, final NodePK fatherPK,
+      int rank, final Map<String, List<Location>> locationCache) {
     final KmeliaPublication publication = new KmeliaPublication(detail.getPK(), rank);
     publication.setPublicationDetail(detail);
-    publication.setFather(fatherPK);
+    publication.setFather(fatherPK, locationCache);
     return publication;
   }
 
@@ -402,14 +434,14 @@ public class KmeliaPublication implements SilverpeasContent {
 
   private KmeliaService getKmeliaService() {
     try {
-      return ServiceProvider.getService(KmeliaService.class);
+      return KmeliaService.get();
     } catch (Exception e) {
       throw new KmeliaRuntimeException(e);
     }
   }
 
   private StatisticService getStatisticService() {
-    return ServiceProvider.getService(StatisticService.class);
+    return StatisticService.get();
   }
 
   private CommentService getCommentService() {
@@ -502,10 +534,8 @@ public class KmeliaPublication implements SilverpeasContent {
    * nothing whether the given user has no access right on it.
    */
   public Optional<Location> getOriginalLocation(String userId) {
-    final Location originalLocation = findLocation(null);
-    AccessController<NodePK> accessController =
-        AccessControllerProvider.getAccessController(NodeAccessControl.class);
-    if (originalLocation != null && accessController.isUserAuthorized(userId, originalLocation)) {
+    final Location originalLocation = findLocation(null, null);
+    if (originalLocation != null && NodeAccessControl.get().isUserAuthorized(userId, originalLocation)) {
       return Optional.of(originalLocation);
     } else {
       return Optional.empty();
