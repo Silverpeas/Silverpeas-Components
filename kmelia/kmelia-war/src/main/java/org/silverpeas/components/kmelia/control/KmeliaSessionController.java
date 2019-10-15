@@ -110,8 +110,8 @@ import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.security.authorization.AccessControlContext;
-import org.silverpeas.core.security.authorization.NodeAccessController;
-import org.silverpeas.core.security.authorization.PublicationAccessController;
+import org.silverpeas.core.security.authorization.NodeAccessControl;
+import org.silverpeas.core.security.authorization.PublicationAccessControl;
 import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
 import org.silverpeas.core.subscription.service.ComponentSubscriptionResource;
@@ -294,11 +294,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   public KmeliaService getKmeliaService() {
-      return ServiceProvider.getService(KmeliaService.class);
+    return KmeliaService.get();
   }
 
   public StatisticService getStatisticService() {
-    return ServiceProvider.getService(StatisticService.class);
+    return StatisticService.get();
   }
 
   /**
@@ -598,7 +598,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
    * @return a KmeliaPublicationExporter instance.
    */
   public static KmeliaPublicationExporter aKmeliaPublicationExporter() {
-    return ServiceProvider.getService(KmeliaPublicationExporter.class);
+    return ServiceProvider.getSingleton(KmeliaPublicationExporter.class);
   }
 
   @Override
@@ -1775,7 +1775,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
    * @return
    */
   public PdcManager getPdcManager() {
-    return ServiceProvider.getService(PdcManager.class);
+    return PdcManager.get();
   }
 
   public NodeService getNodeService() {
@@ -1783,7 +1783,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   public PublicationService getPublicationService() {
-    return ServiceProvider.getService(PublicationService.class);
+    return PublicationService.get();
   }
 
   /**
@@ -2310,8 +2310,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   public void copyPublication(String pubId) throws ClipboardException {
     PublicationDetail pub = getPublicationDetail(pubId);
     // Can only copy user accessed publication
-    PublicationAccessController publicationAccessController =
-        ServiceProvider.getService(PublicationAccessController.class);
+    PublicationAccessControl publicationAccessController = PublicationAccessControl.get();
     if (publicationAccessController.isUserAuthorized(getUserId(), pub.getPK())) {
       PublicationSelection pubSelect = new PublicationSelection(pub, getCurrentFolderPK());
       addClipboardSelection(pubSelect);
@@ -2337,8 +2336,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   public void cutPublication(String pubId) throws ClipboardException {
     PublicationDetail pub = getPublicationDetail(pubId);
     // Can only copy user accessed publication
-    PublicationAccessController publicationAccessController =
-        ServiceProvider.getService(PublicationAccessController.class);
+    PublicationAccessControl publicationAccessController = PublicationAccessControl.get();
     if (publicationAccessController.isUserAuthorized(getUserId(), pub.getPK())) {
       PublicationSelection pubSelect = new PublicationSelection(pub, getCurrentFolderPK());
       pubSelect.setCutted(true);
@@ -2365,9 +2363,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   public void copyTopic(String id) throws ClipboardException {
     NodeDetail nodeDetail = getNodeHeader(id);
-    NodeAccessController nodeAccessController =
-        ServiceProvider.getService(NodeAccessController.class);
-    if (nodeAccessController.isUserAuthorized(getUserId(), nodeDetail.getNodePK())) {
+    if (NodeAccessControl.get().isUserAuthorized(getUserId(), nodeDetail.getNodePK())) {
       NodeSelection nodeSelect = new NodeSelection(getNodeHeader(id));
 
       addClipboardSelection(nodeSelect);
@@ -2380,9 +2376,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   public void cutTopic(String id) throws ClipboardException {
     NodeDetail nodeDetail = getNodeHeader(id);
-    NodeAccessController nodeAccessController =
-        ServiceProvider.getService(NodeAccessController.class);
-    if (nodeAccessController.isUserAuthorized(getUserId(), nodeDetail.getNodePK())) {
+    if (NodeAccessControl.get().isUserAuthorized(getUserId(), nodeDetail.getNodePK())) {
       NodeSelection nodeSelect = new NodeSelection(getNodeHeader(id));
       nodeSelect.setCutted(true);
 
@@ -3065,8 +3059,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       while (tokenizer.hasMoreTokens()) {
         String[] str = StringUtil.splitByWholeSeparator(tokenizer.nextToken(), "-");
         PublicationPK pk = new PublicationPK(str[0], str[1]);
-        PublicationAccessController publicationAccessController =
-            ServiceProvider.getService(PublicationAccessController.class);
+        PublicationAccessControl publicationAccessController = PublicationAccessControl.get();
         if (publicationAccessController.isUserAuthorized(getUserId(), pk,
             AccessControlContext.init())) {
           this.selectedPublicationPKs.add(pk);

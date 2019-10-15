@@ -26,8 +26,9 @@ import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
+import org.silverpeas.core.security.authorization.AccessControlContext;
+import org.silverpeas.core.security.authorization.PublicationAccessControl;
 import org.silverpeas.core.util.Pagination;
-import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SilverpeasArrayList;
 import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.util.StringUtil;
@@ -42,11 +43,12 @@ import java.util.Date;
 import java.util.List;
 
 import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnGetting;
+import static org.silverpeas.core.security.authorization.AccessControlOperation.search;
 
 public class KmeliaTransversal implements PublicationHelper {
 
   private String userId = null;
-  private PublicationService publicationService = ServiceProvider.getService(PublicationService.class);
+  private PublicationService publicationService = PublicationService.get();
   private OrganizationController organizationControl =
       OrganizationControllerProvider.getOrganisationController();
 
@@ -99,7 +101,7 @@ public class KmeliaTransversal implements PublicationHelper {
             return new SilverpeasArrayList<>(0);
           }
         })
-        .filter(p -> filterPublicationPKs(p, nbPublis))
+        .filter(this::filterPublicationPKs)
         .execute();
     try {
       return getPublicationService().getPublications(filteredPublicationPKs);
@@ -135,7 +137,7 @@ public class KmeliaTransversal implements PublicationHelper {
             return new SilverpeasArrayList<>(0);
           }
         })
-        .filter(p -> filterPublicationPKs(p, nbPublis))
+        .filter(this::filterPublicationPKs)
         .execute();
     try {
       return getPublicationService().getPublications(filteredPublicationPKs);
@@ -200,20 +202,10 @@ public class KmeliaTransversal implements PublicationHelper {
   }
 
   private SilverpeasList<PublicationPK> filterPublicationPKs(
-      SilverpeasList<PublicationPK> publicationPKs, int nbPublis) {
-    final SilverpeasList<PublicationPK> filteredPublicationPKs = publicationPKs
-        .newEmptyListWithSameProperties();
-    final KmeliaAuthorization security = new KmeliaAuthorization();
-    for (final PublicationPK pk : publicationPKs) {
-      if (security.isObjectAvailable(pk.getInstanceId(), userId, pk.getId(), "Publication")) {
-        filteredPublicationPKs.add(pk);
-      }
-      if (nbPublis != -1 && filteredPublicationPKs.size() >= nbPublis) {
-        return filteredPublicationPKs;
-      }
-    }
-
-    return filteredPublicationPKs;
+      final SilverpeasList<PublicationPK> publicationPKs) {
+    return PublicationAccessControl.get()
+        .filterAuthorizedByUser(publicationPKs, userId, AccessControlContext.init().onOperationsOf(search))
+        .collect(SilverpeasList.collector(publicationPKs));
   }
 
   private OrganizationController getOrganizationControl() {

@@ -32,7 +32,6 @@ import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
-import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -64,7 +63,7 @@ public abstract class AbstractKmeliaUserNotification<T> extends AbstractTemplate
   }
 
   protected NodeService getNodeService() {
-    return ServiceProvider.getService(NodeService.class);
+    return NodeService.get();
   }
 
   protected NodeDetail getNodeHeader(final NodePK pk) {

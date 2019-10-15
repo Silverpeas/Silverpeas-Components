@@ -863,10 +863,12 @@ public class DefaultKmeliaService implements KmeliaService {
   }
 
   private List<KmeliaPublication> asRankedKmeliaPublication(NodePK fatherPK, Collection<PublicationDetail> pubDetails) {
-    List<KmeliaPublication> publications = new ArrayList<>();
+    final Collection<PublicationPK> pubPks = pubDetails.stream().map(PublicationDetail::getPK).collect(Collectors.toList());
+    final Map<String, List<Location>> locationsByPublication = publicationService.getAllLocationsByPublicationIds(pubPks);
+    final List<KmeliaPublication> publications = new ArrayList<>(pubDetails.size());
     int i = -1;
-    for (PublicationDetail publicationDetail : pubDetails) {
-      publications.add(fromDetail(publicationDetail, fatherPK, i++));
+    for (final PublicationDetail publicationDetail : pubDetails) {
+      publications.add(fromDetail(publicationDetail, fatherPK, i++, locationsByPublication));
     }
 
     return publications;

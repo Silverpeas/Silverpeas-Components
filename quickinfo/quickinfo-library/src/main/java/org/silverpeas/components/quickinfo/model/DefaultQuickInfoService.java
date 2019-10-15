@@ -59,7 +59,6 @@ import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.reminder.Reminder;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
 import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -429,11 +428,11 @@ public class DefaultQuickInfoService implements QuickInfoService {
 
 
   private PublicationService getPublicationService() {
-    return ServiceProvider.getService(PublicationService.class);
+    return PublicationService.get();
   }
 
   private StatisticService getStatisticService() {
-    return ServiceProvider.getService(StatisticService.class);
+    return StatisticService.get();
   }
 
   private DelegatedNewsService getDelegatedNewsService() {

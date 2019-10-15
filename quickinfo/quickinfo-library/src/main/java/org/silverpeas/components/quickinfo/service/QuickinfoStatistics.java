@@ -28,7 +28,6 @@ import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
 import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
-import org.silverpeas.core.util.ServiceProvider;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -57,7 +56,7 @@ public class QuickinfoStatistics implements ComponentStatisticsProvider {
 
   private PublicationService getPublicationService() {
     if (publicationService == null) {
-      publicationService = ServiceProvider.getService(PublicationService.class);
+      publicationService = PublicationService.get();
     }
     return publicationService;
   }
