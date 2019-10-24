@@ -119,9 +119,21 @@ class JdbcRequester {
     DatabaseMetaData dbMetaData = connection.getMetaData();
     ResultSet tables = dbMetaData.getTables(null, null, null, new String[]{"TABLE", "VIEW"});
     while (tables.next()) {
-      tableNames.add(tables.getString("TABLE_NAME"));
+      String table = tables.getString("TABLE_NAME");
+      if (isAuthorizedTable(connection, table)) {
+        tableNames.add(table);
+      }
     }
     return tableNames;
+  }
+
+  private boolean isAuthorizedTable(final Connection connection, String tableName) {
+    try {
+      JdbcSqlQuery.createCountFor(tableName).executeWith(connection);
+      return true;
+    } catch (SQLException e) {
+      return false;
+    }
   }
 
   /**
