@@ -25,11 +25,11 @@ pipeline {
       steps {
         script {
           def pom = readMavenPom()
-          def current = pom.version
           boolean coreDependencyExists = existsDependency(version, 'core')
           if (!coreDependencyExists) {
+            def coreVersion = getCoreDependencyVersion()
             sh """
-sed -i -e "s/<core.version>[\\\${}0-9a-zA-Z.-]\\+/<core.version>${current}/g" pom.xml
+sed -i -e "s/<core.version>[\\\${}0-9a-zA-Z.-]\\+/<core.version>${coreVersion}/g" pom.xml
 """
           }
           sh """
@@ -93,6 +93,12 @@ def computeSnapshotVersion() {
         : ''
   }
   return snapshot.isEmpty() ? defaultVersion : "${pom.properties['next.release']}-${snapshot}"
+}
+
+def getCoreDependencyVersion() {
+  copyArtifacts projectName: 'Silverpeas_Master_AutoDeploy', flatten: true
+  def lastBuild = readYaml file: 'build.yaml'
+  return lastBuild.version
 }
 
 def existsDependency(version, projectName) {
