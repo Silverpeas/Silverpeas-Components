@@ -50,7 +50,7 @@ public class Equality extends AbstractColumnValuePredicate {
     if (value == null) {
       q = query.where(getColumn().getName() + " is null");
     } else {
-      q = query.where(getColumn().getName() + " = ?", value);
+      q = query.where("lower(" + getColumn().getName() + ") = lower(?)", value);
     }
     return q;
   }

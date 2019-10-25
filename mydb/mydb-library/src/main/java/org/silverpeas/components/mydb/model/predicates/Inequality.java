@@ -44,7 +44,7 @@ public class Inequality extends AbstractColumnValuePredicate {
     if (value == null) {
       q = query.where(getColumn().getName() + " is not null");
     } else {
-      q = query.where(getColumn().getName() + " != ?", value);
+      q = query.where("lower(" + getColumn().getName() + ") != lower(?)", value);
     }
     return q;
   }
