@@ -328,20 +328,23 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
   NodePK getPublicationFatherPK(PublicationPK pubPK, boolean isTreeStructureUsed, String userId,
       boolean isRightsOnTopicsUsed);
 
-  Collection<PublicationDetail> getPublicationDetails(List<ResourceReference> links);
+  /**
+   * gets a list of PublicationDetail corresponding to the links parameter
+   * @param links list of publication (componentID + publicationId)
+   * @return a list of PublicationDetail
+   */
+  List<PublicationDetail> getPublicationDetails(List<ResourceReference> links);
 
   /**
-   * gets a list of authorized publications
+   * Gets a list of publications with optional control access filtering
    * @param links list of publication defined by his id and component id
    * @param userId identifier User. allow to check if the publication is accessible for current
    * user
-   * @param isRightsOnTopicsUsed indicates if the right must be checked
+   * @param accessControlFiltering true to filter the publication according user rights.
    * @return a collection of Kmelia publications
-   * @
-   * @since 1.0
    */
-  Collection<KmeliaPublication> getPublications(List<ResourceReference> links, String userId,
-      boolean isRightsOnTopicsUsed);
+  List<KmeliaPublication> getPublications(List<ResourceReference> links, String userId,
+      boolean accessControlFiltering);
 
   /**
    * Gets the publications linked with the specified one and for which the specified user is

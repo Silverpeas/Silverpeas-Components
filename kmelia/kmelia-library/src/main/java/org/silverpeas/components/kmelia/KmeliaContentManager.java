@@ -27,6 +27,7 @@ import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
+import org.silverpeas.core.security.authorization.PublicationAccessControl;
 
 import javax.inject.Singleton;
 import java.io.Serializable;
@@ -34,7 +35,6 @@ import java.sql.Connection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * The kmelia implementation of ContentInterface.
@@ -66,18 +66,13 @@ public class KmeliaContentManager extends AbstractContentInterface implements Se
   @Override
   protected List<Contribution> getAccessibleContributions(final List<String> resourceIds,
       final String componentInstanceId, final String currentUserId) {
-    final KmeliaAuthorization security = new KmeliaAuthorization();
-    final boolean checkRights = security.isRightsOnTopicsEnabled(componentInstanceId);
-
-    final List<PublicationPK> ids =
-        resourceIds.stream().map(i -> new PublicationPK(i, componentInstanceId))
-            .collect(Collectors.toList());
-    Stream<PublicationDetail> publications = getPublicationService().getPublications(ids).stream();
-    if (checkRights) {
-      publications =
-          publications.filter(p -> security.isPublicationAvailable(p.getPK(), currentUserId));
-    }
-    return publications.collect(Collectors.toList());
+    final List<PublicationPK> ids = resourceIds.stream()
+        .map(i -> new PublicationPK(i, componentInstanceId))
+        .collect(Collectors.toList());
+    final List<PublicationDetail> publications = getPublicationService().getPublications(ids);
+    return PublicationAccessControl.get()
+        .filterAuthorizedByUser(currentUserId, publications)
+        .collect(Collectors.toList());
   }
 
   /**

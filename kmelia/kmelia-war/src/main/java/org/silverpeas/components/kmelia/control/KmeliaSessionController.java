@@ -28,7 +28,6 @@ import org.apache.commons.io.FileUtils;
 import org.owasp.encoder.Encode;
 import org.silverpeas.components.kmelia.FileImport;
 import org.silverpeas.components.kmelia.InstanceParameters;
-import org.silverpeas.components.kmelia.KmeliaAuthorization;
 import org.silverpeas.components.kmelia.KmeliaCopyDetail;
 import org.silverpeas.components.kmelia.KmeliaPasteDetail;
 import org.silverpeas.components.kmelia.KmeliaPublicationHelper;
@@ -93,7 +92,6 @@ import org.silverpeas.core.importexport.report.ImportReport;
 import org.silverpeas.core.importexport.report.MassiveReport;
 import org.silverpeas.core.importexport.report.UnitReport;
 import org.silverpeas.core.index.indexing.model.IndexManager;
-import org.silverpeas.core.index.search.SearchEngineProvider;
 import org.silverpeas.core.index.search.model.MatchingIndexEntry;
 import org.silverpeas.core.index.search.model.QueryDescription;
 import org.silverpeas.core.io.media.image.thumbnail.ThumbnailSettings;
@@ -146,6 +144,7 @@ import static org.silverpeas.components.kmelia.export.KmeliaPublicationExporter.
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getSessionCacheService;
 import static org.silverpeas.core.cache.service.VolatileIdentifierProvider.newVolatileIntegerIdentifierOn;
 import static org.silverpeas.core.contribution.attachment.AttachmentService.VERSION_MODE;
+import static org.silverpeas.core.index.search.SearchEngineProvider.getSearchEngine;
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.NONE_CLASSIFICATION;
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
@@ -2877,24 +2876,33 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     queryDescription.addComponent(getComponentId());
 
     try {
-      final List<MatchingIndexEntry> results =
-          SearchEngineProvider.getSearchEngine().search(queryDescription).getEntries();
-      final KmeliaAuthorization security = new KmeliaAuthorization();
-      security.enableCache();
-      results.stream()
-        .filter(i -> PUBLICATION.equals(i.getObjectType()))
-        .filter(i -> security.isObjectAvailable(getComponentId(), getUserId(), i.getObjectId(), PUBLICATION))
-        .forEach(i -> {
-          final String pubId = i.getObjectId();
-          final KmeliaPublication kPub = KmeliaPublication.fromDetail(getPublicationDetail(pubId));
-          if (i.isAlias()
-              || (i.getPaths() != null
-                  && !i.getPaths().isEmpty()
-                  && !(i.getPaths().get(0) + nodePathSep).startsWith(safeCurrentFolderPath))) {
-            kPub.getDetail().setAlias(true);
-          }
-          userPublications.add(kPub);
-        });
+      List<MatchingIndexEntry> results = getSearchEngine().search(queryDescription).getEntries();
+      results = results.stream()
+          .filter(i -> PUBLICATION.equals(i.getObjectType()))
+          .collect(Collectors.toList());
+      final Map<PublicationPK, PublicationDetail> indexedUserPubs = new HashMap<>(results.size());
+      getKmeliaService().getPublicationDetails(results.stream()
+                .map(i -> new ResourceReference(i.getObjectId(), i.getComponent()))
+                .collect(Collectors.toList()))
+          .forEach(p -> indexedUserPubs.put(p.getPK(), p));
+      userPublications = results.stream()
+          .map(i -> {
+            final PublicationPK pubPk = new PublicationPK(i.getObjectId(), i.getComponent());
+            final PublicationDetail pub = indexedUserPubs.get(pubPk);
+            if (pub == null) {
+              return null;
+            }
+            final KmeliaPublication kPub = KmeliaPublication.fromDetail(pub);
+            if (i.isAlias()
+                || (i.getPaths() != null
+                    && !i.getPaths().isEmpty()
+                    && !(i.getPaths().get(0) + nodePathSep).startsWith(safeCurrentFolderPath))) {
+              kPub.getDetail().setAlias(true);
+            }
+            return kPub;
+          })
+          .filter(Objects::nonNull)
+          .collect(Collectors.toList());
     } catch (Exception pe) {
       throw new KmeliaRuntimeException(pe);
     }

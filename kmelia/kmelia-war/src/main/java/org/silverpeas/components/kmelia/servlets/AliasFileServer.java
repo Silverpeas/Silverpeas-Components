@@ -22,15 +22,12 @@ package org.silverpeas.components.kmelia.servlets;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.silverpeas.components.kmelia.KmeliaAuthorization;
-import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.contribution.publication.model.Location;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
+import org.silverpeas.core.security.authorization.SimpleDocumentAccessControl;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
@@ -44,7 +41,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
-import java.util.Collection;
 
 import static org.silverpeas.core.web.http.FileResponse.encodeInlineFilenameAsUtf8;
 
@@ -65,40 +61,17 @@ public class AliasFileServer extends HttpServlet {
     User currentUser = User.getCurrentRequester();
     String userId = currentUser == null ? "undefined" : currentUser.getId();
 
-    ResourceReference foreignKey = null;
     String attachmentId = req.getParameter("AttachmentId");
     if (!StringUtil.isDefined(attachmentId)) {
       attachmentId = req.getParameter("VersionId");
     }
     String language = req.getParameter("lang");
-    SimpleDocument attachment = null;
     if (StringUtil.isDefined(attachmentId)) {
       // Check first if attachment exists
-      attachment = AttachmentServiceProvider.getAttachmentService().
+      final SimpleDocument attachment = AttachmentServiceProvider.getAttachmentService().
           searchDocumentById(new SimpleDocumentPK(attachmentId), language);
-      if (attachment != null) {
-        foreignKey = new ResourceReference(attachment.getForeignId(), attachment.getInstanceId());
-      }
-    }
-
-    if (foreignKey != null) {
-      PublicationPK pubPK = new PublicationPK(foreignKey.getId(), foreignKey.getInstanceId());
-      Collection<Location> locations = getPublicationService().getAllAliases(pubPK);
-
-      // check if user have rights to see alias files
-      boolean rightsOK = false;
-      KmeliaAuthorization security = new KmeliaAuthorization();
-      for (Location location : locations) {
-        // it's an alias
-        // Check if user is allowed to see topic's content
-        rightsOK = security.isAccessAuthorized(location.getInstanceId(), userId, location.getId(),
-            KmeliaAuthorization.NODE_TYPE);
-        if (rightsOK) {
-          break;
-        }
-      }
-
-      if (rightsOK) {
+      if (attachment != null &&
+          SimpleDocumentAccessControl.get().isUserAuthorized(userId, attachment)) {
         response.setContentType(attachment.getContentType());
         final String filename = encodeInlineFilenameAsUtf8(attachment.getFilename());
         response.setHeader("Content-Disposition", filename);
@@ -118,7 +91,6 @@ public class AliasFileServer extends HttpServlet {
    */
   private void display(HttpServletResponse res, String filePath) {
     File file = new File(filePath);
-
     try {
       if (!file.exists()) {
         displayWarningHtmlCode(res);
@@ -134,18 +106,14 @@ public class AliasFileServer extends HttpServlet {
 
   // Add By Mohammed Hguig
   private void displayWarningHtmlCode(HttpServletResponse res) {
-      LocalizationBundle messages = ResourceLocator.getLocalizationBundle(
-          "org.silverpeas.util.peasUtil.multiLang.fileServerBundle");
-      try (InputStream in = new ByteArrayInputStream(messages.getString("warning").
-          getBytes(Charsets.UTF_8))) {
-        IOUtils.copy(in, res.getOutputStream());
-      } catch (Exception e) {
-        SilverLogger.getLogger(this).error(e);
-        res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-      }
-  }
-
-  private PublicationService getPublicationService() {
-      return publicationService;
+    LocalizationBundle messages = ResourceLocator
+        .getLocalizationBundle("org.silverpeas.util.peasUtil.multiLang.fileServerBundle");
+    try (InputStream in = new ByteArrayInputStream(messages.getString("warning").
+        getBytes(Charsets.UTF_8))) {
+      IOUtils.copy(in, res.getOutputStream());
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e);
+      res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
+  }
 }

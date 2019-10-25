@@ -41,7 +41,9 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import static java.util.Collections.singletonList;
 import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnGetting;
 import static org.silverpeas.core.security.authorization.AccessControlOperation.search;
 
@@ -168,37 +170,11 @@ public class KmeliaTransversal implements PublicationHelper {
   }
 
   public List<PublicationDetail> getPublicationsByComponentId(String componentId) {
-    List<PublicationDetail> publications = null;
-    try {
-      List<String> componentIds = new ArrayList<>();
-      componentIds.add(componentId);
-      publications = (List<PublicationDetail>) getPublicationService().getPublicationsByStatus("Valid",
-          componentIds);
-    } catch (Exception e) {
-      SilverLogger.getLogger(this).error(failureOnGetting("publications of component", componentId));
-    }
-    return filterPublications(publications, -1);
-  }
-
-  private List<PublicationDetail> filterPublications(List<PublicationDetail> publications,
-      int nbPublis) {
-    List<PublicationDetail> filteredPublications = new ArrayList<>();
-    KmeliaAuthorization security = new KmeliaAuthorization();
-
-    PublicationDetail pub = null;
-    for (int p = 0; publications != null && p < publications.size(); p++) {
-      pub = publications.get(p);
-      if (security.isObjectAvailable(pub.getPK().getInstanceId(), userId, pub.getPK().getId(),
-          "Publication")) {
-        filteredPublications.add(pub);
-      }
-
-      if (nbPublis != -1 && filteredPublications.size() == nbPublis) {
-        return filteredPublications;
-      }
-    }
-
-    return filteredPublications;
+    final List<PublicationDetail> publications = getPublicationService()
+        .getPublicationsByStatus("Valid", singletonList(componentId));
+    return PublicationAccessControl.get()
+        .filterAuthorizedByUser(userId, publications, AccessControlContext.init().onOperationsOf(search))
+        .collect(Collectors.toList());
   }
 
   private SilverpeasList<PublicationPK> filterPublicationPKs(

@@ -39,11 +39,13 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.apache.commons.lang3.ArrayUtils.isNotEmpty;
 import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery.createSelect;
 
 public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
@@ -104,6 +106,7 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
       "INSERT INTO " + GROUP_RIGHTS_TABLENAME + "(formId, instanceId, rightType, groupId) " +
           "VALUES (?, ?, ?, ?)";
   private static final String STATE_FIELD = "state";
+  private static final String INSTANCE_ID = "instanceId";
 
   @Override
   public FormDetail createForm(FormDetail formDetail) throws FormsOnlineDatabaseException {
@@ -362,54 +365,34 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
    * java.lang.String, java.lang.String[])
    */
   @Override
-  public List<FormDetail> getUserAvailableForms(String instanceId, String userId,
-      String[] userGroupIds) throws FormsOnlineDatabaseException {
-
-    /* Build query */
-    StringBuilder query = new StringBuilder();
-
-    query.append("select * from ").append(FORMS_TABLENAME);
-
-    /* 1st criteria : correct instanceId */
-    query.append(" where instanceId = '").append(instanceId).append("'");
-
-    /* 2nd criteria : state published or old forms that user has sent before unpublish */
-    query.append(" and (").append(" state = ").append(FormDetail.STATE_PUBLISHED)
-        .append(" or id in (select formId from ").append(FORMS_INSTANCES_TABLENAME)
-        .append(" where creatorId = '").append(userId).append("')").append(" )");
-
-    /* 3rd criteria : user has receiver rights (directly or from a group) */
-    query.append(" and (").append(" id in (select formId from ").append(USER_RIGHTS_TABLENAME)
-        .append(" where rightType='S' and userId = '").append(userId).append("') ");
-    if ((userGroupIds != null) && (userGroupIds.length > 0)) {
-      query.append("or id in (select formId from " + GROUP_RIGHTS_TABLENAME +
-          " where rightType='S' and groupId in ( ");
-      for (int i = 0; i < userGroupIds.length; i++) {
-        if (i != 0) {
-          query.append(", ");
-        }
-        query.append("'").append(userGroupIds[i]).append("'");
-      }
-      query.append(") )");
-    }
-    query.append(" )");
-
-    /* launch query */
-    List<FormDetail> forms = new ArrayList<>();
-    try (final Connection con = getConnection();
-         final Statement stmt = con.createStatement()) {
-      try (ResultSet rs = stmt.executeQuery(query.toString())) {
-        while (rs.next()) {
-          FormDetail form = fetchFormDetail(rs);
-          forms.add(form);
-        }
-      }
+  public List<FormDetail> getUserAvailableForms(final Collection<String> instanceIds,
+      final String userId, final String[] userGroupIds) throws FormsOnlineDatabaseException {
+    try {
+      final List<FormDetail> forms = new ArrayList<>();
+      JdbcSqlQuery.executeBySplittingOn(instanceIds, (idBatch, ignore) -> {
+          final JdbcSqlQuery query = JdbcSqlQuery.createSelect("*")
+          .from(FORMS_TABLENAME)
+          // 1st criteria : correct instanceId
+          .where(INSTANCE_ID).in(instanceIds)
+          // 2nd criteria : state published or old forms that user has sent before unpublish
+          .and("(state = ?", FormDetail.STATE_PUBLISHED)
+            .or("id in (select formId from " + FORMS_INSTANCES_TABLENAME + " where creatorId = ?))", userId)
+          // 3rd criteria : user has receiver rights (directly or from a group)
+          .and("(id in (select formId from " + USER_RIGHTS_TABLENAME + " where rightType='S' and userId = ?)", userId);
+          if (isNotEmpty(userGroupIds)) {
+            query.or("id in (select formId from " + GROUP_RIGHTS_TABLENAME + " where rightType='S' and groupId").in(userGroupIds).addSqlPart(")"); }
+          query.addSqlPart(")");
+          query.execute(r -> {
+            forms.add(fetchFormDetail(r));
+            return null;
+          });
+      });
+      return forms;
     } catch (SQLException se) {
       throw new FormsOnlineDatabaseException("FormsOnlineDAOJdbc.getUserAvailableForms()",
-          SilverpeasException.ERROR, "formsOnline.FIND_USER_AVAILABLE_FORMS", "instanceId = " +
-          instanceId + ",userId = " + userId, se);
+          SilverpeasException.ERROR, "formsOnline.FIND_USER_AVAILABLE_FORMS", "instanceIds are " +
+          String.join(",", instanceIds) + ",userId = " + userId, se);
     }
-    return forms;
   }
 
   /*
@@ -562,7 +545,7 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
     form.setTitle(rs.getString("title"));
     form.setCreatorId(rs.getString("creatorId"));
     form.setCreationDate(new Date(rs.getTimestamp("creationDate").getTime()));
-    form.setInstanceId(rs.getString("instanceId"));
+    form.setInstanceId(rs.getString(INSTANCE_ID));
     form.setState(rs.getInt(STATE_FIELD));
     return form;
   }
@@ -689,7 +672,7 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
     formInstance.setValidatorId(rs.getString("validatorId"));
     formInstance.setValidationDate(rs.getTimestamp("validationDate"));
     formInstance.setComments(rs.getString("comments"));
-    formInstance.setInstanceId(rs.getString("instanceId"));
+    formInstance.setInstanceId(rs.getString(INSTANCE_ID));
 
     return formInstance;
   }

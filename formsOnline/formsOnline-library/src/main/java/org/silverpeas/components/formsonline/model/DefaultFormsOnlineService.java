@@ -22,12 +22,9 @@ package org.silverpeas.components.formsonline.model;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang3.tuple.Pair;
-import org.silverpeas.components.formsonline.notification
-    .FormsOnlinePendingValidationRequestUserNotification;
-import org.silverpeas.components.formsonline.notification
-    .FormsOnlineProcessedRequestUserNotification;
-import org.silverpeas.components.formsonline.notification
-    .FormsOnlineValidationRequestUserNotification;
+import org.silverpeas.components.formsonline.notification.FormsOnlinePendingValidationRequestUserNotification;
+import org.silverpeas.components.formsonline.notification.FormsOnlineProcessedRequestUserNotification;
+import org.silverpeas.components.formsonline.notification.FormsOnlineValidationRequestUserNotification;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.Group;
@@ -57,6 +54,7 @@ import org.silverpeas.core.util.logging.SilverLogger;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -216,10 +214,10 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
   }
 
   @Override
-  public List<FormDetail> getAvailableFormsToSend(String appId, String userId)
+  public List<FormDetail> getAvailableFormsToSend(Collection<String> appIds, String userId)
       throws FormsOnlineDatabaseException {
     String[] userGroupIds = organizationController.getAllGroupIdsOfUser(userId);
-    return getDAO().getUserAvailableForms(appId, userId, userGroupIds);
+    return getDAO().getUserAvailableForms(appIds, userId, userGroupIds);
   }
 
   @Override

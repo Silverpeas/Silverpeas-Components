@@ -23,13 +23,14 @@
  */
 package org.silverpeas.components.formsonline.model;
 
+import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.ApplicationService;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
-import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.util.ServiceProvider;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface FormsOnlineService extends ApplicationService<FormInstance> {
@@ -52,7 +53,7 @@ public interface FormsOnlineService extends ApplicationService<FormInstance> {
 
   void unpublishForm(FormPK pk) throws FormsOnlineDatabaseException;
 
-  List<FormDetail> getAvailableFormsToSend(String appId, String userId)
+  List<FormDetail> getAvailableFormsToSend(Collection<String> appIds, String userId)
       throws FormsOnlineDatabaseException;
 
   RequestsByStatus getAllUserRequests(String appId, String userId,
