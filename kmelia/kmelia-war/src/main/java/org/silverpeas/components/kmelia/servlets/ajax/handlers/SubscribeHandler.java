@@ -23,12 +23,13 @@
  */
 package org.silverpeas.components.kmelia.servlets.ajax.handlers;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.components.kmelia.KmeliaAuthorization;
 import org.silverpeas.components.kmelia.control.KmeliaSessionController;
 import org.silverpeas.components.kmelia.servlets.ajax.AjaxHandler;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.security.authorization.NodeAccessControl;
+import org.silverpeas.core.util.logging.SilverLogger;
+
+import javax.servlet.http.HttpServletRequest;
 
 public class SubscribeHandler implements AjaxHandler {
 
@@ -43,13 +44,12 @@ public class SubscribeHandler implements AjaxHandler {
       }
       return "nok";
     } catch (Exception e) {
-      SilverTrace.error("kmelia", "SubscribeHandler.handleRequest", "root.MSG_GEN_PARAM_VALUE", e);
+      SilverLogger.getLogger(this).error(e);
       return e.getMessage();
     }
   }
 
   private boolean isNodeAvailable(KmeliaSessionController kmelia, String nodeId) {
-    KmeliaAuthorization security = new KmeliaAuthorization();
-    return security.isObjectAvailable(kmelia.getComponentId(), kmelia.getUserId(), nodeId, "Node");
+    return NodeAccessControl.get().isUserAuthorized(kmelia.getUserId(), new NodePK(nodeId, kmelia.getComponentId()));
   }
 }

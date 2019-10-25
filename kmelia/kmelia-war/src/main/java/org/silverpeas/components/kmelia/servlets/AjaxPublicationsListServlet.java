@@ -356,7 +356,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
             // le mode brouillon visible par tous,
             // les publication en mode brouillon sont visibles par tous sauf les
             // lecteurs sinon, seules les publications brouillons de l'utilisateur sont visibles
-            if (currentUserId.equals(pub.getUpdaterId()) ||
+            if (pub.isPublicationEditor(currentUserId) ||
                 ((kmeliaScc.isCoWritingEnable() && kmeliaScc.isDraftVisibleWithCoWriting()) &&
                     !user.isInRole(profile))) {
               pubColor = "gray";

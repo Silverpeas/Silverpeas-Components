@@ -26,6 +26,7 @@ package org.silverpeas.components.formsonline.model;
 import org.silverpeas.core.persistence.datasource.repository.PaginationCriterion;
 import org.silverpeas.core.util.SilverpeasList;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -124,13 +125,13 @@ public interface FormsOnlineDAO {
 
   /**
    * Get the form available to be sent for given user or given groups
-   * @param componentId the component instance id
+   * @param componentIds the component instance id
    * @param userId the user id
    * @param userGroupIds the user's groups id list
    * @return a list of FormDetail objects
    * @throws FormsOnlineDatabaseException
    */
-  List<FormDetail> getUserAvailableForms(String componentId, String userId,
+  List<FormDetail> getUserAvailableForms(Collection<String> componentIds, String userId,
       String[] userGroupIds) throws FormsOnlineDatabaseException;
 
   /**

@@ -24,7 +24,6 @@
 package org.silverpeas.components.kmelia.servlets;
 
 import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.components.kmelia.KmeliaAuthorization;
 import org.silverpeas.components.kmelia.KmeliaConstants;
 import org.silverpeas.components.kmelia.SearchContext;
 import org.silverpeas.components.kmelia.control.KmeliaSessionController;
@@ -261,7 +260,6 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         if (type != null && ("Publication".equals(type) ||
             "org.silverpeas.core.personalorganizer.model.TodoDetail".equals(type) ||
             "Attachment".equals(type) || "Document".equals(type) || type.startsWith("Comment"))) {
-          KmeliaAuthorization security = new KmeliaAuthorization(kmelia.getOrganisationController());
           try {
             PublicationDetail pub2Check = kmelia.getPublicationDetail(id);
             // If given PK defines a clone, change PK to master
@@ -275,9 +273,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
                 request.setAttribute("ForcedId", id);
               }
             }
-            boolean accessAuthorized = security
-                .isAccessAuthorized(kmelia.getComponentId(), kmelia.getUserId(), id, "Publication");
-            if (accessAuthorized) {
+            final PublicationPK pubPk = new PublicationPK(id, kmelia.getComponentId());
+            if (PublicationAccessControl.get().isUserAuthorized(kmelia.getUserId(), pubPk)) {
               processPath(kmelia, id);
               if ("Attachment".equals(type)) {
                 String attachmentId = request.getParameter("AttachmentId");
