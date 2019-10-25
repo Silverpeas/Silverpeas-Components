@@ -41,6 +41,7 @@ import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.subscription.ResourceSubscriptionService;
 import org.silverpeas.core.subscription.SubscriptionService;
 import org.silverpeas.core.subscription.SubscriptionServiceProvider;
 import org.silverpeas.core.subscription.service.ComponentSubscription;
@@ -122,7 +123,8 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
    * @return boolean
    */
   public boolean isSubscriptionUsed() {
-    return StringUtil.getBooleanValue(getComponentParameterValue("useSubscription"));
+    return StringUtil.getBooleanValue(
+        getComponentParameterValue(ResourceSubscriptionService.Constants.SUBSCRIPTION_PARAMETER));
   }
 
   /*

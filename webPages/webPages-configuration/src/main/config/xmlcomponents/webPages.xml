@@ -77,6 +77,8 @@
   </profiles>
   <parameters>
     <parameter>
+      <!-- the name of the parameter is defined by the ResourceSubscriptionService interface as it
+      is used to automatically listen any value change of this parameter -->
       <name>useSubscription</name>
       <label>
         <message lang="fr">Gestion de l'abonnement</message>
