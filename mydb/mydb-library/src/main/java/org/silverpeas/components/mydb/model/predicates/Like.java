@@ -45,7 +45,7 @@ public class Like extends AbstractColumnValuePredicate {
 
   @Override
   public JdbcSqlQuery apply(final JdbcSqlQuery query) {
-    return query.where(getColumn().getName() + " like ?", getNormalizedValue());
+    return query.where("lower(" + getColumn().getName() + ") like lower(?)", getNormalizedValue());
   }
 }
   
