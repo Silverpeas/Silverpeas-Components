@@ -38,6 +38,7 @@
 <view:setConstant var="publisherRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.publisher"/>
 <view:setConstant var="mainArrayPaneName" constant="org.silverpeas.components.mydb.web.MyDBWebController.MAIN_ARRAY_PANE_NAME"/>
 <view:setConstant var="tableView" constant="org.silverpeas.components.mydb.web.MyDBWebController.TABLE_VIEW"/>
+<view:setConstant var="foreignKeyTarget" constant="org.silverpeas.components.mydb.web.MyDBWebController.FOREIGN_KEY_TARGET"/>
 <view:setConstant var="useLastLoadedRows" constant="org.silverpeas.components.mydb.web.MyDBWebController.USE_LAST_LOADED_ROWS"/>
 <view:setConstant var="allTables" constant="org.silverpeas.components.mydb.web.MyDBWebController.ALL_TABLES"/>
 <view:setConstant var="comparingColumn" constant="org.silverpeas.components.mydb.web.MyDBWebController.COMPARING_COLUMN"/>
@@ -54,7 +55,6 @@
 <c:set var="comparators"       value="${requestScope[comparingOperators]}"/>
 <c:set var="currentComparator" value="${requestScope[comparingOperator]}"/>
 <c:set var="columnValue"       value="${requestScope[comparingValue]}"/>
-<c:set var="currentTable"      value="${requestScope[tableView]}"/>
 <c:set var="currentTable"      value="${requestScope[tableView]}"/>
 <c:set var="tableNames"        value="${requestScope[allTables]}"/>
 <c:set var="useLastLoadedRows" value="${silfn:booleanValue(requestScope[useLastLoadedRows])}"/>
@@ -98,7 +98,7 @@
 <c:url var="createIcons" value="${createIcons}"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="${currentUserLanguage}">
 <head>
   <title>${windowTitle}</title>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
@@ -248,7 +248,7 @@
      * Open the specified table to select a row as foreign key when inserting a new row in the
      * current table. This function is invoked by the JSP rendered into the popup of row adding.
      */
-    function openForeignKey(refTableName) {
+    function openForeignKey(refTableName, refColumnName) {
       jsonFkRowId = sp.element.querySelectorAll('.field-fk-reftable-' + refTableName)
           .map(function(i) {
             return {
@@ -256,11 +256,16 @@
               'v' : i.value
             }
           });
-      sp.ajaxRequest('ViewTargetTable').withParam('${tableView}', refTableName).send().then(
+      sp.ajaxRequest('ViewTargetTable')
+          .withParam('${tableView}', refTableName)
+          .withParam('${foreignKeyTarget}', refColumnName)
+          .send().then(
         function(response) {
           renderRowForm(refTableName, response, function(row) {
             jsonFkRowId.forEach(function(fieldValue) {
-              sp.element.querySelector(".field-fk-reftable-" + refTableName + "[rel='field-fk-refcolumn-" + fieldValue.f + "']").value = fieldValue.v;
+              sp.element.querySelector(".field-fk-reftable-" +
+                  refTableName + "[rel='field-fk-refcolumn-" +
+                  fieldValue.f + "']").value = fieldValue.v;
             });
           });
         });

@@ -110,7 +110,12 @@ public class TableFieldValue implements Comparable<TableFieldValue> {
     } else if (SqlTypes.isText(this.type)) {
       this.value = value;
     } else if (SqlTypes.isDate(this.type)) {
-      this.value = Date.valueOf(value);
+      try {
+        this.value = Date.valueOf(value);
+      } catch (IllegalArgumentException e) {
+        throw new IllegalArgumentException("The date '" + value +
+            "' is not in the database date escape format (yyyy-[m]m-[d]d)");
+      }
     } else if (SqlTypes.isTime(this.type)) {
       this.value = Time.valueOf(value);
     } else if (SqlTypes.isTimestamp(this.type)) {
