@@ -83,6 +83,7 @@ public class MyDBWebController
   public static final String MAIN_ARRAY_PANE_NAME = "mainArrayPaneName";
   public static final String FK_ARRAY_PANE_NAME = "fkArrayPaneName";
   public static final String TABLE_VIEW = "tableView";
+  public static final String FOREIGN_KEY_TARGET = "fkTarget";
   public static final String USE_LAST_LOADED_ROWS = "useLastLoadedRows";
   public static final String ALL_TABLES = "tableNames";
   public static final String COMPARING_COLUMN = "comparingColumn";
@@ -97,7 +98,7 @@ public class MyDBWebController
   private static final String ERROR_INVALID_ROW_KEY = "mydb.error.invalidRow";
 
   private MyDBConnectionInfo connectionInfo;
-  private TableView tableView = new TableView();
+  private transient TableView tableView = new TableView();
   private String mainArrayPaneName;
 
   /**
@@ -135,13 +136,24 @@ public class MyDBWebController
   @RedirectToInternal("{nextView}")
   @LowestRoleAccess(value = SilverpeasRole.reader)
   public void home(final MyDBWebRequestContext context) {
-    final String nextView;
+    String nextView = "ConnectionSetting";
     if (this.connectionInfo.isDefined()) {
-      nextView = "ViewTable";
-    } else {
-      nextView = "ConnectionSetting";
+      if (connectionInfoIsValid(context)) {
+        nextView = "ViewTable";
+      } else if (!context.getHighestUserRole().isGreaterThanOrEquals(SilverpeasRole.admin)) {
+        nextView = "Error";
+        context.getRequest().setAttribute("errorMessageKey", "mydb.error.dataSource");
+      }
     }
     context.addRedirectVariable("nextView", nextView);
+  }
+
+  @GET
+  @Path("Error")
+  @RedirectToInternalJsp("error.jsp")
+  @LowestRoleAccess(value = SilverpeasRole.reader)
+  public void error(final MyDBWebRequestContext context) {
+    // nothing to do. Just redirect to the JSP
   }
 
   @GET
@@ -157,9 +169,9 @@ public class MyDBWebController
       if (context.getRequest().getParameterAsBoolean(AJAX_EXPORT_PARAMETER_NAME)) {
         tableView.setPagination(null);
       } else {
-        tableView.setPagination(getPaginationPageFrom(request, mainArrayPaneName));
+        tableView.setPagination(getPaginationPageFrom(request, getSessionTableViewId()));
       }
-      tableView.setOrderBy(getOrderByFrom(request, tableView.getOrderBies(), mainArrayPaneName));
+      tableView.setOrderBy(getOrderByFrom(request, tableView.getOrderBies(), getSessionTableViewId()));
       setUpRequestAttributes(request);
     } catch (MyDBRuntimeException e) {
       context.getMessager().addError(e.getLocalizedMessage());
@@ -212,12 +224,14 @@ public class MyDBWebController
   public void getForeignKeyTableViewFrom(final MyDBWebRequestContext context) {
     try {
       final String targetTableName = context.getRequest().getParameter(TABLE_VIEW);
+      final String targetColumnName = context.getRequest().getParameter(FOREIGN_KEY_TARGET);
       final Optional<DbTable> targetTable = DbTable.table(targetTableName, connectionInfo);
       if (targetTable.isPresent()) {
         final TableView targetTableView = new TableView();
         targetTableView.setTable(targetTable);
         final HttpRequest request = context.getRequest();
         final String fkArrayPaneName = "FkTable@" + targetTableName;
+        targetTableView.setColumnTargetedByForeignKey(targetColumnName);
         targetTableView.setPagination(getPaginationPageFrom(request, fkArrayPaneName));
         targetTableView.setOrderBy(getOrderByFrom(request, targetTableView.getOrderBies(), fkArrayPaneName));
         request.setAttribute(TABLE_VIEW, targetTableView);
@@ -410,7 +424,6 @@ public class MyDBWebController
   @RedirectToInternal("{nextView}")
   @LowestRoleAccess(value = SilverpeasRole.publisher, onError = @RedirectTo("Main"))
   public void saveConnection(final MyDBWebRequestContext context) {
-    String nextView = "ViewTable";
     String dataSource = context.getRequest().getParameter("DataSource");
     String login = context.getRequest().getParameter("Login");
     String password = context.getRequest().getParameter("Password");
@@ -422,18 +435,28 @@ public class MyDBWebController
         .withLoginAndPassword(login, password)
         .withDataMaxNumber(rowLimit)
         .withoutAnyDefaultTable();
+    final String nextView;
     // we check the connection: it is saved only if the connection with the data source can be
     // established. In that case, the current table view is cleared.
-    try {
-      connectionInfo.checkConnection();
+    if (connectionInfoIsValid(context)) {
       connectionInfo.save();
       clearTableView();
-    } catch (MyDBException e) {
-      SilverLogger.getLogger(this).error(e);
-      context.getMessager().addError(getString("mydb.error.invalidConnectionSettings"));
+      nextView = "ViewTable";
+    } else {
       nextView = "ConnectionSetting";
     }
     context.addRedirectVariable("nextView", nextView);
+  }
+
+  private boolean connectionInfoIsValid(final MyDBWebRequestContext context) {
+    try {
+      connectionInfo.checkConnection();
+      return true;
+    } catch (MyDBException e) {
+      SilverLogger.getLogger(this).error(e);
+      context.getMessager().addError(getString("mydb.error.invalidConnectionSettings"));
+      return false;
+    }
   }
 
   private void readRequestParameters(final HttpRequest request) {
@@ -467,7 +490,7 @@ public class MyDBWebController
     } else {
       tableNames = Collections.emptyList();
     }
-    request.setAttribute(MAIN_ARRAY_PANE_NAME, mainArrayPaneName);
+    request.setAttribute(MAIN_ARRAY_PANE_NAME, getSessionTableViewId());
     request.setAttribute(TABLE_VIEW, tableView);
     request.setAttribute(ALL_TABLES, tableNames);
     request.setAttribute(COMPARING_COLUMN, tableView.getFilter()
@@ -476,6 +499,10 @@ public class MyDBWebController
     request.setAttribute(COMPARING_OPERATOR, tableView.getFilter().getComparator());
     request.setAttribute(COMPARING_VALUE, tableView.getFilter().getColumnValue());
     request.setAttribute(COMPARING_OPERATORS, TableRowsFilter.getAllComparators());
+  }
+
+  private String getSessionTableViewId() {
+    return this.mainArrayPaneName + tableView.getName();
   }
 
   private void throwInvalidValueType(final String name, final int expectedType) {

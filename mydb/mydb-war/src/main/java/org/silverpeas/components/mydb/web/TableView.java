@@ -61,6 +61,7 @@ public class TableView {
   private TableRowsFilter filter = new TableRowsFilter();
   private String orderBy = null;
   private PaginationPage pagination = null;
+  private String foreignKeyTargetedColumn = null;
   private SilverpeasList<TableRowUIEntity> lastRows = SilverpeasList.wrap(emptyList());
 
   /**
@@ -83,6 +84,10 @@ public class TableView {
 
   void setOrderBy(final String orderBy) {
     this.orderBy = orderBy;
+  }
+
+  void setColumnTargetedByForeignKey(final String columnName) {
+    this.foreignKeyTargetedColumn = columnName;
   }
 
   /**
@@ -171,7 +176,8 @@ public class TableView {
       WebMessager.getInstance().addSevere(e.getMessage());
       SilverLogger.getLogger(this).error(e);
     }
-    lastRows = convertList(this, rows.orElseGet(SilverpeasArrayList::new), emptySet());
+    lastRows = convertList(this, rows.orElseGet(SilverpeasArrayList::new), foreignKeyTargetedColumn,
+        emptySet());
     return lastRows;
   }
 
