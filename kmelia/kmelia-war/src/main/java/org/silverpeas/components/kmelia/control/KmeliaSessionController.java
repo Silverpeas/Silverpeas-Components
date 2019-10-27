@@ -3102,8 +3102,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   public List<KmeliaPublication> getLatestPublications() {
     List<KmeliaPublication> publicationsToDisplay = new ArrayList<>();
     List<KmeliaPublication> toCheck = getKmeliaService()
-        .getLatestPublications(getComponentId(), getNbPublicationsOnRoot(),
-            isRightsOnTopicsEnabled(), getUserId());
+        .getLatestAuthorizedPublications(getComponentId(), getUserId(), getNbPublicationsOnRoot());
     for (KmeliaPublication aPublication : toCheck) {
       if (!isPublicationDeleted(aPublication.getPk())) {
         publicationsToDisplay.add(aPublication);

@@ -20,32 +20,25 @@
  */
 package org.silverpeas.components.kmelia;
 
-import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.contribution.publication.dao.PublicationCriteria;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
-import org.silverpeas.core.security.authorization.AccessControlContext;
-import org.silverpeas.core.security.authorization.PublicationAccessControl;
-import org.silverpeas.core.util.Pagination;
-import org.silverpeas.core.util.SilverpeasArrayList;
-import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.look.PublicationHelper;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import static java.util.Collections.singletonList;
 import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnGetting;
-import static org.silverpeas.core.security.authorization.AccessControlOperation.search;
 
 public class KmeliaTransversal implements PublicationHelper {
 
@@ -89,24 +82,15 @@ public class KmeliaTransversal implements PublicationHelper {
 
   @Override
   public List<PublicationDetail> getPublications(String spaceId, List<String> excluded, int nbPublis) {
-    List<String> componentIds = getAvailableComponents(spaceId);
+    final List<String> componentIds = getAvailableComponents(spaceId);
     componentIds.removeAll(excluded);
-    final SilverpeasList<PublicationPK> filteredPublicationPKs =
-        new Pagination<PublicationPK, SilverpeasList<PublicationPK>>(new PaginationPage(1, nbPublis))
-        .paginatedDataSource(p -> {
-          try {
-            return getPublicationService()
-                .getPublicationPKsByStatus(PublicationDetail.VALID_STATUS, componentIds,
-                    p.originalSizeIsNotRequired());
-          } catch (Exception e) {
-            SilverLogger.getLogger(this).error(failureOnGetting("publication pks of space", spaceId));
-            return new SilverpeasArrayList<>(0);
-          }
-        })
-        .filter(this::filterPublicationPKs)
-        .execute();
     try {
-      return getPublicationService().getPublications(filteredPublicationPKs);
+      return getPublicationService().getAuthorizedPublicationsForUserByCriteria(userId, PublicationCriteria
+          .excludingTrashNodeOnComponentInstanceIds(componentIds)
+          .ofStatus(PublicationDetail.VALID_STATUS)
+          .visibleAt(OffsetDateTime.now())
+          .orderByDescendingBeginDate()
+          .limitTo(nbPublis));
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(failureOnGetting("publications of space", spaceId));
     }
@@ -126,23 +110,15 @@ public class KmeliaTransversal implements PublicationHelper {
   }
 
   protected List<PublicationDetail> getUpdatedPublications(String spaceId, Date since, int nbPublis) {
-    List<String> componentIds = getAvailableComponents(spaceId);
-    final SilverpeasList<PublicationPK> filteredPublicationPKs =
-        new Pagination<PublicationPK, SilverpeasList<PublicationPK>>(new PaginationPage(1, nbPublis))
-        .paginatedDataSource(p -> {
-          try {
-            return getPublicationService()
-                .getUpdatedPublicationPKsByStatus(PublicationDetail.VALID_STATUS, since,
-                    componentIds, p.originalSizeIsNotRequired());
-          } catch (Exception e) {
-            SilverLogger.getLogger(this).error(failureOnGetting("publication pks of space", spaceId));
-            return new SilverpeasArrayList<>(0);
-          }
-        })
-        .filter(this::filterPublicationPKs)
-        .execute();
+    final List<String> componentIds = getAvailableComponents(spaceId);
     try {
-      return getPublicationService().getPublications(filteredPublicationPKs);
+      return getPublicationService().getAuthorizedPublicationsForUserByCriteria(userId, PublicationCriteria
+          .excludingTrashNodeOnComponentInstanceIds(componentIds)
+          .ofStatus(PublicationDetail.VALID_STATUS)
+          .visibleAt(OffsetDateTime.now())
+          .lastUpdatedSince(OffsetDateTime.ofInstant(since.toInstant(), ZoneId.systemDefault()))
+          .orderByDescendingLastUpdateDate()
+          .limitTo(nbPublis));
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(failureOnGetting("publications of space", spaceId));
     }
@@ -170,18 +146,11 @@ public class KmeliaTransversal implements PublicationHelper {
   }
 
   public List<PublicationDetail> getPublicationsByComponentId(String componentId) {
-    final List<PublicationDetail> publications = getPublicationService()
-        .getPublicationsByStatus("Valid", singletonList(componentId));
-    return PublicationAccessControl.get()
-        .filterAuthorizedByUser(userId, publications, AccessControlContext.init().onOperationsOf(search))
-        .collect(Collectors.toList());
-  }
-
-  private SilverpeasList<PublicationPK> filterPublicationPKs(
-      final SilverpeasList<PublicationPK> publicationPKs) {
-    return PublicationAccessControl.get()
-        .filterAuthorizedByUser(publicationPKs, userId, AccessControlContext.init().onOperationsOf(search))
-        .collect(SilverpeasList.collector(publicationPKs));
+    return getPublicationService().getAuthorizedPublicationsForUserByCriteria(userId, PublicationCriteria
+        .excludingTrashNodeOnComponentInstanceIds(componentId)
+        .ofStatus(PublicationDetail.VALID_STATUS)
+        .visibleAt(OffsetDateTime.now())
+        .orderByDescendingLastUpdateDate());
   }
 
   private OrganizationController getOrganizationControl() {

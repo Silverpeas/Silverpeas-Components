@@ -68,7 +68,7 @@ public class KmeliaComponentAuthorization implements ComponentAuthorization {
     resources.forEach(r -> {
       final ComponentResourceReference resourceRef = converter.apply(r);
       final String resourceType = resourceRef.getType();
-      if (isKmeliaObjectType(resourceType)) {
+      if (isHandledKmeliaResourceType(resourceType)) {
         pubPks.put(new PublicationPK(resourceRef.getLocalId(), resourceRef.getInstanceId()), resourceRef);
       } else if (NODE_TYPE.equalsIgnoreCase(resourceType)) {
         nodePks.put(new NodePK(resourceRef.getLocalId(), resourceRef.getInstanceId()), resourceRef);
@@ -87,7 +87,7 @@ public class KmeliaComponentAuthorization implements ComponentAuthorization {
     return resources.stream().filter(r -> authorized.contains(converter.apply(r)));
   }
 
-  private boolean isKmeliaObjectType(String objectType) {
+  private boolean isHandledKmeliaResourceType(String objectType) {
     return objectType != null && (PUBLICATION_TYPE.equalsIgnoreCase(objectType)
         || objectType.startsWith(ATTACHMENT_TYPE) || objectType.startsWith(VERSION_TYPE));
   }
