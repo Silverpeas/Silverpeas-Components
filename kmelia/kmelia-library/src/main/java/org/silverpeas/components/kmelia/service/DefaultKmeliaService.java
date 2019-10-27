@@ -44,7 +44,6 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.contribution.ContributionManager;
 import org.silverpeas.core.contribution.attachment.AttachmentException;
@@ -61,6 +60,7 @@ import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.silverpeas.core.contribution.content.form.record.GenericRecordSet;
 import org.silverpeas.core.contribution.content.wysiwyg.WysiwygException;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
+import org.silverpeas.core.contribution.publication.dao.PublicationCriteria;
 import org.silverpeas.core.contribution.publication.model.CompletePublication;
 import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
@@ -128,6 +128,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
+import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -137,6 +138,7 @@ import static org.silverpeas.components.kmelia.notification.KmeliaDelayedVisibil
 import static org.silverpeas.components.kmelia.service.KmeliaOperationContext.OperationType.*;
 import static org.silverpeas.components.kmelia.service.KmeliaServiceContext.*;
 import static org.silverpeas.core.admin.service.OrganizationControllerProvider.getOrganisationController;
+import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
 import static org.silverpeas.core.contribution.attachment.AttachmentService.VERSION_MODE;
 import static org.silverpeas.core.util.StringUtil.*;
 
@@ -270,8 +272,7 @@ public class DefaultKmeliaService implements KmeliaService {
             KmeliaHelper.isToolbox(pk.getInstanceId())) {
           pubDetails = publicationService.getDetailsByFatherPK(pk, "P.pubUpdateDate desc", false);
         } else {
-          return getLatestPublications(pk.getInstanceId(), nbPublisOnRoot, isRightsOnTopicsUsed,
-              userId);
+          return getLatestAuthorizedPublications(pk.getInstanceId(), userId, nbPublisOnRoot);
         }
       } catch (Exception e) {
         throw new KmeliaRuntimeException(e);
@@ -288,20 +289,23 @@ public class DefaultKmeliaService implements KmeliaService {
     return asRankedKmeliaPublication(pk, pubDetails);
   }
 
+  @SuppressWarnings("unchecked")
   @Override
-  public List<KmeliaPublication> getLatestPublications(String instanceId, int nbPublisOnRoot,
-      boolean isRightsOnTopicsUsed, String userId) {
-    final NodePK fatherPK = new NodePK(NodePK.ROOT_NODE_ID, instanceId);
-    List<PublicationDetail> pubDetails = publicationService.
-        getDetailsByBeginDateDescAndStatusAndNotLinkedToFatherId(fatherPK,
-            PublicationDetail.VALID_STATUS, nbPublisOnRoot);
-    if (isRightsOnTopicsUsed) {
-      // The list of publications must be filtered
-      pubDetails = PublicationAccessControl.get()
-          .filterAuthorizedByUser(userId, pubDetails)
-          .collect(Collectors.toList());
-    }
-    return asRankedKmeliaPublication(pubDetails);
+  public List<KmeliaPublication> getLatestAuthorizedPublications(String instanceId, String userId,
+      int limit) {
+    return getRequestCacheService().getCache().computeIfAbsent(
+        "KmeliaService:getLatestAuthorizedPublications:" + instanceId + ":" + userId + ":" + limit,
+        List.class, () -> {
+          final List<PublicationDetail> pubDetails = publicationService
+              .getAuthorizedPublicationsForUserByCriteria(userId, PublicationCriteria
+                  .excludingTrashNodeOnComponentInstanceIds(instanceId)
+                  .excludingNodes(NodePK.ROOT_NODE_ID)
+                  .ofStatus(PublicationDetail.VALID_STATUS)
+                  .visibleAt(OffsetDateTime.now())
+                  .orderByDescendingBeginDate()
+                  .limitTo(limit));
+          return asRankedKmeliaPublication(pubDetails);
+        });
   }
 
   @Override
@@ -1678,7 +1682,7 @@ public class DefaultKmeliaService implements KmeliaService {
 
       // Subscriptions related to aliases
       Collection<Location> locations =
-          (Collection<Location>) CacheServiceProvider.getRequestCacheService()
+          (Collection<Location>) getRequestCacheService()
               .getCache()
               .get(ALIASES_CACHE_KEY);
       if (locations == null) {
@@ -1918,9 +1922,11 @@ public class DefaultKmeliaService implements KmeliaService {
   public List<KmeliaPublication> getPublicationsToValidate(String componentId, String userId) {
     Collection<PublicationDetail> publications = new ArrayList<>();
     try {
-      Collection<PublicationDetail> temp =
-          publicationService.getPublicationsByStatus(PublicationDetail.TO_VALIDATE_STATUS,
-              componentId);
+      Collection<PublicationDetail> temp = publicationService.getPublicationsByCriteria(
+          PublicationCriteria
+              .excludingTrashNodeOnComponentInstanceIds(componentId)
+              .ofStatus(PublicationDetail.TO_VALIDATE_STATUS)
+              .orderByDescendingLastUpdateDate());
       // only publications which must be validated by current user must be returned
       for (PublicationDetail publi : temp) {
         addPublicationsToValidate(userId, publications, publi);
@@ -2578,7 +2584,7 @@ public class DefaultKmeliaService implements KmeliaService {
     final List<String> userIds = getUserIdsOfFolder(nodePK);
     final List<String> readerIds = new ArrayList<>();
     readerIds.add(excludedUserId);
-    return new Pagination<HistoryObjectDetail, SilverpeasList<HistoryObjectDetail>>(new PaginationPage(1, maxResult))
+    return new Pagination<HistoryObjectDetail>(new PaginationPage(1, maxResult))
         .paginatedDataSource(p -> statisticService
             .getHistoryByAction(new ResourceReference(pk), 1, PUBLICATION, readerIds,
                 p.originalSizeIsNotRequired()))
@@ -3521,7 +3527,7 @@ public class DefaultKmeliaService implements KmeliaService {
         publicationService.setAliases(pubPK, locations);
 
     // Send subscriptions to aliases subscribers
-    CacheServiceProvider.getRequestCacheService()
+    getRequestCacheService()
         .getCache()
         .put(ALIASES_CACHE_KEY, result.getFirst());
     PublicationDetail pubDetail = getPublicationDetail(pubPK);

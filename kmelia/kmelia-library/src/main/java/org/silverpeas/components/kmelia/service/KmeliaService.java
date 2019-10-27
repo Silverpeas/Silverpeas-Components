@@ -186,8 +186,20 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
   List<KmeliaPublication> getPublicationsOfFolder(NodePK pk, String userProfile, String userId,
       boolean isTreeStructureUsed, boolean isRightsOnTopicsUsed);
 
-  List<KmeliaPublication> getLatestPublications(String instanceId, int nbPublisOnRoot,
-      boolean isRightsOnTopicsUsed, String userId);
+  /**
+   * Checks rights on publications order by descending begin visibility date of publication.
+   * <p>
+   * Due to the nature of this service, it is not designed to by used by update processes and the
+   * result is so cached at request scope in order to avoid to perform several times the same
+   * request.
+   * </p>
+   * @param instanceId the identifier of the instance.
+   * @param userId the identifier of the user for which access controls MUST be verified.
+   * @param limit the maximum number of publications to return (0 = no limit).
+   * @return alist of {@link KmeliaPublication} instances.
+   */
+  List<KmeliaPublication> getLatestAuthorizedPublications(String instanceId, String userId,
+      int limit);
 
   /**
    * Return list of all path to this publication - it's a Collection of NodeDetail collection
