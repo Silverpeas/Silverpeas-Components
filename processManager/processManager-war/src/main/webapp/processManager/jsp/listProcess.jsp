@@ -121,6 +121,11 @@
   <view:includePlugin name="toggle"/>
   <% form.displayScripts(out, context); %>
   <script type="text/javascript">
+
+    window.processListMonitor = new function() {
+      applyEventDispatchingBehaviorOn(this);
+    };
+
     var filterDisplayed = ${collapse};
     function toggleFilter(){
       if (filterDisplayed) {
@@ -357,6 +362,7 @@
               spProgressMessage.show();
             }
           });
+          window.processListMonitor.dispatchEvent('load');
         });
       </script>
     </div>
