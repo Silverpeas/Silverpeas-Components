@@ -23,7 +23,6 @@
  */
 package org.silverpeas.components.questionreply.control;
 
-import org.apache.commons.io.IOUtils;
 import org.silverpeas.components.questionreply.QuestionReplyException;
 import org.silverpeas.components.questionreply.model.Category;
 import org.silverpeas.components.questionreply.model.Question;
@@ -31,7 +30,6 @@ import org.silverpeas.components.questionreply.model.QuestionDetail;
 import org.silverpeas.components.questionreply.model.Recipient;
 import org.silverpeas.components.questionreply.model.Reply;
 import org.silverpeas.components.questionreply.service.QuestionManagerProvider;
-import org.silverpeas.components.questionreply.service.notification.NotificationData;
 import org.silverpeas.components.questionreply.service.notification.QuestionNotifier;
 import org.silverpeas.components.questionreply.service.notification.ReplyNotifier;
 import org.silverpeas.components.whitepages.control.CardManager;
@@ -39,6 +37,7 @@ import org.silverpeas.components.whitepages.model.Card;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.model.Attachments;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
@@ -51,7 +50,6 @@ import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
-import org.silverpeas.core.notification.user.client.UserRecipient;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.pdc.pdc.model.SearchContext;
@@ -81,14 +79,18 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import static java.util.Collections.singletonList;
+import static org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper.buildAndSend;
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
 import static org.silverpeas.core.util.Charsets.UTF_8;
 
 public class QuestionReplySessionController extends AbstractComponentSessionController {
+  private static final long serialVersionUID = -4956263179309397997L;
 
   private SilverpeasRole userProfil;
   private Question currentQuestion;
@@ -112,7 +114,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       default:
         break;
     }
-    return new ArrayList<Question>();
+    return new ArrayList<>();
   }
 
   public Collection<Question> getQuestionsByCategory(String categoryId)
@@ -146,7 +148,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       default:
         break;
     }
-    return new ArrayList<Reply>();
+    return new ArrayList<>();
   }
 
   /*
@@ -343,13 +345,13 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    * met en session la question
    */
   public void closeQuestion(long questionId) throws QuestionReplyException {
-    Collection<Long> questionIds = new ArrayList<Long>();
+    Collection<Long> questionIds = new ArrayList<>();
     questionIds.add(questionId);
     QuestionManagerProvider.getQuestionManager().closeQuestions(questionIds);
   }
 
   public void openQuestion(long questionId) throws QuestionReplyException {
-    Collection<Long> questionIds = new ArrayList<Long>();
+    Collection<Long> questionIds = new ArrayList<>();
     questionIds.add(questionId);
     QuestionManagerProvider.getQuestionManager().openQuestions(questionIds);
   }
@@ -500,16 +502,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    */
   @Deprecated
   public void relaunchRecipients() throws QuestionReplyException {
-    String[] uids = new String[0];
-    Collection<Recipient> recipients = new ArrayList<Recipient>();
-
-    if (uids != null) {
-      for (String uid : uids) {
-        Recipient recipient =
-            new Recipient(((IdPK) getCurrentQuestion().getPK()).getIdAsLong(), uid);
-        recipients.add(recipient);
-      }
-    }
+    final Collection<Recipient> recipients = new ArrayList<>();
     getCurrentQuestion().writeRecipients(recipients);
     QuestionManagerProvider.getQuestionManager().updateQuestionRecipients(getCurrentQuestion());
     notifyQuestion(getCurrentQuestion());
@@ -520,7 +513,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    */
   public Collection<UserDetail> getCurrentQuestionWriters() throws QuestionReplyException {
     OrganizationController orga = getOrganisationController();
-    List<UserDetail> arrayUsers = new ArrayList<UserDetail>();
+    List<UserDetail> arrayUsers = new ArrayList<>();
 
     try {
       ContentManager contentManager = ContentManagerProvider.getContentManager();
@@ -562,61 +555,37 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
 
   /**
    * @param question the current question-reply question
-   * @param users list of users to notify
-   * @throws QuestionReplyException
+   * @param recipientIds list of users to notify
    */
-  private void notifyTemplateQuestion(Question question, Collection<UserRecipient> users)
-      throws QuestionReplyException {
-    QuestionNotifier notifier = new QuestionNotifier(getUserDetail(getUserId()), question,
-        new NotificationData(getString("questionReply.notification") + getComponentLabel(),
-            getSpaceLabel() + " - " +
-                getComponentLabel(), getComponentLabel(), getComponentId()));
-    notifier.sendNotification(users);
+  private void notifyTemplateQuestion(Question question, Collection<String> recipientIds) {
+    final User sender = getUserDetail(getUserId());
+    buildAndSend(new QuestionNotifier(sender, question, recipientIds));
   }
 
   /**
    * @param question
-   * @throws QuestionReplyException
    */
-  private void notifyQuestion(Question question) throws QuestionReplyException {
-    Collection<Recipient> recipients = question.readRecipients();
-    List<UserRecipient> users = new ArrayList<UserRecipient>(recipients.size());
-    for (Recipient recipient : recipients) {
-      users.add(new UserRecipient(recipient.getUserId()));
-    }
-    notifyTemplateQuestion(question, users);
+  private void notifyQuestion(Question question) {
+    notifyTemplateQuestion(question,
+        question.readRecipients().stream().map(Recipient::getUserId).collect(Collectors.toSet()));
   }
 
   /**
    * @param question
-   * @throws QuestionReplyException
    */
-  private void notifyQuestionFromExpert(Question question) throws QuestionReplyException {
-    List<String> profils = new ArrayList<String>();
-    profils.add(SilverpeasRole.writer.name());
-    String[] usersIds =
-        getOrganisationController().getUsersIdsByRoleNames(getComponentId(), profils);
-    List<UserRecipient> users = new ArrayList<UserRecipient>(usersIds.length);
-    for (String userId : usersIds) {
-      users.add(new UserRecipient(userId));
-    }
-    notifyTemplateQuestion(question, users);
+  private void notifyQuestionFromExpert(Question question) {
+    final List<String> profiles = singletonList(SilverpeasRole.writer.name());
+    String[] usersIds = getOrganisationController().getUsersIdsByRoleNames(getComponentId(), profiles);
+    notifyTemplateQuestion(question, Stream.of(usersIds).collect(Collectors.toSet()));
   }
 
   /**
    * @param reply
-   * @throws QuestionReplyException
    */
-  private void notifyReply(Reply reply) throws QuestionReplyException {
-    UserDetail user =
-        getOrganisationController().getUserDetail(getCurrentQuestion().getCreatorId());
-    ReplyNotifier notifier =
-        new ReplyNotifier(getUserDetail(getUserId()), getCurrentQuestion(), reply,
-            new NotificationData(getString("questionReply.notification") + getComponentLabel(),
-                getSpaceLabel() + " - " + getComponentLabel(), getComponentLabel(),
-                getComponentId()));
-    notifier
-        .sendNotification((List<UserRecipient>) Collections.singletonList(new UserRecipient(user)));
+  private void notifyReply(final Reply reply) {
+    final User sender = getUserDetail(getUserId());
+    final String recipientId = getCurrentQuestion().getCreatorId();
+    buildAndSend(new ReplyNotifier(sender, getCurrentQuestion(), reply, recipientId));
   }
 
   public QuestionReplySessionController(MainSessionController mainSessionCtrl,
@@ -757,17 +726,15 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     }
 
     // création du fichier html
-    File fileHTML = new File(dir + File.separator + thisExportDir + ".html");
-    Writer fileWriter = null;
+    final File fileHTML = new File(dir + File.separator + thisExportDir + ".html");
     try {
       if (fileHTML.createNewFile()) {
-        fileWriter = new OutputStreamWriter(new FileOutputStream(fileHTML.getPath()), UTF_8);
-        fileWriter.write(toHTML(fileHTML, resource));
+        try(Writer fileWriter = new OutputStreamWriter(new FileOutputStream(fileHTML.getPath()), UTF_8)) {
+          fileWriter.write(toHTML(fileHTML, resource));
+        }
       }
     } catch (IOException ex) {
       throw new QuestionReplyException(ex);
-    } finally {
-      IOUtils.closeQuietly(fileWriter);
     }
 
     // Création du zip

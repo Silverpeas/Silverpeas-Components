@@ -31,6 +31,7 @@ import org.silverpeas.components.infoletter.model.InfoLetter;
 import org.silverpeas.components.infoletter.model.InfoLetterPublication;
 import org.silverpeas.components.infoletter.model.InfoLetterPublicationPdC;
 import org.silverpeas.components.infoletter.model.InfoLetterService;
+import org.silverpeas.components.infoletter.notification.InfoLetterSubscriptionPublicationUserNotification;
 import org.silverpeas.components.infoletter.service.InfoLetterServiceProvider;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.user.model.Group;
@@ -43,27 +44,15 @@ import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
-import org.silverpeas.core.notification.user.client.GroupRecipient;
-import org.silverpeas.core.notification.NotificationException;
-import org.silverpeas.core.notification.user.client.NotificationMetaData;
-import org.silverpeas.core.notification.user.client.NotificationParameters;
-import org.silverpeas.core.notification.user.client.NotificationSender;
-import org.silverpeas.core.notification.user.client.UserRecipient;
+import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.persistence.jdbc.bean.IdPK;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.subscription.constant.SubscriberType;
 import org.silverpeas.core.subscription.util.SubscriptionSubscriberMapBySubscriberType;
-import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.template.SilverpeasTemplateFactory;
-import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.Link;
-import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.Pair;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.csv.CSVReader;
@@ -82,11 +71,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
 
@@ -247,88 +233,22 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     return dataInterface.getInfoLetterPublication(publiPK);
   }
 
-  protected SilverpeasTemplate getNotificationMessageTemplate() {
-    SettingBundle settings =
-        ResourceLocator.getSettingBundle("org.silverpeas.infoLetter.settings.infoLetterSettings");
-    Properties templateConfiguration = new Properties();
-    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR,
-        settings.getString("templatePath"));
-    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR,
-        settings.getString("customersTemplatePath"));
-
-    return SilverpeasTemplateFactory.createSilverpeasTemplate(templateConfiguration);
-  }
-
   /**
    * Notify the newsletter to internal subscribers
    * @param ilp the infoletter to send
    * @param server
    */
   public void notifyInternalSuscribers(InfoLetterPublicationPdC ilp, String server) {
-
-    // Internal subscribers
-    SubscriptionSubscriberMapBySubscriberType subscriberIdsByTypes =
-        dataInterface.getInternalSuscribers(getComponentId()).indexBySubscriberType();
-
-    //Send the newsletter by Mail to internal subscribers
     if (isNewsLetterSendByMail()) {
-
+      //Send the newsletter by Mail to internal subscribers
+      SubscriptionSubscriberMapBySubscriberType subscriberIdsByTypes =
+          dataInterface.getInternalSuscribers(getComponentId()).indexBySubscriberType();
       Set<String> internalSubscribersEmails = getEmailsInternalSubscribers(subscriberIdsByTypes);
       sendLetterByMail(ilp, server, internalSubscribersEmails);
-
     } else {
       //Send the newsletter via notification
-
-      NotificationSender ns = new NotificationSender(getComponentId());
-      String sSubject = getString("infoLetter.emailSubject") + ilp.getName();
-
-      try {
-        Map<String, SilverpeasTemplate> templates = new HashMap<>();
-        NotificationMetaData notifMetaData =
-            new NotificationMetaData(NotificationParameters.PRIORITY_NORMAL, sSubject, templates,
-                "infoLetterNotification");
-
-        String url = "/RinfoLetter/" + getComponentId() + "/View?parution=" + ilp.getPK().getId();
-        for (String lang : DisplayI18NHelper.getLanguages()) {
-          SilverpeasTemplate template = getNotificationMessageTemplate();
-          templates.put(lang, template);
-          template.setAttribute("infoLetter", ilp);
-          template.setAttribute("infoLetterTitle", ilp.getName(lang));
-          String desc = ilp.getDescription(lang);
-          if ("".equals(desc)) {
-            desc = null;
-          }
-          template.setAttribute("infoLetterDesc", desc);
-          template.setAttribute("senderName", getUserDetail().getDisplayedName());
-
-          LocalizationBundle localizedMessage = ResourceLocator.getLocalizationBundle(
-              "org.silverpeas.infoLetter.multilang.infoLetterBundle", lang);
-          String emailSubject =  localizedMessage.getString("infoLetter.emailSubject");
-          if (!StringUtil.isDefined(emailSubject)) {
-            emailSubject = getString("infoLetter.emailSubject");
-          }
-          notifMetaData.addLanguage(lang, emailSubject + ilp.getName(), "");
-
-          Link link = new Link(url, localizedMessage.getString("infoLetter.notifLinkLabel"));
-          notifMetaData.setLink(link, lang);
-        }
-        notifMetaData.setSender(getUserId());
-        notifMetaData.setComponentId(getComponentId());
-        notifMetaData.displayReceiversInFooter();
-
-        // Internal subscribers
-        for (String userId : subscriberIdsByTypes.get(SubscriberType.USER).getAllIds()) {
-          notifMetaData.addUserRecipient(new UserRecipient(userId));
-        }
-        for (String groupId : subscriberIdsByTypes.get(SubscriberType.GROUP).getAllIds()) {
-          notifMetaData.addGroupRecipient(new GroupRecipient(groupId));
-        }
-
-        ns.notifyUser(notifMetaData);
-
-      } catch (NotificationException e) {
-        throw new InfoLetterException(e);
-      }
+      UserNotificationHelper.buildAndSend(
+          new InfoLetterSubscriptionPublicationUserNotification(ilp, getUserDetail()));
     }
   }
 

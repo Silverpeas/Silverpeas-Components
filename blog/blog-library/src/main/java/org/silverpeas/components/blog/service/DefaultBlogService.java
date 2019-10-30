@@ -31,7 +31,6 @@ import org.silverpeas.components.blog.model.Category;
 import org.silverpeas.components.blog.model.PostDetail;
 import org.silverpeas.components.blog.notification.BlogUserSubscriptionNotification;
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.admin.ProfiledObjectId;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.model.CommentPK;
@@ -60,7 +59,6 @@ import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.subscription.SubscriptionService;
 import org.silverpeas.core.subscription.SubscriptionServiceProvider;
 import org.silverpeas.core.subscription.service.ComponentSubscription;
-import org.silverpeas.core.subscription.service.ResourceSubscriptionProvider;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
@@ -184,27 +182,8 @@ public class DefaultBlogService implements BlogService {
   @Override
   public void sendSubscriptionsNotification(final NodePK fatherPK, final PostDetail post,
       final Comment comment, final String type, final String senderId) {
-    Collection<String> subscriberIds =
-        ResourceSubscriptionProvider.getSubscribersOfComponent(fatherPK.getInstanceId())
-            .getAllUserIds();
-    if (subscriberIds != null && !subscriberIds.isEmpty()) {
-      // get only subscribers who have sufficient rights to read pubDetail
-      NodeDetail node = getNodeBm().getHeader(fatherPK);
-      final List<String> newSubscribers = new ArrayList<>(subscriberIds.size());
-      for (String userId : subscriberIds) {
-        if (organizationController.isComponentAvailableToUser(fatherPK.getInstanceId(), userId) &&
-            (!node.haveRights() || organizationController.isObjectAvailableToUser(
-                ProfiledObjectId.fromNode(node.getRightsDependsOn()), fatherPK.getInstanceId(),
-                userId))) {
-          newSubscribers.add(userId);
-        }
-      }
-
-      if (!newSubscribers.isEmpty()) {
-        UserNotificationHelper.buildAndSend(
-            new BlogUserSubscriptionNotification(post, comment, type, senderId, newSubscribers));
-      }
-    }
+      UserNotificationHelper.buildAndSend(
+          new BlogUserSubscriptionNotification(post, comment, type, senderId));
   }
 
   @Transactional

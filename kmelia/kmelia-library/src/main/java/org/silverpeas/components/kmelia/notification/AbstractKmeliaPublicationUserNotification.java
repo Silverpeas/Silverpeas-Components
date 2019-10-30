@@ -23,14 +23,16 @@
  */
 package org.silverpeas.components.kmelia.notification;
 
-import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.notification.user.model.NotificationResourceData;
-import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.notification.user.client.constant.NotifAction;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.components.kmelia.service.KmeliaHelper;
-import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.notification.user.client.constant.NotifAction;
+import org.silverpeas.core.notification.user.model.NotificationResourceData;
+import org.silverpeas.core.security.authorization.ComponentAccessControl;
+import org.silverpeas.core.security.authorization.NodeAccessControl;
+import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.util.StringUtil;
 
 import java.util.MissingResourceException;
@@ -49,6 +51,24 @@ public abstract class AbstractKmeliaPublicationUserNotification
     super(resource);
     this.nodePK = nodePK;
     this.action = action;
+  }
+
+  @Override
+  protected boolean isUserCanBeNotified(final String userId) {
+    if (nodePK != null) {
+      return NodeAccessControl.get().isUserAuthorized(userId, nodePK);
+    } else {
+      return ComponentAccessControl.get().isUserAuthorized(userId, getComponentInstanceId());
+    }
+  }
+
+  @Override
+  protected boolean isGroupCanBeNotified(final String groupId) {
+    if (nodePK != null) {
+      return NodeAccessControl.get().isGroupAuthorized(groupId, nodePK);
+    } else {
+      return ComponentAccessControl.get().isGroupAuthorized(groupId, getComponentInstanceId());
+    }
   }
 
   @Override
