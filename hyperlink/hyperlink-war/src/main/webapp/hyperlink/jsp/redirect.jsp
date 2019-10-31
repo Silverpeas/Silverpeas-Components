@@ -33,19 +33,21 @@
 <head>
   <title></title>
   <view:looknfeel/>
+  <script type="text/javascript">
+    function redirectUser() {
+      sp.navRequest('${url}').addParam('fromRedirect', true).toTarget('_blank').go();
+    }
+  </script>
 </head>
-<body onload="window.document.redirectForm.submit()">
+<body onload="redirectUser()">
 <view:window>
   <view:frame>
     <div class="inlineMessage">
       <%=resource.getString("hyperlink.explications")%>
-      &nbsp;<a href="${url}" target="_blank"><%=resource.getString("hyperlink.ici")%>
+      &nbsp;<a href="javascript:void(0)" onclick="redirectUser()"><%=resource.getString("hyperlink.ici")%>
     </a>
     </div>
   </view:frame>
 </view:window>
-<form name="redirectForm" action="${url}" target="_blank" method="POST">
-  <input type="hidden" name="fromRedirect" value="true"/>
-</form>
 </body>
 </html>
