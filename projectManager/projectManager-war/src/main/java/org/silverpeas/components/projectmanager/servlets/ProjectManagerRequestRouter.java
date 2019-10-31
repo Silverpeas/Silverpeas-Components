@@ -387,9 +387,9 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter<ProjectM
     if ("admin".equals(projectManagerSC.getRole())) {
       task.setResponsableId(Integer.parseInt(request.getParameter("ResponsableId")));
       task.setNom(request.getParameter("Nom"));
-      task.setCharge(StringUtil.convertFloat(request.getParameter("Charge")));
-      task.setConsomme(StringUtil.convertFloat(request.getParameter("Consomme")));
-      task.setRaf(StringUtil.convertFloat(request.getParameter("Raf")));
+      task.setCharge(StringUtil.asFloat(request.getParameter("Charge")));
+      task.setConsomme(StringUtil.asFloat(request.getParameter("Consomme")));
+      task.setRaf(StringUtil.asFloat(request.getParameter("Raf")));
       task.setStatut(Integer.valueOf(request.getParameter("Statut")));
       task.setDescription(request.getParameter("Description"));
       task.setDateDebut(projectManagerSC.uiDate2Date(request.getParameter("DateDebut")));
@@ -398,8 +398,8 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter<ProjectM
 
       task.setResources(request2Resources(request));
     } else if ("responsable".equals(projectManagerSC.getRole())) {
-      task.setConsomme(StringUtil.convertFloat(request.getParameter("Consomme")));
-      task.setRaf(StringUtil.convertFloat(request.getParameter("Raf")));
+      task.setConsomme(StringUtil.asFloat(request.getParameter("Consomme")));
+      task.setRaf(StringUtil.asFloat(request.getParameter("Raf")));
       task.setStatut(Integer.valueOf(request.getParameter("Statut")));
       task.setResources(request2Resources(request));
     }
@@ -425,9 +425,9 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter<ProjectM
     }
 
     task.setNom(request.getParameter("Nom"));
-    task.setCharge(StringUtil.convertFloat(request.getParameter("Charge")));
-    task.setConsomme(StringUtil.convertFloat(request.getParameter("Consomme")));
-    task.setRaf(StringUtil.convertFloat(request.getParameter("Raf")));
+    task.setCharge(StringUtil.asFloat(request.getParameter("Charge")));
+    task.setConsomme(StringUtil.asFloat(request.getParameter("Consomme")));
+    task.setRaf(StringUtil.asFloat(request.getParameter("Raf")));
     task.setStatut(Integer.parseInt(request.getParameter("Statut")));
     task.setDescription(request.getParameter("Description"));
     task.setDateDebut(projectManagerSC.uiDate2Date(request.getParameter("DateDebut")));

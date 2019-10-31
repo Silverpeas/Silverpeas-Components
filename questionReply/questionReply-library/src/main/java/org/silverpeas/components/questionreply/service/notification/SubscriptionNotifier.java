@@ -23,91 +23,59 @@
  */
 package org.silverpeas.components.questionreply.service.notification;
 
-import org.silverpeas.components.questionreply.QuestionReplyException;
 import org.silverpeas.components.questionreply.model.Question;
 import org.silverpeas.components.questionreply.model.Reply;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.notification.NotificationException;
-import org.silverpeas.core.notification.user.client.NotificationMetaData;
-import org.silverpeas.core.notification.user.client.NotificationParameters;
-import org.silverpeas.core.notification.user.client.NotificationSender;
-import org.silverpeas.core.notification.user.client.UserRecipient;
-import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.core.util.Link;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.notification.user.UserSubscriptionNotificationBehavior;
+import org.silverpeas.core.subscription.constant.SubscriberType;
+import org.silverpeas.core.subscription.util.SubscriptionSubscriberMapBySubscriberType;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.MissingResourceException;
+
+import static org.silverpeas.core.subscription.service.ResourceSubscriptionProvider.getSubscribersOfComponent;
 
 /**
  * @author ehugonnet
  */
-public class SubscriptionNotifier extends Notifier {
+public class SubscriptionNotifier extends AbstractReplyNotifier
+    implements UserSubscriptionNotificationBehavior {
 
-  private final Reply reply;
-  private final Question question;
-  final NotificationSender notificationSender;
-  private static final String BUNDLE_NAME =
-      "org.silverpeas.questionReply.multilang.questionReplyBundle";
+  private final SubscriptionSubscriberMapBySubscriberType subscriberIdsByTypes;
 
-  public SubscriptionNotifier(UserDetail sender, Question question, Reply reply) {
-    super(sender);
-    this.reply = reply;
-    this.question = question;
-    this.notificationSender = new NotificationSender(question.getInstanceId());
+  public SubscriptionNotifier(User sender, Question question, Reply reply) {
+    super(question, reply, sender);
+    this.subscriberIdsByTypes = getSubscribersOfComponent(question.getInstanceId()).indexBySubscriberType();
   }
 
   @Override
-  public void sendNotification(Collection<UserRecipient> recipients) throws QuestionReplyException {
-    if (recipients != null && !recipients.isEmpty()) {
-      try {
-        // Get default resource bundle
-        LocalizationBundle message = ResourceLocator.getLocalizationBundle(BUNDLE_NAME,
-            DisplayI18NHelper.getDefaultLanguage());
-        Map<String, SilverpeasTemplate> templates = new HashMap<>();
-        String translation;
-        translation = getNotificationTitle(message);
-        NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.PRIORITY_NORMAL,
-            String.format(translation, question.getTitle()), templates, "reply_subscription");
-        List<String> languages = DisplayI18NHelper.getLanguages();
-        for (String language : languages) {
-          message = ResourceLocator.getLocalizationBundle(BUNDLE_NAME, language);
-          SilverpeasTemplate template = loadTemplate();
-          template.setAttribute("userName", getSendername());
-          template.setAttribute("QuestionDetail", question);
-          template.setAttribute("questionTitle", question.getTitle());
-          template.setAttribute("replyTitle", reply.getTitle());
-          template.setAttribute("replyContent", reply.loadWysiwygContent());
-          template.setAttribute("silverpeasURL", question._getPermalink());
-          templates.put(language, template);
-          notifMetaData.addLanguage(language, String
-              .format(translation, question.getTitle()), "");
-
-          Link link = new Link(question._getPermalink(), message.getString("questionReply.notifLinkLabel"));
-          notifMetaData.setLink(link, language);
-        }
-        notifMetaData.addUserRecipients(recipients);
-        notifMetaData.setSender(sender.getId());
-
-        notificationSender.notifyUser(notifMetaData);
-      } catch (NotificationException e) {
-        throw new QuestionReplyException(e);
-      }
-    }
+  protected String getTemplateFileName() {
+    return "reply_subscription";
   }
 
-  private String getNotificationTitle(final LocalizationBundle message) {
+  @Override
+  protected String getBundleSubjectKey() {
+    return "questionReply.subscription.title";
+  }
+
+  @Override
+  protected String getTitle(final String language) {
     String translation;
     try {
-      translation = message.getString("questionReply.subscription.title");
+      translation = getBundle(language).getString(getBundleSubjectKey());
     } catch (MissingResourceException ex) {
       translation = "Answer to %1$s";
     }
-    return translation;
+    return String.format(translation, getResource().getTitle());
+  }
+
+  @Override
+  protected Collection<String> getUserIdsToNotify() {
+    return subscriberIdsByTypes.get(SubscriberType.USER).getAllIds();
+  }
+
+  @Override
+  protected Collection<String> getGroupIdsToNotify() {
+    return subscriberIdsByTypes.get(SubscriberType.GROUP).getAllIds();
   }
 }

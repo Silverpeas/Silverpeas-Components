@@ -395,6 +395,13 @@ function initOperations(id, op) {
   }
 
   if (op.subscriptions) {
+    label = getString('GML.subscribe');
+    url = "javascript:onclick=addSubscription()";
+    menuItem = new YAHOO.widget.MenuItem(label, {url: url});
+    oMenu.addItem(menuItem, groupIndex);
+    groupEmpty = false;
+    //addCreationItem(url, icons["operation.subscribe"], label);
+  } else if (op.topicSubscriptions) {
     label = getString('SubscriptionsAdd');
     url = "javascript:onclick=addSubscription()";
     menuItem = new YAHOO.widget.MenuItem(label, {url: url});
@@ -402,6 +409,7 @@ function initOperations(id, op) {
     groupEmpty = false;
     //addCreationItem(url, icons["operation.subscribe"], label);
   }
+
   if (op.favorites) {
     label = getString('FavoritesAdd1') + ' ' + getString('FavoritesAdd2');
     url = "javascript:onclick=addCurrentNodeAsFavorite()";

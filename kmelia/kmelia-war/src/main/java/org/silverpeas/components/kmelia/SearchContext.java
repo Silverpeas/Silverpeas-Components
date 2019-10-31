@@ -23,7 +23,9 @@
  */
 package org.silverpeas.components.kmelia;
 
-public class SearchContext {
+import java.io.Serializable;
+
+public class SearchContext implements Serializable {
 
   public static final int NONE = 0;
   public static final int GLOBAL = 1;

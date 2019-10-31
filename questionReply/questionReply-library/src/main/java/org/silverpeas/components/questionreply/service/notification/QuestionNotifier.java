@@ -23,85 +23,30 @@
  */
 package org.silverpeas.components.questionreply.service.notification;
 
-import org.silverpeas.components.questionreply.QuestionReplyException;
 import org.silverpeas.components.questionreply.model.Question;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.notification.NotificationException;
-import org.silverpeas.core.notification.user.client.NotificationMetaData;
-import org.silverpeas.core.notification.user.client.NotificationParameters;
-import org.silverpeas.core.notification.user.client.NotificationSender;
-import org.silverpeas.core.notification.user.client.UserRecipient;
-import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.core.util.Link;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.admin.user.model.User;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author ehugonnet
  */
-public class QuestionNotifier extends Notifier {
+public class QuestionNotifier extends AbstractNotifier {
 
-  final Question question;
-  final String componentLabel;
-  final String subject;
-  final String source;
-  final NotificationSender notifSender;
+  private final Collection<String> usersToNotify;
 
-  public QuestionNotifier(UserDetail sender, Question question, NotificationData data) {
-    super(sender);
-    this.question = question;
-    this.componentLabel = data.getComponentLabel();
-    this.subject = data.getSubject();
-    this.source = data.getSource();
-    this.notifSender = new NotificationSender(data.getComponentId());
+  public QuestionNotifier(User sender, Question question, final Collection<String> usersToNotify) {
+    super(question, sender);
+    this.usersToNotify = usersToNotify;
   }
 
-  /**
-   * @param users list of users to notify
-   * @throws QuestionReplyException
-   */
   @Override
-  public void sendNotification(Collection<UserRecipient> users) throws QuestionReplyException {
-    try {
-      // Get default resource bundle
-      String resource = "org.silverpeas.questionReply.multilang.questionReplyBundle";
-      LocalizationBundle message;
+  protected String getTemplateFileName() {
+    return "question";
+  }
 
-      Map<String, SilverpeasTemplate> templates = new HashMap<>();
-      NotificationMetaData notifMetaData =
-          new NotificationMetaData(NotificationParameters.PRIORITY_NORMAL, subject, templates, "question");
-
-      List<String> languages = DisplayI18NHelper.getLanguages();
-      for (String language : languages) {
-        // initialize new resource locator
-        message = ResourceLocator.getLocalizationBundle(resource, language);
-        // Create a new silverpeas template
-        SilverpeasTemplate template = loadTemplate();
-        template.setAttribute("UserDetail", sender);
-        template.setAttribute("userName", getSendername());
-        template.setAttribute("QuestionDetail", question);
-        template.setAttribute("questionTitle", question.getTitle());
-        template.setAttribute("questionContent", question.getContent());
-        template.setAttribute("silverpeasURL", question._getPermalink());
-        templates.put(language, template);
-        notifMetaData.addLanguage(language,
-            message.getString("questionReply.notification") + componentLabel, "");
-
-        Link link = new Link(question._getPermalink(), message.getString("questionReply.notifLinkLabel"));
-        notifMetaData.setLink(link, language);
-      }
-      notifMetaData.setSender(sender.getId());
-      notifMetaData.addUserRecipients(users);
-
-      notifSender.notifyUser(notifMetaData);
-    } catch (NotificationException e) {
-      throw new QuestionReplyException(e);
-    }
+  @Override
+  protected Collection<String> getUserIdsToNotify() {
+    return usersToNotify;
   }
 }

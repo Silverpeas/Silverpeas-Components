@@ -23,20 +23,18 @@
  */
 package org.silverpeas.components.kmelia.notification;
 
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.notification.user.UserSubscriptionNotificationBehavior;
+import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.subscription.constant.SubscriberType;
 import org.silverpeas.core.subscription.service.NodeSubscriptionResource;
-import org.silverpeas.core.subscription.service.ResourceSubscriptionProvider;
 import org.silverpeas.core.subscription.util.SubscriptionSubscriberMapBySubscriberType;
-import org.silverpeas.core.notification.user.client.constant.NotifAction;
-import org.silverpeas.core.admin.ObjectType;
-import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.admin.service.OrganizationController;
 
 import java.util.Collection;
-import java.util.HashSet;
+
+import static org.silverpeas.core.subscription.service.ResourceSubscriptionProvider.getSubscribersOfComponent;
+import static org.silverpeas.core.subscription.service.ResourceSubscriptionProvider.getSubscribersOfSubscriptionResource;
 
 /**
  * @author Yohann Chastagnier
@@ -45,40 +43,15 @@ public class KmeliaSubscriptionPublicationUserNotification
     extends AbstractKmeliaPublicationUserNotification implements
     UserSubscriptionNotificationBehavior {
 
-  private SubscriptionSubscriberMapBySubscriberType subscriberIdsByTypes =
-      new SubscriptionSubscriberMapBySubscriberType();
-  private Collection<String> userIdsToExcludeFromNotifying = new HashSet<>();
+  private final SubscriptionSubscriberMapBySubscriberType subscriberIdsByTypes;
 
   public KmeliaSubscriptionPublicationUserNotification(final NodePK nodePK,
       final PublicationDetail resource, final NotifAction action) {
     super(nodePK, resource, action);
-  }
-
-  @Override
-  protected void initialize() {
-    super.initialize();
-
-    // ###########
-    // Subscribers
-    // ###########
-
-    subscriberIdsByTypes.addAll(ResourceSubscriptionProvider
-        .getSubscribersOfSubscriptionResource(NodeSubscriptionResource.from(getNodePK())));
-
-    Collection<String> allUserSubscriberIds = subscriberIdsByTypes.getAllUserIds();
-    if (!allUserSubscriberIds.isEmpty()) {
-      // Identifying users to be excluded from notifying
-      final OrganizationController orgaController = getOrganisationController();
-      // Get only subscribers who have sufficient rights to read pubDetail
-      final NodeDetail node = getNodeHeader(getNodePK());
-      for (final String userId : allUserSubscriberIds) {
-        if (!orgaController.isComponentAvailable(getNodePK().getInstanceId(), userId) || (node.
-            haveRights() && !orgaController
-            .isObjectAvailable(node.getRightsDependsOn(), ObjectType.NODE,
-                getNodePK().getInstanceId(), userId))) {
-          userIdsToExcludeFromNotifying.add(userId);
-        }
-      }
+    if (getNodePK().isRoot()) {
+      subscriberIdsByTypes = getSubscribersOfComponent(getComponentInstanceId()).indexBySubscriberType();
+    } else {
+      subscriberIdsByTypes = getSubscribersOfSubscriptionResource(NodeSubscriptionResource.from(getNodePK())).indexBySubscriberType();
     }
   }
 
@@ -108,11 +81,6 @@ public class KmeliaSubscriptionPublicationUserNotification
   @Override
   protected Collection<String> getUserIdsToNotify() {
     return subscriberIdsByTypes.get(SubscriberType.USER).getAllIds();
-  }
-
-  @Override
-  protected Collection<String> getUserIdsToExcludeFromNotifying() {
-    return userIdsToExcludeFromNotifying;
   }
 
   @Override

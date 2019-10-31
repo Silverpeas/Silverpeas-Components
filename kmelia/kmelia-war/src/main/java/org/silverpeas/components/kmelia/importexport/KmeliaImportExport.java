@@ -23,7 +23,7 @@ package org.silverpeas.components.kmelia.importexport;
 import org.silverpeas.components.kmelia.KmeliaException;
 import org.silverpeas.components.kmelia.service.KmeliaHelper;
 import org.silverpeas.components.kmelia.service.KmeliaService;
-import org.silverpeas.core.admin.ObjectType;
+import org.silverpeas.core.admin.ProfiledObjectId;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.UserDetail;
@@ -108,8 +108,8 @@ public class KmeliaImportExport extends GEDImportExport {
           .getInstanceId(), "rightsOnTopics"))) {
         NodeDetail topic = getNodeService().getHeader(topicPK);
         if (topic.haveRights()) {
-          profile = KmeliaHelper.getProfile(orgnaisationController.getUserProfiles(userDetail
-              .getId(), topicPK.getInstanceId(), topic.getRightsDependsOn(), ObjectType.NODE));
+          profile = KmeliaHelper.getProfile(orgnaisationController.getUserProfiles(userDetail.getId(),
+              topicPK.getInstanceId(), ProfiledObjectId.fromNode(topic.getRightsDependsOn())));
         } else {
           profile = KmeliaHelper.getProfile(orgnaisationController.getUserProfiles(userDetail
               .getId(), topicPK.getInstanceId()));

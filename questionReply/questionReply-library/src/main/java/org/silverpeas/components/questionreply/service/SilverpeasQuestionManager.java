@@ -32,17 +32,15 @@ import org.silverpeas.components.questionreply.service.notification.Subscription
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.i18n.I18NHelper;
-import org.silverpeas.core.notification.user.client.UserRecipient;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.bean.IdPK;
 import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAOFactory;
-import org.silverpeas.core.subscription.service.ResourceSubscriptionProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -53,9 +51,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+
+import static org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper.buildAndSend;
 
 @Singleton
 public class SilverpeasQuestionManager implements QuestionManager {
@@ -861,18 +859,10 @@ public class SilverpeasQuestionManager implements QuestionManager {
         .getBooleanValue(controller.getComponentParameterValue(instanceId, "sortable"));
   }
 
-  void notifySubscribers(Question question, Reply reply) throws QuestionReplyException {
+  private void notifySubscribers(Question question, Reply reply) {
     if (reply.getPublicReply() == 1) {
-      UserDetail sender = reply.readAuthor();
-      SubscriptionNotifier notifier = new SubscriptionNotifier(sender, question, reply);
-      Collection<String> subscribers =
-          ResourceSubscriptionProvider.getSubscribersOfComponent(question.getInstanceId())
-              .getAllUserIds();
-      Set<UserRecipient> userRecipients = new HashSet<>();
-      for (String subscriberId : subscribers) {
-        userRecipients.add(new UserRecipient(subscriberId));
-      }
-      notifier.sendNotification(userRecipients);
+      final User sender = reply.readAuthor();
+      buildAndSend(new SubscriptionNotifier(sender, question, reply));
     }
   }
 }

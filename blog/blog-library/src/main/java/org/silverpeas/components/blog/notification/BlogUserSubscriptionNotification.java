@@ -28,9 +28,13 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.notification.user.UserSubscriptionNotificationBehavior;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
+import org.silverpeas.core.subscription.constant.SubscriberType;
+import org.silverpeas.core.subscription.util.SubscriptionSubscriberMapBySubscriberType;
 import org.silverpeas.core.template.SilverpeasTemplate;
 
 import java.util.Collection;
+
+import static org.silverpeas.core.subscription.service.ResourceSubscriptionProvider.getSubscribersOfComponent;
 
 /**
  * The centralization of the construction of the blog notifications
@@ -41,11 +45,11 @@ public class BlogUserSubscriptionNotification extends AbstractBlogUserNotificati
 
   private final String fileName;
   private final NotifAction action;
-  private final Collection<String> newSubscribers;
   private final Comment comment;
+  private final SubscriptionSubscriberMapBySubscriberType subscriberIdsByTypes;
 
   public BlogUserSubscriptionNotification(final PostDetail postDetail, final Comment comment,
-      final String type, final String senderId, final Collection<String> newSubscribers) {
+      final String type, final String senderId) {
     super(postDetail, UserDetail.getById(senderId));
     if ("create".equals(type)) {
       fileName = "blogNotificationSubscriptionCreate";
@@ -54,7 +58,7 @@ public class BlogUserSubscriptionNotification extends AbstractBlogUserNotificati
       fileName = "blogNotificationSubscriptionUpdate";
       action = NotifAction.UPDATE;
     }
-    this.newSubscribers = newSubscribers;
+    subscriberIdsByTypes = getSubscribersOfComponent(getComponentInstanceId()).indexBySubscriberType();
     this.comment = comment;
   }
 
@@ -70,7 +74,12 @@ public class BlogUserSubscriptionNotification extends AbstractBlogUserNotificati
 
   @Override
   protected Collection<String> getUserIdsToNotify() {
-    return newSubscribers;
+    return subscriberIdsByTypes.get(SubscriberType.USER).getAllIds();
+  }
+
+  @Override
+  protected Collection<String> getGroupIdsToNotify() {
+    return subscriberIdsByTypes.get(SubscriberType.GROUP).getAllIds();
   }
 
   @Override

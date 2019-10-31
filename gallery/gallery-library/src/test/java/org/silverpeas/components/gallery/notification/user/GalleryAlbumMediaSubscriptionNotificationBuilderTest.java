@@ -41,6 +41,8 @@ import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePath;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.notification.user.UserNotification;
+import org.silverpeas.core.security.authorization.ComponentAccessControl;
+import org.silverpeas.core.security.authorization.NodeAccessControl;
 import org.silverpeas.core.subscription.ResourceSubscriptionService;
 import org.silverpeas.core.subscription.SubscriptionResource;
 import org.silverpeas.core.subscription.service.ResourceSubscriptionProvider;
@@ -49,6 +51,7 @@ import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
 import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.LocalizationBundleStub;
 import org.silverpeas.core.test.extention.TestManagedMock;
+import org.silverpeas.core.test.extention.TestManagedMocks;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -65,6 +68,7 @@ import static org.mockito.Mockito.when;
  * @author silveryocha
  */
 @EnableSilverTestEnv
+@TestManagedMocks({NodeAccessControl.class, ComponentAccessControl.class})
 class GalleryAlbumMediaSubscriptionNotificationBuilderTest {
 
   private static final String FR = "fr";

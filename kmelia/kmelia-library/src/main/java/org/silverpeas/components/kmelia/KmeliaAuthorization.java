@@ -23,7 +23,7 @@ package org.silverpeas.components.kmelia;
 import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
 import org.silverpeas.components.kmelia.service.KmeliaHelper;
 import org.silverpeas.components.kmelia.service.KmeliaService;
-import org.silverpeas.core.admin.ObjectType;
+import org.silverpeas.core.admin.ProfiledObjectId;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
@@ -251,7 +251,7 @@ public class KmeliaAuthorization implements ComponentAuthorization {
       return fromCache.get();
     }
 
-    boolean available = controller.isComponentAvailable(componentId, userId);
+    boolean available = controller.isComponentAvailableToUser(componentId, userId);
     writeInCache(componentId, available);
     return available;
   }
@@ -364,8 +364,9 @@ public class KmeliaAuthorization implements ComponentAuthorization {
         if (!node.haveRights()) {
           objectAvailable = true;
         } else {
-          objectAvailable = controller.isObjectAvailable(node.getRightsDependsOn(), ObjectType.NODE,
-              nodePK.getInstanceId(), userId);
+          objectAvailable =
+              controller.isObjectAvailableToUser(ProfiledObjectId.fromNode(node.getRightsDependsOn()),
+                  nodePK.getInstanceId(), userId);
         }
       } else {
         objectAvailable = false;
@@ -392,8 +393,8 @@ public class KmeliaAuthorization implements ComponentAuthorization {
           if (!node.haveRights()) {
             lProfiles.addAll(Arrays.asList(getAppProfiles(userId, pubPK.getInstanceId())));
           } else {
-            lProfiles.addAll(Arrays.asList(controller.getUserProfiles(userId,
-                pubPK.getInstanceId(), node.getRightsDependsOn(), ObjectType.NODE)));
+            lProfiles.addAll(Arrays.asList(controller.getUserProfiles(userId, pubPK.getInstanceId(),
+                ProfiledObjectId.fromNode(node.getRightsDependsOn()))));
           }
         }
       }
