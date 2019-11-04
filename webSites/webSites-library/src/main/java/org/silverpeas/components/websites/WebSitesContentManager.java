@@ -26,6 +26,7 @@ package org.silverpeas.components.websites;
 import org.silverpeas.components.websites.service.WebSiteService;
 import org.silverpeas.components.websites.siteManage.model.SiteDetail;
 import org.silverpeas.components.websites.siteManage.model.SitePK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.contentcontainer.content.AbstractContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
@@ -36,6 +37,7 @@ import java.io.Serializable;
 import java.sql.Connection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * The webSites implementation of ContentInterface.
@@ -68,8 +70,11 @@ public class WebSitesContentManager extends AbstractContentInterface implements 
 
   @SuppressWarnings("unchecked")
   @Override
-  protected List<Contribution> getAccessibleContributions(final List<String> resourceIds,
-      final String componentInstanceId, final String currentUserId) {
+  protected List<Contribution> getAccessibleContributions(
+      final List<ResourceReference> resourceReferences, final String currentUserId) {
+    List<String> resourceIds =
+        resourceReferences.stream().map(ResourceReference::getLocalId).collect(Collectors.toList());
+    String componentInstanceId = resourceReferences.iterator().next().getComponentInstanceId();
     return (List) getWebSiteService().getWebSites(componentInstanceId, resourceIds);
   }
 

@@ -47,6 +47,7 @@
  */
 package org.silverpeas.components.survey;
 
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.contentcontainer.content.AbstractContentInterface;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerPK;
@@ -93,11 +94,11 @@ public class SurveyContentManager extends AbstractContentInterface {
   }
 
   @Override
-  protected List<Contribution> getAccessibleContributions(final List<String> resourceIds,
-      final String componentInstanceId, final String currentUserId) {
-    List<QuestionContainerPK> pks =
-        resourceIds.stream().map(id -> new QuestionContainerPK(id, "useless", componentInstanceId))
-            .collect(Collectors.toList());
+  protected List<Contribution> getAccessibleContributions(
+      final List<ResourceReference> resourceReferences, final String currentUserId) {
+    List<QuestionContainerPK> pks = resourceReferences.stream()
+        .map(r -> new QuestionContainerPK(r.getLocalId(), "useless", r.getComponentInstanceId()))
+        .collect(Collectors.toList());
     return new ArrayList<>(getQuestionContainerService().getQuestionContainerHeaders(pks));
   }
 

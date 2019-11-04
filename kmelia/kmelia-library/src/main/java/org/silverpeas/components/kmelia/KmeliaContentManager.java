@@ -20,6 +20,7 @@
  */
 package org.silverpeas.components.kmelia;
 
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.contentcontainer.content.AbstractContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
@@ -64,10 +65,10 @@ public class KmeliaContentManager extends AbstractContentInterface implements Se
   }
 
   @Override
-  protected List<Contribution> getAccessibleContributions(final List<String> resourceIds,
-      final String componentInstanceId, final String currentUserId) {
-    final List<PublicationPK> ids = resourceIds.stream()
-        .map(i -> new PublicationPK(i, componentInstanceId))
+  protected List<Contribution> getAccessibleContributions(final List<ResourceReference> resourceReferences,
+      final String currentUserId) {
+    final List<PublicationPK> ids = resourceReferences.stream()
+        .map(r -> new PublicationPK(r.getLocalId(), r.getComponentInstanceId()))
         .collect(Collectors.toList());
     final List<PublicationDetail> publications = getPublicationService().getPublications(ids);
     return PublicationAccessControl.get()

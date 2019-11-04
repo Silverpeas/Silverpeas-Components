@@ -25,6 +25,7 @@ package org.silverpeas.components.whitepages.control;
 
 import org.silverpeas.components.whitepages.WhitePagesException;
 import org.silverpeas.components.whitepages.model.Card;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.contentcontainer.content.AbstractContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
@@ -61,16 +62,18 @@ public class WhitePagesContentManager extends AbstractContentInterface {
   @Override
   protected Optional<Contribution> getContribution(final String resourceId,
       final String componentInstanceId) {
-    final List<? extends Contribution> contributions =
-        getAccessibleContributions(Collections.singletonList(resourceId), componentInstanceId,
-            null);
+    final List<? extends Contribution> contributions = getAccessibleContributions(
+        Collections.singletonList(new ResourceReference(resourceId, componentInstanceId)), null);
     return contributions.isEmpty() ? Optional.empty() : Optional.of(contributions.get(0));
   }
 
   @Override
-  protected List<Contribution> getAccessibleContributions(final List<String> resourceIds,
-      final String componentInstanceId, final String currentUserId) {
+  protected List<Contribution> getAccessibleContributions(
+      final List<ResourceReference> resourceReferences, final String currentUserId) {
     try {
+      List<String> resourceIds =
+          resourceReferences.stream().map(ResourceReference::getLocalId).collect(Collectors.toList());
+      String componentInstanceId = resourceReferences.iterator().next().getComponentInstanceId();
       return CardManager.getInstance().getCardsByIds(resourceIds).stream().map(
           c -> new CardHeader(Long.parseLong(c.getPK().getId()), c, componentInstanceId,
               c.getCreationDate(), Integer.toString(c.getCreatorId())))
