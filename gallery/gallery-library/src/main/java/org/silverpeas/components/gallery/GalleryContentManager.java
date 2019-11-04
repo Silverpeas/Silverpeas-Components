@@ -26,6 +26,7 @@ package org.silverpeas.components.gallery;
 import org.silverpeas.components.gallery.model.MediaCriteria;
 import org.silverpeas.components.gallery.model.MediaPK;
 import org.silverpeas.components.gallery.service.GalleryService;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.contentcontainer.content.AbstractContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
 import org.silverpeas.core.contribution.model.Contribution;
@@ -35,6 +36,7 @@ import javax.inject.Singleton;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * The gallery implementation of ContentInterface.
@@ -66,8 +68,11 @@ public class GalleryContentManager extends AbstractContentInterface implements S
 
   @SuppressWarnings("unchecked")
   @Override
-  protected List<Contribution> getAccessibleContributions(final List<String> resourceIds,
-      final String componentInstanceId, final String currentUserId) {
+  protected List<Contribution> getAccessibleContributions(
+      final List<ResourceReference> resourceReferences, final String currentUserId) {
+    List<String> resourceIds =
+        resourceReferences.stream().map(ResourceReference::getLocalId).collect(Collectors.toList());
+    String componentInstanceId = resourceReferences.iterator().next().getComponentInstanceId();
     return (List) getGalleryService()
         .getMedia(resourceIds, componentInstanceId, MediaCriteria.VISIBILITY.FORCE_GET_ALL);
   }

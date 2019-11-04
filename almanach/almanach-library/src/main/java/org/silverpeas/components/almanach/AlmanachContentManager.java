@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.almanach;
 
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.contribution.contentcontainer.content.AbstractContentInterface;
 import org.silverpeas.core.contribution.model.Contribution;
@@ -30,6 +31,7 @@ import org.silverpeas.core.contribution.model.Contribution;
 import javax.inject.Singleton;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Singleton
 public class AlmanachContentManager extends AbstractContentInterface {
@@ -56,8 +58,10 @@ public class AlmanachContentManager extends AbstractContentInterface {
 
   @SuppressWarnings("unchecked")
   @Override
-  protected List<Contribution> getAccessibleContributions(final List<String> resourceIds,
-      final String componentInstanceId, final String currentUserId) {
+  protected List<Contribution> getAccessibleContributions(
+      final List<ResourceReference> resourceReferences, final String currentUserId) {
+    List<String> resourceIds =
+        resourceReferences.stream().map(ResourceReference::getLocalId).collect(Collectors.toList());
     return (List) CalendarEvent.getByIds(resourceIds);
   }
 }

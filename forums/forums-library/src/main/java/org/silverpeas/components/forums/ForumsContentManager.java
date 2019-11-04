@@ -26,6 +26,7 @@ package org.silverpeas.components.forums;
 
 import org.silverpeas.components.forums.model.ForumPK;
 import org.silverpeas.components.forums.service.ForumsServiceProvider;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.contentcontainer.content.AbstractContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
@@ -66,9 +67,10 @@ public class ForumsContentManager extends AbstractContentInterface {
   }
 
   @Override
-  protected List<Contribution> getAccessibleContributions(final List<String> resourceIds,
-      final String componentInstanceId, final String currentUserId) {
-    List<ForumPK> ids = resourceIds.stream().map(i -> new ForumPK(componentInstanceId, i))
+  protected List<Contribution> getAccessibleContributions(
+      final List<ResourceReference> resourceReferences, final String currentUserId) {
+    List<ForumPK> ids = resourceReferences.stream()
+        .map(r -> new ForumPK(r.getComponentInstanceId(), r.getLocalId()))
         .collect(Collectors.toList());
     return new ArrayList<>(ForumsServiceProvider.getForumsService().getForums(ids));
   }

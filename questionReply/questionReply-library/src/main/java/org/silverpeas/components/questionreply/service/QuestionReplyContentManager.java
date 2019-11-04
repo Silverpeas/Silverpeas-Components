@@ -25,6 +25,7 @@ package org.silverpeas.components.questionreply.service;
 
 import org.silverpeas.components.questionreply.QuestionReplyException;
 import org.silverpeas.components.questionreply.model.Question;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.contentcontainer.content.AbstractContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
@@ -61,16 +62,18 @@ public class QuestionReplyContentManager extends AbstractContentInterface {
   @Override
   protected Optional<Contribution> getContribution(final String resourceId,
       final String componentInstanceId) {
-    final List<? extends Contribution> contributions =
-        getAccessibleContributions(Collections.singletonList(resourceId), componentInstanceId,
-            null);
+    final List<? extends Contribution> contributions = getAccessibleContributions(
+        Collections.singletonList(new ResourceReference(resourceId, componentInstanceId)), null);
     return contributions.isEmpty() ? Optional.empty() : Optional.of(contributions.get(0));
   }
 
   @Override
-  protected List<Contribution> getAccessibleContributions(final List<String> resourceIds,
-      final String componentInstanceId, final String currentUserId) {
+  protected List<Contribution> getAccessibleContributions(
+      final List<ResourceReference> resourceReferences, final String currentUserId) {
     try {
+      List<String> resourceIds =
+          resourceReferences.stream().map(ResourceReference::getLocalId).collect(Collectors.toList());
+      String componentInstanceId = resourceReferences.iterator().next().getComponentInstanceId();
       return QuestionManagerProvider.getQuestionManager().getQuestionsByIds(resourceIds).stream()
           .map(q -> new QuestionHeader(q, componentInstanceId, q.getCreationDate(),
               q.getCreatorId())).collect(Collectors.toList());
