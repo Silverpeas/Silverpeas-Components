@@ -33,15 +33,27 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 
+<fmt:message key="rss.addChannel" var="addChannelLabel" />
+
 <c:set var="content" value="${requestScope['Content']}" />
 <c:set var="role" value="${requestScope['Role']}"/>
 
 <html>
 <head>
 <view:looknfeel />
+  <script type="text/javascript">
+    function addChannel() {
+      jQuery.popup.load('ToCreateChannel').show('validation', {
+        title : "${addChannelLabel}",
+        callback : function() {
+          validateChannelForm();
+        }
+      });
+    }
+  </script>
 </head>
 <body>
-<view:browseBar></view:browseBar>
+<view:browseBar/>
 
 <c:if test="${fn:contains(role, 'admin')}">
 <fmt:message var="addChannelLabel" key="rss.addChannel" />
@@ -56,8 +68,6 @@
   <c:out escapeXml="false" value="${content}"  />
   </view:frame>
 </view:window>
-
-<%@include file="channelManager.jsp" %>
 
 </body>
 </html>
