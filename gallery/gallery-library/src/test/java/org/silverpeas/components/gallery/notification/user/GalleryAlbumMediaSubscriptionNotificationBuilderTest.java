@@ -38,6 +38,7 @@ import org.silverpeas.core.admin.component.service.SilverpeasComponentInstancePr
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.model.NodePath;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.notification.user.UserNotification;
@@ -61,6 +62,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -68,7 +70,7 @@ import static org.mockito.Mockito.when;
  * @author silveryocha
  */
 @EnableSilverTestEnv
-@TestManagedMocks({NodeAccessControl.class, ComponentAccessControl.class})
+@TestManagedMocks({ComponentAccessControl.class})
 class GalleryAlbumMediaSubscriptionNotificationBuilderTest {
 
   private static final String FR = "fr";
@@ -84,6 +86,8 @@ class GalleryAlbumMediaSubscriptionNotificationBuilderTest {
   static LocalizationBundleStub galleryBundle = new LocalizationBundleStub(
       "org.silverpeas.gallery.multilang.galleryBundle");
 
+  @TestManagedMock
+  private NodeAccessControl nodeAccessControl;
   @TestManagedMock
   private ResourceSubscriptionService subscriptionService;
 
@@ -130,6 +134,9 @@ class GalleryAlbumMediaSubscriptionNotificationBuilderTest {
         .thenReturn(subscriptionSubscribers);
     subscriptionSubscribers.add(UserSubscriptionSubscriber.from("1"));
     when(nodeService.getPath(albumDetail.getNodePK())).thenReturn(albumPath);
+
+    when(nodeAccessControl.isUserAuthorized(anyString(), any(NodePK.class))).thenReturn(true);
+    when(nodeAccessControl.isGroupAuthorized(anyString(), any(NodePK.class))).thenReturn(true);
   }
 
   @AfterEach
