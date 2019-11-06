@@ -71,12 +71,12 @@ public class QuestionReplyContentManager extends AbstractContentInterface {
   protected List<Contribution> getAccessibleContributions(
       final List<ResourceReference> resourceReferences, final String currentUserId) {
     try {
-      List<String> resourceIds =
-          resourceReferences.stream().map(ResourceReference::getLocalId).collect(Collectors.toList());
-      String componentInstanceId = resourceReferences.iterator().next().getComponentInstanceId();
+      final List<String> resourceIds = resourceReferences.stream()
+          .map(ResourceReference::getLocalId)
+          .collect(Collectors.toList());
       return QuestionManagerProvider.getQuestionManager().getQuestionsByIds(resourceIds).stream()
-          .map(q -> new QuestionHeader(q, componentInstanceId, q.getCreationDate(),
-              q.getCreatorId())).collect(Collectors.toList());
+          .map(q -> new QuestionHeader(q, q.getInstanceId(), q.getCreationDate(), q.getCreatorId()))
+          .collect(Collectors.toList());
     } catch (QuestionReplyException e) {
       // skip unknown and ill formed id.
       SilverLogger.getLogger(this).error(e);

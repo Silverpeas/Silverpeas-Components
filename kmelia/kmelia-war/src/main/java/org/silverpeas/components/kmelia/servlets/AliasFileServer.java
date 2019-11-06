@@ -23,33 +23,29 @@ package org.silverpeas.components.kmelia.servlets;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.security.authorization.SimpleDocumentAccessControl;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.mvc.webcomponent.SilverpeasHttpServlet;
 
-import javax.inject.Inject;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.util.Optional;
 
+import static org.silverpeas.core.contribution.attachment.AttachmentServiceProvider.getAttachmentService;
 import static org.silverpeas.core.web.http.FileResponse.encodeInlineFilenameAsUtf8;
 
-public class AliasFileServer extends HttpServlet {
+public class AliasFileServer extends SilverpeasHttpServlet {
 
   private static final long serialVersionUID = 6848143585037987355L;
-
-  @Inject
-  private PublicationService publicationService;
 
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res) {
@@ -58,26 +54,25 @@ public class AliasFileServer extends HttpServlet {
 
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse response) {
-    User currentUser = User.getCurrentRequester();
-    String userId = currentUser == null ? "undefined" : currentUser.getId();
-
+    final User currentUser = User.getCurrentRequester();
+    final String userId = currentUser == null ? "undefined" : currentUser.getId();
     String attachmentId = req.getParameter("AttachmentId");
     if (!StringUtil.isDefined(attachmentId)) {
       attachmentId = req.getParameter("VersionId");
     }
-    String language = req.getParameter("lang");
-    if (StringUtil.isDefined(attachmentId)) {
-      // Check first if attachment exists
-      final SimpleDocument attachment = AttachmentServiceProvider.getAttachmentService().
-          searchDocumentById(new SimpleDocumentPK(attachmentId), language);
-      if (attachment != null &&
-          SimpleDocumentAccessControl.get().isUserAuthorized(userId, attachment)) {
-        response.setContentType(attachment.getContentType());
-        final String filename = encodeInlineFilenameAsUtf8(attachment.getFilename());
-        response.setHeader("Content-Disposition", filename);
-        response.setHeader("Content-Length", String.valueOf(attachment.getSize()));
-        display(response, attachment.getAttachmentPath());
-      }
+    final String language = req.getParameter("lang");
+    final SimpleDocument attachment = Optional.ofNullable(attachmentId)
+        .map(i -> getAttachmentService().searchDocumentById(new SimpleDocumentPK(i), language))
+        .filter(a -> SimpleDocumentAccessControl.get().isUserAuthorized(userId, a))
+        .orElse(null);
+    if (attachment != null) {
+      response.setContentType(attachment.getContentType());
+      final String filename = encodeInlineFilenameAsUtf8(attachment.getFilename());
+      response.setHeader("Content-Disposition", filename);
+      response.setHeader("Content-Length", String.valueOf(attachment.getSize()));
+      display(response, attachment.getAttachmentPath());
+    } else {
+      throwHttpForbiddenError();
     }
   }
 

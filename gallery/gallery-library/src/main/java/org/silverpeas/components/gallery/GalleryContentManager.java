@@ -36,7 +36,8 @@ import javax.inject.Singleton;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.*;
 
 /**
  * The gallery implementation of ContentInterface.
@@ -70,11 +71,12 @@ public class GalleryContentManager extends AbstractContentInterface implements S
   @Override
   protected List<Contribution> getAccessibleContributions(
       final List<ResourceReference> resourceReferences, final String currentUserId) {
-    List<String> resourceIds =
-        resourceReferences.stream().map(ResourceReference::getLocalId).collect(Collectors.toList());
-    String componentInstanceId = resourceReferences.iterator().next().getComponentInstanceId();
-    return (List) getGalleryService()
-        .getMedia(resourceIds, componentInstanceId, MediaCriteria.VISIBILITY.FORCE_GET_ALL);
+    return (List) resourceReferences.stream()
+        .collect(groupingBy(ResourceReference::getComponentInstanceId,
+                 mapping(ResourceReference::getLocalId, toList())))
+        .entrySet().stream()
+        .flatMap(e -> getGalleryService().getMedia(e.getValue(), e.getKey(), MediaCriteria.VISIBILITY.FORCE_GET_ALL).stream())
+        .collect(toList());
   }
 
   @Override
