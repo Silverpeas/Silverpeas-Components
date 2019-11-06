@@ -101,6 +101,7 @@ import org.silverpeas.core.personalorganizer.model.TodoDetail;
 import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
 import org.silverpeas.core.process.annotation.SimulationActionProcess;
 import org.silverpeas.core.reminder.Reminder;
+import org.silverpeas.core.security.authorization.NodeAccessControl;
 import org.silverpeas.core.security.authorization.PublicationAccessControl;
 import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
@@ -130,13 +131,16 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.time.OffsetDateTime;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.singletonList;
+import static java.util.Comparator.comparing;
 import static org.silverpeas.components.kmelia.model.KmeliaPublication.fromDetail;
 import static org.silverpeas.components.kmelia.notification.KmeliaDelayedVisibilityUserNotificationReminder.KMELIA_DELAYED_VISIBILITY_USER_NOTIFICATION;
 import static org.silverpeas.components.kmelia.service.KmeliaOperationContext.OperationType.*;
 import static org.silverpeas.components.kmelia.service.KmeliaServiceContext.*;
+import static org.silverpeas.core.admin.component.model.ComponentInst.getComponentLocalId;
 import static org.silverpeas.core.admin.service.OrganizationControllerProvider.getOrganisationController;
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
 import static org.silverpeas.core.contribution.attachment.AttachmentService.VERSION_MODE;
@@ -209,30 +213,17 @@ public class DefaultKmeliaService implements KmeliaService {
     return SubscriptionServiceProvider.getSubscribeService();
   }
 
-  /**
-   * Return a the detail of a topic
-   * @param pk the id of the topic
-   * @param userId
-   * @param isTreeStructureUsed
-   * @param userProfile
-   * @param isRightsOnTopicsUsed
-   * @return
-   */
   @Override
   public TopicDetail goTo(NodePK pk, String userId, boolean isTreeStructureUsed, String userProfile,
-      boolean isRightsOnTopicsUsed) {
+      boolean mustUserRightsBeChecked) {
     Collection<NodeDetail> newPath = new ArrayList<>();
     NodeDetail nodeDetail = null;
 
     // get the basic information (Header) of this topic
     try {
       nodeDetail = nodeService.getDetail(pk);
-      if (isRightsOnTopicsUsed) {
-        OrganizationController orga = getOrganisationController();
-        if (nodeDetail.haveRights() &&
-            !orga.isObjectAvailableToUser(ProfiledObjectId.fromNode(nodeDetail.getRightsDependsOn()),
-                pk.getInstanceId(),
-                userId)) {
+      if (mustUserRightsBeChecked) {
+        if (!NodeAccessControl.get().isUserAuthorized(userId, nodeDetail)) {
           nodeDetail.setUserRole("noRights");
         }
         List<NodeDetail> availableChildren = getAllowedSubfolders(nodeDetail, userId);
@@ -243,7 +234,7 @@ public class DefaultKmeliaService implements KmeliaService {
     }
     // get publications
     List<KmeliaPublication> pubDetails =
-        getPublicationsOfFolder(pk, userProfile, userId, isTreeStructureUsed, isRightsOnTopicsUsed);
+        getPublicationsOfFolder(pk, userProfile, userId, isTreeStructureUsed);
 
     // get the path to this topic
     if (pk.isRoot()) {
@@ -258,7 +249,7 @@ public class DefaultKmeliaService implements KmeliaService {
 
   @Override
   public List<KmeliaPublication> getPublicationsOfFolder(NodePK pk, String userProfile,
-      String userId, boolean isTreeStructureUsed, boolean isRightsOnTopicsUsed) {
+      String userId, boolean isTreeStructureUsed) {
     Collection<PublicationDetail> pubDetails = null;
 
     // get the publications associated to this topic
@@ -310,44 +301,42 @@ public class DefaultKmeliaService implements KmeliaService {
 
   @Override
   public List<NodeDetail> getAllowedSubfolders(NodeDetail folder, String userId) {
-    NodePK pk = folder.getNodePK();
-    List<NodeDetail> children = (List<NodeDetail>) folder.getChildrenDetails();
-    List<NodeDetail> availableChildren = new ArrayList<>();
-    for (NodeDetail child : children) {
-      NodePK childId = child.getNodePK();
+    final List<NodeDetail> children = (List<NodeDetail>) folder.getChildrenDetails();
+    final List<NodeDetail> availableChildren = new ArrayList<>();
+    for (final NodeDetail child : children) {
+      final NodePK childId = child.getNodePK();
       if (childId.isTrash() || childId.isUnclassed() || !child.haveRights()) {
         availableChildren.add(child);
       } else {
-        addAccordingToRights(userId, pk, availableChildren, child);
+        addAccordingToRights(userId, availableChildren, child);
       }
     }
     return availableChildren;
   }
 
-  private void addAccordingToRights(final String userId, final NodePK pk,
-      final List<NodeDetail> availableChildren, final NodeDetail child) {
-    int rightsDependsOn = child.getRightsDependsOn();
-    boolean nodeAvailable =
-        getOrganisationController().isObjectAvailableToUser(ProfiledObjectId.fromNode(rightsDependsOn),
-            pk.getInstanceId(), userId);
+  private void addAccordingToRights(final String userId, final List<NodeDetail> availableChildren,
+      final NodeDetail child) {
+    final int rightsDependsOn = child.getRightsDependsOn();
+    final boolean nodeAvailable = getOrganisationController()
+        .isObjectAvailableToUser(ProfiledObjectId.fromNode(rightsDependsOn),
+            child.getNodePK().getInstanceId(), userId);
     if (nodeAvailable) {
       availableChildren.add(child);
     } else { // check if at least one descendant is available
       Iterator<NodeDetail> descendants = nodeService.getDescendantDetails(child).iterator();
-      addDescendantIfAvailable(userId, pk, availableChildren, child, rightsDependsOn, descendants);
+      addDescendantIfAvailable(userId, availableChildren, child, rightsDependsOn, descendants);
     }
   }
 
-  private void addDescendantIfAvailable(final String userId, final NodePK pk,
+  private void addDescendantIfAvailable(final String userId,
       final List<NodeDetail> availableChildren, final NodeDetail child, final int rightsDependsOn,
       final Iterator<NodeDetail> descendants) {
     boolean childAllowed = false;
     while (!childAllowed && descendants.hasNext()) {
       NodeDetail descendant = descendants.next();
-      if (descendant.getRightsDependsOn() != rightsDependsOn &&
-          getOrganisationController().isObjectAvailableToUser(
-              ProfiledObjectId.fromNode(descendant.getRightsDependsOn()), pk.
-                  getInstanceId(), userId)) {
+      if (descendant.getRightsDependsOn() != rightsDependsOn
+          && getOrganisationController().isObjectAvailableToUser(ProfiledObjectId.fromNode(descendant.getRightsDependsOn()),
+              descendant.getNodePK().getInstanceId(), userId)) {
         // different rights of father check if it is available
         childAllowed = true;
         if (!availableChildren.contains(child)) {
@@ -1789,73 +1778,52 @@ public class DefaultKmeliaService implements KmeliaService {
 
   @Override
   public TopicDetail getPublicationFather(PublicationPK pubPK, boolean isTreeStructureUsed,
-      String userId, boolean isRightsOnTopicsUsed) {
+      String userId) {
     // fetch one of the publication fathers
-    NodePK fatherPK =
-        getPublicationFatherPK(pubPK, isTreeStructureUsed, userId, isRightsOnTopicsUsed);
+    NodePK fatherPK = getPublicationFatherPK(pubPK, userId);
     String profile = KmeliaHelper.getProfile(getUserRoles(pubPK.getInstanceId(), userId));
-    return goTo(fatherPK, userId, isTreeStructureUsed, profile, isRightsOnTopicsUsed);
+    return goTo(fatherPK, userId, isTreeStructureUsed, profile, false);
   }
 
   @Override
-  public NodePK getPublicationFatherPK(PublicationPK pubPK, boolean isTreeStructureUsed,
-      String userId, boolean isRightsOnTopicsUsed) {
-    final NodePK fatherPK;
+  public NodePK getPublicationFatherPK(PublicationPK pubPK, String userId) {
     final Location root = new Location(NodePK.ROOT_NODE_ID, pubPK.getInstanceId());
-    final List<Location> locations = getPublicationLocations(pubPK);
-    if (locations.isEmpty()) {
-      fatherPK = root;
-    } else if (!isRightsOnTopicsUsed) {
-      fatherPK = locations.stream().filter(l -> !l.isAlias()).findFirst().orElse(locations.get(0));
-    } else {
-      fatherPK = getAllowedFather(userId, root, locations);
-    }
-    return fatherPK;
-  }
-
-  private NodePK getAllowedFather(final String userId, final Location defaultFatherPK,
-      final Collection<Location> locations) {
-    Optional<Location> main = locations.stream().filter(l -> !l.isAlias()).findFirst();
-    if (main.isPresent()) {
-      NodeDetail mainFather = getNodeHeader(main.get());
-      if (!mainFather.haveRights() || getOrganisationController().isObjectAvailableToUser(
-          ProfiledObjectId.fromNode(mainFather.getRightsDependsOn()), main.get().getInstanceId(),
-          userId)) {
-        return main.get();
-      }
-    }
-    return locations.stream()
-        .filter(Location::isAlias)
-        .map(this::getNodeHeader)
-        .filter(f -> !f.haveRights() || getOrganisationController().isObjectAvailableToUser(
-            ProfiledObjectId.fromNode(f.getRightsDependsOn()),
-                f.getNodePK().getInstanceId(), userId))
+    return getPublicationLocations(pubPK, false).stream()
+        .sorted(comparing(Location::isAlias)
+                .thenComparing(l -> !l.getInstanceId().equals(pubPK.getInstanceId()))
+                .thenComparing(Location::getInstanceId))
+        .filter(l -> NodeAccessControl.get().isUserAuthorized(userId, l))
         .findFirst()
-        .map(NodeDetail::getNodePK)
-        .orElse(defaultFatherPK);
+        .orElse(root);
   }
 
   /**
    * Gets all the locations of the publication in the original Kmelia instance.
    * @param pubPK the identifying key of the publication
+   * @param inComponentInstance true o get location in component instance only, false to get all
    * @return a collection of {@link Location} objects.
    */
-  private List<Location> getPublicationLocations(PublicationPK pubPK) {
-    List<Location> locations =
-        publicationService.getLocationsInComponentInstance(pubPK, pubPK.getInstanceId());
+  private List<Location> getPublicationLocations(PublicationPK pubPK,
+      final boolean inComponentInstance) {
+    final Function<PublicationPK, List<Location>> locationSupplier = pk -> {
+      if (inComponentInstance) {
+        return publicationService.getLocationsInComponentInstance(pk, pk.getInstanceId());
+      } else {
+        return publicationService.getAllLocations(pk);
+      }
+    };
+    List<Location> locations = locationSupplier.apply(pubPK);
     if (locations.isEmpty()) {
       // This publication have got no father!
       // Check if it's a clone (a clone have got no father ever)
-      boolean alwaysVisibleModeActivated = StringUtil.getBooleanValue(getOrganisationController().
+      final boolean alwaysVisibleModeActivated = getBooleanValue(getOrganisationController().
           getComponentParameterValue(pubPK.getInstanceId(), "publicationAlwaysVisible"));
       if (alwaysVisibleModeActivated) {
-        PublicationDetail publi = publicationService.getDetail(pubPK);
+        final PublicationDetail publi = publicationService.getDetail(pubPK);
         if (publi != null && isClone(publi)) {
           // This publication is a clone
           // Get fathers from main publication
-          final PublicationPK clonedPK = publi.getClonePK();
-          locations = publicationService.getLocationsInComponentInstance(clonedPK,
-              clonedPK.getInstanceId());
+          locations = locationSupplier.apply(publi.getClonePK());
         }
       }
     }
@@ -1864,7 +1832,7 @@ public class DefaultKmeliaService implements KmeliaService {
 
   @Override
   public NodePK getPublicationFatherPK(PublicationPK pubPK) {
-    Collection<Location> locations = getPublicationLocations(pubPK);
+    Collection<Location> locations = getPublicationLocations(pubPK, true);
     return locations.stream().filter(l -> !l.isAlias()).findFirst().orElse(null);
   }
 
@@ -1924,7 +1892,7 @@ public class DefaultKmeliaService implements KmeliaService {
     try {
       Collection<PublicationDetail> temp = publicationService.getPublicationsByCriteria(
           PublicationCriteria
-              .excludingTrashNodeOnComponentInstanceIds(componentId)
+              .onComponentInstanceIds(componentId)
               .ofStatus(PublicationDetail.TO_VALIDATE_STATUS)
               .orderByDescendingLastUpdateDate());
       // only publications which must be validated by current user must be returned
@@ -2581,10 +2549,12 @@ public class DefaultKmeliaService implements KmeliaService {
   @Override
   public List<HistoryObjectDetail> getLastAccess(PublicationPK pk, NodePK nodePK,
       String excludedUserId, final int maxResult) {
-    final List<String> userIds = getUserIdsOfFolder(nodePK);
-    final List<String> readerIds = new ArrayList<>();
+    final Set<String> userIds = new HashSet<>(getUserIdsOfFolder(nodePK));
+    final Set<String> readerIds = new HashSet<>();
     readerIds.add(excludedUserId);
-    return new Pagination<HistoryObjectDetail>(new PaginationPage(1, maxResult))
+    final Pagination<HistoryObjectDetail> pagination = new Pagination<HistoryObjectDetail>(new PaginationPage(1, maxResult))
+        .limitDataSourceCallsTo(10)
+        .withMinPerPage(200)
         .paginatedDataSource(p -> statisticService
             .getHistoryByAction(new ResourceReference(pk), 1, PUBLICATION, readerIds,
                 p.originalSizeIsNotRequired()))
@@ -2601,8 +2571,16 @@ public class DefaultKmeliaService implements KmeliaService {
             }
           }
           return currentLastAccess;
-        })
-        .execute();
+        });
+    try {
+      return pagination.execute();
+    } finally {
+      if (pagination.isNbMaxDataSourceCallLimitReached()) {
+        SilverLogger.getLogger(this).warn(
+            "Performing too much paginated sql queries to retrieve last accesses from pub {0} on node {1}",
+            pk, nodePK);
+      }
+    }
   }
 
   @Override
@@ -3503,7 +3481,7 @@ public class DefaultKmeliaService implements KmeliaService {
       if (locations.isEmpty()) {
         // This publication doesn't yet have any location!
         // Check if it's a clone (a clone doesn't have a location. It is orphaned)
-        boolean alwaysVisibleModeActivated = StringUtil.getBooleanValue(getOrganisationController().
+        boolean alwaysVisibleModeActivated = getBooleanValue(getOrganisationController().
             getComponentParameterValue(pubPK.getInstanceId(), "publicationAlwaysVisible"));
         if (alwaysVisibleModeActivated) {
           PublicationDetail publication = publicationService.getDetail(pubPK);
@@ -3850,17 +3828,17 @@ public class DefaultKmeliaService implements KmeliaService {
   }
 
   private boolean isRightsOnTopicsEnabled(String componentId) {
-    return StringUtil.getBooleanValue(getOrganisationController()
+    return getBooleanValue(getOrganisationController()
         .getComponentParameterValue(componentId, InstanceParameters.rightsOnFolders));
   }
 
   private boolean isNbItemsDisplayed(String componentId) {
-    return StringUtil.getBooleanValue(getOrganisationController()
+    return getBooleanValue(getOrganisationController()
         .getComponentParameterValue(componentId, InstanceParameters.displayNbItemsOnFolders));
   }
 
   private boolean isCoWritingEnable(String componentId) {
-    return StringUtil.getBooleanValue(getOrganisationController()
+    return getBooleanValue(getOrganisationController()
         .getComponentParameterValue(componentId, InstanceParameters.coWriting));
   }
 
@@ -4188,7 +4166,7 @@ public class DefaultKmeliaService implements KmeliaService {
           if (nodeToPasteProfile != null) {
             ProfileInst nodeProfileInst = nodeToPasteProfile.copy();
             nodeProfileInst.setId("-1");
-            nodeProfileInst.setComponentFatherId(nodePK.getInstanceId());
+            nodeProfileInst.setComponentFatherId(getComponentLocalId(nodePK.getInstanceId()));
             nodeProfileInst.setObjectId(
                 new ProfiledObjectId(ProfiledObjectType.NODE, nodePK.getId()));
             nodeProfileInst.setParentObjectId(

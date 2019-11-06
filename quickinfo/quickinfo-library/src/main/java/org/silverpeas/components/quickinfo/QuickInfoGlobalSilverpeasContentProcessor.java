@@ -9,32 +9,33 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception. You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.components.kmelia;
+package org.silverpeas.components.quickinfo;
 
 import org.silverpeas.core.contribution.publication.PublicationGlobalSilverpeasContentProcessor;
 
 import javax.inject.Named;
 
+import static org.silverpeas.components.quickinfo.QuickInfoComponentSettings.COMPONENT_NAME;
 import static org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContentProcessor.Constants.PROCESSOR_NAME_SUFFIX;
 
-@Named("kmelia" + PROCESSOR_NAME_SUFFIX)
-public class KmeliaGlobalSilverpeasContentProcessor
+@Named(COMPONENT_NAME + PROCESSOR_NAME_SUFFIX)
+public class QuickInfoGlobalSilverpeasContentProcessor
     extends PublicationGlobalSilverpeasContentProcessor {
 
   @Override
   public String relatedToComponent() {
-    return "kmelia";
+    return COMPONENT_NAME;
   }
 }

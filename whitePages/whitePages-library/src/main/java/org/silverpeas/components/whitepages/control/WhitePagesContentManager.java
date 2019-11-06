@@ -71,12 +71,12 @@ public class WhitePagesContentManager extends AbstractContentInterface {
   protected List<Contribution> getAccessibleContributions(
       final List<ResourceReference> resourceReferences, final String currentUserId) {
     try {
-      List<String> resourceIds =
-          resourceReferences.stream().map(ResourceReference::getLocalId).collect(Collectors.toList());
-      String componentInstanceId = resourceReferences.iterator().next().getComponentInstanceId();
-      return CardManager.getInstance().getCardsByIds(resourceIds).stream().map(
-          c -> new CardHeader(Long.parseLong(c.getPK().getId()), c, componentInstanceId,
-              c.getCreationDate(), Integer.toString(c.getCreatorId())))
+      final List<String> resourceIds = resourceReferences.stream()
+          .map(ResourceReference::getLocalId)
+          .collect(Collectors.toList());
+      return CardManager.getInstance().getCardsByIds(resourceIds).stream()
+          .map(c -> new CardHeader(Long.parseLong(c.getPK().getId()), c, c.getInstanceId(),
+                                   c.getCreationDate(), Integer.toString(c.getCreatorId())))
           .collect(Collectors.toList());
     } catch (WhitePagesException e) {
       SilverLogger.getLogger(this).error(e);

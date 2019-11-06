@@ -37,7 +37,8 @@ import java.io.Serializable;
 import java.sql.Connection;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.*;
 
 /**
  * The webSites implementation of ContentInterface.
@@ -72,10 +73,12 @@ public class WebSitesContentManager extends AbstractContentInterface implements 
   @Override
   protected List<Contribution> getAccessibleContributions(
       final List<ResourceReference> resourceReferences, final String currentUserId) {
-    List<String> resourceIds =
-        resourceReferences.stream().map(ResourceReference::getLocalId).collect(Collectors.toList());
-    String componentInstanceId = resourceReferences.iterator().next().getComponentInstanceId();
-    return (List) getWebSiteService().getWebSites(componentInstanceId, resourceIds);
+    return (List) resourceReferences.stream()
+        .collect(groupingBy(ResourceReference::getComponentInstanceId,
+                 mapping(ResourceReference::getLocalId, toList())))
+        .entrySet().stream()
+        .flatMap(e -> getWebSiteService().getWebSites(e.getKey(), e.getValue()).stream())
+        .collect(toList());
   }
 
   @Override

@@ -61,12 +61,12 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
    * @param userId
    * @param isTreeStructureUsed
    * @param userProfile
-   * @param isRightsOnTopicsUsed
+   * @param mustUserRightsBeChecked
    * @return the detail of a topic.
    * @
    */
   TopicDetail goTo(NodePK nodePK, String userId, boolean isTreeStructureUsed, String userProfile,
-      boolean isRightsOnTopicsUsed);
+      boolean mustUserRightsBeChecked);
 
   List<NodeDetail> getAllowedSubfolders(NodeDetail folder, String userId);
 
@@ -184,7 +184,7 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
   PublicationDetail getPublicationDetail(PublicationPK pubPK);
 
   List<KmeliaPublication> getPublicationsOfFolder(NodePK pk, String userProfile, String userId,
-      boolean isTreeStructureUsed, boolean isRightsOnTopicsUsed);
+      boolean isTreeStructureUsed);
 
   /**
    * Checks rights on publications order by descending begin visibility date of publication.
@@ -318,12 +318,9 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
    * @param pubPK the unique identifier of the publication.
    * @param isTreeStructureUsed is the tree view of the topics enabled?
    * @param userId the unique identifier of a user.
-   * @param isRightsOnTopicsUsed is the rights on the topics enabled in the component instance
-   * in which is defined the publication?
    * @return the details of the topic in which the publication is accessible by the given user.
    */
-  TopicDetail getPublicationFather(PublicationPK pubPK, boolean isTreeStructureUsed, String userId,
-      boolean isRightsOnTopicsUsed);
+  TopicDetail getPublicationFather(PublicationPK pubPK, boolean isTreeStructureUsed, String userId);
 
   /**
    * Gets the father of the specified publication according to the rights of the user. If the main
@@ -331,14 +328,10 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
    * the publication is returned. If no aliases are accessible or defined, the the root topic is
    * returned.
    * @param pubPK the unique identifier of the publication
-   * @param isTreeStructureUsed is the tree view of the topics is used?
    * @param userId the unique identifier of a user.
-   * @param isRightsOnTopicsUsed is the rights on the topics enabled in the component instance
-   * in which is defined the publication?
    * @return a topic in which the publication is accessible by the given user.
    */
-  NodePK getPublicationFatherPK(PublicationPK pubPK, boolean isTreeStructureUsed, String userId,
-      boolean isRightsOnTopicsUsed);
+  NodePK getPublicationFatherPK(PublicationPK pubPK, String userId);
 
   /**
    * gets a list of PublicationDetail corresponding to the links parameter

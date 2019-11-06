@@ -28,6 +28,7 @@ import org.silverpeas.components.gallery.model.AlbumDetail;
 import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.notification.user.RemoveSenderRecipientBehavior;
+import org.silverpeas.core.notification.user.UserSubscriptionNotificationBehavior;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.subscription.constant.SubscriberType;
 import org.silverpeas.core.subscription.service.NodeSubscriptionResource;
@@ -46,7 +47,8 @@ import static org.silverpeas.core.subscription.service.ResourceSubscriptionProvi
  * @author silveryocha
  */
 public class GalleryAlbumMediaSubscriptionNotificationBuilder
-    extends AbstractGalleryAlbumUserNotification implements RemoveSenderRecipientBehavior {
+    extends AbstractGalleryAlbumUserNotification implements RemoveSenderRecipientBehavior,
+    UserSubscriptionNotificationBehavior {
 
   private final NotifAction notificationCause;
   private SubscriptionSubscriberMapBySubscriberType subscriberIdsByTypes;

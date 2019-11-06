@@ -24,29 +24,42 @@
 package org.silverpeas.components.gallery;
 
 import org.silverpeas.components.gallery.constant.MediaResolution;
+import org.silverpeas.components.gallery.constant.MediaType;
 import org.silverpeas.components.gallery.model.Media;
-import org.silverpeas.core.contribution.contentcontainer.content.AbstractContentInterface
-    .ContributionWrapper;
-import org.silverpeas.core.contribution.contentcontainer.content
-    .DefaultGlobalSilverContentProcessor;
+import org.silverpeas.core.contribution.contentcontainer.content.AbstractContentInterface.ContributionWrapper;
+import org.silverpeas.core.contribution.contentcontainer.content.AbstractGlobalSilverContentProcessor;
 import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
+import org.silverpeas.core.util.Pair;
 
 import javax.inject.Named;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
 
-import static org.silverpeas.core.contribution.contentcontainer.content
-    .IGlobalSilverContentProcessor.PROCESSOR_NAME_SUFFIX;
+import static java.util.stream.Collectors.toMap;
+import static org.silverpeas.components.gallery.GalleryComponentSettings.COMPONENT_NAME;
+import static org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContentProcessor.Constants.PROCESSOR_NAME_SUFFIX;
 
-@Named("gallery" + PROCESSOR_NAME_SUFFIX)
-public class GalleryGlobalSilverpeasContentProcessor extends DefaultGlobalSilverContentProcessor {
+@Named(COMPONENT_NAME + PROCESSOR_NAME_SUFFIX)
+public class GalleryGlobalSilverpeasContentProcessor extends AbstractGlobalSilverContentProcessor {
 
   @Override
-  public GlobalSilverContent getGlobalSilverContent(SilverContentInterface sci) {
-    GlobalSilverContent gsc = super.getGlobalSilverContent(sci);
-    Media media = (Media) ((ContributionWrapper) sci).getWrappedInstance();
-    gsc.setThumbnailURL(media.getApplicationThumbnailUrl(MediaResolution.TINY));
-    gsc.setType(media.getType().getName());
-    return gsc;
+  public String relatedToComponent() {
+    return COMPONENT_NAME;
+  }
+
+  @Override
+  public Stream<GlobalSilverContent> asGlobalSilverContent(List<SilverContentInterface> silverContents) {
+    final Map<String, Pair<String, MediaType>> mediaThumbnails = silverContents.stream()
+        .map(c -> (Media) ((ContributionWrapper) c).getWrappedInstance())
+        .collect(toMap(Media::getId,
+                       m -> Pair.of(m.getApplicationThumbnailUrl(MediaResolution.TINY), m.getType())));
+    return super.asGlobalSilverContent(silverContents).peek(g -> {
+      final Pair<String, MediaType> mediaThumbnail = mediaThumbnails.get(g.getId());
+      g.setThumbnailURL(mediaThumbnail.getFirst());
+      g.setType(mediaThumbnail.getSecond().getName());
+    });
   }
 
 }

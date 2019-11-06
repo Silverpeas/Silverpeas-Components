@@ -92,7 +92,7 @@ public class AlmanachWebManager extends CalendarWebManager {
   private List<String> getComponentInstanceIdsToAggregateWith(final Collection<String> componentIds) {
     final Set<String> indexedComponentIds = new HashSet<>(componentIds);
     final Map<String, Map<String, String>> parameterValues = getOrganisationController()
-        .getParameterValuesByComponentAndByParamName(indexedComponentIds,
+        .getParameterValuesByComponentIdThenByParamName(indexedComponentIds,
             asList("useAgregation", "customAggregation"));
     final Set<String> componentsUsingAggregation = new HashSet<>(indexedComponentIds.size());
     parameterValues.forEach((i, p) -> {

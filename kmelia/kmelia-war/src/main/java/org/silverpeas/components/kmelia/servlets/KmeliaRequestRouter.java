@@ -316,9 +316,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
               destination = "/admin/jsp/accessForbidden.jsp";
             }
           } catch (Exception e) {
-            SilverLogger.getLogger(this)
-                .error("Document not found. {0}", new String[]{e.getMessage()}, e);
-            destination = getDocumentNotFoundDestination(kmelia, request);
+            destination = processDocumentNotFoundException(request, kmelia, e);
           }
         } else if ("Node".equals(type)) {
           if (kmaxMode) {
@@ -333,9 +331,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
               request.setAttribute("Id", id);
               destination = getDestination("GoToTopic", kmelia, request);
             } catch (Exception e) {
-              SilverLogger.getLogger(this)
-                  .error("Document not found. {0}", new String[]{e.getMessage()}, e);
-              destination = getDocumentNotFoundDestination(kmelia, request);
+              destination = processDocumentNotFoundException(request, kmelia, e);
             }
           }
         } else if ("Wysiwyg".equals(type)) {
@@ -363,9 +359,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
             destination = getDestination("ViewPublication", kmelia, request);
           }
         } catch (Exception e) {
-          SilverLogger.getLogger(this)
-              .error("Document not found. {0}", new String[]{e.getMessage()}, e);
-          destination = getDocumentNotFoundDestination(kmelia, request);
+          destination = processDocumentNotFoundException(request, kmelia, e);
         }
       } else if ("ToUpdatePublicationHeader".equals(function)) {
         request.setAttribute("Action", "UpdateView");
@@ -1089,7 +1083,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         String notSelectedIds = request.getParameter("NotSelectedIds");
         List<PublicationPK> pks = kmelia.processSelectedPublicationIds(selectedIds, notSelectedIds);
 
-        List<WAAttributeValuePair> publicationIds = new ArrayList<WAAttributeValuePair>();
+        List<WAAttributeValuePair> publicationIds = new ArrayList<>();
         for (PublicationPK pk : pks) {
           publicationIds.add(new WAAttributeValuePair(pk.getId(), pk.getInstanceId()));
         }
@@ -1238,7 +1232,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         String sortedIds = request.getParameter("sortedIds");
 
         StringTokenizer tokenizer = new StringTokenizer(sortedIds, ",");
-        List<String> ids = new ArrayList<String>();
+        List<String> ids = new ArrayList<>();
         while (tokenizer.hasMoreTokens()) {
           ids.add(tokenizer.nextToken());
         }
@@ -1426,11 +1420,10 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         String timeCriteria = request.getParameter("TimeCriteria");
 
         List<String> combination = kmelia.getCombination(axisValuesStr);
-        List<KmeliaPublication> publications;
         if (StringUtil.isDefined(timeCriteria) && !"X".equals(timeCriteria)) {
-          publications = kmelia.search(combination, Integer.parseInt(timeCriteria));
+          kmelia.search(combination, Integer.parseInt(timeCriteria));
         } else {
-          publications = kmelia.search(combination);
+          kmelia.search(combination);
         }
 
         kmelia.setIndexOfFirstPubToDisplay("0");
@@ -1454,7 +1447,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         String pubId = request.getParameter("PubId");
         String axisValuesStr = request.getParameter("SearchCombination");
         StringTokenizer st = new StringTokenizer(axisValuesStr, ",");
-        List<String> combination = new ArrayList<String>();
+        List<String> combination = new ArrayList<>();
         String axisValue;
         while (st.hasMoreTokens()) {
           axisValue = st.nextToken();
@@ -1521,6 +1514,20 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
     } catch (Exception exceAll) {
       request.setAttribute("javax.servlet.jsp.jspException", exceAll);
       return "/admin/jsp/errorpageMain.jsp";
+    }
+    return destination;
+  }
+
+  private String processDocumentNotFoundException(final HttpRequest request,
+      final KmeliaSessionController kmelia, final Exception e) {
+    final String destination;
+    if (e instanceof AliasOnOtherKmeliaException) {
+      final AliasOnOtherKmeliaException aliasException = (AliasOnOtherKmeliaException) e;
+      destination = URLUtil.getSimpleURL(URLUtil.URL_PUBLI, aliasException.pubId,
+          aliasException.aliasLocation.getInstanceId(), false);
+    } else {
+      SilverLogger.getLogger(this).error("Document not found. {0}", new String[]{e.getMessage()}, e);
+      destination = getDocumentNotFoundDestination(kmelia, request);
     }
     return destination;
   }
@@ -1782,13 +1789,18 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
     return destination;
   }
 
-  private void processPath(KmeliaSessionController kmeliaSC, String id) {
+  private void processPath(KmeliaSessionController kmeliaSC, String id)
+      throws AliasOnOtherKmeliaException {
     if (!kmeliaSC.isKmaxMode()) {
       NodePK pk;
       if (!StringUtil.isDefined(id)) {
         pk = kmeliaSC.getCurrentFolderPK();
       } else {
-        pk = kmeliaSC.getAllowedPublicationFather(id); // get publication parent
+        // get publication parent
+        pk = kmeliaSC.getAllowedPublicationFather(id);
+        if (!pk.getInstanceId().equals(kmeliaSC.getComponentId())) {
+          throw new AliasOnOtherKmeliaException(id, pk);
+        }
         kmeliaSC.setCurrentFolderId(pk.getId(), true);
       }
 
@@ -1887,7 +1899,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
   private void setTemplatesUsedIntoRequest(KmeliaSessionController kmelia,
       HttpServletRequest request) {
     Collection<String> modelUsed = kmelia.getModelUsed();
-    Collection<PublicationTemplate> listModelXml = new ArrayList<PublicationTemplate>();
+    Collection<PublicationTemplate> listModelXml = new ArrayList<>();
     List<PublicationTemplate> templates = kmelia.getForms();
     // recherche de la liste des modèles utilisables
     for (PublicationTemplate xmlForm : templates) {
@@ -1944,11 +1956,20 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
    * specified identifier.
    */
   private List<ResourceReference> asPks(String instanceId, String... ids) {
-    List<ResourceReference> pks = new ArrayList<ResourceReference>();
+    List<ResourceReference> pks = new ArrayList<>();
     for (String oneId : ids) {
       pks.add(new ResourceReference(oneId, instanceId));
     }
     return pks;
   }
 
+  private class AliasOnOtherKmeliaException extends Exception {
+    private final String pubId;
+    private final NodePK aliasLocation;
+
+    private AliasOnOtherKmeliaException(final String pubId, final NodePK aliasLocation) {
+      this.pubId = pubId;
+      this.aliasLocation = aliasLocation;
+    }
+  }
 }

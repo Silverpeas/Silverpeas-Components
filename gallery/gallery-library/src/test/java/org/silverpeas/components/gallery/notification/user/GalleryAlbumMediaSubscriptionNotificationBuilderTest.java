@@ -135,7 +135,7 @@ class GalleryAlbumMediaSubscriptionNotificationBuilderTest {
     subscriptionSubscribers.add(UserSubscriptionSubscriber.from("1"));
     when(nodeService.getPath(albumDetail.getNodePK())).thenReturn(albumPath);
 
-    when(nodeAccessControl.isUserAuthorized(anyString(), any(NodePK.class))).thenReturn(true);
+    when(nodeAccessControl.isUserAuthorized(anyString(), any(NodeDetail.class))).thenReturn(true);
     when(nodeAccessControl.isGroupAuthorized(anyString(), any(NodePK.class))).thenReturn(true);
   }
 
