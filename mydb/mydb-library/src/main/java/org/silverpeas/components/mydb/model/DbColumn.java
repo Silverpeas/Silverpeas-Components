@@ -149,7 +149,7 @@ public class DbColumn {
    * @return true if a default value is defined for this column, false otherwise.
    */
   public boolean isDefaultValueDefined() {
-    return getDefaultValue() != null;
+    return this.descriptor.getDefaultValue().isDefined();
   }
 
   /**
@@ -158,7 +158,7 @@ public class DbColumn {
    * @return as a {@link String} the default value of this column.
    */
   public String getDefaultValue() {
-    return this.descriptor.getDefaultValue();
+    return this.descriptor.getDefaultValue().get();
   }
 
   /**

@@ -247,15 +247,19 @@
     /**
      * Open the specified table to select a row as foreign key when inserting a new row in the
      * current table. This function is invoked by the JSP rendered into the popup of row adding.
+     * The HTML input id is specified to set its value with the selected value of the given column
+     * in the specified table.
      */
-    function openForeignKey(refTableName, refColumnName) {
-      jsonFkRowId = sp.element.querySelectorAll('.field-fk-reftable-' + refTableName)
+    function openForeignKey(inputId, refTableName, refColumnName) {
+      jsonFkRowId = sp.element.querySelectorAll('#' + inputId)
           .map(function(i) {
             return {
               'f' : i.getAttribute('rel').replace(/field-fk-refcolumn-(.+)/gi, '$1'),
               'v' : i.value
             }
           });
+      console.log('input id is ', inputId);
+      console.log('json fk row id is ', jsonFkRowId);
       sp.ajaxRequest('ViewTargetTable')
           .withParam('${tableView}', refTableName)
           .withParam('${foreignKeyTarget}', refColumnName)
@@ -263,9 +267,7 @@
         function(response) {
           renderRowForm(refTableName, response, function(row) {
             jsonFkRowId.forEach(function(fieldValue) {
-              sp.element.querySelector(".field-fk-reftable-" +
-                  refTableName + "[rel='field-fk-refcolumn-" +
-                  fieldValue.f + "']").value = fieldValue.v;
+              sp.element.querySelector('#' + inputId).value = fieldValue.v;
             });
           });
         });

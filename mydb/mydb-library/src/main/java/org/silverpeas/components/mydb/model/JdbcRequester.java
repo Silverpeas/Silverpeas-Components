@@ -24,6 +24,7 @@
 
 package org.silverpeas.components.mydb.model;
 
+import org.jetbrains.annotations.NotNull;
 import org.silverpeas.components.mydb.model.predicates.AbstractColumnValuePredicate;
 import org.silverpeas.components.mydb.service.MyDBException;
 import org.silverpeas.components.mydb.service.MyDBRuntimeException;
@@ -33,6 +34,7 @@ import org.silverpeas.core.persistence.TransactionRuntimeException;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -44,8 +46,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
-import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * A requester of a remote enterprise data source by using the yet configured
@@ -160,7 +160,7 @@ class JdbcRequester {
           StringUtil.getBooleanValue(columns.getString("IS_AUTOINCREMENT"));
       final boolean isNullable = StringUtil.getBooleanValue(columns.getString("IS_NULLABLE"));
       final boolean isPrimaryKey = columnPks.contains(name);
-      final String defaultValue = getDefaultValue(columns);
+      final DefaultValue defaultValue = getDefaultValue(columns);
       consumer.accept(new ColumnDescriptor().withName(name)
           .withType(type)
           .withSize(size)
@@ -302,22 +302,10 @@ class JdbcRequester {
     return query.where(clauses.toString(), values);
   }
 
-  private String getDefaultValue(final ResultSet resultSet) throws SQLException {
+  private DefaultValue getDefaultValue(final ResultSet resultSet)
+      throws SQLException {
     String defaultValue = resultSet.getString("COLUMN_DEF");
-    if (isDefined(defaultValue)) {
-      int index = defaultValue.indexOf("::");
-      if (index != -1) {
-        defaultValue = defaultValue.substring(0, index);
-        if (defaultValue.startsWith("'") && defaultValue.endsWith("'")) {
-          defaultValue = defaultValue.substring(1, defaultValue.length() - 1);
-        }
-      } else {
-        defaultValue = null;
-      }
-    } else {
-      defaultValue = null;
-    }
-    return defaultValue;
+    return new DefaultValue(defaultValue);
   }
 
   /**
@@ -382,6 +370,55 @@ class JdbcRequester {
     }
   }
 
+  class DefaultValue {
+    private String pattern;
+
+    public DefaultValue(final String valuePattern) {
+      this.pattern = valuePattern;
+    }
+
+    public boolean isDefined() {
+      return pattern != null;
+    }
+
+    public String get() {
+      String value = null;
+      if (isDefined()) {
+        try (Connection connection = currentConnectionInfo.openConnection()) {
+          value = computeSQLFunction(connection, pattern);
+        } catch (MyDBException | SQLException e) {
+          throw new MyDBRuntimeException(e);
+        }
+        int index = value.indexOf("::");
+        if (index != -1) {
+          value = parseDefaultValue(value, index);
+        }
+      }
+      return value;
+    }
+
+    @NotNull
+    private String parseDefaultValue(String defaultValue, final int valueLength) {
+      defaultValue = defaultValue.substring(0, valueLength);
+      if (defaultValue.startsWith("'") && defaultValue.endsWith("'")) {
+        defaultValue = defaultValue.substring(1, defaultValue.length() - 1);
+      }
+      return defaultValue;
+    }
+
+    @NotNull
+    private String computeSQLFunction(final Connection connection, final String function) {
+      try {
+        return JdbcSqlQuery.createSelect(function)
+            .executeUniqueWith(connection, r -> r.getString(1));
+      } catch (SQLException e) {
+        // not a function or cannot be computed by the database
+        SilverLogger.getLogger(this).silent(e);
+        return function;
+      }
+    }
+  }
+
   /**
    * A descriptor of a column in a database table.
    */
@@ -393,7 +430,7 @@ class JdbcRequester {
     private ForeignKeyDescriptor foreignKey;
     private boolean nullable;
     private boolean autoIncrementable;
-    private String defaultValue;
+    private DefaultValue defaultValue;
 
     private ColumnDescriptor() {
     }
@@ -482,11 +519,11 @@ class JdbcRequester {
      * Gets the default value of this column if any.
      * @return the default value set with this column, null if no such a default value was set.
      */
-    String getDefaultValue() {
+    DefaultValue getDefaultValue() {
       return defaultValue;
     }
 
-    private ColumnDescriptor withDefaultValue(final String defaultValue) {
+    private ColumnDescriptor withDefaultValue(final DefaultValue defaultValue) {
       this.defaultValue = defaultValue;
       return this;
     }
