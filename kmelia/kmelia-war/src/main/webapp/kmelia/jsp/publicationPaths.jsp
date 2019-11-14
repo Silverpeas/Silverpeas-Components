@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="org.silverpeas.components.kmelia.KmeliaPublicationHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ page import="org.apache.ecs.xhtml.input" %>
@@ -58,33 +59,6 @@ Button cancelButton = gef.getFormButton(resources.getString("GML.cancel"), "View
 <head>
 <title></title>
 <view:looknfeel/>
-<style>
-.content {
-	padding-left: 0px;
-	overflow: auto;
-	height: 250px;
-}
-
-.basic  {
-	width: 90%;
-}
-
-.basic a {
-	cursor:pointer;
-	display:block;
-	text-decoration: none;
-	color: #000000;
-	width: 100%;
-	margin-top: 2px;
-	padding: 5px;
-	background-image: url(<%=m_context%>/admin/jsp/icons/silverpeasV5/degrade20px.jpg);
-	background-repeat: repeat-x;
-}
-
-.ui-icon {
-	display: none;
-}
-</style>
 <script type="text/javascript">
 	$(document).ready(function(){
 		$('#accordion').accordion({   
@@ -154,7 +128,7 @@ function getObjects(selected) {
 }
 </script>
 </head>
-<body>
+<body class="kmelia path">
   <%
     Window window = gef.getWindow();
     Frame frame = gef.getFrame();
@@ -251,15 +225,15 @@ function getObjects(selected) {
 	    		}
 	    		
 	    		if (treeview.getNbAliases() == 1) {
-	    			nbAliases = "<span align=\"right\">"+treeview.getNbAliases()+" "+resources.getString("kmelia.paths.path")+"</span>";
+	    			nbAliases = "<span class=\"nb_nbAlias\">"+treeview.getNbAliases()+"</span> <span class=\"libelle_nbAlias\">"+resources.getString("kmelia.paths.path")+"</span>";
 	    		} else if (treeview.getNbAliases() > 1) {
-	    			nbAliases = "<span align=\"right\">"+treeview.getNbAliases()+" "+resources.getString("kmelia.paths.paths")+"</span>";
+	    			nbAliases = "<span class=\"nb_nbAlias\">"+treeview.getNbAliases()+"</span> <span class=\"libelle_nbAlias\">"+resources.getString("kmelia.paths.paths")+"</span>";
 	    		}  
 	%>
-				<a href="javascript: void(0)" id="<%=treeview.getComponentId()%>"><table><caption></caption><th id="all-locations"></th><tr><td><%=panelTitle%></td><td text-align="right"><%=nbAliases%></td></tr></table></a>
+				<a href="javascript: void(0)" id="<%=treeview.getComponentId()%>"><div class="panelTitle"><%=panelTitle%></div><div class="nbAlias"><%=nbAliases%></div></a>
 					<div id="content_<%=treeview.getComponentId()%>" class="content">
 	<%
-					out.println("<table border=\"0\">");
+					out.println("<table>");
 					if (t == 0) {
 		    			List<NodeDetail> otherTree = treeview.getTree();
 		    			for (NodeDetail topic : otherTree) {
