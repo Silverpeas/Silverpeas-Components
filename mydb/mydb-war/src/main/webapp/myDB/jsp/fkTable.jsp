@@ -38,6 +38,7 @@
 <c:url var="primaryKeyIcon" value="${primaryKeyIcon}"/>
 
 <view:setConstant var="paramFkArrayPaneName" constant="org.silverpeas.components.mydb.web.MyDBWebController.FK_ARRAY_PANE_NAME"/>
+<view:setConstant var="selectedForeignKey" constant="org.silverpeas.components.mydb.web.MyDBWebController.FK_SELECTED"/>
 <view:setConstant var="paramTable" constant="org.silverpeas.components.mydb.web.MyDBWebController.TABLE_VIEW"/>
 <view:setConstant var="paramError" constant="org.silverpeas.components.mydb.web.MyDBWebController.ERROR_MESSAGE"/>
 <view:setConstant var="nullValue" constant="org.silverpeas.components.mydb.model.predicates.AbstractColumnValuePredicate.NULL_VALUE"/>
@@ -63,11 +64,12 @@
           <view:arrayColumn title="${columnName}" compareOn="${(r, i) -> r.data.getFieldValue(columns[i].name)}"/>
         </c:forEach>
         <view:arrayLines var="row" items="${rows}">
-          <view:arrayLine id="fk-row-${row.pkValue}">
+          <c:set var="rowId" value="fk-row-${row.pkValue}"/>
+          <view:arrayLine id="${rowId}">
             <c:forEach var="field" items="${columns}">
               <c:set var="valueToRender"/>
               <c:if test="${not empty row.pkValue}">
-                <c:set var="valueToRender"><a href='javascript:window.selectFk(${row.jsonPkValue});'></c:set>
+                <c:set var="valueToRender"><a href='javascript:window.selectFk("${rowId}", ${row.toJSON()});'></c:set>
               </c:if>
               <c:set var="valueToRender">${valueToRender}${row.data.getFieldValue(field.name)}</c:set>
               <c:if test="${not empty row.pkValue}">
@@ -81,7 +83,7 @@
       <script type="text/javascript">
         whenSilverpeasReady(function() {
           sp.arrayPane.ajaxControls('#fk-table-view');
-          selectCurrentFk()
+          selectCurrentFk('fk-row-${requestScope[selectedForeignKey]}');
         });
       </script>
     </div>

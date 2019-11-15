@@ -178,10 +178,12 @@ class JdbcRequester {
     final ResultSet foreignKeys =
         dbMetaData.getImportedKeys(connection.getCatalog(), connection.getSchema(), tableName);
     while (foreignKeys.next()) {
+      final String fkName = foreignKeys.getString("FK_NAME");
       final String columnName = foreignKeys.getString("FKCOLUMN_NAME");
       final String targetTableName = foreignKeys.getString("PKTABLE_NAME");
       final String targetColumnName = foreignKeys.getString("PKCOLUMN_NAME");
-      columnFks.put(columnName, new ForeignKeyDescriptor(targetTableName, targetColumnName));
+      columnFks.put(columnName,
+          new ForeignKeyDescriptor(fkName, targetTableName, targetColumnName));
     }
     return columnFks;
   }
@@ -345,12 +347,24 @@ class JdbcRequester {
    * references another column of another table.
    */
   class ForeignKeyDescriptor {
+    private final String name;
     private final String targetTableName;
     private final String targetColumnName;
 
-    private ForeignKeyDescriptor(final String targetTableName, final String targetColumnName) {
+    private ForeignKeyDescriptor(final String name, final String targetTableName,
+        final String targetColumnName) {
+      this.name = name;
       this.targetTableName = targetTableName;
       this.targetColumnName = targetColumnName;
+    }
+
+    /**
+     * Gets the name of the foreign key. Useful to retrieve the columns that made up a composite
+     * foreign keys.
+     * @return the name of the foreign key.
+     */
+    String getName() {
+      return name;
     }
 
     /**

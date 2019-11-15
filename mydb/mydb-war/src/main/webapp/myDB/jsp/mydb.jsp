@@ -38,7 +38,7 @@
 <view:setConstant var="publisherRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.publisher"/>
 <view:setConstant var="mainArrayPaneName" constant="org.silverpeas.components.mydb.web.MyDBWebController.MAIN_ARRAY_PANE_NAME"/>
 <view:setConstant var="tableView" constant="org.silverpeas.components.mydb.web.MyDBWebController.TABLE_VIEW"/>
-<view:setConstant var="foreignKeyTarget" constant="org.silverpeas.components.mydb.web.MyDBWebController.FOREIGN_KEY_TARGET"/>
+<view:setConstant var="selectedForeignKey" constant="org.silverpeas.components.mydb.web.MyDBWebController.FK_SELECTED"/>
 <view:setConstant var="useLastLoadedRows" constant="org.silverpeas.components.mydb.web.MyDBWebController.USE_LAST_LOADED_ROWS"/>
 <view:setConstant var="allTables" constant="org.silverpeas.components.mydb.web.MyDBWebController.ALL_TABLES"/>
 <view:setConstant var="comparingColumn" constant="org.silverpeas.components.mydb.web.MyDBWebController.COMPARING_COLUMN"/>
@@ -239,66 +239,82 @@
     }
 
     /**
-     * The unique identifier of a row in another table to use as foreign key in a row currently
-     * edited.
+     * The json representation of the row in another table that is targeted by a foreign key of
+     * a currently edited row.
      */
-    var jsonFkRowId = null;
+    var jsonFkRow = null;
 
     /**
-     * Open the specified table to select a row as foreign key when inserting a new row in the
-     * current table. This function is invoked by the JSP rendered into the popup of row adding.
-     * The HTML input id is specified to set its value with the selected value of the given column
-     * in the specified table.
+     * Open the specified table to select a row to be targeted by the foreign key with the given
+     * name when editing a row of the current table. This function is invoked by the JSP rendered
+     * within the row edition popup.
+     * The foreign key name is used to select all of the inputs concerned by the same foreign key
+     * setting (a foreign key can be made up of one or several fields referring each of them a
+     * different field of the targeted row).
      */
-    function openForeignKey(inputId, refTableName, refColumnName) {
-      jsonFkRowId = sp.element.querySelectorAll('#' + inputId)
+    function openForeignKey(foreignKeyName, refTableName) {
+       jsonFkRow = sp.element.querySelectorAll('.field-fk-' + foreignKeyName)
           .map(function(i) {
             return {
               'f' : i.getAttribute('rel').replace(/field-fk-refcolumn-(.+)/gi, '$1'),
               'v' : i.value
             }
           });
-      console.log('input id is ', inputId);
-      console.log('json fk row id is ', jsonFkRowId);
+      var s = jsonFkRow.map(function(fieldValue) {
+         return fieldValue.f + ':' + fieldValue.v;
+       }).join(';');
       sp.ajaxRequest('ViewTargetTable')
           .withParam('${tableView}', refTableName)
-          .withParam('${foreignKeyTarget}', refColumnName)
+          .withParam('${selectedForeignKey}', s)
           .send().then(
         function(response) {
           renderRowForm(refTableName, response, function(row) {
-            jsonFkRowId.forEach(function(fieldValue) {
-              sp.element.querySelector('#' + inputId).value = fieldValue.v;
+             jsonFkRow.forEach(function(fieldValue) {
+                sp.element.querySelector(
+                    '.field-fk-' + foreignKeyName + "[rel='field-fk-refcolumn-" + fieldValue.f +
+                    "']").value = fieldValue.v;
             });
           });
         });
     }
 
     /**
-     * A row in a table has been selected as a foreign key. This function is invoked by the JSP
-     * rendered into the popup of the row selection for foreign key setting.
+     * A row in a table has been selected to be targeted by the current edited foreign key.
+     * This function is invoked by the JSP rendered within the popup of the row selection for
+     * foreign key setting. Expected the HTML identifier of the selected row and the JSON
+     * representation of this row as an object whose each attribute is a row field.
      */
-    function selectFk(fkValue) {
-      jsonFkRowId = fkValue;
-      selectCurrentFk();
+    function selectFk(rowId, fkRow) {
+       jsonFkRow.forEach(function(field) {
+          field.v = fkRow[field.f]
+       });
+       selectCurrentFk(rowId);
     }
 
     /**
      * This function is invoked by the JSP rendered into the popup of the current row selection for
-     * foreign key setting.
+     * foreign key setting. Expected the HTML identifier of the selected row.
      */
-    function selectCurrentFk() {
+    function selectCurrentFk(rowId) {
       sp.element.querySelectorAll('#fk-table-view td.selected').forEach(function(e) {
         e.classList.remove('selected');
       });
-      if (jsonFkRowId) {
-        var selectedPkValue = jsonFkRowId.map(function(fieldValue) {
-          return fieldValue.f + '-' + fieldValue.v;
-        }).join('-');
-        sp.element.querySelectorAll('#fk-table-view #fk-row-' + selectedPkValue + " td").forEach(
+       if (jsonFkRow && rowId) {
+          sp.element.querySelectorAll('#fk-table-view #' + rowId + " td").forEach(
             function(e) {
               e.classList.add('selected');
             });
       }
+    }
+
+    function computeSelectedFkRowEltId() {
+       if (jsonFkRow) {
+          return jsonFkRow.map(function(field) {
+             return field.f + '-' + field.v;
+          }).join('-');
+       } else {
+          return null;
+       }
     }
 
     function refreshDataArray() {

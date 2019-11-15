@@ -99,12 +99,25 @@ public class DbColumn {
   }
 
   /**
-   * Is this column represents a foreign key to another table?
+   * Is this column references a column of another table. If true, then the column takes part of
+   * a foreign key whose name is given by the {@link DbColumn#getName()} method.
    * @return true if the values in this column are the primary keys of another table. False
    * otherwise.
    */
   public boolean isForeignKey() {
     return descriptor.getForeignKey() != null;
+  }
+
+  /**
+   * Gets the name of the foreign key to which this column is a component. Several columns can
+   * be part of the same foreign key; in this case, the foreign key name is a way to figure out
+   * them.
+   * If this column isn't a foreign key, then {@link NullPointerException} is thrown.
+   * @return the unique foreign key name.
+   */
+  public String getForeignKeyName() {
+    Objects.requireNonNull(descriptor.getForeignKey());
+    return descriptor.getForeignKey().getName();
   }
 
   /**

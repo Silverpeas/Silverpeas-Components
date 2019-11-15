@@ -27,10 +27,11 @@ import org.silverpeas.components.projectmanager.control.ProjectManagerSessionCon
 import org.silverpeas.components.projectmanager.model.TaskDetail;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.JSONCodec;
+import org.silverpeas.core.util.JSONCodec.JSONArray;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.servlet.http.HttpServlet;
@@ -43,7 +44,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 public class AjaxProjectManagerServlet extends HttpServlet {
 
@@ -135,7 +136,7 @@ public class AjaxProjectManagerServlet extends HttpServlet {
     writer.write(output);
   }
 
-  private Function<JSONCodec.JSONArray, JSONCodec.JSONArray> convertCollapsedTaskIdsIntoJSON(
+  private UnaryOperator<JSONArray> convertCollapsedTaskIdsIntoJSON(
       List<Integer> taskIds) {
     return (jsonTaskIds -> {
       for (Integer taskId : taskIds) {
@@ -169,7 +170,7 @@ public class AjaxProjectManagerServlet extends HttpServlet {
    * @param tasks the list of tasks to convert into JSON
    * @return JSONArray of list of tasks
    */
-  private Function<JSONCodec.JSONArray, JSONCodec.JSONArray> getJSONTasks(List<TaskDetail> tasks) {
+  private UnaryOperator<JSONArray> getJSONTasks(List<TaskDetail> tasks) {
     return (jsonTasks -> {
       for (TaskDetail curTask : tasks) {
         jsonTasks.addJSONObject(jsonTask -> {

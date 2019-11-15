@@ -28,14 +28,12 @@ import org.silverpeas.components.mydb.model.DbColumn;
 import org.silverpeas.components.mydb.model.TableRow;
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.SilverpeasList;
-import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.util.SelectableUIEntity;
 
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -46,7 +44,7 @@ public class TableRowUIEntity extends SelectableUIEntity<TableRow> {
   private final String uiId = UUID.randomUUID().toString();
   private final List<String> pkFields;
   private String pkValue;
-  private String pkJsonValue;
+  private String json;
 
   private TableRowUIEntity(final List<String> pkFields, final TableRow data, final Set<String> selectedIds) {
     super(data, selectedIds);
@@ -67,14 +65,15 @@ public class TableRowUIEntity extends SelectableUIEntity<TableRow> {
     return pkValue;
   }
 
-  public String getJsonPkValue() {
-    if (pkJsonValue == null) {
-      pkJsonValue = JSONCodec.encodeArray(a -> {
-        pkFields.forEach(f -> a.addJSONObject(o -> o.put("f", f).put("v", getData().getFieldValue(f).toString())));
-        return a;
+  public String toJSON() {
+    if (json == null) {
+      json = JSONCodec.encodeObject(o -> {
+        getData().getFields().forEach((f, v) ->
+            o.put(f, v.toString()));
+        return o;
       });
     }
-    return pkJsonValue;
+    return json;
   }
 
   /**
@@ -82,26 +81,14 @@ public class TableRowUIEntity extends SelectableUIEntity<TableRow> {
    * TableRow}.
    * @param tableView the view on the current database table to display.
    * @param values the list of all the {@link TableRow} of the database table.
-   * @param fkName optionally the name of the column that is targeted by a foreign key. If set, this
-   * parameter will be used to filter the primary key of the table instead of its true primary keys.
-   * It is intended to be used in the render of the content of the table that is referred by a
-   * foreign key.
    * @param selectedIds a set of identifiers to indicate what rows has to be selected when rendering
    * the table view.
    * @return the {@link SilverpeasList} of {@link TableRowUIEntity}.
    */
   static <U extends TableRow> SilverpeasList<TableRowUIEntity> convertList(
-      final TableView tableView, final SilverpeasList<U> values, final String fkName,
-      final Set<String> selectedIds) {
-    final Predicate<DbColumn> predicate;
-    if (StringUtil.isDefined(fkName)) {
-      predicate = d -> fkName.equals(d.getName());
-    } else {
-      predicate = DbColumn::isPrimaryKey;
-    }
+      final TableView tableView, final SilverpeasList<U> values, final Set<String> selectedIds) {
     final List<String> pkFields = tableView.getColumns()
-        .stream()
-        .filter(predicate)
+        .stream().filter(DbColumn::isPrimaryKey)
         .map(DbColumn::getName)
         .collect(Collectors.toList());
     final Function<TableRow, TableRowUIEntity> converter = c -> new TableRowUIEntity(pkFields, c, selectedIds);

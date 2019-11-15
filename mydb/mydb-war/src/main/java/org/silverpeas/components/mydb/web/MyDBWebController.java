@@ -25,6 +25,7 @@
 package org.silverpeas.components.mydb.web;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.silverpeas.components.mydb.model.DataSourceDefinition;
 import org.silverpeas.components.mydb.model.DbColumn;
 import org.silverpeas.components.mydb.model.DbTable;
@@ -60,6 +61,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.silverpeas.components.mydb.web.TableRowsFilter.FIELD_NONE;
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
@@ -82,8 +87,8 @@ public class MyDBWebController
 
   public static final String MAIN_ARRAY_PANE_NAME = "mainArrayPaneName";
   public static final String FK_ARRAY_PANE_NAME = "fkArrayPaneName";
+  public static final String FK_SELECTED = "fkSelectedRow";
   public static final String TABLE_VIEW = "tableView";
-  public static final String FOREIGN_KEY_TARGET = "fkTarget";
   public static final String USE_LAST_LOADED_ROWS = "useLastLoadedRows";
   public static final String ALL_TABLES = "tableNames";
   public static final String COMPARING_COLUMN = "comparingColumn";
@@ -224,18 +229,20 @@ public class MyDBWebController
   public void getForeignKeyTableViewFrom(final MyDBWebRequestContext context) {
     try {
       final String targetTableName = context.getRequest().getParameter(TABLE_VIEW);
-      final String targetColumnName = context.getRequest().getParameter(FOREIGN_KEY_TARGET);
+      final String selectedRow = context.getRequest().getParameter(FK_SELECTED);
+      final Map<String, String> fields = parseForeignKeyRow(selectedRow);
       final Optional<DbTable> targetTable = DbTable.table(targetTableName, connectionInfo);
       if (targetTable.isPresent()) {
         final TableView targetTableView = new TableView();
         targetTableView.setTable(targetTable);
         final HttpRequest request = context.getRequest();
         final String fkArrayPaneName = "FkTable@" + targetTableName;
-        targetTableView.setColumnTargetedByForeignKey(targetColumnName);
         targetTableView.setPagination(getPaginationPageFrom(request, fkArrayPaneName));
         targetTableView.setOrderBy(getOrderByFrom(request, targetTableView.getOrderBies(), fkArrayPaneName));
         request.setAttribute(TABLE_VIEW, targetTableView);
         request.setAttribute(FK_ARRAY_PANE_NAME, fkArrayPaneName);
+        TableRowUIEntity row = findMatchingTableRow(targetTableView, fields);
+        request.setAttribute(FK_SELECTED, row != null ? row.getPkValue() : "");
       } else {
         context.getRequest()
             .setAttribute(ERROR_MESSAGE, getMultilang().getString("mydb.error.nonExistingTable"));
@@ -243,6 +250,34 @@ public class MyDBWebController
     } catch (Exception e) {
       context.getRequest().setAttribute(ERROR_MESSAGE, e.getLocalizedMessage());
     }
+  }
+
+  private TableRowUIEntity findMatchingTableRow(final TableView table,
+      final Map<String, String> fields) {
+    final Predicate<TableRowUIEntity> rowMatcher = row -> {
+      Set<Map.Entry<String, TableFieldValue>> rowFields = row.getData().getFields().entrySet();
+      return fields.entrySet()
+          .stream()
+          .allMatch(f -> rowFields.stream()
+              .anyMatch(r -> r.getKey().equals(f.getKey()) &&
+                  r.getValue().toString().equals(f.getValue())));
+    };
+
+    return table.getRows()
+        .stream()
+        .filter(rowMatcher)
+        .findFirst()
+        .orElse(null);
+  }
+
+  @NotNull
+  private Map<String, String> parseForeignKeyRow(final String row) {
+    if (StringUtil.isNotDefined(row)) {
+      return Collections.emptyMap();
+    }
+    return Stream.of(row.split(";"))
+        .map(s -> s.split(":"))
+        .collect(Collectors.toMap(f -> f[0], f -> f[1]));
   }
 
   @POST
