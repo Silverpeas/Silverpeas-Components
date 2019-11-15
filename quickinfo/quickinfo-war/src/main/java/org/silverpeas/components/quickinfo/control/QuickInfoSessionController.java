@@ -40,7 +40,6 @@ import org.silverpeas.core.subscription.SubscriptionServiceProvider;
 import org.silverpeas.core.subscription.service.ComponentSubscription;
 import org.silverpeas.core.subscription.service.ComponentSubscriptionResource;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
@@ -49,7 +48,6 @@ import org.silverpeas.core.web.subscription.SubscriptionContext;
 import org.silverpeas.core.web.util.ListIndex;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -281,7 +279,7 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
   }
 
   private StatisticService getStatisticService() {
-    return ServiceProvider.getService(StatisticService.class);
+    return StatisticService.get();
   }
 
   public News getPrevious() {

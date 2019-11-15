@@ -25,7 +25,10 @@
 package org.silverpeas.components.almanach.services;
 
 import org.silverpeas.components.almanach.AlmanachSettings;
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.service.SpaceWithSubSpacesAndComponents;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
@@ -37,14 +40,20 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import static java.util.Collections.emptyList;
+import static java.util.Arrays.asList;
+import static java.util.Collections.*;
 import static org.silverpeas.components.almanach.AlmanachSettings.*;
-import static org.silverpeas.core.admin.service.OrganizationControllerProvider
-    .getOrganisationController;
+import static org.silverpeas.core.admin.service.OrganizationControllerProvider.getOrganisationController;
+import static org.silverpeas.core.util.StringUtil.getBooleanValue;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
@@ -62,62 +71,97 @@ public class AlmanachWebManager extends CalendarWebManager {
 
   @Override
   public List<Calendar> getCalendarsHandledBy(final String componentInstanceId) {
-    final List<Calendar> calendars = super.getCalendarsHandledBy(componentInstanceId);
-    getComponentInstanceIdsToAggregateWith(componentInstanceId)
-        .forEach(i -> calendars.addAll(Calendar.getByComponentInstanceId(i)));
+    return getCalendarsHandledBy(singleton(componentInstanceId));
+  }
+
+  @Override
+  public List<Calendar> getCalendarsHandledBy(final Collection<String> componentInstanceIds) {
+    final List<Calendar> calendars = super.getCalendarsHandledBy(componentInstanceIds);
+    final List<String> componentInstanceIdsToAggregateWith = getComponentInstanceIdsToAggregateWith(componentInstanceIds);
+    if (!componentInstanceIdsToAggregateWith.isEmpty()) {
+      calendars.addAll(Calendar.getByComponentInstanceIds(componentInstanceIdsToAggregateWith));
+    }
     return calendars;
   }
 
   /**
-   * Gets list of component instance aggregated to the one represented by the given identifier.
-   * @param componentId identifier of a component instance.
-   * @return list of component instance identifier which does not contain the given one.
+   * Gets list of component instances aggregated to those represented by given identifiers.
+   * @param componentIds identifiers of component instance.
+   * @return list of component instance identifier which does not contain the given ones.
    */
-  private List<String> getComponentInstanceIdsToAggregateWith(final String componentId) {
-
+  private List<String> getComponentInstanceIdsToAggregateWith(final Collection<String> componentIds) {
+    final Set<String> indexedComponentIds = new HashSet<>(componentIds);
+    final Map<String, Map<String, String>> parameterValues = getOrganisationController()
+        .getParameterValuesByComponentIdThenByParamName(indexedComponentIds,
+            asList("useAgregation", "customAggregation"));
+    final Set<String> componentsUsingAggregation = new HashSet<>(indexedComponentIds.size());
+    parameterValues.forEach((i, p) -> {
+      if (getBooleanValue(p.get("useAgregation"))) {
+        componentsUsingAggregation.add(i);
+      }
+    });
     // if the parameter is not activated, the empty list is returned immediately
-    if (!StringUtil.getBooleanValue(getOrganisationController()
-        .getComponentParameterValue(componentId, "useAgregation"))) {
+    if (componentsUsingAggregation.isEmpty()) {
       return emptyList();
     }
-
-    final String customAggregation = getOrganisationController()
-        .getComponentParameterValue(componentId, "customAggregation");
-    if (isDefined(customAggregation)) {
-      return Arrays
-          .stream(customAggregation.split(","))
-          .filter(StringUtil::isDefined)
-          .map(String::trim)
-          .filter(i -> !i.equals(componentId))
-          .filter(i -> COMPONENT_NAME.equals(SilverpeasComponentInstance.getComponentName(i)))
-          .filter(i -> componentAccessController.isUserAuthorized(User.getCurrentRequester().getId(), i))
-          .collect(Collectors.toList());
-    }
-
-    return getAlmanachIdsByDefaultAggregation(componentId);
+    final Set<String> customAggregations = new HashSet<>(componentsUsingAggregation.size());
+    final Set<String> componentsWithDefaultAggregation = new HashSet<>(componentsUsingAggregation.size());
+    componentsUsingAggregation.forEach(i -> {
+      final String customAggregation = parameterValues.getOrDefault(i, emptyMap()).get("customAggregation");
+      if (isDefined(customAggregation)) {
+        customAggregations.add(customAggregation);
+      } else {
+        componentsWithDefaultAggregation.add(i);
+      }
+    });
+    final List<String> result = new ArrayList<>(indexedComponentIds.size());
+    final List<String> customAggregationComponentIds = customAggregations.stream()
+        .flatMap(a -> Stream.of(a.split(",")))
+        .filter(StringUtil::isDefined)
+        .map(String::trim)
+        .filter(i -> !indexedComponentIds.contains(i))
+        .filter(i -> COMPONENT_NAME.equals(SilverpeasComponentInstance.getComponentName(i)))
+        .collect(Collectors.toList());
+    componentAccessController
+        .filterAuthorizedByUser(customAggregationComponentIds, User.getCurrentRequester().getId())
+        .forEach(result::add);
+    result.addAll(getAlmanachIdsByDefaultAggregation(componentsWithDefaultAggregation).stream()
+        .map(SilverpeasComponentInstance::getId)
+        .collect(Collectors.toList()));
+    return result;
   }
 
-  private List<String> getAlmanachIdsByDefaultAggregation(final String componentId) {
-    final String aggregationMode = getAggregationMode();
-
-    boolean inCurrentSpace = false;
-    boolean inAllSpaces = false;
-    if (ALMANACH_IN_SPACE_AND_SUBSPACES.equals(aggregationMode)) {
-      inCurrentSpace = true;
-    } else if (ALL_ALMANACHS.equals(aggregationMode)) {
-      inCurrentSpace = true;
-      inAllSpaces = true;
+  private List<SilverpeasComponentInstance> getAlmanachIdsByDefaultAggregation(final Set<String> componentIds) {
+    final SpaceWithSubSpacesAndComponents allAlmanachsFromRootSpaceView;
+    try {
+      allAlmanachsFromRootSpaceView = getOrganisationController()
+          .getFullTreeviewOnComponentName(User.getCurrentRequester().getId(), COMPONENT_NAME);
+    } catch (AdminException e) {
+      throw new SilverpeasRuntimeException(e);
     }
+    final String aggregationMode = getAggregationMode();
+    if (ALMANACH_IN_SPACE_AND_SUBSPACES.equals(aggregationMode)) {
+      return allAlmanachsFromRootSpaceView.componentInstanceSelector()
+          .fromSpaces(getAlmanachSpaceIdsOf(componentIds))
+          .excludingComponentInstances(componentIds)
+          .select();
+    } else if (ALL_ALMANACHS.equals(aggregationMode)) {
+      return allAlmanachsFromRootSpaceView.componentInstanceSelector()
+          .fromAllSpaces()
+          .excludingComponentInstances(componentIds)
+          .select();
+    } else {
+      return allAlmanachsFromRootSpaceView.componentInstanceSelector()
+          .fromSubSpacesOfSpaces(getAlmanachSpaceIdsOf(componentIds))
+          .excludingComponentInstances(componentIds)
+          .select();
+    }
+  }
 
-    final SilverpeasComponentInstance componentInstance =
-        SilverpeasComponentInstance.getById(componentId)
-            .orElseThrow(() -> new WebApplicationException(Response.Status.NOT_FOUND));
-
-    return Arrays.stream(getOrganisationController()
-        .getAllComponentIdsRecur(componentInstance.getSpaceId(), User.getCurrentRequester().getId(),
-            componentInstance.getName(), inCurrentSpace, inAllSpaces))
-        .filter(i -> !i.equals(componentId))
-        .collect(Collectors.toList());
+  private Set<String> getAlmanachSpaceIdsOf(final Set<String> componentIds) {
+    return componentIds.stream().map(i -> SilverpeasComponentInstance.getById(i)
+        .orElseThrow(() -> new WebApplicationException(Response.Status.NOT_FOUND)).getSpaceId())
+        .collect(Collectors.toSet());
   }
 
   @Override

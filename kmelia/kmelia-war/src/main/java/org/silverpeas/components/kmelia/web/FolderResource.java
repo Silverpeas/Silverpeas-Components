@@ -31,7 +31,6 @@ import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.core.webapi.base.annotation.Authorized;
 import org.silverpeas.core.webapi.node.NodeAttrEntity;
@@ -351,7 +350,7 @@ public class FolderResource extends RESTWebService {
 
   private KmeliaService getKmeliaService() {
     try {
-      return ServiceProvider.getService(KmeliaService.class);
+      return KmeliaService.get();
     } catch (Exception e) {
       throw new WebApplicationException(e, Status.INTERNAL_SERVER_ERROR);
     }

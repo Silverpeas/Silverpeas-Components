@@ -30,7 +30,6 @@ import org.silverpeas.core.contribution.publication.model.PublicationRuntimeExce
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.persistence.datasource.model.identifier.ExternalIntegerIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
-import org.silverpeas.core.util.ServiceProvider;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.Column;
@@ -195,7 +194,7 @@ public class DelegatedNews extends BasicJpaEntity<DelegatedNews, ExternalInteger
 
   public PublicationDetail getPublicationDetail() {
     try {
-      PublicationService publicationService = ServiceProvider.getService(PublicationService.class);
+      PublicationService publicationService = PublicationService.get();
       PublicationPK pubPk = new PublicationPK(getId(), this.instanceId);
       return publicationService.getDetail(pubPk);
     } catch (Exception e) {

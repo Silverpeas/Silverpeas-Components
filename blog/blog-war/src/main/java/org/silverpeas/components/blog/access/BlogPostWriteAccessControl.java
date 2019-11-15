@@ -32,7 +32,8 @@ import org.silverpeas.core.util.ServiceProvider;
  * @author: Yohann Chastagnier
  */
 public interface BlogPostWriteAccessControl extends AccessController<String> {
+
   static BlogPostWriteAccessControl get() {
-    return ServiceProvider.getService(BlogPostWriteAccessControl.class);
+    return ServiceProvider.getSingleton(BlogPostWriteAccessControl.class);
   }
 }

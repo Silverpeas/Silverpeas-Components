@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.blog;
 
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.contentcontainer.content.AbstractContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
@@ -71,10 +72,10 @@ public class BlogContentManager extends AbstractContentInterface implements Seri
   }
 
   @Override
-  protected List<Contribution> getAccessibleContributions(final List<String> resourceIds,
-      final String componentInstanceId, final String currentUserId) {
+  protected List<Contribution> getAccessibleContributions(final List<ResourceReference> resourceReferences,
+      final String currentUserId) {
     List<PublicationPK> pks =
-        resourceIds.stream().map(i -> new PublicationPK(i, componentInstanceId))
+        resourceReferences.stream().map(r -> new PublicationPK(r.getId(), r.getComponentInstanceId()))
             .collect(Collectors.toList());
     return new ArrayList<>(getPublicationService().getPublications(pks));
   }

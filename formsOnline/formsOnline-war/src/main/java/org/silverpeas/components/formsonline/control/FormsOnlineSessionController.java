@@ -74,6 +74,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static java.util.Collections.singleton;
+
 public class FormsOnlineSessionController extends AbstractComponentSessionController {
 
   private static final int DEFAULT_ITEM_PER_PAGE = 10;
@@ -232,7 +234,7 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
   }
 
   public List<FormDetail> getAvailableFormsToSend() throws FormsOnlineDatabaseException {
-    return getService().getAvailableFormsToSend(getComponentId(), getUserId());
+    return getService().getAvailableFormsToSend(singleton(getComponentId()), getUserId());
   }
 
   public void saveRequest(List<FileItem> items)

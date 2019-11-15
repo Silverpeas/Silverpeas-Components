@@ -35,8 +35,6 @@ import org.odftoolkit.simple.text.Section;
 import org.odftoolkit.simple.text.list.ListItem;
 import org.silverpeas.components.kmelia.model.KmeliaPublication;
 import org.silverpeas.components.kmelia.service.KmeliaService;
-import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
@@ -60,7 +58,6 @@ import org.silverpeas.core.pdc.pdc.model.Value;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.UnitUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
@@ -469,27 +466,11 @@ public class ODTDocumentBuilder {
     }
   }
 
-  private boolean isRightsOnTopicsEnabled(final String componentInstanceId) {
-    return Boolean.valueOf(
-        getOrganizationService().getComponentParameterValue(componentInstanceId, "rightsOnTopics"));
-  }
-
-  private boolean isTree(final String componentInstanceId) {
-    String isTree =
-        getOrganizationService().getComponentParameterValue(componentInstanceId, "istree");
-    if (!isDefined(isTree)) {
-      return true;
-    }
-    return "0".equals(isTree) || "1".equals(isTree);
-  }
-
   private String getTopicIdOf(final KmeliaPublication publication) {
     String theTopicId = this.topicIdToConsider;
     if (theTopicId == null) {
-      String componentId = publication.getPk().getInstanceId();
       NodePK pk = getKmeliaService().
-          getPublicationFatherPK(publication.getPk(), isTree(componentId), getUser().getId(),
-              isRightsOnTopicsEnabled(componentId));
+          getPublicationFatherPK(publication.getPk(), getUser().getId());
       theTopicId = pk.getId();
     }
     return theTopicId;
@@ -517,14 +498,6 @@ public class ODTDocumentBuilder {
    * @return an instance of KmeliaService.
    */
   protected KmeliaService getKmeliaService() {
-    return ServiceProvider.getService(KmeliaService.class);
-  }
-
-  /**
-   * Gets the organization controller.
-   * @return an instance of OrganizationController.
-   */
-  protected OrganizationController getOrganizationService() {
-    return OrganizationControllerProvider.getOrganisationController();
+    return KmeliaService.get();
   }
 }

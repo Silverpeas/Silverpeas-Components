@@ -52,7 +52,7 @@ import java.util.List;
 public interface KmeliaService extends ApplicationService<KmeliaPublication> {
 
   static KmeliaService get() {
-    return ServiceProvider.getService(KmeliaService.class);
+    return ServiceProvider.getSingleton(KmeliaService.class);
   }
 
   /**
@@ -61,12 +61,12 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
    * @param userId
    * @param isTreeStructureUsed
    * @param userProfile
-   * @param isRightsOnTopicsUsed
+   * @param mustUserRightsBeChecked
    * @return the detail of a topic.
    * @
    */
   TopicDetail goTo(NodePK nodePK, String userId, boolean isTreeStructureUsed, String userProfile,
-      boolean isRightsOnTopicsUsed);
+      boolean mustUserRightsBeChecked);
 
   List<NodeDetail> getAllowedSubfolders(NodeDetail folder, String userId);
 
@@ -184,10 +184,22 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
   PublicationDetail getPublicationDetail(PublicationPK pubPK);
 
   List<KmeliaPublication> getPublicationsOfFolder(NodePK pk, String userProfile, String userId,
-      boolean isTreeStructureUsed, boolean isRightsOnTopicsUsed);
+      boolean isTreeStructureUsed);
 
-  List<KmeliaPublication> getLatestPublications(String instanceId, int nbPublisOnRoot,
-      boolean isRightsOnTopicsUsed, String userId);
+  /**
+   * Checks rights on publications order by descending begin visibility date of publication.
+   * <p>
+   * Due to the nature of this service, it is not designed to by used by update processes and the
+   * result is so cached at request scope in order to avoid to perform several times the same
+   * request.
+   * </p>
+   * @param instanceId the identifier of the instance.
+   * @param userId the identifier of the user for which access controls MUST be verified.
+   * @param limit the maximum number of publications to return (0 = no limit).
+   * @return alist of {@link KmeliaPublication} instances.
+   */
+  List<KmeliaPublication> getLatestAuthorizedPublications(String instanceId, String userId,
+      int limit);
 
   /**
    * Return list of all path to this publication - it's a Collection of NodeDetail collection
@@ -306,12 +318,9 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
    * @param pubPK the unique identifier of the publication.
    * @param isTreeStructureUsed is the tree view of the topics enabled?
    * @param userId the unique identifier of a user.
-   * @param isRightsOnTopicsUsed is the rights on the topics enabled in the component instance
-   * in which is defined the publication?
    * @return the details of the topic in which the publication is accessible by the given user.
    */
-  TopicDetail getPublicationFather(PublicationPK pubPK, boolean isTreeStructureUsed, String userId,
-      boolean isRightsOnTopicsUsed);
+  TopicDetail getPublicationFather(PublicationPK pubPK, boolean isTreeStructureUsed, String userId);
 
   /**
    * Gets the father of the specified publication according to the rights of the user. If the main
@@ -319,29 +328,28 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
    * the publication is returned. If no aliases are accessible or defined, the the root topic is
    * returned.
    * @param pubPK the unique identifier of the publication
-   * @param isTreeStructureUsed is the tree view of the topics is used?
    * @param userId the unique identifier of a user.
-   * @param isRightsOnTopicsUsed is the rights on the topics enabled in the component instance
-   * in which is defined the publication?
    * @return a topic in which the publication is accessible by the given user.
    */
-  NodePK getPublicationFatherPK(PublicationPK pubPK, boolean isTreeStructureUsed, String userId,
-      boolean isRightsOnTopicsUsed);
-
-  Collection<PublicationDetail> getPublicationDetails(List<ResourceReference> links);
+  NodePK getPublicationFatherPK(PublicationPK pubPK, String userId);
 
   /**
-   * gets a list of authorized publications
+   * gets a list of PublicationDetail corresponding to the links parameter
+   * @param links list of publication (componentID + publicationId)
+   * @return a list of PublicationDetail
+   */
+  List<PublicationDetail> getPublicationDetails(List<ResourceReference> links);
+
+  /**
+   * Gets a list of publications with optional control access filtering
    * @param links list of publication defined by his id and component id
    * @param userId identifier User. allow to check if the publication is accessible for current
    * user
-   * @param isRightsOnTopicsUsed indicates if the right must be checked
+   * @param accessControlFiltering true to filter the publication according user rights.
    * @return a collection of Kmelia publications
-   * @
-   * @since 1.0
    */
-  Collection<KmeliaPublication> getPublications(List<ResourceReference> links, String userId,
-      boolean isRightsOnTopicsUsed);
+  List<KmeliaPublication> getPublications(List<ResourceReference> links, String userId,
+      boolean accessControlFiltering);
 
   /**
    * Gets the publications linked with the specified one and for which the specified user is

@@ -24,7 +24,6 @@
 package org.silverpeas.components.kmelia.servlets;
 
 import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.components.kmelia.KmeliaAuthorization;
 import org.silverpeas.components.kmelia.KmeliaConstants;
 import org.silverpeas.components.kmelia.SearchContext;
 import org.silverpeas.components.kmelia.control.KmeliaSessionController;
@@ -45,10 +44,10 @@ import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
-import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.CompletePublication;
-import org.silverpeas.core.contribution.publication.model.PublicationLink;
+import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationLink;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
@@ -61,7 +60,7 @@ import org.silverpeas.core.io.media.image.thumbnail.control.ThumbnailController;
 import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.security.authorization.PublicationAccessController;
+import org.silverpeas.core.security.authorization.PublicationAccessControl;
 import org.silverpeas.core.subscription.service.NodeSubscriptionResource;
 import org.silverpeas.core.subscription.util.SubscriptionManagementContext;
 import org.silverpeas.core.util.DateUtil;
@@ -261,7 +260,6 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         if (type != null && ("Publication".equals(type) ||
             "org.silverpeas.core.personalorganizer.model.TodoDetail".equals(type) ||
             "Attachment".equals(type) || "Document".equals(type) || type.startsWith("Comment"))) {
-          KmeliaAuthorization security = new KmeliaAuthorization(kmelia.getOrganisationController());
           try {
             PublicationDetail pub2Check = kmelia.getPublicationDetail(id);
             // If given PK defines a clone, change PK to master
@@ -275,9 +273,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
                 request.setAttribute("ForcedId", id);
               }
             }
-            boolean accessAuthorized = security
-                .isAccessAuthorized(kmelia.getComponentId(), kmelia.getUserId(), id, "Publication");
-            if (accessAuthorized) {
+            final PublicationPK pubPk = new PublicationPK(id, kmelia.getComponentId());
+            if (PublicationAccessControl.get().isUserAuthorized(kmelia.getUserId(), pubPk)) {
               processPath(kmelia, id);
               if ("Attachment".equals(type)) {
                 String attachmentId = request.getParameter("AttachmentId");
@@ -319,9 +316,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
               destination = "/admin/jsp/accessForbidden.jsp";
             }
           } catch (Exception e) {
-            SilverLogger.getLogger(this)
-                .error("Document not found. {0}", new String[]{e.getMessage()}, e);
-            destination = getDocumentNotFoundDestination(kmelia, request);
+            destination = processDocumentNotFoundException(request, kmelia, e);
           }
         } else if ("Node".equals(type)) {
           if (kmaxMode) {
@@ -336,9 +331,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
               request.setAttribute("Id", id);
               destination = getDestination("GoToTopic", kmelia, request);
             } catch (Exception e) {
-              SilverLogger.getLogger(this)
-                  .error("Document not found. {0}", new String[]{e.getMessage()}, e);
-              destination = getDocumentNotFoundDestination(kmelia, request);
+              destination = processDocumentNotFoundException(request, kmelia, e);
             }
           }
         } else if ("Wysiwyg".equals(type)) {
@@ -366,9 +359,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
             destination = getDestination("ViewPublication", kmelia, request);
           }
         } catch (Exception e) {
-          SilverLogger.getLogger(this)
-              .error("Document not found. {0}", new String[]{e.getMessage()}, e);
-          destination = getDocumentNotFoundDestination(kmelia, request);
+          destination = processDocumentNotFoundException(request, kmelia, e);
         }
       } else if ("ToUpdatePublicationHeader".equals(function)) {
         request.setAttribute("Action", "UpdateView");
@@ -593,8 +584,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         if (StringUtil.isDefined(id)) {
           kmeliaPublication = kmelia.getPublication(id, true);
           // Check user publication access
-          PublicationAccessController publicationAccessController =
-              ServiceProvider.getService(PublicationAccessController.class);
+          PublicationAccessControl publicationAccessController = PublicationAccessControl.get();
           if (!publicationAccessController
               .isUserAuthorized(kmelia.getUserId(), kmeliaPublication.getPk())) {
             SilverLogger.getLogger(this).warn("Security alert from {0} with publication {1}",
@@ -1093,7 +1083,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         String notSelectedIds = request.getParameter("NotSelectedIds");
         List<PublicationPK> pks = kmelia.processSelectedPublicationIds(selectedIds, notSelectedIds);
 
-        List<WAAttributeValuePair> publicationIds = new ArrayList<WAAttributeValuePair>();
+        List<WAAttributeValuePair> publicationIds = new ArrayList<>();
         for (PublicationPK pk : pks) {
           publicationIds.add(new WAAttributeValuePair(pk.getId(), pk.getInstanceId()));
         }
@@ -1242,7 +1232,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         String sortedIds = request.getParameter("sortedIds");
 
         StringTokenizer tokenizer = new StringTokenizer(sortedIds, ",");
-        List<String> ids = new ArrayList<String>();
+        List<String> ids = new ArrayList<>();
         while (tokenizer.hasMoreTokens()) {
           ids.add(tokenizer.nextToken());
         }
@@ -1430,11 +1420,10 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         String timeCriteria = request.getParameter("TimeCriteria");
 
         List<String> combination = kmelia.getCombination(axisValuesStr);
-        List<KmeliaPublication> publications;
         if (StringUtil.isDefined(timeCriteria) && !"X".equals(timeCriteria)) {
-          publications = kmelia.search(combination, Integer.parseInt(timeCriteria));
+          kmelia.search(combination, Integer.parseInt(timeCriteria));
         } else {
-          publications = kmelia.search(combination);
+          kmelia.search(combination);
         }
 
         kmelia.setIndexOfFirstPubToDisplay("0");
@@ -1458,7 +1447,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         String pubId = request.getParameter("PubId");
         String axisValuesStr = request.getParameter("SearchCombination");
         StringTokenizer st = new StringTokenizer(axisValuesStr, ",");
-        List<String> combination = new ArrayList<String>();
+        List<String> combination = new ArrayList<>();
         String axisValue;
         while (st.hasMoreTokens()) {
           axisValue = st.nextToken();
@@ -1529,11 +1518,25 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
     return destination;
   }
 
+  private String processDocumentNotFoundException(final HttpRequest request,
+      final KmeliaSessionController kmelia, final Exception e) {
+    final String destination;
+    if (e instanceof AliasOnOtherKmeliaException) {
+      final AliasOnOtherKmeliaException aliasException = (AliasOnOtherKmeliaException) e;
+      destination = URLUtil.getSimpleURL(URLUtil.URL_PUBLI, aliasException.pubId,
+          aliasException.aliasLocation.getInstanceId(), false);
+    } else {
+      SilverLogger.getLogger(this).error("Document not found. {0}", new String[]{e.getMessage()}, e);
+      destination = getDocumentNotFoundDestination(kmelia, request);
+    }
+    return destination;
+  }
+
   @Override
   protected boolean checkUserAuthorization(final String function,
       final KmeliaSessionController kmelia) {
     KmeliaActionAccessController actionAccessController =
-        ServiceProvider.getService(KmeliaActionAccessController.class);
+        ServiceProvider.getSingleton(KmeliaActionAccessController.class);
     return actionAccessController.hasRightAccess(function, kmelia.getHighestSilverpeasUserRole());
   }
 
@@ -1786,13 +1789,18 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
     return destination;
   }
 
-  private void processPath(KmeliaSessionController kmeliaSC, String id) {
+  private void processPath(KmeliaSessionController kmeliaSC, String id)
+      throws AliasOnOtherKmeliaException {
     if (!kmeliaSC.isKmaxMode()) {
       NodePK pk;
       if (!StringUtil.isDefined(id)) {
         pk = kmeliaSC.getCurrentFolderPK();
       } else {
-        pk = kmeliaSC.getAllowedPublicationFather(id); // get publication parent
+        // get publication parent
+        pk = kmeliaSC.getAllowedPublicationFather(id);
+        if (!pk.getInstanceId().equals(kmeliaSC.getComponentId())) {
+          throw new AliasOnOtherKmeliaException(id, pk);
+        }
         kmeliaSC.setCurrentFolderId(pk.getId(), true);
       }
 
@@ -1891,7 +1899,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
   private void setTemplatesUsedIntoRequest(KmeliaSessionController kmelia,
       HttpServletRequest request) {
     Collection<String> modelUsed = kmelia.getModelUsed();
-    Collection<PublicationTemplate> listModelXml = new ArrayList<PublicationTemplate>();
+    Collection<PublicationTemplate> listModelXml = new ArrayList<>();
     List<PublicationTemplate> templates = kmelia.getForms();
     // recherche de la liste des modèles utilisables
     for (PublicationTemplate xmlForm : templates) {
@@ -1948,11 +1956,20 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
    * specified identifier.
    */
   private List<ResourceReference> asPks(String instanceId, String... ids) {
-    List<ResourceReference> pks = new ArrayList<ResourceReference>();
+    List<ResourceReference> pks = new ArrayList<>();
     for (String oneId : ids) {
       pks.add(new ResourceReference(oneId, instanceId));
     }
     return pks;
   }
 
+  private class AliasOnOtherKmeliaException extends Exception {
+    private final String pubId;
+    private final NodePK aliasLocation;
+
+    private AliasOnOtherKmeliaException(final String pubId, final NodePK aliasLocation) {
+      this.pubId = pubId;
+      this.aliasLocation = aliasLocation;
+    }
+  }
 }

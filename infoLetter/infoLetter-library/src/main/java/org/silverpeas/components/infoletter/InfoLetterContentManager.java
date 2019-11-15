@@ -26,6 +26,7 @@ package org.silverpeas.components.infoletter;
 import org.silverpeas.components.infoletter.model.InfoLetterPublicationPdC;
 import org.silverpeas.components.infoletter.model.InfoLetterService;
 import org.silverpeas.components.infoletter.service.InfoLetterServiceProvider;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.contentcontainer.content.AbstractContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
 import org.silverpeas.core.contribution.model.Contribution;
@@ -64,9 +65,10 @@ public class InfoLetterContentManager extends AbstractContentInterface {
   }
 
   @Override
-  protected List<Contribution> getAccessibleContributions(final List<String> resourceIds,
-      final String componentInstanceId, final String currentUserId) {
-    return resourceIds.stream().map(i -> getInfoLetterPublicationPdC(i, componentInstanceId))
+  protected List<Contribution> getAccessibleContributions(
+      final List<ResourceReference> resourceReferences, final String currentUserId) {
+    return resourceReferences.stream()
+        .map(r -> getInfoLetterPublicationPdC(r.getLocalId(), r.getComponentInstanceId()))
         .collect(Collectors.toList());
   }
 

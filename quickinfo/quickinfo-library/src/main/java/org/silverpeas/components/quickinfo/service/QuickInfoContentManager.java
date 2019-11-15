@@ -24,6 +24,7 @@
 
 package org.silverpeas.components.quickinfo.service;
 
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.contentcontainer.content.AbstractContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
@@ -63,11 +64,11 @@ public class QuickInfoContentManager extends AbstractContentInterface {
   }
 
   @Override
-  protected List<Contribution> getAccessibleContributions(final List<String> resourceIds,
-      final String componentInstanceId, final String currentUserId) {
-    List<PublicationPK> pks =
-        resourceIds.stream().map(i -> new PublicationPK(i, componentInstanceId))
-            .collect(Collectors.toList());
+  protected List<Contribution> getAccessibleContributions(
+      final List<ResourceReference> resourceReferences, final String currentUserId) {
+    List<PublicationPK> pks = resourceReferences.stream()
+        .map(r -> new PublicationPK(r.getLocalId(), r.getComponentInstanceId()))
+        .collect(Collectors.toList());
     return new ArrayList<>(getPublicationService().getPublications(pks));
   }
 

@@ -20,21 +20,18 @@
  */
 package org.silverpeas.components.kmelia;
 
-import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.contribution.publication.dao.PublicationCriteria;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
-import org.silverpeas.core.util.Pagination;
-import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.SilverpeasArrayList;
-import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.look.PublicationHelper;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -46,7 +43,7 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnGetting;
 public class KmeliaTransversal implements PublicationHelper {
 
   private String userId = null;
-  private PublicationService publicationService = ServiceProvider.getService(PublicationService.class);
+  private PublicationService publicationService = PublicationService.get();
   private OrganizationController organizationControl =
       OrganizationControllerProvider.getOrganisationController();
 
@@ -85,24 +82,15 @@ public class KmeliaTransversal implements PublicationHelper {
 
   @Override
   public List<PublicationDetail> getPublications(String spaceId, List<String> excluded, int nbPublis) {
-    List<String> componentIds = getAvailableComponents(spaceId);
+    final List<String> componentIds = getAvailableComponents(spaceId);
     componentIds.removeAll(excluded);
-    final SilverpeasList<PublicationPK> filteredPublicationPKs =
-        new Pagination<PublicationPK, SilverpeasList<PublicationPK>>(new PaginationPage(1, nbPublis))
-        .paginatedDataSource(p -> {
-          try {
-            return getPublicationService()
-                .getPublicationPKsByStatus(PublicationDetail.VALID_STATUS, componentIds,
-                    p.originalSizeIsNotRequired());
-          } catch (Exception e) {
-            SilverLogger.getLogger(this).error(failureOnGetting("publication pks of space", spaceId));
-            return new SilverpeasArrayList<>(0);
-          }
-        })
-        .filter(p -> filterPublicationPKs(p, nbPublis))
-        .execute();
     try {
-      return getPublicationService().getPublications(filteredPublicationPKs);
+      return getPublicationService().getAuthorizedPublicationsForUserByCriteria(userId, PublicationCriteria
+          .excludingTrashNodeOnComponentInstanceIds(componentIds)
+          .ofStatus(PublicationDetail.VALID_STATUS)
+          .visibleAt(OffsetDateTime.now())
+          .orderByDescendingBeginDate()
+          .limitTo(nbPublis));
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(failureOnGetting("publications of space", spaceId));
     }
@@ -122,23 +110,15 @@ public class KmeliaTransversal implements PublicationHelper {
   }
 
   protected List<PublicationDetail> getUpdatedPublications(String spaceId, Date since, int nbPublis) {
-    List<String> componentIds = getAvailableComponents(spaceId);
-    final SilverpeasList<PublicationPK> filteredPublicationPKs =
-        new Pagination<PublicationPK, SilverpeasList<PublicationPK>>(new PaginationPage(1, nbPublis))
-        .paginatedDataSource(p -> {
-          try {
-            return getPublicationService()
-                .getUpdatedPublicationPKsByStatus(PublicationDetail.VALID_STATUS, since,
-                    componentIds, p.originalSizeIsNotRequired());
-          } catch (Exception e) {
-            SilverLogger.getLogger(this).error(failureOnGetting("publication pks of space", spaceId));
-            return new SilverpeasArrayList<>(0);
-          }
-        })
-        .filter(p -> filterPublicationPKs(p, nbPublis))
-        .execute();
+    final List<String> componentIds = getAvailableComponents(spaceId);
     try {
-      return getPublicationService().getPublications(filteredPublicationPKs);
+      return getPublicationService().getAuthorizedPublicationsForUserByCriteria(userId, PublicationCriteria
+          .excludingTrashNodeOnComponentInstanceIds(componentIds)
+          .ofStatus(PublicationDetail.VALID_STATUS)
+          .visibleAt(OffsetDateTime.now())
+          .lastUpdatedSince(OffsetDateTime.ofInstant(since.toInstant(), ZoneId.systemDefault()))
+          .orderByDescendingLastUpdateDate()
+          .limitTo(nbPublis));
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(failureOnGetting("publications of space", spaceId));
     }
@@ -166,54 +146,11 @@ public class KmeliaTransversal implements PublicationHelper {
   }
 
   public List<PublicationDetail> getPublicationsByComponentId(String componentId) {
-    List<PublicationDetail> publications = null;
-    try {
-      List<String> componentIds = new ArrayList<>();
-      componentIds.add(componentId);
-      publications = (List<PublicationDetail>) getPublicationService().getPublicationsByStatus("Valid",
-          componentIds);
-    } catch (Exception e) {
-      SilverLogger.getLogger(this).error(failureOnGetting("publications of component", componentId));
-    }
-    return filterPublications(publications, -1);
-  }
-
-  private List<PublicationDetail> filterPublications(List<PublicationDetail> publications,
-      int nbPublis) {
-    List<PublicationDetail> filteredPublications = new ArrayList<>();
-    KmeliaAuthorization security = new KmeliaAuthorization();
-
-    PublicationDetail pub = null;
-    for (int p = 0; publications != null && p < publications.size(); p++) {
-      pub = publications.get(p);
-      if (security.isObjectAvailable(pub.getPK().getInstanceId(), userId, pub.getPK().getId(),
-          "Publication")) {
-        filteredPublications.add(pub);
-      }
-
-      if (nbPublis != -1 && filteredPublications.size() == nbPublis) {
-        return filteredPublications;
-      }
-    }
-
-    return filteredPublications;
-  }
-
-  private SilverpeasList<PublicationPK> filterPublicationPKs(
-      SilverpeasList<PublicationPK> publicationPKs, int nbPublis) {
-    final SilverpeasList<PublicationPK> filteredPublicationPKs = publicationPKs
-        .newEmptyListWithSameProperties();
-    final KmeliaAuthorization security = new KmeliaAuthorization();
-    for (final PublicationPK pk : publicationPKs) {
-      if (security.isObjectAvailable(pk.getInstanceId(), userId, pk.getId(), "Publication")) {
-        filteredPublicationPKs.add(pk);
-      }
-      if (nbPublis != -1 && filteredPublicationPKs.size() >= nbPublis) {
-        return filteredPublicationPKs;
-      }
-    }
-
-    return filteredPublicationPKs;
+    return getPublicationService().getAuthorizedPublicationsForUserByCriteria(userId, PublicationCriteria
+        .excludingTrashNodeOnComponentInstanceIds(componentId)
+        .ofStatus(PublicationDetail.VALID_STATUS)
+        .visibleAt(OffsetDateTime.now())
+        .orderByDescendingLastUpdateDate());
   }
 
   private OrganizationController getOrganizationControl() {

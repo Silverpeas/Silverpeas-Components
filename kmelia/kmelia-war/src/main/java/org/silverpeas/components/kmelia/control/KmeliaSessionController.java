@@ -28,7 +28,6 @@ import org.apache.commons.io.FileUtils;
 import org.owasp.encoder.Encode;
 import org.silverpeas.components.kmelia.FileImport;
 import org.silverpeas.components.kmelia.InstanceParameters;
-import org.silverpeas.components.kmelia.KmeliaAuthorization;
 import org.silverpeas.components.kmelia.KmeliaCopyDetail;
 import org.silverpeas.components.kmelia.KmeliaPasteDetail;
 import org.silverpeas.components.kmelia.KmeliaPublicationHelper;
@@ -93,7 +92,6 @@ import org.silverpeas.core.importexport.report.ImportReport;
 import org.silverpeas.core.importexport.report.MassiveReport;
 import org.silverpeas.core.importexport.report.UnitReport;
 import org.silverpeas.core.index.indexing.model.IndexManager;
-import org.silverpeas.core.index.search.SearchEngineProvider;
 import org.silverpeas.core.index.search.model.MatchingIndexEntry;
 import org.silverpeas.core.index.search.model.QueryDescription;
 import org.silverpeas.core.io.media.image.thumbnail.ThumbnailSettings;
@@ -110,8 +108,8 @@ import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.security.authorization.AccessControlContext;
-import org.silverpeas.core.security.authorization.NodeAccessController;
-import org.silverpeas.core.security.authorization.PublicationAccessController;
+import org.silverpeas.core.security.authorization.NodeAccessControl;
+import org.silverpeas.core.security.authorization.PublicationAccessControl;
 import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
 import org.silverpeas.core.subscription.service.ComponentSubscriptionResource;
@@ -143,14 +141,17 @@ import java.util.stream.Collectors;
 
 import static org.silverpeas.components.kmelia.control.KmeliaSessionController.CLIPBOARD_STATE.*;
 import static org.silverpeas.components.kmelia.export.KmeliaPublicationExporter.*;
+import static org.silverpeas.core.admin.component.model.ComponentInst.getComponentLocalId;
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getSessionCacheService;
 import static org.silverpeas.core.cache.service.VolatileIdentifierProvider.newVolatileIntegerIdentifierOn;
 import static org.silverpeas.core.contribution.attachment.AttachmentService.VERSION_MODE;
+import static org.silverpeas.core.index.search.SearchEngineProvider.getSearchEngine;
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.NONE_CLASSIFICATION;
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
 public class KmeliaSessionController extends AbstractComponentSessionController
     implements ExportFileNameProducer {
+  private static final long serialVersionUID = -1986747239669483105L;
 
   /**
    * The different export formats the KmeliaPublicationExporter should support.
@@ -294,11 +295,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   public KmeliaService getKmeliaService() {
-      return ServiceProvider.getService(KmeliaService.class);
+    return KmeliaService.get();
   }
 
   public StatisticService getStatisticService() {
-    return ServiceProvider.getService(StatisticService.class);
+    return StatisticService.get();
   }
 
   /**
@@ -598,7 +599,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
    * @return a KmeliaPublicationExporter instance.
    */
   public static KmeliaPublicationExporter aKmeliaPublicationExporter() {
-    return ServiceProvider.getService(KmeliaPublicationExporter.class);
+    return ServiceProvider.getSingleton(KmeliaPublicationExporter.class);
   }
 
   @Override
@@ -642,12 +643,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       if (KmeliaHelper.isToValidateFolder(getCurrentFolderId())) {
         return true;
       }
-      NodeDetail node = getNodeHeader(getCurrentFolderId());
-      if (node.haveRights()) {
-        int rightsDependsOn = node.getRightsDependsOn();
-        ProfiledObjectId nodeRef = ProfiledObjectId.fromNode(rightsDependsOn);
-        return getOrganisationController().isObjectAvailableToUser(nodeRef, getComponentId(), getUserId());
-      }
+      return NodeAccessControl.get().isUserAuthorized(getUserId(), getCurrentFolderPK());
     }
     return true;
   }
@@ -720,8 +716,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   public synchronized TopicDetail getPublicationTopic(String pubId) {
     TopicDetail currentTopic = getKmeliaService()
-        .getPublicationFather(getPublicationPK(pubId), isTreeStructure(), getUserId(),
-            isRightsOnTopicsEnabled());
+        .getPublicationFather(getPublicationPK(pubId), isTreeStructure(), getUserId());
     setSessionTopic(currentTopic);
     applyVisibilityFilter();
     return currentTopic;
@@ -827,9 +822,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   public NodePK getAllowedPublicationFather(String pubId) {
-    return getKmeliaService()
-        .getPublicationFatherPK(getPublicationPK(pubId), isTreeStructure(), getUserId(),
-            isRightsOnTopicsEnabled());
+    return getKmeliaService().getPublicationFatherPK(getPublicationPK(pubId), getUserId());
   }
 
   public synchronized String createPublication(PublicationDetail pubDetail,
@@ -1775,7 +1768,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
    * @return
    */
   public PdcManager getPdcManager() {
-    return ServiceProvider.getService(PdcManager.class);
+    return PdcManager.get();
   }
 
   public NodeService getNodeService() {
@@ -1783,7 +1776,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   public PublicationService getPublicationService() {
-    return ServiceProvider.getService(PublicationService.class);
+    return PublicationService.get();
   }
 
   /**
@@ -2195,7 +2188,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       }
     } else {
       profile.setObjectId(new ProfiledObjectId(ProfiledObjectType.NODE, nodeId));
-      profile.setComponentFatherId(getComponentId());
+      profile.setComponentFatherId(getComponentLocalId(getComponentId()));
       // Create the profile
       getAdmin().addProfileInst(profile);
     }
@@ -2310,8 +2303,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   public void copyPublication(String pubId) throws ClipboardException {
     PublicationDetail pub = getPublicationDetail(pubId);
     // Can only copy user accessed publication
-    PublicationAccessController publicationAccessController =
-        ServiceProvider.getService(PublicationAccessController.class);
+    PublicationAccessControl publicationAccessController = PublicationAccessControl.get();
     if (publicationAccessController.isUserAuthorized(getUserId(), pub.getPK())) {
       PublicationSelection pubSelect = new PublicationSelection(pub, getCurrentFolderPK());
       addClipboardSelection(pubSelect);
@@ -2337,8 +2329,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   public void cutPublication(String pubId) throws ClipboardException {
     PublicationDetail pub = getPublicationDetail(pubId);
     // Can only copy user accessed publication
-    PublicationAccessController publicationAccessController =
-        ServiceProvider.getService(PublicationAccessController.class);
+    PublicationAccessControl publicationAccessController = PublicationAccessControl.get();
     if (publicationAccessController.isUserAuthorized(getUserId(), pub.getPK())) {
       PublicationSelection pubSelect = new PublicationSelection(pub, getCurrentFolderPK());
       pubSelect.setCutted(true);
@@ -2365,9 +2356,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   public void copyTopic(String id) throws ClipboardException {
     NodeDetail nodeDetail = getNodeHeader(id);
-    NodeAccessController nodeAccessController =
-        ServiceProvider.getService(NodeAccessController.class);
-    if (nodeAccessController.isUserAuthorized(getUserId(), nodeDetail.getNodePK())) {
+    if (nodeDetail.canBeModifiedBy(getUserDetail())) {
       NodeSelection nodeSelect = new NodeSelection(getNodeHeader(id));
 
       addClipboardSelection(nodeSelect);
@@ -2380,9 +2369,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   public void cutTopic(String id) throws ClipboardException {
     NodeDetail nodeDetail = getNodeHeader(id);
-    NodeAccessController nodeAccessController =
-        ServiceProvider.getService(NodeAccessController.class);
-    if (nodeAccessController.isUserAuthorized(getUserId(), nodeDetail.getNodePK())) {
+    if (nodeDetail.canBeModifiedBy(getUserDetail())) {
       NodeSelection nodeSelect = new NodeSelection(getNodeHeader(id));
       nodeSelect.setCutted(true);
 
@@ -2883,24 +2870,33 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     queryDescription.addComponent(getComponentId());
 
     try {
-      final List<MatchingIndexEntry> results =
-          SearchEngineProvider.getSearchEngine().search(queryDescription).getEntries();
-      final KmeliaAuthorization security = new KmeliaAuthorization();
-      security.enableCache();
-      results.stream()
-        .filter(i -> PUBLICATION.equals(i.getObjectType()))
-        .filter(i -> security.isObjectAvailable(getComponentId(), getUserId(), i.getObjectId(), PUBLICATION))
-        .forEach(i -> {
-          final String pubId = i.getObjectId();
-          final KmeliaPublication kPub = KmeliaPublication.fromDetail(getPublicationDetail(pubId));
-          if (i.isAlias()
-              || (i.getPaths() != null
-                  && !i.getPaths().isEmpty()
-                  && !(i.getPaths().get(0) + nodePathSep).startsWith(safeCurrentFolderPath))) {
-            kPub.getDetail().setAlias(true);
-          }
-          userPublications.add(kPub);
-        });
+      List<MatchingIndexEntry> results = getSearchEngine().search(queryDescription).getEntries();
+      results = results.stream()
+          .filter(i -> PUBLICATION.equals(i.getObjectType()))
+          .collect(Collectors.toList());
+      final Map<PublicationPK, PublicationDetail> indexedUserPubs = new HashMap<>(results.size());
+      getKmeliaService().getPublicationDetails(results.stream()
+                .map(i -> new ResourceReference(i.getObjectId(), i.getComponent()))
+                .collect(Collectors.toList()))
+          .forEach(p -> indexedUserPubs.put(p.getPK(), p));
+      userPublications = results.stream()
+          .map(i -> {
+            final PublicationPK pubPk = new PublicationPK(i.getObjectId(), i.getComponent());
+            final PublicationDetail pub = indexedUserPubs.get(pubPk);
+            if (pub == null) {
+              return null;
+            }
+            final KmeliaPublication kPub = KmeliaPublication.fromDetail(pub);
+            if (i.isAlias()
+                || (i.getPaths() != null
+                    && !i.getPaths().isEmpty()
+                    && !(i.getPaths().get(0) + nodePathSep).startsWith(safeCurrentFolderPath))) {
+              kPub.getDetail().setAlias(true);
+            }
+            return kPub;
+          })
+          .filter(Objects::nonNull)
+          .collect(Collectors.toList());
     } catch (Exception pe) {
       throw new KmeliaRuntimeException(pe);
     }
@@ -3065,8 +3061,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       while (tokenizer.hasMoreTokens()) {
         String[] str = StringUtil.splitByWholeSeparator(tokenizer.nextToken(), "-");
         PublicationPK pk = new PublicationPK(str[0], str[1]);
-        PublicationAccessController publicationAccessController =
-            ServiceProvider.getService(PublicationAccessController.class);
+        PublicationAccessControl publicationAccessController = PublicationAccessControl.get();
         if (publicationAccessController.isUserAuthorized(getUserId(), pk,
             AccessControlContext.init())) {
           this.selectedPublicationPKs.add(pk);
@@ -3101,8 +3096,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   public List<KmeliaPublication> getLatestPublications() {
     List<KmeliaPublication> publicationsToDisplay = new ArrayList<>();
     List<KmeliaPublication> toCheck = getKmeliaService()
-        .getLatestPublications(getComponentId(), getNbPublicationsOnRoot(),
-            isRightsOnTopicsEnabled(), getUserId());
+        .getLatestAuthorizedPublications(getComponentId(), getUserId(), getNbPublicationsOnRoot());
     for (KmeliaPublication aPublication : toCheck) {
       if (!isPublicationDeleted(aPublication.getPk())) {
         publicationsToDisplay.add(aPublication);
@@ -3116,8 +3110,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     if (!KmeliaHelper.SPECIALFOLDER_TOVALIDATE.equalsIgnoreCase(currentFolderId)) {
       publications = getKmeliaService()
           .getPublicationsOfFolder(new NodePK(currentFolderId, getComponentId()),
-              getUserTopicProfile(currentFolderId), getUserId(), isTreeStructure(),
-              isRightsOnTopicsEnabled());
+              getUserTopicProfile(currentFolderId), getUserId(), isTreeStructure());
     } else {
       publications = getKmeliaService().getPublicationsToValidate(getComponentId(), getUserId());
     }

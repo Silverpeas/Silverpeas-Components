@@ -26,7 +26,6 @@ import org.silverpeas.core.scheduler.SchedulerEventListener;
 import org.silverpeas.core.scheduler.SchedulerProvider;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -58,7 +57,7 @@ public class AutomaticDraftOut implements SchedulerEventListener {
   }
 
   private KmeliaService getKmeliaService() {
-    return ServiceProvider.getService(KmeliaService.class);
+    return KmeliaService.get();
   }
 
   @Override

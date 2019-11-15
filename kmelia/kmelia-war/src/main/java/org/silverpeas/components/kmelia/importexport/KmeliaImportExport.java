@@ -36,7 +36,6 @@ import org.silverpeas.core.importexport.report.MassiveReport;
 import org.silverpeas.core.importexport.report.UnitReport;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -68,7 +67,7 @@ public class KmeliaImportExport extends GEDImportExport {
    * @throws ImportExportException
    */
   protected KmeliaService getKmeliaService() {
-    return ServiceProvider.getService(KmeliaService.class);
+    return KmeliaService.get();
   }
 
   @Override
