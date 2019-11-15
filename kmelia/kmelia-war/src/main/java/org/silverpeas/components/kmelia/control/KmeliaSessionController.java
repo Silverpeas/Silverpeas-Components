@@ -2538,6 +2538,14 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     List<NodeDetail> tree = null;
     NodePK root = new NodePK(NodePK.ROOT_NODE_ID);
 
+    // adding personal component if current space is personal
+    SpaceInstLight currentSpace =
+        getOrganisationController().getSpaceInstLightById(getSpaceId());
+    if (currentSpace != null && currentSpace.isPersonalSpace()) {
+      tree = initTreeView(locations, result, tree, root, currentSpace, new StringBuilder(),
+          getComponentId());
+    }
+
     List<SpaceInstLight> spaces = getOrganisationController().getSpaceTreeview(getUserId());
     for (SpaceInstLight space : spaces) {
       StringBuilder path = new StringBuilder();
