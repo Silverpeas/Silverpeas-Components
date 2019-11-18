@@ -1475,7 +1475,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
       if (gallerySC.isViewNotVisible()) {
         destination = getDestination("ViewNotVisible", gallerySC, request);
       } else {
-        destination = getDestination("SearchKeyWord", gallerySC, request);
+        destination = getDestination("ViewSearchResults", gallerySC, request);
       }
     }
     return destination;

@@ -57,8 +57,7 @@
 <head>
   <view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
   <view:includePlugin name="datepicker"/>
-  <script type="text/javascript" src="<c:url value="/util/javaScript/silverpeas-pdc-widgets.js"/>"></script>
-  <script type="text/javascript" src="<c:url value="/util/javaScript/silverpeas-pdc.js"/>"></script>
+  <view:includePlugin name="pdc"/>
   <script type="text/javascript" src="<c:url value="/util/javaScript/lucene/luceneQueryValidator.js"/>"></script>
   <script type="text/javascript">
     function sendData() {
