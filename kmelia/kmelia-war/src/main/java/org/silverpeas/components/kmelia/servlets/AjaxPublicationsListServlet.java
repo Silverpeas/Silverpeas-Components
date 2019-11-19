@@ -718,9 +718,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
             !seeAlso || linkAttachment;
     if (displayFiles) {
       sb.append("<span class=\"files\">");
-      // Can be a shortcut. Must check attachment mode according to publication source.
-      boolean alias = pub.isAlias();
-      sb.append(displayAttachments(kmeliaScc, pub, resources, linkAttachment, alias));
+      sb.append(displayAttachments(kmeliaScc, pub, resources, linkAttachment));
 
       sb.append("</span>");
     }
@@ -867,8 +865,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
   }
 
   private String displayAttachments(final KmeliaSessionController kmeliaScc,
-      PublicationDetail pubDetail, MultiSilverpeasBundle resources, boolean linkAttachment,
-      boolean alias) {
+      PublicationDetail pubDetail, MultiSilverpeasBundle resources, boolean linkAttachment) {
     ResourceReference resourceReference = new ResourceReference(pubDetail.getPK());
     List<SimpleDocument> documents = AttachmentServiceProvider.getAttachmentService().
         listDocumentsByForeignKey(resourceReference, kmeliaScc.getCurrentLanguage());
@@ -897,10 +894,6 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         String downloadTime = FileRepositoryManager.getFileDownloadTime(attachment.getSize());
         String permalink = URLUtil.getSimpleURL(URLUtil.URL_FILE, document.getId());
         String url = FileServerUtils.getApplicationContext() + attachment.getAttachmentURL();
-
-        if (alias) {
-          url = attachment.getAliasURL();
-        }
         boolean previewable = ViewerProvider.isPreviewable(attachment.getAttachmentPath());
         boolean viewable = ViewerProvider.isViewable(attachment.getAttachmentPath());
         result.append(

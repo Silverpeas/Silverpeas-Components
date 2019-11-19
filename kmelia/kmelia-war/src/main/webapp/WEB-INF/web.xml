@@ -37,11 +37,6 @@
         <servlet-class>org.silverpeas.components.kmelia.servlets.AjaxPublicationsListServlet</servlet-class>
     </servlet>
     <servlet>
-        <display-name>AliasFileServer</display-name>
-        <servlet-name>AliasFileServer</servlet-name>
-        <servlet-class>org.silverpeas.components.kmelia.servlets.AliasFileServer</servlet-class>
-    </servlet>
-    <servlet>
         <display-name>JSONServlet</display-name>
         <servlet-name>JSONServlet</servlet-name>
         <servlet-class>org.silverpeas.components.kmelia.servlets.JSONServlet</servlet-class>
@@ -83,10 +78,6 @@
     <servlet-mapping>
         <servlet-name>AjaxPublicationsListServlet</servlet-name>
         <url-pattern>/RAjaxPublicationsListServlet/*</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>AliasFileServer</servlet-name>
-        <url-pattern>/AliasFileServer/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>KmeliaPublicationExportServlet</servlet-name>

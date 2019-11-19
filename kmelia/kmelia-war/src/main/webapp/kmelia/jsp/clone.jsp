@@ -202,17 +202,6 @@ function closeWindows() {
     }
 }
 
-function viewPublicVersions(docId) {
-	url = "<%=m_context+URLUtil.getURL("VersioningPeas", spaceId, componentId)%>ListPublicVersionsOfDocument?DocId="+docId;
-    windowName = "publicVersionsWindow";
-	larg = "550";
-	haut = "350";
-    windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
-    if (!publicVersionsWindow.closed && publicVersionsWindow.name== "publicVersionsWindow")
-        publicVersionsWindow.close();
-    publicVersionsWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
-}
-
 function pubDraftOut() {
 	if (<%= draftOutTaxonomyOK && draftOutValidatorsOK %>) {
         location.href = "<%=routerUrl%>DraftOut?From=ViewPublication";
