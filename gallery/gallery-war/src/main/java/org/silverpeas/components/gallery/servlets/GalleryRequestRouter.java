@@ -75,11 +75,37 @@ import java.util.List;
 import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery.isSqlDefined;
 
 public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionController> {
-
-  /**
-   *
-   */
   private static final long serialVersionUID = 1L;
+
+  private static final String ORDER_VIEW_PAGIN_FUNC = "OrderViewPagin";
+  private static final String ORDER_VIEW_LIST_FUNC = "OrderViewList";
+  private static final String BASKET_VIEW_FUNC = "BasketView";
+  private static final String VIEW_SEARCH_RESULTS_FUNC = "ViewSearchResults";
+  private static final String VIEW_NOT_VISIBLE_FUNC = "ViewNotVisible";
+  private static final String MEDIA_VIEW_FUNC = "MediaView";
+  private static final String GO_TO_CURRENT_ALBUM_FUNC = "GoToCurrentAlbum";
+  private static final String ORDER_ID = "OrderId";
+  private static final String MEDIA_TYPE_ALERT_ATTR = "MediaTypeAlert";
+  private static final String MEDIA_ID = "MediaId";
+  private static final String IS_VIEW_LIST = "IsViewList";
+  private static final String SELECTED_IDS = "SelectedIds";
+  private static final String IS_VIEW_METADATA = "IsViewMetadata";
+  private static final String MEDIA_RESOLUTION = "MediaResolution";
+  private static final String CURRENT_ALBUM = "CurrentAlbum";
+  private static final String CURRENT_PAGE_INDEX = "CurrentPageIndex";
+  private static final String NB_MEDIA_PER_PAGE = "NbMediaPerPage";
+  private static final String IS_BASKET = "IsBasket";
+  private static final String IS_ORDER = "IsOrder";
+  private static final String IS_PRIVATE_SEARCH = "IsPrivateSearch";
+  private static final String IS_USE_PDC = "IsUsePdc";
+  private static final String MEDIA_LIST = "MediaList";
+  private static final String ALBUMS = "Albums";
+  private static final String ALBUM_ID = "albumId";
+  private static final String ALBUM_ID_FIRST_LETTER_UPPERCASE = "AlbumId";
+  private static final String SEARCH_KEY_WORD = "SearchKeyWord";
+  private static final String MEDIA_PREFIX = "media";
+  private static final String UTF_8 = "UTF-8";
+  private static final String DESCRIPTION = "Description";
 
   /**
    * This method has to be implemented in the component request rooter class. returns the session
@@ -138,14 +164,14 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
         AlbumDetail root = gallerySC.goToAlbum("0");
         request.setAttribute("root", root);
-        request.setAttribute("Albums", gallerySC.addNbMedia(root.getChildrenAlbumsDetails()));
+        request.setAttribute(ALBUMS, gallerySC.addNbMedia(root.getChildrenAlbumsDetails()));
         // chercher les dernièrs médias
         Collection<Media> mediaCollection = gallerySC.getLastRegisteredMedia();
-        request.setAttribute("MediaList", mediaCollection);
-        request.setAttribute("IsUsePdc", gallerySC.isUsePdc());
-        request.setAttribute("IsPrivateSearch", gallerySC.isPrivateSearch());
-        request.setAttribute("IsBasket", gallerySC.isBasket());
-        request.setAttribute("IsOrder", gallerySC.isOrder());
+        request.setAttribute(MEDIA_LIST, mediaCollection);
+        request.setAttribute(IS_USE_PDC, gallerySC.isUsePdc());
+        request.setAttribute(IS_PRIVATE_SEARCH, gallerySC.isPrivateSearch());
+        request.setAttribute(IS_BASKET, gallerySC.isBasket());
+        request.setAttribute(IS_ORDER, gallerySC.isOrder());
         destination = rootDest + "welcome.jsp";
       } else if ("ManageComponentSubscriptions".equals(function)) {
         destination = gallerySC.manageComponentSubscriptions();
@@ -160,10 +186,10 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         gallerySC.goToAlbum(albumId);
         gallerySC.setIndexOfCurrentPage("0");
         // Slideshow requirements
-        request.setAttribute("albumId", albumId);
+        request.setAttribute(ALBUM_ID, albumId);
         request.setAttribute("wait", gallerySC.getSlideshowWait());
         // retour à l'album courant
-        destination = getDestination("GoToCurrentAlbum", gallerySC, request);
+        destination = getDestination(GO_TO_CURRENT_ALBUM_FUNC, gallerySC, request);
       } else if ("Pagination".equals(function)) {
         processSelection(request, gallerySC);
 
@@ -178,13 +204,13 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         }
         destination = returnToAlbum(request, gallerySC);
 
-      } else if ("GoToCurrentAlbum".equals(function)) {
+      } else if (GO_TO_CURRENT_ALBUM_FUNC.equals(function)) {
         // mise à blanc de l'index de pagination si on arrive de la recherche
         if (gallerySC.isSearchResult() || gallerySC.isViewNotVisible()) {
           gallerySC.setIndexOfCurrentPage("0");
         }
         // mise à blanc de la liste des médias (pour les mots clé et pour les médias non visibles)
-        gallerySC.setRestrictedListMedia(new ArrayList<Media>());
+        gallerySC.setRestrictedListMedia(new ArrayList<>());
         gallerySC.setSearchResult(false);
         gallerySC.setViewNotVisible(false);
 
@@ -196,28 +222,28 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         } else {
           // on est dans un album, on y retourne
           AlbumDetail currentAlbum = gallerySC.goToAlbum();
-          request.setAttribute("NbMediaPerPage", gallerySC.getNbMediaPerPage());
-          request.setAttribute("CurrentPageIndex", gallerySC.getIndexOfCurrentPage());
-          request.setAttribute("CurrentAlbum", currentAlbum);
-          request.setAttribute("albumId", currentAlbum.getId());
-          request.setAttribute("Albums",
+          request.setAttribute(NB_MEDIA_PER_PAGE, gallerySC.getNbMediaPerPage());
+          request.setAttribute(CURRENT_PAGE_INDEX, gallerySC.getIndexOfCurrentPage());
+          request.setAttribute(CURRENT_ALBUM, currentAlbum);
+          request.setAttribute(ALBUM_ID, currentAlbum.getId());
+          request.setAttribute(ALBUMS,
               gallerySC.addNbMedia(currentAlbum.getChildrenAlbumsDetails()));
           request.setAttribute("Path", gallerySC.getPath(currentAlbum.getNodePK()));
-          request.setAttribute("MediaResolution", gallerySC.getDisplayedMediaResolution());
+          request.setAttribute(MEDIA_RESOLUTION, gallerySC.getDisplayedMediaResolution());
           request.setAttribute("DragAndDropEnable", gallerySC.isDragAndDropEnabled());
-          request.setAttribute("IsViewMetadata", gallerySC.isViewMetadata());
-          request.setAttribute("IsViewList", gallerySC.isViewList());
-          request.setAttribute("SelectedIds", gallerySC.getListSelected());
-          request.setAttribute("IsUsePdc", gallerySC.isUsePdc());
-          request.setAttribute("IsBasket", gallerySC.isBasket());
-          request.setAttribute("IsOrder", gallerySC.isOrder());
-          request.setAttribute("IsPrivateSearch", gallerySC.isPrivateSearch());
+          request.setAttribute(IS_VIEW_METADATA, gallerySC.isViewMetadata());
+          request.setAttribute(IS_VIEW_LIST, gallerySC.isViewList());
+          request.setAttribute(SELECTED_IDS, gallerySC.getListSelected());
+          request.setAttribute(IS_USE_PDC, gallerySC.isUsePdc());
+          request.setAttribute(IS_BASKET, gallerySC.isBasket());
+          request.setAttribute(IS_ORDER, gallerySC.isOrder());
+          request.setAttribute(IS_PRIVATE_SEARCH, gallerySC.isPrivateSearch());
 
           destination = rootDest + "viewAlbum.jsp";
         }
       } else if ("NewAlbum".equals(function)) {
         // passage de l'album courant : null car en création
-        request.setAttribute("CurrentAlbum", null);
+        request.setAttribute(CURRENT_ALBUM, null);
         request.setAttribute("Path", gallerySC.getPath());
         // appel jsp
         destination = rootDest + "albumManager.jsp";
@@ -229,14 +255,14 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
         // récupération des paramètres de l'album
         String name = request.getParameter("Name");
-        String description = request.getParameter("Description");
+        String description = request.getParameter(DESCRIPTION);
         // création de l'album
         NodeDetail node =
             new NodeDetail("unknown", name, description, 0, "unknown");
         AlbumDetail album = new AlbumDetail(node);
         gallerySC.createAlbum(album);
         // retour à l'album courant
-        destination = getDestination("GoToCurrentAlbum", gallerySC, request);
+        destination = getDestination(GO_TO_CURRENT_ALBUM_FUNC, gallerySC, request);
       } else if ("EditAlbum".equals(function)) {
         // récupération des paramètres
         String albumId = request.getParameter("Id");
@@ -249,7 +275,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         // récupération de l'album courant
         AlbumDetail currentAlbum = gallerySC.getAlbum(albumId);
         // passage des paramètres
-        request.setAttribute("CurrentAlbum", currentAlbum);
+        request.setAttribute(CURRENT_ALBUM, currentAlbum);
         request.setAttribute("Path", gallerySC.getPath());
         destination = rootDest + "albumManager.jsp";
       } else if ("UpdateAlbum".equals(function)) {
@@ -262,7 +288,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
         // Retrieve album name and description
         String name = request.getParameter("Name");
-        String description = request.getParameter("Description");
+        String description = request.getParameter(DESCRIPTION);
 
         // Retrieve current album
         AlbumDetail album = gallerySC.getAlbum(albumId);
@@ -272,7 +298,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
         gallerySC.updateAlbum(album);
         // retour à l'album courant
-        destination = getDestination("GoToCurrentAlbum", gallerySC, request);
+        destination = getDestination(GO_TO_CURRENT_ALBUM_FUNC, gallerySC, request);
       } else if ("DeleteAlbum".equals(function)) {
         // Retrieve album identifier to delete
         String albumId = request.getParameter("Id");
@@ -284,7 +310,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
         gallerySC.deleteAlbum(albumId);
         // retour à l'album courant
-        destination = getDestination("GoToCurrentAlbum", gallerySC, request);
+        destination = getDestination(GO_TO_CURRENT_ALBUM_FUNC, gallerySC, request);
       } else if ("AddMedia".equals(function)) {
         // check user rights
         if (!gallerySC.isMediaAdmin(highestUserRole, null, userId)) {
@@ -299,12 +325,12 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         request.setAttribute("GetLanguage", gallerySC.getLanguage());
         request.setAttribute("UserName", gallerySC.getUserDetail(userId).getDisplayedName());
         request.setAttribute("NbComments", 0);
-        request.setAttribute("IsUsePdc", gallerySC.isUsePdc());
+        request.setAttribute(IS_USE_PDC, gallerySC.isUsePdc());
         request.setAttribute("XMLFormName", gallerySC.getXMLFormName());
         request.setAttribute("ShowCommentsTab", gallerySC.areCommentsEnabled());
-        request.setAttribute("IsBasket", gallerySC.isBasket());
-        request.setAttribute("IsOrder", gallerySC.isOrder());
-        request.setAttribute("IsViewMetadata", gallerySC.isViewMetadata());
+        request.setAttribute(IS_BASKET, gallerySC.isBasket());
+        request.setAttribute(IS_ORDER, gallerySC.isOrder());
+        request.setAttribute(IS_VIEW_METADATA, gallerySC.isViewMetadata());
 
         // prepare xml form data
         PublicationTemplate template = gallerySC.getTemplate();
@@ -314,11 +340,11 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
           request.setAttribute("Data", recordSet.getEmptyRecord());
         }
 
-        destination = rootDest + "media" + mediaType + "Edit.jsp";
+        destination = rootDest + MEDIA_PREFIX + mediaType + "Edit.jsp";
       } else if ("CreateMedia".equals(function)) {
 
         if (!StringUtil.isDefined(request.getCharacterEncoding())) {
-          request.setCharacterEncoding("UTF-8");
+          request.setCharacterEncoding(UTF_8);
         }
 
         // check user rights
@@ -332,17 +358,17 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         gallerySC.loadCurrentAlbum();
 
         // preview of the new media
-        request.setAttribute("MediaId", mediaId);
-        destination = getDestination("MediaView", gallerySC, request);
+        request.setAttribute(MEDIA_ID, mediaId);
+        destination = getDestination(MEDIA_VIEW_FUNC, gallerySC, request);
       } else if ("UpdateMedia".equals(function) || "UpdateInformation".equals(function)) {
         boolean isUpdateMediaFromAlbumCase =
             StringUtil.getBooleanValue(request.getParameter("isUpdateMediaFromAlbumCase"));
         if (!StringUtil.isDefined(request.getCharacterEncoding())) {
-          request.setCharacterEncoding("UTF-8");
+          request.setCharacterEncoding(UTF_8);
         }
         List<FileItem> parameters = request.getFileItems();
         String mediaId = FileUploadUtil
-            .getParameter(parameters, "MediaId", null, request.getCharacterEncoding());
+            .getParameter(parameters, MEDIA_ID, null, request.getCharacterEncoding());
         updateMediaData(mediaId, request, gallerySC);
         if (isUpdateMediaFromAlbumCase) {
           // Reload and clean the current album
@@ -352,12 +378,12 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
           destination = returnToAlbum(request, gallerySC);
         } else {
           // Back to the view of the updated media
-          request.setAttribute("MediaId", mediaId);
-          destination = getDestination("MediaView", gallerySC, request);
+          request.setAttribute(MEDIA_ID, mediaId);
+          destination = getDestination(MEDIA_VIEW_FUNC, gallerySC, request);
         }
       } else if ("DeleteMedia".equals(function)) {
         // Retrieve media identifier to delete
-        String mediaId = request.getParameter("MediaId");
+        String mediaId = request.getParameter(MEDIA_ID);
 
         // check user rights
         if (!gallerySC.isMediaAdmin(highestUserRole, mediaId, userId)) {
@@ -366,27 +392,27 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         gallerySC.deleteMedia(mediaId);
 
         // retour à l'album courant
-        destination = getDestination("GoToCurrentAlbum", gallerySC, request);
-      } else if ("MediaView".equals(function)) {
+        destination = getDestination(GO_TO_CURRENT_ALBUM_FUNC, gallerySC, request);
+      } else if (MEDIA_VIEW_FUNC.equals(function)) {
         // mise à blanc de la liste restreintes des médias (pour les médias non visibles)
-        gallerySC.setRestrictedListMedia(new ArrayList<Media>());
+        gallerySC.setRestrictedListMedia(new ArrayList<>());
         // remise à blanc des médias selectionnés
         deselectAll(gallerySC);
         // récupération des paramètres
-        String mediaId = request.getParameter("MediaId");
+        String mediaId = request.getParameter(MEDIA_ID);
         if (mediaId == null || mediaId.length() == 0 || "null".equals(mediaId)) {
-          mediaId = (String) request.getAttribute("MediaId");
+          mediaId = (String) request.getAttribute(MEDIA_ID);
         }
-        request.setAttribute("IsPrivateSearch", gallerySC.isPrivateSearch());
+        request.setAttribute(IS_PRIVATE_SEARCH, gallerySC.isPrivateSearch());
         destination = processMedia(gallerySC, request, rootDest, highestUserRole, mediaId);
       } else if ("PreviousMedia".equals(function)) {
         Media media = gallerySC.getPrevious();
-        request.setAttribute("MediaId", media.getId());
-        destination = getDestination("MediaView", gallerySC, request);
+        request.setAttribute(MEDIA_ID, media.getId());
+        destination = getDestination(MEDIA_VIEW_FUNC, gallerySC, request);
       } else if ("NextMedia".equals(function)) {
         Media media = gallerySC.getNext();
-        request.setAttribute("MediaId", media.getId());
-        destination = getDestination("MediaView", gallerySC, request);
+        request.setAttribute(MEDIA_ID, media.getId());
+        destination = getDestination(MEDIA_VIEW_FUNC, gallerySC, request);
       } else if (function.startsWith("searchResult")) {
         // traitement des recherches
         String id = request.getParameter("Id");
@@ -397,12 +423,12 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         // visualisation des emplacements
         request.setAttribute("Path", gallerySC.getPath());
         // récupération du média
-        String mediaId = request.getParameter("MediaId");
+        String mediaId = request.getParameter(MEDIA_ID);
         if (mediaId == null || mediaId.isEmpty()) {
           mediaId = request.getParameter("PubId");
         }
         if (mediaId == null || mediaId.isEmpty()) {
-          mediaId = (String) request.getAttribute("MediaId");
+          mediaId = (String) request.getAttribute(MEDIA_ID);
         }
 
         // check user rights
@@ -416,13 +442,13 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         putMediaCommonParameters(request, gallerySC, media, highestUserRole);
 
         request.setAttribute("PathList", gallerySC.getAlbumIdsOf(mediaId));
-        request.setAttribute("Albums", gallerySC.getAllAlbums());
+        request.setAttribute(ALBUMS, gallerySC.getAllAlbums());
 
         destination = rootDest + "albumsOfMedia.jsp";
       } else if ("SelectPath".equals(function)) {
         // modification de la liste des emplacements du média
         String[] albums = request.getParameterValues("albumChoice");
-        String mediaId = request.getParameter("MediaId");
+        String mediaId = request.getParameter(MEDIA_ID);
 
         // check user rights
         if (!gallerySC.isMediaAdmin(highestUserRole, mediaId, userId)) {
@@ -430,13 +456,13 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         }
 
         gallerySC.setMediaToAlbums(mediaId, albums);
-        destination = getDestination("MediaView", gallerySC, request);
+        destination = getDestination(MEDIA_VIEW_FUNC, gallerySC, request);
       } else if ("AskMedia".equals(function)) {
         // demande de médias auprès du gestionnaire de la médiathèque
         destination = rootDest + "askMedia.jsp";
       } else if ("SendAsk".equals(function)) {
         // envoie d'une notification au gestionnaire
-        String description = request.getParameter("Description");
+        String description = request.getParameter(DESCRIPTION);
         gallerySC.sendAskMedia(description);
         destination = rootDest + "closeWindow.jsp";
       } else if ("ChoiceSize".equals(function)) {
@@ -460,14 +486,14 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         destination = returnToAlbum(request, gallerySC);
       } else if ("EditSelectedMedia".equals(function)) {
         // traitement par lot
-        String albumId = request.getParameter("AlbumId");
+        String albumId = request.getParameter(ALBUM_ID_FIRST_LETTER_UPPERCASE);
 
         // check user rights
         if (!highestUserRole.isGreaterThanOrEquals(SilverpeasRole.publisher)) {
           throw new AccessForbiddenException("Media edition fobidden");
         }
 
-        String searchKeyWord = request.getParameter("SearchKeyWord");
+        String searchKeyWord = request.getParameter(SEARCH_KEY_WORD);
 
         processSelection(request, gallerySC);
 
@@ -480,8 +506,8 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
           } else {
             // passage des paramètres globaux
             request.setAttribute("SelectedMediaIds", gallerySC.getListSelected());
-            request.setAttribute("AlbumId", albumId);
-            request.setAttribute("SearchKeyWord", searchKeyWord);
+            request.setAttribute(ALBUM_ID_FIRST_LETTER_UPPERCASE, albumId);
+            request.setAttribute(SEARCH_KEY_WORD, searchKeyWord);
             request.setAttribute("Path", gallerySC.getPath());
             request.setAttribute("GetLanguage", gallerySC.getLanguage());
 
@@ -504,7 +530,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
         // mise à jour des médias
         if (!StringUtil.isDefined(request.getCharacterEncoding())) {
-          request.setCharacterEncoding("UTF-8");
+          request.setCharacterEncoding(UTF_8);
         }
         updateSelectedMedia(request, gallerySC, mediaIds, request.getCharacterEncoding());
 
@@ -542,7 +568,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
           deselectAll(gallerySC);
 
           // retour à l'album en cours
-          destination = getDestination("GoToCurrentAlbum", gallerySC, request);
+          destination = getDestination(GO_TO_CURRENT_ALBUM_FUNC, gallerySC, request);
         }
       } else if ("CategorizeSelectedMedia".equals(function)) {
         processSelection(request, gallerySC);
@@ -552,7 +578,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
           final List<String> selectedIds = (List<String>) gallerySC.getListSelected();
 
           // get silverObjectIds according to selected mediaIds
-          final List<String> silverObjectIds = new ArrayList<String>();
+          final List<String> silverObjectIds = new ArrayList<>();
           for (final String selectedId : selectedIds) {
             silverObjectIds.add(Integer.toString(gallerySC.getSilverObjectId(selectedId)));
           }
@@ -565,7 +591,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         }
       } else if ("AddAlbumForSelectedMedia".equals(function)) {
         // placement par lot
-        String albumId = request.getParameter("AlbumId");
+        String albumId = request.getParameter(ALBUM_ID_FIRST_LETTER_UPPERCASE);
         // check user rights
         if (!highestUserRole.isGreaterThanOrEquals(SilverpeasRole.publisher)) {
           throw new AccessForbiddenException("Media adding into gallery forbidden");
@@ -574,9 +600,9 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         // liste des médias sélectionnés
         if (!gallerySC.getListSelected().isEmpty()) {
           // passage des paramètres globaux
-          request.setAttribute("AlbumId", albumId);
+          request.setAttribute(ALBUM_ID_FIRST_LETTER_UPPERCASE, albumId);
           request.setAttribute("Path", gallerySC.getPath());
-          request.setAttribute("Albums", gallerySC.getAllAlbums());
+          request.setAttribute(ALBUMS, gallerySC.getAllAlbums());
 
           destination = rootDest + "pathsManager.jsp";
         } else {
@@ -584,7 +610,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         }
       } else if ("EditInformation".equals(function)) {
         // récupération des paramètres
-        String mediaId = request.getParameter("MediaId");
+        String mediaId = request.getParameter(MEDIA_ID);
         if (StringUtil.isNotDefined(mediaId)) {
           // Firstly, verifying that the user tries to modify a media from album
           mediaId = (String) request.getAttribute("MediaIdFromAlbum");
@@ -598,7 +624,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         // passage des paramètres
         putMediaCommonParameters(request, gallerySC, media, highestUserRole);
 
-        request.setAttribute("IsViewMetadata", gallerySC.isViewMetadata());
+        request.setAttribute(IS_VIEW_METADATA, gallerySC.isViewMetadata());
 
         request.setAttribute("Repertoire", media.getWorkspaceSubFolderName());
 
@@ -616,7 +642,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         }
 
         // appel jsp
-        destination = rootDest + "media" + media.getType().name() + "Edit.jsp";
+        destination = rootDest + MEDIA_PREFIX + media.getType().name() + "Edit.jsp";
       } else if ("AllSelected".equals(function)) {
         // sélectionne (ou déselectionne) tous les médias de l'album (ou de la liste restreinte
         // dans le cas de la recherche)
@@ -636,7 +662,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
             gallerySC.getListSelected().removeAll(extractIds(media));
           }
 
-          destination = getDestination("GoToCurrentAlbum", gallerySC, request);
+          destination = getDestination(GO_TO_CURRENT_ALBUM_FUNC, gallerySC, request);
 
         } else {
           // Returning to search result or to not visible list
@@ -650,7 +676,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
             }
 
             gallerySC.setRestrictedListMedia(media);
-            destination = getDestination("ViewNotVisible", gallerySC, request);
+            destination = getDestination(VIEW_NOT_VISIBLE_FUNC, gallerySC, request);
           } else {
             media = gallerySC.getSearchResultListMedia();
 
@@ -660,7 +686,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
               gallerySC.getListSelected().removeAll(extractIds(media));
             }
 
-            destination = getDestination("ViewSearchResults", gallerySC, request);
+            destination = getDestination(VIEW_SEARCH_RESULTS_FUNC, gallerySC, request);
 
           }
         }
@@ -700,14 +726,14 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         // Reset pagination index
         gallerySC.setIndexOfCurrentPage("0");
 
-        destination = getDestination("ViewSearchResults", gallerySC, request);
-      } else if ("SearchKeyWord".equals(function)) {
+        destination = getDestination(VIEW_SEARCH_RESULTS_FUNC, gallerySC, request);
+      } else if (SEARCH_KEY_WORD.equals(function)) {
         // traitement de la recherche par mot clé
         // et de la recherche dédiée
         // récupération du mot clé et de la liste des médias concernés si il existe
-        String searchKeyWord = request.getParameter("SearchKeyWord");
+        String searchKeyWord = request.getParameter(SEARCH_KEY_WORD);
         if (searchKeyWord == null) {
-          searchKeyWord = (String) request.getAttribute("SearchKeyWord");
+          searchKeyWord = (String) request.getAttribute(SEARCH_KEY_WORD);
         }
         if (!isDefined(searchKeyWord)) {
           searchKeyWord = gallerySC.getSearchKeyWord();
@@ -715,7 +741,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
         // Reset search if keyword has changed
         if (!gallerySC.getSearchKeyWord().equals(searchKeyWord)) {
-          gallerySC.setSearchResultListMedia(new ArrayList<Media>());
+          gallerySC.setSearchResultListMedia(new ArrayList<>());
           gallerySC.setSearchKeyWord(searchKeyWord);
           // reset pagination index
           gallerySC.setIndexOfCurrentPage("0");
@@ -731,7 +757,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
           gallerySC.setSearchResultListMedia(gallerySC.search(query));
         }
 
-        destination = getDestination("ViewSearchResults", gallerySC, request);
+        destination = getDestination(VIEW_SEARCH_RESULTS_FUNC, gallerySC, request);
       } else if ("PaginationSearch".equals(function)) {
         processSelection(request, gallerySC);
 
@@ -741,35 +767,35 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
           gallerySC.setIndexOfCurrentPage(index);
         }
 
-        destination = getDestination("ViewSearchResults", gallerySC, request);
-      } else if ("ViewSearchResults".equals(function)) {
+        destination = getDestination(VIEW_SEARCH_RESULTS_FUNC, gallerySC, request);
+      } else if (VIEW_SEARCH_RESULTS_FUNC.equals(function)) {
         // passage des paramètres
-        request.setAttribute("SearchKeyWord", gallerySC.getSearchKeyWord());
-        request.setAttribute("MediaList", gallerySC.getSearchResultListMedia());
-        request.setAttribute("NbMediaPerPage", gallerySC.getNbMediaPerPage());
-        request.setAttribute("CurrentPageIndex", gallerySC.getIndexOfCurrentPage());
-        request.setAttribute("MediaResolution", gallerySC.getDisplayedMediaResolution());
-        request.setAttribute("IsViewMetadata", gallerySC.isViewMetadata());
-        request.setAttribute("IsViewList", gallerySC.isViewList());
-        request.setAttribute("SelectedIds", gallerySC.getListSelected());
-        request.setAttribute("IsBasket", gallerySC.isBasket());
+        request.setAttribute(SEARCH_KEY_WORD, gallerySC.getSearchKeyWord());
+        request.setAttribute(MEDIA_LIST, gallerySC.getSearchResultListMedia());
+        request.setAttribute(NB_MEDIA_PER_PAGE, gallerySC.getNbMediaPerPage());
+        request.setAttribute(CURRENT_PAGE_INDEX, gallerySC.getIndexOfCurrentPage());
+        request.setAttribute(MEDIA_RESOLUTION, gallerySC.getDisplayedMediaResolution());
+        request.setAttribute(IS_VIEW_METADATA, gallerySC.isViewMetadata());
+        request.setAttribute(IS_VIEW_LIST, gallerySC.isViewList());
+        request.setAttribute(SELECTED_IDS, gallerySC.getListSelected());
+        request.setAttribute(IS_BASKET, gallerySC.isBasket());
 
         // mise à jour du tag pour les retours
         gallerySC.setSearchResult(true);
         gallerySC.setViewNotVisible(false);
-        request.setAttribute("ViewNotVisible", gallerySC.isViewNotVisible());
+        request.setAttribute(VIEW_NOT_VISIBLE_FUNC, gallerySC.isViewNotVisible());
 
         // appel jsp
         destination = rootDest + "viewRestrictedMediaList.jsp";
       } else if ("Search".equals(function)) {
         if (!StringUtil.isDefined(request.getCharacterEncoding())) {
-          request.setCharacterEncoding("UTF-8");
+          request.setCharacterEncoding(UTF_8);
         }
         List<FileItem> items = request.getFileItems();
         QueryDescription query = new QueryDescription();
         // Ajout de la requete classique
         String word = FileUploadUtil
-            .getParameter(items, "SearchKeyWord", null, request.getCharacterEncoding());
+            .getParameter(items, SEARCH_KEY_WORD, null, request.getCharacterEncoding());
         query.setQuery(word);
         gallerySC.setSearchKeyWord(word);
 
@@ -777,7 +803,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         PublicationTemplateImpl template = (PublicationTemplateImpl) gallerySC.getTemplate();
         if (template != null) {
           String templateFileName = template.getFileName();
-          String templateName = templateFileName.substring(0, templateFileName.lastIndexOf("."));
+          String templateName = templateFileName.substring(0, templateFileName.lastIndexOf('.'));
 
           RecordTemplate searchTemplate = template.getSearchTemplate();
           if (searchTemplate != null) {
@@ -785,7 +811,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
             PagesContext context = new PagesContext("XMLSearchForm", "2", gallerySC.getLanguage(),
                 gallerySC.getUserId());
-            context.setEncoding("UTF-8");
+            context.setEncoding(UTF_8);
             XmlSearchForm searchForm = (XmlSearchForm) template.getSearchForm();
             searchForm.update(items, data, context);
 
@@ -853,8 +879,8 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         // Lancement de la recherche
         gallerySC.search(query);
 
-        destination = getDestination("ViewSearchResults", gallerySC, request);
-      } else if ("ViewNotVisible".equals(function)) {
+        destination = getDestination(VIEW_SEARCH_RESULTS_FUNC, gallerySC, request);
+      } else if (VIEW_NOT_VISIBLE_FUNC.equals(function)) {
         // traitement de la liste des médias plus visibles
         // récupération de la liste des médias plus visibles, ou création de cette liste si elle est
         // vide
@@ -866,18 +892,18 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         // mise à jour du tag pour les médias non visibles
         gallerySC.setSearchResult(false);
         gallerySC.setViewNotVisible(true);
-        request.setAttribute("ViewNotVisible", gallerySC.isViewNotVisible());
+        request.setAttribute(VIEW_NOT_VISIBLE_FUNC, gallerySC.isViewNotVisible());
 
         // passage des paramètres
-        request.setAttribute("MediaList", media);
-        request.setAttribute("NbMediaPerPage", gallerySC.getNbMediaPerPage());
-        request.setAttribute("CurrentPageIndex", gallerySC.getIndexOfCurrentPage());
-        request.setAttribute("MediaResolution", gallerySC.getDisplayedMediaResolution());
-        request.setAttribute("IsViewMetadata", gallerySC.isViewMetadata());
-        request.setAttribute("IsViewList", gallerySC.isViewList());
-        request.setAttribute("SelectedIds", gallerySC.getListSelected());
-        request.setAttribute("SearchKeyWord", "");
-        request.setAttribute("IsBasket", gallerySC.isBasket());
+        request.setAttribute(MEDIA_LIST, media);
+        request.setAttribute(NB_MEDIA_PER_PAGE, gallerySC.getNbMediaPerPage());
+        request.setAttribute(CURRENT_PAGE_INDEX, gallerySC.getIndexOfCurrentPage());
+        request.setAttribute(MEDIA_RESOLUTION, gallerySC.getDisplayedMediaResolution());
+        request.setAttribute(IS_VIEW_METADATA, gallerySC.isViewMetadata());
+        request.setAttribute(IS_VIEW_LIST, gallerySC.isViewList());
+        request.setAttribute(SELECTED_IDS, gallerySC.getListSelected());
+        request.setAttribute(SEARCH_KEY_WORD, "");
+        request.setAttribute(IS_BASKET, gallerySC.isBasket());
 
         destination = rootDest + "viewRestrictedMediaList.jsp";
       } else if (function.startsWith("portlet")) {
@@ -886,7 +912,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         request.setAttribute("root", gallerySC.goToAlbum("0"));
         // chercher les derniers médias
         Collection<Media> mediaList = gallerySC.getLastRegisteredMedia();
-        request.setAttribute("MediaList", mediaList);
+        request.setAttribute(MEDIA_LIST, mediaList);
         destination = rootDest + "portlet.jsp";
       } else if ("copy".equals(function)) {
         String objectType = request.getParameter("Object");
@@ -910,7 +936,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
           deselectAll(gallerySC);
         }
         // Get back to current album view
-        destination = getDestination("GoToCurrentAlbum", gallerySC, request);
+        destination = getDestination(GO_TO_CURRENT_ALBUM_FUNC, gallerySC, request);
       } else if ("cut".startsWith(function)) {
         String objectType = request.getParameter("Object");
         String objectId = request.getParameter("Id");
@@ -931,59 +957,59 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
           deselectAll(gallerySC);
         }
         // Get back to current album view
-        destination = getDestination("GoToCurrentAlbum", gallerySC, request);
+        destination = getDestination(GO_TO_CURRENT_ALBUM_FUNC, gallerySC, request);
       } else if (function.startsWith("paste")) {
         gallerySC.paste();
         gallerySC.loadCurrentAlbum();
-        destination = getDestination("GoToCurrentAlbum", gallerySC, request);
+        destination = getDestination(GO_TO_CURRENT_ALBUM_FUNC, gallerySC, request);
       } else if (function.startsWith("Basket")) {
         // Manage basket functions
-        if ("BasketView".equals(function)) {
+        if (BASKET_VIEW_FUNC.equals(function)) {
           // Basket view
-          request.setAttribute("MediaList", gallerySC.getBasketMedias());
-          request.setAttribute("NbMediaPerPage", gallerySC.getNbMediaPerPage());
-          request.setAttribute("SelectedIds", gallerySC.getListSelected());
-          request.setAttribute("IsOrder", gallerySC.isOrder());
-          request.setAttribute("MediaTypeAlert", request.getAttribute("MediaTypeAlert"));
+          request.setAttribute(MEDIA_LIST, gallerySC.getBasketMedias());
+          request.setAttribute(NB_MEDIA_PER_PAGE, gallerySC.getNbMediaPerPage());
+          request.setAttribute(SELECTED_IDS, gallerySC.getListSelected());
+          request.setAttribute(IS_ORDER, gallerySC.isOrder());
+          request.setAttribute(MEDIA_TYPE_ALERT_ATTR, request.getAttribute(MEDIA_TYPE_ALERT_ATTR));
 
           destination = rootDest + "basket.jsp";
         } else if ("BasketDelete".equals(function)) {
           gallerySC.clearBasket();
-          destination = getDestination("BasketView", gallerySC, request);
+          destination = getDestination(BASKET_VIEW_FUNC, gallerySC, request);
         } else if ("BasketDeleteMedia".equals(function)) {
           // Delete media from basket
-          String mediaId = request.getParameter("MediaId");
+          String mediaId = request.getParameter(MEDIA_ID);
           gallerySC.deletePhotoFromBasket(mediaId);
 
-          destination = getDestination("BasketView", gallerySC, request);
+          destination = getDestination(BASKET_VIEW_FUNC, gallerySC, request);
         } else if ("BasketDeleteSelectedMedia".equals(function)) {
           // delete selected medias from basket
           processSelection(request, gallerySC);
           if (!gallerySC.getListSelected().isEmpty()) {
             gallerySC.deleteSelectedPhotosFromBasket();
           }
-          destination = getDestination("BasketView", gallerySC, request);
+          destination = getDestination(BASKET_VIEW_FUNC, gallerySC, request);
         } else if ("BasketAddMediaList".equals(function)) {
           // Add selected photo media inside basket
           processSelection(request, gallerySC);
           if (!gallerySC.getListSelected().isEmpty()) {
             if (!gallerySC.addToBasket()) {
-              request.setAttribute("MediaTypeAlert", true);
+              request.setAttribute(MEDIA_TYPE_ALERT_ATTR, true);
             }
-            destination = getDestination("BasketView", gallerySC, request);
+            destination = getDestination(BASKET_VIEW_FUNC, gallerySC, request);
           } else {
-            destination = getDestination("GoToCurrentAlbum", gallerySC, request);
+            destination = getDestination(GO_TO_CURRENT_ALBUM_FUNC, gallerySC, request);
           }
         } else if ("BasketAddMedia".equals(function)) {
           // Add this media inside basket
-          String mediaId = request.getParameter("MediaId");
+          String mediaId = request.getParameter(MEDIA_ID);
           gallerySC.addMediaToBasket(mediaId);
-          destination = getDestination("BasketView", gallerySC, request);
+          destination = getDestination(BASKET_VIEW_FUNC, gallerySC, request);
         } else if ("BasketPagination".equals(function)) {
           processSelection(request, gallerySC);
 
           // retour au panier
-          destination = getDestination("BasketView", gallerySC, request);
+          destination = getDestination(BASKET_VIEW_FUNC, gallerySC, request);
         }
       } else if (function.startsWith("Order")) {
         if ("OrderAdd".equals(function)) {
@@ -1006,7 +1032,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
           // mise à jour des données du formulaire
           if (!StringUtil.isDefined(request.getCharacterEncoding())) {
-            request.setCharacterEncoding("UTF-8");
+            request.setCharacterEncoding(UTF_8);
           }
           List<FileItem> items = request.getFileItems();
 
@@ -1022,7 +1048,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
             PagesContext context = new PagesContext("myForm", "0", gallerySC.getLanguage(), false,
                 gallerySC.getComponentId(), gallerySC.getUserId());
-            context.setEncoding("UTF-8");
+            context.setEncoding(UTF_8);
             context.setObjectId(orderId);
 
             // mise à jour des données saisies
@@ -1034,15 +1060,15 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
           gallerySC.sendAskOrder(orderId);
 
           // view order list destination
-          destination = getDestination("OrderViewList", gallerySC, request);
+          destination = getDestination(ORDER_VIEW_LIST_FUNC, gallerySC, request);
         } else if ("OrderUpdate".equals(function)) {
-          String orderId = request.getParameter("OrderId");
+          String orderId = request.getParameter(ORDER_ID);
           // update order
           updateOrder(request, gallerySC, orderId, userId);
           // notify reader user
           gallerySC.sendAskOrderUser(orderId);
-          destination = getDestination("OrderViewList", gallerySC, request);
-        } else if ("OrderViewList".equals(function)) {
+          destination = getDestination(ORDER_VIEW_LIST_FUNC, gallerySC, request);
+        } else if (ORDER_VIEW_LIST_FUNC.equals(function)) {
           Collection<Order> orders;
           if (highestUserRole == SilverpeasRole.admin) {
             // if manager retrieve all orders
@@ -1055,22 +1081,22 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
           request.setAttribute("Orders", orders);
           destination = rootDest + "orders.jsp";
         } else if ("OrderView".equals(function)) {
-          String orderId = request.getParameter("OrderId");
+          String orderId = request.getParameter(ORDER_ID);
           if (orderId == null || orderId.length() == 0 || "null".equals(orderId)) {
-            orderId = (String) request.getAttribute("OrderId");
+            orderId = (String) request.getAttribute(ORDER_ID);
           }
 
           if (highestUserRole == SilverpeasRole.admin || gallerySC.isAccessAuthorized(orderId)) {
             gallerySC.setCurrentOrderId(orderId);
 
-            destination = getDestination("OrderViewPagin", gallerySC, request);
+            destination = getDestination(ORDER_VIEW_PAGIN_FUNC, gallerySC, request);
           } else {
             destination = "/admin/jsp/accessForbidden.jsp";
           }
-        } else if ("OrderViewPagin".equals(function)) {
+        } else if (ORDER_VIEW_PAGIN_FUNC.equals(function)) {
           String orderId = gallerySC.getCurrentOrderId();
           request.setAttribute("Order", gallerySC.getOrder(orderId));
-          request.setAttribute("NbMediaPerPage", gallerySC.getNbMediaPerPage());
+          request.setAttribute(NB_MEDIA_PER_PAGE, gallerySC.getNbMediaPerPage());
 
           PublicationTemplate template = gallerySC.getOrderTemplate();
           if (template != null) {
@@ -1084,10 +1110,10 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
           destination = rootDest + "order.jsp";
         } else if ("OrderPagination".equals(function)) {
           // retour à la demande
-          destination = getDestination("OrderViewPagin", gallerySC, request);
+          destination = getDestination(ORDER_VIEW_PAGIN_FUNC, gallerySC, request);
         } else if ("OrderDownloadMedia".equals(function)) {
-          String mediaId = request.getParameter("MediaId");
-          String orderId = request.getParameter("OrderId");
+          String mediaId = request.getParameter(MEDIA_ID);
+          String orderId = request.getParameter(ORDER_ID);
 
           // rechercher l'url du média
           String url = gallerySC.getUrl(orderId, mediaId);
@@ -1100,7 +1126,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         }
       } else if (function.startsWith("Export")) {
         if ("ExportAlbum".equals(function)) {
-          String albumId = request.getParameter("albumId");
+          String albumId = request.getParameter(ALBUM_ID);
           String format = request.getParameter("format");
           ExportReport exportRpt =
               gallerySC.exportAlbum(albumId, MediaResolution.fromNameOrLabel(format));
@@ -1135,13 +1161,13 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
       MediaType mediaType = MediaType.from(type);
       if (mediaType != MediaType.Unknown) {
         // traitement des médias
-        request.setAttribute("MediaId", id);
-        destination = getDestination("MediaView", gallerySC, request);
+        request.setAttribute(MEDIA_ID, id);
+        destination = getDestination(MEDIA_VIEW_FUNC, gallerySC, request);
       } else if ("Node".equals(type)) {
         // traitement des noeuds = les albums
         destination = getDestination("ViewAlbum", gallerySC, request);
       } else {
-        destination = getDestination("GoToCurrentAlbum", gallerySC, request);
+        destination = getDestination(GO_TO_CURRENT_ALBUM_FUNC, gallerySC, request);
       }
     } catch (Exception e) {
       SilverLogger.getLogger(this).warn(e);
@@ -1156,10 +1182,10 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
     try {
       Media media = gallerySC.getMedia(mediaId);
 
-      request.setAttribute("SearchKeyWord", request.getParameter("SearchKeyWord"));
+      request.setAttribute(SEARCH_KEY_WORD, request.getParameter(SEARCH_KEY_WORD));
       request.setAttribute("Rang", gallerySC.getRang());
       request.setAttribute("NbMedia", gallerySC.goToAlbum().getMedia().size());
-      request.setAttribute("IsViewMetadata", gallerySC.isViewMetadata());
+      request.setAttribute(IS_VIEW_METADATA, gallerySC.isViewMetadata());
       request.setAttribute("IsWatermark", gallerySC.isMakeWatermark());
       request.setAttribute("ImageResolutionPreview", gallerySC.getImageResolutionPreview(media));
 
@@ -1171,13 +1197,13 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
       // Prepare XML form data
       putXMLDisplayerIntoRequest(media, request, gallerySC);
       // Slideshow requirements
-      request.setAttribute("albumId", gallerySC.getCurrentAlbumId());
+      request.setAttribute(ALBUM_ID, gallerySC.getCurrentAlbumId());
       request.setAttribute("wait", gallerySC.getSlideshowWait());
       // Add this following line for backward compatibility TODO create migration script in
       // order to insert each media inside content manager
       request.setAttribute("SilverObjetId", gallerySC.getSilverObjectId(mediaId));
       // appel jsp
-      destination = rootDest + "media" + media.getType().toString() + "View.jsp";
+      destination = rootDest + MEDIA_PREFIX + media.getType().toString() + "View.jsp";
     } catch (Exception e) {
       SilverLogger.getLogger(this).warn(e);
       destination = getDocumentNotFoundDestination(gallerySC, request);
@@ -1281,7 +1307,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
       throws ParseException, PublicationTemplateException {
 
     // Getting all HTTP parameters
-    final List<FileItem> parameters = new ArrayList<FileItem>();
+    final List<FileItem> parameters = new ArrayList<>();
     for (FileItem param : request.getFileItems()) {
       parameters.add(param);
     }
@@ -1412,10 +1438,10 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
     }
     request.setAttribute("NbComments", nbComments);
     request.setAttribute("Path", gallerySC.getPath());
-    request.setAttribute("IsUsePdc", gallerySC.isUsePdc());
+    request.setAttribute(IS_USE_PDC, gallerySC.isUsePdc());
     request.setAttribute("XMLFormName", gallerySC.getXMLFormName());
-    request.setAttribute("IsBasket", gallerySC.isBasket());
-    request.setAttribute("IsOrder", gallerySC.isOrder());
+    request.setAttribute(IS_BASKET, gallerySC.isBasket());
+    request.setAttribute(IS_ORDER, gallerySC.isOrder());
 
     boolean allowedToUpdateMedia = userRole.isGreaterThanOrEquals(SilverpeasRole.publisher) ||
         (userRole == SilverpeasRole.writer && media.getCreatorId().equals(gallerySC.getUserId()));
@@ -1430,7 +1456,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
    * @param gallerySC
    */
   private void processSelection(HttpServletRequest request, GallerySessionController gallerySC) {
-    String selectedIds = request.getParameter("SelectedIds");
+    String selectedIds = request.getParameter(SELECTED_IDS);
     String notSelectedIds = request.getParameter("NotSelectedIds");
     Collection<String> memSelected = gallerySC.getListSelected();
 
@@ -1450,7 +1476,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
   }
 
   private List<String> extractIds(Collection<Media> col) {
-    List<String> ids = new ArrayList<String>();
+    List<String> ids = new ArrayList<>();
     if (col != null) {
       Iterator<Media> it = col.iterator();
       Media media;
@@ -1469,13 +1495,13 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
     // retour d'où on vient
     if (!gallerySC.isSearchResult() && !gallerySC.isViewNotVisible()) {
       // retour à l'album en cours
-      destination = getDestination("GoToCurrentAlbum", gallerySC, request);
+      destination = getDestination(GO_TO_CURRENT_ALBUM_FUNC, gallerySC, request);
     } else {
       // retour aux résultats de recherche ou à la liste des médias non visibles
       if (gallerySC.isViewNotVisible()) {
-        destination = getDestination("ViewNotVisible", gallerySC, request);
+        destination = getDestination(VIEW_NOT_VISIBLE_FUNC, gallerySC, request);
       } else {
-        destination = getDestination("ViewSearchResults", gallerySC, request);
+        destination = getDestination(VIEW_SEARCH_RESULTS_FUNC, gallerySC, request);
       }
     }
     return destination;
