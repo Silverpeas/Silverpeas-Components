@@ -57,8 +57,7 @@
 <head>
   <view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
   <view:includePlugin name="datepicker"/>
-  <script type="text/javascript" src="<c:url value="/util/javaScript/silverpeas-pdc-widgets.js"/>"></script>
-  <script type="text/javascript" src="<c:url value="/util/javaScript/silverpeas-pdc.js"/>"></script>
+  <view:includePlugin name="pdc"/>
   <script type="text/javascript" src="<c:url value="/util/javaScript/lucene/luceneQueryValidator.js"/>"></script>
   <script type="text/javascript">
     function sendData() {
@@ -121,7 +120,7 @@
               <fmt:message key="gallery.search.field.keyword.help" var="searchTitle"/>
               <input type="submit" class="hide"/>
               <input id="searchQuery" type="text" name="SearchKeyWord" value="${keyword}" size="36" title="${searchTitle}"/>
-              <a class="sp_button" href="javascript:onClick=sendData();"><fmt:message key="GML.search"/></a>
+              <a class="sp_button linked-to-input" href="javascript:onClick=sendData();"><fmt:message key="GML.search"/></a>
             </div>
           </div>
         </div>
