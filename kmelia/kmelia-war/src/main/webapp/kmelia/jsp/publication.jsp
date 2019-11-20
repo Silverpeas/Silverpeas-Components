@@ -199,25 +199,31 @@
   //  - if current user can modified publication
   boolean attachmentsUpdatable = attachmentsEnabled && isOwner && !pubDetail.haveGotClone();
   
-  if (isOwner && SilverpeasRole.writer.isInRole(profile) && !validatorsOK) {
-    String selectUserLab = resources.getString("kmelia.SelectValidator");
-    String link = "&nbsp;<a href=\"#\" onclick=\"javascript:SP_openWindow('SelectValidator','selectUser',800,600,'');\">";
-    link += "<img src=\""
-        + resources.getIcon("kmelia.user")
-        + "\" width=\"15\" height=\"15\" border=\"0\" alt=\""
-        + selectUserLab + "\" align=\"absmiddle\" title=\""
-        + selectUserLab + "\"></a>";
-        
-    screenMessage += "<div class=\"inlineMessage\" id=\"validationArea\">" + resources.getString("kmelia.publication.validators.select");
-    screenMessage += "<div id=\"\"><form id=\"form-pub-validator\" action=\"SetPublicationValidator\" method=\"post\"><input type=\"text\" name=\"Valideur\" id=\"Valideur\" value=\"\" size=\"60\" readonly=\"readonly\"/><input type=\"hidden\" name=\"ValideurId\" id=\"ValideurId\" value=\"\"/>";
-    screenMessage += link;
-    screenMessage += "</form></div>";
-    screenMessage += "<a href=\"#\" onclick=\"javascript:$('#form-pub-validator').submit();\" class=\"button\"><span>"+resources.getString("GML.validate")+"</span></a>";
-    screenMessage += "<a href=\"#\" onclick=\"javascript:$('#validationArea').hide('slow');\" class=\"button\"><span>"+resources.getString("GML.close")+"</span></a>";
-    screenMessage += "</div>";
-    attachmentsUpdatable = false;
-  } else if (isOwner && !validatorsOK) {
-    screenMessage += "<div class=\"inlineMessage-nok\">"+resources.getString("kmelia.publication.validators.nomore")+"</div>";
+  if (isOwner && !validatorsOK) {
+    if (SilverpeasRole.writer.isInRole(profile)) {
+      String selectUserLab = resources.getString("kmelia.SelectValidator");
+      String link =
+          "&nbsp;<a href=\"#\" onclick=\"javascript:SP_openWindow('SelectValidator','selectUser',800,600,'');\">";
+      link += "<img src=\"" + resources.getIcon("kmelia.user") +
+          "\" width=\"15\" height=\"15\" border=\"0\" alt=\"" + selectUserLab +
+          "\" align=\"absmiddle\" title=\"" + selectUserLab + "\"></a>";
+
+      screenMessage += "<div class=\"inlineMessage\" id=\"validationArea\">" + resources.getString("kmelia.publication.validators.select");
+      screenMessage +=
+          "<div id=\"\"><form id=\"form-pub-validator\" action=\"SetPublicationValidator\" method=\"post\"><input type=\"text\" name=\"Valideur\" id=\"Valideur\" value=\"\" size=\"60\" readonly=\"readonly\"/><input type=\"hidden\" name=\"ValideurId\" id=\"ValideurId\" value=\"\"/>";
+      screenMessage += link;
+      screenMessage += "</form></div>";
+      screenMessage +=
+          "<a href=\"#\" onclick=\"javascript:$('#form-pub-validator').submit();\" class=\"button\"><span>" +
+              resources.getString("GML.validate") + "</span></a>";
+      screenMessage +=
+          "<a href=\"#\" onclick=\"javascript:$('#validationArea').hide('slow');\" class=\"button\"><span>" +
+              resources.getString("GML.close") + "</span></a>";
+      screenMessage += "</div>";
+      attachmentsUpdatable = false;
+    } else if (pubDetail.isValidationRequired()) {
+      screenMessage += "<div class=\"inlineMessage-nok\">"+resources.getString("kmelia.publication.validators.nomore")+"</div>";
+    }
   }
 
   String updaterId = pubDetail.getUpdaterId();

@@ -103,6 +103,7 @@ import org.silverpeas.core.personalorganizer.model.TodoDetail;
 import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
 import org.silverpeas.core.process.annotation.SimulationActionProcess;
 import org.silverpeas.core.reminder.Reminder;
+import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.security.authorization.NodeAccessControl;
 import org.silverpeas.core.security.authorization.PublicationAccessControl;
 import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
@@ -4097,7 +4098,7 @@ public class DefaultKmeliaService implements KmeliaService {
     for (NodeDetail fromNode : treeToPaste) {
       if (fromNode != null) {
         NodePK toNodePK = new NodePK(fromNode.getNodePK().getId(), to);
-        removeNodeRights(fromNode);
+        checkNodeRights(fromNode);
         // move rich description of node
         if (!nodePK.getInstanceId().equals(to.getInstanceId())) {
           WysiwygController.move(fromNode.getNodePK().getInstanceId(),
@@ -4113,14 +4114,17 @@ public class DefaultKmeliaService implements KmeliaService {
     return getNodeHeader(nodePK);
   }
 
-  private void removeNodeRights(final NodeDetail node) {
+  private void checkNodeRights(final NodeDetail node) {
     if (node.haveLocalRights()) {
       List<ProfileInst> profiles =
           adminController.getProfilesByObject(ProfiledObjectId.fromNode(node.getNodePK().getId()),
               node.getNodePK().getInstanceId());
       for (ProfileInst profile : profiles) {
         if (profile != null && StringUtil.isDefined(profile.getId())) {
-          adminController.deleteProfileInst(profile.getId());
+
+          checkNodeProfile(profile, node.getNodePK().getInstanceId());
+
+          adminController.updateProfileInst(profile);
         }
       }
     }
@@ -4176,6 +4180,9 @@ public class DefaultKmeliaService implements KmeliaService {
                 new ProfiledObjectId(ProfiledObjectType.NODE, nodePK.getId()));
             nodeProfileInst.setParentObjectId(
                 new ProfiledObjectId(ProfiledObjectType.NODE, father.getNodePK().getId()));
+
+            checkNodeProfile(nodeProfileInst, nodePK.getInstanceId());
+
             // Add the profile
             adminController.addProfileInst(nodeProfileInst, userId);
           }
@@ -4208,6 +4215,34 @@ public class DefaultKmeliaService implements KmeliaService {
       }
     }
     return node;
+  }
+
+  /*
+   * Checks given profile according to component instance.
+   * Removes all groups and users which are not authorized to access to component instance.
+   *
+   */
+  private void checkNodeProfile(ProfileInst profile, String instanceId) {
+    List<String> verifiedUserIds = new ArrayList<>();
+    List<String> verifiedGroupIds = new ArrayList<>();
+
+    // check users and groups according to component instance rights
+    List<String> userIdsToCheck = profile.getAllUsers();
+    for (String userIdToCheck : userIdsToCheck) {
+      if (ComponentAccessControl.get().isUserAuthorized(userIdToCheck, instanceId)) {
+        verifiedUserIds.add(userIdToCheck);
+      }
+    }
+
+    List<String> groupIdsToCheck = profile.getAllGroups();
+    for (String groupIdToCheck : groupIdsToCheck) {
+      if (ComponentAccessControl.get().isGroupAuthorized(groupIdToCheck, instanceId)) {
+        verifiedGroupIds.add(groupIdToCheck);
+      }
+    }
+
+    profile.setUsers(verifiedUserIds);
+    profile.setGroups(verifiedGroupIds);
   }
 
   private void setNodeRightDependency(final HashMap<Integer, Integer> oldAndNewIds,
