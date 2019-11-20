@@ -2631,17 +2631,17 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   /**
    * Returns URL of single attached file for the current publication.
    * If publication contains more than one file, null is returned
-   *
+   * @param fromAlias true if getting document version from an alias.
    * @return URL of single attached file for the current publication. Null if publication
    * contains more than one file.
    */
-  public String getSingleAttachmentURLOfCurrentPublication(boolean alias) {
+  public String getSingleAttachmentURLOfCurrentPublication(final boolean fromAlias) {
     PublicationPK pubPK = getSessionPublication().getDetail().getPK();
     List<SimpleDocument> attachments = AttachmentServiceProvider.getAttachmentService().
         listDocumentsByForeignKey(pubPK.toResourceReference(), getLanguage());
     if (attachments.size() == 1) {
       SimpleDocument document = attachments.get(0);
-      return getDocumentVersionURL(document, alias);
+      return getDocumentVersionURL(document, fromAlias);
     }
     return null;
   }
@@ -2649,33 +2649,33 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   /**
    * Return the url to access the file
    * @param fileId the id of the file (attachment or document id).
+   * @param fromAlias true if getting document version from an alias.
    * @return the url to the file.
    */
-  public String getAttachmentURL(String fileId, boolean alias) {
+  public String getAttachmentURL(final String fileId, final boolean fromAlias) {
     SimpleDocument attachment = AttachmentServiceProvider.getAttachmentService().
         searchDocumentById(new SimpleDocumentPK(fileId), getLanguage());
-    return getDocumentVersionURL(attachment, alias);
+    return getDocumentVersionURL(attachment, fromAlias);
   }
 
   /**
    * Returns URL of the right version of the given document according to current folder rights
    * if user is a reader, returns last public version (null if it does not exist)
    * if user is not a reader, returns last version (public or working one)
-   * @param document
+   * @param document a loaded {@link SimpleDocument} instance.
+   * @param fromAlias true if getting document version from an alias.
    * @return the URL of right version or null
    */
-  private String getDocumentVersionURL(SimpleDocument document, boolean alias) {
-    SimpleDocument version = document.getLastPublicVersion();
-    if (document.getVersionMaster().canBeAccessedBy(getUserDetail())) {
-      version = document.getVersionMaster();
-    }
-    if (version != null) {
-      if (alias) {
-        return version.getAliasURL();
-      }
-      return URLUtil.getApplicationURL() + version.getAttachmentURL();
-    }
-    return null;
+  private String getDocumentVersionURL(final SimpleDocument document, final boolean fromAlias) {
+    return Optional.ofNullable(document.getLastPublicVersion())
+        .map(v -> {
+          if (!fromAlias && v.getVersionMaster().canBeAccessedBy(getUserDetail())) {
+            return v.getVersionMaster();
+          }
+          return v;
+        })
+        .map(v -> URLUtil.getApplicationURL() + v.getAttachmentURL())
+        .orElse(null);
   }
 
   public synchronized List<NodeDetail> getSubTopics(String rootId) {

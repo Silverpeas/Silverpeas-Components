@@ -100,8 +100,8 @@ import static org.silverpeas.core.contribution.model.CoreContributionType.NODE;
 public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionController> {
 
   private static final long serialVersionUID = 1L;
-  private static final StatisticRequestHandler STATISTIC_REQUEST_HANDLER =
-      new StatisticRequestHandler();
+  private static final StatisticRequestHandler STATISTIC_REQUEST_HANDLER = new StatisticRequestHandler();
+  private static final String SINGLE_ATTACHMENT_URL_ATTR = "SingleAttachmentURL";
 
   /**
    * This method creates a KmeliaSessionController instance
@@ -660,14 +660,14 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           boolean alreadyOpened = "1".equals(fileAlreadyOpened);
           String attachmentId = (String) request.getAttribute("AttachmentId");
           String documentId = (String) request.getAttribute("DocumentId");
-          if (!alreadyOpened && kmelia.openSingleAttachmentAutomatically() &&
-              !kmelia.isCurrentPublicationHaveContent()) {
-            request.setAttribute("SingleAttachmentURL", kmelia.
-                getSingleAttachmentURLOfCurrentPublication(alias));
-          } else if (!alreadyOpened && attachmentId != null) {
-            request.setAttribute("SingleAttachmentURL", kmelia.getAttachmentURL(attachmentId, alias));
-          } else if (!alreadyOpened && documentId != null) {
-            request.setAttribute("SingleAttachmentURL", kmelia.getAttachmentURL(documentId, alias));
+          if (!alreadyOpened) {
+            if (kmelia.openSingleAttachmentAutomatically() && !kmelia.isCurrentPublicationHaveContent()) {
+              request.setAttribute(SINGLE_ATTACHMENT_URL_ATTR, kmelia.getSingleAttachmentURLOfCurrentPublication(alias));
+            } else if (attachmentId != null) {
+              request.setAttribute(SINGLE_ATTACHMENT_URL_ATTR, kmelia.getAttachmentURL(attachmentId, alias));
+            } else if (documentId != null) {
+              request.setAttribute(SINGLE_ATTACHMENT_URL_ATTR, kmelia.getAttachmentURL(documentId, alias));
+            }
           }
 
           // Attachments area must be displayed or not ?
