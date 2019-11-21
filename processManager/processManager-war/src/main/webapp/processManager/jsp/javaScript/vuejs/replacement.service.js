@@ -46,7 +46,7 @@
     var __load = function(roleName) {
       return User.get({
         component : context.componentInstanceId,
-        userStatesToExclude : ['DEACTIVATED'],
+        userStatesToExclude : ['DEACTIVATED', 'REMOVED'],
         roles : roleName
       }).then(function(users) {
         users.forEach(function(user) {
