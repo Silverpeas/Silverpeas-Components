@@ -44,6 +44,7 @@ import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.date.TemporalFormatter;
 import org.silverpeas.core.io.media.image.thumbnail.ThumbnailSettings;
 import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
 import org.silverpeas.core.node.model.NodePK;
@@ -1103,7 +1104,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
           writer.write(getUserName(kmeliaPub, kmeliaScc));
           writer.write("</span>");
         }
-        writer.write("<span class=\"publication-date\">"+resources.getOutputDate(pub.getUpdateDate())+"</span>");
+        writer.write("<span class=\"publication-date\">"+ TemporalFormatter.toLocalized(pub.getVisibility().getPeriod().getLocalStartDate(kmeliaScc.getZoneId()), language) +"</span>");
         if (displayLinks) {
           String link = URLUtil.getSimpleURL(URLUtil.URL_PUBLI, pub.getPK().getId());
           writer.write("<a class=\"sp-permalink publication-hyperlink\" href=\"" + link + "\"><img src=\"" + linkIcon +
