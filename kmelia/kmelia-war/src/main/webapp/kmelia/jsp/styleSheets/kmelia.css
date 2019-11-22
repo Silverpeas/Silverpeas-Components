@@ -78,7 +78,7 @@ body.treeView > div[id*="kmelia"] > div.kmelia  #topPage .cellBodyWindows{
 }
 
 #preview .inlineMessage {
-  margin-top: 0px;
+  margin-top: 0;
 }
 
 #infoPublication{
@@ -492,6 +492,8 @@ body.treeView > div[id*="kmelia"] > div.kmelia  #topPage .cellBodyWindows{
   float: none;
   font-size: 120%;
   font-weight: bold;
+  margin-left: 0;
+  margin-right: 0;
 }
 
 .inlineMessage a.button {
