@@ -277,7 +277,7 @@ public class MyDBWebController
     }
     return Stream.of(row.split(";"))
         .map(s -> s.split(":"))
-        .collect(Collectors.toMap(f -> f[0], f -> f[1]));
+        .collect(Collectors.toMap(f -> f[0], f -> f.length == 2 ? f[1] : "null"));
   }
 
   @POST
