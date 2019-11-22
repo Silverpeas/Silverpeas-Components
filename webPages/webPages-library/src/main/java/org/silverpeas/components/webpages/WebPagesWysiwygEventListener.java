@@ -30,6 +30,7 @@ import org.silverpeas.core.contribution.model.WysiwygContent;
 import org.silverpeas.core.contribution.content.wysiwyg.notification.WysiwygEvent;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
+import org.silverpeas.core.subscription.ResourceSubscriptionService;
 
 import javax.inject.Inject;
 
@@ -56,8 +57,8 @@ public class WebPagesWysiwygEventListener extends CDIResourceEventListener<Wysiw
     String componentId = content.getContribution().getContributionId().getComponentInstanceId();
 
     // If parameter useSubscription is used
-    if ("yes".equals(
-        organisationController.getComponentParameterValue(componentId, "useSubscription"))) {
+    if ("yes".equals(organisationController.getComponentParameterValue(componentId,
+        ResourceSubscriptionService.Constants.SUBSCRIPTION_PARAMETER))) {
       if (isAboutWebPage(content)) {
         WebPagesUserNotifier.notify(new NodePK("0", componentId), userId);
       }
