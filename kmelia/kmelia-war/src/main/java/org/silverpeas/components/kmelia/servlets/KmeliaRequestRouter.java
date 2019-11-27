@@ -866,6 +866,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
                 .withBrowseInfo(browseInfo)
                 .withContributionId(
                     ContributionIdentifier.from(kmelia.getComponentId(), "Node_" + subTopicId, NODE))
+                .withIndexation(false)
                 .withContentLanguage(kmelia.getCurrentLanguage())
                 .withComeBackUrl(URLUtil.getApplicationURL() +
                     URLUtil.getURL(kmelia.getSpaceId(), kmelia.getComponentId()) +

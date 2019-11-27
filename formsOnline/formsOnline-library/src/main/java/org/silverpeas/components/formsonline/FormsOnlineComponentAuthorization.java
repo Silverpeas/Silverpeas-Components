@@ -2,7 +2,7 @@ package org.silverpeas.components.formsonline;
 
 import org.silverpeas.components.formsonline.model.FormsOnlineDatabaseException;
 import org.silverpeas.components.formsonline.model.FormsOnlineService;
-import org.silverpeas.core.security.authorization.AccessControlContext;
+import org.silverpeas.core.security.authorization.AccessControlOperation;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.security.authorization.ComponentAuthorization;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -29,7 +29,7 @@ public class FormsOnlineComponentAuthorization implements ComponentAuthorization
   @Override
   public <T> Stream<T> filter(final Collection<T> resources,
       final Function<T, ComponentResourceReference> converter, final String userId,
-      final AccessControlContext context) {
+      final AccessControlOperation... operations) {
     Set<String> componentIds = resources.stream()
         .map(r -> converter.apply(r).getInstanceId())
         .collect(Collectors.toSet());

@@ -23,11 +23,13 @@ package org.silverpeas.components.kmelia;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.security.authorization.AccessControlContext;
+import org.silverpeas.core.security.authorization.AccessControlOperation;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.security.authorization.ComponentAuthorization;
 import org.silverpeas.core.security.authorization.NodeAccessControl;
 import org.silverpeas.core.security.authorization.PublicationAccessControl;
 import org.silverpeas.core.util.MapUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Named;
 import java.util.Collection;
@@ -60,29 +62,38 @@ public class KmeliaComponentAuthorization implements ComponentAuthorization {
   @Override
   public <T> Stream<T> filter(final Collection<T> resources,
       final Function<T, ComponentResourceReference> converter, final String userId,
-      final AccessControlContext context) {
-    final Map<PublicationPK, ComponentResourceReference> pubPks = new HashMap<>(resources.size());
-    final Map<NodePK, ComponentResourceReference> nodePks = new HashMap<>(resources.size());
+      final AccessControlOperation... operations) {
+    final Map<PublicationPK, Set<ComponentResourceReference>> pubPks = new HashMap<>(resources.size());
+    final Map<NodePK, Set<ComponentResourceReference>> nodePks = new HashMap<>(resources.size());
     final Map<String, Set<ComponentResourceReference>> instanceIds = new HashMap<>(resources.size());
     final Set<ComponentResourceReference> authorized = new HashSet<>(resources.size());
     resources.forEach(r -> {
       final ComponentResourceReference resourceRef = converter.apply(r);
       final String resourceType = resourceRef.getType();
-      if (isHandledKmeliaResourceType(resourceType)) {
-        pubPks.put(new PublicationPK(resourceRef.getLocalId(), resourceRef.getInstanceId()), resourceRef);
-      } else if (NODE_TYPE.equalsIgnoreCase(resourceType)) {
-        nodePks.put(new NodePK(resourceRef.getLocalId(), resourceRef.getInstanceId()), resourceRef);
-      } else if (isDefined(resourceRef.getInstanceId())) {
-        MapUtil.putAddSet(instanceIds, resourceRef.getInstanceId(), resourceRef);
-      } else {
-        authorized.add(resourceRef);
-      }
+        if (isHandledKmeliaResourceType(resourceType)) {
+          if (StringUtil.isLong(resourceRef.getLocalId())) {
+            MapUtil.putAddSet(pubPks,
+                new PublicationPK(resourceRef.getLocalId(), resourceRef.getInstanceId()),
+                resourceRef);
+          }
+        } else if (NODE_TYPE.equalsIgnoreCase(resourceType)) {
+          MapUtil
+              .putAddSet(nodePks, new NodePK(resourceRef.getLocalId(), resourceRef.getInstanceId()),
+                  resourceRef);
+        } else if (isDefined(resourceRef.getInstanceId())) {
+          MapUtil.putAddSet(instanceIds, resourceRef.getInstanceId(), resourceRef);
+        } else {
+          authorized.add(resourceRef);
+        }
     });
-    PublicationAccessControl.get().filterAuthorizedByUser(pubPks.keySet(), userId, context)
-        .forEach(p -> authorized.add(pubPks.get(p)));
-    NodeAccessControl.get().filterAuthorizedByUser(nodePks.keySet(), userId, context)
-        .forEach(p -> authorized.add(nodePks.get(p)));
-    ComponentAccessControl.get().filterAuthorizedByUser(instanceIds.keySet(), userId, context)
+    PublicationAccessControl.get().filterAuthorizedByUser(pubPks.keySet(), userId, AccessControlContext
+        .init().onOperationsOf(operations))
+        .forEach(p -> authorized.addAll(pubPks.get(p)));
+    NodeAccessControl.get().filterAuthorizedByUser(nodePks.keySet(), userId, AccessControlContext
+        .init().onOperationsOf(operations))
+        .forEach(p -> authorized.addAll(nodePks.get(p)));
+    ComponentAccessControl.get().filterAuthorizedByUser(instanceIds.keySet(), userId, AccessControlContext
+        .init().onOperationsOf(operations))
         .forEach(p -> authorized.addAll(instanceIds.get(p)));
     return resources.stream().filter(r -> authorized.contains(converter.apply(r)));
   }
