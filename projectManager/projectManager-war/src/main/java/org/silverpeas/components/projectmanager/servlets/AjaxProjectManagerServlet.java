@@ -29,9 +29,9 @@ import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.JSONCodec.JSONArray;
+import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
-import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.servlet.http.HttpServlet;
@@ -130,7 +130,7 @@ public class AjaxProjectManagerServlet extends HttpServlet {
       });
     }
 
-    res.setContentType(FileUtil.XML_MIME_TYPE);
+    res.setContentType(MimeTypes.XML_MIME_TYPE);
     res.setHeader("charset", Charsets.UTF_8.name());
     Writer writer = res.getWriter();
     writer.write(output);
