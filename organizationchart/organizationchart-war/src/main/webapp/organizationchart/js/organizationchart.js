@@ -1,3 +1,33 @@
+document.onreadystatechange = function(){
+	if(document.readyState === 'complete'){
+		placeCells();
+		buildLinks();
+
+		var maxWidth = 0;
+		var maxHeight = 0;
+		// supprime le px
+		for (i = 0; i < jCells.length; i++)
+		{
+		  var div = jCells[i].div;
+		  maxWidth = Math.max(maxWidth, div.offsetLeft + div.offsetWidth + 2);
+		  var height = parseInt(div.style.top.substring(0, div.style.top.indexOf('px'))) + div.offsetHeight;
+		  maxHeight = (maxHeight > height) ? maxHeight : height;
+		}
+
+		// on centre le scroll sur la case 0 (moitié de la largeur max moins un
+		// demi écran moins une demi cellule)
+		window.scroll( parseInt( maxWidth / 2 - screen.width / 2 + CELLSIZE / 2), 0);
+		mainDiv.style.height = maxHeight + "px";
+
+		centerBoxesAndLinks();
+	
+		activateUserZoom();
+	}
+}
+
+
+
+
 // TRICK to get all elements by class name
 document.getElementsByClassName = function(cl) {
 	var retnode = [];
@@ -130,29 +160,6 @@ function chartinit()
 
   buildCellDIVs();
   buildUpAndDownLinks();
-  placeCells();
-  buildLinks();
-
-
-  var maxWidth = 0;
-  var maxHeight = 0;
-  // supprime le px
-  for (i = 0; i < jCells.length; i++)
-  {
-	  var div = jCells[i].div;
-	  maxWidth = Math.max(maxWidth, div.offsetLeft + div.offsetWidth + 2);
-	  var height = parseInt(div.style.top.substring(0, div.style.top.indexOf('px'))) + div.offsetHeight;
-	  maxHeight = (maxHeight > height) ? maxHeight : height;
-  }
-
-  // on centre le scroll sur la case 0 (moitié de la largeur max moins un
-  // demi écran moins une demi cellule)
-  window.scroll( parseInt( maxWidth / 2 - screen.width / 2 + CELLSIZE / 2), 0);
-  mainDiv.style.height = maxHeight + "px";
-
-  centerBoxesAndLinks();
-  
-  activateUserZoom();
 }
 
 function centerBoxesAndLinks() {
