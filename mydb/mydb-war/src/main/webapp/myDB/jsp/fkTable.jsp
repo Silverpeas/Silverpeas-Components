@@ -69,7 +69,7 @@
             <c:forEach var="field" items="${columns}">
               <c:set var="valueToRender"/>
               <c:if test="${not empty row.pkValue}">
-                <c:set var="valueToRender"><a href='javascript:window.selectFk("${rowId}", ${row.toJSON()});'></c:set>
+                <c:set var="valueToRender"><a href='javascript:window.selectFk("${rowId}", rows["${row.pkValue}"]);'></c:set>
               </c:if>
               <c:set var="valueToRender">${valueToRender}${row.data.getFieldValue(field.name)}</c:set>
               <c:if test="${not empty row.pkValue}">
@@ -81,8 +81,12 @@
         </view:arrayLines>
       </view:arrayPane>
       <script type="text/javascript">
+        var rows = [];
         whenSilverpeasReady(function() {
           sp.arrayPane.ajaxControls('#fk-table-view');
+          <c:forEach var="row" items="${rows}">
+           rows['${row.pkValue}'] = ${row.toJSON()};
+           </c:forEach>
           selectCurrentFk('fk-row-${requestScope[selectedForeignKey]}');
         });
       </script>
