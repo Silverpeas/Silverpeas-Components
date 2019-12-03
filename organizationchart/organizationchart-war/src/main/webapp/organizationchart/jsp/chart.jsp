@@ -60,7 +60,7 @@
     <script type="text/javascript">
     var organizationchartPath = '<%=request.getContextPath()%>/organizationchart/';
     </script>
-    <script type="text/javascript" src="<c:url value="/organizationchart/js/organizationchart.js" />" ></script>
+    <view:script src="/organizationchart/js/organizationchart.js"/>
     <script type="text/javascript">
 	    function userDetail(url) {
 	    	$("#userDetailDialog").dialog("option", "title", "${userDetailsTitle}");
@@ -76,12 +76,12 @@
 
         $("#userDetailDialog").dialog(dialogOpts);    //end dialog
         
-        $(document).ready(function() {
-        	chartinit();
-        	$("a").click(function() {
-        		if ($(this).attr("target") != "_blank" && !$(this).attr("href").startsWith("javascript:")) {
+        whenSilverpeasReady().then(function() {
+          chartinit();
+          $("a").click(function() {
+            if ($(this).attr("target") != "_blank" && !$(this).attr("href").startsWith("javascript:")) {
               $.progressMessage();
-        		}
+            }
           });
         });
         
