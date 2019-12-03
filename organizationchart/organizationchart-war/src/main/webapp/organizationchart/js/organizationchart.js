@@ -195,9 +195,11 @@ function buildCellDIV(jCell)
 
 	// Main DIV
 	var div = document.createElement("DIV");
-	var uniqueId = jCell.detailsURL.replace('Main?baseOu=', '');
-	uniqueId = 'Ou' + uniqueId;
-	div.className = "cell"+jCell.className+" "+jCell.extraClassName+" "+uniqueId;
+	var uniqueId = decodeURIComponent(StringUtil.defaultStringIfNotDefined(jCell.detailsURL)).replace('Main?baseOu=', '').replace(/[^a-z0-9]/ig, '_');
+  if (uniqueId) {
+    div.id += 'uniqueId_' + uniqueId;
+  }
+  div.className = "cell"+jCell.className+" "+jCell.extraClassName;
 
 	// DIV Content as a HTML table
 	var table = document.createElement("TABLE");
