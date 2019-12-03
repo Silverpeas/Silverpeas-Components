@@ -195,7 +195,11 @@ function buildCellDIV(jCell)
 
 	// Main DIV
 	var div = document.createElement("DIV");
-	div.className = "cell"+jCell.className+" "+jCell.extraClassName;
+	var uniqueId = decodeURIComponent(StringUtil.defaultStringIfNotDefined(jCell.detailsURL)).replace('Main?baseOu=', '').replace(/[^a-z0-9]/ig, '_');
+  if (uniqueId) {
+    div.id += 'uniqueId_' + uniqueId;
+  }
+  div.className = "cell"+jCell.className+" "+jCell.extraClassName;
 
 	// DIV Content as a HTML table
 	var table = document.createElement("TABLE");
