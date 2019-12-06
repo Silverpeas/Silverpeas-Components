@@ -51,7 +51,7 @@ public class DelegatedPublicationEventListener extends CDIResourceEventListener<
       final DelegatedNews delegatedNews = delegatedNewsService.getDelegatedNews(pubId);
       if (delegatedNews != null) {
         delegatedNewsService.updateDelegatedNews(pubDetail.getPK(), pubDetail.getUpdaterId(),
-            pubDetail.getVisibilityPeriod());
+            pubDetail.getVisibility());
       }
     }
   }

@@ -39,6 +39,7 @@
 <%
   List<DelegatedNews> listNews = (List<DelegatedNews>) request.getAttribute("ListNews");
   boolean isAdmin = newsScc.isAdmin();
+
 %>
 
 <c:set var="isAdmin" value="<%=isAdmin%>"/>
@@ -352,7 +353,7 @@
       ArrayCellText cellUpdateDate = arrayLine.addArrayCellText(updateDate);
       cellUpdateDate.setCompareOn(delegatedNews.getPublicationDetail().getUpdateDate());
       
-      arrayLine.addArrayCellText(UserNameGenerator.toString(delegatedNews.getContributorId(), "unknown"));
+      arrayLine.addArrayCellText(UserNameGenerator.toString(delegatedNews.getContributorId(), userId));
       
       String status = delegatedNews.getStatus();
       arrayLine.addArrayCellText(resources.getString("delegatednews.status."+status));

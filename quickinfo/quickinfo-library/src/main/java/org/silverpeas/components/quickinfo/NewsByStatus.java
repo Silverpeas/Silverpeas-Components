@@ -24,14 +24,15 @@
 
 package org.silverpeas.components.quickinfo;
 
+import org.silverpeas.components.quickinfo.model.News;
+import org.silverpeas.components.quickinfo.service.QuickInfoDateComparatorDesc;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.silverpeas.components.quickinfo.model.News;
-
-import org.silverpeas.components.quickinfo.service.QuickInfoDateComparatorDesc;
+import static org.silverpeas.core.date.TemporalConverter.asDate;
 
 public class NewsByStatus {
 
@@ -83,13 +84,15 @@ public class NewsByStatus {
 
   class QuickInfoBeginDateComparatorDesc implements Comparator<News> {
     public int compare(News pd1, News pd2) {
-      return pd1.getVisibilityPeriod().getBeginDate().compareTo(pd2.getVisibilityPeriod().getBeginDate());
+      return asDate(pd1.getVisibility().getPeriod().getStartDate())
+          .compareTo(asDate(pd2.getVisibility().getPeriod().getStartDate()));
     }
   }
 
   class QuickInfoEndDateComparatorDesc implements Comparator<News> {
     public int compare(News pd1, News pd2) {
-      return pd1.getVisibilityPeriod().getEndDate().compareTo(pd2.getVisibilityPeriod().getEndDate());
+      return asDate(pd1.getVisibility().getPeriod().getEndDate())
+          .compareTo(asDate(pd2.getVisibility().getPeriod().getEndDate()));
     }
   }
 

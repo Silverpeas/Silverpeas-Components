@@ -35,6 +35,7 @@
 <fmt:setLocale value="${lang}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <c:set var="componentId" value="${requestScope.browseContext[3]}"/>
+<c:set var="lookHelper" value="${sessionScope['Silverpeas_LookHelper']}"/>
 
 <fmt:message key="GML.manageSubscriptions" var="actionLabelManageSubscriptions"/>
 <fmt:message key="quickinfo.news.broadcast.mode.major" var="labelModeMajor"/>
@@ -53,7 +54,7 @@
 <%@ include file="checkQuickInfo.jsp" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.quickinfo">
+<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.quickinfo" xml:lang="${lang}">
 <head>
 <title>QuickInfo - Home</title>
 <view:looknfeel/>
@@ -122,7 +123,7 @@ function onDelete(id) {
         </div>
         <ul>
           <c:forEach items="${allOtherNews.notYetVisibles}" var="news">
-            <li><a href="View?Id=${news.id}"><span class="date">${silfn:formatDateAndHour(news.visibilityPeriod.beginDate, _language)}</span>${news.title}</a></li>
+            <li><a href="View?Id=${news.id}"><span class="date">${silfn:formatAsLocalDate(news.visibility.period.startDate, lookHelper.zoneId, lookHelper.language)}</span>${news.title}</a></li>
           </c:forEach>
         </ul>
       </div>
@@ -134,7 +135,7 @@ function onDelete(id) {
         </div>
         <ul>
           <c:forEach items="${allOtherNews.noMoreVisibles}" var="news">
-            <li><a href="View?Id=${news.id}"><span class="date">${silfn:formatDateAndHour(news.visibilityPeriod.endDate, _language)}</span>${news.title}</a></li>
+            <li><a href="View?Id=${news.id}"><span class="date">${silfn:formatAsLocalDate(news.visibility.period.endDate, lookHelper.zoneId, lookHelper.language)}</span>${news.title}</a></li>
           </c:forEach>
         </ul>
       </div>

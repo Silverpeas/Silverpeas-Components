@@ -26,10 +26,9 @@ import org.silverpeas.components.quickinfo.control.QuickInfoSessionController;
 import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.date.period.Period;
+import org.silverpeas.core.date.Period;
 import org.silverpeas.core.io.media.image.thumbnail.control.ThumbnailController;
 import org.silverpeas.core.io.upload.UploadedFile;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileUploadUtil;
@@ -38,10 +37,14 @@ import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 
+import java.io.IOException;
 import java.text.ParseException;
+import java.time.ZoneId;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+
+import static java.time.OffsetDateTime.ofInstant;
 
 public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSessionController> {
 
@@ -182,9 +185,6 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
       request.setAttribute("javax.servlet.jsp.jspException", e);
       destination = "/admin/jsp/errorpage.jsp";
     }
-    SilverTrace
-        .info("quickinfo", "QuickInfoRequestRooter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
-            "destination" + destination);
     return destination;
   }
 
@@ -206,7 +206,7 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
    * @throws Exception
    */
   private String saveQuickInfo(QuickInfoSessionController quickInfo, HttpRequest request,
-      boolean publish) throws Exception {
+      boolean publish) throws ParseException, IOException {
 
     List<FileItem> items = request.getFileItems();
     News news = requestToNews(items, quickInfo.getLanguage());
@@ -272,12 +272,9 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
   }
 
   private Period getPeriod(Date begin, Date end) {
-    if (begin == null) {
-      begin = DateUtil.MINIMUM_DATE;
-    }
-    if (end == null) {
-      end = DateUtil.MAXIMUM_DATE;
-    }
-    return Period.from(begin, end);
+    return Period.betweenNullable(
+        begin != null ? ofInstant(begin.toInstant(), ZoneId.systemDefault()) : null,
+        end != null ? ofInstant(end.toInstant(), ZoneId.systemDefault()) : null
+    );
   }
 }

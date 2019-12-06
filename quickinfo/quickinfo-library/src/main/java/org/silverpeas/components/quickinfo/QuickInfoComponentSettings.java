@@ -28,9 +28,11 @@ import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 
+import java.io.Serializable;
+
 import static org.silverpeas.components.delegatednews.service.DelegatedNewsService.Constants.DELEGATED_COMPONENT_PARAM;
 
-public class QuickInfoComponentSettings {
+public class QuickInfoComponentSettings implements Serializable {
 
   private String description;
   private boolean commentsEnabled = false;
