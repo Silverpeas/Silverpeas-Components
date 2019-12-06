@@ -55,6 +55,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import static org.silverpeas.core.contribution.publication.dao.PublicationCriteria.onComponentInstanceIds;
+
 @Singleton
 @Transactional(Transactional.TxType.SUPPORTS)
 public class DefaultWebSiteService implements WebSiteService {
@@ -627,7 +629,7 @@ public class DefaultWebSiteService implements WebSiteService {
       }
       // index all publications
       Collection<PublicationDetail> publications =
-          publicationService.getAllPublications(componentId);
+          publicationService.getPublicationsByCriteria(onComponentInstanceIds(componentId));
       for (final PublicationDetail pub : publications) {
         publicationService.createIndex(pub);
       }

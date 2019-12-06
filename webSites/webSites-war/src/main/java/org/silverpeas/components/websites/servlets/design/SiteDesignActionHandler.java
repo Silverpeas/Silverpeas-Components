@@ -29,7 +29,6 @@ import org.silverpeas.components.websites.servlets.WebSitesRequestRouter;
 import org.silverpeas.components.websites.siteManage.model.SiteDetail;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
-import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.web.http.HttpRequest;
 
 import javax.servlet.http.HttpServletRequest;
@@ -39,7 +38,7 @@ import java.util.Collection;
 import java.util.List;
 
 import static org.silverpeas.components.websites.servlets.WebSitesUtil.buildTab;
-import static org.silverpeas.components.websites.servlets.WebSitesUtil.getMachine;
+import static org.silverpeas.components.websites.servlets.WebSitesUtil.getComponentURL;
 
 /**
  * A handler of actions in the web site designing.
@@ -201,7 +200,7 @@ public class SiteDesignActionHandler {
    * enleve les http :// localhost :8000/ WAwebSiteUploads / WA0webSite17 /18/ et on garde
    * seulement rep /icon .gif
    */
-    String newCode = parseCodeSupprImage(controller, code, request, controller.getSettings(), currentPath);
+    String newCode = parseCodeSupprImage(controller, code, request, currentPath);
     /*
      * enleve les http://localhost :8000 /webactiv/RwebSite /jsp/ et on garde seulement
      * rep/page.html
@@ -473,17 +472,14 @@ public class SiteDesignActionHandler {
   }
 
   private String parseCodeSupprImage(WebSiteSessionController scc, String code,
-      HttpServletRequest request, SettingBundle settings, String currentPath) {
+      HttpServletRequest request, String currentPath) {
     String avant;
     String apres;
     int index;
     String finChemin;
-    String image =
-        "<IMG border=0 src=\"" + getMachine(request) + "/" + settings.getString("Context") +
-            "/" + scc.getComponentId() + "/";
-    int longueurImage = WEBSITE_BASE_URL_LENGTH +
-        (getMachine(request) + "/" + settings.getString("Context") + "/" +
-            scc.getComponentId() + "/").length();
+    final String componentURL = getComponentURL(request, scc.getComponentId()) + "/";
+    String image = "<IMG border=0 src=\"" + componentURL;
+    int longueurImage = WEBSITE_BASE_URL_LENGTH + componentURL.length();
     index = code.indexOf(image);
     if (index == -1) {
       return code;
@@ -505,7 +501,7 @@ public class SiteDesignActionHandler {
       String cheminContexte = finNode(scc, currentPath);
       List<String> tabContexte = buildTab(cheminContexte + "/");
       apres = computeApres(apres, tabContexte, tab, fichier);
-      return avant + parseCodeSupprImage(scc, apres, request, settings, currentPath);
+      return avant + parseCodeSupprImage(scc, apres, request, currentPath);
     }
   }
 
