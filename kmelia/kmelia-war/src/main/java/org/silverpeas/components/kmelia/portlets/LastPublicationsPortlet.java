@@ -24,32 +24,25 @@
 
 package org.silverpeas.components.kmelia.portlets;
 
-import org.silverpeas.core.web.portlets.FormNames;
+import org.silverpeas.components.kmelia.KmeliaTransversal;
+import org.silverpeas.core.admin.service.AdminController;
+import org.silverpeas.core.admin.user.model.UserFull;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.admin.service.AdminController;
-import org.silverpeas.core.admin.user.model.UserFull;
-import org.silverpeas.components.kmelia.KmeliaTransversal;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.web.portlets.FormNames;
 
-import javax.portlet.ActionRequest;
-import javax.portlet.ActionResponse;
-import javax.portlet.GenericPortlet;
-import javax.portlet.PortletException;
-import javax.portlet.PortletMode;
-import javax.portlet.PortletPreferences;
-import javax.portlet.PortletRequestDispatcher;
-import javax.portlet.PortletSession;
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
-import javax.portlet.ValidatorException;
+import javax.portlet.*;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
 
 public class LastPublicationsPortlet extends GenericPortlet implements FormNames {
+
+  private static final String MAX_AGE_ATTR = "maxAge";
+  private static final String UTF_8 = "UTF-8";
 
   @Override
   public void doView(RenderRequest request, RenderResponse response)
@@ -71,8 +64,8 @@ public class LastPublicationsPortlet extends GenericPortlet implements FormNames
       }
     }
     int maxAge = 0;
-    if (StringUtil.isInteger(pref.getValue("maxAge", "0"))) {
-      maxAge = Integer.parseInt(pref.getValue("maxAge", "0"));
+    if (StringUtil.isInteger(pref.getValue(MAX_AGE_ATTR, "0"))) {
+      maxAge = Integer.parseInt(pref.getValue(MAX_AGE_ATTR, "0"));
     }
     KmeliaTransversal kmeliaTransversal = new KmeliaTransversal(mainSessionController);
     List<PublicationDetail> publications = kmeliaTransversal.getUpdatedPublications(spaceId, maxAge,
@@ -82,6 +75,7 @@ public class LastPublicationsPortlet extends GenericPortlet implements FormNames
        request.setAttribute("rssUrl", rssUrl);
     }
     request.setAttribute("Publications", publications);
+    request.setAttribute("ZoneId", mainSessionController.getFavoriteZoneId());
     include(request, response, "portlet.jsp");
   }
 
@@ -128,15 +122,14 @@ public class LastPublicationsPortlet extends GenericPortlet implements FormNames
     if (request.getParameter(SUBMIT_FINISHED) != null) {
       processEditFinishedAction(request, response);
     } else if (request.getParameter(SUBMIT_CANCEL) != null) {
-      processEditCancelAction(request, response);
+      processEditCancelAction(response);
     }
   }
 
   /*
    * Process the "cancel" action for the edit page.
    */
-  private void processEditCancelAction(ActionRequest request,
-      ActionResponse response) throws PortletException {
+  private void processEditCancelAction(ActionResponse response) throws PortletException {
     response.setPortletMode(PortletMode.VIEW);
   }
 
@@ -149,7 +142,6 @@ public class LastPublicationsPortlet extends GenericPortlet implements FormNames
     String nbPublis = request.getParameter(TEXTBOX_NB_ITEMS);
     String maxAge = request.getParameter(TEXTBOX_MAX_AGE);
     String displayDescription = request.getParameter("displayDescription");
-
     // Check if it is a number
     try {
       int nb = Integer.parseInt(nbPublis);
@@ -157,26 +149,25 @@ public class LastPublicationsPortlet extends GenericPortlet implements FormNames
       if (nb <= 0 || nb > 30) {
         throw new NumberFormatException();
       }
-      // store preference
-      PortletPreferences pref = request.getPreferences();
-      try {
-        pref.setValue("nbPublis", nbPublis);
-        pref.setValue("maxAge", maxAge);
-        pref.setValue("displayDescription", displayDescription);
-        pref.store();
-      } catch (ValidatorException ve) {
-        log("could not set nbPublis", ve);
-        throw new PortletException("IFramePortlet.processEditFinishedAction", ve);
-      } catch (IOException ioe) {
-        log("could not set nbPublis", ioe);
-        throw new PortletException("IFramePortlet.prcoessEditFinishedAction", ioe);
-      }
-      response.setPortletMode(PortletMode.VIEW);
-
     } catch (NumberFormatException e) {
       response.setRenderParameter(ERROR_BAD_VALUE, "true");
       response.setPortletMode(PortletMode.EDIT);
     }
+    // store preference
+    PortletPreferences pref = request.getPreferences();
+    try {
+      pref.setValue("nbPublis", nbPublis);
+      pref.setValue(MAX_AGE_ATTR, maxAge);
+      pref.setValue("displayDescription", displayDescription);
+      pref.store();
+    } catch (ValidatorException ve) {
+      log("could not set nbPublis", ve);
+      throw new PortletException("IFramePortlet.processEditFinishedAction", ve);
+    } catch (IOException ioe) {
+      log("could not set nbPublis", ioe);
+      throw new PortletException("IFramePortlet.prcoessEditFinishedAction", ioe);
+    }
+    response.setPortletMode(PortletMode.VIEW);
   }
 
   private void log(String message, Exception ex) {
@@ -191,11 +182,11 @@ public class LastPublicationsPortlet extends GenericPortlet implements FormNames
     builder.append("/rsslastpublications/").append(spaceId);
     builder.append("?userId=").append(userId).append("&login=");
     try {
-      builder.append(URLEncoder.encode(user.getLogin(), "UTF-8"));
+      builder.append(URLEncoder.encode(user.getLogin(), UTF_8));
       builder.append("&password=");
-      builder.append(URLEncoder.encode(user.getPassword(), "UTF-8"));
+      builder.append(URLEncoder.encode(user.getPassword(), UTF_8));
       builder.append("&spaceId=");
-      builder.append(URLEncoder.encode(spaceId, "UTF-8"));
+      builder.append(URLEncoder.encode(spaceId, UTF_8));
     } catch (UnsupportedEncodingException e) {
       builder.append(user.getLogin());
       builder.append("&password=");

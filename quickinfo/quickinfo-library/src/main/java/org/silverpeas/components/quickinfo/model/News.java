@@ -28,6 +28,7 @@ import org.silverpeas.components.delegatednews.model.DelegatedNews;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.comment.service.CommentServiceProvider;
+import org.silverpeas.core.contribution.ContributionVisibility;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
@@ -38,7 +39,7 @@ import org.silverpeas.core.contribution.model.WithAttachment;
 import org.silverpeas.core.contribution.model.WithThumbnail;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
-import org.silverpeas.core.date.period.Period;
+import org.silverpeas.core.date.Period;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.io.media.image.thumbnail.control.ThumbnailController;
 import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
@@ -61,10 +62,14 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+
+import static org.silverpeas.core.date.TemporalConverter.asDate;
+import static org.silverpeas.core.date.TemporalConverter.asOffsetDateTime;
 
 @Entity
 @Table(name = "sc_quickinfo_news")
@@ -182,23 +187,23 @@ public class News extends SilverpeasJpaEntity<News, UuidIdentifier> implements S
   }
 
   public boolean isVisible() {
-    return getVisibilityPeriod().contains(new Date());
+    return getVisibility().isActive();
   }
 
   public boolean isNoMoreVisible() {
-    return new Date().after(getVisibilityPeriod().getEndDate());
+    return getVisibility().hasBeenActive();
   }
 
   public boolean isNotYetVisible() {
-    return new Date().before(getVisibilityPeriod().getBeginDate());
+    return getVisibility().willBeActive();
   }
 
   public void setVisibilityPeriod(Period period) {
     getPublication().setVisibilityPeriod(period);
   }
 
-  public Period getVisibilityPeriod() {
-    return getPublication().getVisibilityPeriod();
+  public ContributionVisibility getVisibility() {
+    return publication.getVisibility();
   }
 
   public void setContentToStore(String content) {
@@ -380,8 +385,12 @@ public class News extends SilverpeasJpaEntity<News, UuidIdentifier> implements S
   }
 
   public Date getOnlineDate() {
-    if (getPublishDate() != null && getVisibilityPeriod().getBeginDate().after(getPublishDate())) {
-      return getVisibilityPeriod().getBeginDate();
+    if (getPublishDate() != null) {
+      final Date visibilityStart = asDate(asOffsetDateTime(getPublication().getVisibility().getPeriod().getStartDate())
+          .atZoneSameInstant(ZoneOffset.systemDefault()));
+      if (visibilityStart.after(getPublishDate())) {
+        return visibilityStart;
+      }
     }
     return getPublishDate();
   }

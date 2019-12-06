@@ -27,20 +27,17 @@ import org.silverpeas.components.quickinfo.model.QuickInfoService;
 import org.silverpeas.components.quickinfo.model.QuickInfoServiceProvider;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.contribution.publication.service.PublicationService;
-import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.exception.DecodingException;
 import org.silverpeas.core.io.media.image.thumbnail.ThumbnailSettings;
 import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.subscription.SubscriptionService;
 import org.silverpeas.core.subscription.SubscriptionServiceProvider;
 import org.silverpeas.core.subscription.service.ComponentSubscription;
 import org.silverpeas.core.subscription.service.ComponentSubscriptionResource;
-import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -58,7 +55,6 @@ import static org.silverpeas.core.cache.service.VolatileIdentifierProvider.newVo
  */
 public class QuickInfoSessionController extends AbstractComponentSessionController {
 
-  private PublicationService publicationService;
   private QuickInfoComponentSettings instanceSettings;
 
   private List<News> mainList;
@@ -152,8 +148,7 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
    * @return an in memory instance of a news.
    */
   public News prepareEmptyNews() {
-    Period period = Period.from(DateUtil.MINIMUM_DATE, DateUtil.MAXIMUM_DATE);
-    News news = new News(getString("quickinfo.news.untitled"), null, period, false, false, false);
+    News news = new News(getString("quickinfo.news.untitled"), null, null, false, false, false);
     news.setDraft();
     news.setComponentInstanceId(getComponentId());
     // Dummy identifiers
@@ -198,7 +193,7 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
     news.setTitle(updatedNews.getTitle());
     news.setDescription(updatedNews.getDescription());
     news.setContentToStore(updatedNews.getContentToStore());
-    news.setVisibilityPeriod(updatedNews.getVisibilityPeriod());
+    news.setVisibilityPeriod(updatedNews.getVisibility().getSpecificPeriod().orElse(null));
     news.setUpdaterId(getUserId());
     news.setImportant(updatedNews.isImportant());
     news.setTicker(updatedNews.isTicker());
@@ -212,13 +207,6 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
         forcePublish);
 
     loadNewsLists(true);
-  }
-
-  @Override
-  public void close() {
-    if (publicationService != null) {
-      publicationService = null;
-    }
   }
 
   public ThumbnailSettings getThumbnailSettings() {
@@ -258,8 +246,7 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
       try {
         qiClassification = PdcClassificationEntity.fromJSON(positions);
       } catch (DecodingException e) {
-        SilverTrace.error("quickInfo", "QuickInfoSessionController.classifyQuickInfo",
-            "PdcClassificationEntity error", "Problem to read JSON", e);
+        SilverLogger.getLogger(this).error(e);
       }
       if (qiClassification != null && !qiClassification.isUndefined()) {
         pdcPositions = qiClassification.getPdcPositions();

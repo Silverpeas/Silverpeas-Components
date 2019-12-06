@@ -37,15 +37,17 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <c:out value="${error}"/>
 
 <%@ page import="org.silverpeas.components.delegatednews.control.DelegatedNewsSessionController"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory "%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayLine"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayColumn"%>
+<%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle "%>
+<%@ page import="org.silverpeas.core.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.core.web.mvc.controller.MainSessionController"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayCellText"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPane"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.icons.Icon"%>
-<%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
-<%@ page import="org.silverpeas.core.util.ResourceLocator" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayColumn"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayLine"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPane" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.icons.Icon" %>
+<%@ page import="org.silverpeas.core.admin.user.model.User" %>
 
 
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
@@ -53,6 +55,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 	DelegatedNewsSessionController newsScc = (DelegatedNewsSessionController) request.getAttribute("DelegatedNews");
 	GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 	MultiSilverpeasBundle resources = (MultiSilverpeasBundle)request.getAttribute("resources");
+	String userId = User.getCurrentRequester().getId();
 	
 	if (newsScc == null) {
 	    // No session controller in the request -> security exception

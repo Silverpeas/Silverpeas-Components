@@ -34,8 +34,8 @@
     <message lang="de">Delegierte Nachrichten</message>
   </label>
   <description>
-    <message lang="fr">Cette application permet la validation et la mise en ligne en page d'accueil des actualités soumises à validation depuis les Gestion documentaire I dont l'option Gestion des actualités est activée.</message>
-    <message lang="en">This application allows to validate and display news in home page. The news have been proposed from Theme Tracker which have the News manage option activated.</message>
+    <message lang="fr">Cette application permet la validation et la mise en ligne en page d'accueil des actualités soumises à validation depuis Actualités dont l'option Gestion des actualités est activée.</message>
+    <message lang="en">This application allows to validate and display news in home page. The news have been proposed from QuickInfo which have the News manage option activated.</message>
     <message lang="de">Diese Komponente ermöglicht es Nachrichten in der Homepage zu Validieren und anzuzeigen.</message>
   </description>
   <suite>
@@ -53,8 +53,8 @@
         <message lang="de">Redaktion</message>
       </label>
       <help>
-        <message lang="fr">L'équipe éditoriale valide ou refuse les actualités soumises par les contributeurs des différentes GED utilisées pour saisir les actualités.</message>
-        <message lang="en">The editorial team validates or denies the news submitted by contributors of the various GED used to capture the news.</message>
+        <message lang="fr">L'équipe éditoriale valide ou refuse les actualités soumises par les contributeurs des différentes Actualités utilisées pour saisir les actualités.</message>
+        <message lang="en">The editorial team validates or denies the news submitted by contributors of the various QuickInfo used to capture the news.</message>
         <message lang="de">Redaktion</message>
       </help>
     </profile>

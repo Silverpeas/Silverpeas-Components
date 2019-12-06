@@ -28,6 +28,8 @@ import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.model.PublicationRuntimeException;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
+import org.silverpeas.core.date.Period;
+import org.silverpeas.core.date.TemporalConverter;
 import org.silverpeas.core.persistence.datasource.model.identifier.ExternalIntegerIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 
@@ -91,7 +93,7 @@ public class DelegatedNews extends BasicJpaEntity<DelegatedNews, ExternalInteger
   }
 
   public DelegatedNews(int pubId, String instanceId, String contributorId, Date validationDate,
-      Date beginDate, Date endDate) {
+      Period visibilityPeriod) {
     super();
     setId(Integer.toString(pubId));
     this.instanceId = instanceId;
@@ -100,12 +102,10 @@ public class DelegatedNews extends BasicJpaEntity<DelegatedNews, ExternalInteger
     if (validationDate != null) {
       this.validationDate = new Date(validationDate.getTime());
     }
-    if (beginDate != null) {
-      this.beginDate = new Date(beginDate.getTime());
-    }
-    if (endDate != null) {
-      this.endDate = new Date(endDate.getTime());
-    }
+    this.beginDate = visibilityPeriod != null && !visibilityPeriod.startsAtMinDate() ?
+        TemporalConverter.asDate(visibilityPeriod.getStartDate()) : null;
+    this.endDate = visibilityPeriod != null && !visibilityPeriod.endsAtMaxDate() ?
+        TemporalConverter.asDate(visibilityPeriod.getEndDate()) : null;
   }
 
   public int getPubId() {

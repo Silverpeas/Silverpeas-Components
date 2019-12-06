@@ -31,20 +31,24 @@ import org.silverpeas.components.delegatednews.notification.DelegatedNewsValidat
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.contribution.ContributionVisibility;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
-import org.silverpeas.core.date.period.Period;
+import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
+import java.time.ZoneId;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
 
 import static java.util.Collections.singletonList;
+import static org.silverpeas.core.date.TemporalConverter.asDate;
+import static org.silverpeas.core.date.TemporalConverter.asOffsetDateTime;
 import static org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper.buildAndSend;
 
 @Singleton
@@ -65,10 +69,11 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService, Component
    * Add new delegated news
    */
   @Override
-  public void submitNews(String id, SilverpeasContent news, String lastUpdaterId, Period visibilityPeriod, String userId) {
+  public void submitNews(String id, SilverpeasContent news, String lastUpdaterId,
+      ContributionVisibility visibility, String userId) {
     DelegatedNews delegatedNews =
-      new DelegatedNews(Integer.parseInt(id), news.getComponentInstanceId(), lastUpdaterId, new Date(),
-          visibilityPeriod.getBeginDate(), visibilityPeriod.getEndDate());
+        new DelegatedNews(Integer.parseInt(id), news.getComponentInstanceId(), lastUpdaterId,
+            new Date(), visibility.getSpecificPeriod().orElse(null));
 
     notifyDelegatedNewsToValidate(delegatedNews, userId);
 
@@ -190,11 +195,11 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService, Component
    * Update delegated news identified by id
    * @param publicationPK delegated news identifier
    * @param updaterId updater identifier
-   * @param visibilityPeriod the visibility period to update
+   * @param visibility the visibility period to update
    */
   @Override
   public void updateDelegatedNews(PublicationPK publicationPK, String updaterId,
-      Period visibilityPeriod) {
+      ContributionVisibility visibility) {
     final DelegatedNews delegatedNews = dao.getById(publicationPK.getId());
     if (delegatedNews != null) {
       delegatedNews.setInstanceId(publicationPK.getInstanceId());
@@ -202,8 +207,14 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService, Component
       delegatedNews.setContributorId(updaterId);
       delegatedNews.setValidatorId(null);
       delegatedNews.setValidationDate(new Date());
-      delegatedNews.setBeginDate(visibilityPeriod.getBeginDate());
-      delegatedNews.setEndDate(visibilityPeriod.getEndDate());
+      delegatedNews.setBeginDate(visibility.getSpecificPeriod()
+          .filter(p -> !p.startsAtMinDate())
+          .map(p -> asDate(asOffsetDateTime(p.getStartDate()).atZoneSameInstant(ZoneId.systemDefault())))
+          .orElse(DateUtil.MINIMUM_DATE));
+      delegatedNews.setEndDate(visibility.getSpecificPeriod()
+          .filter(p -> !p.endsAtMaxDate())
+          .map(p -> asDate(asOffsetDateTime(p.getEndDate()).atZoneSameInstant(ZoneId.systemDefault())))
+          .orElse(DateUtil.MINIMUM_DATE));
       dao.saveAndFlush(delegatedNews);
       notifyDelegatedNewsToValidate(delegatedNews, updaterId);
     }

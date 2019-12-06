@@ -24,18 +24,23 @@
 package org.silverpeas.components.delegatednews.web;
 
 import org.silverpeas.components.delegatednews.model.DelegatedNews;
-import org.silverpeas.core.webapi.profile.UserProfileEntity;
-import org.silverpeas.core.webapi.base.WebEntity;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.date.Period;
+import org.silverpeas.core.webapi.base.WebEntity;
+import org.silverpeas.core.webapi.profile.UserProfileEntity;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * The delegated news entity is a delegated news object that is exposed in the web as an entity (web
@@ -214,19 +219,8 @@ public class DelegatedNewsEntity implements WebEntity {
 
   @Override
   public int hashCode() {
-    int hash = 7;
-    if (pubId != -1) {
-      hash = 17 * hash + Integer.toString(this.pubId).hashCode();
-    } else {
-      hash = 17 * hash + (this.instanceId != null ? this.instanceId.hashCode() : 0);
-      hash = 17 * hash + (this.contributor != null ? this.contributor.hashCode() : 0);
-      hash = 17 * hash + (this.validator != null ? this.validator.hashCode() : 0);
-      hash = 17 * hash + (this.validationDate != null ? this.validationDate.hashCode() : 0);
-      hash = 17 * hash + (this.beginDate != null ? this.beginDate.hashCode() : 0);
-      hash = 17 * hash + (this.endDate != null ? this.endDate.hashCode() : 0);
-      hash = 17 * hash + (this.newsOrder != -1 ? Integer.toString(this.newsOrder).hashCode() : 0);
-    }
-    return hash;
+    return Objects.hash(uri, pubId, pubTitle, instanceId, status, contributor, validator,
+        validationDate, beginDate, endDate, newsOrder);
   }
 
   /**
@@ -234,9 +228,17 @@ public class DelegatedNewsEntity implements WebEntity {
    * @return a delegated news instance.
    */
   public DelegatedNews toDelegatedNews() {
-    return
-        new DelegatedNews(this.pubId, this.instanceId, this.contributor.getId(),
-            this.validationDate, this.beginDate, this.endDate);
+    ZonedDateTime periodStart = null;
+    ZonedDateTime periodEnd = null;
+    if (this.beginDate != null) {
+      periodStart = this.beginDate.toInstant().atZone(ZoneOffset.systemDefault());
+    }
+    if (this.endDate != null) {
+      periodEnd = this.endDate.toInstant().atZone(ZoneId.systemDefault());
+    }
+    Period period = Period.betweenNullable(periodStart, periodEnd);
+    return new DelegatedNews(this.pubId, this.instanceId, this.contributor.getId(),
+            this.validationDate, period);
   }
 
   /**
