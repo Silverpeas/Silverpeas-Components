@@ -27,6 +27,8 @@ import org.silverpeas.components.delegatednews.model.DelegatedNews;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.webapi.base.WebEntity;
 import org.silverpeas.core.webapi.profile.UserProfileEntity;
@@ -57,7 +59,7 @@ public class DelegatedNewsEntity implements WebEntity {
   @XmlElement(defaultValue = "")
   private URI uri;
   @XmlElement(required = true)
-  private int pubId;
+  private String pubId;
   @XmlElement(required = true)
   private String pubTitle;
   @XmlElement(required = true)
@@ -115,7 +117,7 @@ public class DelegatedNewsEntity implements WebEntity {
    * Gets the identifier of the delegated news.
    * @return the delegated news identifier.
    */
-  public int getPubId() {
+  public String getPubId() {
     return this.pubId;
   }
 
@@ -200,8 +202,8 @@ public class DelegatedNewsEntity implements WebEntity {
       return false;
     }
     final DelegatedNewsEntity other = (DelegatedNewsEntity) obj;
-    if (this.pubId != -1 && other.getPubId() != -1) {
-      return this.pubId == other.getPubId();
+    if (!this.pubId.equals("-1") && !other.getPubId().equals("-1")) {
+      return this.pubId.equals(other.getPubId());
     } else {
       if (!this.instanceId.equals(other.getInstanceId()) ||
           !this.status.equals(other.getStatus()) ||
@@ -237,8 +239,9 @@ public class DelegatedNewsEntity implements WebEntity {
       periodEnd = this.endDate.toInstant().atZone(ZoneId.systemDefault());
     }
     Period period = Period.betweenNullable(periodStart, periodEnd);
-    return new DelegatedNews(this.pubId, this.instanceId, this.contributor.getId(),
-            this.validationDate, period);
+    ContributionIdentifier contributionId = ContributionIdentifier.from(this.pubId, this.instanceId,
+        PublicationDetail.TYPE);
+    return new DelegatedNews(contributionId, this.contributor.getId(), this.validationDate, period);
   }
 
   /**

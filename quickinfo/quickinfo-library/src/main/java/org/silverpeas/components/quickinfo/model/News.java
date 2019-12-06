@@ -89,8 +89,7 @@ public class News extends SilverpeasJpaEntity<News, UuidIdentifier> implements S
 
   private static final long serialVersionUID = 1L;
 
-  @Transient
-  private PublicationDetail publication;
+  @Transient  private PublicationDetail publication;
   @Transient
   private String content;
   @Transient

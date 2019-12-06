@@ -110,11 +110,11 @@ public class ListDelegatedNewsResource extends RESTWebService {
       List<DelegatedNews> initialListDelegatedNews) {
     boolean found;
     for (DelegatedNews delegatedNews : initialListDelegatedNews) {
-      int pubId = delegatedNews.getPubId();
+      String pubId = delegatedNews.getPubId();
       found = false;
       for (DelegatedNewsEntity delegatedNewsEntity : newDelegatedNews) {
         // the new tab of DelegatedNewsEntity without the delegated news deleted
-        if (pubId == delegatedNewsEntity.getPubId()) {
+        if (pubId.equals(delegatedNewsEntity.getPubId())) {
           found = true;
           break;
         }

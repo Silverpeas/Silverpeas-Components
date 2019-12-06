@@ -30,19 +30,20 @@ package org.silverpeas.components.delegatednews.service;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.shrinkwrap.api.Archive;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.components.delegatednews.model.DelegatedNews;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
-import org.silverpeas.core.date.period.Period;
+import org.silverpeas.core.date.Period;
 import org.silverpeas.core.test.BasicWarBuilder;
 import org.silverpeas.core.test.rule.DbSetupRule;
-import org.silverpeas.core.util.DateUtil;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -52,17 +53,14 @@ import static org.hamcrest.Matchers.notNullValue;
 @RunWith(Arquillian.class)
 public class DelegatedNewsServiceIT {
 
-  private static DelegatedNewsService service;
-
-  public DelegatedNewsServiceIT() {
-  }
+  private DelegatedNewsService service;
 
   @Rule
   public DbSetupRule dbSetupRule = DbSetupRule.createTablesFrom("create-database.sql")
       .loadInitialDataSetFrom("delegatednews-dataset.sql");
 
   @Deployment
-  public static Archive<?> createTestArchive() {
+  public static WebArchive createTestArchive() {
     return BasicWarBuilder.onWarForTestClass(DelegatedNewsServiceIT.class)
         .testFocusedOn(warBuilder -> {
           warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core");
@@ -72,24 +70,27 @@ public class DelegatedNewsServiceIT {
   }
 
   @Before
-  public void generalSetUp() throws Exception {
+  public void generalSetUp() {
     service = DelegatedNewsService.get();
   }
 
   @Test
-  public void testAddDelegatedNews() throws Exception {
+  public void testAddDelegatedNews() {
     String pubId = "4";
     String instanceId = "kmelia1";
     String contributorId = "1";
+    UserDetail contributor = new UserDetail();
+    contributor.setId(contributorId);
     PublicationDetail publi = new PublicationDetail();
     publi.setPk(new PublicationPK(pubId, instanceId));
-    service.submitNews(pubId, publi, contributorId,
-        Period.from(DateUtil.MINIMUM_DATE, DateUtil.MAXIMUM_DATE), contributorId);
+    publi.setAuthor(contributorId);
+    publi.setUpdaterId(contributorId);
+    service.submitNews(publi, Period.between(LocalDate.MIN, LocalDate.MAX), contributorId);
   }
 
   @Test
-  public void testGetDelegatedNews() throws Exception {
-    int pubId = 1;
+  public void testGetDelegatedNews() {
+    String pubId = "1";
     DelegatedNews detail = service.getDelegatedNews(pubId);
     assertThat(detail, notNullValue());
     assertThat(detail.getInstanceId(), is("kmelia1"));
@@ -97,27 +98,27 @@ public class DelegatedNewsServiceIT {
 
 
   @Test
-  public void testGetAllDelegatedNews() throws Exception {
+  public void testGetAllDelegatedNews() {
     List<DelegatedNews> listDetail = service.getAllDelegatedNews();
     assertThat(listDetail, notNullValue());
     assertThat(listDetail.size(), is(3));
   }
 
   @Test
-  public void testGetAllValidDelegatedNews() throws Exception {
+  public void testGetAllValidDelegatedNews() {
     List<DelegatedNews> listDetail = service.getAllValidDelegatedNews();
     assertThat(listDetail, notNullValue());
     assertThat(listDetail.size(), is(2));
   }
 
   @Test
-  public void testValidateDelegatedNews() throws Exception {
-    int pubId = 1;
+  public void testValidateDelegatedNews() {
+    String pubId = "1";
     String validatorId = "2";
     service.validateDelegatedNews(pubId, validatorId);
     DelegatedNews detail = service.getDelegatedNews(pubId);
     assertThat(detail, notNullValue());
-    assertThat(detail.getPubId(), is(1));
+    assertThat(detail.getPubId(), is("1"));
   }
 
 }

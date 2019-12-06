@@ -3,22 +3,21 @@ package org.silverpeas.components.quickinfo.repository;
 import org.hamcrest.Matchers;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.shrinkwrap.api.Archive;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.date.period.Period;
-import org.silverpeas.core.date.period.PeriodType;
+import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.test.BasicWarBuilder;
 import org.silverpeas.core.test.rule.DbSetupRule;
 import org.silverpeas.core.util.ServiceProvider;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -27,18 +26,15 @@ import static org.hamcrest.Matchers.hasSize;
 @RunWith(Arquillian.class)
 public class NewsRepositoryIT {
 
-  private final static int ROW_COUNT = 3;
+  private static final int ROW_COUNT = 3;
   private NewsRepository newsRepository;
-
-  public NewsRepositoryIT() {
-  }
 
   @Rule
   public DbSetupRule dbSetupRule = DbSetupRule.createTablesFrom("create-database.sql")
       .loadInitialDataSetFrom("quickinfo-dataset.sql");
 
   @Deployment
-  public static Archive<?> createTestArchive() {
+  public static WebArchive createTestArchive() {
     return BasicWarBuilder.onWarForTestClass(NewsRepositoryIT.class).testFocusedOn(warBuilder -> {
       warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core");
       warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core.services:silverpeas-core-pdc");
@@ -53,7 +49,7 @@ public class NewsRepositoryIT {
   }
 
   @Before
-  public void setUp() throws Exception {
+  public void setUp() {
     newsRepository = ServiceProvider.getService(NewsRepository.class);
   }
 
@@ -84,14 +80,15 @@ public class NewsRepositoryIT {
   }
 
   @Test
-  public void testSaving() throws Exception {
+  public void testSaving() {
     final String userId = "1";
     UserDetail user = new UserDetail();
     user.setId(userId);
     OperationContext.fromUser(user);
     News savedNews = Transaction.performInOne(() -> {
+      Period visibility = Period.between(LocalDate.now(), LocalDate.now().plusMonths(1));
       News news =
-          new News("test", "test", Period.from(new Date(), PeriodType.month), true, true, false);
+          new News("test", "test", visibility, true, true, false);
       news.setComponentInstanceId("quickinfo1");
       news.setPublicationId("45789");
       news.createdBy(user);

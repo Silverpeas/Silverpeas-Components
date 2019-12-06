@@ -343,7 +343,7 @@
     for (int i=0; i<listNews.size(); i++) {
       DelegatedNews delegatedNews = (DelegatedNews) listNews.get(i);
       
-      int pubId = delegatedNews.getPubId();
+      String pubId = delegatedNews.getPubId();
       String instanceId = delegatedNews.getInstanceId();
       ArrayLine arrayLine = arrayPane.addArrayLine();
       arrayLine.setId("delegatedNews_"+pubId);

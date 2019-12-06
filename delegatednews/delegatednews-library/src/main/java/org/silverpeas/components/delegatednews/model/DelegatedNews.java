@@ -24,12 +24,12 @@
 
 package org.silverpeas.components.delegatednews.model;
 
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.model.PublicationRuntimeException;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.date.Period;
-import org.silverpeas.core.date.TemporalConverter;
 import org.silverpeas.core.persistence.datasource.model.identifier.ExternalIntegerIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 
@@ -40,8 +40,13 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import java.io.Serializable;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.Objects;
+import java.util.Optional;
+
+import static org.silverpeas.core.date.TemporalConverter.asDate;
+import static org.silverpeas.core.date.TemporalConverter.asOffsetDateTime;
 
 @Entity
 @Table(name = "sc_delegatednews_news")
@@ -62,8 +67,6 @@ import java.util.Objects;
             "ORDER BY dn.newsOrder ASC, dn.beginDate ASC, dn.id.id ASC")})
 public class DelegatedNews extends BasicJpaEntity<DelegatedNews, ExternalIntegerIdentifier>
     implements Serializable {
-  //TODO replace UniqueIntegerIdentifier with ExternalIntegerIdentifier (to create)
-  // demander demain ce qu'il en est de l'identifiant de la table sc_delegatednews_news.
 
   private static final long serialVersionUID = 9192830552642027995L;
 
@@ -92,24 +95,21 @@ public class DelegatedNews extends BasicJpaEntity<DelegatedNews, ExternalInteger
 
   }
 
-  public DelegatedNews(int pubId, String instanceId, String contributorId, Date validationDate,
-      Period visibilityPeriod) {
+  public DelegatedNews(ContributionIdentifier contributionId, final String contributorId,
+      Date validationDate, Period visibilityPeriod) {
     super();
-    setId(Integer.toString(pubId));
-    this.instanceId = instanceId;
+    setId(contributionId.getLocalId());
+    this.instanceId = contributionId.getComponentInstanceId();
     this.status = NEWS_TO_VALIDATE;
     this.contributorId = contributorId;
     if (validationDate != null) {
       this.validationDate = new Date(validationDate.getTime());
     }
-    this.beginDate = visibilityPeriod != null && !visibilityPeriod.startsAtMinDate() ?
-        TemporalConverter.asDate(visibilityPeriod.getStartDate()) : null;
-    this.endDate = visibilityPeriod != null && !visibilityPeriod.endsAtMaxDate() ?
-        TemporalConverter.asDate(visibilityPeriod.getEndDate()) : null;
+    setVisibilityPeriod(visibilityPeriod);
   }
 
-  public int getPubId() {
-    return Integer.parseInt(getId());
+  public String getPubId() {
+    return getId();
   }
 
   public void setPubId(int pubId) {
@@ -160,16 +160,20 @@ public class DelegatedNews extends BasicJpaEntity<DelegatedNews, ExternalInteger
     return beginDate;
   }
 
-  public void setBeginDate(Date beginDate) {
-    this.beginDate = beginDate;
-  }
-
   public Date getEndDate() {
     return endDate;
   }
 
-  public void setEndDate(Date endDate) {
-    this.endDate = endDate;
+  public final void setVisibilityPeriod(final Period visibilityPeriod) {
+    final Optional<Period> specificPeriod = Optional.ofNullable(visibilityPeriod);
+    this.beginDate = specificPeriod
+        .filter(p -> !p.startsAtMinDate())
+        .map(p -> asDate(asOffsetDateTime(p.getStartDate()).atZoneSameInstant(ZoneId.systemDefault())))
+        .orElse(null);
+    this.endDate = specificPeriod
+        .filter(p -> !p.endsAtMaxDate())
+        .map(p -> asDate(asOffsetDateTime(p.getEndDate()).atZoneSameInstant(ZoneId.systemDefault())))
+        .orElse(null);
   }
 
   public int getNewsOrder() {
@@ -211,7 +215,7 @@ public class DelegatedNews extends BasicJpaEntity<DelegatedNews, ExternalInteger
       return false;
     }
     final DelegatedNews other = (DelegatedNews) obj;
-    if (this.getPubId() != other.getPubId()) {
+    if (!this.getPubId().equals(other.getPubId())) {
       return false;
     }
     if (!Objects.equals(this.instanceId, other.instanceId)) {
@@ -243,7 +247,7 @@ public class DelegatedNews extends BasicJpaEntity<DelegatedNews, ExternalInteger
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + getPubId();
+    result = prime * result + Integer.parseInt(getPubId());
     result = prime * result + ((instanceId == null) ? 0 : instanceId.hashCode());
     result = prime * result + ((status == null) ? 0 : status.hashCode());
     result = prime * result + ((contributorId == null) ? 0 : contributorId.hashCode());

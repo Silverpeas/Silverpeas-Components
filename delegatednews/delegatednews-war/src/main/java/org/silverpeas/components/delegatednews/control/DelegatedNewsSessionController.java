@@ -28,13 +28,16 @@ import org.silverpeas.components.delegatednews.model.DelegatedNews;
 import org.silverpeas.components.delegatednews.service.DelegatedNewsService;
 import org.silverpeas.components.delegatednews.service.DelegatedNewsServiceProvider;
 import org.silverpeas.components.delegatednews.web.DelegatedNewsEntity;
+import org.silverpeas.core.date.Period;
+import org.silverpeas.core.exception.EncodingException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.util.JSONCodec;
-import org.silverpeas.core.exception.EncodingException;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -44,7 +47,7 @@ import static org.silverpeas.core.admin.user.model.SilverpeasRole.user;
 
 public class DelegatedNewsSessionController extends AbstractComponentSessionController {
 
-  private DelegatedNewsService service = null;
+  private transient DelegatedNewsService service;
 
   /**
    * Standard Session Controller Constructeur
@@ -106,7 +109,7 @@ public class DelegatedNewsSessionController extends AbstractComponentSessionCont
     List<DelegatedNews> listResult = new ArrayList<>();
     String[] allowedComponentIds = this.getUserAvailComponentIds();
 
-    List<DelegatedNews> list = service.getAllDelegatedNews();
+    List<DelegatedNews> list = getService().getAllDelegatedNews();
     for (DelegatedNews delegatedNews : list) {
       String instanceId = delegatedNews.getInstanceId();
       if (isAvailComponentId(instanceId, allowedComponentIds)) {
@@ -120,8 +123,8 @@ public class DelegatedNewsSessionController extends AbstractComponentSessionCont
    * Validate delegated news identified by pubId
    * @param pubId the delegated news identifier to validate
    */
-  public void validateDelegatedNews(int pubId) {
-    service.validateDelegatedNews(pubId, getUserId());
+  public void validateDelegatedNews(String pubId) {
+    getService().validateDelegatedNews(pubId, getUserId());
   }
 
   /**
@@ -129,16 +132,23 @@ public class DelegatedNewsSessionController extends AbstractComponentSessionCont
    * @param pubId the delegated news identifer to refuse
    * @param refuseReasonText the reason why delegated news has been refused
    */
-  public void refuseDelegatedNews(int pubId, String refuseReasonText) {
+  public void refuseDelegatedNews(String pubId, String refuseReasonText) {
     // refuse l'actualité
-    service.refuseDelegatedNews(pubId, this.getUserId(), refuseReasonText);
+    getService().refuseDelegatedNews(pubId, this.getUserId(), refuseReasonText);
   }
 
   /**
    * Met à jour les dates de visibilité de l'actualité déléguée passée en paramètre
    */
-  public void updateDateDelegatedNews(int pubId, Date beginDate, Date endDate) {
-    service.updateDateDelegatedNews(pubId, beginDate, endDate);
+  public void updateDateDelegatedNews(String pubId, Date beginDate, Date endDate) {
+    final OffsetDateTime periodStart =
+        beginDate != null ? beginDate.toInstant().atOffset(ZoneOffset.UTC) : null;
+    final OffsetDateTime periodEnd =
+        endDate != null ? endDate.toInstant().atOffset(ZoneOffset.UTC) : null;
+    final Period visibilityPeriod =
+        beginDate != null && endDate != null ? Period.betweenNullable(periodStart, periodEnd) :
+            null;
+    getService().updateDateDelegatedNews(pubId, visibilityPeriod);
   }
 
   /**
@@ -171,5 +181,12 @@ public class DelegatedNewsSessionController extends AbstractComponentSessionCont
       throw new DelegatedNewsRuntimeException("DelegatedNewsSessionController.listAsJSON()",
           SilverpeasRuntimeException.ERROR, "root.EX_NO_MESSAGE", ex);
     }
+  }
+
+  private DelegatedNewsService getService() {
+    if (service == null) {
+      service = DelegatedNewsServiceProvider.getDelegatedNewsService();
+    }
+    return service;
   }
 }

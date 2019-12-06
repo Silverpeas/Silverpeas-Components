@@ -47,11 +47,10 @@ public class DelegatedPublicationEventListener extends CDIResourceEventListener<
   public void onUpdate(PublicationEvent event) {
     final PublicationDetail pubDetail = event.getTransition().getAfter();
     if (isDelegatedNewsActivated(pubDetail.getInstanceId())) {
-      final int pubId = Integer.parseInt(pubDetail.getId());
-      final DelegatedNews delegatedNews = delegatedNewsService.getDelegatedNews(pubId);
+      final DelegatedNews delegatedNews = delegatedNewsService.getDelegatedNews(pubDetail.getId());
       if (delegatedNews != null) {
-        delegatedNewsService.updateDelegatedNews(pubDetail.getPK(), pubDetail.getUpdaterId(),
-            pubDetail.getVisibility());
+        delegatedNewsService.updateDelegatedNews(pubDetail.getContributionId(),
+            pubDetail.getUpdaterId(), pubDetail.getVisibility().getSpecificPeriod().orElse(null));
       }
     }
   }
@@ -60,8 +59,7 @@ public class DelegatedPublicationEventListener extends CDIResourceEventListener<
   public void onDeletion(final PublicationEvent event) {
     final PublicationDetail pubDetail = event.getTransition().getBefore();
     if (isDelegatedNewsActivated(pubDetail.getInstanceId())) {
-      final int pubId = Integer.parseInt(pubDetail.getId());
-      delegatedNewsService.deleteDelegatedNews(pubId);
+      delegatedNewsService.deleteDelegatedNews(pubDetail.getId());
     }
   }
 

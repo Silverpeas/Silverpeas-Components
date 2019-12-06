@@ -90,7 +90,7 @@ public class DelegatedNewsRequestRouter
         destination = URLUtil.getURL(null, instanceId) + "ViewOnly?Id=" + pubId;
       } else if ("ValidateDelegatedNews".equals(function)) {
         String pubId = request.getParameter("PubId");
-        newsSC.validateDelegatedNews(Integer.parseInt(pubId));
+        newsSC.validateDelegatedNews(pubId);
         List<DelegatedNews> list = newsSC.getAllAvailDelegatedNews();
         request.setAttribute("ListNews", list);
         String listJSON = newsSC.getListDelegatedNewsJSON(list);
@@ -103,7 +103,7 @@ public class DelegatedNewsRequestRouter
       } else if ("RefuseDelegatedNews".equals(function)) {
         String pubId = request.getParameter("PubId");
         String refuseReasonText = request.getParameter("RefuseReasonText");
-        newsSC.refuseDelegatedNews(Integer.parseInt(pubId), refuseReasonText);
+        newsSC.refuseDelegatedNews(pubId, refuseReasonText);
         List<DelegatedNews> list = newsSC.getAllAvailDelegatedNews();
         request.setAttribute("ListNews", list);
         String listJSON = newsSC.getListDelegatedNewsJSON(list);
@@ -137,7 +137,7 @@ public class DelegatedNewsRequestRouter
           jEndDate = DateUtil.stringToDate(endDate, endHour, newsSC.getLanguage());
         }
 
-        newsSC.updateDateDelegatedNews(Integer.parseInt(pubId), jBeginDate, jEndDate);
+        newsSC.updateDateDelegatedNews(pubId, jBeginDate, jEndDate);
         List<DelegatedNews> list = newsSC.getAllAvailDelegatedNews();
         request.setAttribute("ListNews", list);
         String listJSON = newsSC.getListDelegatedNewsJSON(list);

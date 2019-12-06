@@ -31,24 +31,20 @@ import org.silverpeas.components.delegatednews.notification.DelegatedNewsValidat
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.contribution.ContributionVisibility;
-import org.silverpeas.core.contribution.model.SilverpeasContent;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
-import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.contribution.model.Contribution;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.date.Period;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
-import java.time.ZoneId;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
 
 import static java.util.Collections.singletonList;
-import static org.silverpeas.core.date.TemporalConverter.asDate;
-import static org.silverpeas.core.date.TemporalConverter.asOffsetDateTime;
 import static org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper.buildAndSend;
 
 @Singleton
@@ -65,62 +61,37 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService, Component
     dao.deleteByComponentInstanceId(componentInstanceId);
   }
 
-  /**
-   * Add new delegated news
-   */
   @Override
-  public void submitNews(String id, SilverpeasContent news, String lastUpdaterId,
-      ContributionVisibility visibility, String userId) {
-    DelegatedNews delegatedNews =
-        new DelegatedNews(Integer.parseInt(id), news.getComponentInstanceId(), lastUpdaterId,
-            new Date(), visibility.getSpecificPeriod().orElse(null));
-
+  public void submitNews(Contribution contribution, Period visibilityPeriod, String userId) {
+    DelegatedNews delegatedNews = new DelegatedNews(contribution.getContributionId(),
+        contribution.getLastModifier().getId(), new Date(), visibilityPeriod);
     notifyDelegatedNewsToValidate(delegatedNews, userId);
-
     dao.saveAndFlush(delegatedNews);
   }
 
-  /**
-   * Récupère une actualité déléguée correspondant à la publication Theme Tracker passée en
-   * paramètre
-   * @param pubId : l'id de la publication de Theme Tracker
-   * @return DelegatedNews : l'objet correspondant à l'actualité déléguée ou null si elle n'existe
-   * pas
-   */
   @Override
-  public DelegatedNews getDelegatedNews(int pubId) {
-    return dao.getById(Integer.toString(pubId));
+  public DelegatedNews getDelegatedNews(String contributionId) {
+    return dao.getById(contributionId);
   }
 
   @Override
-  public List<DelegatedNews> getDelegatedNews(final Collection<String> pubIds) {
-    return dao.getById(pubIds);
+  public List<DelegatedNews> getDelegatedNews(final Collection<String> contributionIds) {
+    return dao.getById(contributionIds);
   }
 
-  /**
-   * Retrieve all delegated news from Theme Tracker applications
-   * @return List<DelegatedNews> : list of delegated news
-   */
   @Override
   public List<DelegatedNews> getAllDelegatedNews() {
     return dao.findAllOrderedNews();
   }
 
-  /**
-   * Retrieve all valid delegated news
-   * @return List<DelegatedNews> : list of valid delegated news
-   */
   @Override
   public List<DelegatedNews> getAllValidDelegatedNews() {
     return dao.findByStatus(DelegatedNews.NEWS_VALID);
   }
 
-  /**
-   * Valide l'actualité déléguée passée en paramètre
-   */
   @Override
-  public void validateDelegatedNews(int pubId, String validatorId) {
-    DelegatedNews delegatedNews = dao.getById(Integer.toString(pubId));
+  public void validateDelegatedNews(String contributionId, String validatorId) {
+    DelegatedNews delegatedNews = dao.getById(contributionId);
     if (delegatedNews != null) {
       delegatedNews.setStatus(DelegatedNews.NEWS_VALID);
       delegatedNews.setValidatorId(validatorId);
@@ -131,12 +102,9 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService, Component
     }
   }
 
-  /**
-   * Refuse l'actualité déléguée passée en paramètre
-   */
   @Override
-  public void refuseDelegatedNews(int pubId, String validatorId, String refusalMotive) {
-    DelegatedNews delegatedNews = dao.getById(Integer.toString(pubId));
+  public void refuseDelegatedNews(String contributionId, String validatorId, String refusalMotive) {
+    DelegatedNews delegatedNews = dao.getById(contributionId);
     if (delegatedNews != null) {
       delegatedNews.setStatus(DelegatedNews.NEWS_REFUSED);
       delegatedNews.setValidatorId(validatorId);
@@ -147,22 +115,15 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService, Component
     }
   }
 
-  /**
-   * Met à jour les dates de visibilité de l'actualité déléguée passée en paramètre
-   */
   @Override
-  public void updateDateDelegatedNews(int pubId, Date dateHourBegin, Date dateHourEnd) {
-    DelegatedNews delegatedNews = dao.getById(Integer.toString(pubId));
+  public void updateDateDelegatedNews(String contributionId, Period visibilityPeriod) {
+    DelegatedNews delegatedNews = dao.getById(contributionId);
     if (delegatedNews != null) {
-      delegatedNews.setBeginDate(dateHourBegin);
-      delegatedNews.setEndDate(dateHourEnd);
+      delegatedNews.setVisibilityPeriod(visibilityPeriod);
       dao.saveAndFlush(delegatedNews);
     }
   }
 
-  /**
-   * @return
-   */
   private OrganizationController getOrganisationController() {
     return organizationController;
   }
@@ -179,7 +140,7 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService, Component
   }
 
   /**
-   * Notifie l'Equipe éditoriale d'une actualité à valider
+   * Notify the editorial team about a news to validate.
    */
   private void notifyDelegatedNewsToValidate(DelegatedNews news, String senderId) {
     final String delegatedNewsInstanceId = getAppId();
@@ -191,75 +152,49 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService, Component
     }
   }
 
-  /**
-   * Update delegated news identified by id
-   * @param publicationPK delegated news identifier
-   * @param updaterId updater identifier
-   * @param visibility the visibility period to update
-   */
   @Override
-  public void updateDelegatedNews(PublicationPK publicationPK, String updaterId,
-      ContributionVisibility visibility) {
-    final DelegatedNews delegatedNews = dao.getById(publicationPK.getId());
+  public void updateDelegatedNews(ContributionIdentifier id, String updaterId,
+      Period visibilityPeriod) {
+    final DelegatedNews delegatedNews = dao.getById(id.getLocalId());
     if (delegatedNews != null) {
-      delegatedNews.setInstanceId(publicationPK.getInstanceId());
+      delegatedNews.setInstanceId(id.getComponentInstanceId());
       delegatedNews.setStatus(DelegatedNews.NEWS_TO_VALIDATE);
       delegatedNews.setContributorId(updaterId);
       delegatedNews.setValidatorId(null);
       delegatedNews.setValidationDate(new Date());
-      delegatedNews.setBeginDate(visibility.getSpecificPeriod()
-          .filter(p -> !p.startsAtMinDate())
-          .map(p -> asDate(asOffsetDateTime(p.getStartDate()).atZoneSameInstant(ZoneId.systemDefault())))
-          .orElse(DateUtil.MINIMUM_DATE));
-      delegatedNews.setEndDate(visibility.getSpecificPeriod()
-          .filter(p -> !p.endsAtMaxDate())
-          .map(p -> asDate(asOffsetDateTime(p.getEndDate()).atZoneSameInstant(ZoneId.systemDefault())))
-          .orElse(DateUtil.MINIMUM_DATE));
+      delegatedNews.setVisibilityPeriod(visibilityPeriod);
       dao.saveAndFlush(delegatedNews);
       notifyDelegatedNewsToValidate(delegatedNews, updaterId);
     }
   }
 
-  /**
-   * Delete delegated news identified by pubId
-   * @param pubId the delegated news identifier to delete
-   */
   @Override
-  public void deleteDelegatedNews(int pubId) {
-    DelegatedNews delegatedNews = dao.getById(Integer.toString(pubId));
+  public void deleteDelegatedNews(String contributionId) {
+    DelegatedNews delegatedNews = dao.getById(contributionId);
     if (delegatedNews != null) {
       dao.delete(delegatedNews);
     }
   }
 
-  /**
-   * Notifie le dernier contributeur que l'actualité est validée
-   */
   private void notifyValidation(DelegatedNews news, String senderId) {
     String delegatedNewsInstanceId = getAppId();
-    // Notification du dernier contributeur
+    // Notification of the last contributor
     if (delegatedNewsInstanceId != null) {
       buildAndSend(new DelegatedNewsValidationNotification(news, User.getById(senderId)));
     }
   }
 
-  /**
-   * Notifie le dernier contributeur que l'actualité est refusée
-   */
   private void notifyDelegatedNewsRefused(DelegatedNews news, String refusalMotive, String userId) {
     String delegatedNewsInstanceId = getAppId();
-    // Notification du dernier contributeur
+    // Notification of the last contributor
     if (delegatedNewsInstanceId != null) {
       buildAndSend(new DelegatedNewsDeniedNotification(news, User.getById(userId), refusalMotive));
     }
   }
 
-  /**
-   * Met à jour l'ordre de l'actualité déléguée passée en paramètre
-   */
   @Override
-  public DelegatedNews updateOrderDelegatedNews(int pubId, int newsOrder) {
-    DelegatedNews delegatedNews = dao.getById(Integer.toString(pubId));
+  public DelegatedNews updateOrderDelegatedNews(String contributionId, int newsOrder) {
+    DelegatedNews delegatedNews = dao.getById(contributionId);
     delegatedNews.setNewsOrder(newsOrder);
     return dao.saveAndFlush(delegatedNews);
   }

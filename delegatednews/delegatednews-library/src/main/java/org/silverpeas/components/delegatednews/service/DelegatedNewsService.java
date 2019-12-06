@@ -24,48 +24,124 @@
 package org.silverpeas.components.delegatednews.service;
 
 import org.silverpeas.components.delegatednews.model.DelegatedNews;
-import org.silverpeas.core.contribution.ContributionVisibility;
-import org.silverpeas.core.contribution.model.SilverpeasContent;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.model.Contribution;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.date.Period;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 public interface DelegatedNewsService {
 
   class Constants {
+    /**
+     * The name of the component instance configuration parameter to use to indicate the
+     * contributions in the given component instance can be subject to be submitted as a news to
+     * publish in the home page.
+     */
     public static final String DELEGATED_COMPONENT_PARAM = "delegatedNews";
 
     private Constants() {
     }
   }
 
+  /**
+   * Gets the instance of the actual implementation of the {@link DelegatedNewsService} interface.
+   * @return a {@link DelegatedNewsService} instance.
+   */
   static DelegatedNewsService get() {
     return ServiceProvider.getService(DelegatedNewsService.class);
   }
 
-  void submitNews(String id, SilverpeasContent news, String lastUpdaterId,
-      ContributionVisibility visibility, String userId);
+  /**
+   * Submits the specified contribution as a delegated news. The submitted news can then be
+   * identified by the contribution identifier from which it is spawned.
+   * @param contribution the contribution to take as a news to publish.
+   * @param visibilityPeriod the period during which the news has to be visible. If null, the news
+   * is always visible.
+   * @param userId the unique identifier of the user that has submitted the contribution as a news.
+   */
+  void submitNews(Contribution contribution, Period visibilityPeriod, String userId);
 
-  DelegatedNews getDelegatedNews(int pubId);
+  /**
+   * Gets the delegated news matching the specified contribution.
+   * @param contributionId the unique identifier of the delegated news. It is the unique identifier of the
+   * contribution from which it was spawned.
+   * @return
+   */
+  DelegatedNews getDelegatedNews(String contributionId);
 
-  List<DelegatedNews> getDelegatedNews(Collection<String> pubIds);
+  /**
+   * Gets the delegated news matching the specified contribution.
+   * @param contributionIds a collection of unique identifiers, each of them referring a contribution
+   * from which a delegated news was spawned.
+   * @return a list of delegated news.
+   */
+  List<DelegatedNews> getDelegatedNews(Collection<String> contributionIds);
 
+  /**
+   * Gets all the delegated news.
+   * @return a list of all of the delegated news.
+   */
   List<DelegatedNews> getAllDelegatedNews();
 
+  /**
+   * Gets all the validated delegated news.
+   * @return a list of all of the delegated news that are validated.
+   */
   List<DelegatedNews> getAllValidDelegatedNews();
 
-  void validateDelegatedNews(int pubId, String validatorId);
+  /**
+   * Validates the specified delegated news.
+   * @param contributionId the unique identifier of the contribution from which the delegated news
+   * was spawned.
+   * @param validatorId the unique identifier of the validator.
+   */
+  void validateDelegatedNews(String contributionId, String validatorId);
 
-  void refuseDelegatedNews(int pubId, String validatorId, String refusalMotive);
+  /**
+   * Refuses the specified delegated news with the given motive.
+   * @param contributionId the unique identifier of the contribution from which the delegated news
+   * was spawned.
+   * @param validatorId the unique identifier of the validator.
+   * @param refusalMotive the motive of the refusal.
+   */
+  void refuseDelegatedNews(String contributionId, String validatorId, String refusalMotive);
 
-  void updateDateDelegatedNews(int pubId, Date dateHourBegin, Date dateHourEnd);
+  /**
+   * Updates the period of visibility of the specified delegated news.
+   * @param contributionId the unique identifier of the contribution from which the delegated news
+   * was spawned.
+   * @param visibilityPeriod the new visibility period. If null then the news will be always
+   * visible.
+   */
+  void updateDateDelegatedNews(String contributionId, Period visibilityPeriod);
 
-  void updateDelegatedNews(PublicationPK publicationPK, String updaterId, ContributionVisibility visibility);
+  /**
+   * Updates the news matching the specified contribution and from the update information. This
+   * method should be invoked when the matching contribution is updated.
+   * @param id the unique identifier of the updated contribution and from which the news has to be
+   * updated.
+   * @param updaterId the unique identifier of the contribution updater.
+   * @param visibilityPeriod the new period of visibility of the news. If null, then the news is
+   * always visible.
+   */
+  void updateDelegatedNews(ContributionIdentifier id, String updaterId, Period visibilityPeriod);
 
-  void deleteDelegatedNews(int pubId);
+  /**
+   * Deletes the specified delegated news.
+   * @param contributionId the unique identifier of the contribution from which the news was
+   * spawned.
+   */
+  void deleteDelegatedNews(String contributionId);
 
-  DelegatedNews updateOrderDelegatedNews(int pubId, int newsOrder);
+  /**
+   * Updates the order of the specified delegated news among the other news.
+   * @param contributionId the unique identifier of the contribution from which the deletaged news
+   * was spawned.
+   * @param newsOrder the new order of the news.
+   * @return the updated delegated news.
+   */
+  DelegatedNews updateOrderDelegatedNews(String contributionId, int newsOrder);
 }

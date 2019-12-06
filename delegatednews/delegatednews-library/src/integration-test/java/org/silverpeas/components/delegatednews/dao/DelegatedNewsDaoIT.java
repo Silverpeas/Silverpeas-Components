@@ -23,17 +23,19 @@
  */
 package org.silverpeas.components.delegatednews.dao;
 
-import org.silverpeas.components.delegatednews.model.DelegatedNews;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.shrinkwrap.api.Archive;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.components.delegatednews.model.DelegatedNews;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.test.BasicWarBuilder;
-import org.silverpeas.core.test.rule.DbUnitLoadingRule;
+import org.silverpeas.core.test.rule.DbSetupRule;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.Date;
@@ -46,40 +48,36 @@ import static org.hamcrest.Matchers.notNullValue;
 @RunWith(Arquillian.class)
 public class DelegatedNewsDaoIT {
 
-  private static DelegatedNewsRepository repo;
+  private DelegatedNewsRepository repo;
 
   @Rule
-  public DbUnitLoadingRule dbUnitLoadingRule =
-      new DbUnitLoadingRule("create-database.sql", "delegatednews-dataset.xml");
-
-  public DelegatedNewsDaoIT() {
-  }
+  public DbSetupRule dbSetupRule = DbSetupRule.createTablesFrom("create-database.sql")
+      .loadInitialDataSetFrom("delegatednews-data.sql");
 
   @Deployment
-  public static Archive<?> createTestArchive() {
-    return BasicWarBuilder.onWarForTestClass(DelegatedNewsDaoIT.class)
-        .testFocusedOn(warBuilder -> {
-          warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core");
-          warBuilder.addMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud");
-          warBuilder.addPackages(true, "org.silverpeas.components.delegatednews");
-        }).build();
+  public static WebArchive createTestArchive() {
+    return BasicWarBuilder.onWarForTestClass(DelegatedNewsDaoIT.class).testFocusedOn(warBuilder -> {
+      warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core");
+      warBuilder.addMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud");
+      warBuilder.addPackages(true, "org.silverpeas.components.delegatednews");
+    }).build();
   }
 
   @Before
-  public void generalSetUp() throws Exception {
+  public void generalSetUp() {
     repo = ServiceProvider.getService(DelegatedNewsRepository.class);
   }
 
   @Test
-  public void testInsertDelegatedNews() throws Exception {
+  public void testInsertDelegatedNews() {
     Transaction.performInOne(() -> {
-      Integer pubId = Integer.parseInt("4");
-      String instanceId = "kmelia1";
+      ContributionIdentifier contributionId =
+          ContributionIdentifier.from("kmelia1", "4", PublicationDetail.TYPE);
       String contributorId = "1";
       DelegatedNews expectedDetail =
-          new DelegatedNews(pubId, instanceId, contributorId, new Date(), new Date(), null);
+          new DelegatedNews(contributionId, contributorId, new Date(), null);
       expectedDetail = repo.save(expectedDetail);
-      DelegatedNews detail = repo.getById(Integer.toString(pubId));
+      DelegatedNews detail = repo.getById(contributionId.getLocalId());
       assertThat(detail, notNullValue());
       assertThat(detail.getPubId(), is(expectedDetail.getPubId()));
       assertThat(detail.getInstanceId(), is(expectedDetail.getInstanceId()));
@@ -89,7 +87,7 @@ public class DelegatedNewsDaoIT {
   }
 
   @Test
-  public void testGetDelegatedNews() throws Exception {
+  public void testGetDelegatedNews() {
     Integer pubId = Integer.parseInt("1");
     DelegatedNews detail = repo.getById(Integer.toString(pubId));
     assertThat(detail, notNullValue());
@@ -105,15 +103,15 @@ public class DelegatedNewsDaoIT {
 
 
   @Test
-  public void testFindDelegatedNewsByStatus() throws Exception {
+  public void testFindDelegatedNewsByStatus() {
     String status = DelegatedNews.NEWS_VALID;
     List<DelegatedNews> listDetail = repo.findByStatus(status);
     assertThat(listDetail, notNullValue());
     assertThat(listDetail.size(), is(2));
     DelegatedNews detail = listDetail.get(0);
-    assertThat(detail.getPubId(), is(3));
+    assertThat(detail.getPubId(), is("3"));
     detail = listDetail.get(1);
-    assertThat(detail.getPubId(), is(2));
+    assertThat(detail.getPubId(), is("2"));
 
     status = DelegatedNews.NEWS_REFUSED;
     listDetail = repo.findByStatus(status);
