@@ -960,22 +960,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   public synchronized void deleteClone() {
     if (getSessionClone() != null) {
       // delete clone
-      String cloneId = getSessionClone().getDetail().getPK().getId();
-      PublicationPK clonePK = getPublicationPK(cloneId);
-
-      getKmeliaService().deletePublication(clonePK);
+      getKmeliaService().deleteClone(getSessionClone().getPk());
 
       setSessionClone(null);
       refreshSessionPubliAndClone();
-
-      // delete references on clone
-      PublicationDetail pubDetail = getSessionPublication().getDetail();
-      pubDetail.setCloneId(null);
-      pubDetail.setCloneStatus(null);
-      pubDetail.setStatusMustBeChecked(false);
-      pubDetail.setUpdateDateMustBeSet(false);
-
-      getKmeliaService().updatePublication(pubDetail);
     }
   }
 
@@ -983,7 +971,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     return StringUtil.isInteger(id);
   }
 
-  public void refreshSessionPubliAndClone() {
+  private void refreshSessionPubliAndClone() {
     final KmeliaPublication sessionPubClone = getSessionClone();
     // Master refresh
     final String pubId = getSessionPublication().getDetail().getPK().getId();
@@ -1001,11 +989,15 @@ public class KmeliaSessionController extends AbstractComponentSessionController
    * @param links list of links to remove
    */
   private void addInfoLinks(String pubId, List<ResourceReference> links) {
-    getKmeliaService().addInfoLinks(getPublicationPK(pubId), links);
+    PublicationPK pubPK = getPublicationPK(pubId);
+    getKmeliaService().addInfoLinks(pubPK, links);
 
-    // reset current publication
+    // reset current publication and its location
+    NodePK nodePK = getKmeliaService().getPublicationFatherPK(pubPK);
+    setCurrentFolderId(nodePK.getId(), true);
+
     KmeliaPublication completPub =
-        getKmeliaService().getPublication(getPublicationPK(pubId), getCurrentFolderPK());
+        getKmeliaService().getPublication(pubPK, getCurrentFolderPK());
     setSessionPublication(completPub);
   }
 
