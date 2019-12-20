@@ -1104,7 +1104,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
           writer.write(getUserName(kmeliaPub, kmeliaScc));
           writer.write("</span>");
         }
-        writer.write("<span class=\"publication-date\">"+ TemporalFormatter.toLocalizedDate(pub.getVisibility().getPeriod().getStartDate(), kmeliaScc.getZoneId(), language) +"</span>");
+        writer.write("<span class=\"publication-date\">"+ TemporalFormatter.toLocalizedDate(pub.getVisibility().getPeriod().getStartDate(), kmeliaScc.getZoneId(), kmeliaScc.getLanguage()) +"</span>");
         if (displayLinks) {
           String link = URLUtil.getSimpleURL(URLUtil.URL_PUBLI, pub.getPK().getId());
           writer.write("<a class=\"sp-permalink publication-hyperlink\" href=\"" + link + "\"><img src=\"" + linkIcon +

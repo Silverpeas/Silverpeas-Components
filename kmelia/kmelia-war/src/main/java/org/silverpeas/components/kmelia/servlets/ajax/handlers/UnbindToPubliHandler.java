@@ -23,30 +23,21 @@
  */
 package org.silverpeas.components.kmelia.servlets.ajax.handlers;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.silverpeas.components.kmelia.KmeliaConstants;
-import org.silverpeas.core.util.StringUtil;
-
 import org.silverpeas.components.kmelia.control.KmeliaSessionController;
 import org.silverpeas.components.kmelia.servlets.ajax.AjaxHandler;
+import org.silverpeas.core.util.StringUtil;
 
-public class UnbindToPubliHandler implements AjaxHandler {
+import javax.servlet.http.HttpServletRequest;
+import java.util.Set;
+
+public class UnbindToPubliHandler extends AbstractBindingToPubliHandler implements AjaxHandler {
 
   @Override
   public String handleRequest(HttpServletRequest request, KmeliaSessionController controller) {
-    if (StringUtil.isDefined(request.getParameter("TopicToLinkId"))) {
-      @SuppressWarnings("unchecked")
-      Set<String> list = (Set<String>) request.getSession().getAttribute(
-          KmeliaConstants.PUB_TO_LINK_SESSION_KEY);
-      if (list == null) {
-        list = new HashSet<String>();
-        request.getSession().setAttribute(KmeliaConstants.PUB_TO_LINK_SESSION_KEY, list);
-      }
-      list.remove(request.getParameter("TopicToLinkId"));
+    String toUnlink = request.getParameter("TopicToLinkId");
+    if (StringUtil.isDefined(toUnlink)) {
+      Set<String> list = getLinksFromSession(request);
+      list.remove(toUnlink);
     }
     return "ok";
   }

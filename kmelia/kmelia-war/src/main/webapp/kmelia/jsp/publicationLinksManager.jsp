@@ -32,18 +32,20 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 <%@ page import="org.silverpeas.core.web.treemenu.process.TreeHandler"%>
 <%@page import="org.silverpeas.core.web.treemenu.model.MenuConstants"%>
+<%@ page import="org.silverpeas.components.kmelia.model.KmeliaPublication" %>
 <%@ include file="checkKmelia.jsp" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/menuTree" prefix="menuTree"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
-<% 
-String pubId = kmeliaScc.getSessionPublication().getDetail().getPK().getId();
-String pubComponentId = kmeliaScc.getSessionPublication().getDetail().getPK().getComponentName();
+<%
+PublicationPK publicationPK = (PublicationPK) request.getAttribute("PublicationPK");
+String pubId = publicationPK.getId();
+String pubComponentId = publicationPK.getComponentName();
 Button closeButton = gef.getFormButton(resources.getString("GML.close"), "javascript:window.close();", false);
 Button linkButton = gef.getFormButton(resources.getString("GML.linkTo"), "javaScript:linkTo();", false);
 String closeWindow="";
 if(request.getAttribute("NbLinks")!=null){
-  closeWindow ="onload=\"closeAndReturn('"+pubId+"');\"";
+  closeWindow ="onload=\"closeAndReturn();\"";
 }
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -128,7 +130,7 @@ function doPagination(index, nbItemsPerPage){
 			},"html");
 }
 
-function closeAndReturn(pubId) {
+function closeAndReturn() {
     window.opener.location.replace("ViewPublication");
     window.close();
 }
@@ -148,7 +150,7 @@ function sendPubId(pubId,checked){
 	if(checked){
 		action="Action=bindToPub";
 	}else{
-		action="Action=unbindFromPub";
+		action="Action=unbindToPub";
 	}
 	var ieFix = new Date().getTime();
 	$.get('<%=m_context%>/KmeliaAJAXServlet?'+action, {TopicToLinkId:pubId,IEFix:ieFix});

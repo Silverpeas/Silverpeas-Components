@@ -2430,6 +2430,7 @@ public class DefaultKmeliaService implements KmeliaService {
           clone.setUpdateDateMustBeSet(false);
           publicationService.setDetail(clone);
           changedPublication = clone;
+          pubDetail.setUpdateDateMustBeSet(false);
           pubDetail.setCloneStatus(PublicationDetail.TO_VALIDATE_STATUS);
         } else {
           pubDetail.setStatus(PublicationDetail.TO_VALIDATE_STATUS);
@@ -4594,6 +4595,23 @@ public class DefaultKmeliaService implements KmeliaService {
         }
       });
     }
+  }
+
+  @Override
+  @Transactional(Transactional.TxType.REQUIRED)
+  public void deleteClone(PublicationPK pk) {
+    PublicationDetail clone = getPublicationDetail(pk);
+    PublicationDetail original = getPublicationDetail(clone.getClonePK());
+
+    //delete clone itself
+    deletePublication(pk);
+
+    //remove reference to clone from original publication
+    original.setCloneId(null);
+    original.setCloneStatus(null);
+    original.setUpdateDateMustBeSet(false);
+    original.setIndexOperation(IndexManager.NONE);
+    publicationService.setDetail(original);
   }
 
   private class PublicationConcernedByUpdate {

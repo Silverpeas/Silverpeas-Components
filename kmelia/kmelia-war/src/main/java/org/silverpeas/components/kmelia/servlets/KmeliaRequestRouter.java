@@ -531,8 +531,13 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
         // Reload clone and put it into session
         String cloneId = pubDetail.getCloneId();
-        KmeliaPublication kmeliaPublication = kmelia.getPublication(cloneId);
-        kmelia.setSessionClone(kmeliaPublication);
+
+        KmeliaPublication kmeliaPublication;
+        if (!cloneId.equals("-1")) {
+          kmeliaPublication = kmelia.getPublication(cloneId);
+          kmelia.setSessionClone(kmeliaPublication);
+        }
+        kmeliaPublication = kmelia.getSessionClone();
 
         request.setAttribute("Publication", kmeliaPublication);
         request.setAttribute("ValidationType", kmelia.getValidationType());
@@ -615,15 +620,6 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
                 getDetail()));
           }
           request.setAttribute("Languages", publicationLanguages);
-
-          // see also management
-          List<PublicationLink> links = kmeliaPublication.getCompleteDetail().getLinkList();
-          HashSet<String> linkedList = new HashSet<>(links.size());
-          for (PublicationLink link : links) {
-            linkedList.add(link.getTarget().getId() + "-" + link.getTarget().getComponentInstanceId());
-          }
-          // put into session the current list of selected publications (see also)
-          request.getSession().setAttribute(KmeliaConstants.PUB_TO_LINK_SESSION_KEY, linkedList);
 
           request.setAttribute("Publication", kmeliaPublication);
           request.setAttribute("PubId", id);
@@ -1044,9 +1040,25 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         request.setAttribute("Aliases", kmelia.getPublicationAliases());
 
         destination = rootDestination + "treeview4PublicationPaths.jsp";
+      } else if ("ToAddLinksToPublication".equals(function)) {
+
+        PublicationPK publicationPK = kmelia.getSessionPublication().getPk();
+
+        // put into session the current list of linked publications (get up-to-date data)
+        List<PublicationLink> links =
+            kmelia.getKmeliaService().getCompletePublication(publicationPK).getLinkList();
+        HashSet<String> linkedList = new HashSet<>(links.size());
+        for (PublicationLink link : links) {
+          linkedList.add(link.getTarget().getId() + "-" + link.getTarget().getComponentInstanceId());
+        }
+        request.getSession().setAttribute(KmeliaConstants.PUB_TO_LINK_SESSION_KEY, linkedList);
+
+        request.setAttribute("PublicationPK", publicationPK);
+        destination = rootDestination + "publicationLinksManager.jsp";
+
       } else if (function.equals("AddLinksToPublication")) {
         String id = request.getParameter("PubId");
-        String topicId = request.getParameter("TopicId");
+
         //noinspection unchecked
         HashSet<String> list =
             (HashSet) request.getSession().getAttribute(KmeliaConstants.PUB_TO_LINK_SESSION_KEY);
@@ -1054,8 +1066,9 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         int nb = kmelia.addPublicationsToLink(id, list);
 
         request.setAttribute("NbLinks", Integer.toString(nb));
+        request.setAttribute("PublicationPK", new PublicationPK(id, kmelia.getComponentId()));
 
-        destination = rootDestination + "publicationLinksManager.jsp?Action=Add&Id=" + topicId;
+        destination = rootDestination + "publicationLinksManager.jsp";
       } else if (function.equals("ExportTopic")) {
         String topicId = request.getParameter("TopicId");
         boolean exportFullApp = !StringUtil.isDefined(topicId) || NodePK.ROOT_NODE_ID.
@@ -1802,7 +1815,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         if (!pk.getInstanceId().equals(kmeliaSC.getComponentId())) {
           throw new AliasOnOtherKmeliaException(id, pk);
         }
-        kmeliaSC.setCurrentFolderId(pk.getId(), true);
+        kmeliaSC.getPublicationTopic(id);
       }
 
       Collection<NodeDetail> pathColl = kmeliaSC.getTopicPath(pk.getId());

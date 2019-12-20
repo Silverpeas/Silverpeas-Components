@@ -189,9 +189,12 @@
     kmeliaScc.setSessionOwner(isOwner && modificationAllowed);
   }
 
-  if (validatorsOK && !toolboxMode && isOwner && kmeliaScc.isDraftEnabled() && !pubDetail.haveGotClone() && pubDetail.isDraft()) {
-    screenMessage = "<div class=\"inlineMessage\">" + resources.getString(
-        "kmelia.publication.draft.info") + "</div>";
+  if (isOwner && kmeliaScc.isDraftEnabled() && !pubDetail.haveGotClone() && pubDetail.isDraft()) {
+    screenMessage = "<div class=\"inlineMessage\">" + resources.getString("kmelia.publication.draft.info");
+    if (modificationAllowed) {
+      screenMessage += resources.getString("kmelia.publication.draft.info.publish");
+    }
+    screenMessage += "</div>";
   }
 
   //Attachments can be updated in both cases only :
@@ -509,8 +512,8 @@
 
             if (seeAlsoEnabled) {
               operationPane.addOperation("#", resources.getString("AddLinkPub"),
-                  "javascript:goToOperationInAnotherWindow('publicationLinksManager.jsp', '" +
-                      pubDetail.getId() + "', 'Search')");
+                  "javascript:goToOperationInAnotherWindow('ToAddLinksToPublication', '" +
+                      pubDetail.getId() + "', 'Useless')");
             }
 
             if (kmeliaScc.isDraftEnabled() && !pubDetail.haveGotClone()) {
