@@ -25,12 +25,6 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%
-response.setHeader("Cache-Control","no-store"); //HTTP 1.1
-response.setHeader("Pragma","no-cache"); //HTTP 1.0
-response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
-%>
-
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <%@ include file="checkScc.jsp" %>
 <%@ include file="util.jsp" %>
@@ -54,11 +48,8 @@ String pdcUtilizationSrc = m_context+"/pdcPeas/jsp/icons/pdcPeas_paramPdc.gif";
 Collection listeSites = (Collection) request.getAttribute("ListSites");
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title><%=resources.getString("GML.popupTitle")%></title>
-<view:looknfeel />
+<view:sp-page>
+<view:sp-head-part>
 <script type="text/javascript">
 
 function URLENCODE(URL){
@@ -134,8 +125,8 @@ function openSPWindow(fonction, windowName){
 	pdcUtilizationWindow = SP_openWindow(fonction, windowName, '600', '400','scrollbars=yes, resizable, alwaysRaised');
 }
 </script>
-</head>
-<body>
+</view:sp-head-part>
+<view:sp-body-part>
 
 <form name="descriptionSite" action="descUpload.jsp" method="post" enctype="multipart/form-data">
   <input type="hidden" name="Action"/>
@@ -270,5 +261,5 @@ function openSPWindow(fonction, windowName){
 	out.println(window.printAfter());
 %>
 </form>
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>

@@ -21,44 +21,14 @@
   ~ You should have received a copy of the GNU Affero General Public License
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --%>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ taglib  uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%
-response.setHeader("Cache-Control","no-store"); //HTTP 1.1
-response.setHeader("Pragma","no-cache"); //HTTP 1.0
-response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
-%>
-
-<%@ include file="checkScc.jsp" %>
-<%@ include file="util.jsp" %>
-
-<%
-FolderDetail webSitesCurrentFolder = (FolderDetail) request.getAttribute("CurrentFolder");
-%>
-
-<!-- listSite_reader -->
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <view:sp-page>
-<view:sp-head-part>
-<view:script src="javaScript/spacesInURL.js"/>
-<view:script src="javaScript/commons.js"/>
-<script type="text/javascript">
-  window.wsm = new WebSiteManager({
-    contextUrl : 'listSite_reader.jsp',
-    forceSitePopupOpening : true,
-    popupTarget : 'site'
-  });
-</script>
-</view:sp-head-part>
+<view:sp-head-part noLookAndFeel="true"/>
 <view:sp-body-part>
-<view:browseBar componentId="<%=componentLabel%>" componentJsCallback="wsm.goToApp"/>
-<view:window>
-  <view:frame>
-    <view:componentInstanceIntro componentId="<%=componentId%>" language="<%=resources.getLanguage()%>"/>
-    <c:out escapeXml="false" value="<%=renderTopicNavigation(scc, gef, webSitesCurrentFolder)%>"/>
-    <c:out escapeXml="false" value="<%=renderTopicSites(scc, webSitesCurrentFolder)%>"/>
-  </view:frame>
-</view:window>
+  <viewTags:displayExternalFullIframe url="${requestScope.sitePage}"/>
 </view:sp-body-part>
 </view:sp-page>

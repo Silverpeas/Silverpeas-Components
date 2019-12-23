@@ -35,11 +35,9 @@ import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.util.CollectionUtil;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
@@ -49,14 +47,12 @@ import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.core.web.mvc.util.RoutingException;
 import org.silverpeas.core.web.mvc.util.WysiwygRouting;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static org.silverpeas.components.websites.servlets.WebSitesUtil.getMachine;
 import static org.silverpeas.core.contribution.model.CoreContributionType.UNKNOWN;
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
@@ -112,6 +108,16 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
         destination = processForWebSiteHome(scc, request, flag);
       } else if (function.startsWith("listSite.jsp")) {
         destination = listAllSites(scc, request);
+      } else if (function.equals("siteAsJson")) {
+        final String siteId = request.getParameter("id");
+        final SiteDetail siteDetail = scc.getWebSite(siteId);
+        destination = sendJson(JSONCodec.encodeObject(o -> o
+            .put("id", siteDetail.getId())
+            .put("url", WebSitesUtil.getSiteURL(request, siteDetail.getInstanceId(), siteId))
+            .put("type", siteDetail.getSiteType())
+            .put("name", siteDetail.getName())
+            .put("contentPath", siteDetail.getContentPagePath())
+            .put(POPUP_PARAM, siteDetail.getPopup() == 1)));
       } else if (function.startsWith("listSite_reader.jsp")) {
         destination = listAllSitesForReader(scc, request);
       } else if (function.startsWith("portlet")) {
@@ -121,7 +127,9 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
       } else if ("SuggestLink".equals(function)) {
         destination = suggestLink(scc, request);
       } else if ("DisplaySite".equals(function)) {
-        destination = request.getParameter("SitePage");
+        final String sitePage = request.getParameter("SitePage");
+        request.setAttribute("sitePage", sitePage);
+        destination = "/webSites/jsp/openSite.jsp";
       } else if (function.startsWith("ToWysiwyg")) {
         destination = toWysiwygEditor(scc, request, flag);
       } else if (function.startsWith("FromWysiwyg")) {
@@ -776,23 +784,20 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
   private String listSitesMatchingSearch(final WebSiteSessionController scc,
       final HttpRequest request) {
     String id = request.getParameter("Id");
-    String typeRequest =
-        defaultStringIfNotDefined(request.getParameter("Type"), "Site");
+    String typeRequest = defaultStringIfNotDefined(request.getParameter("Type"), "Site");
     String destination = "";
     if ("Publication".equals(typeRequest)) {
       // recherche de l'url complete d'acces a la page
       try {
-        PublicationDetail pubDetail = scc.getPublicationDetail(id);
-        SiteDetail sitedetail = scc.getWebSite(pubDetail.getVersion());
-
-        destination = getWebSitesDestination(sitedetail, request, scc);
+        final PublicationDetail pubDetail = scc.getPublicationDetail(id);
+        destination = "/webSites/jsp/openSiteFromSearch.jsp?siteId=" + pubDetail.getVersion();
       } catch (Exception e) {
         SilverLogger.getLogger(this).error(e.getMessage(), e);
       }
     } else if ("Site".equals(typeRequest)) {
       try {
-        SiteDetail sitedetail =  scc.getWebSite(id);
-        destination = getWebSitesDestination(sitedetail, request, scc);
+        final SiteDetail sitedetail =  scc.getWebSite(id);
+        destination = "/webSites/jsp/openSiteFromSearch.jsp?siteId=" + sitedetail.getId();
       } catch (Exception e) {
         SilverLogger.getLogger(this).error(e.getMessage(), e);
       }
@@ -861,34 +866,6 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
       // reader
       return "/webSites/jsp/listSite_reader.jsp";
     }
-  }
-
-  private String getWebSitesDestination(SiteDetail sitedetail, HttpServletRequest request,
-      WebSiteSessionController scc) {
-    String siteId = sitedetail.getSitePK().getId();
-
-    String nomPage = sitedetail.getContentPagePath();
-
-    int type = sitedetail.getSiteType();
-
-    if (type == 1) {
-      // type bookmark
-      if (!nomPage.contains("://")) {
-        // no protocol is mentionned
-        // by default = "http"
-        nomPage = "http://" + nomPage;
-      }
-    } else {
-      // upload, design
-      SettingBundle settings =
-          ResourceLocator.getSettingBundle("org.silverpeas.webSites.settings.webSiteSettings");
-
-      nomPage = getMachine(request) + "/" + settings.getString("Context") + "/" +
-          scc.getWebSitePathById(siteId) + "/" + nomPage;
-    }
-    return "/webSites/jsp/ouvertureSite.jsp?URL=" + WebEncodeHelper.javaStringToJsString(nomPage) +
-        "&Popup=" + sitedetail.getPopup();
-
   }
 
   private String getFlag(String[] profiles) {

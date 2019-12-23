@@ -27,52 +27,40 @@
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
-<%@ page import="java.util.Date"%>
-<%@ page import="java.util.Collection"%>
-<%@ page import="java.util.Iterator"%>
-<%@ page import="java.util.ArrayList"%>
-<%@ page import="java.util.Vector"%>
-
-<%@ page import="java.io.PrintWriter"%>
-<%@ page import="java.io.IOException"%>
-<%@ page import="java.io.FileInputStream"%>
-<%@ page import="java.io.ObjectInputStream"%>
-
+<%@ page import="org.silverpeas.components.websites.control.WebSiteSessionController"%>
+<%@ page import="org.silverpeas.components.websites.siteManage.model.FolderDetail"%>
+<%@ page import="org.silverpeas.components.websites.siteManage.model.IconDetail"%>
+<%@ page import="org.silverpeas.components.websites.siteManage.model.SiteDetail"%>
 <%@ page import="org.silverpeas.core.admin.user.model.UserDetail"%>
-<%@ page import="org.silverpeas.core.util.ResourceLocator"%>
+
+<%@ page import="org.silverpeas.core.contribution.publication.model.PublicationDetail"%>
 <%@ page import="org.silverpeas.core.node.model.NodeDetail"%>
 <%@ page import="org.silverpeas.core.node.model.NodePK"%>
-<%@ page import="org.silverpeas.core.contribution.publication.model.PublicationDetail" %>
-<%@ page import="org.silverpeas.components.websites.siteManage.model.FolderDetail" %>
+<%@ page import="org.silverpeas.core.silvertrace.SilverTrace"%>
 
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane"%>
+<%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
+<%@ page import="org.silverpeas.core.util.URLUtil"%>
+<%@ page import="org.silverpeas.core.util.WebEncodeHelper"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.Encode"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayColumn" %>
+
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayLine"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayColumn"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayCellText"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.board.Board"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPane"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.icons.Icon"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.tabs.TabbedPane"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.navigationlist.NavigationList"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.tabs.TabbedPane"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.board.Board"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory "%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.navigationlist.Link"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.Encode" %>
-
-<%@ page import="org.silverpeas.components.websites.control.WebSiteSessionController"%>
-<%@ page import="org.silverpeas.components.websites.siteManage.model.SiteDetail"%>
-<%@ page import="org.silverpeas.components.websites.siteManage.model.IconDetail"%>
-
-<%@ page import="org.silverpeas.core.util.URLUtil"%>
-<%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
-
-<%@ page import="org.silverpeas.core.silvertrace.SilverTrace" %>
-<%@ page import="org.silverpeas.core.util.WebEncodeHelper"%>
+<%@ page import="java.io.IOException"%>
+<%@ page import="java.util.Collection"%>
+<%@ page import="java.util.Date"%>
+<%@ page import="java.util.Iterator "%>
 
 
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>

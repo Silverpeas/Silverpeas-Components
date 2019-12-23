@@ -31,76 +31,115 @@ response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
-<%@ page import="java.lang.StringBuffer"%>
-<%@ page import="java.util.Collection"%>
-<%@ page import="java.util.ArrayList"%>
-<%@ page import="java.util.Iterator"%>
-<%@ page import="java.io.PrintWriter"%>
-<%@ page import="java.io.IOException"%>
-<%@ page import="java.io.FileInputStream"%>
-<%@ page import="java.io.ObjectInputStream"%>
-<%@ page import="java.util.Vector"%>
 <%@ page import="org.silverpeas.components.websites.control.WebSiteSessionController"%>
-<%@ page import="org.silverpeas.core.util.ResourceLocator"%>
-<%@ page import="org.silverpeas.core.util.SettingBundle"%>
+<%@ page import="org.silverpeas.components.websites.service.WebSitesException"%>
 <%@ page import="org.silverpeas.core.node.model.NodeDetail"%>
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.navigationlist.Link"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.navigationlist.NavigationList"%>
+<%@ page import="java.util.ArrayList"%>
+<%@ page import="java.util.Collection"%>
+<%@ page import="java.util.Iterator" %>
+<%@ page import="java.util.List" %>
+<%@ page import="java.util.stream.Collectors" %>
 
 <%!
-
-  SettingBundle settings = ResourceLocator.getSettingBundle("org.silverpeas.webSites.settings.webSiteSettings");
-
-  /* getMachine */
-  public String getMachine(HttpServletRequest request) {
-    SettingBundle settings = ResourceLocator.getSettingBundle("org.silverpeas.webSites.settings.webSiteSettings");
-    SettingBundle generalSettings = ResourceLocator.getGeneralSettingBundle();
-
-    String machine = settings.getString("Machine");
-    String context = (generalSettings.getString("ApplicationURL")).substring(1);
-
-    if (machine.equals("")) {
-      HttpUtils u = new HttpUtils();
-      StringBuffer url =  u.getRequestURL(request);
-
-      ArrayList a = construitTab(url.toString());
-
-      int j = 1;
-
-      while (true) {
-        if (j > a.size()) {
-          break;
-        }
-
-        if (! a.get(j).equals(context)) {
-          if (machine.equals(""))
-            machine += a.get(j);
-          else machine = machine + "/" + a.get(j);
-        }
-        else break;
-        j++;
-      }
+  /**
+   * Centralizing the rendering of topic navigation.<br/>
+   * <p>
+   * <u>In JAVASCRIPT context:</u><br/>
+   * An instance of WebSiteManager MUST have been instantiated and registered into 'wsm' variable name.<br/>
+   * This variable MUST be scoped into window.
+   * </p>
+   */
+  public String renderTopicNavigation(final WebSiteSessionController scc,
+      final GraphicElementFactory gef, final FolderDetail currentFolder)
+      throws WebSitesException {
+    final Collection<NodeDetail> topics = currentFolder.getNodeDetail().getChildrenDetails();
+    final Collection<Integer> nbSitesByTopic = currentFolder.getNbPubByTopic();
+    if (topics.isEmpty()) {
+      return "";
     }
-    return machine;
+    final NavigationList navList = gef.getNavigationList();
+    final Iterator<Integer> nbSiteIt = nbSitesByTopic.iterator();
+    for (final NodeDetail topic : topics) {
+      final String topicName = topic.getName();
+      final String topicId = topic.getNodePK().getId();
+      final FolderDetail folder = scc.getFolder(topicId);
+      final Collection<NodeDetail> subTopics = folder.getNodeDetail().getChildrenDetails();
+      final List<Link> subTopicLinks = subTopics.stream()
+          .map(t -> new Link(t.getName(), "javascript:wsm.goToAppTopic('" + t.getNodePK().getId() + "')"))
+          .collect(Collectors.toList());
+      final int nbSites = nbSiteIt.hasNext() ? nbSiteIt.next() : 0;
+      navList.addItemSubItem(topicName, "javascript:wsm.goToAppTopic('" + topicId + "')", nbSites, subTopicLinks);
+    }
+    return navList.print();
   }
 
-  /* ignoreAntiSlash */
-  public String ignoreAntiSlash(String chemin) {
-    /* ex : \\\rep1\\rep2\\rep3 */
-    /* res = rep1\\rep2\\re3 */
-
-      String res = chemin;
-      boolean ok = false;
-      while (!ok) {
-          char car = res.charAt(0);
-          if (car == '\\') {
-              res = res.substring(1);
+  /**
+   * Centralizing the rendering of sites of a topic.<br/>
+   * <p>
+   * <u>In JAVASCRIPT context:</u><br/>
+   * An instance of WebSiteManager MUST have been instantiated and registered into 'wsm' variable name.<br/>
+   * This variable MUST be scoped into window.
+   * </p>
+   */
+  public String renderTopicSites(final WebSiteSessionController scc,
+      final FolderDetail currentFolder) throws WebSitesException {
+    final String pxmag = URLUtil.getApplicationURL() + "/util/icons/colorPix/1px.gif";
+    final String redFlag = URLUtil.getApplicationURL() + "/util/icons/urgent.gif";
+    final StringBuilder htmlList = new StringBuilder();
+    final Collection<PublicationDetail> siteList = currentFolder.getPublicationDetails();
+    if (!siteList.isEmpty()) {
+      htmlList.append("<TABLE CELLPADDING=3 CELLSPACING=0 ALIGN=CENTER BORDER=0 WIDTH=\"98%\"><tr><td>\n");
+      for (final PublicationDetail site : siteList) {
+        final String siteId = site.getVersion();
+        final String siteName = site.getName();
+        final String siteDescription = WebEncodeHelper.javaStringToHtmlParagraphe(site.getDescription());
+        final StringBuilder iconList = new StringBuilder();
+        final Collection<IconDetail> icons = scc.getIcons(siteId);
+        boolean rouge = false;
+        htmlList.append("<tr>\n");
+        for (final IconDetail icon : scc.getAllIcons()) {
+          if (isIconIncludedIn(icon, icons)) {
+            if (icon.getName().equals("Icon0")) {
+              rouge = true;
+            } else {
+              iconList
+                  .append("<A href=\"javascript:void(0)\" onclick=\"wsm.openIconDictionary()\"><img src=\"")
+                  .append(icon.getAddress()).append("\" alt=\"")
+                  .append(scc.getString(icon.getName()))
+                  .append("\" border=0 align=absmiddle title=\"")
+                  .append(scc.getString(icon.getName())).append("\"></A>&nbsp;\n");
+            }
           }
-          else ok = true;
+        }
+        if (rouge) {
+          htmlList.append("<td valign=\"top\"><img src=\"").append(redFlag).append("\" border=\"0\" align=absmiddle></td>\n");
+        } else {
+          htmlList.append("<td valign=\"top\">&nbsp;</td>\n");
+        }
+        htmlList.append(
+            "<td valign=\"top\" align=left nowrap>&#149;&nbsp;<a class=\"textePetitBold\" href=\"javascript:onClick=wsm.openSite('")
+            .append(siteId).append("')\">").append(siteName)
+            .append("</a></td><td align=left>\n");
+        htmlList.append(iconList);
+        htmlList.append(
+            "</td></tr><tr><td class=intfdcolor51>&nbsp;</td><td colspan=2 width=\"100%\" class=intfdcolor51><span class=\"txtnote\">")
+            .append(siteDescription).append("</span></td></tr><tr><td colspan=3><img src=\"")
+            .append(pxmag).append("\" height=3 width=200></td>\n");
       }
-      return res;
-
+      htmlList.append("</td></tr></table>\n");
+    } else {
+      htmlList.append("<div class='inlineMessage'>").append(scc.getString("NoLinkAvailable")).append("</div>");
+    }
+    return htmlList.toString();
   }
 
+  private boolean isIconIncludedIn(IconDetail iconDetail, Collection<IconDetail> c) {
+    final String iconId = iconDetail.getIconPK().getId();
+    return c.stream().map(i -> i.getIconPK().getId()).anyMatch(i -> i.equals(iconId));
+  }
 
   /* doubleAntiSlash */
   public String doubleAntiSlash(String path) {
@@ -117,26 +156,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
       }
     }
     return res.toString();
-  }
-
-  /* removeDoubleAntiSlash */
-  public String supprDoubleAntiSlash(String chemin) {
-    /* ex : id\\rep1\\rep11\\rep111 */
-    /* res = id\rep1\rep11\re111 */
-
-      String res = "";
-      int i = 0;
-
-      while (i < chemin.length()) {
-          char car = chemin.charAt(i);
-          if (car == '\\') {
-              res = res + car;
-              i++;
-          }
-          else res = res + car;
-          i++;
-      }
-      return res;
   }
 
   private String ignoreSlash(String chemin)
@@ -167,21 +186,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
       return ignoreSlash(finChemin);
   }
 
-  /* finNode */
-  public String finNode(WebSiteSessionController scc, String path) {
-      /* ex : ....webSite17\\id\\rep1\\rep2\\rep3 */
-      /* res : id\rep1\rep2\rep3 */
-
-      int longueur = scc.getComponentId().length();
-      int index = path.lastIndexOf(scc.getComponentId());
-      String chemin = path.substring(index + longueur);
-
-      chemin = ignoreAntiSlash(chemin);
-      chemin = supprDoubleAntiSlash(chemin);
-
-      return chemin;
-  }
-
 
   /* supprAntiSlashFin */
   private String supprAntiSlashFin(String path) {
@@ -206,7 +210,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
       /* collection[1] = c:\\j2sdk\\public_html\\WAwebSiteUploads\\webSite17\\3\\rep1 */
       /* collection[1] = c:\\j2sdk\\public_html\\WAwebSiteUploads\\webSite17\\3\\rep1\\rep11 */
 
-      ArrayList liste = new ArrayList();
+      List<String> liste = new ArrayList<>();
       boolean ok = true;
       String deb;
       String finChemin;
@@ -225,7 +229,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
           finChemin = ignoreSlash(finChemin);
 
           index = finChemin.indexOf("/");
-	  SilverTrace.info("webSites", "JSPcreateSite", "root.MSG_GEN_PARAM_VALUE", "afficherChemin : finChemin = "+finChemin);
 
           if (index == -1) {
                 liste.add(chemin); /* la racine id */
@@ -242,7 +245,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 	      finChemin = finChemin.substring(index + 1);
               /* saute les antiSlash s'il y en a, finChemin = rep\\rep1\\rep2\\ ... */
               finChemin = ignoreSlash(finChemin);
-	      SilverTrace.info("webSites", "JSPcreateSite", "root.MSG_GEN_PARAM_VALUE", "afficherChemin : finChemin = "+finChemin);
 
               if (! finChemin.equals("")) {
                   index = chemin.indexOf(finChemin);
@@ -279,8 +281,8 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 /* navigPath */
 String navigPath(Collection path, boolean linked, int beforeAfter) {
-      String linkedPathString = new String();
-      String pathString = new String();
+      StringBuilder linkedPathString = new StringBuilder();
+      StringBuilder pathString = new StringBuilder();
       int nbItemInPath = path.size();
       Iterator iterator = path.iterator();
       boolean alreadyCut = false;
@@ -292,34 +294,36 @@ String navigPath(Collection path, boolean linked, int beforeAfter) {
                     String name = nodeInPath.getName();
                     if (name.length() > 20)
                             name = name.substring(0, 20) + "...";
-                    linkedPathString += "<a href=\"javascript:onClick=topicGoTo('"+nodeInPath.getNodePK().getId()+"')\">"+
-                        WebEncodeHelper.javaStringToHtmlString(name)+"</a>";
-                    pathString += WebEncodeHelper.javaStringToHtmlString(nodeInPath.getName());
+                    linkedPathString.append("<a href=\"javascript:wsm.goToAppTopic('")
+                        .append(nodeInPath.getNodePK().getId()).append("')\">")
+                        .append(WebEncodeHelper.javaStringToHtmlString(name)).append("</a>");
+                    pathString.append(WebEncodeHelper.javaStringToHtmlString(nodeInPath.getName()));
                     if (iterator.hasNext()) {
-                            linkedPathString += " > ";
-                            pathString += " > ";
+                            linkedPathString.append(" > ");
+                            pathString.append(" > ");
                     }
             } else {
                     if (!alreadyCut) {
-                            linkedPathString += " ... > ";
-                            pathString += " ... > ";
+                            linkedPathString.append(" ... > ");
+                            pathString.append(" ... > ");
                             alreadyCut = true;
                     }
             }
            }
            i++;
       }
-      if (linked)
-          return linkedPathString;
-      else
-          return pathString;
+      if (linked) {
+        return linkedPathString.toString();
+      } else {
+        return pathString.toString();
+      }
 }
 
 
   /* displayPath */
   private String displayPath(Collection path, boolean linked, int beforeAfter, String lien, String racine) {
-      String linkedPathString = new String();
-      String pathString = new String();
+      StringBuilder linkedPathString = new StringBuilder();
+      StringBuilder pathString = new StringBuilder();
       int nbItemInPath = path.size();
       Iterator iterator = path.iterator();
       boolean alreadyCut = false;
@@ -330,264 +334,33 @@ String navigPath(Collection path, boolean linked, int beforeAfter) {
             String aPath = (String) iterator.next(); /* chemin complet */
             if ((i <= beforeAfter) || (i + beforeAfter >= nbItemInPath - 1)) {
                 if (first) {
-                    linkedPathString += "<a href=\""+lien+aPath+"\">"+racine+"</a>";
-                    pathString += racine;
+                    linkedPathString.append("<a href=\"").append(lien).append(aPath).append("\">")
+                        .append(racine).append("</a>");
+                    pathString.append(racine);
                     first = false;
                 }
                 else {
-                    linkedPathString += "<a href=\""+lien+aPath+"\">"+node(aPath)+"</a>";
-                    pathString += node(aPath);
+                    linkedPathString.append("<a href=\"").append(lien).append(aPath).append("\">")
+                        .append(node(aPath)).append("</a>");
+                    pathString.append(node(aPath));
                 }
                 if (iterator.hasNext()) {
-                      linkedPathString += " > ";
-                      pathString += " > ";
+                      linkedPathString.append(" > ");
+                      pathString.append(" > ");
                 }
            } else {
                 if (!alreadyCut) {
-                      linkedPathString += " ... > ";
-                      pathString += " ... > ";
+                      linkedPathString.append(" ... > ");
+                      pathString.append(" ... > ");
                       alreadyCut = true;
                 }
            }
            i++;
       }
-      if (linked)
-          return linkedPathString;
-      else
-          return pathString;
-  }
-
-  /* sortCommun */
-  private ArrayList sortCommun(ArrayList tabContexte, ArrayList tab) {
-    /* tabContexte = [id | rep1 | rep2] */
-    /* tab = [id | rep1 | rep3] */
-    /* res = [id | rep1] */
-      int i = 0;
-      boolean ok = true;
-      ArrayList array = new ArrayList();
-
-
-
-      while (ok && i < tabContexte.size()) {
-          String contenuContexte = (String) tabContexte.get(i);
-          if (i < tab.size()) {
-            String contenu = (String) tab.get(i);
-            if (contenuContexte.equals(contenu)) {
-              array.add(contenu);
-
-            }
-            else ok = false;
-            i++;
-          }
-          else ok = false;
-       }
-       return array;
-  }
-
-  /* sortRester */
-  private String sortReste(ArrayList tab, ArrayList tabCommun) {
-    /* tab = [id | rep1 | rep2 | rep3] */
-    /* tabCommun = [id | rep1] */
-    /* res = rep2/rep3 */
-      String res = "";
-
-
-
-      int indice = tabCommun.size();
-
-      while (indice < tab.size()) {
-          String contenu = (String) tab.get(indice);
-          res += contenu + "/";
-          indice++;
-       }
-
-       if (! res.equals(""))
-          res = res.substring(0, res.length() - 1);
-
-       return res;
-  }
-
-  /* construitTab */
-  private ArrayList construitTab(String deb) {
-    /* deb = id/rep/  ou id\rep/*/
-   /* res = [id | rep] */
-      int i = 0;
-      String noeud = "";
-      ArrayList array = new ArrayList();
-
-
-
-        while (i < deb.length()) {
-            char car = deb.charAt(i);
-            if (car == '/' || car == '\\') {
-                array.add(noeud);
-
-                noeud = "";
-            }
-            else {
-                noeud += car;
-
-            }
-            i++;
-         }
-       return array;
-  }
-
- /* parseCodeSupprImage */
- private String parseCodeSupprImage(WebSiteSessionController scc, String code, HttpServletRequest request, SettingBundle settings, String currentPath) {
-    String theCode = code;
-    String avant;
-    String apres;
-    int index;
-    int longueur;
-    String finChemin;
-	String image = "<IMG border=0 src=\"http://"+getMachine(request)+"/"+settings.getString("Context")+"/"+scc.getComponentId()+"/";
-	int longueurImage = 19 + ("http://"+getMachine(request)+"/"+settings.getString("Context")+"/"+scc.getComponentId()+"/").length();
-	index = code.indexOf(image);
-	if (index == -1) return theCode;
-	else {
-      avant = theCode.substring(0, index + 19);
-      finChemin = theCode.substring(index + longueurImage);
-
-      int indexGuillemet = finChemin.indexOf("\"");
-      String absolute = finChemin.substring(0, indexGuillemet);
-
-      apres = finChemin.substring(indexGuillemet);
-      int indexSlash = absolute.lastIndexOf("/");
-      String fichier = absolute.substring(indexSlash + 1);
-
-      String deb = absolute.substring(0, indexSlash);
-      ArrayList tab = construitTab(deb+"/");
-
-      /* id/rep1 */
-      String cheminContexte = finNode(scc, currentPath);
-      ArrayList tabContexte = construitTab(cheminContexte+"/");
-      ArrayList tabCommun = sortCommun(tabContexte, tab);
-      String reste = sortReste(tab, tabCommun);
-      int nbPas = tabContexte.size() - tabCommun.size();
-      String relatif = "";
-      int i = 0;
-      while (i < nbPas) {
-        relatif += "../";
-        i++;
+      if (linked) {
+        return linkedPathString.toString();
+      } else {
+        return pathString.toString();
       }
-
-      if (reste.equals(""))
-        relatif += fichier;
-      else relatif += reste + "/" + fichier;
-      apres = relatif + apres;
-      return (avant + parseCodeSupprImage(scc, apres, request, settings, currentPath));
   }
- }
-
-
- /* parseCodeSupprHref */
- /* ex : code = ...<a href="rr:icones/fleche.html"> <a href="http://www.etc"> <a href="aa:REP1/page.html">: liens deja en relatif (rr:) ou url externe (http://) ou liens en abslu
-         res = ...<a href="icones/fleche.html"> <a href="http://www.etc"> <a href="page.html"> : tous les liens en relatifs ou urlk externe */
- private String parseCodeSupprHref(WebSiteSessionController scc, String code, SettingBundle settings, String currentPath) {
-    String theCode = code;
-    String avant;
-    String apres;
-    int index;
-    String href = "<A href=\""; /* longueur de chaine = 9 */
-    String resultat = theCode;
-    String finChemin;
-    String fichier;
-    String deb;
-    String theReturn = "";
-
-
-  index = theCode.indexOf(href);
-  if (index == -1) theReturn = theCode;
-
-  else {
-
-        avant = theCode.substring(0, index + 9);
-
-
-        apres = theCode.substring(index + 9);
-
-
-        if (apres.substring(0, 7).equals("http://")) { /* lien externe */
-              theReturn = avant + parseCodeSupprHref(scc, apres, settings, currentPath);
-        }
-        else if (apres.substring(0, 6).equals("ftp://")) { /* lien externe */
-              theReturn = avant + parseCodeSupprHref(scc, apres, settings, currentPath);
-        }
-        else if (apres.substring(0, 3).equals("rr:")) { /* deja en relatif */
-
-              apres = apres.substring(3);
-
-              theReturn = avant + parseCodeSupprHref(scc, apres, settings, currentPath);
-        }
-        else if (apres.substring(0, 3).equals("aa:")) { /* lien absolu a transformer en relatif */
-
-            /* finChemin = rep/coucou.html">... */
-            finChemin = theCode.substring(index + 9 + 3);
-            SilverTrace.info("webSites", "JSPcreateSite", "root.MSG_GEN_PARAM_VALUE", "finChemin = "+finChemin);
-
-            /* traitement */
-            int indexGuillemet = finChemin.indexOf("\"");
-	    SilverTrace.info("webSites", "JSPcreateSite", "root.MSG_GEN_PARAM_VALUE", "indexGuillemet = "+new Integer(indexGuillemet).toString());
-
-            /* absolute = rep/coucou.html */
-           String absolute = finChemin.substring(0, indexGuillemet);
-           SilverTrace.info("webSites", "JSPcreateSite", "root.MSG_GEN_PARAM_VALUE", "absolute = "+absolute);
-
-            /* apres = ">... */
-            apres = finChemin.substring(indexGuillemet);
-            SilverTrace.info("webSites", "JSPcreateSite", "root.MSG_GEN_PARAM_VALUE", "apres = "+apres);
-
-            int indexSlash = absolute.lastIndexOf("\\");
-	    SilverTrace.info("webSites", "JSPcreateSite", "root.MSG_GEN_PARAM_VALUE", "indexSlash = "+new Integer(indexSlash).toString());
-
-            if (indexSlash == -1) { /* pas d'arborescence, le fichier du lien est sur la racine */
-                fichier = absolute;
-                deb = "";
-            }
-            else {
-              /* fichier = coucou.html */
-              fichier = absolute.substring(indexSlash + 1);
-              deb = absolute.substring(0, indexSlash);
-            }
-            ArrayList tab = construitTab(deb+"/"); /* dans ce tableau il manque l'id */
-
-          /* cheminContexte = id/rep */
-	      int longueur = scc.getComponentId().length();
-	      int index2 = currentPath.lastIndexOf(scc.getComponentId());
-	      String chemin = currentPath.substring(index2 + longueur);
-
-	      chemin = chemin.substring(1);
-	      chemin = supprDoubleAntiSlash(chemin);
-	      String cheminContexte = chemin;
-            ArrayList tabContexte = construitTab(cheminContexte+"/");
-            /* ajoute l'id dans le premier tableau */
-            tab.add(0, tabContexte.get(0));
-
-            /* tabCommun = [id | rep] */
-            ArrayList tabCommun = sortCommun(tabContexte, tab);
-
-            /* reste = vide */
-            String reste = sortReste(tab, tabCommun);
-
-            /* nbPas = 0 */
-            int nbPas = tabContexte.size() - tabCommun.size();
-            String relatif = "";
-            int i = 0;
-            while (i < nbPas) {
-              relatif += "../";
-              i++;
-            }
-
-            if (reste.equals(""))
-              relatif += fichier;
-            else relatif += reste + "/" + fichier;
-
-	        /* relatif = vide */
-            apres = relatif + apres;
-            theReturn = avant + parseCodeSupprHref(scc, apres, settings, currentPath);
-         }
-      }
-      return theReturn;
-}
 %>

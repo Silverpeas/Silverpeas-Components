@@ -1,30 +1,26 @@
 <%--
-
-    Copyright (C) 2000 - 2019 Silverpeas
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as
-    published by the Free Software Foundation, either version 3 of the
-    License, or (at your option) any later version.
-
-    As a special exception to the terms and conditions of version 3.0 of
-    the GPL, you may redistribute this Program in connection with Free/Libre
-    Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have received a copy of the text describing
-    the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
---%>
-<%@page import="org.silverpeas.core.util.WebEncodeHelper"%>
-<%@ page import="org.silverpeas.core.util.SettingBundle" %>
+  ~ Copyright (C) 2000 - 2019 Silverpeas
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU Affero General Public License as
+  ~ published by the Free Software Foundation, either version 3 of the
+  ~ License, or (at your option) any later version.
+  ~
+  ~ As a special exception to the terms and conditions of version 3.0 of
+  ~ the GPL, you may redistribute this Program in connection with Free/Libre
+  ~ Open Source Software ("FLOSS") applications as described in Silverpeas's
+  ~ FLOSS exception.  You should have received a copy of the text describing
+  ~ the FLOSS exception, and it is also available here:
+  ~ "https://www.silverpeas.org/legal/floss_exception.html"
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU Affero General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%
@@ -37,26 +33,10 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ include file="checkScc.jsp" %>
 <%@ include file="util.jsp" %>
 
-<%!
-    private boolean appartient(String siteId, Collection liste) {
-          Iterator l = liste.iterator();
-          while(l.hasNext()) {
-            String id = (String) l.next();
-            if (id.equals(siteId))
-                return true;
-          }
-          return false;
-    }
-%>
-
 <%
 String rootId = "0";
-String name;
-String description;
 String linkedPathString = "";
 String pathString = "";
-
-SettingBundle settings = ResourceLocator.getSettingBundle("org.silverpeas.webSites.settings.webSiteSettings");
 
 String addFolder=m_context+"/util/icons/create-action/add-folder.png";
 String addSite=m_context+"/util/icons/create-action/add-website-to-topic.png";
@@ -72,7 +52,6 @@ String folderUpdate=m_context+"/util/icons/update.gif";
 
 String upIconSrc=m_context+"/util/icons/arrow/arrowUp.gif";
 String downIconSrc=m_context+"/util/icons/arrow/arrowDown.gif";
-String pxSrc=m_context+"/util/viewGenerator/icons/15px.gif";
 
 String action = request.getParameter("Action");
 String id = request.getParameter("Id");
@@ -81,31 +60,20 @@ FolderDetail webSitesCurrentFolder = (FolderDetail) request.getAttribute("Curren
 
 //Mise a jour de l'espace
 if (action == null) {
-    id = rootId;
-    action = "Search";
+  id = rootId;
+  action = "Search";
 }
-else SilverTrace.info("websites", "JSPorganize", "root.MSG_GEN_PARAM_VALUE", "action = "+action);
-
 
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title><%=resources.getString("GML.popupTitle")%></title>
-<view:looknfeel />
-<script type="text/javascript" src="javaScript/spacesInURL.js"></script>
+<view:sp-page>
+<view:sp-head-part>
+<view:script src="javaScript/spacesInURL.js"/>
+<view:script src="javaScript/commons.js"/>
 <script type="text/javascript">
+
 var topicAddWindow = window;
 var topicUpdateWindow = window;
-
-function topicGoTo(id) {
-	closeWindows();
-
-    document.liste.Action.value = "Search";
-    document.liste.Id.value = id;
-    document.liste.submit();
-}
 
 /***************************************************************************/
 
@@ -220,28 +188,6 @@ function publicationAdd(topicId){
 
 /***************************************************************************/
 
-function publicationGoTo(type, theURL, nom){
-	closeWindows();
-
-    winName = "_blank" ;
-    larg = "670";
-    haut = "500";
-    windowParams = "width="+larg+",height="+haut+", toolbar=yes, scrollbars=yes, resizable, alwaysRaised";
-
-    if (type == "1") {
-        if (nom.indexOf("://")!=-1)
-            theURL = nom;
-        else
-		theURL = "http://"+ nom;
-     }
-     else {
-          theURL = theURL+nom;
-     }
-     site = window.open(theURL,winName,windowParams);
-}
-
-/***************************************************************************/
-
 function closeWindows() {
 	if (!topicAddWindow.closed && topicAddWindow.name=="topicAddWindow")
 		topicAddWindow.close();
@@ -288,9 +234,16 @@ function pubUp(pubId) {
 	document.liste.Id.value = pubId;
 	document.liste.submit();
 }
+
+window.wsm = new WebSiteManager({
+  contextUrl : 'organize.jsp',
+  forceSitePopupOpening : true,
+  beforeOpenSiteTopicCallback : closeWindows,
+  beforeOpenSiteCallback : closeWindows
+});
 </script>
-</head>
-<body>
+</view:sp-head-part>
+<view:sp-body-part>
 <form name="liste" action="organize.jsp" method="post">
 <%
 	//Traitement = View, Search, Add, Update, Delete, Classify, Declassify
@@ -301,15 +254,13 @@ function pubUp(pubId) {
 
 	/* SEARCH */
 	if (action.equals("Search")) {
-		name = webSitesCurrentFolder.getNodeDetail().getName();
-		Collection pathC = webSitesCurrentFolder.getPath();
+		Collection<NodeDetail> pathC = webSitesCurrentFolder.getPath();
 		pathString = navigPath(pathC, false, 3);
 		linkedPathString = navigPath(pathC, true, 3);
 
-		Collection subThemes = webSitesCurrentFolder.getNodeDetail().getChildrenDetails();
-		Collection nbToolByFolder = webSitesCurrentFolder.getNbPubByTopic();
+		Collection<NodeDetail> subThemes = webSitesCurrentFolder.getNodeDetail().getChildrenDetails();
 
-		Collection listeSites = webSitesCurrentFolder.getPublicationDetails();
+		Collection<PublicationDetail> listeSites = webSitesCurrentFolder.getPublicationDetails();
 
 		Window window = gef.getWindow();
 
@@ -356,61 +307,46 @@ function pubUp(pubId) {
 		ArrayColumn arrayColumnDel = arrayPane.addArrayColumn("&nbsp;");
 		arrayColumnDel.setSortable(false);
 
-		if (subThemes != null) {
-			Iterator i = subThemes.iterator();
-			Iterator iteratorNbTool = nbToolByFolder.iterator();
-			String themeName = "";
-			String themeDescription = "";
-			String themeId = "";
-			String nbPub = "?";
-			int nbChild = 0;
-			while (i.hasNext()) {
-				NodeDetail theme = (NodeDetail) i.next();
-				/* ecriture des lignes du tableau */
-				themeName = theme.getName();
-				themeDescription = theme.getDescription();
-				themeId = theme.getNodePK().getId();
-				if (iteratorNbTool.hasNext())
-					nbPub = ((Integer) iteratorNbTool.next()).toString();
+    int nbChild = 0;
+    for (NodeDetail theme : subThemes) {
+      /* ecriture des lignes du tableau */
+      String themeName = theme.getName();
+      String themeDescription = theme.getDescription();
+      String themeId = theme.getNodePK().getId();
 
-				ArrayLine arrayLine = arrayPane.addArrayLine();
+      ArrayLine arrayLine = arrayPane.addArrayLine();
 
-				if (themeName.length() > 40)
-					themeName = themeName.substring(0, 40) + "...";
-				arrayLine.addArrayCellLink(Encode.javaStringToHtmlString(themeName), "organize.jsp?Action=Search&Id="+themeId);
+      if (themeName.length() > 40)
+        themeName = themeName.substring(0, 40) + "...";
+      arrayLine.addArrayCellLink(WebEncodeHelper.javaStringToHtmlString(themeName), "javascript:wsm.goToAppTopic('"+themeId+"')");
 
-				if (themeDescription.length() > 80)
-					themeDescription = themeDescription.substring(0, 80) + "...";
-				arrayLine.addArrayCellText(Encode.javaStringToHtmlString(themeDescription));
+      if (themeDescription.length() > 80)
+        themeDescription = themeDescription.substring(0, 80) + "...";
+      arrayLine.addArrayCellText(WebEncodeHelper.javaStringToHtmlString(themeDescription));
 
-				IconPane iconPane = gef.getIconPane();
-				Icon checkIcon1 = iconPane.addIcon();
-				checkIcon1.setProperties(folderUpdate, resources.getString("GML.modify")+" '"+Encode.javaStringToHtmlString(themeName)+"'" , "javascript:onClick=topicUpdate('"+themeId+"')");
-				arrayLine.addArrayCellIconPane(iconPane);
+      IconPane iconPane = gef.getIconPane();
+      Icon checkIcon1 = iconPane.addIcon();
+      checkIcon1.setProperties(folderUpdate, resources.getString("GML.modify")+" '"+WebEncodeHelper.javaStringToHtmlString(themeName)+"'" , "javascript:onClick=topicUpdate('"+themeId+"')");
+      arrayLine.addArrayCellIconPane(iconPane);
 
-				if (scc.isSortedTopicsEnabled()) {
-					IconPane sortPane = gef.getIconPane();
-					if (nbChild != 0) {
-						Icon upIcon = sortPane.addIcon();
-						upIcon.setProperties(upIconSrc, resources.getString("TopicUp")+" '"+themeName+"'", "javascript:onClick=topicUp('"+themeId+"')");
-					} else {
-						Icon upIcon = sortPane.addEmptyIcon();
-					}
+      if (scc.isSortedTopicsEnabled()) {
+        IconPane sortPane = gef.getIconPane();
+        if (nbChild != 0) {
+          Icon upIcon = sortPane.addIcon();
+          upIcon.setProperties(upIconSrc, resources.getString("TopicUp")+" '"+themeName+"'", "javascript:onClick=topicUp('"+themeId+"')");
+        }
 
-					if (nbChild < subThemes.size()-1) {
-						Icon downIcon = sortPane.addIcon();
-						downIcon.setProperties(downIconSrc, resources.getString("TopicDown")+" '"+themeName+"'", "javascript:onClick=topicDown('"+themeId+"')");
-					} else {
-						Icon downIcon = sortPane.addEmptyIcon();
-					}
-					arrayLine.addArrayCellIconPane(sortPane);
-				}
+        if (nbChild < subThemes.size()-1) {
+          Icon downIcon = sortPane.addIcon();
+          downIcon.setProperties(downIconSrc, resources.getString("TopicDown")+" '"+themeName+"'", "javascript:onClick=topicDown('"+themeId+"')");
+        }
+        arrayLine.addArrayCellIconPane(sortPane);
+      }
 
-				arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"checkbox\" value=\""+themeId+"\"/>");
+      arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"checkbox\" value=\""+themeId+"\"/>");
 
-				nbChild++;
-			}
-		}
+      nbChild++;
+    }
 		out.println(arrayPane.print());
 
 		//Liste des sites du th�me courant
@@ -419,21 +355,13 @@ function pubUp(pubId) {
 		if (listeSites.size() > 0) {
 			liste += "<table border=\"0\">\n";
 
-			Iterator j = listeSites.iterator();
+			nbChild = 0;
 
-			int nbChild = 0;
-
-			while (j.hasNext()) {
-				PublicationDetail site = (PublicationDetail) j.next();
+			for (PublicationDetail site : listeSites) {
 				String pubId = site.getPK().getId();
+        String siteId = site.getVersion();
 				String siteName = site.getName();
 				String siteDescription = WebEncodeHelper.javaStringToHtmlParagraphe(site.getDescription());
-				if (siteDescription == null)
-					siteDescription = "";
-
-				String sitePage = site.getContentPagePath();
-				String type = new Integer(site.getImportance()).toString();
-				String siteId = site.getVersion();
 				liste += "<tr>\n";
 				liste += "<td valign=\"top\" width=\"5%\"><input type=\"checkbox\" name=\"supSite\" value=\""+pubId+"\"/></td>\n";
 				if (scc.isSortedTopicsEnabled()) {
@@ -441,15 +369,11 @@ function pubUp(pubId) {
 					if (nbChild != 0) {
 						Icon upIcon = sortPane.addIcon();
 						upIcon.setProperties(upIconSrc, resources.getString("PubUp")+" '"+siteName+"'", "javascript:onClick=pubUp('"+pubId+"')");
-					} else {
-						Icon upIcon = sortPane.addEmptyIcon();
 					}
 
 					if (nbChild < listeSites.size()-1) {
 						Icon downIcon = sortPane.addIcon();
 						downIcon.setProperties(downIconSrc, resources.getString("PubDown")+" '"+siteName+"'", "javascript:onClick=pubDown('"+pubId+"')");
-					} else {
-						Icon downIcon = sortPane.addEmptyIcon();
 					}
 
 					liste += "<td width=\"10px\">&nbsp;</td>\n";
@@ -460,7 +384,7 @@ function pubUp(pubId) {
 
 					liste += "<td width=\"10px\">&nbsp;</td>\n";
 				}
-				liste += "<td valign=\"top\">&#149;&nbsp;<a class=\"textePetitBold\" href=\"javascript:onClick=publicationGoTo('"+type+"', 'http://"+getMachine(request)+"/"+settings.getString("Context")+"/"+componentId+"/"+siteId+"/' , '"+Encode.javaStringToJsString(sitePage)+"')\">"+siteName+"</a><br/>\n";
+				liste += "<td valign=\"top\">&#149;&nbsp;<a class=\"textePetitBold\" href=\"javascript:onClick=wsm.openSite('"+siteId+"')\">"+siteName+"</a><br/>\n";
 
 				liste += "<span class=\"txtnote\">&nbsp;&nbsp;"+siteDescription+"</span><br/><br/></td>\n";
 				liste += "</tr>\n";
@@ -485,7 +409,7 @@ function pubUp(pubId) {
 
   <input type="hidden" name="Action"/>
   <input type="hidden" name="Id" value="<%=id%>"/>
-  <input type="hidden" name="Path" value="<%=Encode.javaStringToHtmlString(pathString)%>"/>
+  <input type="hidden" name="Path" value="<%=WebEncodeHelper.javaStringToHtmlString(pathString)%>"/>
   <input type="hidden" name="ChildId"/>
   <input type="hidden" name="Name"/>
   <input type="hidden" name="description"/>
@@ -495,8 +419,8 @@ function pubUp(pubId) {
 <form name="pubForm" action="classifyDeclassify.jsp" method="post">
 <input type="hidden" name="Action"/>
 <input type="hidden" name="TopicId"/>
-<input type="hidden" name="Path" value="<%=Encode.javaStringToHtmlString(linkedPathString)%>"/>
+<input type="hidden" name="Path" value="<%=WebEncodeHelper.javaStringToHtmlString(linkedPathString)%>"/>
 </form>
 
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>
