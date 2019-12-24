@@ -47,6 +47,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="org.silverpeas.core.admin.user.model.User" %>
 <%@ page import="org.silverpeas.core.admin.user.model.SilverpeasRole" %>
 <%@ page import="org.silverpeas.components.kmelia.model.ValidatorsList" %>
+<%@ page import="org.silverpeas.components.kmelia.KmeliaPublicationHelper" %>
 
 <%
 	//Recuperation des parametres
@@ -70,6 +71,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 	String						pubName			= pubDetail.getName();
 	String 						id 				= pubDetail.getPK().getId();
 	String 						resourceType 				= pubDetail.TYPE;
+  UserDetail currentUser = kmeliaScc.getUserDetail();
 
 	String 		linkedPathString 	= kmeliaScc.getSessionPath();
 
@@ -83,6 +85,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
   ValidatorsList validatorsList = kmeliaPublication.getValidators();
   boolean validatorsOK = validatorsList.isValidationOperational();
+  boolean modificationAllowed = pubDetail.canBeModifiedBy(currentUser) && (!SilverpeasRole.writer.isInRole(profile) || validatorsOK);
 
 	//Vrai si le user connecte est le createur de cette publication ou si il est admin
 	boolean isOwner = false;
@@ -125,30 +128,23 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
     }
 	}
 
-	if (action.equals("ValidateView")) {
-    	kmeliaScc.setSessionOwner(true);
-        action = "UpdateView";
-        isOwner = true;
-    } else {
-        if (profile.equals("admin") || profile.equals("publisher") || profile.equals("supervisor") || (ownerDetail != null && kmeliaScc.getUserDetail().getId().equals(ownerDetail.getId()) && profile.equals("writer"))) {
-            isOwner = true;
-        }
-
-        if (isOwner) {
-            kmeliaScc.setSessionOwner(true);
-        } else {
-		    //modification pour acceder e l'onglet voir aussi
-            kmeliaScc.setSessionOwner(false);
-        }
-	}
+  if (action.equals("ValidateView")) {
+    isOwner = true;
+  } else {
+    isOwner = KmeliaPublicationHelper
+        .isUserConsideredAsOwner(pubDetail.getComponentInstanceId(), currentUser.getId(), profile,
+            ownerDetail);
+  }
+  kmeliaScc.setSessionOwner(isOwner);
 
   if (isOwner && kmeliaScc.isDraftEnabled() && pubDetail.isDraft()) {
-    screenMessage = "<div class=\"inlineMessage\">" + resources.getString(
-        "kmelia.publication.draft.info") + "</div>";
+    screenMessage = "<div class=\"inlineMessage\">" + resources.getString("kmelia.publication.draft.info");
+    if (modificationAllowed) {
+      screenMessage += resources.getString("kmelia.publication.draft.info.publish");
+    }
+    screenMessage += "</div>";
   }
 
-  String author = pubDetail.getAuthor();
-  String creatorId = pubDetail.getCreatorId();
   String updaterId = pubDetail.getUpdaterId();
 %>
 

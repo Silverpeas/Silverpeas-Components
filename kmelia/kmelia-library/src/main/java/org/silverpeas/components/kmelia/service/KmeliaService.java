@@ -711,4 +711,6 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
    * @param reminder a {@link Reminder} instance.
    */
   void performReminder(final Reminder reminder);
+
+  void deleteClone(PublicationPK pk);
 }
