@@ -2034,8 +2034,7 @@ public class KmeliaBmEJB implements KmeliaBm {
             + pubPK.toString());
         // This publication have got no father !
         // Check if it's a clone (a clone have got no father ever)
-        boolean alwaysVisibleModeActivated = StringUtil.getBooleanValue(getOrganisationController().
-            getComponentParameterValue(pubPK.getInstanceId(), "publicationAlwaysVisible"));
+        boolean alwaysVisibleModeActivated = isPublicationAlwaysVisibleActivated(pubPK.getInstanceId());
         if (alwaysVisibleModeActivated) {
           SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationFathers()",
               "root.MSG_GEN_PARAM_VALUE", "Getting the publication");
@@ -2170,18 +2169,21 @@ public class KmeliaBmEJB implements KmeliaBm {
         "root.MSG_GEN_ENTER_METHOD");
     Collection<PublicationDetail> publications = new ArrayList<PublicationDetail>();
     PublicationPK pubPK = new PublicationPK("useless", componentId);
+
+    boolean modeAlwaysVisibleOn = isPublicationAlwaysVisibleActivated(componentId);
+
     try {
       Collection<PublicationDetail> temp = publicationBm.getPublicationsByStatus(
           PublicationDetail.TO_VALIDATE, pubPK);
       // only publications which must be validated by current user must be returned
       for (PublicationDetail publi : temp) {
-        boolean isClone = publi.isValidationRequired() && !"-1".equals(publi.getCloneId());
+        boolean isClone = publi.isClone();
         if (isClone) {
-          if (isUserCanValidatePublication(publi.getPK(), userId)) {
+          if (modeAlwaysVisibleOn && isUserCanValidatePublication(publi.getPK(), userId)) {
             // publication to validate is a clone, get original one
+            // if "always visible" mode is off, ignoring clone to validate
             try {
-              PublicationDetail original = getPublicationDetail(new PublicationPK(publi.
-                  getCloneId(), publi.getPK()));
+              PublicationDetail original = getPublicationDetail(publi.getClonePK());
               publications.add(original);
             } catch (Exception e) {
               // inconsistency in database ! Original publication does not exist
@@ -5156,5 +5158,10 @@ public class KmeliaBmEJB implements KmeliaBm {
       }
     }
     return activeValidatorIds;
+  }
+
+  private boolean isPublicationAlwaysVisibleActivated(String componentId) {
+    return StringUtil.getBooleanValue(getOrganisationController().
+        getComponentParameterValue(componentId, "publicationAlwaysVisible"));
   }
 }
