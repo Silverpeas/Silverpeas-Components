@@ -89,7 +89,6 @@ public class WebPagesRequestRouter extends ComponentRequestRouter<WebPagesSessio
       HttpRequest request) {
     String destination = "";
     String rootDestination = "/webPages/jsp/";
-
     try {
       if (function.startsWith("Main") || "searchResult".equals(function)) {
         String profile = webPagesSC.getProfile();
@@ -118,14 +117,11 @@ public class WebPagesRequestRouter extends ComponentRequestRouter<WebPagesSessio
         }
       } else if (FUNCTION_PREVIEW.equals(function)) {
         processHaveGotContent(webPagesSC, request);
-
-        request.setAttribute("IsSubscriber", webPagesSC.isSubscriber());
         request.setAttribute("SubscriptionEnabled", webPagesSC.isSubscriptionUsed());
         if (webPagesSC.isXMLTemplateUsed()) {
           request.setAttribute("Form", webPagesSC.getViewForm());
           request.setAttribute("Data", webPagesSC.getDataRecord());
         }
-
         if (!"Portlet".equals(request.getAttribute(ACTION_ATTR))) {
           if (!USER.equals(webPagesSC.getProfile())) {
             request.setAttribute(ACTION_ATTR, FUNCTION_PREVIEW);
@@ -133,7 +129,6 @@ public class WebPagesRequestRouter extends ComponentRequestRouter<WebPagesSessio
             request.setAttribute(ACTION_ATTR, "Display");
           }
         }
-
         request.setAttribute("AnonymousAccess", isAnonymousAccess(request));
         destination = rootDestination + "display.jsp";
       } else if (function.startsWith("portlet")) {
@@ -158,6 +153,7 @@ public class WebPagesRequestRouter extends ComponentRequestRouter<WebPagesSessio
       } else {
         destination = rootDestination + function;
       }
+      request.setAttribute("highestUserRole", webPagesSC.getHighestSilverpeasUserRole());
     } catch (Exception e) {
       request.setAttribute("javax.servlet.jsp.jspException", e);
       destination = "/admin/jsp/errorpageMain.jsp";

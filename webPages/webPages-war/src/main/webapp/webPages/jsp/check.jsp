@@ -31,11 +31,10 @@ response.setHeader("Pragma","no-cache");        //HTTP 1.0
 response.setDateHeader ("Expires",-1);          //prevents caching at the proxy server
 %>
 
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane"%>
 <%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
-
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.NeedWindowTag"%>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window" %>
 
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
 
@@ -44,7 +43,7 @@ GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("Sessio
 
 MultiSilverpeasBundle resource = (MultiSilverpeasBundle)request.getAttribute("resources");
 Window window = gef.getWindow();
-OperationPane operationPane = window.getOperationPane();
+pageContext.setAttribute(NeedWindowTag.WINDOW_PAGE_ATT, window, PageContext.REQUEST_SCOPE);
 
 String[] browseContext = (String[]) request.getAttribute("browseContext");
 String componentId = browseContext[3];

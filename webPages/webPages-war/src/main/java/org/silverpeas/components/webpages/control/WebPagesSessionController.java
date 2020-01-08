@@ -27,6 +27,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.webpages.model.WebPagesException;
 import org.silverpeas.components.webpages.notification.WebPagesUserNotifier;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.FormException;
@@ -42,9 +43,6 @@ import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.subscription.ResourceSubscriptionService;
-import org.silverpeas.core.subscription.SubscriptionService;
-import org.silverpeas.core.subscription.SubscriptionServiceProvider;
-import org.silverpeas.core.subscription.service.ComponentSubscription;
 import org.silverpeas.core.subscription.service.ComponentSubscriptionResource;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -80,15 +78,11 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
    * @return le role
    */
   public String getProfile() {
-    String[] profiles = getUserRoles();
-    String flag = "user";
-    for (String profile : profiles) {
-      // if publisher, return it, we won't find a better profile
-      if ("publisher".equals(profile)) {
-        return profile;
-      }
-    }
-    return flag;
+    final SilverpeasRole highestRole = getHighestSilverpeasUserRole();
+    final SilverpeasRole normalizedRole = highestRole.isGreaterThanOrEquals(SilverpeasRole.publisher)
+        ? highestRole
+        : SilverpeasRole.user;
+    return normalizedRole.getName();
   }
 
   /**
@@ -99,11 +93,6 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
         I18NHelper.defaultLanguage);
   }
 
-  public boolean isSubscriber() {
-    return getSubscribeService().existsSubscription(
-        new ComponentSubscription(getUserId(), getComponentId()));
-  }
-
   public String manageSubscriptions() {
     SubscriptionContext subscriptionContext = getSubscriptionContext();
     subscriptionContext.initialize(ComponentSubscriptionResource.from(getComponentId()));
@@ -112,10 +101,6 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
 
   private NodePK getNodePK() {
     return new NodePK(NodePK.ROOT_NODE_ID, getSpaceId(), getComponentId());
-  }
-
-  private SubscriptionService getSubscribeService() {
-    return SubscriptionServiceProvider.getSubscribeService();
   }
 
   /**

@@ -50,6 +50,18 @@
   <visible>true</visible>
   <portlet>true</portlet>
   <profiles>
+    <profile name="admin">
+      <label>
+        <message lang="fr">Gestionnaires</message>
+        <message lang="en">Managers</message>
+        <message lang="de">Manager</message>
+      </label>
+      <help>
+        <message lang="fr">Les gestionnaires gèrent la page web ainsi que les abonnements.</message>
+        <message lang="en">Managers manage the web page and subscriptions.</message>
+        <message lang="en">Managers manage the web page and subscriptions.</message>
+      </help>
+    </profile>
     <profile name="publisher">
       <label>
         <message lang="fr">Publieurs</message>
