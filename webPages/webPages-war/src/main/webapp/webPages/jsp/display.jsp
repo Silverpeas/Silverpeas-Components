@@ -23,104 +23,116 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
 <%@ include file="check.jsp" %>
-<%@page import="org.silverpeas.core.contribution.content.form.Form"%>
-<%@page import="org.silverpeas.core.contribution.content.form.DataRecord"%>
-<%@page import="org.silverpeas.core.contribution.content.form.PagesContext"%>
+<%@page import="org.silverpeas.core.contribution.content.form.DataRecord" %>
+<%@page import="org.silverpeas.core.contribution.content.form.Form" %>
+<%@page import="org.silverpeas.core.contribution.content.form.PagesContext" %>
 <%@ page import="org.silverpeas.core.i18n.I18NHelper" %>
+
+<c:set var="currentUserLanguage" value="${requestScope.resources.language}"/>
+<fmt:setLocale value="${currentUserLanguage}"/>
+<view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
+
+<view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.admin"/>
+
+<fmt:message key="webPages.edit" var="editLabel"/>
+<fmt:message key="GML.manageSubscriptions" var="manageSubscriptionLabel"/>
+<fmt:message key="GML.notify" var="notifyLabel"/>
+<fmt:message key="GML.print" var="printLabel"/>
+<fmt:message key="webPages.emptyPage" var="emptyPageMessage"/>
+
+<fmt:message key="webPages.underConstruction" var="underConstructionPath" bundle="${icons}"/>
+<c:url var="underConstructionPath" value="${underConstructionPath}"/>
+
+<c:set var="action" value="${requestScope.Action}"/>
+<c:if test="${empty action}">
+  <c:set var="action" value="Display"/>
+</c:if>
+<c:set var="subscriptionEnabled" value="${requestScope.SubscriptionEnabled}"/>
+<c:set var="highestUserRole" value="${requestScope.highestUserRole}"/>
+<c:set var="haveGotContent" value="${requestScope.haveGotContent}"/>
+<c:set var="isAnonymous" value="${requestScope.AnonymousAccess}"/>
+<c:set var="operationsVisibles" value="${not (action eq 'Portlet') and not isAnonymous}"/>
+<jsp:useBean id="operationsVisibles" type="java.lang.Boolean"/>
+
 <%
-	boolean isSubscriber = (Boolean) request.getAttribute("IsSubscriber");
-	boolean subscriptionEnabled = (Boolean) request.getAttribute("SubscriptionEnabled");
-
-	String action = (String)request.getAttribute("Action");
-	if (action == null) {
-	  action = "Display";
-	}
-	boolean haveGotContent = (Boolean)request.getAttribute("haveGotContent");
-	boolean isAnonymous = (Boolean)request.getAttribute("AnonymousAccess");
-
-	Form form = (Form) request.getAttribute("Form");
-	DataRecord data = (DataRecord) request.getAttribute("Data");
-
-	PagesContext context = new PagesContext("myForm", "0", resource.getLanguage(), false, componentId, "useless");
-	context.setObjectId("0");
-	context.setBorderPrinted(false);
-
-	boolean operationsVisibles = !action.equals("Portlet") && !isAnonymous;
+  Form form = (Form) request.getAttribute("Form");
+  DataRecord data = (DataRecord) request.getAttribute("Data");
+  PagesContext context = new PagesContext("myForm", "0", resource.getLanguage(), false, componentId, "useless");
+  context.setObjectId("0");
+  context.setBorderPrinted(false);
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.webPage">
-<head>
-<view:looknfeel/>
-<link type="text/css" rel="stylesheet" href="styleSheets/webPages-print.css" media="print"/>
-<view:includePlugin name="popup"/>
-<view:includePlugin name="preview"/>
-<view:includePlugin name="toggle"/>
-<view:includePlugin name="subscription"/>
-<script type="text/javascript">
-  SUBSCRIPTION_PROMISE.then(function() {
-    window.spSubManager = new SilverpeasSubscriptionManager('<%=componentId%>');
-  });
+<view:sp-page angularJsAppName="silverpeas.webPage">
+  <view:sp-head-part>
+    <link type="text/css" rel="stylesheet" href="styleSheets/webPages-print.css" media="print"/>
+    <view:includePlugin name="popup"/>
+    <view:includePlugin name="preview"/>
+    <view:includePlugin name="toggle"/>
+    <view:includePlugin name="subscription"/>
+    <script type="text/javascript">
+      SUBSCRIPTION_PROMISE.then(function() {
+        window.spSubManager = new SilverpeasSubscriptionManager('<%=componentId%>');
+      });
 
-  function toNotify() {
-  	sp.messager.open('<%= componentId %>');
-  }
-</script>
-</head>
-<body>
-<%
-	if (operationsVisibles) {
-	  if ("Preview".equals(action)) {
-      operationPane.addOperation("useless", resource.getString("webPages.edit"), "Edit");
-      if (subscriptionEnabled) {
-        operationPane.addOperation("useless", resource.getString("GML.manageSubscriptions"), "ManageSubscriptions");
+      function toNotify() {
+        sp.messager.open('<%= componentId %>');
       }
-      operationPane.addLine();
-    }
-    if (subscriptionEnabled) {
-      operationPane.addLine();
-      operationPane.addOperation("useless", "<span id='subscriptionMenuLabel'></span>", "javascript:spSubManager.switchUserSubscription()");
-    }
-    operationPane.addOperation("useless", resource.getString("GML.notify"), "javascript:toNotify();");
-    operationPane.addOperation("useless", resource.getString("GML.print"), "javascript:print();");
-		out.println(window.printBefore());
-	}
-%>
-<view:componentInstanceIntro componentId="<%=componentId%>" language="<%=resource.getLanguage()%>"/>
-	<table width="100%" border="0">
-	<tr><td id="richContent">
-		<%
-			if (haveGotContent) {
-				if (data != null) {
-				  form.display(out, context, data);
-				} else {
-				  %>
-				  <view:displayWysiwyg objectId="<%=componentId%>" componentId="<%=componentId %>" language="<%=I18NHelper.defaultLanguage %>"/>
-				  <%
-				}
-			} else {
-		%>
-				<img src="<%=resource.getIcon("webPages.underConstruction") %>" alt=""/>
-				<span class="txtnav"><%=resource.getString("webPages.emptyPage")%></span>
-				<img src="<%=resource.getIcon("webPages.underConstruction") %>" alt=""/>
-		<% } %>
-	</td></tr>
-	</table>
-<%
-	if (operationsVisibles) {
-		out.println(window.printAfter());
-	}
-%>
-
-<script type="text/javascript">
-  /* declare the module myapp and its dependencies (here in the silverpeas module) */
-  var myapp = angular.module('silverpeas.webPage', ['silverpeas.services', 'silverpeas.directives']);
-</script>
-
-</body>
-</html>
+    </script>
+  </view:sp-head-part>
+  <view:sp-body-part>
+    <c:if test="${operationsVisibles}">
+      <view:operationPane>
+        <c:if test="${action eq 'Preview'}">
+          <view:operation action="Edit" altText="${editLabel}"/>
+          <c:if test="${subscriptionEnabled and highestUserRole.isGreaterThanOrEquals(adminRole)}">
+            <view:operation action="ManageSubscriptions" altText="${manageSubscriptionLabel}"/>
+          </c:if>
+          <view:operationSeparator/>
+        </c:if>
+        <c:if test="${subscriptionEnabled}">
+          <view:operation action="javascript:spSubManager.switchUserSubscription()" altText="<span id='subscriptionMenuLabel'></span>"/>
+        </c:if>
+        <view:operation action="javascript:toNotify()" altText="${notifyLabel}"/>
+        <view:operation action="javascript:print()" altText="${printLabel}"/>
+      </view:operationPane>
+    </c:if>
+    <%
+      if (operationsVisibles) {
+        out.println(window.printBefore());
+      }
+    %>
+    <view:componentInstanceIntro componentId="<%=componentId%>" language="<%=resource.getLanguage()%>"/>
+    <div id="richContent">
+      <c:choose>
+        <c:when test="${haveGotContent}">
+          <%
+            if (data != null) {
+              form.display(out, context, data);
+            } else {
+          %>
+          <view:displayWysiwyg objectId="<%=componentId%>" componentId="<%=componentId %>" language="<%=I18NHelper.defaultLanguage %>"/>
+          <%
+            }
+          %>
+        </c:when>
+        <c:otherwise>
+          <img src="${underConstructionPath}" alt=""/>
+          <span class="txtnav">${emptyPageMessage}</span>
+          <img src="${underConstructionPath}" alt=""/>
+        </c:otherwise>
+      </c:choose>
+    </div>
+    <%
+      if (operationsVisibles) {
+        out.println(window.printAfter());
+      }
+    %>
+  </view:sp-body-part>
+</view:sp-page>
