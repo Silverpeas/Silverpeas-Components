@@ -48,6 +48,12 @@
       this.openSiteTopic(id);
     };
     /**
+     * Go to the site according to the different given parameters.
+     */
+    this.goToSite = function(id, options) {
+      this.openSite(id, options);
+    };
+    /**
      * Opens a popup displaying all the icons and their definition.
      */
     this.openIconDictionary = function() {
@@ -67,23 +73,15 @@
       }));
     };
     /**
-     * Load the data of the site represented by the given identifier.
+     * Navigating to the site according to the different given parameters.
      * @param siteId an identifier of a site.
-     * @returns {*} a promise with the JSON data of the aimed site.
-     */
-    this.loadSite = function(siteId) {
-      return sp.ajaxRequest('siteAsJson').withParam('id', siteId).sendAndPromiseJsonResponse();
-    };
-    /**
-     * Navigating to the site according the different given parameters.
-     * @param siteId
-     * @param options
+     * @param options specific options to apply.
      */
     this.openSite = function(siteId, options) {
       if (typeof __context.beforeOpenSiteCallback === "function") {
         __context.beforeOpenSiteCallback();
       }
-      return this.loadSite(siteId).then(function(site) {
+      return sp.ajaxRequest('siteAsJson').withParam('id', siteId).sendAndPromiseJsonResponse().then(function(site) {
         var sitePath = site.contentPath;
         if (__isLinkSite(site.type)) {
           if (sitePath.indexOf("://") !== -1) {

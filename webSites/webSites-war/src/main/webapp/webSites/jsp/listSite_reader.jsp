@@ -62,7 +62,7 @@
     function publicationGoToUniqueSite() {
       <%
         if (singleSiteId != null) {
-          out.println("wsm.openSite('" + singleSiteId + "');");
+          out.println("wsm.goToSite('" + singleSiteId + "');");
         }
       %>
     }
