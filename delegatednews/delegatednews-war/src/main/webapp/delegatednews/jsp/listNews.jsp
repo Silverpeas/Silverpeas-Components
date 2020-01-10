@@ -109,7 +109,7 @@
         resizable: false,
         modal: true,
         height: "auto",
-        width: 520,
+        width: 600,
         buttons: {
           "<fmt:message key="GML.ok"/>": function() {
             var message = $("#txtMessage").val();
@@ -170,29 +170,12 @@
           });
       });
       
-      function sortDelegatedNews(updatedDelegatedNewsJSON)
-      {
-          $.ajax({
-              url:"<%=m_context%>/services/delegatednews/<%=newsScc.getComponentId()%>",
-              type: "PUT",
-              contentType: "application/json",
-              dataType: "json",
-              cache: false,
-              data: $.toJSON(updatedDelegatedNewsJSON),
-              success: function (data) {
-                listDelegatedNewsJSON = data;
-              }
-              ,
-              error: function(jqXHR, textStatus, errorThrown) {
-                if (onError == null)
-                 notyError(errorThrown);
-                else
-                 onError({
-                   status: jqXHR.status, 
-                   message: errorThrown
-                 });
-              }
-          });
+      function sortDelegatedNews(updatedDelegatedNewsJSON){
+        var url = "<%=m_context%>/services/delegatednews/<%=newsScc.getComponentId()%>";
+        var ajaxRequest = window.sp.ajaxRequest(url).byPutMethod();
+        ajaxRequest.sendAndPromiseJsonResponse(updatedDelegatedNewsJSON).then(function(data) {
+          listDelegatedNewsJSON = data;
+        });
       }
       
       function deleteDelegatedNews(pubId) {
@@ -236,33 +219,16 @@
       }
       
       function deleteDelegagedNews(updatedDelegatedNews) {
-    	  $.ajax({
-              url:"<%=m_context%>/services/delegatednews/<%=newsScc.getComponentId()%>",
-              type: "PUT",
-              contentType: "application/json",
-              dataType: "json",
-              cache: false,
-              data: $.toJSON(updatedDelegatedNews),
-              success: function (data) {
-                var listPubIdToDelete = getAllPubIdToDelete(data);
-                for (var i=0; i<listPubIdToDelete.length; i++)
-                {
-                  var trToDelete = "#delegatedNews_" + listPubIdToDelete[i];
-                  $(trToDelete).remove();
-                }
-                listDelegatedNewsJSON = data;
-              }
-             ,
-             error: function(jqXHR, textStatus, errorThrown) {
-             if (onError == null)
-              alert(errorThrown);
-             else
-              onError({
-              status: jqXHR.status, 
-              message: errorThrown
-              });
-             }
-            });
+        var url = "<%=m_context%>/services/delegatednews/<%=newsScc.getComponentId()%>";
+        var ajaxRequest = window.sp.ajaxRequest(url).byPutMethod();
+        ajaxRequest.sendAndPromiseJsonResponse(updatedDelegatedNews).then(function(data) {
+          var listPubIdToDelete = getAllPubIdToDelete(data);
+          for (var i=0; i<listPubIdToDelete.length; i++) {
+            var trToDelete = "#delegatedNews_" + listPubIdToDelete[i];
+            $(trToDelete).remove();
+          }
+          listDelegatedNewsJSON = data;
+        });
       }
       
       function isAppartient(id, list) {
