@@ -38,9 +38,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
-import java.time.ZoneId;
+import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Objects;
 
@@ -230,16 +229,18 @@ public class DelegatedNewsEntity implements WebEntity {
    * @return a delegated news instance.
    */
   public DelegatedNews toDelegatedNews() {
-    ZonedDateTime periodStart = null;
-    ZonedDateTime periodEnd = null;
+    OffsetDateTime periodStart = null;
+    OffsetDateTime periodEnd = null;
     if (this.beginDate != null) {
-      periodStart = this.beginDate.toInstant().atZone(ZoneOffset.systemDefault());
+      periodStart =
+          OffsetDateTime.ofInstant(this.beginDate.toInstant(), ZoneOffset.systemDefault());
     }
     if (this.endDate != null) {
-      periodEnd = this.endDate.toInstant().atZone(ZoneId.systemDefault());
+      periodEnd = OffsetDateTime.ofInstant(this.endDate.toInstant(), ZoneOffset.systemDefault());
     }
+
     Period period = Period.betweenNullable(periodStart, periodEnd);
-    ContributionIdentifier contributionId = ContributionIdentifier.from(this.pubId, this.instanceId,
+    ContributionIdentifier contributionId = ContributionIdentifier.from(this.instanceId, this.pubId,
         PublicationDetail.TYPE);
     return new DelegatedNews(contributionId, this.contributor.getId(), this.validationDate, period);
   }

@@ -339,6 +339,7 @@ public class DefaultQuickInfoService implements QuickInfoService {
   @Override
   public void submitNewsOnHomepage(String id, String userId) {
     News news = getNews(id);
+    news.setId(news.getPublicationId());
     getDelegatedNewsService().submitNews(news,
         news.getVisibility().getSpecificPeriod().orElse(null), userId);
   }

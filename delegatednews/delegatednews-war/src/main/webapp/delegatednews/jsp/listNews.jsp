@@ -23,11 +23,11 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@page import="org.silverpeas.components.delegatednews.model.DelegatedNews"%>
 <%@page import="org.silverpeas.core.web.util.viewgenerator.html.UserNameGenerator"%>
 <%@page import="java.text.SimpleDateFormat"%>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="java.util.List"%>
-<%@ page import="org.silverpeas.components.delegatednews.model.DelegatedNews"%>
+<%@page import="java.util.List"%>
 
 <%@ include file="check.jsp"%>
 <fmt:setLocale value="${requestScope.resources.language}" />
@@ -44,10 +44,8 @@
 
 <c:set var="isAdmin" value="<%=isAdmin%>"/>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.delegatedNews">
-  <head>
-    <view:looknfeel withCheckFormScript="true"/>
+<view:sp-page angularJsAppName="silverpeas.delegatedNews">
+  <view:sp-head-part withCheckFormScript="true">
     <view:includePlugin name="datepicker"/>
     <view:includePlugin name="toggle"/>
     <script type="text/javascript">
@@ -109,7 +107,7 @@
         resizable: false,
         modal: true,
         height: "auto",
-        width: 520,
+        width: 600,
         buttons: {
           "<fmt:message key="GML.ok"/>": function() {
             var message = $("#txtMessage").val();
@@ -170,29 +168,12 @@
           });
       });
       
-      function sortDelegatedNews(updatedDelegatedNewsJSON)
-      {
-          $.ajax({
-              url:"<%=m_context%>/services/delegatednews/<%=newsScc.getComponentId()%>",
-              type: "PUT",
-              contentType: "application/json",
-              dataType: "json",
-              cache: false,
-              data: $.toJSON(updatedDelegatedNewsJSON),
-              success: function (data) {
-                listDelegatedNewsJSON = data;
-              }
-              ,
-              error: function(jqXHR, textStatus, errorThrown) {
-                if (onError == null)
-                 notyError(errorThrown);
-                else
-                 onError({
-                   status: jqXHR.status, 
-                   message: errorThrown
-                 });
-              }
-          });
+      function sortDelegatedNews(updatedDelegatedNewsJSON){
+        var url = "<%=m_context%>/services/delegatednews/<%=newsScc.getComponentId()%>";
+        var ajaxRequest = window.sp.ajaxRequest(url).byPutMethod();
+        ajaxRequest.sendAndPromiseJsonResponse(updatedDelegatedNewsJSON).then(function(data) {
+          listDelegatedNewsJSON = data;
+        });
       }
       
       function deleteDelegatedNews(pubId) {
@@ -207,9 +188,9 @@
             k++;  
           }
         }
-        if (confirm('<fmt:message key="delegatednews.deleteOne.confirm"/>')) {
-        	  deleteDelegagedNews(updatedDelegatedNews);
-        }
+        jQuery.popup.confirm('<fmt:message key="delegatednews.deleteOne.confirm"/>', function() {
+          deleteDelegagedNews(updatedDelegatedNews);
+        });
       }
       
       function deleteSelectedDelegatedNews() {
@@ -228,41 +209,24 @@
           }
           
           if (nbNews > updatedDelegatedNews.length) { //on a coché au - une news à supprimer
-            if (confirm('<fmt:message key="delegatednews.delete.confirm"/>')) {
-            	deleteDelegagedNews(updatedDelegatedNews);
-            }
+            jQuery.popup.confirm('<fmt:message key="delegatednews.delete.confirm"/>', function() {
+              deleteDelegagedNews(updatedDelegatedNews);
+            });
           }
         }
       }
       
       function deleteDelegagedNews(updatedDelegatedNews) {
-    	  $.ajax({
-              url:"<%=m_context%>/services/delegatednews/<%=newsScc.getComponentId()%>",
-              type: "PUT",
-              contentType: "application/json",
-              dataType: "json",
-              cache: false,
-              data: $.toJSON(updatedDelegatedNews),
-              success: function (data) {
-                var listPubIdToDelete = getAllPubIdToDelete(data);
-                for (var i=0; i<listPubIdToDelete.length; i++)
-                {
-                  var trToDelete = "#delegatedNews_" + listPubIdToDelete[i];
-                  $(trToDelete).remove();
-                }
-                listDelegatedNewsJSON = data;
-              }
-             ,
-             error: function(jqXHR, textStatus, errorThrown) {
-             if (onError == null)
-              alert(errorThrown);
-             else
-              onError({
-              status: jqXHR.status, 
-              message: errorThrown
-              });
-             }
-            });
+        var url = "<%=m_context%>/services/delegatednews/<%=newsScc.getComponentId()%>";
+        var ajaxRequest = window.sp.ajaxRequest(url).byPutMethod();
+        ajaxRequest.sendAndPromiseJsonResponse(updatedDelegatedNews).then(function(data) {
+          var listPubIdToDelete = getAllPubIdToDelete(data);
+          for (var i=0; i<listPubIdToDelete.length; i++) {
+            var trToDelete = "#delegatedNews_" + listPubIdToDelete[i];
+            $(trToDelete).remove();
+          }
+          listDelegatedNewsJSON = data;
+        });
       }
       
       function isAppartient(id, list) {
@@ -303,8 +267,8 @@
       
     //-->
     </script>
-  </head>  
-  <body>
+  </view:sp-head-part>
+  <view:sp-body-part>
     <c:if test="${isAdmin}">
       <fmt:message key="delegatednews.icons.delete" var="deleteIcon" bundle="${icons}" />
       <fmt:message key="delegatednews.action.delete" var="deleteAction" />
@@ -445,10 +409,5 @@
     <input type="hidden" name="EndHour"/>
 </form>
 
-<script type="text/javascript">
-  /* declare the module myapp and its dependencies (here in the silverpeas module) */
-  var myapp = angular.module('silverpeas.delegatedNews', ['silverpeas.services', 'silverpeas.directives']);
-</script>
-
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>
