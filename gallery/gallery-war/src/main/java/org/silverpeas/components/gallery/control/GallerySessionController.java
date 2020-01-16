@@ -1261,7 +1261,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
       for (String photoId : basket) {
         medias.add(getMediaById(photoId));
       }
-      aGalleryExporter().exportPhotos(exportDesc, medias, exportReport);
+      aGalleryExporter().exportPhysicalMedias(exportDesc, medias, exportReport);
     }
     return exportReport;
   }

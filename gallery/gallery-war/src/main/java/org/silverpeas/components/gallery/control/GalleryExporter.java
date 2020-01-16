@@ -37,6 +37,7 @@ import org.silverpeas.core.importexport.control.AbstractExportProcess;
 import org.silverpeas.core.importexport.report.ExportReport;
 import org.silverpeas.components.gallery.service.GalleryService;
 import org.silverpeas.components.gallery.service.MediaServiceProvider;
+import org.silverpeas.core.util.file.FileFolderManager;
 import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.admin.user.model.UserDetail;
 
@@ -82,7 +83,7 @@ public class GalleryExporter extends AbstractExportProcess {
     }
   }
 
-  public void exportPhotos(ImportExportDescriptor exportDescriptor, List<Media> medias,
+  public void exportPhysicalMedias(ImportExportDescriptor exportDescriptor, List<Media> medias,
       ExportReport exportReport) throws ExportException {
     try {
       UserDetail userDetail = exportDescriptor.getParameter(EXPORT_FOR_USER);
@@ -106,7 +107,7 @@ public class GalleryExporter extends AbstractExportProcess {
   private void prepareZipContent(List<Media> medias, File tempExportDir,
       MediaResolution mediaResolution) throws IOException {
     for (Media media : medias) {
-      if (media.getType().isPhoto()) {
+      if (!media.getType().isStreaming()) {
         File mediaFile = media.getFile(mediaResolution);
         FileUtil.copyFile(mediaFile, new File(tempExportDir, mediaFile.getName()));
       }
@@ -122,6 +123,7 @@ public class GalleryExporter extends AbstractExportProcess {
       for (AlbumDetail subAlbum : subAlbums) {
         subAlbum = getMediaService().getAlbum(subAlbum.getNodePK());
         File tempSubAlbum = new File(tempExportDir, subAlbum.getName());
+        FileFolderManager.createFolder(tempSubAlbum);
         exportAlbumMedia(subAlbum, mediaResolution, tempSubAlbum);
       }
     }
