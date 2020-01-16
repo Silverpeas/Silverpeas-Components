@@ -384,7 +384,7 @@ window.wsm = new WebSiteManager({
 
 					liste += "<td width=\"10px\">&nbsp;</td>\n";
 				}
-				liste += "<td valign=\"top\">&#149;&nbsp;<a class=\"textePetitBold\" href=\"javascript:onClick=wsm.openSite('"+siteId+"')\">"+siteName+"</a><br/>\n";
+				liste += "<td valign=\"top\">&#149;&nbsp;<a class=\"textePetitBold\" href=\"javascript:onClick=wsm.goToSite('"+siteId+"')\">"+siteName+"</a><br/>\n";
 
 				liste += "<span class=\"txtnote\">&nbsp;&nbsp;"+siteDescription+"</span><br/><br/></td>\n";
 				liste += "</tr>\n";

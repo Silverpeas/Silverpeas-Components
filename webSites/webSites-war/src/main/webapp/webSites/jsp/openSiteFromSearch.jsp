@@ -35,8 +35,9 @@
   <script type="text/javascript">
     whenSilverpeasReady().then(function() {
       var wsm = new WebSiteManager({forceSitePopupOpening : true});
-      wsm.openSite('${siteId}');
-      wsm.goToAppPage("Main");
+      wsm.openSite('${siteId}').then(function() {
+        wsm.goToAppPage("Main");
+      });
     });
   </script>
 </view:sp-body-part>

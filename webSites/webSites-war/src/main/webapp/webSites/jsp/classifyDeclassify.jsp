@@ -209,7 +209,7 @@ window.wsm = new WebSiteManager({
 	    if (nom.length() > 40)
 	          nom = nom.substring(0, 40) + "...";
 
-      arrayLine.addArrayCellLink(nom, "javascript:onClick=wsm.openSite('"+theId+"')");
+      arrayLine.addArrayCellLink(nom, "javascript:onClick=wsm.goToSite('"+theId+"')");
 
 	    if (theDescription.length() > 80)
 	          theDescription = theDescription.substring(0, 80) + "...";
@@ -253,7 +253,7 @@ window.wsm = new WebSiteManager({
       liste += "<td valign=\"top\" width=\"5%\"><input type=\"checkbox\" name=\"declassSite\" value=\"" + pubId + "\"></td>\n";
 
       liste +=
-          "<td valign=\"top\"><a class=\"textePetitBold\" href=\"javascript:onClick=wsm.openSite('" + siteId + "')\">" + siteName + "</a><br>\n";
+          "<td valign=\"top\"><a class=\"textePetitBold\" href=\"javascript:onClick=wsm.goToSite('" + siteId + "')\">" + siteName + "</a><br>\n";
 
       liste += "<span class=\"txtnote\">" + siteDescription + "</span><br><br></td>\n";
     }

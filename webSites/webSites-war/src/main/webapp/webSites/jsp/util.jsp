@@ -120,7 +120,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
           htmlList.append("<td valign=\"top\">&nbsp;</td>\n");
         }
         htmlList.append(
-            "<td valign=\"top\" align=left nowrap>&#149;&nbsp;<a class=\"textePetitBold\" href=\"javascript:onClick=wsm.openSite('")
+            "<td valign=\"top\" align=left nowrap>&#149;&nbsp;<a class=\"textePetitBold\" href=\"javascript:onClick=wsm.goToSite('")
             .append(siteId).append("')\">").append(siteName)
             .append("</a></td><td align=left>\n");
         htmlList.append(iconList);
