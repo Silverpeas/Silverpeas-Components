@@ -25,6 +25,7 @@ package org.silverpeas.components.yellowpages.servlets;
 
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
+import org.silverpeas.core.web.export.ExportCSVBuilder;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
@@ -39,12 +40,9 @@ import org.silverpeas.components.yellowpages.model.TopicDetail;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -325,14 +323,8 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
         // Back to topic
         destination = getDestination("topicManager", scc, request);
       } else if ("ExportCSV".equals(function)) {
-        String csvFilename = scc.exportAsCSV();
-        request.setAttribute("CSVFilename", csvFilename);
-        if (StringUtil.isDefined(csvFilename)) {
-          File file = new File(FileRepositoryManager.getTemporaryPath() + csvFilename);
-          request.setAttribute("CSVFileSize", Long.valueOf(file.length()));
-          request.setAttribute("CSVFileURL", FileServerUtils.getUrlToTempDir(csvFilename));
-        }
-        return "/yellowpages/jsp/downloadCSV.jsp";
+        ExportCSVBuilder csvBuilder = scc.exportAsCSV();
+        return csvBuilder.setupRequest(request);
       } else if ("ToImportCSV".equals(function)) {
         destination = rootDestination + "importCSV.jsp";
       } else if ("ImportCSV".equals(function)) {

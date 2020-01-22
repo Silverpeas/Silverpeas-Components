@@ -45,8 +45,9 @@ import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.MapUtil;
 import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.csv.CSVRow;
 import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.export.ExportCSVBuilder;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -83,8 +84,6 @@ import org.silverpeas.processmanager.record.QuestionTemplate;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Function;
@@ -1829,94 +1828,41 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     return viewReturn;
   }
 
-  public String exportListAsCSV() throws ProcessManagerException {
+  public ExportCSVBuilder exportListAsCSV() throws ProcessManagerException {
     String fieldsToExport = getComponentParameterValue("fieldsToExport");
-    List<StringBuilder> csvRows;
+    ExportCSVBuilder csvBuilder;
     if (isDefined(fieldsToExport)) {
-      csvRows = exportDefinedItemsAsCSV();
+      csvBuilder = exportDefinedItemsAsCSV();
     } else {
-      csvRows = exportAllFolderAsCSV();
+      csvBuilder = exportAllFolderAsCSV();
     }
-    return writeCSVFile(csvRows);
+    return csvBuilder;
   }
 
-  private List<StringBuilder> exportAllFolderAsCSV() throws ProcessManagerException {
+  private ExportCSVBuilder exportAllFolderAsCSV() throws ProcessManagerException {
     try {
-      List<DataRecord> processList = getCurrentProcessList();
       Item[] items = getFolderItems();
       RecordTemplate listHeaders = getProcessListHeaders();
       FieldTemplate[] headers = listHeaders.getFieldTemplates();
 
       List<String> csvCols = getCSVCols();
 
-      ProcessInstanceRowRecord instance;
-      StringBuilder csvRow = new StringBuilder();
-      List<StringBuilder> csvRows = new ArrayList<>();
-      boolean isProcessIdVisible = isProcessIdVisible();
+      ExportCSVBuilder csvBuilder = new ExportCSVBuilder();
+      boolean processIdVisible = isProcessIdVisible();
 
-      if (isProcessIdVisible) {
-        addCSVValue(csvRow, "#");
-      }
+      setProcessHeaderToCSVBuilder(csvBuilder, items, processIdVisible, csvCols, headers);
 
-      addCSVValue(csvRow, "<>");
+      setProcessListToCSVBuilder(csvBuilder, items, processIdVisible, csvCols);
 
-      String col;
-      ItemImpl item;
-      for (int i = 0; i < csvCols.size(); i++) {
-        if (i == 0 || i == 1) {
-          addCSVValue(csvRow, headers[i].getLabel(getLanguage()));
-        } else {
-          col = csvCols.get(i);
-          item = (ItemImpl) getItemByName(items, col);
-          addCSVValue(csvRow, item.getLabel(getCurrentRole(), getLanguage()));
-        }
-      }
-      csvRows.add(csvRow);
-
-      for (final DataRecord aProcessList : processList) {
-        instance = (ProcessInstanceRowRecord) aProcessList;
-        if (instance != null) {
-          csvRow = new StringBuilder();
-          if (isProcessIdVisible) {
-            addCSVValue(csvRow, instance.getId());
-          }
-
-          if (instance.isInError()) {
-            addCSVValue(csvRow, getString("processManager.inError"));
-          } else if (instance.isLockedByAdmin()) {
-            addCSVValue(csvRow, getString("processManager.lockedByAdmin"));
-          } else if (instance.isInTimeout()) {
-            addCSVValue(csvRow, getString("processManager.timeout"));
-          } else {
-            addCSVValue(csvRow, "");
-          }
-
-          // add title
-          addCSVValue(csvRow, instance.getField(0).getValue(getLanguage()));
-
-          // add state
-          addCSVValue(csvRow, instance.getField(1).getValue(getLanguage()));
-
-          String fieldString;
-          for (int c = 2; c < csvCols.size(); c++) {
-            String fieldName = csvCols.get(c);
-            fieldString = getFieldValue(instance, items, fieldName);
-            addCSVValue(csvRow, fieldString);
-          }
-          csvRows.add(csvRow);
-        }
-      }
-
-      return csvRows;
+      return csvBuilder;
     } catch (FormException e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      return emptyList();
+      return null;
     }
   }
 
-  private List<StringBuilder> exportDefinedItemsAsCSV() throws ProcessManagerException {
+  private ExportCSVBuilder exportDefinedItemsAsCSV() throws ProcessManagerException {
     try {
-      List<DataRecord> processList = getCurrentProcessList();
       Item[] items = getFolderItems();
       RecordTemplate listHeaders = getProcessListHeaders();
       FieldTemplate[] headers = listHeaders.getFieldTemplates();
@@ -1925,68 +1871,101 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       List<String> csvCols = new ArrayList<>();
       StringTokenizer tokenizer = new StringTokenizer(fieldsToExport, ";");
       while (tokenizer.hasMoreTokens()) {
-        csvCols.add(tokenizer.nextToken());
-      }
-
-      ProcessInstanceRowRecord instance;
-      StringBuilder csvHeader = new StringBuilder();
-      List<StringBuilder> csvRows = new ArrayList<>();
-      boolean isProcessIdVisible = isProcessIdVisible();
-
-      if (isProcessIdVisible) {
-        addCSVValue(csvHeader, "#");
-      }
-
-      String col;
-      ItemImpl item;
-      // add state column
-      addCSVValue(csvHeader, headers[1].getLabel(getLanguage()));
-      // add state column
-      addCSVValue(csvHeader, headers[0].getLabel(getLanguage()));
-      for (String csvCol : csvCols) {
-        col = csvCol;
-        item = (ItemImpl) getItemByName(items, col);
+        String fieldName = tokenizer.nextToken();
+        ItemImpl item = (ItemImpl) getItemByName(items, fieldName);
         if (item != null) {
-          addCSVValue(csvHeader, item.getLabel(getCurrentRole(), getLanguage()));
-        } else {
-          addCSVValue(csvHeader, col);
-        }
-      }
-      csvRows.add(csvHeader);
-
-      StringBuilder csvRow;
-      for (final DataRecord aProcessList : processList) {
-        instance = (ProcessInstanceRowRecord) aProcessList;
-        if (instance != null) {
-          csvRow = new StringBuilder();
-          if (isProcessIdVisible) {
-            addCSVValue(csvRow, instance.getId());
-          }
-
-          // add state
-          addCSVValue(csvRow, instance.getField(1).getValue(getLanguage()));
-
-          // add title
-          addCSVValue(csvRow, instance.getField(0).getValue(getLanguage()));
-
-          String fieldString;
-          for (String csvCol : csvCols) {
-            if (csvCol.startsWith("${")) {
-              fieldString = DataRecordUtil.applySubstitution(csvCol, instance, "fr");
-            } else {
-              fieldString = getFieldValue(instance, items, csvCol);
-            }
-            addCSVValue(csvRow, fieldString);
-          }
-          csvRows.add(csvRow);
+          csvCols.add(fieldName);
         }
       }
 
-      return csvRows;
+      ExportCSVBuilder csvBuilder = new ExportCSVBuilder();
+      boolean processIdVisible = isProcessIdVisible();
+
+      setProcessHeaderToCSVBuilder(csvBuilder, items, processIdVisible, csvCols, headers);
+
+      setProcessListToCSVBuilder(csvBuilder, items, processIdVisible, csvCols);
+
+      return csvBuilder;
     } catch (FormException e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      return emptyList();
+      return null;
     }
+  }
+
+  private void setProcessHeaderToCSVBuilder(ExportCSVBuilder csvBuilder, Item[] items,
+      boolean isProcessIdVisible, List<String> csvCols, FieldTemplate[] headers) {
+    CSVRow csvHeader = new CSVRow();
+
+    if (isProcessIdVisible) {
+      csvHeader.addCell("#");
+    }
+
+    csvHeader.addCell("<>");
+
+    // add title column
+    csvHeader.addCell(headers[0].getLabel(getLanguage()));
+
+    // add state column
+    csvHeader.addCell(headers[1].getLabel(getLanguage()));
+
+    for (String csvCol : csvCols) {
+      ItemImpl item = (ItemImpl) getItemByName(items, csvCol);
+      if (item != null) {
+        csvHeader.addCell(item.getLabel(getCurrentRole(), getLanguage()));
+      }
+    }
+    csvBuilder.setHeader(csvHeader);
+  }
+
+  private void setProcessListToCSVBuilder(ExportCSVBuilder csvBuilder, Item[] items,
+      boolean isProcessIdVisible, List<String> csvCols) throws ProcessManagerException {
+    List<DataRecord> processList = getCurrentProcessList();
+    for (final DataRecord aProcessList : processList) {
+      ProcessInstanceRowRecord instance = (ProcessInstanceRowRecord) aProcessList;
+      if (instance != null) {
+        try {
+          CSVRow csvRow = new CSVRow();
+          if (isProcessIdVisible) {
+            csvRow.addCell(instance.getId());
+          }
+
+          // add internal status
+          csvRow.addCell(getLabelOfProcessInternalStatus(instance));
+
+          // add title
+          csvRow.addCell(instance.getField(0).getValue(getLanguage()));
+
+          // add state
+          csvRow.addCell(instance.getField(1).getValue(getLanguage()));
+
+          for (String csvCol : csvCols) {
+            csvRow.addCell(getComputedFieldValue(csvCol, instance, items));
+          }
+          csvBuilder.addLine(csvRow);
+        } catch (FormException e) {
+          SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
+        }
+      }
+    }
+  }
+
+  private String getComputedFieldValue(String fieldName, ProcessInstanceRowRecord instance,
+      Item[] items) {
+    if (fieldName.startsWith("${")) {
+      return DataRecordUtil.applySubstitution(fieldName, instance, "fr");
+    }
+    return getFieldValue(instance, items, fieldName);
+  }
+
+  private String getLabelOfProcessInternalStatus(ProcessInstanceRowRecord instance) {
+    if (instance.isInError()) {
+      return getString("processManager.inError");
+    } else if (instance.isLockedByAdmin()) {
+      return getString("processManager.lockedByAdmin");
+    } else if (instance.isInTimeout()) {
+      return getString("processManager.timeout");
+    }
+    return "";
   }
 
   private void updateFolder(final Map<String, String> changes)
@@ -2043,24 +2022,6 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     return fieldString;
   }
 
-  private String writeCSVFile(List<StringBuilder> csvRows) {
-    String csvFilename = new Date().getTime() + ".csv";
-    try (FileOutputStream fileOutput = new FileOutputStream(
-        FileRepositoryManager.getTemporaryPath() + csvFilename)) {
-      StringBuilder csvRow;
-      for (StringBuilder csvRow1 : csvRows) {
-        csvRow = csvRow1;
-        fileOutput.write(csvRow.toString().getBytes());
-        fileOutput.write("\n".getBytes());
-      }
-      fileOutput.flush();
-    } catch (IOException e) {
-      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      csvFilename = null;
-    }
-    return csvFilename;
-  }
-
   private List<String> getCSVCols() throws FormException {
     List<String> csvCols = new ArrayList<>();
     Item[] items = getFolderItems();
@@ -2068,9 +2029,11 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     FieldTemplate[] headers = listHeaders.getFieldTemplates();
 
     for (final FieldTemplate header : headers) {
-      csvCols.add(header.getFieldName());
+      String fieldName = header.getFieldName();
+      if (!fieldName.equalsIgnoreCase("title") && !fieldName.equalsIgnoreCase("instance.state")) {
+        csvCols.add(fieldName);
+      }
     }
-
 
     for (final Item item : items) {
       if (!csvCols.contains(item.getName())) {
@@ -2079,14 +2042,6 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     }
 
     return csvCols;
-  }
-
-  private void addCSVValue(StringBuilder row, String value) {
-    row.append("\"");
-    if (value != null) {
-      row.append(value.replaceAll("\"", "\"\""));
-    }
-    row.append("\"").append(",");
   }
 
   /**

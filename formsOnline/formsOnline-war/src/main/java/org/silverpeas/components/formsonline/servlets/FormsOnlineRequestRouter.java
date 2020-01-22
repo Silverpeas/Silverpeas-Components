@@ -24,7 +24,6 @@
 package org.silverpeas.components.formsonline.servlets;
 
 import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.components.formsonline.ExportSummary;
 import org.silverpeas.components.formsonline.control.FormsOnlineSessionController;
 import org.silverpeas.components.formsonline.model.FormDetail;
 import org.silverpeas.components.formsonline.model.FormInstance;
@@ -32,6 +31,7 @@ import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.export.ExportCSVBuilder;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -47,6 +47,7 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
   private static final String USER_PANEL_CURRENT_GROUP_IDS = "UserPanelCurrentGroupIds";
   private static final String FORM_CONTEXT = "FormContext";
   private static final String PARAM_FORMID = "FormId";
+  private static final String ROOT_DESTINATION = "/formsOnline/jsp/";
 
   /**
    * This method has to be implemented in the component request rooter class. returns the session
@@ -97,14 +98,14 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
         request.setAttribute("App", formsOnlineSC.getComponentInstLight());
         formsOnlineSC.resetCurrentForm();
 
-        destination = "formsList.jsp";
+        destination = ROOT_DESTINATION + "formsList.jsp";
       } else if ("CreateForm".equals(function)) {
         FormDetail form = new FormDetail();
         formsOnlineSC.setCurrentForm(form);
 
         request.setAttribute("currentForm", form);
         request.setAttribute("availableTemplates", formsOnlineSC.getTemplates());
-        destination = "editForm.jsp";
+        destination = ROOT_DESTINATION + "editForm.jsp";
       } else if ("SaveForm".equals(function)) {
         FormDetail form = formsOnlineSC.getCurrentForm();
         form.setDescription(request.getParameter("description"));
@@ -145,7 +146,7 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
         request.setAttribute("currentForm", form);
         request.setAttribute("availableTemplates", formsOnlineSC.getTemplates());
 
-        destination = "editForm.jsp";
+        destination = ROOT_DESTINATION + "editForm.jsp";
       } else if ("DeleteForm".equals(function)) {
         String formId = request.getParameter(PARAM_FORMID);
 
@@ -176,7 +177,7 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
         request.setAttribute("XMLFormName", xmlFormName);
         request.setAttribute(FORM_CONTEXT, getFormContext(formsOnlineSC));
 
-        destination = "preview.jsp";
+        destination = ROOT_DESTINATION + "preview.jsp";
       } else if ("PublishForm".equals(function)) {
         formsOnlineSC.publishForm(request.getParameter("Id"));
         return getDestination("Main", formsOnlineSC, request);
@@ -193,17 +194,16 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
         request.setAttribute("CurrentForm", formsOnlineSC.getCurrentForm());
         request.setAttribute("Forms", formsOnlineSC.getAllForms(false));
 
-        destination = "inbox.jsp";
+        destination = ROOT_DESTINATION + "inbox.jsp";
       } else if ("FilterRequests".equals(function)) {
         String formId = request.getParameter(PARAM_FORMID);
         formsOnlineSC.setCurrentForm(formId);
 
         return getDestination(INBOX, formsOnlineSC, request);
       } else if ("Export".equals(function)) {
-        ExportSummary exportSummary = formsOnlineSC.export();
-        request.setAttribute("ExportSummary", exportSummary);
+        ExportCSVBuilder csvBuilder = formsOnlineSC.export();
 
-        destination = "export-popin-content.jsp";
+        destination = csvBuilder.setupRequest(request);
       } else if ("NewRequest".equals(function)) {
         String formId = request.getParameter(PARAM_FORMID);
         if (StringUtil.isNotDefined(formId)) {
@@ -219,7 +219,7 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
         request.setAttribute(FORM_CONTEXT, getFormContext(formsOnlineSC));
         request.setAttribute("FormDetail", form);
 
-        destination = "newFormInstance.jsp";
+        destination = ROOT_DESTINATION + "newFormInstance.jsp";
       } else if ("SaveRequest".equals(function)) {
         // recuperation des donnees saisies dans le formulaire
         List<FileItem> items = request.getFileItems();
@@ -242,7 +242,7 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
         request.setAttribute("FormDetail", userRequest.getForm());
         request.setAttribute("Origin", checkOrigin(request));
 
-        destination = "viewInstance.jsp";
+        destination = ROOT_DESTINATION + "viewInstance.jsp";
       } else if ("EffectiveValideForm".equals(function)) {
         String requestId = request.getParameter("Id");
         String decision = request.getParameter("decision");
@@ -278,9 +278,8 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
 
         return getDestination("NewRequest", formsOnlineSC, request);
       } else {
-        destination = "welcome.jsp";
+        destination = ROOT_DESTINATION + "welcome.jsp";
       }
-      destination = "/formsOnline/jsp/" + destination;
     } catch (Exception e) {
       SilverLogger.getLogger(this).warn(e);
       request.setAttribute("javax.servlet.jsp.jspException", e);

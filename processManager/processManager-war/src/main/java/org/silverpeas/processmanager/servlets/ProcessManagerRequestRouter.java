@@ -36,9 +36,8 @@ import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.util.file.FileUploadUtil;
+import org.silverpeas.core.web.export.ExportCSVBuilder;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -62,7 +61,6 @@ import org.silverpeas.processmanager.StepVO;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -921,16 +919,9 @@ public class ProcessManagerRequestRouter
   private static FunctionHandler exportCSVHandler = new SessionSafeFunctionHandler() {
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
-      String csvFilename = session.exportListAsCSV();
+      ExportCSVBuilder csvBuilder = session.exportListAsCSV();
 
-      request.setAttribute("CSVFilename", csvFilename);
-      if (StringUtil.isDefined(csvFilename)) {
-        File file = new File(FileRepositoryManager.getTemporaryPath() + csvFilename);
-        request.setAttribute("CSVFileSize", file.length());
-        request.setAttribute("CSVFileURL", FileServerUtils.getUrlToTempDir(csvFilename));
-      }
-
-      return "/processManager/jsp/downloadCSV.jsp";
+      return csvBuilder.setupRequest(HttpRequest.decorate(request));
     }
   };
 

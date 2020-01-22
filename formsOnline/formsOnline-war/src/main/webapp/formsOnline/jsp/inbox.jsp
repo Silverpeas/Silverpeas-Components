@@ -102,12 +102,6 @@
       if (${currentForm != null}) {
         $("#link-export").show();
       }
-
-      $("#link-export").click(function() {
-        jQuery.popup.load("Export").show('free', {
-          title : '${silfn:escapeJs(labelExport)}'
-        });
-      });
     });
   </script>
 </head>
@@ -135,7 +129,7 @@
           </c:choose>
         </c:forEach>
       </select>
-      <a id="link-export" class="sp_button" href="#"><fmt:message key="GML.export"/></a>
+      <a id="link-export" class="sp_button" href="Export"><fmt:message key="GML.export"/></a>
     </div>
     <div id="list">
       <c:set var="requestStatusLabelLambda" value="${r ->
