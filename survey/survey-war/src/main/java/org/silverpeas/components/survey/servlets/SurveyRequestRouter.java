@@ -58,10 +58,9 @@ import org.silverpeas.core.questioncontainer.container.model.QuestionContainerHe
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.export.ExportCSVBuilder;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -69,7 +68,6 @@ import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -205,15 +203,9 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
       destination = rootDest + "surveyDetail.jsp?Action=ViewCurrentQuestions&SurveyId=" + id;
     } else if ("ExportCSV".equals(function)) {
       String surveyId = request.getParameter(SURVEY_ID);
-      String csvFilename = surveySC.exportSurveyCSV(surveyId);
+      ExportCSVBuilder csvBuilder = surveySC.exportSurveyCSV(surveyId);
 
-      request.setAttribute("CSVFilename", csvFilename);
-      if (StringUtil.isDefined(csvFilename)) {
-        File file = new File(FileRepositoryManager.getTemporaryPath() + csvFilename);
-        request.setAttribute("CSVFileSize", Long.valueOf(file.length()));
-        request.setAttribute("CSVFileURL", FileServerUtils.getUrlToTempDir(csvFilename));
-      }
-      destination = rootDest + "downloadCSV.jsp";
+      destination = csvBuilder.setupRequest(request);
     } else if ("copy".equals(function)) {
       String surveyId = request.getParameter("Id");
       try {

@@ -25,6 +25,7 @@
 package org.silverpeas.components.quizz.servlets;
 
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.web.export.ExportCSVBuilder;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
@@ -33,13 +34,9 @@ import org.silverpeas.core.questioncontainer.question.model.Question;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerDetail;
 import org.silverpeas.components.quizz.control.QuizzSessionController;
 import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.StringUtil;
 
 import javax.servlet.http.HttpSession;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -108,15 +105,9 @@ public class QuizzRequestRouter extends ComponentRequestRouter<QuizzSessionContr
         }
       } else if ("ExportCSV".equals(function)) {
         String quizzId = request.getParameter("QuizzId");
-        String csvFilename = quizzSC.exportQuizzCSV(quizzId);
+        ExportCSVBuilder csvBuilder = quizzSC.exportQuizzCSV(quizzId);
 
-        request.setAttribute("CSVFilename", csvFilename);
-        if (StringUtil.isDefined(csvFilename)) {
-          File file = new File(FileRepositoryManager.getTemporaryPath() + csvFilename);
-          request.setAttribute("CSVFileSize", Long.valueOf(file.length()));
-          request.setAttribute("CSVFileURL", FileServerUtils.getUrlToTempDir(csvFilename));
-        }
-        destination = rootDest + "downloadCSV.jsp";
+        destination = csvBuilder.setupRequest(request);
       } else if (function.equals("copy")) {
         String quizzId = request.getParameter("Id");
         try {

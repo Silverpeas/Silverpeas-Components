@@ -68,15 +68,15 @@ import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.csv.CSVReader;
+import org.silverpeas.core.util.csv.CSVRow;
 import org.silverpeas.core.util.csv.Variant;
-import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.export.ExportCSVBuilder;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.selection.Selection;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -856,25 +856,24 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     return domainMultilang;
   }
 
-  public String exportAsCSV() {
-    List<StringBuilder> csvRows = exportCurrentContactsAsCSV();
-    return writeCSVFile(csvRows);
+  public ExportCSVBuilder exportAsCSV() {
+    return exportCurrentContactsAsCSV();
   }
 
-  private List<StringBuilder> exportCurrentContactsAsCSV() {
+  private ExportCSVBuilder exportCurrentContactsAsCSV() {
     Collection<ContactFatherDetail> contacts = getCurrentContacts();
-    List<StringBuilder> csvRows = new ArrayList<>();
+    ExportCSVBuilder csvBuilder = new ExportCSVBuilder();
     // Can't export all columns because data are heterogenous
 
     for (ContactFatherDetail contactFatherDetail : contacts) {
       ContactDetail contact = contactFatherDetail.getContactDetail();
       if (contact != null) {
-        StringBuilder csvRow = new StringBuilder();
-        addCSVValue(csvRow, contact.getLastName());
-        addCSVValue(csvRow, contact.getFirstName());
-        addCSVValue(csvRow, contact.getEmail());
-        addCSVValue(csvRow, contact.getPhone());
-        addCSVValue(csvRow, contact.getFax());
+        CSVRow csvRow = new CSVRow();
+        csvRow.addCell(contact.getLastName());
+        csvRow.addCell(contact.getFirstName());
+        csvRow.addCell(contact.getEmail());
+        csvRow.addCell(contact.getPhone());
+        csvRow.addCell(contact.getFax());
 
         // adding userFull data
         UserFull userFull = contact.getUserFull();
@@ -882,7 +881,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
           String[] properties = userFull.getPropertiesNames();
           for (String property : properties) {
             if (!property.startsWith("password")) {
-              addCSVValue(csvRow, userFull.getValue(property));
+              csvRow.addCell(userFull.getValue(property));
             }
           }
         }
@@ -890,16 +889,14 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
         // adding xml data
         exportFormData(contactFatherDetail, csvRow);
 
-        // Remove final ","
-        csvRow.deleteCharAt(csvRow.lastIndexOf(","));
-        csvRows.add(csvRow);
+        csvBuilder.addLine(csvRow);
       }
     }
 
-    return csvRows;
+    return csvBuilder;
   }
 
-  private void exportFormData(ContactFatherDetail contactFatherDetail, StringBuilder csvRow) {
+  private void exportFormData(ContactFatherDetail contactFatherDetail, CSVRow csvRow) {
     String modelId = "unknown";
     ContactDetail contact = contactFatherDetail.getContactDetail();
     try {
@@ -933,7 +930,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
             }
             String fieldValue = sw.getBuffer().toString();
             // removing ending carriage return appended by out.println() of displayers
-            addCSVValue(csvRow, fieldValue.replaceFirst("\\s+$", ""));
+            csvRow.addCell(fieldValue.replaceFirst("\\s+$", ""));
           }
         }
       }
@@ -941,32 +938,6 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
       SilverLogger.getLogger(this).error(
           "Can't export modelId = " + modelId + ", contactId = " + contact.getPK().getId(), e);
     }
-  }
-
-  private void addCSVValue(StringBuilder row, String value) {
-    row.append("\"");
-    if (value != null) {
-      row.append(value.replaceAll("\"", "\"\""));
-    }
-    row.append("\"").append(",");
-  }
-
-  private String writeCSVFile(List<StringBuilder> csvRows) {
-    String csvFilename = new Date().getTime() + ".csv";
-    try (FileOutputStream fileOutput = new FileOutputStream(
-        FileRepositoryManager.getTemporaryPath() + csvFilename)) {
-
-      StringBuilder csvRow;
-      for (StringBuilder csvRow1 : csvRows) {
-        csvRow = csvRow1;
-        fileOutput.write(csvRow.toString().getBytes());
-        fileOutput.write("\n".getBytes());
-      }
-    } catch (Exception e) {
-      SilverLogger.getLogger(this).error("Problem to write csv file", e);
-      csvFilename = null;
-    }
-    return csvFilename;
   }
 
   /**

@@ -22,7 +22,6 @@ package org.silverpeas.components.formsonline.control;
 
 import net.htmlparser.jericho.Source;
 import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.components.formsonline.ExportSummary;
 import org.silverpeas.components.formsonline.FormsOnlineComponentSettings;
 import org.silverpeas.components.formsonline.model.FormDetail;
 import org.silverpeas.components.formsonline.model.FormInstance;
@@ -37,7 +36,6 @@ import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.model.GlobalContext;
-import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.Form;
@@ -48,26 +46,21 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.notification.message.MessageNotifier;
 import org.silverpeas.core.security.authorization.ForbiddenRuntimeException;
-import org.silverpeas.core.util.Charsets;
-import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.csv.CSVRow;
 import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.export.ExportCSVBuilder;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.web.selection.SelectionUsersGroups;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -361,26 +354,26 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
     return form;
   }
 
-  public ExportSummary export() throws FormsOnlineDatabaseException, SilverpeasException {
-    List<StringBuilder> csvRows = new ArrayList<>();
-    StringBuilder csvHeader = new StringBuilder();
+  public ExportCSVBuilder export() throws FormsOnlineDatabaseException, SilverpeasException {
+    ExportCSVBuilder csvBuilder = new ExportCSVBuilder();
+    CSVRow csvHeader = new CSVRow();
 
     // adding columns relative to request metadata
     List<String> csvCols = new ArrayList<>();
     csvCols.add("id");
-    addCSVValue(csvHeader, "Id");
+    csvHeader.addCell("Id");
     csvCols.add("status");
-    addCSVValue(csvHeader, getString("GML.status"));
+    csvHeader.addCell(getString("GML.status"));
     csvCols.add("creationDate");
-    addCSVValue(csvHeader, getString("formsOnline.sendDate"));
+    csvHeader.addCell(getString("formsOnline.sendDate"));
     csvCols.add("requester");
-    addCSVValue(csvHeader, getString("formsOnline.sender"));
+    csvHeader.addCell(getString("formsOnline.sender"));
     csvCols.add("processDate");
-    addCSVValue(csvHeader, getString("formsOnline.request.process.date"));
+    csvHeader.addCell(getString("formsOnline.request.process.date"));
     csvCols.add("validator");
-    addCSVValue(csvHeader, getString("formsOnline.request.process.user"));
+    csvHeader.addCell(getString("formsOnline.request.process.user"));
     csvCols.add("comment");
-    addCSVValue(csvHeader, getString("GML.comments"));
+    csvHeader.addCell(getString("GML.comments"));
 
     int nbMetaDataCols = csvCols.size();
 
@@ -396,29 +389,23 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
     }
     for (FieldTemplate field : fields) {
       csvCols.add(field.getFieldName());
-      addCSVValue(csvHeader, field.getLabel(getLanguage()));
+      csvHeader.addCell(field.getLabel(getLanguage()));
     }
-    csvRows.add(csvHeader);
+    csvBuilder.setHeader(csvHeader);
 
     // getting rows
     RequestsByStatus requestsByStatus = getAllValidatorRequests();
     List<FormInstance> requests = requestsByStatus.getAll();
     for (FormInstance request : requests) {
-      StringBuilder csvRow = new StringBuilder();
+      CSVRow csvRow = new CSVRow();
 
-      addCSVValue(csvRow, request.getId());
-      addCSVValue(csvRow, statusLabels.get(request.getState()));
-      addCSVValue(csvRow, DateUtil.getOutputDate(request.getCreationDate(), getLanguage()));
-      User creator = request.getCreator();
-      addCSVValue(csvRow, creator.getLastName() + " " + creator.getFirstName());
-      addCSVValue(csvRow, DateUtil.getOutputDate(request.getValidationDate(), getLanguage()));
-      User validator = request.getValidator();
-      if (validator != null) {
-        addCSVValue(csvRow, validator.getLastName() + " " + validator.getFirstName());
-      } else {
-        addCSVValue(csvRow, "");
-      }
-      addCSVValue(csvRow, request.getComments());
+      csvRow.addCell(request.getId());
+      csvRow.addCell(statusLabels.get(request.getState()));
+      csvRow.addCell(request.getCreationDate());
+      csvRow.addCell(request.getCreator());
+      csvRow.addCell(request.getValidationDate());
+      csvRow.addCell(request.getValidator());
+      csvRow.addCell(request.getComments());
 
       DataRecord data = null;
       try {
@@ -433,41 +420,13 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
           String value = values.getOrDefault(csvCols.get(i), "");
           // removing all HTML
           value = new Source(value).getTextExtractor().toString();
-          addCSVValue(csvRow, value);
+          csvRow.addCell(value);
         }
       }
-      csvRows.add(csvRow);
+      csvBuilder.addLine(csvRow);
     }
 
-    String exportFileName = writeCSVFile(csvRows);
-    return new ExportSummary(exportFileName, csvRows.size()-1);
-  }
-
-  private void addCSVValue(StringBuilder row, String value) {
-    row.append("\"");
-    if (value != null) {
-      String toAppend = value.replaceAll("\"", "\"\"");
-      toAppend = toAppend.replace("<br/>", "\n");
-      row.append(toAppend);
-    }
-    row.append("\"").append(",");
-  }
-
-  private String writeCSVFile(List<StringBuilder> csvRows) {
-    String csvFilename = new Date().getTime() + ".csv";
-    try (OutputStreamWriter writer = new OutputStreamWriter(
-        new FileOutputStream(FileRepositoryManager.getTemporaryPath() + csvFilename),
-        Charsets.UTF_8)) {
-       for (StringBuilder csvRow : csvRows) {
-        writer.write(csvRow.toString());
-        writer.write("\n");
-      }
-      writer.flush();
-    } catch (IOException e) {
-      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      csvFilename = null;
-    }
-    return csvFilename;
+    return csvBuilder;
   }
 
   public ComponentInstLight getComponentInstLight() {

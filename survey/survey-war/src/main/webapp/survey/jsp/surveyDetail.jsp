@@ -493,18 +493,6 @@ function clipboardCopy() {
  		}
 
  		var usersWindow = window;
- 	  var exportWindow = window;
-
- 		function Export(url)
-    {
- 			  windowName = "exportWindow";
-        larg = "740";
-        haut = "600";
-        windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
-        if (!exportWindow.closed && exportWindow.name == "exportWindow")
-                exportWindow.close();
-            exportWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
-    }
 
     function viewUsers(id)
     {
@@ -605,7 +593,7 @@ function clipboardCopy() {
       SilverpeasRole.publisher.toString().equals(profile)) {
   %>
     <fmt:message key="GML.export" var="exportMsg" />
-    <c:set var="exportAction">javaScript:onClick=Export('ExportCSV?SurveyId=<%=surveyId%>');</c:set>
+    <c:set var="exportAction">ExportCSV?SurveyId=<%=surveyId%></c:set>
     <view:operation altText="${exportMsg}" icon="${exportSrc}" action="${exportAction}" />
   <%
   }

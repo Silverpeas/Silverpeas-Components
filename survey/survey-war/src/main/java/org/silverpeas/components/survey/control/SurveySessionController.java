@@ -58,11 +58,13 @@ import org.silverpeas.core.questioncontainer.result.model.QuestionResult;
 import org.silverpeas.core.questioncontainer.result.service.QuestionResultService;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.csv.CSVRow;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.export.ExportCSVBuilder;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
@@ -639,14 +641,16 @@ public class SurveySessionController extends AbstractComponentSessionController 
     return OrganizationController.get().getComponentsWithParameterValue("viewInWysiwyg", "yes");
   }
 
-  public String exportSurveyCSV(String surveyId) {
+  public ExportCSVBuilder exportSurveyCSV(String surveyId) {
+    ExportCSVBuilder csvBuilder = new ExportCSVBuilder();
     try {
       QuestionContainerDetail survey = getSurvey(surveyId);
-      return questionContainerService.exportCSV(survey, false);
+      List<CSVRow> rows =  questionContainerService.exportCSV(survey, false);
+      csvBuilder.addLines(rows);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error("CSV export of survey " + surveyId + " failed", e);
     }
-    return null;
+    return csvBuilder;
   }
 
   public void copySurvey(String surveyId) throws SilverpeasException {

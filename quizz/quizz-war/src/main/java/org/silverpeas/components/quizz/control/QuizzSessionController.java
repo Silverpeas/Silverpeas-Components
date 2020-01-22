@@ -46,7 +46,9 @@ import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.csv.CSVRow;
 import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.web.export.ExportCSVBuilder;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -632,16 +634,18 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
     return silverObjectId;
   }
 
-  public String exportQuizzCSV(String quizzId) {
-    QuestionContainerDetail quizz;
+  public ExportCSVBuilder exportQuizzCSV(String quizzId) {
+    ExportCSVBuilder csvBuilder = new ExportCSVBuilder();
     try {
-      quizz = getQuizzDetail(quizzId);
-      return questionContainerService.exportCSV(quizz, true);
+      QuestionContainerDetail quizz = getQuizzDetail(quizzId);
+
+      List<CSVRow> rows = questionContainerService.exportCSV(quizz, true);
+      csvBuilder.addLines(rows);
     } catch (Exception e) {
       SilverTrace
           .error("quizzSession", "QuizzSessionController.exportQuizzCSV", "quizzId=" + quizzId, e);
     }
-    return null;
+    return csvBuilder;
   }
 
   public boolean isParticipationAllowed(String id) throws QuizzException {

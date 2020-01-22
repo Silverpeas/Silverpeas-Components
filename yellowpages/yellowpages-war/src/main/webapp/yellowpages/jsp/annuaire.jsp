@@ -172,11 +172,6 @@
       location.href = "topicManager.jsp?Profile=" + profile;
     }
 
-    function exportCSV() {
-      printWindow =
-          SP_openWindow("ExportCSV", "printWindow", '400', '200', 'scrollbars=yes, alwayRaised');
-    }
-
     whenSilverpeasReady(function() {
       $("#searchButton a").click(function() {
         search();
@@ -208,8 +203,7 @@
         .addOperation(resources.getIcon("yellowpages.printPage"), resources.getString("GML.print"),
             "javaScript:printList();");
 
-    operationPane
-        .addOperation("useless", resources.getString("GML.ExportCSV"), "javaScript:exportCSV();");
+    operationPane.addOperation("useless", resources.getString("GML.ExportCSV"), "ExportCSV");
   }
 
   Frame frame = gef.getFrame();

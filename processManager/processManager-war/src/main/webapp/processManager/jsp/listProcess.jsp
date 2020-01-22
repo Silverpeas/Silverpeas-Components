@@ -169,11 +169,6 @@
       });
     }
 
-    function exportCSV() {
-      SP_openWindow("exportCSV", "exportWindow", "550", "350",
-          "directories=0,menubar=0,toolbar=0,alwaysRaised");
-    }
-
     $(function() {
       if (filterDisplayed) {
         displayFilter();
@@ -203,7 +198,7 @@
     <fmt:message key="processManager.csvExport" var="opIcon" bundle="${icons}"/>
     <c:url var="opIcon" value="${opIcon}"/>
     <view:operationSeparator/>
-    <view:operation action="javaScript:exportCSV();" altText="${csvExportLabel}" icon="${opIcon}"/>
+    <view:operation action="exportCSV" altText="${csvExportLabel}" icon="${opIcon}"/>
   </c:if>
 </view:operationPane>
 <view:window>
