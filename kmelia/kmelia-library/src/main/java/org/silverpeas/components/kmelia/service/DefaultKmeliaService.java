@@ -686,7 +686,7 @@ public class DefaultKmeliaService implements KmeliaService {
       final List<NodeDetail> allowedTree) {
     boolean checkVisibility = false;
     StringBuilder statusSubQuery = new StringBuilder();
-    if (profile.equals("user")) {
+    if (profile == null || profile.equals("user")) {
       checkVisibility = true;
       statusSubQuery.append(" AND sb_publication_publi.pubStatus = 'Valid' ");
     } else if (profile.equals("writer")) {
