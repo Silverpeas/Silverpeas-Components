@@ -42,6 +42,7 @@ public final class GalleryResourceURIs {
   public static final String GALLERY_ALBUMS_URI_PART = "albums";
   public static final String GALLERY_PHOTOS_PART = "photos";
   public static final String GALLERY_PHOTO_RESOLUTION_PARAM = "resolution";
+  public static final String GALLERY_DOWNLOAD_CONTEXT_PARAM = "downloadContext";
   public static final String GALLERY_VIDEOS_PART = "videos";
   public static final String GALLERY_SOUNDS_PART = "sounds";
   public static final String GALLERY_MEDIA_CONTENT_PART = "content";

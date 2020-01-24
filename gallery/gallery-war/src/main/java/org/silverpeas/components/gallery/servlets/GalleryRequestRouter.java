@@ -37,6 +37,7 @@ import org.silverpeas.components.gallery.model.Order;
 import org.silverpeas.components.gallery.model.OrderRow;
 import org.silverpeas.components.gallery.web.MediaSort;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.Form;
@@ -71,8 +72,13 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
+import static org.silverpeas.core.cache.service.CacheServiceProvider.getSessionCacheService;
 import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery.isSqlDefined;
+import static org.silverpeas.core.util.JSONCodec.encodeObject;
+import static org.silverpeas.core.web.http.FileResponse.DOWNLOAD_CONTEXT_PARAM;
 
 public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionController> {
   private static final long serialVersionUID = 1L;
@@ -1111,17 +1117,31 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
           // retour à la demande
           destination = getDestination(ORDER_VIEW_PAGIN_FUNC, gallerySC, request);
         } else if ("OrderDownloadMedia".equals(function)) {
-          String mediaId = request.getParameter(MEDIA_ID);
-          String orderId = request.getParameter(ORDER_ID);
-
-          // rechercher l'url du média
-          String url = gallerySC.getUrl(orderId, mediaId);
-
-          // mise à jour de la date de téléchargement
-          gallerySC.updateOrderRow(orderId, mediaId);
-
-          request.setAttribute("Url", url);
-          destination = rootDest + "download.jsp";
+          final SimpleCache cache = getSessionCacheService().getCache();
+          destination = Optional.ofNullable(request.getParameter("downloadId"))
+              .filter(StringUtil::isDefined)
+              .map(d -> Optional.ofNullable(cache.remove(d, String.class))
+                    .filter(StringUtil::isDefined)
+                    .map(u -> {
+                      request.setAttribute(DOWNLOAD_CONTEXT_PARAM, true);
+                      return u.replace(URLUtil.getApplicationURL(), StringUtil.EMPTY);
+                    })
+                    .orElseGet(() -> getDestination(ORDER_VIEW_PAGIN_FUNC, gallerySC, request)))
+              .orElseGet(() -> {
+                final String mediaId = request.getParameter(MEDIA_ID);
+                final String orderId = request.getParameter(ORDER_ID);
+                return Optional.of(gallerySC.getUrl(orderId, mediaId))
+                    .filter(StringUtil::isDefined)
+                    .map(u -> {
+                      gallerySC.updateOrderRow(orderId, mediaId);
+                      final String downloadUrlKey = UUID.randomUUID().toString();
+                      cache.put(downloadUrlKey, u);
+                      return sendJson(encodeObject(o -> o.put("downloadId", downloadUrlKey)));
+                    }).orElseGet(() -> {
+                      final String errorMessage = gallerySC.getString("gallery.alreadyDownloaded");
+                      return sendJson(encodeObject(o -> o.put("errorMessage", errorMessage)));
+                    });
+              });
         }
       } else if (function.startsWith("Export")) {
         if ("ExportAlbum".equals(function)) {

@@ -108,14 +108,19 @@ function doPagination(index) {
   document.orderForm.submit();
 }
 
-var orderWindow = window;
-
-function download(photoId) {
-  var url = "OrderDownloadMedia?MediaId=" + photoId;
-  windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
-  if (!orderWindow.closed && orderWindow.name == "orderWindow")
-    orderWindow.close();
-  orderWindow = SP_openWindow(url, "orderWindow", "740", "600", windowParams);
+function downloadMedia(mediaId, orderId) {
+  sp.ajaxRequest('OrderDownloadMedia')
+    .withParam('MediaId', mediaId)
+    .withParam('OrderId', orderId)
+    .sendAndPromiseJsonResponse()
+    .then(function(response) {
+      if (response.errorMessage) {
+        SilverpeasError.add(response.errorMessage).show()
+      } else {
+        sp.navRequest('OrderDownloadMedia').withParam('downloadId', response.downloadId).go();
+        window.top.spProgressMessage.hide();
+      }
+    });
 }
 
 function updateOrder() {
@@ -316,7 +321,7 @@ function isCorrectForm() {
             </c:when>
             <c:when test="${row.downloadDecision eq 'D' or row.downloadDecision eq 'DW'}">
               <c:set var="downloadTxt">
-                <a href="OrderDownloadMedia?MediaId=${mediaWhenNotAdmin.id}&OrderId=${row.orderId}" target="_blank"><fmt:message key="gallery.download.media"/> </a>
+                <a href="javascript:void(0)" onclick="downloadMedia('${mediaWhenNotAdmin.id}', '${row.orderId}')"><fmt:message key="gallery.download.media"/> </a>
               </c:set>
             </c:when>
             <c:when test="${row.downloadDecision eq 'T' and not empty row.downloadDate}">

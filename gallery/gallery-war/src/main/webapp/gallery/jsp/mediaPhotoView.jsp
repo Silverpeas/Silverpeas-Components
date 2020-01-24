@@ -24,6 +24,8 @@
 
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/gallery" prefix="gallery" %>
@@ -53,7 +55,10 @@
     <c:if test="${isWatermark}">
       <c:set var="watermarlUrl" value="${media.getApplicationThumbnailUrl(WATERMARK_RESOLUTION)}"/>
       <c:if test="${not empty watermarlUrl}">
-        <a href="${watermarlUrl}" class="download-link" target="_blank">
+        <c:url var="watermarlUrl" value="${fn:replace(watermarlUrl, silfn:applicationURL(), '')}">
+          <c:param name="downloadContext" value="true"/>
+        </c:url>
+        <a href="${watermarlUrl}" class="download-link">
           <img src="${downloadWatermarkIconUrl}" alt="<fmt:message key='gallery.originalWatermark'/>" title="<fmt:message key='gallery.originalWatermark'/>"/>
           <fmt:message key='gallery.download.media.watermark'/>
         </a>
