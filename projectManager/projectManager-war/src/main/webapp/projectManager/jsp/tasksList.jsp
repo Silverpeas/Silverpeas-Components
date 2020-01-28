@@ -198,7 +198,7 @@ filterRoles.add("responsable");
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 <script type="text/javascript">
 function exportTasks(){
-	SP_openWindow('Export', 'exportTasks', '750', '550','scrollbars=yes, menubar=yes, resizable, alwaysRaised');
+  sp.preparedDownloadRequest('Export').download();
 }
 function deleteTask(id) {
   var label = "<%=resource.getString("projectManager.SupprimerTacheConfirmation")%>";

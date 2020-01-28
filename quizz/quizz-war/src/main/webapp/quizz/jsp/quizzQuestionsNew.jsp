@@ -826,15 +826,8 @@ function sendVote(roundId) {
 
 var exportWindow = window;
 
-function Export(url)
-{
-  windowName = "exportWindow";
-    larg = "740";
-    haut = "600";
-    windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
-    if (!exportWindow.closed && exportWindow.name == "exportWindow")
-      exportWindow.close();
-    exportWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
+function Export(url) {
+  sp.preparedDownloadRequest(url).download();
 }
 
 function clipboardCopy(id) {

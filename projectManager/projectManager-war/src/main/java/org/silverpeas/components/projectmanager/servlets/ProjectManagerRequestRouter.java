@@ -37,6 +37,7 @@ import org.silverpeas.components.projectmanager.model.TaskResourceDetail;
 import org.silverpeas.components.projectmanager.vo.MonthVO;
 import org.silverpeas.core.util.StringUtil;
 
+import org.silverpeas.core.web.export.ExportCSVBuilder;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
@@ -345,9 +346,9 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter<ProjectM
         projectManagerSC.changeDayOfWeekStatus(year, month, day);
         destination = getDestination("ToCalendar", projectManagerSC, request);
       } else if ("Export".equals(function)) {
-        List<TaskDetail> tasks = projectManagerSC.getAllTasks();
-        request.setAttribute("Tasks", tasks);
-        destination = rootDestination + "export.jsp";
+        ExportCSVBuilder exportCSV = projectManagerSC.export();
+
+        destination = exportCSV.setupRequest(request);
       } else if (function.startsWith("searchResult")) {
         String id = request.getParameter("Id");
         String type = request.getParameter("Type");

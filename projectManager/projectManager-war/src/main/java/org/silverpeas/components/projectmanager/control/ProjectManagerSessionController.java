@@ -42,7 +42,9 @@ import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.csv.CSVRow;
 import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.export.ExportCSVBuilder;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -888,4 +890,65 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     }
     return relevantDate;
   }
+
+  public ExportCSVBuilder export() {
+
+    ExportCSVBuilder csvBuilder = new ExportCSVBuilder();
+
+    CSVRow header = new CSVRow();
+    header.addCell(getString("projectManager.TacheStatut"));
+    header.addCell(getString("projectManager.TacheNumero"));
+    header.addCell(getString("projectManager.TacheNom"));
+    header.addCell(getString("projectManager.TacheResponsable"));
+    header.addCell(getString("projectManager.TacheDebut"));
+    header.addCell(getString("projectManager.TacheFin"));
+    header.addCell(getString("projectManager.TacheCharge"));
+    header.addCell(getString("projectManager.TacheConso"));
+    header.addCell(getString("projectManager.TacheReste"));
+    csvBuilder.setHeader(header);
+
+    List<TaskDetail> allTasks = getAllTasks();
+    for (TaskDetail task : allTasks) {
+      CSVRow row = new CSVRow();
+      if (task.getChrono() != 0) {
+        row.addCell(getTaskStatusAsString(task));
+        row.addCell(task.getChrono());
+        row.addCell(task.getNom());
+        row.addCell(task.getResponsableFullName());
+        row.addCell(task.getUiDateDebut());
+        row.addCell(task.getUiDateFin());
+        row.addCell(task.getCharge());
+        row.addCell(task.getConsomme());
+        row.addCell(task.getRaf());
+        csvBuilder.addLine(row);
+      }
+    }
+
+    return csvBuilder;
+  }
+
+  private String getTaskStatusAsString(TaskDetail task) {
+    String status;
+    switch (task.getStatut()) {
+      case 0:
+        status = getString("projectManager.TacheStatutEnCours");
+        break;
+      case 1:
+        status = getString("projectManager.TacheStatutGelee");
+        break;
+      case 2:
+        status = getString("projectManager.TacheStatutAbandonnee");
+        break;
+      case 3:
+        status = getString("projectManager.TacheStatutRealisee");
+        break;
+      case 4:
+        status = getString("projectManager.TacheStatutEnAlerte");
+        break;
+      default:
+        status = getString("projectManager.TacheAvancementND");
+    }
+    return status;
+  }
+
 }

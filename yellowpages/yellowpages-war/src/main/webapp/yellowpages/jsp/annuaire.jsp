@@ -173,8 +173,7 @@
     }
 
     function exportCSV() {
-      printWindow =
-          SP_openWindow("ExportCSV", "printWindow", '400', '200', 'scrollbars=yes, alwayRaised');
+      sp.preparedDownloadRequest('ExportCSV').download();
     }
 
     whenSilverpeasReady(function() {
@@ -208,8 +207,7 @@
         .addOperation(resources.getIcon("yellowpages.printPage"), resources.getString("GML.print"),
             "javaScript:printList();");
 
-    operationPane
-        .addOperation("useless", resources.getString("GML.ExportCSV"), "javaScript:exportCSV();");
+    operationPane.addOperation("useless", resources.getString("GML.ExportCSV"), "javaScript:exportCSV();");
   }
 
   Frame frame = gef.getFrame();

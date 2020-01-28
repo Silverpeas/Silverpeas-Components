@@ -62,11 +62,8 @@
 
 <fmt:message var="deletionConfirmMessage" key="formsOnline.requests.action.delete.confirm"/>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <title></title>
-  <view:looknfeel/>
+<view:sp-page>
+<view:sp-head-part>
   <style type="text/css">
     #link-export {
       display: none;
@@ -102,16 +99,10 @@
       if (${currentForm != null}) {
         $("#link-export").show();
       }
-
-      $("#link-export").click(function() {
-        jQuery.popup.load("Export").show('free', {
-          title : '${silfn:escapeJs(labelExport)}'
-        });
-      });
     });
   </script>
-</head>
-<body id="all-requests">
+</view:sp-head-part>
+<view:sp-body-part id="all-requests">
 <fmt:message var="browseBarAll" key="formsOnline.requests.all.breadcrumb"/>
 <view:browseBar extraInformations="${browseBarAll}"/>
 <view:operationPane>
@@ -135,7 +126,7 @@
           </c:choose>
         </c:forEach>
       </select>
-      <a id="link-export" class="sp_button" href="#"><fmt:message key="GML.export"/></a>
+      <a id="link-export" class="sp_button" href="javascript:void(0)" onclick="sp.preparedDownloadRequest('Export').download()"><fmt:message key="GML.export"/></a>
     </div>
     <div id="list">
       <c:set var="requestStatusLabelLambda" value="${r ->
@@ -184,5 +175,5 @@
     </div>
   </view:frame>
 </view:window>
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>

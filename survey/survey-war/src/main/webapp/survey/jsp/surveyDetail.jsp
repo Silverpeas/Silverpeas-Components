@@ -495,15 +495,8 @@ function clipboardCopy() {
  		var usersWindow = window;
  	  var exportWindow = window;
 
- 		function Export(url)
-    {
- 			  windowName = "exportWindow";
-        larg = "740";
-        haut = "600";
-        windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
-        if (!exportWindow.closed && exportWindow.name == "exportWindow")
-                exportWindow.close();
-            exportWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
+    function Export(url) {
+      sp.preparedDownloadRequest(url).download();
     }
 
     function viewUsers(id)
@@ -546,7 +539,7 @@ function clipboardCopy() {
     function clipboardCopy() {
         top.IdleFrame.location.href = '../..<%=surveyScc.getComponentUrl()%>copy?Id=<%=survey.getHeader().getId()%>';
     }
-    
+
     function changeScope(mode, participated, surveyId) {
     	if(mode == 'classic') {
     		location.href="surveyDetail.jsp?Action=ViewResult&Participated="+participated+"&SurveyId="+surveyId+"&Choice=C";
@@ -564,15 +557,15 @@ function clipboardCopy() {
 	      }
 	    });
     }
-    
+
     function PublishResult(title) {
-    	  
+
     	  $("#publishResultDialog #SynthesisFile").show();
         document.publishResultForm.removeSynthesisFile.value = "no";
-          
+
     	  showDialog(title)
     }
-    
+
     function hideSynthesisFile() {
     	  $("#publishResultDialog #SynthesisFile").hide();
     	  document.publishResultForm.removeSynthesisFile.value = "yes";
@@ -587,10 +580,10 @@ function clipboardCopy() {
   <fmt:message key="GML.notify" var="notifyUserMsg" />
   <c:set var="notifyUserAction">javaScript:onClick=sp.messager.open('<%= componentId %>', {<%=NotificationContext.CONTRIBUTION_ID%>: '<%=surveyId%>'});</c:set>
   <view:operation altText="${notifyUserMsg}" icon="${alertSrc}" action="${notifyUserAction}" />
-  
+
   <%
   if (survey.getHeader().getResultMode() == QuestionContainerHeader.DELAYED_RESULTS &&
-      (SilverpeasRole.admin.toString().equals(profile) || 
+      (SilverpeasRole.admin.toString().equals(profile) ||
       SilverpeasRole.publisher.toString().equals(profile))) {
   %>
     <fmt:message key="survey.publishResult" var="publishMsg" />
