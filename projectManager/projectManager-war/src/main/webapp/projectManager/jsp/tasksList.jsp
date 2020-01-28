@@ -197,6 +197,9 @@ filterRoles.add("responsable");
 <view:includePlugin name="datepicker"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 <script type="text/javascript">
+function exportTasks(){
+  sp.preparedDownloadRequest('Export').download();
+}
 function deleteTask(id) {
   var label = "<%=resource.getString("projectManager.SupprimerTacheConfirmation")%>";
   jQuery.popup.confirm(label, function() {
@@ -264,7 +267,7 @@ function resetFilter() {
 </head>
 <body>
 <%
-operationPane.addOperation(resource.getIcon("projectManager.exportTaches"), resource.getString("projectManager.Export"), "Export");
+operationPane.addOperation(resource.getIcon("projectManager.exportTaches"), resource.getString("projectManager.Export"), "javaScript:exportTasks()");
 if ("admin".equals(role)) {
 	operationPane.addOperationOfCreation(resource.getIcon("projectManager.addTache"), resource.getString("projectManager.CreerTache"), "ToAddTask");
 }

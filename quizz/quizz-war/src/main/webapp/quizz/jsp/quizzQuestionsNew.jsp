@@ -824,6 +824,12 @@ function sendVote(roundId) {
     }
 }
 
+var exportWindow = window;
+
+function Export(url) {
+  sp.preparedDownloadRequest(url).download();
+}
+
 function clipboardCopy(id) {
   top.IdleFrame.location.href = '../..<%=quizzScc.getComponentUrl()%>copy?Id='+id;
 }
@@ -930,7 +936,7 @@ if (action.equals("ViewQuizz")) {
   if (profile.equals("admin")) {
     // export csv
     String url = "ExportCSV?QuizzId=" + quizz.getHeader().getPK().getId();
-    operationPane.addOperation(exportSrc, resources.getString("GML.export"), url);
+    operationPane.addOperation(exportSrc, resources.getString("GML.export"), "javaScript:onClick=Export('"+url+"')");
   }
 
   // copier

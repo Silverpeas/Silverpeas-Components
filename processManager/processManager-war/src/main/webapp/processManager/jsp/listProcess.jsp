@@ -198,7 +198,7 @@
     <fmt:message key="processManager.csvExport" var="opIcon" bundle="${icons}"/>
     <c:url var="opIcon" value="${opIcon}"/>
     <view:operationSeparator/>
-    <view:operation action="exportCSV" altText="${csvExportLabel}" icon="${opIcon}"/>
+    <view:operation action="javascript:sp.preparedDownloadRequest('exportCSV').download()" altText="${csvExportLabel}" icon="${opIcon}"/>
   </c:if>
 </view:operationPane>
 <view:window>

@@ -172,6 +172,10 @@
       location.href = "topicManager.jsp?Profile=" + profile;
     }
 
+    function exportCSV() {
+      sp.preparedDownloadRequest('ExportCSV').download();
+    }
+
     whenSilverpeasReady(function() {
       $("#searchButton a").click(function() {
         search();
@@ -203,7 +207,7 @@
         .addOperation(resources.getIcon("yellowpages.printPage"), resources.getString("GML.print"),
             "javaScript:printList();");
 
-    operationPane.addOperation("useless", resources.getString("GML.ExportCSV"), "ExportCSV");
+    operationPane.addOperation("useless", resources.getString("GML.ExportCSV"), "javaScript:exportCSV();");
   }
 
   Frame frame = gef.getFrame();
