@@ -814,14 +814,14 @@ function MM_openBrWindow(theURL,winName,features) { //v2.0
 }
 
 function sendVote(roundId) {
-    if (roundId == "end") {
-          document.quizz.Action.value="SendVote";
-          document.quizz.submit();
-    } else {
-          document.quizz.RoundId.value = roundId;
-          document.quizz.Action.value="RecordQuestionsResponses";
-          document.quizz.submit();
-    }
+  if (roundId == "end") {
+    document.quizz.Action.value = "SendVote";
+  } else {
+    document.quizz.RoundId.value = roundId;
+    document.quizz.Action.value = "RecordQuestionsResponses";
+  }
+  $.progressMessage();
+  document.quizz.submit();
 }
 
 var exportWindow = window;
@@ -949,6 +949,7 @@ if (action.equals("ViewQuizz")) {
   out.println(quizzPart);
 %>
   <view:pdcClassification componentId="<%= quizzScc.getComponentId() %>" contentId="<%= quizzId %>" />
+  <view:progressMessage/>
 <%
   out.println(frame.printMiddle());
   out.println(frame.printAfter());

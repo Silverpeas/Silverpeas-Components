@@ -40,7 +40,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
   QuestionContainerDetail survey  = (QuestionContainerDetail) request.getAttribute("Survey");
   String profile          = (String) request.getAttribute("Profile");
   Collection resultsByUser    = (Collection) request.getAttribute("ResultUser");
-  String userName         = (String) request.getAttribute("UserName");
   String userId         = (String) request.getAttribute("UserId");
   
   SettingBundle settings = ResourceLocator.getSettingBundle("org.silverpeas.survey.surveySettings");
@@ -66,7 +65,7 @@ function viewUsers(id) {
 </head>
 <body>
 <%     
-    String surveyPart = displaySurveyResultOfUser(userName, userId, resultsByUser, survey, gef, m_context, surveyScc, resources, settings, profile);
+    String surveyPart = displaySurveyResultOfUser(userId, resultsByUser, survey, gef, m_context, surveyScc, resources, settings, profile);
     out.println(surveyPart);
 %>
 </body>

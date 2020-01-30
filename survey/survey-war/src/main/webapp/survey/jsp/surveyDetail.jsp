@@ -335,14 +335,14 @@ function sendVote(roundId) {
 		 //la zone commentaire n'est pas affich?e pour la page courante
 	 }
 
-	 if (roundId == "end") {
-          document.survey.Action.value="SendVote";
-          document.survey.submit();
-	 } else {
-         document.survey.RoundId.value = roundId;
-          document.survey.Action.value="RecordQuestionsResponses";
-          document.survey.submit();
+    if (roundId == "end") {
+      document.survey.Action.value = "SendVote";
+    } else {
+      document.survey.RoundId.value = roundId;
+      document.survey.Action.value = "RecordQuestionsResponses";
     }
+    $.progressMessage();
+    document.survey.submit();
   });
 }
 
@@ -467,6 +467,7 @@ function clipboardCopy() {
     out.println(surveyPart);
 %>
 <view:pdcClassification componentId="<%= componentId %>" contentId="<%= surveyId %>" />
+<view:progressMessage/>
 </view:window>
 <%
   } else if (action.equals("ViewResult")) {
@@ -525,9 +526,9 @@ function clipboardCopy() {
  		    usersWindow.focus();
     }
 
-    function viewResultByUser(userId, userName)
+    function viewResultByUser(userId)
     {
-       	url = "UserResult?UserId="+userId+"&UserName="+userName;
+       	url = "UserResult?UserId="+userId;
  		    windowName = "resultByUser";
  		    larg = "700";
  		    haut = "500";

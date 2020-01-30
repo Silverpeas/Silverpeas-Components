@@ -7,6 +7,7 @@
 <%@ page import="java.text.ParseException" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory" %>
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
+<%@ page import="org.silverpeas.core.admin.user.model.User" %>
 
 <%!
 
@@ -514,139 +515,7 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
        return r;
   }
 
-  String displayQuestionsUpdateView(SurveySessionController surveyScc, List questions, GraphicElementFactory gef, String m_context, SettingBundle settings, MultiSilverpeasBundle resources) throws SurveyException
-  {
-        String questionUpSrc = "icons/arrowUp.gif";
-        String questionDownSrc = "icons/arrowDown.gif";
-        String questionDeleteSrc = "icons/questionDelete.gif";
-        String questionUpdateSrc = "icons/questionUpdate.gif";
-        String r = "";
-        Question question = null;
-        Collection answers = null;
-        String operations = "";
-		Board board = gef.getBoard();
-        try
-        {
-            Frame frame = gef.getFrame();
-            r += frame.printBefore();
-
-            if (questions != null && questions.size()>0)
-            {
-                //Display the questions
-                r += "<form name=\"survey\" Action=\"questionsUpdate.jsp\" Method=\"Post\">";
-                r += "<input type=\"hidden\" name=\"Action\" value=\"SubmitQuestions\">";
-                Iterator itQ = questions.iterator();
-                int i = 1;
-                for (int j=0; j<questions.size(); j++)
-                {
-                      question = (Question) questions.get(j);
-                      answers = question.getAnswers();
-
-                      //check available operations to current question
-                      operations = " ";
-                      if (j!=0)
-                          operations += "<a href=\"questionsUpdate.jsp?Action=UpQuestion&QId="+j+"\"><img src=\""+questionUpSrc+"\" border=\"0\" alt=\""+resources.getString("QuestionUp")+"\" title=\""+resources.getString("QuestionUp")+"\" align=\"absmiddle\"></a> ";
-                      if (j+1!=questions.size())
-                          operations += "<a href=\"questionsUpdate.jsp?Action=DownQuestion&QId="+j+"\"><img src=\""+questionDownSrc+"\" border=\"0\" alt=\""+resources.getString("QuestionDown")+"\" title=\""+resources.getString("QuestionDown")+"\" align=\"absmiddle\"></a> ";
-                      operations += "<a href=\"questionsUpdate.jsp?Action=DeleteQuestion&QId="+j+"\"><img src=\""+questionDeleteSrc+"\" border=\"0\" alt=\""+resources.getString("GML.delete")+"\" title=\""+resources.getString("GML.delete")+"\" align=\"absmiddle\"></a> ";
-
-                      r += board.printBefore();
-                      r += "<table border=\"0\" width=\"100%\">";
-                      r += "<tr><td colspan=\"2\" align=\"left\"><B>&#149; <U>"+Encode.javaStringToHtmlString(question.getLabel())+"</U></B>"+operations+"<BR/></td></tr>";
-
-                      // traitement du type de question
-                      String style = question.getStyle();
-
-                      //if (question.isOpen())
-                      if (style.equals("open"))
-                      {
-                      		// question ouverte
-                            Iterator itA = answers.iterator();
-                            int isOpened = 0;
-                            r += "<tr><td colspan=\"2\"><textarea name=\"openedAnswer_"+i+"\" cols=\"60\" rows=\"4\"></textarea></td></tr>";
-                      }
-                      else
-                      {
-                       		if (style.equals("list"))
-                       		{
-                       			// liste d�roulante
-                       			r += "<tr><td><select id=\"answers\" name=\"answers\" onchange=\"if(this.value=='openanswer_"+i+"'){document.getElementById('openanswer"+i+"').style.display='block'}else{document.getElementById('openanswer"+i+"').style.display='none'};\">";
-
-                       			Iterator itA = answers.iterator();
-	                                while (itA.hasNext())
-	                                {
-	                                    Answer answer = (Answer) itA.next();
-					    if (answer.isOpened()) {
-						r += "<option name=\"openanswer_"+i+"\" value=\"openanswer_"+i+"\">"+Encode.javaStringToHtmlString(answer.getLabel())+"</option>";
-					    } else {
-                   				r += "<option name=\"answer_"+i+"\" value=\"\">"+Encode.javaStringToHtmlString(answer.getLabel())+"</option>";
-					    }
-   	                                }
-					r += "<input type=\"text\" id=\"openanswer"+i+"\" name=\"answer_"+i+"\" value=\"\" style=\"display:none\"/>";
-	                                r += "</td></tr>";
-                        	}
-                          	else
-                          	{
-                            	String inputType = "radio";
-                            	if (style.equals("checkbox"))
-	                                inputType = "checkbox";
-                             	Iterator itA = answers.iterator();
-                            	int isOpened = 0;
-                            	while (itA.hasNext())
-                            	{
-                                	Answer answer = (Answer) itA.next();
-                                	if (answer.isOpened())
-                                	{
-                                    	isOpened = 1;
-                                    	r += "<tr><td width=\"40px\" align=\"center\"><input type=\""+inputType+"\" name=\"answer_"+i+"\" value=\"\" checked></td><td align=\"left\">"+Encode.javaStringToHtmlString(answer.getLabel())+"<BR><input type=\"text\" size=\"20\" name=\"openedAnswer_"+i+"\"></td></tr>";
-                                	}
-                                	else
-                                	{
-                                    	if (answer.getImage() == null)
-                                          	r += "<tr><td width=\"40px\" align=\"center\"><input type=\""+inputType+"\" name=\"answer_"+i+"\" value=\"\" checked></td><td align=\"left\" width=\"100%\">"+Encode.javaStringToHtmlString(answer.getLabel())+"</td></tr>";
-                                    	else
-                                    	{
-	                                    	String url = "";
-					                      	if (answer.getImage().startsWith("/"))
-					                      	{
-					                      		url = answer.getImage()+"&Size=266x150";
-					                      	}
-					                      	else
-					                      	{
-	                                            url = FileServerUtils.getUrl(surveyScc.getComponentId(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
-	                                        }
-	                                        r += "<tr><td width=\"40px\" align=\"center\"><input type=\""+inputType+"\" name=\"answer_"+i+"\" value=\"\" checked></td><td align=\"left\">"+Encode.javaStringToHtmlString(answer.getLabel())+"<BR>";
-	                                        r += "<img src=\""+url+"\" border=\"0\"></td><td>";
-                                    	}
-                                	}
-                            	}
-                            }
-                      }
-                      i++;
-                      r += "</table>";
-                      r += board.printAfter();
-                      if (j<questions.size()-1)
-                            r += "<br/>";
-                }
-                r += "</form>";
-            }
-            else
-            {
-                r += "<br/>"+settings.getString("SurveyWithNoQuestions", "")+"<br/><br/>";
-            }
-            r += frame.printMiddle();
-            Button voteButton = gef.getFormButton(resources.getString("GML.validate"), "questionsUpdate.jsp?Action=SendQuestions", false);
-            r += "<center>"+voteButton.print()+"</center>";
-            r += frame.printAfter();
-        }
-        catch( Exception e){
-            throw new  SurveyException("SurveyUtils_JSP.displayQuestionsUpdateView",SurveyException.WARNING,"Survey.EX_CANNOT_DISPLAY_UPDATEVIEW",e);
-        }
-
-       return r;
-  }
-
-String displaySurveyResultOfUser(String userName, String userId, Collection resultsByUser,
+String displaySurveyResultOfUser(String userId, Collection resultsByUser,
   QuestionContainerDetail survey, GraphicElementFactory gef, String m_context, SurveySessionController surveyScc,
   MultiSilverpeasBundle resources, SettingBundle settings, String profile) throws SurveyException, ParseException {
 	   
@@ -670,7 +539,8 @@ String displaySurveyResultOfUser(String userName, String userId, Collection resu
 	    
        	r += board.printBefore();
        	r += "<table border=\"0\" cellspacing=\"5\" cellpadding=\"5\" width=\"100%\">";
-       	r += " <tr><td class=\"textePetitBold\" nowrap>"+resources.getString("survey.participationOf")+" : </td><td width=\"90%\">"+Encode.javaStringToHtmlString(userName)+"</td></tr>";
+       	r += " <tr><td class=\"textePetitBold\" nowrap>"+resources.getString("survey.participationOf")+" : </td><td width=\"90%\">"+Encode.javaStringToHtmlString(
+            User.getById(userId).getDisplayedName())+"</td></tr>";
         if (!userComment.equals("") && userCommentDetail != null && !userCommentDetail.isAnonymous()) {
           r += " <tr><td class=\"textePetitBold\" nowrap valign=\"top\">"+resources.getString("survey.Comment")+" : </td><td width=\"90%\">"+Encode.javaStringToHtmlParagraphe(userComment)+"</td></tr>";
         }
@@ -946,15 +816,14 @@ String displaySurveyResult(String choice, QuestionContainerDetail survey, Graphi
 	           	  if (style.equals("open")) {
 	           	   r += displayOpenAnswersToQuestionNotAnonymous(question.getPK().getId(), surveyScc);
 	              } else {
-	                r += displaySurveyResultChartNotAnonymous(question, answers, m_context, settings, surveyScc);
+	                r += displaySurveyResultChartNotAnonymous(question, answers, surveyScc, nbVoters);
 	              }
 	            } else {
 	              // traitement de l'affichage des questions ouvertes
 	              if (style.equals("open")) {
 	                r += displayOpenAnswersToQuestion(anonymous, question.getPK().getId(), surveyScc);
 	              } else {
-	                int nbUsers = surveyScc.getUserByQuestion(new ResourceReference(question.getPK())).size();
-	                r += displaySurveyResultChart(anonymous, answers, m_context, settings, nbUsers);
+	                r += displaySurveyResultChart(anonymous, answers, m_context, settings, nbVoters);
 	              }
 	            }
 	          r += "</td></tr>";
@@ -1015,7 +884,7 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
                 String userId = qR.getUserId();
                 UserDetail userDetail = surveyScc.getUserDetail(userId);
                 String userName = userDetail.getDisplayedName();
-                 r += "<tr><td class=\"displayUserName\" width=\"40%\"><a href=\"javaScript:onClick=viewResultByUser('"+userId+"','"+userName+"');\">"+Encode.javaStringToHtmlString(userName)+"</a></td><td class=\"freeAnswer\">"+answer+"</td></tr>";
+                 r += "<tr><td class=\"displayUserName\" width=\"40%\"><a href=\"javaScript:onClick=viewResultByUser('"+userId+"');\">"+Encode.javaStringToHtmlString(userName)+"</a></td><td class=\"freeAnswer\">"+answer+"</td></tr>";
             }
         }
         catch( Exception e){
@@ -1121,7 +990,7 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
         return r;
   }
 
-  String displaySurveyResultChartNotAnonymous(Question question, Collection answers, String m_context, SettingBundle settings, SurveySessionController surveyScc) throws SurveyException
+  String displaySurveyResultChartNotAnonymous(Question question, Collection answers, SurveySessionController surveyScc, int nbVoters) throws SurveyException
   {
         String r = "";
         try
@@ -1157,11 +1026,11 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
                 {
                  	String user = (String) itU.next();
                  	String userId = user.split("/")[0];
-                	String userName = user.split("/")[1];
+                	String participationId = user.split("/")[1];
                 	int position = 1;
-                	if (!saveUser.equals(userName))
+                	if (!saveUser.equals(userId+"-"+participationId))
                 	{
-	                	r += "<tr><td align=\"left\" width=\"40%\" class=\"displayUserName\"><a href=\"javaScript:onClick=viewResultByUser('"+userId+"','"+userName+"');\">"+Encode.javaStringToHtmlString(userName)+"</a></td>";
+	                	r += "<tr><td align=\"left\" width=\"40%\" class=\"displayUserName\"><a href=\"javaScript:onClick=viewResultByUser('"+userId+"');\">"+Encode.javaStringToHtmlString(User.getById(userId).getDisplayedName())+"</a></td>";
 	                	// rechercher les réponses pour cet utilisateur
 	                	String value;
 	                	Collection results = surveyScc.getResultByUser(userId, new ResourceReference(question.getPK()));
@@ -1170,26 +1039,24 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
 	                	while (it.hasNext())
 	                	{
 	                		QuestionResult qr = (QuestionResult) it.next();
-	                		value = qr.getAnswerPK().getId();
+	                		if (qr.getParticipationId() == Integer.parseInt(participationId)) {
+                        value = qr.getAnswerPK().getId();
 
-	                		Integer n = (Integer) answerValues.get(value);
-	                		int valueColonne = n.intValue();
-	                		// décaller pour se trouver dans la bonne colonne
-	                		while (position <= valueColonne)
-	                		{
-		                		if (valueColonne == position)
-	              				{
-	              					// on est sur la bonne colonne
-	              					r += "<td class=\"questionResults-Oui\"> X </td>";
-	              				}
-	              				else
-	              				{
-	              					// on décale
-	              					r += "<td class=\"questionResults-Non\">&nbsp;</td>";
-	              				}
-	              				position = position + 1;
-	              			}
-	                		saveUser = userName;
+                        Integer n = (Integer) answerValues.get(value);
+                        int valueColonne = n.intValue();
+                        // décaller pour se trouver dans la bonne colonne
+                        while (position <= valueColonne) {
+                          if (valueColonne == position) {
+                            // on est sur la bonne colonne
+                            r += "<td class=\"questionResults-Oui\"> X </td>";
+                          } else {
+                            // on décale
+                            r += "<td class=\"questionResults-Non\">&nbsp;</td>";
+                          }
+                          position = position + 1;
+                        }
+                        saveUser = userId+"-"+participationId;
+                      }
 	                	}
 	                	// completer la ligne avec des cases à "vide"
 		              	while (position <= rang)
@@ -1210,7 +1077,7 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
 	                Answer answer = (Answer) itA.next();
 	                if (!users.isEmpty())
 	                {
-	                    percentageForThisAnswer = Math.round((answer.getNbVoters()*100f)/users.size());
+	                    percentageForThisAnswer = Math.round((answer.getNbVoters()*100f)/nbVoters);
 	                }
 	                // afficher le %
 	                r += "<td align=\"center\">"+percentageForThisAnswer+"%</td>";

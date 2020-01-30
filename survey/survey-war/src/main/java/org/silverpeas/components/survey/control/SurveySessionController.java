@@ -398,22 +398,12 @@ public class SurveySessionController extends AbstractComponentSessionController 
   }
 
   public Collection<String> getUserByQuestion(ResourceReference questionPK) {
-    return getUserByQuestion(questionPK, true);
-  }
-
-  public Collection<String> getUserByQuestion(ResourceReference questionPK, boolean withName) {
-    // return list declaration
-    Collection<String> users = new LinkedHashSet<>();
+    Collection<String> users = new ArrayList<>();
     Collection<QuestionResult> results =
         getQuestionResultService().getQuestionResultToQuestion(questionPK);
     for (final QuestionResult result : results) {
       if (result != null) {
-        if (withName) {
-          String userName = getUserDetail(result.getUserId()).getDisplayedName();
-          users.add(result.getUserId() + "/" + userName);
-        } else {
-          users.add(result.getUserId());
-        }
+        users.add(result.getUserId() + "/" + result.getParticipationId());
       }
     }
     return users;
@@ -510,7 +500,19 @@ public class SurveySessionController extends AbstractComponentSessionController 
     Collection<Question> questions = survey.getQuestions();
     for (Question question : questions) {
       ResourceReference questionPK = new ResourceReference(question.getPK());
-      users.addAll(getUserByQuestion(questionPK, false));
+      users.addAll(getUniqueParticipantIdsByQuestion(questionPK));
+    }
+    return users;
+  }
+
+  private Collection<String> getUniqueParticipantIdsByQuestion(ResourceReference questionPK) {
+    Collection<String> users = new LinkedHashSet<>();
+    Collection<QuestionResult> results =
+        getQuestionResultService().getQuestionResultToQuestion(questionPK);
+    for (final QuestionResult result : results) {
+      if (result != null) {
+        users.add(result.getUserId());
+      }
     }
     return users;
   }
@@ -1101,7 +1103,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
       parameters.setStyle(item.getString(FileUploadUtil.DEFAULT_ENCODING));
     } else if (mpName.startsWith("answer") || "suggestionLabel".equals(mpName)) {
       parameters.setAnswerInput(item.getString(FileUploadUtil.DEFAULT_ENCODING));
-      answer = new Answer(null, null, parameters.getAnswerInput(), 0, 0, false, "", 0, false, null);
+      answer = new Answer(null, null, parameters.getAnswerInput(), 0, false, "", 0, false, null, null);
       parameters.addAnswer(answer);
     } else if (mpName.startsWith("valueImageGallery") &&
         StringUtil.isDefined(item.getString(FileUploadUtil.DEFAULT_ENCODING)) && !file) {
@@ -1124,7 +1126,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
     // Remove answer for open question
     if ("open".equals(parameters.getStyle())) {
       parameters.removeAllAnswers();
-      parameters.addAnswer(new Answer(null, null, "", 0, 0, false, "", 0, false, null));
+      parameters.addAnswer(new Answer(null, null, "", 0, false, "", 0, false, null, null));
     }
     // Remove the suggestion answer from the list
     if ("0".equals(parameters.getSuggestion())) {

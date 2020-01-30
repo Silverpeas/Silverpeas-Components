@@ -181,7 +181,6 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
       destination = rootDest + "answerResult.jsp";
     } else if ("UserResult".equals(function)) {
       String userId = request.getParameter("UserId");
-      String userName = request.getParameter("UserName");
       Collection<String> result = new ArrayList<>();
       try {
         result = surveySC.getResultByUser(userId);
@@ -189,7 +188,6 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
         SilverLogger.getLogger(this).warn(e);
       }
       request.setAttribute("ResultUser", result);
-      request.setAttribute("UserName", userName);
       request.setAttribute("UserId", userId);
       request.setAttribute(SURVEY, surveySC.getSessionSurvey());
       request.setAttribute(PROFILE, flag);
