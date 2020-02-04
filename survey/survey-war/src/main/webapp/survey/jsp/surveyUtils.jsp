@@ -926,8 +926,7 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
         {
             if (answers != null)
             {
-                final int nbVoters = answers.stream().mapToInt(Answer::getNbVoters).sum();
-                for(final Pair<Answer, Integer> current : listAnswerPercents(answers, nbVoters, nbUsers > 0))
+                for(final Pair<Answer, Integer> current : listAnswerPercents(answers, nbUsers, nbUsers > 0))
                 {
                   final Answer answer = current.getFirst();
                   int nbSquareForThisAnswer = 0;
@@ -1076,7 +1075,6 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
   List<Pair<Answer, Integer>> listAnswerPercents(Collection<Answer> answers, int nbVoters, boolean isUsers) {
     final Iterator<Answer> it = answers.iterator();
     final List<Pair<Answer, Integer>> result = new ArrayList<>(answers.size());
-    int percentRest = 100;
     while (it.hasNext()) {
       int percent = 0;
       final Answer answer = it.next();
@@ -1085,10 +1083,6 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
             .multiply(new BigDecimal(100))
             .divide(new BigDecimal(nbVoters), 0, BigDecimal.ROUND_HALF_EVEN)
             .intValue();
-        percentRest -= percent;
-        if (!it.hasNext() && percentRest != 0) {
-          percent += percentRest;
-        }
       }
       result.add(Pair.of(answer, percent));
     }
