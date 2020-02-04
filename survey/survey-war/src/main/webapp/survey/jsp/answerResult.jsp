@@ -47,8 +47,8 @@ String iconsPath = ResourceLocator.getGeneralSettingBundle().getString("Applicat
 <title></title>
 <view:looknfeel/>
 <script type="text/javascript">
-function viewResultByUser(userId, userName) {
-	url = "UserResult?UserId="+userId+"&UserName="+userName;
+function viewResultByUser(userId) {
+	url = "UserResult?UserId="+userId;
  	windowName = "resultByUser";
  	larg = "700";
  	haut = "500";
@@ -71,8 +71,7 @@ function viewResultByUser(userId, userName) {
 	    for (String userId : users) {
 			 UserDetail user = surveyScc.getUserDetail(userId);
 			 ArrayLine ligne = arrayPane.addArrayLine();
-			 String url = "<a href=\"javaScript:onclick=viewResultByUser('"+userId+"','"+
-           WebEncodeHelper.javaStringToHtmlString(user.getDisplayedName())+"');\">"+WebEncodeHelper.javaStringToHtmlString(user.getLastName()+" "+user.getFirstName())+"</a>";
+			 String url = "<a href=\"javaScript:onclick=viewResultByUser('"+userId+"');\">"+WebEncodeHelper.javaStringToHtmlString(user.getLastName()+" "+user.getFirstName())+"</a>";
 			 cell = ligne.addArrayCellText(url);
 			 cell.setCompareOn(user.getLastName()+" "+user.getFirstName());
       	}
