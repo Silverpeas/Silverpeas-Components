@@ -1,13 +1,16 @@
 <%@page import="org.silverpeas.core.admin.user.model.SilverpeasRole"%>
-<%@page import="org.silverpeas.core.questioncontainer.container.model.QuestionContainerHeader"%>
-<%@ page import="org.silverpeas.core.util.file.FileRepositoryManager"%>
+<%@page import="org.silverpeas.core.admin.user.model.User"%>
+<%@ page import="org.silverpeas.core.questioncontainer.container.model.QuestionContainerHeader"%>
 <%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
-<%@ page import="org.silverpeas.core.util.SettingBundle"%>
+<%@ page import="org.silverpeas.core.util.Pair"%>
+<%@ page import="org.silverpeas.core.util.SettingBundle" %>
 <%@ page import="org.silverpeas.core.util.StringUtil" %>
-<%@ page import="java.text.ParseException" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory" %>
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
-<%@ page import="org.silverpeas.core.admin.user.model.User" %>
+<%@ page import="org.silverpeas.core.util.file.FileRepositoryManager" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory" %>
+<%@ page import="java.math.BigDecimal" %>
+<%@ page import="java.text.ParseException" %>
+<%@ page import="java.util.stream.Collectors" %>
 
 <%!
 
@@ -518,7 +521,7 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
 String displaySurveyResultOfUser(String userId, Collection resultsByUser,
   QuestionContainerDetail survey, GraphicElementFactory gef, String m_context, SurveySessionController surveyScc,
   MultiSilverpeasBundle resources, SettingBundle settings, String profile) throws SurveyException, ParseException {
-	   
+
   Board board = gef.getBoard();
   String r = "";
 
@@ -536,7 +539,7 @@ String displaySurveyResultOfUser(String userId, Collection resultsByUser,
   try {
     if (survey != null) {
 	    Collection<Question> questions = survey.getQuestions();
-	    
+
        	r += board.printBefore();
        	r += "<table border=\"0\" cellspacing=\"5\" cellpadding=\"5\" width=\"100%\">";
        	r += " <tr><td class=\"textePetitBold\" nowrap>"+resources.getString("survey.participationOf")+" : </td><td width=\"90%\">"+Encode.javaStringToHtmlString(
@@ -547,12 +550,12 @@ String displaySurveyResultOfUser(String userId, Collection resultsByUser,
         r += "</table>";
         r += board.printAfter();
         r += "<br/>";
-      
+
       if (SilverpeasRole.admin.toString().equals(profile) ||
           SilverpeasRole.publisher.toString().equals(profile)) {
-        
+
         r += "<div class=\"surveyResult\">";
-			   
+
 	      if (questions != null && !questions.isEmpty()) {
 	        r += board.printBefore();
 	        r += "<table border=\"0\" cellspacing=\"1\" width=\"100%\" class=\"questionResults\" >";
@@ -566,7 +569,7 @@ String displaySurveyResultOfUser(String userId, Collection resultsByUser,
 	          r += "<tr><th colspan=\"2\" align=\"left\"><img src=\""+m_context+"/util/icons/mandatoryField.gif\" width=\"5\"/>&nbsp;&nbsp;<b><u>"+Encode.javaStringToHtmlString(question.getLabel())+"</u></b></th></tr>";
 	          r += " </thead>";
 	          r += "<tbody>";
-	
+
 	          String style = question.getStyle();
               // Display result for each user
               if (style.equals("open")) {
@@ -630,14 +633,14 @@ String displaySurveyResult(String choice, QuestionContainerDetail survey, Graphi
      	if(surveyScc.isAnonymousModeEnabled()) {
      	  anonymous = true;
      	}
-     	
+
      	int resultMode = surveyHeader.getResultMode();
      	int resultView = surveyHeader.getResultView();
-        
+
         if (resultMode == QuestionContainerHeader.DELAYED_RESULTS) {
-	        
+
 	        r += "<div class=\"rightContent\">";
-	        
+
 	        List<SimpleDocument> listDocument = surveyScc.getAllSynthesisFile(surveyId);
 	        if(listDocument != null && !listDocument.isEmpty()) {
 	          r += "<div class=\"attachments bgDegradeGris\">";
@@ -645,7 +648,7 @@ String displaySurveyResult(String choice, QuestionContainerDetail survey, Graphi
 	          r += "    <h4 class=\"clean\">"+resources.getString("survey.synthesisFile")+"</h4>";
 	          r += "  </div>";
 	          r += "  <ul id=\"attachmentList\">";
-	        
+
 	          for(SimpleDocument simpleDocument : listDocument) {
 	            String url = m_context +  simpleDocument.getAttachmentURL();
 	            String permalink = m_context + "/File/"+simpleDocument.getId();
@@ -653,7 +656,7 @@ String displaySurveyResult(String choice, QuestionContainerDetail survey, Graphi
 	            if(simpleDocument.getUpdated() != null) {
 	              dateDocument = resources.getOutputDate(simpleDocument.getUpdated());
 	            }
-	            
+
 	            r += "    <li class=\"attachmentListItem\">";
 			        r += "       <span class=\"lineMain\">";
 			        r += "        <img class=\"icon\" src=\""+simpleDocument.getDisplayIcon()+"\">";
@@ -665,7 +668,7 @@ String displaySurveyResult(String choice, QuestionContainerDetail survey, Graphi
 			        r += "       </span>";
 			        r += "    </li>";
 	          }
-	        
+
 	          r += "  </ul>";
 	          r += "</div>";
 	        }
@@ -679,7 +682,7 @@ String displaySurveyResult(String choice, QuestionContainerDetail survey, Graphi
 	        r += "</div>";
 	        r += "</div>";
         }
-        
+
         r += "<div class=\"principalContent\">";
         r += " <h2 class=\"eventName\">"+Encode.javaStringToHtmlString(title)+"</h2>";
         r += " <div class=\"eventInfo\">";
@@ -688,7 +691,7 @@ String displaySurveyResult(String choice, QuestionContainerDetail survey, Graphi
         r += "       <span class=\"eventBeginDate\">"+resources.getString("SurveyCreationDate")+" : ";
         r += "       "+creationDate;
         r += "       </span>";
-        r += "       <span class=\"eventBeginDate\">"+resources.getString("SurveyCreationBeginDate"); 
+        r += "       <span class=\"eventBeginDate\">"+resources.getString("SurveyCreationBeginDate");
         r += "       "+beginDate;
         r += "       </span>";
         if (StringUtil.isDefined(endDate)) {
@@ -709,7 +712,7 @@ String displaySurveyResult(String choice, QuestionContainerDetail survey, Graphi
             SilverpeasRole.publisher.toString().equals(profile)) ||
             (resultMode == QuestionContainerHeader.IMMEDIATE_RESULTS ||
             (resultMode == QuestionContainerHeader.DELAYED_RESULTS &&
-            (resultView == QuestionContainerHeader.DETAILED_DISPLAY_RESULTS || 
+            (resultView == QuestionContainerHeader.DETAILED_DISPLAY_RESULTS ||
             resultView == QuestionContainerHeader.TWICE_DISPLAY_RESULTS))))) {
           // affichage de l'icone des users
           r += "       <a href=\"javaScript:onClick=viewAllUsers('"+surveyId+"');\"><img src=\"icons/info.gif\" border=\"0\" align=\"absmiddle\" width=\"15\" height=\"15\"></a>";
@@ -727,7 +730,7 @@ String displaySurveyResult(String choice, QuestionContainerDetail survey, Graphi
         r += "     </div>";
         r += "   </div>";
         r += "   <div class=\"surveyUserParticipation\">";
-        
+
         if (votes != null) {
           if (votes.size() > 0) {
             Iterator<QuestionResult> it = votes.iterator();
@@ -736,7 +739,7 @@ String displaySurveyResult(String choice, QuestionContainerDetail survey, Graphi
               r += "     <div class=\"bloc\">";
               r += "       <span>"+resources.getString("YouHaveAlreadyParticipate");
               r += "       "+resources.getOutputDate(vote.getVoteDate())+"</span>";
-                      
+
               if (surveyScc.isParticipationMultipleAllowedForUser()) {
                 String labelButton = resources.getString("Survey.revote");
                 if (surveyScc.isPollingStationMode()) {
@@ -749,7 +752,7 @@ String displaySurveyResult(String choice, QuestionContainerDetail survey, Graphi
             }
           }
         }
-        
+
         r += "   </div>";
         r += "   <br clear=\"left\">&nbsp;";
         r += " </div>";
@@ -757,15 +760,15 @@ String displaySurveyResult(String choice, QuestionContainerDetail survey, Graphi
         	r += " <div class=\"surveyDesc\">"+Encode.javaStringToHtmlParagraphe(description)+"</div>";
         }
         r += "</div>";
-      
+
       if ((SilverpeasRole.admin.toString().equals(profile) ||
           SilverpeasRole.publisher.toString().equals(profile)) ||
           resultMode == QuestionContainerHeader.IMMEDIATE_RESULTS ||
            (resultMode == QuestionContainerHeader.DELAYED_RESULTS &&
            resultView != QuestionContainerHeader.NOTHING_DISPLAY_RESULTS)) {
-        
+
         r += "<div class=\"surveyResult\">";
-			   
+
 		  if (!anonymous) {
 				  // l'enquete n'est pas anonyme, proposer le choix d'affichage
 	        r += "   <div class=\"sousNavBulle\">";
@@ -797,19 +800,19 @@ String displaySurveyResult(String choice, QuestionContainerDetail survey, Graphi
 	        r += "    </p>";
 	        r += "   </div>";
 	      }
-			   
+
 	      if (questions != null && !questions.isEmpty()) {
 	        r += board.printBefore();
 	        r += "<table border=\"0\" cellspacing=\"1\" width=\"100%\" class=\"questionResults\">";
 	        int i=1;
 	        for (Question question : questions) {
-	          Collection answers = question.getAnswers();
+	          Collection<Answer> answers = question.getAnswers();
 	          String questionDecorator = "";
 	          if (!surveyScc.isPollingStationMode()) {
 	            questionDecorator = resources.getString("SurveyCreationQuestion")+" n&deg;"+i+"&nbsp;-&nbsp;";
 	          }
 	          r += "<tr><th colspan=\"2\" align=\"left\"><img src=\""+m_context+"/util/icons/mandatoryField.gif\" width=\"5\">&nbsp;&nbsp;"+questionDecorator+Encode.javaStringToHtmlString(question.getLabel())+"</th></tr>";
-	
+
 	            String style = question.getStyle();
 	            if (!anonymous && choice.equals("D")) {
 	              // display not anonymous result
@@ -823,7 +826,7 @@ String displaySurveyResult(String choice, QuestionContainerDetail survey, Graphi
 	              if (style.equals("open")) {
 	                r += displayOpenAnswersToQuestion(anonymous, question.getPK().getId(), surveyScc);
 	              } else {
-	                r += displaySurveyResultChart(anonymous, answers, m_context, settings, nbVoters);
+	                r += displaySurveyResultChart(anonymous, answers, settings, nbVoters);
 	              }
 	            }
 	          r += "</td></tr>";
@@ -916,34 +919,22 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
         return r;
   }
 
-  String displaySurveyResultChart(boolean anonymous, Collection answers, String m_context, SettingBundle settings, int nbUsers) throws SurveyException
+  String displaySurveyResultChart(boolean anonymous, Collection<Answer> answers, SettingBundle settings, int nbUsers) throws SurveyException
   {
         String r = "";
         try
         {
             if (answers != null)
             {
-                Iterator itA = answers.iterator();
-                int nbVoters = 0;
-                while (itA.hasNext())
+                final int nbVoters = answers.stream().mapToInt(Answer::getNbVoters).sum();
+                for(final Pair<Answer, Integer> current : listAnswerPercents(answers, nbVoters, nbUsers > 0))
                 {
-                    Answer answer = (Answer) itA.next();
-                    nbVoters += answer.getNbVoters();
-                }
-                itA = answers.iterator();
-                int percentageForThisAnswer = 0;
-                int nbSquareForThisAnswer = 0;
-                while (itA.hasNext())
-                {
-                    Answer answer = (Answer) itA.next();
-                    nbSquareForThisAnswer = 0;
-                    percentageForThisAnswer = 0;
+                  final Answer answer = current.getFirst();
+                  int nbSquareForThisAnswer = 0;
 
-                    if (nbUsers > 0)
-	                {
-	                    percentageForThisAnswer = Math.round((answer.getNbVoters()*100f)/nbUsers);
-	                    nbSquareForThisAnswer = (answer.getNbVoters() * 100) / nbUsers;
-	                }
+                  if (nbUsers > 0) {
+                    nbSquareForThisAnswer = (answer.getNbVoters() * 100) / nbUsers;
+                  }
                     if (answer.isOpened())
                     {
                         if (answer.getNbVoters() == 0) {
@@ -974,14 +965,14 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
                         }
                     }
                     r += "<img src=\"icons/square.gif\" border=\"0\" width=\""+nbSquareForThisAnswer+"\" height=\"5\">";
-                    r += "&nbsp;"+percentageForThisAnswer+"%";
+                    r += "&nbsp;"+current.getSecond()+"%";
                     if (!anonymous && nbSquareForThisAnswer != 0)
                     {
                     	// l'enquête n'est pas anonyme et le % de réponse n'est pas nulle : afficher l'icone pour visualiser les users
                        	r += " <a href=\"javaScript:onClick=viewUsers('"+answer.getPK().getId()+"');\"><img src=\"icons/info.gif\" border=\"0\" align=\"absmiddle\" width=\"15\" height=\"15\"></a>";
                     }
                     r += "</td>";
-                } // {while}
+                } // {for}
             }
         }
         catch( Exception e){
@@ -990,7 +981,7 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
         return r;
   }
 
-  String displaySurveyResultChartNotAnonymous(Question question, Collection answers, SurveySessionController surveyScc, int nbVoters) throws SurveyException
+  String displaySurveyResultChartNotAnonymous(Question question, Collection<Answer> answers, SurveySessionController surveyScc, int nbVoters) throws SurveyException
   {
         String r = "";
         try
@@ -998,7 +989,6 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
             if (answers != null)
             {
                 Iterator itA = answers.iterator();
-                Collection users = new ArrayList();
                 r += "<tr><td colspan=\"2\"><table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"1\">";
                 r+= " <thead> <tr class=\"questionResults-top\"> <th class=\"questionResults-vide\"></th>";
                 Map answerValues = new HashMap();
@@ -1019,12 +1009,12 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
                 r += "</tr> </thead>";
                 r += "<tbody>";
 
-                users = surveyScc.getUserByQuestion(new ResourceReference(question.getPK()));
+                Collection<String> users = surveyScc.getUserByQuestion(new ResourceReference(question.getPK()));
                 String saveUser = "";
-                Iterator itU = users.iterator();
+                Iterator<String> itU = users.iterator();
                 while (itU.hasNext())
                 {
-                 	String user = (String) itU.next();
+                 	String user = itU.next();
                  	String userId = user.split("/")[0];
                 	String participationId = user.split("/")[1];
                 	int position = 1;
@@ -1069,19 +1059,10 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
                 }
                 r += " </tbody>";
                 r += "<tr><td></td>";
-                itA = answers.iterator();
-                int percentageForThisAnswer = 0;
-                while (itA.hasNext())
-                {
-	                percentageForThisAnswer = 0;
-	                Answer answer = (Answer) itA.next();
-	                if (!users.isEmpty())
-	                {
-	                    percentageForThisAnswer = Math.round((answer.getNbVoters()*100f)/nbVoters);
-	                }
-	                // afficher le %
-	                r += "<td align=\"center\">"+percentageForThisAnswer+"%</td>";
-	            }
+              r += listAnswerPercents(answers, nbVoters, !users.isEmpty()).stream()
+                      .map(Pair::getSecond)
+                      .map(p -> "<td align=\"center\">"+p+"%</td>")
+                      .collect(Collectors.joining());
 	            r += "</tr>";
 	            r += "</table></td></tr>";
             }
@@ -1090,6 +1071,28 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
             throw new  SurveyException("SurveyUtils_JSP.displaySurveyResultChart",SurveyException.WARNING,"Survey.EX_CANNOT_DISPLAY_RESULT",e);
         }
         return r;
+  }
+
+  List<Pair<Answer, Integer>> listAnswerPercents(Collection<Answer> answers, int nbVoters, boolean isUsers) {
+    final Iterator<Answer> it = answers.iterator();
+    final List<Pair<Answer, Integer>> result = new ArrayList<>(answers.size());
+    int percentRest = 100;
+    while (it.hasNext()) {
+      int percent = 0;
+      final Answer answer = it.next();
+      if (isUsers && nbVoters > 0) {
+        percent = new BigDecimal(answer.getNbVoters())
+            .multiply(new BigDecimal(100))
+            .divide(new BigDecimal(nbVoters), 0, BigDecimal.ROUND_HALF_EVEN)
+            .intValue();
+        percentRest -= percent;
+        if (!it.hasNext() && percentRest != 0) {
+          percent += percentRest;
+        }
+      }
+      result.add(Pair.of(answer, percent));
+    }
+    return result;
   }
 
   String displaySurveyResultChartByUser(Collection resultsByUser, String userId, boolean anonymous, String questionId, Collection answers, 
