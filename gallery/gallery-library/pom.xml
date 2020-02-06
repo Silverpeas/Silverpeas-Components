@@ -65,6 +65,10 @@
       <artifactId>metadata-extractor</artifactId>
     </dependency>
     <dependency>
+      <groupId>antlr</groupId>
+      <artifactId>antlr</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.silverpeas.core</groupId>
       <artifactId>silverpeas-core-test</artifactId>
       <version>${core.version}</version>
