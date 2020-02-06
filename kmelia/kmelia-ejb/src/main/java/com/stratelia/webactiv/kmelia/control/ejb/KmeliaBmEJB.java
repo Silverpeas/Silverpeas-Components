@@ -2172,12 +2172,12 @@ public class KmeliaBmEJB implements KmeliaBm {
 
     boolean modeAlwaysVisibleOn = isPublicationAlwaysVisibleActivated(componentId);
 
-    try {
-      Collection<PublicationDetail> temp = publicationBm.getPublicationsByStatus(
-          PublicationDetail.TO_VALIDATE, pubPK);
-      // only publications which must be validated by current user must be returned
-      for (PublicationDetail publi : temp) {
-        boolean isClone = publi.isClone();
+    Collection<PublicationDetail> temp = publicationBm.getPublicationsByStatus(
+        PublicationDetail.TO_VALIDATE, pubPK);
+    // only publications which must be validated by current user must be returned
+    for (PublicationDetail publi : temp) {
+      boolean isClone = publi.isClone();
+      try {
         if (isClone) {
           if (modeAlwaysVisibleOn && isUserCanValidatePublication(publi.getPK(), userId)) {
             // publication to validate is a clone, get original one
@@ -2188,8 +2188,8 @@ public class KmeliaBmEJB implements KmeliaBm {
             } catch (Exception e) {
               // inconsistency in database ! Original publication does not exist
               SilverTrace.warn("kmelia", "KmeliaBmEJB.getPublicationsToValidate()",
-                  "kmelia.ORIGINAL_PUBLICATION_OF_CLONE_NOT_FOUND", "cloneId = " + publi.getId()
-                  + ", originalId=" + publi.getCloneId());
+                  "kmelia.ORIGINAL_PUBLICATION_OF_CLONE_NOT_FOUND",
+                  "cloneId = " + publi.getId() + ", originalId=" + publi.getCloneId());
             }
           }
         } else {
@@ -2197,10 +2197,10 @@ public class KmeliaBmEJB implements KmeliaBm {
             publications.add(publi);
           }
         }
+      } catch (Exception e) {
+        SilverTrace.warn("kmelia", "KmeliaBmEJB.getPublicationsToValidate()",
+            "kmelia.CANNOT_GET_PUBLICATION_TO_VALIDATE", "pubPK = "+publi.getPK(), e);
       }
-    } catch (Exception e) {
-      throw new KmeliaRuntimeException("KmeliaBmEJB.getPublicationsToValidate()", ERROR,
-          "kmelia.EX_IMPOSSIBLE_DOBTENIR_LES_PUBLICATIONS_A_VALIDER", e);
     }
     SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationsToValidate()",
         "root.MSG_GEN_EXIT_METHOD");
