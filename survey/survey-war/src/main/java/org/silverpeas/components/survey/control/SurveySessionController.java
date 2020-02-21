@@ -283,9 +283,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
   public QuestionContainerDetail getSurvey(String surveyId) throws SurveyException {
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(surveyId, getSpaceId(), getComponentId());
-      QuestionContainerDetail qc = questionContainerService.getQuestionContainer(qcPK, getUserId());
-      qc.getHeader().setNbRegistered(getNbRegistered());
-      return qc;
+      return questionContainerService.getQuestionContainer(qcPK, getUserId());
     } catch (Exception e) {
       throw new SurveyException("SurveySessionController.getSurvey", SurveyException.WARNING,
           "Survey.EX_NO_SURVEY", ID_MSG + surveyId, e);
