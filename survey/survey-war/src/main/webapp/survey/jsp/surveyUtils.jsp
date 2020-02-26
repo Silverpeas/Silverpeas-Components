@@ -8,7 +8,6 @@
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 <%@ page import="org.silverpeas.core.util.file.FileRepositoryManager" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory" %>
-<%@ page import="java.math.BigDecimal" %>
 <%@ page import="java.text.ParseException" %>
 <%@ page import="java.util.stream.Collectors" %>
 
@@ -53,7 +52,6 @@ String displaySurveyHeader(QuestionContainerHeader surveyHeader, SurveySessionCo
         if (surveyHeader.getEndDate() != null)
             endDate = resources.getOutputDate(surveyHeader.getEndDate());
         int nbVoters = surveyHeader.getNbVoters();
-        int nbRegistered = surveyHeader.getNbRegistered();
         Board board = gef.getBoard();
         String r = "";
         r += board.printBefore();
@@ -72,7 +70,8 @@ String displaySurveyHeader(QuestionContainerHeader surveyHeader, SurveySessionCo
 		}
 		else
 		{
-	          r += "<tr><td class=\"textePetitBold\" nowrap>"+resources.getString("SurveyNbVoters")+" :</td><td>"+nbVoters+"</td></tr>";
+      int nbRegistered = surveyHeader.getNbRegistered();
+            r += "<tr><td class=\"textePetitBold\" nowrap>"+resources.getString("SurveyNbVoters")+" :</td><td>"+nbVoters+"</td></tr>";
 	          r += "<tr><td class=\"textePetitBold\" nowrap>"+resources.getString("SurveyNbRegistered")+" :</td><td>"+nbRegistered+"</td></tr>";
 	          r += "<tr><td class=\"textePetitBold\" nowrap>"+resources.getString("SurveyParticipationRate")+" :</td><td><B>"+Math.round(((float)nbVoters*100)/((float)nbRegistered))+" %</B></td></tr>";
 		}
@@ -625,8 +624,13 @@ String displaySurveyResult(String choice, QuestionContainerDetail survey, Graphi
      	  endDate = "";
      	}
      	int nbVoters = surveyHeader.getNbVoters();
-     	int nbRegistered = surveyHeader.getNbRegistered();
-     	int participationRate = Math.round(((float)nbVoters*100)/((float)nbRegistered));
+      int nbRegistered = 0;
+      int participationRate = 0;
+      if (!surveyScc.isParticipationMultipleUsed()) {
+        nbRegistered = surveyHeader.getNbRegistered();
+        participationRate = Math.round(((float)nbVoters*100)/((float)nbRegistered));
+      }
+
      	boolean anonymous = surveyHeader.isAnonymous();
 
 	//Mode anonyme -> force les enquetes a�etre toutes anonymes
@@ -861,9 +865,9 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
             while (it.hasNext()) {
                 QuestionResult qR = (QuestionResult) it.next();
                 answer = Encode.javaStringToHtmlParagraphe(qR.getOpenedAnswer());
-                if (!StringUtil.isDefined(answer))
-                    answer = surveyScc.getString("NoResponse");
-                r += "<tr><td colspan=\"2\" align=\"left\">&#149; "+answer+"<br></td></tr>";
+                if (StringUtil.isDefined(answer)) {
+                  r += "<tr><td colspan=\"2\" align=\"left\">&#149; " + answer + "<br></td></tr>";
+                }
             }
         }
         catch( Exception e){
@@ -926,7 +930,7 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
         {
             if (answers != null)
             {
-                for(final Pair<Answer, Integer> current : listAnswerPercents(answers, nbUsers, nbUsers > 0))
+                for(final Pair<Answer, Double> current : listAnswerPercents(answers, nbUsers, nbUsers > 0))
                 {
                   final Answer answer = current.getFirst();
                   int nbSquareForThisAnswer = 0;
@@ -1072,17 +1076,15 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
         return r;
   }
 
-  List<Pair<Answer, Integer>> listAnswerPercents(Collection<Answer> answers, int nbVoters, boolean isUsers) {
+  List<Pair<Answer, Double>> listAnswerPercents(Collection<Answer> answers, int nbVoters, boolean isUsers) {
     final Iterator<Answer> it = answers.iterator();
-    final List<Pair<Answer, Integer>> result = new ArrayList<>(answers.size());
+
+    final List<Pair<Answer, Double>> result = new ArrayList<>(answers.size());
     while (it.hasNext()) {
-      int percent = 0;
+      Double percent = 0.0;
       final Answer answer = it.next();
       if (isUsers && nbVoters > 0) {
-        percent = new BigDecimal(answer.getNbVoters())
-            .multiply(new BigDecimal(100))
-            .divide(new BigDecimal(nbVoters), 0, BigDecimal.ROUND_HALF_EVEN)
-            .intValue();
+        percent = answer.getPercent(nbVoters);
       }
       result.add(Pair.of(answer, percent));
     }
