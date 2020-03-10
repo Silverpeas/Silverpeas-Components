@@ -183,7 +183,7 @@ function printProcess() {
                  <c:set var="currentState" value="<%=currentState%>"/>
 								 <span class="textePetitBold">&#149;&nbsp;<%=currentState.getLabel()%></span>
 								<% if (StringUtil.isDefined(currentState.getWorkingUsersAsString())) { %>
-								   (<%=currentState.getWorkingUsersAsString()%>)
+                  <span class="workingUsers">(<%=currentState.getWorkingUsersAsString()%>)</span>
 								<% } %>
                 <%
                    if (!process.getErrorStatus() && (!hasLockingUsers || isCurrentUserIsLockingUser)) {
