@@ -48,7 +48,6 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.contribution.ContributionManager;
 import org.silverpeas.core.contribution.attachment.AttachmentException;
-import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
@@ -147,6 +146,10 @@ import static org.silverpeas.core.admin.component.model.ComponentInst.getCompone
 import static org.silverpeas.core.admin.service.OrganizationControllerProvider.getOrganisationController;
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
 import static org.silverpeas.core.contribution.attachment.AttachmentService.VERSION_MODE;
+import static org.silverpeas.core.contribution.attachment.AttachmentServiceProvider.getAttachmentService;
+import static org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController.deleteWysiwygAttachmentsOnly;
+import static org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController.haveGotWysiwyg;
+import static org.silverpeas.core.persistence.Transaction.getTransaction;
 import static org.silverpeas.core.util.StringUtil.*;
 
 /**
@@ -1326,11 +1329,10 @@ public class DefaultKmeliaService implements KmeliaService {
           to.getInstanceId(), pub.getPK().getId());
 
       // move regular files
-      List<SimpleDocument> docs = AttachmentServiceProvider.getAttachmentService().
+      List<SimpleDocument> docs = getAttachmentService().
           listDocumentsByForeignKeyAndType(fromResourceReference, DocumentType.attachment, null);
       for (SimpleDocument doc : docs) {
-        AttachmentServiceProvider.getAttachmentService()
-            .moveDocument(doc, toPubliResourceReference);
+        getAttachmentService().moveDocument(doc, toPubliResourceReference);
       }
 
       // move form content
@@ -1395,13 +1397,12 @@ public class DefaultKmeliaService implements KmeliaService {
       final ResourceReference toPubliResourceReference) {
     try {
       // move additional files
-      List<SimpleDocument> documents = AttachmentServiceProvider.getAttachmentService().
+      List<SimpleDocument> documents = getAttachmentService().
           listDocumentsByForeignKeyAndType(fromResourceReference, DocumentType.image, null);
-      documents.addAll(AttachmentServiceProvider.getAttachmentService().
+      documents.addAll(getAttachmentService().
           listDocumentsByForeignKeyAndType(fromResourceReference, DocumentType.wysiwyg, null));
       for (SimpleDocument doc : documents) {
-        AttachmentServiceProvider.getAttachmentService()
-            .moveDocument(doc, toPubliResourceReference);
+        getAttachmentService().moveDocument(doc, toPubliResourceReference);
       }
     } catch (AttachmentException e) {
       SilverLogger.getLogger(this)
@@ -2104,8 +2105,7 @@ public class DefaultKmeliaService implements KmeliaService {
 
   private void applyValidation(final PublicationPK pubPK, final CompletePublication currentPub,
       PublicationDetail currentPubDetail, final PublicationPK validatedPK,
-      final String validatorUserId, final Date validationDate, final boolean validationOnClone)
-      throws FormException, PublicationTemplateException {
+      final String validatorUserId, final Date validationDate, final boolean validationOnClone) {
     removeAllTodosForPublication(validatedPK);
     if (validationOnClone) {
       removeAllTodosForPublication(pubPK);
@@ -2218,64 +2218,76 @@ public class DefaultKmeliaService implements KmeliaService {
    * @param validationDate the date of validation to register. Date of day is taken if null is
    * given.
    * @return the merged publication as {@link PublicationDetail}.
-   * @throws FormException
-   * @throws PublicationTemplateException
-   * @throws AttachmentException
    */
   private PublicationDetail mergeClone(CompletePublication currentPub, String validatorUserId,
-      final Date validationDate) throws FormException, PublicationTemplateException {
+      final Date validationDate) {
     PublicationDetail currentPubDetail = currentPub.getPublicationDetail();
     String memInfoId = currentPubDetail.getInfoId();
     PublicationPK pubPK = currentPubDetail.getPK();
-    // merge du clone sur la publi de référence
+    // merging clone data on the original ones
     String cloneId = currentPubDetail.getCloneId();
     if (!"-1".equals(cloneId)) {
-      currentPubDetail = clonePublication(cloneId, pubPK, validatorUserId, validationDate);
-      // merge des fichiers joints
-      ResourceReference pkFrom = new ResourceReference(pubPK.getId(), pubPK.getInstanceId());
-      ResourceReference pkTo = new ResourceReference(cloneId, pubPK.getInstanceId());
-      Map<String, String> attachmentIds = AttachmentServiceProvider.getAttachmentService().
-          mergeDocuments(pkFrom, pkTo, DocumentType.attachment);
-      // merge du contenu XMLModel
-      String infoId = currentPubDetail.getInfoId();
-      if (infoId != null && !"0".equals(infoId) && !isInteger(infoId)) {
-        RecordSet set = getXMLFormFrom(infoId, pubPK);
-        if (memInfoId != null && !"0".equals(memInfoId)) {
-          // il existait déjà un contenu
-          set.merge(cloneId, pubPK.getInstanceId(), pubPK.getId(), pubPK.getInstanceId(),
-              attachmentIds);
-        } else {
-          // il n'y avait pas encore de contenu
-          PublicationTemplateManager publicationTemplateManager = PublicationTemplateManager.
-              getInstance();
-          publicationTemplateManager
-              .addDynamicPublicationTemplate(pubPK.getInstanceId() + ":" + infoId,
-                  infoId + ".xml");
-
-          set.clone(cloneId, pubPK.getInstanceId(), pubPK.getId(), pubPK.getInstanceId(),
-              attachmentIds);
-        }
-      }
-      // merge du contenu Wysiwyg
-      boolean cloneWysiwyg = WysiwygController.haveGotWysiwyg(pubPK.getInstanceId(), cloneId,
-          currentPubDetail.getLanguage());
-      if (cloneWysiwyg) {
-        try {
-          // delete wysiwyg contents of public version
-          WysiwygController.deleteWysiwygAttachmentsOnly(pubPK.getInstanceId(), pubPK.getId());
-        } catch (WysiwygException e) {
-          SilverLogger.getLogger(this).error(e.getMessage(), e);
-        }
-        // wysiwyg contents of work version become public version ones
-        WysiwygController
-            .copy(pubPK.getInstanceId(), cloneId, pubPK.getInstanceId(), pubPK.getId(),
-                currentPubDetail.getUpdaterId());
-      }
-
-      // suppression du clone
+      final PublicationDetail currentClonedPubDetail =
+          clonePublication(cloneId, pubPK, validatorUserId, validationDate);
+      currentPubDetail = currentClonedPubDetail;
+      // merging attachments in a new transaction in order to ensure getting right committed data
+      // into JCR
+      getTransaction().performNew(() -> {
+        final String instanceId = pubPK.getInstanceId();
+        final ResourceReference pkFrom = new ResourceReference(pubPK.getId(), instanceId);
+        final ResourceReference pkTo = new ResourceReference(cloneId, instanceId);
+        final Map<String, String> attachmentIds = getAttachmentService()
+            .mergeDocuments(pkFrom, pkTo, DocumentType.attachment);
+        // merging XMLModel content
+        mergeXmlModelClone(pubPK, memInfoId, cloneId, currentClonedPubDetail, attachmentIds);
+        // merging Wysiwyg content
+        mergeWysiwygClone(pubPK, cloneId, currentClonedPubDetail);
+        return null;
+      });
+      // deleting the clone
       deletePublication(new PublicationPK(cloneId, pubPK));
     }
     return currentPubDetail;
+  }
+
+  private void mergeXmlModelClone(final PublicationPK originalPubPK, final String originalInfoId,
+      final String cloneId, final PublicationDetail currentClonedPubDetail,
+      final Map<String, String> attachmentIds) throws PublicationTemplateException, FormException {
+    final String infoId = currentClonedPubDetail.getInfoId();
+    if (infoId != null && !"0".equals(infoId) && !isInteger(infoId)) {
+      final RecordSet set = getXMLFormFrom(infoId, originalPubPK);
+      if (originalInfoId != null && !"0".equals(originalInfoId)) {
+        // content already exists
+        set.merge(cloneId, originalPubPK.getInstanceId(), originalPubPK.getId(),
+            originalPubPK.getInstanceId(), attachmentIds);
+      } else {
+        // no content exists
+        final PublicationTemplateManager publicationTemplateManager = PublicationTemplateManager.
+            getInstance();
+        publicationTemplateManager
+            .addDynamicPublicationTemplate(originalPubPK.getInstanceId() + ":" + infoId,
+                infoId + ".xml");
+        set.clone(cloneId, originalPubPK.getInstanceId(), originalPubPK.getId(),
+            originalPubPK.getInstanceId(), attachmentIds);
+      }
+    }
+  }
+
+  private void mergeWysiwygClone(final PublicationPK originalPubPK, final String cloneId,
+      final PublicationDetail currentClonedPubDetail) {
+    final String language = currentClonedPubDetail.getLanguage();
+    final boolean cloneWysiwyg = haveGotWysiwyg(originalPubPK.getInstanceId(), cloneId, language);
+    if (cloneWysiwyg) {
+      try {
+        // delete wysiwyg contents of public version
+        deleteWysiwygAttachmentsOnly(originalPubPK.getInstanceId(), originalPubPK.getId());
+      } catch (WysiwygException e) {
+        SilverLogger.getLogger(this).error(e.getMessage(), e);
+      }
+      // wysiwyg contents of work version become public version ones
+      WysiwygController.copy(originalPubPK.getInstanceId(), cloneId, originalPubPK.getInstanceId(),
+          originalPubPK.getId(), currentClonedPubDetail.getUpdaterId());
+    }
   }
 
   @Override
@@ -2518,8 +2530,7 @@ public class DefaultKmeliaService implements KmeliaService {
     final PublicationDetail pubDetail = getPublicationDetail(pubPK);
     // componentId of document is always the same than its publication (case of alias)
     documentPk.setComponentName(pubDetail.getInstanceId());
-    final SimpleDocument document = AttachmentServiceProvider.getAttachmentService().
-        searchDocumentById(documentPk, null);
+    final SimpleDocument document = getAttachmentService().searchDocumentById(documentPk, null);
     SimpleDocument version = document.getLastPublicVersion();
     if (version == null) {
       version = document.getVersionMaster();
@@ -2830,11 +2841,11 @@ public class DefaultKmeliaService implements KmeliaService {
     if (KmeliaHelper.isIndexable(pubDetail)) {
       try {
         // index all files except Wysiwyg which are already indexed as publication content
-        List<SimpleDocument> documents = AttachmentServiceProvider.getAttachmentService().
+        List<SimpleDocument> documents = getAttachmentService().
             listAllDocumentsByForeignKey(pubDetail.getPK().toResourceReference(), null);
         for (SimpleDocument doc : documents) {
           if (doc.getDocumentType() != DocumentType.wysiwyg) {
-            AttachmentServiceProvider.getAttachmentService().createIndex(doc, pubDetail.getBeginDate(), pubDetail.getEndDate());
+            getAttachmentService().createIndex(doc, pubDetail.getBeginDate(), pubDetail.getEndDate());
           }
         }
       } catch (Exception e) {
@@ -2854,7 +2865,7 @@ public class DefaultKmeliaService implements KmeliaService {
 
   private void unIndexExternalElementsOfPublication(PublicationPK pubPK) {
     try {
-      AttachmentServiceProvider.getAttachmentService()
+      getAttachmentService()
           .unindexAttachmentsOfExternalObject(pubPK.toResourceReference());
     } catch (Exception e) {
       SilverLogger.getLogger(this).error("Unindexing versioning documents failed for publication {0}",
@@ -3243,8 +3254,7 @@ public class DefaultKmeliaService implements KmeliaService {
         NodePK basketPK = new NodePK("1", componentId);
         publications = publicationService.getDetailsNotInFatherPK(basketPK);
       } else {
-        coordinates = coordinatesService
-              .getCoordinatesByFatherPaths((ArrayList<String>) combination, coordinatePK);
+        coordinates = coordinatesService.getCoordinatesByFatherPaths(combination, coordinatePK);
         if (coordinates != null && !coordinates.isEmpty()) {
           publications =
               publicationService.getDetailsByFatherIds((ArrayList<String>) coordinates, componentId,
@@ -3540,7 +3550,7 @@ public class DefaultKmeliaService implements KmeliaService {
         document = new SimpleDocument(new SimpleDocumentPK(null, pubPK.getComponentName()), pubPK.
             getId(), 0, false, file);
       }
-      AttachmentServiceProvider.getAttachmentService()
+      getAttachmentService()
           .createAttachment(document, new ByteArrayInputStream(contents));
     } catch (org.silverpeas.core.contribution.attachment.AttachmentException fnfe) {
       throw new KmeliaRuntimeException(fnfe);
@@ -3608,11 +3618,11 @@ public class DefaultKmeliaService implements KmeliaService {
       cloneId = clonePK.getId();
 
       // clone attachments
-      List<SimpleDocument> documents = AttachmentServiceProvider.getAttachmentService()
+      List<SimpleDocument> documents = getAttachmentService()
           .listDocumentsByForeignKey(new ResourceReference(fromId, fromComponentId), null);
       Map<String, String> attachmentIds = new HashMap<>(documents.size());
       for (SimpleDocument document : documents) {
-        AttachmentServiceProvider.getAttachmentService().cloneDocument(document, cloneId);
+        getAttachmentService().cloneDocument(document, cloneId);
       }
 
       // eventually, paste the form content
@@ -4419,11 +4429,11 @@ public class DefaultKmeliaService implements KmeliaService {
 
   private Map<String, String> copyFiles(PublicationPK fromPK, PublicationPK toPK) {
     Map<String, String> fileIds = new HashMap<>();
-    List<SimpleDocument> origins = AttachmentServiceProvider.getAttachmentService().
+    List<SimpleDocument> origins = getAttachmentService().
         listDocumentsByForeignKeyAndType(fromPK.toResourceReference(), DocumentType.attachment,
             null);
     for (SimpleDocument origin : origins) {
-      SimpleDocumentPK copyPk = AttachmentServiceProvider.getAttachmentService()
+      SimpleDocumentPK copyPk = getAttachmentService()
           .copyDocument(origin, new ResourceReference(toPK));
       fileIds.put(origin.getId(), copyPk.getId());
     }
