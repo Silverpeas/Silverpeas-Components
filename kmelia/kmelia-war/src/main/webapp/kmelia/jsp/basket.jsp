@@ -112,7 +112,7 @@ $(document).ready(function() {
 		out.println(window.printAfter());
 	%>
 
-<form name="pubForm" action="ViewPublication" method="POST">
+<form name="pubForm" action="ViewPublication" method="GET">
 	<input type="hidden" name="PubId"/>
 	<input type="hidden" name="CheckPath" value="1"/>
 </form>

@@ -200,7 +200,7 @@ function getToValidateFolderId() {
 	<input type="hidden" name="Recursive"/>
 </form>
 
-<form name="pubForm" action="ViewPublication" method="post">
+<form name="pubForm" action="ViewPublication" method="GET">
 	<input type="hidden" name="PubId"/>
 	<input type="hidden" id="CheckPath" name="CheckPath"/>
 </form>

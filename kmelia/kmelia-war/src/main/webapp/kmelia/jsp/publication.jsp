@@ -895,7 +895,7 @@
         out.println(frame.printAfter());
         out.println(window.printAfter());
       %>
-      <form name="pubForm" action="<%=routerUrl%>publication.jsp" method="post">
+      <form name="pubForm" action="<%=routerUrl%>publication.jsp" method="GET">
         <input type="hidden" name="Action"/>
         <input type="hidden" name="PubId"/>
         <input type="hidden" name="Profile" value="<%=profile%>"/>

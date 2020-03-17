@@ -257,7 +257,7 @@ $(document).ready(function() {
 	<input type="hidden" name="Status"/><input type="hidden" name="Recursive"/>
 </form>
 
-<form name="pubForm" action="ViewPublication" method="post">
+<form name="pubForm" action="ViewPublication" method="GET">
 	<input type="hidden" name="PubId"/>
 </form>
 

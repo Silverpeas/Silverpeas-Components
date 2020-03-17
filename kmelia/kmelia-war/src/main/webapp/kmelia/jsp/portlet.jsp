@@ -140,7 +140,7 @@ function init()
   <input type="hidden" name="Translation"/>
 </form>
 
-<form name="pubForm" action="ViewPublication" method="post" target="MyMain">
+<form name="pubForm" action="ViewPublication" method="GET" target="MyMain">
 <input type="hidden" name="Id"/>
 <input type="hidden" name="CheckPath"/>
 </form>

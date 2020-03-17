@@ -329,7 +329,7 @@ if (action.equals("KmaxView")) {
 	<input type="hidden" name="Id"/>
 </form>
 
-<form name="pubForm" method="post" action="">
+<form name="pubForm" method="GET" action="">
 	<input type="hidden" name="PubId"/>
 </form>
 
