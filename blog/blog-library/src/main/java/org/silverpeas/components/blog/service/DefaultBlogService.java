@@ -40,10 +40,12 @@ import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerE
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
+import org.silverpeas.core.html.PermalinkRegistry;
 import org.silverpeas.core.index.indexing.model.IndexManager;
 import org.silverpeas.core.index.search.SearchEngineProvider;
 import org.silverpeas.core.index.search.model.MatchingIndexEntry;
 import org.silverpeas.core.index.search.model.QueryDescription;
+import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodeOrderComparator;
 import org.silverpeas.core.node.model.NodePK;
@@ -88,7 +90,7 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.*;
  * different services for which it is interested.
  */
 @Singleton
-public class DefaultBlogService implements BlogService {
+public class DefaultBlogService implements BlogService, Initialization {
 
   private static final String MESSAGES_PATH = "org.silverpeas.blog.multilang.blogBundle";
   private static final String SETTINGS_PATH = "org.silverpeas.blog.settings.blogSettings";
@@ -107,6 +109,11 @@ public class DefaultBlogService implements BlogService {
   private PdcSubscriptionManager pdcSubscriptionManager;
   @Inject
   private BlogContentManager blogContentManager;
+
+  @Override
+  public void init() {
+    PermalinkRegistry.get().addUrlPart("Post");
+  }
 
   @Override
   public PostDetail getContentById(String contentId) {
