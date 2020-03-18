@@ -616,16 +616,19 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     if (relatedGroups != null) {
       for (RelatedGroup relatedGroup : relatedGroups) {
         if (relatedGroup != null) {
-          // Process folder item
-          Item item = relatedGroup.getFolderItem();
-          if (item != null) {
-            try {
-              String groupId = currentProcessInstance.getField(item.getName()).getStringValue();
-              UserDetail[] usersOfGroup = getOrganisationController().getAllUsersOfGroup(groupId);
-              for (UserDetail userOfGroup : usersOfGroup) {
-                users.add(userOfGroup.getId());
+          String role = relatedGroup.getRole();
+          if (currentRole.equals(role) || StringUtil.isNotDefined(role)) {
+            // Process folder item
+            Item item = relatedGroup.getFolderItem();
+            if (item != null) {
+              try {
+                String groupId = currentProcessInstance.getField(item.getName()).getStringValue();
+                UserDetail[] usersOfGroup = getOrganisationController().getAllUsersOfGroup(groupId);
+                for (UserDetail userOfGroup : usersOfGroup) {
+                  users.add(userOfGroup.getId());
+                }
+              } catch (WorkflowException we) {// ignore it.
               }
-            } catch (WorkflowException we) {// ignore it.
             }
           }
         }
@@ -1093,20 +1096,25 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   }
 
   private void filterActions(State state) {
-    AllowedActions filteredActions = new ActionRefs();
+    final AllowedActions filteredActions = new ActionRefs();
+    state.setFilteredActions(filteredActions);
+    // First, check if current role is allowed to deal with process in this state
+    List<String> grantedUserIds = getUsers(state.getWorkingUsers(), true);
+    if (!grantedUserIds.contains(getActiveUser().getUserId())) {
+      return;
+    }
+    // Then, check if current role is allowed to deal with each action declared in this state
     if (state.getAllowedActionsEx() != null) {
-      Iterator<AllowedAction> actions = state.getAllowedActionsEx().iterateAllowedAction();
+      final Iterator<AllowedAction> actions = state.getAllowedActionsEx().iterateAllowedAction();
       while (actions.hasNext()) {
-        AllowedAction action = actions.next();
-        QualifiedUsers qualifiedUsers = action.getAction().getAllowedUsers();
-
-        List<String> grantedUserIds = getUsers(qualifiedUsers, true);
+        final AllowedAction action = actions.next();
+        final QualifiedUsers qualifiedUsers = action.getAction().getAllowedUsers();
+        grantedUserIds = getUsers(qualifiedUsers, true);
         if (grantedUserIds.contains(getActiveUser().getUserId())) {
           filteredActions.addAllowedAction(action);
         }
       }
     }
-    state.setFilteredActions(filteredActions);
   }
 
   /**
