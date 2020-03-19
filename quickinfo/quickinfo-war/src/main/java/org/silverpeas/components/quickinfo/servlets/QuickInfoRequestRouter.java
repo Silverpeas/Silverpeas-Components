@@ -36,6 +36,7 @@ import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
+import org.silverpeas.core.web.util.viewgenerator.html.list.ListPaneTag;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -97,6 +98,10 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
       } else if (function.startsWith("portlet")) {
         List<News> infos = quickInfo.getVisibleQuickInfos();
         request.setAttribute("infos", infos);
+        if (!"portletPagination".equals(function)) {
+          final String listName = ListPaneTag.class.getSimpleName() + "listOfNewsFromPortlet";
+          request.getSession(false).setAttribute(listName, null);
+        }
         destination = "/portlets/jsp/quickInfos/portlet.jsp";
       } else if ("Save".equals(function)) {
         String id = saveQuickInfo(quickInfo, request, false);

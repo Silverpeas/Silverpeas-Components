@@ -71,7 +71,7 @@ public class NewsEntity implements WebEntity {
   private String permalink;
 
   @XmlElement
-  private int numberOfAttachments;
+  private Integer numberOfAttachments;
   
   public static NewsEntity fromNews(News news) {
     NewsEntity entity = new NewsEntity();
@@ -83,15 +83,18 @@ public class NewsEntity implements WebEntity {
     entity.setPublicationId(news.getPublicationId());
     entity.setComponentId(news.getComponentInstanceId());
     entity.setContent(news.getContent());
-    ThumbnailDetail thumbnail = news.getThumbnail();
-    if (thumbnail != null) {
-      entity.setThumbnailURL(thumbnail.getURL());
-    }
-    entity.setNumberOfAttachments(news.getNumberOfAttachments());
     return entity;
   }
   
   protected NewsEntity() {
+  }
+
+  void setExtraInfo(News news) {
+    ThumbnailDetail thumbnail = news.getThumbnail();
+    if (thumbnail != null) {
+      setThumbnailURL(thumbnail.getURL());
+    }
+    setNumberOfAttachments(news.getNumberOfAttachments());
   }
   
   public String getTitle() {
@@ -199,7 +202,7 @@ public class NewsEntity implements WebEntity {
     this.numberOfAttachments = numberOfAttachments;
   }
 
-  public int getNumberOfAttachments() {
+  public Integer getNumberOfAttachments() {
     return numberOfAttachments;
   }
 

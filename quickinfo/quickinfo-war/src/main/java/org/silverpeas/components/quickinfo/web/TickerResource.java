@@ -9,6 +9,7 @@ import org.silverpeas.core.webapi.base.annotation.Authenticated;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
 
@@ -31,8 +32,8 @@ public class TickerResource extends AbstractNewsResource {
 
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public List<NewsEntity> getTickerNews() {
-    List<News> newsForTicker = getService().getNewsForTicker(getUser().getId());
-    return asWebEntities(newsForTicker);
+  public List<NewsEntity> getTickerNews(final @QueryParam("limit") Integer limit) {
+    final List<News> newsForTicker = getService().getNewsForTicker(getUser().getId());
+    return asWebEntities(newsForTicker, false, limit != null ? limit : 0);
   }
 }

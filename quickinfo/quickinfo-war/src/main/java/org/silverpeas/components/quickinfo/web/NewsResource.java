@@ -41,7 +41,7 @@ public class NewsResource extends AbstractNewsResource {
     } else {
       allNews = getService().getVisibleNews(componentId);
     }
-    return asWebEntities(allNews);
+    return asWebEntities(allNews, true, 0);
   }
   
   @GET
@@ -50,7 +50,7 @@ public class NewsResource extends AbstractNewsResource {
   public NewsEntity getNews(@PathParam("newsId") String onNewsId) {
     try {
       News news = getNewsById(onNewsId);
-      return asWebEntity(news);
+      return asWebEntity(news, true);
     } catch (Exception ex) {
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }

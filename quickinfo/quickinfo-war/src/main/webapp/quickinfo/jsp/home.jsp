@@ -49,6 +49,9 @@
 <c:set var="isSubscriberUser" value="${requestScope.IsSubscriberUser}"/>
 <c:set var="contributor" value="${role == 'admin' || role == 'publisher'}"/>
 
+
+<c:set var="defaultPaginationPageSize" value="${requestScope.resources.getSetting('news.home.pagination.page.size.default', 10)}"/>
+
 <fmt:message var="deleteConfirmMsg" key="supprimerQIConfirmation"/>
 
 <%@ include file="checkQuickInfo.jsp" %>
@@ -154,7 +157,8 @@ function onDelete(id) {
     </c:if>
 
     <ul id="list-news" class="${contributor ? '' : 'reader'}">
-      <c:forEach items="${listOfNews}" var="news">
+    <view:listPane var="listOfNewsFromHome" routingAddress="Main" numberLinesPerPage="${defaultPaginationPageSize}">
+      <view:listItems items="${listOfNews}" var="news">
 		  <li class="showActionsOnMouseOver" id="news-${news.id}">
 			<c:if test="${not empty news.thumbnail}">
 			  <view:image css="news-illustration" alt="" src="${news.thumbnail.URL}" size="200x"/>
@@ -212,8 +216,9 @@ function onDelete(id) {
         </c:if>
       </div>
       </li>
-		</c:forEach>
-	</ul>
+    </view:listItems>
+  </view:listPane>
+  </ul>
 </c:if>
 <!-- end for contributors -->
 
@@ -227,7 +232,8 @@ function onDelete(id) {
   </c:if>
 
   <ul id="list-news-lecteur-view">
-    <c:forEach items="${listOfNews}" var="news">
+  <view:listPane var="listOfNewsFromHome" routingAddress="Main" numberLinesPerPage="${defaultPaginationPageSize}">
+    <view:listItems items="${listOfNews}" var="news">
       <li onclick="location.href='View?Id=${news.id}'">
         <c:if test="${empty news.thumbnail}">
           <div class="visuel-container"><view:image css="news-illustration default-illustration" alt="" src="/quickinfo/jsp/icons/defaultThumbnail.jpg" size="400x"/></div>
@@ -252,7 +258,8 @@ function onDelete(id) {
           </c:if>
         </div>
       </li>
-    </c:forEach>
+    </view:listItems>
+  </view:listPane>
   </ul>
 </c:if>
 
