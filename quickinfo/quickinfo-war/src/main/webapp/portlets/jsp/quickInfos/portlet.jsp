@@ -137,7 +137,7 @@ $(document).ready(function() {
         </view:listPane>
         <script type="text/javascript">
           whenSilverpeasReady(function() {
-            sp.arrayPane.ajaxControls('.listing-actuality-portlet');
+            sp.listPane.ajaxControls('.listing-actuality-portlet');
           });
         </script>
       </c:when>
