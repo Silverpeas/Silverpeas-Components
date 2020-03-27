@@ -37,7 +37,6 @@ import org.silverpeas.components.quickinfo.service.QuickInfoDateComparatorDesc;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.ContributionManager;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.Attachments;
@@ -57,6 +56,7 @@ import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.reminder.Reminder;
+import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.SettingBundle;
@@ -67,15 +67,16 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
@@ -87,6 +88,7 @@ import static org.silverpeas.core.persistence.Transaction.performInOne;
 public class DefaultQuickInfoService implements QuickInfoService {
 
   private static final String ASSOCIATED_TO_THE_NEWS_MSG = " associated to the news ";
+  private static final Predicate<News> VISIBLE_PREDICATE = n -> !n.isDraft() && n.isVisible();
 
   @Inject
   private NewsRepository newsRepository;
@@ -102,15 +104,10 @@ public class DefaultQuickInfoService implements QuickInfoService {
 
   @Override
   public List<News> getVisibleNews(String componentId) {
-    List<News> quickinfos = getAllNews(componentId);
-    List<News> result = new ArrayList<>();
-    for (News news : quickinfos) {
-      if (news.isVisible() && !news.isDraft()) {
-        result.add(news);
-      }
-    }
-    sortByDateDesc(result);
-    return result;
+    return getAllNews(componentId).stream()
+        .filter(VISIBLE_PREDICATE)
+        .sorted(QuickInfoDateComparatorDesc.comparator)
+        .collect(Collectors.toList());
   }
 
   @Override
@@ -298,42 +295,54 @@ public class DefaultQuickInfoService implements QuickInfoService {
         .stream()
         .filter(n -> n.getPublishDate() != null)
         .peek(n -> decorateNews(singletonList(n), false))
-        .filter(n -> n.isVisible() && !n.isDraft())
+        .filter(VISIBLE_PREDICATE)
         .limit(limit)
         .collect(Collectors.toList());
   }
 
   @Override
   public List<News> getNewsForTicker(String userId) {
-    List<News> tickerNews = newsRepository.getTickerNews();
+    final List<News> tickerNews = filterAuthorized(newsRepository.getTickerNews(), userId)
+        .collect(Collectors.toList());
     if (tickerNews.isEmpty()) {
       return tickerNews;
     }
     decorateNews(tickerNews, false);
-    List<News> forTicker = new ArrayList<>();
-    for (News news : tickerNews) {
-      if (!news.isDraft() && news.isVisible() && news.canBeAccessedBy(User.getById(userId))) {
-        forTicker.add(news);
-      }
-    }
-    return sortByDateDesc(forTicker);
+    return tickerNews.stream()
+        .filter(VISIBLE_PREDICATE)
+        .sorted(QuickInfoDateComparatorDesc.comparator)
+        .collect(Collectors.toList());
   }
 
   @Override
   public List<News> getUnreadBlockingNews(String userId) {
-    List<News> blockingNews = newsRepository.getBlockingNews();
+    final List<News> blockingNews = filterAuthorized(newsRepository.getBlockingNews(), userId)
+        .collect(Collectors.toList());
     if (blockingNews.isEmpty()) {
       return blockingNews;
     }
     decorateNews(blockingNews, false);
-    List<News> result = new ArrayList<>();
-    for (News news : blockingNews) {
-      if (!news.isDraft() && news.isVisible() && news.canBeAccessedBy(User.getById(userId)) &&
-          !getStatisticService().isRead(news, userId)) {
-        result.add(news);
-      }
-    }
-    return sortByDateDesc(result);
+    final List<News> visibleNews = blockingNews.stream()
+        .filter(VISIBLE_PREDICATE)
+        .collect(Collectors.toList());
+    final Set<News> readNews = getStatisticService()
+        .filterRead(visibleNews, userId)
+        .collect(Collectors.toSet());
+    return visibleNews.stream()
+        .filter(n -> !readNews.contains(n))
+        .sorted(QuickInfoDateComparatorDesc.comparator)
+        .collect(Collectors.toList());
+  }
+
+  private Stream<News> filterAuthorized(final List<News> news, final String userId) {
+    final Set<String> allInstanceIds = news.stream()
+        .map(News::getComponentInstanceId)
+        .collect(Collectors.toSet());
+    final Set<String> authorizedInstanceIds = ComponentAccessControl.get()
+        .filterAuthorizedByUser(allInstanceIds, userId)
+        .collect(Collectors.toSet());
+    return news.stream()
+        .filter(n -> authorizedInstanceIds.contains(n.getComponentInstanceId()));
   }
 
   @Override
@@ -379,12 +388,6 @@ public class DefaultQuickInfoService implements QuickInfoService {
         QuickInfoDelayedVisibilityUserNotificationReminder.get().setAbout(news);
       }
     }
-  }
-
-  private List<News> sortByDateDesc(List<News> listOfNews) {
-    Comparator<News> comparator = QuickInfoDateComparatorDesc.comparator;
-    listOfNews.sort(comparator);
-    return listOfNews;
   }
 
   /**

@@ -5,8 +5,9 @@ import org.silverpeas.components.quickinfo.model.QuickInfoService;
 import org.silverpeas.components.quickinfo.model.QuickInfoServiceProvider;
 import org.silverpeas.core.webapi.base.RESTWebService;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author Nicolas Eysseric
@@ -20,17 +21,20 @@ abstract class AbstractNewsResource extends RESTWebService {
     return PATH;
   }
 
-  List<NewsEntity> asWebEntities(List<News> someNews) {
-    List<NewsEntity> entities = new ArrayList<>();
-    for (News news : someNews) {
-      entities.add(asWebEntity(news));
+  List<NewsEntity> asWebEntities(List<News> someNews, final boolean withExtraInfo, final int limit) {
+    Stream<NewsEntity> newsEntityStream = someNews.stream().map(n -> asWebEntity(n, withExtraInfo));
+    if (limit > 0) {
+      newsEntityStream = newsEntityStream.limit(limit);
     }
-    return entities;
+    return newsEntityStream.collect(Collectors.toList());
   }
 
-  NewsEntity asWebEntity(News news) {
-    return NewsEntity.fromNews(news)
-        .withURI(getUri().getWebResourcePathBuilder().path(news.getId()).build());
+  NewsEntity asWebEntity(final News news, final boolean withExtraInfo) {
+    final NewsEntity entity = NewsEntity.fromNews(news);
+    if (withExtraInfo) {
+      entity.setExtraInfo(news);
+    }
+    return entity.withURI(getUri().getWebResourcePathBuilder().path(news.getId()).build());
   }
 
   QuickInfoService getService() {

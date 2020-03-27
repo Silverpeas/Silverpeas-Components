@@ -41,6 +41,7 @@
 <fmt:message key="quickinfo.news.broadcast.mode.major" var="labelModeMajor"/>
 <fmt:message key="GML.attachments" var="labelFiles"/>
 <fmt:message key="GML.comments" var="labelComments"/>
+<fmt:message key="quickinfo.portlet.news.more" var="moreNews"/>
 
 <c:set var="listOfNews" value="${requestScope['ListOfNews']}"/>
 <c:set var="allOtherNews" value="${requestScope['NotVisibleNews']}"/>
@@ -49,15 +50,15 @@
 <c:set var="isSubscriberUser" value="${requestScope.IsSubscriberUser}"/>
 <c:set var="contributor" value="${role == 'admin' || role == 'publisher'}"/>
 
+<c:set var="defaultPaginationPageSize" value="${requestScope.resources.getSetting('news.home.pagination.page.size.default', 10)}"/>
+<c:set var="defaultBatchSize" value="${requestScope.resources.getSetting('news.home.accumulation.batch.size.default', 9)}"/>
+
 <fmt:message var="deleteConfirmMsg" key="supprimerQIConfirmation"/>
 
 <%@ include file="checkQuickInfo.jsp" %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.quickinfo" xml:lang="${lang}">
-<head>
-<title>QuickInfo - Home</title>
-<view:looknfeel/>
+<view:sp-page angularJsAppName="silverpeas.quickinfo">
+<view:sp-head-part>
   <view:includePlugin name="toggle"/>
   <view:includePlugin name="subscription"/>
 <script type="text/javascript" src="js/quickinfo.js"></script>
@@ -75,8 +76,8 @@ function onDelete(id) {
   $("#news-"+id).remove();
 }
 </script>
-</head>
-<body class="quickInfo" id="${componentId}">
+</view:sp-head-part>
+<view:sp-body-part cssClass="quickInfo" id="${componentId}">
 <view:browseBar />
 <view:operationPane>
   <c:if test="${role == 'admin'}">
@@ -154,7 +155,8 @@ function onDelete(id) {
     </c:if>
 
     <ul id="list-news" class="${contributor ? '' : 'reader'}">
-      <c:forEach items="${listOfNews}" var="news">
+    <view:listPane var="listOfNewsFromHome" routingAddress="Main" numberLinesPerPage="${defaultPaginationPageSize}">
+      <view:listItems items="${listOfNews}" var="news">
 		  <li class="showActionsOnMouseOver" id="news-${news.id}">
 			<c:if test="${not empty news.thumbnail}">
 			  <view:image css="news-illustration" alt="" src="${news.thumbnail.URL}" size="200x"/>
@@ -212,8 +214,9 @@ function onDelete(id) {
         </c:if>
       </div>
       </li>
-		</c:forEach>
-	</ul>
+    </view:listItems>
+  </view:listPane>
+  </ul>
 </c:if>
 <!-- end for contributors -->
 
@@ -226,34 +229,44 @@ function onDelete(id) {
     </div>
   </c:if>
 
-  <ul id="list-news-lecteur-view">
-    <c:forEach items="${listOfNews}" var="news">
-      <li onclick="location.href='View?Id=${news.id}'">
-        <c:if test="${empty news.thumbnail}">
-          <div class="visuel-container"><view:image css="news-illustration default-illustration" alt="" src="/quickinfo/jsp/icons/defaultThumbnail.jpg" size="400x"/></div>
-        </c:if>
-        <c:if test="${not empty news.thumbnail}">
-          <div class="visuel-container"><view:image css="news-illustration" alt="" src="${news.thumbnail.URL}" size="400x"/></div>
-        </c:if>
-        <h3 class="news-title"><a href="View?Id=${news.id}">${news.title}</a></h3>
-        <p class="news-teasing"><view:encodeHtmlParagraph string="${news.description}"/></p>
-        <div class="creationInfo">${silfn:formatDate(news.onlineDate, _language)}</div>
-        <c:if test="${news.important}">
-          <div class="news-broadcast"> <span class="news-broadcast-important" title="${labelModeMajor}">${labelModeMajor}</span> </div>
-        </c:if>
-        <div class="news-nb-attached-files-and-comments">
-          <c:set var="nbFiles" value="${news.numberOfAttachments}"/>
-          <c:if test="${nbFiles > 0}">
-            <div class="news-nb-attached-files"> <img src="../../util/icons/attachedFiles.gif" alt="${labelFiles}"> ${nbFiles} </div>
+  <view:accListPane targetListId="list-news-lecteur-view" nextActionLabel="${moreNews}"
+                    var="listOfNewsFromHome" routingAddress="Main" batchSize="${defaultBatchSize}">
+    <ul id="list-news-lecteur-view">
+      <view:accListItems items="${listOfNews}" var="news">
+        <li onclick="location.href='View?Id=${news.id}'">
+          <c:if test="${empty news.thumbnail}">
+            <div class="visuel-container">
+              <view:image css="news-illustration default-illustration" alt="" src="/quickinfo/jsp/icons/defaultThumbnail.jpg" size="400x"/></div>
           </c:if>
-          <c:set var="nbComments" value="${news.numberOfComments}"/>
-          <c:if test="${appSettings.commentsEnabled && nbComments > 0}">
-            <div class="news-nb-comments"> <img src="../../util/icons/talk2user.gif" alt="${labelComments}"> ${nbComments} </div>
+          <c:if test="${not empty news.thumbnail}">
+            <div class="visuel-container">
+              <view:image css="news-illustration" alt="" src="${news.thumbnail.URL}" size="400x"/></div>
           </c:if>
-        </div>
-      </li>
-    </c:forEach>
-  </ul>
+          <h3 class="news-title"><a href="View?Id=${news.id}">${news.title}</a></h3>
+          <p class="news-teasing"><view:encodeHtmlParagraph string="${news.description}"/></p>
+          <div class="creationInfo">${silfn:formatDate(news.onlineDate, _language)}</div>
+          <c:if test="${news.important}">
+            <div class="news-broadcast">
+              <span class="news-broadcast-important" title="${labelModeMajor}">${labelModeMajor}</span>
+            </div>
+          </c:if>
+          <div class="news-nb-attached-files-and-comments">
+            <c:set var="nbFiles" value="${news.numberOfAttachments}"/>
+            <c:if test="${nbFiles > 0}">
+              <div class="news-nb-attached-files">
+                <img src="../../util/icons/attachedFiles.gif" alt="${labelFiles}"> ${nbFiles} </div>
+            </c:if>
+            <c:set var="nbComments" value="${news.numberOfComments}"/>
+            <c:if test="${appSettings.commentsEnabled && nbComments > 0}">
+              <div class="news-nb-comments">
+                <img src="../../util/icons/talk2user.gif" alt="${labelComments}"> ${nbComments}
+              </div>
+            </c:if>
+          </div>
+        </li>
+      </view:accListItems>
+    </ul>
+  </view:accListPane>
 </c:if>
 
   <!-- /INTEGRATION HOME quickInfo -->
@@ -267,5 +280,5 @@ function onDelete(id) {
   var myapp = angular.module('silverpeas.quickinfo', ['silverpeas.services', 'silverpeas.directives']);
 </script>
 
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>

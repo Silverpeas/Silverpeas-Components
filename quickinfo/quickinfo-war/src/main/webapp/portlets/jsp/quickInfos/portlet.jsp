@@ -33,11 +33,13 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/quickinfo" prefix="quickInfoTags" %>
 
 <c:set var="appSettings" value="${requestScope['AppSettings']}"/>
 <c:set var="fromApp" value="${not empty appSettings}"/>
 
-<fmt:setLocale value="${sessionScope[SilverSessionController].favoriteLanguage}" />
+<c:set var="userLanguage" value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
+<fmt:setLocale value="${userLanguage}" />
 <view:setBundle basename="org.silverpeas.quickinfo.multilang.quickinfo" />
 
 
@@ -47,7 +49,7 @@
 	<c:set var="displayMode" value="list"/>
 	<c:set var="slideshow" value="${displayMode == 'slideshow'}"/>
 	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-	<html xmlns="http://www.w3.org/1999/xhtml">
+	<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="${userLanguage}">
 	<head>
 	<title>QuickInfo - Home</title>
 	<view:looknfeel/>
@@ -63,8 +65,6 @@
 	<c:set var="slideshow" value="${displayMode[0] == 'slideshow'}"/>
 	</c:otherwise>
 </c:choose>
-
-
 
 <c:if test="${slideshow}">
 <script src="<%=m_sContext %>/portlets/jsp/quickInfos/js/responsiveslides.min.js" type="text/javascript"></script>
@@ -83,79 +83,73 @@ $(document).ready(function() {
 		});
 });
 </script>
-<div class="rslides">	
+<div class="rslides">
 <ul class="slider-actuality-portlet">
+  <c:forEach items="${allNews}" var="news">
+    <quickInfoTags:portletNews news="${news}" userLanguage="${userLanguage}" slideshow="${slideshow}" fromApp="${fromApp}" />
+  </c:forEach>
+</ul>
+</div>
 </c:if>
 
 <c:if test="${not slideshow}">
 <script type="text/javascript" >
-$(document).ready(function() {
-  var step = 5;
-  var $lis = $(".listing-actuality-portlet li");
-  var nbNews = $lis.length;
-  if (nbNews <= step) {
-    $('#portlet-nextNews').hide();
-  } else {
-	$lis.hide();
-  	$lis.slice(0, step).show();
-  	var end = step;
-  	$('#portlet-nextNews').click(function () {
-      end += step;
-      $lis.slice(0, end).show();
-      if (end >= $lis.length) {
+  $(document).ready(function() {
+    const step = 5;
+    const $lis = $(".listing-actuality-portlet li");
+    const $pag = $(".listing-actuality-portlet .list-pane-nav");
+    const nbNews = $lis.length;
+    if (nbNews <= step) {
+      $('#portlet-nextNews').hide();
+    } else {
+      $lis.hide();
+      $pag.hide();
+      $lis.slice(0, step).show();
+      let end = step;
+      $('#portlet-nextNews').click(function() {
+        <c:choose>
+        <c:when test="${fromApp}">
+        $lis.show();
+        $pag.show();
         $('#portlet-nextNews').hide();
-      }
-	  return false;
-  	});
-  }
-});
+        </c:when>
+        <c:otherwise>
+        end += step;
+        $lis.slice(0, end).show();
+        $pag.show();
+        if (end >= $lis.length) {
+          $('#portlet-nextNews').hide();
+        }
+        </c:otherwise>
+        </c:choose>
+        return false;
+      });
+    }
+  });
 </script>
-	<ul class="listing-actuality-portlet">
-</c:if>
-
-	<c:forEach items="${allNews}" var="news">
-			<c:choose>
-				<c:when test="${not empty news.thumbnail}">
-					<li onclick="spWindow.loadPermalink('${news.permalink}')">
-					<div class="content-actuality-illustration"><view:image src="${news.thumbnail.URL}" alt="" size="350x" css="actuality-illustration"/></div>
-				</c:when>
-				<c:otherwise>
-					<c:choose>
-            <c:when test="${slideshow}">
-              <li onclick="spWindow.loadPermalink('${news.permalink}')">
-              <div class="content-actuality-illustration"><view:image src="/quickinfo/jsp/icons/defaultThumbnail.jpg" alt="" size="350x" css="actuality-illustration default-illustration"/></div>
-            </c:when>
-            <c:otherwise>
-              <li onclick="spWindow.loadPermalink('${news.permalink}')" class="actuality-without-illustration">
-            </c:otherwise>
-          </c:choose>
-				</c:otherwise>
-			</c:choose>
-			<h3 class="actuality-title"><a class="sp-permalink" href="${news.permalink}">${news.title}</a></h3>
-			<div class="actuality-info-fonctionality">
-				<span class="actuality-publishing">
-					<span class="actuality-date"><span class="actuality-date-label"><fmt:message key="GML.publishedAt"/></span> ${silfn:formatDate(news.updateDate, _language)}</span>
-					<c:if test="${not fromApp}">
-						<span class="actuality-source"><fmt:message key="GML.by"/></span><view:componentPath componentId="${news.componentInstanceId}"/></span>
-					</c:if>
-				</span>
-        <view:componentParam var="isCommentEnabled" componentId="${news.componentInstanceId}" parameter="comments"/>
-        <c:if test="${silfn:booleanValue(isCommentEnabled) && news.numberOfComments > 0}">
-          <a class="sp-permalink" href="${news.permalink}#commentaires" class="actuality-nb-commentaires"><img src="/silverpeas/util/icons/talk2user.gif" alt="commentaire"/> ${news.numberOfComments}</a>
-        </c:if>
-			</div>
-			<p class="actuality-teasing">${news.description}</p>
-		</li>
-	</c:forEach>
-
-<c:if test="${slideshow}">
-	</ul>
-	</div>
-</c:if>
-<c:if test="${not slideshow}">
-	</ul>
-	<br clear="both" />
-	<a class="linkMore" href="#" id="portlet-nextNews"><span><fmt:message key="quickinfo.portlet.news.more"/></span></a>
+  <ul class="listing-actuality-portlet">
+    <c:choose>
+      <c:when test="${fromApp}">
+        <view:listPane var="listOfNewsFromPortlet" routingAddress="portletPagination" numberLinesPerPage="10">
+          <view:listItems items="${allNews}" var="news">
+            <quickInfoTags:portletNews news="${news}" userLanguage="${userLanguage}" slideshow="${slideshow}" fromApp="${fromApp}"/>
+          </view:listItems>
+        </view:listPane>
+        <script type="text/javascript">
+          whenSilverpeasReady(function() {
+            sp.listPane.ajaxControls('.listing-actuality-portlet');
+          });
+        </script>
+      </c:when>
+      <c:otherwise>
+        <c:forEach items="${allNews}" var="news">
+          <quickInfoTags:portletNews news="${news}" userLanguage="${userLanguage}" slideshow="${slideshow}" fromApp="${fromApp}"/>
+        </c:forEach>
+      </c:otherwise>
+    </c:choose>
+  </ul>
+  <br clear="both"/>
+  <a class="linkMore" href="#" id="portlet-nextNews"><span><fmt:message key="quickinfo.portlet.news.more"/></span></a>
 </c:if>
 
 <c:if test="${fromApp}">
