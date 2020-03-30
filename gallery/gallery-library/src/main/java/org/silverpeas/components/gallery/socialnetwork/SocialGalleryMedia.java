@@ -30,24 +30,23 @@ package org.silverpeas.components.gallery.socialnetwork;
  *
  */
 
-import org.silverpeas.core.date.Date;
 import org.silverpeas.components.gallery.service.GalleryService;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
-import org.silverpeas.core.socialnetwork.provider.SocialGalleryInterface;
+import org.silverpeas.core.socialnetwork.provider.SocialMediaProvider;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.exception.SilverpeasException;
 
 import javax.inject.Singleton;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Singleton
-public class SocialGallery implements SocialGalleryInterface {
+public class SocialGalleryMedia implements SocialMediaProvider {
 
-  protected SocialGallery() {
+  protected SocialGalleryMedia() {
   }
 
   /**
@@ -58,8 +57,9 @@ public class SocialGallery implements SocialGalleryInterface {
    * @return List<SocialInformationGallery>
    */
   @Override
-  public List<SocialInformation> getSocialInformationsList(String userId, Date begin, Date end) {
-    return getGalleryBm().getAllMediaByUserId(userId, Period.from(begin, end));
+  @SuppressWarnings("unchecked")
+  public List<SocialInformation> getSocialInformationList(String userId, Date begin, Date end) {
+    return getGalleryService().getAllMediaByUserId(userId, Period.from(begin, end));
   }
 
   /**
@@ -70,22 +70,21 @@ public class SocialGallery implements SocialGalleryInterface {
    * @param begin date
    * @param end date
    * @return List
-   * @throws SilverpeasException
    */
   @Override
-  public List<SocialInformation> getSocialInformationsListOfMyContacts(String myId,
-      List<String> myContactsIds, Date begin, Date end) throws SilverpeasException {
+  public List<SocialInformation> getSocialInformationListOfMyContacts(String myId,
+      List<String> myContactsIds, Date begin, Date end) {
     List<SocialInformation> listSocialInfo = new ArrayList<>();
     List<String> listComponents = this.getListAvailable(myId);
-    if (listComponents != null && listComponents.size() > 0) {
-      listSocialInfo = getGalleryBm()
+    if (!listComponents.isEmpty()) {
+      listSocialInfo = getGalleryService()
           .getSocialInformationListOfMyContacts(myContactsIds, listComponents,
               Period.from(begin, end));
     }
     return listSocialInfo;
   }
 
-  private GalleryService getGalleryBm() {
+  private GalleryService getGalleryService() {
     return ServiceProvider.getService(GalleryService.class);
   }
 
