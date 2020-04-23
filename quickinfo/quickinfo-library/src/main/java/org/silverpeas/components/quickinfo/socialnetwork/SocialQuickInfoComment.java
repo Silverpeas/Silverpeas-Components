@@ -22,40 +22,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.components.gallery.socialnetwork;
+package org.silverpeas.components.quickinfo.socialnetwork;
 
-import org.silverpeas.core.date.Date;
-import org.silverpeas.core.comment.service.CommentServiceProvider;
-import org.silverpeas.core.comment.socialnetwork.SocialInformationComment;
-import org.silverpeas.components.gallery.GalleryComponentSettings;
-import org.silverpeas.components.gallery.service.MediaServiceProvider;
-import org.silverpeas.components.gallery.model.Media;
-import org.silverpeas.components.gallery.model.MediaPK;
-import org.silverpeas.components.gallery.model.Photo;
-import org.silverpeas.components.gallery.model.Sound;
-import org.silverpeas.components.gallery.model.Streaming;
-import org.silverpeas.components.gallery.model.Video;
-import org.silverpeas.core.socialnetwork.model.SocialInformation;
-import org.silverpeas.core.socialnetwork.provider.SocialCommentGalleryInterface;
+import org.silverpeas.components.quickinfo.model.News;
+import org.silverpeas.components.quickinfo.model.QuickInfoServiceProvider;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.comment.service.CommentServiceProvider;
+import org.silverpeas.core.comment.socialnetwork.SocialInformationComment;
 import org.silverpeas.core.date.period.Period;
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.socialnetwork.model.SocialInformation;
+import org.silverpeas.core.socialnetwork.provider.SocialNewsCommentProvider;
+import org.silverpeas.core.util.URLUtil;
 
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 @Singleton
-public class SocialCommentGallery implements SocialCommentGalleryInterface {
+public class SocialQuickInfoComment implements SocialNewsCommentProvider {
 
   private List<String> getListResourceType() {
-    List<String> listResourceType = new ArrayList<String>(); //gallery components
-    listResourceType.add(Photo.getResourceType());
-    listResourceType.add(Video.getResourceType());
-    listResourceType.add(Sound.getResourceType());
-    listResourceType.add(Streaming.getResourceType());
+    List<String> listResourceType = new ArrayList<>();
+    listResourceType.add(News.getResourceType()); //quickinfo components
     return listResourceType;
   }
 
@@ -63,14 +54,14 @@ public class SocialCommentGallery implements SocialCommentGalleryInterface {
   private List<SocialInformation> decorate(List<SocialInformationComment> listSocialInformation) {
     for (SocialInformationComment socialInformation : listSocialInformation) {
       String resourceId = socialInformation.getComment().getForeignKey().getId();
-      String instanceId = socialInformation.getComment().getComponentInstanceId();
 
-      MediaPK mediaPk = new MediaPK(resourceId, instanceId);
-      Media media = MediaServiceProvider.getMediaService().getMedia(mediaPk);
+      News news = QuickInfoServiceProvider.getQuickInfoService().getNews(resourceId);
 
-      // Set URL and title of the media comment
-      socialInformation.setUrl("/Rgallery/" + media.getInstanceId() + "/" + media.getURL());
-      socialInformation.setTitle(media.getTitle());
+      //set URL, title and description of the news
+      socialInformation.setUrl(URLUtil
+          .getSimpleURL(URLUtil.URL_PUBLI, news.getPublicationId(),
+              news.getComponentInstanceId(), false));
+      socialInformation.setTitle(news.getTitle());
     }
 
     return (List) listSocialInformation;
@@ -82,12 +73,9 @@ public class SocialCommentGallery implements SocialCommentGalleryInterface {
    * @param begin
    * @param end
    * @return List<SocialInformation>
-   * @throws SilverpeasException
    */
   @Override
-  public List<SocialInformation> getSocialInformationsList(String userId, Date begin, Date end)
-      throws SilverpeasException {
-
+  public List<SocialInformation> getSocialInformationList(String userId, Date begin, Date end) {
     List<SocialInformationComment> listSocialInformation =
         CommentServiceProvider.getCommentService()
             .getSocialInformationCommentsListByUserId(getListResourceType(), userId,
@@ -103,16 +91,13 @@ public class SocialCommentGallery implements SocialCommentGalleryInterface {
    * @param begin
    * @param end
    * @return List<SocialInformation>
-   * @throws SilverpeasException
    */
   @Override
-  public List<SocialInformation> getSocialInformationsListOfMyContacts(String myId,
-      List<String> myContactsIds, Date begin, Date end) throws SilverpeasException {
-
+  public List<SocialInformation> getSocialInformationListOfMyContacts(String myId,
+      List<String> myContactsIds, Date begin, Date end) {
     OrganizationController oc = OrganizationControllerProvider.getOrganisationController();
-    List<String> instanceIds = new ArrayList<String>();
-    instanceIds.addAll(
-        Arrays.asList(oc.getComponentIdsForUser(myId, GalleryComponentSettings.COMPONENT_NAME)));
+    List<String> instanceIds = new ArrayList<>();
+    instanceIds.addAll(Arrays.asList(oc.getComponentIdsForUser(myId, "quickinfo")));
 
     List<SocialInformationComment> listSocialInformation =
         CommentServiceProvider.getCommentService()
