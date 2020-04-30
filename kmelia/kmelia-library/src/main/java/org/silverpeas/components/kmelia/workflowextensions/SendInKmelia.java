@@ -428,13 +428,14 @@ public class SendInKmelia extends ExternalActionImpl {
         // Extract the text content of the html code
         Source source = new Source(new FileInputStream(file));
         fieldValue = source.getTextExtractor().toString();
-      } // Field file type
-      else if (FileField.TYPE.equals(fieldTemplate.getDisplayerName()) && StringUtil.
-          isDefined(field.getValue())) {
-        SimpleDocument doc = AttachmentServiceProvider.getAttachmentService().
-            searchDocumentById(new SimpleDocumentPK(field.getValue(), componentId), null);
-        if (doc != null) {
-          fieldValue = doc.getFilename();
+      } else if (FileField.TYPE.equals(fieldTemplate.getTypeName())) {
+        // Field file type
+        if (StringUtil.isDefined(field.getValue())) {
+          SimpleDocument doc = AttachmentServiceProvider.getAttachmentService().
+              searchDocumentById(new SimpleDocumentPK(field.getValue(), componentId), null);
+          if (doc != null) {
+            fieldValue = doc.getFilename();
+          }
         }
       } else {
         // Other field types
