@@ -32,11 +32,13 @@ import org.silverpeas.core.importexport.ExportDescriptor;
 import org.silverpeas.core.importexport.ExportException;
 import org.silverpeas.core.importexport.Exporter;
 import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.UUID;
 import java.util.function.Supplier;
 
@@ -90,7 +92,8 @@ public class KmeliaPublicationExporter implements Exporter<KmeliaPublication> {
     DocumentFormat targetFormat = DocumentFormat.inFormat(descriptor.getMimeType());
     KmeliaPublication publication = supplier.get();
     String documentPath = getTemporaryExportFilePathFor(publication);
-    File odtDocument = null, exportFile = null;
+    File odtDocument = null;
+    File exportFile = null;
     try {
       ODTDocumentBuilder builder = ODTDocumentBuilder.anODTDocumentBuilder().forUser(user).inLanguage(language).
               inTopic(folderId);
@@ -107,11 +110,15 @@ public class KmeliaPublicationExporter implements Exporter<KmeliaPublication> {
     } catch (IOException ex) {
       throw new ExportException(ex.getMessage(), ex);
     } finally {
-      if (odtDocument != null && odtDocument.exists()) {
-        odtDocument.delete();
-      }
-      if (exportFile != null && exportFile.exists()) {
-        exportFile.delete();
+      try {
+        if (odtDocument != null && odtDocument.exists()) {
+          Files.delete(odtDocument.toPath());
+        }
+        if (exportFile != null && exportFile.exists()) {
+          Files.delete(exportFile.toPath());
+        }
+      } catch (IOException e) {
+        SilverLogger.getLogger(this).warn(e);
       }
     }
   }

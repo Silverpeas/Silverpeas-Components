@@ -62,4 +62,13 @@ public class ValidatorsList extends ArrayList<String> {
     return validatorNames.toString();
   }
 
+  @Override
+  public boolean equals(final Object o) {
+    return super.equals(o);
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
+  }
 }

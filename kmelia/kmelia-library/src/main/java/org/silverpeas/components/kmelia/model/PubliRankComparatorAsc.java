@@ -28,7 +28,7 @@ import java.util.Comparator;
 
 
 public class PubliRankComparatorAsc implements Comparator<KmeliaPublication> {
-  static public PubliRankComparatorAsc comparator = new PubliRankComparatorAsc();
+  public static final PubliRankComparatorAsc comparator = new PubliRankComparatorAsc();
 
   @Override
   public int compare(KmeliaPublication p1, KmeliaPublication p2) {

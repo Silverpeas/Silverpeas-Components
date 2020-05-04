@@ -28,7 +28,7 @@ import java.util.Comparator;
 
 
 public class PubliImportanceComparatorDesc implements Comparator<KmeliaPublication> {
-  static public PubliImportanceComparatorDesc comparator = new PubliImportanceComparatorDesc();
+  public static final PubliImportanceComparatorDesc comparator = new PubliImportanceComparatorDesc();
 
   @Override
   public int compare(KmeliaPublication p1, KmeliaPublication p2) {

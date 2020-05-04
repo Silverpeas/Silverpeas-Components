@@ -43,7 +43,7 @@ public class TopicComparator implements Comparator<NodeDetail> {
 
   public TopicComparator(String[] criteria) {
     if (criteria != null) {
-      namesWeights = new HashMap<String, Integer>();
+      namesWeights = new HashMap<>();
       int i = 0;
       for (i = 0; i < criteria.length; i++) {
         namesWeights.put(criteria[i].toLowerCase(), i);

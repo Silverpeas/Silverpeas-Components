@@ -151,7 +151,7 @@ public class TopicDetail extends Object implements java.io.Serializable {
   }
 
   public List<KmeliaPublication> getValidPublications(PublicationPK pubPKToExclude) {
-    List<KmeliaPublication> validPublications = new ArrayList<KmeliaPublication>();
+    List<KmeliaPublication> validPublications = new ArrayList<>();
     for (KmeliaPublication aPublication : publications) {
       PublicationDetail detail = aPublication.getDetail();
       if (detail.getStatus() != null && detail.getStatus().equals("Valid")) {
