@@ -185,7 +185,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   // Specific Kmax
   private String sessionTimeCriteria = null;
   private String sortValue = null;
-  private String defaultSortValue = "2";
   private int rang = 0;
   public static final String TAB_PREVIEW = "tabpreview";
   public static final String TAB_HEADER = "tabheader";
@@ -259,10 +258,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       componentManageable =
           getOrganisationController().isComponentManageable(getComponentId(), getUserId());
     }
-    defaultSortValue = getComponentParameterValue("publicationSort");
-    if (!StringUtil.isDefined(defaultSortValue)) {
-      defaultSortValue = getSettings().getString("publications.sort.default", "2");
-    }
     // check if this instance use a specific template of publication
     SilverpeasTemplate template = SilverpeasTemplateFactory.createSilverpeasTemplateOnComponents();
     customPublicationTemplateName = "publication_" + getComponentId();
@@ -275,6 +270,14 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     if (StringUtil.isInteger(parameterValue)) {
       nbPublicationsPerPage = Integer.parseInt(parameterValue);
     }
+  }
+
+  public int getDefaultSortValue() {
+    String defaultSortValue = getComponentParameterValue("publicationSort");
+    if (!StringUtil.isDefined(defaultSortValue)) {
+      defaultSortValue = getSettings().getString("publications.sort.default", "2");
+    }
+    return Integer.parseInt(defaultSortValue);
   }
 
   public boolean isKmaxMode() {
@@ -649,7 +652,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   public boolean isUserComponentAdmin() {
-    return SilverpeasRole.admin.isInRole(KmeliaHelper.getProfile(getUserRoles()));
+    return SilverpeasRole.admin.isInRole(KmeliaHelper.getSilverpeasRole(getSilverpeasUserRoles()));
   }
 
   /*
@@ -1084,7 +1087,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     } else if (sort == -1) {
       // display publications according to default sort defined on application level or instance
       // level
-      sort = Integer.parseInt(defaultSortValue);
+      sort = getDefaultSortValue();
     }
 
     switch (sort) {
@@ -1846,7 +1849,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   public List<String> getModelUsed() {
-    List models = new ArrayList();
+    List<String> models = new ArrayList<>();
     String formNameAppLevel = getXMLFormNameForPublications();
     if (StringUtil.isDefined(formNameAppLevel)) {
       models.add(formNameAppLevel);
