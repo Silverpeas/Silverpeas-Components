@@ -32,6 +32,7 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.index.indexing.model.IndexManager;
 
 import java.io.Serializable;
+import java.util.Collection;
 
 /**
  * @author neysseri
@@ -51,7 +52,11 @@ public class KmeliaHelper implements Serializable {
   public static final String ROLE_READER = "user";
   public static final String SPECIALFOLDER_TOVALIDATE = "tovalidate";
 
-  public KmeliaHelper() {
+  private KmeliaHelper() {
+  }
+
+  public static String getSilverpeasRole(Collection<SilverpeasRole> roles) {
+    return getProfile(roles.stream().map(SilverpeasRole::getName).toArray(String[]::new));
   }
 
   public static String getProfile(String[] profiles) {
@@ -74,6 +79,8 @@ public class KmeliaHelper implements Serializable {
           break;
         case supervisor:
           flag = SilverpeasRole.supervisor;
+          break;
+        default:
           break;
       }
     }
@@ -99,7 +106,7 @@ public class KmeliaHelper implements Serializable {
   }
 
   public static String extractObjectTypeFromURL(String url) {
-    return url.substring(url.indexOf("Type=") + 5, url.lastIndexOf("&"));
+    return url.substring(url.indexOf("Type=") + 5, url.lastIndexOf('&'));
   }
 
   public static String getPublicationUrl(PublicationDetail pubDetail, NodePK nodePK) {
