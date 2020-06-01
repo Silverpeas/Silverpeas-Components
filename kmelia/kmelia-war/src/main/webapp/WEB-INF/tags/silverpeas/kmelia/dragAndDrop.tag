@@ -141,7 +141,7 @@
 
             <div id="publicationBlock" style="display: none;padding-top: 7px">
               <label for="publicationName" class="label">${publicationNameLabel}</label><br/>
-              <input type="text" name="publicationName" id="publicationName" maxlength="150" style="width: 98%"/>
+              <input type="text" name="publicationName" id="publicationName" maxlength="400" style="width: 98%"/>
               <c:if test="${isDescription}">
                 <br/>
                 <label for="publicationDescription" class="label">${publicationDescriptionLabel}</label><br/>

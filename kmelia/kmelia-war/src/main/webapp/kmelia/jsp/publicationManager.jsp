@@ -599,7 +599,7 @@
 				<div class="field" id="pubNameArea">
 					<label for="pubName" class="txtlibform"><%=resources.getString("PubTitre")%></label>
 					<div class="champs">
-						<input type="text" name="KmeliaPubName" id="pubName" value="<%=name%>" size="68" maxlength="150" />&nbsp;<img src="<%=mandatorySrc%>" width="5" height="5" border="0"/>
+						<input type="text" name="KmeliaPubName" id="pubName" value="<%=name%>" size="68" maxlength="400" />&nbsp;<img src="<%=mandatorySrc%>" width="5" height="5" border="0"/>
 					</div>
 				</div>
 
