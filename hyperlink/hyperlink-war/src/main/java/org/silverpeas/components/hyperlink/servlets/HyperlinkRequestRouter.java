@@ -165,6 +165,7 @@ public class HyperlinkRequestRouter extends ComponentRequestRouter<HyperlinkSess
       aimedUrl = getParsedDestination(aimedUrl, USER_PASSWORD, encode("??????"));
     }
     aimedUrl = getParsedDestinationWithExtraInfos(aimedUrl, hyperlinkSCC);
+    aimedUrl += "&Referer="+hyperlinkSCC.getComponentId();
     return aimedUrl;
   }
 
