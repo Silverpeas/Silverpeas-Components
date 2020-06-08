@@ -29,8 +29,8 @@ import org.silverpeas.components.infoletter.model.InfoLetter;
 import org.silverpeas.components.infoletter.model.InfoLetterPublication;
 import org.silverpeas.components.infoletter.model.InfoLetterPublicationPdC;
 import org.silverpeas.components.infoletter.model.InfoLetterService;
-import org.silverpeas.components.infoletter.service.ByteArrayDataSource;
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.service.OrganizationController;
@@ -58,7 +58,6 @@ import org.silverpeas.core.subscription.service.GroupSubscriptionSubscriber;
 import org.silverpeas.core.subscription.service.ResourceSubscriptionProvider;
 import org.silverpeas.core.subscription.service.UserSubscriptionSubscriber;
 import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
-import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.activation.DataHandler;
@@ -81,6 +80,8 @@ import java.util.List;
 import java.util.Set;
 
 import static org.silverpeas.core.mail.MailAddress.eMail;
+import static org.silverpeas.core.mail.MailContent.extractTextBodyPartFromHtmlContent;
+import static org.silverpeas.core.mail.MailContent.getHtmlBodyPartFromHtmlContent;
 
 /**
  * Class declaration
@@ -414,7 +415,7 @@ public class InfoLetterDataManager implements InfoLetterService {
   }
 
   private Multipart createContentMessageMail(InfoLetterPublicationPdC ilp, String mimeMultipart)
-      throws Exception {
+      throws MessagingException, SilverpeasException {
     Multipart multipart = new MimeMultipart(mimeMultipart);
 
     // create and fill the first message part
@@ -427,15 +428,22 @@ public class InfoLetterDataManager implements InfoLetterService {
         WysiwygContentTransformer.on(wysiwygContent).toMailContent();
 
     // Prepare Mail parts
-    // First the WYSIWYG
-    MimeBodyPart wysiwygBodyPart = new MimeBodyPart();
-    wysiwygBodyPart.setDataHandler(new DataHandler(
-        new ByteArrayDataSource(wysiwygMailTransformResult.getWysiwygContent(),
-            MimeTypes.HTML_MIME_TYPE)));
-    multipart.addBodyPart(wysiwygBodyPart);
-
-    // Then all the referenced media content
-    wysiwygMailTransformResult.applyOn(multipart);
+    final String htmlContent = wysiwygMailTransformResult.getWysiwygContent();
+    if ("alternative".equals(mimeMultipart)) {
+      // First the WYSIWYG as brut text
+      multipart.addBodyPart(extractTextBodyPartFromHtmlContent(htmlContent));
+      // Then all the referenced media content
+      wysiwygMailTransformResult.applyOn(multipart);
+      // Finally the WYSIWYG (the preferred one)
+      multipart.addBodyPart(getHtmlBodyPartFromHtmlContent(htmlContent));
+    } else {
+      // First the WYSIWYG (the main one)
+      multipart.addBodyPart(getHtmlBodyPartFromHtmlContent(htmlContent));
+      // Then all the referenced media content
+      wysiwygMailTransformResult.applyOn(multipart);
+      // Finally the WYSIWYG as brut text
+      multipart.addBodyPart(extractTextBodyPartFromHtmlContent(htmlContent));
+    }
 
     // Finally explicit attached files
     List<SimpleDocument> listAttachedFilesFromTab =
