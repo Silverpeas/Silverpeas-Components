@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.silverpeas.components</groupId>
     <artifactId>webpages</artifactId>
-    <version>6.1</version>
+    <version>6.1.1-SNAPSHOT</version>
   </parent>
 
   <groupId>org.silverpeas.components.webpages</groupId>
