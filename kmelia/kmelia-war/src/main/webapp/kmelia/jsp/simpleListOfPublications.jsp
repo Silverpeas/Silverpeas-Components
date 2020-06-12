@@ -77,7 +77,7 @@ boolean userCanSeeStats = kmeliaScc.isStatisticAllowed();
 <head>
 <view:looknfeel/>
 	<title></title>
-<view:includePlugin name="popup"/>
+<view:includePlugin name="subscription"/>
 <view:includePlugin name="preview"/>
 <view:includePlugin name="rating" />
 
@@ -148,6 +148,10 @@ $(document).ready(function() {
 	}
 	displayTopicDescription("0");
 });
+
+window.SUBSCRIPTION_PROMISE.then(function() {
+  window.spSubManager = new SilverpeasSubscriptionManager('<%=componentId%>');
+});
 </script>
 </head>
 <body id="kmelia" onunload="closeWindows()" class="yui-skin-sam">
@@ -200,7 +204,7 @@ $(document).ready(function() {
 
     	if (!isGuest) {
     	  	operationPane.addOperation("useless", resources.getString("kmelia.operation.exportSelection"), "javascript:onclick=exportPublications()");
-    		operationPane.addOperation("useless", resources.getString("GML.subscribe"), "javascript:onClick=addSubscription()");
+    		operationPane.addOperation("useless", "<span id='subscriptionMenuLabel'></span>", "javascript:onClick=spSubManager.switchUserSubscription()");
       		operationPane.addOperation("useless", resources.getString("FavoritesAdd1")+" "+kmeliaScc.getString("FavoritesAdd2"), "javaScript:addFavorite('"+
               WebEncodeHelper.javaStringToHtmlString(WebEncodeHelper.javaStringToJsString(namePath))+"','','"+urlTopic+"')");
     	}

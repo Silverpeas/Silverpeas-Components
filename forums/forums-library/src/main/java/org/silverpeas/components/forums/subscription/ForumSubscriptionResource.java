@@ -23,9 +23,8 @@
  */
 package org.silverpeas.components.forums.subscription;
 
-import org.silverpeas.core.subscription.constant.SubscriptionResourceType;
-import org.silverpeas.core.subscription.service.PKSubscriptionResource;
 import org.silverpeas.components.forums.model.ForumPK;
+import org.silverpeas.core.subscription.service.PKSubscriptionResource;
 
 /**
  * User: Yohann Chastagnier
@@ -47,6 +46,6 @@ public class ForumSubscriptionResource extends PKSubscriptionResource {
    * @param pk
    */
   protected ForumSubscriptionResource(final ForumPK pk) {
-    super(pk, SubscriptionResourceType.FORUM);
+    super(pk, ForumSubscriptionConstants.FORUM);
   }
 }

@@ -80,7 +80,7 @@ String userId = kmeliaScc.getUserId();
 <view:looknfeel withCheckFormScript="true"/>
 <view:script src="/util/javaScript/browseBarComplete.js"/>
 <view:includePlugin name="datepicker" />
-<view:includePlugin name="popup"/>
+<view:includePlugin name="subscription"/>
 <view:includePlugin name="preview"/>
 <view:includePlugin name="rating" />
 
