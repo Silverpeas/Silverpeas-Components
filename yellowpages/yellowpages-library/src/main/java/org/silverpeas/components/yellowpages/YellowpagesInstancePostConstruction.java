@@ -24,10 +24,12 @@
 package org.silverpeas.components.yellowpages;
 
 import org.silverpeas.core.admin.component.ComponentInstancePostConstruction;
+import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Named;
 import javax.transaction.Transactional;
@@ -64,6 +66,13 @@ public class YellowpagesInstancePostConstruction implements ComponentInstancePos
     root.setDescription("");
     root.setCreatorId(UserDetail.getCurrentRequester().getId());
     root.setLevel(1);
+
+    String xmlFilename = AdministrationServiceProvider.getAdminService()
+          .getComponentParameterValue(componentInstanceId, "xmlTemplate");
+    if (StringUtil.isDefined(xmlFilename)) {
+      root.setModelId(xmlFilename);
+    }
+
     return root;
   }
 
