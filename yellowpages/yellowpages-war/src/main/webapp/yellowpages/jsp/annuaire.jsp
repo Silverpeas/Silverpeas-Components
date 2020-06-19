@@ -48,37 +48,27 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <%@ include file="checkYellowpages.jsp" %>
 <%!
-  private String afficheArbo(String idNodeSelected, YellowpagesSessionController yellowpagesScc,
-      int nbEsp) throws Exception {
+  private String afficheArbo(List<NodeDetail> tree, String idNodeSelected,
+      YellowpagesSessionController yellowpagesScc) {
     StringBuffer resultat = new StringBuffer();
-    List<NodeDetail> tree = yellowpagesScc.getTree();
-    StringBuffer espace = new StringBuffer();
-
-    NodeDetail nodeDetail = null;
-    String nodeId = null;
-    int nodeLevel = 0;
-    for (int i = 0; i < tree.size(); i++) {
-      nodeDetail = (NodeDetail) tree.get(i);
-      nodeId = nodeDetail.getNodePK().getId();
-      if (nodeId.equals("1") || nodeId.equals("2")) {
-        //on affiche pas ces deux rubriques
+    StringBuffer espace;
+    for (NodeDetail nodeDetail : tree) {
+      String nodeId = nodeDetail.getNodePK().getId();
+      if (nodeDetail.isRoot()) {
+        resultat.append("<option value=\"").append(nodeId).append("\">")
+            .append(yellowpagesScc.getComponentLabel()).append("</option>");
       } else {
-        if (i == 0) {
-          resultat.append("<option value=\"").append(nodeId).append("\">")
-              .append(yellowpagesScc.getComponentLabel()).append("</option>");
-        } else {
-          nodeLevel = nodeDetail.getLevel();
-          espace = new StringBuffer();
-          for (int j = 0; j < nodeLevel - 1; j++) {
-            espace.append("&nbsp;&nbsp;&nbsp;");
-          }
-          resultat.append("<option value=\"").append(nodeId).append("\"");
-          if (idNodeSelected.equals(nodeId)) {
-            resultat.append("selected");
-          }
-          resultat.append(">").append(espace.toString()).append(nodeDetail.getName())
-              .append("</option>");
+        int nodeLevel = nodeDetail.getLevel();
+        espace = new StringBuffer();
+        for (int j = 0; j < nodeLevel - 1; j++) {
+          espace.append("&nbsp;&nbsp;&nbsp;");
         }
+        resultat.append("<option value=\"").append(nodeId).append("\"");
+        if (idNodeSelected.equals(nodeId)) {
+          resultat.append("selected");
+        }
+        resultat.append(">").append(espace.toString()).append(nodeDetail.getName())
+            .append("</option>");
       }
     }
     return resultat.toString();
@@ -94,6 +84,7 @@
 
   String profile = request.getParameter("Profile");
   String action = request.getParameter("Action");
+  List<NodeDetail> tree = (List<NodeDetail>) request.getAttribute("Tree");
 
   if (action == null) {
     action = "GoTo";
@@ -287,20 +278,15 @@
           </tr>
         </table>
         <!--***************************--></td>
-      <%
-        }
-      %>
+      <% } %>
+      <% if (tree.size() > 1) { %>
       <td><!--Acces aux categories-->
-        <table cellpadding="2" cellspacing="1" border="0" width="100%">
-          <tr>
-            <td align="center" nowrap="nowrap" width="100%" height="24"><span
-                class="selectNS"> <select name="selectTopic"
+          <span class="selectNS"> <select name="selectTopic"
                                           onchange="topicGoToSelected()">
-					<%=afficheArbo(id, yellowpagesScc, 0)%>
-				</select> </span></td>
-          </tr>
-        </table>
+					<%=afficheArbo(tree, id, yellowpagesScc)%>
+				</select> </span>
         <!--***************************--></td>
+      <% } %>
       <td width="100%">&nbsp;</td>
     </tr>
   </table>

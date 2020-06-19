@@ -120,5 +120,23 @@
         <message lang="en">Allows to quickly access to others 'Contacts' applications</message>
       </help>
     </parameter>
+    <parameter>
+      <name>xmlTemplate</name>
+      <label>
+        <message lang="fr">Formulaire</message>
+        <message lang="en">Custom form</message>
+        <message lang="de">Benutzerdefiniertes Formular</message>
+      </label>
+      <order>2</order>
+      <mandatory>false</mandatory>
+      <value/>
+      <type>xmltemplates</type>
+      <updatable>creation</updatable>
+      <help>
+        <message lang="fr">Permet d'utiliser un formulaire pour les contacts hors rubriques</message>
+        <message lang="en">Allows you to use a form for contacts outside the headings</message>
+        <message lang="de">Ermöglicht die Verwendung eines Formulars für Kontakte außerhalb der Überschriften</message>
+      </help>
+    </parameter>
   </parameters>
 </WAComponent>

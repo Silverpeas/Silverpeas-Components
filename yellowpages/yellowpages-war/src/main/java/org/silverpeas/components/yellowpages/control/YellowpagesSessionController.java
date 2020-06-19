@@ -271,7 +271,15 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   }
 
   public List<NodeDetail> getTree() {
-    return getYellowpagesService().getTree(getComponentId());
+    List<NodeDetail> tree = getYellowpagesService().getTree(getComponentId());
+    List<NodeDetail> displayedTree = new ArrayList<>();
+    for (NodeDetail node : tree) {
+      String nodeId = node.getNodePK().getId();
+      if (!nodeId.equals("1") && !nodeId.equals("2")) {
+        displayedTree.add(node);
+      }
+    }
+    return displayedTree;
   }
 
   public NodePK updateTopicHeader(NodeDetail nd) {
@@ -294,10 +302,6 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   public void deleteTopic(String topicId) {
     getYellowpagesService().deleteTopic(getNodePK(topicId));
     resetCurrentFullCompleteUsers();
-  }
-
-  public void emptyPublisherDZ() {
-    getYellowpagesService().emptyDZByUserId(getComponentId(), getUserId());
   }
 
   /* Yellowpages - Gestion des contacts */
@@ -810,6 +814,17 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     return getYellowpagesService().getModelUsed(getComponentId());
   }
 
+  public String getCurrentModel() {
+    if (getCurrentTopic().getNodeDetail().isRoot()) {
+      return getMainUsedXMLTemplate();
+    }
+    return getCurrentTopic().getNodeDetail().getModelId();
+  }
+
+  private String getMainUsedXMLTemplate() {
+    return getComponentParameterValue("xmlTemplate");
+  }
+
   public void deleteBasketContent() {
     TopicDetail td = getCurrentTopic();
     Collection<UserContact> pds = td.getContactDetails();
@@ -947,7 +962,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
    * @return ImportReport
    * @throws YellowpagesException
    */
-  public ImportReport importCSV(FileItem filePart, String modelId) {
+  public ImportReport importCSV(FileItem filePart) {
     ImportReport report = new ImportReport();
     try {
       InputStream is = filePart.getInputStream();
@@ -955,12 +970,13 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
       csvReader.setColumnNumberControlEnabled(false);
       csvReader.setExtraColumnsControlEnabled(false);
       csvReader
-          .initCSVFormat("org.silverpeas.yellowpages.settings.yellowpagesSettings", "User", ",");
+          .initCSVFormat("org.silverpeas.yellowpages.settings.yellowpagesSettings", "User", ";");
 
       try {
         Variant[][] csvHeaderValues = csvReader.parseStream(is);
 
         int nbColumns = csvReader.getNbCols() + csvReader.getSpecificNbCols();
+        String modelId = getCurrentModel();
 
         int currentLine = 1;
         int nbContactsAdded = 0;
