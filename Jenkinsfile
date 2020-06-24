@@ -7,7 +7,7 @@ pipeline {
   }
   agent {
     docker {
-      image 'silverpeas/silverbuild'
+      image 'silverpeas/silverbuild:java-11'
       args '-v $HOME/.m2:/home/silverbuild/.m2 -v $HOME/.gitconfig:/home/silverbuild/.gitconfig -v $HOME/.ssh:/home/silverbuild/.ssh -v $HOME/.gnupg:/home/silverbuild/.gnupg'
     }
   }
@@ -24,7 +24,7 @@ pipeline {
     stage('Build') {
       steps {
         script {
-          def pom = readMavenPom()
+          checkParentPOMVersion(version)
           boolean coreDependencyExists = existsDependency(version, 'core')
           if (!coreDependencyExists) {
             def coreVersion = getCoreDependencyVersion()
@@ -80,8 +80,9 @@ mvn ${SONAR_MAVEN_GOAL} -Dsonar.projectKey=Silverpeas_Silverpeas-Components \\
 def computeSnapshotVersion() {
   def pom = readMavenPom()
   final String version = pom.version
-  final String defaultVersion = env.BRANCH_NAME == 'master' ? version :
-      env.BRANCH_NAME.toLowerCase().replaceAll('[# -]', '')
+  final String release = pom.properties['next.release']
+  final String defaultVersion = env.BRANCH_NAME == 'master' || env.BRANCH_NAME.endsWith('.x') ?
+      version : release + '-' + env.BRANCH_NAME.toLowerCase().replaceAll('[# -]', '')
   Matcher m = env.CHANGE_TITLE =~ /^(Bug #?\d+|Feature #?\d+).*$/
   String snapshot = m.matches()
       ? m.group(1).toLowerCase().replaceAll(' #?', '')
@@ -92,7 +93,7 @@ def computeSnapshotVersion() {
         ? m.group(1).toLowerCase().replaceAll('[/><|:&?!;,*%$=}{#~\'"\\\\°)(\\[\\]]', '').trim().replaceAll('[ @]', '-')
         : ''
   }
-  return snapshot.isEmpty() ? defaultVersion : "${pom.properties['next.release']}-${snapshot}"
+  return snapshot.isEmpty() ? defaultVersion : "${release}-${snapshot}"
 }
 
 def getCoreDependencyVersion() {
@@ -140,5 +141,18 @@ def waitForDependencyRunningBuildIfAny(version, projectName) {
   }
   if (isLockFileExisting(dependencyLockFilePath)) {
     error "After timeout dependency lock file ${dependencyLockFilePath} is yet existing!!!!"
+  }
+}
+
+def checkParentPOMVersion(version) {
+  def pom = readMavenPom()
+  int idx = pom.parent.version.indexOf('-SNAPSHOT')
+  if (idx > 0) {
+    String[] snapshot = version.split('-')
+    String parentVersion = pom.parent.version.substring(0, idx) + '-' + snapshot[0]
+    echo "Update parent POM to ${parentVersion}"
+    sh """
+mvn versions:update-parent -DgenerateBackupPoms=false -DparentVersion="[${parentVersion}]"
+"""
   }
 }
