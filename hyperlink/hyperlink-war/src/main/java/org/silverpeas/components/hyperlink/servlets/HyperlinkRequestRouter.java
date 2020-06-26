@@ -35,6 +35,7 @@ import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.ws.rs.core.UriBuilder;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
@@ -165,8 +166,10 @@ public class HyperlinkRequestRouter extends ComponentRequestRouter<HyperlinkSess
       aimedUrl = getParsedDestination(aimedUrl, USER_PASSWORD, encode("??????"));
     }
     aimedUrl = getParsedDestinationWithExtraInfos(aimedUrl, hyperlinkSCC);
-    aimedUrl += "&Referer="+hyperlinkSCC.getComponentId();
-    return aimedUrl;
+    return UriBuilder.fromUri(aimedUrl)
+        .queryParam("Referer", hyperlinkSCC.getComponentId())
+        .build()
+        .toString();
   }
 
   /**
