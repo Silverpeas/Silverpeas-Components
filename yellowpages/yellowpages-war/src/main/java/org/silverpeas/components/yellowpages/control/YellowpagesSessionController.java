@@ -88,6 +88,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.MissingResourceException;
+import java.util.stream.Collectors;
 
 import static org.silverpeas.components.yellowpages.YellowpagesComponentSettings.areUserExtraDataRequired;
 import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnGetting;
@@ -271,15 +272,12 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   }
 
   public List<NodeDetail> getTree() {
-    List<NodeDetail> tree = getYellowpagesService().getTree(getComponentId());
-    List<NodeDetail> displayedTree = new ArrayList<>();
-    for (NodeDetail node : tree) {
-      String nodeId = node.getNodePK().getId();
-      if (!nodeId.equals("1") && !nodeId.equals("2")) {
-        displayedTree.add(node);
-      }
-    }
-    return displayedTree;
+    return getYellowpagesService().getTree(getComponentId()).stream()
+        .filter(n -> {
+          final String nodeId = n.getNodePK().getId();
+          return !nodeId.equals("1") && !nodeId.equals("2");
+        })
+        .collect(Collectors.toList());
   }
 
   public NodePK updateTopicHeader(NodeDetail nd) {
