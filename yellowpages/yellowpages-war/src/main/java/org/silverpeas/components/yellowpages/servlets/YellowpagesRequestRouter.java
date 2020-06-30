@@ -153,7 +153,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
         }
 
         request.setAttribute("Contacts", contacts);
-        request.setAttribute("PortletMode", scc.isPortletMode());
+        setCommonAttributesOfMainPage(scc, request);
 
         scc.setCurrentContacts(contacts);
 
@@ -205,7 +205,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
 
           request.setAttribute("Contacts", scc.getListContactFather(listContact, true));
           request.setAttribute("CurrentTopic", currentTopic);
-          request.setAttribute("PortletMode", scc.isPortletMode());
+          setCommonAttributesOfMainPage(scc, request);
 
           destination = "/yellowpages/jsp/annuaire.jsp?Action=SearchResults&Profile=" + flag;
         } else if ("Node".equals(type)) {
@@ -223,8 +223,8 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
 
         request.setAttribute("Contacts", searchResults);
         request.setAttribute("CurrentTopic", currentTopic);
-        request.setAttribute("PortletMode", scc.isPortletMode());
         request.setAttribute("SearchCriteria", searchCriteria);
+        setCommonAttributesOfMainPage(scc, request);
 
         destination = "/yellowpages/jsp/annuaire.jsp?Action=SearchResults&Profile=" + flag;
       } else if ("ToAddFolder".equals(function)) {
@@ -330,8 +330,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
       } else if ("ImportCSV".equals(function)) {
         List<FileItem> parameters = request.getFileItems();
         FileItem fileItem = FileUploadUtil.getFile(parameters);
-        String modelId = scc.getCurrentTopic().getNodeDetail().getModelId();
-        request.setAttribute("Result", scc.importCSV(fileItem, modelId));
+        request.setAttribute("Result", scc.importCSV(fileItem));
         destination = rootDestination + "importCSV.jsp";
       } else {
         destination = "/yellowpages/jsp/" + function;
@@ -394,13 +393,13 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
       request.setAttribute("Contact", contact);
       return "/yellowpages/jsp/contact.jsp";
     } else if ("ContactNew".equals(function)) {
-      String modelId = ysc.getCurrentTopic().getNodeDetail().getModelId();
+      String modelId = ysc.getCurrentModel();
       CompleteContact contact = new CompleteContact(ysc.getComponentId(), modelId);
       setPageContext(null, request, ysc);
       request.setAttribute("Contact", contact);
       return "/yellowpages/jsp/contactManager.jsp";
     } else if ("ContactNewFromUser".equals(function)) {
-      String modelId = ysc.getCurrentTopic().getNodeDetail().getModelId();
+      String modelId = ysc.getCurrentModel();
       ysc.getCurrentContact().setModelId(modelId);
       setPageContext(null, request, ysc);
       request.setAttribute("Contact", ysc.getCurrentContact());
@@ -424,7 +423,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
       return "/yellowpages/jsp/contactManager.jsp";
     } else if ("ContactSave".equals(function)) {
       List<FileItem> items = request.getFileItems();
-      String modelId = ysc.getCurrentTopic().getNodeDetail().getModelId();
+      String modelId = ysc.getCurrentModel();
       String contactId = FileUploadUtil.getParameter(items, "ContactId");
       ContactDetail contact = request2ContactDetail(items);
       CompleteContact fullContact = new CompleteContact(contact, modelId);
@@ -481,5 +480,11 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
     context.setObjectId(contactId);
 
     request.setAttribute("PagesContext", context);
+  }
+
+  private void setCommonAttributesOfMainPage(YellowpagesSessionController scc,
+      HttpServletRequest request) {
+    request.setAttribute("PortletMode", scc.isPortletMode());
+    request.setAttribute("Tree", scc.getTree());
   }
 }
