@@ -55,6 +55,7 @@ import org.silverpeas.core.questioncontainer.container.service.QuestionContainer
 import org.silverpeas.core.questioncontainer.question.model.Question;
 import org.silverpeas.core.questioncontainer.question.model.QuestionPK;
 import org.silverpeas.core.questioncontainer.result.model.QuestionResult;
+import org.silverpeas.core.questioncontainer.result.model.Results;
 import org.silverpeas.core.questioncontainer.result.service.QuestionResultService;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.StringUtil;
@@ -426,6 +427,16 @@ public class SurveySessionController extends AbstractComponentSessionController 
       resultId.add(question.getAnswerPK().getId());
     }
     return resultId;
+  }
+
+  public Results getResults() {
+    QuestionContainerDetail survey = getSessionSurvey();
+    Collection<Question> questions = survey.getQuestions();
+    List<ResourceReference> pks = new ArrayList<>();
+    for(Question question : questions) {
+      pks.add(new ResourceReference(question.getPK()));
+    }
+    return getQuestionResultService().getResultsOfQuestions(pks);
   }
 
   public Collection<String> getUserByAnswer(String answerId) {

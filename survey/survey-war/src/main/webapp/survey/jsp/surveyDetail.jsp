@@ -53,8 +53,11 @@
   String roundId = request.getParameter("RoundId");
   String profile = (String) request.getAttribute("Profile");
   List listDocument = (List) request.getAttribute("ListDocument");
-  String choice = request.getParameter("Choice");
-  if (!StringUtil.isDefined(choice)) {
+  String choice = (String) request.getAttribute("ResultDisplayMode");
+  if (StringUtil.isNotDefined(choice)) {
+    choice = request.getParameter("Choice");
+  }
+  if (StringUtil.isNotDefined(choice)) {
     choice = "D";
   }
 
@@ -542,10 +545,11 @@ function clipboardCopy() {
     }
 
     function changeScope(mode, participated, surveyId) {
-    	if(mode == 'classic') {
+      $.progressMessage();
+      if(mode == 'classic') {
     		location.href="surveyDetail.jsp?Action=ViewResult&Participated="+participated+"&SurveyId="+surveyId+"&Choice=C";
     	} else if (mode == 'detail') {
-    		location.href="surveyDetail.jsp?Action=ViewResult&Participated="+participated+"&SurveyId="+surveyId+"&Choice=D";
+    	  location.href="surveyDetail.jsp?Action=ViewResult&Participated="+participated+"&SurveyId="+surveyId+"&Choice=D";
     	}
     }
 
@@ -688,7 +692,7 @@ out.println(surveyPart);
   </div>
   </form>
 </div>
-
+<view:progressMessage/>
 <%
 
   } else if (action.equals("SubmitAndUpdateSurvey")) {
