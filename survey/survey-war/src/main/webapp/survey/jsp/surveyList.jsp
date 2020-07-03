@@ -106,11 +106,10 @@
                 resources.getString("survey.CopySurveyLink") + "\"></a>";
           }
 
-          //arrayLine.addArrayCellLink(survey.getTitle()+link, "surveyDetail.jsp?Action=ViewCurrentQuestions&SurveyId="+survey.getPK().getId());
           ArrayCellText arrayCellText0 =
               arrayLine
-              .addArrayCellText("<a href=\"surveyDetail.jsp?Action=ViewCurrentQuestions&SurveyId=" +
-              survey.getPK().getId() + "\">" + WebEncodeHelper.javaStringToHtmlString(survey.getTitle()) + "</a>" + link);
+              .addArrayCellText("<a href=\"javascript:viewSurvey(" +
+              survey.getPK().getId() + ")\">" + WebEncodeHelper.javaStringToHtmlString(survey.getTitle()) + "</a>" + link);
           arrayCellText0.setCompareOn(survey.getTitle());
 
           if (survey.getEndDate() == null)
@@ -153,7 +152,6 @@
           iconPane.setSpacing("30px");
           arrayLine.addArrayCellIconPane(iconPane);
         } else {
-          //arrayLine.addArrayCellLink(survey.getTitle(), "surveyDetail.jsp?Action=ViewCurrentQuestions&SurveyId="+survey.getPK().getId());
 
           if (survey.getPermalink() != null) {
             link =
@@ -165,8 +163,8 @@
 
           ArrayCellText arrayCellText =
               arrayLine
-              .addArrayCellText("<a href=\"surveyDetail.jsp?Action=ViewCurrentQuestions&SurveyId=" +
-              survey.getPK().getId() + "\">" + WebEncodeHelper.javaStringToHtmlString(survey.getTitle()) + "</a>" + link);
+              .addArrayCellText("<a href=\"javascript:viewSurvey(" +
+              survey.getPK().getId() + ")\">" + WebEncodeHelper.javaStringToHtmlString(survey.getTitle()) + "</a>" + link);
           arrayCellText.setCompareOn(survey.getTitle());
 
           if (survey.getBeginDate() == null) {
@@ -241,7 +239,6 @@
         String link = "";
         if ((view == SurveySessionController.OPENED_SURVEYS_VIEW) ||
             (view == SurveySessionController.CLOSED_SURVEYS_VIEW)) {
-          //arrayLine.addArrayCellLink(survey.getTitle(), "surveyDetail.jsp?Action=ViewCurrentQuestions&SurveyId="+survey.getPK().getId());
 
           if (survey.getPermalink() != null)
             link =
@@ -252,8 +249,8 @@
 
           ArrayCellText arrayCellText0 =
               arrayLine
-              .addArrayCellText("<a href=\"surveyDetail.jsp?Action=ViewCurrentQuestions&SurveyId=" +
-              survey.getPK().getId() + "\">" + WebEncodeHelper.javaStringToHtmlString(survey.getTitle()) + "</a>" + link);
+              .addArrayCellText("<a href=\"javascript:viewSurvey(" +
+              survey.getPK().getId() + ")\">" + WebEncodeHelper.javaStringToHtmlString(survey.getTitle()) + "</a>" + link);
           arrayCellText0.setCompareOn(survey.getTitle());
 
           if (survey.getEndDate() == null)
@@ -409,6 +406,14 @@ function closeSurvey(surveyId) {
   document.updateForm.submit();
 }
 
+function viewSurvey(surveyId) {
+  $.progressMessage();
+  document.updateForm.action = "surveyDetail.jsp";
+  document.updateForm.Action.value = "ViewCurrentQuestions";
+  document.updateForm.SurveyId.value = surveyId;
+  document.updateForm.submit();
+}
+
 function clipboardPaste() {     
 	  top.IdleFrame.document.location.replace('../..<%=URLUtil.getURL(URLUtil.CMP_CLIPBOARD, null, null)%>paste?compR=RSurvey&SpaceFrom=<%=spaceId%>&ComponentFrom=<%=componentId%>&JSPPage=<%=response.encodeURL(URLEncoder.encode("surveyList", "UTF-8"))%>&TargetFrame=MyMain&message=REFRESH');
 	}
@@ -510,6 +515,8 @@ function openSPWindow(fonction, windowName){
   /* declare the module myapp and its dependencies (here in the silverpeas module) */
   var myapp = angular.module('silverpeas.survey', ['silverpeas.services', 'silverpeas.directives']);
 </script>
+
+<view:progressMessage/>
 
 </body>
 </html>

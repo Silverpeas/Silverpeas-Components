@@ -10,6 +10,7 @@
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory" %>
 <%@ page import="java.text.ParseException" %>
 <%@ page import="java.util.stream.Collectors" %>
+<%@ page import="org.silverpeas.core.questioncontainer.result.model.Results" %>
 
 <%!
 
@@ -806,6 +807,7 @@ String displaySurveyResult(String choice, QuestionContainerDetail survey, Graphi
 	      }
 
 	      if (questions != null && !questions.isEmpty()) {
+          Results results = surveyScc.getResults();
 	        r += board.printBefore();
 	        r += "<table border=\"0\" cellspacing=\"1\" width=\"100%\" class=\"questionResults\">";
 	        int i=1;
@@ -823,7 +825,7 @@ String displaySurveyResult(String choice, QuestionContainerDetail survey, Graphi
 	           	  if (style.equals("open")) {
 	           	   r += displayOpenAnswersToQuestionNotAnonymous(question.getPK().getId(), surveyScc);
 	              } else {
-	                r += displaySurveyResultChartNotAnonymous(question, answers, surveyScc, nbVoters);
+	                r += displaySurveyResultChartNotAnonymous(question, answers, surveyScc, nbVoters, results);
 	              }
 	            } else {
 	              // traitement de l'affichage des questions ouvertes
@@ -886,12 +888,15 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
             while (it.hasNext()) {
                 QuestionResult qR = (QuestionResult) it.next();
                 answer = Encode.javaStringToHtmlParagraphe(qR.getOpenedAnswer());
-                if (!StringUtil.isDefined(answer))
-                    answer = surveyScc.getString("NoResponse");
-                String userId = qR.getUserId();
-                UserDetail userDetail = surveyScc.getUserDetail(userId);
-                String userName = userDetail.getDisplayedName();
-                 r += "<tr><td class=\"displayUserName\" width=\"40%\"><a href=\"javaScript:onClick=viewResultByUser('"+userId+"');\">"+Encode.javaStringToHtmlString(userName)+"</a></td><td class=\"freeAnswer\">"+answer+"</td></tr>";
+                if (StringUtil.isDefined(answer)) {
+                  String userId = qR.getUserId();
+                  UserDetail userDetail = surveyScc.getUserDetail(userId);
+                  String userName = userDetail.getDisplayedName();
+                  r +=
+                      "<tr><td class=\"displayUserName\" width=\"40%\"><a href=\"javaScript:onClick=viewResultByUser('" +
+                          userId + "');\">" + Encode.javaStringToHtmlString(userName) +
+                          "</a></td><td class=\"freeAnswer\">" + answer + "</td></tr>";
+                }
             }
         }
         catch( Exception e){
@@ -984,7 +989,7 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
         return r;
   }
 
-  String displaySurveyResultChartNotAnonymous(Question question, Collection<Answer> answers, SurveySessionController surveyScc, int nbVoters) throws SurveyException
+  String displaySurveyResultChartNotAnonymous(Question question, Collection<Answer> answers, SurveySessionController surveyScc, int nbVoters, Results results) throws SurveyException
   {
         String r = "";
         try
@@ -1023,20 +1028,19 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
                 	int position = 1;
                 	if (!saveUser.equals(userId+"-"+participationId))
                 	{
-	                	r += "<tr><td align=\"left\" width=\"40%\" class=\"displayUserName\"><a href=\"javaScript:onClick=viewResultByUser('"+userId+"');\">"+Encode.javaStringToHtmlString(User.getById(userId).getDisplayedName())+"</a></td>";
+	                	r += "<tr><td align=\"left\" width=\"40%\" class=\"displayUserName\"><a href=\"javaScript:onClick=viewResultByUser('"+userId+"');\">"+Encode.javaStringToHtmlString(results.getUser(userId).getDisplayedName())+"</a></td>";
 	                	// rechercher les réponses pour cet utilisateur
 	                	String value;
-	                	Collection results = surveyScc.getResultByUser(userId, new ResourceReference(question.getPK()));
-	                	Iterator it = results.iterator();
+	                	//Collection results = surveyScc.getResultByUser(userId, new ResourceReference(question.getPK()));
+	                	//Iterator it = results.iterator();
 	                	position = 1;
-	                	while (it.hasNext())
-	                	{
-	                		QuestionResult qr = (QuestionResult) it.next();
-	                		if (qr.getParticipationId() == Integer.parseInt(participationId)) {
+	                	//while (it.hasNext())
+	                	//{
+	                		QuestionResult qr = results.getQuestionResultByQuestion(question.getPK().getId(), userId, Integer.parseInt(participationId));
+	                		//if (qr.getParticipationId() == Integer.parseInt(participationId)) {
                         value = qr.getAnswerPK().getId();
 
-                        Integer n = (Integer) answerValues.get(value);
-                        int valueColonne = n.intValue();
+                        int valueColonne = (Integer) answerValues.get(value);
                         // décaller pour se trouver dans la bonne colonne
                         while (position <= valueColonne) {
                           if (valueColonne == position) {
@@ -1049,8 +1053,8 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
                           position = position + 1;
                         }
                         saveUser = userId+"-"+participationId;
-                      }
-	                	}
+                      //}
+	                	//}
 	                	// completer la ligne avec des cases à "vide"
 		              	while (position <= rang)
 		              	{

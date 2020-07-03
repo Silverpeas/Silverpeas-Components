@@ -52,14 +52,12 @@ import org.silverpeas.components.survey.SurveyException;
 import org.silverpeas.components.survey.control.SurveySessionController;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerDetail;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerHeader;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.file.FileUploadUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.export.ExportCSVBuilder;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
@@ -68,8 +66,6 @@ import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionController> {
@@ -86,7 +82,7 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
    * @param profiles
    * @return string representation of current user flag
    */
-  public String getFlag(String[] profiles) {
+  private String getFlag(String[] profiles) {
     String flag = SilverpeasRole.user.toString();
     for (String profile : profiles) {
       if (SilverpeasRole.publisher.isInRole(profile) || ("userMultiple".equals(profile) &&
@@ -125,220 +121,171 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
   @Override
   public String getDestination(String function, SurveySessionController surveySC,
       HttpRequest request) {
-    String flag = getFlag(surveySC.getUserRoles());
-    String rootDest = "/survey/jsp/";
-    if ("userMultiple".equals(flag)) {
-      surveySC.setParticipationMultipleAllowedForUser(true);
-    }
-
-    if ("pollingStation".equals(surveySC.getComponentRootName())) {
-      surveySC.setPollingStationMode(true);
-    }
-    request.setAttribute("PollingStationMode", Boolean.valueOf(surveySC.isPollingStationMode()));
-
-    // Set status for this vote or survey
-    setAnonymousParticipationStatus(request, surveySC);
-
     String destination = "";
-    boolean profileError = false;
-    if (function.startsWith("portlet")) {
-      destination = rootDest + "portlet.jsp?Profile=" + flag;
-    } else if (function.startsWith("Main") || function.startsWith("surveyList")) {
-      // the flag is the best user's profile
-      destination = rootDest + "surveyList.jsp?Profile=" + flag;
-    } else if (function.startsWith("SurveyCreation") || function.startsWith("surveyCreator")) {
-      if (flag.equals(SilverpeasRole.admin.toString()) ||
-          flag.equals(SilverpeasRole.publisher.toString())) {
-        surveySC.sendNewSurveyAction(request);
-        destination = rootDest + "surveyCreator.jsp";
-      } else {
-        profileError = true;
+    try {
+      String flag = getFlag(surveySC.getUserRoles());
+      String rootDest = "/survey/jsp/";
+      if ("userMultiple".equals(flag)) {
+        surveySC.setParticipationMultipleAllowedForUser(true);
       }
-    } else if ("UpdateSurvey".equals(function)) {
-      String surveyId = request.getParameter(SURVEY_ID);
-      destination = rootDest + "surveyUpdate.jsp?Action=UpdateSurveyHeader&SurveyId=" + surveyId;
-    } else if ("ViewListResult".equals(function)) {
-      String answerId = request.getParameter("AnswerId");
-      Collection<String> users = new ArrayList<>();
-      try {
-        users = surveySC.getUsersByAnswer(answerId);
-      } catch (Exception e) {
-        SilverLogger.getLogger(this).warn(e);
-      }
-      request.setAttribute("Users", users);
-      request.setAttribute(SURVEY, surveySC.getSessionSurvey());
-      destination = rootDest + "answerResult.jsp";
-    } else if ("ViewAllUsers".equals(function)) {
-      QuestionContainerDetail survey = surveySC.getSessionSurvey();
-      Collection<String> users = new ArrayList<>();
-      try {
-        users = surveySC.getUsersBySurvey(survey.getId());
-      } catch (Exception e) {
-        SilverLogger.getLogger(this).warn(e);
-      }
-      request.setAttribute("Users", users);
-      request.setAttribute(SURVEY, survey);
-      destination = rootDest + "answerResult.jsp";
-    } else if ("UserResult".equals(function)) {
-      String userId = request.getParameter("UserId");
-      Collection<String> result = new ArrayList<>();
-      try {
-        result = surveySC.getResultByUser(userId);
-      } catch (Exception e) {
-        SilverLogger.getLogger(this).warn(e);
-      }
-      request.setAttribute("ResultUser", result);
-      request.setAttribute("UserId", userId);
-      request.setAttribute(SURVEY, surveySC.getSessionSurvey());
-      request.setAttribute(PROFILE, flag);
 
-      destination = rootDest + "resultByUser.jsp";
-    } else if (function.startsWith("searchResult")) {
-      String id = request.getParameter("Id");
-      request.setAttribute(PROFILE, flag);
-      List<SimpleDocument> listDocument = surveySC.getAllSynthesisFile(id);
-      request.setAttribute(LIST_DOCUMENT, listDocument);
-      destination = rootDest + "surveyDetail.jsp?Action=ViewCurrentQuestions&SurveyId=" + id;
-    } else if ("ExportCSV".equals(function)) {
-      String surveyId = request.getParameter(SURVEY_ID);
-      ExportCSVBuilder csvBuilder = surveySC.exportSurveyCSV(surveyId);
+      if ("pollingStation".equals(surveySC.getComponentRootName())) {
+        surveySC.setPollingStationMode(true);
+      }
+      request.setAttribute("PollingStationMode", surveySC.isPollingStationMode());
 
-      destination = csvBuilder.setupRequest(request);
-    } else if ("copy".equals(function)) {
-      String surveyId = request.getParameter("Id");
-      try {
+      // Set status for this vote or survey
+      setAnonymousParticipationStatus(request, surveySC);
+
+      boolean profileError = false;
+      if (function.startsWith("portlet")) {
+        destination = rootDest + "portlet.jsp?Profile=" + flag;
+      } else if (function.startsWith("Main") || function.startsWith("surveyList")) {
+        // the flag is the best user's profile
+        destination = rootDest + "surveyList.jsp?Profile=" + flag;
+      } else if (function.startsWith("SurveyCreation") || function.startsWith("surveyCreator")) {
+        if (flag.equals(SilverpeasRole.admin.toString()) ||
+            flag.equals(SilverpeasRole.publisher.toString())) {
+          surveySC.sendNewSurveyAction(request);
+          destination = rootDest + "surveyCreator.jsp";
+        } else {
+          profileError = true;
+        }
+      } else if ("UpdateSurvey".equals(function)) {
+        String surveyId = request.getParameter(SURVEY_ID);
+        destination = rootDest + "surveyUpdate.jsp?Action=UpdateSurveyHeader&SurveyId=" + surveyId;
+      } else if ("ViewListResult".equals(function)) {
+        String answerId = request.getParameter("AnswerId");
+        request.setAttribute("Users", surveySC.getUsersByAnswer(answerId));
+        request.setAttribute(SURVEY, surveySC.getSessionSurvey());
+        destination = rootDest + "answerResult.jsp";
+      } else if ("ViewAllUsers".equals(function)) {
+        QuestionContainerDetail survey = surveySC.getSessionSurvey();
+        request.setAttribute("Users", surveySC.getUsersBySurvey(survey.getId()));
+        request.setAttribute(SURVEY, survey);
+        destination = rootDest + "answerResult.jsp";
+      } else if ("UserResult".equals(function)) {
+        String userId = request.getParameter("UserId");
+        request.setAttribute("ResultUser", surveySC.getResultByUser(userId));
+        request.setAttribute("UserId", userId);
+        request.setAttribute(SURVEY, surveySC.getSessionSurvey());
+        request.setAttribute(PROFILE, flag);
+
+        destination = rootDest + "resultByUser.jsp";
+      } else if (function.startsWith("searchResult")) {
+        String id = request.getParameter("Id");
+        request.setAttribute(PROFILE, flag);
+        setCommonDataToDisplayResult(id, request, surveySC);
+        destination = rootDest + "surveyDetail.jsp?Action=ViewCurrentQuestions&SurveyId=" + id;
+      } else if ("ExportCSV".equals(function)) {
+        String surveyId = request.getParameter(SURVEY_ID);
+        ExportCSVBuilder csvBuilder = surveySC.exportSurveyCSV(surveyId);
+
+        destination = csvBuilder.setupRequest(request);
+      } else if ("copy".equals(function)) {
+        String surveyId = request.getParameter("Id");
         surveySC.copySurvey(surveyId);
-      } catch (Exception e) {
-        SilverLogger.getLogger(this).warn(e);
-      }
-      destination = URLUtil.getURL(URLUtil.CMP_CLIPBOARD, null, null) +
-          "Idle.jsp?message=REFRESHCLIPBOARD";
-    } else if (function.startsWith("paste")) {
-      try {
+        destination = URLUtil.getURL(URLUtil.CMP_CLIPBOARD, null, null) +
+            "Idle.jsp?message=REFRESHCLIPBOARD";
+      } else if (function.startsWith("paste")) {
         surveySC.paste();
-      } catch (Exception e) {
-        SilverLogger.getLogger(this).warn(e);
-      }
-      destination = URLUtil.getURL(URLUtil.CMP_CLIPBOARD, null, null) + "Idle.jsp";
-    } else if ("QuestionsUpdate".equals(function) || "questionsUpdate.jsp".equals(function)) {
-      String surveyId = request.getParameter(SURVEY_ID);
+        destination = URLUtil.getURL(URLUtil.CMP_CLIPBOARD, null, null) + "Idle.jsp";
+      } else if ("QuestionsUpdate".equals(function) || "questionsUpdate.jsp".equals(function)) {
+        String surveyId = request.getParameter(SURVEY_ID);
 
-      if ("QuestionsUpdate".equals(function)) {
-        try {
+        if ("QuestionsUpdate".equals(function)) {
           // vérouiller l'enquête
           surveySC.closeSurvey(surveyId);
           // supprimer les participations
           surveySC.deleteVotes(surveyId);
-        } catch (Exception e) {
-          SilverLogger.getLogger(this).warn(e);
         }
-      }
 
-      // Retrieve current action
-      surveySC.questionsUpdateBusinessModel(request);
+        // Retrieve current action
+        surveySC.questionsUpdateBusinessModel(request);
 
-      request.setAttribute("SurveyName", surveySC.getSessionSurveyName());
-      request.setAttribute("Questions", surveySC.getSessionQuestions());
-      request.setAttribute(PROFILE, flag);
-      destination = rootDest + "questionsUpdate.jsp?Action=UpdateQuestions&SurveyId=" + surveyId;
-    } else if ("questionCreatorBis.jsp".equals(function) ||
-        "manageQuestions.jsp".equals(function)) {
-      request.setAttribute("Gallery", surveySC.getGalleries());
-      request.setAttribute("QuestionStyles", surveySC.getListQuestionStyle());
-      request.setAttribute(PROFILE, flag);
-      String view = surveySC.manageQuestionBusiness(function, request);
-      request.setAttribute("Questions", surveySC.getSessionQuestions());
-      request.setAttribute("SurveyName", surveySC.getSessionSurveyName());
-      destination = rootDest + view;
-    } else if ("PublishResult".equals(function)) {
-      // récupération des paramètres
-      List<FileItem> items = request.getFileItems();
+        request.setAttribute("SurveyName", surveySC.getSessionSurveyName());
+        request.setAttribute("Questions", surveySC.getSessionQuestions());
+        request.setAttribute(PROFILE, flag);
+        destination = rootDest + "questionsUpdate.jsp?Action=UpdateQuestions&SurveyId=" + surveyId;
+      } else if ("questionCreatorBis.jsp".equals(function) ||
+          "manageQuestions.jsp".equals(function)) {
+        request.setAttribute("Gallery", surveySC.getGalleries());
+        request.setAttribute("QuestionStyles", surveySC.getListQuestionStyle());
+        request.setAttribute(PROFILE, flag);
+        String view = surveySC.manageQuestionBusiness(function, request);
+        request.setAttribute("Questions", surveySC.getSessionQuestions());
+        request.setAttribute("SurveyName", surveySC.getSessionSurveyName());
+        destination = rootDest + view;
+      } else if ("PublishResult".equals(function)) {
+        // récupération des paramètres
+        List<FileItem> items = request.getFileItems();
 
-      String checkedViewC = FileUploadUtil.getParameter(items, "checkedViewC");
-      String checkedViewD = FileUploadUtil.getParameter(items, "checkedViewD");
-      String notification = FileUploadUtil.getParameter(items, "notification");
-      String destinationUser = FileUploadUtil.getParameter(items, "destination");
-      String idSynthesisFile = FileUploadUtil.getParameter(items, "idSynthesisFile");
-      String removeSynthesisFile =
-          FileUploadUtil.getParameter(items, "removeSynthesisFile");  //yes | no
-      FileItem fileSynthesis = FileUploadUtil.getFile(items, "synthesisNewFile");
-      if (idSynthesisFile == null && fileSynthesis != null &&
-          StringUtil.isDefined(fileSynthesis.getName())) {//Create Document
-        try {
+        String checkedViewC = FileUploadUtil.getParameter(items, "checkedViewC");
+        String checkedViewD = FileUploadUtil.getParameter(items, "checkedViewD");
+        String notification = FileUploadUtil.getParameter(items, "notification");
+        String destinationUser = FileUploadUtil.getParameter(items, "destination");
+        String idSynthesisFile = FileUploadUtil.getParameter(items, "idSynthesisFile");
+        String removeSynthesisFile =
+            FileUploadUtil.getParameter(items, "removeSynthesisFile");  //yes | no
+        FileItem fileSynthesis = FileUploadUtil.getFile(items, "synthesisNewFile");
+        if (idSynthesisFile == null && fileSynthesis != null &&
+            StringUtil.isDefined(fileSynthesis.getName())) {//Create Document
           surveySC.saveSynthesisFile(fileSynthesis);
-        } catch (SurveyException e) {
-          SilverLogger.getLogger(this).warn(e);
-        }
-      } else if (idSynthesisFile != null && fileSynthesis != null &&
-          StringUtil.isDefined(fileSynthesis.getName())) {//Update Document
-        try {
+        } else if (idSynthesisFile != null && fileSynthesis != null &&
+            StringUtil.isDefined(fileSynthesis.getName())) {//Update Document
           surveySC.updateSynthesisFile(fileSynthesis, idSynthesisFile);
-        } catch (SurveyException e) {
-          SilverLogger.getLogger(this).warn(e);
+        } else if (idSynthesisFile != null && fileSynthesis != null &&
+            !StringUtil.isDefined(fileSynthesis.getName()) &&
+            "yes".equals(removeSynthesisFile)) {//Delete Document
+          surveySC.removeSynthesisFile(idSynthesisFile);
         }
-      } else if (idSynthesisFile != null && fileSynthesis != null &&
-          !StringUtil.isDefined(fileSynthesis.getName()) &&
-          "yes".equals(removeSynthesisFile)) {//Delete Document
-        surveySC.removeSynthesisFile(idSynthesisFile);
-      }
 
-      QuestionContainerDetail survey = surveySC.getSessionSurvey();
-      String surveyId = survey.getId();
-      QuestionContainerHeader surveyHeader = survey.getHeader();
+        QuestionContainerDetail survey = surveySC.getSessionSurvey();
+        String surveyId = survey.getId();
+        QuestionContainerHeader surveyHeader = survey.getHeader();
 
-      if (checkedViewC == null && checkedViewD == null) {
-        surveyHeader.setResultView(QuestionContainerHeader.NOTHING_DISPLAY_RESULTS);
-      } else if (checkedViewC != null && checkedViewD != null && "on".equals(checkedViewC) &&
-          "on".equals(checkedViewD)) {//C && D
-        surveyHeader.setResultView(QuestionContainerHeader.TWICE_DISPLAY_RESULTS);
-      } else {//C || D
-        if (checkedViewC != null && "on".equals(checkedViewC)) {
-          surveyHeader.setResultView(QuestionContainerHeader.CLASSIC_DISPLAY_RESULTS);
-        } else if (checkedViewD != null && "on".equals(checkedViewD)) {
-          surveyHeader.setResultView(QuestionContainerHeader.DETAILED_DISPLAY_RESULTS);
+        if (checkedViewC == null && checkedViewD == null) {
+          surveyHeader.setResultView(QuestionContainerHeader.NOTHING_DISPLAY_RESULTS);
+        } else if ("on".equals(checkedViewC) && "on".equals(checkedViewD)) {
+          //C && D
+          surveyHeader.setResultView(QuestionContainerHeader.TWICE_DISPLAY_RESULTS);
+        } else {
+          //C || D
+          if ("on".equals(checkedViewC)) {
+            surveyHeader.setResultView(QuestionContainerHeader.CLASSIC_DISPLAY_RESULTS);
+          } else if ("on".equals(checkedViewD)) {
+            surveyHeader.setResultView(QuestionContainerHeader.DETAILED_DISPLAY_RESULTS);
+          }
         }
-      }
-      try {
         surveySC.updateSurveyHeader(surveyHeader, surveyId);
-      } catch (Exception e) {
-        SilverLogger.getLogger(this).warn(e);
-      }
 
-      if ("1".equals(notification)) {
-        //notifier uniquement les utilisateurs ayant participé
-        try {
+        if ("1".equals(notification)) {
+          //notifier uniquement les utilisateurs ayant participé
           surveySC.initAlertResultParticipants(survey);
-        } catch (Exception e) {
-          SilverLogger.getLogger(this).warn(e);
-        }
-      } else if ("2".equals(notification)) {
-        //notifier tous les utilisateurs qui pouvaient participer
-        try {
+        } else if ("2".equals(notification)) {
+          //notifier tous les utilisateurs qui pouvaient participer
           surveySC.initAlertResultUsers(survey);
-        } catch (Exception e) {
-          SilverLogger.getLogger(this).warn(e);
         }
+        request.setAttribute(PROFILE, flag);
+        setCommonDataToDisplayResult(surveyId, request, surveySC);
+        destination = rootDest + destinationUser;
+      } else if (function.startsWith("surveyDetail")) {
+        String surveyId = request.getParameter(SURVEY_ID);
+        request.setAttribute(PROFILE, flag);
+        setCommonDataToDisplayResult(surveyId, request, surveySC);
+        destination = rootDest + function;
+      } else {
+        request.setAttribute(PROFILE, flag);
+        destination = rootDest + function;
       }
-      request.setAttribute(PROFILE, flag);
-      List<SimpleDocument> listDocument = surveySC.getAllSynthesisFile(surveyId);
-      request.setAttribute(LIST_DOCUMENT, listDocument);
-      destination = rootDest + destinationUser;
-    } else if (function.startsWith("surveyDetail")) {
-      String surveyId = request.getParameter(SURVEY_ID);
-      request.setAttribute(PROFILE, flag);
-      List<SimpleDocument> listDocument = null;
-      if (surveyId != null) {
-        listDocument = surveySC.getAllSynthesisFile(surveyId);
-      }
-      request.setAttribute(LIST_DOCUMENT, listDocument);
-      destination = rootDest + function;
-    } else {
-      request.setAttribute(PROFILE, flag);
-      destination = rootDest + function;
-    }
 
-    if (profileError) {
-      destination = ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout");
+      if (profileError) {
+        destination = ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout");
+      }
+
+    } catch (Exception e) {
+      request.setAttribute("javax.servlet.jsp.jspException", e);
+      destination = "/admin/jsp/errorpageMain.jsp";
     }
     return destination;
   }
@@ -359,6 +306,23 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
         if (currentCookie.getName().equals(cookieName)) {
           surveySC.hasAlreadyParticipated(true);
           break;
+        }
+      }
+    }
+  }
+
+  private void setCommonDataToDisplayResult(String surveyId, HttpServletRequest request,
+      SurveySessionController surveySC) throws SurveyException{
+    if (StringUtil.isDefined(surveyId)) {
+      request.setAttribute(LIST_DOCUMENT, surveySC.getAllSynthesisFile(surveyId));
+
+      String resultDisplayMode = request.getParameter("Choice");
+      if (StringUtil.isDefined(resultDisplayMode)) {
+        request.setAttribute("ResultDisplayMode", resultDisplayMode);
+      } else {
+        request.setAttribute("ResultDisplayMode", "D");
+        if (surveySC.getSurvey(surveyId).getHeader().getNbVoters() > 50) {
+          request.setAttribute("ResultDisplayMode", "C");
         }
       }
     }
