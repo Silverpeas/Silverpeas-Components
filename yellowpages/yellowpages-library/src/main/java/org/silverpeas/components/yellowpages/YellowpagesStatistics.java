@@ -28,6 +28,7 @@ import org.silverpeas.components.yellowpages.model.UserContact;
 import org.silverpeas.components.yellowpages.service.YellowpagesService;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.contact.model.ContactDetail;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
@@ -36,13 +37,12 @@ import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple
 import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
 
 import javax.inject.Named;
-import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-@Singleton
+@Provider
 @Named("yellowpages" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
 public class YellowpagesStatistics implements ComponentStatisticsProvider {
 

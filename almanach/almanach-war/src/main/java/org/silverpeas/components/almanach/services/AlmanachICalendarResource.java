@@ -24,21 +24,18 @@
 
 package org.silverpeas.components.almanach.services;
 
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.webapi.calendar.ICalendarResource;
 
 import javax.ws.rs.Path;
 
-import static org.silverpeas.components.almanach.services.AlmanachCalendarResource
-    .ALMANACH_CALENDAR_BASE_URI;
+import static org.silverpeas.components.almanach.services.AlmanachCalendarResource.ALMANACH_CALENDAR_BASE_URI;
 
 /**
  * A REST Web resource giving calendar data.
  * @author Yohann Chastagnier
  */
-@Service
-@RequestScoped
+@WebService
 @Path(ALMANACH_CALENDAR_BASE_URI + "/ical")
 public class AlmanachICalendarResource extends ICalendarResource {
 }

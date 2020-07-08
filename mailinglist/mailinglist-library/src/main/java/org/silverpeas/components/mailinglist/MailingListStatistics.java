@@ -25,17 +25,17 @@ package org.silverpeas.components.mailinglist;
 
 import org.silverpeas.components.mailinglist.service.MailingListServicesProvider;
 import org.silverpeas.components.mailinglist.service.model.beans.MailingList;
+import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
 import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Named;
-import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-@Singleton
+@Provider
 @Named("mailinglist" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
 public class MailingListStatistics implements ComponentStatisticsProvider {
 

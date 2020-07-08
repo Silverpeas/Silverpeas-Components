@@ -21,6 +21,7 @@
 
 package org.silverpeas.components.jdbcconnector.model;
 
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
 
@@ -29,6 +30,7 @@ import java.util.List;
 /**
  * @author mmoquillon
  */
+@Repository
 public class DataSourceConnectionInfoRepository
     extends BasicJpaEntityRepository<DataSourceConnectionInfo> {
 

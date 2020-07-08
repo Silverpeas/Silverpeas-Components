@@ -38,9 +38,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.Set;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isIn;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
 
 /**
  * Tests on the services provided by the WhitePagesService objects.
@@ -75,7 +74,7 @@ public class WhitePagesServiceIT {
   @Before
   public void loadTestContext() throws Exception {
     whitePagesService = WhitePagesService.get();
-    assertNotNull(whitePagesService);
+    assertThat(whitePagesService, notNullValue());
   }
 
   /**
@@ -114,6 +113,6 @@ public class WhitePagesServiceIT {
   public void testDeleteFields() throws Exception {
     whitePagesService.deleteFields("whitePages1");
     SearchField actual = entityManager.find(SearchField.class, "0");
-    assertNull(actual);
+    assertThat(actual, nullValue());
   }
 }

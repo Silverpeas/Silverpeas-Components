@@ -31,6 +31,7 @@ import org.silverpeas.components.resourcesmanager.repository.ResourceRepository;
 import org.silverpeas.components.resourcesmanager.repository.ResourceValidatorRepository;
 import org.silverpeas.components.resourcesmanager.model.ReservedResource;
 import org.silverpeas.components.resourcesmanager.repository.ReservationRepository;
+import org.silverpeas.core.annotation.Service;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -40,6 +41,7 @@ import java.util.List;
 /**
  * @author ehugonnet
  */
+@Service
 @Singleton
 @Transactional
 public class ReservationService {

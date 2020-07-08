@@ -26,15 +26,15 @@ package org.silverpeas.components.blog;
 import org.silverpeas.components.blog.model.PostDetail;
 import org.silverpeas.components.blog.service.BlogService;
 import org.silverpeas.components.blog.service.BlogServiceFactory;
+import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
 import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
 
 import javax.inject.Named;
-import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 
-@Singleton
+@Provider
 @Named("blog" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
 public class BlogStatistics implements ComponentStatisticsProvider {
 

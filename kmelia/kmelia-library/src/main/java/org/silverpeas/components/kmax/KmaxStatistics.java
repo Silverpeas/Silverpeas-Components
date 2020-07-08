@@ -20,6 +20,7 @@
  */
 package org.silverpeas.components.kmax;
 
+import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
@@ -27,12 +28,11 @@ import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsPr
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-@Singleton
+@Provider
 @Named("kmax" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
 public class KmaxStatistics implements ComponentStatisticsProvider {
 

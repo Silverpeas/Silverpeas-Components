@@ -21,6 +21,7 @@
 
 package org.silverpeas.components.mydb.model;
 
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
 
@@ -31,6 +32,7 @@ import java.util.List;
  * the {@link MyDBConnectionInfo} instances are persisted.
  * @author mmoquillon
  */
+@Repository
 public class MyDBConnectionInfoRepository extends BasicJpaEntityRepository<MyDBConnectionInfo> {
 
   /**

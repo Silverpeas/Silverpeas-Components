@@ -24,11 +24,13 @@
 
 package org.silverpeas.components.silvercrawler;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
 
 /**
  * Initializes the SilverCrawler application.
  */
+@Service
 public class SilverCrawlerInitialize implements Initialization {
   public SilverCrawlerInitialize() {
   }

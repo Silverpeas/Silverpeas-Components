@@ -25,6 +25,7 @@
 package org.silverpeas.components.quickinfo.repository;
 
 import org.silverpeas.components.quickinfo.model.News;
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
 import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEntityRepository;
 
@@ -32,6 +33,7 @@ import java.util.List;
 
 import static java.util.Collections.singletonList;
 
+@Repository
 public class NewsRepository extends SilverpeasJpaEntityRepository<News> {
 
   public List<News> getByComponentId(String componentId) {

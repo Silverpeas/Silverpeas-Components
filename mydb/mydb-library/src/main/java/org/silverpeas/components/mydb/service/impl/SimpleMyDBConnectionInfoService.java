@@ -27,6 +27,7 @@ import org.silverpeas.components.mydb.model.MyDBConnectionInfo;
 import org.silverpeas.components.mydb.model.MyDBConnectionInfoRepository;
 import org.silverpeas.components.mydb.model.DataSourceDefinition;
 import org.silverpeas.components.mydb.service.MyDBConnectionInfoService;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
@@ -37,6 +38,7 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
+@Service
 @Singleton
 @Transactional
 public class SimpleMyDBConnectionInfoService implements MyDBConnectionInfoService {

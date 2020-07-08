@@ -23,15 +23,15 @@
  */
 package org.silverpeas.components.hyperlink;
 
+import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
 import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
 
 import javax.inject.Named;
-import javax.inject.Singleton;
 import java.util.Collection;
 import java.util.Collections;
 
-@Singleton
+@Provider
 @Named("hyperlink" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
 public class HyperlinkStatistics implements ComponentStatisticsProvider {
 

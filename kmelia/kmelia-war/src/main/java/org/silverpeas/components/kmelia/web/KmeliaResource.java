@@ -22,8 +22,7 @@ package org.silverpeas.components.kmelia.web;
 
 import org.silverpeas.components.kmelia.service.KmeliaService;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationRuntimeException;
 import org.silverpeas.core.node.model.NodePK;
@@ -45,8 +44,7 @@ import java.net.URI;
 /**
  * A REST Web resource allowing to update data related to a publication.
  */
-@Service
-@RequestScoped
+@WebService
 @Path(KmeliaResource.PATH + "/{componentId}")
 @Authorized
 public class KmeliaResource extends RESTWebService {

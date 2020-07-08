@@ -25,6 +25,7 @@
 package org.silverpeas.components.resourcesmanager.repository;
 
 import org.silverpeas.components.resourcesmanager.model.Category;
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
 
 import java.util.List;
@@ -32,6 +33,7 @@ import java.util.List;
 /**
  * @author ebonnet
  */
+@Repository
 public class CategoryJpaRepository extends BasicJpaEntityRepository<Category>
     implements CategoryRepository {
 

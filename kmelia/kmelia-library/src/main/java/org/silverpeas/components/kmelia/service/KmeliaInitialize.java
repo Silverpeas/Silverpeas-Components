@@ -20,11 +20,13 @@
  */
 package org.silverpeas.components.kmelia.service;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
 
 /**
  * Initializes the resources required by the Kmelia application instances.
  */
+@Service
 public class KmeliaInitialize implements Initialization {
 
   public KmeliaInitialize() {

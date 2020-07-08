@@ -36,6 +36,7 @@ import org.silverpeas.components.forums.subscription.ForumMessageSubscriptionRes
 import org.silverpeas.components.forums.subscription.ForumSubscription;
 import org.silverpeas.components.forums.subscription.ForumSubscriptionResource;
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
@@ -76,6 +77,7 @@ import static org.silverpeas.core.i18n.I18NHelper.defaultLanguage;
 /**
  * Forums service layer which manage forums application
  */
+@Service
 @Singleton
 @Transactional(Transactional.TxType.SUPPORTS)
 public class DefaultForumService implements ForumService {

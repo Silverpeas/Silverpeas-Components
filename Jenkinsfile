@@ -80,9 +80,8 @@ mvn ${SONAR_MAVEN_GOAL} -Dsonar.projectKey=Silverpeas_Silverpeas-Components \\
 def computeSnapshotVersion() {
   def pom = readMavenPom()
   final String version = pom.version
-  final String release = pom.properties['next.release']
-  final String defaultVersion = env.BRANCH_NAME == 'master' || env.BRANCH_NAME.endsWith('.x') ?
-      version : release + '-' + env.BRANCH_NAME.toLowerCase().replaceAll('[# -]', '')
+  final String defaultVersion = env.BRANCH_NAME == 'master' ? version :
+      env.BRANCH_NAME.toLowerCase().replaceAll('[# -]', '')
   Matcher m = env.CHANGE_TITLE =~ /^(Bug #?\d+|Feature #?\d+).*$/
   String snapshot = m.matches()
       ? m.group(1).toLowerCase().replaceAll(' #?', '')
@@ -93,12 +92,13 @@ def computeSnapshotVersion() {
         ? m.group(1).toLowerCase().replaceAll('[/><|:&?!;,*%$=}{#~\'"\\\\°)(\\[\\]]', '').trim().replaceAll('[ @]', '-')
         : ''
   }
-  return snapshot.isEmpty() ? defaultVersion : "${release}-${snapshot}"
+  return snapshot.isEmpty() ? defaultVersion : "${pom.properties['next.release']}-${snapshot}"
 }
 
 def getCoreDependencyVersion() {
   copyArtifacts projectName: 'Silverpeas_Master_AutoDeploy', flatten: true
   def lastBuild = readYaml file: 'build.yaml'
+  sh "rm build.yaml"
   return lastBuild.version
 }
 

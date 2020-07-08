@@ -24,6 +24,7 @@
 package org.silverpeas.components.suggestionbox.repository;
 
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
 import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEntityRepository;
 import org.silverpeas.core.util.ServiceProvider;
@@ -37,6 +38,7 @@ import javax.inject.Singleton;
  * @author Yohann Chastagnier
  */
 @Singleton
+@Repository
 public class SuggestionBoxRepository extends SilverpeasJpaEntityRepository<SuggestionBox> {
 
   public static SuggestionBoxRepository get() {

@@ -34,6 +34,7 @@ import org.silverpeas.components.classifieds.notification.ClassifiedValidationUs
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
@@ -71,6 +72,7 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 /**
  * Services provided by the Classified Silverpeas component.
  */
+@Service
 public class DefaultClassifiedService implements ClassifiedService {
 
   private static final String MESSAGES_PATH =

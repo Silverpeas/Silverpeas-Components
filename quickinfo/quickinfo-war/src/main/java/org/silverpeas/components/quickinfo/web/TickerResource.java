@@ -1,8 +1,7 @@
 package org.silverpeas.components.quickinfo.web;
 
 import org.silverpeas.components.quickinfo.model.News;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
 import org.silverpeas.core.webapi.base.annotation.Authenticated;
 
@@ -13,8 +12,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
 
-@Service
-@RequestScoped
+@WebService
 @Path(AbstractNewsResource.PATH + "/ticker")
 @Authenticated
 public class TickerResource extends AbstractNewsResource {

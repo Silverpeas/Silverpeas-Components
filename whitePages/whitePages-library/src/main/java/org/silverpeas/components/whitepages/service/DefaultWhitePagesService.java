@@ -25,6 +25,7 @@ package org.silverpeas.components.whitepages.service;
 
 import org.silverpeas.components.whitepages.dao.SearchFieldDao;
 import org.silverpeas.components.whitepages.model.SearchField;
+import org.silverpeas.core.annotation.Service;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -33,6 +34,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+@Service
 @Singleton
 @Transactional
 public class DefaultWhitePagesService implements WhitePagesService {

@@ -24,15 +24,15 @@
 package org.silverpeas.components.spacemembers;
 
 
+import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
 import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
 
 import javax.inject.Named;
-import javax.inject.Singleton;
 import java.util.Collection;
 import java.util.Collections;
 
-@Singleton
+@Provider
 @Named("spaceMembers" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
 public class SpaceMembersStatistics implements ComponentStatisticsProvider {
 

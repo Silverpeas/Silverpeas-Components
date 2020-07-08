@@ -24,6 +24,7 @@
 package org.silverpeas.components.resourcesmanager.repository;
 
 import org.silverpeas.components.resourcesmanager.model.ReservedResource;
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
 import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
 
@@ -32,6 +33,7 @@ import java.util.List;
 /**
  * @author ebonnet
  */
+@Repository
 public class ReservedResourceJpaRepository extends BasicJpaEntityRepository<ReservedResource>
     implements ReservedResourceRepository {
   @Override

@@ -1,3 +1,4 @@
+
 /*
  * Copyright (C) 2000 - 2020 Silverpeas
  *
@@ -48,7 +49,9 @@ import java.util.Date;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @author ehugonnet

@@ -30,6 +30,7 @@ import org.silverpeas.components.resourcesmanager.repository.ReservationReposito
 import org.silverpeas.components.resourcesmanager.repository.ReservedResourceRepository;
 import org.silverpeas.components.resourcesmanager.repository.ResourceRepository;
 import org.silverpeas.components.resourcesmanager.repository.ResourceValidatorRepository;
+import org.silverpeas.core.annotation.Service;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -37,6 +38,7 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
+@Service
 @Singleton
 @Transactional
 public class ResourceService {

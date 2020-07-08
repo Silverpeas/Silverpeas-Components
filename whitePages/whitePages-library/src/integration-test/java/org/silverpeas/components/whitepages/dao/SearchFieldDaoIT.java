@@ -40,8 +40,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.Set;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
 
 @RunWith(Arquillian.class)
 public class SearchFieldDaoIT {
@@ -72,7 +72,7 @@ public class SearchFieldDaoIT {
   @Before
   public void generalSetup() {
     searchFieldDao = ServiceProvider.getService(SearchFieldDao.class);
-    assertNotNull(searchFieldDao);
+    assertThat(searchFieldDao, notNullValue());
   }
 
   /**
@@ -85,11 +85,11 @@ public class SearchFieldDaoIT {
       searchField.setFieldId("field23");
       searchField.setInstanceId("whitePages32");
       searchFieldDao.createSearchField(searchField);
-      assertNotNull(searchField.getId());
+      assertThat(searchField.getId(), notNullValue());
       return searchField.getId();
     });
     SearchField actual = entityManager.find(SearchField.class, searchFieldId);
-    assertNotNull(actual);
+    assertThat(actual, notNullValue());
   }
 
   /**
@@ -102,7 +102,7 @@ public class SearchFieldDaoIT {
       return null;
     });
     SearchField actual = entityManager.find(SearchField.class, "0");
-    assertNull(actual);
+    assertThat(actual, nullValue());
   }
 
   /**

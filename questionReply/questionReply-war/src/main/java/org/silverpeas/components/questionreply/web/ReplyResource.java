@@ -23,22 +23,26 @@
  */
 package org.silverpeas.components.questionreply.web;
 
-import org.silverpeas.core.webapi.base.annotation.Authorized;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
 import org.silverpeas.components.questionreply.QuestionReplyException;
-import org.silverpeas.components.questionreply.service.QuestionManagerProvider;
 import org.silverpeas.components.questionreply.model.Reply;
+import org.silverpeas.components.questionreply.service.QuestionManagerProvider;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.annotation.WebService;
+import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.webapi.base.annotation.Authorized;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response.Status;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.Status;
-import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 
 /**
  *
@@ -48,8 +52,7 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
  * A REST Web resource representing a given reply to a question. It is a web service that provides
  * an access to a reply referenced by its URL.
  */
-@Service
-@RequestScoped
+@WebService
 @Path(QuestionReplyBaseWebService.PATH + "/{componentId}/replies")
 @Authorized
 public class ReplyResource extends QuestionReplyBaseWebService {

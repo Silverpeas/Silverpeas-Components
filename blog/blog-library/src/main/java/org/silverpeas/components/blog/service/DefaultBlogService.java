@@ -32,6 +32,7 @@ import org.silverpeas.components.blog.model.PostDetail;
 import org.silverpeas.components.blog.notification.BlogUserSubscriptionNotification;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.model.CommentPK;
 import org.silverpeas.core.comment.service.CommentService;
@@ -89,6 +90,7 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.*;
  * underlying IoC container. At initialization by the IoC container, it registers itself among
  * different services for which it is interested.
  */
+@Service
 @Singleton
 public class DefaultBlogService implements BlogService, Initialization {
 

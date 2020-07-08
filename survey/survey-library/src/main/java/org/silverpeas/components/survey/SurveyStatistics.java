@@ -47,6 +47,7 @@
  */
 package org.silverpeas.components.survey;
 
+import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerHeader;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerPK;
 import org.silverpeas.core.questioncontainer.container.service.QuestionContainerService;
@@ -55,12 +56,11 @@ import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsPr
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-@Singleton
+@Provider
 @Named("survey" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
 public class SurveyStatistics implements ComponentStatisticsProvider {
 

@@ -23,14 +23,13 @@
  */
 package org.silverpeas.components.rssaggregator.web;
 
-import org.silverpeas.core.webapi.base.annotation.Authorized;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
-import org.silverpeas.components.rssaggregator.service.RSSServiceProvider;
 import org.silverpeas.components.rssaggregator.model.RSSItem;
 import org.silverpeas.components.rssaggregator.model.RssAgregatorException;
+import org.silverpeas.components.rssaggregator.service.RSSServiceProvider;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.webapi.base.RESTWebService;
+import org.silverpeas.core.webapi.base.annotation.Authorized;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -42,8 +41,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 import java.util.List;
 
-@Service
-@RequestScoped
+@WebService
 @Path(RSSResource.PATH + "/{componentId}")
 @Authorized
 public class RSSResource extends RESTWebService {

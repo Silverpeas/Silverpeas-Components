@@ -44,6 +44,7 @@ import org.silverpeas.components.gallery.model.OrderRow;
 import org.silverpeas.components.gallery.model.Photo;
 import org.silverpeas.components.gallery.process.GalleryProcessManagement;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.index.search.model.QueryDescription;
 import org.silverpeas.core.index.search.model.SearchResult;
@@ -75,6 +76,7 @@ import static org.silverpeas.components.gallery.model.MediaCriteria.QUERY_ORDER_
 /**
  * DefaultGalleryService is the service layer which manage a media gallery
  */
+@Service
 @Singleton
 @Transactional(Transactional.TxType.SUPPORTS)
 public class DefaultGalleryService implements GalleryService {

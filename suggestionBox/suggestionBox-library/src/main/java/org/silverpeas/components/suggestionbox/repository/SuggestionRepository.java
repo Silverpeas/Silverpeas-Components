@@ -26,6 +26,7 @@ package org.silverpeas.components.suggestionbox.repository;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteria;
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
@@ -52,6 +53,7 @@ import java.util.Map;
  * @author Yohann Chastagnier
  */
 @Singleton
+@Repository
 public class SuggestionRepository implements EntityRepository<Suggestion> {
 
   public static SuggestionRepository get() {

@@ -36,6 +36,7 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.contribution.ContributionStatus;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
@@ -109,6 +110,7 @@ import static org.silverpeas.core.notification.user.builder.helper.UserNotificat
 import static org.silverpeas.core.util.CollectionUtil.isEmpty;
 import static org.silverpeas.core.util.StringUtil.isNotDefined;
 
+@Service
 @Singleton
 public class DefaultFormsOnlineService implements FormsOnlineService, Initialization {
 

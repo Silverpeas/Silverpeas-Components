@@ -26,15 +26,15 @@ package org.silverpeas.components.whitepages;
 import org.silverpeas.components.whitepages.control.CardManager;
 import org.silverpeas.components.whitepages.model.Card;
 import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
 import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
 
 import javax.inject.Named;
-import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 
-@Singleton
+@Provider
 @Named("whitePages" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
 public class WhitePagesStatistics implements ComponentStatisticsProvider {
 

@@ -26,6 +26,7 @@ package org.silverpeas.components.kmelia.notification;
 
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.components.kmelia.service.KmeliaService;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.initialization.Initialization;
@@ -45,7 +46,7 @@ import java.util.List;
  * In charge of initializing the reminder about news with a publish visibility set into the future.
  * @author silveryocha
  */
-
+@Service
 public class KmeliaDelayedVisibilityUserNotificationReminderInitializer
     implements Initialization {
 

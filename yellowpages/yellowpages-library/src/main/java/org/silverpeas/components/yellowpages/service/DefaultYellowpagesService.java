@@ -31,6 +31,7 @@ import org.silverpeas.components.yellowpages.model.YellowpagesRuntimeException;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contact.model.CompleteContact;
 import org.silverpeas.core.contact.model.Contact;
 import org.silverpeas.core.contact.model.ContactDetail;
@@ -63,6 +64,7 @@ import static org.silverpeas.components.yellowpages.YellowpagesComponentSettings
  * This is the Yellowpages Service layer to manage the yellow page application.
  * @author Nicolas Eysseric
  */
+@Service
 @Singleton
 @Transactional(Transactional.TxType.NOT_SUPPORTED)
 public class DefaultYellowpagesService implements YellowpagesService {

@@ -27,6 +27,7 @@ import org.silverpeas.components.projectmanager.model.ProjectManagerDAO;
 import org.silverpeas.components.projectmanager.model.ProjectManagerRuntimeException;
 import org.silverpeas.components.projectmanager.model.TaskDetail;
 import org.silverpeas.components.projectmanager.model.TaskPK;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.Attachments;
@@ -63,6 +64,7 @@ import java.util.List;
 /**
  * CDI bean to manage the projectManager application
  */
+@Service
 @Singleton
 @Transactional(Transactional.TxType.SUPPORTS)
 public class DefaultProjectManagerService implements ProjectManagerService {

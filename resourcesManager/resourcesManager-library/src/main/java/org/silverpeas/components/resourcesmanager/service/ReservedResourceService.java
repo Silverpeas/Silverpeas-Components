@@ -26,6 +26,7 @@ package org.silverpeas.components.resourcesmanager.service;
 import org.silverpeas.components.resourcesmanager.repository.ReservedResourceRepository;
 import org.silverpeas.components.resourcesmanager.model.ReservedResource;
 import org.silverpeas.components.resourcesmanager.model.ReservedResourcePk;
+import org.silverpeas.core.annotation.Service;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -35,6 +36,7 @@ import java.util.List;
 /**
  * @author ehugonnet
  */
+@Service
 @Singleton
 @Transactional
 public class ReservedResourceService {

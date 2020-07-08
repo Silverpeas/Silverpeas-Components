@@ -36,6 +36,7 @@ import org.silverpeas.components.rssaggregator.model.RSSItem;
 import org.silverpeas.components.rssaggregator.model.RssAgregatorException;
 import org.silverpeas.components.rssaggregator.model.SPChannel;
 import org.silverpeas.components.rssaggregator.model.SPChannelPK;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -51,6 +52,7 @@ import java.util.List;
 import static org.silverpeas.core.util.HttpUtil.httpClient;
 import static org.silverpeas.core.util.HttpUtil.httpClientTrustingAnySslContext;
 
+@Service
 @Singleton
 public class DefaultRSSService implements RSSService {
 

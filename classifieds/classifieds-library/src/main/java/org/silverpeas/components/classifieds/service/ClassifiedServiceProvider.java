@@ -29,7 +29,7 @@ import org.silverpeas.core.util.ServiceProvider;
  * The factory of the classified service objects.
  * It wraps the access the underlying IoC to retrieve the classified service instances.
  */
-public final class ClassifiedServiceProvider {
+public class ClassifiedServiceProvider {
 
   /**
    * Gets a classified service instance from the underlying IoC container.

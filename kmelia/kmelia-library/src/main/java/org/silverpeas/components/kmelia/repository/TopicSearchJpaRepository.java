@@ -25,6 +25,7 @@
 package org.silverpeas.components.kmelia.repository;
 
 import org.silverpeas.components.kmelia.model.TopicSearch;
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
 
 import java.util.List;
@@ -32,6 +33,7 @@ import java.util.List;
 /**
  * @author: ebonnet
  */
+@Repository
 public class TopicSearchJpaRepository extends BasicJpaEntityRepository<TopicSearch>
     implements TopicSearchRepository {
 

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.questionreply.service;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;

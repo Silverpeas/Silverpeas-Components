@@ -23,13 +23,13 @@
  */
 package org.silverpeas.components.almanach;
 
+import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
 import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
 
 import javax.inject.Named;
-import javax.inject.Singleton;
 import java.util.Collection;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -37,7 +37,7 @@ import java.util.stream.Stream;
 /**
  * Statistics about almanach application instances.
  */
-@Singleton
+@Provider
 @Named("almanach" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
 public class AlmanachStatistics implements ComponentStatisticsProvider {
 

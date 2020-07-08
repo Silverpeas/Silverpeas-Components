@@ -27,6 +27,7 @@ package org.silverpeas.components.quickinfo.notification;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.components.quickinfo.model.QuickInfoService;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.util.Charsets;
@@ -44,7 +45,7 @@ import java.util.List;
  * In charge of initializing the reminder about news with a publish visibility set into the future.
  * @author silveryocha
  */
-
+@Service
 public class QuickInfoDelayedVisibilityUserNotificationReminderInitializer
     implements Initialization {
 
