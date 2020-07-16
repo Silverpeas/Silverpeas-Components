@@ -58,21 +58,19 @@
 <fmt:message key="GML.PDCParam" var="classifyLabel"/>
 <fmt:message key="GML.print" var="printLabel" bundle="${calendarBundle}"/>
 <fmt:message key="calendar.menu.item.event.add" var="addEventLabel" bundle="${calendarBundle}"/>
-<fmt:message key="almanach.exportToIcal" var="exportEventLabel"/>
 <fmt:message key="almanach.menu.item.calendar.see.mine" var="viewMyCalendarLabel" bundle="${calendarBundle}"/>
+<fmt:message key="calendar.menu.item.calendar.create" var="createCalendarLabel" bundle="${calendarBundle}"/>
+<fmt:message key="calendar.menu.item.calendar.synchronized.create" var="createSynchronizedCalendarLabel" bundle="${calendarBundle}"/>
+<fmt:message key="calendar.menu.item.event.import" var="importEventLabel" bundle="${calendarBundle}"/>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.almanachcalendar" xml:lang="${currentUserLanguage}">
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-  <view:looknfeel/>
-  <title></title>
+<view:sp-page angularJsAppName="silverpeas.almanachcalendar" angularJsAppInitializedManually="true">
+<view:sp-head-part>
   <view:includePlugin name="calendar"/>
   <view:includePlugin name="toggle"/>
   <view:script src="/almanach/jsp/javaScript/angularjs/services/almanachcalendar.js"/>
   <view:script src="/almanach/jsp/javaScript/angularjs/almanachcalendar.js"/>
-</head>
-<body ng-controller="calendarController">
+</view:sp-head-part>
+<view:sp-body-part ngController="calendarController">
 <view:operationPane>
   <view:operation action="javascript:print()" altText="${printLabel}"/>
   <c:if test="${canCreateEvent}">
@@ -88,10 +86,23 @@
     <c:url var="opIcon" value="${opIcon}"/>
     <view:operationOfCreation action="angularjs:newEvent()"
                               altText="${addEventLabel}" icon="${opIcon}"/>
+    <c:if test='${highestUserRole.isGreaterThanOrEquals(adminRole)}'>
+      <silverpeas-calendar-management api="calMng"
+                                      on-created="almanachCalendar.addCalendar(calendar)"
+                                      on-imported-events="almanachCalendar.refetchCalendars()"></silverpeas-calendar-management>
+      <fmt:message key="almanach.icons.addCalendar" var="opIcon" bundle="${icons}"/>
+      <c:url var="opIcon" value="${opIcon}"/>
+      <view:operationOfCreation action="angularjs:calMng.add()"
+                                altText="${createCalendarLabel}" icon="${opIcon}"/>
+      <fmt:message key="almanach.icons.addSynchronizedCalendar" var="opIcon" bundle="${icons}"/>
+      <c:url var="opIcon" value="${opIcon}"/>
+      <view:operationOfCreation action="angularjs:calMng.add(true)"
+                                altText="${createSynchronizedCalendarLabel}" icon="${opIcon}"/>
+    </c:if>
   </c:if>
-  <view:operationSeparator/>
-  <view:operation action="${mainCalendar.getURI()}/export/ical"
-                  altText="${exportEventLabel}"/>
+  <view:operationSeparator />
+  <view:operation action="angularjs:calMng.importICalEvents(almanachCalendar.getCalendars())"
+                  altText="${importEventLabel}"/>
   <view:operationSeparator/>
   <view:operation action="angularjs:viewMyCalendar()"
                   altText="${viewMyCalendarLabel}"/>
@@ -103,7 +114,8 @@
   <view:frame>
     <view:componentInstanceIntro componentId="${componentId}" language="${currentUserLanguage}"/>
     <view:areaOfOperationOfCreation/>
-    <silverpeas-calendar participation-user-ids="participationIds"
+    <silverpeas-calendar api="almanachCalendar"
+                         participation-user-ids="participationIds"
                          filter-on-pdc="${filterOnPdc}"
                          on-day-click="${canCreateEvent ? 'newEvent(startMoment)' : ''}"
                          on-event-occurrence-view="viewEventOccurrence(occurrence)"
@@ -123,5 +135,5 @@
     limit : ${nextEventViewLimit}
   });
 </script>
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>

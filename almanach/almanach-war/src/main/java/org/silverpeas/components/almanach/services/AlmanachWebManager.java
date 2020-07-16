@@ -50,7 +50,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.*;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
 import static org.silverpeas.components.almanach.AlmanachSettings.*;
 import static org.silverpeas.core.admin.service.OrganizationControllerProvider.getOrganisationController;
 import static org.silverpeas.core.util.StringUtil.getBooleanValue;
@@ -67,11 +68,6 @@ public class AlmanachWebManager extends CalendarWebManager {
   private ComponentAccessControl componentAccessController;
 
   protected AlmanachWebManager() {
-  }
-
-  @Override
-  public List<Calendar> getCalendarsHandledBy(final String componentInstanceId) {
-    return getCalendarsHandledBy(singleton(componentInstanceId));
   }
 
   @Override
