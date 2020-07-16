@@ -40,45 +40,45 @@ public interface FormsOnlineService extends ApplicationService<FormInstance> {
   }
 
   List<FormDetail> getAllForms(String appId, String userId, boolean withSendInfo)
-      throws FormsOnlineDatabaseException;
+      throws FormsOnlineException;
 
-  FormDetail loadForm(FormPK pk) throws FormsOnlineDatabaseException;
+  FormDetail loadForm(FormPK pk) throws FormsOnlineException;
 
   FormDetail storeForm(FormDetail form, String[] senderUserIds, String[] senderGroupIds,
-      String[] receiverUserIds, String[] receiverGroupIds) throws FormsOnlineDatabaseException;
+      String[] receiverUserIds, String[] receiverGroupIds) throws FormsOnlineException;
 
-  boolean deleteForm(FormPK pk) throws FormsOnlineDatabaseException;
+  boolean deleteForm(FormPK pk) throws FormsOnlineException;
 
-  void publishForm(FormPK pk) throws FormsOnlineDatabaseException;
+  void publishForm(FormPK pk) throws FormsOnlineException;
 
-  void unpublishForm(FormPK pk) throws FormsOnlineDatabaseException;
+  void unpublishForm(FormPK pk) throws FormsOnlineException;
 
   List<FormDetail> getAvailableFormsToSend(Collection<String> appIds, String userId)
-      throws FormsOnlineDatabaseException;
+      throws FormsOnlineException;
 
   RequestsByStatus getAllUserRequests(String appId, String userId,
       final PaginationPage paginationPage)
-      throws FormsOnlineDatabaseException;
+      throws FormsOnlineException;
 
   RequestsByStatus getValidatorRequests(RequestsFilter filter, String userId,
-      final PaginationPage paginationPage) throws FormsOnlineDatabaseException;
+      final PaginationPage paginationPage) throws FormsOnlineException;
 
   List<String> getAvailableFormIdsAsReceiver(String appId, String userId)
-      throws FormsOnlineDatabaseException;
+      throws FormsOnlineException;
 
   FormInstance loadRequest(RequestPK pk, String userId)
-      throws FormsOnlineDatabaseException, PublicationTemplateException, FormException;
+      throws FormsOnlineException, PublicationTemplateException, FormException;
 
   void saveRequest(FormPK pk, String userId, List<FileItem> items)
-      throws FormsOnlineDatabaseException, PublicationTemplateException, FormException;
+      throws FormsOnlineException, PublicationTemplateException, FormException;
 
   void setValidationStatus(RequestPK pk, String userId, String decision, String comments)
-      throws FormsOnlineDatabaseException;
+      throws FormsOnlineException;
 
-  void archiveRequest(RequestPK pk) throws FormsOnlineDatabaseException;
+  void archiveRequest(RequestPK pk) throws FormsOnlineException;
 
   void deleteRequest(RequestPK pk)
-      throws FormsOnlineDatabaseException, FormException, PublicationTemplateException;
+      throws FormsOnlineException, FormException, PublicationTemplateException;
 
   void index(String componentId);
 }

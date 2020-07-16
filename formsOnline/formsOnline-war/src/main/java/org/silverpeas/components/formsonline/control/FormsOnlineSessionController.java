@@ -27,7 +27,7 @@ import org.silverpeas.components.formsonline.model.FormDetail;
 import org.silverpeas.components.formsonline.model.FormInstance;
 import org.silverpeas.components.formsonline.model.FormPK;
 import org.silverpeas.components.formsonline.model.FormsOnlineDAO;
-import org.silverpeas.components.formsonline.model.FormsOnlineDatabaseException;
+import org.silverpeas.components.formsonline.model.FormsOnlineException;
 import org.silverpeas.components.formsonline.model.FormsOnlineService;
 import org.silverpeas.components.formsonline.model.RequestPK;
 import org.silverpeas.components.formsonline.model.RequestsByStatus;
@@ -98,7 +98,7 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
     loadStatusLabels();
   }
 
-  public List<FormDetail> getAllForms(boolean withSendInfo) throws FormsOnlineDatabaseException {
+  public List<FormDetail> getAllForms(boolean withSendInfo) throws FormsOnlineException {
     return getService().getAllForms(getComponentId(), getUserId(), withSendInfo);
   }
 
@@ -110,7 +110,7 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
     this.currentForm = null;
   }
 
-  public FormDetail setCurrentForm(String id) throws FormsOnlineDatabaseException {
+  public FormDetail setCurrentForm(String id) throws FormsOnlineException {
     if (StringUtil.isNotDefined(id)) {
       resetCurrentForm();
       return null;
@@ -125,7 +125,7 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
   }
 
   public void updateCurrentForm(String[] senderUserIds, String[] senderGroupIds,
-      String[] receiverUserIds, String[] receiverGroupIds) throws FormsOnlineDatabaseException {
+      String[] receiverUserIds, String[] receiverGroupIds) throws FormsOnlineException {
 
     if (!isAdmin()) {
       throwForbiddenException(UPDATE_CURRENT_FORM);
@@ -143,13 +143,13 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
             receiverGroupIds);
   }
 
-  private FormDetail loadForm(int formId) throws FormsOnlineDatabaseException {
+  private FormDetail loadForm(int formId) throws FormsOnlineException {
     this.currentForm = getService().loadForm(getFormPK(formId));
     return currentForm;
   }
 
 
-  public void deleteForm(int formId) throws FormsOnlineDatabaseException {
+  public void deleteForm(int formId) throws FormsOnlineException {
     if (!isAdmin()) {
       throwForbiddenException(UPDATE_CURRENT_FORM);
     }
@@ -212,40 +212,40 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
     return initSelection(userGroupSelection, userPanelReceiversPrefix, userIds, groupIds);
   }
 
-  public void publishForm(String formId) throws FormsOnlineDatabaseException {
+  public void publishForm(String formId) throws FormsOnlineException {
     if (!isAdmin()) {
       throwForbiddenException(UPDATE_CURRENT_FORM);
     }
     getService().publishForm(getFormPK(formId));
   }
 
-  public void unpublishForm(String formId) throws FormsOnlineDatabaseException {
+  public void unpublishForm(String formId) throws FormsOnlineException {
     if (!isAdmin()) {
       throwForbiddenException(UPDATE_CURRENT_FORM);
     }
     getService().unpublishForm(getFormPK(formId));
   }
 
-  public List<FormDetail> getAvailableFormsToSend() throws FormsOnlineDatabaseException {
+  public List<FormDetail> getAvailableFormsToSend() throws FormsOnlineException {
     return getService().getAvailableFormsToSend(singleton(getComponentId()), getUserId());
   }
 
   public void saveRequest(List<FileItem> items)
-      throws FormsOnlineDatabaseException, PublicationTemplateException, FormException {
+      throws FormsOnlineException, PublicationTemplateException, FormException {
     if (!getCurrentForm().isSender(getUserId())) {
       throwForbiddenException("saveRequest");
     }
     getService().saveRequest(getCurrentForm().getPK(), getUserId(), items);
   }
 
-  public List<String> getAvailableFormIdsAsReceiver() throws FormsOnlineDatabaseException {
+  public List<String> getAvailableFormIdsAsReceiver() throws FormsOnlineException {
     String userId = getUserId();
     String[] userGroupIds = getOrganisationController().getAllGroupIdsOfUser(userId);
     return dao.getAvailableFormIdsAsReceiver(getComponentId(), userId, userGroupIds);
   }
 
   public FormInstance loadRequest(String id)
-      throws FormsOnlineDatabaseException, PublicationTemplateException, FormException {
+      throws FormsOnlineException, PublicationTemplateException, FormException {
     FormInstance request = getService().loadRequest(getRequestPK(id), getUserId());
 
     FormDetail form = request.getForm();
@@ -258,19 +258,19 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
   }
 
   public void updateValidationStatus(String requestId, String decision, String comments)
-      throws FormsOnlineDatabaseException {
+      throws FormsOnlineException {
     if (!getCurrentForm().isValidator(getUserId())) {
       throwForbiddenException(LOAD_REQUEST);
     }
     getService().setValidationStatus(getRequestPK(requestId), getUserId(), decision, comments);
   }
 
-  public void archiveRequest(String id) throws FormsOnlineDatabaseException {
+  public void archiveRequest(String id) throws FormsOnlineException {
     getService().archiveRequest(getRequestPK(id));
   }
 
   public void deleteRequest(String id)
-      throws FormsOnlineDatabaseException, FormException, PublicationTemplateException {
+      throws FormsOnlineException, FormException, PublicationTemplateException {
     FormInstance request = getService().loadRequest(getRequestPK(id), getUserId());
     FormDetail form = request.getForm();
     if (!form.isValidator(getUserId())) {
@@ -280,7 +280,7 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
   }
 
   public int deleteRequests(Set<String> ids)
-      throws PublicationTemplateException, FormsOnlineDatabaseException, FormException {
+      throws PublicationTemplateException, FormsOnlineException, FormException {
     int nbDeletedRequests = 0;
     if (ids != null) {
       for (String id : ids) {
@@ -314,16 +314,16 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
     return templates;
   }
 
-  public RequestsByStatus getAllUserRequests() throws FormsOnlineDatabaseException {
+  public RequestsByStatus getAllUserRequests() throws FormsOnlineException {
     return getService().getAllUserRequests(getComponentId(), getUserId(), null);
   }
 
-  public RequestsByStatus getHomepageValidatorRequests() throws FormsOnlineDatabaseException {
+  public RequestsByStatus getHomepageValidatorRequests() throws FormsOnlineException {
     return getService().getValidatorRequests(getRequestsFilter(), getUserId(),
         new PaginationPage(1, DEFAULT_ITEM_PER_PAGE));
   }
 
-  public RequestsByStatus getAllValidatorRequests() throws FormsOnlineDatabaseException {
+  public RequestsByStatus getAllValidatorRequests() throws FormsOnlineException {
     RequestsFilter filter = getRequestsFilter();
     if (getCurrentForm() != null) {
       filter.getFormIds().add(Integer.toString(getCurrentForm().getId()));
@@ -354,7 +354,7 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
     return form;
   }
 
-  public ExportCSVBuilder export() throws FormsOnlineDatabaseException, SilverpeasException {
+  public ExportCSVBuilder export() throws FormsOnlineException, SilverpeasException {
     ExportCSVBuilder csvBuilder = new ExportCSVBuilder();
     CSVRow csvHeader = new CSVRow();
 

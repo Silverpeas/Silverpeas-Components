@@ -25,7 +25,6 @@
 package org.silverpeas.components.formsonline.model;
 
 import org.silverpeas.core.SilverpeasRuntimeException;
-import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.persistence.datasource.repository.PaginationCriterion;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
@@ -46,6 +45,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.apache.commons.lang3.ArrayUtils.isNotEmpty;
+import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery.createSelect;
 
 public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
@@ -109,7 +109,7 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
   private static final String INSTANCE_ID = "instanceId";
 
   @Override
-  public FormDetail createForm(FormDetail formDetail) throws FormsOnlineDatabaseException {
+  public FormDetail createForm(FormDetail formDetail) throws FormsOnlineException {
     try (final Connection con = getConnection();
          final PreparedStatement stmt = con.prepareStatement(QUERY_INSERT_FORM)) {
       int id = DBUtil.getNextId(FORMS_TABLENAME, "id");
@@ -128,13 +128,12 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
 
       return formDetail;
     } catch (SQLException se) {
-      throw new FormsOnlineDatabaseException("FormsOnlineDAOJdbc.createForm()",
-          SilverpeasException.ERROR, "formsOnline.INSERTING_FORM_FAILED", se);
+      throw new FormsOnlineException(failureOnAdding("form", formDetail.getName()), se);
     }
   }
 
   @Override
-  public FormDetail deleteForm(FormPK pk) throws FormsOnlineDatabaseException {
+  public FormDetail deleteForm(FormPK pk) throws FormsOnlineException {
     FormDetail form = getForm(pk);
     try (final Connection con = getConnection();
          final PreparedStatement stmt = con.prepareStatement(QUERY_DELETE_FORM)) {
@@ -148,13 +147,12 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
       stmt.executeUpdate();
       return form;
     } catch (SQLException se) {
-      throw new FormsOnlineDatabaseException("FormsOnlineDAOJdbc.deleteForm()",
-          SilverpeasException.ERROR, "formsOnline.DELETE_FORM_FAILED", "pk = " + pk.toString(), se);
+      throw new FormsOnlineException(failureOnDeleting("form", pk.toString()), se);
     }
   }
 
   @Override
-  public FormDetail getForm(FormPK pk) throws FormsOnlineDatabaseException {
+  public FormDetail getForm(FormPK pk) throws FormsOnlineException {
     FormDetail form = null;
     try (final Connection con = getConnection();
          final PreparedStatement stmt = con.prepareStatement(QUERY_LOAD_FORM)) {
@@ -166,14 +164,13 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
         }
       }
     } catch (SQLException se) {
-      throw new FormsOnlineDatabaseException("FormsOnlineDAOJdbc.getForm()",
-          SilverpeasException.ERROR, "formsOnline.GET_FORM_FAILED", "pk = "+pk.toString(), se);
+      throw new FormsOnlineException(failureOnGetting("form", pk.toString()), se);
     }
     return form;
   }
 
   @Override
-  public List<FormDetail> findAllForms(String instanceId) throws FormsOnlineDatabaseException {
+  public List<FormDetail> findAllForms(String instanceId) throws FormsOnlineException {
     List<FormDetail> forms = new ArrayList<>();
     try (final Connection con = getConnection();
          final PreparedStatement stmt = con.prepareStatement(QUERY_FIND_FORMS)) {
@@ -185,15 +182,13 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
         }
       }
     } catch (SQLException se) {
-      throw new FormsOnlineDatabaseException("FormsOnlineDAOJdbc.findAllForms()",
-          SilverpeasException.ERROR, "formsOnline.GET_ALL_FORMS_FAILED",
-          "instanceId = " + instanceId, se);
+      throw new FormsOnlineException(failureOnGetting("all forms of instance", instanceId), se);
     }
     return forms;
   }
 
   @Override
-  public void updateForm(FormDetail formDetail) throws FormsOnlineDatabaseException {
+  public void updateForm(FormDetail formDetail) throws FormsOnlineException {
     try (final Connection con = getConnection();
          final PreparedStatement stmt = con.prepareStatement(QUERY_UPDATE_FORM)) {
       stmt.setString(1, formDetail.getXmlFormName());
@@ -207,8 +202,7 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
       stmt.setInt(9, formDetail.getId());
       stmt.executeUpdate();
     } catch (SQLException se) {
-      throw new FormsOnlineDatabaseException("FormsOnlineDAOJdbc.updateForm()",
-          SilverpeasException.ERROR, "formsOnline.UPDATE_FORM_FAILED", se);
+      throw new FormsOnlineException(failureOnUpdate("form", formDetail.getId()), se);
     }
   }
 
@@ -218,7 +212,7 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
    * java.lang.String)
    */
   @Override
-  public List<String> getReceiversAsGroups(FormPK pk) throws FormsOnlineDatabaseException {
+  public List<String> getReceiversAsGroups(FormPK pk) throws FormsOnlineException {
     return getGroupRights(pk, "R");
   }
 
@@ -227,7 +221,7 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
    * @see FormsOnlineDAO#getReceiversAsUsers(int, java.lang.String)
    */
   @Override
-  public List<String> getReceiversAsUsers(FormPK pk) throws FormsOnlineDatabaseException {
+  public List<String> getReceiversAsUsers(FormPK pk) throws FormsOnlineException {
     return getUserRights(pk, "R");
   }
 
@@ -236,7 +230,7 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
    * @see FormsOnlineDAO#getSendersAsGroups(int, java.lang.String)
    */
   @Override
-  public List<String> getSendersAsGroups(FormPK pk) throws FormsOnlineDatabaseException {
+  public List<String> getSendersAsGroups(FormPK pk) throws FormsOnlineException {
     return getGroupRights(pk, "S");
   }
 
@@ -245,12 +239,12 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
    * @see FormsOnlineDAO#getSendersAsUsers(int, java.lang.String)
    */
   @Override
-  public List<String> getSendersAsUsers(FormPK pk) throws FormsOnlineDatabaseException {
+  public List<String> getSendersAsUsers(FormPK pk) throws FormsOnlineException {
     return getUserRights(pk, "S");
   }
 
   private List<String> getGroupRights(FormPK pk, String rightType)
-      throws FormsOnlineDatabaseException {
+      throws FormsOnlineException {
     List<String> groupsIds = new ArrayList<>();
     try (final Connection con = getConnection();
          final PreparedStatement stmt = con.prepareStatement(QUERY_LOAD_GROUP_RIGHTS)) {
@@ -263,14 +257,14 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
         }
       }
     } catch (SQLException se) {
-      throw new FormsOnlineDatabaseException("FormsOnlineDAOJdbc.getGroupRights()",
-          SilverpeasException.ERROR, "formsOnline.FIND_GROUP_RIGHTS", "pk = " + pk.toString(), se);
+      throw new FormsOnlineException(failureOnGetting("senders as users of form", pk.toString()),
+          se);
     }
     return groupsIds;
   }
 
   private List<String> getUserRights(FormPK pk, String rightType)
-      throws FormsOnlineDatabaseException {
+      throws FormsOnlineException {
     List<String> userIds = new ArrayList<>();
     try (final Connection con = getConnection();
          final PreparedStatement stmt = con.prepareStatement(QUERY_LOAD_USER_RIGHTS)) {
@@ -283,26 +277,26 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
         }
       }
     } catch (SQLException se) {
-      throw new FormsOnlineDatabaseException("FormsOnlineDAOJdbc.getUserRights()",
-          SilverpeasException.ERROR, "formsOnline.FIND_USER_RIGHTS", "pk = " + pk.toString(), se);
+      throw new FormsOnlineException(
+          failureOnGetting("user rights (" + rightType + ") of form", pk.toString()), se);
     }
     return userIds;
   }
 
   @Override
   public void updateReceivers(FormPK pk, String[] newUserReceiverIds, String[] newGroupReceiverIds)
-      throws FormsOnlineDatabaseException {
+      throws FormsOnlineException {
     updateRights(pk, newUserReceiverIds, newGroupReceiverIds, "R");
   }
 
   @Override
   public void updateSenders(FormPK pk, String[] newUserSenderIds, String[] newGroupSenderIds)
-      throws FormsOnlineDatabaseException {
+      throws FormsOnlineException {
     updateRights(pk, newUserSenderIds, newGroupSenderIds, "S");
   }
 
   private void updateRights(FormPK pk, String[] newUserIds, String[] newGroupIds, String rightType)
-      throws FormsOnlineDatabaseException {
+      throws FormsOnlineException {
     try (final Connection con = getConnection()) {
       removeGroupRights(con, pk, rightType);
       removeUserRights(con, pk, rightType);
@@ -313,8 +307,8 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
         addGroupRights(con, pk, newGroupId, rightType);
       }
     } catch (Exception e) {
-      throw new FormsOnlineDatabaseException("FormsOnlineDAOJdbc.updateRights()",
-          SilverpeasException.ERROR, "formsOnline.UPDATE_RIGHTS_FAILED", e);
+      throw new FormsOnlineException(
+          failureOnUpdate("user rights (" + rightType + ") of form", pk.toString()), e);
     }
   }
 
@@ -366,7 +360,7 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
    */
   @Override
   public List<FormDetail> getUserAvailableForms(final Collection<String> instanceIds,
-      final String userId, final String[] userGroupIds) throws FormsOnlineDatabaseException {
+      final String userId, final String[] userGroupIds) throws FormsOnlineException {
     try {
       final List<FormDetail> forms = new ArrayList<>();
       JdbcSqlQuery.executeBySplittingOn(instanceIds, (idBatch, ignore) -> {
@@ -389,9 +383,9 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
       });
       return forms;
     } catch (SQLException se) {
-      throw new FormsOnlineDatabaseException("FormsOnlineDAOJdbc.getUserAvailableForms()",
-          SilverpeasException.ERROR, "formsOnline.FIND_USER_AVAILABLE_FORMS", "instanceIds are " +
-          String.join(",", instanceIds) + ",userId = " + userId, se);
+      throw new FormsOnlineException(
+          failureOnGetting("user (" + userId + ") available forms of instances",
+              String.join(",", instanceIds)), se);
     }
   }
 
@@ -400,7 +394,7 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
    * @see FormsOnlineDAO#getForms(java.util.List)
    */
   @Override
-  public List<FormDetail> getForms(List<String> formIds) throws FormsOnlineDatabaseException {
+  public List<FormDetail> getForms(List<String> formIds) throws FormsOnlineException {
 
     List<FormDetail> forms = new ArrayList<>();
     if ((formIds == null) || (formIds.isEmpty())) {
@@ -428,8 +422,7 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
         }
       }
     } catch (SQLException se) {
-      throw new FormsOnlineDatabaseException("FormsOnlineDAOJdbc.getForms()",
-          SilverpeasException.ERROR, "formsOnline.FIND_LOAD_FORMS", se);
+      throw new FormsOnlineException(failureOnGetting("forms", String.join(",", formIds)), se);
     }
     return forms;
   }
@@ -501,7 +494,7 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
 
   @Override
   public List<String> getAvailableFormIdsAsReceiver(String instanceId, String userId,
-      String[] userGroupIds) throws FormsOnlineDatabaseException {
+      String[] userGroupIds) throws FormsOnlineException {
     List<String> availableFormIds = new ArrayList<>();
 
     /* build query */
@@ -529,9 +522,9 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
         }
       }
     } catch (SQLException se) {
-      throw new FormsOnlineDatabaseException("FormsOnlineDAOJdbc.getAvailableFormIds()",
-          SilverpeasException.ERROR, "formsOnline.FIND_AVAILABLE_FORM_IDS_FAILED", "instanceId = " +
-          instanceId + ", userId = " + userId, se);
+      throw new FormsOnlineException(
+          failureOnGetting("user (" + userId + ") available form as receiver ids of instance",
+              instanceId), se);
     }
     return availableFormIds;
   }
@@ -557,7 +550,7 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
    * .FormInstance)
    */
   @Override
-  public FormInstance createInstance(FormInstance instance) throws FormsOnlineDatabaseException {
+  public FormInstance createInstance(FormInstance instance) throws FormsOnlineException {
     try (final Connection con = getConnection();
          final PreparedStatement stmt = con.prepareStatement(QUERY_INSERT_FORMINSTANCE)) {
       int id = DBUtil.getNextId(FORMS_INSTANCES_TABLENAME, "id");
@@ -574,13 +567,13 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
       instance.setId(id);
       return instance;
     } catch (SQLException se) {
-      throw new FormsOnlineDatabaseException("FormsOnlineDAOJdbc.createInstance()",
-          SilverpeasException.ERROR, "formsOnline.INSERTING_FORMINSTANCE_FAILED", se);
+      throw new FormsOnlineException(failureOnAdding("instance on form", instance.getFormId()),
+          se);
     }
   }
 
   @Override
-  public FormInstance getRequest(RequestPK pk) throws FormsOnlineDatabaseException {
+  public FormInstance getRequest(RequestPK pk) throws FormsOnlineException {
     FormInstance formInstance = null;
     try (final Connection con = getConnection();
          final PreparedStatement stmt = con.prepareStatement(QUERY_LOAD_FORM_INSTANCE)) {
@@ -592,14 +585,13 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
         }
       }
     } catch (SQLException se) {
-      throw new FormsOnlineDatabaseException("FormsOnlineDAOJdbc.getFormInstance()",
-          SilverpeasException.ERROR, "formsOnline.CREATE_FORM_FAILED", "pk = " + pk.toString(), se);
+      throw new FormsOnlineException(failureOnGetting("form instance", pk.toString()), se);
     }
     return formInstance;
   }
 
   @Override
-  public void updateRequest(FormInstance formInstance) throws FormsOnlineDatabaseException {
+  public void updateRequest(FormInstance formInstance) throws FormsOnlineException {
     try (final Connection con = getConnection();
          final PreparedStatement stmt = con.prepareStatement(QUERY_UPDATE_FORM_INSTANCE)) {
       stmt.setInt(1, formInstance.getFormId());
@@ -614,27 +606,26 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
 
       stmt.executeUpdate();
     } catch (SQLException se) {
-      throw new FormsOnlineDatabaseException("FormsOnlineDAOJdbc.updateFormInstance()",
-          SilverpeasException.ERROR, "formsOnline.UPDATE_FORM_INSTANCE_FAILED", se);
+      throw new FormsOnlineException(
+          failureOnUpdate("form instance", formInstance.getPK().toString()), se);
     }
   }
 
   @Override
-  public void deleteRequest(RequestPK pk) throws FormsOnlineDatabaseException {
+  public void deleteRequest(RequestPK pk) throws FormsOnlineException {
     try (final Connection con = getConnection();
          final PreparedStatement stmt = con.prepareStatement(QUERY_DELETE_FORM_INSTANCE)) {
       stmt.setString(1, pk.getInstanceId());
       stmt.setInt(2, Integer.parseInt(pk.getId()));
       stmt.executeUpdate();
     } catch (SQLException se) {
-      throw new FormsOnlineDatabaseException("FormsOnlineDAOJdbc.deleteFormInstance()",
-          SilverpeasException.ERROR, "formsOnline.DELETE_FORM_FAILED", "pk = "+pk.toString(), se);
+      throw new FormsOnlineException(failureOnDeleting("form instance", pk.toString()), se);
     }
   }
 
   @Override
   public Map<Integer, Integer> getNumberOfRequestsByForm(String instanceId)
-      throws FormsOnlineDatabaseException {
+      throws FormsOnlineException {
     try (final Connection con = getConnection();
          final PreparedStatement stmt = con.prepareStatement(COUNT_REQUESTS_BY_FORM)) {
       stmt.setString(1, instanceId);
@@ -646,8 +637,8 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
       }
       return map;
     } catch (SQLException se) {
-      throw new FormsOnlineDatabaseException("FormsOnlineDAOJdbc.getNumberOfRequestsByForm()",
-          SilverpeasException.ERROR, "formsOnline.GET_FORM_FAILED", "instanceId = "+instanceId, se);
+      throw new FormsOnlineException(
+          failureOnGetting("number of instance by form of component instance", instanceId), se);
     }
   }
 
@@ -680,15 +671,9 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
   /**
    * Get a new connection.
    * @return the initialized connection.
-   * @throws FormsOnlineDatabaseException if a database error occured while getting connection
    */
-  protected Connection getConnection() throws FormsOnlineDatabaseException {
-    try {
-      return DBUtil.openConnection();
-    } catch (SQLException e) {
-      throw new FormsOnlineDatabaseException("FormsOnlineDAOJdbc.getConnection()",
-          SilverpeasException.FATAL, "root.EX_CONNECTION_OPEN_FAILED", e);
-    }
+  protected Connection getConnection() throws SQLException {
+    return DBUtil.openConnection();
   }
 
   private static void prepareDateStatement(PreparedStatement stat, int pos, Date dateValue)
@@ -699,5 +684,4 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
       stat.setTimestamp(pos, new Timestamp(dateValue.getTime()));
     }
   }
-
 }

@@ -68,7 +68,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
 
   @Override
   public List<FormDetail> getAllForms(final String appId, final String userId,
-      final boolean withSendInfo) throws FormsOnlineDatabaseException {
+      final boolean withSendInfo) throws FormsOnlineException {
     List<FormDetail> forms = getDAO().findAllForms(appId);
     Map<Integer, Integer> numbersOfRequests = getDAO().getNumberOfRequestsByForm(appId);
     for (FormDetail form : forms) {
@@ -83,35 +83,35 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
     return forms;
   }
 
-  private boolean isSender(FormPK pk, String userId) throws FormsOnlineDatabaseException {
+  private boolean isSender(FormPK pk, String userId) throws FormsOnlineException {
     return isInLists(userId, getSendersAsUsers(pk), getSendersAsGroups(pk));
   }
 
-  private List<User> getSendersAsUsers(FormPK pk) throws FormsOnlineDatabaseException {
+  private List<User> getSendersAsUsers(FormPK pk) throws FormsOnlineException {
     List<String> userIds = getDAO().getSendersAsUsers(pk);
     User[] details = organizationController.getUserDetails(userIds.toArray(new String[0]));
     return CollectionUtil.asList(details);
   }
 
-  private List<Group> getSendersAsGroups(FormPK pk) throws FormsOnlineDatabaseException {
+  private List<Group> getSendersAsGroups(FormPK pk) throws FormsOnlineException {
     List<String> groupIds = getDAO().getSendersAsGroups(pk);
     Group[] groups = organizationController.getGroups(groupIds.toArray(new String[0]));
     return CollectionUtil.asList(groups);
   }
 
-  private List<User> getReceiversAsUsers(FormPK pk) throws FormsOnlineDatabaseException {
+  private List<User> getReceiversAsUsers(FormPK pk) throws FormsOnlineException {
     List<String> userIds = getDAO().getReceiversAsUsers(pk);
     User[] details = organizationController.getUserDetails(userIds.toArray(new String[0]));
     return CollectionUtil.asList(details);
   }
 
-  private List<Group> getReceiversAsGroups(FormPK pk) throws FormsOnlineDatabaseException {
+  private List<Group> getReceiversAsGroups(FormPK pk) throws FormsOnlineException {
     List<String> groupIds = getDAO().getReceiversAsGroups(pk);
     Group[] groups = organizationController.getGroups(groupIds.toArray(new String[0]));
     return CollectionUtil.asList(groups);
   }
 
-  private boolean isValidator(FormPK pk, String userId) throws FormsOnlineDatabaseException {
+  private boolean isValidator(FormPK pk, String userId) throws FormsOnlineException {
     return isInLists(userId, getReceiversAsUsers(pk), getReceiversAsGroups(pk));
   }
 
@@ -138,7 +138,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
   }
 
   @Override
-  public FormDetail loadForm(FormPK pk) throws FormsOnlineDatabaseException {
+  public FormDetail loadForm(FormPK pk) throws FormsOnlineException {
     FormDetail form = getDAO().getForm(pk);
     if (form != null) {
       form.setSendersAsUsers(getSendersAsUsers(pk));
@@ -152,7 +152,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
   @Override
   @Transactional
   public FormDetail storeForm(FormDetail form, String[] senderUserIds, String[] senderGroupIds,
-      String[] receiverUserIds, String[] receiverGroupIds) throws FormsOnlineDatabaseException {
+      String[] receiverUserIds, String[] receiverGroupIds) throws FormsOnlineException {
     FormDetail theForm = form;
     if (form.getId() == -1) {
       theForm = getDAO().createForm(form);
@@ -173,7 +173,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
 
   @Override
   @Transactional
-  public boolean deleteForm(FormPK pk) throws FormsOnlineDatabaseException {
+  public boolean deleteForm(FormPK pk) throws FormsOnlineException {
     // delete all associated requests
     final SilverpeasList<FormInstance> requests = getDAO().getAllRequests(pk);
     boolean reallyDeleteForm = true;
@@ -197,7 +197,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
 
   @Override
   @Transactional
-  public void publishForm(FormPK pk) throws FormsOnlineDatabaseException {
+  public void publishForm(FormPK pk) throws FormsOnlineException {
     FormDetail form = getDAO().getForm(pk);
     form.setState(FormDetail.STATE_PUBLISHED);
     getDAO().updateForm(form);
@@ -206,7 +206,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
 
   @Override
   @Transactional
-  public void unpublishForm(FormPK pk) throws FormsOnlineDatabaseException {
+  public void unpublishForm(FormPK pk) throws FormsOnlineException {
     FormDetail form = getDAO().getForm(pk);
     form.setState(FormDetail.STATE_UNPUBLISHED);
     getDAO().updateForm(form);
@@ -215,7 +215,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
 
   @Override
   public List<FormDetail> getAvailableFormsToSend(Collection<String> appIds, String userId)
-      throws FormsOnlineDatabaseException {
+      throws FormsOnlineException {
     String[] userGroupIds = organizationController.getAllGroupIdsOfUser(userId);
     return getDAO().getUserAvailableForms(appIds, userId, userGroupIds);
   }
@@ -223,7 +223,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
   @Override
   public RequestsByStatus getAllUserRequests(String appId, String userId,
       final PaginationPage paginationPage)
-      throws FormsOnlineDatabaseException {
+      throws FormsOnlineException {
     RequestsByStatus requests = new RequestsByStatus(paginationPage);
     List<FormDetail> forms = getAllForms(appId, userId, false);
     for (FormDetail form : forms) {
@@ -249,7 +249,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
 
   @Override
   public RequestsByStatus getValidatorRequests(RequestsFilter filter, String userId,
-      final PaginationPage paginationPage) throws FormsOnlineDatabaseException {
+      final PaginationPage paginationPage) throws FormsOnlineException {
     final List<String> formIds = getAvailableFormIdsAsReceiver(filter.getComponentId(), userId);
 
     // limit requests to specified forms
@@ -282,14 +282,14 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
 
   @Override
   public List<String> getAvailableFormIdsAsReceiver(String appId, String userId)
-      throws FormsOnlineDatabaseException {
+      throws FormsOnlineException {
     String[] userGroupIds = organizationController.getAllGroupIdsOfUser(userId);
     return getDAO().getAvailableFormIdsAsReceiver(appId, userId, userGroupIds);
   }
 
   @Override
   public FormInstance loadRequest(RequestPK pk, String userId)
-      throws FormsOnlineDatabaseException, PublicationTemplateException, FormException {
+      throws FormsOnlineException, PublicationTemplateException, FormException {
 
     FormInstance request = getDAO().getRequest(pk);
 
@@ -328,7 +328,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
   @Override
   @Transactional
   public void saveRequest(FormPK pk, String userId, List<FileItem> items)
-      throws FormsOnlineDatabaseException, PublicationTemplateException, FormException {
+      throws FormsOnlineException, PublicationTemplateException, FormException {
     FormInstance request = new FormInstance();
     request.setCreatorId(userId);
     request.setFormId(Integer.parseInt(pk.getId()));
@@ -365,7 +365,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
   @Override
   @Transactional
   public void setValidationStatus(RequestPK pk, String userId, String decision, String comments)
-      throws FormsOnlineDatabaseException {
+      throws FormsOnlineException {
     FormInstance request = getDAO().getRequest(pk);
     FormDetail form = getDAO().getForm(new FormPK(request.getFormId(), pk.getInstanceId()));
     request.setForm(form);
@@ -389,7 +389,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
     notifyValidation(request);
   }
 
-  private void notifyValidation(FormInstance request) throws FormsOnlineDatabaseException {
+  private void notifyValidation(FormInstance request) throws FormsOnlineException {
     NotifAction action = NotifAction.REFUSE;
     if (request.getState() == FormInstance.STATE_VALIDATED) {
       action = NotifAction.VALIDATE;
@@ -408,7 +408,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
   @Override
   @Transactional
   public void deleteRequest(RequestPK pk)
-      throws FormsOnlineDatabaseException, FormException, PublicationTemplateException {
+      throws FormsOnlineException, FormException, PublicationTemplateException {
     // delete form data
     FormInstance instance = getDAO().getRequest(pk);
     FormPK formPK = new FormPK(instance.getFormId(), pk.getInstanceId());
@@ -427,21 +427,21 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
 
   @Override
   @Transactional
-  public void archiveRequest(RequestPK pk) throws FormsOnlineDatabaseException {
+  public void archiveRequest(RequestPK pk) throws FormsOnlineException {
     FormInstance request = getDAO().getRequest(pk);
     request.setState(FormInstance.STATE_ARCHIVED);
     getDAO().updateRequest(request);
   }
 
   private void notifyReceivers(FormInstance request)
-      throws FormsOnlineDatabaseException {
+      throws FormsOnlineException {
     List<String> userIds = getAllReceivers(request.getForm().getPK());
 
     UserNotificationHelper
         .buildAndSend(new FormsOnlinePendingValidationRequestUserNotification(request, userIds));
   }
 
-  private List<String> getAllReceivers(FormPK pk) throws FormsOnlineDatabaseException {
+  private List<String> getAllReceivers(FormPK pk) throws FormsOnlineException {
     List<String> userIds = getDAO().getReceiversAsUsers(pk);
     List<String> groupIds = getDAO().getReceiversAsGroups(pk);
     for (String groupId : groupIds) {

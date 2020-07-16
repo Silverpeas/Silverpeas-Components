@@ -1,6 +1,6 @@
 package org.silverpeas.components.formsonline;
 
-import org.silverpeas.components.formsonline.model.FormsOnlineDatabaseException;
+import org.silverpeas.components.formsonline.model.FormsOnlineException;
 import org.silverpeas.components.formsonline.model.FormsOnlineService;
 import org.silverpeas.core.security.authorization.AccessControlOperation;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
@@ -42,7 +42,7 @@ public class FormsOnlineComponentAuthorization implements ComponentAuthorization
           .map(f -> String.valueOf(f.getId()))
           .collect(Collectors.toSet());
       return resources.stream().filter(r -> formIds.contains(converter.apply(r).getLocalId()));
-    } catch (FormsOnlineDatabaseException e) {
+    } catch (FormsOnlineException e) {
       SilverLogger.getLogger(this).error(e);
     }
     return Stream.empty();

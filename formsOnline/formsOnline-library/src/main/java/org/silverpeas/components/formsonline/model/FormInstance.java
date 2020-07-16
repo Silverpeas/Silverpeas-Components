@@ -31,6 +31,8 @@ import javax.persistence.Transient;
 import java.util.Date;
 
 public class FormInstance implements SilverpeasContent {
+  private static final long serialVersionUID = -3341454138112938275L;
+
   public static final int STATE_UNREAD = 1;
   public static final int STATE_READ = 2;
   public static final int STATE_VALIDATED = 3;

@@ -23,40 +23,21 @@
  */
 package org.silverpeas.components.formsonline.model;
 
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
-public class FormsOnlineRuntimeException extends SilverpeasRuntimeException {
-  private static final long serialVersionUID = 581380633250529755L;
+import org.silverpeas.core.SilverpeasException;
 
-  /**
-   * --------------------------------------------------------------------------
-   * constructors
-   */
-  public FormsOnlineRuntimeException(String callingClass, int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
+public class FormsOnlineException extends SilverpeasException {
+  private static final long serialVersionUID = -170511538940110451L;
+
+  public FormsOnlineException(final String message, final String... parameters) {
+    super(message, parameters);
   }
 
-  public FormsOnlineRuntimeException(String callingClass, int errorLevel, String message,
-      String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public FormsOnlineException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  public FormsOnlineRuntimeException(String callingClass, int errorLevel, String message,
-      Exception nested) {
-    super(callingClass, errorLevel, message, nested);
+  public FormsOnlineException(final Throwable cause) {
+    super(cause);
   }
-
-  public FormsOnlineRuntimeException(String callingClass, int errorLevel, String message,
-      String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  /**
-   * --------------------------------------------------------------------------
-   * getModule
-   */
-  public String getModule() {
-    return "FormsOnline";
-  }
-
 }
