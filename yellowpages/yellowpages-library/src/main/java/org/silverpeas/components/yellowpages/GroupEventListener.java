@@ -25,6 +25,7 @@ package org.silverpeas.components.yellowpages;
 
 import org.silverpeas.components.yellowpages.service.YellowpagesService;
 import org.silverpeas.core.admin.user.notification.GroupEvent;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
 
 import javax.inject.Inject;
@@ -33,6 +34,7 @@ import javax.inject.Inject;
  * A listener of events coming from the changes operating on the user groups.
  * @author miguel
  */
+@Bean
 public class GroupEventListener extends CDIResourceEventListener<GroupEvent> {
 
   @Inject

@@ -30,6 +30,7 @@ import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.SpaceWithSubSpacesAndComponents;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.util.StringUtil;
@@ -37,7 +38,6 @@ import org.silverpeas.core.webapi.calendar.CalendarWebManager;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.inject.Singleton;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
@@ -60,7 +60,7 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
 /**
  * @author Yohann Chastagnier
  */
-@Singleton
+@Service
 @Named("almanach" + CalendarWebManager.NAME_SUFFIX)
 public class AlmanachWebManager extends CalendarWebManager {
 

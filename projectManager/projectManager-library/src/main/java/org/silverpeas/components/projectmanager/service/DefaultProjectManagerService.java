@@ -52,7 +52,6 @@ import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -65,7 +64,6 @@ import java.util.List;
  * CDI bean to manage the projectManager application
  */
 @Service
-@Singleton
 @Transactional(Transactional.TxType.SUPPORTS)
 public class DefaultProjectManagerService implements ProjectManagerService {
 

@@ -29,6 +29,7 @@ import org.silverpeas.components.whitepages.model.SilverCard;
 import org.silverpeas.components.whitepages.model.WhitePagesCard;
 import org.silverpeas.components.whitepages.record.UserRecord;
 import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.RecordSet;
@@ -55,7 +56,6 @@ import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -65,7 +65,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-@Singleton
+@Service
 public class CardManager {
 
   @Inject

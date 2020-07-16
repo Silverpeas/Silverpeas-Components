@@ -65,7 +65,6 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -86,7 +85,6 @@ import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassifica
 import static org.silverpeas.core.persistence.Transaction.performInOne;
 
 @Service
-@Singleton
 public class DefaultQuickInfoService implements QuickInfoService {
 
   private static final String ASSOCIATED_TO_THE_NEWS_MSG = " associated to the news ";

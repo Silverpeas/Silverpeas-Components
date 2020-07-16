@@ -35,7 +35,6 @@ import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.SettingBundle;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.transaction.Transactional;
 
 /**
@@ -44,7 +43,6 @@ import javax.transaction.Transactional;
  * @author mmoquillon
  */
 @Service
-@Singleton
 public class DefaultSuggestionBoxService implements SuggestionBoxService {
 
   @Inject

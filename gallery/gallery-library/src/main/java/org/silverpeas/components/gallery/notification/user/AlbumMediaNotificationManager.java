@@ -28,6 +28,7 @@ import org.silverpeas.components.gallery.model.AlbumDetail;
 import org.silverpeas.components.gallery.model.AlbumMedia;
 import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import org.silverpeas.core.scheduler.Job;
 import org.silverpeas.core.scheduler.JobExecutionContext;
@@ -40,7 +41,6 @@ import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.logging.SilverLogger;
 
-import javax.inject.Singleton;
 import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.HashSet;
@@ -52,7 +52,7 @@ import java.util.concurrent.ConcurrentMap;
 /**
  * @author silveryocha
  */
-@Singleton
+@Service
 public class AlbumMediaNotificationManager {
 
   private static final ConcurrentMap<String, NotificationAlbumJob> contextCache =

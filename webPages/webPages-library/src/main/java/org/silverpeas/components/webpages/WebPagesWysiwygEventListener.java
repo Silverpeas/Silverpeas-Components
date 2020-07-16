@@ -25,6 +25,7 @@ package org.silverpeas.components.webpages;
 
 import org.silverpeas.components.webpages.notification.WebPagesUserNotifier;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.WysiwygContent;
 import org.silverpeas.core.contribution.content.wysiwyg.notification.WysiwygEvent;
@@ -37,6 +38,7 @@ import javax.inject.Inject;
 /**
  * @author mmoquillon
  */
+@Bean
 public class WebPagesWysiwygEventListener extends CDIResourceEventListener<WysiwygEvent> {
 
   @Inject

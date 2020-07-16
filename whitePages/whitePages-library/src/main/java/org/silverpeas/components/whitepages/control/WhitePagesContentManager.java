@@ -26,6 +26,7 @@ package org.silverpeas.components.whitepages.control;
 import org.silverpeas.components.whitepages.WhitePagesException;
 import org.silverpeas.components.whitepages.model.Card;
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.contentcontainer.content.AbstractContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
@@ -33,7 +34,6 @@ import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.persistence.jdbc.bean.IdPK;
 import org.silverpeas.core.util.logging.SilverLogger;
 
-import javax.inject.Singleton;
 import java.sql.Connection;
 import java.util.Collections;
 import java.util.List;
@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 /**
  * The whitePages implementation of ContentInterface.
  */
-@Singleton
+@Service
 public class WhitePagesContentManager extends AbstractContentInterface {
 
   private static final String CONTENT_ICON_FILE_NAME = "whitePagesSmall.gif";

@@ -30,14 +30,12 @@ import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEn
 import org.silverpeas.core.util.ServiceProvider;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 /**
  * This entity suggestionRepository provides all necessary methods in order to handle the
  * persistence of suggestion boxes, whatever the data sources used underlying.
  * @author Yohann Chastagnier
  */
-@Singleton
 @Repository
 public class SuggestionBoxRepository extends SilverpeasJpaEntityRepository<SuggestionBox> {
 

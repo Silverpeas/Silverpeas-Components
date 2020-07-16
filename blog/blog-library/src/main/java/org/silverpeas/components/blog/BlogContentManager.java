@@ -24,6 +24,7 @@
 package org.silverpeas.components.blog;
 
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.contentcontainer.content.AbstractContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
@@ -33,7 +34,6 @@ import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
 /**
  * The blog implementation of ContentInterface.
  */
-@Singleton
+@Service
 public class BlogContentManager extends AbstractContentInterface implements Serializable {
   private static final long serialVersionUID = 8619139224896358447L;
 

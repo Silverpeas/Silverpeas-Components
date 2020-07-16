@@ -60,7 +60,6 @@ import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.SettingBundle;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.io.File;
 import java.sql.Connection;
@@ -77,7 +76,6 @@ import static org.silverpeas.components.gallery.model.MediaCriteria.QUERY_ORDER_
  * DefaultGalleryService is the service layer which manage a media gallery
  */
 @Service
-@Singleton
 @Transactional(Transactional.TxType.SUPPORTS)
 public class DefaultGalleryService implements GalleryService {
 

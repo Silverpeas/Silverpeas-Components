@@ -31,6 +31,7 @@ import org.silverpeas.components.suggestionbox.web.SuggestionEntity;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.ContributionStatus;
 import org.silverpeas.core.contribution.model.ContributionValidation;
 import org.silverpeas.core.notification.message.MessageNotifier;
@@ -43,7 +44,6 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.comparator.AbstractComplexComparator;
 import org.silverpeas.core.util.logging.SilverLogger;
 
-import javax.inject.Singleton;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.text.MessageFormat;
@@ -54,20 +54,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.silverpeas.components.suggestionbox.SuggestionBoxComponentSettings
-    .getUserNotificationDisplayLiveTimeForLongMessage;
+import static org.silverpeas.components.suggestionbox.SuggestionBoxComponentSettings.getUserNotificationDisplayLiveTimeForLongMessage;
 import static org.silverpeas.core.contribution.ContributionStatus.PENDING_VALIDATION;
 
 /**
  * @author: Yohann Chastagnier
  */
-@Singleton
+@Service
 public class SuggestionBoxWebManager {
 
   private static final List<SilverpeasRole> MODERATOR_ROLES =
       CollectionUtil.asList(SilverpeasRole.admin, SilverpeasRole.publisher);
 
-  private SuggestionBoxWebManager() {
+  protected SuggestionBoxWebManager() {
   }
 
   /**

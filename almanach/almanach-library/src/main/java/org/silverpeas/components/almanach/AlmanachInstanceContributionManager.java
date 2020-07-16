@@ -24,6 +24,7 @@
 
 package org.silverpeas.components.almanach;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.calendar.AbstractCalendarComponentInstanceContributionManager;
 import org.silverpeas.core.contribution.ComponentInstanceContributionManager;
 
@@ -32,6 +33,7 @@ import javax.inject.Named;
 /**
  * @author silveryocha
  */
+@Service
 @Named("almanach" + ComponentInstanceContributionManager.Constants.NAME_SUFFIX)
 public class AlmanachInstanceContributionManager
     extends AbstractCalendarComponentInstanceContributionManager {}

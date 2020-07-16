@@ -33,6 +33,7 @@ import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.i18n.I18NHelper;
@@ -45,7 +46,6 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -55,7 +55,7 @@ import java.util.List;
 
 import static org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper.buildAndSend;
 
-@Singleton
+@Service
 public class SilverpeasQuestionManager implements QuestionManager {
 
   private static final String QUESTION_ID = " questionId = ";

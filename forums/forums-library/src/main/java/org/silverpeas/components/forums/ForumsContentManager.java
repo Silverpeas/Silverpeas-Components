@@ -27,12 +27,12 @@ package org.silverpeas.components.forums;
 import org.silverpeas.components.forums.model.ForumPK;
 import org.silverpeas.components.forums.service.ForumsServiceProvider;
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.contentcontainer.content.AbstractContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
 import org.silverpeas.core.contribution.model.Contribution;
 
-import javax.inject.Singleton;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 /**
  * The forums implementation of ContentInterface.
  */
-@Singleton
+@Service
 public class ForumsContentManager extends AbstractContentInterface {
 
   private static final String CONTENT_ICON_FILE_NAME = "forumsSmall.gif";

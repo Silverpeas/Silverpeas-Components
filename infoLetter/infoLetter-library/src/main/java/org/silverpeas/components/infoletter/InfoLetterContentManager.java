@@ -27,12 +27,12 @@ import org.silverpeas.components.infoletter.model.InfoLetterPublicationPdC;
 import org.silverpeas.components.infoletter.model.InfoLetterService;
 import org.silverpeas.components.infoletter.service.InfoLetterServiceProvider;
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.contentcontainer.content.AbstractContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.persistence.jdbc.bean.IdPK;
 
-import javax.inject.Singleton;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -42,7 +42,7 @@ import static org.silverpeas.components.infoletter.model.InfoLetterPublication.P
 /**
  * The infoletter implementation of ContentInterface.
  */
-@Singleton
+@Service
 public class InfoLetterContentManager extends AbstractContentInterface {
 
   private static final String CONTENT_ICON_FILE_NAME = "infoLetterSmall.gif";

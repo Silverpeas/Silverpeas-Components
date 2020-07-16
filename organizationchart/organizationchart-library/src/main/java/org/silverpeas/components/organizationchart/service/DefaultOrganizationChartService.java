@@ -4,13 +4,10 @@ import org.silverpeas.components.organizationchart.model.OrganizationalChart;
 import org.silverpeas.components.organizationchart.model.OrganizationalChartType;
 import org.silverpeas.core.annotation.Service;
 
-import javax.inject.Singleton;
-
 /**
  * @author Yohann Chastagnier
  */
 @Service
-@Singleton
 class DefaultOrganizationChartService implements OrganizationChartService {
 
   @SuppressWarnings("UnnecessaryLocalVariable")

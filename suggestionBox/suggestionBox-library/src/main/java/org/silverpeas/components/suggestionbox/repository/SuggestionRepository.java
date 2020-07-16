@@ -41,7 +41,6 @@ import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SilverpeasList;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -52,7 +51,6 @@ import java.util.Map;
  * suggestion associated to suggestion boxes.
  * @author Yohann Chastagnier
  */
-@Singleton
 @Repository
 public class SuggestionRepository implements EntityRepository<Suggestion> {
 

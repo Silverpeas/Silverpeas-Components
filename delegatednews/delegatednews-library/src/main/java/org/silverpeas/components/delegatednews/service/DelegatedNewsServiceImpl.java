@@ -31,13 +31,13 @@ import org.silverpeas.components.delegatednews.notification.DelegatedNewsValidat
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.util.Collection;
 import java.util.Date;
@@ -47,7 +47,7 @@ import java.util.stream.Stream;
 import static java.util.Collections.singletonList;
 import static org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper.buildAndSend;
 
-@Singleton
+@Service
 @Transactional
 public class DelegatedNewsServiceImpl implements DelegatedNewsService, ComponentInstanceDeletion {
 

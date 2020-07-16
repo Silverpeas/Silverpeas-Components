@@ -49,7 +49,6 @@ import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.DateUtil;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -59,7 +58,6 @@ import java.util.List;
 import static org.silverpeas.core.contribution.publication.dao.PublicationCriteria.onComponentInstanceIds;
 
 @Service
-@Singleton
 @Transactional(Transactional.TxType.SUPPORTS)
 public class DefaultWebSiteService implements WebSiteService {
 

@@ -36,6 +36,7 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.test.DataSetTest;
 import org.silverpeas.core.util.ServiceProvider;
@@ -191,6 +192,7 @@ public abstract class BaseGalleryIT extends DataSetTest {
   /**
    * @author Yohann Chastagnier
    */
+  @Service
   @Singleton
   @Alternative
   @Priority(APPLICATION + 10)

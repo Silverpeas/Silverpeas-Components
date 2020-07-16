@@ -33,13 +33,11 @@ import org.silverpeas.components.resourcesmanager.repository.ResourceValidatorRe
 import org.silverpeas.core.annotation.Service;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@Singleton
 @Transactional
 public class ResourceService {
 

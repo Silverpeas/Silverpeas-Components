@@ -23,11 +23,12 @@
  */
 package org.silverpeas.components.blog.access;
 
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.security.authorization.AbstractAccessController;
 import org.silverpeas.core.security.authorization.AccessControlContext;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
-import org.silverpeas.core.admin.service.OrganizationController;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -39,6 +40,7 @@ import javax.inject.Singleton;
  * With access rights, a user can create/modify/delete a post.
  * @author mmoquillon
  */
+@Service
 @Singleton
 public class BlogPostWriteAccessController extends AbstractAccessController<String>
     implements BlogPostWriteAccessControl {

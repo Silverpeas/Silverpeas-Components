@@ -28,17 +28,17 @@ import org.silverpeas.components.rssaggregator.model.SPChannel;
 import org.silverpeas.components.rssaggregator.model.SPChannelPK;
 import org.silverpeas.core.SilverpeasExceptionMessages;
 import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAOFactory;
 
-import javax.inject.Singleton;
 import java.util.List;
 
 /**
  * @author neysseri
  */
-@Singleton
+@Service
 public class DefaultRssAggregator implements RssAggregator {
 
   private static final String SYNDICATION_CHANNEL_WITH_ID = "syndication channel with id";

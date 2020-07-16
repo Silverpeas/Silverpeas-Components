@@ -33,7 +33,6 @@ import org.silverpeas.core.subscription.constant.SubscriptionResourceType;
 import org.silverpeas.core.subscription.service.AbstractResourceSubscriptionService;
 import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
 
-import javax.inject.Singleton;
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -48,7 +47,6 @@ import static org.silverpeas.core.subscription.constant.SubscriptionResourceType
  * @author Yohann Chastagnier
  */
 @Service
-@Singleton
 public class ForumsSubscriptionService extends AbstractResourceSubscriptionService {
 
   @Override

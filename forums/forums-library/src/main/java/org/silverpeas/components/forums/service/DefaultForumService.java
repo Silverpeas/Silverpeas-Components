@@ -62,7 +62,6 @@ import org.silverpeas.core.tagcloud.service.TagCloudService;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -78,7 +77,6 @@ import static org.silverpeas.core.i18n.I18NHelper.defaultLanguage;
  * Forums service layer which manage forums application
  */
 @Service
-@Singleton
 @Transactional(Transactional.TxType.SUPPORTS)
 public class DefaultForumService implements ForumService {
   private static final String RESOURCE_TYPE = "Forum";

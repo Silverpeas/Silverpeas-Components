@@ -25,6 +25,7 @@ import org.silverpeas.components.kmelia.model.StatsFilterVO;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.node.model.NodeDetail;
@@ -34,7 +35,6 @@ import org.silverpeas.core.silverstatistics.access.service.StatisticService;
 import org.silverpeas.core.silvertrace.SilverTrace;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -42,7 +42,7 @@ import java.util.List;
 
 import static org.silverpeas.core.admin.service.AdministrationServiceProvider.getAdminService;
 
-@Singleton
+@Service
 public class StatisticServiceImpl implements
     org.silverpeas.components.kmelia.stats.StatisticService {
 

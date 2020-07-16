@@ -25,13 +25,13 @@
 package org.silverpeas.components.quizz;
 
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.contentcontainer.content.AbstractContentInterface;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerPK;
 import org.silverpeas.core.questioncontainer.container.service.QuestionContainerService;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 /**
  * The quizz implementation of ContentInterface.
  */
-@Singleton
+@Service
 public class QuizzContentManager  extends AbstractContentInterface {
 
   private static final String CONTENT_ICON_FILE_NAME = "quizzSmall.gif";

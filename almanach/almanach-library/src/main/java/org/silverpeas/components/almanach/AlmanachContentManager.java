@@ -24,16 +24,16 @@
 package org.silverpeas.components.almanach;
 
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.contribution.contentcontainer.content.AbstractContentInterface;
 import org.silverpeas.core.contribution.model.Contribution;
 
-import javax.inject.Singleton;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Singleton
+@Service
 public class AlmanachContentManager extends AbstractContentInterface {
 
   private static final String CONTENT_ICON_FILE_NAME = "almanachSmall.gif";

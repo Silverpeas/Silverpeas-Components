@@ -25,12 +25,12 @@
 package org.silverpeas.components.kmelia.dao;
 
 import org.silverpeas.components.kmelia.model.MostInterestedQueryVO;
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 
-import javax.inject.Singleton;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -38,7 +38,7 @@ import java.util.List;
  * This class is the Jdbc Dao implementation of TopicSearchDao
  * @author ebonnet
  */
-@Singleton
+@Repository
 public class TopicSearchDaoImpl implements TopicSearchDao {
 
   private static final String QUERY_GET_LIST_MOST_INTERESTED_QUERY =

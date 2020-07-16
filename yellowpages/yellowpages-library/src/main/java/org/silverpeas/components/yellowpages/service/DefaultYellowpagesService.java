@@ -49,7 +49,6 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -65,7 +64,6 @@ import static org.silverpeas.components.yellowpages.YellowpagesComponentSettings
  * @author Nicolas Eysseric
  */
 @Service
-@Singleton
 @Transactional(Transactional.TxType.NOT_SUPPORTED)
 public class DefaultYellowpagesService implements YellowpagesService {
 

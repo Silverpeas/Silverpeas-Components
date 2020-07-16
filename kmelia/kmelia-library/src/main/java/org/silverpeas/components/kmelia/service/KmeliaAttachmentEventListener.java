@@ -25,6 +25,7 @@
 package org.silverpeas.components.kmelia.service;
 
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.contribution.attachment.notification.AttachmentEvent;
 import org.silverpeas.core.contribution.attachment.notification.AttachmentRef;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
@@ -35,6 +36,7 @@ import javax.inject.Inject;
 /**
  * @author neysseri
  */
+@Bean
 public class KmeliaAttachmentEventListener extends CDIResourceEventListener<AttachmentEvent> {
 
   @Inject

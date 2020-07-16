@@ -27,6 +27,7 @@ import org.silverpeas.components.mailinglist.service.event.MessageEvent;
 import org.silverpeas.components.mailinglist.service.event.MessageListener;
 import org.silverpeas.components.mailinglist.service.model.MailingListService;
 import org.silverpeas.components.mailinglist.service.model.beans.MailingList;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.mail.engine.SmtpConfiguration;
 import org.silverpeas.core.scheduler.Scheduler;
 import org.silverpeas.core.scheduler.SchedulerEvent;
@@ -39,7 +40,6 @@ import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.mail.FetchProfile;
 import javax.mail.Flags.Flag;
 import javax.mail.Folder;
@@ -59,7 +59,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-@Singleton
+@Service
 public class MessageChecker {
 
   private static final String MAILING_LIST_JOB_NAME = "mailingListScheduler";

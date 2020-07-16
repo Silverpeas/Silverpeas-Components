@@ -23,18 +23,17 @@ package org.silverpeas.components.scheduleevent.service;
 import org.silverpeas.components.scheduleevent.service.model.beans.Contributor;
 import org.silverpeas.components.scheduleevent.service.model.beans.ScheduleEvent;
 import org.silverpeas.components.scheduleevent.service.model.dao.ScheduleEventDao;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Set;
 
-@Singleton
+@Service
 public class ScheduleEventServiceImpl implements ScheduleEventService {
 
   private static final String MESSAGES_PATH

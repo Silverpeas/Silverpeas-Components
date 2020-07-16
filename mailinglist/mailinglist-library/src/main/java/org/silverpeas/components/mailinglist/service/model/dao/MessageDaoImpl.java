@@ -34,7 +34,6 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Named;
-import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
@@ -45,7 +44,6 @@ import java.util.List;
 
 @Repository
 @Named("messageDao")
-@Singleton
 @Transactional
 public class MessageDaoImpl implements MessageDao {
 

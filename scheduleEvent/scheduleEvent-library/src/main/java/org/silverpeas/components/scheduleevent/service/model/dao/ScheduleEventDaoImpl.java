@@ -20,14 +20,14 @@
  */
 package org.silverpeas.components.scheduleevent.service.model.dao;
 
-import org.silverpeas.core.comment.model.CommentPK;
-import org.silverpeas.core.comment.service.CommentServiceProvider;
 import org.silverpeas.components.scheduleevent.constant.ScheduleEventConstant;
 import org.silverpeas.components.scheduleevent.service.model.beans.Contributor;
 import org.silverpeas.components.scheduleevent.service.model.beans.Response;
 import org.silverpeas.components.scheduleevent.service.model.beans.ScheduleEvent;
+import org.silverpeas.core.annotation.Repository;
+import org.silverpeas.core.comment.model.CommentPK;
+import org.silverpeas.core.comment.service.CommentServiceProvider;
 
-import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
@@ -37,7 +37,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-@Singleton
+@Repository
 @Transactional
 public class ScheduleEventDaoImpl implements ScheduleEventDao {
 

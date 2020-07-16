@@ -70,7 +70,6 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -91,7 +90,6 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.*;
  * different services for which it is interested.
  */
 @Service
-@Singleton
 public class DefaultBlogService implements BlogService, Initialization {
 
   private static final String MESSAGES_PATH = "org.silverpeas.blog.multilang.blogBundle";

@@ -24,6 +24,8 @@
 package org.silverpeas.components.mailinglist.service.util;
 
 import org.silverpeas.components.mailinglist.service.util.neko.NekoHtmlCleaner;
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Technical;
 
 import javax.enterprise.inject.Alternative;
 import javax.swing.text.MutableAttributeSet;
@@ -39,6 +41,8 @@ import java.io.Reader;
  * @deprecated use {@link NekoHtmlCleaner} instead
  */
 @Alternative
+@Technical
+@Bean
 public class Html2Text extends HTMLEditorKit.ParserCallback implements HtmlCleaner {
 
   private StringBuilder texte = new StringBuilder(1024);

@@ -21,6 +21,7 @@
 package org.silverpeas.components.kmelia;
 
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.contentcontainer.content.AbstractContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
@@ -30,7 +31,6 @@ import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.security.authorization.PublicationAccessControl;
 
-import javax.inject.Singleton;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.util.List;
@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 /**
  * The kmelia implementation of ContentInterface.
  */
-@Singleton
+@Service
 public class KmeliaContentManager extends AbstractContentInterface implements Serializable {
   private static final long serialVersionUID = 3525407153404515235L;
 
