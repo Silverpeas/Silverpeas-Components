@@ -27,12 +27,11 @@
 <%@page import="org.silverpeas.core.contact.model.ContactDetail" %>
 <%@ page import="org.silverpeas.core.contribution.content.form.Form" %>
 <%@ page import="org.silverpeas.core.contribution.content.form.PagesContext" %>
-<%@ page import="org.silverpeas.core.util.StringUtil" %>
-<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/yellowpages" prefix="yellowpagesTags" %>
 
 <%
   response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
@@ -50,50 +49,21 @@
   PagesContext context = (PagesContext) request.getAttribute("PagesContext");
 %>
 
-<view:link href="/util/styleSheets/fieldset.css"/>
+<c:set var="fullPage" value="${requestScope['FullPage']}"/>
 
-<fieldset id="identity-base" class="skinFieldset">
-  <legend class="without-img"><%=WebEncodeHelper
-      .javaStringToHtmlString(contact.getFirstName()) %> <%= WebEncodeHelper
-      .javaStringToHtmlString(contact.getLastName()) %>
-  </legend>
-
-  <div class="oneFieldPerLine">
-    <% if (StringUtil.isDefined(contact.getEmail())) { %>
-    <div class="field" id="email">
-      <label class="txtlibform"><%=resources.getString("GML.eMail")%>
-      </label>
-      <div class="champs">
-        <a href=mailto:"<%=WebEncodeHelper.javaStringToHtmlString(contact.getEmail()) %>"><%=WebEncodeHelper
-            .javaStringToHtmlString(WebEncodeHelper.javaStringToHtmlString(contact.getEmail())) %>
-        </a></div>
-    </div>
-    <% } %>
-    <% if (StringUtil.isDefined(contact.getPhone())) { %>
-    <div class="field" id="phone">
-      <label class="txtlibform"><%=resources.getString("GML.phoneNumber")%>
-      </label>
-      <div class="champs"><%=WebEncodeHelper.javaStringToHtmlString(contact.getPhone()) %>
-      </div>
-    </div>
-    <% } %>
-    <% if (StringUtil.isDefined(contact.getFax())) { %>
-    <div class="field" id="fax">
-      <label class="txtlibform"><%=resources.getString("GML.faxNumber")%>
-      </label>
-      <div class="champs"><%=WebEncodeHelper.javaStringToHtmlString(contact.getFax()) %>
-      </div>
-    </div>
-    <% } %>
-  </div>
-</fieldset>
-
-<% if (formView != null) { %>
-<fieldset id="identity-extra" class="skinFieldset">
-  <legend class="without-img"><%=resources.getString("GML.bloc.further.information")%>
-  </legend>
-  <%
-    formView.display(out, context);
-  %>
-</fieldset>
-<% } %>
+<c:choose>
+  <c:when test="${fullPage}">
+    <view:sp-page>
+    <view:sp-head-part withFieldsetStyle="true"/>
+    <view:sp-body-part>
+      <view:window popup="false">
+    <yellowpagesTags:contactView contact="<%=contact%>" userLanguage="<%=resources.getLanguage()%>" formView="<%=formView%>" context="<%=context%>"/>
+      </view:window>
+    </view:sp-body-part>
+    </view:sp-page>
+  </c:when>
+  <c:otherwise>
+    <view:link href="/util/styleSheets/fieldset.css"/>
+    <yellowpagesTags:contactView contact="<%=contact%>" userLanguage="<%=resources.getLanguage()%>" formView="<%=formView%>" context="<%=context%>"/>
+  </c:otherwise>
+</c:choose>

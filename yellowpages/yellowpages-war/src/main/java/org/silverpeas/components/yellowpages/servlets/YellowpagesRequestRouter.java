@@ -471,15 +471,16 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter<Yellowpages
     return contact;
   }
 
-  private void setPageContext(String contactId, HttpServletRequest request,
+  private void setPageContext(String contactId, HttpRequest request,
       YellowpagesSessionController ysc) {
     PagesContext context =
         new PagesContext("modelForm", "0", ysc.getLanguage(), false, ysc.getComponentId(),
             ysc.getUserId());
     context.setBorderPrinted(false);
     context.setObjectId(contactId);
-
     request.setAttribute("PagesContext", context);
+
+    request.setAttribute("FullPage", request.getParameterAsBoolean("FullPage"));
   }
 
   private void setCommonAttributesOfMainPage(YellowpagesSessionController scc,
