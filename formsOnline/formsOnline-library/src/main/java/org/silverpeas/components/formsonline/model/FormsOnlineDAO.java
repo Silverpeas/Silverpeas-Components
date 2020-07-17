@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.formsonline.model;
 
-import org.silverpeas.core.persistence.datasource.repository.PaginationCriterion;
+import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.util.SilverpeasList;
 
 import java.util.Collection;
@@ -140,12 +140,12 @@ public interface FormsOnlineDAO {
    * @param pk the form primary key
    * @param userId the user id
    * @param states the states to filter on if any
-   * @param paginationCriterion pagination criterion which can be null if no pagination is
+   * @param paginationPage pagination which can be null if no pagination is
    * requested.
    * @return a list of FormInstance objects
    */
   SilverpeasList<FormInstance> getSentFormInstances(FormPK pk, String userId,
-      final List<Integer> states, final PaginationCriterion paginationCriterion);
+      final List<Integer> states, final PaginationPage paginationPage) throws FormsOnlineException;
 
   /**
    * Get all requests associated to given form ordered from the newest to the older.
@@ -153,29 +153,44 @@ public interface FormsOnlineDAO {
    * @param allRequests true to get all request of any state, false to get only request to validate
    * @param userId the user id
    * @param states the states to filter on if any
-   * @param paginationCriterion pagination criterion which can be null if no pagination is
+   * @param paginationPage pagination which can be null if no pagination is
    * requested.
    * @return if allRequests is false only requests to validate and requests validated by given
    * user are returned. If true, all requests (validated or not) are returned.
    */
   SilverpeasList<FormInstance> getReceivedRequests(FormPK pk, boolean allRequests, String userId,
-      final List<Integer> states, final PaginationCriterion paginationCriterion);
+      final List<Integer> states, final PaginationPage paginationPage) throws FormsOnlineException;
 
   List<String> getAvailableFormIdsAsReceiver(String instanceId, String userId,
       String[] userGroupIds) throws FormsOnlineException;
-
-  FormInstance createInstance(FormInstance instance) throws FormsOnlineException;
 
   FormInstance getRequest(RequestPK pk) throws FormsOnlineException;
 
   List<FormDetail> getForms(List<String> formIds) throws FormsOnlineException;
 
-  void updateRequest(FormInstance instance) throws FormsOnlineException;
+  /**
+   * Inserts or updates the given request (also called a form instance).
+   * <p>
+   * All validation data contained into {@link FormInstance#getValidations()} are also inserted
+   * or updated.
+   * </p>
+   * @param request the request to insert or update.
+   * @return the {@link FormInstance} itself.
+   * @throws FormsOnlineException on database integrity error.
+   */
+  FormInstance saveRequest(FormInstance request) throws FormsOnlineException;
+
+  /**
+   * Saves the state of the given request without updating anything else.
+   * @param request the request which the state MUST be updated.
+   * @throws FormsOnlineException if the form instance id does not exist.
+   */
+  void saveRequestState(FormInstance request) throws FormsOnlineException;
 
   void deleteRequest(RequestPK pk) throws FormsOnlineException;
 
   Map<Integer, Integer> getNumberOfRequestsByForm(String instanceId)
       throws FormsOnlineException;
 
-  SilverpeasList<FormInstance> getAllRequests(FormPK pk);
+  SilverpeasList<FormInstance> getAllRequests(FormPK pk) throws FormsOnlineException;
 }

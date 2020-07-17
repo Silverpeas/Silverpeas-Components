@@ -24,10 +24,15 @@
 
 package org.silverpeas.components.formsonline.model;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
-import org.silverpeas.core.persistence.datasource.repository.PaginationCriterion;
+import org.silverpeas.components.formsonline.model.RequestCriteria.QUERY_ORDER_BY;
+import org.silverpeas.core.admin.PaginationPage;
+import org.silverpeas.core.contribution.ContributionStatus;
+import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQueries;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
+import org.silverpeas.core.util.Mutable;
+import org.silverpeas.core.util.SilverpeasArrayList;
 import org.silverpeas.core.util.SilverpeasList;
 
 import java.sql.Connection;
@@ -37,76 +42,85 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.ArrayUtils.isNotEmpty;
+import static org.silverpeas.components.formsonline.model.RequestCriteria.QUERY_ORDER_BY.CREATION_DATE_DESC;
+import static org.silverpeas.components.formsonline.model.RequestCriteria.QUERY_ORDER_BY.ID_DESC;
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
-import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery.createSelect;
+import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery.*;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
 
   // General infos
   private static final String FORMS_TABLENAME = "SC_FormsOnline_Forms";
   private static final String FORMS_INSTANCES_TABLENAME = "SC_FormsOnline_FormInstances";
+  private static final String FORMS_INSTANCE_VALIDATIONS_TABLENAME = "SC_FormsOnline_FormInstVali";
   private static final String USER_RIGHTS_TABLENAME = "SC_FormsOnline_UserRights";
   private static final String GROUP_RIGHTS_TABLENAME = "SC_FormsOnline_GroupRights";
 
+  private static final String SELECT_FROM = "SELECT * FROM ";
+  private static final String INSERT_INTO = "INSERT INTO ";
+  private static final String DELETE_FROM = "DELETE FROM ";
   // Queries about Forms
   private static final String QUERY_FIND_FORMS =
-      "select * from " + FORMS_TABLENAME + " where instanceId = ?";
+      SELECT_FROM + FORMS_TABLENAME + " where instanceId = ?";
   private static final String QUERY_LOAD_FORM =
-      "select * from " + FORMS_TABLENAME + " where instanceId = ? and id = ?";
-  private static final String QUERY_INSERT_FORM = "INSERT INTO " +
-      FORMS_TABLENAME +
+      SELECT_FROM + FORMS_TABLENAME + " where instanceId = ? and id = ?";
+  private static final String QUERY_INSERT_FORM = INSERT_INTO + FORMS_TABLENAME +
       "(id, xmlFormName, name, description, title, creatorId, creationDate, state, " +
-      "instanceId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-  private static final String QUERY_UPDATE_FORM = "update " +
-      FORMS_TABLENAME +
+      "instanceId, hierarchicalValidation, formInstExchangeReceiver, deleteAfterFormInstExchange) " +
+      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+  private static final String QUERY_UPDATE_FORM = "update " + FORMS_TABLENAME +
       " set xmlFormName = ?, name = ?, description = ?, title = ?, creatorId = ?, creationDate = " +
-      "?, state = ? where instanceId = ? and id= ? ";
+      "?, state = ?, hierarchicalValidation = ?, formInstExchangeReceiver = ?, " +
+      "deleteAfterFormInstExchange = ? where instanceId = ? and id= ? ";
   private static final String QUERY_DELETE_FORM =
-      "delete from " + FORMS_TABLENAME + " where instanceId = ? and id = ? ";
+      DELETE_FROM + FORMS_TABLENAME + " where instanceId = ? and id = ? ";
 
   // Queries about Forms instances
-  private static final String QUERY_LOAD_FORM_INSTANCE =
-      "select * from " + FORMS_INSTANCES_TABLENAME + " where instanceId = ? and id = ?";
-  private static final String QUERY_UPDATE_FORM_INSTANCE = "update " +
-      FORMS_INSTANCES_TABLENAME +
-      " set formId = ?, state = ?, creatorId = ?, creationDate = ?, validatorId = ?, " +
-      "validationDate = ?, comments = ?, instanceId = ? where id = ? ";
-  private static final String QUERY_INSERT_FORMINSTANCE = "INSERT INTO " +
-      FORMS_INSTANCES_TABLENAME +
-      "(id, formId, state, creatorId, creationDate, validatorId, validationDate, comments, " +
-      "instanceId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-  private static final String QUERY_DELETE_FORM_INSTANCE =
-      "delete from " + FORMS_INSTANCES_TABLENAME + " where instanceId = ? and id = ? ";
-
   private static final String COUNT_REQUESTS_BY_FORM =
       "select formid, count(*) from " + FORMS_INSTANCES_TABLENAME + " where instanceId = ? group by formid";
 
+  private static final String WHERE_FULL_RIGHT_CLAUSE = " where instanceId = ? and formId = ? and rightType = ?";
   // Queries about Rights
-  private static final String QUERY_LOAD_USER_RIGHTS = "select * from " + USER_RIGHTS_TABLENAME +
-      " where instanceId = ? and formId = ? and rightType = ?";
-  private static final String QUERY_LOAD_GROUP_RIGHTS = "select * from " + GROUP_RIGHTS_TABLENAME +
-      " where instanceId = ? and formId = ? and rightType = ?";
-  private static final String QUERY_REMOVE_USER_RIGHTS = "delete from " + USER_RIGHTS_TABLENAME +
-      " where instanceId = ? and formId = ? and rightType = ?";
-  private static final String QUERY_REMOVE_GROUP_RIGHTS = "delete from " + GROUP_RIGHTS_TABLENAME +
-      " where instanceId = ? and formId = ? and rightType = ?";
+  private static final String QUERY_LOAD_USER_RIGHTS = SELECT_FROM + USER_RIGHTS_TABLENAME +
+      WHERE_FULL_RIGHT_CLAUSE;
+  private static final String QUERY_LOAD_GROUP_RIGHTS = SELECT_FROM + GROUP_RIGHTS_TABLENAME +
+      WHERE_FULL_RIGHT_CLAUSE;
+  private static final String QUERY_REMOVE_USER_RIGHTS = DELETE_FROM + USER_RIGHTS_TABLENAME +
+      WHERE_FULL_RIGHT_CLAUSE;
+  private static final String QUERY_REMOVE_GROUP_RIGHTS = DELETE_FROM + GROUP_RIGHTS_TABLENAME +
+      WHERE_FULL_RIGHT_CLAUSE;
   private static final String QUERY_INSERT_USER_RIGHTS =
-      "INSERT INTO " + USER_RIGHTS_TABLENAME + "(formId, instanceId, rightType, userId) " +
+      INSERT_INTO + USER_RIGHTS_TABLENAME + "(formId, instanceId, rightType, userId) " +
           "VALUES (?, ?, ?, ?)";
   private static final String QUERY_INSERT_GROUP_RIGHTS =
-      "INSERT INTO " + GROUP_RIGHTS_TABLENAME + "(formId, instanceId, rightType, groupId) " +
+      INSERT_INTO + GROUP_RIGHTS_TABLENAME + "(formId, instanceId, rightType, groupId) " +
           "VALUES (?, ?, ?, ?)";
-  private static final String STATE_FIELD = "state";
+
+  private static final String ID = "id";
+  private static final String ID_CRITERIA = ID + " = ?";
+  private static final String STATE = "state";
   private static final String INSTANCE_ID = "instanceId";
+  private static final String FORM_ID = "formId";
+  private static final String CREATION_DATE = "creationDate";
+  private static final String CREATOR_ID = "creatorId";
+  private static final String REQUEST_MSG = "instance on form";
+  private static final String FORM_INST_ID = "formInstId";
+  private static final String FORM_INST_ID_CLAUSE = FORM_INST_ID + " = r.id";
+  private static final String VALIDATION_BY = "validationBy";
 
   @Override
   public FormDetail createForm(FormDetail formDetail) throws FormsOnlineException {
@@ -122,10 +136,11 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
       prepareDateStatement(stmt, 7, formDetail.getCreationDate());
       stmt.setInt(8, formDetail.getState());
       stmt.setString(9, formDetail.getInstanceId());
-
+      stmt.setBoolean(10, formDetail.isHierarchicalValidation());
+      stmt.setString(11, formDetail.getRequestExchangeReceiver().orElse(null));
+      stmt.setBoolean(12, formDetail.isDeleteAfterRequestExchange());
       stmt.executeUpdate();
       formDetail.setId(id);
-
       return formDetail;
     } catch (SQLException se) {
       throw new FormsOnlineException(failureOnAdding("form", formDetail.getName()), se);
@@ -141,7 +156,6 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
       removeUserRights(con, pk, "S");
       removeGroupRights(con, pk, "R");
       removeUserRights(con, pk, "R");
-
       stmt.setString(1, pk.getInstanceId());
       stmt.setInt(2, Integer.parseInt(pk.getId()));
       stmt.executeUpdate();
@@ -198,8 +212,11 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
       stmt.setString(5, formDetail.getCreatorId());
       prepareDateStatement(stmt, 6, formDetail.getCreationDate());
       stmt.setInt(7, formDetail.getState());
-      stmt.setString(8, formDetail.getInstanceId());
-      stmt.setInt(9, formDetail.getId());
+      stmt.setBoolean(8, formDetail.isHierarchicalValidation());
+      stmt.setString(9, formDetail.getRequestExchangeReceiver().orElse(null));
+      stmt.setBoolean(10, formDetail.isDeleteAfterRequestExchange());
+      stmt.setString(11, formDetail.getInstanceId());
+      stmt.setInt(12, formDetail.getId());
       stmt.executeUpdate();
     } catch (SQLException se) {
       throw new FormsOnlineException(failureOnUpdate("form", formDetail.getId()), se);
@@ -402,7 +419,7 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
     }
 
     /* Build query */
-    StringBuilder query = new StringBuilder("select * from " + FORMS_TABLENAME + " where id in (");
+    StringBuilder query = new StringBuilder(SELECT_FROM + FORMS_TABLENAME + " where id in (");
     int pos = 0;
     for (final String formId : formIds) {
       if (pos++ != 0) {
@@ -434,15 +451,13 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
    */
   @Override
   public SilverpeasList<FormInstance> getSentFormInstances(FormPK pk, String userId,
-      final List<Integer> states, final PaginationCriterion paginationCriterion) {
-
-    JdbcSqlQuery query = createSelect("*")
-                        .from(FORMS_INSTANCES_TABLENAME)
-                        .where("instanceid = ?", pk.getInstanceId())
-                        .and("formId = ?", Integer.parseInt(pk.getId()))
-                        .and("creatorId = ?", userId);
-
-    return getFormInstances(query, states, paginationCriterion);
+      final List<Integer> states, final PaginationPage paginationPage) throws FormsOnlineException {
+    return getRequestsByCriteria(RequestCriteria
+        .onComponentInstanceIds(pk.getInstanceId())
+        .andFormIds(pk.getId())
+        .andCreatorId(userId)
+        .andStates(states)
+        .paginateBy(paginationPage));
   }
 
   /*
@@ -452,44 +467,128 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
    */
   @Override
   public SilverpeasList<FormInstance> getReceivedRequests(FormPK pk, boolean allRequests,
-      String userId, final List<Integer> states, final PaginationCriterion paginationCriterion) {
+      String userId, final List<Integer> states, final PaginationPage paginationPage)
+      throws FormsOnlineException {
     /*
      * then retrieve instances where : - user has been the validator - no validation has been done
      * yet and formid in available form ids
      */
-
-    JdbcSqlQuery query = createSelect("*")
-                         .from(FORMS_INSTANCES_TABLENAME)
-                         .where("instanceid = ?", pk.getInstanceId())
-                         .and("formId = ?", Integer.parseInt(pk.getId()));
+    final RequestCriteria criteria = RequestCriteria
+        .onComponentInstanceIds(pk.getInstanceId())
+        .andFormIds(pk.getId())
+        .andStates(states)
+        .paginateBy(paginationPage);
     if (!allRequests) {
-      query.and("(validatorId = ? or (validatorId is null))", userId);
+      criteria.andValidatorIdOrNoValidator(userId);
     }
-
-    return getFormInstances(query, states, paginationCriterion);
+    return getRequestsByCriteria(criteria);
   }
 
   /**
-   * Centralization of form instances queries execution.<br>
+   * Centralization of request queries execution.<br>
    * Common filtering and ordering are applied to the given {@link JdbcSqlQuery} instance.
-   * @param preparedQuery an initialized and prepared {@link JdbcSqlQuery} instance.
-   * @param states the states to filter on.
-   * @param paginationCriterion the pagination criterion.
+   * @param criteria criteria to apply.
    * @return the result list.
    */
-  private SilverpeasList<FormInstance> getFormInstances(final JdbcSqlQuery preparedQuery,
-      final List<Integer> states, final PaginationCriterion paginationCriterion) {
-    if (states != null && !states.isEmpty()) {
-      preparedQuery.and(STATE_FIELD).in(states);
+  SilverpeasList<FormInstance> getRequestsByCriteria(final RequestCriteria criteria)
+      throws FormsOnlineException {
+    if (criteria.emptyResultWhenNoFilteringOnComponentInstances()) {
+      return new SilverpeasArrayList<>(0);
     }
-
-    preparedQuery.orderBy("creationDate desc, id desc");
-
-    try {
-      return preparedQuery.withPagination(paginationCriterion).execute(this::fetchFormInstance);
-    } catch (SQLException e) {
-      throw new SilverpeasRuntimeException(e);
+    final JdbcSqlQuery query = JdbcSqlQuery
+        .createSelect("r.*")
+        .from(FORMS_INSTANCES_TABLENAME + " r")
+        .where("instanceid").in(criteria.getComponentInstanceIds());
+    if (!criteria.getIds().isEmpty()) {
+      query.and("id").in(criteria.getIds().stream().map(Integer::parseInt).collect(toSet()));
     }
+    if (!criteria.getFormIds().isEmpty()) {
+      query.and(FORM_ID).in(criteria.getFormIds().stream().map(Integer::parseInt).collect(toSet()));
+    }
+    if (isDefined(criteria.getCreatorId())) {
+      query.and("creatorId = ?", criteria.getCreatorId());
+    }
+    if (!criteria.getStates().isEmpty()) {
+      query.and(STATE).in(criteria.getStates());
+    }
+    if (isDefined(criteria.getValidatorId())) {
+      if (criteria.isNoValidator()) {
+        query.and("(EXISTS(SELECT 1")
+            .from(FORMS_INSTANCE_VALIDATIONS_TABLENAME)
+            .where(FORM_INST_ID_CLAUSE)
+            .and(VALIDATION_BY + " = ?", criteria.getValidatorId())
+            .addSqlPart(")");
+        query.or("NOT EXISTS(SELECT 1")
+             .from(FORMS_INSTANCE_VALIDATIONS_TABLENAME)
+             .where(FORM_INST_ID_CLAUSE)
+             .addSqlPart(")");
+        query.addSqlPart(")");
+      } else {
+        query.and("EXISTS(SELECT 1")
+            .from(FORMS_INSTANCE_VALIDATIONS_TABLENAME)
+            .where(FORM_INST_ID_CLAUSE)
+            .and(VALIDATION_BY + " = ?", criteria.getValidatorId())
+            .addSqlPart(")");
+      }
+    } else if (criteria.isNoValidator()) {
+      query.and("NOT EXISTS(SELECT 1")
+          .from(FORMS_INSTANCE_VALIDATIONS_TABLENAME)
+          .where(FORM_INST_ID_CLAUSE)
+          .addSqlPart(")");
+    }
+    // default order by if none defined
+    final List<QUERY_ORDER_BY> orderBies = criteria.getOrderByList().isEmpty()
+        ? Arrays.asList(CREATION_DATE_DESC, ID_DESC)
+        : criteria.getOrderByList();
+    query.orderBy(orderBies.stream()
+        .map(o -> o.getPropertyName() + " " + (o.isAsc() ? "asc" : "desc"))
+        .collect(Collectors.joining(",")));
+    // pagination
+    if (criteria.getPagination() != null) {
+      query.withPagination(criteria.getPagination().asCriterion());
+    }
+    // execution
+    try (final Connection connection = DBUtil.openConnection()) {
+      final SilverpeasList<FormInstance> requests = query.executeWith(connection, this::fetchFormInstance);
+      return decorateWithValidations(connection, requests);
+    } catch (Exception e) {
+      throw new FormsOnlineException(failureOnGetting("form instance", criteria.toString()), e);
+    }
+  }
+
+  private SilverpeasList<FormInstance> decorateWithValidations(final Connection con,
+      final SilverpeasList<FormInstance> requests) throws SQLException {
+    if (!requests.isEmpty()) {
+      final Mutable<Integer> min = Mutable.of(Integer.MAX_VALUE);
+      final Mutable<Integer> max = Mutable.of(Integer.MIN_VALUE);
+      final Map<Integer, FormInstance> indexedById = requests.stream()
+          .map(i -> {
+            final int idAsInt = i.getIdAsInt();
+            min.set(Math.min(min.get(), idAsInt));
+            max.set(Math.max(max.get(), idAsInt));
+            return i;
+          })
+          .collect(toMap(FormInstance::getIdAsInt, r -> r));
+      JdbcSqlQuery.createSelect("*")
+          .from(FORMS_INSTANCE_VALIDATIONS_TABLENAME)
+          .where(FORM_INST_ID + " BETWEEN ? AND ?", min.get(), max.get())
+          .executeWith(con, r -> {
+            final FormInstance request = indexedById.get(r.getInt(FORM_INST_ID));
+            if (request != null) {
+              final FormInstanceValidation validation = new FormInstanceValidation(request);
+              validation.setId(r.getInt("id"));
+              validation.setStatus(ContributionStatus.valueOf(r.getString("status")));
+              validation.setComment(r.getString("validationComment"));
+              validation.setValidationBy(r.getString(VALIDATION_BY));
+              validation.setDate(r.getTimestamp("validationDate"));
+              validation.setValidationType(FormInstanceValidationType.valueOf(r.getString("validationType")));
+              validation.setFollower(r.getBoolean("follower"));
+              request.getValidations().add(validation);
+            }
+            return null;
+          });
+    }
+    return requests;
   }
 
   @Override
@@ -536,90 +635,128 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
     form.setName(rs.getString("name"));
     form.setDescription(rs.getString("description"));
     form.setTitle(rs.getString("title"));
-    form.setCreatorId(rs.getString("creatorId"));
-    form.setCreationDate(new Date(rs.getTimestamp("creationDate").getTime()));
+    form.setCreatorId(rs.getString(CREATOR_ID));
+    form.setCreationDate(rs.getTimestamp(CREATION_DATE));
     form.setInstanceId(rs.getString(INSTANCE_ID));
-    form.setState(rs.getInt(STATE_FIELD));
+    form.setState(rs.getInt(STATE));
+    form.setHierarchicalValidation(rs.getBoolean("hierarchicalValidation"));
+    form.setRequestExchangeReceiver(rs.getString("formInstExchangeReceiver"));
+    form.setDeleteAfterRequestExchange(rs.getBoolean("deleteAfterFormInstExchange"));
     return form;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * FormsOnlineDAO#createInstance(com.silverpeas.formsonline.model
-   * .FormInstance)
-   */
   @Override
-  public FormInstance createInstance(FormInstance instance) throws FormsOnlineException {
-    try (final Connection con = getConnection();
-         final PreparedStatement stmt = con.prepareStatement(QUERY_INSERT_FORMINSTANCE)) {
-      int id = DBUtil.getNextId(FORMS_INSTANCES_TABLENAME, "id");
-      stmt.setInt(1, id);
-      stmt.setInt(2, instance.getFormId());
-      stmt.setInt(3, instance.getState());
-      stmt.setString(4, instance.getCreatorId());
-      prepareDateStatement(stmt, 5, instance.getCreationDate());
-      stmt.setString(6, instance.getValidatorId());
-      prepareDateStatement(stmt, 7, instance.getValidationDate());
-      stmt.setString(8, instance.getComments());
-      stmt.setString(9, instance.getComponentInstanceId());
-      stmt.executeUpdate();
-      instance.setId(id);
-      return instance;
-    } catch (SQLException se) {
-      throw new FormsOnlineException(failureOnAdding("instance on form", instance.getFormId()),
-          se);
+  public FormInstance saveRequest(final FormInstance request) throws FormsOnlineException {
+    final boolean isInsert = !isSqlDefined(request.getId());
+    try {
+      final JdbcSqlQueries saveQueries = new JdbcSqlQueries();
+      final int formInstId;
+      final JdbcSqlQuery formInstanceSave;
+      if (isInsert) {
+        formInstId = DBUtil.getNextId(FORMS_INSTANCES_TABLENAME, "id");
+        request.setId(formInstId);
+        formInstanceSave = createInsertFor(FORMS_INSTANCES_TABLENAME);
+        formInstanceSave.addInsertParam(ID, formInstId);
+      } else {
+        formInstId = request.getIdAsInt();
+        formInstanceSave = createUpdateFor(FORMS_INSTANCES_TABLENAME);
+      }
+      saveQueries.add(formInstanceSave);
+      formInstanceSave.addSaveParam(FORM_ID, request.getFormId(), isInsert);
+      formInstanceSave.addSaveParam(STATE, request.getState(), isInsert);
+      formInstanceSave.addSaveParam(INSTANCE_ID, request.getComponentInstanceId(), isInsert);
+      if (isInsert) {
+        formInstanceSave.addSaveParam(CREATOR_ID, request.getCreatorId(), true);
+        formInstanceSave.addSaveParam(CREATION_DATE, Timestamp.from(Instant.now()), true);
+      } else {
+        formInstanceSave.where(ID_CRITERIA, formInstId);
+      }
+      saveQueries.addAll(prepareSaveValidations(request.getValidations()));
+      saveQueries.execute();
+      return request;
+    } catch (Exception e) {
+      final String idAsString = String.valueOf(request.getFormId());
+      if (isInsert) {
+        throw new FormsOnlineException(failureOnAdding(REQUEST_MSG, idAsString), e);
+      } else {
+        throw new FormsOnlineException(failureOnUpdate(REQUEST_MSG, idAsString), e);
+      }
+    }
+  }
+
+  private List<JdbcSqlQuery> prepareSaveValidations(
+      final Collection<FormInstanceValidation> validations) {
+    return validations.stream()
+        .map(v -> {
+          final JdbcSqlQuery validationSave;
+          final boolean isInsert = v.getId() == null || v.getId() == -1;
+          final int validationId;
+          if (isInsert) {
+            validationId = DBUtil.getNextId(FORMS_INSTANCE_VALIDATIONS_TABLENAME, "id");
+            v.setId(validationId);
+            validationSave = createInsertFor(FORMS_INSTANCE_VALIDATIONS_TABLENAME);
+            validationSave.addInsertParam(ID, validationId);
+          } else {
+            validationId = v.getId();
+            validationSave = createUpdateFor(FORMS_INSTANCE_VALIDATIONS_TABLENAME);
+          }
+          validationSave.addSaveParam(FORM_INST_ID, v.getFormInstance().getIdAsInt(), isInsert);
+          validationSave.addSaveParam(VALIDATION_BY, v.getValidator().getId(), isInsert);
+          validationSave.addSaveParam("validationType", v.getValidationType().name(), isInsert);
+          validationSave.addSaveParam("status", v.getStatus().name(), isInsert);
+          validationSave.addSaveParam("validationComment", v.getComment(), isInsert);
+          validationSave.addSaveParam("follower", v.isFollower(), isInsert);
+          if (isInsert) {
+            final Timestamp validationDate = v.getDate() != null
+                ? new Timestamp(v.getDate().getTime())
+                : Timestamp.from(Instant.now());
+            validationSave.addSaveParam("validationDate", validationDate, true);
+          } else {
+            validationSave.where(ID_CRITERIA, validationId);
+          }
+          return validationSave;
+        })
+        .collect(Collectors.toList());
+  }
+
+  @Override
+  public void saveRequestState(final FormInstance request) throws FormsOnlineException {
+    try {
+      if (!isSqlDefined(request.getId())) {
+        throw new FormsOnlineException(failureOnUpdate(REQUEST_MSG, request.getFormId()));
+      }
+      Transaction.performInOne(() -> {
+        final JdbcSqlQuery formInstanceStateSave = createUpdateFor(FORMS_INSTANCES_TABLENAME);
+        formInstanceStateSave.addUpdateParam(STATE, request.getState());
+        formInstanceStateSave.where(ID_CRITERIA, request.getIdAsInt());
+        return formInstanceStateSave.execute();
+      });
+    } catch (Exception e) {
+      throw new FormsOnlineException(failureOnUpdate("instance state on form", request.getFormId()), e);
     }
   }
 
   @Override
   public FormInstance getRequest(RequestPK pk) throws FormsOnlineException {
-    FormInstance formInstance = null;
-    try (final Connection con = getConnection();
-         final PreparedStatement stmt = con.prepareStatement(QUERY_LOAD_FORM_INSTANCE)) {
-      stmt.setString(1, pk.getInstanceId());
-      stmt.setInt(2, Integer.parseInt(pk.getId()));
-      try (ResultSet rs = stmt.executeQuery()) {
-        if (rs.next()) {
-          formInstance = fetchFormInstance(rs);
-        }
-      }
-    } catch (SQLException se) {
-      throw new FormsOnlineException(failureOnGetting("form instance", pk.toString()), se);
-    }
-    return formInstance;
-  }
-
-  @Override
-  public void updateRequest(FormInstance formInstance) throws FormsOnlineException {
-    try (final Connection con = getConnection();
-         final PreparedStatement stmt = con.prepareStatement(QUERY_UPDATE_FORM_INSTANCE)) {
-      stmt.setInt(1, formInstance.getFormId());
-      stmt.setInt(2, formInstance.getState());
-      stmt.setString(3, formInstance.getCreatorId());
-      prepareDateStatement(stmt, 4, formInstance.getCreationDate());
-      stmt.setString(5, formInstance.getValidatorId());
-      prepareDateStatement(stmt, 6, formInstance.getValidationDate());
-      stmt.setString(7, formInstance.getComments());
-      stmt.setString(8, formInstance.getComponentInstanceId());
-      stmt.setInt(9, formInstance.getIdAsInt());
-
-      stmt.executeUpdate();
-    } catch (SQLException se) {
-      throw new FormsOnlineException(
-          failureOnUpdate("form instance", formInstance.getPK().toString()), se);
-    }
+    return unique(getRequestsByCriteria(RequestCriteria
+        .onComponentInstanceIds(pk.getInstanceId())
+        .andIds(pk.getId())));
   }
 
   @Override
   public void deleteRequest(RequestPK pk) throws FormsOnlineException {
-    try (final Connection con = getConnection();
-         final PreparedStatement stmt = con.prepareStatement(QUERY_DELETE_FORM_INSTANCE)) {
-      stmt.setString(1, pk.getInstanceId());
-      stmt.setInt(2, Integer.parseInt(pk.getId()));
-      stmt.executeUpdate();
-    } catch (SQLException se) {
-      throw new FormsOnlineException(failureOnDeleting("form instance", pk.toString()), se);
+    try {
+      final JdbcSqlQueries deleteQueries = new JdbcSqlQueries();
+      deleteQueries.add(JdbcSqlQuery
+          .createDeleteFor(FORMS_INSTANCE_VALIDATIONS_TABLENAME)
+          .where("formInstId = ?", Integer.parseInt(pk.getId())));
+      deleteQueries.add(JdbcSqlQuery
+          .createDeleteFor(FORMS_INSTANCES_TABLENAME)
+          .where("instanceId = ?", pk.getInstanceId())
+          .and("id = ?", Integer.parseInt(pk.getId())));
+      deleteQueries.execute();
+    } catch (Exception e) {
+      throw new FormsOnlineException(failureOnDeleting("form instance", pk.toString()), e);
     }
   }
 
@@ -643,28 +780,20 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
   }
 
   @Override
-  public SilverpeasList<FormInstance> getAllRequests(FormPK pk) {
-    JdbcSqlQuery query = createSelect("*")
-        .from(FORMS_INSTANCES_TABLENAME)
-        .where("instanceid = ?", pk.getInstanceId())
-        .and("formId = ?", Integer.parseInt(pk.getId()));
-
-    return getFormInstances(query, null, PaginationCriterion.NO_PAGINATION);
+  public SilverpeasList<FormInstance> getAllRequests(FormPK pk) throws FormsOnlineException {
+    return getRequestsByCriteria(RequestCriteria
+        .onComponentInstanceIds(pk.getInstanceId())
+        .andFormIds(pk.getId()));
   }
 
-  private FormInstance fetchFormInstance(ResultSet rs) throws SQLException {
-    FormInstance formInstance = new FormInstance();
-
+  private FormInstance fetchFormInstance(final ResultSet rs) throws SQLException {
+    final FormInstance formInstance = new FormInstance();
     formInstance.setId(rs.getInt("id"));
-    formInstance.setFormId(rs.getInt("formId"));
-    formInstance.setState(rs.getInt(STATE_FIELD));
-    formInstance.setCreatorId(rs.getString("creatorId"));
-    formInstance.setCreationDate(rs.getTimestamp("creationDate"));
-    formInstance.setValidatorId(rs.getString("validatorId"));
-    formInstance.setValidationDate(rs.getTimestamp("validationDate"));
-    formInstance.setComments(rs.getString("comments"));
+    formInstance.setFormId(rs.getInt(FORM_ID));
+    formInstance.setState(rs.getInt(STATE));
+    formInstance.setCreatorId(rs.getString(CREATOR_ID));
+    formInstance.setCreationDate(rs.getTimestamp(CREATION_DATE));
     formInstance.setInstanceId(rs.getString(INSTANCE_ID));
-
     return formInstance;
   }
 

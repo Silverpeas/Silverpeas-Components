@@ -23,8 +23,9 @@ import static org.silverpeas.components.formsonline.model.FormInstance.*;
 public class RequestsByStatus {
 
   static final List<Pair<List<Integer>, BiConsumer<RequestsByStatus, SilverpeasList<FormInstance>>>>
-      MERGING_RULES_BY_STATES =
-      asList(Pair.of(singletonList(STATE_REFUSED), RequestsByStatus::addDenied),
+      MERGING_RULES_BY_STATES = asList(
+          Pair.of(singletonList(STATE_DRAFT), RequestsByStatus::addDraft),
+          Pair.of(singletonList(STATE_REFUSED), RequestsByStatus::addDenied),
           Pair.of(singletonList(STATE_VALIDATED), RequestsByStatus::addValidated),
           Pair.of(singletonList(STATE_ARCHIVED), RequestsByStatus::addArchived),
           Pair.of(asList(STATE_UNREAD, STATE_READ), RequestsByStatus::addToValidate));
@@ -32,12 +33,13 @@ public class RequestsByStatus {
   private static final Comparator<FormInstance> FORM_INSTANCE_COMPARATOR = (a, b) -> {
     int c = b.getCreationDate().compareTo(a.getCreationDate());
     if (c == 0) {
-      c = Integer.valueOf(b.getId()) - Integer.valueOf(a.getId());
+      c = Integer.parseInt(b.getId()) - Integer.parseInt(a.getId());
     }
     return c;
   };
   private final PaginationPage paginationPage;
 
+  private SilverpeasList<FormInstance> draftList = new SilverpeasArrayList<>();
   private SilverpeasList<FormInstance> toValidateList = new SilverpeasArrayList<>();
   private SilverpeasList<FormInstance> validatedList = new SilverpeasArrayList<>();
   private SilverpeasList<FormInstance> deniedList = new SilverpeasArrayList<>();
@@ -45,6 +47,10 @@ public class RequestsByStatus {
 
   RequestsByStatus(final PaginationPage paginationPage) {
     this.paginationPage = paginationPage;
+  }
+
+  private void addDraft(final SilverpeasList<FormInstance> formInstances) {
+    draftList = merge(formInstances, draftList);
   }
 
   private void addArchived(final SilverpeasList<FormInstance> formInstances) {
@@ -61,6 +67,10 @@ public class RequestsByStatus {
 
   private void addToValidate(final SilverpeasList<FormInstance> formInstances) {
     toValidateList = merge(formInstances, toValidateList);
+  }
+
+  public SilverpeasList<FormInstance> getDraft() {
+    return draftList;
   }
 
   public SilverpeasList<FormInstance> getToValidate() {
@@ -80,12 +90,12 @@ public class RequestsByStatus {
   }
 
   public boolean isEmpty() {
-    return getValidated().isEmpty() && getToValidate().isEmpty() && getDenied().isEmpty() &&
-        getArchived().isEmpty();
+    return getDraft().isEmpty() && getValidated().isEmpty() && getToValidate().isEmpty() &&
+        getDenied().isEmpty() && getArchived().isEmpty();
   }
 
   public SilverpeasList<FormInstance> getAll() {
-    return merge(getToValidate(), getValidated(), getDenied(), getArchived());
+    return merge(getDraft(), getToValidate(), getValidated(), getDenied(), getArchived());
   }
 
   /**

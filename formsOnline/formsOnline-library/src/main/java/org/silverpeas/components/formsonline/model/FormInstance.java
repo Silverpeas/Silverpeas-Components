@@ -25,42 +25,51 @@ package org.silverpeas.components.formsonline.model;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.content.form.Form;
+import org.silverpeas.core.contribution.model.ContributionValidation;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 
 import javax.persistence.Transient;
 import java.util.Date;
 
+import static org.silverpeas.core.util.StringUtil.EMPTY;
+
 public class FormInstance implements SilverpeasContent {
   private static final long serialVersionUID = -3341454138112938275L;
 
+  public static final int STATE_DRAFT = 0;
   public static final int STATE_UNREAD = 1;
   public static final int STATE_READ = 2;
   public static final int STATE_VALIDATED = 3;
   public static final int STATE_REFUSED = 4;
   public static final int STATE_ARCHIVED = 5;
 
+  private final FormInstanceValidations validations = new FormInstanceValidations();
+
+  @Transient
+  protected transient FormDetail form;
   private String id;
   private int formId = -1;
   private int state = -1;
   private String creatorId = null;
-  private Date creationDate = new Date();
-  private String validatorId = null;
-  private Date validationDate = null;
-  private String comments = "";
+  private Date creationDate = null;
   private String instanceId = null;
-
-  @Transient
-  protected FormDetail form;
 
   @Transient
   private boolean validationEnabled = false;
 
   @Transient
-  private Form formWithData;
+  private transient Form formWithData;
 
   @Override
   public String getId() {
     return id;
+  }
+
+  /**
+   * @param id the id to set
+   */
+  public void setId(int id) {
+    this.id = Integer.toString(id);
   }
 
   public int getIdAsInt() {
@@ -70,13 +79,6 @@ public class FormInstance implements SilverpeasContent {
   @Override
   public String getComponentInstanceId() {
     return instanceId;
-  }
-
-  /**
-   * @param id the id to set
-   */
-  public void setId(int id) {
-    this.id = Integer.toString(id);
   }
 
   /**
@@ -126,7 +128,14 @@ public class FormInstance implements SilverpeasContent {
    */
   @Override
   public Date getCreationDate() {
-    return creationDate != null ? new Date(creationDate.getTime()) : creationDate;
+    return creationDate != null ? new Date(creationDate.getTime()) : null;
+  }
+
+  /**
+   * @param creationDate the creationDate to set
+   */
+  public void setCreationDate(Date creationDate) {
+    this.creationDate = creationDate != null ? new Date(creationDate.getTime()) : null;
   }
 
   @Override
@@ -155,52 +164,32 @@ public class FormInstance implements SilverpeasContent {
   }
 
   /**
-   * @param creationDate the creationDate to set
+   * Gets all the validations performed on the form instance.
+   * @return a {@link FormInstanceValidations} instance.
    */
-  public void setCreationDate(Date creationDate) {
-    this.creationDate = creationDate != null ? new Date(creationDate.getTime()) : null;
+  FormInstanceValidations getValidations() {
+    return validations;
   }
 
   /**
    * @return the validatorId
    */
   public String getValidatorId() {
-    return validatorId;
-  }
-
-  /**
-   * @param validatorId the validatorId to set
-   */
-  public void setValidatorId(String validatorId) {
-    this.validatorId = validatorId;
+    return validations.getFinalValidation().map(v -> v.getValidator().getId()).orElse(EMPTY);
   }
 
   /**
    * @return the validationDate
    */
   public Date getValidationDate() {
-    return validationDate != null ? new Date(validationDate.getTime()) : null;
-  }
-
-  /**
-   * @param validationDate the validationDate to set
-   */
-  public void setValidationDate(Date validationDate) {
-    this.validationDate = validationDate != null ? new Date(validationDate.getTime()) : null;
+    return validations.getFinalValidation().map(ContributionValidation::getDate).orElse(null);
   }
 
   /**
    * @return the comments
    */
   public String getComments() {
-    return comments;
-  }
-
-  /**
-   * @param comments the comments to set
-   */
-  public void setComments(String comments) {
-    this.comments = comments;
+    return validations.getFinalValidation().map(ContributionValidation::getComment).orElse(EMPTY);
   }
 
   /**
@@ -245,7 +234,9 @@ public class FormInstance implements SilverpeasContent {
 
   @Override
   public User getLastModifier() {
-    return validatorId != null ? getValidator() : getCreator();
+    return validations.getFinalValidation()
+        .map(ContributionValidation::getValidator)
+        .orElseGet(this::getCreator);
   }
 
   public User getValidator() {

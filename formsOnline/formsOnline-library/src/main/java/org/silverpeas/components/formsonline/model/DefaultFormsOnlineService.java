@@ -30,6 +30,7 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.ContributionStatus;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.FormException;
@@ -44,7 +45,6 @@ import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
-import org.silverpeas.core.persistence.datasource.repository.PaginationCriterion;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.SettingBundle;
@@ -54,6 +54,7 @@ import org.silverpeas.core.util.logging.SilverLogger;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -232,10 +233,8 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
         final List<Integer> states = mergingRuleByStates.getLeft();
         final BiConsumer<RequestsByStatus, SilverpeasList<FormInstance>> merge =
             mergingRuleByStates.getRight();
-        final PaginationCriterion paginationCriterion =
-            paginationPage != null ? paginationPage.asCriterion() : null;
         final SilverpeasList<FormInstance> result =
-            getDAO().getSentFormInstances(form.getPK(), userId, states, paginationCriterion);
+            getDAO().getSentFormInstances(form.getPK(), userId, states, paginationPage);
         merge.accept(requests, result.stream()
                                      .map(l -> {
                                        l.setForm(form);
@@ -264,11 +263,9 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
         final List<Integer> states = mergingRuleByStates.getLeft();
         final BiConsumer<RequestsByStatus, SilverpeasList<FormInstance>> merge =
             mergingRuleByStates.getRight();
-        final PaginationCriterion paginationCriterion =
-            paginationPage != null ? paginationPage.asCriterion() : null;
         final SilverpeasList<FormInstance> result = getDAO()
             .getReceivedRequests(form.getPK(), filter.isAllRequests(), userId, states,
-                paginationCriterion);
+                paginationPage);
         merge.accept(requests, result.stream()
                                      .map(l -> {
                                        l.setForm(form);
@@ -317,7 +314,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
       // mise a jour du statut de l'instance
       if (request.getState() == FormInstance.STATE_UNREAD) {
         request.setState(FormInstance.STATE_READ);
-        getDAO().updateRequest(request);
+        getDAO().saveRequestState(request);
       }
       request.setValidationEnabled(true);
     }
@@ -334,7 +331,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
     request.setFormId(Integer.parseInt(pk.getId()));
     request.setInstanceId(pk.getInstanceId());
     request.setState(FormInstance.STATE_UNREAD);
-    request = getDAO().createInstance(request);
+    request = getDAO().saveRequest(request);
 
     FormDetail formDetail = getDAO().getForm(pk);
     request.setForm(formDetail);
@@ -364,26 +361,30 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
 
   @Override
   @Transactional
-  public void setValidationStatus(RequestPK pk, String userId, String decision, String comments)
+  public void setValidationStatus(RequestPK pk, String userId, String decision, String comment)
       throws FormsOnlineException {
-    FormInstance request = getDAO().getRequest(pk);
-    FormDetail form = getDAO().getForm(new FormPK(request.getFormId(), pk.getInstanceId()));
+    final FormInstance request = getDAO().getRequest(pk);
+    final FormDetail form = getDAO().getForm(new FormPK(request.getFormId(), pk.getInstanceId()));
     request.setForm(form);
+    final FormInstanceValidation validation = new FormInstanceValidation(request);
 
     // update state
     if ("validate".equals(decision)) {
       request.setState(FormInstance.STATE_VALIDATED);
+      validation.setStatus(ContributionStatus.VALIDATED);
     } else {
       request.setState(FormInstance.STATE_REFUSED);
+      validation.setStatus(ContributionStatus.REFUSED);
     }
 
     // validation infos
-    request.setValidationDate(new Date());
-    request.setValidatorId(userId);
-    request.setComments(comments);
+    validation.setDate(Date.from(Instant.now()));
+    validation.setValidator(User.getById(userId));
+    validation.setComment(comment);
+    request.getValidations().add(validation);
 
     // save modifications
-    getDAO().updateRequest(request);
+    getDAO().saveRequest(request);
 
     // notify sender and all validators
     notifyValidation(request);
@@ -430,7 +431,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
   public void archiveRequest(RequestPK pk) throws FormsOnlineException {
     FormInstance request = getDAO().getRequest(pk);
     request.setState(FormInstance.STATE_ARCHIVED);
-    getDAO().updateRequest(request);
+    getDAO().saveRequestState(request);
   }
 
   private void notifyReceivers(FormInstance request)
