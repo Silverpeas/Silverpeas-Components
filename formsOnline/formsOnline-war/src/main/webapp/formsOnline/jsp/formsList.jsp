@@ -129,6 +129,28 @@
   </div>
   </c:if>
 
+  <c:if test="${not empty userRequests.toValidate}">
+  <div class="secteur-container my-formsOnline" id="my-formsOnline-draft">
+    <div class="header">
+      <h3 class="my-formsOnline-title"><fmt:message key="formsOnline.home.requests.mine"/> <strong><fmt:message key="formsOnline.home.requests.mine.draft"/></strong></h3>
+    </div>
+    <ul>
+      <view:listPane var="draftUserRequests" routingAddress="Main" numberLinesPerPage="10">
+        <view:listItems items="${userRequests.toValidate}" var="request">
+          <li>
+            <a href="ViewRequest?Id=${request.id}"><span class="ask-form-date"><view:formatDate value="${request.creationDate}"/></span><span class="form-title">${request.form.title}</span></a>
+          </li>
+        </view:listItems>
+      </view:listPane>
+      <script type="text/javascript">
+        whenSilverpeasReady(function() {
+          sp.listPane.ajaxControls('#my-formsOnline-draft');
+        });
+      </script>
+    </ul>
+  </div>
+  </c:if>
+
   <div class="secteur-container my-formsOnline" id="my-formsOnline-wait">
     <div class="header">
       <h3 class="my-formsOnline-title"><fmt:message key="formsOnline.home.requests.mine"/> <strong><fmt:message key="formsOnline.home.requests.mine.toValidate"/></strong></h3>

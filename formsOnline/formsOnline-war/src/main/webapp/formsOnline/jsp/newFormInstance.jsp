@@ -45,21 +45,24 @@
 	context.setBorderPrinted(false);
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title></title>
-<view:looknfeel/>
-<% formUpdate.displayScripts(out, context); %>
-<script type="text/javascript">
-  function sendRequest() {
-		ifCorrectFormExecute(function() {
-			document.newInstanceForm.submit();
-		});
-	}
-</script>
-</head>
-<body class="yui-skin-sam">
+<view:sp-page>
+<view:sp-head-part>
+  <title></title>
+  <% formUpdate.displayScripts(out, context); %>
+  <script type="text/javascript">
+    function sendRequest() {
+      ifCorrectFormExecute(function() {
+        document.newInstanceForm.submit();
+      });
+    }
+
+    function saveDraft() {
+      document.newInstanceForm.action = "SaveRequestAsDraft";
+      document.newInstanceForm.submit();
+    }
+  </script>
+</view:sp-head-part>
+<view:sp-body-part cssClass="yui-skin-sam">
 <view:window>
 <view:frame>
 <div id="header-OnlineForm">
@@ -73,12 +76,14 @@
 </view:frame>
 
   <view:buttonPane>
+    <fmt:message var="buttonDraft" key="GML.draft.save"/>
     <fmt:message var="buttonValidate" key="formsOnline.request.send"/>
     <fmt:message var="buttonCancel" key="GML.cancel"/>
-    <view:button label="${buttonValidate}" action="javascript:onclick=sendRequest();" />
+    <view:button label="${buttonValidate}" action="javascript:sendRequest();" />
+    <view:button label="${buttonDraft}" action="javascript:saveDraft();" />
     <view:button label="${buttonCancel}" action="Main" />
   </view:buttonPane>
 
 </view:window>
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>

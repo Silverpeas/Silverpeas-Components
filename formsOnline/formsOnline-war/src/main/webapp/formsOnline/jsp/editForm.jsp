@@ -45,15 +45,34 @@
 <c:set var="m_listUserSenders" value="${form.sendersAsUsers}"/>
 <c:set var="m_listGroupReceivers" value="${form.receiversAsGroups}"/>
 <c:set var="m_listUserReceivers" value="${form.receiversAsUsers}"/>
+<c:set var="m_listGroupIntermediateValidation" value=""/>
+<c:set var="m_listUserIntermediateValidation" value=""/>
+
+<c:set var="hierarchicalValidation" value=""/>
+<c:if test="${form.hierarchicalValidation}">
+  <c:set var="hierarchicalValidation" value="checked=\"checked\""/>
+</c:if>
+
+<c:set var="deleteAfterRequestExchange" value=""/>
+<c:if test="${form.deleteAfterRequestExchange}">
+  <c:set var="deleteAfterRequestExchange" value="checked=\"checked\""/>
+</c:if>
+
+<c:set var="requestExchangeReceiver" value=""/>
+<c:if test="${not empty form.requestExchangeReceiver.get()}">
+  <c:set var="requestExchangeReceiver" value="${form.requestExchangeReceiver.get()}"/>
+</c:if>
 
 <c:url var="iconMandatory" value="/util/icons/mandatoryField.gif"/>
 
 <fmt:message key="formsOnline.senders" var="labelSenders"/>
 <fmt:message key="formsOnline.receivers" var="labelReceivers"/>
+<fmt:message key="formsOnline.validation.inter" var="labelValidationInter"/>
 <fmt:message key="GML.mandatory" var="labelMandatory"/>
 
 <c:set var="id_ListSenders" value="<%=FormsOnlineSessionController.USER_PANEL_SENDERS_PREFIX%>"/>
 <c:set var="id_ListReceivers" value="<%=FormsOnlineSessionController.USER_PANEL_RECEIVERS_PREFIX%>"/>
+<c:set var="id_ListIntermediateValidation" value="<%=FormsOnlineSessionController.USER_PANEL_INTERMEDIATE_VALIDATION_PREFIX%>"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -76,6 +95,18 @@ function valider() {
 
   if (isWhitespace(description)) {
     SilverpeasError.add("'<fmt:message key="GML.description"/>' <fmt:message key="GML.MustBeFilled"/>");
+  }
+
+  var email = document.getElementById('sendEmail').value;
+  if (StringUtil.isDefined(email) && !checkemail(email)) {
+    SilverpeasError.add("'<fmt:message key="formsOnline.sendEmail"/>' <fmt:message key="GML.MustContainsEmail"/>");
+  }
+
+  var directDeletionChecked = document.getElementById('directDeletion').checked;
+  if (directDeletionChecked) {
+    if (StringUtil.isNotDefined(email)) {
+      SilverpeasError.add("'<fmt:message key="formsOnline.sendEmail"/>' <fmt:message key="GML.MustBeFilled"/>");
+    }
   }
 
   if (!SilverpeasError.show()) {
@@ -119,7 +150,7 @@ $(document).ready(function() {
         <div class="field" id="titleForm">
           <label for="title" class="txtlibform"><fmt:message key="GML.title"/></label>
           <div class="champs">
-            <input type="text" id="title" name="title" size="60" maxlength="200" value="${form.title}">
+            <input type="text" id="title" name="title" size="60" maxlength="200" value="${form.title}"/>
             &nbsp;<img width="5" height="5" alt="${labelMandatory}" src="${iconMandatory}" /> </div>
         </div>
         <div class="field" id="templateForm">
@@ -155,12 +186,36 @@ $(document).ready(function() {
             &nbsp;<img width="5" height="5" alt="${labelMandatory}" src="${iconMandatory}" />
           </div>
         </div>
+        <div class="field" id="bossValidationForm">
+          <label for="bossValidation" class="txtlibform"><fmt:message key="formsOnline.validation.boss"/></label>
+          <div class="champs">
+            <input type="checkbox" name="bossValidation" id="bossValidation" value="true" ${hierarchicalValidation}/>
+          </div>
+        </div>
+        <div class="field" id="sendEmailForm">
+          <label for="sendEmail" class="txtlibform"><fmt:message key="formsOnline.sendEmail"/></label>
+          <div class="champs">
+            <input type="text" id="sendEmail" name="sendEmail" size="60" maxlength="200" value="${requestExchangeReceiver}"/>
+          </div>
+        </div>
+        <div class="field" id="directDeletionForm">
+          <label for="directDeletion" class="txtlibform"><fmt:message key="formsOnline.directDeletion"/></label>
+          <div class="champs">
+            <input type="checkbox" name="directDeletion" id="directDeletion" value="true" ${deleteAfterRequestExchange}/>
+          </div>
+        </div>
+
       </div>
     </fieldset>
 
     <div class="table">
       <div class="cell">
         <viewTags:displayListOfUsersAndGroups users="${m_listUserSenders}" groups="${m_listGroupSenders}" label="${labelSenders}" id="${id_ListSenders}" updateCallback="ModifySenders"/>
+      </div>
+    </div>
+    <div class="table">
+      <div class="cell">
+        <viewTags:displayListOfUsersAndGroups users="${m_listUserIntermediateValidation}" groups="${m_listGroupIntermediateValidation}" label="${labelValidationInter}" id="${id_ListIntermediateValidation}" updateCallback="ModifyIntermediateValidation"/>
       </div>
       <div class="cell">
         <viewTags:displayListOfUsersAndGroups users="${m_listUserReceivers}" groups="${m_listGroupReceivers}" label="${labelReceivers}" id="${id_ListReceivers}" updateCallback="ModifyReceivers"/>

@@ -77,8 +77,7 @@ public interface FormsOnlineService extends ApplicationService<FormInstance> {
 
   void archiveRequest(RequestPK pk) throws FormsOnlineException;
 
-  void deleteRequest(RequestPK pk)
-      throws FormsOnlineException, FormException, PublicationTemplateException;
+  void deleteRequest(RequestPK pk) throws FormsOnlineException;
 
   void index(String componentId);
 }

@@ -40,10 +40,14 @@ import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RecordSet;
+import org.silverpeas.core.contribution.content.form.form.XmlForm;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
+import org.silverpeas.core.mail.MailAddress;
+import org.silverpeas.core.mail.MailSending;
 import org.silverpeas.core.notification.message.MessageNotifier;
 import org.silverpeas.core.security.authorization.ForbiddenRuntimeException;
 import org.silverpeas.core.util.Pair;
@@ -82,6 +86,7 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
 
   public static final String USER_PANEL_SENDERS_PREFIX = "listSenders";
   public static final String USER_PANEL_RECEIVERS_PREFIX = "listReceivers";
+  public static final String USER_PANEL_INTERMEDIATE_VALIDATION_PREFIX = "listIntermediateValidation";
 
   /**
    * Standard Session Controller Constructeur
@@ -230,12 +235,14 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
     return getService().getAvailableFormsToSend(singleton(getComponentId()), getUserId());
   }
 
-  public void saveRequest(List<FileItem> items)
+  public void saveRequest(List<FileItem> items, boolean draft)
       throws FormsOnlineException, PublicationTemplateException, FormException {
     if (!getCurrentForm().isSender(getUserId())) {
       throwForbiddenException("saveRequest");
     }
     getService().saveRequest(getCurrentForm().getPK(), getUserId(), items);
+
+
   }
 
   public List<String> getAvailableFormIdsAsReceiver() throws FormsOnlineException {
@@ -517,6 +524,10 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
 
   private void loadStatusLabel(int status, String key) {
     statusLabels.put(Integer.valueOf(status), getString(key));
+  }
+
+  public PagesContext getFormPageContext() {
+    return new PagesContext("unknown", "0", getLanguage(), false, getComponentId(), getUserId());
   }
 
 }

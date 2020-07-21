@@ -114,6 +114,9 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
         if (request.getParameter("template") != null) {
           form.setXmlFormName(request.getParameter("template"));
         }
+        form.setHierarchicalValidation(request.getParameterAsBoolean("bossValidation"));
+        form.setDeleteAfterRequestExchange(request.getParameterAsBoolean("directDeletion"));
+        form.setRequestExchangeReceiver(request.getParameter("sendEmail"));
 
         String[] senderUserIds = StringUtil.split(request.getParameter(
             FormsOnlineSessionController.USER_PANEL_SENDERS_PREFIX + USER_PANEL_CURRENT_USER_IDS),
@@ -175,7 +178,7 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
         // call to the JSP with required parameters
         request.setAttribute("Form", formUpdate);
         request.setAttribute("XMLFormName", xmlFormName);
-        request.setAttribute(FORM_CONTEXT, getFormContext(formsOnlineSC));
+        request.setAttribute(FORM_CONTEXT, formsOnlineSC.getFormPageContext());
 
         destination = ROOT_DESTINATION + "preview.jsp";
       } else if ("PublishForm".equals(function)) {
@@ -216,7 +219,7 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
 
         // call of the JSP with required parameters
         request.setAttribute("Form", formUpdate);
-        request.setAttribute(FORM_CONTEXT, getFormContext(formsOnlineSC));
+        request.setAttribute(FORM_CONTEXT, formsOnlineSC.getFormPageContext());
         request.setAttribute("FormDetail", form);
 
         destination = ROOT_DESTINATION + "newFormInstance.jsp";
@@ -225,7 +228,14 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
         List<FileItem> items = request.getFileItems();
 
         // Sauvegarde des donnees
-        formsOnlineSC.saveRequest(items);
+        formsOnlineSC.saveRequest(items, false);
+
+        return getDestination("Main", formsOnlineSC, request);
+      } else if ("SaveRequestAsDraft".equals(function)) {
+        List<FileItem> items = request.getFileItems();
+
+        // Sauvegarde des donnees
+        formsOnlineSC.saveRequest(items, true);
 
         return getDestination("Main", formsOnlineSC, request);
       } else if ("ViewRequest".equals(function)) {
@@ -234,7 +244,7 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
 
         // Add attribute inside request to display data inside JSP view
         request.setAttribute("Form", userRequest.getFormWithData());
-        PagesContext formContext = getFormContext(formsOnlineSC);
+        PagesContext formContext = formsOnlineSC.getFormPageContext();
         formContext.setObjectId(formInstanceId);
         request.setAttribute(FORM_CONTEXT, formContext);
         request.setAttribute("ValidationEnabled", userRequest.isValidationEnabled());
@@ -297,8 +307,4 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
     return origin;
   }
 
-  private PagesContext getFormContext(FormsOnlineSessionController fosc) {
-    return new PagesContext("unknown", "0", fosc.getLanguage(), false, fosc.getComponentId(),
-        fosc.getUserId());
-  }
 }

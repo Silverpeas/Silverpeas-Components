@@ -22,27 +22,40 @@ package org.silverpeas.components.formsonline.model;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.ecs.html.BR;
 import org.silverpeas.components.formsonline.notification.FormsOnlinePendingValidationRequestUserNotification;
 import org.silverpeas.components.formsonline.notification.FormsOnlineProcessedRequestUserNotification;
 import org.silverpeas.components.formsonline.notification.FormsOnlineValidationRequestUserNotification;
+
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.ContributionStatus;
+import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.model.DocumentType;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RecordSet;
+import org.silverpeas.core.contribution.content.form.field.FileField;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
+import org.silverpeas.core.mail.MailAddress;
+import org.silverpeas.core.mail.MailContent;
+import org.silverpeas.core.mail.MailSending;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.util.CollectionUtil;
@@ -51,10 +64,17 @@ import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.activation.DataHandler;
+import javax.activation.FileDataSource;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.mail.MessagingException;
+import javax.mail.Multipart;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMultipart;
 import javax.transaction.Transactional;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -326,6 +346,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
   @Transactional
   public void saveRequest(FormPK pk, String userId, List<FileItem> items)
       throws FormsOnlineException, PublicationTemplateException, FormException {
+
     FormInstance request = new FormInstance();
     request.setCreatorId(userId);
     request.setFormId(Integer.parseInt(pk.getId()));
@@ -408,19 +429,18 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
 
   @Override
   @Transactional
-  public void deleteRequest(RequestPK pk)
-      throws FormsOnlineException, FormException, PublicationTemplateException {
-    // delete form data
-    FormInstance instance = getDAO().getRequest(pk);
-    FormPK formPK = new FormPK(instance.getFormId(), pk.getInstanceId());
-    FormDetail form = getDAO().getForm(formPK);
-    String xmlFormName = form.getXmlFormName();
-    String xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName.indexOf('.'));
-    PublicationTemplate pubTemplate = getPublicationTemplateManager().getPublicationTemplate(
-        pk.getInstanceId() + ":" + xmlFormShortName);
-    RecordSet set = pubTemplate.getRecordSet();
-    DataRecord data = set.getRecord(pk.getId());
-    set.delete(data.getId());
+  public void deleteRequest(RequestPK pk) throws FormsOnlineException {
+    try {
+      // delete form data
+      FormInstance instance = getDAO().getRequest(pk);
+      PublicationTemplate pubTemplate = getPublicationTemplate(instance);
+      RecordSet set = pubTemplate.getRecordSet();
+      DataRecord data = set.getRecord(pk.getId());
+      set.delete(data.getId());
+    } catch (Exception e) {
+      throw new FormsOnlineException("Can't delete request #"+pk.getId()+" in component " +
+          pk.getInstanceId(), e);
+    }
 
     // delete instance metadata
     getDAO().deleteRequest(pk);
@@ -440,6 +460,8 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
 
     UserNotificationHelper
         .buildAndSend(new FormsOnlinePendingValidationRequestUserNotification(request, userIds));
+
+    sendRequestByEmail(request);
   }
 
   private List<String> getAllReceivers(FormPK pk) throws FormsOnlineException {
@@ -455,6 +477,92 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
       }
     }
     return userIds;
+  }
+
+  private PublicationTemplate getPublicationTemplate(FormInstance request)
+      throws FormsOnlineException, PublicationTemplateException {
+    FormPK formPK = new FormPK(request.getFormId(), request.getPK().getInstanceId());
+    FormDetail form = getDAO().getForm(formPK);
+    String xmlFormName = form.getXmlFormName();
+    String xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName.indexOf('.'));
+    return getPublicationTemplateManager().getPublicationTemplate(
+        request.getPK().getInstanceId() + ":" + xmlFormShortName);
+  }
+
+  private void sendRequestByEmail(FormInstance request) throws FormsOnlineException {
+    FormDetail form = request.getForm();
+    if (form.getRequestExchangeReceiver().isPresent()) {
+
+      String email = form.getRequestExchangeReceiver().get();
+
+      StringBuilder content = new StringBuilder();
+      List<SimpleDocument> docs = new ArrayList<>();
+      try {
+        PublicationTemplate template = getPublicationTemplate(request);
+        RecordSet recordSet = template.getRecordSet();
+        FieldTemplate[] fields = template.getRecordTemplate().getFieldTemplates();
+
+        BR br = new BR();
+        DataRecord dataRecord = recordSet.getRecord(request.getId());
+        Map<String, String> values = dataRecord.getValues(I18NHelper.defaultLanguage);
+        for (FieldTemplate field : fields) {
+          content.append(field.getLabel(I18NHelper.defaultLanguage));
+          content.append(" : ");
+          content.append(values.get(field.getFieldName()));
+          content.append(br.toString());
+
+          if (field.getTypeName().equals(FileField.TYPE)) {
+            SimpleDocument doc = AttachmentServiceProvider.getAttachmentService()
+                .searchDocumentById(new SimpleDocumentPK(dataRecord.getField(field.getFieldName()).getValue(), request.getComponentInstanceId()), null);
+            docs.add(doc);
+          }
+        }
+      } catch (Exception e) {
+        throw new FormsOnlineException("Can't load form '" + form.getXmlFormName() + "'", e);
+      }
+
+      try {
+        Multipart multipart = new MimeMultipart();
+        multipart.addBodyPart(MailContent.getHtmlBodyPartFromHtmlContent(content.toString()));
+
+        // Finally explicit attached files
+        /*List<SimpleDocument> listAttachedFilesFromTab =
+            AttachmentServiceProvider.getAttachmentService().
+                listDocumentsByForeignKeyAndType(new ResourceReference(request.getId(), request.getComponentInstanceId()),
+                    DocumentType.form, I18NHelper.defaultLanguage);
+        attachFilesToMail(multipart, listAttachedFilesFromTab);*/
+        attachFilesToMail(multipart, docs);
+
+        MailSending mail = MailSending.from(MailAddress.eMail(User.getById(request.getCreatorId()).geteMail()))
+            .to(MailAddress.eMail(email)).withSubject(form.getTitle()).withContent(multipart);
+
+        mail.send();
+      } catch (Exception e) {
+        throw new FormsOnlineException("Can't send request #" + request.getPK().getId() + " to " + email, e);
+      }
+
+      if (form.isDeleteAfterRequestExchange()) {
+        deleteRequest(request.getPK());
+      }
+    }
+  }
+
+  private void attachFilesToMail(Multipart mp, List<SimpleDocument> listAttachedFiles)
+      throws MessagingException {
+    for (SimpleDocument attachment : listAttachedFiles) {
+      // create the second message part
+      MimeBodyPart mbp = new MimeBodyPart();
+
+      // attach the file to the message
+      FileDataSource fds = new FileDataSource(attachment.getAttachmentPath());
+      mbp.setDataHandler(new DataHandler(fds));
+      // For Displaying images in the mail
+      mbp.setFileName(attachment.getFilename());
+      mbp.setHeader("Content-ID", "<" + attachment.getFilename() + ">");
+
+      // create the Multipart and its parts to it
+      mp.addBodyPart(mbp);
+    }
   }
 
   private PublicationTemplateManager getPublicationTemplateManager() {
