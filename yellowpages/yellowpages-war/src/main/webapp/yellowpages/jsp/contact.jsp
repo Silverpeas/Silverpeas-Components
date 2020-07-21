@@ -31,6 +31,7 @@
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/yellowpages" prefix="yellowpagesTags" %>
 
 <%
@@ -38,6 +39,10 @@
   response.setHeader("Pragma", "no-cache"); //HTTP 1.0
   response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
+
+<c:set var="userLanguage" value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
+<fmt:setLocale value="${userLanguage}" />
+<view:setBundle basename="org.silverpeas.yellowpages.multilang.yellowpagesBundle" />
 
 <%@ include file="checkYellowpages.jsp" %>
 
@@ -57,7 +62,11 @@
     <view:sp-head-part withFieldsetStyle="true"/>
     <view:sp-body-part>
       <view:window popup="false">
-    <yellowpagesTags:contactView contact="<%=contact%>" userLanguage="<%=resources.getLanguage()%>" formView="<%=formView%>" context="<%=context%>"/>
+        <yellowpagesTags:contactView contact="<%=contact%>" userLanguage="<%=resources.getLanguage()%>" formView="<%=formView%>" context="<%=context%>"/>
+        <view:buttonPane>
+          <fmt:message key="GML.back" var="labelBack"/>
+          <view:button label="${labelBack}" action="javascript:history.back()"/>
+        </view:buttonPane>
       </view:window>
     </view:sp-body-part>
     </view:sp-page>
