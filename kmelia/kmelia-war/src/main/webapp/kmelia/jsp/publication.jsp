@@ -830,17 +830,17 @@
 				      <%
 				          }
 				        }
-				        %>
-              <viewTags:viewAttachmentsAsContent componentInstanceId="<%= componentId %>"
-                                                 resourceType="<%=resourceType %>"
-                                                 resourceId="<%=id%>"
-                                                 contentLanguage="<%=contentLanguage%>"
-                                                 highestUserRole="<%=SilverpeasRole.from(attProfile)%>"/>
-              <%
 
 				        out.println("</div>");
+              %>
+      <viewTags:viewAttachmentsAsContent componentInstanceId="<%= componentId %>"
+                                         resourceType="<%=resourceType %>"
+                                         resourceId="<%=id%>"
+                                         contentLanguage="<%=contentLanguage%>"
+                                         highestUserRole="<%=SilverpeasRole.from(attProfile)%>"/>
+      <%
 
-                        if (kmeliaScc.getInvisibleTabs().indexOf(kmeliaScc.TAB_COMMENT) == -1 && !kmaxMode)	 {
+      if (kmeliaScc.getInvisibleTabs().indexOf(kmeliaScc.TAB_COMMENT) == -1 && !kmaxMode)	 {
 			      %>
       <view:comments	userId="<%= user_id%>" componentId="<%= componentId %>"
       					resourceType="<%= resourceType %>" resourceId="<%= id %>" indexed="<%= indexIt %>"/>

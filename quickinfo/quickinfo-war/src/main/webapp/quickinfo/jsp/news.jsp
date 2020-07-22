@@ -203,12 +203,12 @@ function onDelete(id) {
 	</c:if>
     <div id="richContent">
 		${news.content}
-
-    <viewTags:viewAttachmentsAsContent componentInstanceId="${news.componentInstanceId}"
-                                       resourceType="${news.publication.contributionType}"
-                                       resourceId="${news.publicationId}"
-                                       highestUserRole="${highestUserRoleForAttachments}"/>
     </div>
+
+  <viewTags:viewAttachmentsAsContent componentInstanceId="${news.componentInstanceId}"
+                                     resourceType="${news.publication.contributionType}"
+                                     resourceId="${news.publicationId}"
+                                     highestUserRole="${highestUserRoleForAttachments}"/>
     
     <c:if test="${appSettings.commentsEnabled && not viewOnly}">
 		<view:comments userId="${userId}" componentId="${news.componentInstanceId}" resourceType="${news.contributionType}" resourceId="${news.id}" indexed="true"/>
