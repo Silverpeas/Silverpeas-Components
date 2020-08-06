@@ -69,8 +69,13 @@ public interface FormsOnlineService extends ApplicationService<FormInstance> {
   FormInstance loadRequest(RequestPK pk, String userId)
       throws FormsOnlineException, PublicationTemplateException, FormException;
 
-  void saveRequest(FormPK pk, String userId, List<FileItem> items)
+  FormInstance loadRequest(RequestPK pk, String userId, boolean editionMode)
       throws FormsOnlineException, PublicationTemplateException, FormException;
+
+  void saveRequest(FormPK pk, String userId, List<FileItem> items) throws FormsOnlineException;
+
+  void saveRequest(FormPK pk, String userId, List<FileItem> items, boolean draft)
+      throws FormsOnlineException;
 
   void setValidationStatus(RequestPK pk, String userId, String decision, String comment)
       throws FormsOnlineException;

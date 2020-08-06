@@ -27,7 +27,6 @@ import org.silverpeas.components.formsonline.notification.FormsOnlinePendingVali
 import org.silverpeas.components.formsonline.notification.FormsOnlineProcessedRequestUserNotification;
 import org.silverpeas.components.formsonline.notification.FormsOnlineValidationRequestUserNotification;
 
-import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.Group;
@@ -35,7 +34,6 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.ContributionStatus;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
-import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.content.form.DataRecord;
@@ -62,6 +60,8 @@ import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.SilverpeasList;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.activation.DataHandler;
@@ -305,8 +305,13 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
   }
 
   @Override
-  public FormInstance loadRequest(RequestPK pk, String userId)
-      throws FormsOnlineException, PublicationTemplateException, FormException {
+  public FormInstance loadRequest(RequestPK pk, String userId) throws FormsOnlineException {
+    return loadRequest(pk, userId, false);
+  }
+
+  @Override
+  public FormInstance loadRequest(RequestPK pk, String userId, boolean editionMode)
+      throws FormsOnlineException {
 
     FormInstance request = getDAO().getRequest(pk);
 
@@ -317,17 +322,23 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
     String xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName.indexOf('.'));
 
     // creation du PublicationTemplate
-    getPublicationTemplateManager()
-        .addDynamicPublicationTemplate(pk.getInstanceId() + ":" + xmlFormShortName, xmlFormName);
-    PublicationTemplateImpl pubTemplate = (PublicationTemplateImpl) getPublicationTemplateManager()
-        .getPublicationTemplate(pk.getInstanceId() + ":" + xmlFormShortName, xmlFormName);
+    try {
+      getPublicationTemplateManager()
+          .addDynamicPublicationTemplate(pk.getInstanceId() + ":" + xmlFormShortName, xmlFormName);
+      PublicationTemplateImpl pubTemplate = (PublicationTemplateImpl) getPublicationTemplateManager()
+          .getPublicationTemplate(pk.getInstanceId() + ":" + xmlFormShortName, xmlFormName);
 
-    // Retrieve Form and DataRecord
-    Form formView = pubTemplate.getViewForm();
-    RecordSet recordSet = pubTemplate.getRecordSet();
-    DataRecord data = recordSet.getRecord(pk.getId());
-    formView.setData(data);
-    request.setFormWithData(formView);
+      // Retrieve Form and DataRecord
+      Form customForm = editionMode ? pubTemplate.getUpdateForm() : pubTemplate.getViewForm();
+      RecordSet recordSet = pubTemplate.getRecordSet();
+      DataRecord data = recordSet.getRecord(pk.getId());
+      customForm.setData(data);
+      request.setFormWithData(customForm);
+    } catch (PublicationTemplateException | FormException e) {
+      throw new FormsOnlineException(
+          "Can't load content of request #" + request.getId() + " in component " +
+              pk.getInstanceId(), e);
+    }
 
     // Check FormsOnline request states in order to display or hide comment
     if (request.isCanBeValidated() && isValidator(form.getPK(), userId)) {
@@ -345,39 +356,105 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
   @Override
   @Transactional
   public void saveRequest(FormPK pk, String userId, List<FileItem> items)
-      throws FormsOnlineException, PublicationTemplateException, FormException {
+      throws FormsOnlineException {
 
+    saveRequest(pk, userId, items, false);
+  }
+
+  @Override
+  @Transactional
+  public void saveRequest(FormPK pk, String userId, List<FileItem> items, boolean draft)
+      throws FormsOnlineException {
+
+    String requestId = FileUploadUtil.getParameter(items, "Id");
+    FormInstance request = null;
+    if (StringUtil.isNotDefined(requestId)) {
+      request = createRequest(pk, userId, items, draft);
+    } else {
+      request = loadRequest(new RequestPK(requestId, pk.getInstanceId()), userId);
+      updateRequest(request, items, draft);
+    }
+
+    if (!draft) {
+      // Notify receivers
+      notifyReceivers(request);
+    }
+  }
+
+  private FormInstance createRequest(FormPK pk, String userId, List<FileItem> items,
+      boolean draft) throws FormsOnlineException {
     FormInstance request = new FormInstance();
     request.setCreatorId(userId);
     request.setFormId(Integer.parseInt(pk.getId()));
     request.setInstanceId(pk.getInstanceId());
-    request.setState(FormInstance.STATE_UNREAD);
+    if (draft) {
+      request.setState(FormInstance.STATE_DRAFT);
+    } else {
+      request.setState(FormInstance.STATE_UNREAD);
+    }
     request = getDAO().saveRequest(request);
 
     FormDetail formDetail = getDAO().getForm(pk);
     request.setForm(formDetail);
 
-    String xmlFormName = formDetail.getXmlFormName();
-    String xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName.indexOf('.'));
+    // Retrieve data form (with DataRecord object)
+    try {
+      PublicationTemplate pub = getPublicationTemplate(request);
+      RecordSet set = pub.getRecordSet();
+      Form form = pub.getUpdateForm();
+      DataRecord data = set.getEmptyRecord();
+      data.setId(String.valueOf(request.getId()));
+
+      // Save data form
+      PagesContext aContext = new PagesContext("dummy", "0",
+          UserDetail.getById(userId).getUserPreferences().getLanguage(), false, pk.getInstanceId(),
+          userId);
+      aContext.setObjectId(String.valueOf(request.getId()));
+      form.update(items, data, aContext);
+      set.save(data);
+    } catch (Exception e) {
+      throw new FormsOnlineException(
+          "Can't create content of request #" + request.getId() + " in component " +
+              pk.getInstanceId(), e);
+    }
+
+    return request;
+  }
+
+  private FormInstance updateRequest(FormInstance request, List<FileItem> items,
+      boolean draft) throws FormsOnlineException {
+
+    FormDetail formDetail = request.getForm();
+
+    if (draft) {
+      request.setState(FormInstance.STATE_DRAFT);
+    } else {
+      request.setState(FormInstance.STATE_UNREAD);
+    }
+    request = getDAO().saveRequest(request);
+
+    request.setForm(formDetail);
 
     // Retrieve data form (with DataRecord object)
-    PublicationTemplate pub = getPublicationTemplateManager().getPublicationTemplate(
-        pk.getInstanceId() + ":" + xmlFormShortName);
-    RecordSet set = pub.getRecordSet();
-    Form form = pub.getUpdateForm();
-    DataRecord data = set.getEmptyRecord();
-    data.setId(String.valueOf(request.getId()));
+    try {
+      PublicationTemplate pub = getPublicationTemplate(request);
+      RecordSet set = pub.getRecordSet();
+      Form form = pub.getUpdateForm();
+      DataRecord data = set.getRecord(request.getId());
 
-    // Save data form
-    PagesContext aContext = new PagesContext("dummy", "0",
-        UserDetail.getById(userId).getUserPreferences().getLanguage(), false, pk.getInstanceId(),
-        userId);
-    aContext.setObjectId(String.valueOf(request.getId()));
-    form.update(items, data, aContext);
-    set.save(data);
+      // Save data form
+      PagesContext aContext = new PagesContext("dummy", "0",
+          UserDetail.getById(request.getCreatorId()).getUserPreferences().getLanguage(), false, request.getComponentInstanceId(), request.getCreatorId());
+      aContext.setObjectId(String.valueOf(request.getId()));
+      form.update(items, data, aContext);
+      set.save(data);
+    } catch (Exception e) {
+      throw new FormsOnlineException(
+          "Can't update content of request #" + request.getId() + " in component " +
+              request.getComponentInstanceId(), e);
+    }
 
-    // Notify receivers
-    notifyReceivers(request);
+    return request;
   }
 
   @Override

@@ -227,6 +227,8 @@ public class FormInstance implements SilverpeasContent {
     return !isValidated() && !isDenied() && !isArchived();
   }
 
+  public boolean isDraft() { return getState() == STATE_DRAFT; }
+
   @Override
   public User getCreator() {
     return User.getById(getCreatorId());

@@ -665,9 +665,9 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
       formInstanceSave.addSaveParam(FORM_ID, request.getFormId(), isInsert);
       formInstanceSave.addSaveParam(STATE, request.getState(), isInsert);
       formInstanceSave.addSaveParam(INSTANCE_ID, request.getComponentInstanceId(), isInsert);
+      formInstanceSave.addSaveParam(CREATION_DATE, Timestamp.from(Instant.now()), isInsert);
       if (isInsert) {
         formInstanceSave.addSaveParam(CREATOR_ID, request.getCreatorId(), true);
-        formInstanceSave.addSaveParam(CREATION_DATE, Timestamp.from(Instant.now()), true);
       } else {
         formInstanceSave.where(ID_CRITERIA, formInstId);
       }

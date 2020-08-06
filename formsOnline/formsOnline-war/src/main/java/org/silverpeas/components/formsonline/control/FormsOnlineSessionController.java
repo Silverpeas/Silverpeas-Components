@@ -42,12 +42,9 @@ import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RecordSet;
-import org.silverpeas.core.contribution.content.form.form.XmlForm;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.mail.MailAddress;
-import org.silverpeas.core.mail.MailSending;
 import org.silverpeas.core.notification.message.MessageNotifier;
 import org.silverpeas.core.security.authorization.ForbiddenRuntimeException;
 import org.silverpeas.core.util.Pair;
@@ -235,14 +232,11 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
     return getService().getAvailableFormsToSend(singleton(getComponentId()), getUserId());
   }
 
-  public void saveRequest(List<FileItem> items, boolean draft)
-      throws FormsOnlineException, PublicationTemplateException, FormException {
+  public void saveRequest(List<FileItem> items, boolean draft) throws FormsOnlineException {
     if (!getCurrentForm().isSender(getUserId())) {
       throwForbiddenException("saveRequest");
     }
-    getService().saveRequest(getCurrentForm().getPK(), getUserId(), items);
-
-
+    getService().saveRequest(getCurrentForm().getPK(), getUserId(), items, draft);
   }
 
   public List<String> getAvailableFormIdsAsReceiver() throws FormsOnlineException {
@@ -251,9 +245,9 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
     return dao.getAvailableFormIdsAsReceiver(getComponentId(), userId, userGroupIds);
   }
 
-  public FormInstance loadRequest(String id)
+  public FormInstance loadRequest(String id, boolean editionMode)
       throws FormsOnlineException, PublicationTemplateException, FormException {
-    FormInstance request = getService().loadRequest(getRequestPK(id), getUserId());
+    FormInstance request = getService().loadRequest(getRequestPK(id), getUserId(), editionMode);
 
     FormDetail form = request.getForm();
     if (!request.getCreatorId().equals(getUserId()) && !form.isValidator(getUserId())) {
@@ -280,9 +274,13 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
       throws FormsOnlineException, FormException, PublicationTemplateException {
     FormInstance request = getService().loadRequest(getRequestPK(id), getUserId());
     FormDetail form = request.getForm();
-    if (!form.isValidator(getUserId())) {
+    boolean deletionAllowed = (request.isDraft() && request.getCreatorId().equals(getUserId())) ||
+        form.isValidator(getUserId());
+
+    if (!deletionAllowed) {
       throwForbiddenException(LOAD_REQUEST);
     }
+
     getService().deleteRequest(getRequestPK(id));
   }
 

@@ -47,6 +47,7 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
   private static final String USER_PANEL_CURRENT_GROUP_IDS = "UserPanelCurrentGroupIds";
   private static final String FORM_CONTEXT = "FormContext";
   private static final String PARAM_FORMID = "FormId";
+  private static final String PARAM_REQUESTID = "Id";
   private static final String ROOT_DESTINATION = "/formsOnline/jsp/";
 
   /**
@@ -223,6 +224,17 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
         request.setAttribute("FormDetail", form);
 
         destination = ROOT_DESTINATION + "newFormInstance.jsp";
+      } else if ("EditRequest".equals(function)) {
+        String id = request.getParameter(PARAM_REQUESTID);
+
+        FormInstance userRequest = formsOnlineSC.loadRequest(id, true);
+
+        request.setAttribute("UserRequest", userRequest);
+        PagesContext formContext = formsOnlineSC.getFormPageContext();
+        formContext.setObjectId(userRequest.getId());
+        request.setAttribute(FORM_CONTEXT, formContext);
+
+        destination = ROOT_DESTINATION + "editFormInstance.jsp";
       } else if ("SaveRequest".equals(function)) {
         // recuperation des donnees saisies dans le formulaire
         List<FileItem> items = request.getFileItems();
@@ -240,7 +252,7 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
         return getDestination("Main", formsOnlineSC, request);
       } else if ("ViewRequest".equals(function)) {
         String formInstanceId = request.getParameter("Id");
-        FormInstance userRequest = formsOnlineSC.loadRequest(formInstanceId);
+        FormInstance userRequest = formsOnlineSC.loadRequest(formInstanceId, false);
 
         // Add attribute inside request to display data inside JSP view
         request.setAttribute("Form", userRequest.getFormWithData());
@@ -268,9 +280,11 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
         return getDestination("Main", formsOnlineSC, request);
       } else if ("DeleteRequest".equals(function)) {
         String id = request.getParameter("Id");
+        String origin = checkOrigin(request);
+
         formsOnlineSC.deleteRequest(id);
 
-        return getDestination(INBOX, formsOnlineSC, request);
+        return getDestination(origin, formsOnlineSC, request);
       } else if ("DeleteRequests".equals(function)) {
 
         // Selection

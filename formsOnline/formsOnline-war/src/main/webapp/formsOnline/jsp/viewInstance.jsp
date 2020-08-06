@@ -205,6 +205,7 @@
   </view:window>
 <form name="requestForm" action="" method="post">
   <input type="hidden" name="Id" value="${userRequest.id}"/>
+  <input type="hidden" name="Origin" value="InBox"/>
 </form>
 </body>
 </html>
