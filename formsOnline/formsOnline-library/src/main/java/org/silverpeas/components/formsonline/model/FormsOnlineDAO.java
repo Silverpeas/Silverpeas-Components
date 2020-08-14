@@ -87,8 +87,8 @@ public interface FormsOnlineDAO {
    * @param newGroupReceiverIds the new receivers list as group ids
    * @throws FormsOnlineException
    */
-  void updateReceivers(FormPK pk, String[] newUserReceiverIds, String[] newGroupReceiverIds)
-      throws FormsOnlineException;
+  void updateReceivers(FormPK pk, String[] newUserReceiverIds, String[] newGroupReceiverIds,
+      String rightType) throws FormsOnlineException;
 
   /**
    * Get the form's senders list where users has been declared directly.
@@ -113,7 +113,7 @@ public interface FormsOnlineDAO {
    * @return user ids as a list of String
    * @throws FormsOnlineException
    */
-  List<String> getReceiversAsUsers(FormPK pk) throws FormsOnlineException;
+  List<String> getReceiversAsUsers(FormPK pk, String rightType) throws FormsOnlineException;
 
   /**
    * Get the form's receivers list where groups has been declared directly.
@@ -121,7 +121,7 @@ public interface FormsOnlineDAO {
    * @return group ids as a list of String
    * @throws FormsOnlineException
    */
-  List<String> getReceiversAsGroups(FormPK pk) throws FormsOnlineException;
+  List<String> getReceiversAsGroups(FormPK pk, String rightType) throws FormsOnlineException;
 
   /**
    * Get the form available to be sent for given user or given groups
@@ -159,7 +159,8 @@ public interface FormsOnlineDAO {
    * user are returned. If true, all requests (validated or not) are returned.
    */
   SilverpeasList<FormInstance> getReceivedRequests(FormPK pk, boolean allRequests, String userId,
-      final List<Integer> states, final PaginationPage paginationPage) throws FormsOnlineException;
+      final List<Integer> states, final PaginationPage paginationPage, final List<String> senderIds)
+      throws FormsOnlineException;
 
   List<String> getAvailableFormIdsAsReceiver(String instanceId, String userId,
       String[] userGroupIds) throws FormsOnlineException;

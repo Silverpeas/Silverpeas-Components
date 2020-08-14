@@ -25,8 +25,11 @@ package org.silverpeas.components.formsonline.model;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.util.CollectionUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -39,6 +42,13 @@ public class FormDetail {
   public static final int STATE_NOT_YET_PUBLISHED = 0;
   public static final int STATE_PUBLISHED = 1;
   public static final int STATE_UNPUBLISHED = 2;
+
+  public static final int VALIDATOR_OK = 0;
+  public static final int VALIDATOR_UNDEFINED = 1;
+  public static final int VALIDATOR_NOT_ALLOWED = 2;
+
+  public static final String RECEIVERS_TYPE_INTERMEDIATE = "I";
+  public static final String RECEIVERS_TYPE_FINAL = "R";
 
   private int id = -1;
   private String xmlFormName = null;
@@ -56,8 +66,13 @@ public class FormDetail {
   private boolean sendable = true;
   private int nbRequests = 0;
 
+  private String hierarchicalValidator;
+
   private List<User> sendersAsUsers;
   private List<Group> sendersAsGroups;
+
+  private List<User> intermediateReceiversAsUsers;
+  private List<Group> intermediateReceiversAsGroups;
   private List<User> receiversAsUsers;
   private List<Group> receiversAsGroups;
 
@@ -329,6 +344,8 @@ public class FormDetail {
   private List<User> getAllReceivers() {
     List<User> users = getReceiversAsUsers();
     users.addAll(getUsers(getReceiversAsGroups()));
+    users.addAll(getIntermediateReceiversAsUsers());
+    users.addAll(getUsers(getIntermediateReceiversAsGroups()));
     return users;
   }
 
@@ -386,11 +403,75 @@ public class FormDetail {
     this.receiversAsGroups = receiversAsGroups;
   }
 
+  protected List<User> getAllFinalReceivers() {
+    List<User> users = getReceiversAsUsers();
+    users.addAll(getUsers(getReceiversAsGroups()));
+    return users;
+  }
+
+  public List<User> getIntermediateReceiversAsUsers() {
+    if (intermediateReceiversAsUsers == null) {
+      return new ArrayList<>();
+    }
+    return intermediateReceiversAsUsers;
+  }
+
+  public void setIntermediateReceiversAsUsers(final List<User> receiversAsUsers) {
+    this.intermediateReceiversAsUsers = receiversAsUsers;
+  }
+
+  public List<Group> getIntermediateReceiversAsGroups() {
+    if (intermediateReceiversAsGroups == null) {
+      return new ArrayList<>();
+    }
+    return intermediateReceiversAsGroups;
+  }
+
+  public void setIntermediateReceiversAsGroups(final List<Group> receiversAsGroups) {
+    this.intermediateReceiversAsGroups = receiversAsGroups;
+  }
+
+  protected List<User> getAllIntermediateReceivers() {
+    List<User> users = getIntermediateReceiversAsUsers();
+    users.addAll(getUsers(getIntermediateReceiversAsGroups()));
+    return users;
+  }
+
+  public boolean isIntermediateValidator(String userId) {
+    return isInList(userId, getAllIntermediateReceivers());
+  }
+
+  public boolean isIntermediateValidation() {
+    return CollectionUtil.isNotEmpty(getIntermediateReceiversAsUsers()) ||
+        CollectionUtil.isNotEmpty(getIntermediateReceiversAsGroups());
+  }
+
   public int getNbRequests() {
     return nbRequests;
   }
 
   public void setNbRequests(final int nbRequests) {
     this.nbRequests = nbRequests;
+  }
+
+  public String getHierarchicalValidator() {
+    return hierarchicalValidator;
+  }
+
+  public void setHierarchicalValidator(final String hierarchicalValidator) {
+    this.hierarchicalValidator = hierarchicalValidator;
+  }
+
+  public int getHierarchicalValidatorState() {
+    if (!isHierarchicalValidation()) {
+      return VALIDATOR_OK;
+    }
+    if (StringUtil.isNotDefined(hierarchicalValidator)) {
+      return VALIDATOR_UNDEFINED;
+    } else if (OrganizationController.get()
+        .isComponentAvailableToUser(getInstanceId(), hierarchicalValidator)) {
+      return VALIDATOR_OK;
+    }
+    return VALIDATOR_NOT_ALLOWED;
   }
 }

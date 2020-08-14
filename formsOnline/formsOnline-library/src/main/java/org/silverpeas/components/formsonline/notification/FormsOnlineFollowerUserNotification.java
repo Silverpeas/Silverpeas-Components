@@ -27,60 +27,52 @@ import org.silverpeas.components.formsonline.model.FormInstance;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.template.SilverpeasTemplate;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * @author Nicolas EYSSERIC
  */
-public class FormsOnlineValidationRequestUserNotification
-    extends AbstractFormsOnlineRequestUserNotification {
+public class FormsOnlineFollowerUserNotification
+    extends FormsOnlineValidationRequestUserNotification {
 
-  public FormsOnlineValidationRequestUserNotification(final FormInstance resource,
-      final NotifAction action) {
+  private final List<String> usersToBeNotified;
+
+  public FormsOnlineFollowerUserNotification(final FormInstance resource,
+      NotifAction action, final List<String> usersToBeNotified) {
     super(resource, action);
+    this.usersToBeNotified = usersToBeNotified;
+  }
+
+  @Override
+  protected void perform(final FormInstance resource) {
+    super.perform(resource);
+    getNotificationMetaData().displayReceiversInFooter();
   }
 
   @Override
   protected String getBundleSubjectKey() {
-    if (NotifAction.VALIDATE.equals(getAction())) {
-      int nbValidationSteps = getNbValidationSteps();
-      String decoration = "";
-      if (nbValidationSteps > 1) {
-        int step = getCurrentValidationStep();
-        decoration = Integer.toString(step) + nbValidationSteps;
-      }
-      return "formsOnline.msgFormValidated"+decoration;
-    }
-    return "formsOnline.msgFormRefused";
+    return "formsOnline.msgFormProcessed";
   }
 
   @Override
   protected String getTemplateFileName() {
-    if (NotifAction.VALIDATE.equals(getAction())) {
-      return "notificationValidated";
+    return "notificationProcessed";
+  }
+
+  @Override
+  protected Collection<String> getUserIdsToNotify() {
+    if (usersToBeNotified == null) {
+      return Collections.emptyList();
     }
-    return "notificationDenied";
+    return usersToBeNotified;
   }
 
   @Override
   protected void performTemplateData(final String language, final FormInstance resource,
       final SilverpeasTemplate template) {
     super.performTemplateData(language, resource, template);
-    template
-        .setAttribute("comment", getResource().getValidations().getLatestValidation().getComment());
-  }
-
-  @Override
-  protected Collection<String> getUserIdsToNotify() {
-    List<String> ids = new ArrayList<>();
-    ids.add(getResource().getCreatorId());
-    return ids;
-  }
-
-  @Override
-  protected boolean isSendImmediately() {
-    return true;
+    template.setAttribute("validation", getResource().getValidations().getLatestValidation());
   }
 }

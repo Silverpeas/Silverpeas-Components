@@ -40,13 +40,14 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 
 <c:set var="form" value="${requestScope['currentForm']}"/>
+<jsp:useBean id="form" type="org.silverpeas.components.formsonline.model.FormDetail"/>
 <c:set var="templates" value="${requestScope['availableTemplates']}"/>
 <c:set var="m_listGroupSenders" value="${form.sendersAsGroups}"/>
 <c:set var="m_listUserSenders" value="${form.sendersAsUsers}"/>
 <c:set var="m_listGroupReceivers" value="${form.receiversAsGroups}"/>
 <c:set var="m_listUserReceivers" value="${form.receiversAsUsers}"/>
-<c:set var="m_listGroupIntermediateValidation" value=""/>
-<c:set var="m_listUserIntermediateValidation" value=""/>
+<c:set var="m_listGroupIntermediateReceivers" value="${form.intermediateReceiversAsGroups}"/>
+<c:set var="m_listUserIntermediateReceivers" value="${form.intermediateReceiversAsUsers}"/>
 
 <c:set var="hierarchicalValidation" value=""/>
 <c:if test="${form.hierarchicalValidation}">
@@ -59,7 +60,7 @@
 </c:if>
 
 <c:set var="requestExchangeReceiver" value=""/>
-<c:if test="${not empty form.requestExchangeReceiver.get()}">
+<c:if test="${form.requestExchangeReceiver.isPresent()}">
   <c:set var="requestExchangeReceiver" value="${form.requestExchangeReceiver.get()}"/>
 </c:if>
 
@@ -72,7 +73,7 @@
 
 <c:set var="id_ListSenders" value="<%=FormsOnlineSessionController.USER_PANEL_SENDERS_PREFIX%>"/>
 <c:set var="id_ListReceivers" value="<%=FormsOnlineSessionController.USER_PANEL_RECEIVERS_PREFIX%>"/>
-<c:set var="id_ListIntermediateValidation" value="<%=FormsOnlineSessionController.USER_PANEL_INTERMEDIATE_VALIDATION_PREFIX%>"/>
+<c:set var="id_ListIntermediateReveivers" value="<%=FormsOnlineSessionController.USER_PANEL_INTERMEDIATE_RECEIVERS_PREFIX%>"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -215,7 +216,7 @@ $(document).ready(function() {
     </div>
     <div class="table">
       <div class="cell">
-        <viewTags:displayListOfUsersAndGroups users="${m_listUserIntermediateValidation}" groups="${m_listGroupIntermediateValidation}" label="${labelValidationInter}" id="${id_ListIntermediateValidation}" updateCallback="ModifyIntermediateValidation"/>
+        <viewTags:displayListOfUsersAndGroups users="${m_listUserIntermediateReceivers}" groups="${m_listGroupIntermediateReceivers}" label="${labelValidationInter}" id="${id_ListIntermediateReveivers}" updateCallback="ModifyIntermediateReceivers"/>
       </div>
       <div class="cell">
         <viewTags:displayListOfUsersAndGroups users="${m_listUserReceivers}" groups="${m_listGroupReceivers}" label="${labelReceivers}" id="${id_ListReceivers}" updateCallback="ModifyReceivers"/>

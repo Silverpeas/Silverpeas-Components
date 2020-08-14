@@ -356,7 +356,7 @@ fieldset {
 	margin:0;
 }
 
-#ask-by {
+/*#ask-by {
 	width:30%;
 	max-width:400px;
 	float:right;
@@ -397,12 +397,119 @@ fieldset {
 	width:auto;
 	display:inline-block;
 	text-align:left;
+}*/
+
+.steps-OnlineForm {
+  display:flex;
+  list-style-type:none;
+  padding:0;
+  margin:2em 0;
+}
+
+.step-OnlineForm {
+  position:relative;
+  border:1px solid #ccc;
+  margin-right:1em;
+  flex-basis:300px;
+}
+.step-OnlineForm.next-step {
+  opacity:0.5;
+}
+.step-OnlineForm .header-step-onlineForm {
+  height:6.5em;
+}
+
+.step-OnlineForm div.avatar {
+  border-radius:20px;
+  border:1px solid #ccc;
+  width:36px;
+  height:36px;
+  padding:1px;
+  overflow:hidden;
+}
+.step-OnlineForm div.validator {
+  position:absolute;
+  right:1em;
+  top:1em;
+}
+
+.step-OnlineForm .avatar img{
+  width:38px;
+  height:auto;
+}
+
+.step-OnlineForm .title-step-OnlineForm {
+  font-weight:bold;
+  padding:1em 1em 0.25em 1em;
+}
+.step-OnlineForm .refused .title-step-OnlineForm {
+  padding-left:2em;
+  background:transparent url(/silverpeas/util/icons/wrong.gif) no-repeat 0.5em 1em;
+}
+.step-OnlineForm .date-step-OnlineForm,
+.step-OnlineForm .actor-step-OnlineForm {
+  padding:0 1em ;
+}
+.step-OnlineForm .comment-step-OnlineForm,
+.step-OnlineForm .statut-step-OnlineForm {
+  margin:0;
+  position: relative;
+  font-size: 11px;
+  border-left:0;
+  border-right:0;
+  border-bottom:0;
+  height:auto;
+}
+.step-OnlineForm .comment-step-OnlineForm div,
+.step-OnlineForm .statut-step-OnlineForm div{
+  overflow: hidden;
+  height:4em;
+}
+.step-OnlineForm .comment-step-OnlineForm:before {
+  content:' ';
+  display:block;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 5px solid black;
+  position:absolute;
+  top:-5px;
+  right:calc( 1em + 18px );
+}
+.step-OnlineForm .comment-step-OnlineForm.inlineMessage-ok:before {
+  border-bottom: 5px solid #9BD94A;
+}
+.step-OnlineForm .comment-step-OnlineForm.inlineMessage-nok:before {
+  border-bottom: 5px solid #CE6F6F;
+}
+.step-OnlineForm .comment-step-OnlineForm.inlineMessage:before {
+  border-bottom: 5px solid #F9E98E;
+}
+.step-OnlineForm.next-step .comment-step-OnlineForm.inlineMessage:before {
+  border-bottom: 5px solid #d8d7d7;
+}
+
+.step-OnlineForm.next-step .inlineMessage {
+  background-color: #ebebeb;
+  border-color: #d8d7d7;
+}
+.ask-by .forms {
+  display:none;
+}
+.step-OnlineForm:hover {
+  height:auto;
+}
+
+.step-OnlineForm:hover .comment-step-OnlineForm div,
+.step-OnlineForm:hover .statut-step-OnlineForm div{
+  min-height:3em;
+  height:auto;
 }
 
 .read-form .forms {
 	clear:both;
 }
-
 
 .read-form .buttonPane {
 	margin-top:1em;

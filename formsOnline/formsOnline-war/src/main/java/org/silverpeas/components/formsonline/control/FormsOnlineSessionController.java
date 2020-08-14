@@ -26,7 +26,6 @@ import org.silverpeas.components.formsonline.FormsOnlineComponentSettings;
 import org.silverpeas.components.formsonline.model.FormDetail;
 import org.silverpeas.components.formsonline.model.FormInstance;
 import org.silverpeas.components.formsonline.model.FormPK;
-import org.silverpeas.components.formsonline.model.FormsOnlineDAO;
 import org.silverpeas.components.formsonline.model.FormsOnlineException;
 import org.silverpeas.components.formsonline.model.FormsOnlineService;
 import org.silverpeas.components.formsonline.model.RequestPK;
@@ -36,6 +35,7 @@ import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.model.GlobalContext;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.Form;
@@ -49,7 +49,6 @@ import org.silverpeas.core.notification.message.MessageNotifier;
 import org.silverpeas.core.security.authorization.ForbiddenRuntimeException;
 import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.csv.CSVRow;
@@ -75,7 +74,6 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
   private static final int DEFAULT_ITEM_PER_PAGE = 10;
   private static final String UPDATE_CURRENT_FORM = "updateCurrentForm";
   private static final String LOAD_REQUEST = "loadRequest";
-  private FormsOnlineDAO dao = ServiceProvider.getService(FormsOnlineDAO.class);
   private FormDetail currentForm;
   private Selection selection = null;
   private Set<String> selectedValidatorRequestIds = new HashSet<>();
@@ -83,7 +81,7 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
 
   public static final String USER_PANEL_SENDERS_PREFIX = "listSenders";
   public static final String USER_PANEL_RECEIVERS_PREFIX = "listReceivers";
-  public static final String USER_PANEL_INTERMEDIATE_VALIDATION_PREFIX = "listIntermediateValidation";
+  public static final String USER_PANEL_INTERMEDIATE_RECEIVERS_PREFIX = "listIntermediateReceivers";
 
   /**
    * Standard Session Controller Constructeur
@@ -127,6 +125,7 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
   }
 
   public void updateCurrentForm(String[] senderUserIds, String[] senderGroupIds,
+      String[] intermediateReceiverUserIds, String[] intermediateReceiverGroupIds,
       String[] receiverUserIds, String[] receiverGroupIds) throws FormsOnlineException {
 
     if (!isAdmin()) {
@@ -140,16 +139,14 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
     } else {
       MessageNotifier.addSuccess(getString("formsOnline.form.update.succeed"));
     }
-    currentForm =
-        getService().storeForm(currentForm, senderUserIds, senderGroupIds, receiverUserIds,
-            receiverGroupIds);
+    currentForm = getService()
+        .storeForm(currentForm, senderUserIds, senderGroupIds, intermediateReceiverUserIds,
+            intermediateReceiverGroupIds, receiverUserIds, receiverGroupIds);
   }
 
   private FormDetail loadForm(int formId) throws FormsOnlineException {
-    this.currentForm = getService().loadForm(getFormPK(formId));
-    return currentForm;
+    return getService().loadForm(getFormPK(formId), getUserId());
   }
-
 
   public void deleteForm(int formId) throws FormsOnlineException {
     if (!isAdmin()) {
@@ -203,6 +200,10 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
     return initSelection(userIds, groupIds, USER_PANEL_RECEIVERS_PREFIX);
   }
 
+  public String initSelectionIntermediateReceivers(List<String> userIds, List<String> groupIds) {
+    return initSelection(userIds, groupIds, USER_PANEL_INTERMEDIATE_RECEIVERS_PREFIX);
+  }
+
   private String initSelection(final List<String> userIds, final List<String> groupIds,
       final String userPanelReceiversPrefix) {
     ArrayList<String> profiles = new ArrayList<>();
@@ -240,17 +241,14 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
   }
 
   public List<String> getAvailableFormIdsAsReceiver() throws FormsOnlineException {
-    String userId = getUserId();
-    String[] userGroupIds = getOrganisationController().getAllGroupIdsOfUser(userId);
-    return dao.getAvailableFormIdsAsReceiver(getComponentId(), userId, userGroupIds);
+    return getService().getAvailableFormIdsAsReceiver(getComponentId(), getUserId());
   }
 
-  public FormInstance loadRequest(String id, boolean editionMode)
-      throws FormsOnlineException, PublicationTemplateException, FormException {
+  public FormInstance loadRequest(String id, boolean editionMode) throws FormsOnlineException {
     FormInstance request = getService().loadRequest(getRequestPK(id), getUserId(), editionMode);
 
     FormDetail form = request.getForm();
-    if (!request.getCreatorId().equals(getUserId()) && !form.isValidator(getUserId())) {
+    if (!request.canBeAccessedBy(User.getCurrentRequester())) {
       throwForbiddenException(LOAD_REQUEST);
     }
 
@@ -258,12 +256,13 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
     return request;
   }
 
-  public void updateValidationStatus(String requestId, String decision, String comments)
-      throws FormsOnlineException {
-    if (!getCurrentForm().isValidator(getUserId())) {
+  public void updateValidationStatus(String requestId, String decision, String comments,
+      boolean follower) throws FormsOnlineException {
+    FormInstance request = getService().loadRequest(getRequestPK(requestId), getUserId(), false);
+    if (!getCurrentForm().isValidator(getUserId()) && !request.isHierarchicalValidator(getUserId())) {
       throwForbiddenException(LOAD_REQUEST);
     }
-    getService().setValidationStatus(getRequestPK(requestId), getUserId(), decision, comments);
+    getService().setValidationStatus(getRequestPK(requestId), getUserId(), decision, comments, follower);
   }
 
   public void archiveRequest(String id) throws FormsOnlineException {

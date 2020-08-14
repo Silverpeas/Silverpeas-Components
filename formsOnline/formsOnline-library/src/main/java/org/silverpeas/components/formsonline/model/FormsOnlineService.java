@@ -44,7 +44,10 @@ public interface FormsOnlineService extends ApplicationService<FormInstance> {
 
   FormDetail loadForm(FormPK pk) throws FormsOnlineException;
 
+  FormDetail loadForm(FormPK pk, String userId) throws FormsOnlineException;
+
   FormDetail storeForm(FormDetail form, String[] senderUserIds, String[] senderGroupIds,
+      String[] intermediateReceiverUserIds, String[] intermediateReceiverGroupIds,
       String[] receiverUserIds, String[] receiverGroupIds) throws FormsOnlineException;
 
   boolean deleteForm(FormPK pk) throws FormsOnlineException;
@@ -70,15 +73,15 @@ public interface FormsOnlineService extends ApplicationService<FormInstance> {
       throws FormsOnlineException, PublicationTemplateException, FormException;
 
   FormInstance loadRequest(RequestPK pk, String userId, boolean editionMode)
-      throws FormsOnlineException, PublicationTemplateException, FormException;
+      throws FormsOnlineException;
 
   void saveRequest(FormPK pk, String userId, List<FileItem> items) throws FormsOnlineException;
 
   void saveRequest(FormPK pk, String userId, List<FileItem> items, boolean draft)
       throws FormsOnlineException;
 
-  void setValidationStatus(RequestPK pk, String userId, String decision, String comment)
-      throws FormsOnlineException;
+  void setValidationStatus(RequestPK pk, String userId, String decision, String comment,
+      boolean follower) throws FormsOnlineException;
 
   void archiveRequest(RequestPK pk) throws FormsOnlineException;
 

@@ -31,6 +31,7 @@ import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQueries;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
+import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.SilverpeasArrayList;
 import org.silverpeas.core.util.SilverpeasList;
@@ -55,6 +56,8 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.ArrayUtils.isNotEmpty;
+import static org.silverpeas.components.formsonline.model.FormDetail.RECEIVERS_TYPE_FINAL;
+import static org.silverpeas.components.formsonline.model.FormDetail.RECEIVERS_TYPE_INTERMEDIATE;
 import static org.silverpeas.components.formsonline.model.RequestCriteria.QUERY_ORDER_BY.CREATION_DATE_DESC;
 import static org.silverpeas.components.formsonline.model.RequestCriteria.QUERY_ORDER_BY.ID_DESC;
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
@@ -154,8 +157,10 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
          final PreparedStatement stmt = con.prepareStatement(QUERY_DELETE_FORM)) {
       removeGroupRights(con, pk, "S");
       removeUserRights(con, pk, "S");
-      removeGroupRights(con, pk, "R");
-      removeUserRights(con, pk, "R");
+      removeGroupRights(con, pk, RECEIVERS_TYPE_INTERMEDIATE);
+      removeUserRights(con, pk, RECEIVERS_TYPE_INTERMEDIATE);
+      removeGroupRights(con, pk, RECEIVERS_TYPE_FINAL);
+      removeUserRights(con, pk, RECEIVERS_TYPE_FINAL);
       stmt.setString(1, pk.getInstanceId());
       stmt.setInt(2, Integer.parseInt(pk.getId()));
       stmt.executeUpdate();
@@ -229,8 +234,8 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
    * java.lang.String)
    */
   @Override
-  public List<String> getReceiversAsGroups(FormPK pk) throws FormsOnlineException {
-    return getGroupRights(pk, "R");
+  public List<String> getReceiversAsGroups(FormPK pk, String rightType) throws FormsOnlineException {
+    return getGroupRights(pk, rightType);
   }
 
   /*
@@ -238,8 +243,8 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
    * @see FormsOnlineDAO#getReceiversAsUsers(int, java.lang.String)
    */
   @Override
-  public List<String> getReceiversAsUsers(FormPK pk) throws FormsOnlineException {
-    return getUserRights(pk, "R");
+  public List<String> getReceiversAsUsers(FormPK pk, String rightType) throws FormsOnlineException {
+    return getUserRights(pk, rightType);
   }
 
   /*
@@ -301,9 +306,9 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
   }
 
   @Override
-  public void updateReceivers(FormPK pk, String[] newUserReceiverIds, String[] newGroupReceiverIds)
-      throws FormsOnlineException {
-    updateRights(pk, newUserReceiverIds, newGroupReceiverIds, "R");
+  public void updateReceivers(FormPK pk, String[] newUserReceiverIds, String[] newGroupReceiverIds,
+      String rightType) throws FormsOnlineException {
+    updateRights(pk, newUserReceiverIds, newGroupReceiverIds, rightType);
   }
 
   @Override
@@ -467,7 +472,7 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
    */
   @Override
   public SilverpeasList<FormInstance> getReceivedRequests(FormPK pk, boolean allRequests,
-      String userId, final List<Integer> states, final PaginationPage paginationPage)
+      String userId, final List<Integer> states, final PaginationPage paginationPage, final List<String> creatorIds)
       throws FormsOnlineException {
     /*
      * then retrieve instances where : - user has been the validator - no validation has been done
@@ -480,6 +485,9 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
         .paginateBy(paginationPage);
     if (!allRequests) {
       criteria.andValidatorIdOrNoValidator(userId);
+    }
+    if (CollectionUtil.isNotEmpty(creatorIds)) {
+      criteria.andCreatorIds(creatorIds);
     }
     return getRequestsByCriteria(criteria);
   }
@@ -505,7 +513,10 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
     if (!criteria.getFormIds().isEmpty()) {
       query.and(FORM_ID).in(criteria.getFormIds().stream().map(Integer::parseInt).collect(toSet()));
     }
-    if (isDefined(criteria.getCreatorId())) {
+    if (!criteria.getCreatorIds().isEmpty()) {
+      query.and("creatorId").in(criteria.getCreatorIds());
+    }
+    if (!criteria.getCreatorId().isEmpty()) {
       query.and("creatorId = ?", criteria.getCreatorId());
     }
     if (!criteria.getStates().isEmpty()) {

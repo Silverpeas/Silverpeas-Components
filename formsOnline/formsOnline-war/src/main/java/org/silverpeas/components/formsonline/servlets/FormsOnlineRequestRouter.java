@@ -126,6 +126,13 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
             FormsOnlineSessionController.USER_PANEL_SENDERS_PREFIX + USER_PANEL_CURRENT_GROUP_IDS),
             ',');
 
+        String[] interReceiverUserIds = StringUtil.split(request.getParameter(
+            FormsOnlineSessionController.USER_PANEL_INTERMEDIATE_RECEIVERS_PREFIX + USER_PANEL_CURRENT_USER_IDS),
+            ',');
+        String[] interReceiverGroupIds = StringUtil.split(request.getParameter(
+            FormsOnlineSessionController.USER_PANEL_INTERMEDIATE_RECEIVERS_PREFIX + USER_PANEL_CURRENT_GROUP_IDS),
+            ',');
+
         String[] receiverUserIds = StringUtil.split(request.getParameter(
             FormsOnlineSessionController.USER_PANEL_RECEIVERS_PREFIX + USER_PANEL_CURRENT_USER_IDS),
             ',');
@@ -133,8 +140,8 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
             FormsOnlineSessionController.USER_PANEL_RECEIVERS_PREFIX + USER_PANEL_CURRENT_GROUP_IDS),
             ',');
 
-        formsOnlineSC
-            .updateCurrentForm(senderUserIds, senderGroupIds, receiverUserIds, receiverGroupIds);
+        formsOnlineSC.updateCurrentForm(senderUserIds, senderGroupIds, interReceiverUserIds,
+            interReceiverGroupIds, receiverUserIds, receiverGroupIds);
 
         return getDestination("Main", formsOnlineSC, request);
       } else if ("EditForm".equals(function)) {
@@ -158,7 +165,8 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
           formsOnlineSC.deleteForm(Integer.parseInt(formId));
         }
         return getDestination("Main", formsOnlineSC, request);
-      } else if ("ModifySenders".equals(function) || "ModifyReceivers".equals(function)) {
+      } else if ("ModifySenders".equals(function) || "ModifyReceivers".equals(function) ||
+          "ModifyIntermediateReceivers".equals(function)) {
         List<String> userIds = (List<String>) StringUtil
             .splitString(request.getParameter(USER_PANEL_CURRENT_USER_IDS), ',');
         List<String> groupIds = (List<String>) StringUtil
@@ -166,6 +174,8 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
 
         if ("ModifySenders".equals(function)) {
           return formsOnlineSC.initSelectionSenders(userIds, groupIds);
+        } else if ("ModifyIntermediateReceivers".equals(function)) {
+          return formsOnlineSC.initSelectionIntermediateReceivers(userIds, groupIds);
         }
 
         return formsOnlineSC.initSelectionReceivers(userIds, groupIds);
@@ -269,8 +279,9 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
         String requestId = request.getParameter("Id");
         String decision = request.getParameter("decision");
         String comment = request.getParameter("comment");
+        boolean follower = request.getParameterAsBoolean("follower");
         String origin = checkOrigin(request);
-        formsOnlineSC.updateValidationStatus(requestId, decision, comment);
+        formsOnlineSC.updateValidationStatus(requestId, decision, comment, follower);
 
         return getDestination(origin, formsOnlineSC, request);
       } else if ("ArchiveRequest".equals(function)) {

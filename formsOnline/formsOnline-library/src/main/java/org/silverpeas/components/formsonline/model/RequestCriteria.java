@@ -74,6 +74,8 @@ public class RequestCriteria {
   private boolean noValidator = false;
   private PaginationPage pagination;
 
+  private final List<String> creatorIds = new ArrayList<>();
+
   /**
    * Initializes the criteria with component instance ids.
    * <p>
@@ -176,6 +178,13 @@ public class RequestCriteria {
     return this;
   }
 
+  public RequestCriteria andCreatorIds(final Collection<String> creatorIds) {
+    if (creatorIds != null) {
+      this.creatorIds.addAll(creatorIds);
+    }
+    return this;
+  }
+
   /**
    * Configures the criteria of validator id or no validator.
    * @param validatorId identifier of a validator of a form or no validator.
@@ -250,6 +259,10 @@ public class RequestCriteria {
 
   String getCreatorId() {
     return creatorId;
+  }
+
+  List<String> getCreatorIds() {
+    return creatorIds;
   }
 
   String getValidatorId() {

@@ -24,8 +24,10 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/formsOnline" prefix="formsOnline" %>
 
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
@@ -34,9 +36,11 @@
 <%@page import="org.silverpeas.core.contribution.content.form.Form"%>
 <%@page import="org.silverpeas.core.contribution.content.form.PagesContext"%>
 
+<c:set var="formDetail" value="${requestScope['FormDetail']}"/>
+<jsp:useBean id="formDetail" type="org.silverpeas.components.formsonline.model.FormDetail"/>
+
 <%
 	Form formUpdate = (Form) request.getAttribute("Form");
-  FormDetail formDetail = (FormDetail) request.getAttribute("FormDetail");
 
 	// context creation
 	PagesContext context = (PagesContext) request.getAttribute("FormContext");
@@ -68,8 +72,12 @@
 <view:window>
 <view:frame>
 <div id="header-OnlineForm">
-  <h2 class="title"><%=formDetail.getTitle()%></h2>
+  <h2 class="title">${formDetail.title}</h2>
+  <div>${formDetail.description}</div>
 </div>
+
+<formsOnline:hierarchicalInfo formDetail="${formDetail}"/>
+
 <form name="newInstanceForm" method="post" action="SaveRequest" enctype="multipart/form-data">
 	<%
 	formUpdate.display(out, context);
@@ -81,7 +89,7 @@
     <fmt:message var="buttonDraft" key="GML.draft.save"/>
     <fmt:message var="buttonValidate" key="formsOnline.request.send"/>
     <fmt:message var="buttonCancel" key="GML.cancel"/>
-    <view:button label="${buttonValidate}" action="javascript:sendRequest();" />
+    <view:button label="${buttonValidate}" action="javascript:sendRequest();" classes="validateButton" />
     <view:button label="${buttonDraft}" action="javascript:saveDraft();" />
     <view:button label="${buttonCancel}" action="Main" />
   </view:buttonPane>

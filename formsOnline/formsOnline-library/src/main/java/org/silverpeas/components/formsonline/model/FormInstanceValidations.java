@@ -85,6 +85,17 @@ public class FormInstanceValidations extends ArrayList<FormInstanceValidation> {
         t -> stream().filter(v -> v.getValidationType() == type).findFirst());
   }
 
+  public FormInstanceValidation getLatestValidation() {
+    if (getFinalValidation().isPresent()) {
+      return getFinalValidation().get();
+    } else if (getIntermediateValidation().isPresent()) {
+      return getIntermediateValidation().get();
+    } else if (getHierarchicalValidation().isPresent()) {
+      return getHierarchicalValidation().get();
+    }
+    return null;
+  }
+
   private void resetCache() {
     byType.clear();
   }

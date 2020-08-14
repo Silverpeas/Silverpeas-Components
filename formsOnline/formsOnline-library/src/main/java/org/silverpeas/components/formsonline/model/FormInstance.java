@@ -24,12 +24,17 @@
 package org.silverpeas.components.formsonline.model;
 
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.admin.user.model.UserFull;
+import org.silverpeas.core.contribution.ContributionStatus;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.model.ContributionValidation;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 
 import javax.persistence.Transient;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 import static org.silverpeas.core.util.StringUtil.EMPTY;
 
@@ -160,15 +165,92 @@ public class FormInstance implements SilverpeasContent {
 
   @Override
   public boolean canBeAccessedBy(final User user) {
-    return false;
+    String userId = user.getId();
+    return getCreatorId().equals(userId) || form.isValidator(userId) ||
+        isHierarchicalValidator(userId);
+  }
+
+  public String getHierarchicalValidator() {
+    return UserFull.getById(getCreatorId()).getValue("boss");
+  }
+
+  public boolean isHierarchicalValidator(String userId) {
+    return form.isHierarchicalValidation() && userId.equals(getHierarchicalValidator());
   }
 
   /**
    * Gets all the validations performed on the form instance.
    * @return a {@link FormInstanceValidations} instance.
    */
-  FormInstanceValidations getValidations() {
+  public FormInstanceValidations getValidations() {
     return validations;
+  }
+
+  public List<FormInstanceValidation> getPreviousValidations() {
+    List<FormInstanceValidation> previousValidations = new ArrayList<>();
+    for (FormInstanceValidation validation : getValidationsSchema()) {
+      if (validation.isValidated()) {
+        previousValidations.add(validation);
+      }
+    }
+    return previousValidations;
+  }
+
+  public List<FormInstanceValidation> getValidationsSchema() {
+    List<FormInstanceValidation> schema = new ArrayList<>();
+    if (form.isHierarchicalValidation()) {
+      Optional<FormInstanceValidation> hierarchicalValidation = getValidations().getHierarchicalValidation();
+      if (hierarchicalValidation.isPresent()) {
+        schema.add(hierarchicalValidation.get());
+      } else {
+        FormInstanceValidation newHierarchicalValidation = new FormInstanceValidation(this);
+        newHierarchicalValidation.setValidationType(FormInstanceValidationType.HIERARCHICAL);
+        newHierarchicalValidation.setStatus(ContributionStatus.PENDING_VALIDATION);
+        newHierarchicalValidation.setValidator(User.getById(getHierarchicalValidator()));
+        schema.add(newHierarchicalValidation);
+      }
+    }
+    if (form.isIntermediateValidation()) {
+      Optional<FormInstanceValidation> intermediateValidation = getValidations().getIntermediateValidation();
+      if (intermediateValidation.isPresent()) {
+        schema.add(intermediateValidation.get());
+      } else {
+        FormInstanceValidation newIntermediateValidation = new FormInstanceValidation(this);
+        newIntermediateValidation.setValidationType(FormInstanceValidationType.INTERMEDIATE);
+        newIntermediateValidation.setStatus(ContributionStatus.PENDING_VALIDATION);
+        // adding user who have to validate if it is unique
+        List<User> validators = form.getAllIntermediateReceivers();
+        if (validators.size() == 1) {
+          newIntermediateValidation.setValidator(validators.get(0));
+        }
+        schema.add(newIntermediateValidation);
+      }
+    }
+    Optional<FormInstanceValidation> finalValidation = getValidations().getFinalValidation();
+    if (finalValidation.isPresent()) {
+      schema.add(finalValidation.get());
+    } else {
+      FormInstanceValidation newFinalValidation = new FormInstanceValidation(this);
+      newFinalValidation.setValidationType(FormInstanceValidationType.FINAL);
+      newFinalValidation.setStatus(ContributionStatus.PENDING_VALIDATION);
+      // adding user who have to validate if it is unique
+      List<User> validators = form.getAllFinalReceivers();
+      if (validators.size() == 1) {
+        newFinalValidation.setValidator(validators.get(0));
+      }
+      schema.add(newFinalValidation);
+    }
+    return schema;
+  }
+
+  public FormInstanceValidation getPendingValidation() {
+    List<FormInstanceValidation> schema = getValidationsSchema();
+    for (FormInstanceValidation validation : schema) {
+      if (validation.isPendingValidation()) {
+        return validation;
+      }
+    }
+    return null;
   }
 
   /**
@@ -210,6 +292,8 @@ public class FormInstance implements SilverpeasContent {
   public boolean isRead() {
     return getState() == STATE_READ;
   }
+
+  public boolean isUnread() { return getState() == STATE_UNREAD; }
 
   public boolean isValidated() {
     return getState() == STATE_VALIDATED;
@@ -268,4 +352,5 @@ public class FormInstance implements SilverpeasContent {
   public RequestPK getPK() {
     return new RequestPK(getId(), getComponentInstanceId());
   }
+
 }

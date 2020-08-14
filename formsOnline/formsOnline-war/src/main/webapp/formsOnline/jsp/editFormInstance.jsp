@@ -27,6 +27,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/formsOnline" prefix="formsOnline" %>
 
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
@@ -34,7 +35,7 @@
 <%@page import="org.silverpeas.components.formsonline.model.FormDetail"%>
 <%@page import="org.silverpeas.core.contribution.content.form.Form"%>
 <%@page import="org.silverpeas.core.contribution.content.form.PagesContext"%>
-<%@ page import="org.silverpeas.components.formsonline.model.FormInstance" %>
+<%@page import="org.silverpeas.components.formsonline.model.FormInstance" %>
 
 <%
   FormInstance userRequest = (FormInstance) request.getAttribute("UserRequest");
@@ -80,6 +81,9 @@
   <h2 class="title"><%=formDetail.getTitle()%></h2>
   <div><%=formDetail.getDescription()%></div>
 </div>
+
+<formsOnline:hierarchicalInfo formDetail="<%=formDetail%>"/>
+
 <form name="newInstanceForm" method="post" action="SaveRequest" enctype="multipart/form-data">
   <input type="hidden" name="Id" value="<%=userRequest.getId()%>"/>
 	<%
@@ -92,7 +96,7 @@
     <fmt:message var="buttonValidate" key="formsOnline.request.send"/>
     <fmt:message var="buttonBack" key="GML.back"/>
     <fmt:message var="buttonDelete" key="GML.delete"/>
-    <view:button label="${buttonValidate}" action="javascript:sendRequest();" />
+    <view:button label="${buttonValidate}" action="javascript:sendRequest();" classes="validateButton"/>
     <view:button label="${buttonDraft}" action="javascript:saveDraft();" />
     <view:button label="${buttonDelete}" action="javascript:deleteDraft();" />
     <view:button label="${buttonBack}" action="Main" />

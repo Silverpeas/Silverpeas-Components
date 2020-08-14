@@ -32,6 +32,7 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.contribution.ContributionStatus;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
@@ -56,6 +57,7 @@ import org.silverpeas.core.mail.MailContent;
 import org.silverpeas.core.mail.MailSending;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
+import org.silverpeas.core.security.authorization.ForbiddenRuntimeException;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.SettingBundle;
@@ -79,7 +81,11 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.BiConsumer;
+
+import static org.silverpeas.components.formsonline.model.FormDetail.RECEIVERS_TYPE_FINAL;
+import static org.silverpeas.components.formsonline.model.FormDetail.RECEIVERS_TYPE_INTERMEDIATE;
 
 @Singleton
 public class DefaultFormsOnlineService implements FormsOnlineService {
@@ -120,20 +126,22 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
     return CollectionUtil.asList(groups);
   }
 
-  private List<User> getReceiversAsUsers(FormPK pk) throws FormsOnlineException {
-    List<String> userIds = getDAO().getReceiversAsUsers(pk);
+  private List<User> getReceiversAsUsers(FormPK pk, String rightType) throws FormsOnlineException {
+    List<String> userIds = getDAO().getReceiversAsUsers(pk, rightType);
     User[] details = organizationController.getUserDetails(userIds.toArray(new String[0]));
     return CollectionUtil.asList(details);
   }
 
-  private List<Group> getReceiversAsGroups(FormPK pk) throws FormsOnlineException {
-    List<String> groupIds = getDAO().getReceiversAsGroups(pk);
+  private List<Group> getReceiversAsGroups(FormPK pk, String rightType) throws FormsOnlineException {
+    List<String> groupIds = getDAO().getReceiversAsGroups(pk, rightType);
     Group[] groups = organizationController.getGroups(groupIds.toArray(new String[0]));
     return CollectionUtil.asList(groups);
   }
 
-  private boolean isValidator(FormPK pk, String userId) throws FormsOnlineException {
-    return isInLists(userId, getReceiversAsUsers(pk), getReceiversAsGroups(pk));
+  private boolean isValidator(FormPK pk, String userId, String rightType)
+      throws FormsOnlineException {
+    return isInLists(userId, getReceiversAsUsers(pk, rightType),
+        getReceiversAsGroups(pk, rightType));
   }
 
   private boolean isInLists(String userId, List<? extends User> users, List<Group> groups) {
@@ -160,12 +168,20 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
 
   @Override
   public FormDetail loadForm(FormPK pk) throws FormsOnlineException {
+    return loadForm(pk, null);
+  }
+
+  @Override
+  public FormDetail loadForm(FormPK pk, String userId) throws FormsOnlineException {
     FormDetail form = getDAO().getForm(pk);
     if (form != null) {
       form.setSendersAsUsers(getSendersAsUsers(pk));
       form.setSendersAsGroups(getSendersAsGroups(pk));
-      form.setReceiversAsUsers(getReceiversAsUsers(pk));
-      form.setReceiversAsGroups(getReceiversAsGroups(pk));
+      form.setIntermediateReceiversAsUsers(getReceiversAsUsers(pk, RECEIVERS_TYPE_INTERMEDIATE));
+      form.setIntermediateReceiversAsGroups(getReceiversAsGroups(pk, RECEIVERS_TYPE_INTERMEDIATE));
+      form.setReceiversAsUsers(getReceiversAsUsers(pk, RECEIVERS_TYPE_FINAL));
+      form.setReceiversAsGroups(getReceiversAsGroups(pk, RECEIVERS_TYPE_FINAL));
+      setHierarchicalValidator(form, userId);
     }
     return form;
   }
@@ -173,6 +189,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
   @Override
   @Transactional
   public FormDetail storeForm(FormDetail form, String[] senderUserIds, String[] senderGroupIds,
+      String[] intermediateReceiverUserIds, String[] intermediateReceiverGroupIds,
       String[] receiverUserIds, String[] receiverGroupIds) throws FormsOnlineException {
     FormDetail theForm = form;
     if (form.getId() == -1) {
@@ -181,11 +198,16 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
       getDAO().updateForm(theForm);
     }
     getDAO().updateSenders(theForm.getPK(), senderUserIds, senderGroupIds);
-    getDAO().updateReceivers(theForm.getPK(), receiverUserIds, receiverGroupIds);
+    getDAO()
+        .updateReceivers(theForm.getPK(), intermediateReceiverUserIds, intermediateReceiverGroupIds,
+            RECEIVERS_TYPE_INTERMEDIATE);
+    getDAO().updateReceivers(theForm.getPK(), receiverUserIds, receiverGroupIds, RECEIVERS_TYPE_FINAL);
     theForm.setSendersAsUsers(getSendersAsUsers(theForm.getPK()));
     theForm.setSendersAsGroups(getSendersAsGroups(theForm.getPK()));
-    theForm.setReceiversAsUsers(getReceiversAsUsers(theForm.getPK()));
-    theForm.setReceiversAsGroups(getReceiversAsGroups(theForm.getPK()));
+    theForm.setIntermediateReceiversAsUsers(getReceiversAsUsers(theForm.getPK(), RECEIVERS_TYPE_INTERMEDIATE));
+    theForm.setIntermediateReceiversAsGroups(getReceiversAsGroups(theForm.getPK(), RECEIVERS_TYPE_INTERMEDIATE));
+    theForm.setReceiversAsUsers(getReceiversAsUsers(theForm.getPK(), RECEIVERS_TYPE_FINAL));
+    theForm.setReceiversAsGroups(getReceiversAsGroups(theForm.getPK(), RECEIVERS_TYPE_FINAL));
 
     index(theForm);
 
@@ -271,6 +293,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
       final PaginationPage paginationPage) throws FormsOnlineException {
     final List<String> formIds = getAvailableFormIdsAsReceiver(filter.getComponentId(), userId);
 
+    String userDomainId = User.getById(userId).getDomainId();
     // limit requests to specified forms
     if (!filter.getFormIds().isEmpty()) {
       formIds.retainAll(filter.getFormIds());
@@ -283,9 +306,19 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
         final List<Integer> states = mergingRuleByStates.getLeft();
         final BiConsumer<RequestsByStatus, SilverpeasList<FormInstance>> merge =
             mergingRuleByStates.getRight();
+        List<String> senderIds = new ArrayList<>();
+        if (states.contains(FormInstance.STATE_UNREAD) && form.isHierarchicalValidation()) {
+          User[] users = OrganizationController.get().getAllUsersInDomain(userDomainId);
+          for (User user : users) {
+            String bossId = UserFull.getById(user.getId()).getValue("boss");
+            if (userId.equals(bossId)) {
+              senderIds.add(user.getId());
+            }
+          }
+        }
         final SilverpeasList<FormInstance> result = getDAO()
             .getReceivedRequests(form.getPK(), filter.isAllRequests(), userId, states,
-                paginationPage);
+                paginationPage, senderIds);
         merge.accept(requests, result.stream()
                                      .map(l -> {
                                        l.setForm(form);
@@ -294,6 +327,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
                                      .collect(SilverpeasList.collector(result)));
       }
     }
+
     return requests;
   }
 
@@ -301,7 +335,22 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
   public List<String> getAvailableFormIdsAsReceiver(String appId, String userId)
       throws FormsOnlineException {
     String[] userGroupIds = organizationController.getAllGroupIdsOfUser(userId);
-    return getDAO().getAvailableFormIdsAsReceiver(appId, userId, userGroupIds);
+    List<String> formIds = getDAO().getAvailableFormIdsAsReceiver(appId, userId, userGroupIds);
+
+    // get available form as boss
+    List<FormDetail> forms = getDAO().findAllForms(appId);
+    for (FormDetail form : forms) {
+      if (form.isHierarchicalValidation()) {
+        SilverpeasList<FormInstance> requests = getDAO().getAllRequests(form.getPK());
+        for (FormInstance request : requests) {
+          String bossId = getHierarchicalValidator(request.getCreatorId());
+          if (userId.equals(bossId)) {
+            formIds.add(Integer.toString(form.getId()));
+          }
+        }
+      }
+    }
+    return formIds;
   }
 
   @Override
@@ -316,7 +365,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
     FormInstance request = getDAO().getRequest(pk);
 
     // recuperation de l'objet et du nom du formulaire
-    FormDetail form = loadForm(request.getFormPK());
+    FormDetail form = loadForm(request.getFormPK(), editionMode ? userId : null);
     request.setForm(form);
     String xmlFormName = form.getXmlFormName();
     String xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName.indexOf('.'));
@@ -341,13 +390,28 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
     }
 
     // Check FormsOnline request states in order to display or hide comment
-    if (request.isCanBeValidated() && isValidator(form.getPK(), userId)) {
+    if (request.isCanBeValidated()) {
       // mise a jour du statut de l'instance
       if (request.getState() == FormInstance.STATE_UNREAD) {
         request.setState(FormInstance.STATE_READ);
         getDAO().saveRequestState(request);
       }
-      request.setValidationEnabled(true);
+
+      List<FormInstanceValidation> schema = request.getValidationsSchema();
+      for (FormInstanceValidation validation : schema) {
+        if (validation.isPendingValidation()) {
+          boolean validationEnabled;
+          if (validation.getValidationType().isHierarchical()) {
+            validationEnabled = request.isHierarchicalValidator(userId);
+          } else if (validation.getValidationType().isIntermediate()) {
+            validationEnabled = isValidator(form.getPK(), userId, RECEIVERS_TYPE_INTERMEDIATE);
+          } else {
+            validationEnabled = isValidator(form.getPK(), userId, RECEIVERS_TYPE_FINAL);
+          }
+          request.setValidationEnabled(validationEnabled);
+          break;
+        }
+      }
     }
 
     return request;
@@ -367,7 +431,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
       throws FormsOnlineException {
 
     String requestId = FileUploadUtil.getParameter(items, "Id");
-    FormInstance request = null;
+    FormInstance request;
     if (StringUtil.isNotDefined(requestId)) {
       request = createRequest(pk, userId, items, draft);
     } else {
@@ -394,7 +458,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
     }
     request = getDAO().saveRequest(request);
 
-    FormDetail formDetail = getDAO().getForm(pk);
+    FormDetail formDetail = loadForm(pk, userId);
     request.setForm(formDetail);
 
     // Retrieve data form (with DataRecord object)
@@ -459,16 +523,23 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
 
   @Override
   @Transactional
-  public void setValidationStatus(RequestPK pk, String userId, String decision, String comment)
-      throws FormsOnlineException {
+  public void setValidationStatus(RequestPK pk, String userId, String decision, String comment,
+      boolean follower) throws FormsOnlineException {
     final FormInstance request = getDAO().getRequest(pk);
-    final FormDetail form = getDAO().getForm(new FormPK(request.getFormId(), pk.getInstanceId()));
+    final FormDetail form = loadForm(new FormPK(request.getFormId(), pk.getInstanceId()));
     request.setForm(form);
-    final FormInstanceValidation validation = new FormInstanceValidation(request);
+
+    if (!form.isValidator(userId) && !request.isHierarchicalValidator(userId)) {
+      throwForbiddenException("Validation");
+    }
+
+    FormInstanceValidation validation = request.getPendingValidation();
 
     // update state
     if ("validate".equals(decision)) {
-      request.setState(FormInstance.STATE_VALIDATED);
+      if (validation.getValidationType().isFinal()) {
+        request.setState(FormInstance.STATE_VALIDATED);
+      }
       validation.setStatus(ContributionStatus.VALIDATED);
     } else {
       request.setState(FormInstance.STATE_REFUSED);
@@ -479,6 +550,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
     validation.setDate(Date.from(Instant.now()));
     validation.setValidator(User.getById(userId));
     validation.setComment(comment);
+    validation.setFollower(follower);
     request.getValidations().add(validation);
 
     // save modifications
@@ -489,20 +561,45 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
   }
 
   private void notifyValidation(FormInstance request) throws FormsOnlineException {
-    NotifAction action = NotifAction.REFUSE;
-    if (request.getState() == FormInstance.STATE_VALIDATED) {
-      action = NotifAction.VALIDATE;
+    FormInstanceValidation latestValidation = request.getValidations().getLatestValidation();
+    FormInstanceValidation pendingValidation = request.getPendingValidation();
+
+    NotifAction action = NotifAction.VALIDATE;
+    if (request.getState() == FormInstance.STATE_REFUSED) {
+      action = NotifAction.REFUSE;
     }
 
     // notify sender
+    // TODO custom message
     UserNotificationHelper.buildAndSend(
         new FormsOnlineValidationRequestUserNotification(request, action));
 
-    // notify all validators
-    List<String> userIds = getAllReceivers(request.getForm().getPK());
+    List<String> validatorIds = new ArrayList<>();
+
+    // notify next validators
+    if (latestValidation.getValidationType().isFinal() ||
+        pendingValidation.getValidationType().isFinal()) {
+      validatorIds.addAll(getAllReceivers(request.getForm().getPK(), RECEIVERS_TYPE_FINAL));
+    } else if (pendingValidation.getValidationType().isIntermediate()) {
+      validatorIds.addAll(getAllReceivers(request.getForm().getPK(), RECEIVERS_TYPE_INTERMEDIATE));
+    }
+
     UserNotificationHelper
-        .buildAndSend(new FormsOnlineProcessedRequestUserNotification(request, action, userIds));
-  }
+        .buildAndSend(new FormsOnlineProcessedRequestUserNotification(request, action, validatorIds));
+
+    // notify previous validators if marked as followers
+    List<String> followerIds = new ArrayList<>();
+    List<FormInstanceValidation> previousValidations = request.getPreviousValidations();
+    for (FormInstanceValidation previousValidation : previousValidations) {
+      if (previousValidation.isFollower()) {
+        followerIds.add(previousValidation.getValidator().getId());
+      }
+    }
+
+    UserNotificationHelper
+        .buildAndSend(new FormsOnlineProcessedRequestUserNotification(request, action, followerIds));
+
+ }
 
   @Override
   @Transactional
@@ -531,19 +628,37 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
     getDAO().saveRequestState(request);
   }
 
-  private void notifyReceivers(FormInstance request)
-      throws FormsOnlineException {
-    List<String> userIds = getAllReceivers(request.getForm().getPK());
+  private void notifyReceivers(FormInstance request) throws FormsOnlineException {
+
+    FormInstanceValidations validations = request.getValidations();
+    FormDetail form = request.getForm();
+
+    if (validations.isEmpty()) {
+      sendRequestByEmail(request);
+    }
+
+    List<String> userIds = new ArrayList<>();
+
+    FormInstanceValidation pendingValidation = request.getPendingValidation();
+    if (pendingValidation != null) {
+      if (pendingValidation.getValidationType().isHierarchical()) {
+        // notify boss
+        String bossId = form.getHierarchicalValidator();
+        userIds.add(bossId);
+      } else if (pendingValidation.getValidationType().isIntermediate()) {
+        userIds = getAllReceivers(request.getForm().getPK(), RECEIVERS_TYPE_INTERMEDIATE);
+      } else {
+        userIds = getAllReceivers(request.getForm().getPK(), RECEIVERS_TYPE_FINAL);
+      }
+    }
 
     UserNotificationHelper
         .buildAndSend(new FormsOnlinePendingValidationRequestUserNotification(request, userIds));
-
-    sendRequestByEmail(request);
   }
 
-  private List<String> getAllReceivers(FormPK pk) throws FormsOnlineException {
-    List<String> userIds = getDAO().getReceiversAsUsers(pk);
-    List<String> groupIds = getDAO().getReceiversAsGroups(pk);
+  private List<String> getAllReceivers(FormPK pk, String rightType) throws FormsOnlineException {
+    List<String> userIds = getDAO().getReceiversAsUsers(pk, rightType);
+    List<String> groupIds = getDAO().getReceiversAsGroups(pk, rightType);
     for (String groupId : groupIds) {
       Group group = Group.getById(groupId);
       if (group != null) {
@@ -568,9 +683,9 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
 
   private void sendRequestByEmail(FormInstance request) throws FormsOnlineException {
     FormDetail form = request.getForm();
-    if (form.getRequestExchangeReceiver().isPresent()) {
-
-      String email = form.getRequestExchangeReceiver().get();
+    Optional<String> requestExchangeReceiver = form.getRequestExchangeReceiver();
+    if (requestExchangeReceiver.isPresent()) {
+      String email = requestExchangeReceiver.get();
 
       StringBuilder content = new StringBuilder();
       List<SimpleDocument> docs = new ArrayList<>();
@@ -583,15 +698,18 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
         DataRecord dataRecord = recordSet.getRecord(request.getId());
         Map<String, String> values = dataRecord.getValues(I18NHelper.defaultLanguage);
         for (FieldTemplate field : fields) {
+          String value = values.get(field.getFieldName());
           content.append(field.getLabel(I18NHelper.defaultLanguage));
           content.append(" : ");
-          content.append(values.get(field.getFieldName()));
+          content.append(value);
           content.append(br.toString());
 
-          if (field.getTypeName().equals(FileField.TYPE)) {
+          if (StringUtil.isDefined(value) && field.getTypeName().equals(FileField.TYPE)) {
             SimpleDocument doc = AttachmentServiceProvider.getAttachmentService()
                 .searchDocumentById(new SimpleDocumentPK(dataRecord.getField(field.getFieldName()).getValue(), request.getComponentInstanceId()), null);
-            docs.add(doc);
+            if (doc != null) {
+              docs.add(doc);
+            }
           }
         }
       } catch (Exception e) {
@@ -640,6 +758,21 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
       // create the Multipart and its parts to it
       mp.addBodyPart(mbp);
     }
+  }
+
+  private void setHierarchicalValidator(FormDetail form, String userId) {
+    if (form.isHierarchicalValidation() && StringUtil.isDefined(userId)) {
+      form.setHierarchicalValidator(getHierarchicalValidator(userId));
+    }
+  }
+
+  private String getHierarchicalValidator(String userId) {
+    return UserFull.getById(userId).getValue("boss");
+  }
+
+  private void throwForbiddenException(String method) {
+    throw new ForbiddenRuntimeException(
+        "User is not allowed to do the following operation: " + method);
   }
 
   private PublicationTemplateManager getPublicationTemplateManager() {

@@ -36,6 +36,7 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/formsOnline" prefix="formsOnline" %>
 
 <c:set var="lang" value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
 <c:set var="currentUser" value="${sessionScope['SilverSessionController'].currentUserDetail}"/>
@@ -44,6 +45,7 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 
 <c:set var="userRequest" value="${requestScope['UserRequest']}"/>
+<jsp:useBean id="userRequest" type="org.silverpeas.components.formsonline.model.FormInstance"/>
 <c:set var="validationEnabled" value="${requestScope['ValidationEnabled']}"/>
 <c:set var="form" value="${requestScope['FormDetail']}"/>
 <c:set var="origin" value="${requestScope['Origin']}"/>
@@ -70,8 +72,24 @@
   <% formView.displayScripts(out, context); %>
   <script type="text/javascript">
 	  function validate() {
-		  document.validationForm.decision.value = "validate";
-		  document.validationForm.submit();
+      document.validationForm.decision.value = "validate";
+      <c:choose>
+        <c:when test="${not userRequest.pendingValidation.validationType.final}">
+          $('#followerMessage').popup('validation', {
+            title : "Accepter la demande",
+            callback : function() {
+              var followerCheckbox = document.getElementById('followerCheckbox');
+              if (followerCheckbox.checked) {
+                document.validationForm.follower.value = followerCheckbox.value;
+              }
+              document.validationForm.submit();
+            }
+          });
+        </c:when>
+        <c:otherwise>
+          document.validationForm.submit();
+        </c:otherwise>
+      </c:choose>
 	  }
 
 	  function refuse() {
@@ -113,60 +131,23 @@
 
   <div id="header-OnlineForm">
     <h2 class="title">${form.title}</h2>
-    <div id="ask-by" class="bgDegradeGris">
-      <fmt:message key="formsOnline.request.from"/> <view:username userId="${userRequest.creatorId}"/>
-      <div class="profilPhoto"><view:image src="${userRequest.creator.avatar}" alt="" type="avatar" /></div>
-      <div class="ask-date"><fmt:message key="GML.date.the"/> <view:formatDate value="${userRequest.creationDate}"/></div>
-      <div>
-        <viewTags:displayUserExtraProperties user="${userRequest.creator}" readOnly="true" linear="true" includeEmail="true" displayLabels="false"/>
-      </div>
-    </div>
 
-    <c:choose>
-      <c:when test="${userRequest.canBeValidated}">
-        <div id="ask-statut" class="inlineMessage"><fmt:message key="GML.contribution.validation.status.PENDING_VALIDATION"/></div>
-      </c:when>
-      <c:when test="${userRequest.validated}">
-        <c:choose>
-          <c:when test="${silfn:isDefined(userRequest.comments)}">
-            <div id="ask-statut" class="commentaires">
-              <div class="inlineMessage-ok oneComment">
-                <p class="author"><fmt:message key="GML.contribution.validation.status.VALIDATED"/> <fmt:message key="GML.date.the"/> <view:formatDate value="${userRequest.validationDate}"/> <fmt:message key="GML.by"/> <view:username userId="${userRequest.validatorId}"/></p>
-                <div class="avatar"><view:image src="${userRequest.validator.avatar}" alt="" type="avatar" /></div>
-                <div>
-                  <p>${silfn:escapeHtmlWhitespaces(userRequest.comments)}</p>
-                </div>
-              </div>
-            </div>
-          </c:when>
-          <c:otherwise>
-            <div id="ask-statut" class="inlineMessage-ok">
-              <fmt:message key="GML.contribution.validation.status.VALIDATED"/> <fmt:message key="GML.date.the"/> <view:formatDate value="${userRequest.validationDate}"/> <fmt:message key="GML.by"/> <view:username userId="${userRequest.validatorId}"/>
-            </div>
-          </c:otherwise>
-        </c:choose>
-      </c:when>
-      <c:when test="${userRequest.denied}">
-        <c:choose>
-          <c:when test="${silfn:isDefined(userRequest.comments)}">
-            <div id="ask-statut" class="commentaires">
-              <div class="inlineMessage-nok oneComment">
-                <p class="author"><fmt:message key="GML.contribution.validation.status.REFUSED"/> <fmt:message key="GML.date.the"/> <view:formatDate value="${userRequest.validationDate}"/> <fmt:message key="GML.by"/> <view:username userId="${userRequest.validatorId}"/></p>
-                <div class="avatar"><view:image src="${userRequest.validator.avatar}" alt="" type="avatar" /></div>
-                <div>
-                  <p>${silfn:escapeHtmlWhitespaces(userRequest.comments)}</p>
-                </div>
-              </div>
-            </div>
-          </c:when>
-          <c:otherwise>
-            <div id="ask-statut" class="inlineMessage-nok">
-              <fmt:message key="GML.contribution.validation.status.REFUSED"/> <fmt:message key="GML.date.the"/> <view:formatDate value="${userRequest.validationDate}"/> <fmt:message key="GML.by"/> <view:username userId="${userRequest.validatorId}"/>
-            </div>
-          </c:otherwise>
-        </c:choose>
-      </c:when>
-    </c:choose>
+    <ul class="steps-OnlineForm">
+      <li class="step-OnlineForm ask-by">
+        <div class="header-step-onlineForm">
+          <div class="validator avatar"><view:image src="${userRequest.creator.avatar}" alt="" type="avatar" /></div>
+          <div class="title-step-OnlineForm"><fmt:message key="formsOnline.request.from"/></div>
+          <div class="date-step-OnlineForm"><fmt:message key="GML.date.the"/> <view:formatDate value="${userRequest.creationDate}"/></div>
+          <div class="actor-step-OnlineForm"><fmt:message key="GML.by"/> <view:username userId="${userRequest.creatorId}"/></div>
+        </div>
+        <div class="forms">
+          <viewTags:displayUserExtraProperties user="${userRequest.creator}" readOnly="true" linear="true" includeEmail="true" displayLabels="false"/>
+        </div>
+      </li>
+
+      <formsOnline:validations userRequest="${userRequest}"/>
+
+    </ul>
   </div>
 
 	<%
@@ -182,6 +163,7 @@
           <input type="hidden" name="Id" value="${userRequest.id}"/>
           <input type="hidden" name="Origin" value="${origin}"/>
           <input type="hidden" name="decision" value=""/>
+          <input type="hidden" name="follower" id="follower" value=""/>
           <textarea name="comment"  style="resize: none; overflow-y: hidden; height: 60px;" class="text"></textarea>
         </form>
       </div>
@@ -207,5 +189,10 @@
   <input type="hidden" name="Id" value="${userRequest.id}"/>
   <input type="hidden" name="Origin" value="InBox"/>
 </form>
+
+<div id="followerMessage" style="display: none">
+  <input id="followerCheckbox" type="checkbox" value="true"/> M'avertir des prochaines décisions sur cette demande
+</div>
+
 </body>
 </html>

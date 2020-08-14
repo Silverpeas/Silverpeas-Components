@@ -24,6 +24,7 @@
 package org.silverpeas.components.formsonline.notification;
 
 import org.silverpeas.components.formsonline.model.FormInstance;
+import org.silverpeas.components.formsonline.model.FormInstanceValidation;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
@@ -49,7 +50,7 @@ public abstract class AbstractFormsOnlineRequestUserNotification
     if (NotifAction.PENDING_VALIDATION.equals(action)) {
       this.senderName = UserDetail.getById(resource.getCreatorId()).getDisplayedName();
     } else {
-      this.senderName = UserDetail.getById(resource.getValidatorId()).getDisplayedName();
+      this.senderName = resource.getValidations().getLatestValidation().getValidator().getDisplayedName();
     }
   }
 
@@ -70,6 +71,7 @@ public abstract class AbstractFormsOnlineRequestUserNotification
     template.setAttribute("senderName", getSenderName());
     template.setAttribute("requester", resource.getCreator());
     template.setAttribute("validator", resource.getValidator());
+    template.setAttribute("pendingValidation", resource.getPendingValidation());
   }
 
   @Override
@@ -103,11 +105,27 @@ public abstract class AbstractFormsOnlineRequestUserNotification
     if (NotifAction.PENDING_VALIDATION.equals(action)) {
       return getResource().getCreatorId();
     }
-    return getResource().getValidatorId();
+    return getResource().getValidations().getLatestValidation().getValidator().getId();
   }
 
   @Override
   protected String getContributionAccessLinkLabelBundleKey() {
     return "formsOnline.notifLinkLabel";
+  }
+
+  protected int getNbValidationSteps() {
+    return getResource().getValidationsSchema().size();
+  }
+
+  protected int getCurrentValidationStep() {
+    int currentStep = 1;
+    int nbValidationSteps = getNbValidationSteps();
+    FormInstanceValidation latestValidation = getResource().getValidations().getLatestValidation();
+    if (latestValidation.getValidationType().isFinal()) {
+      currentStep = nbValidationSteps;
+    } else if (latestValidation.getValidationType().isIntermediate() && nbValidationSteps == 3) {
+      currentStep = 2;
+    }
+    return currentStep;
   }
 }
