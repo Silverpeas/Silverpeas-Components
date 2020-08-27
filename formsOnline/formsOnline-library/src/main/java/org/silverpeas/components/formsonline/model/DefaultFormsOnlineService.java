@@ -23,10 +23,10 @@ package org.silverpeas.components.formsonline.model;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.ecs.html.BR;
+import org.apache.ecs.xhtml.div;
 import org.silverpeas.components.formsonline.notification.FormsOnlinePendingValidationRequestUserNotification;
 import org.silverpeas.components.formsonline.notification.FormsOnlineProcessedRequestUserNotification;
 import org.silverpeas.components.formsonline.notification.FormsOnlineValidationRequestUserNotification;
-
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.Group;
@@ -36,6 +36,7 @@ import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.contribution.ContributionStatus;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocumentMailAttachedFile;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
@@ -53,7 +54,6 @@ import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.mail.MailAddress;
-import org.silverpeas.core.mail.MailContent;
 import org.silverpeas.core.mail.MailSending;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
@@ -66,13 +66,10 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
-import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
-import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
 import javax.transaction.Transactional;
 import java.time.Instant;
@@ -86,6 +83,7 @@ import java.util.function.BiConsumer;
 
 import static org.silverpeas.components.formsonline.model.FormDetail.RECEIVERS_TYPE_FINAL;
 import static org.silverpeas.components.formsonline.model.FormDetail.RECEIVERS_TYPE_INTERMEDIATE;
+import static org.silverpeas.core.mail.MailContent.getHtmlBodyPartFromHtmlContent;
 
 @Singleton
 public class DefaultFormsOnlineService implements FormsOnlineService {
@@ -682,81 +680,70 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
   }
 
   private void sendRequestByEmail(FormInstance request) throws FormsOnlineException {
-    FormDetail form = request.getForm();
-    Optional<String> requestExchangeReceiver = form.getRequestExchangeReceiver();
+    final FormDetail form = request.getForm();
+    final Optional<String> requestExchangeReceiver = form.getRequestExchangeReceiver();
     if (requestExchangeReceiver.isPresent()) {
-      String email = requestExchangeReceiver.get();
-
-      StringBuilder content = new StringBuilder();
-      List<SimpleDocument> docs = new ArrayList<>();
+      final Pair<String, List<SimpleDocument>> contents = prepareMailContents(request, form);
+      final String email = requestExchangeReceiver.get();
       try {
-        PublicationTemplate template = getPublicationTemplate(request);
-        RecordSet recordSet = template.getRecordSet();
-        FieldTemplate[] fields = template.getRecordTemplate().getFieldTemplates();
-
-        BR br = new BR();
-        DataRecord dataRecord = recordSet.getRecord(request.getId());
-        Map<String, String> values = dataRecord.getValues(I18NHelper.defaultLanguage);
-        for (FieldTemplate field : fields) {
-          String value = values.get(field.getFieldName());
-          content.append(field.getLabel(I18NHelper.defaultLanguage));
-          content.append(" : ");
-          content.append(value);
-          content.append(br.toString());
-
-          if (StringUtil.isDefined(value) && field.getTypeName().equals(FileField.TYPE)) {
-            SimpleDocument doc = AttachmentServiceProvider.getAttachmentService()
-                .searchDocumentById(new SimpleDocumentPK(dataRecord.getField(field.getFieldName()).getValue(), request.getComponentInstanceId()), null);
-            if (doc != null) {
-              docs.add(doc);
-            }
-          }
-        }
-      } catch (Exception e) {
-        throw new FormsOnlineException("Can't load form '" + form.getXmlFormName() + "'", e);
-      }
-
-      try {
-        Multipart multipart = new MimeMultipart();
-        multipart.addBodyPart(MailContent.getHtmlBodyPartFromHtmlContent(content.toString()));
-
+        final Multipart multipart = new MimeMultipart();
+        // First HTML content
+        multipart.addBodyPart(getHtmlBodyPartFromHtmlContent(contents.getLeft()));
         // Finally explicit attached files
-        /*List<SimpleDocument> listAttachedFilesFromTab =
-            AttachmentServiceProvider.getAttachmentService().
-                listDocumentsByForeignKeyAndType(new ResourceReference(request.getId(), request.getComponentInstanceId()),
-                    DocumentType.form, I18NHelper.defaultLanguage);
-        attachFilesToMail(multipart, listAttachedFilesFromTab);*/
-        attachFilesToMail(multipart, docs);
-
-        MailSending mail = MailSending.from(MailAddress.eMail(User.getById(request.getCreatorId()).geteMail()))
-            .to(MailAddress.eMail(email)).withSubject(form.getTitle()).withContent(multipart);
-
-        mail.send();
+        attachFilesToMail(multipart, contents.getRight());
+        // Sending
+        MailSending
+            .from(MailAddress.eMail(User.getById(request.getCreatorId()).geteMail()))
+            .to(MailAddress.eMail(email))
+            .withSubject(form.getTitle())
+            .withContent(multipart)
+            .setReplyToRequired()
+            .send();
       } catch (Exception e) {
         throw new FormsOnlineException("Can't send request #" + request.getPK().getId() + " to " + email, e);
       }
-
       if (form.isDeleteAfterRequestExchange()) {
         deleteRequest(request.getPK());
       }
     }
   }
 
+  private Pair<String, List<SimpleDocument>> prepareMailContents(final FormInstance request,
+      final FormDetail form) throws FormsOnlineException {
+    try {
+      final div content = new div();
+      final List<SimpleDocument> docs = new ArrayList<>();
+      final PublicationTemplate template = getPublicationTemplate(request);
+      final RecordSet recordSet = template.getRecordSet();
+      final FieldTemplate[] fields = template.getRecordTemplate().getFieldTemplates();
+      final DataRecord dataRecord = recordSet.getRecord(request.getId());
+      final Map<String, String> values = dataRecord.getValues(I18NHelper.defaultLanguage);
+      for (final FieldTemplate field : fields) {
+        final String value = values.get(field.getFieldName());
+        content.addElement(field.getLabel(I18NHelper.defaultLanguage));
+        content.addElement(" : ");
+        content.addElement(value);
+        content.addElement(new BR());
+        if (StringUtil.isDefined(value) && field.getTypeName().equals(FileField.TYPE)) {
+          final SimpleDocument doc = AttachmentServiceProvider.getAttachmentService()
+              .searchDocumentById(
+                  new SimpleDocumentPK(dataRecord.getField(field.getFieldName()).getValue(),
+                      request.getComponentInstanceId()), null);
+          if (doc != null) {
+            docs.add(doc);
+          }
+        }
+      }
+      return Pair.of(content.toString(), docs);
+    } catch (Exception e) {
+      throw new FormsOnlineException("Can't load form '" + form.getXmlFormName() + "'", e);
+    }
+  }
+
   private void attachFilesToMail(Multipart mp, List<SimpleDocument> listAttachedFiles)
       throws MessagingException {
     for (SimpleDocument attachment : listAttachedFiles) {
-      // create the second message part
-      MimeBodyPart mbp = new MimeBodyPart();
-
-      // attach the file to the message
-      FileDataSource fds = new FileDataSource(attachment.getAttachmentPath());
-      mbp.setDataHandler(new DataHandler(fds));
-      // For Displaying images in the mail
-      mbp.setFileName(attachment.getFilename());
-      mbp.setHeader("Content-ID", "<" + attachment.getFilename() + ">");
-
-      // create the Multipart and its parts to it
-      mp.addBodyPart(mbp);
+      mp.addBodyPart(new SimpleDocumentMailAttachedFile(attachment).toBodyPart());
     }
   }
 

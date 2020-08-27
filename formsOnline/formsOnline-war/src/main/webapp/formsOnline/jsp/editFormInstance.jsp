@@ -50,7 +50,7 @@
 
 <view:sp-page>
 <view:sp-head-part>
-  <title></title>
+  <view:includePlugin name="wysiwyg"/>
   <% formUpdate.displayScripts(out, context); %>
   <script type="text/javascript">
     function sendRequest() {

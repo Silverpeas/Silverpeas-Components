@@ -40,6 +40,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocumentMailAttachedFile;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformer;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.contribution.content.wysiwyg.service.process.MailContentProcess;
@@ -60,14 +61,11 @@ import org.silverpeas.core.subscription.service.UserSubscriptionSubscriber;
 import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
 import org.silverpeas.core.util.logging.SilverLogger;
 
-import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -397,20 +395,8 @@ public class InfoLetterDataManager implements InfoLetterService {
 
   private void attachFilesToMail(Multipart mp, List<SimpleDocument> listAttachedFiles)
       throws MessagingException {
-    for (SimpleDocument attachment : listAttachedFiles) {
-      // create the second message part
-      MimeBodyPart mbp = new MimeBodyPart();
-
-      // attach the file to the message
-      FileDataSource fds = new FileDataSource(attachment.getAttachmentPath());
-      mbp.setDataHandler(new DataHandler(fds));
-      // For Displaying images in the mail
-      mbp.setFileName(attachment.getFilename());
-      mbp.setHeader("Content-ID", "<" + attachment.getFilename() + ">");
-
-
-      // create the Multipart and its parts to it
-      mp.addBodyPart(mbp);
+    for (final SimpleDocument attachment : listAttachedFiles) {
+      mp.addBodyPart(new SimpleDocumentMailAttachedFile(attachment).toBodyPart());
     }
   }
 

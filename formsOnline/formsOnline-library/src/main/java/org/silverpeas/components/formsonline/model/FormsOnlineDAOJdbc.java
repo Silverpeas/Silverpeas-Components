@@ -514,10 +514,7 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
       query.and(FORM_ID).in(criteria.getFormIds().stream().map(Integer::parseInt).collect(toSet()));
     }
     if (!criteria.getCreatorIds().isEmpty()) {
-      query.and("creatorId").in(criteria.getCreatorIds());
-    }
-    if (!criteria.getCreatorId().isEmpty()) {
-      query.and("creatorId = ?", criteria.getCreatorId());
+      query.and(CREATOR_ID).in(criteria.getCreatorIds());
     }
     if (!criteria.getStates().isEmpty()) {
       query.and(STATE).in(criteria.getStates());
@@ -676,10 +673,13 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
       formInstanceSave.addSaveParam(FORM_ID, request.getFormId(), isInsert);
       formInstanceSave.addSaveParam(STATE, request.getState(), isInsert);
       formInstanceSave.addSaveParam(INSTANCE_ID, request.getComponentInstanceId(), isInsert);
-      formInstanceSave.addSaveParam(CREATION_DATE, Timestamp.from(Instant.now()), isInsert);
       if (isInsert) {
         formInstanceSave.addSaveParam(CREATOR_ID, request.getCreatorId(), true);
+        formInstanceSave.addSaveParam(CREATION_DATE, Timestamp.from(Instant.now()), true);
       } else {
+        if (request.getState() <= FormInstance.STATE_UNREAD) {
+          formInstanceSave.addSaveParam(CREATION_DATE, Timestamp.from(Instant.now()), false);
+        }
         formInstanceSave.where(ID_CRITERIA, formInstId);
       }
       saveQueries.addAll(prepareSaveValidations(request.getValidations()));

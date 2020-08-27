@@ -137,7 +137,7 @@
         <div class="header-step-onlineForm">
           <div class="validator avatar"><view:image src="${userRequest.creator.avatar}" alt="" type="avatar" /></div>
           <div class="title-step-OnlineForm"><fmt:message key="formsOnline.request.from"/></div>
-          <div class="date-step-OnlineForm"><fmt:message key="GML.date.the"/> <view:formatDate value="${userRequest.creationDate}"/></div>
+          <div class="date-step-OnlineForm"><fmt:message key="GML.date.the"/> <view:formatDateTime value="${userRequest.creationDate}"/></div>
           <div class="actor-step-OnlineForm"><fmt:message key="GML.by"/> <view:username userId="${userRequest.creatorId}"/></div>
         </div>
         <div class="forms">

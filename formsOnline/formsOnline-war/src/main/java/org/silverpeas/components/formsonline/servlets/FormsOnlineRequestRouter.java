@@ -245,20 +245,10 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
         request.setAttribute(FORM_CONTEXT, formContext);
 
         destination = ROOT_DESTINATION + "editFormInstance.jsp";
-      } else if ("SaveRequest".equals(function)) {
-        // recuperation des donnees saisies dans le formulaire
-        List<FileItem> items = request.getFileItems();
-
-        // Sauvegarde des donnees
-        formsOnlineSC.saveRequest(items, false);
-
-        return getDestination("Main", formsOnlineSC, request);
-      } else if ("SaveRequestAsDraft".equals(function)) {
-        List<FileItem> items = request.getFileItems();
-
-        // Sauvegarde des donnees
-        formsOnlineSC.saveRequest(items, true);
-
+      } else if (function.startsWith("SaveRequest")) {
+        final boolean isDraft = function.endsWith("AsDraft");
+        final List<FileItem> items = request.getFileItems();
+        formsOnlineSC.saveRequest(items, isDraft);
         return getDestination("Main", formsOnlineSC, request);
       } else if ("ViewRequest".equals(function)) {
         String formInstanceId = request.getParameter("Id");

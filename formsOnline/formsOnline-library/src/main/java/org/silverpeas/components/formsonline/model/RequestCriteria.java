@@ -34,6 +34,7 @@ import java.util.StringJoiner;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Collections.singletonList;
 import static org.silverpeas.core.util.StringUtil.EMPTY;
 
 /**
@@ -69,12 +70,10 @@ public class RequestCriteria {
   private final List<String> formIds = new ArrayList<>();
   private final List<Integer> states = new ArrayList<>();
   private final List<QUERY_ORDER_BY> orderByList = new ArrayList<>();
-  private String creatorId = EMPTY;
+  private final List<String> creatorIds = new ArrayList<>();
   private String validatorId = EMPTY;
   private boolean noValidator = false;
   private PaginationPage pagination;
-
-  private final List<String> creatorIds = new ArrayList<>();
 
   /**
    * Initializes the criteria with component instance ids.
@@ -174,10 +173,14 @@ public class RequestCriteria {
    * @return an instance of criteria.
    */
   public RequestCriteria andCreatorId(final String creatorId) {
-    this.creatorId = creatorId;
-    return this;
+    return andCreatorIds(singletonList(creatorId));
   }
 
+  /**
+   * Configures the criteria of creator id.
+   * @param creatorIds creator identifiers of form.
+   * @return an instance of criteria.
+   */
   public RequestCriteria andCreatorIds(final Collection<String> creatorIds) {
     if (creatorIds != null) {
       this.creatorIds.addAll(creatorIds);
@@ -257,10 +260,6 @@ public class RequestCriteria {
     return states;
   }
 
-  String getCreatorId() {
-    return creatorId;
-  }
-
   List<String> getCreatorIds() {
     return creatorIds;
   }
@@ -286,7 +285,7 @@ public class RequestCriteria {
     return new StringJoiner(", ", RequestCriteria.class.getSimpleName() + "[", "]")
         .add("componentInstanceIds=" + componentInstanceIds).add("formIds=" + formIds)
         .add("states=" + states).add("orderByList=" + orderByList)
-        .add("creatorId='" + creatorId + "'").add("validatorId='" + validatorId + "'")
+        .add("creatorIds='" + creatorIds + "'").add("validatorId='" + validatorId + "'")
         .add("noValidator=" + noValidator).add("pagination=" + pagination).toString();
   }
 }

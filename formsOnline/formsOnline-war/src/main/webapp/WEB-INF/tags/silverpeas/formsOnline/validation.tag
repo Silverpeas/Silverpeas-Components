@@ -86,7 +86,7 @@
     <div class="date-step-OnlineForm">
       <c:choose>
         <c:when test="${not empty validation.date}">
-          <fmt:message key="GML.date.the"/> <view:formatDate value="${validation.date}"/>
+          <fmt:message key="GML.date.the"/> <view:formatDateTime value="${validation.date}"/>
         </c:when>
         <c:otherwise>
           <fmt:message key="formsOnline.home.requests.mine.toValidate"/>
@@ -111,7 +111,7 @@
       <c:when test="${silfn:isDefined(validation.comment)}">
         <div id="ask-statut" class="commentaires">
           <div class="inlineMessage-ok oneComment">
-            <p class="author"><fmt:message key="GML.contribution.validation.status.VALIDATED"/> <fmt:message key="GML.date.the"/> <view:formatDate value="${validation.date}"/> <fmt:message key="GML.by"/> <view:username user="${validation.validator}"/></p>
+            <p class="author"><fmt:message key="GML.contribution.validation.status.VALIDATED"/> <fmt:message key="GML.date.the"/> <view:formatDateTime value="${validation.date}"/> <fmt:message key="GML.by"/> <view:username user="${validation.validator}"/></p>
             <div class="avatar"><view:image src="${validation.validator.avatar}" alt="" type="avatar" /></div>
             <div>
               <p>${silfn:escapeHtmlWhitespaces(validation.comment)}</p>
@@ -121,7 +121,7 @@
       </c:when>
       <c:otherwise>
         <div id="ask-statut" class="inlineMessage-ok">
-          <fmt:message key="GML.contribution.validation.status.VALIDATED"/> <fmt:message key="GML.date.the"/> <view:formatDate value="${validation.date}"/> <fmt:message key="GML.by"/> <view:username user="${validation.validator}"/>
+          <fmt:message key="GML.contribution.validation.status.VALIDATED"/> <fmt:message key="GML.date.the"/> <view:formatDateTime value="${validation.date}"/> <fmt:message key="GML.by"/> <view:username user="${validation.validator}"/>
         </div>
       </c:otherwise>
     </c:choose>
@@ -131,7 +131,7 @@
       <c:when test="${silfn:isDefined(validation.comment)}">
         <div id="ask-statut" class="commentaires">
           <div class="inlineMessage-nok oneComment">
-            <p class="author"><fmt:message key="GML.contribution.validation.status.REFUSED"/> <fmt:message key="GML.date.the"/> <view:formatDate value="${validation.date}"/> <fmt:message key="GML.by"/> <view:username user="${validation.validator}"/></p>
+            <p class="author"><fmt:message key="GML.contribution.validation.status.REFUSED"/> <fmt:message key="GML.date.the"/> <view:formatDateTime value="${validation.date}"/> <fmt:message key="GML.by"/> <view:username user="${validation.validator}"/></p>
             <div class="avatar"><view:image src="${validation.validator.avatar}" alt="" type="avatar" /></div>
             <div>
               <p>${silfn:escapeHtmlWhitespaces(validation.comment)}</p>
@@ -141,7 +141,7 @@
       </c:when>
       <c:otherwise>
         <div id="ask-statut" class="inlineMessage-nok">
-          <fmt:message key="GML.contribution.validation.status.REFUSED"/> <fmt:message key="GML.date.the"/> <view:formatDate value="${validation.date}"/> <fmt:message key="GML.by"/> <view:username user="${validation.validator}"/>
+          <fmt:message key="GML.contribution.validation.status.REFUSED"/> <fmt:message key="GML.date.the"/> <view:formatDateTime value="${validation.date}"/> <fmt:message key="GML.by"/> <view:username user="${validation.validator}"/>
         </div>
       </c:otherwise>
     </c:choose>

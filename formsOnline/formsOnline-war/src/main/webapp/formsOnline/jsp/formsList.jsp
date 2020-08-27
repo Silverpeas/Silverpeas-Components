@@ -122,7 +122,7 @@
              <li>
           </c:otherwise>
         </c:choose>
-        <a href="ViewRequest?Id=${request.id}"><span class="form-title">${request.form.title}</span><span class="ask-form-author"><view:username userId="${request.creatorId}"/></span><span class="ask-form-date"><view:formatDate value="${request.creationDate}"/></span></a></li>
+        <a href="ViewRequest?Id=${request.id}"><span class="form-title">${request.form.title}</span><span class="ask-form-author"><view:username userId="${request.creatorId}"/></span><span class="ask-form-date"><view:formatDateTime value="${request.creationDate}"/></span></a></li>
       </c:forEach>
     </ul>
     <a href="InBox" class="more"> <fmt:message key="formsOnline.home.requests.toggle.more"/></a>
@@ -138,7 +138,7 @@
       <view:listPane var="draftUserRequests" routingAddress="Main" numberLinesPerPage="10">
         <view:listItems items="${userRequests.draft}" var="request">
           <li>
-            <a href="EditRequest?Id=${request.id}"><span class="ask-form-date"><view:formatDate value="${request.creationDate}"/></span><span class="form-title">${request.form.title}</span></a>
+            <a href="EditRequest?Id=${request.id}"><span class="ask-form-date"><view:formatDateTime value="${request.creationDate}"/></span><span class="form-title">${request.form.title}</span></a>
           </li>
         </view:listItems>
       </view:listPane>
@@ -162,7 +162,7 @@
       <view:listPane var="toValidateUserRequests" routingAddress="Main" numberLinesPerPage="10">
         <view:listItems items="${userRequests.toValidate}" var="request">
           <li>
-            <a href="ViewRequest?Id=${request.id}"><span class="ask-form-date"><view:formatDate value="${request.creationDate}"/></span><span class="form-title">${request.form.title}</span></a>
+            <a href="ViewRequest?Id=${request.id}"><span class="ask-form-date"><view:formatDateTime value="${request.creationDate}"/></span><span class="form-title">${request.form.title}</span></a>
             <c:choose>
               <c:when test="${request.read}">
                 <span class="form-statut"><fmt:message key="formsOnline.stateRead"/></span>
@@ -190,7 +190,7 @@
     <ul>
       <view:listPane var="validatedUserRequests" routingAddress="Main" numberLinesPerPage="10">
         <view:listItems items="${userRequests.validated}" var="request">
-          <li><a href="ViewRequest?Id=${request.id}"><span class="ask-form-date"><view:formatDate value="${request.creationDate}"/></span><span class="form-title">${request.form.title}</span></a></li>
+          <li><a href="ViewRequest?Id=${request.id}"><span class="ask-form-date"><view:formatDateTime value="${request.creationDate}"/></span><span class="form-title">${request.form.title}</span></a></li>
         </view:listItems>
       </view:listPane>
       <script type="text/javascript">
@@ -210,7 +210,7 @@
     <ul>
       <view:listPane var="deniedUserRequests" routingAddress="Main" numberLinesPerPage="10">
         <view:listItems items="${userRequests.denied}" var="request">
-          <li><a href="ViewRequest?Id=${request.id}"><span class="ask-form-date"><view:formatDate value="${request.creationDate}"/></span><span class="form-title">${request.form.title}</span></a></li>
+          <li><a href="ViewRequest?Id=${request.id}"><span class="ask-form-date"><view:formatDateTime value="${request.creationDate}"/></span><span class="form-title">${request.form.title}</span></a></li>
         </view:listItems>
       </view:listPane>
       <script type="text/javascript">
@@ -230,7 +230,7 @@
       <ul>
         <view:listPane var="archievedUserRequests" routingAddress="Main" numberLinesPerPage="10">
           <view:listItems items="${userRequests.archived}" var="request">
-            <li><a href="ViewRequest?Id=${request.id}"><span class="ask-form-date"><view:formatDate value="${request.creationDate}"/></span><span class="form-title">${request.form.title}</span></a></li>
+            <li><a href="ViewRequest?Id=${request.id}"><span class="ask-form-date"><view:formatDateTime value="${request.creationDate}"/></span><span class="form-title">${request.form.title}</span></a></li>
           </view:listItems>
         </view:listPane>
         <script type="text/javascript">
