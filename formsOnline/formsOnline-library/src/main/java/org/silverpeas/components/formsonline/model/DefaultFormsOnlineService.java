@@ -24,6 +24,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.ecs.html.BR;
 import org.apache.ecs.xhtml.div;
+import org.silverpeas.components.formsonline.model.RequestsByStatus.MergeRuleByStates;
 import org.silverpeas.components.formsonline.notification.FormsOnlinePendingValidationRequestUserNotification;
 import org.silverpeas.components.formsonline.notification.FormsOnlineProcessedRequestUserNotification;
 import org.silverpeas.components.formsonline.notification.FormsOnlineValidationRequestUserNotification;
@@ -76,17 +77,24 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.BiConsumer;
 
+import static java.util.stream.Collectors.toSet;
 import static org.silverpeas.components.formsonline.model.FormDetail.RECEIVERS_TYPE_FINAL;
 import static org.silverpeas.components.formsonline.model.FormDetail.RECEIVERS_TYPE_INTERMEDIATE;
+import static org.silverpeas.components.formsonline.model.RequestsByStatus.MERGING_RULES_BY_STATES;
 import static org.silverpeas.core.mail.MailContent.getHtmlBodyPartFromHtmlContent;
 
 @Singleton
 public class DefaultFormsOnlineService implements FormsOnlineService {
+
+  private static final String IN_COMPONENT_MSG_PART = " in component ";
 
   @Inject
   private OrganizationController organizationController;
@@ -166,11 +174,6 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
 
   @Override
   public FormDetail loadForm(FormPK pk) throws FormsOnlineException {
-    return loadForm(pk, null);
-  }
-
-  @Override
-  public FormDetail loadForm(FormPK pk, String userId) throws FormsOnlineException {
     FormDetail form = getDAO().getForm(pk);
     if (form != null) {
       form.setSendersAsUsers(getSendersAsUsers(pk));
@@ -179,7 +182,6 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
       form.setIntermediateReceiversAsGroups(getReceiversAsGroups(pk, RECEIVERS_TYPE_INTERMEDIATE));
       form.setReceiversAsUsers(getReceiversAsUsers(pk, RECEIVERS_TYPE_FINAL));
       form.setReceiversAsGroups(getReceiversAsGroups(pk, RECEIVERS_TYPE_FINAL));
-      setHierarchicalValidator(form, userId);
     }
     return form;
   }
@@ -223,7 +225,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
         FormsOnlineService.get().deleteRequest(request.getPK());
       } catch (Exception e) {
         SilverLogger.getLogger(this).error(
-            "Unable to delete request #" + request.getId() + " in component " +
+            "Unable to delete request #" + request.getId() + IN_COMPONENT_MSG_PART +
                 request.getComponentInstanceId(), e);
         reallyDeleteForm = false;
       }
@@ -268,11 +270,9 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
     RequestsByStatus requests = new RequestsByStatus(paginationPage);
     List<FormDetail> forms = getAllForms(appId, userId, false);
     for (FormDetail form : forms) {
-      for (Pair<List<Integer>, BiConsumer<RequestsByStatus, SilverpeasList<FormInstance>>>
-          mergingRuleByStates : RequestsByStatus.MERGING_RULES_BY_STATES) {
-        final List<Integer> states = mergingRuleByStates.getLeft();
-        final BiConsumer<RequestsByStatus, SilverpeasList<FormInstance>> merge =
-            mergingRuleByStates.getRight();
+      for (final MergeRuleByStates rule : MERGING_RULES_BY_STATES) {
+        final List<Integer> states = rule.getStates();
+        final BiConsumer<RequestsByStatus, SilverpeasList<FormInstance>> merge = rule.getMerger();
         final SilverpeasList<FormInstance> result =
             getDAO().getSentFormInstances(form.getPK(), userId, states, paginationPage);
         merge.accept(requests, result.stream()
@@ -287,36 +287,23 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
   }
 
   @Override
-  public RequestsByStatus getValidatorRequests(RequestsFilter filter, String userId,
+  public RequestsByStatus getValidatorRequests(RequestsFilter filter, String validatorId,
       final PaginationPage paginationPage) throws FormsOnlineException {
-    final List<String> formIds = getAvailableFormIdsAsReceiver(filter.getComponentId(), userId);
-
-    String userDomainId = User.getById(userId).getDomainId();
+    final Set<String> formIds = getAvailableFormIdsAsReceiver(filter.getComponentId(), validatorId);
     // limit requests to specified forms
     if (!filter.getFormIds().isEmpty()) {
       formIds.retainAll(filter.getFormIds());
     }
     final List<FormDetail> availableForms = getDAO().getForms(formIds);
-    RequestsByStatus requests = new RequestsByStatus(paginationPage);
-    for (FormDetail form : availableForms) {
-      for (Pair<List<Integer>, BiConsumer<RequestsByStatus, SilverpeasList<FormInstance>>>
-          mergingRuleByStates : RequestsByStatus.MERGING_RULES_BY_STATES) {
-        final List<Integer> states = mergingRuleByStates.getLeft();
-        final BiConsumer<RequestsByStatus, SilverpeasList<FormInstance>> merge =
-            mergingRuleByStates.getRight();
-        List<String> senderIds = new ArrayList<>();
-        if (states.contains(FormInstance.STATE_UNREAD) && form.isHierarchicalValidation()) {
-          User[] users = OrganizationController.get().getAllUsersInDomain(userDomainId);
-          for (User user : users) {
-            String bossId = UserFull.getById(user.getId()).getValue("boss");
-            if (userId.equals(bossId)) {
-              senderIds.add(user.getId());
-            }
-          }
-        }
+    final RequestsByStatus requests = new RequestsByStatus(paginationPage);
+    for (final FormDetail form : availableForms) {
+      for (final MergeRuleByStates rule : MERGING_RULES_BY_STATES) {
+        final List<Integer> states = rule.getStates();
+        final BiConsumer<RequestsByStatus, SilverpeasList<FormInstance>> merge = rule.getMerger();
+        final Set<String> domainUsersManagedBy = rule.getDomainUsersManagedBy(form, validatorId);
         final SilverpeasList<FormInstance> result = getDAO()
-            .getReceivedRequests(form.getPK(), filter.isAllRequests(), userId, states,
-                paginationPage, senderIds);
+            .getReceivedRequests(form, filter.isAllRequests(), validatorId, domainUsersManagedBy,
+                states, paginationPage);
         merge.accept(requests, result.stream()
                                      .map(l -> {
                                        l.setForm(form);
@@ -330,22 +317,23 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
   }
 
   @Override
-  public List<String> getAvailableFormIdsAsReceiver(String appId, String userId)
+  public Set<String> getAvailableFormIdsAsReceiver(String appId, String userId)
       throws FormsOnlineException {
-    String[] userGroupIds = organizationController.getAllGroupIdsOfUser(userId);
-    List<String> formIds = getDAO().getAvailableFormIdsAsReceiver(appId, userId, userGroupIds);
-
+    final String[] userGroupIds = organizationController.getAllGroupIdsOfUser(userId);
+    final Set<String> formIds = new HashSet<>(getDAO().getAvailableFormIdsAsReceiver(appId, userId, userGroupIds));
     // get available form as boss
-    List<FormDetail> forms = getDAO().findAllForms(appId);
+    final List<FormDetail> forms = getDAO().findAllForms(appId);
+    final HierarchicalValidatorCacheManager hvManager = new HierarchicalValidatorCacheManager();
     for (FormDetail form : forms) {
       if (form.isHierarchicalValidation()) {
-        SilverpeasList<FormInstance> requests = getDAO().getAllRequests(form.getPK());
-        for (FormInstance request : requests) {
-          String bossId = getHierarchicalValidator(request.getCreatorId());
-          if (userId.equals(bossId)) {
-            formIds.add(Integer.toString(form.getId()));
-          }
-        }
+        final SilverpeasList<FormInstance> requests = getDAO().getAllRequests(form.getPK());
+        final Set<String> creatorIds = requests.stream().map(FormInstance::getCreatorId).collect(toSet());
+        hvManager.cacheHierarchicalValidatorsOf(creatorIds);
+        creatorIds.stream()
+            .map(hvManager::getHierarchicalValidatorOf)
+            .filter(userId::equals)
+            .findFirst()
+            .ifPresent(b -> formIds.add(Integer.toString(form.getId())));
       }
     }
     return formIds;
@@ -363,7 +351,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
     FormInstance request = getDAO().getRequest(pk);
 
     // recuperation de l'objet et du nom du formulaire
-    FormDetail form = loadForm(request.getFormPK(), editionMode ? userId : null);
+    FormDetail form = loadForm(request.getFormPK());
     request.setForm(form);
     String xmlFormName = form.getXmlFormName();
     String xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName.indexOf('.'));
@@ -383,7 +371,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
       request.setFormWithData(customForm);
     } catch (PublicationTemplateException | FormException e) {
       throw new FormsOnlineException(
-          "Can't load content of request #" + request.getId() + " in component " +
+          "Can't load content of request #" + request.getId() + IN_COMPONENT_MSG_PART +
               pk.getInstanceId(), e);
     }
 
@@ -456,7 +444,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
     }
     request = getDAO().saveRequest(request);
 
-    FormDetail formDetail = loadForm(pk, userId);
+    FormDetail formDetail = loadForm(pk);
     request.setForm(formDetail);
 
     // Retrieve data form (with DataRecord object)
@@ -476,7 +464,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
       set.save(data);
     } catch (Exception e) {
       throw new FormsOnlineException(
-          "Can't create content of request #" + request.getId() + " in component " +
+          "Can't create content of request #" + request.getId() + IN_COMPONENT_MSG_PART +
               pk.getInstanceId(), e);
     }
 
@@ -512,7 +500,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
       set.save(data);
     } catch (Exception e) {
       throw new FormsOnlineException(
-          "Can't update content of request #" + request.getId() + " in component " +
+          "Can't update content of request #" + request.getId() + IN_COMPONENT_MSG_PART +
               request.getComponentInstanceId(), e);
     }
 
@@ -610,7 +598,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
       DataRecord data = set.getRecord(pk.getId());
       set.delete(data.getId());
     } catch (Exception e) {
-      throw new FormsOnlineException("Can't delete request #"+pk.getId()+" in component " +
+      throw new FormsOnlineException("Can't delete request #"+pk.getId()+ IN_COMPONENT_MSG_PART +
           pk.getInstanceId(), e);
     }
 
@@ -641,7 +629,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
     if (pendingValidation != null) {
       if (pendingValidation.getValidationType().isHierarchical()) {
         // notify boss
-        String bossId = form.getHierarchicalValidator();
+        final String bossId = form.getHierarchicalValidatorOfCurrentUser();
         userIds.add(bossId);
       } else if (pendingValidation.getValidationType().isIntermediate()) {
         userIds = getAllReceivers(request.getForm().getPK(), RECEIVERS_TYPE_INTERMEDIATE);
@@ -747,16 +735,6 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
     }
   }
 
-  private void setHierarchicalValidator(FormDetail form, String userId) {
-    if (form.isHierarchicalValidation() && StringUtil.isDefined(userId)) {
-      form.setHierarchicalValidator(getHierarchicalValidator(userId));
-    }
-  }
-
-  private String getHierarchicalValidator(String userId) {
-    return UserFull.getById(userId).getValue("boss");
-  }
-
   private void throwForbiddenException(String method) {
     throw new ForbiddenRuntimeException(
         "User is not allowed to do the following operation: " + method);
@@ -831,4 +809,32 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
     }
   }
 
+  /**
+   * Permits to manage a cache in order to increase performances.
+   */
+  static class HierarchicalValidatorCacheManager {
+
+    private final Map<String, String> cache = new HashMap<>();
+
+    /**
+     * Caches the hierarchical validators of users represented by given ids.
+     * @param userIds set of string user ids.
+     */
+    void cacheHierarchicalValidatorsOf(final Set<String> userIds) {
+      userIds.forEach(this::getHierarchicalValidatorOf);
+    }
+
+    /**
+     * Gets from cached data the validator of given users.
+     * <p>
+     * If no data has been cached for the user, the data are retrieved.
+     * </p>
+     * @param userId a string user id.
+     * @return the hierarchical validator of the user represented by the given id.
+     */
+    String getHierarchicalValidatorOf(final String userId) {
+      return cache.computeIfAbsent(userId, i ->
+          UserFull.getById(i).getValue("boss"));
+    }
+  }
 }

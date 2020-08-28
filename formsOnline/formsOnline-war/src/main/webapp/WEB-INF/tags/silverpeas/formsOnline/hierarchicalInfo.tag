@@ -62,7 +62,7 @@
       <div class="inlineMessage-nok">
         <fmt:message key="formsOnline.request.boss.notallowed">
           <fmt:param>
-            <view:username userId="${formDetail.hierarchicalValidator}" zoom="true"/>
+            <view:username userId="${formDetail.hierarchicalValidatorOfCurrentUser}" zoom="true"/>
           </fmt:param>
         </fmt:message>
       </div>
@@ -71,7 +71,7 @@
       <div class="inlineMessage">
         <fmt:message key="formsOnline.request.boss.ok">
           <fmt:param>
-            <view:username userId="${formDetail.hierarchicalValidator}" zoom="true"/>
+            <view:username userId="${formDetail.hierarchicalValidatorOfCurrentUser}" zoom="true"/>
           </fmt:param>
         </fmt:message>
       </div>

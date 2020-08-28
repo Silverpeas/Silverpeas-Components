@@ -145,7 +145,7 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
   }
 
   private FormDetail loadForm(int formId) throws FormsOnlineException {
-    return getService().loadForm(getFormPK(formId), getUserId());
+    return getService().loadForm(getFormPK(formId));
   }
 
   public void deleteForm(int formId) throws FormsOnlineException {
@@ -240,7 +240,7 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
     getService().saveRequest(getCurrentForm().getPK(), getUserId(), items, draft);
   }
 
-  public List<String> getAvailableFormIdsAsReceiver() throws FormsOnlineException {
+  public Set<String> getAvailableFormIdsAsReceiver() throws FormsOnlineException {
     return getService().getAvailableFormIdsAsReceiver(getComponentId(), getUserId());
   }
 

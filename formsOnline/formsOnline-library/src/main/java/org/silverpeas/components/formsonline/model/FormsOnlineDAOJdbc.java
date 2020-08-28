@@ -31,7 +31,6 @@ import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQueries;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
-import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.SilverpeasArrayList;
 import org.silverpeas.core.util.SilverpeasList;
@@ -51,6 +50,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toMap;
@@ -416,7 +416,7 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
    * @see FormsOnlineDAO#getForms(java.util.List)
    */
   @Override
-  public List<FormDetail> getForms(List<String> formIds) throws FormsOnlineException {
+  public List<FormDetail> getForms(Collection<String> formIds) throws FormsOnlineException {
 
     List<FormDetail> forms = new ArrayList<>();
     if ((formIds == null) || (formIds.isEmpty())) {
@@ -471,23 +471,23 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
    * java.lang.String)
    */
   @Override
-  public SilverpeasList<FormInstance> getReceivedRequests(FormPK pk, boolean allRequests,
-      String userId, final List<Integer> states, final PaginationPage paginationPage, final List<String> creatorIds)
-      throws FormsOnlineException {
+  public SilverpeasList<FormInstance> getReceivedRequests(FormDetail form, boolean allRequests,
+      String validatorId, final Set<String> senderIdsManagedByValidator,
+      final List<Integer> states, final PaginationPage paginationPage) throws FormsOnlineException {
     /*
-     * then retrieve instances where : - user has been the validator - no validation has been done
-     * yet and formid in available form ids
+     * then retrieve instances where :
+     *  - user has been the validator
+     *  - no validation has been done yet and form id in available form ids
+     *  - sender ids managed by the validator
      */
+    final FormPK pk = form.getPK();
     final RequestCriteria criteria = RequestCriteria
         .onComponentInstanceIds(pk.getInstanceId())
         .andFormIds(pk.getId())
         .andStates(states)
         .paginateBy(paginationPage);
     if (!allRequests) {
-      criteria.andValidatorIdOrNoValidator(userId);
-    }
-    if (CollectionUtil.isNotEmpty(creatorIds)) {
-      criteria.andCreatorIds(creatorIds);
+      criteria.andValidatorIdOrNoValidatorOrSenderIdsManagedByValidator(validatorId, senderIdsManagedByValidator);
     }
     return getRequestsByCriteria(criteria);
   }
@@ -519,31 +519,7 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
     if (!criteria.getStates().isEmpty()) {
       query.and(STATE).in(criteria.getStates());
     }
-    if (isDefined(criteria.getValidatorId())) {
-      if (criteria.isNoValidator()) {
-        query.and("(EXISTS(SELECT 1")
-            .from(FORMS_INSTANCE_VALIDATIONS_TABLENAME)
-            .where(FORM_INST_ID_CLAUSE)
-            .and(VALIDATION_BY + " = ?", criteria.getValidatorId())
-            .addSqlPart(")");
-        query.or("NOT EXISTS(SELECT 1")
-             .from(FORMS_INSTANCE_VALIDATIONS_TABLENAME)
-             .where(FORM_INST_ID_CLAUSE)
-             .addSqlPart(")");
-        query.addSqlPart(")");
-      } else {
-        query.and("EXISTS(SELECT 1")
-            .from(FORMS_INSTANCE_VALIDATIONS_TABLENAME)
-            .where(FORM_INST_ID_CLAUSE)
-            .and(VALIDATION_BY + " = ?", criteria.getValidatorId())
-            .addSqlPart(")");
-      }
-    } else if (criteria.isNoValidator()) {
-      query.and("NOT EXISTS(SELECT 1")
-          .from(FORMS_INSTANCE_VALIDATIONS_TABLENAME)
-          .where(FORM_INST_ID_CLAUSE)
-          .addSqlPart(")");
-    }
+    applyValidationCriteria(criteria, query);
     // default order by if none defined
     final List<QUERY_ORDER_BY> orderBies = criteria.getOrderByList().isEmpty()
         ? Arrays.asList(CREATION_DATE_DESC, ID_DESC)
@@ -561,6 +537,38 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
       return decorateWithValidations(connection, requests);
     } catch (Exception e) {
       throw new FormsOnlineException(failureOnGetting("form instance", criteria.toString()), e);
+    }
+  }
+
+  private void applyValidationCriteria(final RequestCriteria criteria, final JdbcSqlQuery query) {
+    if (isDefined(criteria.getValidatorId())) {
+      query.and("(");
+      query.addSqlPart("EXISTS(SELECT 1")
+          .from(FORMS_INSTANCE_VALIDATIONS_TABLENAME)
+          .where(FORM_INST_ID_CLAUSE)
+          .and(VALIDATION_BY + " = ?)", criteria.getValidatorId());
+      if (criteria.isNoValidator()) {
+        query.or("NOT EXISTS(SELECT 1")
+             .from(FORMS_INSTANCE_VALIDATIONS_TABLENAME)
+             .where(FORM_INST_ID_CLAUSE)
+             .addSqlPart(")");
+      }
+      if (!criteria.getSenderIdsManagedByValidator().isEmpty()) {
+        query.or(CREATOR_ID).in(criteria.getSenderIdsManagedByValidator());
+      }
+      query.addSqlPart(")");
+    } else if (criteria.isNoValidator()) {
+      query.and("(");
+      query.addSqlPart("NOT EXISTS(SELECT 1")
+          .from(FORMS_INSTANCE_VALIDATIONS_TABLENAME)
+          .where(FORM_INST_ID_CLAUSE)
+          .addSqlPart(")");
+      if (!criteria.getSenderIdsManagedByValidator().isEmpty()) {
+        query.or(CREATOR_ID).in(criteria.getSenderIdsManagedByValidator());
+      }
+      query.addSqlPart(")");
+    } else if (!criteria.getSenderIdsManagedByValidator().isEmpty()) {
+      query.and(CREATOR_ID).in(criteria.getSenderIdsManagedByValidator());
     }
   }
 

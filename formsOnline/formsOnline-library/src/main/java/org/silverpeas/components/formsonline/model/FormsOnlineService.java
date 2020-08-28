@@ -32,6 +32,7 @@ import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 public interface FormsOnlineService extends ApplicationService<FormInstance> {
 
@@ -43,8 +44,6 @@ public interface FormsOnlineService extends ApplicationService<FormInstance> {
       throws FormsOnlineException;
 
   FormDetail loadForm(FormPK pk) throws FormsOnlineException;
-
-  FormDetail loadForm(FormPK pk, String userId) throws FormsOnlineException;
 
   FormDetail storeForm(FormDetail form, String[] senderUserIds, String[] senderGroupIds,
       String[] intermediateReceiverUserIds, String[] intermediateReceiverGroupIds,
@@ -63,10 +62,10 @@ public interface FormsOnlineService extends ApplicationService<FormInstance> {
       final PaginationPage paginationPage)
       throws FormsOnlineException;
 
-  RequestsByStatus getValidatorRequests(RequestsFilter filter, String userId,
+  RequestsByStatus getValidatorRequests(RequestsFilter filter, String validatorId,
       final PaginationPage paginationPage) throws FormsOnlineException;
 
-  List<String> getAvailableFormIdsAsReceiver(String appId, String userId)
+  Set<String> getAvailableFormIdsAsReceiver(String appId, String userId)
       throws FormsOnlineException;
 
   FormInstance loadRequest(RequestPK pk, String userId)

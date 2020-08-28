@@ -25,10 +25,12 @@ package org.silverpeas.components.formsonline.model;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.silverpeas.components.formsonline.model.DefaultFormsOnlineService.HierarchicalValidatorCacheManager;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.util.CollectionUtil;
+import org.silverpeas.core.util.MemoizedSupplier;
 import org.silverpeas.core.util.StringUtil;
 
 import java.util.ArrayList;
@@ -66,7 +68,7 @@ public class FormDetail {
   private boolean sendable = true;
   private int nbRequests = 0;
 
-  private String hierarchicalValidator;
+  private MemoizedSupplier<String> hierarchicalValidatorOfCurrentUser;
 
   private List<User> sendersAsUsers;
   private List<Group> sendersAsGroups;
@@ -454,22 +456,27 @@ public class FormDetail {
     this.nbRequests = nbRequests;
   }
 
-  public String getHierarchicalValidator() {
-    return hierarchicalValidator;
-  }
-
-  public void setHierarchicalValidator(final String hierarchicalValidator) {
-    this.hierarchicalValidator = hierarchicalValidator;
+  public String getHierarchicalValidatorOfCurrentUser() {
+    if (hierarchicalValidatorOfCurrentUser == null && isHierarchicalValidation()) {
+      hierarchicalValidatorOfCurrentUser = new MemoizedSupplier<>(() -> {
+        if (!this.isHierarchicalValidation()) {
+          return StringUtil.EMPTY;
+        }
+        final HierarchicalValidatorCacheManager hvManager = new HierarchicalValidatorCacheManager();
+        return hvManager.getHierarchicalValidatorOf(User.getCurrentRequester().getId());
+      });
+    }
+    return hierarchicalValidatorOfCurrentUser.get();
   }
 
   public int getHierarchicalValidatorState() {
     if (!isHierarchicalValidation()) {
       return VALIDATOR_OK;
     }
-    if (StringUtil.isNotDefined(hierarchicalValidator)) {
+    if (StringUtil.isNotDefined(getHierarchicalValidatorOfCurrentUser())) {
       return VALIDATOR_UNDEFINED;
     } else if (OrganizationController.get()
-        .isComponentAvailableToUser(getInstanceId(), hierarchicalValidator)) {
+        .isComponentAvailableToUser(getInstanceId(), getHierarchicalValidatorOfCurrentUser())) {
       return VALIDATOR_OK;
     }
     return VALIDATOR_NOT_ALLOWED;

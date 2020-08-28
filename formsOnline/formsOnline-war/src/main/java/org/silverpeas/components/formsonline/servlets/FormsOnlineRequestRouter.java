@@ -86,8 +86,7 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
           request.setAttribute("Role", "admin");
         } else {
           if (!formsOnlineSC.getAvailableFormIdsAsReceiver().isEmpty()) {
-            request
-                .setAttribute("RequestsAsValidator", formsOnlineSC.getHomepageValidatorRequests());
+            request.setAttribute("RequestsAsValidator", formsOnlineSC.getHomepageValidatorRequests());
             request.setAttribute("Role", "validator");
           } else {
             request.setAttribute("Role", "senderOnly");

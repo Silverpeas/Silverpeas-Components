@@ -73,6 +73,7 @@ public class RequestCriteria {
   private final List<String> creatorIds = new ArrayList<>();
   private String validatorId = EMPTY;
   private boolean noValidator = false;
+  private final List<String> senderIdsManagedByValidator = new ArrayList<>();
   private PaginationPage pagination;
 
   /**
@@ -189,13 +190,18 @@ public class RequestCriteria {
   }
 
   /**
-   * Configures the criteria of validator id or no validator.
+   * Configures the criteria of validator id or no validator or sender ids which MUST be managed
+   * by the validator.
    * @param validatorId identifier of a validator of a form or no validator.
    * @return an instance of criteria.
    */
-  public RequestCriteria andValidatorIdOrNoValidator(final String validatorId) {
+  public RequestCriteria andValidatorIdOrNoValidatorOrSenderIdsManagedByValidator(
+      final String validatorId, final Collection<String> domainUserIdsManagedByValidator) {
     this.validatorId = validatorId;
     this.noValidator = true;
+    if (domainUserIdsManagedByValidator != null) {
+      this.senderIdsManagedByValidator.addAll(domainUserIdsManagedByValidator);
+    }
     return this;
   }
 
@@ -268,8 +274,12 @@ public class RequestCriteria {
     return validatorId;
   }
 
-  public boolean isNoValidator() {
+  boolean isNoValidator() {
     return noValidator;
+  }
+
+  List<String> getSenderIdsManagedByValidator() {
+    return senderIdsManagedByValidator;
   }
 
   PaginationPage getPagination() {

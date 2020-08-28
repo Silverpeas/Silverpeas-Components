@@ -39,6 +39,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.joining;
@@ -51,6 +52,7 @@ import static org.silverpeas.components.formsonline.model.FormInstanceValidation
 import static org.silverpeas.components.formsonline.model.RequestCriteria.QUERY_ORDER_BY.CREATION_DATE_ASC;
 import static org.silverpeas.components.formsonline.model.RequestCriteria.QUERY_ORDER_BY.ID_ASC;
 import static org.silverpeas.core.contribution.ContributionStatus.VALIDATED;
+import static org.silverpeas.core.util.CollectionUtil.asSet;
 
 /**
  * @author ebonnet
@@ -347,8 +349,9 @@ public class FormsOnlineDAOJdbcIT extends AbstractFormsOnlineIT {
 
   @Test
   public void testGetReceivedRequests() throws Exception {
-    List<FormInstance> forms =
-        dao.getReceivedRequests(new FormPK(1000, DEFAULT_INSTANCE_ID), true, null, null, null);
+    final List<FormInstance> forms = dao
+        .getReceivedRequests(dao.getForm(new FormPK(1000, DEFAULT_INSTANCE_ID)), true, null, null,
+            null, null);
     assertThat(forms, hasSize(1));
     final FormInstance formInstance = forms.get(0);
     assertThat(formInstance.getFormId(), is(1000));
@@ -379,24 +382,42 @@ public class FormsOnlineDAOJdbcIT extends AbstractFormsOnlineIT {
   }
 
   @Test
-  public void testGetRequestsByValidatorOrNoValidatorCriteria() throws Exception {
+  public void testGetRequestsByValidatorOrNoValidatorOrSenderIdsManagedByValidatorCriteria()
+      throws Exception {
     createDefaultDynamicContextOfData(1, DEFAULT_VALIDATION_CYCLE.length);
+    final Set<String> senderIds = asSet("1", "67");
     // VALIDATOR_ID_29
     SilverpeasList<FormInstance> requests = dao.getRequestsByCriteria(RequestCriteria
         .onComponentInstanceIds(DYNAMIC_DATA_INSTANCE_ID)
-        .andValidatorIdOrNoValidator(VALIDATOR_ID_29));
+        .andValidatorIdOrNoValidatorOrSenderIdsManagedByValidator(VALIDATOR_ID_29, null));
     assertThat(requests, hasSize(DEFAULT_VALIDATION_CYCLE.length - 1));
+    assertThat(requests.iterator().next().getValidations(), hasSize(3));
+    // VALIDATOR_ID_29 and Sender ID
+    requests = dao.getRequestsByCriteria(RequestCriteria
+        .onComponentInstanceIds(DYNAMIC_DATA_INSTANCE_ID)
+        .andValidatorIdOrNoValidatorOrSenderIdsManagedByValidator(VALIDATOR_ID_29, senderIds));
+    assertThat(requests, hasSize(DEFAULT_VALIDATION_CYCLE.length));
     assertThat(requests.iterator().next().getValidations(), hasSize(3));
     // VALIDATOR_ID_30
     requests = dao.getRequestsByCriteria(RequestCriteria
         .onComponentInstanceIds(DYNAMIC_DATA_INSTANCE_ID)
-        .andValidatorIdOrNoValidator(VALIDATOR_ID_30));
+        .andValidatorIdOrNoValidatorOrSenderIdsManagedByValidator(VALIDATOR_ID_30, null));
     assertThat(requests, hasSize(5));
+    // VALIDATOR_ID_30
+    requests = dao.getRequestsByCriteria(RequestCriteria
+        .onComponentInstanceIds(DYNAMIC_DATA_INSTANCE_ID)
+        .andValidatorIdOrNoValidatorOrSenderIdsManagedByValidator(VALIDATOR_ID_30, senderIds));
+    assertThat(requests, hasSize(8));
     // unknown validator
     requests = dao.getRequestsByCriteria(RequestCriteria
         .onComponentInstanceIds(DYNAMIC_DATA_INSTANCE_ID)
-        .andValidatorIdOrNoValidator("69"));
+        .andValidatorIdOrNoValidatorOrSenderIdsManagedByValidator("69", null));
     assertThat(requests, hasSize(1));
+    // unknown validator
+    requests = dao.getRequestsByCriteria(RequestCriteria
+        .onComponentInstanceIds(DYNAMIC_DATA_INSTANCE_ID)
+        .andValidatorIdOrNoValidatorOrSenderIdsManagedByValidator("69", senderIds));
+    assertThat(requests, hasSize(6));
   }
 
   @Test
