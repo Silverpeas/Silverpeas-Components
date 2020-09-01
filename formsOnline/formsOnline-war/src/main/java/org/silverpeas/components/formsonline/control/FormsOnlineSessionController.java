@@ -241,7 +241,7 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
   }
 
   public Set<String> getAvailableFormIdsAsReceiver() throws FormsOnlineException {
-    return getService().getAvailableFormIdsAsReceiver(getComponentId(), getUserId());
+    return getService().getValidatorFormIdsWithValidationTypes(getComponentId(), getUserId(), null).keySet();
   }
 
   public FormInstance loadRequest(String id, boolean editionMode) throws FormsOnlineException {

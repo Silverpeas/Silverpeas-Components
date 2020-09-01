@@ -31,6 +31,7 @@ import org.junit.runner.RunWith;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.test.BasicWarBuilder;
+import org.silverpeas.core.util.MemoizedSupplier;
 import org.silverpeas.core.util.SilverpeasList;
 
 import javax.inject.Inject;
@@ -47,10 +48,10 @@ import static java.util.stream.Stream.of;
 import static org.apache.commons.lang3.reflect.FieldUtils.readDeclaredField;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.silverpeas.components.formsonline.model.FormInstanceValidationType.FINAL;
-import static org.silverpeas.components.formsonline.model.FormInstanceValidationType.INTERMEDIATE;
+import static org.silverpeas.components.formsonline.model.FormInstanceValidationType.*;
 import static org.silverpeas.components.formsonline.model.RequestCriteria.QUERY_ORDER_BY.CREATION_DATE_ASC;
 import static org.silverpeas.components.formsonline.model.RequestCriteria.QUERY_ORDER_BY.ID_ASC;
+import static org.silverpeas.components.formsonline.model.RequestValidationCriteria.withValidatorId;
 import static org.silverpeas.core.contribution.ContributionStatus.VALIDATED;
 import static org.silverpeas.core.util.CollectionUtil.asSet;
 
@@ -350,8 +351,7 @@ public class FormsOnlineDAOJdbcIT extends AbstractFormsOnlineIT {
   @Test
   public void testGetReceivedRequests() throws Exception {
     final List<FormInstance> forms = dao
-        .getReceivedRequests(dao.getForm(new FormPK(1000, DEFAULT_INSTANCE_ID)), true, null, null,
-            null, null);
+        .getReceivedRequests(dao.getForm(new FormPK(1000, DEFAULT_INSTANCE_ID)), null, null, null);
     assertThat(forms, hasSize(1));
     final FormInstance formInstance = forms.get(0);
     assertThat(formInstance.getFormId(), is(1000));
@@ -382,42 +382,76 @@ public class FormsOnlineDAOJdbcIT extends AbstractFormsOnlineIT {
   }
 
   @Test
-  public void testGetRequestsByValidatorOrNoValidatorOrSenderIdsManagedByValidatorCriteria()
+  public void testGetRequestsIntoContextOfValidator()
       throws Exception {
     createDefaultDynamicContextOfData(1, DEFAULT_VALIDATION_CYCLE.length);
     final Set<String> senderIds = asSet("1", "67");
     // VALIDATOR_ID_29
     SilverpeasList<FormInstance> requests = dao.getRequestsByCriteria(RequestCriteria
         .onComponentInstanceIds(DYNAMIC_DATA_INSTANCE_ID)
-        .andValidatorIdOrNoValidatorOrSenderIdsManagedByValidator(VALIDATOR_ID_29, null));
-    assertThat(requests, hasSize(DEFAULT_VALIDATION_CYCLE.length - 1));
+        .andValidationCriteria(withValidatorId(VALIDATOR_ID_29, null)));
+    assertContainsIdsWithOffsetAutomaticallyApplied(requests, 12, 10, 9, 8, 7, 6, 5, 4, 3, 2);
     assertThat(requests.iterator().next().getValidations(), hasSize(3));
-    // VALIDATOR_ID_29 and Sender ID
+    // VALIDATOR_ID_29 or no validation
     requests = dao.getRequestsByCriteria(RequestCriteria
         .onComponentInstanceIds(DYNAMIC_DATA_INSTANCE_ID)
-        .andValidatorIdOrNoValidatorOrSenderIdsManagedByValidator(VALIDATOR_ID_29, senderIds));
-    assertThat(requests, hasSize(DEFAULT_VALIDATION_CYCLE.length));
+        .andValidationCriteria(withValidatorId(VALIDATOR_ID_29, null).orNoValidator()));
+    assertContainsIdsWithOffsetAutomaticallyApplied(requests, 12, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1);
+    assertThat(requests.iterator().next().getValidations(), hasSize(3));
+    // VALIDATOR_ID_29 or Sender ID
+    requests = dao.getRequestsByCriteria(RequestCriteria
+        .onComponentInstanceIds(DYNAMIC_DATA_INSTANCE_ID)
+        .andValidationCriteria(withValidatorId(VALIDATOR_ID_29, new MemoizedSupplier<>(() -> senderIds))
+                               .orAsHierarchicalValidatorId()));
+    assertContainsIdsWithOffsetAutomaticallyApplied(requests, 12, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1);
     assertThat(requests.iterator().next().getValidations(), hasSize(3));
     // VALIDATOR_ID_30
     requests = dao.getRequestsByCriteria(RequestCriteria
         .onComponentInstanceIds(DYNAMIC_DATA_INSTANCE_ID)
-        .andValidatorIdOrNoValidatorOrSenderIdsManagedByValidator(VALIDATOR_ID_30, null));
-    assertThat(requests, hasSize(5));
-    // VALIDATOR_ID_30
+        .andValidationCriteria(withValidatorId(VALIDATOR_ID_30, null)));
+    assertContainsIdsWithOffsetAutomaticallyApplied(requests, 12, 11, 9, 8);
+    // VALIDATOR_ID_30 or HIERARCHICAL validated
     requests = dao.getRequestsByCriteria(RequestCriteria
         .onComponentInstanceIds(DYNAMIC_DATA_INSTANCE_ID)
-        .andValidatorIdOrNoValidatorOrSenderIdsManagedByValidator(VALIDATOR_ID_30, senderIds));
-    assertThat(requests, hasSize(8));
+        .andValidationCriteria(withValidatorId(VALIDATOR_ID_30, null).orLastValidationType(HIERARCHICAL)));
+    assertContainsIdsWithOffsetAutomaticallyApplied(requests, 12, 11, 9, 8, 2);
+    // VALIDATOR_ID_30 or INTERMEDIATE validated
+    requests = dao.getRequestsByCriteria(RequestCriteria
+        .onComponentInstanceIds(DYNAMIC_DATA_INSTANCE_ID)
+        .andValidationCriteria(withValidatorId(VALIDATOR_ID_30, null).orLastValidationType(INTERMEDIATE)));
+    assertContainsIdsWithOffsetAutomaticallyApplied(requests, 12, 11, 9, 8, 3);
+    // VALIDATOR_ID_30 or HIERARCHICAL and INTERMEDIATE validated
+    requests = dao.getRequestsByCriteria(RequestCriteria
+        .onComponentInstanceIds(DYNAMIC_DATA_INSTANCE_ID)
+        .andValidationCriteria(withValidatorId(VALIDATOR_ID_30, null).orLastValidationType(INTERMEDIATE, HIERARCHICAL)));
+    assertContainsIdsWithOffsetAutomaticallyApplied(requests, 12, 11, 9, 8, 3, 2);
+    // VALIDATOR_ID_30 or no validator
+    requests = dao.getRequestsByCriteria(RequestCriteria
+        .onComponentInstanceIds(DYNAMIC_DATA_INSTANCE_ID)
+        .andValidationCriteria(withValidatorId(VALIDATOR_ID_30, null).orNoValidator()));
+    assertContainsIdsWithOffsetAutomaticallyApplied(requests, 12, 11, 9, 8, 1);
+    // VALIDATOR_ID_30 or Sender ID
+    requests = dao.getRequestsByCriteria(RequestCriteria
+        .onComponentInstanceIds(DYNAMIC_DATA_INSTANCE_ID)
+        .andValidationCriteria(withValidatorId(VALIDATOR_ID_30, new MemoizedSupplier<>(() -> senderIds))
+                               .orAsHierarchicalValidatorId()));
+    assertContainsIdsWithOffsetAutomaticallyApplied(requests, 12, 11, 9, 8, 1);
     // unknown validator
     requests = dao.getRequestsByCriteria(RequestCriteria
         .onComponentInstanceIds(DYNAMIC_DATA_INSTANCE_ID)
-        .andValidatorIdOrNoValidatorOrSenderIdsManagedByValidator("69", null));
-    assertThat(requests, hasSize(1));
-    // unknown validator
+        .andValidationCriteria(withValidatorId("69", null)));
+    assertThat(requests, empty());
+    // unknown validator or no validator
     requests = dao.getRequestsByCriteria(RequestCriteria
         .onComponentInstanceIds(DYNAMIC_DATA_INSTANCE_ID)
-        .andValidatorIdOrNoValidatorOrSenderIdsManagedByValidator("69", senderIds));
-    assertThat(requests, hasSize(6));
+        .andValidationCriteria(withValidatorId("69", null).orNoValidator()));
+    assertContainsIdsWithOffsetAutomaticallyApplied(requests, 1);
+    // unknown validator or sender id
+    requests = dao.getRequestsByCriteria(RequestCriteria
+        .onComponentInstanceIds(DYNAMIC_DATA_INSTANCE_ID)
+        .andValidationCriteria(withValidatorId("69", new MemoizedSupplier<>(() -> senderIds))
+                               .orAsHierarchicalValidatorId()));
+    assertContainsIdsWithOffsetAutomaticallyApplied(requests, 1);
   }
 
   @Test
@@ -426,30 +460,19 @@ public class FormsOnlineDAOJdbcIT extends AbstractFormsOnlineIT {
     // VALIDATOR_ID_29
     SilverpeasList<FormInstance> requests = dao.getRequestsByCriteria(RequestCriteria
         .onComponentInstanceIds(DYNAMIC_DATA_INSTANCE_ID)
-        .andValidatorId(VALIDATOR_ID_29));
+        .andValidationCriteria(withValidatorId(VALIDATOR_ID_29, null)));
     assertThat(requests, hasSize(DEFAULT_VALIDATION_CYCLE.length - 2));
     assertThat(requests.iterator().next().getValidations(), hasSize(3));
     // VALIDATOR_ID_30
     requests = dao.getRequestsByCriteria(RequestCriteria
         .onComponentInstanceIds(DYNAMIC_DATA_INSTANCE_ID)
-        .andValidatorId(VALIDATOR_ID_30));
+        .andValidationCriteria(withValidatorId(VALIDATOR_ID_30, null)));
     assertThat(requests, hasSize(4));
     // unknown validator
     requests = dao.getRequestsByCriteria(RequestCriteria
         .onComponentInstanceIds(DYNAMIC_DATA_INSTANCE_ID)
-        .andValidatorId("69"));
+        .andValidationCriteria(withValidatorId("69", null)));
     assertThat(requests, empty());
-  }
-
-  @Test
-  public void testGetRequestsByNoValidatorCriteria() throws Exception {
-    createDefaultDynamicContextOfData(1, DEFAULT_VALIDATION_CYCLE.length);
-    // VALIDATOR_ID_29
-    SilverpeasList<FormInstance> requests = dao.getRequestsByCriteria(RequestCriteria
-        .onComponentInstanceIds(DYNAMIC_DATA_INSTANCE_ID)
-        .andNoValidator());
-    assertThat(requests, hasSize(1));
-    assertThat(requests.iterator().next().getValidations(), empty());
   }
 
   @Test

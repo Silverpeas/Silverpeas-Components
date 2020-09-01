@@ -1,29 +1,24 @@
 package org.silverpeas.components.formsonline.model;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.silverpeas.components.formsonline.model.DefaultFormsOnlineService.HierarchicalValidatorCacheManager;
 import org.silverpeas.core.admin.PaginationPage;
-import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.util.PaginationList;
 import org.silverpeas.core.util.SilverpeasArrayList;
 import org.silverpeas.core.util.SilverpeasList;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.BiConsumer;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptySet;
 import static java.util.Collections.singletonList;
-import static java.util.stream.Collectors.toSet;
 import static org.silverpeas.components.formsonline.model.FormInstance.*;
+import static org.silverpeas.components.formsonline.model.FormInstanceValidationType.HIERARCHICAL;
 
 /**
  * @author Nicolas Eysseric
@@ -32,11 +27,11 @@ public class RequestsByStatus {
 
   static final List<MergeRuleByStates>
       MERGING_RULES_BY_STATES = asList(
-          new MergeRuleByStates(singletonList(STATE_DRAFT), s -> emptySet(), RequestsByStatus::addDraft),
-          new MergeRuleByStates(singletonList(STATE_REFUSED), s -> emptySet(), RequestsByStatus::addDenied),
-          new MergeRuleByStates(singletonList(STATE_VALIDATED), s -> emptySet(), RequestsByStatus::addValidated),
-          new MergeRuleByStates(singletonList(STATE_ARCHIVED), s -> emptySet(), RequestsByStatus::addArchived),
-          new MergeRuleByStates(asList(STATE_UNREAD, STATE_READ), RequestsByStatus::getDomainUsersManagedBy, RequestsByStatus::addToValidate));
+          new MergeRuleByStates(singletonList(STATE_DRAFT), (f, t) -> {}, RequestsByStatus::addDraft),
+          new MergeRuleByStates(singletonList(STATE_REFUSED), (f, t) -> {}, RequestsByStatus::addDenied),
+          new MergeRuleByStates(singletonList(STATE_VALIDATED), (f, t) -> {}, RequestsByStatus::addValidated),
+          new MergeRuleByStates(singletonList(STATE_ARCHIVED), (f, t) -> {}, RequestsByStatus::addArchived),
+          new MergeRuleByStates(asList(STATE_UNREAD, STATE_READ), unvalidatedValidationCriteriaConfigurer(), RequestsByStatus::addToValidate));
 
   private static final Comparator<FormInstance> FORM_INSTANCE_COMPARATOR = (a, b) -> {
     int c = b.getCreationDate().compareTo(a.getCreationDate());
@@ -130,16 +125,49 @@ public class RequestsByStatus {
     return PaginationList.from(resultStream.collect(Collectors.toList()), maxSize);
   }
 
+  static BiConsumer<Pair<Set<FormInstanceValidationType>,
+        Set<FormInstanceValidationType>>, RequestValidationCriteria> unvalidatedValidationCriteriaConfigurer() {
+    return (f, t) -> {
+      final Set<FormInstanceValidationType> possibleFormValidationTypes = f.getLeft();
+      final Set<FormInstanceValidationType> possibleValidatorValidationTypes = f.getRight().stream()
+          .filter(possibleFormValidationTypes::contains)
+          .collect(Collectors.toSet());
+      final Set<FormInstanceValidationType> lastValidationFilter = new TreeSet<>();
+      possibleValidatorValidationTypes.stream()
+          .filter(v -> v != HIERARCHICAL)
+          .forEach(v -> {
+            for (int i = (v.ordinal() - 1) ; i >= 0 ; i--) {
+              final FormInstanceValidationType current = FormInstanceValidationType.values()[i];
+              if (possibleFormValidationTypes.contains(current)) {
+                lastValidationFilter.add(current);
+                break;
+              }
+            }
+          });
+      final boolean isHierarchicalFormValidation = possibleFormValidationTypes.contains(HIERARCHICAL);
+      if (isHierarchicalFormValidation) {
+        if (possibleValidatorValidationTypes.contains(HIERARCHICAL)) {
+          t.orAsHierarchicalValidatorId();
+        }
+      } else if (possibleValidatorValidationTypes.stream()
+          .filter(v -> v != HIERARCHICAL)
+          .anyMatch(v -> possibleFormValidationTypes.stream().findFirst().filter(p -> p == v).isPresent())) {
+        t.orNoValidator();
+      }
+      t.orLastValidationType(lastValidationFilter);
+    };
+  }
+
   public static class MergeRuleByStates {
     private final List<Integer> states;
-    private final Function<String, Set<String>> domainUsersManagedBy;
+    private final BiConsumer<Pair<Set<FormInstanceValidationType>, Set<FormInstanceValidationType>>, RequestValidationCriteria> validationCriteriaConfigurer;
     private final BiConsumer<RequestsByStatus, SilverpeasList<FormInstance>> merger;
 
     public MergeRuleByStates(final List<Integer> states,
-        final Function<String, Set<String>> domainUsersManagedBy,
+        final BiConsumer<Pair<Set<FormInstanceValidationType>, Set<FormInstanceValidationType>>, RequestValidationCriteria> validationCriteriaConfigurer,
         final BiConsumer<RequestsByStatus, SilverpeasList<FormInstance>> merger) {
       this.states = states;
-      this.domainUsersManagedBy = domainUsersManagedBy;
+      this.validationCriteriaConfigurer = validationCriteriaConfigurer;
       this.merger = merger;
     }
 
@@ -147,28 +175,13 @@ public class RequestsByStatus {
       return states;
     }
 
-    public Set<String> getDomainUsersManagedBy(final FormDetail form, final String managerId) {
-      if (!form.isHierarchicalValidation()) {
-        return Collections.emptySet();
-      }
-      return domainUsersManagedBy.apply(managerId);
+    public BiConsumer<Pair<Set<FormInstanceValidationType>,
+        Set<FormInstanceValidationType>>, RequestValidationCriteria> getValidationCriteriaConfigurer() {
+      return validationCriteriaConfigurer;
     }
 
     public BiConsumer<RequestsByStatus, SilverpeasList<FormInstance>> getMerger() {
       return merger;
     }
-  }
-
-  private static Set<String> getDomainUsersManagedBy(final String userId) {
-    final String userDomainId = User.getById(userId).getDomainId();
-    final User[] users = OrganizationController.get().getAllUsersInDomain(userDomainId);
-    final Set<String> userIds = Stream.of(users).map(User::getId).collect(toSet());
-    final HierarchicalValidatorCacheManager hvManager = new HierarchicalValidatorCacheManager();
-    hvManager.cacheHierarchicalValidatorsOf(userIds);
-    return userIds.stream()
-        .map(u -> Pair.of(u, hvManager.getHierarchicalValidatorOf(u)))
-        .filter(p -> userId.equals(p.getRight()))
-        .map(Pair::getLeft)
-        .collect(toSet());
   }
 }

@@ -31,6 +31,8 @@ import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQueries;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
+import org.silverpeas.core.persistence.jdbc.sql.SelectResultRowProcess;
+import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.SilverpeasArrayList;
 import org.silverpeas.core.util.SilverpeasList;
@@ -51,18 +53,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.ArrayUtils.isNotEmpty;
 import static org.silverpeas.components.formsonline.model.FormDetail.RECEIVERS_TYPE_FINAL;
 import static org.silverpeas.components.formsonline.model.FormDetail.RECEIVERS_TYPE_INTERMEDIATE;
+import static org.silverpeas.components.formsonline.model.FormInstanceValidationType.fromRightsCode;
 import static org.silverpeas.components.formsonline.model.RequestCriteria.QUERY_ORDER_BY.CREATION_DATE_DESC;
 import static org.silverpeas.components.formsonline.model.RequestCriteria.QUERY_ORDER_BY.ID_DESC;
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
+import static org.silverpeas.core.contribution.ContributionStatus.VALIDATED;
 import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery.*;
-import static org.silverpeas.core.util.StringUtil.isDefined;
 
 public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
 
@@ -122,8 +127,13 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
   private static final String CREATOR_ID = "creatorId";
   private static final String REQUEST_MSG = "instance on form";
   private static final String FORM_INST_ID = "formInstId";
-  private static final String FORM_INST_ID_CLAUSE = FORM_INST_ID + " = r.id";
   private static final String VALIDATION_BY = "validationBy";
+  private static final String RIGHT_TYPE = "rightType";
+  private static final String VALIDATION_TYPE = "validationType";
+
+  private static final String NOT_EXISTS_SELECT = "NOT EXISTS(SELECT 1";
+  private static final String EXISTS_SELECT = "EXISTS(SELECT 1";
+  private static final String FORM_INST_ID_CLAUSE = FORM_INST_ID + " = r.id";
 
   @Override
   public FormDetail createForm(FormDetail formDetail) throws FormsOnlineException {
@@ -471,25 +481,16 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
    * java.lang.String)
    */
   @Override
-  public SilverpeasList<FormInstance> getReceivedRequests(FormDetail form, boolean allRequests,
-      String validatorId, final Set<String> senderIdsManagedByValidator,
-      final List<Integer> states, final PaginationPage paginationPage) throws FormsOnlineException {
-    /*
-     * then retrieve instances where :
-     *  - user has been the validator
-     *  - no validation has been done yet and form id in available form ids
-     *  - sender ids managed by the validator
-     */
+  public SilverpeasList<FormInstance> getReceivedRequests(final FormDetail form,
+      final List<Integer> states, RequestValidationCriteria validationCriteria,
+      final PaginationPage paginationPage) throws FormsOnlineException {
     final FormPK pk = form.getPK();
-    final RequestCriteria criteria = RequestCriteria
+    return getRequestsByCriteria(RequestCriteria
         .onComponentInstanceIds(pk.getInstanceId())
+        .andValidationCriteria(validationCriteria)
         .andFormIds(pk.getId())
         .andStates(states)
-        .paginateBy(paginationPage);
-    if (!allRequests) {
-      criteria.andValidatorIdOrNoValidatorOrSenderIdsManagedByValidator(validatorId, senderIdsManagedByValidator);
-    }
-    return getRequestsByCriteria(criteria);
+        .paginateBy(paginationPage));
   }
 
   /**
@@ -541,34 +542,52 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
   }
 
   private void applyValidationCriteria(final RequestCriteria criteria, final JdbcSqlQuery query) {
-    if (isDefined(criteria.getValidatorId())) {
+    final RequestValidationCriteria validationCriteria = criteria.getValidationCriteria();
+    if (validationCriteria != null) {
+      final String validatorId = validationCriteria.getValidatorId();
       query.and("(");
-      query.addSqlPart("EXISTS(SELECT 1")
+      query.addSqlPart(EXISTS_SELECT)
           .from(FORMS_INSTANCE_VALIDATIONS_TABLENAME)
           .where(FORM_INST_ID_CLAUSE)
-          .and(VALIDATION_BY + " = ?)", criteria.getValidatorId());
-      if (criteria.isNoValidator()) {
-        query.or("NOT EXISTS(SELECT 1")
+          .and(VALIDATION_BY + " = ?)", validatorId);
+      validationCriteria.getLastValidationType().forEach(v -> {
+        query.or("(");
+        query.addSqlPart(EXISTS_SELECT)
+             .from(FORMS_INSTANCE_VALIDATIONS_TABLENAME)
+             .where(FORM_INST_ID_CLAUSE)
+             .and("status = ?", VALIDATED)
+             .and(VALIDATION_TYPE + " = ?)", v.name());
+        final List<String> excludedValidationTypes =
+            Stream.of(FormInstanceValidationType.values())
+                  .filter(e -> e.ordinal() > v.ordinal())
+                  .map(FormInstanceValidationType::name)
+                  .collect(Collectors.toList());
+        if (!excludedValidationTypes.isEmpty()) {
+          query.and(NOT_EXISTS_SELECT)
+               .from(FORMS_INSTANCE_VALIDATIONS_TABLENAME)
+               .where(FORM_INST_ID_CLAUSE)
+               .and(VALIDATION_TYPE).in(excludedValidationTypes)
+               .addSqlPart(")");
+        }
+        query.addSqlPart(")");
+      });
+      if (validationCriteria.isNoValidator()) {
+        query.or(NOT_EXISTS_SELECT)
              .from(FORMS_INSTANCE_VALIDATIONS_TABLENAME)
              .where(FORM_INST_ID_CLAUSE)
              .addSqlPart(")");
       }
-      if (!criteria.getSenderIdsManagedByValidator().isEmpty()) {
-        query.or(CREATOR_ID).in(criteria.getSenderIdsManagedByValidator());
+      if (validationCriteria.isAsHierarchicalValidatorId() &&
+          !validationCriteria.getManagedDomainUsers().isEmpty()) {
+        query.or("(");
+        query.addSqlPart(CREATOR_ID).in(validationCriteria.getManagedDomainUsers());
+        query.and(NOT_EXISTS_SELECT)
+            .from(FORMS_INSTANCE_VALIDATIONS_TABLENAME)
+            .where(FORM_INST_ID_CLAUSE)
+            .addSqlPart(")");
+        query.addSqlPart(")");
       }
       query.addSqlPart(")");
-    } else if (criteria.isNoValidator()) {
-      query.and("(");
-      query.addSqlPart("NOT EXISTS(SELECT 1")
-          .from(FORMS_INSTANCE_VALIDATIONS_TABLENAME)
-          .where(FORM_INST_ID_CLAUSE)
-          .addSqlPart(")");
-      if (!criteria.getSenderIdsManagedByValidator().isEmpty()) {
-        query.or(CREATOR_ID).in(criteria.getSenderIdsManagedByValidator());
-      }
-      query.addSqlPart(")");
-    } else if (!criteria.getSenderIdsManagedByValidator().isEmpty()) {
-      query.and(CREATOR_ID).in(criteria.getSenderIdsManagedByValidator());
     }
   }
 
@@ -597,7 +616,7 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
               validation.setComment(r.getString("validationComment"));
               validation.setValidationBy(r.getString(VALIDATION_BY));
               validation.setDate(r.getTimestamp("validationDate"));
-              validation.setValidationType(FormInstanceValidationType.valueOf(r.getString("validationType")));
+              validation.setValidationType(FormInstanceValidationType.valueOf(r.getString(VALIDATION_TYPE)));
               validation.setFollower(r.getBoolean("follower"));
               request.getValidations().add(validation);
             }
@@ -608,40 +627,82 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
   }
 
   @Override
-  public List<String> getAvailableFormIdsAsReceiver(String instanceId, String userId,
-      String[] userGroupIds) throws FormsOnlineException {
-    List<String> availableFormIds = new ArrayList<>();
-
-    /* build query */
-    StringBuilder query =
-        new StringBuilder("select distinct id from " + FORMS_TABLENAME + " where instanceId = '" +
-            instanceId + "' and id in (select formId from " + USER_RIGHTS_TABLENAME +
-            " where rightType='R' and userId = '" + userId + "') ");
-    if ((userGroupIds != null) && (userGroupIds.length > 0)) {
-      query.append("or id in (select formId from " + GROUP_RIGHTS_TABLENAME +
-          " where rightType='R' and groupId in ( ");
-      for (int i = 0; i < userGroupIds.length; i++) {
-        if (i != 0) {
-          query.append(", ");
-        }
-        query.append("'").append(userGroupIds[i]).append("'");
-      }
-      query.append(") )");
+  public Map<String, Set<FormInstanceValidationType>> getValidatorFormIdsWithValidationTypes(
+      String instanceId, String validatorId, String[] validatorGroupIds,
+      final Collection<String> formIds) throws FormsOnlineException {
+    final Map<String, Set<FormInstanceValidationType>> result = new HashMap<>();
+    final JdbcSqlQuery query = JdbcSqlQuery
+        .createSelect("DISTINCT formId, rightType")
+        .from(USER_RIGHTS_TABLENAME)
+        .join(FORMS_TABLENAME + " f").on("f." + ID + " = " + FORM_ID)
+        .where("f." + INSTANCE_ID + " = ?", instanceId)
+        .and(RIGHT_TYPE).in("I", "R")
+        .and("userId = ?", validatorId);
+    if (CollectionUtil.isNotEmpty(formIds)) {
+      query.and(FORM_ID).in(formIds.stream().map(Integer::parseInt).collect(toSet()));
     }
-
-    try (final Connection con = getConnection();
-         final Statement stmt = con.createStatement()) {
-      try (ResultSet rs = stmt.executeQuery(query.toString())) {
-        while (rs.next()) {
-          availableFormIds.add(String.valueOf(rs.getInt("id")));
-        }
+    if (isNotEmpty(validatorGroupIds)) {
+      query.union()
+          .addSqlPart("SELECT DISTINCT formId, rightType")
+          .from(GROUP_RIGHTS_TABLENAME)
+          .join(FORMS_TABLENAME + " f").on("f." + ID + " = " + FORM_ID)
+          .where("f." + INSTANCE_ID + " = ?", instanceId)
+          .and(RIGHT_TYPE).in("I", "R")
+          .and("groupId").in((Object[]) validatorGroupIds);
+      if (CollectionUtil.isNotEmpty(formIds)) {
+        query.and(FORM_ID).in(formIds.stream().map(Integer::parseInt).collect(toSet()));
       }
+    }
+    try {
+      query.execute(fetchRightValidationTypesByForm(result));
     } catch (SQLException se) {
       throw new FormsOnlineException(
-          failureOnGetting("user (" + userId + ") available form as receiver ids of instance",
+          failureOnGetting("user (" + validatorId + ") available form as receiver ids of instance",
               instanceId), se);
     }
-    return availableFormIds;
+    return result;
+  }
+
+  @Override
+  public Map<String, Set<FormInstanceValidationType>> getPossibleValidationTypesByFormId(
+      final Collection<String> formIds) throws FormsOnlineException {
+    final Map<String, Set<FormInstanceValidationType>> result = new HashMap<>();
+    if (!formIds.isEmpty()) {
+      final Collection<Integer> asIntegers = formIds.stream().map(Integer::parseInt).collect(toSet());
+      final JdbcSqlQuery query = JdbcSqlQuery
+          .createSelect("formId, rightType")
+          .from(USER_RIGHTS_TABLENAME)
+          .join(FORMS_TABLENAME).on(ID + " = " + FORM_ID)
+          .where(RIGHT_TYPE).in("I", "R")
+          .and(FORM_ID).in(asIntegers);
+      query.union()
+          .addSqlPart("SELECT formId, rightType")
+          .from(GROUP_RIGHTS_TABLENAME)
+          .join(FORMS_TABLENAME).on(ID + " = " + FORM_ID)
+          .where(RIGHT_TYPE).in("I", "R")
+          .and(FORM_ID).in(asIntegers);
+      query.union()
+          .addSqlPart("SELECT id AS formId, 'H'")
+          .from(FORMS_TABLENAME)
+          .where(ID).in(asIntegers)
+          .and("hierarchicalValidation = ?", true);
+      try {
+        query.execute(fetchRightValidationTypesByForm(result));
+      } catch (SQLException se) {
+        throw new FormsOnlineException(failureOnGetting("possible rights on", formIds), se);
+      }
+    }
+    return result;
+  }
+
+  private SelectResultRowProcess<Object> fetchRightValidationTypesByForm(
+      final Map<String, Set<FormInstanceValidationType>> result) {
+    return r -> {
+      final String formId = String.valueOf(r.getInt(FORM_ID));
+      final String rightValidatorType = r.getString(RIGHT_TYPE);
+      result.computeIfAbsent(formId, s -> new TreeSet<>()).add(fromRightsCode(rightValidatorType));
+      return null;
+    };
   }
 
   private FormDetail fetchFormDetail(ResultSet rs) throws SQLException {
@@ -721,7 +782,7 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
           }
           validationSave.addSaveParam(FORM_INST_ID, v.getFormInstance().getIdAsInt(), isInsert);
           validationSave.addSaveParam(VALIDATION_BY, v.getValidator().getId(), isInsert);
-          validationSave.addSaveParam("validationType", v.getValidationType().name(), isInsert);
+          validationSave.addSaveParam(VALIDATION_TYPE, v.getValidationType().name(), isInsert);
           validationSave.addSaveParam("status", v.getStatus().name(), isInsert);
           validationSave.addSaveParam("validationComment", v.getComment(), isInsert);
           validationSave.addSaveParam("follower", v.isFollower(), isInsert);

@@ -61,6 +61,7 @@ import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.security.authorization.ForbiddenRuntimeException;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.MemoizedSupplier;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.util.StringUtil;
@@ -78,16 +79,19 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.BiConsumer;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toSet;
 import static org.silverpeas.components.formsonline.model.FormDetail.RECEIVERS_TYPE_FINAL;
 import static org.silverpeas.components.formsonline.model.FormDetail.RECEIVERS_TYPE_INTERMEDIATE;
+import static org.silverpeas.components.formsonline.model.FormInstanceValidationType.HIERARCHICAL;
+import static org.silverpeas.components.formsonline.model.RequestValidationCriteria.withValidatorId;
 import static org.silverpeas.components.formsonline.model.RequestsByStatus.MERGING_RULES_BY_STATES;
 import static org.silverpeas.core.mail.MailContent.getHtmlBodyPartFromHtmlContent;
 
@@ -289,21 +293,44 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
   @Override
   public RequestsByStatus getValidatorRequests(RequestsFilter filter, String validatorId,
       final PaginationPage paginationPage) throws FormsOnlineException {
-    final Set<String> formIds = getAvailableFormIdsAsReceiver(filter.getComponentId(), validatorId);
-    // limit requests to specified forms
-    if (!filter.getFormIds().isEmpty()) {
-      formIds.retainAll(filter.getFormIds());
-    }
-    final List<FormDetail> availableForms = getDAO().getForms(formIds);
+    final Map<String, Set<FormInstanceValidationType>> possibleValidatorValidationTypesByFormId =
+        getValidatorFormIdsWithValidationTypes(filter.getComponentId(), validatorId, filter.getFormIds());
+    final List<FormDetail> availableForms = getDAO().getForms(possibleValidatorValidationTypesByFormId.keySet());
+    final Map<String, Set<FormInstanceValidationType>> possibleValidationTypesByFormId = getDAO()
+        .getPossibleValidationTypesByFormId(possibleValidatorValidationTypesByFormId.keySet());
     final RequestsByStatus requests = new RequestsByStatus(paginationPage);
+    final MemoizedSupplier<Set<String>> managedDomainUsersSupplier = new MemoizedSupplier<>(() -> {
+      final String userDomainId = User.getById(validatorId).getDomainId();
+      final User[] users = OrganizationController.get().getAllUsersInDomain(userDomainId);
+      final Set<String> userIds = Stream.of(users).map(User::getId).collect(toSet());
+      final HierarchicalValidatorCacheManager hvManager = new HierarchicalValidatorCacheManager();
+      hvManager.cacheHierarchicalValidatorsOf(userIds);
+      return userIds.stream()
+          .map(u -> Pair.of(u, hvManager.getHierarchicalValidatorOf(u)))
+          .filter(p -> validatorId.equals(p.getRight()))
+          .map(Pair::getLeft)
+          .collect(toSet());
+    });
     for (final FormDetail form : availableForms) {
       for (final MergeRuleByStates rule : MERGING_RULES_BY_STATES) {
         final List<Integer> states = rule.getStates();
         final BiConsumer<RequestsByStatus, SilverpeasList<FormInstance>> merge = rule.getMerger();
-        final Set<String> domainUsersManagedBy = rule.getDomainUsersManagedBy(form, validatorId);
+        final RequestValidationCriteria validationCriteria;
+        if (!filter.isAllRequests()) {
+          validationCriteria = withValidatorId(validatorId, managedDomainUsersSupplier);
+          final String formId = form.getPK().getId();
+          final Set<FormInstanceValidationType> possibleFormValidationTypes =
+              possibleValidationTypesByFormId.get(formId);
+          final Set<FormInstanceValidationType> possibleValidatorValidationTypes =
+              possibleValidatorValidationTypesByFormId.get(formId);
+          rule.getValidationCriteriaConfigurer().accept(
+              Pair.of(possibleFormValidationTypes, possibleValidatorValidationTypes),
+              validationCriteria);
+        } else {
+          validationCriteria = null;
+        }
         final SilverpeasList<FormInstance> result = getDAO()
-            .getReceivedRequests(form, filter.isAllRequests(), validatorId, domainUsersManagedBy,
-                states, paginationPage);
+            .getReceivedRequests(form, states, validationCriteria, paginationPage);
         merge.accept(requests, result.stream()
                                      .map(l -> {
                                        l.setForm(form);
@@ -317,10 +344,11 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
   }
 
   @Override
-  public Set<String> getAvailableFormIdsAsReceiver(String appId, String userId)
-      throws FormsOnlineException {
-    final String[] userGroupIds = organizationController.getAllGroupIdsOfUser(userId);
-    final Set<String> formIds = new HashSet<>(getDAO().getAvailableFormIdsAsReceiver(appId, userId, userGroupIds));
+  public Map<String, Set<FormInstanceValidationType>> getValidatorFormIdsWithValidationTypes(
+      String appId, String validatorId, final Collection<String> formIds) throws FormsOnlineException {
+    final String[] userGroupIds = organizationController.getAllGroupIdsOfUser(validatorId);
+    final Map<String, Set<FormInstanceValidationType>> result = getDAO()
+        .getValidatorFormIdsWithValidationTypes(appId, validatorId, userGroupIds, formIds);
     // get available form as boss
     final List<FormDetail> forms = getDAO().findAllForms(appId);
     final HierarchicalValidatorCacheManager hvManager = new HierarchicalValidatorCacheManager();
@@ -331,12 +359,14 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
         hvManager.cacheHierarchicalValidatorsOf(creatorIds);
         creatorIds.stream()
             .map(hvManager::getHierarchicalValidatorOf)
-            .filter(userId::equals)
+            .filter(validatorId::equals)
             .findFirst()
-            .ifPresent(b -> formIds.add(Integer.toString(form.getId())));
+            .ifPresent(b ->
+                result.computeIfAbsent(Integer.toString(form.getId()), s -> new TreeSet<>())
+                      .add(HIERARCHICAL));
       }
     }
-    return formIds;
+    return result;
   }
 
   @Override
@@ -376,13 +406,19 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
     }
 
     // Check FormsOnline request states in order to display or hide comment
+    setRequestStateAndValidationData(form, request, userId);
+
+    return request;
+  }
+
+  private void setRequestStateAndValidationData(final FormDetail form, final FormInstance request,
+      final String userId) throws FormsOnlineException {
     if (request.isCanBeValidated()) {
       // mise a jour du statut de l'instance
       if (request.getState() == FormInstance.STATE_UNREAD) {
         request.setState(FormInstance.STATE_READ);
         getDAO().saveRequestState(request);
       }
-
       List<FormInstanceValidation> schema = request.getValidationsSchema();
       for (FormInstanceValidation validation : schema) {
         if (validation.isPendingValidation()) {
@@ -399,8 +435,6 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
         }
       }
     }
-
-    return request;
   }
 
   @Override

@@ -35,7 +35,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Collections.singletonList;
-import static org.silverpeas.core.util.StringUtil.EMPTY;
 
 /**
  * Class that permits to set request search criteria for FormsOnline services.
@@ -71,9 +70,7 @@ public class RequestCriteria {
   private final List<Integer> states = new ArrayList<>();
   private final List<QUERY_ORDER_BY> orderByList = new ArrayList<>();
   private final List<String> creatorIds = new ArrayList<>();
-  private String validatorId = EMPTY;
-  private boolean noValidator = false;
-  private final List<String> senderIdsManagedByValidator = new ArrayList<>();
+  private RequestValidationCriteria validationCriteria;
   private PaginationPage pagination;
 
   /**
@@ -190,39 +187,12 @@ public class RequestCriteria {
   }
 
   /**
-   * Configures the criteria of validator id or no validator or sender ids which MUST be managed
-   * by the validator.
-   * @param validatorId identifier of a validator of a form or no validator.
+   * Configures the validation criteria.
+   * @param validationCriteria criteria of validation.
    * @return an instance of criteria.
    */
-  public RequestCriteria andValidatorIdOrNoValidatorOrSenderIdsManagedByValidator(
-      final String validatorId, final Collection<String> domainUserIdsManagedByValidator) {
-    this.validatorId = validatorId;
-    this.noValidator = true;
-    if (domainUserIdsManagedByValidator != null) {
-      this.senderIdsManagedByValidator.addAll(domainUserIdsManagedByValidator);
-    }
-    return this;
-  }
-
-  /**
-   * Configures the criteria of validator id.
-   * @param validatorId identifier of a validator of a form.
-   * @return an instance of criteria.
-   */
-  public RequestCriteria andValidatorId(final String validatorId) {
-    this.validatorId = validatorId;
-    this.noValidator = false;
-    return this;
-  }
-
-  /**
-   * Configures the criteria of no validator.
-   * @return an instance of criteria.
-   */
-  public RequestCriteria andNoValidator() {
-    this.validatorId = null;
-    this.noValidator = true;
+  public RequestCriteria andValidationCriteria(final RequestValidationCriteria validationCriteria) {
+    this.validationCriteria = validationCriteria;
     return this;
   }
 
@@ -270,16 +240,8 @@ public class RequestCriteria {
     return creatorIds;
   }
 
-  String getValidatorId() {
-    return validatorId;
-  }
-
-  boolean isNoValidator() {
-    return noValidator;
-  }
-
-  List<String> getSenderIdsManagedByValidator() {
-    return senderIdsManagedByValidator;
+  RequestValidationCriteria getValidationCriteria() {
+    return validationCriteria;
   }
 
   PaginationPage getPagination() {
@@ -293,9 +255,9 @@ public class RequestCriteria {
   @Override
   public String toString() {
     return new StringJoiner(", ", RequestCriteria.class.getSimpleName() + "[", "]")
-        .add("componentInstanceIds=" + componentInstanceIds).add("formIds=" + formIds)
-        .add("states=" + states).add("orderByList=" + orderByList)
-        .add("creatorIds='" + creatorIds + "'").add("validatorId='" + validatorId + "'")
-        .add("noValidator=" + noValidator).add("pagination=" + pagination).toString();
+        .add("componentInstanceIds=" + componentInstanceIds).add("ids=" + ids)
+        .add("formIds=" + formIds).add("states=" + states).add("orderByList=" + orderByList)
+        .add("creatorIds=" + creatorIds).add("validationCriteria=" + validationCriteria)
+        .add("pagination=" + pagination).toString();
   }
 }

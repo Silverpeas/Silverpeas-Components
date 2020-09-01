@@ -37,10 +37,14 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static java.text.MessageFormat.format;
 import static java.util.stream.Stream.of;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.silverpeas.components.formsonline.model.FormInstanceValidationType.*;
 import static org.silverpeas.core.contribution.ContributionStatus.REFUSED;
 import static org.silverpeas.core.contribution.ContributionStatus.VALIDATED;
@@ -224,5 +228,10 @@ public abstract class AbstractFormsOnlineIT {
     } catch (SQLException e) {
       throw new SilverpeasRuntimeException(e);
     }
+  }
+
+  void assertContainsIdsWithOffsetAutomaticallyApplied(final List<FormInstance> requests, Integer... ids) {
+    assertThat(requests.stream().map(FormInstance::getId).collect(Collectors.toList()),
+        contains(Stream.of(ids).map(i -> String.valueOf(i + 100000)).toArray(String[]::new)));
   }
 }

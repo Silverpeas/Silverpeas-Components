@@ -151,21 +151,40 @@ public interface FormsOnlineDAO {
   /**
    * Get all requests associated to given form ordered from the newest to the older.
    * @param form the form primary key
-   * @param allRequests true to get all request of any state, false to get only request to validate
-   * @param validatorId the user id
-   * @param senderIdsManagedByValidator sender ids which are managed by the given validator
    * @param states the states to filter on if any
+   * @param validatorCriteria the validation criteria
    * @param paginationPage pagination which can be null if no pagination is
    * requested.
    * @return if allRequests is false only requests to validate and requests validated by given
    * user are returned. If true, all requests (validated or not) are returned.
    */
-  SilverpeasList<FormInstance> getReceivedRequests(FormDetail form, boolean allRequests,
-      String validatorId, final Set<String> senderIdsManagedByValidator,
-      final List<Integer> states, final PaginationPage paginationPage) throws FormsOnlineException;
+  SilverpeasList<FormInstance> getReceivedRequests(FormDetail form, final List<Integer> states,
+      RequestValidationCriteria validatorCriteria, final PaginationPage paginationPage)
+      throws FormsOnlineException;
 
-  List<String> getAvailableFormIdsAsReceiver(String instanceId, String userId,
-      String[] userGroupIds) throws FormsOnlineException;
+  /**
+   * Gets the {@link FormInstanceValidationType} instances mapped by form identifiers of the the
+   * validator represented by given validator id and validator group ids on the given component
+   * instance.
+   * @param instanceId the identifier of the component instance.
+   * @param validatorId the identifier of the validator.
+   * @param validatorGroupIds identifiers of the group of the validator.
+   * @param formIds optional filter about form identifiers in order to reduce the search load.
+   * @return {@link FormInstanceValidationType} instances mapped by form identifiers.
+   * @throws FormsOnlineException
+   */
+  Map<String, Set<FormInstanceValidationType>> getValidatorFormIdsWithValidationTypes(
+      String instanceId, String validatorId, String[] validatorGroupIds,
+      final Collection<String> formIds) throws FormsOnlineException;
+
+  /**
+   * Gets the possible {@link FormInstanceValidationType} instances mapped by form identifiers.
+   * @param formIds form identifiers to search for.
+   * @return {@link FormInstanceValidationType} instances mapped by form identifiers.
+   * @throws FormsOnlineException
+   */
+  Map<String, Set<FormInstanceValidationType>> getPossibleValidationTypesByFormId(
+      final Collection<String> formIds) throws FormsOnlineException;
 
   FormInstance getRequest(RequestPK pk) throws FormsOnlineException;
 

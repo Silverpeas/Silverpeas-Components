@@ -44,4 +44,14 @@ public enum FormInstanceValidationType {
   public boolean isFinal() {
     return this == FINAL;
   }
+
+  static FormInstanceValidationType fromRightsCode(final String validatorType) {
+    if ("I".equals(validatorType)) {
+      return INTERMEDIATE;
+    }
+    if ("H".equals(validatorType)) {
+      return HIERARCHICAL;
+    }
+    return FINAL;
+  }
 }

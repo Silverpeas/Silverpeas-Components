@@ -32,6 +32,7 @@ import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public interface FormsOnlineService extends ApplicationService<FormInstance> {
@@ -65,8 +66,18 @@ public interface FormsOnlineService extends ApplicationService<FormInstance> {
   RequestsByStatus getValidatorRequests(RequestsFilter filter, String validatorId,
       final PaginationPage paginationPage) throws FormsOnlineException;
 
-  Set<String> getAvailableFormIdsAsReceiver(String appId, String userId)
-      throws FormsOnlineException;
+  /**
+   * Gets the {@link FormInstanceValidationType} instances mapped by form identifiers of the the
+   * validator represented by given validator id and validator group ids on the given component
+   * instance.
+   * @param appId the identifier of the component instance.
+   * @param validatorId the identifier of the validator.
+   * @param formIds optional filter about form identifiers in order to reduce the search load.
+   * @return {@link FormInstanceValidationType} instances mapped by form identifiers.
+   * @throws FormsOnlineException
+   */
+  Map<String, Set<FormInstanceValidationType>> getValidatorFormIdsWithValidationTypes(String appId,
+      String validatorId, final Collection<String> formIds) throws FormsOnlineException;
 
   FormInstance loadRequest(RequestPK pk, String userId)
       throws FormsOnlineException, PublicationTemplateException, FormException;
