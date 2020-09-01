@@ -30,6 +30,7 @@ import org.silverpeas.components.silvercrawler.statistic.Statistic;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.exception.RelativeFileAccessException;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
@@ -72,14 +73,12 @@ public class SilverCrawlerFileServer extends SilverpeasAuthenticatedHttpServlet 
   }
 
   @Override
-  public void doGet(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException {
+  public void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
     doPost(req, res);
   }
 
   @Override
-  public void doPost(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException {
+  public void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException {
     String sourceFile = req.getParameter("SourceFile");
     String componentId = req.getParameter("ComponentId");
     String typeUpload = req.getParameter("TypeUpload");
@@ -150,16 +149,12 @@ public class SilverCrawlerFileServer extends SilverpeasAuthenticatedHttpServlet 
     LocalizationBundle messages = ResourceLocator.getLocalizationBundle(
         "org.silverpeas.util.peasUtil.multiLang.fileServerBundle");
 
-    OutputStream out = res.getOutputStream();
-    StringReader sr = new StringReader(messages.getString("warning"));
-    try {
-      IOUtils.copy(sr, out);
+    try(OutputStream out = res.getOutputStream();
+        StringReader sr = new StringReader(messages.getString("warning"))) {
+      IOUtils.copy(sr, out, Charsets.UTF_8);
       out.flush();
     } catch (IOException e) {
       SilverLogger.getLogger(this).error("Error while displaying warning HTML Code", e);
-    } finally {
-      IOUtils.closeQuietly(sr);
-      IOUtils.closeQuietly(out);
     }
   }
 }
