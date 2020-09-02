@@ -49,10 +49,14 @@
 <c:set var="validationEnabled" value="${requestScope['ValidationEnabled']}"/>
 <c:set var="form" value="${requestScope['FormDetail']}"/>
 <c:set var="origin" value="${requestScope['Origin']}"/>
+<c:set var="finalValidator" value="${requestScope['FinalValidator']}"/>
 
 <c:set var="formNameParts" value="${silfn:split(form.xmlFormName, '.')}"/>
 
 <fmt:message var="buttonBack" key="GML.back"/>
+<fmt:message var="labelAccept" key="formsOnline.request.action.validate"/>
+<fmt:message var="labelCancel" key="formsOnline.request.action.cancel"/>
+<fmt:message var="labelCancelConfirm" key="formsOnline.request.action.cancel.confirm"/>
 
 <%
 	Form        formView  = (Form) request.getAttribute("Form");
@@ -76,7 +80,7 @@
       <c:choose>
         <c:when test="${not userRequest.pendingValidation.validationType.final}">
           $('#followerMessage').popup('validation', {
-            title : "Accepter la demande",
+            title : "${labelAccept}",
             callback : function() {
               var followerCheckbox = document.getElementById('followerCheckbox');
               if (followerCheckbox.checked) {
@@ -106,21 +110,37 @@
       document.requestForm.action = "ArchiveRequest";
       document.requestForm.submit();
     }
+
+    function cancelRequest() {
+      $('#cancelConfirmation').popup('confirmation', {
+        title : "${labelCancel}",
+        callback : function() {
+          document.requestForm.action = "CancelRequest";
+          document.requestForm.submit();
+        }
+      });
+
+    }
   </script>
 </head>
 <body class="${formNameParts[0]}">
     <view:operationPane>
       <c:choose>
         <c:when test="${userRequest.creatorId == currentUser.id}">
-          <c:if test="${userRequest.denied || userRequest.validated}">
-            <fmt:message var="opArchive" key="formsOnline.request.action.archive"/>
-            <view:operation action="javascript:archive()" altText="${opArchive}"/>
+          <c:if test="${userRequest.voidable}">
+            <view:operation action="javascript:cancelRequest()" altText="${labelCancel}"/>
           </c:if>
         </c:when>
         <c:otherwise>
-          <c:if test="${userRequest.archived}">
-            <fmt:message var="opDelete" key="GML.delete"/>
-            <view:operation action="javascript:deleteRequest()" altText="${opDelete}"/>
+          <c:if test="${finalValidator}">
+            <c:if test="${userRequest.denied || userRequest.validated}">
+              <fmt:message var="opArchive" key="formsOnline.request.action.archive"/>
+              <view:operation action="javascript:archive()" altText="${opArchive}"/>
+            </c:if>
+            <c:if test="${userRequest.archived}">
+              <fmt:message var="opDelete" key="GML.delete"/>
+              <view:operation action="javascript:deleteRequest()" altText="${opDelete}"/>
+            </c:if>
           </c:if>
         </c:otherwise>
       </c:choose>
@@ -180,6 +200,9 @@
   <c:if test="${not validationEnabled}">
     <br/>
     <view:buttonPane>
+      <c:if test="${userRequest.creatorId == currentUser.id && userRequest.voidable}">
+        <view:button label="${labelCancel}" action="javascript:cancelRequest();"/>
+      </c:if>
       <view:button label="${buttonBack}" action="${origin}" />
     </view:buttonPane>
   </c:if>
@@ -191,7 +214,11 @@
 </form>
 
 <div id="followerMessage" style="display: none">
-  <input id="followerCheckbox" type="checkbox" value="true"/> M'avertir des prochaines décisions sur cette demande
+  <input id="followerCheckbox" type="checkbox" value="true"/> <fmt:message key="formsOnline.request.follow"/>
+</div>
+
+<div id="cancelConfirmation" style="display: none">
+  ${labelCancelConfirm}
 </div>
 
 </body>

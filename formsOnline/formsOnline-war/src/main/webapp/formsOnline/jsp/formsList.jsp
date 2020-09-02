@@ -32,6 +32,7 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 <%@ taglib prefix="vien" uri="http://www.silverpeas.com/tld/viewGenerator" %>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/formsOnline" prefix="formsOnline" %>
 
 <c:set var="lang" value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
 <c:set var="componentId" value="${requestScope.browseContext[3]}"/>
@@ -163,14 +164,7 @@
         <view:listItems items="${userRequests.toValidate}" var="request">
           <li>
             <a href="ViewRequest?Id=${request.id}"><span class="ask-form-date"><view:formatDateTime value="${request.creationDate}"/></span><span class="form-title">${request.form.title}</span></a>
-            <c:choose>
-              <c:when test="${request.read}">
-                <span class="form-statut"><fmt:message key="formsOnline.stateRead"/></span>
-              </c:when>
-              <c:otherwise>
-                <span class="form-statut"><fmt:message key="formsOnline.stateUnread"/></span>
-              </c:otherwise>
-            </c:choose>
+            <span class="form-statut"><formsOnline:validationsSchemaImage userRequest="${request}"/></span>
           </li>
         </view:listItems>
       </view:listPane>

@@ -179,14 +179,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
   @Override
   public FormDetail loadForm(FormPK pk) throws FormsOnlineException {
     FormDetail form = getDAO().getForm(pk);
-    if (form != null) {
-      form.setSendersAsUsers(getSendersAsUsers(pk));
-      form.setSendersAsGroups(getSendersAsGroups(pk));
-      form.setIntermediateReceiversAsUsers(getReceiversAsUsers(pk, RECEIVERS_TYPE_INTERMEDIATE));
-      form.setIntermediateReceiversAsGroups(getReceiversAsGroups(pk, RECEIVERS_TYPE_INTERMEDIATE));
-      form.setReceiversAsUsers(getReceiversAsUsers(pk, RECEIVERS_TYPE_FINAL));
-      form.setReceiversAsGroups(getReceiversAsGroups(pk, RECEIVERS_TYPE_FINAL));
-    }
+    setSendersAndReceivers(form);
     return form;
   }
 
@@ -206,12 +199,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
         .updateReceivers(theForm.getPK(), intermediateReceiverUserIds, intermediateReceiverGroupIds,
             RECEIVERS_TYPE_INTERMEDIATE);
     getDAO().updateReceivers(theForm.getPK(), receiverUserIds, receiverGroupIds, RECEIVERS_TYPE_FINAL);
-    theForm.setSendersAsUsers(getSendersAsUsers(theForm.getPK()));
-    theForm.setSendersAsGroups(getSendersAsGroups(theForm.getPK()));
-    theForm.setIntermediateReceiversAsUsers(getReceiversAsUsers(theForm.getPK(), RECEIVERS_TYPE_INTERMEDIATE));
-    theForm.setIntermediateReceiversAsGroups(getReceiversAsGroups(theForm.getPK(), RECEIVERS_TYPE_INTERMEDIATE));
-    theForm.setReceiversAsUsers(getReceiversAsUsers(theForm.getPK(), RECEIVERS_TYPE_FINAL));
-    theForm.setReceiversAsGroups(getReceiversAsGroups(theForm.getPK(), RECEIVERS_TYPE_FINAL));
+    setSendersAndReceivers(theForm);
 
     index(theForm);
 
@@ -274,6 +262,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
     RequestsByStatus requests = new RequestsByStatus(paginationPage);
     List<FormDetail> forms = getAllForms(appId, userId, false);
     for (FormDetail form : forms) {
+      setSendersAndReceivers(form);
       for (final MergeRuleByStates rule : MERGING_RULES_BY_STATES) {
         final List<Integer> states = rule.getStates();
         final BiConsumer<RequestsByStatus, SilverpeasList<FormInstance>> merge = rule.getMerger();
@@ -840,6 +829,18 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
       }
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e);
+    }
+  }
+
+  private void setSendersAndReceivers(FormDetail form) throws FormsOnlineException {
+    if (form != null) {
+      FormPK pk = form.getPK();
+      form.setSendersAsUsers(getSendersAsUsers(pk));
+      form.setSendersAsGroups(getSendersAsGroups(pk));
+      form.setIntermediateReceiversAsUsers(getReceiversAsUsers(pk, RECEIVERS_TYPE_INTERMEDIATE));
+      form.setIntermediateReceiversAsGroups(getReceiversAsGroups(pk, RECEIVERS_TYPE_INTERMEDIATE));
+      form.setReceiversAsUsers(getReceiversAsUsers(pk, RECEIVERS_TYPE_FINAL));
+      form.setReceiversAsGroups(getReceiversAsGroups(pk, RECEIVERS_TYPE_FINAL));
     }
   }
 

@@ -22,11 +22,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 fieldset {
-	margin-top: 10px;
-	margin-bottom: 10px;
-	width: 98%;
-	text-align: left;
-	padding: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  width: 98%;
+  text-align: left;
+  padding: 10px;
 }
 
 .txtPersoSpace {
@@ -153,14 +153,11 @@ fieldset {
   position: relative;
 }
 
-
-
 #all-formsOnline .secteur-container .date {
   position: absolute;
   top: 13px;
   right: 13px;
 }
-
 
 .my-formsOnline-title {
   font-size: 117%;
@@ -346,14 +343,14 @@ fieldset {
 }
 
 #header-OnlineForm {
-	min-height:60px;
+  min-height:60px;
   margin-left: 0.5em;
 }
 #header-OnlineForm .title {
-	width:100%;
-	font-weight:100;
-	padding:0;
-	margin:0;
+  width:100%;
+  font-weight:100;
+  padding:0;
+  margin:0;
 }
 
 /*#ask-by {
@@ -406,13 +403,27 @@ fieldset {
   margin:2em 0;
 }
 
+.steps-OnlineForm li:after {
+  content: ' ';
+  display: block;
+  width:1em;
+  height:2em;
+  background: transparent url(/silverpeas/util/icons/arrow/next-step.png) 0 0 no-repeat;
+  position: absolute;
+  top: 1em;
+  right:-1.75em;
+}
+.steps-OnlineForm li:last-child:after {
+  display:none;
+}
+
 .step-OnlineForm {
   position:relative;
   border:1px solid #ccc;
-  margin-right:1em;
+  margin-right:2em;
   flex-basis:300px;
 }
-.step-OnlineForm.next-step {
+.step-OnlineForm.next-step > div {
   opacity:0.5;
 }
 .step-OnlineForm .header-step-onlineForm {
@@ -434,17 +445,19 @@ fieldset {
 }
 
 .step-OnlineForm .avatar img{
-  width:38px;
-  height:auto;
+  width: 38px;
+  height: auto;
+  margin-top: -1px;
+  margin-left: -1px;
 }
 
 .step-OnlineForm .title-step-OnlineForm {
   font-weight:bold;
   padding:1em 1em 0.25em 1em;
 }
-.step-OnlineForm .refused .title-step-OnlineForm {
+.step-OnlineForm.REFUSED .title-step-OnlineForm {
   padding-left:2em;
-  background:transparent url(/silverpeas/util/icons/wrong.gif) no-repeat 0.5em 1em;
+  background:transparent url(/silverpeas/util/icons/wrong.gif) no-repeat 0.5em 0.85em;
 }
 .step-OnlineForm .date-step-OnlineForm,
 .step-OnlineForm .actor-step-OnlineForm {
@@ -494,6 +507,13 @@ fieldset {
   background-color: #ebebeb;
   border-color: #d8d7d7;
 }
+
+.step-OnlineForm .inlineMessage,
+.step-OnlineForm .inlineMessage-ok,
+.step-OnlineForm .inlineMessage-nok  {
+  text-align:left;
+}
+
 .ask-by .forms {
   display:none;
 }
@@ -503,48 +523,53 @@ fieldset {
 
 .step-OnlineForm:hover .comment-step-OnlineForm div,
 .step-OnlineForm:hover .statut-step-OnlineForm div{
-  min-height:3em;
+  min-height:4em;
   height:auto;
 }
 
 .read-form .forms {
-	clear:both;
+  clear:both;
 }
 
 .read-form .buttonPane {
-	margin-top:1em;
+  margin-top:1em;
 }
 
-#templateForm.field, #titleForm.field, #descriptionForm.field , #list-senders .field, #list-receivers .field{
-	width:98%;
+#templateForm.field,
+#titleForm.field,
+#descriptionForm.field ,
+#list-senders .field,
+#list-receivers .field,
+#bossValidationForm.field{
+  width:98%;
 }
 
 .field textarea {
-	width:90%;
+  width:90%;
 }
 
 #templateForm select {
-	width:45%
+  width:45%
 }
 
 #view-form {
-    background-color: #f4f4f4;
-    background-image: url("/silverpeas/util/icons/gradientSVG.jsp?from=fff&to=e5e5e5&vertical=0&horizontal=100");
-    border: 1px solid #cccccc;
-    border-radius: 5px;
-    color: #4c4c4c;
-    font-size: 100%;
-    padding: 5px 10px;
-    width: auto;
-	display:inline-block;
-	margin-top:5px;
+  background-color: #f4f4f4;
+  background-image: url("/silverpeas/util/icons/gradientSVG.jsp?from=fff&to=e5e5e5&vertical=0&horizontal=100");
+  border: 1px solid #cccccc;
+  border-radius: 5px;
+  color: #4c4c4c;
+  font-size: 100%;
+  padding: 5px 10px;
+  width: auto;
+  display:inline-block;
+  margin-top:5px;
 }
 
 #view-form  span {
-	background:transparent url("/silverpeas/util/icons/component/formsOnlineSmall.gif") 0 0 no-repeat;
-	display: inline-block;
-    line-height: 16px;
-    padding-left: 23px;
+  background:transparent url("/silverpeas/util/icons/component/formsOnlineSmall.gif") 0 0 no-repeat;
+  display: inline-block;
+  line-height: 16px;
+  padding-left: 23px;
 }
 
 #informationForm legend {

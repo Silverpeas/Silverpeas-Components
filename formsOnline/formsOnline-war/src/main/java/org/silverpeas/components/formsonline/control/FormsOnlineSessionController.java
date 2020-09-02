@@ -25,6 +25,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.formsonline.FormsOnlineComponentSettings;
 import org.silverpeas.components.formsonline.model.FormDetail;
 import org.silverpeas.components.formsonline.model.FormInstance;
+import org.silverpeas.components.formsonline.model.FormInstanceValidation;
 import org.silverpeas.components.formsonline.model.FormPK;
 import org.silverpeas.components.formsonline.model.FormsOnlineException;
 import org.silverpeas.components.formsonline.model.FormsOnlineService;
@@ -65,6 +66,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import static java.util.Collections.singleton;
@@ -75,6 +77,7 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
   private static final String UPDATE_CURRENT_FORM = "updateCurrentForm";
   private static final String LOAD_REQUEST = "loadRequest";
   private FormDetail currentForm;
+  private int currentState;
   private Selection selection = null;
   private Set<String> selectedValidatorRequestIds = new HashSet<>();
   private Map<Integer, String> statusLabels = new HashMap<>();
@@ -122,6 +125,14 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
 
   public FormDetail getCurrentForm() {
     return this.currentForm;
+  }
+
+  public void setCurrentState(int state) {
+    this.currentState = state;
+  }
+
+  public int getCurrentState() {
+    return currentState;
   }
 
   public void updateCurrentForm(String[] senderUserIds, String[] senderGroupIds,
@@ -265,6 +276,15 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
     getService().setValidationStatus(getRequestPK(requestId), getUserId(), decision, comments, follower);
   }
 
+  public void cancelRequest(String id)
+      throws FormsOnlineException, FormException, PublicationTemplateException {
+    FormInstance request = getService().loadRequest(getRequestPK(id), getUserId());
+    if (!request.isVoidable() || !request.getCreatorId().equals(getUserId())) {
+      throwForbiddenException("cancelRequest");
+    }
+    //getService().cancelRequest(request.getPK());
+  }
+
   public void archiveRequest(String id) throws FormsOnlineException {
     getService().archiveRequest(getRequestPK(id));
   }
@@ -332,6 +352,7 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
     if (getCurrentForm() != null) {
       filter.getFormIds().add(Integer.toString(getCurrentForm().getId()));
     }
+    filter.setState(getCurrentState());
     return getService().getValidatorRequests(filter, getUserId(), null);
   }
 
@@ -358,9 +379,12 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
     return form;
   }
 
-  public ExportCSVBuilder export() throws FormsOnlineException, SilverpeasException {
+  public ExportCSVBuilder export() throws SilverpeasException {
     ExportCSVBuilder csvBuilder = new ExportCSVBuilder();
     CSVRow csvHeader = new CSVRow();
+
+    boolean isHierarchicalValidation = getCurrentForm().isHierarchicalValidation();
+    boolean isIntermediateValidation = getCurrentForm().isIntermediateValidation();
 
     // adding columns relative to request metadata
     List<String> csvCols = new ArrayList<>();
@@ -372,12 +396,25 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
     csvHeader.addCell(getString("formsOnline.sendDate"));
     csvCols.add("requester");
     csvHeader.addCell(getString("formsOnline.sender"));
-    csvCols.add("processDate");
-    csvHeader.addCell(getString("formsOnline.request.process.date"));
-    csvCols.add("validator");
-    csvHeader.addCell(getString("formsOnline.request.process.user"));
-    csvCols.add("comment");
-    csvHeader.addCell(getString("GML.comments"));
+
+    String labelPrefix;
+    String idPrefix;
+    if (isHierarchicalValidation) {
+      // adding columns of hierarchical validation
+      labelPrefix = getString("formsOnline.validation.boss") + " - ";
+      idPrefix = "boss-";
+      addColumnsToExport(csvCols, csvHeader, idPrefix, labelPrefix);
+    }
+
+    if (isIntermediateValidation) {
+      // adding columns of intermediate validation
+      labelPrefix = getString("formsOnline.validation.inter") + " - ";
+      idPrefix = "inter-";
+      addColumnsToExport(csvCols, csvHeader, idPrefix, labelPrefix);
+    }
+
+    // adding columns of finale validation
+    addColumnsToExport(csvCols, csvHeader, "","");
 
     int nbMetaDataCols = csvCols.size();
 
@@ -407,30 +444,68 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
       csvRow.addCell(statusLabels.get(request.getState()));
       csvRow.addCell(request.getCreationDate());
       csvRow.addCell(request.getCreator());
-      csvRow.addCell(request.getValidationDate());
-      csvRow.addCell(request.getValidator());
-      csvRow.addCell(request.getComments());
 
-      DataRecord data = null;
-      try {
-        data = recordSet.getRecord(request.getId());
-      } catch (Exception e) {
-        SilverLogger.getLogger(this).error("RequestId = "+request.getId(), e);
+      if (isHierarchicalValidation) {
+        Optional<FormInstanceValidation> validation = request.getValidations().getHierarchicalValidation();
+        addValidationDataToExport(validation, csvRow);
       }
-      if (data != null) {
-        Map<String, String> values = data.getValues(getLanguage());
 
-        for (int i=nbMetaDataCols; i<csvCols.size(); i++) {
-          String value = values.getOrDefault(csvCols.get(i), "");
-          // removing all HTML
-          value = new Source(value).getTextExtractor().toString();
-          csvRow.addCell(value);
-        }
+      if (isIntermediateValidation) {
+        Optional<FormInstanceValidation> validation = request.getValidations().getIntermediateValidation();
+        addValidationDataToExport(validation, csvRow);
       }
+
+      Optional<FormInstanceValidation> validation = request.getValidations().getFinalValidation();
+      addValidationDataToExport(validation, csvRow);
+
+      addRequestDataToExport(recordSet, request, nbMetaDataCols, csvCols, csvRow);
+
       csvBuilder.addLine(csvRow);
     }
 
     return csvBuilder;
+  }
+
+  private void addColumnsToExport(List<String> csvCols, CSVRow csvHeader, String idPrefix,
+      String labelPrefix) {
+    csvCols.add(idPrefix+"processDate");
+    csvHeader.addCell(labelPrefix + getString("formsOnline.request.process.date"));
+    csvCols.add(idPrefix+"validator");
+    csvHeader.addCell(labelPrefix + getString("formsOnline.request.process.user"));
+    csvCols.add(idPrefix+"comment");
+    csvHeader.addCell(labelPrefix + getString("GML.comments"));
+  }
+
+  private void addValidationDataToExport(Optional<FormInstanceValidation> validation, CSVRow csvRow) {
+    if (validation.isPresent()) {
+      csvRow.addCell(validation.get().getDate());
+      csvRow.addCell(validation.get().getValidator());
+      csvRow.addCell(validation.get().getComment());
+    } else {
+      csvRow.addCell("");
+      csvRow.addCell("");
+      csvRow.addCell("");
+    }
+  }
+
+  private void addRequestDataToExport(RecordSet recordSet, FormInstance request, int nbMetaDataCols,
+      List<String> csvCols, CSVRow csvRow) {
+    DataRecord data = null;
+    try {
+      data = recordSet.getRecord(request.getId());
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error("RequestId = "+request.getId(), e);
+    }
+    if (data != null) {
+      Map<String, String> values = data.getValues(getLanguage());
+
+      for (int i=nbMetaDataCols; i<csvCols.size(); i++) {
+        String value = values.getOrDefault(csvCols.get(i), "");
+        // removing all HTML
+        value = new Source(value).getTextExtractor().toString();
+        csvRow.addCell(value);
+      }
+    }
   }
 
   public ComponentInstLight getComponentInstLight() {

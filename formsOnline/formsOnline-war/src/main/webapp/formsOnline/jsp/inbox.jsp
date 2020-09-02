@@ -31,6 +31,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/formsOnline" prefix="formsOnline" %>
 
 <c:set var="lang" value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
 <c:set var="controller" value="${requestScope.FormsOnline}"/>
@@ -62,6 +63,12 @@
 
 <fmt:message var="deletionConfirmMessage" key="formsOnline.requests.action.delete.confirm"/>
 
+<view:setConstant var="STATE_UNREAD" constant="org.silverpeas.components.formsonline.model.FormInstance.STATE_UNREAD"/>
+<view:setConstant var="STATE_READ" constant="org.silverpeas.components.formsonline.model.FormInstance.STATE_READ"/>
+<view:setConstant var="STATE_VALIDATED" constant="org.silverpeas.components.formsonline.model.FormInstance.STATE_VALIDATED"/>
+<view:setConstant var="STATE_REFUSED" constant="org.silverpeas.components.formsonline.model.FormInstance.STATE_REFUSED"/>
+<view:setConstant var="STATE_ARCHIVED" constant="org.silverpeas.components.formsonline.model.FormInstance.STATE_ARCHIVED"/>
+
 <view:sp-page>
 <view:sp-head-part>
   <style type="text/css">
@@ -82,6 +89,16 @@
       });
     }
 
+    function filterRequests() {
+      var formId = $("#selectedForm").val();
+      var state = $("#selectedState").val();
+      var ajaxRequest = sp.ajaxRequest("FilterRequests").byPostMethod();
+      ajaxRequest.withParam("FormId", formId);
+      ajaxRequest.withParam("State", state);
+      checkboxMonitor.prepareAjaxRequest(ajaxRequest);
+      ajaxRequest.send().then(arrayPaneAjaxControl.refreshFromRequestResponse);
+    }
+
     whenSilverpeasReady(function() {
       $("#selectedForm").change(function() {
         var formId = $(this).val();
@@ -90,10 +107,11 @@
         } else {
           $("#link-export").show();
         }
-        var ajaxRequest = sp.ajaxRequest("FilterRequests").byPostMethod();
-        ajaxRequest.withParam("FormId", formId);
-        checkboxMonitor.prepareAjaxRequest(ajaxRequest);
-        ajaxRequest.send().then(arrayPaneAjaxControl.refreshFromRequestResponse);
+        filterRequests();
+      });
+
+      $("#selectedState").change(function() {
+        filterRequests();
       });
 
       if (${currentForm != null}) {
@@ -112,21 +130,34 @@
 <view:window>
   <view:frame>
     <div id="filter">
-      <fmt:message key="formsOnline.Form"/> :
-      <select id="selectedForm">
-        <option></option>
-        <c:forEach items="${forms}" var="form">
-          <c:choose>
-            <c:when test="${form.id == currentForm.id}">
-              <option value="${form.id}" selected="selected">${form.name}</option>
-            </c:when>
-            <c:otherwise>
-              <option value="${form.id}">${form.name}</option>
-            </c:otherwise>
-          </c:choose>
-        </c:forEach>
-      </select>
-      <a id="link-export" class="sp_button" href="javascript:void(0)" onclick="sp.preparedDownloadRequest('Export').download()"><fmt:message key="GML.export"/></a>
+      <div id="stateFilter">
+        ${colStatus} :
+          <select id="selectedState">
+          <option value="-1"></option>
+          <option value="${STATE_UNREAD}">${statusUnreadLabel}</option>
+          <option value="${STATE_READ}">${statusReadLabel}</option>
+          <option value="${STATE_VALIDATED}">${statusValidatedLabel}</option>
+          <option value="${STATE_REFUSED}">${statusDeniedLabel}</option>
+          <option value="${STATE_ARCHIVED}">${statusArchivedLabel}</option>
+        </select>
+      </div>
+      <div id="formFilter">
+        <fmt:message key="formsOnline.Form"/> :
+        <select id="selectedForm">
+          <option></option>
+          <c:forEach items="${forms}" var="form">
+            <c:choose>
+              <c:when test="${form.id == currentForm.id}">
+                <option value="${form.id}" selected="selected">${form.name}</option>
+              </c:when>
+              <c:otherwise>
+                <option value="${form.id}">${form.name}</option>
+              </c:otherwise>
+            </c:choose>
+          </c:forEach>
+        </select>
+        <a id="link-export" class="sp_button" href="javascript:void(0)" onclick="sp.preparedDownloadRequest('Export').download()"><fmt:message key="GML.export"/></a>
+      </div>
     </div>
     <div id="list">
       <c:set var="requestStatusLabelLambda" value="${r ->
@@ -155,7 +186,7 @@
                 <view:arrayCellText text=""/>
               </c:otherwise>
             </c:choose>
-            <view:arrayCellText text="${requestStatusLabelLambda(request)}"/>
+            <view:arrayCellText><formsOnline:validationsSchemaImage userRequest="${request.data}"/></view:arrayCellText>
             <view:arrayCellText text="${silfn:formatDate(request.data.creationDate, lang)}"/>
             <view:arrayCellText text="${request.creator.displayedName}"/>
             <view:arrayCellText><a href="ViewRequest?Id=${request.id}&Origin=InBox">${request.data.form.title}</a></view:arrayCellText>

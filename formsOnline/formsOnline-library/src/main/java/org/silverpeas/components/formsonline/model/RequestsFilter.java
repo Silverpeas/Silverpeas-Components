@@ -6,10 +6,9 @@ import java.util.List;
 public class RequestsFilter {
 
   private String componentId;
-
   private boolean allRequests;
-
   private List<String> formIds = new ArrayList<>();
+  private int state = -1;
 
   public RequestsFilter(String componentId, boolean allRequests) {
     this.componentId = componentId;
@@ -36,4 +35,11 @@ public class RequestsFilter {
     return formIds;
   }
 
+  public int getState() {
+    return state;
+  }
+
+  public void setState(final int state) {
+    this.state = state;
+  }
 }

@@ -353,4 +353,37 @@ public class FormInstance implements SilverpeasContent {
     return new RequestPK(getId(), getComponentInstanceId());
   }
 
+  public boolean isVoidable() {
+    return isUnread() || isRead();
+  }
+
+  public List<String> getValidationsSchemaImages() {
+    List<FormInstanceValidation> schema = getValidationsSchema();
+    List<String> images = new ArrayList<>();
+    String read = "vu-ok.png";
+    if (isUnread()) {
+      read = "vu.png";
+    }
+    images.add(read);
+    for (FormInstanceValidation validation : schema) {
+      images.add(getValidationImage(validation));
+    }
+    return images;
+  }
+
+  private String getValidationImage(FormInstanceValidation validation) {
+    String prefix = "vh";
+    if (validation.getValidationType().isIntermediate()) {
+      prefix = "vi";
+    } else if (validation.getValidationType().isFinal()) {
+      prefix = "vf";
+    }
+    String stateSuffix = "";
+    if (validation.isValidated()) {
+      stateSuffix = "-ok";
+    } else if (validation.isRefused()) {
+      stateSuffix = "-nok";
+    }
+    return prefix+stateSuffix+".png";
+  }
 }

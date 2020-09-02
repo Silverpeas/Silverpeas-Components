@@ -481,4 +481,8 @@ public class FormDetail {
     }
     return VALIDATOR_NOT_ALLOWED;
   }
+
+  public boolean isFinalValidator(String userId) {
+    return isInList(userId, getAllFinalReceivers());
+  }
 }

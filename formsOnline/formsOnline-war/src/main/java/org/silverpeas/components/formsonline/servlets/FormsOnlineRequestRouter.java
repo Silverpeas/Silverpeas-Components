@@ -27,6 +27,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.formsonline.control.FormsOnlineSessionController;
 import org.silverpeas.components.formsonline.model.FormDetail;
 import org.silverpeas.components.formsonline.model.FormInstance;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.util.StringUtil;
@@ -212,6 +213,9 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
         String formId = request.getParameter(PARAM_FORMID);
         formsOnlineSC.setCurrentForm(formId);
 
+        int state = request.getParameterAsInteger("State");
+        formsOnlineSC.setCurrentState(state);
+
         return getDestination(INBOX, formsOnlineSC, request);
       } else if ("Export".equals(function)) {
         ExportCSVBuilder csvBuilder = formsOnlineSC.export();
@@ -261,6 +265,8 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
         request.setAttribute("ValidationEnabled", userRequest.isValidationEnabled());
         request.setAttribute("UserRequest", userRequest);
         request.setAttribute("FormDetail", userRequest.getForm());
+        request.setAttribute("FinalValidator",
+            userRequest.getForm().isFinalValidator(User.getCurrentRequester().getId()));
         request.setAttribute("Origin", checkOrigin(request));
 
         destination = ROOT_DESTINATION + "viewInstance.jsp";
@@ -273,6 +279,11 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
         formsOnlineSC.updateValidationStatus(requestId, decision, comment, follower);
 
         return getDestination(origin, formsOnlineSC, request);
+      } else if ("CancelRequest".equals(function)) {
+        String id = request.getParameter("Id");
+        formsOnlineSC.cancelRequest(id);
+
+        return getDestination("Main", formsOnlineSC, request);
       } else if ("ArchiveRequest".equals(function)) {
         String id = request.getParameter("Id");
         formsOnlineSC.archiveRequest(id);
