@@ -443,6 +443,10 @@ public class FormDetail {
     return isInList(userId, getAllIntermediateReceivers());
   }
 
+  public boolean isFinalValidator(String userId) {
+    return isInList(userId, getAllFinalReceivers());
+  }
+
   public boolean isIntermediateValidation() {
     return CollectionUtil.isNotEmpty(getIntermediateReceiversAsUsers()) ||
         CollectionUtil.isNotEmpty(getIntermediateReceiversAsGroups());
@@ -480,9 +484,5 @@ public class FormDetail {
       return VALIDATOR_OK;
     }
     return VALIDATOR_NOT_ALLOWED;
-  }
-
-  public boolean isFinalValidator(String userId) {
-    return isInList(userId, getAllFinalReceivers());
   }
 }

@@ -47,6 +47,7 @@ public class FormInstance implements SilverpeasContent {
   public static final int STATE_VALIDATED = 3;
   public static final int STATE_REFUSED = 4;
   public static final int STATE_ARCHIVED = 5;
+  public static final int STATE_CANCELED = 6;
 
   private final FormInstanceValidations validations = new FormInstanceValidations();
 
@@ -168,6 +169,12 @@ public class FormInstance implements SilverpeasContent {
     String userId = user.getId();
     return getCreatorId().equals(userId) || form.isValidator(userId) ||
         isHierarchicalValidator(userId);
+  }
+
+  @Override
+  public boolean canBeDeletedBy(final User user) {
+    return (isDraft() && user.getId().equals(getCreatorId())) ||
+        ((isCanceled() || isValidated() || isDenied() || isArchived()) && isOneOfLastValidators(user));
   }
 
   public String getHierarchicalValidator() {
@@ -293,7 +300,13 @@ public class FormInstance implements SilverpeasContent {
     return getState() == STATE_READ;
   }
 
-  public boolean isUnread() { return getState() == STATE_UNREAD; }
+  public boolean isUnread() {
+    return getState() == STATE_UNREAD;
+  }
+
+  public boolean isCanceled() {
+    return getState() == STATE_CANCELED;
+  }
 
   public boolean isValidated() {
     return getState() == STATE_VALIDATED;
@@ -307,11 +320,35 @@ public class FormInstance implements SilverpeasContent {
     return getState() == STATE_ARCHIVED;
   }
 
-  public boolean isCanBeValidated() {
-    return !isValidated() && !isDenied() && !isArchived();
+  boolean canBeValidated() {
+    return !isCanceled() && !isValidated() && !isDenied() && !isArchived();
   }
 
-  public boolean isDraft() { return getState() == STATE_DRAFT; }
+  public boolean canBeArchivedBy(final User user) {
+    return (isCanceled() || isValidated() || isDenied()) && isOneOfLastValidators(user);
+  }
+
+  private boolean isOneOfLastValidators(final User user) {
+    boolean isOneOfLastValidator;
+    if (!form.getAllFinalReceivers().isEmpty()) {
+      isOneOfLastValidator = form.isFinalValidator(user.getId());
+    } else if (!form.getAllIntermediateReceivers().isEmpty()) {
+      isOneOfLastValidator = form.isIntermediateValidator(user.getId());
+    } else if (form.isHierarchicalValidation()) {
+      isOneOfLastValidator = getHierarchicalValidator().equals(user.getId());
+    } else {
+      isOneOfLastValidator = false;
+    }
+    return isOneOfLastValidator;
+  }
+
+  public boolean canBeCanceledBy(final User user) {
+    return canBeValidated() && user.getId().equals(getCreatorId()) && !getValidations().isEmpty();
+  }
+
+  public boolean isDraft() {
+    return getState() == STATE_DRAFT;
+  }
 
   @Override
   public User getCreator() {

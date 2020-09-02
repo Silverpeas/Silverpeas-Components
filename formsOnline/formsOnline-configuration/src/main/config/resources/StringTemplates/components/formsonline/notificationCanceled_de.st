@@ -1,0 +1,1 @@
+$senderName$ just canceled its request '$formName$'.

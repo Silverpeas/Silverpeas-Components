@@ -24,25 +24,28 @@
 package org.silverpeas.components.formsonline.notification;
 
 import org.silverpeas.components.formsonline.model.FormInstance;
+import org.silverpeas.components.formsonline.model.FormInstanceValidation;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
-import org.silverpeas.core.template.SilverpeasTemplate;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Nicolas EYSSERIC
  */
-public class FormsOnlineFollowerUserNotification
-    extends FormsOnlineValidationRequestUserNotification {
+public class FormsOnlineCanceledRequestUserNotification
+    extends AbstractFormsOnlineRequestUserNotification {
 
   private final List<String> usersToBeNotified;
 
-  public FormsOnlineFollowerUserNotification(final FormInstance resource,
-      NotifAction action, final List<String> usersToBeNotified) {
-    super(resource, action);
-    this.usersToBeNotified = usersToBeNotified;
+  public FormsOnlineCanceledRequestUserNotification(final FormInstance resource) {
+    super(resource, NotifAction.CANCELED);
+    this.usersToBeNotified = resource.getPreviousValidations().stream()
+        .map(FormInstanceValidation::getValidator)
+        .map(User::getId)
+        .collect(Collectors.toList());
   }
 
   @Override
@@ -53,26 +56,16 @@ public class FormsOnlineFollowerUserNotification
 
   @Override
   protected String getBundleSubjectKey() {
-    return "formsOnline.msgFormProcessed";
+    return "formsOnline.msgFormCanceled";
   }
 
   @Override
   protected String getTemplateFileName() {
-    return "notificationProcessed";
+    return "notificationCanceled";
   }
 
   @Override
   protected Collection<String> getUserIdsToNotify() {
-    if (usersToBeNotified == null) {
-      return Collections.emptyList();
-    }
     return usersToBeNotified;
-  }
-
-  @Override
-  protected void performTemplateData(final String language, final FormInstance resource,
-      final SilverpeasTemplate template) {
-    super.performTemplateData(language, resource, template);
-    template.setAttribute("validation", getResource().getValidations().getLatestValidation());
   }
 }

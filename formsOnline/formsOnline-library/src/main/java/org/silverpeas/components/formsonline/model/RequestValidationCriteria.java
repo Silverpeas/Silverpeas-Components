@@ -43,9 +43,9 @@ public class RequestValidationCriteria {
 
   private final String validatorId;
   private final MemoizedSupplier<Set<String>> managedDomainUsersSupplier;
-  private boolean noValidator = false;
-  private boolean asHierarchicalValidatorId = false;
-  private final Set<FormInstanceValidationType> lastValidationType = new TreeSet<>();
+  private boolean orNoValidator = false;
+  private boolean orAsHierarchicalValidatorId = false;
+  private final Set<FormInstanceValidationType> orLastValidationType = new TreeSet<>();
 
   public RequestValidationCriteria(final String validatorId,
       final MemoizedSupplier<Set<String>> managedDomainUsersSupplier) {
@@ -77,7 +77,7 @@ public class RequestValidationCriteria {
    * @return an instance of criteria.
    */
   public RequestValidationCriteria orLastValidationType(final Collection<FormInstanceValidationType> validationTypes) {
-    this.lastValidationType.addAll(validationTypes);
+    this.orLastValidationType.addAll(validationTypes);
     return this;
   }
 
@@ -86,7 +86,7 @@ public class RequestValidationCriteria {
    * @return an instance of criteria.
    */
   public RequestValidationCriteria orAsHierarchicalValidatorId() {
-    this.asHierarchicalValidatorId = true;
+    this.orAsHierarchicalValidatorId = true;
     return this;
   }
 
@@ -95,7 +95,7 @@ public class RequestValidationCriteria {
    * @return an instance of criteria.
    */
   public RequestValidationCriteria orNoValidator() {
-    this.noValidator = true;
+    this.orNoValidator = true;
     return this;
   }
 
@@ -103,30 +103,30 @@ public class RequestValidationCriteria {
     return validatorId;
   }
 
-  boolean isNoValidator() {
-    return noValidator;
+  boolean isOrNoValidator() {
+    return orNoValidator;
   }
 
-  boolean isAsHierarchicalValidatorId() {
-    return asHierarchicalValidatorId;
+  boolean isOrAsHierarchicalValidatorId() {
+    return orAsHierarchicalValidatorId;
   }
 
   Set<String> getManagedDomainUsers() {
-    if (!asHierarchicalValidatorId) {
+    if (!orAsHierarchicalValidatorId) {
       return emptySet();
     }
     return managedDomainUsersSupplier.get();
   }
 
-  Set<FormInstanceValidationType> getLastValidationType() {
-    return lastValidationType;
+  Set<FormInstanceValidationType> getOrLastValidationType() {
+    return orLastValidationType;
   }
 
   @Override
   public String toString() {
     return new StringJoiner(", ", RequestValidationCriteria.class.getSimpleName() + "[", "]")
-        .add("validatorId='" + validatorId + "'").add("noValidator=" + noValidator)
-        .add("hierarchicalValidatorId=" + asHierarchicalValidatorId)
-        .add("lastValidationType=" + lastValidationType).toString();
+        .add("validatorId='" + validatorId + "'").add("noValidator=" + orNoValidator)
+        .add("hierarchicalValidatorId=" + orAsHierarchicalValidatorId)
+        .add("lastValidationType=" + orLastValidationType).toString();
   }
 }

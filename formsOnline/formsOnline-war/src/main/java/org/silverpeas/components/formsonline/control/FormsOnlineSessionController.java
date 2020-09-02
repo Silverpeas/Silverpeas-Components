@@ -40,7 +40,6 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.Form;
-import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
@@ -99,6 +98,7 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
         "org.silverpeas.formsonline.settings.formsOnlineSettings");
     selection = getSelection();
     loadStatusLabels();
+    setCurrentState(-1);
   }
 
   public List<FormDetail> getAllForms(boolean withSendInfo) throws FormsOnlineException {
@@ -269,42 +269,22 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
 
   public void updateValidationStatus(String requestId, String decision, String comments,
       boolean follower) throws FormsOnlineException {
-    FormInstance request = getService().loadRequest(getRequestPK(requestId), getUserId(), false);
-    if (!getCurrentForm().isValidator(getUserId()) && !request.isHierarchicalValidator(getUserId())) {
-      throwForbiddenException(LOAD_REQUEST);
-    }
-    getService().setValidationStatus(getRequestPK(requestId), getUserId(), decision, comments, follower);
+    getService().saveNextRequestValidationStep(getRequestPK(requestId), getUserId(), decision, comments, follower);
   }
 
-  public void cancelRequest(String id)
-      throws FormsOnlineException, FormException, PublicationTemplateException {
-    FormInstance request = getService().loadRequest(getRequestPK(id), getUserId());
-    if (!request.isVoidable() || !request.getCreatorId().equals(getUserId())) {
-      throwForbiddenException("cancelRequest");
-    }
-    //getService().cancelRequest(request.getPK());
+  public void cancelRequest(String id) throws FormsOnlineException {
+    getService().cancelRequest(getRequestPK(id));
   }
 
   public void archiveRequest(String id) throws FormsOnlineException {
     getService().archiveRequest(getRequestPK(id));
   }
 
-  public void deleteRequest(String id)
-      throws FormsOnlineException, FormException, PublicationTemplateException {
-    FormInstance request = getService().loadRequest(getRequestPK(id), getUserId());
-    FormDetail form = request.getForm();
-    boolean deletionAllowed = (request.isDraft() && request.getCreatorId().equals(getUserId())) ||
-        form.isValidator(getUserId());
-
-    if (!deletionAllowed) {
-      throwForbiddenException(LOAD_REQUEST);
-    }
-
+  public void deleteRequest(String id) throws FormsOnlineException {
     getService().deleteRequest(getRequestPK(id));
   }
 
-  public int deleteRequests(Set<String> ids)
-      throws PublicationTemplateException, FormsOnlineException, FormException {
+  public int deleteRequests(Set<String> ids) throws FormsOnlineException {
     int nbDeletedRequests = 0;
     if (ids != null) {
       for (String id : ids) {

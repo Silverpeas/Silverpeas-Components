@@ -550,34 +550,34 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
           .from(FORMS_INSTANCE_VALIDATIONS_TABLENAME)
           .where(FORM_INST_ID_CLAUSE)
           .and(VALIDATION_BY + " = ?)", validatorId);
-      validationCriteria.getLastValidationType().forEach(v -> {
+      validationCriteria.getOrLastValidationType().forEach(v -> {
         query.or("(");
         query.addSqlPart(EXISTS_SELECT)
-             .from(FORMS_INSTANCE_VALIDATIONS_TABLENAME)
-             .where(FORM_INST_ID_CLAUSE)
-             .and("status = ?", VALIDATED)
-             .and(VALIDATION_TYPE + " = ?)", v.name());
+            .from(FORMS_INSTANCE_VALIDATIONS_TABLENAME)
+            .where(FORM_INST_ID_CLAUSE)
+            .and("status = ?", VALIDATED)
+            .and(VALIDATION_TYPE + " = ?)", v.name());
         final List<String> excludedValidationTypes =
             Stream.of(FormInstanceValidationType.values())
-                  .filter(e -> e.ordinal() > v.ordinal())
-                  .map(FormInstanceValidationType::name)
-                  .collect(Collectors.toList());
+                .filter(e -> e.ordinal() > v.ordinal())
+                .map(FormInstanceValidationType::name)
+                .collect(Collectors.toList());
         if (!excludedValidationTypes.isEmpty()) {
           query.and(NOT_EXISTS_SELECT)
-               .from(FORMS_INSTANCE_VALIDATIONS_TABLENAME)
-               .where(FORM_INST_ID_CLAUSE)
-               .and(VALIDATION_TYPE).in(excludedValidationTypes)
-               .addSqlPart(")");
+              .from(FORMS_INSTANCE_VALIDATIONS_TABLENAME)
+              .where(FORM_INST_ID_CLAUSE)
+              .and(VALIDATION_TYPE).in(excludedValidationTypes)
+              .addSqlPart(")");
         }
         query.addSqlPart(")");
       });
-      if (validationCriteria.isNoValidator()) {
+      if (validationCriteria.isOrNoValidator()) {
         query.or(NOT_EXISTS_SELECT)
-             .from(FORMS_INSTANCE_VALIDATIONS_TABLENAME)
-             .where(FORM_INST_ID_CLAUSE)
-             .addSqlPart(")");
+            .from(FORMS_INSTANCE_VALIDATIONS_TABLENAME)
+            .where(FORM_INST_ID_CLAUSE)
+            .addSqlPart(")");
       }
-      if (validationCriteria.isAsHierarchicalValidatorId() &&
+      if (validationCriteria.isOrAsHierarchicalValidatorId() &&
           !validationCriteria.getManagedDomainUsers().isEmpty()) {
         query.or("(");
         query.addSqlPart(CREATOR_ID).in(validationCriteria.getManagedDomainUsers());

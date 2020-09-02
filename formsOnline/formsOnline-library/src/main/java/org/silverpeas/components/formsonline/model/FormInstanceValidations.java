@@ -46,11 +46,6 @@ public class FormInstanceValidations extends ArrayList<FormInstanceValidation> {
     resetCache();
   }
 
-  public FormInstanceValidations(final Collection<? extends FormInstanceValidation> c) {
-    super(c);
-    resetCache();
-  }
-
   /**
    * Gets the hierarchical validation.
    * @return an optional {@link FormInstanceValidation} instance.
@@ -86,14 +81,10 @@ public class FormInstanceValidations extends ArrayList<FormInstanceValidation> {
   }
 
   public FormInstanceValidation getLatestValidation() {
-    if (getFinalValidation().isPresent()) {
-      return getFinalValidation().get();
-    } else if (getIntermediateValidation().isPresent()) {
-      return getIntermediateValidation().get();
-    } else if (getHierarchicalValidation().isPresent()) {
-      return getHierarchicalValidation().get();
-    }
-    return null;
+    return getFinalValidation()
+        .orElseGet(() -> getIntermediateValidation()
+            .orElseGet(() -> getHierarchicalValidation()
+                .orElse(null)));
   }
 
   private void resetCache() {

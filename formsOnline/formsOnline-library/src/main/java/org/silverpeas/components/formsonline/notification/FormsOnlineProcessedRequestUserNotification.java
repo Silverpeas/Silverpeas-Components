@@ -24,11 +24,12 @@
 package org.silverpeas.components.formsonline.notification;
 
 import org.silverpeas.components.formsonline.model.FormInstance;
+import org.silverpeas.components.formsonline.model.FormInstanceValidation;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.template.SilverpeasTemplate;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -40,9 +41,15 @@ public class FormsOnlineProcessedRequestUserNotification
   private final List<String> usersToBeNotified;
 
   public FormsOnlineProcessedRequestUserNotification(final FormInstance resource,
-      NotifAction action, final List<String> usersToBeNotified) {
+      NotifAction action, final List<String> nextValidatorIds) {
     super(resource, action);
-    this.usersToBeNotified = usersToBeNotified;
+    this.usersToBeNotified = nextValidatorIds;
+    // notify previous validators if marked as followers
+    resource.getPreviousValidations().stream()
+        .filter(FormInstanceValidation::isFollower)
+        .map(FormInstanceValidation::getValidator)
+        .map(User::getId)
+        .forEach(this.usersToBeNotified::add);
   }
 
   @Override
@@ -66,9 +73,6 @@ public class FormsOnlineProcessedRequestUserNotification
 
   @Override
   protected Collection<String> getUserIdsToNotify() {
-    if (usersToBeNotified == null) {
-      return Collections.emptyList();
-    }
     return usersToBeNotified;
   }
 

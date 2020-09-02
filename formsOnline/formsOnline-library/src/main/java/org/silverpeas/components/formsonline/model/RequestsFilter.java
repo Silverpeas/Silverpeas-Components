@@ -2,6 +2,7 @@ package org.silverpeas.components.formsonline.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class RequestsFilter {
 
@@ -9,6 +10,7 @@ public class RequestsFilter {
   private boolean allRequests;
   private List<String> formIds = new ArrayList<>();
   private int state = -1;
+  private FormInstanceValidationType pendingValidationType;
 
   public RequestsFilter(String componentId, boolean allRequests) {
     this.componentId = componentId;
@@ -41,5 +43,13 @@ public class RequestsFilter {
 
   public void setState(final int state) {
     this.state = state;
+  }
+
+  public Optional<FormInstanceValidationType> getPendingValidationType() {
+    return Optional.ofNullable(pendingValidationType);
+  }
+
+  public void setPendingValidationType(final FormInstanceValidationType pendingValidationType) {
+    this.pendingValidationType = pendingValidationType;
   }
 }

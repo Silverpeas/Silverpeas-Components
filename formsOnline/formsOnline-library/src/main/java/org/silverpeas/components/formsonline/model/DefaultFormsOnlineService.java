@@ -25,6 +25,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.ecs.html.BR;
 import org.apache.ecs.xhtml.div;
 import org.silverpeas.components.formsonline.model.RequestsByStatus.MergeRuleByStates;
+import org.silverpeas.components.formsonline.notification.FormsOnlineCanceledRequestUserNotification;
 import org.silverpeas.components.formsonline.notification.FormsOnlinePendingValidationRequestUserNotification;
 import org.silverpeas.components.formsonline.notification.FormsOnlineProcessedRequestUserNotification;
 import org.silverpeas.components.formsonline.notification.FormsOnlineValidationRequestUserNotification;
@@ -56,7 +57,6 @@ import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.mail.MailAddress;
 import org.silverpeas.core.mail.MailSending;
-import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.security.authorization.ForbiddenRuntimeException;
 import org.silverpeas.core.util.CollectionUtil;
@@ -85,8 +85,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toSet;
 import static org.silverpeas.components.formsonline.model.FormDetail.RECEIVERS_TYPE_FINAL;
 import static org.silverpeas.components.formsonline.model.FormDetail.RECEIVERS_TYPE_INTERMEDIATE;
@@ -94,6 +96,8 @@ import static org.silverpeas.components.formsonline.model.FormInstanceValidation
 import static org.silverpeas.components.formsonline.model.RequestValidationCriteria.withValidatorId;
 import static org.silverpeas.components.formsonline.model.RequestsByStatus.MERGING_RULES_BY_STATES;
 import static org.silverpeas.core.mail.MailContent.getHtmlBodyPartFromHtmlContent;
+import static org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper.buildAndSend;
+import static org.silverpeas.core.util.CollectionUtil.isEmpty;
 
 @Singleton
 public class DefaultFormsOnlineService implements FormsOnlineService {
@@ -301,8 +305,14 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
           .collect(toSet());
     });
     for (final FormDetail form : availableForms) {
+      setSendersAndReceivers(form);
       for (final MergeRuleByStates rule : MERGING_RULES_BY_STATES) {
-        final List<Integer> states = rule.getStates();
+        final List<Integer> states = rule.getStates().stream()
+            .filter(s -> filter.getState() < FormInstance.STATE_DRAFT || filter.getState() == s)
+            .collect(Collectors.toList());
+        if (states.isEmpty()) {
+          continue;
+        }
         final BiConsumer<RequestsByStatus, SilverpeasList<FormInstance>> merge = rule.getMerger();
         final RequestValidationCriteria validationCriteria;
         if (!filter.isAllRequests()) {
@@ -318,14 +328,20 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
         } else {
           validationCriteria = null;
         }
-        final SilverpeasList<FormInstance> result = getDAO()
-            .getReceivedRequests(form, states, validationCriteria, paginationPage);
-        merge.accept(requests, result.stream()
-                                     .map(l -> {
-                                       l.setForm(form);
-                                       return l;
-                                     })
-                                     .collect(SilverpeasList.collector(result)));
+        final Optional<FormInstanceValidationType> pendingValidationTypeFilter = filter
+            .getPendingValidationType();
+        final SilverpeasList<FormInstance> result = getDAO().getReceivedRequests(form, states, validationCriteria,
+                ofNullable(paginationPage).filter(p -> !pendingValidationTypeFilter.isPresent()).orElse(null));
+        Stream<FormInstance> resultStream = result.stream();
+        if (pendingValidationTypeFilter.isPresent()) {
+          resultStream = resultStream
+              .filter(r -> r.getValidations().getValidationOfType(pendingValidationTypeFilter.get()).isPresent());
+        }
+        resultStream = resultStream.map(l -> {
+          l.setForm(form);
+          return l;
+        });
+        merge.accept(requests, resultStream.collect(SilverpeasList.collector(result)));
       }
     }
 
@@ -342,7 +358,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
     final List<FormDetail> forms = getDAO().findAllForms(appId);
     final HierarchicalValidatorCacheManager hvManager = new HierarchicalValidatorCacheManager();
     for (FormDetail form : forms) {
-      if (form.isHierarchicalValidation()) {
+      if (form.isHierarchicalValidation() && (isEmpty(formIds) || formIds.contains(form.getPK().getId()))) {
         final SilverpeasList<FormInstance> requests = getDAO().getAllRequests(form.getPK());
         final Set<String> creatorIds = requests.stream().map(FormInstance::getCreatorId).collect(toSet());
         hvManager.cacheHierarchicalValidatorsOf(creatorIds);
@@ -402,13 +418,13 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
 
   private void setRequestStateAndValidationData(final FormDetail form, final FormInstance request,
       final String userId) throws FormsOnlineException {
-    if (request.isCanBeValidated()) {
+    if (request.canBeValidated()) {
       // mise a jour du statut de l'instance
       if (request.getState() == FormInstance.STATE_UNREAD) {
         request.setState(FormInstance.STATE_READ);
         getDAO().saveRequestState(request);
       }
-      List<FormInstanceValidation> schema = request.getValidationsSchema();
+      final List<FormInstanceValidation> schema = request.getValidationsSchema();
       for (FormInstanceValidation validation : schema) {
         if (validation.isPendingValidation()) {
           boolean validationEnabled;
@@ -424,14 +440,6 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
         }
       }
     }
-  }
-
-  @Override
-  @Transactional
-  public void saveRequest(FormPK pk, String userId, List<FileItem> items)
-      throws FormsOnlineException {
-
-    saveRequest(pk, userId, items, false);
   }
 
   @Override
@@ -532,18 +540,17 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
 
   @Override
   @Transactional
-  public void setValidationStatus(RequestPK pk, String userId, String decision, String comment,
-      boolean follower) throws FormsOnlineException {
+  public void saveNextRequestValidationStep(RequestPK pk, String validatorId, String decision,
+      String comment, boolean follower) throws FormsOnlineException {
     final FormInstance request = getDAO().getRequest(pk);
     final FormDetail form = loadForm(new FormPK(request.getFormId(), pk.getInstanceId()));
     request.setForm(form);
-
-    if (!form.isValidator(userId) && !request.isHierarchicalValidator(userId)) {
-      throwForbiddenException("Validation");
+    final FormInstanceValidation validation = request.getPendingValidation();
+    if ((validation.getValidationType().isHierarchical() && !request.isHierarchicalValidator(validatorId)) ||
+        (validation.getValidationType().isIntermediate() && !form.isIntermediateValidator(validatorId)) ||
+        (validation.getValidationType().isFinal() && !form.isFinalValidator(validatorId))) {
+      throwForbiddenException(validatorId + " can not validate the request " + request.getId());
     }
-
-    FormInstanceValidation validation = request.getPendingValidation();
-
     // update state
     if ("validate".equals(decision)) {
       if (validation.getValidationType().isFinal()) {
@@ -554,17 +561,14 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
       request.setState(FormInstance.STATE_REFUSED);
       validation.setStatus(ContributionStatus.REFUSED);
     }
-
     // validation infos
     validation.setDate(Date.from(Instant.now()));
-    validation.setValidator(User.getById(userId));
+    validation.setValidator(User.getById(validatorId));
     validation.setComment(comment);
     validation.setFollower(follower);
     request.getValidations().add(validation);
-
     // save modifications
     getDAO().saveRequest(request);
-
     // notify sender and all validators
     notifyValidation(request);
   }
@@ -580,43 +584,51 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
 
     // notify sender
     // TODO custom message
-    UserNotificationHelper.buildAndSend(
-        new FormsOnlineValidationRequestUserNotification(request, action));
+    buildAndSend(new FormsOnlineValidationRequestUserNotification(request, action));
 
-    List<String> validatorIds = new ArrayList<>();
-
-    // notify next validators
+    // notify the request processed
+    final List<String> nextValidatorIds = new ArrayList<>();
     if (latestValidation.getValidationType().isFinal() ||
         pendingValidation.getValidationType().isFinal()) {
-      validatorIds.addAll(getAllReceivers(request.getForm().getPK(), RECEIVERS_TYPE_FINAL));
+      nextValidatorIds.addAll(getAllReceivers(request.getForm().getPK(), RECEIVERS_TYPE_FINAL));
     } else if (pendingValidation.getValidationType().isIntermediate()) {
-      validatorIds.addAll(getAllReceivers(request.getForm().getPK(), RECEIVERS_TYPE_INTERMEDIATE));
+      nextValidatorIds.addAll(getAllReceivers(request.getForm().getPK(), RECEIVERS_TYPE_INTERMEDIATE));
     }
+    buildAndSend(new FormsOnlineProcessedRequestUserNotification(request, action, nextValidatorIds));
+  }
 
-    UserNotificationHelper
-        .buildAndSend(new FormsOnlineProcessedRequestUserNotification(request, action, validatorIds));
-
-    // notify previous validators if marked as followers
-    List<String> followerIds = new ArrayList<>();
-    List<FormInstanceValidation> previousValidations = request.getPreviousValidations();
-    for (FormInstanceValidation previousValidation : previousValidations) {
-      if (previousValidation.isFollower()) {
-        followerIds.add(previousValidation.getValidator().getId());
-      }
+  @Override
+  public void cancelRequest(final RequestPK pk) throws FormsOnlineException {
+    final FormInstance request = getDAO().getRequest(pk);
+    final FormDetail form = loadForm(new FormPK(request.getFormId(), pk.getInstanceId()));
+    request.setForm(form);
+    final User currentRequester = User.getCurrentRequester();
+    if (!request.canBeCanceledBy(currentRequester)) {
+      throwForbiddenException(currentRequester.getId() + " can not cancel the request " + request.getId());
     }
+    request.setState(FormInstance.STATE_CANCELED);
+    getDAO().saveRequestState(request);
+    // notify sender and all validators
+    notifyCancellation(request);
+  }
 
-    UserNotificationHelper
-        .buildAndSend(new FormsOnlineProcessedRequestUserNotification(request, action, followerIds));
-
- }
+  private void notifyCancellation(final FormInstance request) {
+    buildAndSend(new FormsOnlineCanceledRequestUserNotification(request));
+  }
 
   @Override
   @Transactional
   public void deleteRequest(RequestPK pk) throws FormsOnlineException {
     try {
       // delete form data
-      FormInstance instance = getDAO().getRequest(pk);
-      PublicationTemplate pubTemplate = getPublicationTemplate(instance);
+      final FormInstance request = getDAO().getRequest(pk);
+      final FormDetail form = loadForm(new FormPK(request.getFormId(), pk.getInstanceId()));
+      request.setForm(form);
+      final User currentRequester = User.getCurrentRequester();
+      if (!request.canBeDeletedBy(currentRequester)) {
+        throwForbiddenException(currentRequester.getId() + " can not delete the request " + request.getId());
+      }
+      PublicationTemplate pubTemplate = getPublicationTemplate(request);
       RecordSet set = pubTemplate.getRecordSet();
       DataRecord data = set.getRecord(pk.getId());
       set.delete(data.getId());
@@ -632,23 +644,25 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
   @Override
   @Transactional
   public void archiveRequest(RequestPK pk) throws FormsOnlineException {
-    FormInstance request = getDAO().getRequest(pk);
+    final FormInstance request = getDAO().getRequest(pk);
+    final FormDetail form = loadForm(new FormPK(request.getFormId(), pk.getInstanceId()));
+    request.setForm(form);
+    final User currentRequester = User.getCurrentRequester();
+    if (!request.canBeArchivedBy(currentRequester)) {
+      throwForbiddenException(currentRequester.getId() + " can not archive the request " + request.getId());
+    }
     request.setState(FormInstance.STATE_ARCHIVED);
     getDAO().saveRequestState(request);
   }
 
   private void notifyReceivers(FormInstance request) throws FormsOnlineException {
-
-    FormInstanceValidations validations = request.getValidations();
-    FormDetail form = request.getForm();
-
+    final FormInstanceValidations validations = request.getValidations();
+    final FormDetail form = request.getForm();
     if (validations.isEmpty()) {
       sendRequestByEmail(request);
     }
-
     List<String> userIds = new ArrayList<>();
-
-    FormInstanceValidation pendingValidation = request.getPendingValidation();
+    final FormInstanceValidation pendingValidation = request.getPendingValidation();
     if (pendingValidation != null) {
       if (pendingValidation.getValidationType().isHierarchical()) {
         // notify boss
@@ -661,8 +675,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
       }
     }
 
-    UserNotificationHelper
-        .buildAndSend(new FormsOnlinePendingValidationRequestUserNotification(request, userIds));
+    buildAndSend(new FormsOnlinePendingValidationRequestUserNotification(request, userIds));
   }
 
   private List<String> getAllReceivers(FormPK pk, String rightType) throws FormsOnlineException {

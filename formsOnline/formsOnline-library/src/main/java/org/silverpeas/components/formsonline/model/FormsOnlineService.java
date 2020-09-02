@@ -85,16 +85,57 @@ public interface FormsOnlineService extends ApplicationService<FormInstance> {
   FormInstance loadRequest(RequestPK pk, String userId, boolean editionMode)
       throws FormsOnlineException;
 
-  void saveRequest(FormPK pk, String userId, List<FileItem> items) throws FormsOnlineException;
-
   void saveRequest(FormPK pk, String userId, List<FileItem> items, boolean draft)
       throws FormsOnlineException;
 
-  void setValidationStatus(RequestPK pk, String userId, String decision, String comment,
+  /**
+   * Register a step of validation of the request represented by the given identifier.
+   * <p>
+   * The service ensure that the validator is able to validate the given request. In case of the
+   * validator can not validate, an error is thrown.
+   * </p>
+   * @param pk the unique identifier of the aimed request.
+   * @param validatorId the identifier of the validator.
+   * @param decision the validation decision ("validate" or "refused")
+   * @param comment the validation comment.
+   * @param follower a boolean flag. True means that the validator want to follow the next steps
+   * of validation.
+   * @throws FormsOnlineException if the validator can not validate indeed or on technical error.
+   */
+  void saveNextRequestValidationStep(RequestPK pk, String validatorId, String decision, String comment,
       boolean follower) throws FormsOnlineException;
 
+  /**
+   * Cancels the request represented by the given identifier.
+   * <p>
+   * The service ensures that the current user is the creator of the request. In case of the
+   * validator can not validate, an error is thrown.
+   * </p>
+   * @param pk the unique identifier of the aimed request.
+   * @throws FormsOnlineException if the current user can not cancel the request or on technical error.
+   */
+  void cancelRequest(RequestPK pk) throws FormsOnlineException;
+
+  /**
+   * Archives the request represented by the given identifier.
+   * <p>
+   * The service ensures that the current user is able to archive the request. In case of the
+   * validator can not validate, an error is thrown.
+   * </p>
+   * @param pk the unique identifier of the aimed request.
+   * @throws FormsOnlineException if the current user can not archive the request or on technical error.
+   */
   void archiveRequest(RequestPK pk) throws FormsOnlineException;
 
+  /**
+   * Deletes the request represented by the given identifier.
+   * <p>
+   * The service ensures that the current user is able to delete the request. In case of the
+   * validator can not validate, an error is thrown.
+   * </p>
+   * @param pk the unique identifier of the aimed request.
+   * @throws FormsOnlineException if the current user can not delete the request or on technical error.
+   */
   void deleteRequest(RequestPK pk) throws FormsOnlineException;
 
   void index(String componentId);

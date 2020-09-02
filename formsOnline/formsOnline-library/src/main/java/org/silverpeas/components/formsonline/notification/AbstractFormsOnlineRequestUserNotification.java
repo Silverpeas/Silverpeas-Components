@@ -26,6 +26,7 @@ package org.silverpeas.components.formsonline.notification;
 import org.silverpeas.components.formsonline.model.FormInstance;
 import org.silverpeas.components.formsonline.model.FormInstanceValidation;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.template.SilverpeasTemplate;
@@ -38,7 +39,7 @@ import java.util.MissingResourceException;
  * @author Yohann Chastagnier
  */
 public abstract class AbstractFormsOnlineRequestUserNotification
-    extends AbstractFormsOnlineUserNotification<FormInstance> {
+    extends AbstractTemplateUserNotificationBuilder<FormInstance> {
 
   private final NotifAction action;
   private final String senderName;
@@ -52,6 +53,16 @@ public abstract class AbstractFormsOnlineRequestUserNotification
     } else {
       this.senderName = resource.getValidations().getLatestValidation().getValidator().getDisplayedName();
     }
+  }
+
+  @Override
+  protected String getLocalizationBundlePath() {
+    return "org.silverpeas.formsonline.multilang.formsOnlineBundle";
+  }
+
+  @Override
+  protected String getTemplatePath() {
+    return "formsonline";
   }
 
   @Override
@@ -127,5 +138,10 @@ public abstract class AbstractFormsOnlineRequestUserNotification
       currentStep = 2;
     }
     return currentStep;
+  }
+
+  @Override
+  protected boolean isSendImmediately() {
+    return true;
   }
 }
