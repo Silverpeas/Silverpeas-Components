@@ -166,12 +166,30 @@
               (r.data.denied ? statusDeniedLabel :
               (r.data.archived ? statusArchivedLabel : statusUnreadLabel))))}"/>
       <c:set var="requestItems" value="<%=RequestUIEntity.convertList(requests.getAll(), controller.getSelectedValidatorRequestIds())%>"/>
+      <c:set var="useHierarchicalValidation" value="false"/>
+      <c:set var="useIntermediateValidation" value="false"/>
+      <c:forEach var="requestItem" items="${requestItems}">
+        <c:if test="${requestItem.data.form.hierarchicalValidation}">
+          <c:set var="useHierarchicalValidation" value="true"/>
+        </c:if>
+        <c:if test="${requestItem.data.form.intermediateValidation}">
+          <c:set var="useIntermediateValidation" value="true"/>
+        </c:if>
+      </c:forEach>
       <view:arrayPane var="myForms" routingAddress="InBox" numberLinesPerPage="25">
         <view:arrayColumn width="10" sortable="false"/>
         <view:arrayColumn title="${colStatus}" compareOn="${requestStatusLabelLambda}"/>
         <view:arrayColumn title="${colDate}" compareOn="${r -> r.data.creationDate}"/>
         <view:arrayColumn title="${colSender}" compareOn="${r -> r.creator.displayedName}"/>
         <view:arrayColumn title="${colForm}" compareOn="${r -> r.data.form.title}"/>
+        <c:if test="${useHierarchicalValidation}">
+          <view:arrayColumn title="VH - Date" sortable="false"/>
+          <view:arrayColumn title="VH - User" sortable="false"/>
+        </c:if>
+        <c:if test="${useIntermediateValidation}">
+          <view:arrayColumn title="VI - Date" sortable="false"/>
+          <view:arrayColumn title="VI - User" sortable="false"/>
+        </c:if>
         <view:arrayColumn title="${colProcessDate}" compareOn="${r -> r.data.validationDate}"/>
         <view:arrayColumn title="${colValidator}" compareOn="${r -> r.validator.displayedName}"/>
         <view:arrayLines var="request" items="${requestItems}">
@@ -186,10 +204,57 @@
                 <view:arrayCellText text=""/>
               </c:otherwise>
             </c:choose>
-            <view:arrayCellText><formsOnline:validationsSchemaImage userRequest="${request.data}"/></view:arrayCellText>
+            <view:arrayCellText>
+              <c:choose>
+                <c:when test="${request.data.archived}">
+                  ${requestStatusLabelLambda}
+                </c:when>
+                <c:otherwise>
+                  <formsOnline:validationsSchemaImage userRequest="${request.data}"/>
+                </c:otherwise>
+              </c:choose>
+            </view:arrayCellText>
             <view:arrayCellText text="${silfn:formatDate(request.data.creationDate, lang)}"/>
             <view:arrayCellText text="${request.creator.displayedName}"/>
             <view:arrayCellText><a href="ViewRequest?Id=${request.id}&Origin=InBox">${request.data.form.title}</a></view:arrayCellText>
+            <c:if test="${useHierarchicalValidation}">
+              <c:choose>
+                <c:when test="${request.data.form.hierarchicalValidation}">
+                  <c:if test="${request.data.validations.getHierarchicalValidation().isPresent()}">
+                    <c:set var="validation" value="${request.data.validations.getHierarchicalValidation().get()}"/>
+                    <view:arrayCellText text="${silfn:formatDate(validation.date, lang)}"/>
+                    <view:arrayCellText text="${validation.validator.displayedName}"/>
+                  </c:if>
+                  <c:if test="${not request.data.validations.getHierarchicalValidation().isPresent()}">
+                    <view:arrayCellText text=""/>
+                    <view:arrayCellText text=""/>
+                  </c:if>
+                </c:when>
+                <c:otherwise>
+                  <view:arrayCellText text="N/A"/>
+                  <view:arrayCellText text="N/A"/>
+                </c:otherwise>
+              </c:choose>
+            </c:if>
+            <c:if test="${useIntermediateValidation}">
+              <c:choose>
+                <c:when test="${request.data.form.intermediateValidation}">
+                  <c:if test="${request.data.validations.getIntermediateValidation().isPresent()}">
+                    <c:set var="validation" value="${request.data.validations.getIntermediateValidation().get()}"/>
+                    <view:arrayCellText text="${silfn:formatDate(validation.date, lang)}"/>
+                    <view:arrayCellText text="${validation.validator.displayedName}"/>
+                  </c:if>
+                  <c:if test="${not request.data.validations.getIntermediateValidation().isPresent()}">
+                    <view:arrayCellText text=""/>
+                    <view:arrayCellText text=""/>
+                  </c:if>
+                </c:when>
+                <c:otherwise>
+                  <view:arrayCellText text="N/A"/>
+                  <view:arrayCellText text="N/A"/>
+                </c:otherwise>
+              </c:choose>
+            </c:if>
             <view:arrayCellText text="${silfn:formatDate(request.data.validationDate, lang)}"/>
             <view:arrayCellText text="${request.validator.displayedName}"/>
           </view:arrayLine>

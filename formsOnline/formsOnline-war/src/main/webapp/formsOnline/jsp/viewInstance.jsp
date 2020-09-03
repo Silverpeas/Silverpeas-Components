@@ -53,6 +53,8 @@
 
 <c:set var="formNameParts" value="${silfn:split(form.xmlFormName, '.')}"/>
 
+<c:set var="voidable" value="${userRequest.creatorId == currentUser.id && userRequest.voidable}"/>
+
 <fmt:message var="buttonBack" key="GML.back"/>
 <fmt:message var="labelAccept" key="formsOnline.request.action.validate"/>
 <fmt:message var="labelCancel" key="formsOnline.request.action.cancel"/>
@@ -125,25 +127,19 @@
 </head>
 <body class="${formNameParts[0]}">
     <view:operationPane>
-      <c:choose>
-        <c:when test="${userRequest.creatorId == currentUser.id}">
-          <c:if test="${userRequest.voidable}">
-            <view:operation action="javascript:cancelRequest()" altText="${labelCancel}"/>
-          </c:if>
-        </c:when>
-        <c:otherwise>
-          <c:if test="${finalValidator}">
-            <c:if test="${userRequest.denied || userRequest.validated}">
-              <fmt:message var="opArchive" key="formsOnline.request.action.archive"/>
-              <view:operation action="javascript:archive()" altText="${opArchive}"/>
-            </c:if>
-            <c:if test="${userRequest.archived}">
-              <fmt:message var="opDelete" key="GML.delete"/>
-              <view:operation action="javascript:deleteRequest()" altText="${opDelete}"/>
-            </c:if>
-          </c:if>
-        </c:otherwise>
-      </c:choose>
+      <c:if test="${voidable}">
+        <view:operation action="javascript:cancelRequest()" altText="${labelCancel}"/>
+      </c:if>
+      <c:if test="${finalValidator}">
+        <c:if test="${userRequest.denied || userRequest.validated}">
+          <fmt:message var="opArchive" key="formsOnline.request.action.archive"/>
+          <view:operation action="javascript:archive()" altText="${opArchive}"/>
+        </c:if>
+        <c:if test="${userRequest.archived}">
+          <fmt:message var="opDelete" key="GML.delete"/>
+          <view:operation action="javascript:deleteRequest()" altText="${opDelete}"/>
+        </c:if>
+      </c:if>
       <fmt:message var="opPrint" key="GML.print"/>
       <view:operation action="javascript:window.print()" altText="${opPrint}"/>
     </view:operationPane>
@@ -190,6 +186,9 @@
     </div>
     <br/>
     <view:buttonPane>
+      <c:if test="${voidable}">
+        <view:button label="${labelCancel}" action="javascript:cancelRequest();"/>
+      </c:if>
       <fmt:message var="buttonValidate" key="GML.accept"/>
       <fmt:message var="buttonDeny" key="GML.refuse"/>
       <view:button label="${buttonValidate}" action="javascript:validate();" />
@@ -200,7 +199,7 @@
   <c:if test="${not validationEnabled}">
     <br/>
     <view:buttonPane>
-      <c:if test="${userRequest.creatorId == currentUser.id && userRequest.voidable}">
+      <c:if test="${voidable}">
         <view:button label="${labelCancel}" action="javascript:cancelRequest();"/>
       </c:if>
       <view:button label="${buttonBack}" action="${origin}" />
