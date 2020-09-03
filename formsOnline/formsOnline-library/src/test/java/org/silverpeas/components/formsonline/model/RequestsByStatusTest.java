@@ -35,6 +35,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.silverpeas.components.formsonline.model.FormInstanceValidationType.*;
 import static org.silverpeas.components.formsonline.model.RequestValidationCriteria.withValidatorId;
+import static org.silverpeas.components.formsonline.model.RequestsByStatus.toValidateCriteriaConfigurer;
 import static org.silverpeas.core.util.CollectionUtil.asSet;
 
 
@@ -44,57 +45,56 @@ import static org.silverpeas.core.util.CollectionUtil.asSet;
 class RequestsByStatusTest {
 
   private static final BiConsumer<Pair<Set<FormInstanceValidationType>,
-      Set<FormInstanceValidationType>>, RequestValidationCriteria> CONFIGURER = RequestsByStatus
-      .unvalidatedValidationCriteriaConfigurer();
+      Set<FormInstanceValidationType>>, RequestValidationCriteria> TO_VALIDATE_CONFIGURER = toValidateCriteriaConfigurer();
 
   @Test
   void configureValidationCriteriaWhenNoFormValidation() {
     final Set<FormInstanceValidationType> noValidation = possibleFormValidationTypes();
-    RequestValidationCriteria criteria = configureWith(noValidation,
+    RequestValidationCriteria criteria = configureToValidateWith(noValidation,
         possibleValidatorValidationTypes());
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(false));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(false));
     assertThat(criteria.isOrNoValidator(), is(false));
     assertThat(criteria.getOrLastValidationType(), empty());
 
-    criteria = configureWith(noValidation,
+    criteria = configureToValidateWith(noValidation,
         possibleValidatorValidationTypes(FINAL));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(false));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(false));
     assertThat(criteria.isOrNoValidator(), is(false));
     assertThat(criteria.getOrLastValidationType(), empty());
 
-    criteria = configureWith(noValidation,
+    criteria = configureToValidateWith(noValidation,
         possibleValidatorValidationTypes(INTERMEDIATE));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(false));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(false));
     assertThat(criteria.isOrNoValidator(), is(false));
     assertThat(criteria.getOrLastValidationType(), empty());
 
-    criteria = configureWith(noValidation,
+    criteria = configureToValidateWith(noValidation,
         possibleValidatorValidationTypes(HIERARCHICAL));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(false));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(false));
     assertThat(criteria.isOrNoValidator(), is(false));
     assertThat(criteria.getOrLastValidationType(), empty());
 
-    criteria = configureWith(noValidation,
+    criteria = configureToValidateWith(noValidation,
         possibleValidatorValidationTypes(HIERARCHICAL, FINAL));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(false));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(false));
     assertThat(criteria.isOrNoValidator(), is(false));
     assertThat(criteria.getOrLastValidationType(), empty());
 
-    criteria = configureWith(noValidation,
+    criteria = configureToValidateWith(noValidation,
         possibleValidatorValidationTypes(HIERARCHICAL, INTERMEDIATE, FINAL));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(false));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(false));
     assertThat(criteria.isOrNoValidator(), is(false));
     assertThat(criteria.getOrLastValidationType(), empty());
 
-    criteria = configureWith(noValidation,
+    criteria = configureToValidateWith(noValidation,
         possibleValidatorValidationTypes(HIERARCHICAL, INTERMEDIATE));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(false));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(false));
     assertThat(criteria.isOrNoValidator(), is(false));
     assertThat(criteria.getOrLastValidationType(), empty());
 
-    criteria = configureWith(noValidation,
+    criteria = configureToValidateWith(noValidation,
         possibleValidatorValidationTypes(INTERMEDIATE, FINAL));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(false));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(false));
     assertThat(criteria.isOrNoValidator(), is(false));
     assertThat(criteria.getOrLastValidationType(), empty());
   }
@@ -102,51 +102,51 @@ class RequestsByStatusTest {
   @Test
   void configureValidationCriteriaWhenFinalFormValidation() {
     final Set<FormInstanceValidationType> finalValidation = possibleFormValidationTypes(FINAL);
-    RequestValidationCriteria criteria = configureWith(finalValidation,
+    RequestValidationCriteria criteria = configureToValidateWith(finalValidation,
         possibleValidatorValidationTypes());
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(false));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(false));
     assertThat(criteria.isOrNoValidator(), is(false));
     assertThat(criteria.getOrLastValidationType(), empty());
 
-    criteria = configureWith(finalValidation,
+    criteria = configureToValidateWith(finalValidation,
         possibleValidatorValidationTypes(FINAL));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(false));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(false));
     assertThat(criteria.isOrNoValidator(), is(true));
     assertThat(criteria.getOrLastValidationType(), empty());
 
-    criteria = configureWith(finalValidation,
+    criteria = configureToValidateWith(finalValidation,
         possibleValidatorValidationTypes(INTERMEDIATE));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(false));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(false));
     assertThat(criteria.isOrNoValidator(), is(false));
     assertThat(criteria.getOrLastValidationType(), empty());
 
-    criteria = configureWith(finalValidation,
+    criteria = configureToValidateWith(finalValidation,
         possibleValidatorValidationTypes(HIERARCHICAL));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(false));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(false));
     assertThat(criteria.isOrNoValidator(), is(false));
     assertThat(criteria.getOrLastValidationType(), empty());
 
-    criteria = configureWith(finalValidation,
+    criteria = configureToValidateWith(finalValidation,
         possibleValidatorValidationTypes(HIERARCHICAL, FINAL));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(false));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(false));
     assertThat(criteria.isOrNoValidator(), is(true));
     assertThat(criteria.getOrLastValidationType(), empty());
 
-    criteria = configureWith(finalValidation,
+    criteria = configureToValidateWith(finalValidation,
         possibleValidatorValidationTypes(HIERARCHICAL, INTERMEDIATE, FINAL));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(false));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(false));
     assertThat(criteria.isOrNoValidator(), is(true));
     assertThat(criteria.getOrLastValidationType(), empty());
 
-    criteria = configureWith(finalValidation,
+    criteria = configureToValidateWith(finalValidation,
         possibleValidatorValidationTypes(HIERARCHICAL, INTERMEDIATE));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(false));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(false));
     assertThat(criteria.isOrNoValidator(), is(false));
     assertThat(criteria.getOrLastValidationType(), empty());
 
-    criteria = configureWith(finalValidation,
+    criteria = configureToValidateWith(finalValidation,
         possibleValidatorValidationTypes(INTERMEDIATE, FINAL));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(false));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(false));
     assertThat(criteria.isOrNoValidator(), is(true));
     assertThat(criteria.getOrLastValidationType(), empty());
   }
@@ -154,51 +154,51 @@ class RequestsByStatusTest {
   @Test
   void configureValidationCriteriaWhenIntermediateFormValidation() {
     final Set<FormInstanceValidationType> intermediateValidation = possibleFormValidationTypes(INTERMEDIATE);
-    RequestValidationCriteria criteria = configureWith(intermediateValidation,
+    RequestValidationCriteria criteria = configureToValidateWith(intermediateValidation,
         possibleValidatorValidationTypes());
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(false));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(false));
     assertThat(criteria.isOrNoValidator(), is(false));
     assertThat(criteria.getOrLastValidationType(), empty());
 
-    criteria = configureWith(intermediateValidation,
+    criteria = configureToValidateWith(intermediateValidation,
         possibleValidatorValidationTypes(FINAL));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(false));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(false));
     assertThat(criteria.isOrNoValidator(), is(false));
     assertThat(criteria.getOrLastValidationType(), empty());
 
-    criteria = configureWith(intermediateValidation,
+    criteria = configureToValidateWith(intermediateValidation,
         possibleValidatorValidationTypes(INTERMEDIATE));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(false));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(false));
     assertThat(criteria.isOrNoValidator(), is(true));
     assertThat(criteria.getOrLastValidationType(), empty());
 
-    criteria = configureWith(intermediateValidation,
+    criteria = configureToValidateWith(intermediateValidation,
         possibleValidatorValidationTypes(HIERARCHICAL));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(false));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(false));
     assertThat(criteria.isOrNoValidator(), is(false));
     assertThat(criteria.getOrLastValidationType(), empty());
 
-    criteria = configureWith(intermediateValidation,
+    criteria = configureToValidateWith(intermediateValidation,
         possibleValidatorValidationTypes(HIERARCHICAL, FINAL));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(false));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(false));
     assertThat(criteria.isOrNoValidator(), is(false));
     assertThat(criteria.getOrLastValidationType(), empty());
 
-    criteria = configureWith(intermediateValidation,
+    criteria = configureToValidateWith(intermediateValidation,
         possibleValidatorValidationTypes(HIERARCHICAL, INTERMEDIATE, FINAL));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(false));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(false));
     assertThat(criteria.isOrNoValidator(), is(true));
     assertThat(criteria.getOrLastValidationType(), empty());
 
-    criteria = configureWith(intermediateValidation,
+    criteria = configureToValidateWith(intermediateValidation,
         possibleValidatorValidationTypes(HIERARCHICAL, INTERMEDIATE));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(false));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(false));
     assertThat(criteria.isOrNoValidator(), is(true));
     assertThat(criteria.getOrLastValidationType(), empty());
 
-    criteria = configureWith(intermediateValidation,
+    criteria = configureToValidateWith(intermediateValidation,
         possibleValidatorValidationTypes(INTERMEDIATE, FINAL));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(false));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(false));
     assertThat(criteria.isOrNoValidator(), is(true));
     assertThat(criteria.getOrLastValidationType(), empty());
   }
@@ -206,51 +206,51 @@ class RequestsByStatusTest {
   @Test
   void configureValidationCriteriaWhenHierarchicalFormValidation() {
     final Set<FormInstanceValidationType> hierarchicalValidation = possibleFormValidationTypes(HIERARCHICAL);
-    RequestValidationCriteria criteria = configureWith(hierarchicalValidation,
+    RequestValidationCriteria criteria = configureToValidateWith(hierarchicalValidation,
         possibleValidatorValidationTypes());
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(false));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(false));
     assertThat(criteria.isOrNoValidator(), is(false));
     assertThat(criteria.getOrLastValidationType(), empty());
 
-    criteria = configureWith(hierarchicalValidation,
+    criteria = configureToValidateWith(hierarchicalValidation,
         possibleValidatorValidationTypes(FINAL));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(false));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(false));
     assertThat(criteria.isOrNoValidator(), is(false));
     assertThat(criteria.getOrLastValidationType(), empty());
 
-    criteria = configureWith(hierarchicalValidation,
+    criteria = configureToValidateWith(hierarchicalValidation,
         possibleValidatorValidationTypes(INTERMEDIATE));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(false));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(false));
     assertThat(criteria.isOrNoValidator(), is(false));
     assertThat(criteria.getOrLastValidationType(), empty());
 
-    criteria = configureWith(hierarchicalValidation,
+    criteria = configureToValidateWith(hierarchicalValidation,
         possibleValidatorValidationTypes(HIERARCHICAL));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(true));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(true));
     assertThat(criteria.isOrNoValidator(), is(false));
     assertThat(criteria.getOrLastValidationType(), empty());
 
-    criteria = configureWith(hierarchicalValidation,
+    criteria = configureToValidateWith(hierarchicalValidation,
         possibleValidatorValidationTypes(HIERARCHICAL, FINAL));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(true));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(true));
     assertThat(criteria.isOrNoValidator(), is(false));
     assertThat(criteria.getOrLastValidationType(), empty());
 
-    criteria = configureWith(hierarchicalValidation,
+    criteria = configureToValidateWith(hierarchicalValidation,
         possibleValidatorValidationTypes(HIERARCHICAL, INTERMEDIATE, FINAL));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(true));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(true));
     assertThat(criteria.isOrNoValidator(), is(false));
     assertThat(criteria.getOrLastValidationType(), empty());
 
-    criteria = configureWith(hierarchicalValidation,
+    criteria = configureToValidateWith(hierarchicalValidation,
         possibleValidatorValidationTypes(HIERARCHICAL, INTERMEDIATE));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(true));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(true));
     assertThat(criteria.isOrNoValidator(), is(false));
     assertThat(criteria.getOrLastValidationType(), empty());
 
-    criteria = configureWith(hierarchicalValidation,
+    criteria = configureToValidateWith(hierarchicalValidation,
         possibleValidatorValidationTypes(INTERMEDIATE, FINAL));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(false));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(false));
     assertThat(criteria.isOrNoValidator(), is(false));
     assertThat(criteria.getOrLastValidationType(), empty());
   }
@@ -259,51 +259,51 @@ class RequestsByStatusTest {
   void configureValidationCriteriaWhenIntermediateAndFinalFormValidation() {
     final Set<FormInstanceValidationType> intermediateAndFinalValidation =
         possibleFormValidationTypes(INTERMEDIATE, FINAL);
-    RequestValidationCriteria criteria = configureWith(intermediateAndFinalValidation,
+    RequestValidationCriteria criteria = configureToValidateWith(intermediateAndFinalValidation,
         possibleValidatorValidationTypes());
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(false));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(false));
     assertThat(criteria.isOrNoValidator(), is(false));
     assertThat(criteria.getOrLastValidationType(), empty());
 
-    criteria = configureWith(intermediateAndFinalValidation,
+    criteria = configureToValidateWith(intermediateAndFinalValidation,
         possibleValidatorValidationTypes(FINAL));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(false));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(false));
     assertThat(criteria.isOrNoValidator(), is(false));
     assertThat(criteria.getOrLastValidationType(), contains(INTERMEDIATE));
 
-    criteria = configureWith(intermediateAndFinalValidation,
+    criteria = configureToValidateWith(intermediateAndFinalValidation,
         possibleValidatorValidationTypes(INTERMEDIATE));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(false));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(false));
     assertThat(criteria.isOrNoValidator(), is(true));
     assertThat(criteria.getOrLastValidationType(), empty());
 
-    criteria = configureWith(intermediateAndFinalValidation,
+    criteria = configureToValidateWith(intermediateAndFinalValidation,
         possibleValidatorValidationTypes(HIERARCHICAL));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(false));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(false));
     assertThat(criteria.isOrNoValidator(), is(false));
     assertThat(criteria.getOrLastValidationType(), empty());
 
-    criteria = configureWith(intermediateAndFinalValidation,
+    criteria = configureToValidateWith(intermediateAndFinalValidation,
         possibleValidatorValidationTypes(HIERARCHICAL, FINAL));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(false));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(false));
     assertThat(criteria.isOrNoValidator(), is(false));
     assertThat(criteria.getOrLastValidationType(), contains(INTERMEDIATE));
 
-    criteria = configureWith(intermediateAndFinalValidation,
+    criteria = configureToValidateWith(intermediateAndFinalValidation,
         possibleValidatorValidationTypes(HIERARCHICAL, INTERMEDIATE, FINAL));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(false));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(false));
     assertThat(criteria.isOrNoValidator(), is(true));
     assertThat(criteria.getOrLastValidationType(), contains(INTERMEDIATE));
 
-    criteria = configureWith(intermediateAndFinalValidation,
+    criteria = configureToValidateWith(intermediateAndFinalValidation,
         possibleValidatorValidationTypes(HIERARCHICAL, INTERMEDIATE));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(false));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(false));
     assertThat(criteria.isOrNoValidator(), is(true));
     assertThat(criteria.getOrLastValidationType(), empty());
 
-    criteria = configureWith(intermediateAndFinalValidation,
+    criteria = configureToValidateWith(intermediateAndFinalValidation,
         possibleValidatorValidationTypes(INTERMEDIATE, FINAL));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(false));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(false));
     assertThat(criteria.isOrNoValidator(), is(true));
     assertThat(criteria.getOrLastValidationType(), contains(INTERMEDIATE));
   }
@@ -312,51 +312,51 @@ class RequestsByStatusTest {
   void configureValidationCriteriaWhenHierarchicalAndFinalFormValidation() {
     final Set<FormInstanceValidationType> hierarchicalAndFinalValidation =
         possibleFormValidationTypes(HIERARCHICAL, FINAL);
-    RequestValidationCriteria criteria = configureWith(hierarchicalAndFinalValidation,
+    RequestValidationCriteria criteria = configureToValidateWith(hierarchicalAndFinalValidation,
         possibleValidatorValidationTypes());
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(false));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(false));
     assertThat(criteria.isOrNoValidator(), is(false));
     assertThat(criteria.getOrLastValidationType(), empty());
 
-    criteria = configureWith(hierarchicalAndFinalValidation,
+    criteria = configureToValidateWith(hierarchicalAndFinalValidation,
         possibleValidatorValidationTypes(FINAL));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(false));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(false));
     assertThat(criteria.isOrNoValidator(), is(false));
     assertThat(criteria.getOrLastValidationType(), contains(HIERARCHICAL));
 
-    criteria = configureWith(hierarchicalAndFinalValidation,
+    criteria = configureToValidateWith(hierarchicalAndFinalValidation,
         possibleValidatorValidationTypes(INTERMEDIATE));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(false));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(false));
     assertThat(criteria.isOrNoValidator(), is(false));
     assertThat(criteria.getOrLastValidationType(), empty());
 
-    criteria = configureWith(hierarchicalAndFinalValidation,
+    criteria = configureToValidateWith(hierarchicalAndFinalValidation,
         possibleValidatorValidationTypes(HIERARCHICAL));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(true));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(true));
     assertThat(criteria.isOrNoValidator(), is(false));
     assertThat(criteria.getOrLastValidationType(), empty());
 
-    criteria = configureWith(hierarchicalAndFinalValidation,
+    criteria = configureToValidateWith(hierarchicalAndFinalValidation,
         possibleValidatorValidationTypes(HIERARCHICAL, FINAL));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(true));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(true));
     assertThat(criteria.isOrNoValidator(), is(false));
     assertThat(criteria.getOrLastValidationType(), contains(HIERARCHICAL));
 
-    criteria = configureWith(hierarchicalAndFinalValidation,
+    criteria = configureToValidateWith(hierarchicalAndFinalValidation,
         possibleValidatorValidationTypes(HIERARCHICAL, INTERMEDIATE, FINAL));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(true));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(true));
     assertThat(criteria.isOrNoValidator(), is(false));
     assertThat(criteria.getOrLastValidationType(), contains(HIERARCHICAL));
 
-    criteria = configureWith(hierarchicalAndFinalValidation,
+    criteria = configureToValidateWith(hierarchicalAndFinalValidation,
         possibleValidatorValidationTypes(HIERARCHICAL, INTERMEDIATE));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(true));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(true));
     assertThat(criteria.isOrNoValidator(), is(false));
     assertThat(criteria.getOrLastValidationType(), empty());
 
-    criteria = configureWith(hierarchicalAndFinalValidation,
+    criteria = configureToValidateWith(hierarchicalAndFinalValidation,
         possibleValidatorValidationTypes(INTERMEDIATE, FINAL));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(false));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(false));
     assertThat(criteria.isOrNoValidator(), is(false));
     assertThat(criteria.getOrLastValidationType(), contains(HIERARCHICAL));
   }
@@ -365,51 +365,51 @@ class RequestsByStatusTest {
   void configureValidationCriteriaWhenHierarchicalAndIntermediateFormValidation() {
     final Set<FormInstanceValidationType> hierarchicalAndIntermediateValidation =
         possibleFormValidationTypes(HIERARCHICAL, INTERMEDIATE);
-    RequestValidationCriteria criteria = configureWith(hierarchicalAndIntermediateValidation,
+    RequestValidationCriteria criteria = configureToValidateWith(hierarchicalAndIntermediateValidation,
         possibleValidatorValidationTypes());
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(false));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(false));
     assertThat(criteria.isOrNoValidator(), is(false));
     assertThat(criteria.getOrLastValidationType(), empty());
 
-    criteria = configureWith(hierarchicalAndIntermediateValidation,
+    criteria = configureToValidateWith(hierarchicalAndIntermediateValidation,
         possibleValidatorValidationTypes(FINAL));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(false));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(false));
     assertThat(criteria.isOrNoValidator(), is(false));
     assertThat(criteria.getOrLastValidationType(), empty());
 
-    criteria = configureWith(hierarchicalAndIntermediateValidation,
+    criteria = configureToValidateWith(hierarchicalAndIntermediateValidation,
         possibleValidatorValidationTypes(INTERMEDIATE));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(false));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(false));
     assertThat(criteria.isOrNoValidator(), is(false));
     assertThat(criteria.getOrLastValidationType(), contains(HIERARCHICAL));
 
-    criteria = configureWith(hierarchicalAndIntermediateValidation,
+    criteria = configureToValidateWith(hierarchicalAndIntermediateValidation,
         possibleValidatorValidationTypes(HIERARCHICAL));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(true));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(true));
     assertThat(criteria.isOrNoValidator(), is(false));
     assertThat(criteria.getOrLastValidationType(), empty());
 
-    criteria = configureWith(hierarchicalAndIntermediateValidation,
+    criteria = configureToValidateWith(hierarchicalAndIntermediateValidation,
         possibleValidatorValidationTypes(HIERARCHICAL, FINAL));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(true));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(true));
     assertThat(criteria.isOrNoValidator(), is(false));
     assertThat(criteria.getOrLastValidationType(), empty());
 
-    criteria = configureWith(hierarchicalAndIntermediateValidation,
+    criteria = configureToValidateWith(hierarchicalAndIntermediateValidation,
         possibleValidatorValidationTypes(HIERARCHICAL, INTERMEDIATE, FINAL));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(true));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(true));
     assertThat(criteria.isOrNoValidator(), is(false));
     assertThat(criteria.getOrLastValidationType(), contains(HIERARCHICAL));
 
-    criteria = configureWith(hierarchicalAndIntermediateValidation,
+    criteria = configureToValidateWith(hierarchicalAndIntermediateValidation,
         possibleValidatorValidationTypes(HIERARCHICAL, INTERMEDIATE));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(true));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(true));
     assertThat(criteria.isOrNoValidator(), is(false));
     assertThat(criteria.getOrLastValidationType(), contains(HIERARCHICAL));
 
-    criteria = configureWith(hierarchicalAndIntermediateValidation,
+    criteria = configureToValidateWith(hierarchicalAndIntermediateValidation,
         possibleValidatorValidationTypes(INTERMEDIATE, FINAL));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(false));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(false));
     assertThat(criteria.isOrNoValidator(), is(false));
     assertThat(criteria.getOrLastValidationType(), contains(HIERARCHICAL));
   }
@@ -418,61 +418,64 @@ class RequestsByStatusTest {
   void configureValidationCriteriaWhenHierarchicalAndIntermediateAndFinalFormValidation() {
     final Set<FormInstanceValidationType> hierarchicalAndIntermediateAndFinalValidation =
         possibleFormValidationTypes(HIERARCHICAL, INTERMEDIATE, FINAL);
-    RequestValidationCriteria criteria = configureWith(hierarchicalAndIntermediateAndFinalValidation,
+    RequestValidationCriteria criteria = configureToValidateWith(hierarchicalAndIntermediateAndFinalValidation,
         possibleValidatorValidationTypes());
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(false));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(false));
     assertThat(criteria.isOrNoValidator(), is(false));
     assertThat(criteria.getOrLastValidationType(), empty());
 
-    criteria = configureWith(hierarchicalAndIntermediateAndFinalValidation,
+    criteria = configureToValidateWith(hierarchicalAndIntermediateAndFinalValidation,
         possibleValidatorValidationTypes(FINAL));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(false));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(false));
     assertThat(criteria.isOrNoValidator(), is(false));
     assertThat(criteria.getOrLastValidationType(), contains(INTERMEDIATE));
 
-    criteria = configureWith(hierarchicalAndIntermediateAndFinalValidation,
+    criteria = configureToValidateWith(hierarchicalAndIntermediateAndFinalValidation,
         possibleValidatorValidationTypes(INTERMEDIATE));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(false));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(false));
     assertThat(criteria.isOrNoValidator(), is(false));
     assertThat(criteria.getOrLastValidationType(), contains(HIERARCHICAL));
 
-    criteria = configureWith(hierarchicalAndIntermediateAndFinalValidation,
+    criteria = configureToValidateWith(hierarchicalAndIntermediateAndFinalValidation,
         possibleValidatorValidationTypes(HIERARCHICAL));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(true));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(true));
     assertThat(criteria.isOrNoValidator(), is(false));
     assertThat(criteria.getOrLastValidationType(), empty());
 
-    criteria = configureWith(hierarchicalAndIntermediateAndFinalValidation,
+    criteria = configureToValidateWith(hierarchicalAndIntermediateAndFinalValidation,
         possibleValidatorValidationTypes(HIERARCHICAL, FINAL));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(true));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(true));
     assertThat(criteria.isOrNoValidator(), is(false));
     assertThat(criteria.getOrLastValidationType(), contains(INTERMEDIATE));
 
-    criteria = configureWith(hierarchicalAndIntermediateAndFinalValidation,
+    criteria = configureToValidateWith(hierarchicalAndIntermediateAndFinalValidation,
         possibleValidatorValidationTypes(HIERARCHICAL, INTERMEDIATE, FINAL));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(true));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(true));
     assertThat(criteria.isOrNoValidator(), is(false));
     assertThat(criteria.getOrLastValidationType(), contains(HIERARCHICAL, INTERMEDIATE));
 
-    criteria = configureWith(hierarchicalAndIntermediateAndFinalValidation,
+    criteria = configureToValidateWith(hierarchicalAndIntermediateAndFinalValidation,
         possibleValidatorValidationTypes(HIERARCHICAL, INTERMEDIATE));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(true));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(true));
     assertThat(criteria.isOrNoValidator(), is(false));
     assertThat(criteria.getOrLastValidationType(), contains(HIERARCHICAL));
 
-    criteria = configureWith(hierarchicalAndIntermediateAndFinalValidation,
+    criteria = configureToValidateWith(hierarchicalAndIntermediateAndFinalValidation,
         possibleValidatorValidationTypes(INTERMEDIATE, FINAL));
-    assertThat(criteria.isOrAsHierarchicalValidatorId(), is(false));
+    assertThat(criteria.isOrValidatorIsHierarchicalOne(), is(false));
     assertThat(criteria.isOrNoValidator(), is(false));
     assertThat(criteria.getOrLastValidationType(), contains(HIERARCHICAL, INTERMEDIATE));
   }
 
-  private RequestValidationCriteria configureWith(
+  private RequestValidationCriteria configureToValidateWith(
       final Set<FormInstanceValidationType> possibleFormValidationTypes,
       final Set<FormInstanceValidationType> possibleValidatorValidationTypes) {
     final RequestValidationCriteria validationCriteria = withValidatorId("1", null);
-    CONFIGURER.accept(Pair.of(new TreeSet<>(possibleFormValidationTypes),
+    TO_VALIDATE_CONFIGURER.accept(Pair.of(new TreeSet<>(possibleFormValidationTypes),
         new TreeSet<>(possibleValidatorValidationTypes)), validationCriteria);
+    assertThat(validationCriteria.getValidatorId(), is("1"));
+    assertThat(validationCriteria.isOnlyToValidateByValidator(), is(true));
+    assertThat(validationCriteria.isStillNeedValidation(), is(false));
     return validationCriteria;
   }
 

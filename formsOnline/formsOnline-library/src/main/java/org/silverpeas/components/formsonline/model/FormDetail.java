@@ -37,6 +37,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
@@ -344,21 +346,19 @@ public class FormDetail {
   }
 
   private List<User> getAllReceivers() {
-    List<User> users = getReceiversAsUsers();
-    users.addAll(getUsers(getReceiversAsGroups()));
-    users.addAll(getIntermediateReceiversAsUsers());
-    users.addAll(getUsers(getIntermediateReceiversAsGroups()));
-    return users;
+    return Stream.concat(getReceiversAsUsers().stream(),
+           Stream.concat(getUsers(getReceiversAsGroups()).stream(),
+           Stream.concat(getIntermediateReceiversAsUsers().stream(),
+                         getUsers(getIntermediateReceiversAsGroups()).stream())))
+           .distinct()
+           .collect(Collectors.toList());
   }
 
   private List<User> getUsers(List<Group> groups) {
-    List<User> users = new ArrayList<>();
-    for (Group group : groups) {
-      for (User user : group.getAllUsers()) {
-        users.add(user);
-      }
-    }
-    return users;
+    return groups.stream()
+        .flatMap(g -> g.getAllUsers().stream())
+        .distinct()
+        .collect(Collectors.toList());
   }
 
   public List<User> getSendersAsUsers() {

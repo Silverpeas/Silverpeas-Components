@@ -546,47 +546,62 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
     if (validationCriteria != null) {
       final String validatorId = validationCriteria.getValidatorId();
       query.and("(");
-      query.addSqlPart(EXISTS_SELECT)
-          .from(FORMS_INSTANCE_VALIDATIONS_TABLENAME)
-          .where(FORM_INST_ID_CLAUSE)
-          .and(VALIDATION_BY + " = ?)", validatorId);
-      validationCriteria.getOrLastValidationType().forEach(v -> {
-        query.or("(");
+      if (validationCriteria.isOnlyToValidateByValidator()) {
+        query.addSqlPart("1 <> 1");
+      } else {
         query.addSqlPart(EXISTS_SELECT)
             .from(FORMS_INSTANCE_VALIDATIONS_TABLENAME)
             .where(FORM_INST_ID_CLAUSE)
-            .and("status = ?", VALIDATED)
-            .and(VALIDATION_TYPE + " = ?)", v.name());
-        final List<String> excludedValidationTypes =
-            Stream.of(FormInstanceValidationType.values())
-                .filter(e -> e.ordinal() > v.ordinal())
-                .map(FormInstanceValidationType::name)
-                .collect(Collectors.toList());
-        if (!excludedValidationTypes.isEmpty()) {
-          query.and(NOT_EXISTS_SELECT)
-              .from(FORMS_INSTANCE_VALIDATIONS_TABLENAME)
-              .where(FORM_INST_ID_CLAUSE)
-              .and(VALIDATION_TYPE).in(excludedValidationTypes)
-              .addSqlPart(")");
-        }
-        query.addSqlPart(")");
-      });
-      if (validationCriteria.isOrNoValidator()) {
-        query.or(NOT_EXISTS_SELECT)
-            .from(FORMS_INSTANCE_VALIDATIONS_TABLENAME)
-            .where(FORM_INST_ID_CLAUSE)
-            .addSqlPart(")");
+            .and(VALIDATION_BY + " = ?)", validatorId);
       }
-      if (validationCriteria.isOrAsHierarchicalValidatorId() &&
-          !validationCriteria.getManagedDomainUsers().isEmpty()) {
-        query.or("(");
-        query.addSqlPart(CREATOR_ID).in(validationCriteria.getManagedDomainUsers());
+      if (validationCriteria.isStillNeedValidation()) {
+        query.and("(1 <> 1");
+      }
+      applyExclusiveValidationCriteria(query, validationCriteria);
+      if (validationCriteria.isStillNeedValidation()) {
+        query.addSqlPart(")");
+      }
+      query.addSqlPart(")");
+    }
+  }
+
+  private void applyExclusiveValidationCriteria(final JdbcSqlQuery query,
+      final RequestValidationCriteria validationCriteria) {
+    validationCriteria.getOrLastValidationType().forEach(v -> {
+      query.or("(");
+      query.addSqlPart(EXISTS_SELECT)
+          .from(FORMS_INSTANCE_VALIDATIONS_TABLENAME)
+          .where(FORM_INST_ID_CLAUSE)
+          .and("status = ?", VALIDATED)
+          .and(VALIDATION_TYPE + " = ?)", v.name());
+      final List<String> excludedValidationTypes =
+          Stream.of(FormInstanceValidationType.values())
+              .filter(e -> e.ordinal() > v.ordinal())
+              .map(FormInstanceValidationType::name)
+              .collect(Collectors.toList());
+      if (!excludedValidationTypes.isEmpty()) {
         query.and(NOT_EXISTS_SELECT)
             .from(FORMS_INSTANCE_VALIDATIONS_TABLENAME)
             .where(FORM_INST_ID_CLAUSE)
+            .and(VALIDATION_TYPE).in(excludedValidationTypes)
             .addSqlPart(")");
-        query.addSqlPart(")");
       }
+      query.addSqlPart(")");
+    });
+    if (validationCriteria.isOrNoValidator()) {
+      query.or(NOT_EXISTS_SELECT)
+          .from(FORMS_INSTANCE_VALIDATIONS_TABLENAME)
+          .where(FORM_INST_ID_CLAUSE)
+          .addSqlPart(")");
+    }
+    if (validationCriteria.isOrValidatorIsHierarchicalOne() &&
+        !validationCriteria.getManagedDomainUsers().isEmpty()) {
+      query.or("(");
+      query.addSqlPart(CREATOR_ID).in(validationCriteria.getManagedDomainUsers());
+      query.and(NOT_EXISTS_SELECT)
+          .from(FORMS_INSTANCE_VALIDATIONS_TABLENAME)
+          .where(FORM_INST_ID_CLAUSE)
+          .addSqlPart(")");
       query.addSqlPart(")");
     }
   }

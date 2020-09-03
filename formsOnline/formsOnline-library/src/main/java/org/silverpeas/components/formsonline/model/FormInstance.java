@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.silverpeas.core.util.StringUtil.EMPTY;
 
@@ -194,13 +195,9 @@ public class FormInstance implements SilverpeasContent {
   }
 
   public List<FormInstanceValidation> getPreviousValidations() {
-    List<FormInstanceValidation> previousValidations = new ArrayList<>();
-    for (FormInstanceValidation validation : getValidationsSchema()) {
-      if (validation.isValidated()) {
-        previousValidations.add(validation);
-      }
-    }
-    return previousValidations;
+    return getValidationsSchema().stream()
+        .filter(v -> !v.isPendingValidation())
+        .collect(Collectors.toList());
   }
 
   public List<FormInstanceValidation> getValidationsSchema() {
@@ -343,7 +340,7 @@ public class FormInstance implements SilverpeasContent {
   }
 
   public boolean canBeCanceledBy(final User user) {
-    return canBeValidated() && user.getId().equals(getCreatorId()) && !getValidations().isEmpty();
+    return canBeValidated() && user.getId().equals(getCreatorId());
   }
 
   public boolean isDraft() {

@@ -43,8 +43,10 @@ public class RequestValidationCriteria {
 
   private final String validatorId;
   private final MemoizedSupplier<Set<String>> managedDomainUsersSupplier;
+  private boolean onlyToValidateByValidator = false;
+  private boolean stillNeedValidation = false;
   private boolean orNoValidator = false;
-  private boolean orAsHierarchicalValidatorId = false;
+  private boolean orValidatorIsHierarchicalOne = false;
   private final Set<FormInstanceValidationType> orLastValidationType = new TreeSet<>();
 
   public RequestValidationCriteria(final String validatorId,
@@ -85,8 +87,8 @@ public class RequestValidationCriteria {
    * Configures the criteria of hierarchical validator search.
    * @return an instance of criteria.
    */
-  public RequestValidationCriteria orAsHierarchicalValidatorId() {
-    this.orAsHierarchicalValidatorId = true;
+  public RequestValidationCriteria orValidatorIsHierarchicalOne() {
+    this.orValidatorIsHierarchicalOne = true;
     return this;
   }
 
@@ -99,6 +101,24 @@ public class RequestValidationCriteria {
     return this;
   }
 
+  /**
+   * Configures the criteria of still need validation.
+   * @return an instance of criteria.
+   */
+  public RequestValidationCriteria andStillNeedValidation() {
+    this.stillNeedValidation = true;
+    return this;
+  }
+
+  /**
+   * Configures the criteria of still need validation.
+   * @return an instance of criteria.
+   */
+  public RequestValidationCriteria andOnlyToValidateByValidator() {
+    this.onlyToValidateByValidator = true;
+    return this;
+  }
+
   String getValidatorId() {
     return validatorId;
   }
@@ -107,12 +127,12 @@ public class RequestValidationCriteria {
     return orNoValidator;
   }
 
-  boolean isOrAsHierarchicalValidatorId() {
-    return orAsHierarchicalValidatorId;
+  boolean isOrValidatorIsHierarchicalOne() {
+    return orValidatorIsHierarchicalOne;
   }
 
   Set<String> getManagedDomainUsers() {
-    if (!orAsHierarchicalValidatorId) {
+    if (!orValidatorIsHierarchicalOne) {
       return emptySet();
     }
     return managedDomainUsersSupplier.get();
@@ -122,11 +142,21 @@ public class RequestValidationCriteria {
     return orLastValidationType;
   }
 
+  boolean isStillNeedValidation() {
+    return stillNeedValidation;
+  }
+
+  boolean isOnlyToValidateByValidator() {
+    return onlyToValidateByValidator;
+  }
+
   @Override
   public String toString() {
     return new StringJoiner(", ", RequestValidationCriteria.class.getSimpleName() + "[", "]")
-        .add("validatorId='" + validatorId + "'").add("noValidator=" + orNoValidator)
-        .add("hierarchicalValidatorId=" + orAsHierarchicalValidatorId)
-        .add("lastValidationType=" + orLastValidationType).toString();
+        .add("validatorId='" + validatorId + "'")
+        .add("toValidateByValidator=" + onlyToValidateByValidator)
+        .add("stillNeedValidation=" + stillNeedValidation).add("orNoValidator=" + orNoValidator)
+        .add("orValidatorIsHierarchicalOne=" + orValidatorIsHierarchicalOne)
+        .add("orLastValidationType=" + orLastValidationType).toString();
   }
 }

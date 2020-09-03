@@ -25,6 +25,7 @@ package org.silverpeas.components.formsonline.notification;
 
 import org.silverpeas.components.formsonline.model.FormInstance;
 import org.silverpeas.components.formsonline.model.FormInstanceValidation;
+import org.silverpeas.components.formsonline.model.FormInstanceValidationType;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.template.SilverpeasTemplate;
@@ -45,7 +46,9 @@ public class FormsOnlineProcessedRequestUserNotification
     super(resource, action);
     this.usersToBeNotified = nextValidatorIds;
     // notify previous validators if marked as followers
+    final FormInstanceValidationType latestValidation = getResource().getValidations().getLatestValidation().getValidationType();
     resource.getPreviousValidations().stream()
+        .filter(v -> v.getValidationType() != latestValidation)
         .filter(FormInstanceValidation::isFollower)
         .map(FormInstanceValidation::getValidator)
         .map(User::getId)
