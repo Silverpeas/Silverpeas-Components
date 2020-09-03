@@ -276,19 +276,42 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
     getService().cancelRequest(getRequestPK(id));
   }
 
-  public void archiveRequest(String id) throws FormsOnlineException {
+  public void archiveRequest(String id, boolean notify) throws FormsOnlineException {
     getService().archiveRequest(getRequestPK(id));
+    if (notify) {
+      MessageNotifier.addSuccess(getString("formsOnline.requests.action.archive.succeed"),
+          1);
+    }
   }
 
-  public void deleteRequest(String id) throws FormsOnlineException {
+  public int archiveRequests(Set<String> ids) throws FormsOnlineException {
+    int nbRequests = 0;
+    if (ids != null) {
+      for (String id : ids) {
+        archiveRequest(id, false);
+        nbRequests++;
+      }
+    }
+    if (nbRequests > 0) {
+      MessageNotifier.addSuccess(getString("formsOnline.requests.action.archive.succeed"),
+          nbRequests);
+    }
+    return nbRequests;
+  }
+
+  public void deleteRequest(String id, boolean notify) throws FormsOnlineException {
     getService().deleteRequest(getRequestPK(id));
+    if (notify) {
+      MessageNotifier.addSuccess(getString("formsOnline.requests.action.delete.succeed"),
+          1);
+    }
   }
 
   public int deleteRequests(Set<String> ids) throws FormsOnlineException {
     int nbDeletedRequests = 0;
     if (ids != null) {
       for (String id : ids) {
-        deleteRequest(id);
+        deleteRequest(id, false);
         nbDeletedRequests++;
       }
     }

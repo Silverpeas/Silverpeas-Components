@@ -34,6 +34,7 @@
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/formsOnline" prefix="formsOnline" %>
 
 <c:set var="lang" value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
+<c:set var="currentUser" value="${sessionScope['SilverSessionController'].currentUserDetail}"/>
 <c:set var="controller" value="${requestScope.FormsOnline}"/>
 <jsp:useBean id="controller" type="org.silverpeas.components.formsonline.control.FormsOnlineSessionController"/>
 
@@ -51,6 +52,7 @@
 <fmt:message var="statusDeniedLabel" key="formsOnline.stateRefused"/>
 <fmt:message var="statusArchivedLabel" key="formsOnline.stateArchived"/>
 <fmt:message var="statusUnreadLabel" key="formsOnline.stateUnread"/>
+<fmt:message var="statusCanceledLabel" key="formsOnline.stateCanceled"/>
 
 <fmt:message var="colStatus" key="GML.status"/>
 <fmt:message var="colDate" key="formsOnline.sendDate"/>
@@ -62,12 +64,14 @@
 <fmt:message var="labelExport" key="GML.export.result"/>
 
 <fmt:message var="deletionConfirmMessage" key="formsOnline.requests.action.delete.confirm"/>
+<fmt:message var="archiveConfirmMessage" key="formsOnline.requests.action.archive.confirm"/>
 
 <view:setConstant var="STATE_UNREAD" constant="org.silverpeas.components.formsonline.model.FormInstance.STATE_UNREAD"/>
 <view:setConstant var="STATE_READ" constant="org.silverpeas.components.formsonline.model.FormInstance.STATE_READ"/>
 <view:setConstant var="STATE_VALIDATED" constant="org.silverpeas.components.formsonline.model.FormInstance.STATE_VALIDATED"/>
 <view:setConstant var="STATE_REFUSED" constant="org.silverpeas.components.formsonline.model.FormInstance.STATE_REFUSED"/>
 <view:setConstant var="STATE_ARCHIVED" constant="org.silverpeas.components.formsonline.model.FormInstance.STATE_ARCHIVED"/>
+<view:setConstant var="STATE_CANCELED" constant="org.silverpeas.components.formsonline.model.FormInstance.STATE_CANCELED"/>
 
 <view:sp-page>
 <view:sp-head-part>
@@ -84,6 +88,14 @@
     function removeRequests() {
       jQuery.popup.confirm('${silfn:escapeJs(deletionConfirmMessage)}', function() {
         var ajaxRequest = sp.ajaxRequest("DeleteRequests").byPostMethod();
+        checkboxMonitor.prepareAjaxRequest(ajaxRequest);
+        ajaxRequest.send().then(arrayPaneAjaxControl.refreshFromRequestResponse);
+      });
+    }
+
+    function archiveRequests() {
+      jQuery.popup.confirm('${silfn:escapeJs(archiveConfirmMessage)}', function() {
+        var ajaxRequest = sp.ajaxRequest("ArchiveRequests").byPostMethod();
         checkboxMonitor.prepareAjaxRequest(ajaxRequest);
         ajaxRequest.send().then(arrayPaneAjaxControl.refreshFromRequestResponse);
       });
@@ -126,12 +138,14 @@
 <view:operationPane>
   <fmt:message var="deleteReq" key="formsOnline.removeFormInstance"/>
   <view:operationOfCreation action="javascript:removeRequests()" icon="" altText="${deleteReq}"/>
+  <fmt:message var="archiveReq" key="formsOnline.requests.action.archive"/>
+  <view:operationOfCreation action="javascript:archiveRequests()" icon="" altText="${archiveReq}"/>
 </view:operationPane>
 <view:window>
   <view:frame>
     <div id="filter">
       <div id="stateFilter">
-        ${colStatus} :
+        <label for="selectedState">${colStatus}</label>
           <select id="selectedState">
           <option value="-1"></option>
           <option value="${STATE_UNREAD}">${statusUnreadLabel}</option>
@@ -139,10 +153,11 @@
           <option value="${STATE_VALIDATED}">${statusValidatedLabel}</option>
           <option value="${STATE_REFUSED}">${statusDeniedLabel}</option>
           <option value="${STATE_ARCHIVED}">${statusArchivedLabel}</option>
+          <option value="${STATE_CANCELED}">${statusCanceledLabel}</option>
         </select>
       </div>
       <div id="formFilter">
-        <fmt:message key="formsOnline.Form"/> :
+        <label for="selectedForm"><fmt:message key="formsOnline.Form"/></label>
         <select id="selectedForm">
           <option></option>
           <c:forEach items="${forms}" var="form">
@@ -164,7 +179,8 @@
               (r.data.read ? statusReadLabel :
               (r.data.validated ? statusValidatedLabel :
               (r.data.denied ? statusDeniedLabel :
-              (r.data.archived ? statusArchivedLabel : statusUnreadLabel))))}"/>
+              (r.data.canceled ? statusCanceledLabel :
+              (r.data.archived ? statusArchivedLabel : statusUnreadLabel)))))}"/>
       <c:set var="requestItems" value="<%=RequestUIEntity.convertList(requests.getAll(), controller.getSelectedValidatorRequestIds())%>"/>
       <c:set var="useHierarchicalValidation" value="false"/>
       <c:set var="useIntermediateValidation" value="false"/>
@@ -195,7 +211,7 @@
         <view:arrayLines var="request" items="${requestItems}">
           <view:arrayLine>
             <c:choose>
-              <c:when test="${request.data.archived}">
+              <c:when test="${request.data.canBeDeletedBy(currentUser) || request.data.canBeArchivedBy(currentUser)}">
                 <view:arrayCellCheckbox name="selection"
                                         checked="${request.selected}"
                                         value="${request.id}"/>
@@ -206,8 +222,8 @@
             </c:choose>
             <view:arrayCellText>
               <c:choose>
-                <c:when test="${request.data.archived}">
-                  ${requestStatusLabelLambda}
+                <c:when test="${request.data.archived || request.data.canceled}">
+                  ${requestStatusLabelLambda(request)}
                 </c:when>
                 <c:otherwise>
                   <formsOnline:validationsSchemaImage userRequest="${request.data}"/>

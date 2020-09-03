@@ -286,23 +286,27 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
         return getDestination("Main", formsOnlineSC, request);
       } else if ("ArchiveRequest".equals(function)) {
         String id = request.getParameter("Id");
-        formsOnlineSC.archiveRequest(id);
+        formsOnlineSC.archiveRequest(id, true);
 
         return getDestination("Main", formsOnlineSC, request);
       } else if ("DeleteRequest".equals(function)) {
         String id = request.getParameter("Id");
         String origin = checkOrigin(request);
 
-        formsOnlineSC.deleteRequest(id);
+        formsOnlineSC.deleteRequest(id, true);
 
         return getDestination(origin, formsOnlineSC, request);
-      } else if ("DeleteRequests".equals(function)) {
+      } else if ("DeleteRequests".equals(function) || "ArchiveRequests".equals(function)) {
 
         // Selection
         request.mergeSelectedItemsInto(formsOnlineSC.getSelectedValidatorRequestIds());
 
-        // Deletion
-        formsOnlineSC.deleteRequests(formsOnlineSC.getSelectedValidatorRequestIds());
+        if ("DeleteRequests".equals(function)) {
+          // Deletion
+          formsOnlineSC.deleteRequests(formsOnlineSC.getSelectedValidatorRequestIds());
+        } else {
+          formsOnlineSC.archiveRequests(formsOnlineSC.getSelectedValidatorRequestIds());
+        }
 
         // Clear selection
         formsOnlineSC.getSelectedValidatorRequestIds().clear();

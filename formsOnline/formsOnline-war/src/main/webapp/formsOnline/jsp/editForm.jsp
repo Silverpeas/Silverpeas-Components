@@ -209,11 +209,7 @@ $(document).ready(function() {
       </div>
     </fieldset>
 
-    <div class="table">
-      <div class="cell">
-        <viewTags:displayListOfUsersAndGroups users="${m_listUserSenders}" groups="${m_listGroupSenders}" label="${labelSenders}" id="${id_ListSenders}" updateCallback="ModifySenders"/>
-      </div>
-    </div>
+    <viewTags:displayListOfUsersAndGroups users="${m_listUserSenders}" groups="${m_listGroupSenders}" label="${labelSenders}" id="${id_ListSenders}" updateCallback="ModifySenders"/>
     <div class="table">
       <div class="cell">
         <viewTags:displayListOfUsersAndGroups users="${m_listUserIntermediateReceivers}" groups="${m_listGroupIntermediateReceivers}" label="${labelValidationInter}" id="${id_ListIntermediateReveivers}" updateCallback="ModifyIntermediateReceivers"/>

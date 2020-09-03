@@ -53,12 +53,15 @@
 </c:choose>
 
 <c:set var="decisionClass" value="inlineMessage"/>
+<c:set var="decisionLabel" value=""/>
 <c:choose>
   <c:when test="${validation.validated}">
     <c:set var="decisionClass" value="inlineMessage-ok"/>
+    <fmt:message var="decisionLabel" key="formsOnline.stateValidated"/>
   </c:when>
   <c:when test="${validation.refused}">
     <c:set var="decisionClass" value="inlineMessage-nok"/>
+    <fmt:message var="decisionLabel" key="formsOnline.stateRefused"/>
   </c:when>
 </c:choose>
 
@@ -95,55 +98,9 @@
     </div>
     <div class="actor-step-OnlineForm">
       <c:if test="${not empty validation.validator}">
-        <fmt:message key="GML.by"/> <view:username user="${validation.validator}"/>
+        ${decisionLabel} <fmt:message key="GML.by"/> <view:username user="${validation.validator}"/>
       </c:if>
     </div>
   </div>
   <div class="comment-step-OnlineForm ${decisionClass}"><div>${silfn:escapeHtmlWhitespaces(validation.comment)}</div></div>
 </li>
-
-<!--<c:choose>
-  <c:when test="${validation.pendingValidation}">
-    <div id="ask-statut" class="inlineMessage"><fmt:message key="GML.contribution.validation.status.PENDING_VALIDATION"/></div>
-  </c:when>
-  <c:when test="${validation.validated}">
-    <c:choose>
-      <c:when test="${silfn:isDefined(validation.comment)}">
-        <div id="ask-statut" class="commentaires">
-          <div class="inlineMessage-ok oneComment">
-            <p class="author"><fmt:message key="GML.contribution.validation.status.VALIDATED"/> <fmt:message key="GML.date.the"/> <view:formatDateTime value="${validation.date}"/> <fmt:message key="GML.by"/> <view:username user="${validation.validator}"/></p>
-            <div class="avatar"><view:image src="${validation.validator.avatar}" alt="" type="avatar" /></div>
-            <div>
-              <p>${silfn:escapeHtmlWhitespaces(validation.comment)}</p>
-            </div>
-          </div>
-        </div>
-      </c:when>
-      <c:otherwise>
-        <div id="ask-statut" class="inlineMessage-ok">
-          <fmt:message key="GML.contribution.validation.status.VALIDATED"/> <fmt:message key="GML.date.the"/> <view:formatDateTime value="${validation.date}"/> <fmt:message key="GML.by"/> <view:username user="${validation.validator}"/>
-        </div>
-      </c:otherwise>
-    </c:choose>
-  </c:when>
-  <c:when test="${validation.refused}">
-    <c:choose>
-      <c:when test="${silfn:isDefined(validation.comment)}">
-        <div id="ask-statut" class="commentaires">
-          <div class="inlineMessage-nok oneComment">
-            <p class="author"><fmt:message key="GML.contribution.validation.status.REFUSED"/> <fmt:message key="GML.date.the"/> <view:formatDateTime value="${validation.date}"/> <fmt:message key="GML.by"/> <view:username user="${validation.validator}"/></p>
-            <div class="avatar"><view:image src="${validation.validator.avatar}" alt="" type="avatar" /></div>
-            <div>
-              <p>${silfn:escapeHtmlWhitespaces(validation.comment)}</p>
-            </div>
-          </div>
-        </div>
-      </c:when>
-      <c:otherwise>
-        <div id="ask-statut" class="inlineMessage-nok">
-          <fmt:message key="GML.contribution.validation.status.REFUSED"/> <fmt:message key="GML.date.the"/> <view:formatDateTime value="${validation.date}"/> <fmt:message key="GML.by"/> <view:username user="${validation.validator}"/>
-        </div>
-      </c:otherwise>
-    </c:choose>
-  </c:when>
-</c:choose>-->

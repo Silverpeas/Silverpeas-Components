@@ -29,6 +29,7 @@
 
 <%@page import="org.silverpeas.core.contribution.content.form.Form"%>
 <%@page import="org.silverpeas.core.contribution.content.form.PagesContext"%>
+<%@ page import="org.silverpeas.core.admin.user.model.User" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
@@ -52,8 +53,6 @@
 <c:set var="finalValidator" value="${requestScope['FinalValidator']}"/>
 
 <c:set var="formNameParts" value="${silfn:split(form.xmlFormName, '.')}"/>
-
-<c:set var="voidable" value="${userRequest.creatorId == currentUser.id && userRequest.voidable}"/>
 
 <fmt:message var="buttonBack" key="GML.back"/>
 <fmt:message var="labelAccept" key="formsOnline.request.action.validate"/>
@@ -127,18 +126,16 @@
 </head>
 <body class="${formNameParts[0]}">
     <view:operationPane>
-      <c:if test="${voidable}">
+      <c:if test="${userRequest.canBeCanceledBy(currentUser)}">
         <view:operation action="javascript:cancelRequest()" altText="${labelCancel}"/>
       </c:if>
-      <c:if test="${finalValidator}">
-        <c:if test="${userRequest.denied || userRequest.validated}">
-          <fmt:message var="opArchive" key="formsOnline.request.action.archive"/>
-          <view:operation action="javascript:archive()" altText="${opArchive}"/>
-        </c:if>
-        <c:if test="${userRequest.archived}">
-          <fmt:message var="opDelete" key="GML.delete"/>
-          <view:operation action="javascript:deleteRequest()" altText="${opDelete}"/>
-        </c:if>
+      <c:if test="${userRequest.canBeArchivedBy(currentUser)}">
+        <fmt:message var="opArchive" key="formsOnline.request.action.archive"/>
+        <view:operation action="javascript:archive()" altText="${opArchive}"/>
+      </c:if>
+      <c:if test="${userRequest.canBeDeletedBy(currentUser)}">
+        <fmt:message var="opDelete" key="GML.delete"/>
+        <view:operation action="javascript:deleteRequest()" altText="${opDelete}"/>
       </c:if>
       <fmt:message var="opPrint" key="GML.print"/>
       <view:operation action="javascript:window.print()" altText="${opPrint}"/>
@@ -186,7 +183,7 @@
     </div>
     <br/>
     <view:buttonPane>
-      <c:if test="${voidable}">
+      <c:if test="${userRequest.canBeCanceledBy(currentUser)}">
         <view:button label="${labelCancel}" action="javascript:cancelRequest();"/>
       </c:if>
       <fmt:message var="buttonValidate" key="GML.accept"/>
@@ -199,7 +196,7 @@
   <c:if test="${not validationEnabled}">
     <br/>
     <view:buttonPane>
-      <c:if test="${voidable}">
+      <c:if test="${userRequest.canBeCanceledBy(currentUser)}">
         <view:button label="${labelCancel}" action="javascript:cancelRequest();"/>
       </c:if>
       <view:button label="${buttonBack}" action="${origin}" />

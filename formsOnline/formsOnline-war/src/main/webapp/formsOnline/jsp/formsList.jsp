@@ -163,8 +163,8 @@
       <view:listPane var="toValidateUserRequests" routingAddress="Main" numberLinesPerPage="10">
         <view:listItems items="${userRequests.toValidate}" var="request">
           <li>
-            <a href="ViewRequest?Id=${request.id}"><span class="ask-form-date"><view:formatDateTime value="${request.creationDate}"/></span><span class="form-title">${request.form.title}</span></a>
-            <span class="form-statut"><formsOnline:validationsSchemaImage userRequest="${request}"/></span>
+            <a href="ViewRequest?Id=${request.id}"><span class="ask-form-date"><view:formatDateTime value="${request.creationDate}"/></span><span class="form-title">${request.form.title}</span>
+            <formsOnline:validationsSchemaImage userRequest="${request}"/></a>
           </li>
         </view:listItems>
       </view:listPane>
@@ -176,65 +176,26 @@
     </ul>
   </div>
 
-  <c:if test="${not empty userRequests.validated}">
-  <div class="secteur-container my-formsOnline" id="my-formsOnline-validate">
-    <div class="header">
-      <h3 class="my-formsOnline-title"><fmt:message key="formsOnline.home.requests.mine"/> <strong><fmt:message key="formsOnline.home.requests.mine.validated"/></strong></h3>
-    </div>
-    <ul>
-      <view:listPane var="validatedUserRequests" routingAddress="Main" numberLinesPerPage="10">
-        <view:listItems items="${userRequests.validated}" var="request">
-          <li><a href="ViewRequest?Id=${request.id}"><span class="ask-form-date"><view:formatDateTime value="${request.creationDate}"/></span><span class="form-title">${request.form.title}</span></a></li>
-        </view:listItems>
-      </view:listPane>
-      <script type="text/javascript">
-        whenSilverpeasReady(function() {
-          sp.listPane.ajaxControls('#my-formsOnline-validate');
-        });
-      </script>
-    </ul>
-  </div>
-  </c:if>
+  <c:set var="areaValidatedTitle">
+    <fmt:message key="formsOnline.home.requests.mine"/> <strong><fmt:message key="formsOnline.home.requests.mine.validated"/></strong>
+  </c:set>
+  <formsOnline:myRequestsByState requests="${userRequests.validated}" title="${areaValidatedTitle}" state="validate"/>
 
-  <c:if test="${not empty userRequests.denied}">
-  <div class="secteur-container my-formsOnline" id="my-formsOnline-refused">
-    <div class="header">
-      <h3 class="my-formsOnline-title"><fmt:message key="formsOnline.home.requests.mine"/> <strong><fmt:message key="formsOnline.home.requests.mine.denied"/></strong></h3>
-    </div>
-    <ul>
-      <view:listPane var="deniedUserRequests" routingAddress="Main" numberLinesPerPage="10">
-        <view:listItems items="${userRequests.denied}" var="request">
-          <li><a href="ViewRequest?Id=${request.id}"><span class="ask-form-date"><view:formatDateTime value="${request.creationDate}"/></span><span class="form-title">${request.form.title}</span></a></li>
-        </view:listItems>
-      </view:listPane>
-      <script type="text/javascript">
-        whenSilverpeasReady(function() {
-          sp.listPane.ajaxControls('#my-formsOnline-refused');
-        });
-      </script>
-    </ul>
-  </div>
-  </c:if>
+  <c:set var="areaRefusedTitle">
+    <fmt:message key="formsOnline.home.requests.mine"/> <strong><fmt:message key="formsOnline.home.requests.mine.denied"/></strong>
+  </c:set>
+  <formsOnline:myRequestsByState requests="${userRequests.denied}" title="${areaRefusedTitle}" state="refused"/>
 
-  <c:if test="${not empty userRequests.archived}">
-    <div class="secteur-container my-formsOnline" id="my-formsOnline-archived">
-      <div class="header">
-        <h3 class="my-formsOnline-title"><fmt:message key="formsOnline.home.requests.mine"/> <strong><fmt:message key="formsOnline.home.requests.mine.archived"/></strong></h3>
-      </div>
-      <ul>
-        <view:listPane var="archievedUserRequests" routingAddress="Main" numberLinesPerPage="10">
-          <view:listItems items="${userRequests.archived}" var="request">
-            <li><a href="ViewRequest?Id=${request.id}"><span class="ask-form-date"><view:formatDateTime value="${request.creationDate}"/></span><span class="form-title">${request.form.title}</span></a></li>
-          </view:listItems>
-        </view:listPane>
-        <script type="text/javascript">
-          whenSilverpeasReady(function() {
-            sp.listPane.ajaxControls('#my-formsOnline-archived');
-          });
-        </script>
-      </ul>
-    </div>
-  </c:if>
+  <c:set var="areaArchivedTitle">
+    <fmt:message key="formsOnline.home.requests.mine"/> <strong><fmt:message key="formsOnline.home.requests.mine.archived"/></strong>
+  </c:set>
+  <formsOnline:myRequestsByState requests="${userRequests.archived}" title="${areaArchivedTitle}" state="archived"/>
+
+  <c:set var="areaCanceledTitle">
+    <fmt:message key="formsOnline.home.requests.mine"/> <strong><fmt:message key="formsOnline.home.requests.mine.canceled"/></strong>
+  </c:set>
+  <formsOnline:myRequestsByState requests="${userRequests.archived}" title="${areaCanceledTitle}" state="canceled"/>
+
 </div>
 
 <c:choose>

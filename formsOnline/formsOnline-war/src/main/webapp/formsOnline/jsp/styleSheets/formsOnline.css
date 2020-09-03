@@ -309,10 +309,12 @@ fieldset {
 }
 
 #my-formsOnline ul li > a > span {
-  display:block;
-  float:left;
-  height:25px;
-  overflow:hidden;
+  display: block;
+  float: left;
+  height: 25px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .formsOnline-waitMyAction .form-title{
@@ -326,13 +328,14 @@ fieldset {
 }
 
 #my-formsOnline-wait .form-title{
-  width:62%;
+  width: calc( 100% - 112px - 20% );
 }
 #my-formsOnline-wait .ask-form-date{
   width:20%;
 }
-#my-formsOnline-wait .form-statut{
-  width:18%;
+#my-formsOnline-wait .request-state{
+  width:112px;
+  white-space:nowrap;
 }
 
 .my-formsOnline .form-title{
@@ -543,6 +546,9 @@ fieldset {
 #bossValidationForm.field{
   width:98%;
 }
+fieldset#listSenders {
+  margin: 2% 0 2.5%;
+}
 
 .field textarea {
   width:90%;
@@ -584,5 +590,16 @@ fieldset {
 }
 
 #all-requests #filter {
-  margin: 0 0 10px 0;
+  background: #eaeaea url(/silverpeas/util/icons/arrow/bg_tri.png) bottom left no-repeat;
+  padding: 5px 5px 14px;
+  margin-bottom:1em;
+}
+
+#all-requests #filter #stateFilter label,
+#all-requests #filter #formFilter label{
+  display:inline-block;
+  width:120px;
+}
+#all-requests .request-state {
+  white-space:nowrap;
 }

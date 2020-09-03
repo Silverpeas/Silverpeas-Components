@@ -27,18 +27,39 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/formsOnline" prefix="formsOnline" %>
 
 <%-- Set resource bundle --%>
 <fmt:setLocale value="${requestScope.resources.language}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 
 <%-- Attributes --%>
-<%@ attribute name="userRequest" required="true"
-              type="org.silverpeas.components.formsonline.model.FormInstance"
-              description="The user request" %>
+<%@ attribute name="requests" required="true"
+              type="org.silverpeas.core.util.SilverpeasList"
+              description="The user requests" %>
 
-<c:set var="validationsSchemaImages" value="${userRequest.validationsSchemaImages}"/>
+<%@ attribute name="title" required="true" type="java.lang.String" %>
+<%@ attribute name="state" required="true" type="java.lang.String" %>
 
-<span class="request-state">
-<c:forEach var="validationImage" items="${validationsSchemaImages}"><img src="${silfn:applicationURL()}/formsOnline/jsp/icons/${validationImage}" alt=""/></c:forEach>
-</span>
+<c:if test="${not empty requests}">
+  <div class="secteur-container my-formsOnline" id="my-formsOnline-${state}">
+    <div class="header">
+      <h3 class="my-formsOnline-title">${title}</h3>
+    </div>
+    <ul>
+      <view:listPane var="${state}UserRequests" routingAddress="Main" numberLinesPerPage="10">
+        <view:listItems items="${requests}" var="request">
+          <li><a href="ViewRequest?Id=${request.id}">
+            <span class="ask-form-date"><view:formatDateTime value="${request.creationDate}"/></span>
+            <span class="form-title">${request.form.title}</span></a>
+          </li>
+        </view:listItems>
+      </view:listPane>
+      <script type="text/javascript">
+        whenSilverpeasReady(function() {
+          sp.listPane.ajaxControls('#my-formsOnline-${state}');
+        });
+      </script>
+    </ul>
+  </div>
+</c:if>
