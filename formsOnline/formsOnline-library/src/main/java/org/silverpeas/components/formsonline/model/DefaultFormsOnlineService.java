@@ -332,15 +332,28 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
             .getPendingValidationType();
         final SilverpeasList<FormInstance> result = getDAO().getReceivedRequests(form, states, validationCriteria,
                 ofNullable(paginationPage).filter(p -> !pendingValidationTypeFilter.isPresent()).orElse(null));
-        Stream<FormInstance> resultStream = result.stream();
-        if (pendingValidationTypeFilter.isPresent()) {
-          resultStream = resultStream
-              .filter(r -> r.getValidations().getValidationOfType(pendingValidationTypeFilter.get()).isPresent());
-        }
-        resultStream = resultStream.map(l -> {
+        Stream<FormInstance> resultStream = result.stream().map(l -> {
           l.setForm(form);
           return l;
         });
+        if (pendingValidationTypeFilter.isPresent()) {
+          resultStream = resultStream
+              .filter(r -> {
+                final FormInstanceValidationType type = pendingValidationTypeFilter.get();
+                final Set<FormInstanceValidationType> possibleTypes = r.getForm().getPossibleRequestValidations().keySet();
+                if (!possibleTypes.contains(type)) {
+                  return false;
+                }
+                final Optional<FormInstanceValidationType> previousType = possibleTypes
+                    .stream()
+                    .filter(t -> t.ordinal() < type.ordinal())
+                    .reduce((a, b) -> b);
+                return previousType
+                    .map(p ->r.getValidations().getValidationOfType(p).filter(FormInstanceValidation::isValidated).isPresent()
+                             && !r.getValidations().getValidationOfType(type).isPresent())
+                    .orElseGet(() -> r.getValidations().isEmpty());
+              });
+        }
         merge.accept(requests, resultStream.collect(SilverpeasList.collector(result)));
       }
     }

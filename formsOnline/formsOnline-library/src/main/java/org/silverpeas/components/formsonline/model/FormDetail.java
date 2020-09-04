@@ -29,17 +29,23 @@ import org.silverpeas.components.formsonline.model.DefaultFormsOnlineService.Hie
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.MemoizedSupplier;
 import org.silverpeas.core.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Collections.singletonList;
+import static org.silverpeas.components.formsonline.model.FormInstanceValidationType.*;
+import static org.silverpeas.core.util.CollectionUtil.isNotEmpty;
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
 public class FormDetail {
@@ -70,7 +76,9 @@ public class FormDetail {
   private boolean sendable = true;
   private int nbRequests = 0;
 
-  private MemoizedSupplier<String> hierarchicalValidatorOfCurrentUser;
+  private String hierarchicalValidatorOfCurrentUser;
+  private Map<FormInstanceValidationType, Function<FormInstance, Supplier<List<User>>>> possibleValidationTypes;
+  private HierarchicalValidatorCacheManager hvManager;
 
   private List<User> sendersAsUsers;
   private List<Group> sendersAsGroups;
@@ -406,9 +414,9 @@ public class FormDetail {
   }
 
   protected List<User> getAllFinalReceivers() {
-    List<User> users = getReceiversAsUsers();
-    users.addAll(getUsers(getReceiversAsGroups()));
-    return users;
+    return Stream.concat(getReceiversAsUsers().stream(), getUsers(getReceiversAsGroups()).stream())
+        .distinct()
+        .collect(Collectors.toList());
   }
 
   public List<User> getIntermediateReceiversAsUsers() {
@@ -434,9 +442,9 @@ public class FormDetail {
   }
 
   protected List<User> getAllIntermediateReceivers() {
-    List<User> users = getIntermediateReceiversAsUsers();
-    users.addAll(getUsers(getIntermediateReceiversAsGroups()));
-    return users;
+    return Stream.concat(getIntermediateReceiversAsUsers().stream(), getUsers(getIntermediateReceiversAsGroups()).stream())
+        .distinct()
+        .collect(Collectors.toList());
   }
 
   public boolean isIntermediateValidator(String userId) {
@@ -447,9 +455,12 @@ public class FormDetail {
     return isInList(userId, getAllFinalReceivers());
   }
 
+  public boolean isFinalValidation() {
+    return isNotEmpty(getReceiversAsUsers()) || isNotEmpty(getReceiversAsGroups());
+  }
+
   public boolean isIntermediateValidation() {
-    return CollectionUtil.isNotEmpty(getIntermediateReceiversAsUsers()) ||
-        CollectionUtil.isNotEmpty(getIntermediateReceiversAsGroups());
+    return isNotEmpty(getIntermediateReceiversAsUsers()) || isNotEmpty(getIntermediateReceiversAsGroups());
   }
 
   public int getNbRequests() {
@@ -461,16 +472,21 @@ public class FormDetail {
   }
 
   public String getHierarchicalValidatorOfCurrentUser() {
-    if (hierarchicalValidatorOfCurrentUser == null && isHierarchicalValidation()) {
-      hierarchicalValidatorOfCurrentUser = new MemoizedSupplier<>(() -> {
-        if (!this.isHierarchicalValidation()) {
-          return StringUtil.EMPTY;
-        }
-        final HierarchicalValidatorCacheManager hvManager = new HierarchicalValidatorCacheManager();
-        return hvManager.getHierarchicalValidatorOf(User.getCurrentRequester().getId());
-      });
+    if (hierarchicalValidatorOfCurrentUser == null) {
+      if (this.isHierarchicalValidation()) {
+        hierarchicalValidatorOfCurrentUser = getHvManager().getHierarchicalValidatorOf(User.getCurrentRequester().getId());
+      } else {
+        hierarchicalValidatorOfCurrentUser = StringUtil.EMPTY;
+      }
     }
-    return hierarchicalValidatorOfCurrentUser.get();
+    return hierarchicalValidatorOfCurrentUser;
+  }
+
+  HierarchicalValidatorCacheManager getHvManager() {
+    if (hvManager == null) {
+      hvManager = new HierarchicalValidatorCacheManager();
+    }
+    return hvManager;
   }
 
   public int getHierarchicalValidatorState() {
@@ -484,5 +500,40 @@ public class FormDetail {
       return VALIDATOR_OK;
     }
     return VALIDATOR_NOT_ALLOWED;
+  }
+
+  /**
+   * Gets the possible request validations.
+   * <p>
+   * For each request validation, a validator provider is provided.
+   * </p>
+   * <p>
+   *   BE CAREFUL of that following methods MUST have been called before using this method:
+   *   <ul>
+   *     <li>{@link #setIntermediateReceiversAsUsers(List)}</li>
+   *     <li>{@link #setIntermediateReceiversAsGroups(List)}</li>
+   *     <li>{@link #setReceiversAsUsers(List)}</li>
+   *     <li>{@link #setReceiversAsGroups(List)}</li>
+   *   </ul>
+   * </p>
+   * @return a map of validation type associated to a validator list supplier. Keys of map are
+   * sorted as the {@link FormInstanceValidationType} enum.
+   */
+  public Map<FormInstanceValidationType, Function<FormInstance, Supplier<List<User>>>> getPossibleRequestValidations() {
+    if (possibleValidationTypes == null) {
+      possibleValidationTypes = new LinkedHashMap<>(FormInstanceValidationType.values().length);
+      if (isHierarchicalValidation()) {
+        possibleValidationTypes.put(HIERARCHICAL, f -> () -> singletonList(User.getById(f.getHierarchicalValidator())));
+      }
+      if (isIntermediateValidation()) {
+        final MemoizedSupplier<List<User>> supplier = new MemoizedSupplier<>(this::getAllIntermediateReceivers);
+        possibleValidationTypes.put(INTERMEDIATE, f -> supplier);
+      }
+      if (isFinalValidation()) {
+        final MemoizedSupplier<List<User>> supplier = new MemoizedSupplier<>(this::getAllFinalReceivers);
+        possibleValidationTypes.put(FINAL, f -> supplier);
+      }
+    }
+    return possibleValidationTypes;
   }
 }

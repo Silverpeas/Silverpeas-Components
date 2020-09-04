@@ -24,6 +24,7 @@
 
 --%>
 <%@ page import="org.silverpeas.components.formsonline.control.RequestUIEntity" %>
+<%@ page import="org.silverpeas.components.formsonline.model.RequestsByStatus" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -72,6 +73,21 @@
 <view:setConstant var="STATE_REFUSED" constant="org.silverpeas.components.formsonline.model.FormInstance.STATE_REFUSED"/>
 <view:setConstant var="STATE_ARCHIVED" constant="org.silverpeas.components.formsonline.model.FormInstance.STATE_ARCHIVED"/>
 <view:setConstant var="STATE_CANCELED" constant="org.silverpeas.components.formsonline.model.FormInstance.STATE_CANCELED"/>
+
+<jsp:useBean id="possibleStatusFilters" class="java.util.LinkedHashMap"/>
+<c:set target="${possibleStatusFilters}" property="${''}" value="${''}"/>
+<c:set target="${possibleStatusFilters}" property="${statusUnreadLabel}" value="${STATE_UNREAD}"/>
+<c:set target="${possibleStatusFilters}" property="${statusReadLabel}" value="${STATE_READ}"/>
+<c:forEach var="possibleValidation" items="<%=RequestsByStatus.possibleRequestValidationsFrom(requests.getAll())%>">
+  <fmt:message var="tmpLabel" key="formsOnline.statePending${silfn:capitalize(possibleValidation.name().toLowerCase())}Validation"/>
+  <c:set target="${possibleStatusFilters}" property="${tmpLabel}" value="${possibleValidation.name()}"/>
+</c:forEach>
+<c:set target="${possibleStatusFilters}" property="${statusValidatedLabel}" value="${STATE_VALIDATED}"/>
+<c:set target="${possibleStatusFilters}" property="${statusDeniedLabel}" value="${STATE_REFUSED}"/>
+<c:set target="${possibleStatusFilters}" property="${statusArchivedLabel}" value="${STATE_ARCHIVED}"/>
+<c:set target="${possibleStatusFilters}" property="${statusCanceledLabel}" value="${STATE_CANCELED}"/>
+<c:set var="currentStateFilter" value="${controller.currentStateFilter}"/>
+<c:set var="currentValidationTypeFilter" value="${controller.currentValidationTypeFilter}"/>
 
 <view:sp-page>
 <view:sp-head-part>
@@ -147,13 +163,11 @@
       <div id="stateFilter">
         <label for="selectedState">${colStatus}</label>
           <select id="selectedState">
-          <option value="-1"></option>
-          <option value="${STATE_UNREAD}">${statusUnreadLabel}</option>
-          <option value="${STATE_READ}">${statusReadLabel}</option>
-          <option value="${STATE_VALIDATED}">${statusValidatedLabel}</option>
-          <option value="${STATE_REFUSED}">${statusDeniedLabel}</option>
-          <option value="${STATE_ARCHIVED}">${statusArchivedLabel}</option>
-          <option value="${STATE_CANCELED}">${statusCanceledLabel}</option>
+            <c:forEach var="possibleStatusFilter" items="${possibleStatusFilters.entrySet()}">
+              <c:set var="asString" value="${''.concat(possibleStatusFilter.value)}"/>
+              <c:set var="selected" value="${asString eq ''.concat(currentStateFilter) or asString eq currentValidationTypeFilter.name() ? 'selected' : ''}"/>
+              <option value="${possibleStatusFilter.getValue()}" ${selected}>${possibleStatusFilter.key}</option>
+            </c:forEach>
         </select>
       </div>
       <div id="formFilter">
@@ -230,7 +244,7 @@
                 </c:otherwise>
               </c:choose>
             </view:arrayCellText>
-            <view:arrayCellText text="${silfn:formatDate(request.data.creationDate, lang)}"/>
+            <view:arrayCellText text="${silfn:formatDateAndHour(request.data.creationDate, lang)}"/>
             <view:arrayCellText text="${request.creator.displayedName}"/>
             <view:arrayCellText><a href="ViewRequest?Id=${request.id}&Origin=InBox">${request.data.form.title}</a></view:arrayCellText>
             <c:if test="${useHierarchicalValidation}">
@@ -238,7 +252,7 @@
                 <c:when test="${request.data.form.hierarchicalValidation}">
                   <c:if test="${request.data.validations.getHierarchicalValidation().isPresent()}">
                     <c:set var="validation" value="${request.data.validations.getHierarchicalValidation().get()}"/>
-                    <view:arrayCellText text="${silfn:formatDate(validation.date, lang)}"/>
+                    <view:arrayCellText text="${silfn:formatDateAndHour(validation.date, lang)}"/>
                     <view:arrayCellText text="${validation.validator.displayedName}"/>
                   </c:if>
                   <c:if test="${not request.data.validations.getHierarchicalValidation().isPresent()}">
@@ -257,7 +271,7 @@
                 <c:when test="${request.data.form.intermediateValidation}">
                   <c:if test="${request.data.validations.getIntermediateValidation().isPresent()}">
                     <c:set var="validation" value="${request.data.validations.getIntermediateValidation().get()}"/>
-                    <view:arrayCellText text="${silfn:formatDate(validation.date, lang)}"/>
+                    <view:arrayCellText text="${silfn:formatDateAndHour(validation.date, lang)}"/>
                     <view:arrayCellText text="${validation.validator.displayedName}"/>
                   </c:if>
                   <c:if test="${not request.data.validations.getIntermediateValidation().isPresent()}">
@@ -271,7 +285,7 @@
                 </c:otherwise>
               </c:choose>
             </c:if>
-            <view:arrayCellText text="${silfn:formatDate(request.data.validationDate, lang)}"/>
+            <view:arrayCellText text="${silfn:formatDateAndHour(request.data.validationDate, lang)}"/>
             <view:arrayCellText text="${request.validator.displayedName}"/>
           </view:arrayLine>
         </view:arrayLines>

@@ -27,6 +27,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.formsonline.control.FormsOnlineSessionController;
 import org.silverpeas.components.formsonline.model.FormDetail;
 import org.silverpeas.components.formsonline.model.FormInstance;
+import org.silverpeas.components.formsonline.model.FormInstanceValidationType;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.PagesContext;
@@ -39,6 +40,9 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 
 import java.util.List;
+
+import static org.silverpeas.core.util.StringUtil.isInteger;
+import static org.silverpeas.core.util.StringUtil.isNotDefined;
 
 public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnlineSessionController> {
 
@@ -79,6 +83,7 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
 
     try {
       if ("Main".equals(function)) {
+        formsOnlineSC.setCurrentFilter(-1, null);
         formsOnlineSC.getSelectedValidatorRequestIds().clear();
         String role = formsOnlineSC.getBestProfile();
         if ("Administrator".equals(role)) {
@@ -199,23 +204,21 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
         formsOnlineSC.unpublishForm(request.getParameter("Id"));
         return getDestination("Main", formsOnlineSC, request);
       } else if (INBOX.equals(function)) {
-
         // Selection
         request.mergeSelectedItemsInto(formsOnlineSC.getSelectedValidatorRequestIds());
-
         request.setAttribute("Requests", formsOnlineSC.getAllValidatorRequests());
-
         request.setAttribute("CurrentForm", formsOnlineSC.getCurrentForm());
         request.setAttribute("Forms", formsOnlineSC.getAllForms(false));
-
         destination = ROOT_DESTINATION + "inbox.jsp";
       } else if ("FilterRequests".equals(function)) {
         String formId = request.getParameter(PARAM_FORMID);
         formsOnlineSC.setCurrentForm(formId);
-
-        int state = request.getParameterAsInteger("State");
-        formsOnlineSC.setCurrentState(state);
-
+        final String filterValue = request.getParameter("State");
+        final int state = isInteger(filterValue) ? Integer.parseInt(filterValue) : -1;
+        final FormInstanceValidationType validation = state > -1 || isNotDefined(filterValue)
+            ? null
+            : FormInstanceValidationType.valueOf(filterValue);
+        formsOnlineSC.setCurrentFilter(state, validation);
         return getDestination(INBOX, formsOnlineSC, request);
       } else if ("Export".equals(function)) {
         ExportCSVBuilder csvBuilder = formsOnlineSC.export();

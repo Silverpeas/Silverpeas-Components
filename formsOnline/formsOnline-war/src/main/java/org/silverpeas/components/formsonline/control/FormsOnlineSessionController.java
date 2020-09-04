@@ -23,15 +23,7 @@ package org.silverpeas.components.formsonline.control;
 import net.htmlparser.jericho.Source;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.formsonline.FormsOnlineComponentSettings;
-import org.silverpeas.components.formsonline.model.FormDetail;
-import org.silverpeas.components.formsonline.model.FormInstance;
-import org.silverpeas.components.formsonline.model.FormInstanceValidation;
-import org.silverpeas.components.formsonline.model.FormPK;
-import org.silverpeas.components.formsonline.model.FormsOnlineException;
-import org.silverpeas.components.formsonline.model.FormsOnlineService;
-import org.silverpeas.components.formsonline.model.RequestPK;
-import org.silverpeas.components.formsonline.model.RequestsByStatus;
-import org.silverpeas.components.formsonline.model.RequestsFilter;
+import org.silverpeas.components.formsonline.model.*;
 import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
@@ -76,7 +68,8 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
   private static final String UPDATE_CURRENT_FORM = "updateCurrentForm";
   private static final String LOAD_REQUEST = "loadRequest";
   private FormDetail currentForm;
-  private int currentState;
+  private int currentStateFilter;
+  private FormInstanceValidationType currentValidationTypeFilter;
   private Selection selection = null;
   private Set<String> selectedValidatorRequestIds = new HashSet<>();
   private Map<Integer, String> statusLabels = new HashMap<>();
@@ -98,7 +91,7 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
         "org.silverpeas.formsonline.settings.formsOnlineSettings");
     selection = getSelection();
     loadStatusLabels();
-    setCurrentState(-1);
+    setCurrentFilter(-1, null);
   }
 
   public List<FormDetail> getAllForms(boolean withSendInfo) throws FormsOnlineException {
@@ -127,12 +120,22 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
     return this.currentForm;
   }
 
-  public void setCurrentState(int state) {
-    this.currentState = state;
+  public void setCurrentFilter(int state, FormInstanceValidationType validationType) {
+    if (validationType != null) {
+      this.currentStateFilter = -1;
+      this.currentValidationTypeFilter = validationType;
+    } else {
+      this.currentStateFilter = state;
+      this.currentValidationTypeFilter = null;
+    }
   }
 
-  public int getCurrentState() {
-    return currentState;
+  public int getCurrentStateFilter() {
+    return currentStateFilter;
+  }
+
+  public FormInstanceValidationType getCurrentValidationTypeFilter() {
+    return currentValidationTypeFilter;
   }
 
   public void updateCurrentForm(String[] senderUserIds, String[] senderGroupIds,
@@ -355,7 +358,8 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
     if (getCurrentForm() != null) {
       filter.getFormIds().add(Integer.toString(getCurrentForm().getId()));
     }
-    filter.setState(getCurrentState());
+    filter.setState(getCurrentStateFilter());
+    filter.setPendingValidationType(getCurrentValidationTypeFilter());
     return getService().getValidatorRequests(filter, getUserId(), null);
   }
 
