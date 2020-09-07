@@ -66,8 +66,9 @@ QuestionContainerDetail survey = null;
 
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head>
+  <title></title>
 <view:looknfeel />
 <view:includePlugin name="popup"/>
 <script type="text/javascript">
@@ -142,7 +143,7 @@ try
   <c:when test="${requestScope['UpdateSucceed']}">
     <div class="inlineMessage inlineMessage-ok">
       <fmt:message key="survey.update.succeed" />
-    </div><br clear="all"/>
+    </div><br/>
   </c:when>
 </c:choose>
 
@@ -273,7 +274,7 @@ try
     out.println("<center>"+voteButton.print()+"</center>");
     out.println(frame.printAfter());
 } catch( Exception e){
-    throw new SurveyException("SurveyUtils_JSP.displayQuestionsUpdateView",SurveyException.WARNING,"Survey.EX_CANNOT_DISPLAY_UPDATEVIEW",e);
+    throw new SurveyException(e);
 }
 
 %>
