@@ -47,46 +47,22 @@
  */
 package org.silverpeas.components.survey;
 
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.SilverpeasException;
 
 /**
  * Non runtime exception management for this jobPeas.
  */
 public class SurveyException extends SilverpeasException {
 
-  private static final long serialVersionUID = 4382543304390138200L;
-
-  /**
-   * Constructor which calls the super constructor
-   * @param callingClass (String) the name of the module which catchs the Exception
-   * @param errorLevel (int) the level error of the exception
-   * @param message (String) the level of the exception label
-   * @param extraParams (String) the generic exception message
-   * @param nested (Exception) the exception catched
-   */
-  public SurveyException(String callingClass, int errorLevel, String message, String extraParams,
-      Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
+  public SurveyException(final String message, final String... parameters) {
+    super(message, parameters);
   }
 
-  public SurveyException(String callingClass, int errorLevel, String message, String extraParams) {
-    this(callingClass, errorLevel, message, extraParams, null);
+  public SurveyException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  public SurveyException(String callingClass, int errorLevel, String message, Exception nested) {
-    this(callingClass, errorLevel, message, "", nested);
+  public SurveyException(final Throwable cause) {
+    super(cause);
   }
-
-  public SurveyException(String callingClass, int errorLevel, String message) {
-    this(callingClass, errorLevel, message, "", null);
-  }
-
-  /**
-   * Returns the name of this jobPeas
-   * @return the name of this module
-   */
-  public String getModule() {
-    return "survey";
-  }
-
 }
