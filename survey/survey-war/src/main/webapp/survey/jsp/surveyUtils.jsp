@@ -125,7 +125,7 @@ MultiSilverpeasBundle resources, SettingBundle settings, String profile, boolean
             }
         }
         catch (Exception e){
-            throw new  SurveyException("SurveyUtils_JSP.displaySurvey",SurveyException.WARNING,"Survey.EX_CANNOT_DISPLAY_SURVEY",e);
+            throw new  SurveyException(e);
         }
 
         return r;
@@ -236,7 +236,7 @@ MultiSilverpeasBundle resources, SettingBundle settings, String profile, boolean
             r += frame.printAfter();
         }
         catch( Exception e){
-            throw new  SurveyException("SurveyUtils_JSP.displayQuestions",SurveyException.WARNING,"Survey.EX_CANNOT_DISPLAY_QUESTIONS",e);
+            throw new  SurveyException(e);
         }
 
         return r;
@@ -512,7 +512,7 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
             }
         }
         catch( Exception e){
-            throw new  SurveyException("SurveyUtils_JSP.displaySurveyPreview",SurveyException.WARNING,"Survey.EX_CANNOT_DISPLAY_PREVIEW",e);
+            throw new  SurveyException(e);
         }
 
        return r;
@@ -592,7 +592,7 @@ String displaySurveyResultOfUser(String userId, Collection resultsByUser,
       r += "<center>"+resources.getString("SurveyUnavailable")+"</center>";
     }
   } catch( Exception e){
-    throw new  SurveyException("SurveyUtils_JSP.displaySurveyResult",SurveyException.WARNING,"Survey.EX_CANNOT_DISPLAY_CHART",e);
+    throw new  SurveyException(e);
   }
   return r;
 }
@@ -852,7 +852,7 @@ String displaySurveyResult(String choice, QuestionContainerDetail survey, Graphi
       r += "<center>"+resources.getString("SurveyUnavailable")+"</center>";
     }
   } catch( Exception e){
-    throw new  SurveyException("SurveyUtils_JSP.displaySurveyResult",SurveyException.WARNING,"Survey.EX_CANNOT_DISPLAY_CHART",e);
+    throw new  SurveyException(e);
   }
   return r;
 }
@@ -873,7 +873,7 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
             }
         }
         catch( Exception e){
-            throw new  SurveyException("SurveyUtils_JSP.displayOpenAnswersToQuestion",SurveyException.WARNING,"Survey.EX_CANNOT_DISPLAY_ANSWER",e);
+            throw new  SurveyException(e);
         }
         return r;
   }
@@ -900,7 +900,7 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
             }
         }
         catch( Exception e){
-            throw new  SurveyException("SurveyUtils_JSP.displayOpenAnswersToQuestion",SurveyException.WARNING,"Survey.EX_CANNOT_DISPLAY_ANSWER",e);
+            throw new  SurveyException(e);
         }
         return r;
   }
@@ -923,7 +923,7 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
             }
         }
         catch( Exception e){
-            throw new  SurveyException("SurveyUtils_JSP.displayOpenAnswersToQuestion",SurveyException.WARNING,"Survey.EX_CANNOT_DISPLAY_ANSWER",e);
+            throw new  SurveyException(e);
         }
         return r;
   }
@@ -984,7 +984,7 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
             }
         }
         catch( Exception e){
-            throw new  SurveyException("SurveyUtils_JSP.displaySurveyResultChart",SurveyException.WARNING,"Survey.EX_CANNOT_DISPLAY_RESULT",e);
+            throw new  SurveyException(e);
         }
         return r;
   }
@@ -1075,7 +1075,7 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
             }
         }
         catch( Exception e){
-            throw new  SurveyException("SurveyUtils_JSP.displaySurveyResultChart",SurveyException.WARNING,"Survey.EX_CANNOT_DISPLAY_RESULT",e);
+            throw new  SurveyException(e);
         }
         return r;
   }
@@ -1157,7 +1157,7 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
             }
         }
         catch( Exception e){
-            throw new  SurveyException("SurveyUtils_JSP.displaySurveyResultChart",SurveyException.WARNING,"Survey.EX_CANNOT_DISPLAY_RESULT",e);
+            throw new  SurveyException(e);
         }
         return r;
   }
@@ -1220,7 +1220,7 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
             }
         }
         catch( Exception e){
-            throw new  SurveyException("SurveyUtils_JSP.displaySurveyComments",SurveyException.WARNING,"Survey.EX_CANNOT_DISPLAY_RESULT",e);
+            throw new  SurveyException(e);
         }
        return r;
   }
