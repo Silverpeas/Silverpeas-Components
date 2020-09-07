@@ -35,8 +35,18 @@
     <description>no description</description>
     <servlet-class>org.silverpeas.components.formsonline.servlets.FormsOnlineRequestRouter</servlet-class>
   </servlet>
+  <servlet>
+    <servlet-name>GoToForm</servlet-name>
+    <display-name>GoToForm</display-name>
+    <description>no description</description>
+    <servlet-class>org.silverpeas.components.formsonline.servlets.GoToForm</servlet-class>
+  </servlet>
   <servlet-mapping>
     <servlet-name>FormsOnlineRequestRouter</servlet-name>
     <url-pattern>/RformsOnline/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>GoToForm</servlet-name>
+    <url-pattern>/Form/*</url-pattern>
   </servlet-mapping>
 </web-app>

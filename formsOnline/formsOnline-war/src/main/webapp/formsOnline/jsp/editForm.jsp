@@ -80,6 +80,7 @@
 <head>
 <title></title>
 <view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
+  <view:includePlugin name="popup"/>
 <script type="text/javascript">
 function valider() {
   var description = stripInitialWhitespace(document.creationForm.description.value);
@@ -129,6 +130,40 @@ function showHidePreviewButton() {
   }
 }
 
+function notifySenders() {
+  var users = $("#listSenders-userIds").val();
+  var groups = $("#listSenders-groupIds").val();
+  notify(users, groups);
+}
+
+function notifyReceivers() {
+  var users = $("#listIntermediateReceivers-userIds").val();
+  var groups = $("#listIntermediateReceivers-groupIds").val();
+  users += ","+$("#listReceivers-userIds").val();
+  groups += ","+$("#listReceivers-groupIds").val();
+  notify(users, groups);
+}
+
+function notifyAll() {
+  var users = $("#listIntermediateReceivers-userIds").val();
+  var groups = $("#listIntermediateReceivers-groupIds").val();
+  users += ","+$("#listReceivers-userIds").val();
+  groups += ","+$("#listReceivers-groupIds").val();
+  users += ","+$("#listSenders-userIds").val();
+  groups += ","+$("#listSenders-groupIds").val();
+  notify(users, groups);
+}
+
+function notify(users, groups) {
+  sp.messager.open("${form.instanceId}", {
+    contributionId: ${form.id},
+    recipientUsers: users,
+    recipientGroups: groups,
+    recipientEdition: false,
+    manuel: true
+  });
+}
+
 $(document).ready(function() {
 
   showHidePreviewButton();
@@ -141,6 +176,15 @@ $(document).ready(function() {
 
 </head>
 <body>
+<view:operationPane>
+  <fmt:message var="labelNotifySenders" key="formsOnline.form.action.notify.senders"/>
+  <fmt:message var="labelNotifyReceivers" key="formsOnline.form.action.notify.receivers"/>
+  <fmt:message var="labelNotifyAll" key="formsOnline.form.action.notify.all"/>
+  <view:operation action="javascript:notifySenders()" altText="${labelNotifySenders}"/>
+  <view:operation action="javascript:notifyReceivers()" altText="${labelNotifyReceivers}"/>
+  <view:operation action="javascript:notifyAll()" altText="${labelNotifyAll}"/>
+</view:operationPane>
+
 <view:window>
 
 	<form name="creationForm" action="SaveForm" method="post">

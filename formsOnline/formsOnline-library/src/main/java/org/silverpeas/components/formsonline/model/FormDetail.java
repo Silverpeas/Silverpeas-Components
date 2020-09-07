@@ -326,7 +326,7 @@ public class FormDetail {
     return sendable;
   }
 
-  public boolean isSender(String userId) {
+  private boolean isSender(String userId) {
     return isInList(userId, getAllSenders());
   }
 
@@ -535,5 +535,9 @@ public class FormDetail {
       }
     }
     return possibleValidationTypes;
+  }
+
+  public boolean canBeSentBy(final User user) {
+    return isPublished() && isSender(user.getId());
   }
 }

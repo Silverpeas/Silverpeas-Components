@@ -39,6 +39,7 @@
 
 <fmt:setLocale value="${lang}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<view:setBundle basename="org.silverpeas.multilang.generalMultilang" var="generalBundle"/>
 
 <c:set var="forms" value="${requestScope['formsList']}"/>
 <c:set var="userRequests" value="${requestScope['UserRequests']}"/>
@@ -51,6 +52,9 @@
 <c:url var="iconPublish" value="/util/icons/lock.gif"/>
 <c:url var="iconUnpublish" value="/util/icons/unlock.gif"/>
 <c:url var="iconDelete" value="/util/icons/delete.gif"/>
+<c:url var="iconPermalink" value="/util/icons/link.gif"/>
+
+<fmt:message var="permalinkCopyLabel" key="GML.permalink.copy" bundle="${generalBundle}"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.formsOnline">
@@ -194,7 +198,7 @@
   <c:set var="areaCanceledTitle">
     <fmt:message key="formsOnline.home.requests.mine"/> <strong><fmt:message key="formsOnline.home.requests.mine.canceled"/></strong>
   </c:set>
-  <formsOnline:myRequestsByState requests="${userRequests.archived}" title="${areaCanceledTitle}" state="canceled"/>
+  <formsOnline:myRequestsByState requests="${userRequests.canceled}" title="${areaCanceledTitle}" state="canceled"/>
 
 </div>
 
@@ -232,6 +236,8 @@
             </c:if>
             <c:if test="${role == 'admin'}">
               <div class="operation actionShownOnMouseOver">
+                <c:url var="permalinkUrl" value="/Form/${form.id}?ComponentId=${form.instanceId}"/>
+                <a href="${permalinkUrl}" title="${permalinkCopyLabel}"><img border="0" src="${iconPermalink}" alt="<fmt:message key="GML.permalink"/>" title="<fmt:message key="GML.permalink"/>" /></a>
                 <a href="EditForm?FormId=${form.id}" title="<fmt:message key="GML.modify"/>"><img border="0" src="${iconEdit}" alt="<fmt:message key="GML.modify"/>" title="<fmt:message key="GML.modify"/>" /></a>
                 <c:choose>
                   <c:when test="${form.notYetPublished}">

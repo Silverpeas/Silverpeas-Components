@@ -248,7 +248,7 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
   }
 
   public void saveRequest(List<FileItem> items, boolean draft) throws FormsOnlineException {
-    if (!getCurrentForm().isSender(getUserId())) {
+    if (!getCurrentForm().canBeSentBy(User.getCurrentRequester())) {
       throwForbiddenException("saveRequest");
     }
     getService().saveRequest(getCurrentForm().getPK(), getUserId(), items, draft);

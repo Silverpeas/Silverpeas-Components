@@ -29,6 +29,7 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/formsOnline" prefix="formsOnline" %>
 
+<c:set var="currentUser" value="${sessionScope['SilverSessionController'].currentUserDetail}"/>
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 
@@ -89,8 +90,10 @@
     <fmt:message var="buttonDraft" key="GML.draft.save"/>
     <fmt:message var="buttonValidate" key="formsOnline.request.send"/>
     <fmt:message var="buttonCancel" key="GML.cancel"/>
-    <view:button label="${buttonValidate}" action="javascript:sendRequest();" classes="validateButton" />
-    <view:button label="${buttonDraft}" action="javascript:saveDraft();" />
+    <c:if test="${formDetail.canBeSentBy(currentUser)}">
+      <view:button label="${buttonValidate}" action="javascript:sendRequest();" classes="validateButton" />
+      <view:button label="${buttonDraft}" action="javascript:saveDraft();" />
+    </c:if>
     <view:button label="${buttonCancel}" action="Main" />
   </view:buttonPane>
 
