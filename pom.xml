@@ -38,13 +38,13 @@
   <version>6.1.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Silverpeas Components</name>
-  <url>http://www.silverpeas.org/docs/components</url>
+  <url>https://www.silverpeas.org/docs/components</url>
   <description>The different applications that are deployed in standard in Silverpeas</description>
 
   <scm>
     <connection>scm:git:git@github.com:Silverpeas/Silverpeas-Components.git</connection>
     <developerConnection>scm:git:git@github.com:Silverpeas/Silverpeas-Components.git</developerConnection>
-    <url>http://github.com/Silverpeas/Silverpeas-Components</url>
+    <url>https://github.com/Silverpeas/Silverpeas-Components</url>
     <tag>HEAD</tag>
   </scm>
 
@@ -53,7 +53,7 @@
       <id>Silverpeas</id>
       <layout>default</layout>
       <name>Silverpeas Repository</name>
-      <url>http://www.silverpeas.org/nexus/content/groups/silverpeas</url>
+      <url>https://www.silverpeas.org/nexus/content/groups/silverpeas</url>
       <releases>
         <enabled>true</enabled>
       </releases>
