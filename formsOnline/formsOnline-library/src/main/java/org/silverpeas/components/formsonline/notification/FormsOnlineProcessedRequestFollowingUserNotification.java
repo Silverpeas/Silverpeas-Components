@@ -24,65 +24,62 @@
 package org.silverpeas.components.formsonline.notification;
 
 import org.silverpeas.components.formsonline.model.FormInstance;
+import org.silverpeas.components.formsonline.model.FormInstanceValidation;
+import org.silverpeas.components.formsonline.model.FormInstanceValidationType;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.template.SilverpeasTemplate;
 
 import java.util.Collection;
-
-import static java.util.Collections.singletonList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Nicolas EYSSERIC
  */
-public class FormsOnlineValidationRequestUserNotification
-    extends AbstractFormsOnlineRequestUserNotification {
+public class FormsOnlineProcessedRequestFollowingUserNotification
+    extends FormsOnlineValidationRequestUserNotification {
 
-  public FormsOnlineValidationRequestUserNotification(final FormInstance resource,
+  private final List<String> usersToBeNotified;
+
+  public FormsOnlineProcessedRequestFollowingUserNotification(final FormInstance resource,
       final NotifAction action) {
     super(resource, action);
+    final FormInstanceValidationType latestValidation = resource.getValidations().getLatestValidation().getValidationType();
+    // notify previous validators if marked as followers
+    this.usersToBeNotified = resource.getPreviousValidations().stream()
+        .filter(v -> v.getValidationType() != latestValidation)
+        .filter(FormInstanceValidation::isFollower)
+        .map(FormInstanceValidation::getValidator)
+        .map(User::getId)
+        .collect(Collectors.toList());
+  }
+
+  @Override
+  protected void perform(final FormInstance resource) {
+    super.perform(resource);
+    getNotificationMetaData().displayReceiversInFooter();
   }
 
   @Override
   protected String getBundleSubjectKey() {
-    if (NotifAction.VALIDATE.equals(getAction())) {
-      return "formsOnline.msgFormValidated";
-    }
-    return "formsOnline.msgFormRefused";
-  }
-
-  @Override
-  protected String getTitle(final String language) {
-    String title = super.getTitle(language);
-    if (NotifAction.VALIDATE.equals(getAction())) {
-      int nbValidationSteps = getNbValidationSteps();
-      if (nbValidationSteps > 1) {
-        int step = getCurrentValidationStep();
-        title += " " + getBundle(language)
-            .getStringWithParams("formsOnline.msgFormValidated.steps", Integer.toString(step),
-                Integer.toString(nbValidationSteps));
-      }
-    }
-    return title;
+    return "formsOnline.msgFormProcessed.follower";
   }
 
   @Override
   protected String getTemplateFileName() {
-    if (NotifAction.VALIDATE.equals(getAction())) {
-      return "notificationValidated";
-    }
-    return "notificationDenied";
+    return "notificationProcessed";
+  }
+
+  @Override
+  protected Collection<String> getUserIdsToNotify() {
+    return usersToBeNotified;
   }
 
   @Override
   protected void performTemplateData(final String language, final FormInstance resource,
       final SilverpeasTemplate template) {
     super.performTemplateData(language, resource, template);
-    template
-        .setAttribute("comment", getResource().getValidations().getLatestValidation().getComment());
-  }
-
-  @Override
-  protected Collection<String> getUserIdsToNotify() {
-    return singletonList(getResource().getCreatorId());
+    template.setAttribute("validation", getResource().getValidations().getLatestValidation());
   }
 }

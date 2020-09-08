@@ -27,6 +27,7 @@ import org.apache.ecs.xhtml.div;
 import org.silverpeas.components.formsonline.model.RequestsByStatus.MergeRuleByStates;
 import org.silverpeas.components.formsonline.notification.FormsOnlineCanceledRequestUserNotification;
 import org.silverpeas.components.formsonline.notification.FormsOnlinePendingValidationRequestUserNotification;
+import org.silverpeas.components.formsonline.notification.FormsOnlineProcessedRequestFollowingUserNotification;
 import org.silverpeas.components.formsonline.notification.FormsOnlineProcessedRequestUserNotification;
 import org.silverpeas.components.formsonline.notification.FormsOnlineValidationRequestUserNotification;
 import org.silverpeas.core.admin.PaginationPage;
@@ -51,10 +52,12 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
+import org.silverpeas.core.html.PermalinkRegistry;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
+import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.mail.MailAddress;
 import org.silverpeas.core.mail.MailSending;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
@@ -100,12 +103,17 @@ import static org.silverpeas.core.notification.user.builder.helper.UserNotificat
 import static org.silverpeas.core.util.CollectionUtil.isEmpty;
 
 @Singleton
-public class DefaultFormsOnlineService implements FormsOnlineService {
+public class DefaultFormsOnlineService implements FormsOnlineService, Initialization {
 
   private static final String IN_COMPONENT_MSG_PART = " in component ";
 
   @Inject
   private OrganizationController organizationController;
+
+  @Override
+  public void init() {
+    PermalinkRegistry.get().addUrlPart("Form");
+  }
 
   @Override
   public List<FormDetail> getAllForms(final String appId, final String userId,
@@ -336,29 +344,35 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
           l.setForm(form);
           return l;
         });
-        if (pendingValidationTypeFilter.isPresent()) {
-          resultStream = resultStream
-              .filter(r -> {
-                final FormInstanceValidationType type = pendingValidationTypeFilter.get();
-                final Set<FormInstanceValidationType> possibleTypes = r.getForm().getPossibleRequestValidations().keySet();
-                if (!possibleTypes.contains(type)) {
-                  return false;
-                }
-                final Optional<FormInstanceValidationType> previousType = possibleTypes
-                    .stream()
-                    .filter(t -> t.ordinal() < type.ordinal())
-                    .reduce((a, b) -> b);
-                return previousType
-                    .map(p ->r.getValidations().getValidationOfType(p).filter(FormInstanceValidation::isValidated).isPresent()
-                             && !r.getValidations().getValidationOfType(type).isPresent())
-                    .orElseGet(() -> r.getValidations().isEmpty());
-              });
-        }
+        resultStream = filterOnValidationType(resultStream, pendingValidationTypeFilter);
         merge.accept(requests, resultStream.collect(SilverpeasList.collector(result)));
       }
     }
 
     return requests;
+  }
+
+  private Stream<FormInstance> filterOnValidationType(Stream<FormInstance> resultStream,
+      final Optional<FormInstanceValidationType> pendingValidationTypeFilter) {
+    if (pendingValidationTypeFilter.isPresent()) {
+      resultStream = resultStream
+          .filter(r -> {
+            final FormInstanceValidationType type = pendingValidationTypeFilter.get();
+            final Set<FormInstanceValidationType> possibleTypes = r.getForm().getPossibleRequestValidations().keySet();
+            if (!possibleTypes.contains(type)) {
+              return false;
+            }
+            final Optional<FormInstanceValidationType> previousType = possibleTypes
+                .stream()
+                .filter(t -> t.ordinal() < type.ordinal())
+                .reduce((a, b) -> b);
+            return previousType
+                .map(p ->r.getValidations().getValidationOfType(p).filter(FormInstanceValidation::isValidated).isPresent()
+                         && !r.getValidations().getValidationOfType(type).isPresent())
+                .orElseGet(() -> r.getValidations().isEmpty());
+          });
+    }
+    return resultStream;
   }
 
   @Override
@@ -586,28 +600,17 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
     notifyValidation(request);
   }
 
-  private void notifyValidation(FormInstance request) throws FormsOnlineException {
-    FormInstanceValidation latestValidation = request.getValidations().getLatestValidation();
-    FormInstanceValidation pendingValidation = request.getPendingValidation();
-
-    NotifAction action = NotifAction.VALIDATE;
-    if (request.getState() == FormInstance.STATE_REFUSED) {
-      action = NotifAction.REFUSE;
-    }
-
+  private void notifyValidation(FormInstance request) {
+    final NotifAction action = request.getState() == FormInstance.STATE_REFUSED
+        ? NotifAction.REFUSE
+        : NotifAction.VALIDATE;
     // notify sender
     // TODO custom message
     buildAndSend(new FormsOnlineValidationRequestUserNotification(request, action));
-
     // notify the request processed
-    final List<String> nextValidatorIds = new ArrayList<>();
-    if (latestValidation.getValidationType().isFinal() ||
-        pendingValidation.getValidationType().isFinal()) {
-      nextValidatorIds.addAll(getAllReceivers(request.getForm().getPK(), RECEIVERS_TYPE_FINAL));
-    } else if (pendingValidation.getValidationType().isIntermediate()) {
-      nextValidatorIds.addAll(getAllReceivers(request.getForm().getPK(), RECEIVERS_TYPE_INTERMEDIATE));
-    }
-    buildAndSend(new FormsOnlineProcessedRequestUserNotification(request, action, nextValidatorIds));
+    buildAndSend(new FormsOnlineProcessedRequestUserNotification(request, action));
+    // notify validator followers of the processed request
+    buildAndSend(new FormsOnlineProcessedRequestFollowingUserNotification(request, action));
   }
 
   @Override
@@ -670,40 +673,10 @@ public class DefaultFormsOnlineService implements FormsOnlineService {
 
   private void notifyReceivers(FormInstance request) throws FormsOnlineException {
     final FormInstanceValidations validations = request.getValidations();
-    final FormDetail form = request.getForm();
     if (validations.isEmpty()) {
       sendRequestByEmail(request);
     }
-    List<String> userIds = new ArrayList<>();
-    final FormInstanceValidation pendingValidation = request.getPendingValidation();
-    if (pendingValidation != null) {
-      if (pendingValidation.getValidationType().isHierarchical()) {
-        // notify boss
-        final String bossId = form.getHierarchicalValidatorOfCurrentUser();
-        userIds.add(bossId);
-      } else if (pendingValidation.getValidationType().isIntermediate()) {
-        userIds = getAllReceivers(request.getForm().getPK(), RECEIVERS_TYPE_INTERMEDIATE);
-      } else {
-        userIds = getAllReceivers(request.getForm().getPK(), RECEIVERS_TYPE_FINAL);
-      }
-    }
-
-    buildAndSend(new FormsOnlinePendingValidationRequestUserNotification(request, userIds));
-  }
-
-  private List<String> getAllReceivers(FormPK pk, String rightType) throws FormsOnlineException {
-    List<String> userIds = getDAO().getReceiversAsUsers(pk, rightType);
-    List<String> groupIds = getDAO().getReceiversAsGroups(pk, rightType);
-    for (String groupId : groupIds) {
-      Group group = Group.getById(groupId);
-      if (group != null) {
-        List<User> users = group.getAllUsers();
-        for (User user : users) {
-          userIds.add(user.getId());
-        }
-      }
-    }
-    return userIds;
+    buildAndSend(new FormsOnlinePendingValidationRequestUserNotification(request));
   }
 
   private PublicationTemplate getPublicationTemplate(FormInstance request)

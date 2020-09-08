@@ -33,7 +33,11 @@ import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.silverpeas.core.util.StringUtil.EMPTY;
 
@@ -172,7 +176,7 @@ public class FormInstance implements SilverpeasContent {
 
   @Override
   public boolean canBeDeletedBy(final User user) {
-    return (isDraft() && user.getId().equals(getCreatorId())) ||
+    return ((isDraft() || getForm().isDeleteAfterRequestExchange()) && user.getId().equals(getCreatorId())) ||
         ((isCanceled() || isValidated() || isDenied() || isArchived()) && isOneOfLastValidators(user));
   }
 
@@ -199,33 +203,34 @@ public class FormInstance implements SilverpeasContent {
   }
 
   public List<FormInstanceValidation> getValidationsSchema() {
-    return form.getPossibleRequestValidations().entrySet().stream()
-        .map(e -> {
-          final FormInstanceValidationType validationType = e.getKey();
-          return getValidations().getValidationOfType(validationType)
-              .orElseGet(() -> {
-                final FormInstanceValidation validation = new FormInstanceValidation(this);
-                validation.setValidationType(validationType);
-                validation.setStatus(ContributionStatus.PENDING_VALIDATION);
-                // adding user who have to validate if it is unique
-                final List<User> validators = e.getValue().apply(this).get();
-                if (validators.size() == 1) {
-                  validation.setValidator(validators.get(0));
-                }
-                return validation;
-              });
-        })
+    return Stream.of(FormInstanceValidationType.values())
+        .map(v -> getValidations().getValidationOfType(v).orElseGet(() -> {
+          final Function<FormInstance, Supplier<List<User>>> validatorSupplier = form
+              .getPossibleRequestValidations().get(v);
+          final FormInstanceValidation validation;
+          if (validatorSupplier != null) {
+            validation = new FormInstanceValidation(this);
+            validation.setValidationType(v);
+            validation.setStatus(ContributionStatus.PENDING_VALIDATION);
+            // adding user who have to validate if it is unique
+            final List<User> validators = validatorSupplier.apply(this).get();
+            if (validators.size() == 1) {
+              validation.setValidator(validators.get(0));
+            }
+          } else {
+            validation = null;
+          }
+          return validation;
+        }))
+        .filter(Objects::nonNull)
         .collect(Collectors.toList());
   }
 
   public FormInstanceValidation getPendingValidation() {
-    List<FormInstanceValidation> schema = getValidationsSchema();
-    for (FormInstanceValidation validation : schema) {
-      if (validation.isPendingValidation()) {
-        return validation;
-      }
-    }
-    return null;
+    return getValidationsSchema().stream()
+        .filter(FormInstanceValidation::isPendingValidation)
+        .findFirst()
+        .orElse(null);
   }
 
   /**
@@ -300,8 +305,17 @@ public class FormInstance implements SilverpeasContent {
     boolean isOneOfLastValidator;
     if (form.isFinalValidation()) {
       isOneOfLastValidator = form.isFinalValidator(user.getId());
+      if (!isOneOfLastValidator && getValidations().getIntermediateValidation().filter(FormInstanceValidation::isRefused).isPresent()) {
+        isOneOfLastValidator = form.isIntermediateValidator(user.getId());
+      }
+      if (!isOneOfLastValidator && getValidations().getHierarchicalValidation().filter(FormInstanceValidation::isRefused).isPresent()) {
+        isOneOfLastValidator = getHierarchicalValidator().equals(user.getId());
+      }
     } else if (form.isIntermediateValidation()) {
       isOneOfLastValidator = form.isIntermediateValidator(user.getId());
+      if (!isOneOfLastValidator && getValidations().getHierarchicalValidation().filter(FormInstanceValidation::isRefused).isPresent()) {
+        isOneOfLastValidator = getHierarchicalValidator().equals(user.getId());
+      }
     } else if (form.isHierarchicalValidation()) {
       isOneOfLastValidator = getHierarchicalValidator().equals(user.getId());
     } else {

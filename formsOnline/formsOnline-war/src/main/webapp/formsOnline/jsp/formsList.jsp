@@ -56,11 +56,8 @@
 
 <fmt:message var="permalinkCopyLabel" key="GML.permalink.copy" bundle="${generalBundle}"/>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.formsOnline">
-<head>
-<title></title>
-<view:looknfeel/>
+<view:sp-page angularJsAppName="silverpeas.formsOnline">
+<view:sp-head-part>
 <view:includePlugin name="toggle"/>
 <script type="text/javascript">
   function deleteForm(idModel, nbRequests) {
@@ -79,8 +76,8 @@
     location.href = "Inbox";
   }
 </script>
-</head>
-<body>
+</view:sp-head-part>
+<view:sp-body-part>
 <view:browseBar/>
 <c:if test="${role == 'admin'}">
   <view:operationPane>
@@ -237,7 +234,7 @@
             <c:if test="${role == 'admin'}">
               <div class="operation actionShownOnMouseOver">
                 <c:url var="permalinkUrl" value="/Form/${form.id}?ComponentId=${form.instanceId}"/>
-                <a href="${permalinkUrl}" title="${permalinkCopyLabel}"><img border="0" src="${iconPermalink}" alt="<fmt:message key="GML.permalink"/>" title="<fmt:message key="GML.permalink"/>" /></a>
+                <a href="${permalinkUrl}" title="${permalinkCopyLabel}" class="sp-permalink"><img border="0" src="${iconPermalink}" alt="<fmt:message key="GML.permalink"/>" title="<fmt:message key="GML.permalink"/>" /></a>
                 <a href="EditForm?FormId=${form.id}" title="<fmt:message key="GML.modify"/>"><img border="0" src="${iconEdit}" alt="<fmt:message key="GML.modify"/>" title="<fmt:message key="GML.modify"/>" /></a>
                 <c:choose>
                   <c:when test="${form.notYetPublished}">
@@ -263,11 +260,6 @@
 <form name="deleteForm" action="DeleteForm" method="post">
   <input type="hidden" name="FormId"/>
 </form>
-
-<script type="text/javascript">
-  /* declare the module myapp and its dependencies (here in the silverpeas module) */
-  var myapp = angular.module('silverpeas.formsOnline', ['silverpeas.services', 'silverpeas.directives']);
-</script>
 <view:progressMessage/>
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>

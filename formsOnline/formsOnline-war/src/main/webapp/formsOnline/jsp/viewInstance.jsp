@@ -58,6 +58,10 @@
 <fmt:message var="labelAccept" key="formsOnline.request.action.validate"/>
 <fmt:message var="labelCancel" key="formsOnline.request.action.cancel"/>
 <fmt:message var="labelCancelConfirm" key="formsOnline.request.action.cancel.confirm"/>
+<fmt:message var="labelDelete" key="GML.delete"/>
+<fmt:message var="labelDeleteConfirm" key="formsOnline.request.action.delete.confirm"/>
+<fmt:message var="labelArchive" key="formsOnline.request.action.archive"/>
+<fmt:message var="labelArchiveConfirm" key="formsOnline.request.action.archive.confirm"/>
 
 <%
 	Form        formView  = (Form) request.getAttribute("Form");
@@ -69,10 +73,8 @@
 	context.setBorderPrinted(false);
 %>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <title></title>
-  <view:looknfeel />
+<view:sp-page>
+<view:sp-head-part>
   <view:link href="/formsOnline/jsp/styleSheets/formsOnline-print.css" print="true"/>
   <% formView.displayScripts(out, context); %>
   <script type="text/javascript">
@@ -103,39 +105,46 @@
 	  }
 
     function deleteRequest() {
-      document.requestForm.action = "DeleteRequest";
-      document.requestForm.submit();
+      jQuery.popup.confirm("${silfn:escapeJs(labelDeleteConfirm)}", {
+        title : "${silfn:escapeJs(labelDelete)}",
+        callback : function() {
+          document.requestForm.action = "DeleteRequest";
+          document.requestForm.submit();
+        }
+      });
     }
 
     function archive() {
-      document.requestForm.action = "ArchiveRequest";
-      document.requestForm.submit();
+      jQuery.popup.confirm("${silfn:escapeJs(labelArchiveConfirm)}", {
+        title : "${silfn:escapeJs(labelArchive)}",
+        callback : function() {
+          document.requestForm.action = "ArchiveRequest";
+          document.requestForm.submit();
+        }
+      });
     }
 
     function cancelRequest() {
-      $('#cancelConfirmation').popup('confirmation', {
-        title : "${labelCancel}",
+	    jQuery.popup.confirm("${silfn:escapeJs(labelCancelConfirm)}", {
+        title : "${silfn:escapeJs(labelCancel)}",
         callback : function() {
           document.requestForm.action = "CancelRequest";
           document.requestForm.submit();
         }
       });
-
     }
   </script>
-</head>
-<body class="${formNameParts[0]}">
+</view:sp-head-part>
+<view:sp-body-part cssClass="${formNameParts[0]}">
     <view:operationPane>
       <c:if test="${userRequest.canBeCanceledBy(currentUser)}">
         <view:operation action="javascript:cancelRequest()" altText="${labelCancel}"/>
       </c:if>
       <c:if test="${userRequest.canBeArchivedBy(currentUser)}">
-        <fmt:message var="opArchive" key="formsOnline.request.action.archive"/>
-        <view:operation action="javascript:archive()" altText="${opArchive}"/>
+        <view:operation action="javascript:archive()" altText="${labelArchive}"/>
       </c:if>
       <c:if test="${userRequest.canBeDeletedBy(currentUser)}">
-        <fmt:message var="opDelete" key="GML.delete"/>
-        <view:operation action="javascript:deleteRequest()" altText="${opDelete}"/>
+        <view:operation action="javascript:deleteRequest()" altText="${labelDelete}"/>
       </c:if>
       <fmt:message var="opPrint" key="GML.print"/>
       <view:operation action="javascript:window.print()" altText="${opPrint}"/>
@@ -213,9 +222,5 @@
   <input id="followerCheckbox" type="checkbox" value="true"/> <fmt:message key="formsOnline.request.follow"/>
 </div>
 
-<div id="cancelConfirmation" style="display: none">
-  ${labelCancelConfirm}
-</div>
-
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>

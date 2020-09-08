@@ -25,15 +25,20 @@ package org.silverpeas.components.formsonline.notification;
 
 import org.silverpeas.components.formsonline.model.FormInstance;
 import org.silverpeas.components.formsonline.model.FormInstanceValidation;
+import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
 
-import java.util.MissingResourceException;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.silverpeas.core.notification.user.client.constant.NotifAction.CANCELED;
+import static org.silverpeas.core.notification.user.client.constant.NotifAction.PENDING_VALIDATION;
 
 /**
  * @author Yohann Chastagnier
@@ -48,7 +53,7 @@ public abstract class AbstractFormsOnlineRequestUserNotification
       final NotifAction action) {
     super(resource);
     this.action = action;
-    if (NotifAction.PENDING_VALIDATION.equals(action)) {
+    if (PENDING_VALIDATION.equals(action) || CANCELED.equals(action)) {
       this.senderName = UserDetail.getById(resource.getCreatorId()).getDisplayedName();
     } else {
       this.senderName = resource.getValidations().getLatestValidation().getValidator().getDisplayedName();
@@ -68,14 +73,7 @@ public abstract class AbstractFormsOnlineRequestUserNotification
   @Override
   protected void performTemplateData(final String language, final FormInstance resource,
       final SilverpeasTemplate template) {
-    String title;
-    try {
-      title = getBundle(language).getString(getBundleSubjectKey());
-    } catch (MissingResourceException ex) {
-      SilverLogger.getLogger(this).silent(ex);
-      title = getTitle();
-    }
-    getNotificationMetaData().addLanguage(language, title, "");
+    getNotificationMetaData().addLanguage(language, getTitle(language), "");
     template.setAttribute("form", resource.getForm());
     template.setAttribute("request", resource);
     template.setAttribute("formName", resource.getForm().getName());
@@ -113,7 +111,7 @@ public abstract class AbstractFormsOnlineRequestUserNotification
 
   @Override
   protected String getSender() {
-    if (NotifAction.PENDING_VALIDATION.equals(action)) {
+    if (PENDING_VALIDATION.equals(action) || CANCELED.equals(action)) {
       return getResource().getCreatorId();
     }
     return getResource().getValidations().getLatestValidation().getValidator().getId();
@@ -143,5 +141,13 @@ public abstract class AbstractFormsOnlineRequestUserNotification
   @Override
   protected boolean isSendImmediately() {
     return true;
+  }
+
+  protected List<String> extractGroupIds(final List<Group> groups) {
+    return groups.stream().map(Group::getId).collect(Collectors.toList());
+  }
+
+  protected List<String> extractUserIds(final List<User> users) {
+    return users.stream().map(User::getId).collect(Collectors.toList());
   }
 }

@@ -26,12 +26,15 @@ package org.silverpeas.components.formsonline.notification;
 import org.silverpeas.components.formsonline.model.FormInstance;
 import org.silverpeas.components.formsonline.model.FormInstanceValidation;
 import org.silverpeas.components.formsonline.model.FormInstanceValidationType;
-import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.template.SilverpeasTemplate;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
+
+import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
 
 /**
  * @author Nicolas EYSSERIC
@@ -40,19 +43,23 @@ public class FormsOnlineProcessedRequestUserNotification
     extends FormsOnlineValidationRequestUserNotification {
 
   private final List<String> usersToBeNotified;
+  private final List<String> groupsToBeNotified;
 
   public FormsOnlineProcessedRequestUserNotification(final FormInstance resource,
-      NotifAction action, final List<String> nextValidatorIds) {
+      final NotifAction action) {
     super(resource, action);
-    this.usersToBeNotified = nextValidatorIds;
-    // notify previous validators if marked as followers
-    final FormInstanceValidationType latestValidation = getResource().getValidations().getLatestValidation().getValidationType();
-    resource.getPreviousValidations().stream()
-        .filter(v -> v.getValidationType() != latestValidation)
-        .filter(FormInstanceValidation::isFollower)
-        .map(FormInstanceValidation::getValidator)
-        .map(User::getId)
-        .forEach(this.usersToBeNotified::add);
+    final Optional<FormInstanceValidationType> pendingValidation = ofNullable(resource.getPendingValidation())
+        .map(FormInstanceValidation::getValidationType);
+    if (pendingValidation.filter(FormInstanceValidationType::isFinal).isPresent()) {
+      this.usersToBeNotified = extractUserIds(resource.getForm().getReceiversAsUsers());
+      this.groupsToBeNotified = extractGroupIds(resource.getForm().getReceiversAsGroups());
+    } else if (pendingValidation.filter(FormInstanceValidationType::isIntermediate).isPresent()) {
+      this.usersToBeNotified = extractUserIds(resource.getForm().getIntermediateReceiversAsUsers());
+      this.groupsToBeNotified = extractGroupIds(resource.getForm().getIntermediateReceiversAsGroups());
+    } else {
+      this.usersToBeNotified = emptyList();
+      this.groupsToBeNotified = emptyList();
+    }
   }
 
   @Override
@@ -77,6 +84,11 @@ public class FormsOnlineProcessedRequestUserNotification
   @Override
   protected Collection<String> getUserIdsToNotify() {
     return usersToBeNotified;
+  }
+
+  @Override
+  protected Collection<String> getGroupIdsToNotify() {
+    return groupsToBeNotified;
   }
 
   @Override
