@@ -45,7 +45,9 @@ public class FormsOnlineProcessedRequestFollowingUserNotification
   public FormsOnlineProcessedRequestFollowingUserNotification(final FormInstance resource,
       final NotifAction action) {
     super(resource, action);
-    final FormInstanceValidationType latestValidation = resource.getValidations().getLatestValidation().getValidationType();
+    final FormInstanceValidationType latestValidation = resource.getValidations().getLatestValidation()
+        .map(FormInstanceValidation::getValidationType)
+        .orElse(null);
     // notify previous validators if marked as followers
     this.usersToBeNotified = resource.getPreviousValidations().stream()
         .filter(v -> v.getValidationType() != latestValidation)
@@ -80,6 +82,7 @@ public class FormsOnlineProcessedRequestFollowingUserNotification
   protected void performTemplateData(final String language, final FormInstance resource,
       final SilverpeasTemplate template) {
     super.performTemplateData(language, resource, template);
-    template.setAttribute("validation", getResource().getValidations().getLatestValidation());
+    getResource().getValidations().getLatestValidation()
+        .ifPresent(v -> template.setAttribute("validation", v));
   }
 }

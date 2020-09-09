@@ -30,6 +30,7 @@ import org.silverpeas.core.template.SilverpeasTemplate;
 import java.util.Collection;
 
 import static java.util.Collections.singletonList;
+import static org.silverpeas.core.notification.user.client.constant.NotifAction.*;
 
 /**
  * @author Nicolas EYSSERIC
@@ -44,7 +45,7 @@ public class FormsOnlineValidationRequestUserNotification
 
   @Override
   protected String getBundleSubjectKey() {
-    if (NotifAction.VALIDATE.equals(getAction())) {
+    if (VALIDATE.equals(getAction())) {
       return "formsOnline.msgFormValidated";
     }
     return "formsOnline.msgFormRefused";
@@ -53,7 +54,7 @@ public class FormsOnlineValidationRequestUserNotification
   @Override
   protected String getTitle(final String language) {
     String title = super.getTitle(language);
-    if (NotifAction.VALIDATE.equals(getAction())) {
+    if (REFUSE.equals(getAction()) || VALIDATE.equals(getAction()) || PENDING_VALIDATION.equals(getAction())) {
       int nbValidationSteps = getNbValidationSteps();
       if (nbValidationSteps > 1) {
         int step = getCurrentValidationStep();
@@ -67,7 +68,7 @@ public class FormsOnlineValidationRequestUserNotification
 
   @Override
   protected String getTemplateFileName() {
-    if (NotifAction.VALIDATE.equals(getAction())) {
+    if (VALIDATE.equals(getAction())) {
       return "notificationValidated";
     }
     return "notificationDenied";
@@ -77,12 +78,27 @@ public class FormsOnlineValidationRequestUserNotification
   protected void performTemplateData(final String language, final FormInstance resource,
       final SilverpeasTemplate template) {
     super.performTemplateData(language, resource, template);
-    template
-        .setAttribute("comment", getResource().getValidations().getLatestValidation().getComment());
+    getResource().getValidations().getLatestValidation()
+        .ifPresent(v -> template.setAttribute("comment", v.getComment()));
   }
 
   @Override
   protected Collection<String> getUserIdsToNotify() {
     return singletonList(getResource().getCreatorId());
+  }
+
+  protected int getNbValidationSteps() {
+    return getResource().getValidationsSchema().size();
+  }
+
+  /**
+   * The meaning of the returned step number is "VALIDATED" and not "TO VALIDATE".
+   * <p>
+   * Please override this method in order to get the "TO VALIDATE" meaning.
+   * </p>
+   * @return the step number as integer.
+   */
+  protected int getCurrentValidationStep() {
+    return Math.min(getResource().getValidations().size(), getNbValidationSteps());
   }
 }

@@ -219,7 +219,7 @@
 </form>
 
 <div id="followerMessage" style="display: none">
-  <input id="followerCheckbox" type="checkbox" value="true"/> <fmt:message key="formsOnline.request.follow"/>
+  <input id="followerCheckbox" type="checkbox" value="true"/> <label for="followerCheckbox"><fmt:message key="formsOnline.request.follow"/></label>
 </div>
 
 </view:sp-body-part>

@@ -80,11 +80,11 @@ public class FormInstanceValidations extends ArrayList<FormInstanceValidation> {
         t -> stream().filter(v -> v.getValidationType() == type).findFirst());
   }
 
-  public FormInstanceValidation getLatestValidation() {
-    return getFinalValidation()
+  public Optional<FormInstanceValidation> getLatestValidation() {
+    return Optional.ofNullable(getFinalValidation()
         .orElseGet(() -> getIntermediateValidation()
             .orElseGet(() -> getHierarchicalValidation()
-                .orElse(null)));
+                .orElse(null))));
   }
 
   private void resetCache() {

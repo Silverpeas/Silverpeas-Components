@@ -24,10 +24,9 @@
 package org.silverpeas.components.formsonline.notification;
 
 import org.silverpeas.components.formsonline.model.FormInstance;
-import org.silverpeas.components.formsonline.model.FormInstanceValidation;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.model.ContributionValidation;
 import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
@@ -35,6 +34,8 @@ import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.util.URLUtil;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static org.silverpeas.core.notification.user.client.constant.NotifAction.CANCELED;
@@ -53,10 +54,13 @@ public abstract class AbstractFormsOnlineRequestUserNotification
       final NotifAction action) {
     super(resource);
     this.action = action;
+    final Supplier<String> creatorDisplayName = () -> User.getById(resource.getCreatorId()).getDisplayedName();
     if (PENDING_VALIDATION.equals(action) || CANCELED.equals(action)) {
-      this.senderName = UserDetail.getById(resource.getCreatorId()).getDisplayedName();
+      this.senderName = creatorDisplayName.get();
     } else {
-      this.senderName = resource.getValidations().getLatestValidation().getValidator().getDisplayedName();
+      this.senderName = getLatestRequestValidator()
+          .map(User::getDisplayedName)
+          .orElseGet(creatorDisplayName);
     }
   }
 
@@ -111,10 +115,13 @@ public abstract class AbstractFormsOnlineRequestUserNotification
 
   @Override
   protected String getSender() {
+    final Supplier<String> creatorIdSupplier = () -> getResource().getCreatorId();
     if (PENDING_VALIDATION.equals(action) || CANCELED.equals(action)) {
-      return getResource().getCreatorId();
+      return creatorIdSupplier.get();
     }
-    return getResource().getValidations().getLatestValidation().getValidator().getId();
+    return getLatestRequestValidator()
+        .map(User::getId)
+        .orElseGet(creatorIdSupplier);
   }
 
   @Override
@@ -122,25 +129,13 @@ public abstract class AbstractFormsOnlineRequestUserNotification
     return "formsOnline.notifLinkLabel";
   }
 
-  protected int getNbValidationSteps() {
-    return getResource().getValidationsSchema().size();
-  }
-
-  protected int getCurrentValidationStep() {
-    int currentStep = 1;
-    int nbValidationSteps = getNbValidationSteps();
-    FormInstanceValidation latestValidation = getResource().getValidations().getLatestValidation();
-    if (latestValidation.getValidationType().isFinal()) {
-      currentStep = nbValidationSteps;
-    } else if (latestValidation.getValidationType().isIntermediate() && nbValidationSteps == 3) {
-      currentStep = 2;
-    }
-    return currentStep;
-  }
-
   @Override
   protected boolean isSendImmediately() {
     return true;
+  }
+
+  protected Optional<User> getLatestRequestValidator() {
+    return getResource().getValidations().getLatestValidation().map(ContributionValidation::getValidator);
   }
 
   protected List<String> extractGroupIds(final List<Group> groups) {

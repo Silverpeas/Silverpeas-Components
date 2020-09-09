@@ -603,3 +603,7 @@ fieldset#listSenders {
 #all-requests .request-state {
   white-space:nowrap;
 }
+
+#followerMessage label {
+  font-weight: normal;
+}

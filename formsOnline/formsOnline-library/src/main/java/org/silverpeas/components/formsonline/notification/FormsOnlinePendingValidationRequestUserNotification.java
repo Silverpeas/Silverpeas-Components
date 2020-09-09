@@ -37,7 +37,7 @@ import static java.util.Collections.singletonList;
  * @author Nicolas EYSSERIC
  */
 public class FormsOnlinePendingValidationRequestUserNotification
-    extends AbstractFormsOnlineRequestUserNotification {
+    extends FormsOnlineValidationRequestUserNotification {
 
   private final List<String> usersToBeNotified;
   private final List<String> groupsToBeNotified;
@@ -88,5 +88,14 @@ public class FormsOnlinePendingValidationRequestUserNotification
   @Override
   protected Collection<String> getGroupIdsToNotify() {
     return groupsToBeNotified;
+  }
+
+  /**
+   * The meaning of the returned step number is "TO VALIDATE".
+   * @return the next step number as integer.
+   */
+  @Override
+  protected int getCurrentValidationStep() {
+    return super.getCurrentValidationStep() + 1;
   }
 }

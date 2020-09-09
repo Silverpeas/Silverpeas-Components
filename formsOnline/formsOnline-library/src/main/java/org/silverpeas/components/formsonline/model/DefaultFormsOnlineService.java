@@ -614,6 +614,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
   }
 
   @Override
+  @Transactional
   public void cancelRequest(final RequestPK pk) throws FormsOnlineException {
     final FormInstance request = getDAO().getRequest(pk);
     final FormDetail form = loadForm(new FormPK(request.getFormId(), pk.getInstanceId()));
@@ -676,7 +677,9 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
     if (validations.isEmpty()) {
       sendRequestByEmail(request);
     }
-    buildAndSend(new FormsOnlinePendingValidationRequestUserNotification(request));
+    if (!request.getForm().isDeleteAfterRequestExchange()) {
+      buildAndSend(new FormsOnlinePendingValidationRequestUserNotification(request));
+    }
   }
 
   private PublicationTemplate getPublicationTemplate(FormInstance request)
@@ -702,8 +705,9 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
         // Finally explicit attached files
         attachFilesToMail(multipart, contents.getRight());
         // Sending
+        final User sender = User.getById(request.getCreatorId());
         MailSending
-            .from(MailAddress.eMail(User.getById(request.getCreatorId()).geteMail()))
+            .from(MailAddress.eMail(sender.geteMail()).withName(sender.getDisplayedName()))
             .to(MailAddress.eMail(email))
             .withSubject(form.getTitle())
             .withContent(multipart)

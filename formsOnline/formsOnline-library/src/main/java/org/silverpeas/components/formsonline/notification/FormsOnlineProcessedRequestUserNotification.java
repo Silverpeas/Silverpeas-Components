@@ -35,6 +35,7 @@ import java.util.Optional;
 
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
+import static org.silverpeas.core.notification.user.client.constant.NotifAction.VALIDATE;
 
 /**
  * @author Nicolas EYSSERIC
@@ -49,6 +50,7 @@ public class FormsOnlineProcessedRequestUserNotification
       final NotifAction action) {
     super(resource, action);
     final Optional<FormInstanceValidationType> pendingValidation = ofNullable(resource.getPendingValidation())
+        .filter(v -> VALIDATE == action)
         .map(FormInstanceValidation::getValidationType);
     if (pendingValidation.filter(FormInstanceValidationType::isFinal).isPresent()) {
       this.usersToBeNotified = extractUserIds(resource.getForm().getReceiversAsUsers());
@@ -70,9 +72,6 @@ public class FormsOnlineProcessedRequestUserNotification
 
   @Override
   protected String getBundleSubjectKey() {
-    if (getResource().getValidations().getLatestValidation().getValidationType().isFinal()) {
-      return "formsOnline.msgFormProcessed";
-    }
     return "formsOnline.msgFormToValid";
   }
 
@@ -95,6 +94,16 @@ public class FormsOnlineProcessedRequestUserNotification
   protected void performTemplateData(final String language, final FormInstance resource,
       final SilverpeasTemplate template) {
     super.performTemplateData(language, resource, template);
-    template.setAttribute("validation", getResource().getValidations().getLatestValidation());
+    getResource().getValidations().getLatestValidation()
+        .ifPresent(v -> template.setAttribute("validation", v));
+  }
+
+  /**
+   * The meaning of the returned step number is "TO VALIDATE".
+   * @return the next step number as integer.
+   */
+  @Override
+  protected int getCurrentValidationStep() {
+    return super.getCurrentValidationStep() + 1;
   }
 }
