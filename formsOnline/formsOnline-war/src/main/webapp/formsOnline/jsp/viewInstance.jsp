@@ -154,6 +154,10 @@
   <div id="header-OnlineForm">
     <h2 class="title">${form.title}</h2>
 
+    <c:if test="${userRequest.canceled}">
+      <div class="inlineMessage-nok"><fmt:message key="formsOnline.form.request.cancel.info"/></div>
+    </c:if>
+
     <ul class="steps-OnlineForm">
       <li class="step-OnlineForm ask-by">
         <div class="header-step-onlineForm">

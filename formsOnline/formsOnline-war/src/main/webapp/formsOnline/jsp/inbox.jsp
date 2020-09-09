@@ -60,7 +60,10 @@
 <fmt:message var="colSender" key="formsOnline.sender"/>
 <fmt:message var="colForm" key="formsOnline.Form"/>
 <fmt:message var="colValidator" key="formsOnline.request.process.user"/>
-<fmt:message var="colProcessDate" key="formsOnline.request.process.date"/>
+<fmt:message var="colProcessDate" key="GML.date"/>
+<fmt:message var="colVH" key="formsOnline.requests.array.col.vh.label"/>
+<fmt:message var="colVI" key="formsOnline.requests.array.col.vi.label"/>
+<fmt:message var="colVF" key="formsOnline.requests.array.col.vf.label"/>
 
 <fmt:message var="labelExport" key="GML.export.result"/>
 
@@ -213,15 +216,15 @@
         <view:arrayColumn title="${colSender}" compareOn="${r -> r.creator.displayedName}"/>
         <view:arrayColumn title="${colForm}" compareOn="${r -> r.data.form.title}"/>
         <c:if test="${useHierarchicalValidation}">
-          <view:arrayColumn title="VH - Date" sortable="false"/>
-          <view:arrayColumn title="VH - User" sortable="false"/>
+          <view:arrayColumn title="${colVH}" sortable="false"/>
+          <view:arrayColumn title="${colProcessDate}" sortable="false"/>
         </c:if>
         <c:if test="${useIntermediateValidation}">
-          <view:arrayColumn title="VI - Date" sortable="false"/>
-          <view:arrayColumn title="VI - User" sortable="false"/>
+          <view:arrayColumn title="${colVI}" sortable="false"/>
+          <view:arrayColumn title="${colProcessDate}" sortable="false"/>
         </c:if>
+        <view:arrayColumn title="${colVF}" compareOn="${r -> r.validator.displayedName}"/>
         <view:arrayColumn title="${colProcessDate}" compareOn="${r -> r.data.validationDate}"/>
-        <view:arrayColumn title="${colValidator}" compareOn="${r -> r.validator.displayedName}"/>
         <view:arrayLines var="request" items="${requestItems}">
           <view:arrayLine>
             <c:choose>
@@ -252,8 +255,8 @@
                 <c:when test="${request.data.form.hierarchicalValidation}">
                   <c:if test="${request.data.validations.getHierarchicalValidation().isPresent()}">
                     <c:set var="validation" value="${request.data.validations.getHierarchicalValidation().get()}"/>
-                    <view:arrayCellText text="${silfn:formatDateAndHour(validation.date, lang)}"/>
                     <view:arrayCellText text="${validation.validator.displayedName}"/>
+                    <view:arrayCellText text="${silfn:formatDateAndHour(validation.date, lang)}"/>
                   </c:if>
                   <c:if test="${not request.data.validations.getHierarchicalValidation().isPresent()}">
                     <view:arrayCellText text=""/>
@@ -271,8 +274,8 @@
                 <c:when test="${request.data.form.intermediateValidation}">
                   <c:if test="${request.data.validations.getIntermediateValidation().isPresent()}">
                     <c:set var="validation" value="${request.data.validations.getIntermediateValidation().get()}"/>
-                    <view:arrayCellText text="${silfn:formatDateAndHour(validation.date, lang)}"/>
                     <view:arrayCellText text="${validation.validator.displayedName}"/>
+                    <view:arrayCellText text="${silfn:formatDateAndHour(validation.date, lang)}"/>
                   </c:if>
                   <c:if test="${not request.data.validations.getIntermediateValidation().isPresent()}">
                     <view:arrayCellText text=""/>
@@ -285,8 +288,8 @@
                 </c:otherwise>
               </c:choose>
             </c:if>
-            <view:arrayCellText text="${silfn:formatDateAndHour(request.data.validationDate, lang)}"/>
             <view:arrayCellText text="${request.validator.displayedName}"/>
+            <view:arrayCellText text="${silfn:formatDateAndHour(request.data.validationDate, lang)}"/>
           </view:arrayLine>
         </view:arrayLines>
       </view:arrayPane>

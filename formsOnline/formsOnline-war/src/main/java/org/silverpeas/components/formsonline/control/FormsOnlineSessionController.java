@@ -408,20 +408,21 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
     String idPrefix;
     if (isHierarchicalValidation) {
       // adding columns of hierarchical validation
-      labelPrefix = getString("formsOnline.validation.boss") + " - ";
+      labelPrefix = getString("formsOnline.requests.array.col.vh.label") + " - ";
       idPrefix = "boss-";
       addColumnsToExport(csvCols, csvHeader, idPrefix, labelPrefix);
     }
 
     if (isIntermediateValidation) {
       // adding columns of intermediate validation
-      labelPrefix = getString("formsOnline.validation.inter") + " - ";
+      labelPrefix = getString("formsOnline.requests.array.col.vi.label") + " - ";
       idPrefix = "inter-";
       addColumnsToExport(csvCols, csvHeader, idPrefix, labelPrefix);
     }
 
     // adding columns of finale validation
-    addColumnsToExport(csvCols, csvHeader, "","");
+    labelPrefix = getString("formsOnline.requests.array.col.vf.label") + " - ";
+    addColumnsToExport(csvCols, csvHeader, "",labelPrefix);
 
     int nbMetaDataCols = csvCols.size();
 
@@ -475,18 +476,18 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
 
   private void addColumnsToExport(List<String> csvCols, CSVRow csvHeader, String idPrefix,
       String labelPrefix) {
-    csvCols.add(idPrefix+"processDate");
-    csvHeader.addCell(labelPrefix + getString("formsOnline.request.process.date"));
     csvCols.add(idPrefix+"validator");
     csvHeader.addCell(labelPrefix + getString("formsOnline.request.process.user"));
+    csvCols.add(idPrefix+"processDate");
+    csvHeader.addCell(labelPrefix + getString("GML.date"));
     csvCols.add(idPrefix+"comment");
     csvHeader.addCell(labelPrefix + getString("GML.comments"));
   }
 
   private void addValidationDataToExport(Optional<FormInstanceValidation> validation, CSVRow csvRow) {
     if (validation.isPresent()) {
-      csvRow.addCell(validation.get().getDate());
       csvRow.addCell(validation.get().getValidator());
+      csvRow.addCell(validation.get().getDate());
       csvRow.addCell(validation.get().getComment());
     } else {
       csvRow.addCell("");
