@@ -45,7 +45,7 @@ import static org.silverpeas.core.util.CollectionUtil.asSet;
 class RequestsByStatusTest {
 
   private static final BiConsumer<Pair<Set<FormInstanceValidationType>,
-      Set<FormInstanceValidationType>>, RequestValidationCriteria> TO_VALIDATE_CONFIGURER = toValidateCriteriaConfigurer();
+      Set<FormInstanceValidationType>>, RequestValidationCriteria> TO_VALIDATE_CONFIGURER = toValidateCriteriaConfigurer;
 
   @Test
   void configureValidationCriteriaWhenNoFormValidation() {
@@ -474,7 +474,7 @@ class RequestsByStatusTest {
     TO_VALIDATE_CONFIGURER.accept(Pair.of(new TreeSet<>(possibleFormValidationTypes),
         new TreeSet<>(possibleValidatorValidationTypes)), validationCriteria);
     assertThat(validationCriteria.getValidatorId(), is("1"));
-    assertThat(validationCriteria.isOnlyToValidateByValidator(), is(true));
+    assertThat(validationCriteria.isAvoidValidatedByValidator(), is(true));
     assertThat(validationCriteria.isStillNeedValidation(), is(false));
     return validationCriteria;
   }

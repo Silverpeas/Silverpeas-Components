@@ -43,8 +43,10 @@ public class RequestValidationCriteria {
 
   private final String validatorId;
   private final MemoizedSupplier<Set<String>> managedDomainUsersSupplier;
-  private boolean onlyToValidateByValidator = false;
+  private boolean skipValidationFiltering = false;
+  private boolean avoidValidatedByValidator = false;
   private boolean stillNeedValidation = false;
+  private boolean invert = false;
   private boolean orNoValidator = false;
   private boolean orValidatorIsHierarchicalOne = false;
   private final Set<FormInstanceValidationType> orLastValidationType = new TreeSet<>();
@@ -111,12 +113,28 @@ public class RequestValidationCriteria {
   }
 
   /**
-   * Configures the criteria of still need validation.
+   * Configures the criteria of inversion of all clauses.
    * @return an instance of criteria.
    */
-  public RequestValidationCriteria andOnlyToValidateByValidator() {
-    this.onlyToValidateByValidator = true;
+  public RequestValidationCriteria invert() {
+    this.invert = true;
     return this;
+  }
+
+  /**
+   * Configures the criteria of avoiding the validated by validator.
+   * @return an instance of criteria.
+   */
+  public RequestValidationCriteria andAvoidValidatedByValidator() {
+    this.avoidValidatedByValidator = true;
+    return this;
+  }
+
+  /**
+   * If called, validation filtering is not performed.
+   */
+  public void skipValidationFiltering() {
+    this.skipValidationFiltering = true;
   }
 
   String getValidatorId() {
@@ -146,16 +164,26 @@ public class RequestValidationCriteria {
     return stillNeedValidation;
   }
 
-  boolean isOnlyToValidateByValidator() {
-    return onlyToValidateByValidator;
+  boolean isInvert() {
+    return invert;
+  }
+
+  boolean isAvoidValidatedByValidator() {
+    return avoidValidatedByValidator;
+  }
+
+  boolean isSkipValidationFiltering() {
+    return skipValidationFiltering;
   }
 
   @Override
   public String toString() {
     return new StringJoiner(", ", RequestValidationCriteria.class.getSimpleName() + "[", "]")
         .add("validatorId='" + validatorId + "'")
-        .add("toValidateByValidator=" + onlyToValidateByValidator)
-        .add("stillNeedValidation=" + stillNeedValidation).add("orNoValidator=" + orNoValidator)
+        .add("skipValidationFiltering=" + skipValidationFiltering)
+        .add("avoidValidatedByValidator=" + avoidValidatedByValidator)
+        .add("stillNeedValidation=" + stillNeedValidation).add("invert=" + invert)
+        .add("orNoValidator=" + orNoValidator)
         .add("orValidatorIsHierarchicalOne=" + orValidatorIsHierarchicalOne)
         .add("orLastValidationType=" + orLastValidationType).toString();
   }

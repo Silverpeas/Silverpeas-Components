@@ -25,11 +25,13 @@
 package org.silverpeas.components.formsonline.control;
 
 import org.silverpeas.components.formsonline.model.FormInstance;
+import org.silverpeas.components.formsonline.model.FormInstanceValidation;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.web.util.SimpleContributionUIEntity;
 
+import java.util.Date;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -67,11 +69,35 @@ public class RequestUIEntity extends SimpleContributionUIEntity<FormInstance> {
   }
 
   /**
-   * Gets the validator with the use of request cache in order to avoid getting again and again
-   * data from persistence about same validators occurring into several lines.
-   * @return the creator.
+   * Gets the final validator with the use of request cache in order to avoid getting again and
+   * again data from persistence about same validators occurring into several lines.
+   * @return the final validator.
    */
   public User getValidator() {
     return getUserByIdFromCache(getData().getValidatorId());
+  }
+
+  /**
+   * Gets the final validation date.
+   * @return the final validation date.
+   */
+  public Date getValidationDate() {
+    return getData().getValidationDate();
+  }
+
+  /**
+   * Gets the hierarchical validation if any, null otherwise.
+   * @return hierarchical validation or null.
+   */
+  public FormInstanceValidation getHierarchicalValidation() {
+    return getData().getValidations().getHierarchicalValidation().orElse(null);
+  }
+
+  /**
+   * Gets the intermediate validation if any, null otherwise.
+   * @return intermediate validation or null.
+   */
+  public FormInstanceValidation getIntermediateValidation() {
+    return getData().getValidations().getIntermediateValidation().orElse(null);
   }
 }

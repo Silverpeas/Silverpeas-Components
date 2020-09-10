@@ -18,6 +18,7 @@ import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
+import static java.util.Comparator.naturalOrder;
 import static org.silverpeas.components.formsonline.model.FormInstance.*;
 import static org.silverpeas.components.formsonline.model.FormInstanceValidationType.HIERARCHICAL;
 
@@ -29,26 +30,75 @@ public class RequestsByStatus {
   private static final Comparator<FormInstance> FORM_INSTANCE_COMPARATOR = (a, b) -> {
     int c = b.getCreationDate().compareTo(a.getCreationDate());
     if (c == 0) {
-      c = Integer.parseInt(b.getId()) - Integer.parseInt(a.getId());
+      c = b.getIdAsInt() - a.getIdAsInt();
     }
     return c;
   };
 
+  static final BiConsumer<Pair<Set<FormInstanceValidationType>,
+      Set<FormInstanceValidationType>>, RequestValidationCriteria> toValidateCriteriaConfigurer =
+      (f, t) -> {
+    t.andAvoidValidatedByValidator();
+    final Set<FormInstanceValidationType> possibleFormValidationTypes = f.getLeft();
+    final Set<FormInstanceValidationType> possibleValidatorValidationTypes = f.getRight().stream()
+        .filter(possibleFormValidationTypes::contains)
+        .collect(Collectors.toSet());
+    setLastValidationTypeCriteria(possibleFormValidationTypes, possibleValidatorValidationTypes, t);
+    final boolean isHierarchicalFormValidation = possibleFormValidationTypes.contains(HIERARCHICAL);
+    if (isHierarchicalFormValidation) {
+      if (possibleValidatorValidationTypes.contains(HIERARCHICAL)) {
+        t.orValidatorIsHierarchicalOne();
+      }
+    } else if (possibleValidatorValidationTypes.stream()
+        .filter(v -> v != HIERARCHICAL)
+        .anyMatch(v -> possibleFormValidationTypes.stream().findFirst().filter(p -> p == v).isPresent())) {
+      t.orNoValidator();
+    }
+  };
+
+  static final BiConsumer<Pair<Set<FormInstanceValidationType>,
+      Set<FormInstanceValidationType>>, RequestValidationCriteria> concernedByValidationCriteriaConfigurer = (f, t) -> {
+    final Set<FormInstanceValidationType> possibleFormValidationTypes = f.getLeft();
+    final boolean isLastValidatorCase = isLastValidatorCase(possibleFormValidationTypes, f.getRight());
+    if (isLastValidatorCase) {
+      toValidateCriteriaConfigurer.accept(f, t);
+      t.invert();
+    } else {
+      t.andStillNeedValidation();
+      setLastValidationTypeCriteria(possibleFormValidationTypes, possibleFormValidationTypes, t);
+    }
+  };
+
+  static final BiConsumer<Pair<Set<FormInstanceValidationType>,
+      Set<FormInstanceValidationType>>, RequestValidationCriteria> skipValidationCriteriaIfLastValidatorConfigurer = (f, t) -> {
+    if (isLastValidatorCase(f.getLeft(), f.getRight())) {
+      t.skipValidationFiltering();
+    }
+  };
+
+  static final BiConsumer<Pair<Set<FormInstanceValidationType>,
+      Set<FormInstanceValidationType>>, RequestValidationCriteria> canceledCriteriaConfigurer =
+      (f, t) -> {
+    skipValidationCriteriaIfLastValidatorConfigurer.accept(f, t);
+    if (!t.isSkipValidationFiltering()) {
+      t.orNoValidator();
+    }
+  };
+
   static final List<MergeRuleByStates>
       MERGING_RULES_BY_STATES = asList(
-          new MergeRuleByStates(singletonList(STATE_DRAFT), (f, t) -> {}, RequestsByStatus::addDraft),
-          new MergeRuleByStates(singletonList(STATE_REFUSED), (f, t) -> {}, RequestsByStatus::addDenied),
-          new MergeRuleByStates(singletonList(STATE_VALIDATED), (f, t) -> {}, RequestsByStatus::addValidated),
-          new MergeRuleByStates(singletonList(STATE_ARCHIVED), (f, t) -> {}, RequestsByStatus::addArchived),
-          new MergeRuleByStates(singletonList(STATE_CANCELED), canceledCriteriaConfigurer(), RequestsByStatus::addCanceled),
-          new MergeRuleByStates(asList(STATE_UNREAD, STATE_READ), toValidateCriteriaConfigurer(), RequestsByStatus::addToValidate),
-          new MergeRuleByStates(singletonList(STATE_READ), stillValidationNeededCriteriaConfigurer(), RequestsByStatus::addStillNeedValidation));
+          new MergeRuleByStates(singletonList(STATE_DRAFT), skipValidationCriteriaIfLastValidatorConfigurer, RequestsByStatus::addDraft),
+          new MergeRuleByStates(singletonList(STATE_REFUSED), skipValidationCriteriaIfLastValidatorConfigurer, RequestsByStatus::addDenied),
+          new MergeRuleByStates(singletonList(STATE_VALIDATED), skipValidationCriteriaIfLastValidatorConfigurer, RequestsByStatus::addValidated),
+          new MergeRuleByStates(singletonList(STATE_ARCHIVED), skipValidationCriteriaIfLastValidatorConfigurer, RequestsByStatus::addArchived),
+          new MergeRuleByStates(singletonList(STATE_CANCELED), canceledCriteriaConfigurer, RequestsByStatus::addCanceled),
+          new MergeRuleByStates(asList(STATE_UNREAD, STATE_READ), toValidateCriteriaConfigurer, RequestsByStatus::addToValidate),
+          new MergeRuleByStates(asList(STATE_UNREAD, STATE_READ), concernedByValidationCriteriaConfigurer, RequestsByStatus::addConcernedByValidation));
 
   private final PaginationPage paginationPage;
-
   private SilverpeasList<FormInstance> draftList = new SilverpeasArrayList<>();
   private SilverpeasList<FormInstance> toValidateList = new SilverpeasArrayList<>();
-  private SilverpeasList<FormInstance> stillNeedValidationList = new SilverpeasArrayList<>();
+  private SilverpeasList<FormInstance> concernedByValidationList = new SilverpeasArrayList<>();
   private SilverpeasList<FormInstance> validatedList = new SilverpeasArrayList<>();
   private SilverpeasList<FormInstance> deniedList = new SilverpeasArrayList<>();
   private SilverpeasList<FormInstance> archivedList = new SilverpeasArrayList<>();
@@ -75,6 +125,16 @@ public class RequestsByStatus {
     criteria.orLastValidationType(lastValidationFilter);
   }
 
+  private static boolean isLastValidatorCase(
+      final Set<FormInstanceValidationType> possibleFormValidationTypes,
+      final Set<FormInstanceValidationType> possibleValidatorValidationTypes) {
+    return possibleValidatorValidationTypes.stream()
+        .filter(possibleFormValidationTypes::contains)
+        .max(naturalOrder())
+        .filter(v -> possibleFormValidationTypes.stream().max(naturalOrder()).orElse(null) == v)
+        .isPresent();
+  }
+
   /**
    * Gets the possible request validations from given requests.
    * <p>
@@ -95,42 +155,6 @@ public class RequestsByStatus {
         .distinct()
         .flatMap(f -> f.getPossibleRequestValidations().keySet().stream())
         .collect(Collectors.toCollection(TreeSet::new));
-  }
-
-  static BiConsumer<Pair<Set<FormInstanceValidationType>,
-        Set<FormInstanceValidationType>>, RequestValidationCriteria> toValidateCriteriaConfigurer() {
-    return (f, t) -> {
-      t.andOnlyToValidateByValidator();
-      final Set<FormInstanceValidationType> possibleFormValidationTypes = f.getLeft();
-      final Set<FormInstanceValidationType> possibleValidatorValidationTypes = f.getRight().stream()
-          .filter(possibleFormValidationTypes::contains)
-          .collect(Collectors.toSet());
-      setLastValidationTypeCriteria(possibleFormValidationTypes, possibleValidatorValidationTypes, t);
-      final boolean isHierarchicalFormValidation = possibleFormValidationTypes.contains(HIERARCHICAL);
-      if (isHierarchicalFormValidation) {
-        if (possibleValidatorValidationTypes.contains(HIERARCHICAL)) {
-          t.orValidatorIsHierarchicalOne();
-        }
-      } else if (possibleValidatorValidationTypes.stream()
-          .filter(v -> v != HIERARCHICAL)
-          .anyMatch(v -> possibleFormValidationTypes.stream().findFirst().filter(p -> p == v).isPresent())) {
-        t.orNoValidator();
-      }
-    };
-  }
-
-  static BiConsumer<Pair<Set<FormInstanceValidationType>,
-      Set<FormInstanceValidationType>>, RequestValidationCriteria> canceledCriteriaConfigurer() {
-    return (f, t) -> t.orNoValidator();
-  }
-
-  static BiConsumer<Pair<Set<FormInstanceValidationType>,
-        Set<FormInstanceValidationType>>, RequestValidationCriteria> stillValidationNeededCriteriaConfigurer() {
-    return (f, t) -> {
-      t.andStillNeedValidation();
-      final Set<FormInstanceValidationType> possibleFormValidationTypes = f.getLeft();
-      setLastValidationTypeCriteria(possibleFormValidationTypes, possibleFormValidationTypes, t);
-    };
   }
 
   private void addDraft(final SilverpeasList<FormInstance> formInstances) {
@@ -158,9 +182,9 @@ public class RequestsByStatus {
     toValidateList = merge(formInstances, toValidateList);
   }
 
-  private void addStillNeedValidation(final SilverpeasList<FormInstance> formInstances) {
+  private void addConcernedByValidation(final SilverpeasList<FormInstance> formInstances) {
     resetAll();
-    stillNeedValidationList = merge(formInstances, stillNeedValidationList);
+    concernedByValidationList = merge(formInstances, concernedByValidationList);
   }
 
   private void addCanceled(final SilverpeasList<FormInstance> formInstances) {
@@ -176,8 +200,8 @@ public class RequestsByStatus {
     return toValidateList;
   }
 
-  public SilverpeasList<FormInstance> getStillNeedValidation() {
-    return stillNeedValidationList;
+  public SilverpeasList<FormInstance> getConcernedByValidation() {
+    return concernedByValidationList;
   }
 
   public SilverpeasList<FormInstance> getDenied() {
@@ -202,7 +226,7 @@ public class RequestsByStatus {
 
   public SilverpeasList<FormInstance> getAll() {
     if (all == null) {
-      all = merge(getDraft(), getToValidate(), getStillNeedValidation(), getValidated(),
+      all = merge(getDraft(), getToValidate(), getConcernedByValidation(), getValidated(),
           getDenied(), getArchived(), getCanceled());
     }
     return all;

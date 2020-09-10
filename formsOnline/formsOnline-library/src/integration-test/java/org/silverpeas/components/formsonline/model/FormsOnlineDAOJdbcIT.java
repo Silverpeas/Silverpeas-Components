@@ -409,15 +409,33 @@ public class FormsOnlineDAOJdbcIT extends AbstractFormsOnlineIT {
     requests = dao.getRequestsByCriteria(RequestCriteria
         .onComponentInstanceIds(DYNAMIC_DATA_INSTANCE_ID)
         .andValidationCriteria(withValidatorId(VALIDATOR_ID_29, null)
-                               .andOnlyToValidateByValidator()));
+                               .andAvoidValidatedByValidator()));
     assertThat(requests, empty());
     // VALIDATOR_ID_29 or HIERARCHICAL validated  (only to validate by validator)
     requests = dao.getRequestsByCriteria(RequestCriteria
         .onComponentInstanceIds(DYNAMIC_DATA_INSTANCE_ID)
         .andValidationCriteria(withValidatorId(VALIDATOR_ID_29, null)
-                               .andOnlyToValidateByValidator()
+                               .andAvoidValidatedByValidator()
                                .orLastValidationType(HIERARCHICAL)));
     assertContainsIdsWithOffsetAutomaticallyApplied(requests, 2);
+    // VALIDATOR_ID_29 or HIERARCHICAL validated  (only to validate by validator) but skipping validation filtering!!!
+    final RequestValidationCriteria validationCriteria =
+        withValidatorId(VALIDATOR_ID_29, null)
+            .andAvoidValidatedByValidator()
+            .orLastValidationType(HIERARCHICAL);
+    validationCriteria.skipValidationFiltering();
+    requests = dao.getRequestsByCriteria(RequestCriteria
+        .onComponentInstanceIds(DYNAMIC_DATA_INSTANCE_ID)
+        .andValidationCriteria(validationCriteria));
+    assertContainsIdsWithOffsetAutomaticallyApplied(requests, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1);
+    // VALIDATOR_ID_29 or INTERMEDIATE validated (validator is last one)
+    requests = dao.getRequestsByCriteria(RequestCriteria
+        .onComponentInstanceIds(DYNAMIC_DATA_INSTANCE_ID)
+        .andValidationCriteria(withValidatorId(VALIDATOR_ID_29, null)
+            .invert()
+            .andAvoidValidatedByValidator()
+            .orLastValidationType(HIERARCHICAL)));
+    assertContainsIdsWithOffsetAutomaticallyApplied(requests, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 1);
     // VALIDATOR_ID_29 or HIERARCHICAL validated (still need validation)
     requests = dao.getRequestsByCriteria(RequestCriteria
         .onComponentInstanceIds(DYNAMIC_DATA_INSTANCE_ID)
@@ -425,13 +443,6 @@ public class FormsOnlineDAOJdbcIT extends AbstractFormsOnlineIT {
                                .andStillNeedValidation()
                                .orLastValidationType(HIERARCHICAL)));
     assertContainsIdsWithOffsetAutomaticallyApplied(requests, 2);
-    // VALIDATOR_ID_29 or INTERMEDIATE validated (still need validation)
-    requests = dao.getRequestsByCriteria(RequestCriteria
-        .onComponentInstanceIds(DYNAMIC_DATA_INSTANCE_ID)
-        .andValidationCriteria(withValidatorId(VALIDATOR_ID_29, null)
-                               .andStillNeedValidation()
-                               .orLastValidationType(INTERMEDIATE)));
-    assertContainsIdsWithOffsetAutomaticallyApplied(requests, 8, 3);
     // VALIDATOR_ID_30
     requests = dao.getRequestsByCriteria(RequestCriteria
         .onComponentInstanceIds(DYNAMIC_DATA_INSTANCE_ID)
@@ -446,13 +457,13 @@ public class FormsOnlineDAOJdbcIT extends AbstractFormsOnlineIT {
     requests = dao.getRequestsByCriteria(RequestCriteria
         .onComponentInstanceIds(DYNAMIC_DATA_INSTANCE_ID)
         .andValidationCriteria(withValidatorId(VALIDATOR_ID_30, null)
-                               .andOnlyToValidateByValidator()));
+                               .andAvoidValidatedByValidator()));
     assertThat(requests, empty());
     // VALIDATOR_ID_30 or HIERARCHICAL validated (only to validate by validator)
     requests = dao.getRequestsByCriteria(RequestCriteria
         .onComponentInstanceIds(DYNAMIC_DATA_INSTANCE_ID)
         .andValidationCriteria(withValidatorId(VALIDATOR_ID_30, null)
-                               .andOnlyToValidateByValidator()
+                               .andAvoidValidatedByValidator()
                                .orLastValidationType(HIERARCHICAL)));
     assertContainsIdsWithOffsetAutomaticallyApplied(requests, 2);
     // VALIDATOR_ID_30 or HIERARCHICAL validated (still need validation)
@@ -485,7 +496,7 @@ public class FormsOnlineDAOJdbcIT extends AbstractFormsOnlineIT {
         .onComponentInstanceIds(DYNAMIC_DATA_INSTANCE_ID)
         .andValidationCriteria(withValidatorId(VALIDATOR_ID_30, null)
                                .orLastValidationType(INTERMEDIATE, HIERARCHICAL)
-                               .andOnlyToValidateByValidator()));
+                               .andAvoidValidatedByValidator()));
     assertContainsIdsWithOffsetAutomaticallyApplied(requests, 8, 3, 2);
     // VALIDATOR_ID_30 or HIERARCHICAL and INTERMEDIATE validated (still need validation)
     requests = dao.getRequestsByCriteria(RequestCriteria

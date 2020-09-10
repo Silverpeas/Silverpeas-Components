@@ -543,10 +543,14 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
 
   private void applyValidationCriteria(final RequestCriteria criteria, final JdbcSqlQuery query) {
     final RequestValidationCriteria validationCriteria = criteria.getValidationCriteria();
-    if (validationCriteria != null) {
+    if (validationCriteria != null && !validationCriteria.isSkipValidationFiltering()) {
       final String validatorId = validationCriteria.getValidatorId();
-      query.and("(");
-      if (validationCriteria.isOnlyToValidateByValidator()) {
+      if (validationCriteria.isInvert()) {
+        query.and("NOT (");
+      } else {
+        query.and("(");
+      }
+      if (validationCriteria.isAvoidValidatedByValidator()) {
         query.addSqlPart("1 <> 1");
       } else {
         query.addSqlPart(EXISTS_SELECT)
@@ -574,16 +578,16 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
           .where(FORM_INST_ID_CLAUSE)
           .and("status = ?", VALIDATED)
           .and(VALIDATION_TYPE + " = ?)", v.name());
-      final List<String> excludedValidationTypes =
+      final List<String> nextValidationTypes =
           Stream.of(FormInstanceValidationType.values())
               .filter(e -> e.ordinal() > v.ordinal())
               .map(FormInstanceValidationType::name)
               .collect(Collectors.toList());
-      if (!excludedValidationTypes.isEmpty()) {
+      if (!nextValidationTypes.isEmpty()) {
         query.and(NOT_EXISTS_SELECT)
             .from(FORMS_INSTANCE_VALIDATIONS_TABLENAME)
             .where(FORM_INST_ID_CLAUSE)
-            .and(VALIDATION_TYPE).in(excludedValidationTypes)
+            .and(VALIDATION_TYPE).in(nextValidationTypes)
             .addSqlPart(")");
       }
       query.addSqlPart(")");
