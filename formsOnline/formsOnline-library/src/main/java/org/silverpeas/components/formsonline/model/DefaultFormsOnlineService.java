@@ -42,6 +42,7 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentMailAttachedFile;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.FormException;
@@ -739,19 +740,43 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
         content.addElement(value);
         content.addElement(new BR());
         if (StringUtil.isDefined(value) && field.getTypeName().equals(FileField.TYPE)) {
-          final SimpleDocument doc = AttachmentServiceProvider.getAttachmentService()
-              .searchDocumentById(
-                  new SimpleDocumentPK(dataRecord.getField(field.getFieldName()).getValue(),
-                      request.getComponentInstanceId()), null);
-          if (doc != null) {
-            docs.add(doc);
-          }
+          docs.addAll(getFiles(dataRecord, field, request.getComponentInstanceId()));
         }
       }
       return Pair.of(content.toString(), docs);
     } catch (Exception e) {
       throw new FormsOnlineException("Can't load form '" + form.getXmlFormName() + "'", e);
     }
+  }
+
+  private List<SimpleDocument> getFiles(DataRecord dataRecord, FieldTemplate field,
+      String instanceId) throws FormException {
+    final List<SimpleDocument> docs = new ArrayList<>();
+    if (!field.isRepeatable()) {
+      String docId = dataRecord.getField(field.getFieldName()).getValue();
+      final SimpleDocument doc = getDocument(docId, instanceId);
+      if (doc != null) {
+        docs.add(doc);
+      }
+    } else {
+      int maxOccurrences = field.getMaximumNumberOfOccurrences();
+      for (int occ = 0; occ < maxOccurrences; occ++) {
+        final Field fieldOcc = dataRecord.getField(field.getFieldName(), occ);
+        if (fieldOcc != null && !fieldOcc.isNull()) {
+          String docId = fieldOcc.getValue();
+          final SimpleDocument doc = getDocument(docId, instanceId);
+          if (doc != null) {
+            docs.add(doc);
+          }
+        }
+      }
+    }
+    return docs;
+  }
+
+  private SimpleDocument getDocument(String documentId, String instanceId) {
+    return AttachmentServiceProvider.getAttachmentService()
+        .searchDocumentById(new SimpleDocumentPK(documentId, instanceId), null);
   }
 
   private void attachFilesToMail(Multipart mp, List<SimpleDocument> listAttachedFiles)
