@@ -43,6 +43,7 @@
 
 <c:set var="forms" value="${requestScope['formsList']}"/>
 <c:set var="userRequests" value="${requestScope['UserRequests']}"/>
+<jsp:useBean id="userRequests" type="org.silverpeas.components.formsonline.model.RequestsByStatus"/>
 <c:set var="requestsAsValidator" value="${requestScope['RequestsAsValidator']}"/>
 <c:set var="role" value="${requestScope['Role']}"/>
 <c:set var="app" value="${requestScope['App']}"/>

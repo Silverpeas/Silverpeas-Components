@@ -25,6 +25,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.ecs.html.BR;
 import org.apache.ecs.xhtml.div;
 import org.silverpeas.components.formsonline.model.RequestsByStatus.MergeRuleByStates;
+import org.silverpeas.components.formsonline.model.RequestsByStatus.ValidationMergeRuleByStates;
 import org.silverpeas.components.formsonline.notification.FormsOnlineCanceledRequestUserNotification;
 import org.silverpeas.components.formsonline.notification.FormsOnlinePendingValidationRequestUserNotification;
 import org.silverpeas.components.formsonline.notification.FormsOnlineProcessedRequestFollowingUserNotification;
@@ -99,6 +100,7 @@ import static org.silverpeas.components.formsonline.model.FormDetail.RECEIVERS_T
 import static org.silverpeas.components.formsonline.model.FormInstanceValidationType.HIERARCHICAL;
 import static org.silverpeas.components.formsonline.model.RequestValidationCriteria.withValidatorId;
 import static org.silverpeas.components.formsonline.model.RequestsByStatus.MERGING_RULES_BY_STATES;
+import static org.silverpeas.components.formsonline.model.RequestsByStatus.VALIDATION_MERGING_RULES_BY_STATES;
 import static org.silverpeas.core.mail.MailContent.getHtmlBodyPartFromHtmlContent;
 import static org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper.buildAndSend;
 import static org.silverpeas.core.util.CollectionUtil.isEmpty;
@@ -315,7 +317,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
     });
     for (final FormDetail form : availableForms) {
       setSendersAndReceivers(form);
-      for (final MergeRuleByStates rule : MERGING_RULES_BY_STATES) {
+      for (final ValidationMergeRuleByStates rule : VALIDATION_MERGING_RULES_BY_STATES) {
         final List<Integer> states = rule.getStates().stream()
             .filter(s -> filter.getState() < FormInstance.STATE_DRAFT || filter.getState() == s)
             .collect(Collectors.toList());
@@ -606,7 +608,6 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
         ? NotifAction.REFUSE
         : NotifAction.VALIDATE;
     // notify sender
-    // TODO custom message
     buildAndSend(new FormsOnlineValidationRequestUserNotification(request, action));
     // notify the request processed
     buildAndSend(new FormsOnlineProcessedRequestUserNotification(request, action));

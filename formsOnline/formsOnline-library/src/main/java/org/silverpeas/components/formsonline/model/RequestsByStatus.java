@@ -85,15 +85,22 @@ public class RequestsByStatus {
     }
   };
 
-  static final List<MergeRuleByStates>
-      MERGING_RULES_BY_STATES = asList(
-          new MergeRuleByStates(singletonList(STATE_DRAFT), skipValidationCriteriaIfLastValidatorConfigurer, RequestsByStatus::addDraft),
-          new MergeRuleByStates(singletonList(STATE_REFUSED), skipValidationCriteriaIfLastValidatorConfigurer, RequestsByStatus::addDenied),
-          new MergeRuleByStates(singletonList(STATE_VALIDATED), skipValidationCriteriaIfLastValidatorConfigurer, RequestsByStatus::addValidated),
-          new MergeRuleByStates(singletonList(STATE_ARCHIVED), skipValidationCriteriaIfLastValidatorConfigurer, RequestsByStatus::addArchived),
-          new MergeRuleByStates(singletonList(STATE_CANCELED), canceledCriteriaConfigurer, RequestsByStatus::addCanceled),
-          new MergeRuleByStates(asList(STATE_UNREAD, STATE_READ), toValidateCriteriaConfigurer, RequestsByStatus::addToValidate),
-          new MergeRuleByStates(asList(STATE_UNREAD, STATE_READ), concernedByValidationCriteriaConfigurer, RequestsByStatus::addConcernedByValidation));
+  static final List<MergeRuleByStates> MERGING_RULES_BY_STATES = asList(
+    new MergeRuleByStates(singletonList(STATE_DRAFT), RequestsByStatus::addDraft),
+    new MergeRuleByStates(singletonList(STATE_REFUSED), RequestsByStatus::addDenied),
+    new MergeRuleByStates(singletonList(STATE_VALIDATED), RequestsByStatus::addValidated),
+    new MergeRuleByStates(singletonList(STATE_ARCHIVED), RequestsByStatus::addArchived),
+    new MergeRuleByStates(singletonList(STATE_CANCELED), RequestsByStatus::addCanceled),
+    new MergeRuleByStates(asList(STATE_UNREAD, STATE_READ), RequestsByStatus::addToValidate));
+
+  static final List<ValidationMergeRuleByStates> VALIDATION_MERGING_RULES_BY_STATES = asList(
+    new ValidationMergeRuleByStates(singletonList(STATE_DRAFT), skipValidationCriteriaIfLastValidatorConfigurer, RequestsByStatus::addDraft),
+    new ValidationMergeRuleByStates(singletonList(STATE_REFUSED), skipValidationCriteriaIfLastValidatorConfigurer, RequestsByStatus::addDenied),
+    new ValidationMergeRuleByStates(singletonList(STATE_VALIDATED), skipValidationCriteriaIfLastValidatorConfigurer, RequestsByStatus::addValidated),
+    new ValidationMergeRuleByStates(singletonList(STATE_ARCHIVED), skipValidationCriteriaIfLastValidatorConfigurer, RequestsByStatus::addArchived),
+    new ValidationMergeRuleByStates(singletonList(STATE_CANCELED), canceledCriteriaConfigurer, RequestsByStatus::addCanceled),
+    new ValidationMergeRuleByStates(asList(STATE_UNREAD, STATE_READ), toValidateCriteriaConfigurer, RequestsByStatus::addToValidate),
+    new ValidationMergeRuleByStates(asList(STATE_UNREAD, STATE_READ), concernedByValidationCriteriaConfigurer, RequestsByStatus::addConcernedByValidation));
 
   private final PaginationPage paginationPage;
   private SilverpeasList<FormInstance> draftList = new SilverpeasArrayList<>();
@@ -262,14 +269,11 @@ public class RequestsByStatus {
 
   public static class MergeRuleByStates {
     private final List<Integer> states;
-    private final BiConsumer<Pair<Set<FormInstanceValidationType>, Set<FormInstanceValidationType>>, RequestValidationCriteria> validationCriteriaConfigurer;
     private final BiConsumer<RequestsByStatus, SilverpeasList<FormInstance>> merger;
 
     public MergeRuleByStates(final List<Integer> states,
-        final BiConsumer<Pair<Set<FormInstanceValidationType>, Set<FormInstanceValidationType>>, RequestValidationCriteria> validationCriteriaConfigurer,
         final BiConsumer<RequestsByStatus, SilverpeasList<FormInstance>> merger) {
       this.states = states;
-      this.validationCriteriaConfigurer = validationCriteriaConfigurer;
       this.merger = merger;
     }
 
@@ -277,13 +281,24 @@ public class RequestsByStatus {
       return states;
     }
 
+    public BiConsumer<RequestsByStatus, SilverpeasList<FormInstance>> getMerger() {
+      return merger;
+    }
+  }
+
+  public static class ValidationMergeRuleByStates extends MergeRuleByStates {
+    private final BiConsumer<Pair<Set<FormInstanceValidationType>, Set<FormInstanceValidationType>>, RequestValidationCriteria> validationCriteriaConfigurer;
+
+    public ValidationMergeRuleByStates(final List<Integer> states,
+        final BiConsumer<Pair<Set<FormInstanceValidationType>, Set<FormInstanceValidationType>>, RequestValidationCriteria> validationCriteriaConfigurer,
+        final BiConsumer<RequestsByStatus, SilverpeasList<FormInstance>> merger) {
+      super(states, merger);
+      this.validationCriteriaConfigurer = validationCriteriaConfigurer;
+    }
+
     public BiConsumer<Pair<Set<FormInstanceValidationType>,
         Set<FormInstanceValidationType>>, RequestValidationCriteria> getValidationCriteriaConfigurer() {
       return validationCriteriaConfigurer;
-    }
-
-    public BiConsumer<RequestsByStatus, SilverpeasList<FormInstance>> getMerger() {
-      return merger;
     }
   }
 }

@@ -85,7 +85,7 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
       if ("Main".equals(function)) {
         formsOnlineSC.setCurrentFilter(-1, null);
         formsOnlineSC.getSelectedValidatorRequestIds().clear();
-        String role = formsOnlineSC.getBestProfile();
+        final String role = formsOnlineSC.getBestProfile();
         if ("Administrator".equals(role)) {
           request.setAttribute("formsList", formsOnlineSC.getAllForms(true));
           request.setAttribute("RequestsAsValidator", formsOnlineSC.getHomepageValidatorRequests());
@@ -99,16 +99,13 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
           }
           request.setAttribute("formsList", formsOnlineSC.getAvailableFormsToSend());
         }
-
         request.setAttribute("UserRequests", formsOnlineSC.getAllUserRequests());
         request.setAttribute("App", formsOnlineSC.getComponentInstLight());
         formsOnlineSC.resetCurrentForm();
-
         destination = ROOT_DESTINATION + "formsList.jsp";
       } else if ("CreateForm".equals(function)) {
-        FormDetail form = new FormDetail();
+        final FormDetail form = new FormDetail();
         formsOnlineSC.setCurrentForm(form);
-
         request.setAttribute("currentForm", form);
         request.setAttribute("availableTemplates", formsOnlineSC.getTemplates());
         destination = ROOT_DESTINATION + "editForm.jsp";
