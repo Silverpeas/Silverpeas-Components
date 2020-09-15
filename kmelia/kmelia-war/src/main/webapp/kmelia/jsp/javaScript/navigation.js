@@ -379,6 +379,7 @@ function initOperations(id, op) {
   }
 
   if (op.subscriptions || op.topicSubscriptions) {
+    let subscriptionResourceType = jQuery.subscription.subscriptionType.COMPONENT;
     let topicId = undefined;
     let subscribeLabel = undefined;
     let unsubscribeLabel = undefined;
@@ -391,11 +392,13 @@ function initOperations(id, op) {
       subscribeLabel = getString('SubscriptionsAdd');
       unsubscribeLabel = getString('SubscriptionsRemove');
       topicId = op.context.nodeId;
+      subscriptionResourceType = jQuery.subscription.subscriptionType.NODE;
     }
     window.SUBSCRIPTION_PROMISE.then(function() {
       window.spSubManager = new SilverpeasSubscriptionManager({
         componentInstanceId : op.context.componentId,
-        topicId : topicId,
+        subscriptionResourceType : subscriptionResourceType,
+        resourceId : topicId,
         labels : {
           subscribe : subscribeLabel,
           unsubscribe : unsubscribeLabel
