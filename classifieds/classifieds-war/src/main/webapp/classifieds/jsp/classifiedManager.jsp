@@ -48,6 +48,7 @@
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 
 <c:set var="classified" value="${requestScope.Classified}" />
+<c:set var="instanceSettings" value="${requestScope.InstanceSettings}" />
 
 <c:set var="formUpdate" value="${requestScope.Form}" />
 <c:set var="data" value="${requestScope.Data}" />
@@ -156,11 +157,15 @@
 	     errorMsg+="  - '${GML_description}' ${classifieds_msgSize}\n";
 	     errorNb++;
 	    }
-	    if (! isInteger(document.classifiedForm.Price.value)) {
-	    	errorMsg+="  - '${classifieds_price}' ${GML_MustContainsNumber}\n";
-	      errorNb++;
-	    }
-	    
+
+	    <c:if test="${instanceSettings.priceAllowed}">
+        if (! isInteger(document.classifiedForm.Price.value)) {
+          errorMsg+="  - '${classifieds_price}' ${GML_MustContainsNumber}\n";
+          errorNb++;
+        }
+      </c:if>
+
+    <c:if test="${instanceSettings.photosAllowed}">
 	    if (!isWhitespace(document.classifiedForm.Image1.value)) {
 	     var verif = /[.][jpg,gif,bmp,tiff,tif,jpeg,png,JPG,GIF,BMP,TIFF,TIF,JPEG,PNG]{3,4}$/;
        if (verif.exec(document.classifiedForm.Image1.value) == null) {
@@ -191,8 +196,9 @@
 	         errorNb++;
 	        }
 	    }
-	   	switch(errorNb)
-	   	{
+    </c:if>
+
+    switch(errorNb)	{
 	       	case 0 :
               callback.call(this);
 	           	break;
@@ -271,13 +277,15 @@
       &nbsp;<img src="${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}"/>" width="5" height="5" border="0"/>
     </div>
   </div>
-  
-  <div class="field" id="priceArea">
-	  <label for="classifiedPrice" class="txtlibform"><fmt:message key="classifieds.price"/></label>
-	  <div class="champs">
-	    <input type="text" name="Price" size="10" maxlength="8" id="classifiedPrice" value="${displayedPrice}"/> &euro;
-	  </div>
-	</div>
+
+  <c:if test="${instanceSettings.priceAllowed}">
+    <div class="field" id="priceArea">
+      <label for="classifiedPrice" class="txtlibform"><fmt:message key="classifieds.price"/></label>
+      <div class="champs">
+        <input type="text" name="Price" size="10" maxlength="8" id="classifiedPrice" value="${displayedPrice}"/> &euro;
+      </div>
+    </div>
+  </c:if>
 	
   <c:if test="${action eq 'UpdateClassified'}">
     <div class="field" id="creationDateArea">
@@ -312,7 +320,8 @@
   </div>    
 </fieldset>
 
-<div class="table">      
+<div class="table">
+  <c:if test="${instanceSettings.photosAllowed}">
   <div class="cell" id="thumbnails">
     <fieldset id="pubThumb" class="skinFieldset">
     <legend><fmt:message key="classifieds.images"/></legend>
@@ -396,6 +405,7 @@
     </div>
     </fieldset>
   </div>
+  </c:if>
   <div class="cell">
     <fieldset id="specifiedInfo" class="skinFieldset">
     <legend><fmt:message key="classifieds.specificInfos"/></legend>

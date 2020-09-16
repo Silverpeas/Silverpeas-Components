@@ -54,8 +54,10 @@
 <c:set var="browseContext" value="${requestScope.browseContext}" />
 <c:set var="componentLabel" value="${browseContext[1]}" />
 
+<c:set var="instanceSettings" value="${requestScope.InstanceSettings}" />
+
 <c:set var="isDraftEnabled" value="${requestScope.IsDraftEnabled}" />
-<c:set var="isCommentsEnabled" value="${requestScope.IsCommentsEnabled}" />
+<c:set var="commentsEnabled" value="${instanceSettings.commentsEnabled}" />
 <c:set var="profile" value="${requestScope.Profile}" />
 <c:set var="creationDate" value="${requestScope.CreationDate}" />
 <c:set var="updateDate" value="${requestScope.UpdateDate}" />
@@ -327,7 +329,7 @@
                 </c:if>
                 <div class="classified_fiche">
                   <h2 class="classified_title">${displayedTitle}</h2>
-                  <c:if test="${not empty classified.images}">
+                  <c:if test="${instanceSettings.photosAllowed && not empty classified.images}">
                     <div class="classified_photos">
                       <div class="classified_thumbs">
                       <%
@@ -353,7 +355,7 @@
                       </div>
                     </div>
                   </c:if>
-                  <c:if test="${classified.price > 0}">
+                  <c:if test="${instanceSettings.priceAllowed && classified.price > 0}">
                     <div class="classified_price">${classified.price} &euro;</div>
                   </c:if>
                   <p class="classified_description">${displayedDescription}</p>
@@ -379,7 +381,7 @@
 				<tr>
 					<td>
 						<!--Afficher les commentaires-->
-						<c:if test="${isCommentsEnabled}">
+						<c:if test="${commentsEnabled}">
 							<view:comments 	userId="${user.id}" componentId="${instanceId}"
 											resourceType="${classified.contributionType}" resourceId="${classified.id}" />
 						</c:if>
