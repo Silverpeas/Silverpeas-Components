@@ -30,6 +30,7 @@ import org.silverpeas.components.forums.model.MessagePK;
 import org.silverpeas.components.forums.model.MessagePath;
 import org.silverpeas.components.forums.service.ForumService;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.subscription.Subscription;
 import org.silverpeas.core.subscription.SubscriptionResource;
 import org.silverpeas.core.subscription.SubscriptionResourceType;
@@ -52,6 +53,7 @@ import static org.silverpeas.components.forums.subscription.ForumSubscriptionCon
 /**
  * @author silveryocha
  */
+@Service
 public class ForumsSubscriptionBeanService extends AbstractSubscriptionBeanService {
 
   @Override

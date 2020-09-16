@@ -58,13 +58,14 @@
 <fmt:message key="GML.PDCParam" var="classifyLabel"/>
 <fmt:message key="GML.print" var="printLabel" bundle="${calendarBundle}"/>
 <fmt:message key="calendar.menu.item.event.add" var="addEventLabel" bundle="${calendarBundle}"/>
-<fmt:message key="almanach.menu.item.calendar.see.mine" var="viewMyCalendarLabel" bundle="${calendarBundle}"/>
+<fmt:message key="calendar.menu.item.calendar.see.mine" var="viewMyCalendarLabel" bundle="${calendarBundle}"/>
 <fmt:message key="calendar.menu.item.calendar.create" var="createCalendarLabel" bundle="${calendarBundle}"/>
 <fmt:message key="calendar.menu.item.calendar.synchronized.create" var="createSynchronizedCalendarLabel" bundle="${calendarBundle}"/>
 <fmt:message key="calendar.menu.item.event.import" var="importEventLabel" bundle="${calendarBundle}"/>
 
 <view:sp-page angularJsAppName="silverpeas.almanachcalendar" angularJsAppInitializedManually="true">
 <view:sp-head-part>
+  <view:includePlugin name="subscription"/>
   <view:includePlugin name="calendar"/>
   <view:includePlugin name="toggle"/>
   <view:script src="/almanach/jsp/javaScript/angularjs/services/almanachcalendar.js"/>
