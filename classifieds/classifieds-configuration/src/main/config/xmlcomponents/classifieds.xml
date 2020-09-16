@@ -246,5 +246,37 @@
         <message lang="en">Allow a specific setup of expiration delay for this instance</message>
       </help>
     </parameter>
+    <parameter>
+      <name>usePrice</name>
+      <label>
+        <message lang="fr">Prix</message>
+        <message lang="en">Price</message>
+      </label>
+      <order>10</order>
+      <mandatory>false</mandatory>
+      <value>yes</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Autorise un prix sur chaque annonce</message>
+        <message lang="en">Allows adding a price to each ad</message>
+      </help>
+    </parameter>
+    <parameter>
+      <name>usePhotos</name>
+      <label>
+        <message lang="fr">Photos</message>
+        <message lang="en">Photos</message>
+      </label>
+      <order>11</order>
+      <mandatory>false</mandatory>
+      <value>yes</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Autorise l'ajout de photos sur chaque annonce</message>
+        <message lang="en">Allows adding photos to each ad</message>
+      </help>
+    </parameter>
   </parameters>
 </WAComponent>

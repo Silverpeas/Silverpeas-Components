@@ -64,6 +64,7 @@ public class ClassifiedUpdateFormHandler extends FunctionHandler {
     // Stores objects in request
     request.setAttribute("Classified", classified);
     request.setAttribute("DraftEnabled", classifiedsSC.isDraftEnabled() && classified.isDraft());
+    request.setAttribute("InstanceSettings", classifiedsSC.getInstanceSettings());
 
     // Returns jsp to redirect to
     return "classifiedManager.jsp";
