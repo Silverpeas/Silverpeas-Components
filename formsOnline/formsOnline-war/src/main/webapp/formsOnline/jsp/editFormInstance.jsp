@@ -55,12 +55,14 @@
   <script type="text/javascript">
     function sendRequest() {
       ifCorrectFormExecute(function() {
+        spProgressMessage.show();
         document.newInstanceForm.submit();
       });
     }
 
     function saveDraft() {
       ifCorrectFormAndIgnoringMandatoryExecute(function() {
+        spProgressMessage.show();
         document.newInstanceForm.action = "SaveRequestAsDraft";
         document.newInstanceForm.submit();
       });
@@ -68,6 +70,7 @@
 
     function deleteDraft() {
       jQuery.popup.confirm('${silfn:escapeJs(deletionConfirmMessage)}', function() {
+        spProgressMessage.show();
         document.newInstanceForm.action = "DeleteRequest";
         document.newInstanceForm.submit();
       });
@@ -104,5 +107,6 @@
 
 </view:frame>
 </view:window>
+<view:progressMessage/>
 </view:sp-body-part>
 </view:sp-page>

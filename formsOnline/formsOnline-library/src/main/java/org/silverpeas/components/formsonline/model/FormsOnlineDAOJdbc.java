@@ -25,6 +25,7 @@
 package org.silverpeas.components.formsonline.model;
 
 import org.silverpeas.components.formsonline.model.RequestCriteria.QUERY_ORDER_BY;
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.contribution.ContributionStatus;
 import org.silverpeas.core.persistence.Transaction;
@@ -34,6 +35,7 @@ import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.persistence.jdbc.sql.SelectResultRowProcess;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.Mutable;
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.SilverpeasArrayList;
 import org.silverpeas.core.util.SilverpeasList;
 
@@ -60,8 +62,8 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.ArrayUtils.isNotEmpty;
-import static org.silverpeas.components.formsonline.model.FormDetail.RECEIVERS_TYPE_FINAL;
-import static org.silverpeas.components.formsonline.model.FormDetail.RECEIVERS_TYPE_INTERMEDIATE;
+import static org.silverpeas.components.formsonline.model.FormDetail.ALL_RIGHT_TYPES;
+import static org.silverpeas.components.formsonline.model.FormDetail.SENDERS_TYPE;
 import static org.silverpeas.components.formsonline.model.FormInstanceValidationType.fromRightsCode;
 import static org.silverpeas.components.formsonline.model.RequestCriteria.QUERY_ORDER_BY.CREATION_DATE_DESC;
 import static org.silverpeas.components.formsonline.model.RequestCriteria.QUERY_ORDER_BY.ID_DESC;
@@ -165,12 +167,10 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
     FormDetail form = getForm(pk);
     try (final Connection con = getConnection();
          final PreparedStatement stmt = con.prepareStatement(QUERY_DELETE_FORM)) {
-      removeGroupRights(con, pk, "S");
-      removeUserRights(con, pk, "S");
-      removeGroupRights(con, pk, RECEIVERS_TYPE_INTERMEDIATE);
-      removeUserRights(con, pk, RECEIVERS_TYPE_INTERMEDIATE);
-      removeGroupRights(con, pk, RECEIVERS_TYPE_FINAL);
-      removeUserRights(con, pk, RECEIVERS_TYPE_FINAL);
+      for (final String rightType : ALL_RIGHT_TYPES) {
+        removeGroupRights(con, pk, rightType);
+        removeUserRights(con, pk, rightType);
+      }
       stmt.setString(1, pk.getInstanceId());
       stmt.setInt(2, Integer.parseInt(pk.getId()));
       stmt.executeUpdate();
@@ -263,7 +263,7 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
    */
   @Override
   public List<String> getSendersAsGroups(FormPK pk) throws FormsOnlineException {
-    return getGroupRights(pk, "S");
+    return getGroupRights(pk, SENDERS_TYPE);
   }
 
   /*
@@ -272,7 +272,7 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
    */
   @Override
   public List<String> getSendersAsUsers(FormPK pk) throws FormsOnlineException {
-    return getUserRights(pk, "S");
+    return getUserRights(pk, SENDERS_TYPE);
   }
 
   private List<String> getGroupRights(FormPK pk, String rightType)
@@ -316,31 +316,39 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
   }
 
   @Override
-  public void updateReceivers(FormPK pk, String[] newUserReceiverIds, String[] newGroupReceiverIds,
-      String rightType) throws FormsOnlineException {
-    updateRights(pk, newUserReceiverIds, newGroupReceiverIds, rightType);
+  public void updateReceivers(FormPK pk,
+      Map<String, Pair<List<String>, List<String>>> userAndGroupIdsByRightTypes) throws FormsOnlineException {
+    updateRights(pk, userAndGroupIdsByRightTypes.entrySet().stream().filter(e -> !e.getKey().equals(SENDERS_TYPE)));
   }
 
   @Override
-  public void updateSenders(FormPK pk, String[] newUserSenderIds, String[] newGroupSenderIds)
-      throws FormsOnlineException {
-    updateRights(pk, newUserSenderIds, newGroupSenderIds, "S");
+  public void updateSenders(FormPK pk,
+      Map<String, Pair<List<String>, List<String>>> userAndGroupIdsByRightTypes) throws FormsOnlineException {
+    updateRights(pk, userAndGroupIdsByRightTypes.entrySet().stream().filter(e -> e.getKey().equals(SENDERS_TYPE)));
   }
 
-  private void updateRights(FormPK pk, String[] newUserIds, String[] newGroupIds, String rightType)
+  private void updateRights(final FormPK pk,
+      final Stream<Map.Entry<String, Pair<List<String>, List<String>>>> userAndGroupIdsByRightTypes)
       throws FormsOnlineException {
     try (final Connection con = getConnection()) {
-      removeGroupRights(con, pk, rightType);
-      removeUserRights(con, pk, rightType);
-      for (final String newUserId : newUserIds) {
-        addUserRights(con, pk, newUserId, rightType);
-      }
-      for (final String newGroupId : newGroupIds) {
-        addGroupRights(con, pk, newGroupId, rightType);
-      }
+      userAndGroupIdsByRightTypes.forEach(e -> {
+        try {
+          final String rightType = e.getKey();
+          removeGroupRights(con, pk, rightType);
+          removeUserRights(con, pk, rightType);
+          final Pair<List<String>, List<String>> ids = e.getValue();
+          for (final String newUserId : ids.getFirst()) {
+            addUserRights(con, pk, newUserId, rightType);
+          }
+          for (final String newGroupId : ids.getSecond()) {
+            addGroupRights(con, pk, newGroupId, rightType);
+          }
+        } catch (SQLException sqlE) {
+          throw new SilverpeasRuntimeException(sqlE);
+        }
+      });
     } catch (Exception e) {
-      throw new FormsOnlineException(
-          failureOnUpdate("user rights (" + rightType + ") of form", pk.toString()), e);
+      throw new FormsOnlineException(failureOnUpdate("user and group rights of form", pk.toString()), e);
     }
   }
 

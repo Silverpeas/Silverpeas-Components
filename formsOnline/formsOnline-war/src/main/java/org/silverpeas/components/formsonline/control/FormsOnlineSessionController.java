@@ -49,6 +49,7 @@ import org.silverpeas.core.web.export.ExportCSVBuilder;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
 import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.web.selection.SelectionUsersGroups;
 
@@ -61,6 +62,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static java.util.Collections.singleton;
+import static org.silverpeas.components.formsonline.model.FormDetail.*;
 
 public class FormsOnlineSessionController extends AbstractComponentSessionController {
 
@@ -86,9 +88,9 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
   public FormsOnlineSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
-        "org.silverpeas.formsonline.multilang.formsOnlineBundle",
+        FormsOnlineComponentSettings.MESSAGES_PATH,
         "org.silverpeas.formsonline.settings.formsOnlineIcons",
-        "org.silverpeas.formsonline.settings.formsOnlineSettings");
+        FormsOnlineComponentSettings.SETTINGS_PATH);
     selection = getSelection();
     loadStatusLabels();
     setCurrentFilter(-1, null);
@@ -138,14 +140,12 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
     return currentValidationTypeFilter;
   }
 
-  public void updateCurrentForm(String[] senderUserIds, String[] senderGroupIds,
-      String[] intermediateReceiverUserIds, String[] intermediateReceiverGroupIds,
-      String[] receiverUserIds, String[] receiverGroupIds) throws FormsOnlineException {
-
+  public void saveCurrentForm(List<String> senderUserIds, List<String> senderGroupIds,
+      List<String> intermediateReceiverUserIds, List<String> intermediateReceiverGroupIds,
+      List<String> receiverUserIds, List<String> receiverGroupIds) throws FormsOnlineException {
     if (!isAdmin()) {
       throwForbiddenException(UPDATE_CURRENT_FORM);
     }
-
     if (currentForm.getId() == -1) {
       currentForm.setCreatorId(getUserId());
       currentForm.setInstanceId(getComponentId());
@@ -153,9 +153,11 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
     } else {
       MessageNotifier.addSuccess(getString("formsOnline.form.update.succeed"));
     }
-    currentForm = getService()
-        .storeForm(currentForm, senderUserIds, senderGroupIds, intermediateReceiverUserIds,
-            intermediateReceiverGroupIds, receiverUserIds, receiverGroupIds);
+    final Map<String, Pair<List<String>, List<String>>> userAndGroupIdsByRightTypes = new HashMap<>();
+    userAndGroupIdsByRightTypes.put(SENDERS_TYPE, Pair.of(senderUserIds, senderGroupIds));
+    userAndGroupIdsByRightTypes.put(RECEIVERS_TYPE_INTERMEDIATE, Pair.of(intermediateReceiverUserIds, intermediateReceiverGroupIds));
+    userAndGroupIdsByRightTypes.put(RECEIVERS_TYPE_FINAL, Pair.of(receiverUserIds, receiverGroupIds));
+    currentForm = getService().saveForm(currentForm, userAndGroupIdsByRightTypes);
   }
 
   private FormDetail loadForm(int formId) throws FormsOnlineException {
@@ -233,14 +235,30 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
     if (!isAdmin()) {
       throwForbiddenException(UPDATE_CURRENT_FORM);
     }
-    getService().publishForm(getFormPK(formId));
+    final FormDetail form = loadForm(Integer.parseInt(formId));
+    if (!form.isDeleteAfterRequestExchange() && !form.isFinalValidation()) {
+      WebMessager.getInstance()
+          .addError(getString("formsOnline.publishForm.error.finalValidatorMissing"),
+              form.getTitle());
+      return;
+    }
+    getService().publishForm(form.getPK());
+    final String message;
+    if (form.isNotYetPublished()) {
+      message = getString("formsOnline.publishForm.success");
+    } else {
+      message = getString("formsOnline.republishForm.success");
+    }
+    WebMessager.getInstance().addSuccess(message, form.getTitle());
   }
 
   public void unpublishForm(String formId) throws FormsOnlineException {
     if (!isAdmin()) {
       throwForbiddenException(UPDATE_CURRENT_FORM);
     }
-    getService().unpublishForm(getFormPK(formId));
+    final FormDetail form = loadForm(Integer.parseInt(formId));
+    getService().unpublishForm(form.getPK());
+    WebMessager.getInstance().addSuccess(getString("formsOnline.unpublishForm.success"), form.getTitle());
   }
 
   public List<FormDetail> getAvailableFormsToSend() throws FormsOnlineException {

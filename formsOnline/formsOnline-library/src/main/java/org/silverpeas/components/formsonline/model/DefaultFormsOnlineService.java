@@ -21,9 +21,9 @@
 package org.silverpeas.components.formsonline.model;
 
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.ecs.html.BR;
 import org.apache.ecs.xhtml.div;
+import org.silverpeas.components.formsonline.FormsOnlineComponentSettings;
 import org.silverpeas.components.formsonline.model.RequestsByStatus.MergeRuleByStates;
 import org.silverpeas.components.formsonline.model.RequestsByStatus.ValidationMergeRuleByStates;
 import org.silverpeas.components.formsonline.notification.FormsOnlineCanceledRequestUserNotification;
@@ -62,11 +62,13 @@ import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.mail.MailAddress;
 import org.silverpeas.core.mail.MailSending;
+import org.silverpeas.core.notification.message.MessageNotifier;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.security.authorization.ForbiddenRuntimeException;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.MemoizedSupplier;
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.util.StringUtil;
@@ -93,10 +95,11 @@ import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.text.MessageFormat.format;
+import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toSet;
-import static org.silverpeas.components.formsonline.model.FormDetail.RECEIVERS_TYPE_FINAL;
-import static org.silverpeas.components.formsonline.model.FormDetail.RECEIVERS_TYPE_INTERMEDIATE;
+import static org.silverpeas.components.formsonline.model.FormDetail.*;
 import static org.silverpeas.components.formsonline.model.FormInstanceValidationType.HIERARCHICAL;
 import static org.silverpeas.components.formsonline.model.RequestValidationCriteria.withValidatorId;
 import static org.silverpeas.components.formsonline.model.RequestsByStatus.MERGING_RULES_BY_STATES;
@@ -104,6 +107,7 @@ import static org.silverpeas.components.formsonline.model.RequestsByStatus.VALID
 import static org.silverpeas.core.mail.MailContent.getHtmlBodyPartFromHtmlContent;
 import static org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper.buildAndSend;
 import static org.silverpeas.core.util.CollectionUtil.isEmpty;
+import static org.silverpeas.core.util.StringUtil.isNotDefined;
 
 @Singleton
 public class DefaultFormsOnlineService implements FormsOnlineService, Initialization {
@@ -200,24 +204,40 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
 
   @Override
   @Transactional
-  public FormDetail storeForm(FormDetail form, String[] senderUserIds, String[] senderGroupIds,
-      String[] intermediateReceiverUserIds, String[] intermediateReceiverGroupIds,
-      String[] receiverUserIds, String[] receiverGroupIds) throws FormsOnlineException {
+  public FormDetail saveForm(FormDetail form,
+      Map<String, Pair<List<String>, List<String>>> userAndGroupIdsByRightTypes) throws FormsOnlineException {
     FormDetail theForm = form;
-    if (form.getId() == -1) {
-      theForm = getDAO().createForm(form);
+    final boolean deleteAfterRequestExchange = theForm.isDeleteAfterRequestExchange();
+    if (deleteAfterRequestExchange) {
+      theForm.setHierarchicalValidation(false);
+    } else {
+      if (Optional.of(form.getState())
+          .filter(s -> s.equals(STATE_PUBLISHED))
+          .filter(s -> userAndGroupIdsByRightTypes.entrySet().stream()
+              .filter(e -> e.getKey().equals(RECEIVERS_TYPE_FINAL))
+              .map(Map.Entry::getValue)
+              .anyMatch(p -> p.getFirst().isEmpty() && p.getSecond().isEmpty()))
+          .isPresent()) {
+      throw new FormsOnlineException(
+          format("published form {0} must have final validators", form.getPK()));
+      }
+    }
+    if (theForm.getId() == -1) {
+      theForm = getDAO().createForm(theForm);
     } else {
       getDAO().updateForm(theForm);
     }
-    getDAO().updateSenders(theForm.getPK(), senderUserIds, senderGroupIds);
-    getDAO()
-        .updateReceivers(theForm.getPK(), intermediateReceiverUserIds, intermediateReceiverGroupIds,
-            RECEIVERS_TYPE_INTERMEDIATE);
-    getDAO().updateReceivers(theForm.getPK(), receiverUserIds, receiverGroupIds, RECEIVERS_TYPE_FINAL);
+    final Map<String, Pair<List<String>, List<String>>> filteredRights = userAndGroupIdsByRightTypes.entrySet().stream()
+        .collect(Collectors.toMap(Map.Entry::getKey, e -> {
+          if (ALL_RECEIVER_TYPES.contains(e.getKey()) && deleteAfterRequestExchange) {
+            return Pair.of(emptyList(), emptyList());
+          }
+          return e.getValue();
+        }));
+    getDAO().updateSenders(theForm.getPK(), filteredRights);
+    getDAO().updateReceivers(theForm.getPK(), filteredRights);
     setSendersAndReceivers(theForm);
-
     index(theForm);
-
     return theForm;
   }
 
@@ -248,10 +268,19 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
   @Override
   @Transactional
   public void publishForm(FormPK pk) throws FormsOnlineException {
-    FormDetail form = getDAO().getForm(pk);
+    final FormDetail form = loadForm(pk);
     form.setState(FormDetail.STATE_PUBLISHED);
+    checkFormData(form);
     getDAO().updateForm(form);
     index(form);
+  }
+
+  private void checkFormData(final FormDetail form) throws FormsOnlineException {
+    if (form.isPublished() &&
+        !form.isDeleteAfterRequestExchange() && !form.isFinalValidation()) {
+      throw new FormsOnlineException(
+          format("published form {0} must have final validators", form.getPK()));
+    }
   }
 
   @Override
@@ -311,8 +340,8 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
       hvManager.cacheHierarchicalValidatorsOf(userIds);
       return userIds.stream()
           .map(u -> Pair.of(u, hvManager.getHierarchicalValidatorOf(u)))
-          .filter(p -> validatorId.equals(p.getRight()))
-          .map(Pair::getLeft)
+          .filter(p -> validatorId.equals(p.getSecond()))
+          .map(Pair::getFirst)
           .collect(toSet());
     });
     for (final FormDetail form : availableForms) {
@@ -449,11 +478,6 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
   private void setRequestStateAndValidationData(final FormDetail form, final FormInstance request,
       final String userId) throws FormsOnlineException {
     if (request.canBeValidated()) {
-      // mise a jour du statut de l'instance
-      if (request.getState() == FormInstance.STATE_UNREAD) {
-        request.setState(FormInstance.STATE_READ);
-        getDAO().saveRequestState(request);
-      }
       final List<FormInstanceValidation> schema = request.getValidationsSchema();
       for (FormInstanceValidation validation : schema) {
         if (validation.isPendingValidation()) {
@@ -469,6 +493,11 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
           break;
         }
       }
+      // updating the status of the request if the validation is enabled
+      if (request.getState() == FormInstance.STATE_UNREAD && request.isValidationEnabled()) {
+        request.setState(FormInstance.STATE_READ);
+        getDAO().saveRequestState(request);
+      }
     }
   }
 
@@ -479,7 +508,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
 
     String requestId = FileUploadUtil.getParameter(items, "Id");
     FormInstance request;
-    if (StringUtil.isNotDefined(requestId)) {
+    if (isNotDefined(requestId)) {
       request = createRequest(pk, userId, items, draft);
     } else {
       request = loadRequest(new RequestPK(requestId, pk.getInstanceId()), userId);
@@ -590,6 +619,9 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
     } else {
       request.setState(FormInstance.STATE_REFUSED);
       validation.setStatus(ContributionStatus.REFUSED);
+      if (isNotDefined(comment)) {
+        throw new FormsOnlineException("Missing a comment on the refused request");
+      }
     }
     // validation infos
     validation.setDate(Date.from(Instant.now()));
@@ -703,10 +735,10 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
       try {
         final Multipart multipart = new MimeMultipart();
         // First HTML content
-        multipart.addBodyPart(getHtmlBodyPartFromHtmlContent(contents.getLeft()));
+        multipart.addBodyPart(getHtmlBodyPartFromHtmlContent(contents.getFirst()));
         // Finally explicit attached files
-        attachFilesToMail(multipart, contents.getRight());
-        // Sending
+        attachFilesToMail(multipart, contents.getSecond());
+        // Sending to service exchange
         final User sender = User.getById(request.getCreatorId());
         MailSending
             .from(MailAddress.eMail(sender.geteMail()).withName(sender.getDisplayedName()))
@@ -715,6 +747,24 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
             .withContent(multipart)
             .setReplyToRequired()
             .send();
+        // Sending to sender
+        final LocalizationBundle messages = FormsOnlineComponentSettings
+            .getMessagesIn(sender.getUserPreferences().getLanguage());
+        if (form.isDeleteAfterRequestExchange()) {
+          final String title = messages
+              .getStringWithParams("formsOnline.request.exchange.senderCopy", form.getTitle());
+          MailSending
+              .from(MailAddress.eMail(null))
+              .to(MailAddress.eMail(sender.geteMail()))
+              .withSubject(title)
+              .withContent(multipart)
+              .send();
+          MessageNotifier.addSuccess(
+              messages.getStringWithParams("formsOnline.request.exchange.successAndSummary", form.getTitle()));
+        } else {
+          MessageNotifier.addSuccess(
+              messages.getStringWithParams("formsOnline.request.exchange.success", form.getTitle()));
+        }
       } catch (Exception e) {
         throw new FormsOnlineException("Can't send request #" + request.getPK().getId() + " to " + email, e);
       }

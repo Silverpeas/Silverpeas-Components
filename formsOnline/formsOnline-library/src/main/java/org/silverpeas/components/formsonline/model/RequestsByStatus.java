@@ -1,8 +1,8 @@
 package org.silverpeas.components.formsonline.model;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.util.PaginationList;
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.SilverpeasArrayList;
 import org.silverpeas.core.util.SilverpeasList;
 
@@ -36,11 +36,11 @@ public class RequestsByStatus {
   };
 
   static final BiConsumer<Pair<Set<FormInstanceValidationType>,
-      Set<FormInstanceValidationType>>, RequestValidationCriteria> toValidateCriteriaConfigurer =
+        Set<FormInstanceValidationType>>, RequestValidationCriteria> toValidateCriteriaConfigurer =
       (f, t) -> {
     t.andAvoidValidatedByValidator();
-    final Set<FormInstanceValidationType> possibleFormValidationTypes = f.getLeft();
-    final Set<FormInstanceValidationType> possibleValidatorValidationTypes = f.getRight().stream()
+    final Set<FormInstanceValidationType> possibleFormValidationTypes = f.getFirst();
+    final Set<FormInstanceValidationType> possibleValidatorValidationTypes = f.getSecond().stream()
         .filter(possibleFormValidationTypes::contains)
         .collect(Collectors.toSet());
     setLastValidationTypeCriteria(possibleFormValidationTypes, possibleValidatorValidationTypes, t);
@@ -58,8 +58,8 @@ public class RequestsByStatus {
 
   static final BiConsumer<Pair<Set<FormInstanceValidationType>,
       Set<FormInstanceValidationType>>, RequestValidationCriteria> concernedByValidationCriteriaConfigurer = (f, t) -> {
-    final Set<FormInstanceValidationType> possibleFormValidationTypes = f.getLeft();
-    final boolean isLastValidatorCase = isLastValidatorCase(possibleFormValidationTypes, f.getRight());
+    final Set<FormInstanceValidationType> possibleFormValidationTypes = f.getFirst();
+    final boolean isLastValidatorCase = isLastValidatorCase(possibleFormValidationTypes, f.getSecond());
     if (isLastValidatorCase) {
       toValidateCriteriaConfigurer.accept(f, t);
       t.invert();
@@ -71,7 +71,7 @@ public class RequestsByStatus {
 
   static final BiConsumer<Pair<Set<FormInstanceValidationType>,
       Set<FormInstanceValidationType>>, RequestValidationCriteria> skipValidationCriteriaIfLastValidatorConfigurer = (f, t) -> {
-    if (isLastValidatorCase(f.getLeft(), f.getRight())) {
+    if (isLastValidatorCase(f.getFirst(), f.getSecond())) {
       t.skipValidationFiltering();
     }
   };

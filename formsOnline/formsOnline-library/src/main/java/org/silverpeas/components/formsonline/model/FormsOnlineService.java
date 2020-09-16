@@ -28,6 +28,7 @@ import org.silverpeas.core.ApplicationService;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.Collection;
@@ -46,9 +47,8 @@ public interface FormsOnlineService extends ApplicationService<FormInstance> {
 
   FormDetail loadForm(FormPK pk) throws FormsOnlineException;
 
-  FormDetail storeForm(FormDetail form, String[] senderUserIds, String[] senderGroupIds,
-      String[] intermediateReceiverUserIds, String[] intermediateReceiverGroupIds,
-      String[] receiverUserIds, String[] receiverGroupIds) throws FormsOnlineException;
+  FormDetail saveForm(FormDetail form,
+      Map<String, Pair<List<String>, List<String>>> userAndGroupIdsByRightTypes) throws FormsOnlineException;
 
   boolean deleteForm(FormPK pk) throws FormsOnlineException;
 

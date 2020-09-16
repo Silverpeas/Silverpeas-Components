@@ -30,7 +30,6 @@ import org.silverpeas.core.contribution.model.ContributionValidation;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 
 import javax.persistence.Transient;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -293,7 +292,7 @@ public class FormInstance implements SilverpeasContent {
     return getState() == STATE_ARCHIVED;
   }
 
-  boolean canBeValidated() {
+  public boolean canBeValidated() {
     return !isCanceled() && !isValidated() && !isDenied() && !isArchived();
   }
 
@@ -376,18 +375,12 @@ public class FormInstance implements SilverpeasContent {
     return isUnread() || isRead();
   }
 
-  public List<String> getValidationsSchemaImages() {
-    List<FormInstanceValidation> schema = getValidationsSchema();
-    List<String> images = new ArrayList<>();
-    String read = "vu-ok.png";
-    if (isUnread()) {
-      read = "vu.png";
-    }
-    images.add(read);
-    for (FormInstanceValidation validation : schema) {
-      images.add(getValidationImage(validation));
-    }
-    return images;
+  public List<String> getValidationsImages() {
+    final List<FormInstanceValidation> validationForImages = canBeValidated()
+        ? getValidationsSchema()
+        : getValidations();
+    return Stream.concat(Stream.of(isUnread() ? "vu.png" : "vu-ok.png"),
+        validationForImages.stream().map(this::getValidationImage)).collect(Collectors.toList());
   }
 
   private String getValidationImage(FormInstanceValidation validation) {
@@ -403,6 +396,6 @@ public class FormInstance implements SilverpeasContent {
     } else if (validation.isRefused()) {
       stateSuffix = "-nok";
     }
-    return prefix+stateSuffix+".png";
+    return prefix + stateSuffix + ".png";
   }
 }

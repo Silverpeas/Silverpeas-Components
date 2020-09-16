@@ -24,6 +24,7 @@
 package org.silverpeas.components.formsonline.model;
 
 import org.silverpeas.core.admin.PaginationPage;
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.SilverpeasList;
 
 import java.util.Collection;
@@ -74,22 +75,25 @@ public interface FormsOnlineDAO {
   /**
    * Update form senders list.
    * @param pk the form primary key
-   * @param newUserSenderIds the new sender list as user ids
-   * @param newGroupSenderIds the new sender list as group ids
+   * @param userAndGroupIdsByRightTypes the new sender list as user ids
    * @throws FormsOnlineException
    */
-  void updateSenders(FormPK pk, String[] newUserSenderIds, String[] newGroupSenderIds)
+  void updateSenders(FormPK pk,
+      Map<String, Pair<List<String>, List<String>>> userAndGroupIdsByRightTypes)
       throws FormsOnlineException;
 
   /**
-   * Update form receivers list.
-   * @param pk the form primary key
-   * @param newUserReceiverIds the new receivers list as user ids
-   * @param newGroupReceiverIds the new receivers list as group ids
-   * @throws FormsOnlineException
+   * Updates the form rights from given parameters.
+   * @param pk the unique identifier of a form.
+   * @param userAndGroupIdsByRightTypes the user and group rights to update indexed by right types.
+   * Users and groups are represented by a {@link Pair} containing on left the user identifiers
+   * and on right the group identifiers.
+   * @throws FormsOnlineException on technical error.
    */
-  void updateReceivers(FormPK pk, String[] newUserReceiverIds, String[] newGroupReceiverIds,
-      String rightType) throws FormsOnlineException;
+  void updateReceivers(FormPK pk,
+      Map<String, Pair<List<String>, List<String>>> userAndGroupIdsByRightTypes)
+      throws FormsOnlineException;
+
 
   /**
    * Get the form's senders list where users has been declared directly.

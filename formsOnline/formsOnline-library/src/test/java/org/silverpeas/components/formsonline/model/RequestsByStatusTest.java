@@ -24,8 +24,8 @@
 
 package org.silverpeas.components.formsonline.model;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Test;
+import org.silverpeas.core.util.Pair;
 
 import java.util.Set;
 import java.util.TreeSet;
@@ -45,7 +45,7 @@ import static org.silverpeas.core.util.CollectionUtil.asSet;
 class RequestsByStatusTest {
 
   private static final BiConsumer<Pair<Set<FormInstanceValidationType>,
-      Set<FormInstanceValidationType>>, RequestValidationCriteria> TO_VALIDATE_CONFIGURER = toValidateCriteriaConfigurer;
+        Set<FormInstanceValidationType>>, RequestValidationCriteria> TO_VALIDATE_CONFIGURER = toValidateCriteriaConfigurer;
 
   @Test
   void configureValidationCriteriaWhenNoFormValidation() {

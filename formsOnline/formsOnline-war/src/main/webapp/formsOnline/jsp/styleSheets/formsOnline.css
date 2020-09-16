@@ -582,6 +582,16 @@ fieldset#listSenders {
   background: url("/silverpeas/util/icons/component/formsOnlineSmall.gif") no-repeat scroll 11px 0px transparent;
 }
 
+#informationForm img[class$=help-button] {
+  position: absolute;
+  top: 6px;
+  margin-left: 5px;
+}
+
+#informationForm .directDeletion-help-button {
+  top: 3px !important;
+}
+
 #all-requests .sp_button {
   padding: 1px 10px;
   font-size: 9pt !important;

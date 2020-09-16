@@ -24,8 +24,6 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <%@page import="org.silverpeas.core.contribution.content.form.Form"%>
 <%@page import="org.silverpeas.core.contribution.content.form.PagesContext"%>
@@ -62,6 +60,7 @@
 <fmt:message var="labelDeleteConfirm" key="formsOnline.request.action.delete.confirm"/>
 <fmt:message var="labelArchive" key="formsOnline.request.action.archive"/>
 <fmt:message var="labelArchiveConfirm" key="formsOnline.request.action.archive.confirm"/>
+<fmt:message var="commentYourDecisionLabel" key="formsOnline.request.validation.comment"/>
 
 <%
 	Form        formView  = (Form) request.getAttribute("Form");
@@ -74,7 +73,8 @@
 %>
 
 <view:sp-page>
-<view:sp-head-part>
+<view:sp-head-part withCheckFormScript="true">
+  <view:includePlugin name="preview"/>
   <view:link href="/formsOnline/jsp/styleSheets/formsOnline-print.css" print="true"/>
   <% formView.displayScripts(out, context); %>
   <script type="text/javascript">
@@ -89,25 +89,35 @@
               if (followerCheckbox.checked) {
                 document.validationForm.follower.value = followerCheckbox.value;
               }
+              spProgressMessage.show();
               document.validationForm.submit();
             }
           });
         </c:when>
         <c:otherwise>
+          spProgressMessage.show();
           document.validationForm.submit();
         </c:otherwise>
       </c:choose>
 	  }
 
 	  function refuse() {
-		  document.validationForm.decision.value = "refuse";
-		  document.validationForm.submit();
+      const comment = stripInitialWhitespace(document.validationForm.comment.value);
+      if (isWhitespace(comment)) {
+        SilverpeasError.add("'${silfn:escapeJs(commentYourDecisionLabel)}' <fmt:message key="GML.MustBeFilled"/>");
+      }
+      if (!SilverpeasError.show()) {
+        spProgressMessage.show();
+        document.validationForm.decision.value = "refuse";
+        document.validationForm.submit();
+      }
 	  }
 
     function deleteRequest() {
       jQuery.popup.confirm("${silfn:escapeJs(labelDeleteConfirm)}", {
         title : "${silfn:escapeJs(labelDelete)}",
         callback : function() {
+          spProgressMessage.show();
           document.requestForm.action = "DeleteRequest";
           document.requestForm.submit();
         }
@@ -118,6 +128,7 @@
       jQuery.popup.confirm("${silfn:escapeJs(labelArchiveConfirm)}", {
         title : "${silfn:escapeJs(labelArchive)}",
         callback : function() {
+          spProgressMessage.show();
           document.requestForm.action = "ArchiveRequest";
           document.requestForm.submit();
         }
@@ -128,6 +139,7 @@
 	    jQuery.popup.confirm("${silfn:escapeJs(labelCancelConfirm)}", {
         title : "${silfn:escapeJs(labelCancel)}",
         callback : function() {
+          spProgressMessage.show();
           document.requestForm.action = "CancelRequest";
           document.requestForm.submit();
         }
@@ -183,7 +195,7 @@
   <c:if test="${validationEnabled}">
     <div class="commentaires">
       <div id="edition-box">
-        <p class="title">Commentez votre décision</p>
+        <p class="title">${commentYourDecisionLabel}</p>
         <div class="avatar"><view:image src="${currentUser.avatar}" type="avatar"/> </div>
         <form name="validationForm" action="EffectiveValideForm" method="post">
           <input type="hidden" name="Id" value="${userRequest.id}"/>
@@ -226,5 +238,6 @@
   <input id="followerCheckbox" type="checkbox" value="true"/> <label for="followerCheckbox"><fmt:message key="formsOnline.request.follow"/></label>
 </div>
 
+<view:progressMessage/>
 </view:sp-body-part>
 </view:sp-page>

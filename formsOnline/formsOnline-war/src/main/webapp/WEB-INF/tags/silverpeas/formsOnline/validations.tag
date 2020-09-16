@@ -38,7 +38,7 @@
               type="org.silverpeas.components.formsonline.model.FormInstance"
               description="The user request" %>
 
-<c:set var="validations" value="${userRequest.validationsSchema}"/>
+<c:set var="validations" value="${userRequest.canBeValidated() ? userRequest.validationsSchema : userRequest.validations}"/>
 <jsp:useBean id="validations" type="java.util.List"/>
 <c:set var="form" value="${userRequest.form}"/>
 

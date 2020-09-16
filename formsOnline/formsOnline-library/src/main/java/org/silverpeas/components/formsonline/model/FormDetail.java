@@ -43,7 +43,9 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
+import static java.util.Collections.unmodifiableList;
 import static org.silverpeas.components.formsonline.model.FormInstanceValidationType.*;
 import static org.silverpeas.core.util.CollectionUtil.isNotEmpty;
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
@@ -57,8 +59,13 @@ public class FormDetail {
   public static final int VALIDATOR_UNDEFINED = 1;
   public static final int VALIDATOR_NOT_ALLOWED = 2;
 
+  public static final String SENDERS_TYPE = "S";
   public static final String RECEIVERS_TYPE_INTERMEDIATE = "I";
   public static final String RECEIVERS_TYPE_FINAL = "R";
+  public static final List<String> ALL_RIGHT_TYPES = unmodifiableList(
+      asList(SENDERS_TYPE, RECEIVERS_TYPE_INTERMEDIATE, RECEIVERS_TYPE_FINAL));
+  public static final List<String> ALL_RECEIVER_TYPES = unmodifiableList(
+      asList(RECEIVERS_TYPE_INTERMEDIATE, RECEIVERS_TYPE_FINAL));
 
   private int id = -1;
   private String xmlFormName = null;

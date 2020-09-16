@@ -38,6 +38,7 @@
 
 <fmt:setLocale value="${lang}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 
 <c:set var="form" value="${requestScope['currentForm']}"/>
 <jsp:useBean id="form" type="org.silverpeas.components.formsonline.model.FormDetail"/>
@@ -70,22 +71,24 @@
 <fmt:message key="formsOnline.receivers" var="labelReceivers"/>
 <fmt:message key="formsOnline.validation.inter" var="labelValidationInter"/>
 <fmt:message key="GML.mandatory" var="labelMandatory"/>
+<fmt:message key="formsOnline.form.exchange.mail.help" var="sendEmailHelpMessage"/>
+<fmt:message key="formsOnline.form.exchange.immediateDeletion.help" var="immediateDeletionHelpMessage"/>
+
+<fmt:message bundle="${icons}" var="helpIcon" key="formsOnline.icons.help"/>
+<c:url var="helpIcon" value="${helpIcon}"/>
 
 <c:set var="id_ListSenders" value="<%=FormsOnlineSessionController.USER_PANEL_SENDERS_PREFIX%>"/>
 <c:set var="id_ListReceivers" value="<%=FormsOnlineSessionController.USER_PANEL_RECEIVERS_PREFIX%>"/>
 <c:set var="id_ListIntermediateReveivers" value="<%=FormsOnlineSessionController.USER_PANEL_INTERMEDIATE_RECEIVERS_PREFIX%>"/>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title></title>
-<view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
-  <view:includePlugin name="popup"/>
+<view:sp-page>
+<view:sp-head-part withFieldsetStyle="true" withCheckFormScript="true">
+<view:includePlugin name="popup"/>
 <script type="text/javascript">
 function valider() {
-  var description = stripInitialWhitespace(document.creationForm.description.value);
-	var templateSelectedIndex = document.creationForm.template.selectedIndex;
-  var title = stripInitialWhitespace(document.creationForm.title.value);
+  const description = stripInitialWhitespace(document.creationForm.description.value);
+  const templateSelectedIndex = document.creationForm.template.selectedIndex;
+  const title = stripInitialWhitespace(document.creationForm.title.value);
 
   if (isWhitespace(title)) {
     SilverpeasError.add("'<fmt:message key="GML.title"/>' <fmt:message key="GML.MustBeFilled"/>");
@@ -99,15 +102,21 @@ function valider() {
     SilverpeasError.add("'<fmt:message key="GML.description"/>' <fmt:message key="GML.MustBeFilled"/>");
   }
 
-  var email = document.getElementById('sendEmail').value;
+  const email = document.getElementById('sendEmail').value;
   if (StringUtil.isDefined(email) && !checkemail(email)) {
     SilverpeasError.add("'<fmt:message key="formsOnline.sendEmail"/>' <fmt:message key="GML.MustContainsEmail"/>");
   }
 
-  var directDeletionChecked = document.getElementById('directDeletion').checked;
+  const directDeletionChecked = document.getElementById('directDeletion').checked;
   if (directDeletionChecked) {
     if (StringUtil.isNotDefined(email)) {
       SilverpeasError.add("'<fmt:message key="formsOnline.sendEmail"/>' <fmt:message key="GML.MustBeFilled"/>");
+    }
+  } else if (${form.published}) {
+    if (sp.element.querySelectorAll('input[id^="${id_ListReceivers}"').filter(function(input) {
+      return !!input.value
+    }).length === 0) {
+      SilverpeasError.add("<fmt:message key="formsOnline.form.error.finalValidatorMissing"/>");
     }
   }
 
@@ -117,12 +126,22 @@ function valider() {
 }
 
 function viewForm() {
-  var xml = $("#templates").val();
+  const xml = $("#templates").val();
   SP_openWindow("Preview?Form="+xml);
 }
 
+function showHideOnImmediateRequestDeletionAfterExchangeCheckboxChange(checkBoxTarget) {
+  if (checkBoxTarget.checked) {
+    $("#bossValidationForm").hide();
+    $("#validator-containers").hide();
+  } else {
+    $("#bossValidationForm").show();
+    $("#validator-containers").show();
+  }
+}
+
 function showHidePreviewButton() {
-  var xml = $("#templates").val();
+  const xml = $("#templates").val();
   if (xml.length > 0) {
     $("#view-form").show();
   } else {
@@ -131,22 +150,22 @@ function showHidePreviewButton() {
 }
 
 function notifySenders() {
-  var users = $("#listSenders-userIds").val();
-  var groups = $("#listSenders-groupIds").val();
+  const users = $("#listSenders-userIds").val();
+  const groups = $("#listSenders-groupIds").val();
   notify(users, groups);
 }
 
 function notifyReceivers() {
-  var users = $("#listIntermediateReceivers-userIds").val();
-  var groups = $("#listIntermediateReceivers-groupIds").val();
+  let users = $("#listIntermediateReceivers-userIds").val();
+  let groups = $("#listIntermediateReceivers-groupIds").val();
   users += ","+$("#listReceivers-userIds").val();
   groups += ","+$("#listReceivers-groupIds").val();
   notify(users, groups);
 }
 
 function notifyAll() {
-  var users = $("#listIntermediateReceivers-userIds").val();
-  var groups = $("#listIntermediateReceivers-groupIds").val();
+  let users = $("#listIntermediateReceivers-userIds").val();
+  let groups = $("#listIntermediateReceivers-groupIds").val();
   users += ","+$("#listReceivers-userIds").val();
   groups += ","+$("#listReceivers-groupIds").val();
   users += ","+$("#listSenders-userIds").val();
@@ -165,17 +184,21 @@ function notify(users, groups) {
 }
 
 $(document).ready(function() {
-
   showHidePreviewButton();
-
   $("#templates").change(function() {
     showHidePreviewButton();
   });
+  const directDeletionCheckBox = document.querySelector('#directDeletion');
+  showHideOnImmediateRequestDeletionAfterExchangeCheckboxChange(directDeletionCheckBox)
+  directDeletionCheckBox.addEventListener('change', () =>
+      showHideOnImmediateRequestDeletionAfterExchangeCheckboxChange(directDeletionCheckBox));
+  TipManager.simpleHelp(".sendEmail-help-button", "${silfn:escapeJs(sendEmailHelpMessage)}");
+  TipManager.simpleHelp(".directDeletion-help-button", "${silfn:escapeJs(immediateDeletionHelpMessage)}");
 });
 </script>
 
-</head>
-<body>
+</view:sp-head-part>
+<view:sp-body-part>
 <view:operationPane>
   <fmt:message var="labelNotifySenders" key="formsOnline.form.action.notify.senders"/>
   <fmt:message var="labelNotifyReceivers" key="formsOnline.form.action.notify.receivers"/>
@@ -231,7 +254,7 @@ $(document).ready(function() {
             &nbsp;<img width="5" height="5" alt="${labelMandatory}" src="${iconMandatory}" />
           </div>
         </div>
-        <div class="field" id="bossValidationForm">
+        <div class="field" id="bossValidationForm" style="display: none">
           <label for="bossValidation" class="txtlibform"><fmt:message key="formsOnline.validation.boss"/></label>
           <div class="champs">
             <input type="checkbox" name="bossValidation" id="bossValidation" value="true" ${hierarchicalValidation}/>
@@ -241,12 +264,14 @@ $(document).ready(function() {
           <label for="sendEmail" class="txtlibform"><fmt:message key="formsOnline.sendEmail"/></label>
           <div class="champs">
             <input type="text" id="sendEmail" name="sendEmail" size="60" maxlength="200" value="${requestExchangeReceiver}"/>
+            <span><img class="sendEmail-help-button" src="${helpIcon}" alt=""/></span>
           </div>
         </div>
         <div class="field" id="directDeletionForm">
           <label for="directDeletion" class="txtlibform"><fmt:message key="formsOnline.directDeletion"/></label>
           <div class="champs">
             <input type="checkbox" name="directDeletion" id="directDeletion" value="true" ${deleteAfterRequestExchange}/>
+            <span><img class="directDeletion-help-button" src="${helpIcon}" alt=""/></span>
           </div>
         </div>
 
@@ -254,7 +279,7 @@ $(document).ready(function() {
     </fieldset>
 
     <viewTags:displayListOfUsersAndGroups users="${m_listUserSenders}" groups="${m_listGroupSenders}" label="${labelSenders}" id="${id_ListSenders}" updateCallback="ModifySenders"/>
-    <div class="table">
+    <div class="table" id="validator-containers" style="display: none">
       <div class="cell">
         <viewTags:displayListOfUsersAndGroups users="${m_listUserIntermediateReceivers}" groups="${m_listGroupIntermediateReceivers}" label="${labelValidationInter}" id="${id_ListIntermediateReveivers}" updateCallback="ModifyIntermediateReceivers"/>
       </div>
@@ -275,5 +300,5 @@ $(document).ready(function() {
 
 </view:window>
 
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>

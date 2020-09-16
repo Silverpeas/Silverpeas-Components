@@ -41,6 +41,7 @@ import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 
 import java.util.List;
 
+import static org.silverpeas.components.formsonline.control.FormsOnlineSessionController.*;
 import static org.silverpeas.core.util.StringUtil.isInteger;
 import static org.silverpeas.core.util.StringUtil.isNotDefined;
 
@@ -120,31 +121,14 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
         form.setHierarchicalValidation(request.getParameterAsBoolean("bossValidation"));
         form.setDeleteAfterRequestExchange(request.getParameterAsBoolean("directDeletion"));
         form.setRequestExchangeReceiver(request.getParameter("sendEmail"));
-
-        String[] senderUserIds = StringUtil.split(request.getParameter(
-            FormsOnlineSessionController.USER_PANEL_SENDERS_PREFIX + USER_PANEL_CURRENT_USER_IDS),
-            ',');
-        String[] senderGroupIds = StringUtil.split(request.getParameter(
-            FormsOnlineSessionController.USER_PANEL_SENDERS_PREFIX + USER_PANEL_CURRENT_GROUP_IDS),
-            ',');
-
-        String[] interReceiverUserIds = StringUtil.split(request.getParameter(
-            FormsOnlineSessionController.USER_PANEL_INTERMEDIATE_RECEIVERS_PREFIX + USER_PANEL_CURRENT_USER_IDS),
-            ',');
-        String[] interReceiverGroupIds = StringUtil.split(request.getParameter(
-            FormsOnlineSessionController.USER_PANEL_INTERMEDIATE_RECEIVERS_PREFIX + USER_PANEL_CURRENT_GROUP_IDS),
-            ',');
-
-        String[] receiverUserIds = StringUtil.split(request.getParameter(
-            FormsOnlineSessionController.USER_PANEL_RECEIVERS_PREFIX + USER_PANEL_CURRENT_USER_IDS),
-            ',');
-        String[] receiverGroupIds = StringUtil.split(request.getParameter(
-            FormsOnlineSessionController.USER_PANEL_RECEIVERS_PREFIX + USER_PANEL_CURRENT_GROUP_IDS),
-            ',');
-
-        formsOnlineSC.updateCurrentForm(senderUserIds, senderGroupIds, interReceiverUserIds,
+        final List<String> senderUserIds = request.getParameterAsList(USER_PANEL_SENDERS_PREFIX + USER_PANEL_CURRENT_USER_IDS);
+        final List<String> senderGroupIds = request.getParameterAsList(USER_PANEL_SENDERS_PREFIX + USER_PANEL_CURRENT_GROUP_IDS);
+        final List<String> interReceiverUserIds = request.getParameterAsList(USER_PANEL_INTERMEDIATE_RECEIVERS_PREFIX + USER_PANEL_CURRENT_USER_IDS);
+        final List<String> interReceiverGroupIds = request.getParameterAsList(USER_PANEL_INTERMEDIATE_RECEIVERS_PREFIX + USER_PANEL_CURRENT_GROUP_IDS);
+        final List<String> receiverUserIds = request.getParameterAsList(USER_PANEL_RECEIVERS_PREFIX + USER_PANEL_CURRENT_USER_IDS);
+        final List<String> receiverGroupIds = request.getParameterAsList(USER_PANEL_RECEIVERS_PREFIX + USER_PANEL_CURRENT_GROUP_IDS);
+        formsOnlineSC.saveCurrentForm(senderUserIds, senderGroupIds, interReceiverUserIds,
             interReceiverGroupIds, receiverUserIds, receiverGroupIds);
-
         return getDestination("Main", formsOnlineSC, request);
       } else if ("EditForm".equals(function)) {
         String formId = request.getParameter(PARAM_FORMID);

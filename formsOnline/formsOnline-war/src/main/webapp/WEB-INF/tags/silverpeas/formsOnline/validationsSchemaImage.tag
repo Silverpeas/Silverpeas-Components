@@ -37,7 +37,7 @@
               type="org.silverpeas.components.formsonline.model.FormInstance"
               description="The user request" %>
 
-<c:set var="validationsSchemaImages" value="${userRequest.validationsSchemaImages}"/>
+<c:set var="validationsSchemaImages" value="${userRequest.validationsImages}"/>
 
 <span class="request-state">
 <c:forEach var="validationImage" items="${validationsSchemaImages}"><img src="${silfn:applicationURL()}/formsOnline/jsp/icons/${validationImage}" alt=""/></c:forEach>
