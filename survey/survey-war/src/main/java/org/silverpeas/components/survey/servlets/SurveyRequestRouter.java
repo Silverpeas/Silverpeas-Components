@@ -94,7 +94,19 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
         return profile;
       }
     }
+    return flag;
+  }
 
+  /**
+   * @param profiles
+   * @return boolean isParticipationMultipleUser
+   */
+  public boolean isParticipationMultipleUser(String[] profiles) {
+    boolean flag = false;
+    for (String profile : profiles) {
+      if ("userMultiple".equals(profile))
+        return true;
+    }
     return flag;
   }
 
@@ -125,9 +137,7 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
     try {
       String flag = getFlag(surveySC.getUserRoles());
       String rootDest = "/survey/jsp/";
-      if ("userMultiple".equals(flag)) {
-        surveySC.setParticipationMultipleAllowedForUser(true);
-      }
+      surveySC.setParticipationMultipleAllowedForUser(isParticipationMultipleUser(surveySC.getUserRoles()));
 
       if ("pollingStation".equals(surveySC.getComponentRootName())) {
         surveySC.setPollingStationMode(true);
