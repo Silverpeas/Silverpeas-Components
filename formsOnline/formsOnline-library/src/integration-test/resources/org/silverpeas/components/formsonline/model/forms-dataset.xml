@@ -6,7 +6,8 @@
 -->
 <dataset>
   <uniqueid tableName="sc_formsonline_forms" maxId="1001" />
-  <uniqueid tableName="sc_formsonline_forminstances" maxId="20" />
+  <uniqueid tableName="sc_formsonline_forminstances" maxId="50" />
+  <uniqueid tableName="sc_formsonline_forminstvali" maxId="100" />
 
   <sc_formsonline_forms id="1000" xmlformname="descriptif_salle.xml" name="Référencement des salles"
     description="Formulaire de description d'une salle" creationdate="2012-01-09" state="1" instanceid="formsOnline100"
@@ -16,10 +17,18 @@
     description="Formulaire de réservation d'une voiture" creationdate="2012-01-08" state="0" instanceid="formsOnline100"
     alreadyused="0" creatorid="1" title="Titre de mon formulaire en ligne" />
 
-  <sc_formsonline_forminstances id="20" formid="1000" state="3" creatorid="1" creationdate="2012-01-28"
-    validatorid="29" validationdate="2012-01-29" comments="Salle 18 disponible" instanceid="formsOnline100"/>
+  <sc_formsonline_forminstances id="20" formid="1000" state="3" creatorid="1" creationdate="2012-01-28 10:50:34.26" instanceid="formsOnline100"/>
+  <sc_formsonline_forminstvali id="5" formInstId="20" status="VALIDATED" validationBy="29" follower="false" validationType="FINAL"
+                               validationdate="2012-01-29 11:03:38.07" validationComment="Salle 18 disponible"/>
 
   <sc_formsonline_userrights formid="1000" instanceid="formsOnline100" userid="1" righttype="S"/>
   <sc_formsonline_userrights formid="1000" instanceid="formsOnline100" userid="29" righttype="R"/>
 
+  <sc_formsonline_forminstances id="10" formid="1001" state="1" creatorid="1" creationdate="2020-07-21 17:27:00.000" instanceid="formsOnline100"/>
+
+  <st_user id="1" domainid="0" specificid="1" firstname="Bart" lastname="Simpson" email="bart.simpson@silverpeas.org" login="bart.simpson" loginmail="[NULL]" accesslevel="U" loginquestion="[NULL]" loginanswer="[NULL]" state='VALID' stateSaveDate='2012-01-01 00:00:00.000'/>
+  <st_user id="2" domainid="0" specificid="2" firstname="Bart2" lastname="Simpson2" email="bart2.simpson@silverpeas.org" login="bart.simpson" loginmail="[NULL]" accesslevel="U" loginquestion="[NULL]" loginanswer="[NULL]" state='VALID' stateSaveDate='2012-01-01 00:00:00.000'/>
+  <st_user id="29" domainid="0" specificid="29" firstname="Marge" lastname="Simpson" email="marge.simpson@silverpeas.org" login="marge.simpson" loginmail="[NULL]" accesslevel="U" loginquestion="[NULL]" loginanswer="[NULL]" state='VALID' stateSaveDate='2012-01-01 00:00:00.000'/>
+  <st_user id="30" domainid="0" specificid="30" firstname="Marge2" lastname="Simpson2" email="marge2.simpson@silverpeas.org" login="marge.simpson" loginmail="[NULL]" accesslevel="U" loginquestion="[NULL]" loginanswer="[NULL]" state='VALID' stateSaveDate='2012-01-01 00:00:00.000'/>
+  <st_user id="31" domainid="0" specificid="31" firstname="Marge3" lastname="Simpson3" email="marge3.simpson@silverpeas.org" login="marge.simpson" loginmail="[NULL]" accesslevel="U" loginquestion="[NULL]" loginanswer="[NULL]" state='VALID' stateSaveDate='2012-01-01 00:00:00.000'/>
 </dataset>

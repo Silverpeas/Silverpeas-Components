@@ -27,6 +27,8 @@ import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.formsonline.control.FormsOnlineSessionController;
 import org.silverpeas.components.formsonline.model.FormDetail;
 import org.silverpeas.components.formsonline.model.FormInstance;
+import org.silverpeas.components.formsonline.model.FormInstanceValidationType;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.util.StringUtil;
@@ -39,6 +41,10 @@ import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 
 import java.util.List;
 
+import static org.silverpeas.components.formsonline.control.FormsOnlineSessionController.*;
+import static org.silverpeas.core.util.StringUtil.isInteger;
+import static org.silverpeas.core.util.StringUtil.isNotDefined;
+
 public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnlineSessionController> {
 
   private static final long serialVersionUID = -6152014003939730643L;
@@ -47,6 +53,7 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
   private static final String USER_PANEL_CURRENT_GROUP_IDS = "UserPanelCurrentGroupIds";
   private static final String FORM_CONTEXT = "FormContext";
   private static final String PARAM_FORMID = "FormId";
+  private static final String PARAM_REQUESTID = "Id";
   private static final String ROOT_DESTINATION = "/formsOnline/jsp/";
 
   /**
@@ -77,32 +84,29 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
 
     try {
       if ("Main".equals(function)) {
+        formsOnlineSC.setCurrentFilter(-1, null);
         formsOnlineSC.getSelectedValidatorRequestIds().clear();
-        String role = formsOnlineSC.getBestProfile();
+        final String role = formsOnlineSC.getBestProfile();
         if ("Administrator".equals(role)) {
           request.setAttribute("formsList", formsOnlineSC.getAllForms(true));
           request.setAttribute("RequestsAsValidator", formsOnlineSC.getHomepageValidatorRequests());
           request.setAttribute("Role", "admin");
         } else {
           if (!formsOnlineSC.getAvailableFormIdsAsReceiver().isEmpty()) {
-            request
-                .setAttribute("RequestsAsValidator", formsOnlineSC.getHomepageValidatorRequests());
+            request.setAttribute("RequestsAsValidator", formsOnlineSC.getHomepageValidatorRequests());
             request.setAttribute("Role", "validator");
           } else {
             request.setAttribute("Role", "senderOnly");
           }
           request.setAttribute("formsList", formsOnlineSC.getAvailableFormsToSend());
         }
-
         request.setAttribute("UserRequests", formsOnlineSC.getAllUserRequests());
         request.setAttribute("App", formsOnlineSC.getComponentInstLight());
         formsOnlineSC.resetCurrentForm();
-
         destination = ROOT_DESTINATION + "formsList.jsp";
       } else if ("CreateForm".equals(function)) {
-        FormDetail form = new FormDetail();
+        final FormDetail form = new FormDetail();
         formsOnlineSC.setCurrentForm(form);
-
         request.setAttribute("currentForm", form);
         request.setAttribute("availableTemplates", formsOnlineSC.getTemplates());
         destination = ROOT_DESTINATION + "editForm.jsp";
@@ -114,24 +118,17 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
         if (request.getParameter("template") != null) {
           form.setXmlFormName(request.getParameter("template"));
         }
-
-        String[] senderUserIds = StringUtil.split(request.getParameter(
-            FormsOnlineSessionController.USER_PANEL_SENDERS_PREFIX + USER_PANEL_CURRENT_USER_IDS),
-            ',');
-        String[] senderGroupIds = StringUtil.split(request.getParameter(
-            FormsOnlineSessionController.USER_PANEL_SENDERS_PREFIX + USER_PANEL_CURRENT_GROUP_IDS),
-            ',');
-
-        String[] receiverUserIds = StringUtil.split(request.getParameter(
-            FormsOnlineSessionController.USER_PANEL_RECEIVERS_PREFIX + USER_PANEL_CURRENT_USER_IDS),
-            ',');
-        String[] receiverGroupIds = StringUtil.split(request.getParameter(
-            FormsOnlineSessionController.USER_PANEL_RECEIVERS_PREFIX + USER_PANEL_CURRENT_GROUP_IDS),
-            ',');
-
-        formsOnlineSC
-            .updateCurrentForm(senderUserIds, senderGroupIds, receiverUserIds, receiverGroupIds);
-
+        form.setHierarchicalValidation(request.getParameterAsBoolean("bossValidation"));
+        form.setDeleteAfterRequestExchange(request.getParameterAsBoolean("directDeletion"));
+        form.setRequestExchangeReceiver(request.getParameter("sendEmail"));
+        final List<String> senderUserIds = request.getParameterAsList(USER_PANEL_SENDERS_PREFIX + USER_PANEL_CURRENT_USER_IDS);
+        final List<String> senderGroupIds = request.getParameterAsList(USER_PANEL_SENDERS_PREFIX + USER_PANEL_CURRENT_GROUP_IDS);
+        final List<String> interReceiverUserIds = request.getParameterAsList(USER_PANEL_INTERMEDIATE_RECEIVERS_PREFIX + USER_PANEL_CURRENT_USER_IDS);
+        final List<String> interReceiverGroupIds = request.getParameterAsList(USER_PANEL_INTERMEDIATE_RECEIVERS_PREFIX + USER_PANEL_CURRENT_GROUP_IDS);
+        final List<String> receiverUserIds = request.getParameterAsList(USER_PANEL_RECEIVERS_PREFIX + USER_PANEL_CURRENT_USER_IDS);
+        final List<String> receiverGroupIds = request.getParameterAsList(USER_PANEL_RECEIVERS_PREFIX + USER_PANEL_CURRENT_GROUP_IDS);
+        formsOnlineSC.saveCurrentForm(senderUserIds, senderGroupIds, interReceiverUserIds,
+            interReceiverGroupIds, receiverUserIds, receiverGroupIds);
         return getDestination("Main", formsOnlineSC, request);
       } else if ("EditForm".equals(function)) {
         String formId = request.getParameter(PARAM_FORMID);
@@ -154,7 +151,8 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
           formsOnlineSC.deleteForm(Integer.parseInt(formId));
         }
         return getDestination("Main", formsOnlineSC, request);
-      } else if ("ModifySenders".equals(function) || "ModifyReceivers".equals(function)) {
+      } else if ("ModifySenders".equals(function) || "ModifyReceivers".equals(function) ||
+          "ModifyIntermediateReceivers".equals(function)) {
         List<String> userIds = (List<String>) StringUtil
             .splitString(request.getParameter(USER_PANEL_CURRENT_USER_IDS), ',');
         List<String> groupIds = (List<String>) StringUtil
@@ -162,6 +160,8 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
 
         if ("ModifySenders".equals(function)) {
           return formsOnlineSC.initSelectionSenders(userIds, groupIds);
+        } else if ("ModifyIntermediateReceivers".equals(function)) {
+          return formsOnlineSC.initSelectionIntermediateReceivers(userIds, groupIds);
         }
 
         return formsOnlineSC.initSelectionReceivers(userIds, groupIds);
@@ -175,7 +175,7 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
         // call to the JSP with required parameters
         request.setAttribute("Form", formUpdate);
         request.setAttribute("XMLFormName", xmlFormName);
-        request.setAttribute(FORM_CONTEXT, getFormContext(formsOnlineSC));
+        request.setAttribute(FORM_CONTEXT, formsOnlineSC.getFormPageContext());
 
         destination = ROOT_DESTINATION + "preview.jsp";
       } else if ("PublishForm".equals(function)) {
@@ -185,20 +185,21 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
         formsOnlineSC.unpublishForm(request.getParameter("Id"));
         return getDestination("Main", formsOnlineSC, request);
       } else if (INBOX.equals(function)) {
-
         // Selection
         request.mergeSelectedItemsInto(formsOnlineSC.getSelectedValidatorRequestIds());
-
         request.setAttribute("Requests", formsOnlineSC.getAllValidatorRequests());
-
         request.setAttribute("CurrentForm", formsOnlineSC.getCurrentForm());
         request.setAttribute("Forms", formsOnlineSC.getAllForms(false));
-
         destination = ROOT_DESTINATION + "inbox.jsp";
       } else if ("FilterRequests".equals(function)) {
         String formId = request.getParameter(PARAM_FORMID);
         formsOnlineSC.setCurrentForm(formId);
-
+        final String filterValue = request.getParameter("State");
+        final int state = isInteger(filterValue) ? Integer.parseInt(filterValue) : -1;
+        final FormInstanceValidationType validation = state > -1 || isNotDefined(filterValue)
+            ? null
+            : FormInstanceValidationType.valueOf(filterValue);
+        formsOnlineSC.setCurrentFilter(state, validation);
         return getDestination(INBOX, formsOnlineSC, request);
       } else if ("Export".equals(function)) {
         ExportCSVBuilder csvBuilder = formsOnlineSC.export();
@@ -216,30 +217,40 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
 
         // call of the JSP with required parameters
         request.setAttribute("Form", formUpdate);
-        request.setAttribute(FORM_CONTEXT, getFormContext(formsOnlineSC));
+        request.setAttribute(FORM_CONTEXT, formsOnlineSC.getFormPageContext());
         request.setAttribute("FormDetail", form);
 
         destination = ROOT_DESTINATION + "newFormInstance.jsp";
-      } else if ("SaveRequest".equals(function)) {
-        // recuperation des donnees saisies dans le formulaire
-        List<FileItem> items = request.getFileItems();
+      } else if ("EditRequest".equals(function)) {
+        String id = request.getParameter(PARAM_REQUESTID);
 
-        // Sauvegarde des donnees
-        formsOnlineSC.saveRequest(items);
+        FormInstance userRequest = formsOnlineSC.loadRequest(id, true);
 
+        request.setAttribute("UserRequest", userRequest);
+        PagesContext formContext = formsOnlineSC.getFormPageContext();
+        formContext.setObjectId(userRequest.getId());
+        request.setAttribute(FORM_CONTEXT, formContext);
+
+        destination = ROOT_DESTINATION + "editFormInstance.jsp";
+      } else if (function.startsWith("SaveRequest")) {
+        final boolean isDraft = function.endsWith("AsDraft");
+        final List<FileItem> items = request.getFileItems();
+        formsOnlineSC.saveRequest(items, isDraft);
         return getDestination("Main", formsOnlineSC, request);
       } else if ("ViewRequest".equals(function)) {
         String formInstanceId = request.getParameter("Id");
-        FormInstance userRequest = formsOnlineSC.loadRequest(formInstanceId);
+        FormInstance userRequest = formsOnlineSC.loadRequest(formInstanceId, false);
 
         // Add attribute inside request to display data inside JSP view
         request.setAttribute("Form", userRequest.getFormWithData());
-        PagesContext formContext = getFormContext(formsOnlineSC);
+        PagesContext formContext = formsOnlineSC.getFormPageContext();
         formContext.setObjectId(formInstanceId);
         request.setAttribute(FORM_CONTEXT, formContext);
         request.setAttribute("ValidationEnabled", userRequest.isValidationEnabled());
         request.setAttribute("UserRequest", userRequest);
         request.setAttribute("FormDetail", userRequest.getForm());
+        request.setAttribute("FinalValidator",
+            userRequest.getForm().isFinalValidator(User.getCurrentRequester().getId()));
         request.setAttribute("Origin", checkOrigin(request));
 
         destination = ROOT_DESTINATION + "viewInstance.jsp";
@@ -247,27 +258,39 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
         String requestId = request.getParameter("Id");
         String decision = request.getParameter("decision");
         String comment = request.getParameter("comment");
+        boolean follower = request.getParameterAsBoolean("follower");
         String origin = checkOrigin(request);
-        formsOnlineSC.updateValidationStatus(requestId, decision, comment);
+        formsOnlineSC.updateValidationStatus(requestId, decision, comment, follower);
 
         return getDestination(origin, formsOnlineSC, request);
+      } else if ("CancelRequest".equals(function)) {
+        String id = request.getParameter("Id");
+        formsOnlineSC.cancelRequest(id);
+
+        return getDestination("Main", formsOnlineSC, request);
       } else if ("ArchiveRequest".equals(function)) {
         String id = request.getParameter("Id");
-        formsOnlineSC.archiveRequest(id);
+        formsOnlineSC.archiveRequest(id, true);
 
         return getDestination("Main", formsOnlineSC, request);
       } else if ("DeleteRequest".equals(function)) {
         String id = request.getParameter("Id");
-        formsOnlineSC.deleteRequest(id);
+        String origin = checkOrigin(request);
 
-        return getDestination(INBOX, formsOnlineSC, request);
-      } else if ("DeleteRequests".equals(function)) {
+        formsOnlineSC.deleteRequest(id, true);
+
+        return getDestination(origin, formsOnlineSC, request);
+      } else if ("DeleteRequests".equals(function) || "ArchiveRequests".equals(function)) {
 
         // Selection
         request.mergeSelectedItemsInto(formsOnlineSC.getSelectedValidatorRequestIds());
 
-        // Deletion
-        formsOnlineSC.deleteRequests(formsOnlineSC.getSelectedValidatorRequestIds());
+        if ("DeleteRequests".equals(function)) {
+          // Deletion
+          formsOnlineSC.deleteRequests(formsOnlineSC.getSelectedValidatorRequestIds());
+        } else {
+          formsOnlineSC.archiveRequests(formsOnlineSC.getSelectedValidatorRequestIds());
+        }
 
         // Clear selection
         formsOnlineSC.getSelectedValidatorRequestIds().clear();
@@ -297,8 +320,4 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
     return origin;
   }
 
-  private PagesContext getFormContext(FormsOnlineSessionController fosc) {
-    return new PagesContext("unknown", "0", fosc.getLanguage(), false, fosc.getComponentId(),
-        fosc.getUserId());
-  }
 }

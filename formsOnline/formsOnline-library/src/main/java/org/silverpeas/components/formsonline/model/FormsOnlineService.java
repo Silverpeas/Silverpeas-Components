@@ -28,10 +28,13 @@ import org.silverpeas.core.ApplicationService;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public interface FormsOnlineService extends ApplicationService<FormInstance> {
 
@@ -40,45 +43,100 @@ public interface FormsOnlineService extends ApplicationService<FormInstance> {
   }
 
   List<FormDetail> getAllForms(String appId, String userId, boolean withSendInfo)
-      throws FormsOnlineDatabaseException;
+      throws FormsOnlineException;
 
-  FormDetail loadForm(FormPK pk) throws FormsOnlineDatabaseException;
+  FormDetail loadForm(FormPK pk) throws FormsOnlineException;
 
-  FormDetail storeForm(FormDetail form, String[] senderUserIds, String[] senderGroupIds,
-      String[] receiverUserIds, String[] receiverGroupIds) throws FormsOnlineDatabaseException;
+  FormDetail saveForm(FormDetail form,
+      Map<String, Pair<List<String>, List<String>>> userAndGroupIdsByRightTypes) throws FormsOnlineException;
 
-  boolean deleteForm(FormPK pk) throws FormsOnlineDatabaseException;
+  boolean deleteForm(FormPK pk) throws FormsOnlineException;
 
-  void publishForm(FormPK pk) throws FormsOnlineDatabaseException;
+  void publishForm(FormPK pk) throws FormsOnlineException;
 
-  void unpublishForm(FormPK pk) throws FormsOnlineDatabaseException;
+  void unpublishForm(FormPK pk) throws FormsOnlineException;
 
   List<FormDetail> getAvailableFormsToSend(Collection<String> appIds, String userId)
-      throws FormsOnlineDatabaseException;
+      throws FormsOnlineException;
 
   RequestsByStatus getAllUserRequests(String appId, String userId,
       final PaginationPage paginationPage)
-      throws FormsOnlineDatabaseException;
+      throws FormsOnlineException;
 
-  RequestsByStatus getValidatorRequests(RequestsFilter filter, String userId,
-      final PaginationPage paginationPage) throws FormsOnlineDatabaseException;
+  RequestsByStatus getValidatorRequests(RequestsFilter filter, String validatorId,
+      final PaginationPage paginationPage) throws FormsOnlineException;
 
-  List<String> getAvailableFormIdsAsReceiver(String appId, String userId)
-      throws FormsOnlineDatabaseException;
+  /**
+   * Gets the {@link FormInstanceValidationType} instances mapped by form identifiers of the the
+   * validator represented by given validator id and validator group ids on the given component
+   * instance.
+   * @param appId the identifier of the component instance.
+   * @param validatorId the identifier of the validator.
+   * @param formIds optional filter about form identifiers in order to reduce the search load.
+   * @return {@link FormInstanceValidationType} instances mapped by form identifiers.
+   * @throws FormsOnlineException
+   */
+  Map<String, Set<FormInstanceValidationType>> getValidatorFormIdsWithValidationTypes(String appId,
+      String validatorId, final Collection<String> formIds) throws FormsOnlineException;
 
   FormInstance loadRequest(RequestPK pk, String userId)
-      throws FormsOnlineDatabaseException, PublicationTemplateException, FormException;
+      throws FormsOnlineException, PublicationTemplateException, FormException;
 
-  void saveRequest(FormPK pk, String userId, List<FileItem> items)
-      throws FormsOnlineDatabaseException, PublicationTemplateException, FormException;
+  FormInstance loadRequest(RequestPK pk, String userId, boolean editionMode)
+      throws FormsOnlineException;
 
-  void setValidationStatus(RequestPK pk, String userId, String decision, String comments)
-      throws FormsOnlineDatabaseException;
+  void saveRequest(FormPK pk, String userId, List<FileItem> items, boolean draft)
+      throws FormsOnlineException;
 
-  void archiveRequest(RequestPK pk) throws FormsOnlineDatabaseException;
+  /**
+   * Register a step of validation of the request represented by the given identifier.
+   * <p>
+   * The service ensure that the validator is able to validate the given request. In case of the
+   * validator can not validate, an error is thrown.
+   * </p>
+   * @param pk the unique identifier of the aimed request.
+   * @param validatorId the identifier of the validator.
+   * @param decision the validation decision ("validate" or "refused")
+   * @param comment the validation comment.
+   * @param follower a boolean flag. True means that the validator want to follow the next steps
+   * of validation.
+   * @throws FormsOnlineException if the validator can not validate indeed or on technical error.
+   */
+  void saveNextRequestValidationStep(RequestPK pk, String validatorId, String decision, String comment,
+      boolean follower) throws FormsOnlineException;
 
-  void deleteRequest(RequestPK pk)
-      throws FormsOnlineDatabaseException, FormException, PublicationTemplateException;
+  /**
+   * Cancels the request represented by the given identifier.
+   * <p>
+   * The service ensures that the current user is the creator of the request. In case of the
+   * validator can not validate, an error is thrown.
+   * </p>
+   * @param pk the unique identifier of the aimed request.
+   * @throws FormsOnlineException if the current user can not cancel the request or on technical error.
+   */
+  void cancelRequest(RequestPK pk) throws FormsOnlineException;
+
+  /**
+   * Archives the request represented by the given identifier.
+   * <p>
+   * The service ensures that the current user is able to archive the request. In case of the
+   * validator can not validate, an error is thrown.
+   * </p>
+   * @param pk the unique identifier of the aimed request.
+   * @throws FormsOnlineException if the current user can not archive the request or on technical error.
+   */
+  void archiveRequest(RequestPK pk) throws FormsOnlineException;
+
+  /**
+   * Deletes the request represented by the given identifier.
+   * <p>
+   * The service ensures that the current user is able to delete the request. In case of the
+   * validator can not validate, an error is thrown.
+   * </p>
+   * @param pk the unique identifier of the aimed request.
+   * @throws FormsOnlineException if the current user can not delete the request or on technical error.
+   */
+  void deleteRequest(RequestPK pk) throws FormsOnlineException;
 
   void index(String componentId);
 }

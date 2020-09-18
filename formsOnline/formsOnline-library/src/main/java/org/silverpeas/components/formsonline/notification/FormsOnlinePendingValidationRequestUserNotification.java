@@ -24,24 +24,44 @@
 package org.silverpeas.components.formsonline.notification;
 
 import org.silverpeas.components.formsonline.model.FormInstance;
+import org.silverpeas.components.formsonline.model.FormInstanceValidation;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
+
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 
 /**
  * @author Nicolas EYSSERIC
  */
 public class FormsOnlinePendingValidationRequestUserNotification
-    extends AbstractFormsOnlineRequestUserNotification {
+    extends FormsOnlineValidationRequestUserNotification {
 
   private final List<String> usersToBeNotified;
+  private final List<String> groupsToBeNotified;
 
-  public FormsOnlinePendingValidationRequestUserNotification(final FormInstance resource,
-      final List<String> usersToBeNotified) {
+  public FormsOnlinePendingValidationRequestUserNotification(final FormInstance resource) {
     super(resource, NotifAction.PENDING_VALIDATION);
-    this.usersToBeNotified = usersToBeNotified;
+    final FormInstanceValidation pendingValidation = resource.getPendingValidation();
+    if (pendingValidation != null) {
+      if (pendingValidation.getValidationType().isHierarchical()) {
+        // notify boss
+        final String bossId = resource.getForm().getHierarchicalValidatorOfCurrentUser();
+        this.usersToBeNotified = singletonList(bossId);
+        this.groupsToBeNotified = emptyList();
+      } else if (pendingValidation.getValidationType().isIntermediate()) {
+        this.usersToBeNotified = extractUserIds(resource.getForm().getIntermediateReceiversAsUsers());
+        this.groupsToBeNotified = extractGroupIds(resource.getForm().getIntermediateReceiversAsGroups());
+      } else {
+        this.usersToBeNotified = extractUserIds(resource.getForm().getReceiversAsUsers());
+        this.groupsToBeNotified = extractGroupIds(resource.getForm().getReceiversAsGroups());
+      }
+    } else {
+      this.usersToBeNotified = emptyList();
+      this.groupsToBeNotified = emptyList();
+    }
   }
 
   @Override
@@ -62,14 +82,20 @@ public class FormsOnlinePendingValidationRequestUserNotification
 
   @Override
   protected Collection<String> getUserIdsToNotify() {
-    if (usersToBeNotified == null) {
-      return Collections.emptyList();
-    }
     return usersToBeNotified;
   }
 
   @Override
-  protected boolean isSendImmediately() {
-    return true;
+  protected Collection<String> getGroupIdsToNotify() {
+    return groupsToBeNotified;
+  }
+
+  /**
+   * The meaning of the returned step number is "TO VALIDATE".
+   * @return the next step number as integer.
+   */
+  @Override
+  protected int getCurrentValidationStep() {
+    return super.getCurrentValidationStep() + 1;
   }
 }

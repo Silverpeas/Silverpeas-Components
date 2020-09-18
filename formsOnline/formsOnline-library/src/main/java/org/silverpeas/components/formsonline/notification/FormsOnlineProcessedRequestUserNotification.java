@@ -24,11 +24,18 @@
 package org.silverpeas.components.formsonline.notification;
 
 import org.silverpeas.components.formsonline.model.FormInstance;
+import org.silverpeas.components.formsonline.model.FormInstanceValidation;
+import org.silverpeas.components.formsonline.model.FormInstanceValidationType;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
+import org.silverpeas.core.template.SilverpeasTemplate;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+
+import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
+import static org.silverpeas.core.notification.user.client.constant.NotifAction.VALIDATE;
 
 /**
  * @author Nicolas EYSSERIC
@@ -37,11 +44,24 @@ public class FormsOnlineProcessedRequestUserNotification
     extends FormsOnlineValidationRequestUserNotification {
 
   private final List<String> usersToBeNotified;
+  private final List<String> groupsToBeNotified;
 
   public FormsOnlineProcessedRequestUserNotification(final FormInstance resource,
-      NotifAction action, final List<String> usersToBeNotified) {
+      final NotifAction action) {
     super(resource, action);
-    this.usersToBeNotified = usersToBeNotified;
+    final Optional<FormInstanceValidationType> pendingValidation = ofNullable(resource.getPendingValidation())
+        .filter(v -> VALIDATE == action)
+        .map(FormInstanceValidation::getValidationType);
+    if (pendingValidation.filter(FormInstanceValidationType::isFinal).isPresent()) {
+      this.usersToBeNotified = extractUserIds(resource.getForm().getReceiversAsUsers());
+      this.groupsToBeNotified = extractGroupIds(resource.getForm().getReceiversAsGroups());
+    } else if (pendingValidation.filter(FormInstanceValidationType::isIntermediate).isPresent()) {
+      this.usersToBeNotified = extractUserIds(resource.getForm().getIntermediateReceiversAsUsers());
+      this.groupsToBeNotified = extractGroupIds(resource.getForm().getIntermediateReceiversAsGroups());
+    } else {
+      this.usersToBeNotified = emptyList();
+      this.groupsToBeNotified = emptyList();
+    }
   }
 
   @Override
@@ -52,7 +72,7 @@ public class FormsOnlineProcessedRequestUserNotification
 
   @Override
   protected String getBundleSubjectKey() {
-    return "formsOnline.msgFormProcessed";
+    return "formsOnline.msgFormToValid";
   }
 
   @Override
@@ -62,9 +82,28 @@ public class FormsOnlineProcessedRequestUserNotification
 
   @Override
   protected Collection<String> getUserIdsToNotify() {
-    if (usersToBeNotified == null) {
-      return Collections.emptyList();
-    }
     return usersToBeNotified;
+  }
+
+  @Override
+  protected Collection<String> getGroupIdsToNotify() {
+    return groupsToBeNotified;
+  }
+
+  @Override
+  protected void performTemplateData(final String language, final FormInstance resource,
+      final SilverpeasTemplate template) {
+    super.performTemplateData(language, resource, template);
+    getResource().getValidations().getLatestValidation()
+        .ifPresent(v -> template.setAttribute("validation", v));
+  }
+
+  /**
+   * The meaning of the returned step number is "TO VALIDATE".
+   * @return the next step number as integer.
+   */
+  @Override
+  protected int getCurrentValidationStep() {
+    return super.getCurrentValidationStep() + 1;
   }
 }

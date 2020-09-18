@@ -21,6 +21,27 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ask-statut {
-  display: block;
+.ask-by .forms {
+  display:block;
+}
+.steps-OnlineForm{
+  font-size:11px;
+}
+
+.step-OnlineForm {
+  height:auto;
+}
+
+.step-OnlineForm .comment-step-OnlineForm,
+.step-OnlineForm .statut-step-OnlineForm {
+  position: relative;
+  top: auto;
+  left: auto;
+  right:auto;
+  bottom: auto;
+  overflow: auto;
+  min-height:2.75em;
+}
+.forms .fields label, .forms .operators {
+  min-width: auto;
 }

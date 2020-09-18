@@ -24,9 +24,12 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/formsOnline" prefix="formsOnline" %>
 
+<c:set var="currentUser" value="${sessionScope['SilverSessionController'].currentUserDetail}"/>
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 
@@ -34,9 +37,11 @@
 <%@page import="org.silverpeas.core.contribution.content.form.Form"%>
 <%@page import="org.silverpeas.core.contribution.content.form.PagesContext"%>
 
+<c:set var="formDetail" value="${requestScope['FormDetail']}"/>
+<jsp:useBean id="formDetail" type="org.silverpeas.components.formsonline.model.FormDetail"/>
+
 <%
 	Form formUpdate = (Form) request.getAttribute("Form");
-  FormDetail formDetail = (FormDetail) request.getAttribute("FormDetail");
 
 	// context creation
 	PagesContext context = (PagesContext) request.getAttribute("FormContext");
@@ -45,26 +50,37 @@
 	context.setBorderPrinted(false);
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title></title>
-<view:looknfeel/>
-<% formUpdate.displayScripts(out, context); %>
-<script type="text/javascript">
-  function sendRequest() {
-		ifCorrectFormExecute(function() {
-			document.newInstanceForm.submit();
-		});
-	}
-</script>
-</head>
-<body class="yui-skin-sam">
+<view:sp-page>
+<view:sp-head-part>
+  <view:includePlugin name="wysiwyg"/>
+  <% formUpdate.displayScripts(out, context); %>
+  <script type="text/javascript">
+    function sendRequest() {
+      ifCorrectFormExecute(function() {
+        spProgressMessage.show();
+        document.newInstanceForm.submit();
+      });
+    }
+
+    function saveDraft() {
+      ifCorrectFormAndIgnoringMandatoryExecute(function() {
+        spProgressMessage.show();
+        document.newInstanceForm.action = "SaveRequestAsDraft";
+        document.newInstanceForm.submit();
+      });
+    }
+  </script>
+</view:sp-head-part>
+<view:sp-body-part cssClass="yui-skin-sam">
 <view:window>
 <view:frame>
 <div id="header-OnlineForm">
-  <h2 class="title"><%=formDetail.getTitle()%></h2>
+  <h2 class="title">${formDetail.title}</h2>
+  <div>${formDetail.description}</div>
 </div>
+
+<formsOnline:hierarchicalInfo formDetail="${formDetail}"/>
+
 <form name="newInstanceForm" method="post" action="SaveRequest" enctype="multipart/form-data">
 	<%
 	formUpdate.display(out, context);
@@ -73,12 +89,17 @@
 </view:frame>
 
   <view:buttonPane>
+    <fmt:message var="buttonDraft" key="GML.draft.save"/>
     <fmt:message var="buttonValidate" key="formsOnline.request.send"/>
     <fmt:message var="buttonCancel" key="GML.cancel"/>
-    <view:button label="${buttonValidate}" action="javascript:onclick=sendRequest();" />
+    <c:if test="${formDetail.canBeSentBy(currentUser)}">
+      <view:button label="${buttonValidate}" action="javascript:sendRequest();" classes="validateButton" />
+      <view:button label="${buttonDraft}" action="javascript:saveDraft();" />
+    </c:if>
     <view:button label="${buttonCancel}" action="Main" />
   </view:buttonPane>
 
 </view:window>
-</body>
-</html>
+<view:progressMessage/>
+</view:sp-body-part>
+</view:sp-page>

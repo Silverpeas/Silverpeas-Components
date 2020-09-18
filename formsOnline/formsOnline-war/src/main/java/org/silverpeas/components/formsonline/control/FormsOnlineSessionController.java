@@ -23,23 +23,16 @@ package org.silverpeas.components.formsonline.control;
 import net.htmlparser.jericho.Source;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.formsonline.FormsOnlineComponentSettings;
-import org.silverpeas.components.formsonline.model.FormDetail;
-import org.silverpeas.components.formsonline.model.FormInstance;
-import org.silverpeas.components.formsonline.model.FormPK;
-import org.silverpeas.components.formsonline.model.FormsOnlineDAO;
-import org.silverpeas.components.formsonline.model.FormsOnlineDatabaseException;
-import org.silverpeas.components.formsonline.model.FormsOnlineService;
-import org.silverpeas.components.formsonline.model.RequestPK;
-import org.silverpeas.components.formsonline.model.RequestsByStatus;
-import org.silverpeas.components.formsonline.model.RequestsFilter;
+import org.silverpeas.components.formsonline.model.*;
 import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.model.GlobalContext;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.Form;
-import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
@@ -48,7 +41,6 @@ import org.silverpeas.core.notification.message.MessageNotifier;
 import org.silverpeas.core.security.authorization.ForbiddenRuntimeException;
 import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.csv.CSVRow;
@@ -57,6 +49,7 @@ import org.silverpeas.core.web.export.ExportCSVBuilder;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
 import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.web.selection.SelectionUsersGroups;
 
@@ -65,23 +58,27 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import static java.util.Collections.singleton;
+import static org.silverpeas.components.formsonline.model.FormDetail.*;
 
 public class FormsOnlineSessionController extends AbstractComponentSessionController {
 
   private static final int DEFAULT_ITEM_PER_PAGE = 10;
   private static final String UPDATE_CURRENT_FORM = "updateCurrentForm";
   private static final String LOAD_REQUEST = "loadRequest";
-  private FormsOnlineDAO dao = ServiceProvider.getService(FormsOnlineDAO.class);
   private FormDetail currentForm;
+  private int currentStateFilter;
+  private FormInstanceValidationType currentValidationTypeFilter;
   private Selection selection = null;
   private Set<String> selectedValidatorRequestIds = new HashSet<>();
   private Map<Integer, String> statusLabels = new HashMap<>();
 
   public static final String USER_PANEL_SENDERS_PREFIX = "listSenders";
   public static final String USER_PANEL_RECEIVERS_PREFIX = "listReceivers";
+  public static final String USER_PANEL_INTERMEDIATE_RECEIVERS_PREFIX = "listIntermediateReceivers";
 
   /**
    * Standard Session Controller Constructeur
@@ -91,14 +88,15 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
   public FormsOnlineSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
-        "org.silverpeas.formsonline.multilang.formsOnlineBundle",
+        FormsOnlineComponentSettings.MESSAGES_PATH,
         "org.silverpeas.formsonline.settings.formsOnlineIcons",
-        "org.silverpeas.formsonline.settings.formsOnlineSettings");
+        FormsOnlineComponentSettings.SETTINGS_PATH);
     selection = getSelection();
     loadStatusLabels();
+    setCurrentFilter(-1, null);
   }
 
-  public List<FormDetail> getAllForms(boolean withSendInfo) throws FormsOnlineDatabaseException {
+  public List<FormDetail> getAllForms(boolean withSendInfo) throws FormsOnlineException {
     return getService().getAllForms(getComponentId(), getUserId(), withSendInfo);
   }
 
@@ -110,7 +108,7 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
     this.currentForm = null;
   }
 
-  public FormDetail setCurrentForm(String id) throws FormsOnlineDatabaseException {
+  public FormDetail setCurrentForm(String id) throws FormsOnlineException {
     if (StringUtil.isNotDefined(id)) {
       resetCurrentForm();
       return null;
@@ -124,13 +122,30 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
     return this.currentForm;
   }
 
-  public void updateCurrentForm(String[] senderUserIds, String[] senderGroupIds,
-      String[] receiverUserIds, String[] receiverGroupIds) throws FormsOnlineDatabaseException {
+  public void setCurrentFilter(int state, FormInstanceValidationType validationType) {
+    if (validationType != null) {
+      this.currentStateFilter = -1;
+      this.currentValidationTypeFilter = validationType;
+    } else {
+      this.currentStateFilter = state;
+      this.currentValidationTypeFilter = null;
+    }
+  }
 
+  public int getCurrentStateFilter() {
+    return currentStateFilter;
+  }
+
+  public FormInstanceValidationType getCurrentValidationTypeFilter() {
+    return currentValidationTypeFilter;
+  }
+
+  public void saveCurrentForm(List<String> senderUserIds, List<String> senderGroupIds,
+      List<String> intermediateReceiverUserIds, List<String> intermediateReceiverGroupIds,
+      List<String> receiverUserIds, List<String> receiverGroupIds) throws FormsOnlineException {
     if (!isAdmin()) {
       throwForbiddenException(UPDATE_CURRENT_FORM);
     }
-
     if (currentForm.getId() == -1) {
       currentForm.setCreatorId(getUserId());
       currentForm.setInstanceId(getComponentId());
@@ -138,18 +153,18 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
     } else {
       MessageNotifier.addSuccess(getString("formsOnline.form.update.succeed"));
     }
-    currentForm =
-        getService().storeForm(currentForm, senderUserIds, senderGroupIds, receiverUserIds,
-            receiverGroupIds);
+    final Map<String, Pair<List<String>, List<String>>> userAndGroupIdsByRightTypes = new HashMap<>();
+    userAndGroupIdsByRightTypes.put(SENDERS_TYPE, Pair.of(senderUserIds, senderGroupIds));
+    userAndGroupIdsByRightTypes.put(RECEIVERS_TYPE_INTERMEDIATE, Pair.of(intermediateReceiverUserIds, intermediateReceiverGroupIds));
+    userAndGroupIdsByRightTypes.put(RECEIVERS_TYPE_FINAL, Pair.of(receiverUserIds, receiverGroupIds));
+    currentForm = getService().saveForm(currentForm, userAndGroupIdsByRightTypes);
   }
 
-  private FormDetail loadForm(int formId) throws FormsOnlineDatabaseException {
-    this.currentForm = getService().loadForm(getFormPK(formId));
-    return currentForm;
+  private FormDetail loadForm(int formId) throws FormsOnlineException {
+    return getService().loadForm(getFormPK(formId));
   }
 
-
-  public void deleteForm(int formId) throws FormsOnlineDatabaseException {
+  public void deleteForm(int formId) throws FormsOnlineException {
     if (!isAdmin()) {
       throwForbiddenException(UPDATE_CURRENT_FORM);
     }
@@ -201,6 +216,10 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
     return initSelection(userIds, groupIds, USER_PANEL_RECEIVERS_PREFIX);
   }
 
+  public String initSelectionIntermediateReceivers(List<String> userIds, List<String> groupIds) {
+    return initSelection(userIds, groupIds, USER_PANEL_INTERMEDIATE_RECEIVERS_PREFIX);
+  }
+
   private String initSelection(final List<String> userIds, final List<String> groupIds,
       final String userPanelReceiversPrefix) {
     ArrayList<String> profiles = new ArrayList<>();
@@ -212,44 +231,56 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
     return initSelection(userGroupSelection, userPanelReceiversPrefix, userIds, groupIds);
   }
 
-  public void publishForm(String formId) throws FormsOnlineDatabaseException {
+  public void publishForm(String formId) throws FormsOnlineException {
     if (!isAdmin()) {
       throwForbiddenException(UPDATE_CURRENT_FORM);
     }
-    getService().publishForm(getFormPK(formId));
+    final FormDetail form = loadForm(Integer.parseInt(formId));
+    if (!form.isDeleteAfterRequestExchange() && !form.isFinalValidation()) {
+      WebMessager.getInstance()
+          .addError(getString("formsOnline.publishForm.error.finalValidatorMissing"),
+              form.getTitle());
+      return;
+    }
+    getService().publishForm(form.getPK());
+    final String message;
+    if (form.isNotYetPublished()) {
+      message = getString("formsOnline.publishForm.success");
+    } else {
+      message = getString("formsOnline.republishForm.success");
+    }
+    WebMessager.getInstance().addSuccess(message, form.getTitle());
   }
 
-  public void unpublishForm(String formId) throws FormsOnlineDatabaseException {
+  public void unpublishForm(String formId) throws FormsOnlineException {
     if (!isAdmin()) {
       throwForbiddenException(UPDATE_CURRENT_FORM);
     }
-    getService().unpublishForm(getFormPK(formId));
+    final FormDetail form = loadForm(Integer.parseInt(formId));
+    getService().unpublishForm(form.getPK());
+    WebMessager.getInstance().addSuccess(getString("formsOnline.unpublishForm.success"), form.getTitle());
   }
 
-  public List<FormDetail> getAvailableFormsToSend() throws FormsOnlineDatabaseException {
+  public List<FormDetail> getAvailableFormsToSend() throws FormsOnlineException {
     return getService().getAvailableFormsToSend(singleton(getComponentId()), getUserId());
   }
 
-  public void saveRequest(List<FileItem> items)
-      throws FormsOnlineDatabaseException, PublicationTemplateException, FormException {
-    if (!getCurrentForm().isSender(getUserId())) {
+  public void saveRequest(List<FileItem> items, boolean draft) throws FormsOnlineException {
+    if (!getCurrentForm().canBeSentBy(User.getCurrentRequester())) {
       throwForbiddenException("saveRequest");
     }
-    getService().saveRequest(getCurrentForm().getPK(), getUserId(), items);
+    getService().saveRequest(getCurrentForm().getPK(), getUserId(), items, draft);
   }
 
-  public List<String> getAvailableFormIdsAsReceiver() throws FormsOnlineDatabaseException {
-    String userId = getUserId();
-    String[] userGroupIds = getOrganisationController().getAllGroupIdsOfUser(userId);
-    return dao.getAvailableFormIdsAsReceiver(getComponentId(), userId, userGroupIds);
+  public Set<String> getAvailableFormIdsAsReceiver() throws FormsOnlineException {
+    return getService().getValidatorFormIdsWithValidationTypes(getComponentId(), getUserId(), null).keySet();
   }
 
-  public FormInstance loadRequest(String id)
-      throws FormsOnlineDatabaseException, PublicationTemplateException, FormException {
-    FormInstance request = getService().loadRequest(getRequestPK(id), getUserId());
+  public FormInstance loadRequest(String id, boolean editionMode) throws FormsOnlineException {
+    FormInstance request = getService().loadRequest(getRequestPK(id), getUserId(), editionMode);
 
     FormDetail form = request.getForm();
-    if (!request.getCreatorId().equals(getUserId()) && !form.isValidator(getUserId())) {
+    if (!request.canBeAccessedBy(User.getCurrentRequester())) {
       throwForbiddenException(LOAD_REQUEST);
     }
 
@@ -257,34 +288,51 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
     return request;
   }
 
-  public void updateValidationStatus(String requestId, String decision, String comments)
-      throws FormsOnlineDatabaseException {
-    if (!getCurrentForm().isValidator(getUserId())) {
-      throwForbiddenException(LOAD_REQUEST);
-    }
-    getService().setValidationStatus(getRequestPK(requestId), getUserId(), decision, comments);
+  public void updateValidationStatus(String requestId, String decision, String comments,
+      boolean follower) throws FormsOnlineException {
+    getService().saveNextRequestValidationStep(getRequestPK(requestId), getUserId(), decision, comments, follower);
   }
 
-  public void archiveRequest(String id) throws FormsOnlineDatabaseException {
+  public void cancelRequest(String id) throws FormsOnlineException {
+    getService().cancelRequest(getRequestPK(id));
+  }
+
+  public void archiveRequest(String id, boolean notify) throws FormsOnlineException {
     getService().archiveRequest(getRequestPK(id));
-  }
-
-  public void deleteRequest(String id)
-      throws FormsOnlineDatabaseException, FormException, PublicationTemplateException {
-    FormInstance request = getService().loadRequest(getRequestPK(id), getUserId());
-    FormDetail form = request.getForm();
-    if (!form.isValidator(getUserId())) {
-      throwForbiddenException(LOAD_REQUEST);
+    if (notify) {
+      MessageNotifier.addSuccess(getString("formsOnline.requests.action.archive.succeed"),
+          1);
     }
-    getService().deleteRequest(getRequestPK(id));
   }
 
-  public int deleteRequests(Set<String> ids)
-      throws PublicationTemplateException, FormsOnlineDatabaseException, FormException {
+  public int archiveRequests(Set<String> ids) throws FormsOnlineException {
+    int nbRequests = 0;
+    if (ids != null) {
+      for (String id : ids) {
+        archiveRequest(id, false);
+        nbRequests++;
+      }
+    }
+    if (nbRequests > 0) {
+      MessageNotifier.addSuccess(getString("formsOnline.requests.action.archive.succeed"),
+          nbRequests);
+    }
+    return nbRequests;
+  }
+
+  public void deleteRequest(String id, boolean notify) throws FormsOnlineException {
+    getService().deleteRequest(getRequestPK(id));
+    if (notify) {
+      MessageNotifier.addSuccess(getString("formsOnline.requests.action.delete.succeed"),
+          1);
+    }
+  }
+
+  public int deleteRequests(Set<String> ids) throws FormsOnlineException {
     int nbDeletedRequests = 0;
     if (ids != null) {
       for (String id : ids) {
-        deleteRequest(id);
+        deleteRequest(id, false);
         nbDeletedRequests++;
       }
     }
@@ -314,20 +362,22 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
     return templates;
   }
 
-  public RequestsByStatus getAllUserRequests() throws FormsOnlineDatabaseException {
+  public RequestsByStatus getAllUserRequests() throws FormsOnlineException {
     return getService().getAllUserRequests(getComponentId(), getUserId(), null);
   }
 
-  public RequestsByStatus getHomepageValidatorRequests() throws FormsOnlineDatabaseException {
+  public RequestsByStatus getHomepageValidatorRequests() throws FormsOnlineException {
     return getService().getValidatorRequests(getRequestsFilter(), getUserId(),
         new PaginationPage(1, DEFAULT_ITEM_PER_PAGE));
   }
 
-  public RequestsByStatus getAllValidatorRequests() throws FormsOnlineDatabaseException {
+  public RequestsByStatus getAllValidatorRequests() throws FormsOnlineException {
     RequestsFilter filter = getRequestsFilter();
     if (getCurrentForm() != null) {
       filter.getFormIds().add(Integer.toString(getCurrentForm().getId()));
     }
+    filter.setState(getCurrentStateFilter());
+    filter.setPendingValidationType(getCurrentValidationTypeFilter());
     return getService().getValidatorRequests(filter, getUserId(), null);
   }
 
@@ -354,9 +404,12 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
     return form;
   }
 
-  public ExportCSVBuilder export() throws FormsOnlineDatabaseException, SilverpeasException {
+  public ExportCSVBuilder export() throws SilverpeasException {
     ExportCSVBuilder csvBuilder = new ExportCSVBuilder();
     CSVRow csvHeader = new CSVRow();
+
+    boolean isHierarchicalValidation = getCurrentForm().isHierarchicalValidation();
+    boolean isIntermediateValidation = getCurrentForm().isIntermediateValidation();
 
     // adding columns relative to request metadata
     List<String> csvCols = new ArrayList<>();
@@ -368,12 +421,26 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
     csvHeader.addCell(getString("formsOnline.sendDate"));
     csvCols.add("requester");
     csvHeader.addCell(getString("formsOnline.sender"));
-    csvCols.add("processDate");
-    csvHeader.addCell(getString("formsOnline.request.process.date"));
-    csvCols.add("validator");
-    csvHeader.addCell(getString("formsOnline.request.process.user"));
-    csvCols.add("comment");
-    csvHeader.addCell(getString("GML.comments"));
+
+    String labelPrefix;
+    String idPrefix;
+    if (isHierarchicalValidation) {
+      // adding columns of hierarchical validation
+      labelPrefix = getString("formsOnline.requests.array.col.vh.label") + " - ";
+      idPrefix = "boss-";
+      addColumnsToExport(csvCols, csvHeader, idPrefix, labelPrefix);
+    }
+
+    if (isIntermediateValidation) {
+      // adding columns of intermediate validation
+      labelPrefix = getString("formsOnline.requests.array.col.vi.label") + " - ";
+      idPrefix = "inter-";
+      addColumnsToExport(csvCols, csvHeader, idPrefix, labelPrefix);
+    }
+
+    // adding columns of finale validation
+    labelPrefix = getString("formsOnline.requests.array.col.vf.label") + " - ";
+    addColumnsToExport(csvCols, csvHeader, "",labelPrefix);
 
     int nbMetaDataCols = csvCols.size();
 
@@ -403,30 +470,68 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
       csvRow.addCell(statusLabels.get(request.getState()));
       csvRow.addCell(request.getCreationDate());
       csvRow.addCell(request.getCreator());
-      csvRow.addCell(request.getValidationDate());
-      csvRow.addCell(request.getValidator());
-      csvRow.addCell(request.getComments());
 
-      DataRecord data = null;
-      try {
-        data = recordSet.getRecord(request.getId());
-      } catch (Exception e) {
-        SilverLogger.getLogger(this).error("RequestId = "+request.getId(), e);
+      if (isHierarchicalValidation) {
+        Optional<FormInstanceValidation> validation = request.getValidations().getHierarchicalValidation();
+        addValidationDataToExport(validation, csvRow);
       }
-      if (data != null) {
-        Map<String, String> values = data.getValues(getLanguage());
 
-        for (int i=nbMetaDataCols; i<csvCols.size(); i++) {
-          String value = values.getOrDefault(csvCols.get(i), "");
-          // removing all HTML
-          value = new Source(value).getTextExtractor().toString();
-          csvRow.addCell(value);
-        }
+      if (isIntermediateValidation) {
+        Optional<FormInstanceValidation> validation = request.getValidations().getIntermediateValidation();
+        addValidationDataToExport(validation, csvRow);
       }
+
+      Optional<FormInstanceValidation> validation = request.getValidations().getFinalValidation();
+      addValidationDataToExport(validation, csvRow);
+
+      addRequestDataToExport(recordSet, request, nbMetaDataCols, csvCols, csvRow);
+
       csvBuilder.addLine(csvRow);
     }
 
     return csvBuilder;
+  }
+
+  private void addColumnsToExport(List<String> csvCols, CSVRow csvHeader, String idPrefix,
+      String labelPrefix) {
+    csvCols.add(idPrefix+"validator");
+    csvHeader.addCell(labelPrefix + getString("formsOnline.request.process.user"));
+    csvCols.add(idPrefix+"processDate");
+    csvHeader.addCell(labelPrefix + getString("GML.date"));
+    csvCols.add(idPrefix+"comment");
+    csvHeader.addCell(labelPrefix + getString("GML.comments"));
+  }
+
+  private void addValidationDataToExport(Optional<FormInstanceValidation> validation, CSVRow csvRow) {
+    if (validation.isPresent()) {
+      csvRow.addCell(validation.get().getValidator());
+      csvRow.addCell(validation.get().getDate());
+      csvRow.addCell(validation.get().getComment());
+    } else {
+      csvRow.addCell("");
+      csvRow.addCell("");
+      csvRow.addCell("");
+    }
+  }
+
+  private void addRequestDataToExport(RecordSet recordSet, FormInstance request, int nbMetaDataCols,
+      List<String> csvCols, CSVRow csvRow) {
+    DataRecord data = null;
+    try {
+      data = recordSet.getRecord(request.getId());
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error("RequestId = "+request.getId(), e);
+    }
+    if (data != null) {
+      Map<String, String> values = data.getValues(getLanguage());
+
+      for (int i=nbMetaDataCols; i<csvCols.size(); i++) {
+        String value = values.getOrDefault(csvCols.get(i), "");
+        // removing all HTML
+        value = new Source(value).getTextExtractor().toString();
+        csvRow.addCell(value);
+      }
+    }
   }
 
   public ComponentInstLight getComponentInstLight() {
@@ -517,6 +622,10 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
 
   private void loadStatusLabel(int status, String key) {
     statusLabels.put(Integer.valueOf(status), getString(key));
+  }
+
+  public PagesContext getFormPageContext() {
+    return new PagesContext("unknown", "0", getLanguage(), false, getComponentId(), getUserId());
   }
 
 }

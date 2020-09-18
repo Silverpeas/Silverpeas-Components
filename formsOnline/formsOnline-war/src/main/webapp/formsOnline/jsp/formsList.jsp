@@ -32,15 +32,18 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 <%@ taglib prefix="vien" uri="http://www.silverpeas.com/tld/viewGenerator" %>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/formsOnline" prefix="formsOnline" %>
 
 <c:set var="lang" value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
 <c:set var="componentId" value="${requestScope.browseContext[3]}"/>
 
 <fmt:setLocale value="${lang}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<view:setBundle basename="org.silverpeas.multilang.generalMultilang" var="generalBundle"/>
 
 <c:set var="forms" value="${requestScope['formsList']}"/>
 <c:set var="userRequests" value="${requestScope['UserRequests']}"/>
+<jsp:useBean id="userRequests" type="org.silverpeas.components.formsonline.model.RequestsByStatus"/>
 <c:set var="requestsAsValidator" value="${requestScope['RequestsAsValidator']}"/>
 <c:set var="role" value="${requestScope['Role']}"/>
 <c:set var="app" value="${requestScope['App']}"/>
@@ -50,12 +53,12 @@
 <c:url var="iconPublish" value="/util/icons/lock.gif"/>
 <c:url var="iconUnpublish" value="/util/icons/unlock.gif"/>
 <c:url var="iconDelete" value="/util/icons/delete.gif"/>
+<c:url var="iconPermalink" value="/util/icons/link.gif"/>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.formsOnline">
-<head>
-<title></title>
-<view:looknfeel/>
+<fmt:message var="permalinkCopyLabel" key="GML.permalink.copy" bundle="${generalBundle}"/>
+
+<view:sp-page angularJsAppName="silverpeas.formsOnline">
+<view:sp-head-part>
 <view:includePlugin name="toggle"/>
 <script type="text/javascript">
   function deleteForm(idModel, nbRequests) {
@@ -74,8 +77,8 @@
     location.href = "Inbox";
   }
 </script>
-</head>
-<body>
+</view:sp-head-part>
+<view:sp-body-part>
 <view:browseBar/>
 <c:if test="${role == 'admin'}">
   <view:operationPane>
@@ -122,10 +125,32 @@
              <li>
           </c:otherwise>
         </c:choose>
-        <a href="ViewRequest?Id=${request.id}"><span class="form-title">${request.form.title}</span><span class="ask-form-author"><view:username userId="${request.creatorId}"/></span><span class="ask-form-date"><view:formatDate value="${request.creationDate}"/></span></a></li>
+        <a href="ViewRequest?Id=${request.id}"><span class="form-title">${request.form.title}</span><span class="ask-form-author"><view:username userId="${request.creatorId}"/></span><span class="ask-form-date"><view:formatDateTime value="${request.creationDate}"/></span></a></li>
       </c:forEach>
     </ul>
     <a href="InBox" class="more"> <fmt:message key="formsOnline.home.requests.toggle.more"/></a>
+  </div>
+  </c:if>
+
+  <c:if test="${not empty userRequests.draft}">
+  <div class="secteur-container my-formsOnline" id="my-formsOnline-draft">
+    <div class="header">
+      <h3 class="my-formsOnline-title"><fmt:message key="formsOnline.home.requests.mine"/> <strong><fmt:message key="formsOnline.home.requests.mine.draft"/></strong></h3>
+    </div>
+    <ul>
+      <view:listPane var="draftUserRequests" routingAddress="Main" numberLinesPerPage="10">
+        <view:listItems items="${userRequests.draft}" var="request">
+          <li>
+            <a href="EditRequest?Id=${request.id}"><span class="ask-form-date"><view:formatDateTime value="${request.creationDate}"/></span><span class="form-title">${request.form.title}</span></a>
+          </li>
+        </view:listItems>
+      </view:listPane>
+      <script type="text/javascript">
+        whenSilverpeasReady(function() {
+          sp.listPane.ajaxControls('#my-formsOnline-draft');
+        });
+      </script>
+    </ul>
   </div>
   </c:if>
 
@@ -140,15 +165,8 @@
       <view:listPane var="toValidateUserRequests" routingAddress="Main" numberLinesPerPage="10">
         <view:listItems items="${userRequests.toValidate}" var="request">
           <li>
-            <a href="ViewRequest?Id=${request.id}"><span class="ask-form-date"><view:formatDate value="${request.creationDate}"/></span><span class="form-title">${request.form.title}</span></a>
-            <c:choose>
-              <c:when test="${request.read}">
-                <span class="form-statut"><fmt:message key="formsOnline.stateRead"/></span>
-              </c:when>
-              <c:otherwise>
-                <span class="form-statut"><fmt:message key="formsOnline.stateUnread"/></span>
-              </c:otherwise>
-            </c:choose>
+            <a href="ViewRequest?Id=${request.id}"><span class="ask-form-date"><view:formatDateTime value="${request.creationDate}"/></span><span class="form-title">${request.form.title}</span>
+            <formsOnline:validationsSchemaImage userRequest="${request}"/></a>
           </li>
         </view:listItems>
       </view:listPane>
@@ -160,65 +178,26 @@
     </ul>
   </div>
 
-  <c:if test="${not empty userRequests.validated}">
-  <div class="secteur-container my-formsOnline" id="my-formsOnline-validate">
-    <div class="header">
-      <h3 class="my-formsOnline-title"><fmt:message key="formsOnline.home.requests.mine"/> <strong><fmt:message key="formsOnline.home.requests.mine.validated"/></strong></h3>
-    </div>
-    <ul>
-      <view:listPane var="validatedUserRequests" routingAddress="Main" numberLinesPerPage="10">
-        <view:listItems items="${userRequests.validated}" var="request">
-          <li><a href="ViewRequest?Id=${request.id}"><span class="ask-form-date"><view:formatDate value="${request.creationDate}"/></span><span class="form-title">${request.form.title}</span></a></li>
-        </view:listItems>
-      </view:listPane>
-      <script type="text/javascript">
-        whenSilverpeasReady(function() {
-          sp.listPane.ajaxControls('#my-formsOnline-validate');
-        });
-      </script>
-    </ul>
-  </div>
-  </c:if>
+  <c:set var="areaValidatedTitle">
+    <fmt:message key="formsOnline.home.requests.mine"/> <strong><fmt:message key="formsOnline.home.requests.mine.validated"/></strong>
+  </c:set>
+  <formsOnline:myRequestsByState requests="${userRequests.validated}" title="${areaValidatedTitle}" state="validate"/>
 
-  <c:if test="${not empty userRequests.denied}">
-  <div class="secteur-container my-formsOnline" id="my-formsOnline-refused">
-    <div class="header">
-      <h3 class="my-formsOnline-title"><fmt:message key="formsOnline.home.requests.mine"/> <strong><fmt:message key="formsOnline.home.requests.mine.denied"/></strong></h3>
-    </div>
-    <ul>
-      <view:listPane var="deniedUserRequests" routingAddress="Main" numberLinesPerPage="10">
-        <view:listItems items="${userRequests.denied}" var="request">
-          <li><a href="ViewRequest?Id=${request.id}"><span class="ask-form-date"><view:formatDate value="${request.creationDate}"/></span><span class="form-title">${request.form.title}</span></a></li>
-        </view:listItems>
-      </view:listPane>
-      <script type="text/javascript">
-        whenSilverpeasReady(function() {
-          sp.listPane.ajaxControls('#my-formsOnline-refused');
-        });
-      </script>
-    </ul>
-  </div>
-  </c:if>
+  <c:set var="areaRefusedTitle">
+    <fmt:message key="formsOnline.home.requests.mine"/> <strong><fmt:message key="formsOnline.home.requests.mine.denied"/></strong>
+  </c:set>
+  <formsOnline:myRequestsByState requests="${userRequests.denied}" title="${areaRefusedTitle}" state="refused"/>
 
-  <c:if test="${not empty userRequests.archived}">
-    <div class="secteur-container my-formsOnline" id="my-formsOnline-archived">
-      <div class="header">
-        <h3 class="my-formsOnline-title"><fmt:message key="formsOnline.home.requests.mine"/> <strong><fmt:message key="formsOnline.home.requests.mine.archived"/></strong></h3>
-      </div>
-      <ul>
-        <view:listPane var="archievedUserRequests" routingAddress="Main" numberLinesPerPage="10">
-          <view:listItems items="${userRequests.archived}" var="request">
-            <li><a href="ViewRequest?Id=${request.id}"><span class="ask-form-date"><view:formatDate value="${request.creationDate}"/></span><span class="form-title">${request.form.title}</span></a></li>
-          </view:listItems>
-        </view:listPane>
-        <script type="text/javascript">
-          whenSilverpeasReady(function() {
-            sp.listPane.ajaxControls('#my-formsOnline-archived');
-          });
-        </script>
-      </ul>
-    </div>
-  </c:if>
+  <c:set var="areaArchivedTitle">
+    <fmt:message key="formsOnline.home.requests.mine"/> <strong><fmt:message key="formsOnline.home.requests.mine.archived"/></strong>
+  </c:set>
+  <formsOnline:myRequestsByState requests="${userRequests.archived}" title="${areaArchivedTitle}" state="archived"/>
+
+  <c:set var="areaCanceledTitle">
+    <fmt:message key="formsOnline.home.requests.mine"/> <strong><fmt:message key="formsOnline.home.requests.mine.canceled"/></strong>
+  </c:set>
+  <formsOnline:myRequestsByState requests="${userRequests.canceled}" title="${areaCanceledTitle}" state="canceled"/>
+
 </div>
 
 <c:choose>
@@ -255,6 +234,8 @@
             </c:if>
             <c:if test="${role == 'admin'}">
               <div class="operation actionShownOnMouseOver">
+                <c:url var="permalinkUrl" value="/Form/${form.id}?ComponentId=${form.instanceId}"/>
+                <a href="${permalinkUrl}" title="${permalinkCopyLabel}" class="sp-permalink"><img border="0" src="${iconPermalink}" alt="<fmt:message key="GML.permalink"/>" title="<fmt:message key="GML.permalink"/>" /></a>
                 <a href="EditForm?FormId=${form.id}" title="<fmt:message key="GML.modify"/>"><img border="0" src="${iconEdit}" alt="<fmt:message key="GML.modify"/>" title="<fmt:message key="GML.modify"/>" /></a>
                 <c:choose>
                   <c:when test="${form.notYetPublished}">
@@ -280,11 +261,6 @@
 <form name="deleteForm" action="DeleteForm" method="post">
   <input type="hidden" name="FormId"/>
 </form>
-
-<script type="text/javascript">
-  /* declare the module myapp and its dependencies (here in the silverpeas module) */
-  var myapp = angular.module('silverpeas.formsOnline', ['silverpeas.services', 'silverpeas.directives']);
-</script>
 <view:progressMessage/>
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>

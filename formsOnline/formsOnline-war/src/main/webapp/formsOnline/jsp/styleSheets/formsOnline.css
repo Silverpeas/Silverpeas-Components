@@ -22,11 +22,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 fieldset {
-	margin-top: 10px;
-	margin-bottom: 10px;
-	width: 98%;
-	text-align: left;
-	padding: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  width: 98%;
+  text-align: left;
+  padding: 10px;
 }
 
 .txtPersoSpace {
@@ -153,14 +153,11 @@ fieldset {
   position: relative;
 }
 
-
-
 #all-formsOnline .secteur-container .date {
   position: absolute;
   top: 13px;
   right: 13px;
 }
-
 
 .my-formsOnline-title {
   font-size: 117%;
@@ -312,10 +309,12 @@ fieldset {
 }
 
 #my-formsOnline ul li > a > span {
-  display:block;
-  float:left;
-  height:25px;
-  overflow:hidden;
+  display: block;
+  float: left;
+  height: 25px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .formsOnline-waitMyAction .form-title{
@@ -329,13 +328,14 @@ fieldset {
 }
 
 #my-formsOnline-wait .form-title{
-  width:62%;
+  width: calc( 100% - 112px - 20% );
 }
 #my-formsOnline-wait .ask-form-date{
   width:20%;
 }
-#my-formsOnline-wait .form-statut{
-  width:18%;
+#my-formsOnline-wait .request-state{
+  width:112px;
+  white-space:nowrap;
 }
 
 .my-formsOnline .form-title{
@@ -346,16 +346,17 @@ fieldset {
 }
 
 #header-OnlineForm {
-	min-height:75px;
+  min-height:60px;
+  margin-left: 0.5em;
 }
 #header-OnlineForm .title {
-	width:100%;
-	font-weight:100;
-	padding:0;
-	margin:0;
+  width:100%;
+  font-weight:100;
+  padding:0;
+  margin:0;
 }
 
-#ask-by {
+/*#ask-by {
 	width:30%;
 	max-width:400px;
 	float:right;
@@ -396,51 +397,199 @@ fieldset {
 	width:auto;
 	display:inline-block;
 	text-align:left;
+}*/
+
+.steps-OnlineForm {
+  display:flex;
+  list-style-type:none;
+  padding:0;
+  margin:2em 0;
+}
+
+.steps-OnlineForm li:after {
+  content: ' ';
+  display: block;
+  width:1em;
+  height:2em;
+  background: transparent url(/silverpeas/util/icons/arrow/next-step.png) 0 0 no-repeat;
+  position: absolute;
+  top: 1em;
+  right:-1.75em;
+}
+.steps-OnlineForm li:last-child:after {
+  display:none;
+}
+
+.step-OnlineForm {
+  position:relative;
+  border:1px solid #ccc;
+  margin-right:2em;
+  flex-basis:300px;
+}
+.step-OnlineForm.next-step > div {
+  opacity:0.5;
+}
+.step-OnlineForm .header-step-onlineForm {
+  height:6.5em;
+}
+
+.step-OnlineForm div.avatar {
+  border-radius:20px;
+  border:1px solid #ccc;
+  width:36px;
+  height:36px;
+  padding:1px;
+  overflow:hidden;
+}
+.step-OnlineForm div.validator {
+  position:absolute;
+  right:1em;
+  top:1em;
+}
+
+.step-OnlineForm .avatar img{
+  width: 38px;
+  height: auto;
+  margin-top: -1px;
+  margin-left: -1px;
+}
+
+.step-OnlineForm .title-step-OnlineForm {
+  font-weight:bold;
+  padding:1em 1em 0.25em 1em;
+}
+.step-OnlineForm.REFUSED .title-step-OnlineForm {
+  padding-left:2em;
+  background:transparent url(/silverpeas/util/icons/wrong.gif) no-repeat 0.5em 0.85em;
+}
+.step-OnlineForm .date-step-OnlineForm,
+.step-OnlineForm .actor-step-OnlineForm {
+  padding:0 1em ;
+}
+.step-OnlineForm .comment-step-OnlineForm,
+.step-OnlineForm .statut-step-OnlineForm {
+  margin:0;
+  position: relative;
+  font-size: 11px;
+  border-left:0;
+  border-right:0;
+  border-bottom:0;
+  height:auto;
+}
+.step-OnlineForm .comment-step-OnlineForm div,
+.step-OnlineForm .statut-step-OnlineForm div{
+  overflow: hidden;
+  height:4em;
+}
+.step-OnlineForm .comment-step-OnlineForm:before {
+  content:' ';
+  display:block;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 5px solid black;
+  position:absolute;
+  top:-5px;
+  right:calc( 1em + 18px );
+}
+.step-OnlineForm .comment-step-OnlineForm.inlineMessage-ok:before {
+  border-bottom: 5px solid #9BD94A;
+}
+.step-OnlineForm .comment-step-OnlineForm.inlineMessage-nok:before {
+  border-bottom: 5px solid #CE6F6F;
+}
+.step-OnlineForm .comment-step-OnlineForm.inlineMessage:before {
+  border-bottom: 5px solid #F9E98E;
+}
+.step-OnlineForm.next-step .comment-step-OnlineForm.inlineMessage:before {
+  border-bottom: 5px solid #d8d7d7;
+}
+
+.step-OnlineForm.next-step .inlineMessage {
+  background-color: #ebebeb;
+  border-color: #d8d7d7;
+}
+
+.step-OnlineForm .inlineMessage,
+.step-OnlineForm .inlineMessage-ok,
+.step-OnlineForm .inlineMessage-nok  {
+  text-align:left;
+}
+
+.ask-by .forms {
+  display:none;
+}
+.step-OnlineForm:hover {
+  height:auto;
+}
+
+.step-OnlineForm:hover .comment-step-OnlineForm div,
+.step-OnlineForm:hover .statut-step-OnlineForm div{
+  min-height:4em;
+  height:auto;
 }
 
 .read-form .forms {
-	clear:both;
+  clear:both;
 }
-
 
 .read-form .buttonPane {
-	margin-top:1em;
+  margin-top:1em;
 }
 
-#templateForm.field, #titleForm.field, #descriptionForm.field , #list-senders .field, #list-receivers .field{
-	width:98%;
+#templateForm.field,
+#titleForm.field,
+#descriptionForm.field ,
+#list-senders .field,
+#list-receivers .field,
+#bossValidationForm.field{
+  width:98%;
+}
+fieldset#listSenders {
+  margin: 2% 0 2.5%;
 }
 
 .field textarea {
-	width:90%;
+  width:90%;
 }
 
 #templateForm select {
-	width:45%
+  width:45%
 }
 
 #view-form {
-    background-color: #f4f4f4;
-    background-image: url("/silverpeas/util/icons/gradientSVG.jsp?from=fff&to=e5e5e5&vertical=0&horizontal=100");
-    border: 1px solid #cccccc;
-    border-radius: 5px;
-    color: #4c4c4c;
-    font-size: 100%;
-    padding: 5px 10px;
-    width: auto;
-	display:inline-block;
-	margin-top:5px;
+  background-color: #f4f4f4;
+  background-image: url("/silverpeas/util/icons/gradientSVG.jsp?from=fff&to=e5e5e5&vertical=0&horizontal=100");
+  border: 1px solid #cccccc;
+  border-radius: 5px;
+  color: #4c4c4c;
+  font-size: 100%;
+  padding: 5px 10px;
+  width: auto;
+  display:inline-block;
+  margin-top:5px;
 }
 
 #view-form  span {
-	background:transparent url("/silverpeas/util/icons/component/formsOnlineSmall.gif") 0 0 no-repeat;
-	display: inline-block;
-    line-height: 16px;
-    padding-left: 23px;
+  background:transparent url("/silverpeas/util/icons/component/formsOnlineSmall.gif") 0 0 no-repeat;
+  display: inline-block;
+  line-height: 16px;
+  padding-left: 23px;
 }
 
 #informationForm legend {
   background: url("/silverpeas/util/icons/component/formsOnlineSmall.gif") no-repeat scroll 11px 0px transparent;
+}
+
+#informationForm img[class$=help-button] {
+  position: absolute;
+  top: 6px;
+  margin-left: 5px;
+}
+
+#informationForm .directDeletion-help-button {
+  top: 3px !important;
 }
 
 #all-requests .sp_button {
@@ -451,5 +600,20 @@ fieldset {
 }
 
 #all-requests #filter {
-  margin: 0 0 10px 0;
+  background: #eaeaea url(/silverpeas/util/icons/arrow/bg_tri.png) bottom left no-repeat;
+  padding: 5px 5px 14px;
+  margin-bottom:1em;
+}
+
+#all-requests #filter #stateFilter label,
+#all-requests #filter #formFilter label{
+  display:inline-block;
+  width:120px;
+}
+#all-requests .request-state {
+  white-space:nowrap;
+}
+
+#followerMessage label {
+  font-weight: normal;
 }

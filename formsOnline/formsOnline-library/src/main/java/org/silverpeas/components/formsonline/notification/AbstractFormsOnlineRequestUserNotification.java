@@ -24,20 +24,28 @@
 package org.silverpeas.components.formsonline.notification;
 
 import org.silverpeas.components.formsonline.model.FormInstance;
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.contribution.model.ContributionValidation;
+import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
 
-import java.util.MissingResourceException;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+
+import static org.silverpeas.core.notification.user.client.constant.NotifAction.CANCELED;
+import static org.silverpeas.core.notification.user.client.constant.NotifAction.PENDING_VALIDATION;
 
 /**
  * @author Yohann Chastagnier
  */
 public abstract class AbstractFormsOnlineRequestUserNotification
-    extends AbstractFormsOnlineUserNotification<FormInstance> {
+    extends AbstractTemplateUserNotificationBuilder<FormInstance> {
 
   private final NotifAction action;
   private final String senderName;
@@ -46,30 +54,37 @@ public abstract class AbstractFormsOnlineRequestUserNotification
       final NotifAction action) {
     super(resource);
     this.action = action;
-    if (NotifAction.PENDING_VALIDATION.equals(action)) {
-      this.senderName = UserDetail.getById(resource.getCreatorId()).getDisplayedName();
+    final Supplier<String> creatorDisplayName = () -> User.getById(resource.getCreatorId()).getDisplayedName();
+    if (PENDING_VALIDATION.equals(action) || CANCELED.equals(action)) {
+      this.senderName = creatorDisplayName.get();
     } else {
-      this.senderName = UserDetail.getById(resource.getValidatorId()).getDisplayedName();
+      this.senderName = getLatestRequestValidator()
+          .map(User::getDisplayedName)
+          .orElseGet(creatorDisplayName);
     }
+  }
+
+  @Override
+  protected String getLocalizationBundlePath() {
+    return "org.silverpeas.formsonline.multilang.formsOnlineBundle";
+  }
+
+  @Override
+  protected String getTemplatePath() {
+    return "formsonline";
   }
 
   @Override
   protected void performTemplateData(final String language, final FormInstance resource,
       final SilverpeasTemplate template) {
-    String title;
-    try {
-      title = getBundle(language).getString(getBundleSubjectKey());
-    } catch (MissingResourceException ex) {
-      SilverLogger.getLogger(this).silent(ex);
-      title = getTitle();
-    }
-    getNotificationMetaData().addLanguage(language, title, "");
+    getNotificationMetaData().addLanguage(language, getTitle(language), "");
     template.setAttribute("form", resource.getForm());
     template.setAttribute("request", resource);
     template.setAttribute("formName", resource.getForm().getName());
     template.setAttribute("senderName", getSenderName());
     template.setAttribute("requester", resource.getCreator());
     template.setAttribute("validator", resource.getValidator());
+    template.setAttribute("pendingValidation", resource.getPendingValidation());
   }
 
   @Override
@@ -100,14 +115,34 @@ public abstract class AbstractFormsOnlineRequestUserNotification
 
   @Override
   protected String getSender() {
-    if (NotifAction.PENDING_VALIDATION.equals(action)) {
-      return getResource().getCreatorId();
+    final Supplier<String> creatorIdSupplier = () -> getResource().getCreatorId();
+    if (PENDING_VALIDATION.equals(action) || CANCELED.equals(action)) {
+      return creatorIdSupplier.get();
     }
-    return getResource().getValidatorId();
+    return getLatestRequestValidator()
+        .map(User::getId)
+        .orElseGet(creatorIdSupplier);
   }
 
   @Override
   protected String getContributionAccessLinkLabelBundleKey() {
     return "formsOnline.notifLinkLabel";
+  }
+
+  @Override
+  protected boolean isSendImmediately() {
+    return true;
+  }
+
+  protected Optional<User> getLatestRequestValidator() {
+    return getResource().getValidations().getLatestValidation().map(ContributionValidation::getValidator);
+  }
+
+  protected List<String> extractGroupIds(final List<Group> groups) {
+    return groups.stream().map(Group::getId).collect(Collectors.toList());
+  }
+
+  protected List<String> extractUserIds(final List<User> users) {
+    return users.stream().map(User::getId).collect(Collectors.toList());
   }
 }

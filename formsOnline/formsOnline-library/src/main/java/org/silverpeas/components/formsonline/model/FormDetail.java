@@ -23,18 +23,49 @@
  */
 package org.silverpeas.components.formsonline.model;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.silverpeas.components.formsonline.model.DefaultFormsOnlineService.HierarchicalValidatorCacheManager;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.util.MemoizedSupplier;
+import org.silverpeas.core.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
+import static java.util.Collections.unmodifiableList;
+import static org.silverpeas.components.formsonline.model.FormInstanceValidationType.*;
+import static org.silverpeas.core.util.CollectionUtil.isNotEmpty;
+import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
 public class FormDetail {
   public static final int STATE_NOT_YET_PUBLISHED = 0;
   public static final int STATE_PUBLISHED = 1;
   public static final int STATE_UNPUBLISHED = 2;
+
+  public static final int VALIDATOR_OK = 0;
+  public static final int VALIDATOR_UNDEFINED = 1;
+  public static final int VALIDATOR_NOT_ALLOWED = 2;
+
+  public static final String SENDERS_TYPE = "S";
+  public static final String RECEIVERS_TYPE_INTERMEDIATE = "I";
+  public static final String RECEIVERS_TYPE_FINAL = "R";
+  public static final List<String> ALL_RIGHT_TYPES = unmodifiableList(
+      asList(SENDERS_TYPE, RECEIVERS_TYPE_INTERMEDIATE, RECEIVERS_TYPE_FINAL));
+  public static final List<String> ALL_RECEIVER_TYPES = unmodifiableList(
+      asList(RECEIVERS_TYPE_INTERMEDIATE, RECEIVERS_TYPE_FINAL));
 
   private int id = -1;
   private String xmlFormName = null;
@@ -45,14 +76,24 @@ public class FormDetail {
   private Date creationDate = new Date();
   private String instanceId = null;
   private int state = STATE_NOT_YET_PUBLISHED;
+  private boolean hierarchicalValidation = false;
+  private String requestExchangeReceiver = null;
+  private boolean deleteAfterRequestExchange = false;
 
   private boolean sendable = true;
   private int nbRequests = 0;
 
-  List<User> sendersAsUsers;
-  List<Group> sendersAsGroups;
-  List<User> receiversAsUsers;
-  List<Group> receiversAsGroups;
+  private String hierarchicalValidatorOfCurrentUser;
+  private Map<FormInstanceValidationType, Function<FormInstance, Supplier<List<User>>>> possibleValidationTypes;
+  private HierarchicalValidatorCacheManager hvManager;
+
+  private List<User> sendersAsUsers;
+  private List<Group> sendersAsGroups;
+
+  private List<User> intermediateReceiversAsUsers;
+  private List<Group> intermediateReceiversAsGroups;
+  private List<User> receiversAsUsers;
+  private List<Group> receiversAsGroups;
 
   /**
    * @return the id
@@ -180,48 +221,96 @@ public class FormDetail {
     this.instanceId = instanceId;
   }
 
+  /**
+   * Indicates if the hierarchical validation enabled.
+   * @return true if enabled, false othserwise.
+   */
+  public boolean isHierarchicalValidation() {
+    return hierarchicalValidation;
+  }
+
+  /**
+   * Sets the hierarchical validation flag.
+   * @param hierarchicalValidation true to enabled, false otherwise.
+   */
+  public void setHierarchicalValidation(final boolean hierarchicalValidation) {
+    this.hierarchicalValidation = hierarchicalValidation;
+  }
+
+  /**
+   * Gets the receiver data which permits to exchange the data of a new form request.
+   * <p>
+   * If filled, just after its creation the new form request is exchanged with the given receiver.
+   * </p>
+   * <p>
+   * For now, the receiver is represented by an e-mail. By this way, the data are sent to the
+   * receiver just after a new form request creation.
+   * </p>
+   * @return an optional receiver data in charge of request exchange processing.
+   */
+  public Optional<String> getRequestExchangeReceiver() {
+    return Optional.ofNullable(requestExchangeReceiver);
+  }
+
+  /**
+   * Sets the receiver data (an e-mail for now) which permits to perform the exchange of a new
+   * form request creation.
+   * @param requestExchangeReceiver receiver data (an e-mail for now)
+   */
+  public void setRequestExchangeReceiver(final String requestExchangeReceiver) {
+    this.requestExchangeReceiver = defaultStringIfNotDefined(requestExchangeReceiver, null);
+  }
+
+  /**
+   * Indicates id the exchanged form request MUST be deleted after the exchange processing.
+   * <p>
+   * If method {@link #getRequestExchangeReceiver()} returns no receiver data, then no deletion
+   * is indicated.
+   * </p>
+   * @return true if a new form request MUST be deleted after exchange, false otherwise.
+   */
+  public boolean isDeleteAfterRequestExchange() {
+    return getRequestExchangeReceiver().map(r -> deleteAfterRequestExchange).orElse(false);
+  }
+
+  /**
+   * Sets the behavior about the deletion of a new form request when it has just been exchanged with
+   * the receiver procided by {@link #getRequestExchangeReceiver()} method.
+   * @param deleteAfterRequestExchange  true if a new form request MUST be deleted after
+   * exchange, false otherwise.
+   */
+  public void setDeleteAfterRequestExchange(final boolean deleteAfterRequestExchange) {
+    this.deleteAfterRequestExchange = deleteAfterRequestExchange;
+  }
+
   @Override
-  public boolean equals(Object obj) {
-    if (obj == null) {
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+
+    if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    final FormDetail other = (FormDetail) obj;
-    if (this.id != other.id) {
-      return false;
-    }
-    if ((this.instanceId == null) ? (other.instanceId != null) :
-        !this.instanceId.equals(other.instanceId)) {
-      return false;
-    }
-    if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)) {
-      return false;
-    }
-    if ((this.title == null) ? (other.title != null) : !this.title.equals(other.title)) {
-      return false;
-    }
-    if (this.creationDate != other.creationDate &&
-        (this.creationDate == null || !this.creationDate.equals(other.creationDate))) {
-      return false;
-    }
-    if ((this.xmlFormName == null) ? (other.xmlFormName != null) :
-        !this.xmlFormName.equals(other.xmlFormName)) {
-      return false;
-    }
-    if ((this.description == null) ? (other.description != null) :
-        !this.description.equals(other.description)) {
-      return false;
-    }
-    return this.state == other.state;
+
+    final FormDetail that = (FormDetail) o;
+
+    return new EqualsBuilder().append(id, that.id).append(state, that.state)
+        .append(hierarchicalValidation, that.hierarchicalValidation)
+        .append(deleteAfterRequestExchange, that.deleteAfterRequestExchange)
+        .append(xmlFormName, that.xmlFormName).append(name, that.name)
+        .append(description, that.description).append(title, that.title)
+        .append(creatorId, that.creatorId).append(creationDate, that.creationDate)
+        .append(instanceId, that.instanceId)
+        .append(requestExchangeReceiver, that.requestExchangeReceiver).isEquals();
   }
 
   @Override
   public int hashCode() {
-    return new HashCodeBuilder(7, 17).append(this.id).append(this.xmlFormName).append(this.name)
-        .append(this.description).append(this.title).append(this.creatorId).append(this.instanceId)
-        .append(this.state).toHashCode();
+    return new HashCodeBuilder(17, 37).append(id).append(xmlFormName).append(name)
+        .append(description).append(title).append(creatorId).append(creationDate).append(instanceId)
+        .append(state).append(hierarchicalValidation).append(requestExchangeReceiver)
+        .append(deleteAfterRequestExchange).toHashCode();
   }
 
   public boolean isPublished() {
@@ -244,7 +333,7 @@ public class FormDetail {
     return sendable;
   }
 
-  public boolean isSender(String userId) {
+  private boolean isSender(String userId) {
     return isInList(userId, getAllSenders());
   }
 
@@ -272,19 +361,19 @@ public class FormDetail {
   }
 
   private List<User> getAllReceivers() {
-    List<User> users = getReceiversAsUsers();
-    users.addAll(getUsers(getReceiversAsGroups()));
-    return users;
+    return Stream.concat(getReceiversAsUsers().stream(),
+           Stream.concat(getUsers(getReceiversAsGroups()).stream(),
+           Stream.concat(getIntermediateReceiversAsUsers().stream(),
+                         getUsers(getIntermediateReceiversAsGroups()).stream())))
+           .distinct()
+           .collect(Collectors.toList());
   }
 
   private List<User> getUsers(List<Group> groups) {
-    List<User> users = new ArrayList<>();
-    for (Group group : groups) {
-      for (User user : group.getAllUsers()) {
-        users.add(user);
-      }
-    }
-    return users;
+    return groups.stream()
+        .flatMap(g -> g.getAllUsers().stream())
+        .distinct()
+        .collect(Collectors.toList());
   }
 
   public List<User> getSendersAsUsers() {
@@ -300,7 +389,7 @@ public class FormDetail {
 
   public List<Group> getSendersAsGroups() {
     if (sendersAsGroups == null) {
-      return new ArrayList<Group>();
+      return new ArrayList<>();
     }
     return sendersAsGroups;
   }
@@ -322,7 +411,7 @@ public class FormDetail {
 
   public List<Group> getReceiversAsGroups() {
     if (receiversAsGroups == null) {
-      return new ArrayList<Group>();
+      return new ArrayList<>();
     }
     return receiversAsGroups;
   }
@@ -331,11 +420,131 @@ public class FormDetail {
     this.receiversAsGroups = receiversAsGroups;
   }
 
+  protected List<User> getAllFinalReceivers() {
+    return Stream.concat(getReceiversAsUsers().stream(), getUsers(getReceiversAsGroups()).stream())
+        .distinct()
+        .collect(Collectors.toList());
+  }
+
+  public List<User> getIntermediateReceiversAsUsers() {
+    if (intermediateReceiversAsUsers == null) {
+      return new ArrayList<>();
+    }
+    return intermediateReceiversAsUsers;
+  }
+
+  public void setIntermediateReceiversAsUsers(final List<User> receiversAsUsers) {
+    this.intermediateReceiversAsUsers = receiversAsUsers;
+  }
+
+  public List<Group> getIntermediateReceiversAsGroups() {
+    if (intermediateReceiversAsGroups == null) {
+      return new ArrayList<>();
+    }
+    return intermediateReceiversAsGroups;
+  }
+
+  public void setIntermediateReceiversAsGroups(final List<Group> receiversAsGroups) {
+    this.intermediateReceiversAsGroups = receiversAsGroups;
+  }
+
+  protected List<User> getAllIntermediateReceivers() {
+    return Stream.concat(getIntermediateReceiversAsUsers().stream(), getUsers(getIntermediateReceiversAsGroups()).stream())
+        .distinct()
+        .collect(Collectors.toList());
+  }
+
+  public boolean isIntermediateValidator(String userId) {
+    return isInList(userId, getAllIntermediateReceivers());
+  }
+
+  public boolean isFinalValidator(String userId) {
+    return isInList(userId, getAllFinalReceivers());
+  }
+
+  public boolean isFinalValidation() {
+    return isNotEmpty(getReceiversAsUsers()) || isNotEmpty(getReceiversAsGroups());
+  }
+
+  public boolean isIntermediateValidation() {
+    return isNotEmpty(getIntermediateReceiversAsUsers()) || isNotEmpty(getIntermediateReceiversAsGroups());
+  }
+
   public int getNbRequests() {
     return nbRequests;
   }
 
   public void setNbRequests(final int nbRequests) {
     this.nbRequests = nbRequests;
+  }
+
+  public String getHierarchicalValidatorOfCurrentUser() {
+    if (hierarchicalValidatorOfCurrentUser == null) {
+      if (this.isHierarchicalValidation()) {
+        hierarchicalValidatorOfCurrentUser = getHvManager().getHierarchicalValidatorOf(User.getCurrentRequester().getId());
+      } else {
+        hierarchicalValidatorOfCurrentUser = StringUtil.EMPTY;
+      }
+    }
+    return hierarchicalValidatorOfCurrentUser;
+  }
+
+  HierarchicalValidatorCacheManager getHvManager() {
+    if (hvManager == null) {
+      hvManager = new HierarchicalValidatorCacheManager();
+    }
+    return hvManager;
+  }
+
+  public int getHierarchicalValidatorState() {
+    if (!isHierarchicalValidation()) {
+      return VALIDATOR_OK;
+    }
+    if (StringUtil.isNotDefined(getHierarchicalValidatorOfCurrentUser())) {
+      return VALIDATOR_UNDEFINED;
+    } else if (OrganizationController.get()
+        .isComponentAvailableToUser(getInstanceId(), getHierarchicalValidatorOfCurrentUser())) {
+      return VALIDATOR_OK;
+    }
+    return VALIDATOR_NOT_ALLOWED;
+  }
+
+  /**
+   * Gets the possible request validations.
+   * <p>
+   * For each request validation, a validator provider is provided.
+   * </p>
+   * <p>
+   *   BE CAREFUL of that following methods MUST have been called before using this method:
+   *   <ul>
+   *     <li>{@link #setIntermediateReceiversAsUsers(List)}</li>
+   *     <li>{@link #setIntermediateReceiversAsGroups(List)}</li>
+   *     <li>{@link #setReceiversAsUsers(List)}</li>
+   *     <li>{@link #setReceiversAsGroups(List)}</li>
+   *   </ul>
+   * </p>
+   * @return a map of validation type associated to a validator list supplier. Keys of map are
+   * sorted as the {@link FormInstanceValidationType} enum.
+   */
+  public Map<FormInstanceValidationType, Function<FormInstance, Supplier<List<User>>>> getPossibleRequestValidations() {
+    if (possibleValidationTypes == null) {
+      possibleValidationTypes = new LinkedHashMap<>(FormInstanceValidationType.values().length);
+      if (isHierarchicalValidation()) {
+        possibleValidationTypes.put(HIERARCHICAL, f -> () -> singletonList(User.getById(f.getHierarchicalValidator())));
+      }
+      if (isIntermediateValidation()) {
+        final MemoizedSupplier<List<User>> supplier = new MemoizedSupplier<>(this::getAllIntermediateReceivers);
+        possibleValidationTypes.put(INTERMEDIATE, f -> supplier);
+      }
+      if (isFinalValidation()) {
+        final MemoizedSupplier<List<User>> supplier = new MemoizedSupplier<>(this::getAllFinalReceivers);
+        possibleValidationTypes.put(FINAL, f -> supplier);
+      }
+    }
+    return possibleValidationTypes;
+  }
+
+  public boolean canBeSentBy(final User user) {
+    return isPublished() && isSender(user.getId());
   }
 }

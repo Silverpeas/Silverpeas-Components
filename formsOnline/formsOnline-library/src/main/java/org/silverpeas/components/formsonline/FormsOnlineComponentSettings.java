@@ -23,11 +23,39 @@
  */
 package org.silverpeas.components.formsonline;
 
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.ResourceLocator;
+
 public class FormsOnlineComponentSettings {
 
   public static final String PARAM_WORKGROUP = "workgroup";
 
+  /**
+   * The name of the Almanach component in Silverpeas.
+   */
+  public static final String COMPONENT_NAME = "formsOnline";
+  /**
+   * The relative path of the properties file containing the settings of the Almanach
+   * component.
+   */
+  public static final String SETTINGS_PATH =
+      "org.silverpeas.formsonline.settings.formsOnlineSettings";
+  /**
+   * The relative path of the i18n bundle of the FormsOnline component.
+   */
+  public static final String MESSAGES_PATH =
+      "org.silverpeas.formsonline.multilang.formsOnlineBundle";
+
   private FormsOnlineComponentSettings() {
 
+  }
+
+  /**
+   * Gets all the messages for the FormsOnline component and translated in the specified language.
+   * @param language the language in which are written the messages.
+   * @return the resource with the translated messages.
+   */
+  public static LocalizationBundle getMessagesIn(String language) {
+    return ResourceLocator.getLocalizationBundle(MESSAGES_PATH, language);
   }
 }

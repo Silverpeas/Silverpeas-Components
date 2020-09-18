@@ -24,11 +24,10 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <%@page import="org.silverpeas.core.contribution.content.form.Form"%>
 <%@page import="org.silverpeas.core.contribution.content.form.PagesContext"%>
+<%@ page import="org.silverpeas.core.admin.user.model.User" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
@@ -36,6 +35,7 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/formsOnline" prefix="formsOnline" %>
 
 <c:set var="lang" value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
 <c:set var="currentUser" value="${sessionScope['SilverSessionController'].currentUserDetail}"/>
@@ -44,13 +44,23 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 
 <c:set var="userRequest" value="${requestScope['UserRequest']}"/>
+<jsp:useBean id="userRequest" type="org.silverpeas.components.formsonline.model.FormInstance"/>
 <c:set var="validationEnabled" value="${requestScope['ValidationEnabled']}"/>
 <c:set var="form" value="${requestScope['FormDetail']}"/>
 <c:set var="origin" value="${requestScope['Origin']}"/>
+<c:set var="finalValidator" value="${requestScope['FinalValidator']}"/>
 
 <c:set var="formNameParts" value="${silfn:split(form.xmlFormName, '.')}"/>
 
 <fmt:message var="buttonBack" key="GML.back"/>
+<fmt:message var="labelAccept" key="formsOnline.request.action.validate"/>
+<fmt:message var="labelCancel" key="formsOnline.request.action.cancel"/>
+<fmt:message var="labelCancelConfirm" key="formsOnline.request.action.cancel.confirm"/>
+<fmt:message var="labelDelete" key="GML.delete"/>
+<fmt:message var="labelDeleteConfirm" key="formsOnline.request.action.delete.confirm"/>
+<fmt:message var="labelArchive" key="formsOnline.request.action.archive"/>
+<fmt:message var="labelArchiveConfirm" key="formsOnline.request.action.archive.confirm"/>
+<fmt:message var="commentYourDecisionLabel" key="formsOnline.request.validation.comment"/>
 
 <%
 	Form        formView  = (Form) request.getAttribute("Form");
@@ -62,50 +72,92 @@
 	context.setBorderPrinted(false);
 %>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <title></title>
-  <view:looknfeel />
+<view:sp-page>
+<view:sp-head-part withCheckFormScript="true">
+  <view:includePlugin name="preview"/>
   <view:link href="/formsOnline/jsp/styleSheets/formsOnline-print.css" print="true"/>
   <% formView.displayScripts(out, context); %>
   <script type="text/javascript">
 	  function validate() {
-		  document.validationForm.decision.value = "validate";
-		  document.validationForm.submit();
+      document.validationForm.decision.value = "validate";
+      <c:choose>
+        <c:when test="${not userRequest.pendingValidation.validationType.final}">
+          $('#followerMessage').popup('validation', {
+            title : "${labelAccept}",
+            callback : function() {
+              var followerCheckbox = document.getElementById('followerCheckbox');
+              if (followerCheckbox.checked) {
+                document.validationForm.follower.value = followerCheckbox.value;
+              }
+              spProgressMessage.show();
+              document.validationForm.submit();
+            }
+          });
+        </c:when>
+        <c:otherwise>
+          spProgressMessage.show();
+          document.validationForm.submit();
+        </c:otherwise>
+      </c:choose>
 	  }
 
 	  function refuse() {
-		  document.validationForm.decision.value = "refuse";
-		  document.validationForm.submit();
+      const comment = stripInitialWhitespace(document.validationForm.comment.value);
+      if (isWhitespace(comment)) {
+        SilverpeasError.add("'${silfn:escapeJs(commentYourDecisionLabel)}' <fmt:message key="GML.MustBeFilled"/>");
+      }
+      if (!SilverpeasError.show()) {
+        spProgressMessage.show();
+        document.validationForm.decision.value = "refuse";
+        document.validationForm.submit();
+      }
 	  }
 
     function deleteRequest() {
-      document.requestForm.action = "DeleteRequest";
-      document.requestForm.submit();
+      jQuery.popup.confirm("${silfn:escapeJs(labelDeleteConfirm)}", {
+        title : "${silfn:escapeJs(labelDelete)}",
+        callback : function() {
+          spProgressMessage.show();
+          document.requestForm.action = "DeleteRequest";
+          document.requestForm.submit();
+        }
+      });
     }
 
     function archive() {
-      document.requestForm.action = "ArchiveRequest";
-      document.requestForm.submit();
+      jQuery.popup.confirm("${silfn:escapeJs(labelArchiveConfirm)}", {
+        title : "${silfn:escapeJs(labelArchive)}",
+        callback : function() {
+          spProgressMessage.show();
+          document.requestForm.action = "ArchiveRequest";
+          document.requestForm.submit();
+        }
+      });
+    }
+
+    function cancelRequest() {
+	    jQuery.popup.confirm("${silfn:escapeJs(labelCancelConfirm)}", {
+        title : "${silfn:escapeJs(labelCancel)}",
+        callback : function() {
+          spProgressMessage.show();
+          document.requestForm.action = "CancelRequest";
+          document.requestForm.submit();
+        }
+      });
     }
   </script>
-</head>
-<body class="${formNameParts[0]}">
+</view:sp-head-part>
+<view:sp-body-part cssClass="${formNameParts[0]}">
     <view:operationPane>
-      <c:choose>
-        <c:when test="${userRequest.creatorId == currentUser.id}">
-          <c:if test="${userRequest.denied || userRequest.validated}">
-            <fmt:message var="opArchive" key="formsOnline.request.action.archive"/>
-            <view:operation action="javascript:archive()" altText="${opArchive}"/>
-          </c:if>
-        </c:when>
-        <c:otherwise>
-          <c:if test="${userRequest.archived}">
-            <fmt:message var="opDelete" key="GML.delete"/>
-            <view:operation action="javascript:deleteRequest()" altText="${opDelete}"/>
-          </c:if>
-        </c:otherwise>
-      </c:choose>
+      <c:if test="${userRequest.canBeCanceledBy(currentUser)}">
+        <view:operation action="javascript:cancelRequest()" altText="${labelCancel}"/>
+      </c:if>
+      <c:if test="${userRequest.canBeArchivedBy(currentUser)}">
+        <view:operation action="javascript:archive()" altText="${labelArchive}"/>
+      </c:if>
+      <c:if test="${userRequest.canBeDeletedBy(currentUser)}">
+        <view:operation action="javascript:deleteRequest()" altText="${labelDelete}"/>
+      </c:if>
       <fmt:message var="opPrint" key="GML.print"/>
       <view:operation action="javascript:window.print()" altText="${opPrint}"/>
     </view:operationPane>
@@ -113,60 +165,27 @@
 
   <div id="header-OnlineForm">
     <h2 class="title">${form.title}</h2>
-    <div id="ask-by" class="bgDegradeGris">
-      <fmt:message key="formsOnline.request.from"/> <view:username userId="${userRequest.creatorId}"/>
-      <div class="profilPhoto"><view:image src="${userRequest.creator.avatar}" alt="" type="avatar" /></div>
-      <div class="ask-date"><fmt:message key="GML.date.the"/> <view:formatDate value="${userRequest.creationDate}"/></div>
-      <div>
-        <viewTags:displayUserExtraProperties user="${userRequest.creator}" readOnly="true" linear="true" includeEmail="true" displayLabels="false"/>
-      </div>
-    </div>
 
-    <c:choose>
-      <c:when test="${userRequest.canBeValidated}">
-        <div id="ask-statut" class="inlineMessage"><fmt:message key="GML.contribution.validation.status.PENDING_VALIDATION"/></div>
-      </c:when>
-      <c:when test="${userRequest.validated}">
-        <c:choose>
-          <c:when test="${silfn:isDefined(userRequest.comments)}">
-            <div id="ask-statut" class="commentaires">
-              <div class="inlineMessage-ok oneComment">
-                <p class="author"><fmt:message key="GML.contribution.validation.status.VALIDATED"/> <fmt:message key="GML.date.the"/> <view:formatDate value="${userRequest.validationDate}"/> <fmt:message key="GML.by"/> <view:username userId="${userRequest.validatorId}"/></p>
-                <div class="avatar"><view:image src="${userRequest.validator.avatar}" alt="" type="avatar" /></div>
-                <div>
-                  <p>${silfn:escapeHtmlWhitespaces(userRequest.comments)}</p>
-                </div>
-              </div>
-            </div>
-          </c:when>
-          <c:otherwise>
-            <div id="ask-statut" class="inlineMessage-ok">
-              <fmt:message key="GML.contribution.validation.status.VALIDATED"/> <fmt:message key="GML.date.the"/> <view:formatDate value="${userRequest.validationDate}"/> <fmt:message key="GML.by"/> <view:username userId="${userRequest.validatorId}"/>
-            </div>
-          </c:otherwise>
-        </c:choose>
-      </c:when>
-      <c:when test="${userRequest.denied}">
-        <c:choose>
-          <c:when test="${silfn:isDefined(userRequest.comments)}">
-            <div id="ask-statut" class="commentaires">
-              <div class="inlineMessage-nok oneComment">
-                <p class="author"><fmt:message key="GML.contribution.validation.status.REFUSED"/> <fmt:message key="GML.date.the"/> <view:formatDate value="${userRequest.validationDate}"/> <fmt:message key="GML.by"/> <view:username userId="${userRequest.validatorId}"/></p>
-                <div class="avatar"><view:image src="${userRequest.validator.avatar}" alt="" type="avatar" /></div>
-                <div>
-                  <p>${silfn:escapeHtmlWhitespaces(userRequest.comments)}</p>
-                </div>
-              </div>
-            </div>
-          </c:when>
-          <c:otherwise>
-            <div id="ask-statut" class="inlineMessage-nok">
-              <fmt:message key="GML.contribution.validation.status.REFUSED"/> <fmt:message key="GML.date.the"/> <view:formatDate value="${userRequest.validationDate}"/> <fmt:message key="GML.by"/> <view:username userId="${userRequest.validatorId}"/>
-            </div>
-          </c:otherwise>
-        </c:choose>
-      </c:when>
-    </c:choose>
+    <c:if test="${userRequest.canceled}">
+      <div class="inlineMessage-nok"><fmt:message key="formsOnline.form.request.cancel.info"/></div>
+    </c:if>
+
+    <ul class="steps-OnlineForm">
+      <li class="step-OnlineForm ask-by">
+        <div class="header-step-onlineForm">
+          <div class="validator avatar"><view:image src="${userRequest.creator.avatar}" alt="" type="avatar" /></div>
+          <div class="title-step-OnlineForm"><fmt:message key="formsOnline.request.from"/></div>
+          <div class="date-step-OnlineForm"><fmt:message key="GML.date.the"/> <view:formatDateTime value="${userRequest.creationDate}"/></div>
+          <div class="actor-step-OnlineForm"><fmt:message key="GML.by"/> <view:username userId="${userRequest.creatorId}"/></div>
+        </div>
+        <div class="forms">
+          <viewTags:displayUserExtraProperties user="${userRequest.creator}" readOnly="true" linear="true" includeEmail="true" displayLabels="false"/>
+        </div>
+      </li>
+
+      <formsOnline:validations userRequest="${userRequest}"/>
+
+    </ul>
   </div>
 
 	<%
@@ -176,18 +195,22 @@
   <c:if test="${validationEnabled}">
     <div class="commentaires">
       <div id="edition-box">
-        <p class="title">Commentez votre décision</p>
+        <p class="title">${commentYourDecisionLabel}</p>
         <div class="avatar"><view:image src="${currentUser.avatar}" type="avatar"/> </div>
         <form name="validationForm" action="EffectiveValideForm" method="post">
           <input type="hidden" name="Id" value="${userRequest.id}"/>
           <input type="hidden" name="Origin" value="${origin}"/>
           <input type="hidden" name="decision" value=""/>
+          <input type="hidden" name="follower" id="follower" value=""/>
           <textarea name="comment"  style="resize: none; overflow-y: hidden; height: 60px;" class="text"></textarea>
         </form>
       </div>
     </div>
     <br/>
     <view:buttonPane>
+      <c:if test="${userRequest.canBeCanceledBy(currentUser)}">
+        <view:button label="${labelCancel}" action="javascript:cancelRequest();"/>
+      </c:if>
       <fmt:message var="buttonValidate" key="GML.accept"/>
       <fmt:message var="buttonDeny" key="GML.refuse"/>
       <view:button label="${buttonValidate}" action="javascript:validate();" />
@@ -198,6 +221,9 @@
   <c:if test="${not validationEnabled}">
     <br/>
     <view:buttonPane>
+      <c:if test="${userRequest.canBeCanceledBy(currentUser)}">
+        <view:button label="${labelCancel}" action="javascript:cancelRequest();"/>
+      </c:if>
       <view:button label="${buttonBack}" action="${origin}" />
     </view:buttonPane>
   </c:if>
@@ -205,6 +231,13 @@
   </view:window>
 <form name="requestForm" action="" method="post">
   <input type="hidden" name="Id" value="${userRequest.id}"/>
+  <input type="hidden" name="Origin" value="InBox"/>
 </form>
-</body>
-</html>
+
+<div id="followerMessage" style="display: none">
+  <input id="followerCheckbox" type="checkbox" value="true"/> <label for="followerCheckbox"><fmt:message key="formsOnline.request.follow"/></label>
+</div>
+
+<view:progressMessage/>
+</view:sp-body-part>
+</view:sp-page>

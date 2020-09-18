@@ -27,9 +27,10 @@ import org.silverpeas.components.formsonline.model.FormInstance;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.template.SilverpeasTemplate;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+
+import static java.util.Collections.singletonList;
+import static org.silverpeas.core.notification.user.client.constant.NotifAction.*;
 
 /**
  * @author Nicolas EYSSERIC
@@ -44,15 +45,30 @@ public class FormsOnlineValidationRequestUserNotification
 
   @Override
   protected String getBundleSubjectKey() {
-    if (NotifAction.VALIDATE.equals(getAction())) {
+    if (VALIDATE.equals(getAction())) {
       return "formsOnline.msgFormValidated";
     }
     return "formsOnline.msgFormRefused";
   }
 
   @Override
+  protected String getTitle(final String language) {
+    String title = super.getTitle(language);
+    if (REFUSE.equals(getAction()) || VALIDATE.equals(getAction()) || PENDING_VALIDATION.equals(getAction())) {
+      int nbValidationSteps = getNbValidationSteps();
+      if (nbValidationSteps > 1) {
+        int step = getCurrentValidationStep();
+        title += " " + getBundle(language)
+            .getStringWithParams("formsOnline.msgFormValidated.steps", Integer.toString(step),
+                Integer.toString(nbValidationSteps));
+      }
+    }
+    return title;
+  }
+
+  @Override
   protected String getTemplateFileName() {
-    if (NotifAction.VALIDATE.equals(getAction())) {
+    if (VALIDATE.equals(getAction())) {
       return "notificationValidated";
     }
     return "notificationDenied";
@@ -62,23 +78,27 @@ public class FormsOnlineValidationRequestUserNotification
   protected void performTemplateData(final String language, final FormInstance resource,
       final SilverpeasTemplate template) {
     super.performTemplateData(language, resource, template);
-    template.setAttribute("comment", getResource().getComments());
-    if (NotifAction.VALIDATE.equals(getAction())) {
-      template.setAttribute("validated", true);
-    } else if (NotifAction.REFUSE.equals(getAction())) {
-      template.setAttribute("denied", true);
-    }
+    getResource().getValidations().getLatestValidation()
+        .ifPresent(v -> template.setAttribute("comment", v.getComment()));
   }
 
   @Override
   protected Collection<String> getUserIdsToNotify() {
-    List<String> ids = new ArrayList<String>();
-    ids.add(getResource().getCreatorId());
-    return ids;
+    return singletonList(getResource().getCreatorId());
   }
 
-  @Override
-  protected boolean isSendImmediately() {
-    return true;
+  protected int getNbValidationSteps() {
+    return getResource().getValidationsSchema().size();
+  }
+
+  /**
+   * The meaning of the returned step number is "VALIDATED" and not "TO VALIDATE".
+   * <p>
+   * Please override this method in order to get the "TO VALIDATE" meaning.
+   * </p>
+   * @return the step number as integer.
+   */
+  protected int getCurrentValidationStep() {
+    return Math.min(getResource().getValidations().size(), getNbValidationSteps());
   }
 }

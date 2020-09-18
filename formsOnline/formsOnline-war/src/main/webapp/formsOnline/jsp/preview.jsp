@@ -39,14 +39,11 @@
 	context.setBorderPrinted(false);
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title></title>
-<view:looknfeel/>
+<view:sp-page>
+<view:sp-head-part>
 <% formUpdate.displayScripts(out, context); %>
-</head>
-<body class="yui-skin-sam">
+</view:sp-head-part>
+<view:sp-body-part cssClass="yui-skin-sam">
 <view:window popup="true" browseBarVisible="false">
 <view:frame>
 	<form name="myForm" method="post" action="UpdateXMLForm" enctype="multipart/form-data">
@@ -57,5 +54,5 @@
 
 </view:frame>
 </view:window>
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>
