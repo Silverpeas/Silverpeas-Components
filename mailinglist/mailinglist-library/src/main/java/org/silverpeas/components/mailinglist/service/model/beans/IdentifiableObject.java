@@ -23,6 +23,8 @@
  */
 package org.silverpeas.components.mailinglist.service.model.beans;
 
+import org.silverpeas.core.Identifiable;
+
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.PrePersist;
@@ -31,7 +33,7 @@ import java.io.Serializable;
 import java.util.UUID;
 
 @MappedSuperclass
-public abstract class IdentifiableObject implements Serializable {
+public abstract class IdentifiableObject implements Identifiable, Serializable {
 
   @Id
   protected String id;
