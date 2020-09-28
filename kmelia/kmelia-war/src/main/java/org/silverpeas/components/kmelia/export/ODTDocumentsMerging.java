@@ -288,9 +288,11 @@ class ODTDocumentsMerging extends TextDocument {
           String height = imageFrame.getDrawFrameElement().getSvgHeightAttribute();
           String width = imageFrame.getDrawFrameElement().getSvgWidthAttribute();
           Image embeddedImage = Image.newImage(imageFrame, imageURI);
-          DrawFrameElement drawFrame = embeddedImage.getFrame().getDrawFrameElement();
-          drawFrame.setSvgWidthAttribute(width);
-          drawFrame.setSvgHeightAttribute(height);
+          if (embeddedImage != null) {
+            DrawFrameElement drawFrame = embeddedImage.getFrame().getDrawFrameElement();
+            drawFrame.setSvgWidthAttribute(width);
+            drawFrame.setSvgHeightAttribute(height);
+          }
           image.remove();
         } else {
           imageNode.getParentNode().removeChild(imageNode);
