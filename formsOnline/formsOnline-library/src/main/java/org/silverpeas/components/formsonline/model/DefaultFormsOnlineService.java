@@ -928,7 +928,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
   /**
    * Permits to manage a cache in order to increase performances.
    */
-  static class HierarchicalValidatorCacheManager {
+  public static class HierarchicalValidatorCacheManager {
 
     private final Map<String, String> cache = new HashMap<>();
 
@@ -936,7 +936,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
      * Caches the hierarchical validators of users represented by given ids.
      * @param userIds set of string user ids.
      */
-    void cacheHierarchicalValidatorsOf(final Set<String> userIds) {
+    public void cacheHierarchicalValidatorsOf(final Set<String> userIds) {
       userIds.forEach(this::getHierarchicalValidatorOf);
     }
 
@@ -948,7 +948,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
      * @param userId a string user id.
      * @return the hierarchical validator of the user represented by the given id.
      */
-    String getHierarchicalValidatorOf(final String userId) {
+    public String getHierarchicalValidatorOf(final String userId) {
       return cache.computeIfAbsent(userId, i ->
           UserFull.getById(i).getValue("boss"));
     }

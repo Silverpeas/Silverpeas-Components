@@ -42,6 +42,7 @@
 
 <c:set var="form" value="${requestScope['currentForm']}"/>
 <jsp:useBean id="form" type="org.silverpeas.components.formsonline.model.FormDetail"/>
+<c:set var="isCreationCase" value="${form.id eq -1}"/>
 <c:set var="templates" value="${requestScope['availableTemplates']}"/>
 <c:set var="m_listGroupSenders" value="${form.sendersAsGroups}"/>
 <c:set var="m_listUserSenders" value="${form.sendersAsUsers}"/>
@@ -178,8 +179,7 @@ function notify(users, groups) {
     contributionId: ${form.id},
     recipientUsers: users,
     recipientGroups: groups,
-    recipientEdition: false,
-    manuel: true
+    recipientEdition: false
   });
 }
 
@@ -203,9 +203,11 @@ $(document).ready(function() {
   <fmt:message var="labelNotifySenders" key="formsOnline.form.action.notify.senders"/>
   <fmt:message var="labelNotifyReceivers" key="formsOnline.form.action.notify.receivers"/>
   <fmt:message var="labelNotifyAll" key="formsOnline.form.action.notify.all"/>
-  <view:operation action="javascript:notifySenders()" altText="${labelNotifySenders}"/>
-  <view:operation action="javascript:notifyReceivers()" altText="${labelNotifyReceivers}"/>
-  <view:operation action="javascript:notifyAll()" altText="${labelNotifyAll}"/>
+  <c:if test="${not isCreationCase and form.published}">
+    <view:operation action="javascript:notifySenders()" altText="${labelNotifySenders}"/>
+    <view:operation action="javascript:notifyReceivers()" altText="${labelNotifyReceivers}"/>
+    <view:operation action="javascript:notifyAll()" altText="${labelNotifyAll}"/>
+  </c:if>
 </view:operationPane>
 
 <view:window>
@@ -225,7 +227,7 @@ $(document).ready(function() {
           <label for="templates" class="txtlibform"><fmt:message key="formsOnline.Template"/></label>
           <div class="champs">
             <c:choose>
-              <c:when test="${form.id != -1}">
+              <c:when test="${not isCreationCase}">
                 <select name="template" id="templates" size="1" disabled="disabled">
               </c:when>
               <c:otherwise>
