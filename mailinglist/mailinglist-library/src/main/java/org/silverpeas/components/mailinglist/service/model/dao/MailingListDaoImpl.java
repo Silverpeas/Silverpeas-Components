@@ -23,20 +23,20 @@
  */
 package org.silverpeas.components.mailinglist.service.model.dao;
 
-import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.components.mailinglist.service.model.beans.MailingList;
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.util.logging.SilverLogger;
 
-import java.util.List;
-import javax.inject.Singleton;
+import javax.inject.Named;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
+import java.util.List;
 
-@Repository("mailingListDao")
-@Singleton
+@Repository
+@Named("mailingListDAO")
 @Transactional
 public class MailingListDaoImpl implements MailingListDao {
 

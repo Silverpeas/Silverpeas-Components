@@ -21,6 +21,7 @@
 
 package org.silverpeas.components.kmelia.service;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.WysiwygContent;
 import org.silverpeas.core.contribution.content.wysiwyg.notification.WysiwygEvent;
@@ -33,6 +34,7 @@ import javax.inject.Inject;
 /**
  * @author mmoquillon
  */
+@Bean
 public class KmeliaWysiwygEventListener extends CDIResourceEventListener<WysiwygEvent> {
 
   @Inject

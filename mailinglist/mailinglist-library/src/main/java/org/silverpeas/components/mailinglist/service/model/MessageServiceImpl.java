@@ -29,20 +29,20 @@ import org.silverpeas.components.mailinglist.service.model.beans.MailingListActi
 import org.silverpeas.components.mailinglist.service.model.beans.Message;
 import org.silverpeas.components.mailinglist.service.model.dao.MessageDao;
 import org.silverpeas.components.mailinglist.service.util.OrderBy;
+import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.personalorganizer.model.ToDoHeader;
 import org.silverpeas.core.personalorganizer.service.CalendarRuntimeException;
 import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
-import org.silverpeas.core.personalorganizer.model.ToDoHeader;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-@Singleton
+@Service
 @Transactional
 public class MessageServiceImpl implements MessageService {
 

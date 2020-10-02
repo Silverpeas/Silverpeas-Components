@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.whitepages.service;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.index.indexing.model.FieldDescription;
 import org.silverpeas.core.index.search.model.QueryDescription;
 import org.silverpeas.core.index.search.model.SearchResult;
@@ -31,11 +32,10 @@ import org.silverpeas.core.search.SearchService;
 import org.silverpeas.core.util.CollectionUtil;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.List;
 import java.util.Map;
 
-@Singleton
+@Service
 public class MixedSearchServiceImpl implements MixedSearchService {
 
   @Inject

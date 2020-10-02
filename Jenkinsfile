@@ -7,7 +7,7 @@ pipeline {
   }
   agent {
     docker {
-      image 'silverpeas/silverbuild'
+      image 'silverpeas/silverbuild:java-11'
       args '-v $HOME/.m2:/home/silverbuild/.m2 -v $HOME/.gitconfig:/home/silverbuild/.gitconfig -v $HOME/.ssh:/home/silverbuild/.ssh -v $HOME/.gnupg:/home/silverbuild/.gnupg'
     }
   }
@@ -24,7 +24,7 @@ pipeline {
     stage('Build') {
       steps {
         script {
-          def pom = readMavenPom()
+          checkParentPOMVersion(version)
           boolean coreDependencyExists = existsDependency(version, 'core')
           if (!coreDependencyExists) {
             def coreVersion = getCoreDependencyVersion()
@@ -98,6 +98,7 @@ def computeSnapshotVersion() {
 def getCoreDependencyVersion() {
   copyArtifacts projectName: 'Silverpeas_Master_AutoDeploy', flatten: true
   def lastBuild = readYaml file: 'build.yaml'
+  sh "rm build.yaml"
   return lastBuild.version
 }
 
@@ -140,5 +141,18 @@ def waitForDependencyRunningBuildIfAny(version, projectName) {
   }
   if (isLockFileExisting(dependencyLockFilePath)) {
     error "After timeout dependency lock file ${dependencyLockFilePath} is yet existing!!!!"
+  }
+}
+
+def checkParentPOMVersion(version) {
+  def pom = readMavenPom()
+  int idx = pom.parent.version.indexOf('-SNAPSHOT')
+  if (idx > 0) {
+    String[] snapshot = version.split('-')
+    String parentVersion = pom.parent.version.substring(0, idx) + '-' + snapshot[snapshot.length - 1]
+    echo "Update parent POM to ${parentVersion}"
+    sh """
+mvn versions:update-parent -DgenerateBackupPoms=false -DparentVersion="[${parentVersion}]"
+"""
   }
 }

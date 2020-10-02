@@ -26,16 +26,16 @@ package org.silverpeas.components.questionreply;
 import org.silverpeas.components.questionreply.model.Question;
 import org.silverpeas.components.questionreply.service.QuestionManagerProvider;
 import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
 import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
 
 import javax.inject.Named;
-import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-@Singleton
+@Provider
 @Named("questionReply" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
 public class QuestionReplyStatistics implements ComponentStatisticsProvider {
 

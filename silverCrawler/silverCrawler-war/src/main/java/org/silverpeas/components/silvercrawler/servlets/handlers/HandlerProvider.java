@@ -32,13 +32,13 @@ public class HandlerProvider {
   /**
    * Map the function name to the function handler
    */
-  static private Map<String, FunctionHandler> handlerMap = null;
+  private static Map<String, FunctionHandler> handlerMap;
 
   /**
    * Inits the function handler
    */
   static {
-    handlerMap = new HashMap<String, FunctionHandler>();
+    handlerMap = new HashMap<>();
 
     handlerMap.put("Main", new InitHandler());
 
@@ -86,5 +86,9 @@ public class HandlerProvider {
       return getHandler("Main");
     }
     return handlerMap.get(useCase);
+  }
+
+  private HandlerProvider() {
+
   }
 }

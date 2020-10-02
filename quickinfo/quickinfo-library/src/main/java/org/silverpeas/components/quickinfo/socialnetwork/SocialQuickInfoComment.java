@@ -28,6 +28,7 @@ import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.components.quickinfo.model.QuickInfoServiceProvider;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.comment.service.CommentServiceProvider;
 import org.silverpeas.core.comment.socialnetwork.SocialInformationComment;
 import org.silverpeas.core.date.period.Period;
@@ -35,13 +36,12 @@ import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.socialnetwork.provider.SocialNewsCommentProvider;
 import org.silverpeas.core.util.URLUtil;
 
-import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-@Singleton
+@Provider
 public class SocialQuickInfoComment implements SocialNewsCommentProvider {
 
   private List<String> getListResourceType() {

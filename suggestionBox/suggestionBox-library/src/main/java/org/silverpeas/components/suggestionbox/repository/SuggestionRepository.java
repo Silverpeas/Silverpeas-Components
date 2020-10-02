@@ -26,6 +26,7 @@ package org.silverpeas.components.suggestionbox.repository;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionCriteria;
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
@@ -40,7 +41,6 @@ import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SilverpeasList;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -51,7 +51,7 @@ import java.util.Map;
  * suggestion associated to suggestion boxes.
  * @author Yohann Chastagnier
  */
-@Singleton
+@Repository
 public class SuggestionRepository implements EntityRepository<Suggestion> {
 
   public static SuggestionRepository get() {

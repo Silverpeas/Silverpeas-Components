@@ -23,16 +23,15 @@
  */
 package org.silverpeas.components.resourcesmanager.web;
 
-import org.silverpeas.core.webapi.base.annotation.Authorized;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.date.period.Period;
-import org.silverpeas.core.date.period.PeriodType;
 import org.silverpeas.components.resourcesmanager.model.Reservation;
 import org.silverpeas.components.resourcesmanager.model.Resource;
+import org.silverpeas.core.annotation.WebService;
+import org.silverpeas.core.date.period.Period;
+import org.silverpeas.core.date.period.PeriodType;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.webapi.base.annotation.Authorized;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -50,8 +49,7 @@ import java.util.List;
  * A REST Web resource giving reservation and resource data.
  * @author Yohann Chastagnier
  */
-@Service
-@RequestScoped
+@WebService
 @Path(ResourceManagerResourceURIs.RESOURCE_MANAGER_BASE_URI + "/{componentInstanceId}")
 @Authorized
 public class ResourceManagerResource extends AbstractResourceManagerResource {

@@ -28,6 +28,7 @@ import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.components.quickinfo.model.QuickInfoService;
 import org.silverpeas.components.quickinfo.model.QuickInfoServiceProvider;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.security.authentication.UserAuthenticationListener;
 
@@ -40,6 +41,7 @@ import java.util.List;
  * This listener handles the blocking news about Quick Info application.<br>
  * Just after a successful user authentication, blocking news are displayed to the user if any.
  */
+@Service
 @Singleton
 public class QuickInfoUserAuthenticationListener
     implements UserAuthenticationListener, Initialization {

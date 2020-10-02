@@ -24,12 +24,14 @@
 package org.silverpeas.components.delegatednews;
 
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Technical;
 import org.silverpeas.core.web.index.components.ComponentIndexation;
 
 import javax.inject.Named;
-import javax.inject.Singleton;
 
-@Singleton
+@Technical
+@Bean
 @Named("delegatednews" + ComponentIndexation.QUALIFIER_SUFFIX)
 public class DelegatednewsIndexer implements ComponentIndexation {
 

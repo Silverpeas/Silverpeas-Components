@@ -26,6 +26,7 @@ package org.silverpeas.components.suggestionbox.model;
 import org.silverpeas.components.suggestionbox.SuggestionBoxComponentSettings;
 import org.silverpeas.components.suggestionbox.repository.SuggestionBoxRepository;
 import org.silverpeas.core.ApplicationService;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
@@ -34,7 +35,6 @@ import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.SettingBundle;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.transaction.Transactional;
 
 /**
@@ -42,7 +42,7 @@ import javax.transaction.Transactional;
  * {@link ApplicationService} interface.
  * @author mmoquillon
  */
-@Singleton
+@Service
 public class DefaultSuggestionBoxService implements SuggestionBoxService {
 
   @Inject

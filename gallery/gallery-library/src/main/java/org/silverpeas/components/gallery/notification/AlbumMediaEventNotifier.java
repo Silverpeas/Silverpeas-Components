@@ -24,6 +24,7 @@
 package org.silverpeas.components.gallery.notification;
 
 import org.silverpeas.components.gallery.model.AlbumMedia;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.notification.system.CDIResourceEventNotifier;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.util.ServiceProvider;
@@ -32,6 +33,7 @@ import org.silverpeas.core.util.ServiceProvider;
  * A notifier of lifecycle events of {@link AlbumMedia} instances.
  * @author silveryocha
  */
+@Bean
 public class AlbumMediaEventNotifier
     extends CDIResourceEventNotifier<AlbumMedia, AlbumMediaEvent> {
 

@@ -26,6 +26,7 @@ package org.silverpeas.components.classifieds.service;
 import org.silverpeas.components.classifieds.model.ClassifiedDetail;
 import org.silverpeas.components.classifieds.model.ClassifiedsRuntimeException;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.scheduler.Scheduler;
 import org.silverpeas.core.scheduler.SchedulerEvent;
@@ -39,6 +40,7 @@ import org.silverpeas.core.util.logging.SilverLogger;
 import javax.inject.Inject;
 import java.util.Collection;
 
+@Service
 public class ScheduledUnpublishExpiredClassifieds implements SchedulerEventListener,
     Initialization {
 

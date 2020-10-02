@@ -30,6 +30,8 @@ import org.apache.xerces.xni.parser.XMLParserConfiguration;
 import org.cyberneko.html.HTMLConfiguration;
 import org.cyberneko.html.HTMLTagBalancer;
 import org.cyberneko.html.filters.ElementRemover;
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Technical;
 
 import javax.enterprise.inject.Default;
 import java.io.IOException;
@@ -37,6 +39,8 @@ import java.io.Reader;
 import java.io.StringWriter;
 
 @Default
+@Technical
+@Bean
 public class NekoHtmlCleaner implements HtmlCleaner {
   private StringWriter content;
   private XMLParserConfiguration parser;

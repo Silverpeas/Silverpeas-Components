@@ -31,19 +31,19 @@ package org.silverpeas.components.gallery.socialnetwork;
  */
 
 import org.silverpeas.components.gallery.service.GalleryService;
-import org.silverpeas.core.socialnetwork.model.SocialInformation;
-import org.silverpeas.core.socialnetwork.provider.SocialMediaProvider;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.date.period.Period;
+import org.silverpeas.core.socialnetwork.model.SocialInformation;
+import org.silverpeas.core.socialnetwork.provider.SocialMediaProvider;
 import org.silverpeas.core.util.ServiceProvider;
 
-import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@Singleton
+@Provider
 public class SocialGalleryMedia implements SocialMediaProvider {
 
   protected SocialGalleryMedia() {

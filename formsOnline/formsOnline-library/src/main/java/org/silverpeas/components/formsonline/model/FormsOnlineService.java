@@ -38,7 +38,7 @@ import java.util.Set;
 
 public interface FormsOnlineService extends ApplicationService<FormInstance> {
 
-  public static FormsOnlineService get() {
+  static FormsOnlineService get() {
     return ServiceProvider.getService(FormsOnlineService.class);
   }
 

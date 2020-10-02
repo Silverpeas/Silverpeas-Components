@@ -25,17 +25,17 @@ package org.silverpeas.components.resourcesmanager.service;
 
 import org.silverpeas.components.resourcesmanager.model.Category;
 import org.silverpeas.components.resourcesmanager.repository.CategoryRepository;
+import org.silverpeas.core.annotation.Service;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.util.List;
 
-@Singleton
+@Service
 @Transactional
 public class CategoryService {
   @Inject
-  CategoryRepository repository;
+  private CategoryRepository repository;
 
   public void createCategory(Category category) {
     repository.saveAndFlush(category);

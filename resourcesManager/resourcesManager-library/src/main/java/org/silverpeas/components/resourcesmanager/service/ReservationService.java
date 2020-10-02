@@ -24,23 +24,23 @@
 package org.silverpeas.components.resourcesmanager.service;
 
 import org.silverpeas.components.resourcesmanager.model.Reservation;
+import org.silverpeas.components.resourcesmanager.model.ReservedResource;
 import org.silverpeas.components.resourcesmanager.model.Resource;
 import org.silverpeas.components.resourcesmanager.model.ResourceStatus;
+import org.silverpeas.components.resourcesmanager.repository.ReservationRepository;
 import org.silverpeas.components.resourcesmanager.repository.ReservedResourceRepository;
 import org.silverpeas.components.resourcesmanager.repository.ResourceRepository;
 import org.silverpeas.components.resourcesmanager.repository.ResourceValidatorRepository;
-import org.silverpeas.components.resourcesmanager.model.ReservedResource;
-import org.silverpeas.components.resourcesmanager.repository.ReservationRepository;
+import org.silverpeas.core.annotation.Service;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.util.List;
 
 /**
  * @author ehugonnet
  */
-@Singleton
+@Service
 @Transactional
 public class ReservationService {
 

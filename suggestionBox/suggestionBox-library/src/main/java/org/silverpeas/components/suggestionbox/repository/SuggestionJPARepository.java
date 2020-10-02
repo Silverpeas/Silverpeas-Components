@@ -1,6 +1,7 @@
 package org.silverpeas.components.suggestionbox.repository;
 
 import org.silverpeas.components.suggestionbox.model.Suggestion;
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
 import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEntityRepository;
 
@@ -14,6 +15,7 @@ import javax.inject.Singleton;
  * @author mmoquillon
  */
 @Singleton
+@Repository
 public class SuggestionJPARepository extends SilverpeasJpaEntityRepository<Suggestion> {
 
   @Override

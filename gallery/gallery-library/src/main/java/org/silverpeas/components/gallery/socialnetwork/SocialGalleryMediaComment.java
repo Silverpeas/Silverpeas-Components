@@ -34,19 +34,19 @@ import org.silverpeas.components.gallery.model.Video;
 import org.silverpeas.components.gallery.service.MediaServiceProvider;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.comment.service.CommentServiceProvider;
 import org.silverpeas.core.comment.socialnetwork.SocialInformationComment;
 import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.socialnetwork.provider.SocialMediaCommentProvider;
 
-import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-@Singleton
+@Provider
 public class SocialGalleryMediaComment implements SocialMediaCommentProvider {
 
   private List<String> getListResourceType() {

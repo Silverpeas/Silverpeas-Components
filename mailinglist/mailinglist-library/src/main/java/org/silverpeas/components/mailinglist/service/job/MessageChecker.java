@@ -27,6 +27,7 @@ import org.silverpeas.components.mailinglist.service.event.MessageEvent;
 import org.silverpeas.components.mailinglist.service.event.MessageListener;
 import org.silverpeas.components.mailinglist.service.model.MailingListService;
 import org.silverpeas.components.mailinglist.service.model.beans.MailingList;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.mail.engine.SmtpConfiguration;
 import org.silverpeas.core.scheduler.Scheduler;
 import org.silverpeas.core.scheduler.SchedulerEvent;
@@ -39,7 +40,6 @@ import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.mail.FetchProfile;
 import javax.mail.Flags.Flag;
 import javax.mail.Folder;
@@ -59,7 +59,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-@Singleton
+@Service
 public class MessageChecker {
 
   private static final String MAILING_LIST_JOB_NAME = "mailingListScheduler";
@@ -262,7 +262,7 @@ public class MessageChecker {
    * @throws MessagingException
    * @throws IOException
    */
-  void processEmail(MimeMessage mail, Map<MessageListener, MessageEvent> eventsMap,
+  protected void processEmail(MimeMessage mail, Map<MessageListener, MessageEvent> eventsMap,
       Map<String, MessageListener> listenersByEmail) throws MessagingException, IOException {
     BetterMimeMessage email = new BetterMimeMessage(mail);
     if (email.isBounced() || email.isSpam()) {
@@ -289,7 +289,7 @@ public class MessageChecker {
    * @throws MessagingException
    * @see javax.mail.internet.InternetAddress
    */
-  Set<String> getAllRecipients(MimeMessage mail) throws MessagingException {
+  protected Set<String> getAllRecipients(MimeMessage mail) throws MessagingException {
     Set<String> allRecipients = new HashSet<>(10);
     InternetAddress[] addresses = (InternetAddress[]) mail.getRecipients(RecipientType.TO);
     if (addresses != null) {
@@ -317,7 +317,7 @@ public class MessageChecker {
    * @param recipients the recipients of the email.
    * @return the list of mailing lists (as MessageListener) for this email.
    */
-  Set<MessageListener> getRecipientMailingLists(Collection<String> recipients,
+  protected Set<MessageListener> getRecipientMailingLists(Collection<String> recipients,
       Map<String, MessageListener> listenersByEmail) {
     Set<MessageListener> mailingLists = new HashSet<>(recipients.size());
     for (final String email : recipients) {

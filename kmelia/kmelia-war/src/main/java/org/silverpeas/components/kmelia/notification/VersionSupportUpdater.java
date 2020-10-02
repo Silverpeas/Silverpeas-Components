@@ -24,6 +24,7 @@ package org.silverpeas.components.kmelia.notification;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.notification.ComponentInstanceEvent;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
 import org.silverpeas.core.notification.system.StateTransition;
@@ -37,6 +38,7 @@ import javax.inject.Inject;
  * all attachments of the publications managed by this instance of Kmelia.
  * @author mmoquillon
  */
+@Bean
 public class VersionSupportUpdater extends CDIResourceEventListener<ComponentInstanceEvent> {
 
   @Inject

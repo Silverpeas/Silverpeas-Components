@@ -27,6 +27,7 @@ import org.silverpeas.components.mailinglist.model.MailingListComponent;
 import org.silverpeas.components.mailinglist.service.job.MessageChecker;
 import org.silverpeas.components.mailinglist.service.model.MailingListService;
 import org.silverpeas.components.mailinglist.service.model.beans.MailingList;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.scheduler.SchedulerException;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
@@ -38,6 +39,7 @@ import org.silverpeas.core.util.logging.SilverLogger;
 import javax.inject.Inject;
 import java.util.List;
 
+@Service
 public class MailCheckerInitialize implements Initialization {
 
   @Inject

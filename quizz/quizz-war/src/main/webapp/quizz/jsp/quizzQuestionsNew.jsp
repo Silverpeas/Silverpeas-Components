@@ -949,7 +949,6 @@ if (action.equals("ViewQuizz")) {
   out.println(quizzPart);
 %>
   <view:pdcClassification componentId="<%= quizzScc.getComponentId() %>" contentId="<%= quizzId %>" />
-  <view:progressMessage/>
 <%
   out.println(frame.printMiddle());
   out.println(frame.printAfter());
@@ -1122,5 +1121,6 @@ self.location="quizzResultAdmin.jsp";
   }
 }
 %>
+<view:progressMessage/>
 </body>
 </html>

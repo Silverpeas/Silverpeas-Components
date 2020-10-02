@@ -31,14 +31,14 @@ import org.silverpeas.components.mailinglist.service.model.beans.InternalUser;
 import org.silverpeas.components.mailinglist.service.model.beans.InternalUserSubscriber;
 import org.silverpeas.components.mailinglist.service.model.beans.MailingList;
 import org.silverpeas.components.mailinglist.service.model.dao.MailingListDao;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.silvertrace.SilverTrace;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.util.Collection;
 import java.util.HashMap;
@@ -48,7 +48,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-@Singleton
+@Service
 @Transactional
 public class MailingListServiceImpl implements MailingListService {
 

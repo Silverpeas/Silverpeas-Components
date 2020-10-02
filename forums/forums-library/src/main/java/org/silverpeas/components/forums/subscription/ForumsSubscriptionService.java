@@ -27,12 +27,12 @@ import org.silverpeas.components.forums.model.Forum;
 import org.silverpeas.components.forums.model.ForumPK;
 import org.silverpeas.components.forums.model.Message;
 import org.silverpeas.components.forums.model.MessagePK;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.subscription.SubscriptionSubscriber;
 import org.silverpeas.core.subscription.constant.SubscriptionResourceType;
 import org.silverpeas.core.subscription.service.AbstractResourceSubscriptionService;
 import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
 
-import javax.inject.Singleton;
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -46,7 +46,7 @@ import static org.silverpeas.core.subscription.constant.SubscriptionResourceType
  * The service will be taken in charge by initialization treatments.
  * @author Yohann Chastagnier
  */
-@Singleton
+@Service
 public class ForumsSubscriptionService extends AbstractResourceSubscriptionService {
 
   @Override

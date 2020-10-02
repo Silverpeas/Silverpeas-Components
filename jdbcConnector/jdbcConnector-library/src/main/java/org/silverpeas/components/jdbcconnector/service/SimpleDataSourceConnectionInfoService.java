@@ -26,17 +26,17 @@ package org.silverpeas.components.jdbcconnector.service;
 import org.silverpeas.components.jdbcconnector.model.DataSourceConnectionInfo;
 import org.silverpeas.components.jdbcconnector.model.DataSourceConnectionInfoRepository;
 import org.silverpeas.components.jdbcconnector.model.DataSourceDefinition;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
-@Singleton
+@Service
 @Transactional
 public class SimpleDataSourceConnectionInfoService implements DataSourceConnectionInfoService {
 

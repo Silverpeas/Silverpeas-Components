@@ -45,6 +45,7 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.contribution.ContributionManager;
 import org.silverpeas.core.contribution.attachment.AttachmentException;
@@ -158,6 +159,7 @@ import static org.silverpeas.core.util.StringUtil.*;
  * Service which manage kmelia and kmax application.
  * @author Nicolas Eysseric
  */
+@Service
 @Singleton
 @Transactional(Transactional.TxType.SUPPORTS)
 public class DefaultKmeliaService implements KmeliaService {
@@ -4559,9 +4561,9 @@ public class DefaultKmeliaService implements KmeliaService {
     return pubTemplate.getRecordSet();
   }
 
-  void onDocumentDeletion(AttachmentRef attachment) {
+  protected void onDocumentDeletion(AttachmentRef attachment) {
     Optional<KmeliaOperationContext> context = KmeliaOperationContext.current();
-    if (!context.isPresent() || !context.get().isAbout(DELETION)) {
+    if (context.isEmpty() || !context.get().isAbout(DELETION)) {
       PublicationPK pubPK = new PublicationPK(attachment.getForeignId(), attachment.getInstanceId());
       externalElementsOfPublicationHaveChanged(pubPK, attachment.getUserId(), false);
     }

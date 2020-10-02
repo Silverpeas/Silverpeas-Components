@@ -37,6 +37,7 @@ import org.silverpeas.components.quickinfo.service.QuickInfoDateComparatorDesc;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.ContributionManager;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.Attachments;
@@ -64,7 +65,6 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -84,7 +84,7 @@ import static org.silverpeas.components.quickinfo.notification.QuickInfoDelayedV
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
 import static org.silverpeas.core.persistence.Transaction.performInOne;
 
-@Singleton
+@Service
 public class DefaultQuickInfoService implements QuickInfoService {
 
   private static final String ASSOCIATED_TO_THE_NEWS_MSG = " associated to the news ";

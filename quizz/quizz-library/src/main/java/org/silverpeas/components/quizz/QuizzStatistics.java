@@ -24,6 +24,7 @@
 
 package org.silverpeas.components.quizz;
 
+import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerHeader;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerPK;
 import org.silverpeas.core.questioncontainer.container.service.QuestionContainerService;
@@ -32,12 +33,11 @@ import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsPr
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-@Singleton
+@Provider
 @Named("quizz" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
 public class QuizzStatistics implements ComponentStatisticsProvider {
 

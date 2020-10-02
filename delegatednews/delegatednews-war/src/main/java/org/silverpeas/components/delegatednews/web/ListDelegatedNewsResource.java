@@ -26,8 +26,7 @@ package org.silverpeas.components.delegatednews.web;
 import org.silverpeas.components.delegatednews.DelegatedNewsRuntimeException;
 import org.silverpeas.components.delegatednews.model.DelegatedNews;
 import org.silverpeas.components.delegatednews.service.DelegatedNewsService;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.core.webapi.base.annotation.Authorized;
 
@@ -46,8 +45,7 @@ import java.util.List;
  * A REST Web resource representing a given delegated news. It is a web service that provides an
  * access to a delegated news referenced by its URL.
  */
-@Service
-@RequestScoped
+@WebService
 @Path(ListDelegatedNewsResource.PATH + "/{instanceId}")
 @Authorized
 public class ListDelegatedNewsResource extends RESTWebService {

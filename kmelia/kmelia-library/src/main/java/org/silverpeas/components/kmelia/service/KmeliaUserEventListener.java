@@ -26,6 +26,7 @@ package org.silverpeas.components.kmelia.service;
 
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.notification.UserEvent;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
 
 import javax.inject.Inject;
@@ -33,6 +34,7 @@ import javax.inject.Inject;
 /**
  * @author Yohann Chastagnier
  */
+@Bean
 public class KmeliaUserEventListener extends CDIResourceEventListener<UserEvent> {
 
   @Inject

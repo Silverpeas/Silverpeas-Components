@@ -24,6 +24,7 @@
 package org.silverpeas.components.quickinfo.notification;
 
 import org.silverpeas.components.quickinfo.model.News;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.notification.system.CDIResourceEventNotifier;
 import org.silverpeas.core.notification.system.ResourceEvent;
 
@@ -31,6 +32,7 @@ import org.silverpeas.core.notification.system.ResourceEvent;
  * An synchronous notifier of change on a news in Silverpeas.
  * @author silveryocha
  */
+@Bean
 public class NewsEventNotifier
     extends CDIResourceEventNotifier<News, NewsEvent> {
 

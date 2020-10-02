@@ -32,6 +32,7 @@ import org.silverpeas.components.blog.model.PostDetail;
 import org.silverpeas.components.blog.notification.BlogUserSubscriptionNotification;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.model.CommentPK;
 import org.silverpeas.core.comment.service.CommentService;
@@ -69,7 +70,6 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -89,7 +89,7 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.*;
  * underlying IoC container. At initialization by the IoC container, it registers itself among
  * different services for which it is interested.
  */
-@Singleton
+@Service
 public class DefaultBlogService implements BlogService, Initialization {
 
   private static final String MESSAGES_PATH = "org.silverpeas.blog.multilang.blogBundle";

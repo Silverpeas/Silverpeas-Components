@@ -27,12 +27,12 @@ import org.silverpeas.components.websites.service.WebSiteService;
 import org.silverpeas.components.websites.siteManage.model.SiteDetail;
 import org.silverpeas.components.websites.siteManage.model.SitePK;
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.contentcontainer.content.AbstractContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
 import org.silverpeas.core.contribution.model.Contribution;
 
-import javax.inject.Singleton;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.util.List;
@@ -43,7 +43,7 @@ import static java.util.stream.Collectors.*;
 /**
  * The webSites implementation of ContentInterface.
  */
-@Singleton
+@Service
 public class WebSitesContentManager extends AbstractContentInterface implements Serializable {
   private static final long serialVersionUID = -8992766242253326927L;
   private static final String WEB_SITES_CONTENT_ICON_FILE_NAME = "webSitesSmall.gif";

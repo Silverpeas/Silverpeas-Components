@@ -28,6 +28,7 @@ import org.silverpeas.components.mailinglist.service.event.MessageListener;
 import org.silverpeas.components.mailinglist.service.model.beans.Attachment;
 import org.silverpeas.components.mailinglist.service.model.beans.Message;
 import org.silverpeas.components.mailinglist.service.util.HtmlCleaner;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -49,6 +50,7 @@ import java.nio.file.Files;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
+@Service
 public class MailProcessor {
 
   public static final int SUMMARY_SIZE = 200;

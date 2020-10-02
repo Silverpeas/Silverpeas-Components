@@ -26,6 +26,7 @@ package org.silverpeas.components.whitepages.control;
 import org.silverpeas.components.whitepages.WhitePagesException;
 import org.silverpeas.components.whitepages.model.Card;
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.contentcontainer.content.AbstractContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
@@ -33,7 +34,6 @@ import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.persistence.jdbc.bean.IdPK;
 import org.silverpeas.core.util.logging.SilverLogger;
 
-import javax.inject.Singleton;
 import java.sql.Connection;
 import java.util.Collections;
 import java.util.List;
@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 /**
  * The whitePages implementation of ContentInterface.
  */
-@Singleton
+@Service
 public class WhitePagesContentManager extends AbstractContentInterface {
 
   private static final String CONTENT_ICON_FILE_NAME = "whitePagesSmall.gif";
@@ -90,7 +90,7 @@ public class WhitePagesContentManager extends AbstractContentInterface {
    * @param card the user card
    * @return the unique silverObjectId which identified the new content
    */
-  int createSilverContent(Connection con, Card card) throws ContentManagerException {
+  protected int createSilverContent(Connection con, Card card) throws ContentManagerException {
     SilverContentVisibility scv = new SilverContentVisibility(isVisible(card));
     return getContentManager()
         .addSilverContent(con, card.getPK().getId(), card.getInstanceId(), card.getUserId(), scv);
@@ -101,7 +101,7 @@ public class WhitePagesContentManager extends AbstractContentInterface {
    * PublicationDetail
    * @param card the user card
    */
-  void updateSilverContentVisibility(Card card) throws ContentManagerException {
+  protected void updateSilverContentVisibility(Card card) throws ContentManagerException {
     int silverContentId = getContentManager()
         .getSilverContentId(card.getPK().getId(), card.getPK().getComponentName());
     SilverContentVisibility scv = new SilverContentVisibility(isVisible(card));
@@ -114,7 +114,7 @@ public class WhitePagesContentManager extends AbstractContentInterface {
    * @param con a Connection
    * @param pk the expert identifier to unregister
    */
-  void deleteSilverContent(Connection con, IdPK pk) throws ContentManagerException {
+  protected void deleteSilverContent(Connection con, IdPK pk) throws ContentManagerException {
     deleteSilverContent(con, pk.getId(), pk.getComponentName());
   }
 

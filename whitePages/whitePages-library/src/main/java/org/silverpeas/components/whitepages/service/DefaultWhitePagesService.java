@@ -25,15 +25,15 @@ package org.silverpeas.components.whitepages.service;
 
 import org.silverpeas.components.whitepages.dao.SearchFieldDao;
 import org.silverpeas.components.whitepages.model.SearchField;
+import org.silverpeas.core.annotation.Service;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-@Singleton
+@Service
 @Transactional
 public class DefaultWhitePagesService implements WhitePagesService {
 

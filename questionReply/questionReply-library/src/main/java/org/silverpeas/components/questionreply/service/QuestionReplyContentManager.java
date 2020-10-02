@@ -26,6 +26,7 @@ package org.silverpeas.components.questionreply.service;
 import org.silverpeas.components.questionreply.QuestionReplyException;
 import org.silverpeas.components.questionreply.model.Question;
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.contentcontainer.content.AbstractContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
@@ -33,7 +34,6 @@ import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.persistence.jdbc.bean.IdPK;
 import org.silverpeas.core.util.logging.SilverLogger;
 
-import javax.inject.Singleton;
 import java.sql.Connection;
 import java.util.Collections;
 import java.util.List;
@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 /**
  * The questionReply implementation of ContentInterface.
  */
-@Singleton
+@Service
 public class QuestionReplyContentManager extends AbstractContentInterface {
 
   private static final String CONTENT_ICON_FILE_NAME = "questionReplySmall.gif";
@@ -88,7 +88,7 @@ public class QuestionReplyContentManager extends AbstractContentInterface {
    * Add a new content. It is registered to contentManager service
    * @throws ContentManagerException on technical error.
    */
-  void createSilverContent(Connection con, Question question) throws ContentManagerException {
+  protected void createSilverContent(Connection con, Question question) throws ContentManagerException {
     SilverContentVisibility scv = new SilverContentVisibility(isVisible(question));
     getContentManager().addSilverContent(con, question.getPK().getId(), question.getInstanceId(),
         question.getCreatorId(), scv);
@@ -99,7 +99,7 @@ public class QuestionReplyContentManager extends AbstractContentInterface {
    * @param question the content
    * @throws ContentManagerException on technical error.
    */
-  void updateSilverContentVisibility(Question question) throws ContentManagerException {
+  protected void updateSilverContentVisibility(Question question) throws ContentManagerException {
     int silverContentId = getContentManager()
         .getSilverContentId(question.getPK().getId(), question.getPK().getComponentName());
     SilverContentVisibility scv = new SilverContentVisibility(isVisible(question));
@@ -112,7 +112,7 @@ public class QuestionReplyContentManager extends AbstractContentInterface {
    * @param pk the identity of the content to unregister
    * @throws ContentManagerException on technical error.
    */
-  void deleteSilverContent(Connection con, IdPK pk) throws ContentManagerException {
+  protected void deleteSilverContent(Connection con, IdPK pk) throws ContentManagerException {
     deleteSilverContent(con, pk.getId(), pk.getComponentName());
   }
 

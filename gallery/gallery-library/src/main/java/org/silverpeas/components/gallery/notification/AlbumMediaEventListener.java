@@ -26,12 +26,14 @@ package org.silverpeas.components.gallery.notification;
 import org.silverpeas.components.gallery.model.AlbumMedia;
 import org.silverpeas.components.gallery.notification.user.AlbumMediaNotificationManager;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
 
 /**
  * A listener about some lifecycle events triggered by the Media engine.
  * @author silveryocha
  */
+@Bean
 public class AlbumMediaEventListener extends CDIResourceEventListener<AlbumMediaEvent> {
 
   @Override

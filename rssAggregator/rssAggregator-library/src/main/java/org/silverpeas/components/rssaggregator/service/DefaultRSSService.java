@@ -36,12 +36,12 @@ import org.silverpeas.components.rssaggregator.model.RSSItem;
 import org.silverpeas.components.rssaggregator.model.RssAgregatorException;
 import org.silverpeas.components.rssaggregator.model.SPChannel;
 import org.silverpeas.components.rssaggregator.model.SPChannelPK;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
@@ -51,7 +51,7 @@ import java.util.List;
 import static org.silverpeas.core.util.HttpUtil.httpClient;
 import static org.silverpeas.core.util.HttpUtil.httpClientTrustingAnySslContext;
 
-@Singleton
+@Service
 public class DefaultRSSService implements RSSService {
 
   @Inject

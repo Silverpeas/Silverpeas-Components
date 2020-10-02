@@ -25,6 +25,8 @@ package org.silverpeas.components.questionreply.index;
 
 import org.silverpeas.components.questionreply.model.Question;
 import org.silverpeas.components.questionreply.model.Reply;
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Technical;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
@@ -38,6 +40,8 @@ import java.util.Collection;
 /**
  * @author ehugonnet
  */
+@Technical
+@Bean
 public class QuestionIndexer {
 
   public void createIndex(Question question, Collection<Reply> replies) {

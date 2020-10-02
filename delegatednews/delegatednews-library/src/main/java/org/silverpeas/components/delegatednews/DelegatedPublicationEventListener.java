@@ -26,6 +26,7 @@ package org.silverpeas.components.delegatednews;
 import org.silverpeas.components.delegatednews.model.DelegatedNews;
 import org.silverpeas.components.delegatednews.service.DelegatedNewsService;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.notification.PublicationEvent;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
@@ -38,6 +39,7 @@ import static org.silverpeas.components.delegatednews.service.DelegatedNewsServi
 /**
  * @author mmoquillon
  */
+@Bean
 public class DelegatedPublicationEventListener extends CDIResourceEventListener<PublicationEvent> {
 
   @Inject

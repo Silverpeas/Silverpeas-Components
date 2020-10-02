@@ -40,7 +40,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.TimeZone;
 
-import static org.hamcrest.Matchers.isIn;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
 @RunWith(Arquillian.class)
@@ -405,8 +406,8 @@ public class MessageServiceIT {
     assertNotNull(activity.getMessages());
     assertEquals(2, activity.getMessages().size());
     String[] messageIds = {"1", "2"};
-    assertThat(activity.getMessages().get(0).getId(), isIn(messageIds));
-    assertThat(activity.getMessages().get(1).getId(), isIn(messageIds));
+    assertThat(activity.getMessages().get(0).getId(), is(in(messageIds)));
+    assertThat(activity.getMessages().get(1).getId(), is(in(messageIds)));
   }
 
   @Before

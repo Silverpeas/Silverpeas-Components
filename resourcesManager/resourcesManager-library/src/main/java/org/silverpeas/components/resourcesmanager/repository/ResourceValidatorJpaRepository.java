@@ -25,11 +25,13 @@
 package org.silverpeas.components.resourcesmanager.repository;
 
 import org.silverpeas.components.resourcesmanager.model.ResourceValidator;
+import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
 
 /**
  * @author ebonnet
  */
+@Repository
 public class ResourceValidatorJpaRepository extends BasicJpaEntityRepository<ResourceValidator>
     implements ResourceValidatorRepository {
 

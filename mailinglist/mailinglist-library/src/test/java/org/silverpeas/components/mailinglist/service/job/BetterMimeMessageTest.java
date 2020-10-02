@@ -23,39 +23,24 @@
  */
 package org.silverpeas.components.mailinglist.service.job;
 
+import org.junit.jupiter.api.Test;
+import org.silverpeas.core.test.UnitTest;
+
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  *
  * @author ehugonnet
  */
+@UnitTest
 public class BetterMimeMessageTest {
 
   public BetterMimeMessageTest() {
-  }
-
-  @BeforeClass
-  public static void setUpClass() throws Exception {
-  }
-
-  @AfterClass
-  public static void tearDownClass() throws Exception {
-  }
-
-  @Before
-  public void setUp() {
-  }
-
-  @After
-  public void tearDown() {
   }
 
   /**

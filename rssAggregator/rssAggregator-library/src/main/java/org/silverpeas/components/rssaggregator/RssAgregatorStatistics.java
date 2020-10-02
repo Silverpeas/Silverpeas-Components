@@ -27,17 +27,17 @@ package org.silverpeas.components.rssaggregator;
 import org.silverpeas.components.rssaggregator.model.SPChannel;
 import org.silverpeas.components.rssaggregator.service.RssAggregator;
 import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
 import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-@Singleton
+@Provider
 @Named("rssAgregator" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
 public class RssAgregatorStatistics implements ComponentStatisticsProvider {
 

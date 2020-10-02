@@ -24,6 +24,7 @@
 
 package org.silverpeas.components.quickinfo.model;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.ComponentInstanceContributionManager;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
@@ -36,6 +37,7 @@ import java.util.Optional;
  * Contribution manager centralization about the kmelia contributions.
  * @author silveryocha
  */
+@Service
 @Named("quickinfo" + ComponentInstanceContributionManager.Constants.NAME_SUFFIX)
 public class QuickInfoInstanceContributionManager implements ComponentInstanceContributionManager {
 

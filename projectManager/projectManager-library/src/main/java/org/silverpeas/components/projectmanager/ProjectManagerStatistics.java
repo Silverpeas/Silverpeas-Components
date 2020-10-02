@@ -22,17 +22,17 @@ package org.silverpeas.components.projectmanager;
 
 import org.silverpeas.components.projectmanager.model.TaskDetail;
 import org.silverpeas.components.projectmanager.service.ProjectManagerService;
+import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
 import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-@Singleton
+@Provider
 @Named("projectManager" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
 public class ProjectManagerStatistics implements ComponentStatisticsProvider {
 

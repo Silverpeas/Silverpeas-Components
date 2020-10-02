@@ -38,6 +38,7 @@ import org.silverpeas.components.websites.siteManage.model.SiteDetail;
 import org.silverpeas.components.websites.siteManage.model.SitePK;
 import org.silverpeas.components.websites.siteManage.model.WebSitesRuntimeException;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
@@ -48,7 +49,6 @@ import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.DateUtil;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -57,7 +57,7 @@ import java.util.List;
 
 import static org.silverpeas.core.contribution.publication.dao.PublicationCriteria.onComponentInstanceIds;
 
-@Singleton
+@Service
 @Transactional(Transactional.TxType.SUPPORTS)
 public class DefaultWebSiteService implements WebSiteService {
 

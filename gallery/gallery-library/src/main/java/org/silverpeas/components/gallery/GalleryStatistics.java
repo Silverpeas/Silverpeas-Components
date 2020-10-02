@@ -26,13 +26,13 @@ package org.silverpeas.components.gallery;
 import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.components.gallery.model.MediaCriteria;
 import org.silverpeas.components.gallery.service.GalleryService;
+import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
 import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Named;
-import javax.inject.Singleton;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.FileVisitor;
@@ -47,7 +47,7 @@ import java.util.List;
 import static org.silverpeas.components.gallery.constant.MediaType.*;
 import static org.silverpeas.core.util.file.FileRepositoryManager.getAbsolutePath;
 
-@Singleton
+@Provider
 @Named("gallery" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
 public class GalleryStatistics implements ComponentStatisticsProvider {
 

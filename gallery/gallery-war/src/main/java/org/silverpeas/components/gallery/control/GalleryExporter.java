@@ -23,24 +23,26 @@
  */
 package org.silverpeas.components.gallery.control;
 
+import org.silverpeas.components.gallery.constant.MediaResolution;
+import org.silverpeas.components.gallery.model.AlbumDetail;
+import org.silverpeas.components.gallery.model.Media;
+import org.silverpeas.components.gallery.service.GalleryService;
+import org.silverpeas.components.gallery.service.MediaServiceProvider;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.importexport.ExportException;
+import org.silverpeas.core.importexport.ImportExportDescriptor;
+import org.silverpeas.core.importexport.control.AbstractExportProcess;
+import org.silverpeas.core.importexport.report.ExportReport;
+import org.silverpeas.core.util.file.FileFolderManager;
+import org.silverpeas.core.util.file.FileUtil;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
-import org.silverpeas.core.importexport.ExportException;
-import org.silverpeas.core.importexport.ImportExportDescriptor;
-import org.silverpeas.components.gallery.constant.MediaResolution;
-import org.silverpeas.components.gallery.model.AlbumDetail;
-import org.silverpeas.components.gallery.model.Media;
-import org.silverpeas.core.importexport.control.AbstractExportProcess;
-import org.silverpeas.core.importexport.report.ExportReport;
-import org.silverpeas.components.gallery.service.GalleryService;
-import org.silverpeas.components.gallery.service.MediaServiceProvider;
-import org.silverpeas.core.util.file.FileFolderManager;
-import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.admin.user.model.UserDetail;
-
+@Service
 public class GalleryExporter extends AbstractExportProcess {
 
   /**

@@ -24,18 +24,18 @@
 
 package org.silverpeas.components.quickinfo.service;
 
+import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
 import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;
 
 import javax.inject.Named;
-import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-@Singleton
+@Provider
 @Named("quickinfo" + ComponentStatisticsProvider.QUALIFIER_SUFFIX)
 public class QuickinfoStatistics implements ComponentStatisticsProvider {
 

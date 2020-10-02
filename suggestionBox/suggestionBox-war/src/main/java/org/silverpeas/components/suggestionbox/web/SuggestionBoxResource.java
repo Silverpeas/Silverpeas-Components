@@ -31,8 +31,7 @@ import org.silverpeas.components.suggestionbox.model.SuggestionCriteria.QUERY_OR
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.contribution.ContributionStatus;
@@ -56,15 +55,13 @@ import java.util.List;
 
 import static org.silverpeas.components.suggestionbox.model.SuggestionCriteria.JOIN_DATA_APPLY;
 import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs.BOX_BASE_URI;
-import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs
-    .BOX_SUGGESTION_URI_PART;
+import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceURIs.BOX_SUGGESTION_URI_PART;
 
 /**
  * A REST Web resource giving suggestion data.
  * @author Yohann Chastagnier
  */
-@Service
-@RequestScoped
+@WebService
 @Path(BOX_BASE_URI + "/{componentInstanceId}/{suggestionBoxId}")
 @Authorized
 public class SuggestionBoxResource extends AbstractSuggestionBoxResource {

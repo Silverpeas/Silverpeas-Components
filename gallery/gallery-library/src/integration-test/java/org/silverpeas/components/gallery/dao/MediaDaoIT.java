@@ -58,12 +58,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.silverpeas.components.gallery.model.MediaCriteria.QUERY_ORDER_BY.*;
 import static org.silverpeas.components.gallery.model.MediaCriteria.VISIBILITY.*;
 import static org.silverpeas.core.test.rule.DbSetupRule.getActualDataSet;
 import static org.silverpeas.core.test.rule.DbSetupRule.getTableRowFor;
+import static org.silverpeas.core.test.util.TestRuntime.awaitUntil;
 
 /**
  * This class of unit tests has been written during Entity and SGBD model migration.
@@ -1605,7 +1607,7 @@ public class MediaDaoIT extends BaseGalleryIT {
     }
 
     // Updating to test (to verify update data in context of creation)
-    Thread.sleep(100);
+    awaitUntil(100, MILLISECONDS);
     Transaction.performInOne(
         () -> MediaDAO.saveMedia(OperationContext.fromUser(adminAccessUser), newStreaming));
 
@@ -1625,7 +1627,7 @@ public class MediaDaoIT extends BaseGalleryIT {
       assertThat(mediaRow.getString("lastUpdatedBy"), is(adminAccessUser.getId()));
     }
 
-    Thread.sleep(100);
+    awaitUntil(100, MILLISECONDS);
     Transaction.performInOne(() -> MediaDAO
         .saveMedia(OperationContext.fromUser(writerUser).setUpdatingInCaseOfCreation(),
             newStreaming));

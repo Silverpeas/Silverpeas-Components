@@ -24,8 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.owasp.encoder.Encode;
 import org.silverpeas.components.kmelia.service.KmeliaService;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
@@ -59,8 +58,7 @@ import java.util.List;
  * A REST Web resource representing a given node. It is a web service that provides an access to a
  * node referenced by its URL.
  */
-@Service
-@RequestScoped
+@WebService
 @Authorized
 @Path(FolderResource.PATH + "/{componentId}")
 public class FolderResource extends RESTWebService {

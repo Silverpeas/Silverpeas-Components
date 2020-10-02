@@ -13,7 +13,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -26,11 +27,11 @@ public class QuestionReplyExportTest {
   }
 
   @BeforeClass
-  public static void setUpClass() throws Exception {
+  public static void setUpClass() {
   }
 
   @AfterClass
-  public static void tearDownClass() throws Exception {
+  public static void tearDownClass() {
   }
 
   @Before
@@ -65,26 +66,26 @@ public class QuestionReplyExportTest {
     when(userScc.getUserRole()).thenReturn(SilverpeasRole.user);
     when(userScc.getUserId()).thenReturn("20");
     QuestionReplyExport instance = new QuestionReplyExport(null, null);
-    assertTrue("Admin should see everything", instance.isReplyVisible(question, privateReply,
-        adminScc));
-    assertTrue("Admin should see everything", instance.isReplyVisible(question, publicReply,
-        adminScc));
-    assertTrue("Writer should see everything", instance.isReplyVisible(question, privateReply,
-        writerScc));
-    assertTrue("Writer should see everything", instance.isReplyVisible(question, publicReply,
-        writerScc));
+    assertThat("Admin should see everything", instance.isReplyVisible(question, privateReply,
+        adminScc), is(true));
+    assertThat("Admin should see everything", instance.isReplyVisible(question, publicReply,
+        adminScc), is(true));
+    assertThat("Writer should see everything", instance.isReplyVisible(question, privateReply,
+        writerScc), is(true));
+    assertThat("Writer should see everything", instance.isReplyVisible(question, publicReply,
+        writerScc), is(true));
 
-    assertTrue("User should see everything public", instance.isReplyVisible(question, publicReply,
-        userScc));
-    assertFalse("User should not see everything private", instance.isReplyVisible(question,
-        privateReply, userScc));
-    assertTrue("Publisher should see everything public", instance.isReplyVisible(question,
-        publicReply, publisherCreatorScc));
-    assertTrue("Publisher should see everything it has created", instance.isReplyVisible(question,
-        privateReply, publisherCreatorScc));
-    assertTrue("Publisher should see everything public", instance.isReplyVisible(question,
-        publicReply, publisherScc));
-    assertFalse("Publisher should not see everything", instance.isReplyVisible(question, privateReply,
-        publisherScc));
+    assertThat("User should see everything public", instance.isReplyVisible(question, publicReply,
+        userScc), is(true));
+    assertThat("User should not see everything private", instance.isReplyVisible(question,
+        privateReply, userScc), is(false));
+    assertThat("Publisher should see everything public", instance.isReplyVisible(question,
+        publicReply, publisherCreatorScc), is(true));
+    assertThat("Publisher should see everything it has created", instance.isReplyVisible(question,
+        privateReply, publisherCreatorScc), is(true));
+    assertThat("Publisher should see everything public", instance.isReplyVisible(question,
+        publicReply, publisherScc), is(true));
+    assertThat("Publisher should not see everything", instance.isReplyVisible(question, privateReply,
+        publisherScc), is(false));
   }
 }
