@@ -88,7 +88,7 @@ public class QuestionReplyContentManager extends AbstractContentInterface {
    * Add a new content. It is registered to contentManager service
    * @throws ContentManagerException on technical error.
    */
-  void createSilverContent(Connection con, Question question) throws ContentManagerException {
+  protected void createSilverContent(Connection con, Question question) throws ContentManagerException {
     SilverContentVisibility scv = new SilverContentVisibility(isVisible(question));
     getContentManager().addSilverContent(con, question.getPK().getId(), question.getInstanceId(),
         question.getCreatorId(), scv);
@@ -99,7 +99,7 @@ public class QuestionReplyContentManager extends AbstractContentInterface {
    * @param question the content
    * @throws ContentManagerException on technical error.
    */
-  void updateSilverContentVisibility(Question question) throws ContentManagerException {
+  protected void updateSilverContentVisibility(Question question) throws ContentManagerException {
     int silverContentId = getContentManager()
         .getSilverContentId(question.getPK().getId(), question.getPK().getComponentName());
     SilverContentVisibility scv = new SilverContentVisibility(isVisible(question));
@@ -112,7 +112,7 @@ public class QuestionReplyContentManager extends AbstractContentInterface {
    * @param pk the identity of the content to unregister
    * @throws ContentManagerException on technical error.
    */
-  void deleteSilverContent(Connection con, IdPK pk) throws ContentManagerException {
+  protected void deleteSilverContent(Connection con, IdPK pk) throws ContentManagerException {
     deleteSilverContent(con, pk.getId(), pk.getComponentName());
   }
 

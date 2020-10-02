@@ -90,7 +90,7 @@ public class WhitePagesContentManager extends AbstractContentInterface {
    * @param card the user card
    * @return the unique silverObjectId which identified the new content
    */
-  int createSilverContent(Connection con, Card card) throws ContentManagerException {
+  protected int createSilverContent(Connection con, Card card) throws ContentManagerException {
     SilverContentVisibility scv = new SilverContentVisibility(isVisible(card));
     return getContentManager()
         .addSilverContent(con, card.getPK().getId(), card.getInstanceId(), card.getUserId(), scv);
@@ -101,7 +101,7 @@ public class WhitePagesContentManager extends AbstractContentInterface {
    * PublicationDetail
    * @param card the user card
    */
-  void updateSilverContentVisibility(Card card) throws ContentManagerException {
+  protected void updateSilverContentVisibility(Card card) throws ContentManagerException {
     int silverContentId = getContentManager()
         .getSilverContentId(card.getPK().getId(), card.getPK().getComponentName());
     SilverContentVisibility scv = new SilverContentVisibility(isVisible(card));
@@ -114,7 +114,7 @@ public class WhitePagesContentManager extends AbstractContentInterface {
    * @param con a Connection
    * @param pk the expert identifier to unregister
    */
-  void deleteSilverContent(Connection con, IdPK pk) throws ContentManagerException {
+  protected void deleteSilverContent(Connection con, IdPK pk) throws ContentManagerException {
     deleteSilverContent(con, pk.getId(), pk.getComponentName());
   }
 

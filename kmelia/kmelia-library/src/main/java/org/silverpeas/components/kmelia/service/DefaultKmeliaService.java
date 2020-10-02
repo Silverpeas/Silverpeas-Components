@@ -4561,9 +4561,9 @@ public class DefaultKmeliaService implements KmeliaService {
     return pubTemplate.getRecordSet();
   }
 
-  void onDocumentDeletion(AttachmentRef attachment) {
+  protected void onDocumentDeletion(AttachmentRef attachment) {
     Optional<KmeliaOperationContext> context = KmeliaOperationContext.current();
-    if (!context.isPresent() || !context.get().isAbout(DELETION)) {
+    if (context.isEmpty() || !context.get().isAbout(DELETION)) {
       PublicationPK pubPK = new PublicationPK(attachment.getForeignId(), attachment.getInstanceId());
       externalElementsOfPublicationHaveChanged(pubPK, attachment.getUserId(), false);
     }
