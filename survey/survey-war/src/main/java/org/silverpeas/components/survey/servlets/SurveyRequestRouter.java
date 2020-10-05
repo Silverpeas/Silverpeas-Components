@@ -48,9 +48,9 @@
 
 package org.silverpeas.components.survey.servlets;
 
+import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.survey.SurveyException;
 import org.silverpeas.components.survey.control.SurveySessionController;
-import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerDetail;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerHeader;
@@ -67,6 +67,7 @@ import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionController> {
 
@@ -79,7 +80,7 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
   private static final String LIST_DOCUMENT = "ListDocument";
 
   /**
-   * @param profiles
+   * @param profiles current profiles.
    * @return string representation of current user flag
    */
   private String getFlag(String[] profiles) {
@@ -98,16 +99,11 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
   }
 
   /**
-   * @param profiles
+   * @param profiles current profiles.
    * @return boolean isParticipationMultipleUser
    */
-  public boolean isParticipationMultipleUser(String[] profiles) {
-    boolean flag = false;
-    for (String profile : profiles) {
-      if ("userMultiple".equals(profile))
-        return true;
-    }
-    return flag;
+  public boolean isParticipationMultipleUser(final String[] profiles) {
+    return Stream.of(profiles).anyMatch("userMultiple"::equals);
   }
 
   @Override
