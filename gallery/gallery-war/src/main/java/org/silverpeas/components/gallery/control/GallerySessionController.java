@@ -260,7 +260,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   }
 
   public void createAlbum(AlbumDetail album) {
-    album.setCreationDate(DateUtil.date2SQLDate(new Date()));
+    album.setCreationDate(new Date());
     album.setCreatorId(getUserId());
     album.getNodePK().setComponentName(getComponentId());
 
@@ -1172,7 +1172,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
       // pour chaque sous album, rechercher le nombre de médias
       long nbMedia = countAllMediaOf(album);
       // parcourir ses sous albums pour comptabiliser aussi ses médias
-      AlbumDetail thisAlbum = getAlbumLight(Integer.toString(album.getId()));
+      AlbumDetail thisAlbum = getAlbumLight(album.getId());
       Collection<AlbumDetail> subAlbums = addNbMedia(thisAlbum.getChildrenAlbumsDetails());
       for (AlbumDetail oneSubAlbum : subAlbums) {
         nbMedia += oneSubAlbum.getNbMedia();

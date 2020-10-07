@@ -21,11 +21,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.components.websites.siteManage.model;
+package org.silverpeas.components.websites.model;
 
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagementEngine;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagementEngineProvider;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -168,9 +168,9 @@ public class SiteDetail extends PublicationDetail {
   @Override
   public String getSilverpeasContentId() {
     if (this.silverObjectId == null) {
-      ContentManager contentManager = ContentManagerProvider.getContentManager();
+      ContentManagementEngine contentMgtEngine = ContentManagementEngineProvider.getContentManagementEngine();
       try {
-        int objectId = contentManager.getSilverContentId(this.getId(), this.getInstanceId());
+        int objectId = contentMgtEngine.getSilverContentId(this.getId(), this.getInstanceId());
         if (objectId >= 0) {
           this.silverObjectId = String.valueOf(objectId);
         }
@@ -181,4 +181,13 @@ public class SiteDetail extends PublicationDetail {
     return this.silverObjectId;
   }
 
+  @Override
+  public boolean equals(final Object o) {
+    return super.equals(o);
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
+  }
 }

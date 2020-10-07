@@ -27,7 +27,7 @@ import org.silverpeas.components.whitepages.WhitePagesException;
 import org.silverpeas.components.whitepages.model.Card;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.contribution.contentcontainer.content.AbstractContentInterface;
+import org.silverpeas.core.contribution.contentcontainer.content.AbstractSilverpeasContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
 import org.silverpeas.core.contribution.model.Contribution;
@@ -41,10 +41,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * The whitePages implementation of ContentInterface.
+ * The whitePages implementation of SilverpeasContentManager.
  */
 @Service
-public class WhitePagesContentManager extends AbstractContentInterface {
+public class WhitePagesContentManager extends AbstractSilverpeasContentManager {
 
   private static final String CONTENT_ICON_FILE_NAME = "whitePagesSmall.gif";
 

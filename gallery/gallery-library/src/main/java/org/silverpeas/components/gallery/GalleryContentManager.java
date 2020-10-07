@@ -28,7 +28,7 @@ import org.silverpeas.components.gallery.model.MediaPK;
 import org.silverpeas.components.gallery.service.GalleryService;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.contribution.contentcontainer.content.AbstractContentInterface;
+import org.silverpeas.core.contribution.contentcontainer.content.AbstractSilverpeasContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.util.ServiceProvider;
@@ -40,10 +40,10 @@ import java.util.Optional;
 import static java.util.stream.Collectors.*;
 
 /**
- * The gallery implementation of ContentInterface.
+ * The gallery implementation of SilverpeasContentManager.
  */
 @Service
-public class GalleryContentManager extends AbstractContentInterface implements Serializable {
+public class GalleryContentManager extends AbstractSilverpeasContentManager implements Serializable {
   private static final long serialVersionUID = 1L;
 
   private static final String CONTENT_ICON_FILE_NAME = "gallerySmall.gif";

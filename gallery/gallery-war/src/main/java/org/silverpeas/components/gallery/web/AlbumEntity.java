@@ -142,7 +142,7 @@ public class AlbumEntity implements WebEntity {
    * Default hidden constructor.
    */
   private AlbumEntity(final AlbumDetail album, final String language) {
-    this.id = String.valueOf(album.getId());
+    this.id = album.getId();
     this.title = album.getName();
     this.description = album.getDescription(language);
   }

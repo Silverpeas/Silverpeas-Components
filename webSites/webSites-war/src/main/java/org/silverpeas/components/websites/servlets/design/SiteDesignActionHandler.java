@@ -26,7 +26,7 @@ package org.silverpeas.components.websites.servlets.design;
 import org.silverpeas.components.websites.control.WebSiteSessionController;
 import org.silverpeas.components.websites.service.WebSitesException;
 import org.silverpeas.components.websites.servlets.WebSitesRequestRouter;
-import org.silverpeas.components.websites.siteManage.model.SiteDetail;
+import org.silverpeas.components.websites.model.SiteDetail;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.web.http.HttpRequest;

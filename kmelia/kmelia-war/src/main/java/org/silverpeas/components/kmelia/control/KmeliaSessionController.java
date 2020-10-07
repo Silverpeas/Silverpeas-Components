@@ -752,7 +752,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     nd.getNodePK().setComponentName(getComponentId());
     if (isTopicAdmin(nd.getNodePK().getId())) {
       nd.setCreatorId(getUserId());
-      nd.setCreationDate(DateUtil.today2SQLDate());
+      nd.setCreationDate(new Date());
       final NodePK updatedNodePK = getKmeliaService().updateTopic(nd, alertType);
       if (updatedNodePK.getId().equals(getCurrentFolderId())) {
         processBreadcrumb(getCurrentFolderId());
@@ -1238,7 +1238,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     NodePK nodePK = new NodePK(topicId, getComponentId());
     List<NodeDetail> nodes = getNodeService().getSubTree(nodePK);
     for (NodeDetail node : nodes) {
-      fatherIds.add(Integer.toString(node.getId()));
+      fatherIds.add(node.getId());
     }
     // création de pubPK
     Collection<PublicationDetail> allPublications =
@@ -2866,7 +2866,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     final String nodePathSep = "/";
     final String safeCurrentFolderPath = getCurrentFolder().getFullPath().replaceFirst("[/]+$", "") + nodePathSep;
     TopicSearch newTS = new TopicSearch(getComponentId(), currentFolder.getId(),
-        Integer.parseInt(getUserId()), getLanguage(), query.toLowerCase(), new Date());
+        getUserId(), getLanguage(), query.toLowerCase(), new Date());
     KmeliaSearchServiceProvider.getTopicSearchService().createTopicSearch(newTS);
 
     List<KmeliaPublication> userPublications = new ArrayList<>();

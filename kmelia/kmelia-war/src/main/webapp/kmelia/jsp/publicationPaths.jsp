@@ -164,7 +164,7 @@ function getObjects(selected) {
     	  	// toolbox case
     		out.println("<table>");
     		for (NodeDetail topic : topics) {
-    			if (topic.getId() != 1 && topic.getId() != 2) {
+    			if (!topic.isBin() && !topic.isUnclassified()) {
     				String name = topic.getName(currentLang);
     				
     				String ind = "";
@@ -182,7 +182,7 @@ function getObjects(selected) {
             final input topicChoiceInput = new input().setType("checkbox").setName("topicChoice").setValue(topic.getId()+","+topic.getNodePK().getInstanceId());
             topicChoiceInput.addAttribute("valign","absmiddle");
             locations.stream()
-              .filter(l -> Integer.toString(topic.getId()).equals(l.getId()))
+              .filter(l -> topic.getId().equals(l.getId()))
               .findFirst()
               .ifPresent(l -> {
                 topicChoiceInput.setChecked(true);
@@ -236,7 +236,7 @@ function getObjects(selected) {
 					if (t == 0) {
 		    			List<NodeDetail> otherTree = treeview.getTree();
 		    			for (NodeDetail topic : otherTree) {
-		        			if (topic.getId() != 1 && topic.getId() != 2) {
+		        			if (!topic.isBin() && !topic.isUnclassified()) {
 	    	    				String name = topic.getName(currentLang);
 	    	    				    	    			
 	    	    				String ind = "";
@@ -255,7 +255,7 @@ function getObjects(selected) {
                     final input topicChoiceInput = new input().setType("checkbox").setName("topicChoice").setValue(topic.getId()+","+topic.getNodePK().getInstanceId());
                     topicChoiceInput.addAttribute("valign","absmiddle");
                     locations.stream()
-                      .filter(l -> Integer.toString(topic.getId()).equals(l.getId()) && topic.getNodePK().getInstanceId().equals(l.getInstanceId()))
+                      .filter(l -> topic.getId().equals(l.getId()) && topic.getNodePK().getInstanceId().equals(l.getInstanceId()))
                       .findFirst()
                       .ifPresent(l -> {
                         topicChoiceInput.setChecked(true);

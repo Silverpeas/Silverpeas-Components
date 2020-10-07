@@ -52,8 +52,8 @@ public class MessagePath extends ResourcePath<Message> {
 
   @SuppressWarnings("unchecked")
   @Override
-  protected Integer getId(final Message message) {
-    return message.getId();
+  protected String getId(final Message message) {
+    return String.valueOf(message.getId());
   }
 
   @Override
@@ -79,7 +79,7 @@ public class MessagePath extends ResourcePath<Message> {
     if (!currentResourceIdPath.equals(lastPath.getFirst())) {
       final StringBuilder result = new StringBuilder();
       for (Message message : this) {
-        result.insert(0, SEP + getLabel(message, language));
+        result.insert(0, DEFAULT_SEPARATOR + getLabel(message, language));
       }
       lastPath = Pair.of(currentResourceIdPath, result.toString());
       lastPathByLanguage.put(language, lastPath);

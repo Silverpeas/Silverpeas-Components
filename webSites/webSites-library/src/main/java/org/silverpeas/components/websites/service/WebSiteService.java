@@ -37,9 +37,9 @@ import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
-import org.silverpeas.components.websites.siteManage.model.FolderDetail;
-import org.silverpeas.components.websites.siteManage.model.IconDetail;
-import org.silverpeas.components.websites.siteManage.model.SiteDetail;
+import org.silverpeas.components.websites.model.FolderDetail;
+import org.silverpeas.components.websites.model.IconDetail;
+import org.silverpeas.components.websites.model.SiteDetail;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.Collection;

@@ -40,9 +40,9 @@ import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.model.Attachments;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagementEngine;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagementEngineProvider;
 import org.silverpeas.core.contribution.model.LocalizedContribution;
 import org.silverpeas.core.exception.DecodingException;
 import org.silverpeas.core.importexport.report.ExportReport;
@@ -55,7 +55,6 @@ import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.pdc.pdc.model.SearchContext;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.persistence.jdbc.bean.IdPK;
-import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
@@ -500,19 +499,6 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     return "";
   }
 
-  /**
-   * (This method is no more used at the moment - Silverpeas 6.0. If necessary,
-   * implementation must be completed to get recipients)
-   * @deprecated
-   */
-  @Deprecated
-  public void relaunchRecipients() throws QuestionReplyException {
-    final Collection<Recipient> recipients = new ArrayList<>();
-    getCurrentQuestion().writeRecipients(recipients);
-    QuestionManagerProvider.getQuestionManager().updateQuestionRecipients(getCurrentQuestion());
-    notifyQuestion(getCurrentQuestion());
-  }
-
   /*
    * Récupère la liste des experts du domaine de la question
    */
@@ -521,7 +507,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     List<UserDetail> arrayUsers = new ArrayList<>();
 
     try {
-      ContentManager contentManager = ContentManagerProvider.getContentManager();
+      ContentManagementEngine contentMgtEngine = ContentManagementEngineProvider.getContentManagementEngine();
       // recupere la liste de toutes les instances d'annuaire
       String[] instances = orga.getCompoId("whitePages");
       List<String> listeInstanceId = new ArrayList<>();
@@ -538,7 +524,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
 
         CardManager cardManager = CardManager.getInstance();
         for (Integer silverContentId : liste) {
-          String internalContentId = contentManager.getInternalContentId(silverContentId);
+          String internalContentId = contentMgtEngine.getInternalContentId(silverContentId);
           long userCardId = Long.parseLong(internalContentId);
           Card card = cardManager.getCard(userCardId);
           if (card != null) {
@@ -604,9 +590,9 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
 
     if (currentQuestion != null) {
       try {
-        ContentManager contentManager = ContentManagerProvider.getContentManager();
-        contentId = "" + contentManager
-            .getSilverContentId(currentQuestion.getPK().getId(), currentQuestion.getInstanceId());
+        ContentManagementEngine contentMgtEngine = ContentManagementEngineProvider.getContentManagementEngine();
+        contentId = String.valueOf(contentMgtEngine
+            .getSilverContentId(currentQuestion.getPK().getId(), currentQuestion.getInstanceId()));
       } catch (ContentManagerException ignored) {
         SilverLogger.getLogger(this).error(ignored);
         contentId = null;
@@ -638,7 +624,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
 
   public synchronized void createCategory(Category category) throws QuestionReplyException {
     try {
-      category.setCreationDate(DateUtil.date2SQLDate(new Date()));
+      category.setCreationDate(new Date());
       category.setCreatorId(getUserId());
       category.getNodePK().setComponentName(getComponentId());
       getNodeService().createNode(category, new NodeDetail());
@@ -820,7 +806,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     Collection<NodeDetail> categories = getAllCategories();
     QuestionReplyExport exporter = new QuestionReplyExport(resource, file);
     for (NodeDetail category : categories) {
-      String categoryId = java.lang.Integer.toString(category.getId());
+      String categoryId = category.getId();
       exportCategory(exporter, category, categoryId, sb);
     }
     NodeDetail fakeCategory = new NodeDetail();

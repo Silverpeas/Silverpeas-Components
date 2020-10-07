@@ -28,7 +28,7 @@ import org.silverpeas.components.forums.model.ForumPK;
 import org.silverpeas.components.forums.service.ForumsServiceProvider;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.contribution.contentcontainer.content.AbstractContentInterface;
+import org.silverpeas.core.contribution.contentcontainer.content.AbstractSilverpeasContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
 import org.silverpeas.core.contribution.model.Contribution;
@@ -40,10 +40,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * The forums implementation of ContentInterface.
+ * The forums implementation of SilverpeasContentManager.
  */
 @Service
-public class ForumsContentManager extends AbstractContentInterface {
+public class ForumsContentManager extends AbstractSilverpeasContentManager {
 
   private static final String CONTENT_ICON_FILE_NAME = "forumsSmall.gif";
 

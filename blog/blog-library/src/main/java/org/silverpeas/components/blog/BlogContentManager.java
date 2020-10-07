@@ -25,7 +25,7 @@ package org.silverpeas.components.blog;
 
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.contribution.contentcontainer.content.AbstractContentInterface;
+import org.silverpeas.core.contribution.contentcontainer.content.AbstractSilverpeasContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
 import org.silverpeas.core.contribution.model.Contribution;
@@ -42,10 +42,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * The blog implementation of ContentInterface.
+ * The blog implementation of SilverpeasContentManager.
  */
 @Service
-public class BlogContentManager extends AbstractContentInterface implements Serializable {
+public class BlogContentManager extends AbstractSilverpeasContentManager implements Serializable {
   private static final long serialVersionUID = 8619139224896358447L;
 
   private static final String CONTENT_ICON_FILE_NAME = "blogSmall.gif";

@@ -56,7 +56,6 @@ import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
 import org.silverpeas.core.subscription.SubscriptionServiceProvider;
 import org.silverpeas.core.subscription.service.ComponentSubscription;
-import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
@@ -725,7 +724,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   }
 
   public synchronized void createCategory(NodeDetail category) {
-    category.setCreationDate(DateUtil.date2SQLDate(new Date()));
+    category.setCreationDate(new Date());
     category.setCreatorId(getUserId());
     category.getNodePK().setComponentName(getComponentId());
     getForumsService().createCategory(category);

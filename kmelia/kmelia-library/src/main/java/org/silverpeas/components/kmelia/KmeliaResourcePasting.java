@@ -70,8 +70,8 @@ public class KmeliaResourcePasting implements ApplicationResourcePasting {
     // copy first level of nodes
     List<NodeDetail> firstLevelNodes = nodeService.getHeadersByLevel(rootPK, 2);
     for (NodeDetail nodeToPaste : firstLevelNodes) {
-      if (nodeToPaste.getId() > 2) {
-        // Don't take unbalanced and basket nodes
+      if (nodeToPaste.isChild()) {
+        // Don't take unclassified, root and basket nodes
         copyDetail.setFromNodePK(nodeToPaste.getNodePK());
         copyDetail.setToNodePK(targetPK);
         kmeliaService.copyNode(copyDetail);

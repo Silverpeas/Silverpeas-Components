@@ -58,14 +58,6 @@ public class TopicSearch extends BasicJpaEntity<TopicSearch, UniqueLongIdentifie
   }
 
   /**
-   * Creates a new TopicSearch instance
-   * @param id topic search identifier
-   */
-  public TopicSearch(Long id) {
-    setId(Long.toString(id));
-  }
-
-  /**
    * @param instanceId the application instance identifier
    * @param topicId the topic identifier
    * @param userId the user identifier
@@ -73,11 +65,11 @@ public class TopicSearch extends BasicJpaEntity<TopicSearch, UniqueLongIdentifie
    * @param query the query
    * @param date the date
    */
-  public TopicSearch(String instanceId, Integer topicId, Integer userId, String language,
+  public TopicSearch(String instanceId, String topicId, String userId, String language,
       String query, Date date) {
     this.instanceId = instanceId;
-    this.topicId = topicId;
-    this.userId = userId;
+    this.topicId = Integer.valueOf(topicId);
+    this.userId = Integer.valueOf(userId);
     this.language = language;
     this.query = query;
     this.searchDate = date;
@@ -100,15 +92,15 @@ public class TopicSearch extends BasicJpaEntity<TopicSearch, UniqueLongIdentifie
   /**
    * @return the topicId
    */
-  public int getTopicId() {
-    return topicId;
+  public String getTopicId() {
+    return topicId.toString();
   }
 
   /**
    * @param topicId the topicId to set
    */
-  public void setTopicId(Integer topicId) {
-    this.topicId = topicId;
+  public void setTopicId(String topicId) {
+    this.topicId = Integer.valueOf(topicId);
   }
 
   /**
@@ -156,15 +148,15 @@ public class TopicSearch extends BasicJpaEntity<TopicSearch, UniqueLongIdentifie
   /**
    * @return the userId
    */
-  public Integer getUserId() {
-    return userId;
+  public String getUserId() {
+    return userId.toString();
   }
 
   /**
    * @param userId the userId to set
    */
-  public void setUserId(Integer userId) {
-    this.userId = userId;
+  public void setUserId(String userId) {
+    this.userId = Integer.valueOf(userId);
   }
 
   @Override
@@ -176,7 +168,7 @@ public class TopicSearch extends BasicJpaEntity<TopicSearch, UniqueLongIdentifie
       return false;
     }
     TopicSearch other = (TopicSearch) obj;
-    return this.getId() == other.getId() ||
+    return this.getId().equals(other.getId()) ||
         (this.getId() != null && this.getId().equals(other.getId()));
   }
 

@@ -31,12 +31,12 @@ package org.silverpeas.components.websites.service;
  */
 
 import org.silverpeas.components.websites.WebSitesContentManager;
-import org.silverpeas.components.websites.siteManage.dao.SiteDAO;
-import org.silverpeas.components.websites.siteManage.model.FolderDetail;
-import org.silverpeas.components.websites.siteManage.model.IconDetail;
-import org.silverpeas.components.websites.siteManage.model.SiteDetail;
-import org.silverpeas.components.websites.siteManage.model.SitePK;
-import org.silverpeas.components.websites.siteManage.model.WebSitesRuntimeException;
+import org.silverpeas.components.websites.dao.SiteDAO;
+import org.silverpeas.components.websites.model.FolderDetail;
+import org.silverpeas.components.websites.model.IconDetail;
+import org.silverpeas.components.websites.model.SiteDetail;
+import org.silverpeas.components.websites.model.SitePK;
+import org.silverpeas.components.websites.model.WebSitesRuntimeException;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
@@ -46,13 +46,13 @@ import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.util.DateUtil;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import static org.silverpeas.core.contribution.publication.dao.PublicationCriteria.onComponentInstanceIds;
@@ -173,8 +173,7 @@ public class DefaultWebSiteService implements WebSiteService {
     subFolder.getNodePK().setComponentName(fatherId.getInstanceId());
 
     // Construction de la date de creation (date courante)
-    String creationDate = DateUtil.today2SQLDate();
-    subFolder.setCreationDate(creationDate);
+    subFolder.setCreationDate(new Date());
     subFolder.setCreatorId(currentUser.getId());
     // add new topic to current topic
     return addToFolder(fatherId, subFolder);

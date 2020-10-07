@@ -282,7 +282,7 @@ public final class BlogSessionController extends AbstractComponentSessionControl
   }
 
   public synchronized void createCategory(Category category) {
-    category.setCreationDate(DateUtil.date2SQLDate(new Date()));
+    category.setCreationDate(new Date());
     category.setCreatorId(getUserId());
     category.getNodePK().setComponentName(getComponentId());
 

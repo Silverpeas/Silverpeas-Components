@@ -153,7 +153,7 @@ public class StatisticServiceImpl implements
     if (nodes != null) {
       List<String> fatherIds = new ArrayList<>();
       for (NodeDetail node : nodes) {
-        fatherIds.add(Integer.toString(node.getId()));
+        fatherIds.add(node.getId());
       }
       validPubli =
           getPublicationService().getDetailsByFatherIdsAndStatus(fatherIds,

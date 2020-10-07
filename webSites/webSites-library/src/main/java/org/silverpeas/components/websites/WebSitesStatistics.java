@@ -24,7 +24,7 @@
 package org.silverpeas.components.websites;
 
 import org.silverpeas.components.websites.service.WebSiteService;
-import org.silverpeas.components.websites.siteManage.model.SiteDetail;
+import org.silverpeas.components.websites.model.SiteDetail;
 import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
 import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;

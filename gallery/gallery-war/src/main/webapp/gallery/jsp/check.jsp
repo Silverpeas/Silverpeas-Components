@@ -104,7 +104,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
           Iterator itPath = path.iterator();
           while (itPath.hasNext()) {
             NodeDetail unAlbum = (NodeDetail) itPath.next();
-            if (unAlbum.getId() != 0) {
+            if (!unAlbum.isRoot()) {
               browseBar.addElement(new BrowseBarElement(unAlbum.getName(), "ViewAlbum?Id=" + unAlbum.
                   getNodePK().getId(), unAlbum.getNodePK().getId()));
             }

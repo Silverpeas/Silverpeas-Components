@@ -211,7 +211,7 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
               <%
                 NodeDetail category = (NodeDetail) pageContext.getAttribute("category");
                 ForumListHelper.displayForumsList(out, resources, isAdmin, isModerator, isReader, forumId, "main", fsc,
-                    Integer.toString(category.getId()), category.getName(), category.getDescription(), isForumSubscriberByInheritance);
+                    category.getId(), category.getName(), category.getDescription(), isForumSubscriberByInheritance);
               %>
             </c:forEach>
             <%ForumListHelper.displayForumsList(out, resources, isAdmin, isModerator, isReader, forumId, "main", fsc, null, "", "", isForumSubscriberByInheritance);%>

@@ -22,7 +22,7 @@ package org.silverpeas.components.kmelia;
 
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.contribution.contentcontainer.content.AbstractContentInterface;
+import org.silverpeas.core.contribution.contentcontainer.content.AbstractSilverpeasContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
 import org.silverpeas.core.contribution.model.Contribution;
@@ -38,10 +38,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * The kmelia implementation of ContentInterface.
+ * The kmelia implementation of SilverpeasContentManager.
  */
 @Service
-public class KmeliaContentManager extends AbstractContentInterface implements Serializable {
+public class KmeliaContentManager extends AbstractSilverpeasContentManager implements Serializable {
   private static final long serialVersionUID = 3525407153404515235L;
 
   private static final String CONTENT_ICON_FILE_NAME = "kmeliaSmall.gif";

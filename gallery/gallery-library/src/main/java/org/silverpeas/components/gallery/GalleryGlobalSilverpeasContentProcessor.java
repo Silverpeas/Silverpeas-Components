@@ -26,7 +26,7 @@ package org.silverpeas.components.gallery;
 import org.silverpeas.components.gallery.constant.MediaResolution;
 import org.silverpeas.components.gallery.constant.MediaType;
 import org.silverpeas.components.gallery.model.Media;
-import org.silverpeas.core.contribution.contentcontainer.content.AbstractContentInterface.ContributionWrapper;
+import org.silverpeas.core.contribution.contentcontainer.content.AbstractSilverpeasContentManager.ContributionWrapper;
 import org.silverpeas.core.contribution.contentcontainer.content.AbstractGlobalSilverContentProcessor;
 import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;

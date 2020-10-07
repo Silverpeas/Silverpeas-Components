@@ -79,7 +79,7 @@ public class TopicSearchRepositoryIT {
     TopicSearch result = Transaction.performInOne(() -> {
       String instanceId = "kmelia111";
       TopicSearch entity =
-          new TopicSearch(instanceId, 0, 0, "fr", "ma nouvelle recherche", new Date());
+          new TopicSearch(instanceId, "0", "0", "fr", "ma nouvelle recherche", new Date());
       return repo.saveAndFlush(entity);
     });
     assertEquals(result, repo.getById(result.getId()));

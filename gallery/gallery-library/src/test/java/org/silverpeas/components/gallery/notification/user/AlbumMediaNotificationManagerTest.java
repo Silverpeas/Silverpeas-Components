@@ -121,13 +121,13 @@ class AlbumMediaNotificationManagerTest {
     // settings
     gallerySettings.put("subscription.notification.delay", "0");
     // Album media instances
-    albumMediaA = new AlbumMedia(String.valueOf(albumDetail1.getId()), aMedia());
+    albumMediaA = new AlbumMedia(albumDetail1.getId(), aMedia());
     when(albumMediaA.getMedia().getInstanceId()).thenReturn(componentInstance.getId());
-    albumMediaB = new AlbumMedia(String.valueOf(albumDetail2.getId()), aMedia());
+    albumMediaB = new AlbumMedia(albumDetail2.getId(), aMedia());
     when(albumMediaB.getMedia().getInstanceId()).thenReturn(componentInstance.getId());
-    albumMediaC = new AlbumMedia(String.valueOf(albumDetail1.getId()), aMedia());
+    albumMediaC = new AlbumMedia(albumDetail1.getId(), aMedia());
     when(albumMediaC.getMedia().getInstanceId()).thenReturn(componentInstance.getId());
-    albumMediaD = new AlbumMedia(String.valueOf(albumDetail3.getId()), aMedia());
+    albumMediaD = new AlbumMedia(albumDetail3.getId(), aMedia());
     when(albumMediaD.getMedia().getInstanceId()).thenReturn(otherComponentInstance.getId());
     // services
     when(galleryService.getAlbum(albumDetail1.getNodePK())).thenReturn(albumDetail1);

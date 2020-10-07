@@ -98,7 +98,7 @@ public class KmeliaInstanceManualUserNotification extends
     return KmeliaService.get();
   }
 
-  private String asResourceId(final int folderId) {
+  private String asResourceId(final String folderId) {
     return ProfiledObjectType.NODE.getCode() + folderId;
   }
 }

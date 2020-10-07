@@ -27,7 +27,7 @@
  *
  * Created on 9 Avril 2001, 16:40
  */
-package org.silverpeas.components.websites.siteManage.model;
+package org.silverpeas.components.websites.model;
 
 /**
  * @author cbonin

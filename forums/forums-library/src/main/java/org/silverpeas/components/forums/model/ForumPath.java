@@ -47,8 +47,8 @@ public class ForumPath  extends ResourcePath<Forum> {
 
   @SuppressWarnings("unchecked")
   @Override
-  protected Integer getId(final Forum forum) {
-    return forum.getId();
+  protected String getId(final Forum forum) {
+    return String.valueOf(forum.getId());
   }
 
   @Override

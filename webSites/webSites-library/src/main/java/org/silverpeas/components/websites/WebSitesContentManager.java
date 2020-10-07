@@ -24,11 +24,11 @@
 package org.silverpeas.components.websites;
 
 import org.silverpeas.components.websites.service.WebSiteService;
-import org.silverpeas.components.websites.siteManage.model.SiteDetail;
-import org.silverpeas.components.websites.siteManage.model.SitePK;
+import org.silverpeas.components.websites.model.SiteDetail;
+import org.silverpeas.components.websites.model.SitePK;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.contribution.contentcontainer.content.AbstractContentInterface;
+import org.silverpeas.core.contribution.contentcontainer.content.AbstractSilverpeasContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
 import org.silverpeas.core.contribution.model.Contribution;
@@ -41,10 +41,10 @@ import java.util.Optional;
 import static java.util.stream.Collectors.*;
 
 /**
- * The webSites implementation of ContentInterface.
+ * The webSites implementation of SilverpeasContentManager.
  */
 @Service
-public class WebSitesContentManager extends AbstractContentInterface implements Serializable {
+public class WebSitesContentManager extends AbstractSilverpeasContentManager implements Serializable {
   private static final long serialVersionUID = -8992766242253326927L;
   private static final String WEB_SITES_CONTENT_ICON_FILE_NAME = "webSitesSmall.gif";
   private static final String BOOKMARK_CONTENT_ICON_FILE_NAME = "bookmarkSmall.gif";

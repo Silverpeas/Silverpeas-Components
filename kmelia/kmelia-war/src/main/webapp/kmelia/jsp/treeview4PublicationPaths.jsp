@@ -46,7 +46,7 @@ List<Location>	locations		= (List<Location>) request.getAttribute("Aliases");
 <%
 for(NodeDetail topic: otherTree)
 {
-	if (topic.getId() != 1 && topic.getId() != 2)
+	if (!topic.isBin() && !topic.isUnclassified())
 	{
 			String name = WebEncodeHelper.convertHTMLEntities(topic.getName(currentLang));
 
