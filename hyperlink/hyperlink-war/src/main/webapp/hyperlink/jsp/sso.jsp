@@ -32,14 +32,11 @@
 <c:set var="domain" value="${requestScope.Domain}"/>
 <c:set var="url" value="${requestScope.URL}"/>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html>
-<head>
-  <title></title>
-  <view:looknfeel/>
+<view:sp-page>
+<view:sp-head-part>
   <script type="text/javascript">
     (function() {
-      var xhr = new XMLHttpRequest();
+      const xhr = new XMLHttpRequest();
       xhr.open("get", "${silfn:escapeJs(url)}", false, "${domain}\\${login}", "${silfn:escapeJs(password)}");
       xhr.send("");
       if (xhr.status < 400) {
@@ -50,8 +47,8 @@
       spProgressMessage.hide();
     })();
   </script>
-</head>
-<body>
+</view:sp-head-part>
+<view:sp-body-part>
 <viewTags:displayExternalFullIframe url="javacript:void(0)"/>
 <view:progressMessage/>
 <script type="text/javascript">
@@ -59,5 +56,5 @@
     spProgressMessage.show();
   })();
 </script>
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>

@@ -24,14 +24,13 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="view" uri="http://www.silverpeas.com/tld/viewGenerator" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <%@ include file="check.jsp" %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <title></title>
-</head>
-<body>
+<view:sp-page>
+<view:sp-head-part lookContextManagerCallbackOnly="true"/>
+<view:sp-body-part>
 <c:choose>
   <c:when test="${requestScope.IsInternalLink}">
     <c:redirect url="${requestScope.URL}"/>
@@ -40,5 +39,5 @@
     <viewTags:displayExternalFullIframe url="${requestScope.URL}"/>
   </c:otherwise>
 </c:choose>
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>
