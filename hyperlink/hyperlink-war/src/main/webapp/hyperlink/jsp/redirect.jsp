@@ -28,18 +28,15 @@
 
 <c:set var="url" value="GoToURL"/>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html>
-<head>
-  <title></title>
-  <view:looknfeel/>
+<view:sp-page>
+<view:sp-head-part>
   <script type="text/javascript">
     function redirectUser() {
       sp.navRequest('${url}').addParam('fromRedirect', true).toTarget('_blank').go();
     }
   </script>
-</head>
-<body onload="redirectUser()">
+</view:sp-head-part>
+<view:sp-body-part onLoad="redirectUser()">
 <view:window>
   <view:frame>
     <div class="inlineMessage">
@@ -49,5 +46,5 @@
     </div>
   </view:frame>
 </view:window>
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>
