@@ -25,11 +25,11 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ page import="org.silverpeas.components.survey.control.FileHelper"%>
 <%@ page import="org.silverpeas.core.web.http.HttpRequest"%>
 <%@ page import="org.silverpeas.core.util.SettingBundle"%>
 <%@ page import="java.io.File"%>
+<%@ page import="java.io.IOException" %>
 <%@ include file="checkSurvey.jsp" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -41,37 +41,34 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 
 <%!
-  void displaySurveyHeader(QuestionContainerDetail surveyDetail, MultiSilverpeasBundle resources, SurveySessionController surveyScc, JspWriter out, GraphicElementFactory gef) throws SurveyException {
-    try{
-          QuestionContainerHeader surveyHeader = surveyDetail.getHeader();
-          String title = WebEncodeHelper.javaStringToHtmlString(surveyHeader.getTitle());
-          String creationDate = resources.getOutputDate(new Date());
-          String beginDate = "&nbsp;";
-          if (surveyHeader.getBeginDate() != null)
-              beginDate = resources.getOutputDate(surveyHeader.getBeginDate());
-          String endDate = "&nbsp;";
-          if (surveyHeader.getEndDate() != null)
-              endDate = resources.getOutputDate(surveyHeader.getEndDate());
-          String nbQuestions = "&nbsp;";
-          if (surveyHeader.getNbQuestionsPerPage() != 0)
-              nbQuestions = new Integer(surveyHeader.getNbQuestionsPerPage()).toString();
-          out.println("<center>");
-          Board board = gef.getBoard();
-          out.println(board.printBefore());
-          out.println("<table width=\"100%\">");
-          out.println("<tr><td class=\"textePetitBold\" align=left width=\"50%\">"+resources.getString("GML.name")+" :</td><td align=left width=\"50%\">"+title+"</td></tr>");
-          out.println("<tr><td class=\"textePetitBold\" align=left width=\"50%\">"+resources.getString("SurveyCreationDate")+" :</td><td align=left width=\"50%\">"+creationDate+"</td></tr>");
-          out.println("<tr><td class=\"textePetitBold\" align=left width=\"50%\">"+resources.getString("SurveyCreationBeginDate")+" :</td><td align=left width=\"50%\">"+beginDate+"</td></tr>");
-          out.println("<tr><td class=\"textePetitBold\" align=left width=\"50%\">"+resources.getString("SurveyCreationEndDate")+" :</td><td align=left width=\"50%\">"+endDate+"</td></tr>");
-          out.println("<tr><td class=\"textePetitBold\" align=left width=\"50%\">"+resources.getString("SurveyCreationNbQuestionPerPage")+" :</td><td align=left width=\"50%\">"+nbQuestions+"</td></tr>");
-          out.println("</table>");
-           out.println("</center>");
-          out.println(board.printAfter());
-    }
-    catch( Exception e){
-        throw new  SurveyException("questionCreator_JSP.displaySurveyHeader",SurveyException.WARNING,"Survey.EX_CANNOT_DISPLAY_SURVEY_HEADER",e);
-    }
-
+  void displaySurveyHeader(QuestionContainerDetail surveyDetail, MultiSilverpeasBundle resources, JspWriter out, GraphicElementFactory gef) throws ParseException, IOException {
+      QuestionContainerHeader surveyHeader = surveyDetail.getHeader();
+      String title = WebEncodeHelper.javaStringToHtmlString(surveyHeader.getTitle());
+      String creationDate = resources.getOutputDate(new Date());
+      String beginDate = "&nbsp;";
+      if (surveyHeader.getBeginDate() != null) {
+        beginDate = resources.getOutputDate(surveyHeader.getBeginDate());
+      }
+      String endDate = "&nbsp;";
+      if (surveyHeader.getEndDate() != null) {
+        endDate = resources.getOutputDate(surveyHeader.getEndDate());
+      }
+      String nbQuestions = "&nbsp;";
+      if (surveyHeader.getNbQuestionsPerPage() != 0) {
+        nbQuestions = Integer.toString(surveyHeader.getNbQuestionsPerPage());
+      }
+      out.println("<center>");
+      Board board = gef.getBoard();
+      out.println(board.printBefore());
+      out.println("<table width=\"100%\">");
+      out.println("<tr><td class=\"textePetitBold\" align=left width=\"50%\">"+resources.getString("GML.name")+" :</td><td align=left width=\"50%\">"+title+"</td></tr>");
+      out.println("<tr><td class=\"textePetitBold\" align=left width=\"50%\">"+resources.getString("SurveyCreationDate")+" :</td><td align=left width=\"50%\">"+creationDate+"</td></tr>");
+      out.println("<tr><td class=\"textePetitBold\" align=left width=\"50%\">"+resources.getString("SurveyCreationBeginDate")+" :</td><td align=left width=\"50%\">"+beginDate+"</td></tr>");
+      out.println("<tr><td class=\"textePetitBold\" align=left width=\"50%\">"+resources.getString("SurveyCreationEndDate")+" :</td><td align=left width=\"50%\">"+endDate+"</td></tr>");
+      out.println("<tr><td class=\"textePetitBold\" align=left width=\"50%\">"+resources.getString("SurveyCreationNbQuestionPerPage")+" :</td><td align=left width=\"50%\">"+nbQuestions+"</td></tr>");
+      out.println("</table>");
+      out.println("</center>");
+      out.println(board.printAfter());
   }
 %>
 
@@ -448,7 +445,7 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
       out.println(window.printBefore());
       out.println(frame.printBefore());
       out.println("<center>");
-      displaySurveyHeader(surveyScc.getSessionSurveyUnderConstruction(), resources, surveyScc, out, gef);
+      displaySurveyHeader(surveyScc.getSessionSurveyUnderConstruction(), resources, out, gef);
       out.println("<br>");
       Board board = gef.getBoard();
       out.println(board.printBefore());
