@@ -187,11 +187,11 @@ out.println(window.printBefore());
       <div class="champs"><input type="text" name="FirstName" value="<%=WebEncodeHelper.javaStringToHtmlString(firstName)%>" size="60" maxlength="60" <%=readOnly%>/></div>
     </div>
     <div class="field" id="email">
-      <label class="txtlibform"><%=resources.getString("GML.eMail")%></label>
+      <label class="txtlibform"><%=resources.getString("yellowpages.column.email")%></label>
       <div class="champs"><input type="text" name="Email" value="<%=WebEncodeHelper.javaStringToHtmlString(email)%>" size="60" maxlength="60" <%=readOnly%>/></div>
     </div>
     <div class="field" id="phone">
-      <label class="txtlibform"><%=resources.getString("GML.phoneNumber")%></label>
+      <label class="txtlibform"><%=resources.getString("yellowpages.column.phone")%></label>
       <div class="champs"><input type="text" name="Phone" value="<%=WebEncodeHelper.javaStringToHtmlString(phone)%>" size="20" maxlength="20"/></div>
     </div>
     <div class="field" id="fax">

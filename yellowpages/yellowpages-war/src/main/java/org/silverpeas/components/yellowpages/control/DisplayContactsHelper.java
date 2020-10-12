@@ -71,9 +71,9 @@ public class DisplayContactsHelper {
     }
     arrayPane.addArrayColumn(resources.getString("GML.name"));
     arrayPane.addArrayColumn(resources.getString("GML.surname"));
-    arrayPane.addArrayColumn(resources.getString("GML.eMail"));
+    arrayPane.addArrayColumn(resources.getString("yellowpages.column.email"));
     if (resources.getSetting("columns").contains("phone")) {
-      ArrayColumn arrayColumn4 = arrayPane.addArrayColumn(resources.getString("GML.phoneNumber"));
+      ArrayColumn arrayColumn4 = arrayPane.addArrayColumn(resources.getString("yellowpages.column.phone"));
       arrayColumn4.setSortable(false);
     }
     if (resources.getSetting("columns").contains("fax")) {
