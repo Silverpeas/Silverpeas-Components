@@ -4,13 +4,13 @@
   <parent>
     <groupId>com.silverpeas</groupId>
     <artifactId>parent</artifactId>
-    <version>29</version>
+    <version>29.1</version>
   </parent>
 
   <scm>
     <connection>scm:git:git@github.com:Silverpeas/Silverpeas-Components.git</connection>
     <developerConnection>scm:git:git@github.com:Silverpeas/Silverpeas-Components.git</developerConnection>
-    <url>http://github.com/Silverpeas/Silverpeas-Components</url>
+    <url>https://github.com/Silverpeas/Silverpeas-Components</url>
     <tag>HEAD</tag>
   </scm>
 
@@ -19,7 +19,7 @@
       <id>Silverpeas</id>
       <layout>default</layout>
       <name>Silverpeas Repository</name>
-      <url>http://www.silverpeas.org/nexus/content/groups/silverpeas</url>
+      <url>https://www.silverpeas.org/nexus/content/groups/silverpeas</url>
       <releases>
         <enabled>true</enabled>
       </releases>
@@ -34,7 +34,7 @@
   <version>5.15.13-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Silverpeas Components</name>
-  <url>http://www.silverpeas.org/docs/components</url>
+  <url>https://www.silverpeas.org/docs/components</url>
   <description>The different applications that are deployed in standard in Silverpeas</description>
 
   <properties>
