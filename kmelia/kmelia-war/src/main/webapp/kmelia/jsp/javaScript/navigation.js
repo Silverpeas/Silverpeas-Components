@@ -1,4 +1,3 @@
-var subscriptionWindow = window;
 var favoriteWindow = window;
 var importFileWindow = window;
 var importFilesWindow = window;
@@ -7,19 +6,6 @@ var exportComponentWindow = window;
 function addFavorite(name, description, url)
 {
   postNewLink(name, url, description);
-}
-
-function switchSubscription() {
-  spSubManager.switchUserSubscription().then(function() {
-    const url = "subscriptionsManager.jsp?Action=View&Id=" + getCurrentNodeId();
-    const windowName = "subscriptionWindow";
-    const windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars=1";
-    const larg = "550";
-    const haut = "350";
-    if (!subscriptionWindow.closed && subscriptionWindow.name === "subscriptionWindow")
-      subscriptionWindow.close();
-    subscriptionWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
-  })
 }
 
 function importFile()
@@ -105,10 +91,6 @@ function validatePublicationClassification(s)
 }
 
 function closeWindows() {
-  if (!subscriptionWindow.closed && subscriptionWindow.name === "subscriptionWindow") {
-    subscriptionWindow.close();
-  }
-
   if (!favoriteWindow.closed && favoriteWindow.name === "favoriteWindow") {
     favoriteWindow.close();
   }
@@ -401,7 +383,7 @@ function initOperations(id, op) {
     let subscribeLabel = undefined;
     let unsubscribeLabel = undefined;
     label = '<span id="subscriptionMenuLabel"></span>';
-    url = "javascript:onclick=switchSubscription()";
+    url = "javascript:onclick=spSubManager.switchUserSubscription()";
     menuItem = new YAHOO.widget.MenuItem(label, {url: url});
     oMenu.addItem(menuItem, groupIndex);
     groupEmpty = false;
