@@ -504,17 +504,21 @@ public class ProjectManagerDAO {
   public static List<TaskDetail> getTasksByMotherId(Connection con, String instanceId,
       int motherId, Filtre filtre) throws SQLException {
     List<TaskDetail> tasks = new ArrayList<TaskDetail>();
+
     StringBuilder query = new StringBuilder();
     query.append("select * ");
     query.append("from ").append(PROJECTMANAGER_TASKS_TABLENAME);
     query.append(" where instanceId = ? ");
-    query.append(" and mereId = ? ");
+    boolean applyFilter = false;
     if (filtre != null) {
       String filtreSQL = getSQL(filtre);
       if (filtreSQL.length() > 0) {
+        applyFilter = true;
         query.append("and ").append(filtreSQL);
       }
     }
+    if (!applyFilter)
+      query.append(" and mereId = ? ");
     query.append(" order by dateDebut ASC");
 
     PreparedStatement stmt = null;
@@ -523,7 +527,8 @@ public class ProjectManagerDAO {
     try {
       stmt = con.prepareStatement(query.toString());
       stmt.setString(1, instanceId);
-      stmt.setInt(2, motherId);
+      if (!applyFilter)
+        stmt.setInt(2, motherId);
 
       rs = stmt.executeQuery();
       while (rs.next()) {
@@ -536,6 +541,7 @@ public class ProjectManagerDAO {
     }
     return tasks;
   }
+
 
   public static List<TaskDetail> getTasksNotCancelledByMotherId(Connection con,
       String instanceId, int motherId, Filtre filtre) throws SQLException {
