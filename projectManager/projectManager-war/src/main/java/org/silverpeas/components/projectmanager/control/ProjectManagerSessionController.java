@@ -87,7 +87,8 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
         "org.silverpeas.projectManager.multilang.projectManagerBundle",
-        "org.silverpeas.projectManager.settings.projectManagerIcons");
+        "org.silverpeas.projectManager.settings.projectManagerIcons",
+        "org.silverpeas.projectManager.settings.projectManagerSettings");
   }
 
   public TaskDetail getCurrentTask() {

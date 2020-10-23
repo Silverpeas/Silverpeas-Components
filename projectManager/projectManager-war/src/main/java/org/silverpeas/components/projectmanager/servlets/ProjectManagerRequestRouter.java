@@ -88,6 +88,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter<ProjectM
 
     String role = projectManagerSC.getRole();
     request.setAttribute("Role", role);
+    request.setAttribute("AppIcons", projectManagerSC.getIcon());
 
     try {
       if (function.startsWith("Main")) {
