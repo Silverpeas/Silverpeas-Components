@@ -131,7 +131,7 @@ function doPagination(index, nbItemsPerPage){
 }
 
 function closeAndReturn() {
-    window.opener.location.replace("ViewPublication");
+    window.opener.location.replace("ViewPublication?PubId=<%=pubId%>");
     window.close();
 }
 
@@ -157,7 +157,7 @@ function sendPubId(pubId,checked){
 }
 
 function linkTo(){
-	location.href="AddLinksToPublication?PubId=<%=pubId%>"
+	location.href="<%=m_context+URLUtil.getComponentInstanceURL(publicationPK.getInstanceId())%>AddLinksToPublication?PubId=<%=pubId%>"
 }
 
 function displayHomeMessage(){
