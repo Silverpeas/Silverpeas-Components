@@ -4,6 +4,7 @@ pipeline {
   environment {
     lockFilePath = null
     version = null
+    master = true
   }
   agent {
     docker {
@@ -15,6 +16,7 @@ pipeline {
     stage('Waiting for core running build if any') {
       steps {
         script {
+          master = env.BRANCH_NAME == 'master'
           version = computeSnapshotVersion()
           lockFilePath = createLockFile(version, 'components')
           waitForDependencyRunningBuildIfAny(version, 'core')
@@ -96,7 +98,8 @@ def computeSnapshotVersion() {
 }
 
 def getCoreDependencyVersion() {
-  copyArtifacts projectName: 'Silverpeas_Master_AutoDeploy', flatten: true
+  String silverpeasBuild = env.BRANCH_NAME == 'master' ? 'Silverpeas_Master_AutoDeploy' : 'Silverpeas_Stable_AutoDeploy'
+  copyArtifacts projectName: silverpeasBuild, flatten: true
   def lastBuild = readYaml file: 'build.yaml'
   return lastBuild.version
 }
