@@ -166,8 +166,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   private static final String KMELIA = "kmelia";
   private static final String PUBLICATION = "Publication";
   private static final String USELESS = "useless";
-  private static final String PUB_LIST_SESSION_CACHE_KEY =
-      KmeliaSessionController.class.getSimpleName() + "#publicationList";
 
   // Session objects
   private TopicDetail sessionTopic = null;
@@ -662,8 +660,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     return getTopic(id, true);
   }
 
-  public synchronized TopicDetail getTopic(String id, boolean resetSessionPublication) {
-    if (resetSessionPublication) {
+  public synchronized TopicDetail getTopic(String id, boolean resetSessionItems) {
+    if (resetSessionItems) {
       setSessionPublication(null);
     }
     if (!id.equals(getCurrentFolderId())) {
@@ -683,7 +681,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     if (displayNbPublis()) {
       prepareForPublicationNbDisplaying(currentTopic);
     }
-    setSessionTopic(currentTopic);
+    if (resetSessionItems) {
+      setSessionTopic(currentTopic);
+    }
     applyVisibilityFilter();
     return currentTopic;
   }
@@ -1469,7 +1469,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   private void cacheDirectlyPublicationsListInSession(final List<KmeliaPublication> publications) {
-    getSessionCacheService().getCache().put(PUB_LIST_SESSION_CACHE_KEY, publications);
+    getSessionCacheService().getCache().put(getPublicationListSessionCacheKey(), publications);
   }
 
   public void setSessionCombination(List<String> combination) {
@@ -1556,7 +1556,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   @SuppressWarnings("unchecked")
   public List<KmeliaPublication> getSessionPublicationsList() {
-    return (List) getSessionCacheService().getCache().get(PUB_LIST_SESSION_CACHE_KEY);
+    return (List) getSessionCacheService().getCache().get(getPublicationListSessionCacheKey());
   }
 
   public List<String> getSessionCombination() {
@@ -3517,5 +3517,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     String pathString = displayPath(pathColl, false, 3);
     setSessionPath(linkedPathString);
     setSessionPathString(pathString);
+  }
+
+  private String getPublicationListSessionCacheKey() {
+    return KmeliaSessionController.class.getSimpleName() + "#" + getComponentId() +
+        "#publicationList";
   }
 }
