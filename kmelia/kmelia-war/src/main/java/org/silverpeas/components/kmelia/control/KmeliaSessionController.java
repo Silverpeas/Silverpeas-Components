@@ -800,18 +800,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     getKmeliaService().changeTopicStatus(newStatus, getNodePK(topicId), recursiveChanges);
   }
 
-  public synchronized Collection<Collection<NodeDetail>> getSubscriptionList() {
-    return getKmeliaService().getSubscriptionList(getUserId(), getComponentId());
-  }
-
-  public synchronized void removeSubscription(String topicId) {
-    getKmeliaService().removeSubscriptionToCurrentUser(getNodePK(topicId), getUserId());
-  }
-
-  public synchronized void addSubscription(String topicId) {
-    getKmeliaService().addSubscription(getNodePK(topicId), getUserId());
-  }
-
   /**
    * @param pubId a publication identifier
    * @return

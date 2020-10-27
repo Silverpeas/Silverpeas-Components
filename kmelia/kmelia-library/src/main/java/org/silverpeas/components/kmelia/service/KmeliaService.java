@@ -145,37 +145,6 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
       boolean isRightsOnTopicsUsed);
 
   /**
-   * ***********************************************************************************
-   */
-  /* Interface - Gestion des abonnements */
-  /**
-   * ***********************************************************************************
-   */
-  /**
-   * Subscriptions - get the subscription list of the current user
-   * @return a Path Collection - it's a Collection of NodeDetail collection
-   * @see NodeDetail
-   * @since 1.0
-   */
-  Collection<Collection<NodeDetail>> getSubscriptionList(String userId, String componentId);
-
-  /**
-   * Subscriptions - remove a subscription to the subscription list of the current user
-   * @param topicPK the subscribe topic Id to remove
-   * @since 1.0
-   */
-  void removeSubscriptionToCurrentUser(NodePK topicPK, String userId);
-
-  /**
-   * Subscriptions - add a subscription
-   * @param topicPK the subscription topic Id to add
-   * @since 1.0
-   */
-  void addSubscription(NodePK topicPK, String userId);
-
-  boolean checkSubscription(NodePK topicPK, String userId);
-
-  /**
    * Return the detail of a publication (only the Header)
    * @param pubPK the id of the publication
    * @return a PublicationDetail

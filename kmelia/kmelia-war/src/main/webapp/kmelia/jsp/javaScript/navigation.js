@@ -1,4 +1,3 @@
-var subscriptionWindow = window;
 var favoriteWindow = window;
 var importFileWindow = window;
 var importFilesWindow = window;
@@ -7,17 +6,6 @@ var exportComponentWindow = window;
 function addFavorite(name, description, url)
 {
   postNewLink(name, url, description);
-}
-
-function addSubscription() {
-  var url = "subscriptionsManager.jsp?Action=AddSubscription&Id=" + getCurrentNodeId();
-  var windowName = "subscriptionWindow";
-  var windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars=1";
-  var larg = "550";
-  var haut = "350";
-  if (!subscriptionWindow.closed && subscriptionWindow.name === "subscriptionWindow")
-    subscriptionWindow.close();
-  subscriptionWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
 }
 
 function importFile()
@@ -103,10 +91,6 @@ function validatePublicationClassification(s)
 }
 
 function closeWindows() {
-  if (!subscriptionWindow.closed && subscriptionWindow.name === "subscriptionWindow") {
-    subscriptionWindow.close();
-  }
-
   if (!favoriteWindow.closed && favoriteWindow.name === "favoriteWindow") {
     favoriteWindow.close();
   }
@@ -394,20 +378,34 @@ function initOperations(id, op) {
     groupEmpty = false;
   }
 
-  if (op.subscriptions) {
-    label = getString('GML.subscribe');
-    url = "javascript:onclick=addSubscription()";
+  if (op.subscriptions || op.topicSubscriptions) {
+    let subscriptionResourceType = jQuery.subscription.subscriptionType.COMPONENT;
+    let topicId = undefined;
+    let subscribeLabel = undefined;
+    let unsubscribeLabel = undefined;
+    label = '<span id="subscriptionMenuLabel"></span>';
+    url = "javascript:onclick=spSubManager.switchUserSubscription()";
     menuItem = new YAHOO.widget.MenuItem(label, {url: url});
     oMenu.addItem(menuItem, groupIndex);
     groupEmpty = false;
-    //addCreationItem(url, icons["operation.subscribe"], label);
-  } else if (op.topicSubscriptions) {
-    label = getString('SubscriptionsAdd');
-    url = "javascript:onclick=addSubscription()";
-    menuItem = new YAHOO.widget.MenuItem(label, {url: url});
-    oMenu.addItem(menuItem, groupIndex);
-    groupEmpty = false;
-    //addCreationItem(url, icons["operation.subscribe"], label);
+    if (op.topicSubscriptions) {
+      subscribeLabel = getString('SubscriptionsAdd');
+      unsubscribeLabel = getString('SubscriptionsRemove');
+      topicId = op.context.nodeId;
+      subscriptionResourceType = jQuery.subscription.subscriptionType.NODE;
+    }
+    window.SUBSCRIPTION_PROMISE.then(function() {
+      window.spSubManager = new SilverpeasSubscriptionManager({
+        componentInstanceId : op.context.componentId,
+        subscriptionResourceType : subscriptionResourceType,
+        resourceId : topicId,
+        labels : {
+          subscribe : subscribeLabel,
+          unsubscribe : unsubscribeLabel
+        },
+        $menuLabel : undefined
+      });
+    });
   }
 
   if (op.favorites) {

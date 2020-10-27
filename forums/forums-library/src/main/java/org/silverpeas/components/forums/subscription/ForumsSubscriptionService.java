@@ -27,9 +27,10 @@ import org.silverpeas.components.forums.model.Forum;
 import org.silverpeas.components.forums.model.ForumPK;
 import org.silverpeas.components.forums.model.Message;
 import org.silverpeas.components.forums.model.MessagePK;
+import org.silverpeas.core.subscription.SubscriptionResourceType;
+import org.silverpeas.core.subscription.SubscriptionResourceTypeRegistry;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.subscription.SubscriptionSubscriber;
-import org.silverpeas.core.subscription.constant.SubscriptionResourceType;
 import org.silverpeas.core.subscription.service.AbstractResourceSubscriptionService;
 import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
 
@@ -37,8 +38,10 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import static org.silverpeas.components.forums.service.ForumsServiceProvider.getForumsService;
+import static org.silverpeas.components.forums.subscription.ForumSubscriptionConstants.FORUM;
+import static org.silverpeas.components.forums.subscription.ForumSubscriptionConstants.FORUM_MESSAGE;
 import static org.silverpeas.core.subscription.SubscriptionServiceProvider.getSubscribeService;
-import static org.silverpeas.core.subscription.constant.SubscriptionResourceType.*;
+import static org.silverpeas.core.subscription.constant.CommonSubscriptionResourceConstants.COMPONENT;
 
 /**
  * As the class is implementing {@link org.silverpeas.core.initialization.Initialization}, no
@@ -48,6 +51,13 @@ import static org.silverpeas.core.subscription.constant.SubscriptionResourceType
  */
 @Service
 public class ForumsSubscriptionService extends AbstractResourceSubscriptionService {
+
+  @Override
+  public void init() throws Exception {
+    super.init();
+    SubscriptionResourceTypeRegistry.get().add(FORUM);
+    SubscriptionResourceTypeRegistry.get().add(FORUM_MESSAGE);
+  }
 
   @Override
   protected String getHandledComponentName() {
@@ -82,7 +92,7 @@ public class ForumsSubscriptionService extends AbstractResourceSubscriptionServi
     if (nextTypeToHandle == COMPONENT) {
       // In that case, subscribers of component must be verified.
       subscribers.addAll(super.getSubscribersOfComponentAndTypedResource(componentInstanceId,
-          SubscriptionResourceType.COMPONENT, resourceId));
+          COMPONENT, resourceId));
     }
 
     return new SubscriptionSubscriberList(subscribers);

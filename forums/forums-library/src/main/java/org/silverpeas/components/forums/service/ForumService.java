@@ -24,15 +24,17 @@
 
 package org.silverpeas.components.forums.service;
 
-import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
 import org.silverpeas.components.forums.model.Forum;
 import org.silverpeas.components.forums.model.ForumDetail;
 import org.silverpeas.components.forums.model.ForumPK;
+import org.silverpeas.components.forums.model.ForumPath;
 import org.silverpeas.components.forums.model.Message;
 import org.silverpeas.components.forums.model.MessagePK;
+import org.silverpeas.components.forums.model.MessagePath;
 import org.silverpeas.components.forums.model.Moderator;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.Collection;
@@ -50,6 +52,8 @@ public interface ForumService {
   }
 
   Forum getForum(ForumPK forumPK);
+
+  ForumPath getForumPath(ForumPK forumPK);
 
   String getForumName(int forumId);
 
@@ -96,6 +100,8 @@ public interface ForumService {
   Collection<Message> getMessages(ForumPK forumPK);
 
   Message getMessage(MessagePK messagePK);
+
+  MessagePath getMessagePath(MessagePK messagePK);
 
   String getMessageTitle(int messageId);
 

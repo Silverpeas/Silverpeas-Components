@@ -351,7 +351,8 @@ function CutSelectedMedia() {
 SUBSCRIPTION_PROMISE.then(function() {
   window.spSubManager = new SilverpeasSubscriptionManager({
     componentInstanceId : '${componentId}',
-    topicId : '${currentAlbum.id}'
+    subscriptionResourceType : jQuery.subscription.subscriptionType.NODE,
+    resourceId : '${currentAlbum.id}'
   });
 });
   </script>

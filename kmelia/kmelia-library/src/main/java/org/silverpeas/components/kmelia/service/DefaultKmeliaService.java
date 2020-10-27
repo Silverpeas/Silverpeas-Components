@@ -85,7 +85,6 @@ import org.silverpeas.core.node.coordinates.model.CoordinatePoint;
 import org.silverpeas.core.node.coordinates.service.CoordinatesService;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.node.model.NodePath;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.notification.user.UserNotification;
 import org.silverpeas.core.notification.user.builder.UserNotificationBuilder;
@@ -108,13 +107,6 @@ import org.silverpeas.core.security.authorization.NodeAccessControl;
 import org.silverpeas.core.security.authorization.PublicationAccessControl;
 import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
-import org.silverpeas.core.subscription.Subscription;
-import org.silverpeas.core.subscription.SubscriptionResource;
-import org.silverpeas.core.subscription.SubscriptionService;
-import org.silverpeas.core.subscription.SubscriptionServiceProvider;
-import org.silverpeas.core.subscription.service.ComponentSubscription;
-import org.silverpeas.core.subscription.service.NodeSubscription;
-import org.silverpeas.core.subscription.service.UserSubscriptionSubscriber;
 import org.silverpeas.core.util.*;
 import org.silverpeas.core.util.annotation.Action;
 import org.silverpeas.core.util.annotation.SourcePK;
@@ -215,10 +207,6 @@ public class DefaultKmeliaService implements KmeliaService {
   private boolean isDraftModeUsed(String componentId) {
     return "yes".
         equals(getOrganisationController().getComponentParameterValue(componentId, "draft"));
-  }
-
-  private SubscriptionService getSubscribeService() {
-    return SubscriptionServiceProvider.getSubscribeService();
   }
 
   @Override
@@ -775,86 +763,6 @@ public class DefaultKmeliaService implements KmeliaService {
     } catch (Exception e) {
       throw new KmeliaRuntimeException(e);
     }
-  }
-
-  /**
-   * Subscriptions - get the subscription list of the current user
-   * @param userId
-   * @param componentId
-   * @return a Path Collection - it's a Collection of NodeDetail collection
-   * @see NodeDetail
-   * @since 1.0
-   */
-  @Override
-  public Collection<Collection<NodeDetail>> getSubscriptionList(String userId, String componentId) {
-    try {
-      Collection<Subscription> list = getSubscribeService()
-          .getBySubscriberAndComponent(UserSubscriptionSubscriber.from(userId), componentId);
-      Collection<Collection<NodeDetail>> detailedList = new ArrayList<>();
-      // For each favorite, get the path from root to favorite
-      for (Subscription subscription : list) {
-        final SubscriptionResource resource = subscription.getResource();
-        final NodePK nodePK = new NodePK(resource.getId(), resource.getInstanceId());
-        final NodePath path = NodeService.get().getPath(nodePK);
-        detailedList.add(path);
-      }
-      return detailedList;
-    } catch (Exception e) {
-      throw new KmeliaRuntimeException(e);
-    }
-  }
-
-  /**
-   * Subscriptions - remove a subscription to the subscription list of the current user
-   * @param topicPK the subscribe topic Id to remove
-   * @param userId
-   * @since 1.0
-   */
-  @Override
-  public void removeSubscriptionToCurrentUser(NodePK topicPK, String userId) {
-    try {
-      if (topicPK.isRoot()) {
-        getSubscribeService().unsubscribe(
-            new ComponentSubscription(userId, topicPK.getInstanceId()));
-      } else {
-        getSubscribeService().unsubscribe(new NodeSubscription(userId, topicPK));
-      }
-    } catch (Exception e) {
-      throw new KmeliaRuntimeException(e);
-    }
-  }
-
-  /**
-   * Subscriptions - add a subscription
-   * @param topicPK the subscription topic Id to add
-   * @param userId the subscription userId
-   * @since 1.0
-   */
-  @Override
-  public void addSubscription(NodePK topicPK, String userId) {
-    if (topicPK.isRoot()) {
-      getSubscribeService().subscribe(new ComponentSubscription(userId, topicPK.getInstanceId()));
-    } else {
-      getSubscribeService().subscribe(new NodeSubscription(userId, topicPK));
-    }
-  }
-
-  /**
-   * @param topicPK
-   * @param userId
-   * @return true if this topic does not exists in user subscriptions and can be added to them.
-   */
-  @Override
-  public boolean checkSubscription(NodePK topicPK, String userId) {
-    final boolean alreadyExist;
-    if (topicPK.isRoot()) {
-      alreadyExist = getSubscribeService().existsSubscription(
-          new ComponentSubscription(userId, topicPK.getInstanceId()));
-    } else {
-      alreadyExist =
-          getSubscribeService().existsSubscription(new NodeSubscription(userId, topicPK));
-    }
-    return !alreadyExist;
   }
 
   private List<KmeliaPublication> asRankedKmeliaPublication(NodePK fatherPK, Collection<PublicationDetail> pubDetails) {

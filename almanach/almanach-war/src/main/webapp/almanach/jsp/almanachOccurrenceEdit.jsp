@@ -79,6 +79,7 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   <view:looknfeel withFieldsetStyle="true"/>
+  <view:includePlugin name="subscription"/>
   <view:includePlugin name="calendar"/>
   <view:includePlugin name="attachment"/>
   <view:script src="/almanach/jsp/javaScript/angularjs/services/almanachcalendar.js"/>

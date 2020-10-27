@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,25 +21,43 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.components.kmelia.servlets.ajax.handlers;
 
-import javax.servlet.http.HttpServletRequest;
+package org.silverpeas.components.forums.model;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.components.kmelia.control.KmeliaSessionController;
-import org.silverpeas.components.kmelia.servlets.ajax.AjaxHandler;
+import org.jetbrains.annotations.NotNull;
+import org.silverpeas.core.util.ResourcePath;
 
-public class UnsubscribeHandler implements AjaxHandler {
+import java.util.Collection;
+
+/**
+ * List of {@link Forum} which represents a path.
+ * @author silveryocha
+ */
+public class ForumPath  extends ResourcePath<Forum> {
+  private static final long serialVersionUID = 4607155750736774073L;
+
+  public ForumPath(final @NotNull Collection<Forum> c) {
+    super(c);
+  }
 
   @Override
-  public String handleRequest(HttpServletRequest request, KmeliaSessionController kmelia) {
-    String topicId = request.getParameter("Id");
-    try {
-      kmelia.removeSubscription(topicId);
-      return "ok";
-    } catch (Exception e) {
-      SilverTrace.error("kmelia", "UnsubscribeHandler.handleRequest", "root.MSG_GEN_PARAM_VALUE", e);
-      return e.getMessage();
-    }
+  protected String getInstanceId(final Forum forum) {
+    return forum.getInstanceId();
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  protected Integer getId(final Forum forum) {
+    return forum.getId();
+  }
+
+  @Override
+  protected boolean isRoot(final Forum forum) {
+    return forum.isRoot();
+  }
+
+  @Override
+  protected String getLabel(final Forum forum, final String language) {
+    return forum.getName();
   }
 }

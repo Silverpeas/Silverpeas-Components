@@ -64,7 +64,6 @@ if (action == null) {
 <script type="text/javascript" src="javaScript/publications.js"></script>
 <script type="text/javascript">
 <!--
-var subscriptionWindow = window;
 var favoriteWindow = window;
 var topicUpdateWindow = window;
 var topicAddWindow = window;
@@ -97,8 +96,6 @@ function search() {
 }
 
 function publicationAdd(){
-	if(subscriptionWindow.name=="subscriptionWindow")
-		subscriptionWindow.close();
 	if (favoriteWindow.name=="favoriteWindow")
 		favoriteWindow.close();
 	if (topicAddWindow.name=="topicAddWindow")
@@ -110,8 +107,6 @@ function publicationAdd(){
 }
 
 function publicationGoTo(id){
-	if(subscriptionWindow.name=="subscriptionWindow")
-		subscriptionWindow.close();
 	if (favoriteWindow.name=="favoriteWindow")
 		favoriteWindow.close();
 	if (topicAddWindow.name=="topicAddWindow")

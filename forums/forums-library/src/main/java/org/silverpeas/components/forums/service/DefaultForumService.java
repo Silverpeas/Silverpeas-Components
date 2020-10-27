@@ -28,8 +28,10 @@ import org.silverpeas.components.forums.ForumsContentManager;
 import org.silverpeas.components.forums.model.Forum;
 import org.silverpeas.components.forums.model.ForumDetail;
 import org.silverpeas.components.forums.model.ForumPK;
+import org.silverpeas.components.forums.model.ForumPath;
 import org.silverpeas.components.forums.model.Message;
 import org.silverpeas.components.forums.model.MessagePK;
+import org.silverpeas.components.forums.model.MessagePath;
 import org.silverpeas.components.forums.model.Moderator;
 import org.silverpeas.components.forums.subscription.ForumMessageSubscription;
 import org.silverpeas.components.forums.subscription.ForumMessageSubscriptionResource;
@@ -102,6 +104,27 @@ public class DefaultForumService implements ForumService {
   public Forum getForum(ForumPK forumPK) {
     try (Connection con = openConnection()) {
       return ForumsDAO.getForum(con, forumPK);
+    } catch (SQLException e) {
+      throw new ForumsRuntimeException(e);
+    }
+  }
+
+  @Override
+  public ForumPath getForumPath(final ForumPK forumPK) {
+    final List<Forum> path = new ArrayList<>();
+    try (Connection con = openConnection()) {
+      Forum currentForum = ForumsDAO.getForum(con, forumPK);
+      if (currentForum != null) {
+        path.add(currentForum);
+        while (currentForum != null && !currentForum.isRoot()) {
+          currentForum = ForumsDAO.getForum(con,
+              new ForumPK(forumPK.getInstanceId(), currentForum.getParentIdAsString()));
+          if (currentForum != null) {
+            path.add(currentForum);
+          }
+        }
+      }
+      return new ForumPath(path);
     } catch (SQLException e) {
       throw new ForumsRuntimeException(e);
     }
@@ -592,6 +615,25 @@ public class DefaultForumService implements ForumService {
     } catch (SQLException e) {
       throw new ForumsRuntimeException(e);
     }
+  }
+
+  @Override
+  public MessagePath getMessagePath(final MessagePK messagePK) {
+    final List<Message> path = new ArrayList<>();
+    Message currentMessage = getMessage(messagePK);
+    if (currentMessage != null) {
+      path.add(currentMessage);
+      while (currentMessage != null && !currentMessage.isSubject()) {
+        currentMessage = getMessage(
+            new MessagePK(messagePK.getInstanceId(), currentMessage.getParentIdAsString()));
+        if (currentMessage != null) {
+          path.add(currentMessage);
+        }
+      }
+    }
+    final Message subject = path.iterator().next();
+    return new MessagePath(
+        getForumPath(new ForumPK(subject.getInstanceId(), subject.getForumIdAsString())), path);
   }
 
   @Override

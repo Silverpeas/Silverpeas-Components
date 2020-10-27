@@ -122,9 +122,11 @@ class GalleryAlbumMediaSubscriptionNotificationBuilderTest {
   void setup(@TestManagedMock OrganizationController organizationController,
       @TestManagedMock SilverpeasComponentInstanceProvider componentInstanceProvider,
       @TestManagedMock NodeService nodeService) throws Exception {
+    final Optional<SilverpeasComponentInstance> optionalInstance = Optional.of(componentInstance);
     when(organizationController.getComponentInstLight(componentInstance.getId()))
         .thenReturn(componentInstance);
-    final Optional<SilverpeasComponentInstance> optionalInstance = Optional.of(componentInstance);
+    when(organizationController.getComponentInstance(componentInstance.getId()))
+        .thenReturn(optionalInstance);
     when(componentInstanceProvider.getById(componentInstance.getId())).thenReturn(optionalInstance);
     componentImplementations = (Map) FieldUtils
         .readDeclaredStaticField(ResourceSubscriptionProvider.class, "componentImplementations",
