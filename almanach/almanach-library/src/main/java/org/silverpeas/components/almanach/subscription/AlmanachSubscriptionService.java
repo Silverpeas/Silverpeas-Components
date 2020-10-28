@@ -9,43 +9,33 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception. You should have received a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.components.forums.subscription;
 
-import org.silverpeas.components.forums.model.ForumPK;
-import org.silverpeas.core.subscription.service.PKSubscriptionResource;
+package org.silverpeas.components.almanach.subscription;
+
+import org.silverpeas.components.almanach.AlmanachSettings;
+import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.calendar.subscription.AbstractCalendarSubscriptionService;
 
 /**
- * User: Yohann Chastagnier
- * Date: 07/06/13
+ * @author silveryocha
  */
-public class ForumSubscriptionResource extends PKSubscriptionResource {
+@Service
+public class AlmanachSubscriptionService extends AbstractCalendarSubscriptionService {
 
-  /**
-   * A way to get an instance of a forum subscription resource.
-   * @param pk
-   * @return
-   */
-  public static ForumSubscriptionResource from(ForumPK pk) {
-    return new ForumSubscriptionResource(pk);
-  }
-
-  /**
-   * Default constructor
-   * @param pk
-   */
-  protected ForumSubscriptionResource(final ForumPK pk) {
-    super(pk, ForumSubscriptionConstants.FORUM);
+  @Override
+  protected String getHandledComponentName() {
+    return AlmanachSettings.COMPONENT_NAME;
   }
 }

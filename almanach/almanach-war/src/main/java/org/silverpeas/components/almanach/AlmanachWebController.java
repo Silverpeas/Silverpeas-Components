@@ -25,20 +25,24 @@ package org.silverpeas.components.almanach;
 
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.calendar.Calendar;
+import org.silverpeas.core.calendar.subscription.CalendarSubscriptionResource;
 import org.silverpeas.core.web.calendar.AbstractCalendarWebController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.Homepage;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.LowestRoleAccess;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.NavigationStep;
+import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectTo;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToInternalJsp;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.WebComponentController;
+import org.silverpeas.core.web.subscription.SubscriptionContext;
 import org.silverpeas.core.webapi.calendar.CalendarEntity;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
-import static org.silverpeas.components.almanach.AlmanachSettings.*;
+import static org.silverpeas.components.almanach.AlmanachSettings.getDefaultCalendarView;
+import static org.silverpeas.components.almanach.AlmanachSettings.isCalendarWeekendVisible;
 import static org.silverpeas.core.web.calendar.CalendarViewType.from;
 
 @WebComponentController(AlmanachSettings.COMPONENT_NAME)
@@ -106,6 +110,23 @@ public class AlmanachWebController
   @RedirectToInternalJsp("almanachPortlet.jsp")
   public void portlet(AlmanachWebRequestContext context) {
     // Nothing to do
+  }
+
+  /**
+   * Asks for managing subscriptions of a calendar. It redirects to the transversal subscription
+   * management.
+   * @param context the context of the incoming request.
+   */
+  @GET
+  @Path("calendars/{id}/subscriptions/manage")
+  @RedirectTo("{destination}")
+  @LowestRoleAccess(SilverpeasRole.admin)
+  public void manageCalendarSubscriptions(AlmanachWebRequestContext context) {
+    final String calendarId = context.getPathVariables().get("id");
+    final Calendar calendar = Calendar.getById(calendarId);
+    final SubscriptionContext subscriptionContext = getSubscriptionContext();
+    subscriptionContext.initialize(CalendarSubscriptionResource.from(calendar));
+    context.addRedirectVariable("destination", subscriptionContext.getDestinationUrl());
   }
 
   /**
