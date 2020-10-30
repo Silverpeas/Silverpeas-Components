@@ -24,6 +24,7 @@
 package org.silverpeas.components.forums.model;
 
 import org.silverpeas.components.forums.ForumsContentManager;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
 import org.silverpeas.core.i18n.AbstractBean;
 import org.silverpeas.core.util.DateUtil;
@@ -74,6 +75,21 @@ public class ForumDetail extends AbstractBean
   @Override
   public Date getCreationDate() {
     return creationDate;
+  }
+
+  @Override
+  public Date getLastUpdateDate() {
+    return getCreationDate();
+  }
+
+  @Override
+  public User getCreator() {
+    return User.getById(getCreatorId());
+  }
+
+  @Override
+  public User getLastUpdater() {
+    return getCreator();
   }
 
   public String toString() {

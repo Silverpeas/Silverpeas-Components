@@ -543,7 +543,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         fragmentSettings.showImportance && !fragmentSettings.linkAttachment);
     template.setAttribute("date", displayDate(pub, kmeliaScc, resources));
     template.setAttribute("creationDate", resources.getOutputDate(pub.getCreationDate()));
-    template.setAttribute("updateDate", resources.getOutputDate(pub.getUpdateDate()));
+    template.setAttribute("updateDate", resources.getOutputDate(pub.getLastUpdateDate()));
     // check if the pub date must be display
     boolean showPubDate = true;
     if (fragmentSettings.linkAttachment) {
@@ -713,7 +713,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     if ("5".equals(kmeliaScc.getSortValue()) || "6".equals(kmeliaScc.getSortValue())) {
       return resources.getOutputDate(pub.getCreationDate());
     } else {
-      return resources.getOutputDate(pub.getUpdateDate());
+      return resources.getOutputDate(pub.getLastUpdateDate());
     }
   }
 

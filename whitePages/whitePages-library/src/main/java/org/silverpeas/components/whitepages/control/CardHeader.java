@@ -28,14 +28,19 @@ import org.silverpeas.components.whitepages.model.Card;
 import org.silverpeas.components.whitepages.record.UserRecord;
 import org.silverpeas.components.whitepages.record.UserTemplate;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
 import org.silverpeas.core.i18n.AbstractBean;
+import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 
+import java.text.ParseException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -185,6 +190,33 @@ public final class CardHeader extends AbstractBean
   @Override
   public String getSilverCreationDate() {
     return this.date;
+  }
+
+  @Override
+  public Date getCreationDate() {
+    if (StringUtil.isDefined(this.date)) {
+      try {
+        return DateUtil.parseDate(this.date);
+      } catch (ParseException e) {
+        return null;
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public Date getLastUpdateDate() {
+    return getCreationDate();
+  }
+
+  @Override
+  public User getCreator() {
+    return User.getById(getCreatorId());
+  }
+
+  @Override
+  public User getLastUpdater() {
+    return getCreator();
   }
 
   @Override

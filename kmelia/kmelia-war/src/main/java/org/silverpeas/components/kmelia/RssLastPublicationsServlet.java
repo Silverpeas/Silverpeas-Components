@@ -151,7 +151,7 @@ public class RssLastPublicationsServlet extends HttpServlet {
     url.append(URLUtil.getSimpleURL(URLUtil.URL_PUBLI, publication.getPK().getId()));
     entry.setLink(url.toString());
     entry.setPublishedDate(publication.getCreationDate());
-    entry.setUpdatedDate(publication.getUpdateDate());
+    entry.setUpdatedDate(publication.getLastUpdateDate());
 
     SyndContent description = new SyndContentImpl();
     description.setType("text/plan");

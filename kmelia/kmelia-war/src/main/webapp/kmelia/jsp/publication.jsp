@@ -678,8 +678,8 @@
 			         			<% if (updaterId != null) {%>
 								  	<div id="lastModificationInfo" class="paragraphe">
 								  		<%=resources.getString("PubDateUpdate")%>
-                                        <strong><%=resources.getOutputDate(pubDetail.getUpdateDate())%></strong> <%=resources.getString("GML.by")%> <view:username userId="<%=kmeliaPublication.getLastModifier().getId()%>"/>
-								  		<div class="profilPhoto"><view:image src="<%=kmeliaPublication.getLastModifier().getAvatar() %>" type="avatar" css="defaultAvatar"/></div>
+                                        <strong><%=resources.getOutputDate(pubDetail.getLastUpdateDate())%></strong> <%=resources.getString("GML.by")%> <view:username userId="<%=kmeliaPublication.getLastUpdater().getId()%>"/>
+								  		<div class="profilPhoto"><view:image src="<%=kmeliaPublication.getLastUpdater().getAvatar() %>" type="avatar" css="defaultAvatar"/></div>
 							  		</div>
 							  	 <% }%>
 								<c:if test="${view:isDefined(requestScope['Publication'].creator) && view:isDefined(requestScope['Publication'].creator.id)}">

@@ -120,7 +120,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 			</td>
 			<td valign=top align=right><%=user.getFirstName()+" "+user.getLastName()%><br />
-			<i><%=resources.getOutputDate(detail.getUpdateDate())%> </i><br /> 
+			<i><%=resources.getOutputDate(detail.getLastUpdateDate())%> </i><br />
 <%		
     }
   }

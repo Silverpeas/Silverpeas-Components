@@ -85,7 +85,7 @@ public class KmeliaDelayedVisibilityUserNotificationReminder implements Backgrou
     final Temporal delayedVisibilityTemporal = pubDetail.getModel()
         .getProperty(DELAYED_VISIBILITY_AT_MODEL_PROPERTY);
     if (delayedVisibilityTemporal != null) {
-      final ContributionIdentifier contributionId = pubDetail.getContributionId();
+      final ContributionIdentifier contributionId = pubDetail.getIdentifier();
       if (Reminder.getByContribution(contributionId).stream().noneMatch(
           r -> KMELIA_DELAYED_VISIBILITY_USER_NOTIFICATION.asString().equals(r.getProcessName()))) {
         try {

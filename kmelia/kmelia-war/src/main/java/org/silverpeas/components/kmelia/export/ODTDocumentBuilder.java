@@ -232,9 +232,9 @@ public class ODTDocumentBuilder {
     metadata.setUserDefinedDataValue(FIELD_CREATION_DATE,
         getOutputDate(detail.getCreationDate(), getLanguage()));
     metadata.setUserDefinedDataValue(FIELD_MODIFICATION_DATE,
-        getOutputDate(detail.getUpdateDate(), getLanguage()));
+        getOutputDate(detail.getLastUpdateDate(), getLanguage()));
     metadata.setUserDefinedDataValue(FIELD_AUTHOR, publication.getCreator().getDisplayedName());
-    metadata.setUserDefinedDataValue(FIELD_LAST_MODIFIER, publication.getLastModifier().
+    metadata.setUserDefinedDataValue(FIELD_LAST_MODIFIER, publication.getLastUpdater().
         getDisplayedName());
     metadata.setUserDefinedDataValue(FIELD_URL, publication.getURL());
     metadata.setUserDefinedDataValue(FIELD_VERSION, detail.getVersion());
@@ -254,7 +254,7 @@ public class ODTDocumentBuilder {
         row.getCellByIndex(0).setStringValue(comment.getOwnerDetail().getDisplayedName());
         row.getCellByIndex(1).setStringValue(comment.getMessage());
         row.getCellByIndex(2).setStringValue(formatDate(comment.getCreationDate()));
-        row.getCellByIndex(3).setStringValue(formatDate(comment.getLastModificationDate()));
+        row.getCellByIndex(3).setStringValue(formatDate(comment.getLastUpdateDate()));
       }
     }
   }
@@ -396,8 +396,8 @@ public class ODTDocumentBuilder {
             li.getOdfElement().getFirstChild().appendChild(hyperlink);
             seeAlso.getOdfElement().appendChild(ul.getOdfElement().cloneNode(true));
             ul.remove();
-            seeAlso.addParagraph(aLinkedPublication.getLastModifier().getDisplayedName() + " - " +
-                getOutputDate(publicationDetail.getUpdateDate(), getLanguage()));
+            seeAlso.addParagraph(aLinkedPublication.getLastUpdater().getDisplayedName() + " - " +
+                getOutputDate(publicationDetail.getLastUpdateDate(), getLanguage()));
             seeAlso.addParagraph(publicationDetail.getDescription(getLanguage()));
           }
         }

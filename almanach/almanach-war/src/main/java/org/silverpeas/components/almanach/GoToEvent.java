@@ -35,6 +35,6 @@ public class GoToEvent extends GoToContribution {
 
   @Override
   protected ContributionIdentifier getContributionIdentifier(final String objectId) {
-    return CalendarEvent.getById(objectId).getContributionId();
+    return CalendarEvent.getById(objectId).getIdentifier();
   }
 }

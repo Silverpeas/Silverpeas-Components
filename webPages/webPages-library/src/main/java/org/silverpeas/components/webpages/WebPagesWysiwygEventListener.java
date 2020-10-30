@@ -56,7 +56,7 @@ public class WebPagesWysiwygEventListener extends CDIResourceEventListener<Wysiw
 
   private void notifyUsersAboutChange(WysiwygContent content) {
     String userId = content.getAuthor().getId();
-    String componentId = content.getContribution().getContributionId().getComponentInstanceId();
+    String componentId = content.getContribution().getIdentifier().getComponentInstanceId();
 
     // If parameter useSubscription is used
     if ("yes".equals(organisationController.getComponentParameterValue(componentId,
@@ -69,7 +69,7 @@ public class WebPagesWysiwygEventListener extends CDIResourceEventListener<Wysiw
 
   private boolean isAboutWebPage(WysiwygContent content) {
     final Contribution contribution = content.getContribution();
-    return !contribution.getContributionId().getLocalId().startsWith("Node") &&
-        contribution.getContributionId().getComponentInstanceId().startsWith("webPages");
+    return !contribution.getIdentifier().getLocalId().startsWith("Node") &&
+        contribution.getIdentifier().getComponentInstanceId().startsWith("webPages");
   }
 }

@@ -353,7 +353,7 @@ public class KmeliaPublication implements SilverpeasContent {
    * @return the detail about the last modifier of this publication.
    */
   @Override
-  public User getLastModifier() {
+  public User getLastUpdater() {
     User lastModifier;
     String modifierId = getDetail().getUpdaterId();
     if (modifierId == null) {
@@ -472,8 +472,8 @@ public class KmeliaPublication implements SilverpeasContent {
   }
 
   @Override
-  public Date getLastModificationDate() {
-    return getDetail().getLastModificationDate();
+  public Date getLastUpdateDate() {
+    return getDetail().getLastUpdateDate();
   }
 
   @Override

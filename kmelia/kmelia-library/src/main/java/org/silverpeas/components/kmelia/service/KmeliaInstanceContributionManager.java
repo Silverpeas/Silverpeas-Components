@@ -31,6 +31,7 @@ import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import java.text.MessageFormat;
 import java.util.Optional;
@@ -43,13 +44,16 @@ import java.util.Optional;
 @Named("kmelia" + ComponentInstanceContributionManager.Constants.NAME_SUFFIX)
 public class KmeliaInstanceContributionManager implements ComponentInstanceContributionManager {
 
+  @Inject
+  private KmeliaService kmeliaService;
+
   @Override
   public Optional<Contribution> getById(final ContributionIdentifier contributionId) {
     if (PublicationDetail.TYPE.equals(contributionId.getType())) {
       final String localId = contributionId.getLocalId();
       final String componentInstanceId = contributionId.getComponentInstanceId();
       final PublicationPK pubPK = new PublicationPK(localId, componentInstanceId);
-      return Optional.ofNullable(KmeliaService.get().getPublicationDetail(pubPK));
+      return Optional.ofNullable(kmeliaService.getPublicationDetail(pubPK));
     }
     throw new IllegalStateException(
         MessageFormat.format("type {0} is not handled", contributionId.getType()));

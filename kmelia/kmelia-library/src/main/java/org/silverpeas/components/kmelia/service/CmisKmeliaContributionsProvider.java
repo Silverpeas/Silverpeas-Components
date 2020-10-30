@@ -24,12 +24,16 @@
 
 package org.silverpeas.components.kmelia.service;
 
+import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
 import org.silverpeas.components.kmelia.KmeliaPublicationHelper;
 import org.silverpeas.components.kmelia.model.KmeliaPublication;
+import org.silverpeas.core.ResourceIdentifier;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.cmis.CmisContributionsProvider;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.model.I18nContribution;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 
@@ -46,55 +50,57 @@ import java.util.stream.Stream;
  */
 @Service
 @Named("kmelia" + CmisContributionsProvider.Constants.NAME_SUFFIX)
-public class KmeliaContributionsProvider implements CmisContributionsProvider {
+public class CmisKmeliaContributionsProvider implements CmisContributionsProvider {
 
   @Inject
   private KmeliaService kmeliaService;
 
-  /**
-   * The root contributions are either the publications for tree disabled kmelia instances or
-   * the root folder.
-   * @param appId the unique identifier of a Kmelia application.
-   * @param user a user in Silverpeas.
-   * @return either a list with the root {@link org.silverpeas.core.node.model.NodeDetail} instance
-   * or a list of all publications.
-   */
+  @Inject
+  private OrganizationController controller;
+
   @Override
-  public List<ContributionIdentifier> getAllowedRootContributions(final String appId,
+  public List<I18nContribution> getAllowedRootContributions(final ResourceIdentifier appId,
       final User user) {
-    boolean treeEnabled = KmeliaPublicationHelper.isTreeEnabled(appId);
-    NodePK root = new NodePK(NodePK.ROOT_NODE_ID, appId);
+    String kmeliaId = appId.asString();
+    if (!controller.isComponentAvailableToUser(kmeliaId, user.getId())) {
+      throw new CmisObjectNotFoundException(
+          String.format("The application %s doesn't exist or is not accessible to user %s",
+              kmeliaId, user.getId()));
+    } boolean treeEnabled = KmeliaPublicationHelper.isTreeEnabled(kmeliaId);
+    NodePK root = new NodePK(NodePK.ROOT_NODE_ID, kmeliaId);
     if (treeEnabled) {
       ContributionIdentifier rootId = ContributionIdentifier.from(root, NodeDetail.TYPE);
       return getAllowedContributionsInFolder(rootId, user);
     } else {
       String profile = kmeliaService.getUserTopicProfile(root, user.getId());
-      List<KmeliaPublication> publications =
-          kmeliaService.getPublicationsOfFolder(root, profile, user.getId(), treeEnabled);
-      return publications.stream()
-          .map(p -> p.getDetail().getContributionId())
+      return kmeliaService.getPublicationsOfFolder(root, profile, user.getId(), treeEnabled)
+          .stream()
+          .map(KmeliaPublication::getDetail)
           .collect(Collectors.toList());
     }
   }
 
   @Override
-  public List<ContributionIdentifier> getAllowedContributionsInFolder(
-      final ContributionIdentifier folder, final User user) {
+  public List<I18nContribution> getAllowedContributionsInFolder(final ContributionIdentifier folder,
+      final User user) {
     boolean treeEnabled = KmeliaPublicationHelper.isTreeEnabled(folder.getComponentInstanceId());
     NodePK folderPK = toNodePK(folder);
-    String profile = kmeliaService.getUserTopicProfile(folderPK, user.getId());
-    Stream<ContributionIdentifier> publications =
-        kmeliaService.getPublicationsOfFolder(folderPK, profile, user.getId(), treeEnabled)
-            .stream()
-            .map(p -> p.getDetail().getContributionId());
-    Stream<ContributionIdentifier> subFolders =
-        kmeliaService.getFolderChildren(folderPK, user.getId())
-            .stream()
-            .filter(n -> !KmeliaHelper.isToValidateFolder(n.getNodePK().getId()))
-            .filter(n -> !n.isUnclassified() && !n.isBin())
-            .map(NodeDetail::getContributionId);
+    try {
+      String profile = kmeliaService.getUserTopicProfile(folderPK, user.getId());
+      Stream<? extends I18nContribution> publications =
+          kmeliaService.getPublicationsOfFolder(folderPK, profile, user.getId(), treeEnabled)
+              .stream()
+              .map(KmeliaPublication::getDetail);
+      Stream<? extends I18nContribution> subFolders =
+          kmeliaService.getFolderChildren(folderPK, user.getId())
+              .stream()
+              .filter(n -> !KmeliaHelper.isToValidateFolder(n.getNodePK().getId()))
+              .filter(n -> !n.isUnclassified() && !n.isBin());
 
-    return Stream.concat(publications, subFolders).collect(Collectors.toList());
+      return Stream.concat(publications, subFolders).collect(Collectors.toList());
+    } catch (Exception e) {
+      throw new CmisObjectNotFoundException(e.getMessage());
+    }
   }
 
   private NodePK toNodePK(final ContributionIdentifier identifier) {

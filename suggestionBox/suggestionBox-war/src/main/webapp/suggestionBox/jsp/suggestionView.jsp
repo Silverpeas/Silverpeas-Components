@@ -56,6 +56,9 @@
 <c:set var="isPublishable" value="${requestScope.isPublishable}"/>
 <c:set var="isModeratorView" value="${requestScope.isModeratorView}"/>
 
+<jsp:useBean id="suggestionBox" type="org.silverpeas.components.suggestionbox.model.SuggestionBox"/>
+<jsp:useBean id="suggestion" type="org.silverpeas.components.suggestionbox.web.SuggestionEntity"/>
+
 <c:url var="backUri" value="${requestScope.navigationContext.previousNavigationStep.uri}"/>
 <c:url var="componentUriBase" value="${requestScope.componentUriBase}"/>
 <c:url var="suggestionBoxJS" value="/suggestionBox/jsp/javaScript/angularjs/suggestionbox.js"/>

@@ -2109,8 +2109,8 @@ public class DefaultKmeliaService implements KmeliaService {
     clone.setStatus(refPub.getStatus());
     clone.setTargetValidatorId(refPub.getTargetValidatorId());
     clone.setCloneId(refPub.getCloneId());
-    if (refPub.getUpdateDate() != null) {
-      clone.setUpdateDate(new Date(refPub.getUpdateDate().getTime()));
+    if (refPub.getLastUpdateDate() != null) {
+      clone.setUpdateDate(new Date(refPub.getLastUpdateDate().getTime()));
     }
     clone.setUpdaterId(refPub.getUpdaterId());
     if (refPub.getValidateDate() != null) {
@@ -4254,7 +4254,7 @@ public class DefaultKmeliaService implements KmeliaService {
       newPubli.setCreatorId(publiToCopy.getCreatorId());
       newPubli.setCreationDate(publiToCopy.getCreationDate());
       newPubli.setUpdaterId(publiToCopy.getUpdaterId());
-      newPubli.setUpdateDate(publiToCopy.getUpdateDate());
+      newPubli.setUpdateDate(publiToCopy.getLastUpdateDate());
       newPubli.setStatus(publiToCopy.getStatus());
       newPubli.setTargetValidatorId(publiToCopy.getTargetValidatorId());
     } else {

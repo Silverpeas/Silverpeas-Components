@@ -24,9 +24,15 @@
 package org.silverpeas.components.questionreply.service;
 
 import org.silverpeas.components.questionreply.model.Question;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
 import org.silverpeas.core.i18n.AbstractBean;
 import org.silverpeas.core.persistence.jdbc.bean.IdPK;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.StringUtil;
+
+import java.text.ParseException;
+import java.util.Date;
 
 /**
  * The questionReply implementation of SilverContentInterface
@@ -81,6 +87,33 @@ public final class QuestionHeader extends AbstractBean implements SilverContentI
   @Override
   public String getDate() {
     return this.date;
+  }
+
+  @Override
+  public Date getCreationDate() {
+    if (StringUtil.isDefined(this.date)) {
+      try {
+        return DateUtil.parseDate(this.date);
+      } catch (ParseException e) {
+        return null;
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public Date getLastUpdateDate() {
+    return getCreationDate();
+  }
+
+  @Override
+  public User getCreator() {
+    return User.getById(getCreatorId());
+  }
+
+  @Override
+  public User getLastUpdater() {
+    return getCreator();
   }
 
   @Override

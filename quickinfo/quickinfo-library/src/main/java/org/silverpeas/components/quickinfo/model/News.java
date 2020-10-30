@@ -182,7 +182,7 @@ public class News extends SilverpeasJpaEntity<News, UuidIdentifier> implements S
   }
 
   public Date getUpdateDate() {
-    return getPublication().getUpdateDate();
+    return getPublication().getLastUpdateDate();
   }
 
   public boolean isVisible() {
@@ -254,18 +254,8 @@ public class News extends SilverpeasJpaEntity<News, UuidIdentifier> implements S
   }
 
   @Override
-  public ContributionIdentifier getContributionId() {
+  public ContributionIdentifier getIdentifier() {
     return ContributionIdentifier.from(getComponentInstanceId(), getId(), getContributionType());
-  }
-
-  @Override
-  public User getLastModifier() {
-    return getLastUpdater();
-  }
-
-  @Override
-  public Date getLastModificationDate() {
-    return getLastUpdateDate();
   }
 
   @Override

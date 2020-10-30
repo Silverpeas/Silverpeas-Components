@@ -222,7 +222,7 @@ public class StatisticServiceImpl implements
   private boolean isPubliActivityInsideTimeInterval(Date startTime, Date endTime,
       PublicationDetail publi, boolean isCreate, boolean isUpdate) {
     Date createDate = publi.getCreationDate();
-    Date updateDate = publi.getUpdateDate();
+    Date updateDate = publi.getLastUpdateDate();
     return (isCreate && (createDate.after(startTime) || createDate.equals(startTime)) && createDate.
         before(endTime)) || (isUpdate && (updateDate.after(startTime) || updateDate.
         equals(startTime)) && updateDate

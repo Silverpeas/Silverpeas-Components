@@ -160,8 +160,8 @@ out.println(window.printBefore());
 	  	       &nbsp;|&nbsp;
 		         <% // date de cr�ation et de modification %>
 		         <%=resource.getString("GML.creationDate")%> <%=resource.getOutputDate(post.getPublication().getCreationDate())%> <%=resource.getString("GML.by")%> <view:username userId="<%=post.getPublication().getCreatorId()%>" />
-		         <% if (!resource.getOutputDate(post.getPublication().getCreationDate()).equals(resource.getOutputDate(post.getPublication().getUpdateDate())) || !post.getPublication().getCreatorId().equals(post.getPublication().getUpdaterId())) { %>
-		           - <%=resource.getString("GML.updateDate")%> <%=resource.getOutputDate(post.getPublication().getUpdateDate())%> <%=resource.getString("GML.by")%> <view:username userId="<%=post.getPublication().getUpdaterId()%>" />
+		         <% if (!resource.getOutputDate(post.getPublication().getCreationDate()).equals(resource.getOutputDate(post.getPublication().getLastUpdateDate())) || !post.getPublication().getCreatorId().equals(post.getPublication().getUpdaterId())) { %>
+		           - <%=resource.getString("GML.updateDate")%> <%=resource.getOutputDate(post.getPublication().getLastUpdateDate())%> <%=resource.getString("GML.by")%> <view:username userId="<%=post.getPublication().getUpdaterId()%>" />
 		         <% } %>
 		       </span>
 		    </div>

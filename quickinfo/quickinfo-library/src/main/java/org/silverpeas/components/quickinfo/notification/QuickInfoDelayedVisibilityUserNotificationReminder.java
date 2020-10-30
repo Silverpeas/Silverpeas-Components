@@ -85,7 +85,7 @@ public class QuickInfoDelayedVisibilityUserNotificationReminder implements Backg
     final Temporal delayedVisibilityTemporal = news.getModel()
         .getProperty(DELAYED_VISIBILITY_AT_MODEL_PROPERTY);
     if (delayedVisibilityTemporal != null) {
-      final ContributionIdentifier contributionId = news.getContributionId();
+      final ContributionIdentifier contributionId = news.getIdentifier();
       if (Reminder.getByContribution(contributionId).stream().noneMatch(
           r -> QUICKINFO_DELAYED_VISIBILITY_USER_NOTIFICATION.asString().equals(r.getProcessName()))) {
         try {

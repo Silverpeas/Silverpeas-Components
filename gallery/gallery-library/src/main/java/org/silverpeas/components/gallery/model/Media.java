@@ -225,16 +225,6 @@ public abstract class Media implements SilverContentInterface, Serializable {
     return getCreator() != null ? getCreator().getDisplayedName() : "";
   }
 
-  @Override
-  public User getLastModifier() {
-    return getLastUpdater();
-  }
-
-  @Override
-  public Date getLastModificationDate() {
-    return getLastUpdateDate();
-  }
-
   public Date getLastUpdateDate() {
     return lastUpdateDate != null ? lastUpdateDate : getCreationDate();
   }

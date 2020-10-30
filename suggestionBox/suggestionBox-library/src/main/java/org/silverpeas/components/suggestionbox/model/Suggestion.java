@@ -48,7 +48,6 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.Date;
 
 /**
  * This entity represents a suggestion associated to a suggestion box.
@@ -262,18 +261,8 @@ public class Suggestion extends SilverpeasJpaEntity<Suggestion, UuidIdentifier>
   }
 
   @Override
-  public ContributionIdentifier getContributionId() {
+  public ContributionIdentifier getIdentifier() {
     return ContributionIdentifier.from(getComponentInstanceId(), getId(), getContributionType());
-  }
-
-  @Override
-  public User getLastModifier() {
-    return getLastUpdater();
-  }
-
-  @Override
-  public Date getLastModificationDate() {
-    return getLastUpdateDate();
   }
 
   @Override

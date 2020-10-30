@@ -313,9 +313,9 @@
       arrayLine.setId("delegatedNews_"+pubId);
       arrayLine.addArrayCellLink(delegatedNews.getPublicationDetail().getName(resources.getLanguage()), "javascript:onClick=openPublication('"+pubId+"', '"+instanceId+"');");
       
-      String updateDate = resources.getOutputDate(delegatedNews.getPublicationDetail().getUpdateDate());
+      String updateDate = resources.getOutputDate(delegatedNews.getPublicationDetail().getLastUpdateDate());
       ArrayCellText cellUpdateDate = arrayLine.addArrayCellText(updateDate);
-      cellUpdateDate.setCompareOn(delegatedNews.getPublicationDetail().getUpdateDate());
+      cellUpdateDate.setCompareOn(delegatedNews.getPublicationDetail().getLastUpdateDate());
       
       arrayLine.addArrayCellText(UserNameGenerator.toString(delegatedNews.getContributorId(), userId));
       
