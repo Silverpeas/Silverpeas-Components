@@ -1,8 +1,5 @@
 package org.silverpeas.components.gallery;
 
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -10,12 +7,15 @@ import javax.ws.rs.core.MediaType;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import static java.net.http.HttpResponse.BodyHandlers.ofInputStream;
 import static org.apache.commons.io.FilenameUtils.*;
 import static org.silverpeas.core.util.HttpUtil.httpClient;
+import static org.silverpeas.core.util.HttpUtil.toUrl;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 public class Watermark {
@@ -121,13 +121,14 @@ public class Watermark {
         SilverLogger.getLogger(this).warn("impossible to save image from URL {0}", imageUrl);
       }
     } else {
-      final HttpGet httpGet = new HttpGet(imageUrl);
-      httpGet.addHeader("Accept", MediaType.WILDCARD);
-      try (CloseableHttpClient httpClient = httpClient();
-           CloseableHttpResponse response = httpClient.execute(httpGet);
-           InputStream is = response.getEntity().getContent()) {
-        Files.copy(is, cachedPath);
-      } catch (IOException e) {
+      try {
+        final HttpResponse<InputStream> response =  httpClient().send(toUrl(imageUrl)
+            .header("Accept", MediaType.WILDCARD)
+            .build(), ofInputStream());
+        try (final InputStream body = response.body()) {
+          Files.copy(body, cachedPath);
+        }
+      } catch (Exception e) {
         cachedFile = null;
         SilverLogger.getLogger(this).warn(e);
         SilverLogger.getLogger(this).warn("impossible to save image from URL {0}", imageUrl);
