@@ -2,7 +2,7 @@
  * Copyright (C) 2000 - 2020 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
+ * it under the terms of the GNU Affero General License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
@@ -16,27 +16,29 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
+ * GNU Affero General License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU Affero General License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.silverpeas.components.gallery.constant;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 
+import java.util.Optional;
+
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.silverpeas.components.gallery.constant.StreamingProvider.getOembedUrl;
 
 @EnableSilverTestEnv
-public class StreamingProviderTest {
+class StreamingProviderTest {
 
   @Test
-  public void testFrom() {
+  void testFrom() {
     assertThat(StreamingProvider.ALL_VALIDS, hasSize(StreamingProvider.values().length - 1));
     assertThat(StreamingProvider.from(null), is(StreamingProvider.unknown));
     assertThat(StreamingProvider.from(""), is(StreamingProvider.unknown));
@@ -48,7 +50,7 @@ public class StreamingProviderTest {
   }
 
   @Test
-  public void testFromUrl() {
+  void testFromUrl() {
     assertThat(StreamingProvider.fromUrl(null), is(StreamingProvider.unknown));
     assertThat(StreamingProvider.fromUrl(""), is(StreamingProvider.unknown));
     assertThat(StreamingProvider.fromUrl(" "), is(StreamingProvider.unknown));
@@ -61,7 +63,7 @@ public class StreamingProviderTest {
   }
 
   @Test
-  public void testExtractStreamingId() {
+  void testExtractStreamingId() {
     assertThat(StreamingProvider.dailymotion.extractStreamingId(
         "http://www.dailymotion.com/video/x3fd843_beverly-piegee-par-l-incroyable-strategie-de" +
             "-gilles_tv"), is("x3fd843"));
@@ -73,33 +75,30 @@ public class StreamingProviderTest {
   }
 
   @Test
-  public void getYoutubeOembedUrl() {
-    assertThat(StreamingProvider.getOembedUrl("https://youtu.be/6xN3hSEj21Q"),
-        is("http://www.youtube.com/oembed?url=https://youtu.be/6xN3hSEj21Q&format=json"));
+  void getYoutubeOembedUrl() {
+    final Optional<String> oembedUrl = getOembedUrl("https://youtu.be/6xN3hSEj21Q");
+    assertThat(oembedUrl.isPresent(), is(true));
+    assertThat(oembedUrl.get(), is("http://www.youtube.com/oembed?url=https://youtu.be/6xN3hSEj21Q&format=json"));
   }
 
   @Test
-  public void getVimeoOembedUrl() {
-    assertThat(StreamingProvider.getOembedUrl("http://vimeo.com/21040307"),
-        is("http://vimeo.com/api/oembed.json?url=http://vimeo.com/21040307"));
+  void getVimeoOembedUrl() {
+    final Optional<String> oembedUrl = getOembedUrl("http://vimeo.com/21040307");
+    assertThat(oembedUrl.isPresent(), is(true));
+    assertThat(oembedUrl.get(), is("http://vimeo.com/api/oembed.json?url=http://vimeo.com/21040307"));
   }
 
   @Test
-  public void getDailymotionOembedUrl() {
-    assertThat(StreamingProvider.getOembedUrl(
-        "http://www.dailymotion.com/video/x3fgyln_jeff-bezos-fait-atterrir-en-secret-la-premiere" +
-            "-fusee-reutilisable_tech"),
-        is("http://www.dailymotion.com/services/oembed?url=http://www.dailymotion" +
-            ".com/video/x3fgyln"));
+  void getDailymotionOembedUrl() {
+    final Optional<String> oembedUrl = getOembedUrl("http://www.dailymotion.com/video/x3fgyln_jeff-bezos-fait-atterrir-en-secret-la-premiere-fusee-reutilisable_tech");
+    assertThat(oembedUrl.isPresent(), is(true));
+    assertThat(oembedUrl.get(), is("http://www.dailymotion.com/services/oembed?url=http://www.dailymotion.com/video/x3fgyln"));
   }
 
   @Test
-  public void getSoundCloudOembedUrl() {
-    assertThat(StreamingProvider.getOembedUrl(
-        "https://soundcloud.com/empreinte-digiale/saison-1-01-la-lazy-company-jean-sebastien" +
-            "-vermalle?in=benjamin-roux-10/sets/lazy-compagny"),
-        is("http://soundcloud.com/oembed?url=http://soundcloud" +
-            ".com/empreinte-digiale/saison-1-01-la-lazy-company-jean-sebastien-vermalle?in" +
-            "=benjamin-roux-10/sets/lazy-compagny&format=json"));
+  void getSoundCloudOembedUrl() {
+    final Optional<String> oembedUrl = getOembedUrl("https://soundcloud.com/empreinte-digiale/saison-1-01-la-lazy-company-jean-sebastien-vermalle?in=benjamin-roux-10/sets/lazy-compagny");
+    assertThat(oembedUrl.isPresent(), is(true));
+    assertThat(oembedUrl.get(), is("http://soundcloud.com/oembed?url=http://soundcloud.com/empreinte-digiale/saison-1-01-la-lazy-company-jean-sebastien-vermalle?in=benjamin-roux-10/sets/lazy-compagny&format=json"));
   }
 }

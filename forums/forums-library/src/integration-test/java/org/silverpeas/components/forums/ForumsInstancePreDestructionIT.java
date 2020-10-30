@@ -406,5 +406,10 @@ public class ForumsInstancePreDestructionIT {
     public void switchEnableDisplayAsContent(final SimpleDocumentPK pk, final boolean enable) {
 
     }
+
+    @Override
+    public void switchEnableEditSimultaneously(final SimpleDocumentPK pk, final boolean enable) {
+
+    }
   }
 }
