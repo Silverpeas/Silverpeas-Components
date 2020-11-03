@@ -3814,8 +3814,9 @@ public class DefaultKmeliaService implements KmeliaService {
   private void setAllowedSubfolders(NodeDetail node, String userId) {
     String instanceId = node.getNodePK().getInstanceId();
     if (isRightsOnTopicsEnabled(instanceId)) {
-      if (isUserComponentAdmin(instanceId, userId)) {
-        // user is admin of application, all folders must be shown
+      if (isUserComponentAdmin(instanceId, userId) ||
+          SilverpeasRole.admin.getName().equals(getUserTopicProfile(node.getNodePK(), userId))) {
+        // user is admin of application or admin of folder, all subfolders must be shown
         setRole(node.getChildrenDetails(), userId);
       } else {
         Collection<NodeDetail> allowedChildren = getAllowedSubfolders(node, userId);
