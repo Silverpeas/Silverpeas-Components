@@ -27,7 +27,6 @@ import org.silverpeas.components.questionreply.control.QuestionReplySessionContr
 import org.silverpeas.components.questionreply.model.Category;
 import org.silverpeas.components.questionreply.model.Question;
 import org.silverpeas.components.questionreply.model.Reply;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.importexport.report.ExportReport;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
@@ -90,7 +89,6 @@ public class QuestionReplyRequestRouter
 
     String destination;
     String flag = scc.getUserProfil();
-    SilverpeasRole role = scc.getUserRole();
 
     try {
       if (function.startsWith("Main")) {
@@ -118,7 +116,7 @@ public class QuestionReplyRequestRouter
         }
         destination = getDestination("Main", scc, request);
       } else if ("DeleteQuestions".equals(function)) {
-        if (admin == role || writer == role) {
+        if (scc.isUserExpert()) {
           String[] checkQuestions = request.getParameterValues("checkedQuestion");
           if (checkQuestions != null) {
             List<Long> listToDelete = new ArrayList<>(checkQuestions.length);
@@ -141,7 +139,7 @@ public class QuestionReplyRequestRouter
         scc.closeQuestion(Long.parseLong(questionId));
         destination = getDestination("Main", scc, request);
       } else if ("CloseQuestions".equals(function)) {
-        if (admin == role || writer == role) {
+        if (scc.isUserExpert()) {
           String[] checkQuestions = request.getParameterValues("checkedQuestion");
           List<Long> listToClose = new ArrayList<>();
           if (checkQuestions != null) {
@@ -156,7 +154,7 @@ public class QuestionReplyRequestRouter
           destination = "/admin/jsp/errorpage.jsp";
         }
       } else if ("CloseQuestion".equals(function)) {
-        if (admin == role || writer == role) {
+        if (scc.isUserExpert()) {
           scc.closeQuestion(Long.parseLong(request.getParameter("QuestionId")));
           destination = getDestination("Main", scc, request);
         } else {
@@ -188,8 +186,7 @@ public class QuestionReplyRequestRouter
         destination = "/questionReply/jsp/updateQ.jsp";
       } else if ("DeleteR".equals(function)) {
         String questionId = request.getParameter("QuestionId");
-        if (StringUtil.isDefined(questionId) && StringUtil.isLong(questionId) &&
-            canDeleteReply(role)) {
+        if (StringUtil.isLong(questionId) && scc.isUserExpert()) {
           Question question = scc.getQuestion(Long.parseLong(questionId));
           scc.setCurrentQuestion(question);
           String id = request.getParameter("replyId");
@@ -214,7 +211,7 @@ public class QuestionReplyRequestRouter
         // passer le paramètre pour savoir si on utilise les réponses privées
         Boolean usedPrivateReplies = scc.isPrivateRepliesEnabled();
         request.setAttribute("UsedPrivateReplies", usedPrivateReplies);
-        if (("admin".equals(flag)) || ("writer".equals(flag))) {
+        if (scc.isUserExpert()) {
           request.setAttribute("reply", scc.getNewReply());
           destination = "/questionReply/jsp/addR.jsp";
         } else {
@@ -373,7 +370,4 @@ public class QuestionReplyRequestRouter
     return destination;
   }
 
-  private boolean canDeleteReply(SilverpeasRole role) {
-    return admin == role || writer == role;
-  }
 }
