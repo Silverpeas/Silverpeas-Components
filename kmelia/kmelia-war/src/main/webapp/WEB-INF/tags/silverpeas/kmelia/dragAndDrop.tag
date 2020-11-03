@@ -55,7 +55,6 @@
 
   <view:setConstant var="writerRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.writer"/>
   <jsp:useBean id="writerRole" type="org.silverpeas.core.admin.user.model.SilverpeasRole"/>
-  <c:if test="${highestUserRole.isGreaterThanOrEquals(writerRole)}">
 
     <c:set var="_ddIsI18n" value="${silfn:isI18n() && silfn:isDefined(contentLanguage)}"/>
 
@@ -349,7 +348,6 @@
         window.dragAndDropInstanceFromTag = initDragAndDropUploadAndReload(options);
       })();
     </script>
-  </c:if>
 </c:if>
 <script type="text/javascript">
   window.muteDragAndDrop = function() {
