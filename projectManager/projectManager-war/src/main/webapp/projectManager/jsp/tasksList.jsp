@@ -505,7 +505,7 @@
           <view:image src="${completedIcon}"/><span class="txtNav">${completed}</span>
           <view:image src="${cancelledIcon}"/><span class="txtNav">${cancelled}</span>
           <view:image src="${warningIcon}"/><span class="txtNav">${warning}</span>
-        </div
+        </div>
       </view:frame>
     </view:window>
     <form name="listForm" action="RemoveTask" method="post">
