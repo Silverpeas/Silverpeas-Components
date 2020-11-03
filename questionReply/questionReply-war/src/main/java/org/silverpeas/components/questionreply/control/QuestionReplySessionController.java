@@ -461,6 +461,11 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     return highestUserRole;
   }
 
+  public boolean isUserExpert() {
+    Collection<SilverpeasRole> userRoles = getSilverpeasUserRoles();
+    return userRoles.contains(SilverpeasRole.writer) || userRoles.contains(SilverpeasRole.admin);
+  }
+
   /*
    * Retourne true si la liste contient deja le user
    */
