@@ -71,6 +71,7 @@ public class DefaultHandler extends FunctionHandler {
 
     // Stores objects in request
     nbTotalClassifieds = classifiedsSC.getNbTotalClassifieds();
+    request.setAttribute("InstanceSettings", classifiedsSC.getInstanceSettings());
     request.setAttribute("Form", formUpdate);
     request.setAttribute("Data", data);
     request.setAttribute("NbTotal", nbTotalClassifieds);

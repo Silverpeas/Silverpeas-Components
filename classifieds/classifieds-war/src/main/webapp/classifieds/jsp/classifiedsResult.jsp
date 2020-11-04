@@ -36,9 +36,9 @@
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/classifieds" prefix="classifiedsTags" %>
 
 <%
-  	response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
-	response.setHeader("Pragma", "no-cache"); //HTTP 1.0
-	response.setDateHeader("Expires", -1); //prevents caching at the proxy server
+    response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
+  response.setHeader("Pragma", "no-cache"); //HTTP 1.0
+  response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
 
 <c:set var="language" value="${requestScope.resources.language}"/>
@@ -47,6 +47,8 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 
+<c:set var="instanceSettings" value="${requestScope.InstanceSettings}" />
+<jsp:useBean id="instanceSettings" type="org.silverpeas.components.classifieds.ClassifiedsComponentSettings"/>
 <c:set var="classifieds" value="${requestScope.Classifieds}" />
 <c:set var="searchContext" value="${requestScope.SearchContext}" />
 <c:set var="instanceId" value="${requestScope.InstanceId}" />
@@ -55,64 +57,61 @@
 <c:set var="nbPerPage" value="${requestScope.NbPerPage}" />
 <c:set var="nbResults" value="${requestScope.NbResults}" />
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="${language}">
-<head>
-<view:looknfeel />
-	<title></title>
+<view:sp-page>
+<view:sp-head-part>
 <script type="text/javascript">
 function sendData() {
-	document.searchForm.submit();
+  document.searchForm.submit();
 }
 
 function viewClassifieds(fieldNumber, fieldValue) {
-	var id = $("#searchForm select").get(fieldNumber).id;
-	$("#searchForm #"+id+" option[value='"+fieldValue+"']").prop('selected',true);
-	sendData();
+  var id = $("#searchForm select").get(fieldNumber).id;
+  $("#searchForm #"+id+" option[value='"+fieldValue+"']").prop('selected',true);
+  sendData();
 }
 </script>
-</head>
-<body id="classifieds">
-	<fmt:message var="classifiedPath" key="classifieds.classifiedsResult" />
-	<view:browseBar>
-		<view:browseBarElt label="${classifiedPath}" link="#" />
-	</view:browseBar>
+</view:sp-head-part>
+<view:sp-body-part id="classifieds">
+  <fmt:message var="classifiedPath" key="classifieds.classifiedsResult" />
+  <view:browseBar>
+    <view:browseBarElt label="${classifiedPath}" link="#" />
+  </view:browseBar>
 
-	<view:window>
-		<view:frame>
-			<form id="searchForm" name="searchForm" action="SearchClassifieds" method="post" enctype="multipart/form-data">
-						<div id="search">
-							<!-- AFFICHAGE du formulaire -->
-							<view:board>
-								<%
-								String language = (String) pageContext.getAttribute("language");
-								String instanceId = (String) pageContext.getAttribute("instanceId");
-								SearchContext searchContext = (SearchContext) pageContext.getAttribute("searchContext");
-								Form formSearch = searchContext.getForm();
+  <view:window>
+    <view:frame>
+      <form id="searchForm" name="searchForm" action="SearchClassifieds" method="post" enctype="multipart/form-data">
+            <div id="search">
+              <!-- AFFICHAGE du formulaire -->
+              <view:board>
+                <%
+                String language = (String) pageContext.getAttribute("language");
+                String instanceId = (String) pageContext.getAttribute("instanceId");
+                SearchContext searchContext = (SearchContext) pageContext.getAttribute("searchContext");
+                Form formSearch = searchContext.getForm();
 
-								PagesContext context = new PagesContext("myForm", "0", language, false, instanceId, null, null);
-								context.setIgnoreDefaultValues(true);
-								context.setBorderPrinted(false);
-								formSearch.display(out, context, searchContext.getData());
-								%>
-								<br/>
-								<view:buttonPane>
-									<fmt:message var="searchLabel" key="classifieds.searchButton">
-										<fmt:param value="${nbTotal}" />
-									</fmt:message>
-									<view:button label="${searchLabel}" action="javascript:onclick=sendData();" />
-								</view:buttonPane>
-							</view:board>
-						</div>
-			</form>
-			<br />
+                PagesContext context = new PagesContext("myForm", "0", language, false, instanceId, null, null);
+                context.setIgnoreDefaultValues(true);
+                context.setBorderPrinted(false);
+                formSearch.display(out, context, searchContext.getData());
+                %>
+                <br/>
+                <view:buttonPane>
+                  <fmt:message var="searchLabel" key="classifieds.searchButton">
+                    <fmt:param value="${nbTotal}" />
+                  </fmt:message>
+                  <view:button label="${searchLabel}" action="javascript:onclick=sendData();" />
+                </view:buttonPane>
+              </view:board>
+            </div>
+      </form>
+      <br />
 
       <fmt:message key="classifieds.noResult" var="emptyListMessage"/>
-      <classifiedsTags:listOfClassifieds classifieds="${classifieds}" language="${language}" emptyListMessage="${emptyListMessage}"/>
+      <classifiedsTags:listOfClassifieds instanceSettings="${instanceSettings}" classifieds="${classifieds}" language="${language}" emptyListMessage="${emptyListMessage}"/>
 
       <view:pagination currentPage="${currentFirstItemIndex}" totalNumberOfItems="${nbResults}" nbItemsPerPage="${nbPerPage}" action="Pagination?ItemIndex=" />
-			
-		</view:frame>
-	</view:window>
-</body>
-</html>
+      
+    </view:frame>
+  </view:window>
+</view:sp-body-part>
+</view:sp-page>

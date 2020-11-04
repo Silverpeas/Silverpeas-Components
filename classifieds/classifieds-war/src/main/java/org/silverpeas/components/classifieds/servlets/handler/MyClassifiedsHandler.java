@@ -47,6 +47,7 @@ public class MyClassifiedsHandler extends FunctionHandler {
     Collection<ClassifiedDetail> classifieds = classifiedsSC.getClassifiedsByUser();
 
     // Stores objects in request
+    request.setAttribute("InstanceSettings", classifiedsSC.getInstanceSettings());
     request.setAttribute("Classifieds", classifieds);
     request.setAttribute("TitlePath", "classifieds.myClassifieds");
 

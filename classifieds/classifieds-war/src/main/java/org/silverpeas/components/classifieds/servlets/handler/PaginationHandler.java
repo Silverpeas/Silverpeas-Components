@@ -62,6 +62,7 @@ public class PaginationHandler extends FunctionHandler {
       throws Exception {
 
     // Stores objects in request
+    request.setAttribute("InstanceSettings", classifiedsSC.getInstanceSettings());
     request.setAttribute("SearchContext", classifiedsSC.getSearchContext());
     request.setAttribute("NbTotal", classifiedsSC.getNbTotalClassifieds());
     request.setAttribute("Classifieds", classifiedsSC.getPage());

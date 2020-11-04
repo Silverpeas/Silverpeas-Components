@@ -104,7 +104,7 @@ public class ViewClassifiedHandler extends FunctionHandler {
 
     // Stores objects in request
     request.setAttribute("IsDraftEnabled", classifiedsSC.isDraftEnabled());
-    request.setAttribute("IsCommentsEnabled", classifiedsSC.isCommentsEnabled());
+    request.setAttribute("InstanceSettings", classifiedsSC.getInstanceSettings());
     request.setAttribute("CreationDate", creationDate);
     request.setAttribute("UpdateDate", updateDate);
     request.setAttribute("ValidateDate", validateDate);

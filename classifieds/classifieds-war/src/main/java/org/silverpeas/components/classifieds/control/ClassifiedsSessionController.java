@@ -24,6 +24,7 @@
 package org.silverpeas.components.classifieds.control;
 
 import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.components.classifieds.ClassifiedsComponentSettings;
 import org.silverpeas.components.classifieds.model.ClassifiedDetail;
 import org.silverpeas.components.classifieds.model.Subscribe;
 import org.silverpeas.components.classifieds.notification.ClassifiedOwnerNotification;
@@ -95,10 +96,9 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    */
   public ClassifiedsSessionController(MainSessionController mainSessionCtrl,
           ComponentContext componentContext) {
-    super(mainSessionCtrl, componentContext,
-            "org.silverpeas.classifieds.multilang.classifiedsBundle",
-            "org.silverpeas.classifieds.settings.classifiedsIcons",
-            "org.silverpeas.classifieds.settings.classifiedsSettings");
+    super(mainSessionCtrl, componentContext, ClassifiedsComponentSettings.MESSAGES_PATH,
+            ClassifiedsComponentSettings.ICONS_PATH,
+            ClassifiedsComponentSettings.SETTINGS_PATH);
 
     nbItemsPerPage = getResources().getSetting("nbElementsPerPage", DEFAULT_NBITEMS_PERPAGE);
 
@@ -115,6 +115,18 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
         throw new SilverpeasRuntimeException(e);
       }
     }
+  }
+
+  public ClassifiedsComponentSettings getInstanceSettings() {
+    ClassifiedsComponentSettings instanceSettings = new ClassifiedsComponentSettings();
+    instanceSettings.setCommentsEnabled(isParamEnabled(ClassifiedsComponentSettings.PARAM_COMMENTS));
+    instanceSettings.setPhotosAllowed(isParamEnabled(ClassifiedsComponentSettings.PARAM_PHOTOS));
+    instanceSettings.setPriceAllowed(isParamEnabled(ClassifiedsComponentSettings.PARAM_PRICE));
+    return instanceSettings;
+  }
+
+  private boolean isParamEnabled(String paramName) {
+    return !"no".equalsIgnoreCase(getComponentParameterValue(paramName));
   }
 
   public void setPagination(Pagination pagination) {

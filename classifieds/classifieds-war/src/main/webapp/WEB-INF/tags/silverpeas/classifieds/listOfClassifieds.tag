@@ -27,6 +27,7 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
 
+<%@ attribute name="instanceSettings" required="true" type="org.silverpeas.components.classifieds.ClassifiedsComponentSettings" %>
 <%@ attribute name="classifieds" required="true" type="java.util.List" %>
 <%@ attribute name="language" required="true" type="java.lang.String" %>
 <%@ attribute name="emptyListMessage" required="false" type="java.lang.String" %>
@@ -42,12 +43,12 @@
   <ul id="classifieds_rich_list">
     <c:forEach items="${classifieds}" var="classified" varStatus="loopStatus">
       <c:set var="cssClass" value="add-with-image"/>
-      <c:if test="${empty classified.images}">
+      <c:if test="${not instanceSettings.photosAllowed or empty classified.images}">
         <c:set var="cssClass" value="add-without-image"/>
       </c:if>
 
       <li class="${cssClass}" onclick="javascript:viewClassified('${classified.classifiedId}')">
-        <c:if test="${not empty classified.images}">
+        <c:if test="${instanceSettings.photosAllowed and not empty classified.images}">
           <div class="classified_thumb">
             <c:forEach var="image" items="${classified.images}" begin="0" end="0">
               <a href="#" onclick="javascript:viewClassified('${classified.classifiedId}')"><view:image src="${image.attachmentURL}" size="250x"/></a>
@@ -63,7 +64,7 @@
           </div>
         </div>
 
-        <c:if test="${classified.price > 0}">
+        <c:if test="${instanceSettings.priceAllowed and classified.price > 0}">
           <div class="classified_price">
               ${classified.price} &euro;
           </div>
