@@ -47,6 +47,7 @@ public class ListToValidateHandler extends FunctionHandler {
     Collection<ClassifiedDetail> classifieds = classifiedsSC.getClassifiedsToValidate();
 
     // Stores objects in request
+    request.setAttribute("InstanceSettings", classifiedsSC.getInstanceSettings());
     request.setAttribute("Classifieds", classifieds);
     request.setAttribute("TitlePath", "classifieds.viewClassifiedToValidate");
 

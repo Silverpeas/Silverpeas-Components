@@ -24,7 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"
-	isELIgnored="false"%>
+  isELIgnored="false"%>
 
 <%@page import="org.silverpeas.core.contribution.content.form.Form"%>
 <%@page import="org.silverpeas.core.contribution.content.form.PagesContext"%>
@@ -39,8 +39,8 @@
 
 <%
   response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
-	response.setHeader("Pragma", "no-cache"); //HTTP 1.0
-	response.setDateHeader("Expires", -1); //prevents caching at the proxy server
+  response.setHeader("Pragma", "no-cache"); //HTTP 1.0
+  response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
 
 <c:set var="language" value="${requestScope.resources.language}"/>
@@ -55,6 +55,7 @@
 <c:set var="componentLabel" value="${browseContext[1]}" />
 
 <c:set var="instanceSettings" value="${requestScope.InstanceSettings}" />
+<jsp:useBean id="instanceSettings" type="org.silverpeas.components.classifieds.ClassifiedsComponentSettings"/>
 
 <c:set var="isDraftEnabled" value="${requestScope.IsDraftEnabled}" />
 <c:set var="commentsEnabled" value="${instanceSettings.commentsEnabled}" />
@@ -78,100 +79,96 @@
 <c:set var="draftOperationsEnabled" value="${user.id == creatorId and isDraftEnabled}"/>
 <c:set var="contributionIdKey"><%=NotificationContext.CONTRIBUTION_ID%></c:set>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="${language}">
-<head>
-  <title></title>
-<view:looknfeel />
+<view:sp-page>
+<view:sp-head-part>
 <fmt:message var="deletionConfirm" key="classifieds.confirmDeleteClassified" />
 <script type="text/javascript">
-	function deleteConfirm() {
-		// confirmation de suppression de l'annonce
+  function deleteConfirm() {
+    // confirmation de suppression de l'annonce
     var label = "<c:out value='${deletionConfirm}'/>";
     jQuery.popup.confirm(label, function() {
-			document.classifiedForm.action = "DeleteClassified";
-			document.classifiedForm.submit();
-		});
-	}
+      document.classifiedForm.action = "DeleteClassified";
+      document.classifiedForm.submit();
+    });
+  }
 
-	function updateClassified() {
-		document.classifiedForm.action = "EditClassified?ClassifiedId=${classified.id}";
-		document.classifiedForm.submit();
-	}
+  function updateClassified() {
+    document.classifiedForm.action = "EditClassified?ClassifiedId=${classified.id}";
+    document.classifiedForm.submit();
+  }
 
-	function draftIn() {
-		location.href = "<view:componentUrl componentId='${instanceId}'/>DraftIn?ClassifiedId=${classified.id}";
-	}
+  function draftIn() {
+    location.href = "<view:componentUrl componentId='${instanceId}'/>DraftIn?ClassifiedId=${classified.id}";
+  }
 
-	function draftOut() {
-		location.href = "<view:componentUrl componentId='${instanceId}'/>DraftOut?ClassifiedId=${classified.id}";
-	}
+  function draftOut() {
+    location.href = "<view:componentUrl componentId='${instanceId}'/>DraftOut?ClassifiedId=${classified.id}";
+  }
 
-	function validate() {
-		location.href = "<view:componentUrl componentId='${instanceId}'/>ValidateClassified?ClassifiedId=${classified.id}";
-	}
+  function validate() {
+    location.href = "<view:componentUrl componentId='${instanceId}'/>ValidateClassified?ClassifiedId=${classified.id}";
+  }
 
-	function refused() {
-		// open modal dialog
-		$("#refusalModalDialog").dialog({
-			modal: true,
-			resizable: false,
-			width: 600,
-			buttons: {
-				"<fmt:message key="GML.ok"/>": function() {
-					sendRefusalForm();
-				},
-				"<fmt:message key="GML.cancel"/>": function() {
-					$( this ).dialog( "close" );
-				}
-			}
-		});
-	}
+  function refused() {
+    // open modal dialog
+    $("#refusalModalDialog").dialog({
+      modal: true,
+      resizable: false,
+      width: 600,
+      buttons: {
+        "<fmt:message key="GML.ok"/>": function() {
+          sendRefusalForm();
+        },
+        "<fmt:message key="GML.cancel"/>": function() {
+          $( this ).dialog( "close" );
+        }
+      }
+    });
+  }
 
-	function sendRefusalForm() {
-		var errorMsg = "";
-		var errorNb = 0;
-		var motive = stripInitialWhitespace(document.refusalForm.Motive.value);
-		if (isWhitespace(motive)) {
-			errorMsg += "  - '<fmt:message key="classifieds.refusalMotive"/>' <fmt:message key="GML.MustBeFilled"/>\n";
-			errorNb++;
-		}
-		switch (errorNb) {
-		case 0:
+  function sendRefusalForm() {
+    var errorMsg = "";
+    var errorNb = 0;
+    var motive = stripInitialWhitespace(document.refusalForm.Motive.value);
+    if (isWhitespace(motive)) {
+      errorMsg += "  - '<fmt:message key="classifieds.refusalMotive"/>' <fmt:message key="GML.MustBeFilled"/>\n";
+      errorNb++;
+    }
+    switch (errorNb) {
+    case 0:
       document.refusalForm.submit();
-			break;
-		case 1:
-			errorMsg = "<fmt:message key="GML.ThisFormContains"/> 1 <fmt:message key="GML.error"/> : \n"
-					+ errorMsg;
+      break;
+    case 1:
+      errorMsg = "<fmt:message key="GML.ThisFormContains"/> 1 <fmt:message key="GML.error"/> : \n"
+          + errorMsg;
       jQuery.popup.error(errorMsg);
-			break;
-		default:
-			errorMsg = "<fmt:message key="GML.ThisFormContains"/> " + errorNb
-					+ " <fmt:message key="GML.errors"/> :\n" + errorMsg;
+      break;
+    default:
+      errorMsg = "<fmt:message key="GML.ThisFormContains"/> " + errorNb
+          + " <fmt:message key="GML.errors"/> :\n" + errorMsg;
       jQuery.popup.error(errorMsg);
-		}
-	}
+    }
+  }
 
-	$(document).ready(function() {
+  $(document).ready(function() {
 
-		  $('.classified_thumbs a').click(function() {
-		        cheminImage=$(this).children('img').attr('src');
-		        $('.selected').removeClass('selected');
-		        $(this).addClass('selected');
-		        $('.classified_selected_photo img').attr('src',cheminImage);
-		        $('.classified_selected_photo a').attr('href',"javascript:onClick=openImage('"+cheminImage+"')");
-		  });
-		});
+      $('.classified_thumbs a').click(function() {
+            cheminImage=$(this).children('img').attr('src');
+            $('.selected').removeClass('selected');
+            $(this).addClass('selected');
+            $('.classified_selected_photo img').attr('src',cheminImage);
+            $('.classified_selected_photo a').attr('href',"javascript:onClick=openImage('"+cheminImage+"')");
+      });
+    });
 
-	function openImage(url) {
-  		var urlPart = "/size/250x/";
-  		var i = url.indexOf(urlPart);
-  		if (i != -1) {
-    		url = url.substring(0, i) + url.substring(i+urlPart.length, url.length);
-  		}
-		SP_openWindow(url,'image','700','500','scrollbars=yes, noresize, alwaysRaised');
-  	}
+  function openImage(url) {
+      var urlPart = "/size/250x/";
+      var i = url.indexOf(urlPart);
+      if (i != -1) {
+        url = url.substring(0, i) + url.substring(i+urlPart.length, url.length);
+      }
+    SP_openWindow(url,'image','700','500','scrollbars=yes, noresize, alwaysRaised');
+    }
 
   function toNotify() {
     sp.messager.open('${instanceId}', {${contributionIdKey}: '${classified.id}'});
@@ -200,8 +197,8 @@
     return false;
   }
 </script>
-</head>
-<body id="classifieds">
+</view:sp-head-part>
+<view:sp-body-part id="classifieds">
 <div id="${instanceId}">
   <view:browseBar>
     <c:choose>
@@ -218,79 +215,79 @@
         <view:browseBarElt label="${classifiedPath}" link="Pagination" />
       </c:when>
     </c:choose>
-	</view:browseBar>
-		<c:if test="${'Unpublished' == classified.status}">
-			<fmt:message var="updateOp" key="classifieds.republishClassified" />
-		</c:if>
-		<c:if test="${'Unpublished' != classified.status}">
-			<fmt:message var="updateOp" key="classifieds.updateClassified" />
-		</c:if>
+  </view:browseBar>
+    <c:if test="${'Unpublished' == classified.status}">
+      <fmt:message var="updateOp" key="classifieds.republishClassified" />
+    </c:if>
+    <c:if test="${'Unpublished' != classified.status}">
+      <fmt:message var="updateOp" key="classifieds.updateClassified" />
+    </c:if>
 
-		<fmt:message var="updateIcon" key="classifieds.update"
-			bundle="${icons}" />
-		<fmt:message var="deleteOp" key="classifieds.deleteClassified" />
-		<fmt:message var="deleteIcon" key="classifieds.delete"
-			bundle="${icons}" />
-		<view:operationPane>
+    <fmt:message var="updateIcon" key="classifieds.update"
+      bundle="${icons}" />
+    <fmt:message var="deleteOp" key="classifieds.deleteClassified" />
+    <fmt:message var="deleteIcon" key="classifieds.delete"
+      bundle="${icons}" />
+    <view:operationPane>
       <c:if test="${user.id == creatorId or profile.name == 'admin'}">
-			<view:operation
-				action="javascript:updateClassified();"
-				altText="${updateOp}" icon="${updateIcon}" />
-			<view:operation
-				action="javascript:deleteConfirm();"
-				altText="${deleteOp}" icon="${deleteIcon}" />
+      <view:operation
+        action="javascript:updateClassified();"
+        altText="${updateOp}" icon="${updateIcon}" />
+      <view:operation
+        action="javascript:deleteConfirm();"
+        altText="${deleteOp}" icon="${deleteIcon}" />
 
-			<c:if test="${draftOperationsEnabled}">
-				<view:operationSeparator />
-				<c:choose>
-					<c:when test="${classified.draft}">
-						<fmt:message var="draftOutOp" key="GML.publish" />
-						<fmt:message var="draftOutIcon" key="classifieds.draftOut"
-							bundle="${icons}" />
-						<view:operation
-							action="javascript:draftOut();"
-							altText="${draftOutOp}" icon="${draftOutIcon}" />
-					</c:when>
-					<c:otherwise>
-						<fmt:message var="draftInOp" key="classifieds.draftIn" />
-						<fmt:message var="draftInIcon" key="classifieds.draftIn"
-							bundle="${icons}" />
-						<view:operation
-							action="javascript:draftIn();"
-							altText="${draftInOp}" icon="${draftInIcon}" />
-					</c:otherwise>
-				</c:choose>
-			</c:if>
-			<c:if
-				test="${'admin' == profile.name and classified.toValidate}">
-				<view:operationSeparator />
-				<fmt:message var="validateOp" key="classifieds.validate" />
-				<fmt:message var="validateIcon" key="classifieds.validate"
-					bundle="${icons}" />
-				<fmt:message var="refuseOp" key="classifieds.refused" />
-				<fmt:message var="refuseIcon" key="classifieds.refused"
-					bundle="${icons}" />
-				<view:operation
-					action="javascript:validate();"
-					altText="${validateOp}" icon="${validateIcon}" />
-				<view:operation
-					action="javascript:refused();"
-					altText="${refuseOp}" icon="${refuseIcon}" />
-			</c:if>
+      <c:if test="${draftOperationsEnabled}">
+        <view:operationSeparator />
+        <c:choose>
+          <c:when test="${classified.draft}">
+            <fmt:message var="draftOutOp" key="GML.publish" />
+            <fmt:message var="draftOutIcon" key="classifieds.draftOut"
+              bundle="${icons}" />
+            <view:operation
+              action="javascript:draftOut();"
+              altText="${draftOutOp}" icon="${draftOutIcon}" />
+          </c:when>
+          <c:otherwise>
+            <fmt:message var="draftInOp" key="classifieds.draftIn" />
+            <fmt:message var="draftInIcon" key="classifieds.draftIn"
+              bundle="${icons}" />
+            <view:operation
+              action="javascript:draftIn();"
+              altText="${draftInOp}" icon="${draftInIcon}" />
+          </c:otherwise>
+        </c:choose>
+      </c:if>
+      <c:if
+        test="${'admin' == profile.name and classified.toValidate}">
+        <view:operationSeparator />
+        <fmt:message var="validateOp" key="classifieds.validate" />
+        <fmt:message var="validateIcon" key="classifieds.validate"
+          bundle="${icons}" />
+        <fmt:message var="refuseOp" key="classifieds.refused" />
+        <fmt:message var="refuseIcon" key="classifieds.refused"
+          bundle="${icons}" />
+        <view:operation
+          action="javascript:validate();"
+          altText="${validateOp}" icon="${validateIcon}" />
+        <view:operation
+          action="javascript:refused();"
+          altText="${refuseOp}" icon="${refuseIcon}" />
+      </c:if>
       </c:if>
       <c:if test="${not user.anonymous}">
         <view:operationSeparator/>
         <fmt:message var="notifyOp" key="GML.notify" />
         <view:operation action="javascript:toNotify();" altText="${notifyOp}" />
       </c:if>
-		</view:operationPane>
+    </view:operationPane>
 
-	<view:window>
-		<view:frame>
-			  <table cellpadding="5" width="100%">
+  <view:window>
+    <view:frame>
+        <table cellpadding="5" width="100%">
           <caption></caption>
           <th id="classified-view-header"></th>
-			  <tr>
+        <tr>
             <td valign="top">
               <div class="rightContent">
                 <c:if test="${not empty index}">
@@ -308,10 +305,10 @@
                    <fmt:message key="classifieds.by" />&nbsp;
                     <view:username userId="${classified.creatorId}" />
                     <div class="profilPhoto"><view:image src="${classified.creator.avatar}" type="avatar.profil" css="defaultAvatar" alt=""/></div><br/>
-									 <c:if test="${fn:length(updateDate) > 0}">
-									   <fmt:message key="classifieds.updateDate" /> : <b><c:out value="${updateDate}" /></b><br/>
-									 </c:if>
-									</div>
+                   <c:if test="${fn:length(updateDate) > 0}">
+                     <fmt:message key="classifieds.updateDate" /> : <b><c:out value="${updateDate}" /></b><br/>
+                   </c:if>
+                  </div>
 
                   <c:if test="${not user.anonymous && user.id != creatorId}">
                     <div id="classified_contact_link" class="bgDegradeGris">
@@ -360,7 +357,6 @@
                   </c:if>
                   <p class="classified_description">${displayedDescription}</p>
 
-                  <!-- <hr class="clear" /> -->
                   <c:if test="${not empty xmlForm}">
                      <div id="classified_content_form">
                 <%
@@ -378,49 +374,49 @@
              </td>
           </tr>
 
-				<tr>
-					<td>
-						<!--Afficher les commentaires-->
-						<c:if test="${commentsEnabled}">
-							<view:comments 	userId="${user.id}" componentId="${instanceId}"
-											resourceType="${classified.contributionType}" resourceId="${classified.id}" />
-						</c:if>
-					</td>
-				</tr>
-			</table>
-		</view:frame>
-	</view:window>
-	<form name="classifiedForm" action="" method="post">
-		<input type="hidden" name="ClassifiedId" value="${classified.id}" />
-	</form>
-	<div id="refusalModalDialog" title="${refuseOp}" style="display: none;">
-		<form name="refusalForm" action="RefusedClassified" method="post">
-			<table>
+        <tr>
+          <td>
+            <!--Afficher les commentaires-->
+            <c:if test="${commentsEnabled}">
+              <view:comments   userId="${user.id}" componentId="${instanceId}"
+                      resourceType="${classified.contributionType}" resourceId="${classified.id}" />
+            </c:if>
+          </td>
+        </tr>
+      </table>
+    </view:frame>
+  </view:window>
+  <form name="classifiedForm" action="" method="post">
+    <input type="hidden" name="ClassifiedId" value="${classified.id}" />
+  </form>
+  <div id="refusalModalDialog" title="${refuseOp}" style="display: none;">
+    <form name="refusalForm" action="RefusedClassified" method="post">
+      <table>
         <caption></caption>
         <th id="refusal-form-header"></th>
-				<tr>
-					<td>
-						<table>
-							<tr>
-								<td class="txtlibform"><fmt:message key="classifieds.number" /> :</td>
-								<td>${classified.id} <input type="hidden" name="ClassifiedId" value="${classified.id}"/></td>
-							</tr>
-							<tr>
-								<td class="txtlibform"><fmt:message key="GML.title" /> :</td>
-								<td valign="top">${displayedTitle}</td>
-							</tr>
-							<tr>
-								<td class="txtlibform" valign="top"><fmt:message key="classifieds.refusalMotive" /> :</td>
-								<td><textarea name="Motive" rows="5" cols="55"></textarea>&nbsp;<img border="0" src="${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}"/>" width="5" height="5"/></td>
-							</tr>
-							<tr>
-								<td colspan="2"><img border="0" src="${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}"/>" width="5" height="5"/> : <fmt:message key="GML.requiredField" /></td>
-							</tr>
-						</table></td>
-				</tr>
-			</table>
-		</form>
-	</div>
+        <tr>
+          <td>
+            <table>
+              <tr>
+                <td class="txtlibform"><fmt:message key="classifieds.number" /> :</td>
+                <td>${classified.id} <input type="hidden" name="ClassifiedId" value="${classified.id}"/></td>
+              </tr>
+              <tr>
+                <td class="txtlibform"><fmt:message key="GML.title" /> :</td>
+                <td valign="top">${displayedTitle}</td>
+              </tr>
+              <tr>
+                <td class="txtlibform" valign="top"><fmt:message key="classifieds.refusalMotive" /> :</td>
+                <td><textarea name="Motive" rows="5" cols="55"></textarea>&nbsp;<img border="0" src="${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}"/>" width="5" height="5"/></td>
+              </tr>
+              <tr>
+                <td colspan="2"><img border="0" src="${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}"/>" width="5" height="5"/> : <fmt:message key="GML.requiredField" /></td>
+              </tr>
+            </table></td>
+        </tr>
+      </table>
+    </form>
+  </div>
   <div id="messageToOwnerDialog" style="display: none;">
     <form name="messageToOwnerForm" action="ToNotifyOwner" method="post">
         <table>
@@ -435,6 +431,6 @@
         </table>
     </form>
   </div>
-</div>	
-</body>
-</html>
+</div>  
+</view:sp-body-part>
+</view:sp-page>

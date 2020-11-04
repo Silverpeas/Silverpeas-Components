@@ -42,6 +42,8 @@
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 
 <c:set var="browseContext" value="${requestScope.browseContext}" />
+<c:set var="instanceSettings" value="${requestScope.InstanceSettings}" />
+<jsp:useBean id="instanceSettings" type="org.silverpeas.components.classifieds.ClassifiedsComponentSettings"/>
 <c:set var="profile" value="${requestScope.Profile}" />
 <c:set var="classifieds" value="${requestScope.Classifieds}" />
 <c:set var="nbTotal" value="${requestScope.NbTotal}" />
@@ -59,69 +61,66 @@
   <c:set var="modeView" value="classifieds-portletView"/>
 </c:if>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.classifieds" xml:lang="${language}">
-<head>
-<view:looknfeel />
-	<title></title>
+<view:sp-page angularJsAppName="silverpeas.classifieds">
+<view:sp-head-part>
 <view:includePlugin name="toggle"/>
 <script type="text/javascript">
 function sendData() {
-	document.searchForm.submit();
+  document.searchForm.submit();
 }
 
 function viewClassifieds(fieldNumber, fieldValue) {
-	var id = $("#searchForm select").get(fieldNumber).id;
-	$("#searchForm #"+id+" option[value='"+fieldValue+"']").prop('selected', true);
-	sendData();
+  var id = $("#searchForm select").get(fieldNumber).id;
+  $("#searchForm #"+id+" option[value='"+fieldValue+"']").prop('selected', true);
+  sendData();
 }
 </script>
-</head>
-<body id="classifieds" class="${modeView}">
-		<div id="${componentInstanceId}">
+</view:sp-head-part>
+<view:sp-body-part id="classifieds" cssClass="${modeView}">
+    <div id="${componentInstanceId}">
 
-			<view:browseBar />
+      <view:browseBar />
 
-			<view:operationPane>
-				<c:if test="${profile.name != 'anonymous'}">
-					<c:if
-						test="${(profile.name == 'admin') || (profile.name == 'publisher')}">
-						<fmt:message var="addOp" key="classifieds.addClassified" />
-						<fmt:message var="addIcon" key="classifieds.addClassified" bundle="${icons}" />
-						<c:url var="addIcon" value="${addIcon}"/>
-						<view:operationOfCreation action="NewClassified" altText="${addOp}" icon="${addIcon}" />
-					</c:if>
+      <view:operationPane>
+        <c:if test="${profile.name != 'anonymous'}">
+          <c:if
+            test="${(profile.name == 'admin') || (profile.name == 'publisher')}">
+            <fmt:message var="addOp" key="classifieds.addClassified" />
+            <fmt:message var="addIcon" key="classifieds.addClassified" bundle="${icons}" />
+            <c:url var="addIcon" value="${addIcon}"/>
+            <view:operationOfCreation action="NewClassified" altText="${addOp}" icon="${addIcon}" />
+          </c:if>
 
-					<fmt:message var="myOp" key="classifieds.myClassifieds" />
-					<fmt:message var="myIcon" key="classifieds.myClassifieds" bundle="${icons}" />
-					<view:operation action="ViewMyClassifieds" altText="${myOp}" icon="${myIcon}" />
+          <fmt:message var="myOp" key="classifieds.myClassifieds" />
+          <fmt:message var="myIcon" key="classifieds.myClassifieds" bundle="${icons}" />
+          <view:operation action="ViewMyClassifieds" altText="${myOp}" icon="${myIcon}" />
 
-					<view:operationSeparator />
+          <view:operationSeparator />
 
-					<fmt:message var="subAddOp" key="classifieds.addSubscription" />
-					<fmt:message var="subAddIcon" key="classifieds.subscriptionsAdd" bundle="${icons}" />
-					<view:operation action="javascript:addSubscription()" altText="${subAddOp}" icon="${subAddIcon}" />
+          <fmt:message var="subAddOp" key="classifieds.addSubscription" />
+          <fmt:message var="subAddIcon" key="classifieds.subscriptionsAdd" bundle="${icons}" />
+          <view:operation action="javascript:addSubscription()" altText="${subAddOp}" icon="${subAddIcon}" />
 
-					<fmt:message var="mySubOp" key="classifieds.mySubscriptions" />
-					<fmt:message var="mySubIcon" key="classifieds.mySubscriptions" bundle="${icons}" />
-					<view:operation action="ViewMySubscriptions" altText="${mySubOp}" icon="${mySubIcon}" />
-				</c:if>
+          <fmt:message var="mySubOp" key="classifieds.mySubscriptions" />
+          <fmt:message var="mySubIcon" key="classifieds.mySubscriptions" bundle="${icons}" />
+          <view:operation action="ViewMySubscriptions" altText="${mySubOp}" icon="${mySubIcon}" />
+        </c:if>
 
-				<c:if test="${(profile.name == 'admin') && (validation)}">
-					<view:operationSeparator />
-					<fmt:message var="toValidateOp" key="classifieds.viewClassifiedToValidate" />
-					<fmt:message var="toValidateIcon" key="classifieds.viewClassifiedToValidate" bundle="${icons}" />
-					<view:operation action="ViewClassifiedToValidate" altText="${toValidateOp}" icon="${toValidateIcon}" />
-				</c:if>
-			</view:operationPane>
+        <c:if test="${(profile.name == 'admin') && (validation)}">
+          <view:operationSeparator />
+          <fmt:message var="toValidateOp" key="classifieds.viewClassifiedToValidate" />
+          <fmt:message var="toValidateIcon" key="classifieds.viewClassifiedToValidate" bundle="${icons}" />
+          <view:operation action="ViewClassifiedToValidate" altText="${toValidateOp}" icon="${toValidateIcon}" />
+        </c:if>
+      </view:operationPane>
 
-			<view:window>
-				<view:frame>
+      <view:window>
+        <view:frame>
           <view:componentInstanceIntro componentId="${instanceId}" language="${language}"/>
-					<view:areaOfOperationOfCreation/>
-					<jsp:include page="subscriptionManager.jsp"/>
-					<form id="searchForm" name="searchForm" action="SearchClassifieds" method="post" target="MyMain" enctype="multipart/form-data">
-						<c:if test="${not empty formSearch}">
+          <view:areaOfOperationOfCreation/>
+          <jsp:include page="subscriptionManager.jsp"/>
+          <form id="searchForm" name="searchForm" action="SearchClassifieds" method="post" target="MyMain" enctype="multipart/form-data">
+            <c:if test="${not empty formSearch}">
               <div id="search" >
                 <!-- Search Form -->
                   <%
@@ -147,25 +146,19 @@ function viewClassifieds(fieldNumber, fieldValue) {
               </div>
               <br/>
             </c:if>
-					</form>
+          </form>
 
-          <classifiedsTags:listOfClassifieds classifieds="${classifieds}" language="${language}"/>
+          <classifiedsTags:listOfClassifieds instanceSettings="${instanceSettings}" classifieds="${classifieds}" language="${language}"/>
 
           <view:pagination currentPage="${currentFirstItemIndex}" totalNumberOfItems="${nbTotal}" nbItemsPerPage="${nbPerPage}" action="Main?ItemIndex=" />
             
-			<!-- legal notice -->
-			<div id="infos" class="inlineMessage">
-				<fmt:message key="classifieds.infos" />
-			</div>
+      <!-- legal notice -->
+      <div id="infos" class="inlineMessage">
+        <fmt:message key="classifieds.infos" />
+      </div>
 
-	</view:frame>
+  </view:frame>
 </view:window>
 </div>
-
-<script type="text/javascript">
-  /* declare the module myapp and its dependencies (here in the silverpeas module) */
-  var myapp = angular.module('silverpeas.classifieds', ['silverpeas.services', 'silverpeas.directives']);
-</script>
-
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>

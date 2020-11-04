@@ -38,7 +38,7 @@
 <%
   response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
   response.setHeader("Pragma", "no-cache"); //HTTP 1.0
-	response.setDateHeader("Expires", -1); //prevents caching at the proxy server
+  response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
 
 <c:set var="language" value="${requestScope.resources.language}"/>
@@ -49,6 +49,7 @@
 
 <c:set var="classified" value="${requestScope.Classified}" />
 <c:set var="instanceSettings" value="${requestScope.InstanceSettings}" />
+<jsp:useBean id="instanceSettings" type="org.silverpeas.components.classifieds.ClassifiedsComponentSettings"/>
 
 <c:set var="formUpdate" value="${requestScope.Form}" />
 <c:set var="data" value="${requestScope.Data}" />
@@ -58,44 +59,42 @@
 <c:set var="action" value="${(not empty classified) ? 'UpdateClassified' : 'CreateClassified' }" />
 
 <c:if test="${not empty classified}">
-	<c:set var="classifiedId" value="${classified.classifiedId}" />
-	<c:set var="title" value="${classified.title}" />
-	<c:set var="description" value="${classified.description}" />
-	<c:set var="price" value="${classified.price}" />
-	<c:set var="instanceId" value="${classified.instanceId}" />
-	<c:set var="creatorId" value="${classified.creatorId}" />
-	<c:set var="status" value="${classified.status}" />
-	<c:set var="validatorId" value="${classified.validatorId}" />
-	<c:set var="validatorName" value="${classified.validatorName}" />
-	<c:set var="creationDate" value="${classified.creationDate}" />
-	<c:set var="validateDate" value="${classified.validateDate}" />
-	<c:set var="updateDate" value="${classified.updateDate}" />
-	<c:set var="images" value="${classified.images}" />
+  <c:set var="classifiedId" value="${classified.classifiedId}" />
+  <c:set var="title" value="${classified.title}" />
+  <c:set var="description" value="${classified.description}" />
+  <c:set var="price" value="${classified.price}" />
+  <c:set var="instanceId" value="${classified.instanceId}" />
+  <c:set var="creatorId" value="${classified.creatorId}" />
+  <c:set var="status" value="${classified.status}" />
+  <c:set var="validatorId" value="${classified.validatorId}" />
+  <c:set var="validatorName" value="${classified.validatorName}" />
+  <c:set var="creationDate" value="${classified.creationDate}" />
+  <c:set var="validateDate" value="${classified.validateDate}" />
+  <c:set var="updateDate" value="${classified.updateDate}" />
+  <c:set var="images" value="${classified.images}" />
 </c:if>
 
 <%
-	String language = (String) pageContext.getAttribute("language");
-	String instanceId = (String) pageContext.getAttribute("instanceId");
-	Form formUpdate = (Form) pageContext.getAttribute("formUpdate");
-	DataRecord data = (DataRecord) pageContext.getAttribute("data");
+  String language = (String) pageContext.getAttribute("language");
+  String instanceId = (String) pageContext.getAttribute("instanceId");
+  Form formUpdate = (Form) pageContext.getAttribute("formUpdate");
+  DataRecord data = (DataRecord) pageContext.getAttribute("data");
   ClassifiedDetail classify = (ClassifiedDetail) pageContext.getAttribute("classified");
 
-	PagesContext context = new PagesContext("classifiedForm", "11", language, false, instanceId, null, null);
-	context.setIgnoreDefaultValues(true);
-	context.setBorderPrinted(false);
+  PagesContext context = new PagesContext("classifiedForm", "11", language, false, instanceId, null, null);
+  context.setIgnoreDefaultValues(true);
+  context.setBorderPrinted(false);
   if (classify != null) {
     context.setObjectId(classify.getId());
   }
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
+<view:sp-page>
+<view:sp-head-part withFieldsetStyle="true" withCheckFormScript="true">
 <c:if test="${not empty formUpdate}">
-	<%
-  	formUpdate.displayScripts(out, context);
-	%>
+  <%
+    formUpdate.displayScripts(out, context);
+  %>
 </c:if>
 
 <fmt:message var="GML_title" key="GML.title"/>
@@ -112,53 +111,53 @@
 
 <script type="text/javascript">
 
-	// form validation
-	function sendData() {
-		<c:if test="${not empty formUpdate}">
+  // form validation
+  function sendData() {
+    <c:if test="${not empty formUpdate}">
       ifCorrectLocalFormExecute(function() {
         ifCorrectFormExecute(function() {
-		    	document.classifiedForm.submit();
-		    });
-      });
-		 </c:if>
-		<c:if test="${empty formUpdate}">
-        ifCorrectLocalFormExecute(function() {
-					document.classifiedForm.submit();
+          document.classifiedForm.submit();
         });
-		</c:if>
-	}
-
-	function save() {
-	  sendData();
+      });
+     </c:if>
+    <c:if test="${empty formUpdate}">
+        ifCorrectLocalFormExecute(function() {
+          document.classifiedForm.submit();
+        });
+    </c:if>
   }
 
-	function publish() {
+  function save() {
+    sendData();
+  }
+
+  function publish() {
     $("#publishInput").val("true");
     sendData();
   }
 
-	function ifCorrectLocalFormExecute(callback)
-	{
-		  var errorMsg = "";
-	   	var errorNb = 0;
-	   	var title = stripInitialWhitespace(document.classifiedForm.Title.value);
-	   	var description = stripInitialWhitespace(document.classifiedForm.Description.value);
+  function ifCorrectLocalFormExecute(callback)
+  {
+      var errorMsg = "";
+       var errorNb = 0;
+       var title = stripInitialWhitespace(document.classifiedForm.Title.value);
+       var description = stripInitialWhitespace(document.classifiedForm.Description.value);
 
-	    if (title == "") {
-			 errorMsg+="  - '${GML_title}' ${GML_MustBeFilled}\n";
-		   errorNb++;
-		  }
-	   	
-	   	if (description == "") {
-	     errorMsg+="  - '${GML_description}' ${GML_MustBeFilled}\n";
-	     errorNb++;
-	    }
-	    if (description.length > 4000) {
-	     errorMsg+="  - '${GML_description}' ${classifieds_msgSize}\n";
-	     errorNb++;
-	    }
+      if (title == "") {
+       errorMsg+="  - '${GML_title}' ${GML_MustBeFilled}\n";
+       errorNb++;
+      }
+       
+       if (description == "") {
+       errorMsg+="  - '${GML_description}' ${GML_MustBeFilled}\n";
+       errorNb++;
+      }
+      if (description.length > 4000) {
+       errorMsg+="  - '${GML_description}' ${classifieds_msgSize}\n";
+       errorNb++;
+      }
 
-	    <c:if test="${instanceSettings.priceAllowed}">
+      <c:if test="${instanceSettings.priceAllowed}">
         if (! isInteger(document.classifiedForm.Price.value)) {
           errorMsg+="  - '${classifieds_price}' ${GML_MustContainsNumber}\n";
           errorNb++;
@@ -166,73 +165,73 @@
       </c:if>
 
     <c:if test="${instanceSettings.photosAllowed}">
-	    if (!isWhitespace(document.classifiedForm.Image1.value)) {
-	     var verif = /[.][jpg,gif,bmp,tiff,tif,jpeg,png,JPG,GIF,BMP,TIFF,TIF,JPEG,PNG]{3,4}$/;
+      if (!isWhitespace(document.classifiedForm.Image1.value)) {
+       var verif = /[.][jpg,gif,bmp,tiff,tif,jpeg,png,JPG,GIF,BMP,TIFF,TIF,JPEG,PNG]{3,4}$/;
        if (verif.exec(document.classifiedForm.Image1.value) == null) {
         errorMsg+="  - '${classifieds_image}1' : ${classifieds_imageFormat}\n";
         errorNb++;
        }
-	    }
-	    
-	    if (!isWhitespace(document.classifiedForm.Image2.value)) {
+      }
+      
+      if (!isWhitespace(document.classifiedForm.Image2.value)) {
        var verif = /[.][jpg,gif,bmp,tiff,tif,jpeg,png,JPG,GIF,BMP,TIFF,TIF,JPEG,PNG]{3,4}$/;
        if (verif.exec(document.classifiedForm.Image2.value) == null) {
         errorMsg+="  - '${classifieds_image}2' : ${classifieds_imageFormat}\n";
         errorNb++;
        }
-	    }
-	    
-	    if (!isWhitespace(document.classifiedForm.Image3.value)) {
+      }
+      
+      if (!isWhitespace(document.classifiedForm.Image3.value)) {
        var verif = /[.][jpg,gif,bmp,tiff,tif,jpeg,png,JPG,GIF,BMP,TIFF,TIF,JPEG,PNG]{3,4}$/;
        if (verif.exec(document.classifiedForm.Image3.value) == null) {
         errorMsg+="  - '${classifieds_image}3' : ${classifieds_imageFormat}\n";
         errorNb++;
        }
-	    }
-	    if (!isWhitespace(document.classifiedForm.Image4.value)) {
-	        var verif = /[.][jpg,gif,bmp,tiff,tif,jpeg,png,JPG,GIF,BMP,TIFF,TIF,JPEG,PNG]{3,4}$/;
-	        if (verif.exec(document.classifiedForm.Image4.value) == null) {
-	         errorMsg+="  - '${classifieds_image}4' : ${classifieds_imageFormat}\n";
-	         errorNb++;
-	        }
-	    }
+      }
+      if (!isWhitespace(document.classifiedForm.Image4.value)) {
+          var verif = /[.][jpg,gif,bmp,tiff,tif,jpeg,png,JPG,GIF,BMP,TIFF,TIF,JPEG,PNG]{3,4}$/;
+          if (verif.exec(document.classifiedForm.Image4.value) == null) {
+           errorMsg+="  - '${classifieds_image}4' : ${classifieds_imageFormat}\n";
+           errorNb++;
+          }
+      }
     </c:if>
 
-    switch(errorNb)	{
-	       	case 0 :
+    switch(errorNb)  {
+           case 0 :
               callback.call(this);
-	           	break;
-	       	case 1 :
-	           	errorMsg = "${GML_ThisFormContains} 1 ${GML_error} : \n" + errorMsg;
+               break;
+           case 1 :
+               errorMsg = "${GML_ThisFormContains} 1 ${GML_error} : \n" + errorMsg;
               jQuery.popup.error(errorMsg);
-	           	break;
-	       	default :
-	           	errorMsg = "${GML_ThisFormContains} " + errorNb + " ${GML_errors} :\n" + errorMsg;
+               break;
+           default :
+               errorMsg = "${GML_ThisFormContains} " + errorNb + " ${GML_errors} :\n" + errorMsg;
               jQuery.popup.error(errorMsg);
-	   	}
-	}
+       }
+  }
 
-	function setData()
-	{
-		<c:if test="${not empty fieldName}">
-	      document.classifiedForm.${fieldName}.value = '${fieldKey}';
-	    </c:if>
-	}
-	
-	function hideImageFile(idElement) {
-		document.getElementById("imageFile"+idElement).style.visibility = "hidden";
-		document.classifiedForm["RemoveImageFile"+idElement].value = "yes";
-	}
+  function setData()
+  {
+    <c:if test="${not empty fieldName}">
+        document.classifiedForm.${fieldName}.value = '${fieldKey}';
+      </c:if>
+  }
+  
+  function hideImageFile(idElement) {
+    document.getElementById("imageFile"+idElement).style.visibility = "hidden";
+    document.classifiedForm["RemoveImageFile"+idElement].value = "yes";
+  }
 
 </script>
 
-</head>
-<body onload="setData()">
-	<fmt:message var="classifiedPath"
-		key="${ (action eq 'CreateClassified') ? 'classifieds.addClassified' : 'classifieds.updateClassified'}" />
-	<view:browseBar>
-		<view:browseBarElt label="${classifiedPath}" link="" />
-	</view:browseBar>
+</view:sp-head-part>
+<view:sp-body-part onLoad="setData()">
+  <fmt:message var="classifiedPath"
+    key="${ (action eq 'CreateClassified') ? 'classifieds.addClassified' : 'classifieds.updateClassified'}" />
+  <view:browseBar>
+    <view:browseBarElt label="${classifiedPath}" link="" />
+  </view:browseBar>
 
 <view:window>
 <view:frame>
@@ -258,19 +257,19 @@
         ${displayedId}
       </div>
     </div>
-	</c:if>
-	
+  </c:if>
+  
   <div class="field" id="classifiedNameArea">
-	  <label for="classifiedName" class="txtlibform"><fmt:message key="GML.title"/></label>
-	  <div class="champs">
-	    <input type="text" name="Title" id="classifiedName" size="60" maxlength="100" value="${displayedTitle}"/>
-	    &nbsp;<img src="${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}"/>" width="5" height="5" border="0"/>
-	    <input type="hidden" name="ClassifiedId" value="${displayedId}"/>
+    <label for="classifiedName" class="txtlibform"><fmt:message key="GML.title"/></label>
+    <div class="champs">
+      <input type="text" name="Title" id="classifiedName" size="60" maxlength="100" value="${displayedTitle}"/>
+      &nbsp;<img src="${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}"/>" width="5" height="5" border="0"/>
+      <input type="hidden" name="ClassifiedId" value="${displayedId}"/>
       <input type="hidden" id="publishInput" name="Publish" value=""/>
-	  </div>
-	</div>
-	
-	<div class="field" id="descriptionArea">
+    </div>
+  </div>
+  
+  <div class="field" id="descriptionArea">
     <label for="classifiedDesc" class="txtlibform"><fmt:message key="GML.description"/></label>
     <div class="champs">
       <textarea cols="100" rows="8" name="Description" id="classifiedDesc">${displayedDescription}</textarea>
@@ -286,13 +285,13 @@
       </div>
     </div>
   </c:if>
-	
+  
   <c:if test="${action eq 'UpdateClassified'}">
     <div class="field" id="creationDateArea">
       <label class="txtlibform"><fmt:message key="classifieds.creationDate"/></label>
       <div class="champs">
-	      <view:formatDateTime value="${creationDate}"/> <fmt:message key="classifieds.by"/>
-	      <view:username userId="${creatorId}" />
+        <view:formatDateTime value="${creationDate}"/> <fmt:message key="classifieds.by"/>
+        <view:username userId="${creatorId}" />
       </div>
     </div>
   </c:if>
@@ -327,8 +326,8 @@
     <legend><fmt:message key="classifieds.images"/></legend>
     <div class="fields">
     
-	   <div class="field thumb">
-	     <c:forEach var="image" items="${images}" begin="0" end="0">
+     <div class="field thumb">
+       <c:forEach var="image" items="${images}" begin="0" end="0">
        <div class="thumbnailPreviewAndActions" id="imageFile1">
          <div class="thumbnailPreview">
           <view:image src="${image.attachmentURL}" size="250x" css="thumbnail" id="actualImage1"/>
@@ -410,19 +409,19 @@
     <fieldset id="specifiedInfo" class="skinFieldset">
     <legend><fmt:message key="classifieds.specificInfos"/></legend>
     <div class="fields">
-			<c:if test="${not empty formUpdate}">
-			<!-- AFFICHAGE du formulaire -->
-			<%
-			formUpdate.display(out, context, data);
-			%>
-			</c:if>
-		</div>
-	</fieldset>
+      <c:if test="${not empty formUpdate}">
+      <!-- AFFICHAGE du formulaire -->
+      <%
+      formUpdate.display(out, context, data);
+      %>
+      </c:if>
+    </div>
+  </fieldset>
   </div>
-</div>			
+</div>      
 </form>
 <view:buttonPane>
-	<fmt:message var="cancelLabel" key="GML.cancel"/>
+  <fmt:message var="cancelLabel" key="GML.cancel"/>
   <c:choose>
     <c:when test="${draftEnabled}">
       <fmt:message var="publishLabel" key="GML.publish"/>
@@ -435,9 +434,9 @@
       <view:button label="${validateLabel}" action="javascript:onclick=save();" />
     </c:otherwise>
   </c:choose>
-	<view:button label="${cancelLabel}" action="Main" />
+  <view:button label="${cancelLabel}" action="Main" />
 </view:buttonPane>
 </view:frame>
 </view:window>
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>
