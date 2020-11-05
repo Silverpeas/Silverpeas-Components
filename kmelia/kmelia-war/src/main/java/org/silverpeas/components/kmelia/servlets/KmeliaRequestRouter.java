@@ -219,7 +219,6 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         request.setAttribute("DisplayNBPublis", kmelia.displayNbPublis());
         request.setAttribute("DisplaySearch", kmelia.isSearchOnTopicsEnabled());
 
-        request.setAttribute("IsComponentAdmin", kmelia.isUserComponentAdmin());
         request.setAttribute("Profile", kmelia.getUserTopicProfile(topicId));
         request.setAttribute("IsGuest", kmelia.getUserDetail().isAccessGuest());
         request.setAttribute("RightsOnTopicsEnabled", kmelia.isRightsOnTopicsEnabled());

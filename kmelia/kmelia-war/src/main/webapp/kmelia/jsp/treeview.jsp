@@ -44,8 +44,6 @@
 <c:set var='highestUserRole' value='<%=SilverpeasRole.from((String) request.getAttribute("Profile"))%>'/>
 <view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.admin"/>
 
-<c:set var="componentAdmin" value="${requestScope.IsComponentAdmin}"/>
-
 <fmt:message key="GML.ForbiddenAccessContent" var="labelForbiddenAccess"/>
 
 <%
@@ -667,11 +665,6 @@ function spreadNbItems(children) {
 			<% if (kmeliaScc.isOrientedWebContent()) { %>
       child.li_attr = { class: child.attr['status'] };
 			<% } %>
-      <c:if test="${componentAdmin}">
-      if (child.attr['specificRights'] === true) {
-        child.type = "folder-with-rights";
-      }
-      </c:if>
       decorateNodeName(child);
       if (child.children && child.children.length > 0) {
         spreadNbItems(child.children);

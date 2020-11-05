@@ -37,23 +37,23 @@
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window" %>
+<%@ page import="org.silverpeas.core.webapi.node.NodeType" %>
 
 <c:url var="mandatoryFieldUrl" value="/util/icons/mandatoryField.gif"/>
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 
 <c:set var='highestUserRole' value='<%=SilverpeasRole.from((String) request.getAttribute("Profile"))%>'/>
-<view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.admin"/>
 
 <%
-String		rootId				= "0";
+String    rootId        = "0";
 
-String 	profile			= (String) request.getAttribute("Profile");
-String  translation 	= (String) request.getAttribute("Language");
+String   profile      = (String) request.getAttribute("Profile");
+String  translation   = (String) request.getAttribute("Language");
 boolean displayNBPublis = ((Boolean) request.getAttribute("DisplayNBPublis")).booleanValue();
 Boolean rightsOnTopics  = (Boolean) request.getAttribute("RightsOnTopicsEnabled");
-Boolean displaySearch	= (Boolean) request.getAttribute("DisplaySearch");
-int		currentPageIndex = (Integer) request.getAttribute("PageIndex");
+Boolean displaySearch  = (Boolean) request.getAttribute("DisplaySearch");
+int    currentPageIndex = (Integer) request.getAttribute("PageIndex");
 
 SearchContext searchContext = (SearchContext) request.getAttribute("SearchContext");
 String query = "";
@@ -61,14 +61,14 @@ if (searchContext != null) {
   query = searchContext.getQuery();
 }
 
-String id 		= (String) request.getAttribute("CurrentFolderId");
+String id     = (String) request.getAttribute("CurrentFolderId");
 
-String		pubIdToHighlight	= (String) request.getAttribute("PubIdToHighlight"); //used when we have found publication from search (only toolbox)
+String    pubIdToHighlight  = (String) request.getAttribute("PubIdToHighlight"); //used when we have found publication from search (only toolbox)
 
 String language = kmeliaScc.getLanguage();
 
 if (id == null) {
-	id = rootId;
+  id = rootId;
 }
 
 String userId = kmeliaScc.getUserId();
@@ -118,31 +118,31 @@ function getCurrentUserId() {
 }
 
 function getWebContext() {
-	return "<%=m_context%>";
+  return "<%=m_context%>";
 }
 
 function getComponentId() {
-	return "<%=componentId%>";
+  return "<%=componentId%>";
 }
 
 function getComponentLabel() {
-	return "<%=WebEncodeHelper.javaStringToJsString(componentLabel)%>";
+  return "<%=WebEncodeHelper.javaStringToJsString(componentLabel)%>";
 }
 
 function getLanguage() {
-	return "<%=language%>";
+  return "<%=language%>";
 }
 
 function getPubIdToHighlight() {
-	return "<%=pubIdToHighlight%>";
+  return "<%=pubIdToHighlight%>";
 }
 
 function getTranslation() {
-	return "<%=translation%>";
+  return "<%=translation%>";
 }
 
 function getToValidateFolderId() {
-	return "<%=KmeliaHelper.SPECIALFOLDER_TOVALIDATE%>";
+  return "<%=KmeliaHelper.SPECIALFOLDER_TOVALIDATE%>";
 }
 </script>
 </head>
@@ -150,32 +150,32 @@ function getToValidateFolderId() {
 <div compile-directive style="display: none"></div>
 <div id="<%=componentId %>" class="<%=profile%>">
 <%
-	Window window = gef.getWindow();
-	BrowseBar browseBar = window.getBrowseBar();
-	browseBar.setI18N("GoToCurrentTopic", translation);
+  Window window = gef.getWindow();
+  BrowseBar browseBar = window.getBrowseBar();
+  browseBar.setI18N("GoToCurrentTopic", translation);
 
-	//Display operations - following lines are mandatory to init menu correctly
-	OperationPane operationPane = window.getOperationPane();
-	operationPane.addOperation("", resources.getString("FavoritesAdd1")+" "+kmeliaScc.getString("FavoritesAdd2"), "javaScript:addCurrentNodeAsFavorite()");
+  //Display operations - following lines are mandatory to init menu correctly
+  OperationPane operationPane = window.getOperationPane();
+  operationPane.addOperation("", resources.getString("FavoritesAdd1")+" "+kmeliaScc.getString("FavoritesAdd2"), "javaScript:addCurrentNodeAsFavorite()");
 
     out.println(window.printBefore());
 %>
 <view:frame>
-					<div id="subTopics"></div>
+          <div id="subTopics"></div>
 
-					<% if (displaySearch.booleanValue()) {
-						Button searchButton = gef.getFormButton(resources.getString("GML.search"), "javascript:onClick=searchInTopic();", false); %>
-						<div id="searchZone">
-						<view:board>
-						<table id="searchLine">
-						<tr><td><div id="searchLabel"><%=resources.getString("kmelia.SearchInTopics") %></div>&nbsp;<input type="text" id="topicQuery" size="50" value="<%=query%>" onkeydown="checkSubmitToSearch(event);"/></td><td><%=searchButton.print() %></td></tr>
-						</table>
-						</view:board>
-						</div>
-					<% } %>
+          <% if (displaySearch.booleanValue()) {
+            Button searchButton = gef.getFormButton(resources.getString("GML.search"), "javascript:onClick=searchInTopic();", false); %>
+            <div id="searchZone">
+            <view:board>
+            <table id="searchLine">
+            <tr><td><div id="searchLabel"><%=resources.getString("kmelia.SearchInTopics") %></div>&nbsp;<input type="text" id="topicQuery" size="50" value="<%=query%>" onkeydown="checkSubmitToSearch(event);"/></td><td><%=searchButton.print() %></td></tr>
+            </table>
+            </view:board>
+            </div>
+          <% } %>
 
-					<div id="topicDescription"></div>
-					<view:areaOfOperationOfCreation/>
+          <div id="topicDescription"></div>
+          <view:areaOfOperationOfCreation/>
           <div class="dragAndDropUpload" style="min-height: 75px">
             <div id="pubList">
               <br/>
@@ -187,26 +187,26 @@ function getToValidateFolderId() {
               </view:board>
             </div>
           </div>
-					<div id="footer" class="txtBaseline"></div>
-		</view:frame>
-	<%
-		out.println(window.printAfter());
-	%>
+          <div id="footer" class="txtBaseline"></div>
+    </view:frame>
+  <%
+    out.println(window.printAfter());
+  %>
 
 <form name="topicDetailForm" method="post">
-	<input type="hidden" name="Id" value="<%=id%>"/>
-	<input type="hidden" name="ChildId"/>
-	<input type="hidden" name="Status"/>
-	<input type="hidden" name="Recursive"/>
+  <input type="hidden" name="Id" value="<%=id%>"/>
+  <input type="hidden" name="ChildId"/>
+  <input type="hidden" name="Status"/>
+  <input type="hidden" name="Recursive"/>
 </form>
 
 <form name="pubForm" action="ViewPublication" method="GET">
-	<input type="hidden" name="PubId"/>
-	<input type="hidden" id="CheckPath" name="CheckPath"/>
+  <input type="hidden" name="PubId"/>
+  <input type="hidden" id="CheckPath" name="CheckPath"/>
 </form>
 
 <form name="fupload" action="fileUpload.jsp" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
-	<input type="hidden" name="Action" value="initial"/>
+  <input type="hidden" name="Action" value="initial"/>
 </form>
 
 <script type="text/javascript">
@@ -228,83 +228,83 @@ var searchInProgress = <%=searchContext != null%>;
 var searchFolderId = "<%=id%>";
 
 function getComponentPermalink() {
-	return "<%=URLUtil.getSimpleURL(URLUtil.URL_COMPONENT, componentId)%>";
+  return "<%=URLUtil.getSimpleURL(URLUtil.URL_COMPONENT, componentId)%>";
 }
 
-function copyCurrentNode()	{
-	top.IdleFrame.location.href = '../..<%=kmeliaScc.getComponentUrl()%>copy?Object=Node&Id='+getCurrentNodeId();
+function copyCurrentNode()  {
+  top.IdleFrame.location.href = '../..<%=kmeliaScc.getComponentUrl()%>copy?Object=Node&Id='+getCurrentNodeId();
 }
 
 function cutCurrentNode() {
-	top.IdleFrame.location.href = '../..<%=kmeliaScc.getComponentUrl()%>cut?Object=Node&Id='+getCurrentNodeId();
+  top.IdleFrame.location.href = '../..<%=kmeliaScc.getComponentUrl()%>cut?Object=Node&Id='+getCurrentNodeId();
 }
 
 function changeCurrentTopicStatus() {
-	changeStatus(getCurrentNodeId(), getCurrentTopicStatus());
+  changeStatus(getCurrentNodeId(), getCurrentTopicStatus());
 }
 
 function updateUIStatus(nodeId, newStatus) {
-	setCurrentTopicStatus(newStatus);
-	displayOperations(nodeId);
+  setCurrentTopicStatus(newStatus);
+  displayOperations(nodeId);
 }
 
 function displayTopicContent(id) {
-	if (id !== searchFolderId) {
-		// search session is over
-		searchInProgress = false;
-	}
+  if (id !== searchFolderId) {
+    // search session is over
+    searchInProgress = false;
+  }
 
-	if (!searchInProgress) {
-		clearSearchQuery();
-	}
+  if (!searchInProgress) {
+    clearSearchQuery();
+  }
 
-	setCurrentNodeId(id);
+  setCurrentNodeId(id);
 
-	if (id === getToValidateFolderId() || id === "1") {
-		muteDragAndDrop(); //mute dropzone
-		$("#footer").css({'visibility':'hidden'}); //hide footer
-		$("#searchZone").css({'display':'none'}); //hide search
-		$("#subTopics").empty();
+  if (id === getToValidateFolderId() || id === "1") {
+    muteDragAndDrop(); //mute dropzone
+    $("#footer").css({'visibility':'hidden'}); //hide footer
+    $("#searchZone").css({'display':'none'}); //hide search
+    $("#subTopics").empty();
 
-		if (id === getToValidateFolderId())	{
-			hideOperations();
-			displayPublications(id);
+    if (id === getToValidateFolderId())  {
+      hideOperations();
+      displayPublications(id);
 
-			//update breadcrumb
+      //update breadcrumb
             removeBreadCrumbElements();
             addBreadCrumbElement("#", "<%=resources.getString("ToValidate")%>");
-		} else {
-			displayPublications(id);
-			displayPath(id);
-			displayOperations(id);
-		}
-	} else {
-		if (searchInProgress) {
-			doPagination(<%=currentPageIndex%>);
-		} else {
-			displayPublications(id);
-		}
-		displayPath(id);
-		displayOperations(id);
-		$("#searchZone").css({'display':'block'});
-		displaySubTopics(id);
-	}
+    } else {
+      displayPublications(id);
+      displayPath(id);
+      displayOperations(id);
+    }
+  } else {
+    if (searchInProgress) {
+      doPagination(<%=currentPageIndex%>);
+    } else {
+      displayPublications(id);
+    }
+    displayPath(id);
+    displayOperations(id);
+    $("#searchZone").css({'display':'block'});
+    displaySubTopics(id);
+  }
 
-	//display topic information
-	displayTopicInformation(id);
+  //display topic information
+  displayTopicInformation(id);
 
-	//display topic rich description
-	displayTopicDescription(id);
+  //display topic rich description
+  displayTopicDescription(id);
 }
 
 function displaySubTopics(id) {
-	var sUrl = "<%=m_context%>/services/folders/<%=componentId%>/"+id+"/children?lang="+getTranslation();
-	$.ajax(sUrl, {
-		 type: 'GET',
-		 dataType : 'json',
-		 async : false,
-		 cache : false,
-		 success : function(data){
+  var sUrl = "<%=m_context%>/services/folders/<%=componentId%>/"+id+"/children?lang="+getTranslation();
+  $.ajax(sUrl, {
+     type: 'GET',
+     dataType : 'json',
+     async : false,
+     cache : false,
+     success : function(data){
         $("#subTopics").empty();
         $("#subTopics").append("<ul>");
         var basket = "";
@@ -331,54 +331,52 @@ function displaySubTopics(id) {
         }
       },
     error : function(data) {
-		   //alert("error");
+       //alert("error");
     }
-	});
+  });
 }
 
 function getSubFolder(folder) {
-	var id = folder.attr["id"];
-	var nbItems = folder.attr["nbItems"];
-	var name = folder.text;
-	var desc = folder.attr["description"];
-	var specificRights = folder.attr["specificRights"];
+  var id = folder.attr["id"];
+  var nbItems = folder.attr["nbItems"];
+  var name = folder.text;
+  var desc = folder.attr["description"];
+  var folderType = folder["type"];
 
-	var str = '<li id="topic_'+id+'">';
-	str += '<a href="#" onclick="topicGoTo(\''+id+'\')" ';
-	if (id === getToValidateFolderId()) {
-		str += 'class="toValidate"';
-	} else if (id === "1") {
-		str += 'class="trash"';
-	} else if (specificRights) {
-    <c:if test="${highestUserRole.isGreaterThanOrEquals(adminRole)}">
-	  str += 'class="folder-with-rights"';
-    </c:if>
+  var str = '<li id="topic_'+id+'">';
+  str += '<a href="#" onclick="topicGoTo(\''+id+'\')" ';
+  if (id === getToValidateFolderId()) {
+    str += 'class="toValidate"';
+  } else if (id === "1") {
+    str += 'class="trash"';
+  } else if (folderType === '<%=NodeType.FOLDER_WITH_RIGHTS%>') {
+    str += 'class="folder-with-rights"';
   }
-	str += '>';
-	str += '<strong>'+name+' ';
-	if (nbItems && typeof(nbItems) !== "undefined") {
-		str += '<span>'+nbItems+'</span>';
-	}
-	str += '</strong>';
-	if (typeof(desc) !== "undefined" && desc.length > 0) {
-		str += '<span title="'+desc+'">'+desc+'</span>';
-	}
-	str += '</a>';
-	str += '</li>';
-	return str;
+  str += '>';
+  str += '<strong>'+name+' ';
+  if (nbItems && typeof(nbItems) !== "undefined") {
+    str += '<span>'+nbItems+'</span>';
+  }
+  str += '</strong>';
+  if (typeof(desc) !== "undefined" && desc.length > 0) {
+    str += '<span title="'+desc+'">'+desc+'</span>';
+  }
+  str += '</a>';
+  str += '</li>';
+  return str;
 }
 
 function getString(key) {
-	return sp.i18n.get(key);
+  return sp.i18n.get(key);
 }
 </script>
 </div>
 <div id="visibleInvisible-message" style="display: none;">
-	<p>
-	</p>
+  <p>
+  </p>
 </div>
 <div id="addOrUpdateNode" style="display: none;">
-	<form name="topicForm" action="AddTopic" method="post">
+  <form name="topicForm" action="AddTopic" method="post">
     <input type="hidden" id="<%=I18NHelper.HTMLHiddenRemovedTranslationMode %>" name="<%=I18NHelper.HTMLHiddenRemovedTranslationMode %>" value="false"/>
        <table cellpadding="5" width="100%">
          <tr><td class="txtlibform"><fmt:message key="TopicPath"/> :</td>

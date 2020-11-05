@@ -34,6 +34,7 @@ import org.silverpeas.components.blog.service.BlogService;
 import org.silverpeas.components.blog.service.BlogServiceFactory;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.service.AdminController;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.model.CommentPK;
 import org.silverpeas.core.comment.service.CommentService;
@@ -412,9 +413,10 @@ public final class BlogSessionController extends AbstractComponentSessionControl
    * @return a JSON representation of the list of Delegated News (as string)
    */
   public String getListNodeJSON(Collection<NodeDetail> listNode) {
+    final SilverpeasRole highestSilverpeasUserRole = getHighestSilverpeasUserRole();
     List<NodeEntity> listNodeEntity = new ArrayList<>();
     for (NodeDetail node : listNode) {
-      NodeEntity nodeEntity = NodeEntity.fromNodeDetail(node, node.getNodePK().getId());
+      NodeEntity nodeEntity = NodeEntity.fromNodeDetail(highestSilverpeasUserRole, node, node.getNodePK().getId());
       listNodeEntity.add(nodeEntity);
     }
     return listAsJSON(listNodeEntity);
