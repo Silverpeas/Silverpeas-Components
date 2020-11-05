@@ -119,6 +119,18 @@ function sortGoTo(selectedIndex) {
   }
 }
 
+function resetSort() {
+  jQuery.popup.confirm(getString('kmelia.sort.manual.reset.confirm'), function() {
+    var ieFix = new Date().getTime();
+    var componentId = getComponentId();
+    $.get(getWebContext() + '/RAjaxPublicationsListServlet', {Index: 0, ResetManualSort: true, ComponentId: componentId, IEFix: ieFix},
+        function(data) {
+          updateHtmlContainingAngularDirectives($('#pubList'), data);
+          activateUserZoom();
+        }, "html");
+  });
+}
+
 function displayPath(id) {
   var url = getWebContext() + "/services/folders/" + getComponentId() + "/" + id + "/path?lang=" + getTranslation();
   $.getJSON(url, function(data) {
