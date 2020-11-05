@@ -24,6 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.owasp.encoder.Encode;
 import org.silverpeas.components.kmelia.service.KmeliaService;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.node.model.NodeDetail;
@@ -141,8 +142,9 @@ public class FolderResource extends RESTWebService {
     String uri = requestUri.substring(0, requestUri.lastIndexOf('/'));
 
     List<NodeEntity> entities = new ArrayList<>();
+    final SilverpeasRole highestUserRole = getHighestUserRoleIfAny();
     for (NodeDetail node : nodes) {
-      entities.add(NodeEntity.fromNodeDetail(node, uri, language));
+      entities.add(NodeEntity.fromNodeDetail(highestUserRole, node, uri, language));
     }
 
     return decorate ? decorateRootChildren(entities, language) : entities.toArray(new NodeEntity[0]);
@@ -220,7 +222,7 @@ public class FolderResource extends RESTWebService {
 
       NodeDetail node = getNodeDetail(nodeId);
       URI uri = getUri().getRequestUri();
-      NodeEntity newNodeEntity = NodeEntity.fromNodeDetail(node, uri);
+      NodeEntity newNodeEntity = NodeEntity.fromNodeDetail(getHighestUserRoleIfAny(), node, uri);
 
       return Response.created(uri).entity(newNodeEntity).build();
     } catch (Exception ex) {
@@ -276,7 +278,7 @@ public class FolderResource extends RESTWebService {
       String requestUri = getUri().getRequestUri().toString();
       String uri = requestUri.substring(0, requestUri.lastIndexOf('/'));
 
-      NodeEntity rootEntity = NodeEntity.fromNodeDetail(root, uri, language);
+      NodeEntity rootEntity = NodeEntity.fromNodeDetail(getHighestUserRoleIfAny(), root, uri, language);
       decorateRoot(rootEntity, language);
 
       setOpenState(rootEntity.getChildren(), nodes);
@@ -321,7 +323,7 @@ public class FolderResource extends RESTWebService {
   }
 
   private NodeEntity asNodeEntity(final NodeDetail node, final URI uri, final String language) {
-    final NodeEntity entity = NodeEntity.fromNodeDetail(node, uri, language);
+    final NodeEntity entity = NodeEntity.fromNodeDetail(getHighestUserRoleIfAny(), node, uri, language);
     if (node.isRoot()) {
       decorateRoot(entity, language);
     }
@@ -354,5 +356,9 @@ public class FolderResource extends RESTWebService {
     } catch (Exception e) {
       throw new WebApplicationException(e, Status.INTERNAL_SERVER_ERROR);
     }
+  }
+
+  private SilverpeasRole getHighestUserRoleIfAny() {
+    return getUser() != null && getComponentId() != null ? getHighestUserRole() : null;
   }
 }

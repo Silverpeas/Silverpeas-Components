@@ -846,9 +846,7 @@ $(document).ready(function() {
       },
       "<%=NodeType.FOLDER_WITH_RIGHTS%>" : {
         // those prevent the functions with the same name to be used on `root` nodes
-        <c:if test="${highestUserRole.isGreaterThanOrEquals(adminRole)}">
-          "icon" : getWebContext() + "/util/icons/treeview/folder-bicolor.png",
-        </c:if>
+        "icon" : getWebContext() + "/util/icons/treeview/folder-bicolor.png",
         "valid_children" : ["folder","<%=NodeType.FOLDER_WITH_RIGHTS%>"]
       }
     },
