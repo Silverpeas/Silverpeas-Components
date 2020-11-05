@@ -34,6 +34,7 @@ import org.silverpeas.core.contribution.rating.service.RatingService;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
 public class Message implements Contribution, Rateable, Serializable, WithAttachment {
   private static final String TYPE = "forum_message";
@@ -57,7 +58,7 @@ public class Message implements Contribution, Rateable, Serializable, WithAttach
   private String status;
   private ContributionRating contributionRating;
 
-  public Message(int id, String title, String author, Date date, int forumId,
+  public Message(int id, String instanceId, String title, String author, Date date, int forumId,
       int parentId) {
     this.id = id;
     this.title = title;
@@ -65,18 +66,7 @@ public class Message implements Contribution, Rateable, Serializable, WithAttach
     this.date = date;
     this.forumId = forumId;
     this.parentId = parentId;
-  }
-
-  public Message(int id, String title, String author, Date date, int forumId,
-      int parentId, String instanceId) {
-    this(id, title, author, date, forumId, parentId);
     this.instanceId = instanceId;
-  }
-
-  public Message(int id, String title, String author, Date date, int forumId,
-      int parentId, String instanceId, String status) {
-    this(id, title, author, date, forumId, parentId, instanceId);
-    this.status = status;
   }
 
   public int getId() {
@@ -116,6 +106,7 @@ public class Message implements Contribution, Rateable, Serializable, WithAttach
     return getDate();
   }
 
+  @Override
   public String getTitle() {
     return title;
   }
@@ -249,25 +240,25 @@ public class Message implements Contribution, Rateable, Serializable, WithAttach
     if (parentId != message.parentId) {
       return false;
     }
-    if (author != null ? !author.equals(message.author) : message.author != null) {
+    if (!Objects.equals(author, message.author)) {
       return false;
     }
-    if (date != null ? !date.equals(message.date) : message.date != null) {
+    if (!Objects.equals(date, message.date)) {
       return false;
     }
-    if (instanceId != null ? !instanceId.equals(message.instanceId) : message.instanceId != null) {
+    if (!Objects.equals(instanceId, message.instanceId)) {
       return false;
     }
-    if (pk != null ? !pk.equals(message.pk) : message.pk != null) {
+    if (!Objects.equals(pk, message.pk)) {
       return false;
     }
-    if (status != null ? !status.equals(message.status) : message.status != null) {
+    if (!Objects.equals(status, message.status)) {
       return false;
     }
-    if (text != null ? !text.equals(message.text) : message.text != null) {
+    if (!Objects.equals(text, message.text)) {
       return false;
     }
-    return title != null ? title.equals(message.title) : message.title == null;
+    return Objects.equals(title, message.title);
   }
 
   @Override

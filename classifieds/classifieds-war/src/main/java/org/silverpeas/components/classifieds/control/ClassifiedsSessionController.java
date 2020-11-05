@@ -583,7 +583,8 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
               creationDate, null));
       sd.setDocumentType(DocumentType.attachment);
 
-      AttachmentServiceProvider.getAttachmentService().createAttachment(sd, fileImage.getInputStream(), true);
+      AttachmentServiceProvider.getAttachmentService()
+          .createAttachment(sd, fileImage.getInputStream(), true);
     } catch (Exception e) {
       throw new SilverpeasRuntimeException("Can't save image", e);
     }
@@ -648,7 +649,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
       classifiedImage.setSize(size);
       classifiedImage.setContentType(mimeType);
       classifiedImage.setUpdatedBy(getUserId());
-      classifiedImage.setUpdated(updateDate);
+      classifiedImage.setLastUpdateDate(updateDate);
 
       try {
         AttachmentServiceProvider.getAttachmentService()

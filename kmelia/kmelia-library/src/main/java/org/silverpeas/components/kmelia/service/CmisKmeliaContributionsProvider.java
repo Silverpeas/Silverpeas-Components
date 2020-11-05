@@ -66,7 +66,8 @@ public class CmisKmeliaContributionsProvider implements CmisContributionsProvide
       throw new CmisObjectNotFoundException(
           String.format("The application %s doesn't exist or is not accessible to user %s",
               kmeliaId, user.getId()));
-    } boolean treeEnabled = KmeliaPublicationHelper.isTreeEnabled(kmeliaId);
+    }
+    boolean treeEnabled = KmeliaPublicationHelper.isTreeEnabled(kmeliaId);
     NodePK root = new NodePK(NodePK.ROOT_NODE_ID, kmeliaId);
     if (treeEnabled) {
       ContributionIdentifier rootId = ContributionIdentifier.from(root, NodeDetail.TYPE);
@@ -90,6 +91,7 @@ public class CmisKmeliaContributionsProvider implements CmisContributionsProvide
       Stream<? extends I18nContribution> publications =
           kmeliaService.getPublicationsOfFolder(folderPK, profile, user.getId(), treeEnabled)
               .stream()
+              .filter(k -> !k.isAlias())
               .map(KmeliaPublication::getDetail);
       Stream<? extends I18nContribution> subFolders =
           kmeliaService.getFolderChildren(folderPK, user.getId())

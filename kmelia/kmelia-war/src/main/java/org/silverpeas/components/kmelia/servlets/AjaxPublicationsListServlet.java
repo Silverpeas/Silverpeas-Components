@@ -923,7 +923,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         boolean viewable = ViewerProvider.isViewable(attachment.getAttachmentPath());
         result.append(
             displayFile(url, title, Encode.forHtml(attachment.getDescription()), icon, logicalName,
-                size, downloadTime, attachment.getCreated(), permalink, resources, linkAttachment,
+                size, downloadTime, attachment.getCreationDate(), permalink, resources, linkAttachment,
                 previewable, viewable, attachment.isDownloadAllowedForReaders(),
                 attachment.isDownloadAllowedForRolesFrom(kmeliaScc.getUserDetail()),
                 attachment.getPk().getId()));

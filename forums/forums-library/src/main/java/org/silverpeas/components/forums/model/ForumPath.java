@@ -25,7 +25,7 @@
 package org.silverpeas.components.forums.model;
 
 import org.jetbrains.annotations.NotNull;
-import org.silverpeas.core.util.ResourcePath;
+import org.silverpeas.core.util.ContributionPath;
 
 import java.util.Collection;
 
@@ -33,22 +33,11 @@ import java.util.Collection;
  * List of {@link Forum} which represents a path.
  * @author silveryocha
  */
-public class ForumPath  extends ResourcePath<Forum> {
+public class ForumPath  extends ContributionPath<Forum> {
   private static final long serialVersionUID = 4607155750736774073L;
 
   public ForumPath(final @NotNull Collection<Forum> c) {
     super(c);
-  }
-
-  @Override
-  protected String getInstanceId(final Forum forum) {
-    return forum.getInstanceId();
-  }
-
-  @SuppressWarnings("unchecked")
-  @Override
-  protected String getId(final Forum forum) {
-    return String.valueOf(forum.getId());
   }
 
   @Override

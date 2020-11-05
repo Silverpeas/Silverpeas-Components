@@ -88,7 +88,7 @@ public class KmeliaNotifyPublicationDocumentUserNotification extends
       template.setAttribute("attachmentDesc", document.getDescription());
     }
     template
-        .setAttribute("attachmentCreationDate", DateUtil.getOutputDate(document.getCreated(), language));
+        .setAttribute("attachmentCreationDate", DateUtil.getOutputDate(document.getCreationDate(), language));
     template.setAttribute("attachmentSize", FileRepositoryManager.formatFileSize(document.getSize()));
 
     User author = getOrganisationController().getUserDetail(document.getUpdatedBy());

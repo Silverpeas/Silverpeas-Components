@@ -68,7 +68,7 @@ class SimpleDocumentHolder {
    * @return the last modification date of the simple document.
    */
   public String getLastModification(String lang) {
-    return getOutputDate(document.getUpdated(), lang);
+    return getOutputDate(document.getLastUpdateDate(), lang);
   }
 
   /**
