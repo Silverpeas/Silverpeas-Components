@@ -20,15 +20,15 @@
  */
 package org.silverpeas.components.projectmanager.service;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-
 import org.silverpeas.components.projectmanager.model.Filtre;
 import org.silverpeas.components.projectmanager.model.HolidayDetail;
 import org.silverpeas.components.projectmanager.model.TaskDetail;
 import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.util.ServiceProvider;
+
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 public interface ProjectManagerService {
 
@@ -47,11 +47,6 @@ public interface ProjectManagerService {
   void calculateAllTasksDates(String instanceId, int projectId, String userId);
 
   List<TaskDetail> getTasksByMotherId(String instanceId, int motherId);
-
-  List<TaskDetail> getTasksByMotherId(String instanceId, int motherId, Filtre filtre);
-
-  List<TaskDetail> getTasksNotCancelledByMotherId(String instanceId, int motherId,
-      Filtre filtre);
 
   List<TaskDetail> getTasksByMotherIdAndPreviousId(String instanceId, int motherId,
       int previousId);
