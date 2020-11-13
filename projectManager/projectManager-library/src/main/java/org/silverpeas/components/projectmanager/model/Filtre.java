@@ -29,9 +29,17 @@
 package org.silverpeas.components.projectmanager.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.function.BiPredicate;
 
-import javax.servlet.http.HttpServletRequest;
+import static java.lang.Integer.parseInt;
+import static java.util.Map.entry;
+import static java.util.Map.ofEntries;
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+import static org.silverpeas.core.util.StringUtil.likeIgnoreCase;
 
 /**
  * @author neysseri
@@ -39,6 +47,21 @@ import javax.servlet.http.HttpServletRequest;
 public class Filtre implements Serializable {
 
   private static final long serialVersionUID = -5172014425250531057L;
+  private static final String FROM_ACTION = "FROM_ACTION";
+  private static final String TO_ACTION = "TO_ACTION";
+  private static final String PROJECT_CODE = "PROJECT_CODE";
+  private static final String PROJECT_DESCRIPTION = "PROJECT_DESCRIPTION";
+  private static final String ACTION_NAME = "ACTION_NAME";
+  private static final String STATUS = "STATUS";
+  private static final String FROM_START_DATE = "FROM_START_DATE";
+  private static final String TO_START_DATE = "TO_START_DATE";
+  private static final String FROM_END_DATE = "FROM_END_DATE";
+  private static final String TO_END_DATE = "TO_END_DATE";
+  private static final String WITH_DELAY = "WITH_DELAY";
+  private static final String WITHOUT_DELAY = "WITHOUT_DELAY";
+  private static final String ENDED = "ENDED";
+  private static final String NOT_ENDED = "NOT_ENDED";
+  private static final String TASK_MANAGER = "TASK_MANAGER";
   private String actionFrom = null;
   private String actionTo = null;
   private String codeProjet = null;
@@ -62,9 +85,6 @@ public class Filtre implements Serializable {
   private String responsableId = null;
   private String responsableName = null;
   private String visibleMOA = null;
-
-  public Filtre() {
-  }
 
   /**
    * @return
@@ -388,4 +408,77 @@ public class Filtre implements Serializable {
     responsableName = string;
   }
 
+  private static final Map<String, BiPredicate<Filtre, TaskDetail>> MATCHING_PREDICATES = ofEntries(
+      entry(FROM_ACTION, (f, t) -> t.getChrono() >= parseInt(f.getActionFrom())),
+      entry(TO_ACTION, (f, t) -> t.getChrono() <= parseInt(f.getActionTo())),
+      entry(PROJECT_CODE, (f, t) -> f.getCodeProjet().equals(t.getCodeProjet())),
+      entry(PROJECT_DESCRIPTION, (f, t) -> likeIgnoreCase(t.getDescriptionProjet(), "%" + f.getDescProjet() + "%")),
+      entry(ACTION_NAME, (f, t) -> likeIgnoreCase(t.getNom(), "%" + f.getActionNom() + "%")),
+      entry(STATUS, (f, t) -> parseInt(f.getStatut()) == t.getStatut()),
+      entry(FROM_START_DATE, (f, t) -> t.getDateDebut().compareTo(f.getDateDebutFrom()) >= 0),
+      entry(TO_START_DATE, (f, t) -> t.getDateDebut().compareTo(f.getDateDebutTo()) <= 0),
+      entry(FROM_END_DATE, (f, t) -> t.getDateFin().compareTo(f.getDateFinFrom()) >= 0),
+      entry(TO_END_DATE, (f, t) -> t.getDateFin().compareTo(f.getDateFinTo()) <= 0),
+      entry(WITH_DELAY, (f, t) -> t.getDateFin().compareTo(new Date()) < 0 && t.getAvancement() == 100),
+      entry(WITHOUT_DELAY, (f, t) -> t.getDateFin().compareTo(new Date()) >= 0 && t.getAvancement() == 100),
+      entry(ENDED, (f, t) -> t.getAvancement() == 100),
+      entry(NOT_ENDED, (f, t) -> t.getAvancement() < 100),
+      entry(TASK_MANAGER, (f, t) -> parseInt(f.getResponsableId()) == t.getResponsableId()));
+
+  /**
+   * Indicates if the given task matches the registered filters.
+   * @param task the task to check.
+   * @return true if the filters matches, false otherwise.
+   */
+  public boolean matches(final TaskDetail task) {
+    final List<String> predicates = new ArrayList<>();
+    addFromStringFilter(predicates, getActionFrom(), FROM_ACTION);
+    addFromStringFilter(predicates, getActionTo(), TO_ACTION);
+    addFromStringFilter(predicates, getCodeProjet(), PROJECT_CODE);
+    addFromStringFilter(predicates, getDescProjet(), PROJECT_DESCRIPTION);
+    addFromStringFilter(predicates, getActionNom(), ACTION_NAME);
+    addFromIntegerFilter(predicates, getStatut(), STATUS);
+    if (getDateDebutFrom() != null) {
+      predicates.add(FROM_START_DATE);
+    }
+    if (getDateDebutTo() != null) {
+      predicates.add(TO_START_DATE);
+    }
+    if (getDateFinFrom() != null) {
+      predicates.add(FROM_END_DATE);
+    }
+    if (getDateFinTo() != null) {
+      predicates.add(TO_END_DATE);
+    }
+    if (getRetard() != null && !"-1".equals(getRetard())) {
+      if ("1".equals(getRetard())) {
+        predicates.add(WITH_DELAY);
+      } else {
+        predicates.add(WITHOUT_DELAY);
+      }
+    }
+    if (getAvancement() != null && !"-1".equals(getAvancement())) {
+      if ("1".equals(getAvancement())) {
+        predicates.add(ENDED);
+      } else {
+        predicates.add(NOT_ENDED);
+      }
+    }
+    addFromStringFilter(predicates, getResponsableId(), TASK_MANAGER);
+    return predicates.stream().map(MATCHING_PREDICATES::get).noneMatch(p -> !p.test(this, task));
+  }
+
+  private void addFromStringFilter(final List<String> predicates, final String filter,
+      final String predicateKey) {
+    if (isNotEmpty(filter)) {
+      predicates.add(predicateKey);
+    }
+  }
+
+  private void addFromIntegerFilter(final List<String> predicates, final String filter,
+      final String predicateKey) {
+    if (isNotEmpty(filter) && !"-1".equals(filter)) {
+      predicates.add(predicateKey);
+    }
+  }
 }

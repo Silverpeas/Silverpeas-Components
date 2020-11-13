@@ -30,6 +30,7 @@ package org.silverpeas.components.projectmanager.model;
 
 import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.util.DateUtil;
 
 import java.sql.Connection;
@@ -43,6 +44,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.UnaryOperator;
 
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
@@ -332,7 +334,7 @@ public class ProjectManagerDAO {
 
   public static List<TaskResourceDetail> getResources(Connection con, int taskId,
       String instanceId) throws SQLException {
-    List<TaskResourceDetail> resources = new ArrayList<TaskResourceDetail>();
+    List<TaskResourceDetail> resources = new ArrayList<>();
     StringBuilder query = new StringBuilder();
     query.append("SELECT id, taskId, resourceId, charge, instanceId FROM ");
     query.append(PROJECTMANAGER_RESOURCES_TABLENAME);
@@ -357,7 +359,7 @@ public class ProjectManagerDAO {
 
   public static List<TaskDetail> getAllTasks(Connection con, String instanceId,
       Filtre filtre) throws SQLException {
-    List<TaskDetail> tasks = new ArrayList<TaskDetail>();
+    List<TaskDetail> tasks = new ArrayList<>();
     StringBuilder query = new StringBuilder();
     query.append("SELECT * FROM ").append(PROJECTMANAGER_TASKS_TABLENAME);
     query.append(" WHERE instanceId = ? ");
@@ -387,62 +389,9 @@ public class ProjectManagerDAO {
     return tasks;
   }
 
-  public static List<TaskDetail> getTasks(Connection con, int actionId, Filtre filtre,
-      String instanceId) throws SQLException {
-    List<TaskDetail> tasks = new ArrayList<TaskDetail>();
-    StringBuilder query = new StringBuilder();
-    query.append("SELECT * FROM ").append(PROJECTMANAGER_TASKS_TABLENAME);
-    query.append(" WHERE mereId = ? AND instanceId = ? ");
-    if (filtre != null) {
-      String filtreSQL = getSQL(filtre);
-      if (filtreSQL.length() > 0) {
-        query.append("AND ").append(filtreSQL);
-      }
-    }
-    query.append(" ORDER BY dateDebut ASC");
-
-    PreparedStatement stmt = null;
-    ResultSet rs = null;
-
-    try {
-      stmt = con.prepareStatement(query.toString());
-      stmt.setInt(1, actionId);
-      stmt.setString(2, instanceId);
-      rs = stmt.executeQuery();
-      while (rs.next()) {
-        TaskDetail task = getTaskDetailFromResultset(rs);
-        task.setResources(getResources(con, task.getId(), task.getInstanceId()));
-        tasks.add(task);
-      }
-    } finally {
-      DBUtil.close(rs, stmt);
-    }
-    return tasks;
-  }
-
   public static List<TaskDetail> getNextTasks(Connection con, int taskId)
       throws SQLException {
-    List<TaskDetail> tasks = new ArrayList<TaskDetail>();
-    StringBuilder query = new StringBuilder();
-    query.append("SELECT * FROM ").append(PROJECTMANAGER_TASKS_TABLENAME);
-    query.append(" WHERE previousId = ? ORDER BY dateDebut ASC");
-
-    PreparedStatement stmt = null;
-    ResultSet rs = null;
-
-    try {
-      stmt = con.prepareStatement(query.toString());
-      stmt.setInt(1, taskId);
-      rs = stmt.executeQuery();
-      while (rs.next()) {
-        TaskDetail task = getTaskDetailFromResultset(rs);
-        task.setResources(getResources(con, task.getId(), task.getInstanceId()));
-        tasks.add(task);
-      }
-    } finally {
-      DBUtil.close(rs, stmt);
-    }
-    return tasks;
+    return listTasksSortedByStartDate(con, q -> q.where("previousId = ?", taskId));
   }
 
   public static TaskDetail getMostDistantTask(Connection con, int taskId) throws SQLException {
@@ -477,7 +426,7 @@ public class ProjectManagerDAO {
    * @throws SQLException
    */
   public static List<TaskDetail> getTree(Connection con, int actionId) throws SQLException {
-    List<TaskDetail> tasks = new ArrayList<TaskDetail>();
+    List<TaskDetail> tasks = new ArrayList<>();
     StringBuilder query = new StringBuilder();
     query.append("select * ");
     query.append("from ").append(PROJECTMANAGER_TASKS_TABLENAME);
@@ -501,123 +450,56 @@ public class ProjectManagerDAO {
     return tasks;
   }
 
-  public static List<TaskDetail> getTasksByMotherId(Connection con, String instanceId,
-      int motherId, Filtre filtre) throws SQLException {
-    List<TaskDetail> tasks = new ArrayList<TaskDetail>();
-
-    StringBuilder query = new StringBuilder();
-    query.append("select * ");
-    query.append("from ").append(PROJECTMANAGER_TASKS_TABLENAME);
-    query.append(" where instanceId = ? ");
-    boolean applyFilter = false;
-    if (filtre != null) {
-      String filtreSQL = getSQL(filtre);
-      if (filtreSQL.length() > 0) {
-        applyFilter = true;
-        query.append("and ").append(filtreSQL);
-      }
-    }
-    if (!applyFilter)
-      query.append(" and mereId = ? ");
-    query.append(" order by dateDebut ASC");
-
-    PreparedStatement stmt = null;
-    ResultSet rs = null;
-
-    try {
-      stmt = con.prepareStatement(query.toString());
-      stmt.setString(1, instanceId);
-      if (!applyFilter)
-        stmt.setInt(2, motherId);
-
-      rs = stmt.executeQuery();
-      while (rs.next()) {
-        TaskDetail task = getTaskDetailFromResultset(rs);
-        task.setResources(getResources(con, task.getId(), task.getInstanceId()));
-        tasks.add(task);
-      }
-    } finally {
-      DBUtil.close(rs, stmt);
-    }
-    return tasks;
+  /**
+   * Gets the tasks by mother identifier if no filter, or filtered tasks on filter if any (so
+   * not on mother id in that case).
+   * @param con the current database connection.
+   * @param instanceId the identifier of the component instance.
+   * @param motherId the identifier of the parent task.
+   * @return a list of {@link TaskDetail} instances.
+   * @throws SQLException on database error.
+   */
+  public static List<TaskDetail> getTasksByMotherId(Connection con, String instanceId, int motherId)
+      throws SQLException {
+    return listInstanceTasksSortedByStartDate(con, instanceId, q -> q.and("mereId = ?", motherId));
   }
 
+  /**
+   * Centralizing the task listing.
+   * @param con the current database connection.
+   * @param instanceId the identifier of the component instance.
+   * @param sqlQueryOp the operator permitting to precise the query.
+   * @return a list of {@link TaskDetail} instances.
+   * @throws SQLException on database error.
+   */
+  private static List<TaskDetail> listInstanceTasksSortedByStartDate(Connection con, String instanceId,
+      UnaryOperator<JdbcSqlQuery> sqlQueryOp) throws SQLException {
+    return listTasksSortedByStartDate(con, q -> sqlQueryOp.apply(q.where("instanceId = ?", instanceId)));
+  }
 
-  public static List<TaskDetail> getTasksNotCancelledByMotherId(Connection con,
-      String instanceId, int motherId, Filtre filtre) throws SQLException {
-    List<TaskDetail> tasks = new ArrayList<TaskDetail>();
-    StringBuilder query = new StringBuilder();
-    query.append("select * ");
-    query.append("from ").append(PROJECTMANAGER_TASKS_TABLENAME);
-    query.append(" where instanceId = ? ");
-    query.append(" and mereId = ? ");
-    if (filtre != null) {
-      String filtreSQL = getSQL(filtre);
-      if (filtreSQL.length() > 0) {
-        query.append("and ").append(filtreSQL);
-      }
-    }
-
-    // si on demande toutes les taches quelque soit le statut,
-    // il faut enlever de la liste les taches dont le statut est "Abandonné"
-    // car elles n'apparaissent pas dans le diagramme de Gantt
-    if (filtre == null || filtre.getStatut() == null
-        || "-1".equals(filtre.getStatut())) {
-      query.append(" and statut != ").append(TaskDetail.CANCELLED);
-    }
-
-    query.append("order by dateDebut ASC");
-
-    PreparedStatement stmt = null;
-    ResultSet rs = null;
-
-    try {
-      stmt = con.prepareStatement(query.toString());
-      stmt.setString(1, instanceId);
-      stmt.setInt(2, motherId);
-
-      rs = stmt.executeQuery();
-      while (rs.next()) {
-        TaskDetail task = getTaskDetailFromResultset(rs);
-        task.setResources(getResources(con, task.getId(), task.getInstanceId()));
-        tasks.add(task);
-      }
-    } finally {
-      DBUtil.close(rs, stmt);
-    }
-    return tasks;
+  /**
+   * Centralizing the task listing.
+   * @param con the current database connection.
+   * @param sqlQueryOp the operator permitting to precise the query. First clause MUST be a WHERE
+   * one.
+   * @return a list of {@link TaskDetail} instances.
+   * @throws SQLException on database error.
+   */
+  private static List<TaskDetail> listTasksSortedByStartDate(Connection con,
+      UnaryOperator<JdbcSqlQuery> sqlQueryOp) throws SQLException {
+    return sqlQueryOp.apply(JdbcSqlQuery.createSelect("*")
+        .from(PROJECTMANAGER_TASKS_TABLENAME))
+        .orderBy("dateDebut ASC, id ASC")
+        .executeWith(con, rs -> {
+          final TaskDetail task = getTaskDetailFromResultset(rs);
+          task.setResources(getResources(con, task.getId(), task.getInstanceId()));
+          return task;
+        });
   }
 
   public static List<TaskDetail> getTasksByMotherIdAndPreviousId(Connection con,
       String instanceId, int motherId, int previousId) throws SQLException {
-    List<TaskDetail> tasks = new ArrayList<TaskDetail>();
-    StringBuilder query = new StringBuilder();
-    query.append("select * ");
-    query.append("from ").append(PROJECTMANAGER_TASKS_TABLENAME);
-    query.append(" where mereId = ? ");
-    query.append(" and previousId = ? ");
-    query.append(" and instanceId = ? ");
-    query.append("order by dateDebut ASC");
-
-    PreparedStatement stmt = null;
-    ResultSet rs = null;
-
-    try {
-      stmt = con.prepareStatement(query.toString());
-      stmt.setInt(1, motherId);
-      stmt.setInt(2, previousId);
-      stmt.setString(3, instanceId);
-
-      rs = stmt.executeQuery();
-      while (rs.next()) {
-        TaskDetail task = getTaskDetailFromResultset(rs);
-        task.setResources(getResources(con, task.getId(), task.getInstanceId()));
-        tasks.add(task);
-      }
-    } finally {
-      DBUtil.close(rs, stmt);
-    }
-    return tasks;
+    return listInstanceTasksSortedByStartDate(con, instanceId, q -> q.and("mereId = ?", motherId).and("previousId = ?", previousId));
   }
 
   public static int getOccupationByUser(Connection con, String userId,

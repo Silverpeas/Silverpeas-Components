@@ -5,3 +5,7 @@
 #filterFields .select-user-group-container {
   width: 50%;
 }
+
+.status-legend {
+  text-align: center;
+}

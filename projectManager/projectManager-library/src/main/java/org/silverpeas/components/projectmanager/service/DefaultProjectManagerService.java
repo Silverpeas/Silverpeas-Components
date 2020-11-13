@@ -87,7 +87,7 @@ public class DefaultProjectManagerService implements ProjectManagerService {
 
     Connection con = getConnection();
     try {
-      return ProjectManagerDAO.getTasksByMotherId(con, instanceId, -1, null);
+      return ProjectManagerDAO.getTasksByMotherId(con, instanceId, -1);
     } catch (SQLException re) {
       throw new ProjectManagerRuntimeException(re);
     } finally {
@@ -97,30 +97,9 @@ public class DefaultProjectManagerService implements ProjectManagerService {
 
   @Override
   public List<TaskDetail> getTasksByMotherId(String instanceId, int motherId) {
-
-    return getTasksByMotherId(instanceId, motherId, null);
-  }
-
-  @Override
-  public List<TaskDetail> getTasksByMotherId(String instanceId, int motherId, Filtre filtre) {
-
     Connection con = getConnection();
     try {
-      return ProjectManagerDAO.getTasksByMotherId(con, instanceId, motherId, filtre);
-    } catch (SQLException re) {
-      throw new ProjectManagerRuntimeException(re);
-    } finally {
-      DBUtil.close(con);
-    }
-  }
-
-  @Override
-  public List<TaskDetail> getTasksNotCancelledByMotherId(String instanceId, int motherId,
-      Filtre filtre) {
-
-    Connection con = getConnection();
-    try {
-      return ProjectManagerDAO.getTasksNotCancelledByMotherId(con, instanceId, motherId, filtre);
+      return ProjectManagerDAO.getTasksByMotherId(con, instanceId, motherId);
     } catch (SQLException re) {
       throw new ProjectManagerRuntimeException(re);
     } finally {
@@ -144,7 +123,6 @@ public class DefaultProjectManagerService implements ProjectManagerService {
 
   @Override
   public List<TaskDetail> getAllTasks(String instanceId, Filtre filtre) {
-
     Connection con = getConnection();
     try {
       return ProjectManagerDAO.getAllTasks(con, instanceId, filtre);
@@ -710,7 +688,7 @@ public class DefaultProjectManagerService implements ProjectManagerService {
         // tache, pas le
         // projet
         List<TaskDetail> subTasks = ProjectManagerDAO.getTasksByMotherId(con, motherTask
-            .getInstanceId(), motherTask.getId(), null);
+            .getInstanceId(), motherTask.getId());
         TaskDetail subTask = null;
         float somConsomme = 0;
         float somRaf = 0;

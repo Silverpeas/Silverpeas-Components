@@ -1,28 +1,26 @@
 <%--
-
-    Copyright (C) 2000 - 2020 Silverpeas
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as
-    published by the Free Software Foundation, either version 3 of the
-    License, or (at your option) any later version.
-
-    As a special exception to the terms and conditions of version 3.0 of
-    the GPL, you may redistribute this Program in connection with Free/Libre
-    Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have received a copy of the text describing
-    the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
---%>
+  ~ Copyright (C) 2000 - 2020 Silverpeas
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU Affero General Public License as
+  ~ published by the Free Software Foundation, either version 3 of the
+  ~ License, or (at your option) any later version.
+  ~
+  ~ As a special exception to the terms and conditions of version 3.0 of
+  ~ the GPL, you may redistribute this Program in connection with Free/Libre
+  ~ Open Source Software ("FLOSS") applications as described in Silverpeas's
+  ~ FLOSS exception.  You should have received a copy of the text describing
+  ~ the FLOSS exception, and it is also available here:
+  ~ "https://www.silverpeas.org/legal/floss_exception.html"
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU Affero General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  --%>
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="java.util.Collections" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -33,19 +31,24 @@
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 <%@ include file="check.jsp" %>
 
-<view:sp-page>
+<%!
+  boolean otherActionOnSameLevel(List<TaskDetail> tasks, TaskDetail task, int debut) {
+    return tasks.stream().skip(debut).anyMatch(n -> n.getLevel() == task.getLevel() && n.getMereId() == task.getMereId());
+  }
+  boolean otherActionOnLowerLevel(List<TaskDetail> tasks, TaskDetail task, int debut) {
+    return tasks.stream().skip(debut).anyMatch(n -> n.getLevel() < task.getLevel());
+  }
+%>
+
+<view:sp-page angularJsAppName="silverpeas.projectManager">
   <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
   <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
   <c:set var="role" value="${requestScope['Role']}"/>
   <c:set var="defaultPaginationPageSize" value="${requestScope.resources.getSetting('tasksList.pagination.page.size.default', 30)}"/>
 
   <%
-    List 	tasks 	= (List) request.getAttribute("Tasks");
-
-    String 	role 		= (String) request.getAttribute("Role");
     Boolean filtreActif = (Boolean) request.getAttribute("FiltreActif");
     Filtre	filtre		= (Filtre) request.getAttribute("Filtre");
-    String	userId		= (String) request.getAttribute("UserId");
 
     String actionFrom 		= "";
     String actionTo			= "";
@@ -168,7 +171,9 @@
     <view:operationPane>
       <view:operation action="javaScript:exportTasks()" altText="${export}"/>
       <c:if test="${role eq 'admin'}">
-        <view:operation action="ToAddTask" altText="${createTask}"/>
+        <fmt:message var="addTacheIcon" key="projectManager.addTache" bundle="${icons}"/>
+        <c:url var="addTacheIconPath" value="${addTacheIcon}"/>
+        <view:operationOfCreation action="ToAddTask" altText="${createTask}" icon="${addTacheIconPath}"/>
       </c:if>
     </view:operationPane>
     <view:window>
@@ -366,6 +371,8 @@
         <c:url var="treePlusIconPath" value="${treePlusIcon}" />
         <fmt:message var="treeMinusIcon" key="projectManager.treeMinus" bundle="${icons}"/>
         <c:url var="treeMinusIconPath" value="${treeMinusIcon}" />
+        <c:set var="treeSpace" value="/util/icons/colorPix/15px.gif"/>
+        <fmt:message var="treeIicon" key="projectManager.treeI" bundle="${icons}"/>
         <fmt:message var="treeTicon" key="projectManager.treeT" bundle="${icons}"/>
         <fmt:message var="treeLicon" key="projectManager.treeL" bundle="${icons}"/>
 
@@ -375,6 +382,7 @@
         <c:set var="previousTaskId" value="-1"/>
         <c:set var="previousTaskLevel" value="-1"/>
         <c:set var="previousTaskDecomposee" value="-1"/>
+        <c:set var="isActionColumns" value="${role eq 'admin' || role eq 'responsable'}"/>
 
         <view:arrayPane var="actionsList" routingAddress="Main" numberLinesPerPage="${defaultPaginationPageSize}">
           <view:arrayColumn title="${colStatus}" compareOn="${a -> fn:toLowerCase(a.statut)}"/>
@@ -386,20 +394,22 @@
           <view:arrayColumn title="${colCharge}" compareOn="${a -> a.charge}"/>
           <view:arrayColumn title="${colDone}" compareOn="${a -> a.consomme}"/>
           <view:arrayColumn title="${colTodo}" compareOn="${a -> a.raf}"/>
-          <c:if test="${role eq 'admin' || role eq 'responsable'}">
+          <c:if test="${isActionColumns}">
             <view:arrayColumn title="${colOperations}" sortable="false"/>
           </c:if>
 
-          <view:arrayLines var="task" items='<%=request.getAttribute("Tasks")%>'>
-            <c:set var="isChild" value="false"/>
-            <c:set var="isSameLevel" value="false"/>
+          <c:set var="allTasks" value="${requestScope.Tasks}"/>
+          <jsp:useBean id="allTasks" type="java.util.List<org.silverpeas.components.projectmanager.model.TaskDetail>"/>
+          <view:arrayLines var="task" items='${allTasks}' varStatus="currentLine">
+            <jsp:useBean id="task" type="org.silverpeas.components.projectmanager.model.TaskDetail"/>
+            <jsp:useBean id="currentLine" type="javax.servlet.jsp.jstl.core.LoopTagStatus"/>
             <c:set var="taskId" value="${task.id}"/>
             <c:set var="isAttachment" value="false"/>
             <c:if test="${fn:length(task.attachments) > 0}">
               <c:set var="isAttachment" value="true"/>
             </c:if>
 
-            <view:arrayLine id="line">
+            <view:arrayLine>
               <c:choose>
                 <c:when test="${task.statut eq 0}">
                   <fmt:message var="statusIcon" key="projectManager.enCours" bundle="${icons}"/>
@@ -426,74 +436,57 @@
                   <fmt:message var="altStatusIcon" key="projectManager.TacheAvancementND"/>
                 </c:when>
               </c:choose>
-              <view:arrayCellText text="">
-                <view:image src="${statusIcon}" alt="${altStatusIcon}"/>
+              <view:arrayCellText>
+                <img src="<c:url value="${statusIcon}"/>" alt="${altStatusIcon}" title="${altStatusIcon}">
               </view:arrayCellText>
-
               <view:arrayCellText text="${task.chrono}"/>
-
-              <c:set var="taskFatherId" value="${task.mereId}"/>
-
-              <c:if test="${taskFatherId eq previousTaskId && previousTaskDecomposee eq '1'}">
-                <c:set var="isChild" value="true"/>
+              <c:set var="treeElements"/>
+              <c:if test="<%=task.getLevel() > 0%>">
+                <c:set var="emptySpaceOrTreeIicons" />
+                <c:choose>
+                  <c:when test="<%=otherActionOnLowerLevel(allTasks, task, currentLine.getIndex() + 1)%>">
+                    <c:forEach begin="1" end="${task.level - 1}">
+                      <c:set var="emptySpaceOrTreeIicons">${emptySpaceOrTreeIicons}<view:image src="${treeIicon}"/></c:set>
+                    </c:forEach>
+                  </c:when>
+                  <c:otherwise>
+                    <c:set var="emptySpaceOrTreeIicons"><view:image src="${treeSpace}"/></c:set>
+                  </c:otherwise>
+                </c:choose>
+                <c:set var="treeElements">${emptySpaceOrTreeIicons}<view:image src="${treeLicon}"/></c:set>
+                <c:if test="<%=otherActionOnSameLevel(allTasks, task, currentLine.getIndex() + 1)%>">
+                  <c:set var="treeElements">${emptySpaceOrTreeIicons}<view:image src="${treeTicon}"/></c:set>
+                </c:if>
               </c:if>
-
-              <c:set var="taskLevel" value="${task.level}"/>
-              <c:if test="${taskLevel eq previousTaskLevel}">
-                <c:set var="isSameLevel" value="true"/>
-              </c:if>
-
-              <c:set var="espaceImage" value='<img src="/silverpeas/util/icons/colorPix/15px.gif">'/>
-              <c:set var="spaces" value=""/>
-              <c:forEach var="i" begin="0" end="${task.level}">
-                <c:set var="spaces" value="${spaces += espaceImage}" />
-              </c:forEach>
-
-              <c:if test="${task.estDecomposee eq '0'}">
-                <view:arrayCellText text="">
-                  <c:if test="${isChild eq true || (isSameLevel && task.level >= 1)}">
-                    ${spaces}
-                    <view:image src="${treeLicon}"/>
-                  </c:if>
-
-                  <view:a href="ViewTask?Id=${taskId}">${task.nom}</view:a>
-                  <c:if test="${isAttachment}">
-                    <view:image src="${attachmentIcon}"/>
-                  </c:if>
-                </view:arrayCellText>
-              </c:if>
-
               <c:if test="${task.estDecomposee eq '1'}">
-                <view:arrayCellText text="">
-                  <c:if test="${isChild eq true || (isSameLevel && task.level >= 1)}">
-                    ${spaces}
-                    <view:image src="${treeLicon}"/>
-                  </c:if>
-                  <c:if test="${task.unfold eq false}">
-                    <view:icon iconName="${treePlusIconPath}" action="UnfoldTask?Id=${taskId}"/>
-                  </c:if>
-                  <c:if test="${task.unfold eq true}">
-                    <view:icon iconName="${treeMinusIconPath}" action="CollapseTask?Id=${taskId}"/>
-                  </c:if>
-                  <view:a href="ViewTask?Id=${task.id}">${task.nom}</view:a>
-                  <c:if test="${isAttachment}">
-                    <view:image src="${attachmentIcon}"/>
-                  </c:if>
-                </view:arrayCellText>
+                <c:choose>
+                  <c:when test="${task.unfold}">
+                    <c:set var="treeElements">${treeElements}<view:icon iconName="${treeMinusIconPath}" action="CollapseTask?Id=${taskId}"/></c:set>
+                  </c:when>
+                  <c:otherwise>
+                    <c:set var="treeElements">${treeElements}<view:icon iconName="${treePlusIconPath}" action="UnfoldTask?Id=${taskId}"/></c:set>
+                  </c:otherwise>
+                </c:choose>
               </c:if>
 
+              <view:arrayCellText>
+                ${treeElements} <view:a href="ViewTask?Id=${taskId}">${task.nom}</view:a>
+                <c:if test="${isAttachment}">
+                  <view:image src="${attachmentIcon}"/>
+                </c:if>
+              </view:arrayCellText>
               <view:arrayCellText text="${task.responsableFullName}"/>
               <view:arrayCellText text="${task.uiDateDebut}"/>
               <view:arrayCellText text="${task.uiDateFin}"/>
               <view:arrayCellText text="${task.charge}"/>
               <view:arrayCellText text="${task.consomme}"/>
               <view:arrayCellText text="${task.raf}"/>
-              <c:if test="${task.updateAvailable eq true || task.deletionAvailable eq true && role ne 'responsable'}">
-                <view:arrayCellText text="">
-                  <c:if test="${task.updateAvailable eq true}">
+              <c:if test="${isActionColumns}">
+                <view:arrayCellText>
+                  <c:if test="${task.updateAvailable}">
                     <view:icon iconName="${updateIconPath}" altText="${updateTitle}" action="ToUpdateTask?Id=${taskId}"/>
                   </c:if>
-                  <c:if test="${task.deletionAvailable eq true}">
+                  <c:if test="${task.deletionAvailable}">
                     <view:icon iconName="${deleteIconPath}" altText="${deleteTitle}" action="javascript:deleteTask(${taskId})"/>
                   </c:if>
                 </view:arrayCellText>
@@ -505,18 +498,14 @@
           </view:arrayLines>
         </view:arrayPane>
 
-        <table>
-          <tr>
-            <td>
-              <view:image src="${toStartIcon}"/><span class="txtNav">${toStart}</span>
-              <view:image src="${inWorkingIcon}"/><span class="txtNav">${inWorking}</span>
-              <view:image src="${freezedIcon}"/><span class="txtNav">${freezed}</span>
-              <view:image src="${completedIcon}"/><span class="txtNav">${completed}</span>
-              <view:image src="${cancelledIcon}"/><span class="txtNav">${cancelled}</span>
-              <view:image src="${warningIcon}"/><span class="txtNav">${warning}</span>
-            </td>
-          </tr>
-        </table>
+        <div class="status-legend">
+          <view:image src="${toStartIcon}"/><span class="txtNav">${toStart}</span>
+          <view:image src="${inWorkingIcon}"/><span class="txtNav">${inWorking}</span>
+          <view:image src="${freezedIcon}"/><span class="txtNav">${freezed}</span>
+          <view:image src="${completedIcon}"/><span class="txtNav">${completed}</span>
+          <view:image src="${cancelledIcon}"/><span class="txtNav">${cancelled}</span>
+          <view:image src="${warningIcon}"/><span class="txtNav">${warning}</span>
+        </div
       </view:frame>
     </view:window>
     <form name="listForm" action="RemoveTask" method="post">

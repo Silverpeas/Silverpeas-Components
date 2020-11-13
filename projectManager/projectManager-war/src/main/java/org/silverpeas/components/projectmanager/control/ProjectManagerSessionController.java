@@ -60,18 +60,20 @@ import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.MissingResourceException;
+import java.util.stream.Collectors;
 
 /**
  * This class contains all the business model for project manager component
  */
 public class ProjectManagerSessionController extends AbstractComponentSessionController {
+  private static final long serialVersionUID = 1783287523929344966L;
 
   private static final String RESPONSABLE_ROLE = "responsable";
   private static final String ADMIN_ROLE = "admin";
   /**
    * Project manager EJB
    */
-  private ProjectManagerService projectManagerService = null;
+  private transient ProjectManagerService projectManagerService = null;
   private TaskDetail currentTask = null;
   private Boolean projectDefined = null;
   private TaskDetail currentProject = null;
@@ -108,7 +110,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
   }
 
   private boolean isUnfoldTask(int actionId) {
-    return unfoldTasks.contains(Integer.valueOf(actionId));
+    return unfoldTasks.contains(actionId);
   }
 
   public List<TaskDetail> getAllTasks() {
@@ -121,28 +123,32 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
 
   public List<TaskDetail> getTasks() {
     currentTask = null;
-    List<TaskDetail> tasks = getProjectManagerService().getTasksByMotherId(getComponentId(),
-        getCurrentProject().getId(), getFiltre());
-    List<TaskDetail> arbo = new ArrayList<>();
-    for (TaskDetail task : tasks) {
-      buildArbo(arbo, task, null, 0);
+    final List<TaskDetail> tasks = getProjectManagerService()
+        .getTasksByMotherId(getComponentId(), getCurrentProject().getId());
+    final List<TaskDetail> taskTree = new ArrayList<>();
+    for (final TaskDetail task : tasks) {
+      buildTaskTreeWithoutFiltering(taskTree, task, null, 0);
     }
-    return arbo;
+    return applyFilter(taskTree);
   }
 
-  private void buildArbo(List<TaskDetail> arbo, TaskDetail task, TaskDetail actionMere,
-      int level) {
-    enrichirTask(task);
+  private List<TaskDetail> applyFilter(final List<TaskDetail> taskTree) {
+    return getFiltre() != null
+        ? taskTree.stream().filter(getFiltre()::matches).collect(Collectors.toList())
+        : taskTree;
+  }
 
-    // fichiers joint à la tâche
+  private void buildTaskTreeWithoutFiltering(List<TaskDetail> taskTree, TaskDetail task,
+      TaskDetail parentTask, int level) {
+    enrichirTask(task);
     task.setAttachments(getAttachments(Integer.toString(task.getId())));
     task.setLevel(level);
     if (SilverpeasRole.admin.isInRole(getRole())) {
       task.setDeletionAvailable(true);
       task.setUpdateAvailable(true);
     } else {
-      if (actionMere != null && RESPONSABLE_ROLE.equals(getRole())
-          && actionMere.getResponsableId() == Integer.parseInt(getUserId())) {
+      if (parentTask != null && RESPONSABLE_ROLE.equals(getRole())
+          && parentTask.getResponsableId() == Integer.parseInt(getUserId())) {
         task.setDeletionAvailable(true);
         task.setUpdateAvailable(true);
       } else if (RESPONSABLE_ROLE.equals(getRole())
@@ -150,46 +156,28 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
         task.setUpdateAvailable(true);
       }
     }
-
     if (isUnfoldTask(task.getId())) {
       task.setUnfold(true);
-      arbo.add(task);
-
-      // la tâche est dépliée
-      List<TaskDetail> sousActions = getProjectManagerService().getTasksByMotherId(
-          getComponentId(), task.getId(), getFiltre());
+      taskTree.add(task);
+      final List<TaskDetail> subTasks = getProjectManagerService().getTasksByMotherId(
+          getComponentId(), task.getId());
       level++;
-      for (TaskDetail sousAction : sousActions) {
-        buildArbo(arbo, sousAction, task, level);
+      for (TaskDetail subTask : subTasks) {
+        buildTaskTreeWithoutFiltering(taskTree, subTask, task, level);
       }
     } else {
       task.setUnfold(false);
-      arbo.add(task);
+      taskTree.add(task);
     }
   }
 
   public List<TaskDetail> getTasks(String id) {
-    List<TaskDetail> tasks = getProjectManagerService().getTasksByMotherId(getComponentId(),
-        Integer.parseInt(id), getFiltre());
-    for (TaskDetail task : tasks) {
+    final List<TaskDetail> tasks = getProjectManagerService()
+        .getTasksByMotherId(getComponentId(), Integer.parseInt(id));
+    for (final TaskDetail task : tasks) {
       enrichirTask(task);
     }
-    return tasks;
-  }
-
-  /**
-   * Retrieve the list of tasks which are not cancelled
-   *
-   * @param id the current root task identifier
-   * @return the list of tasks which are not cancelled
-   */
-  public List<TaskDetail> getTasksNotCancelled(String id) {
-    List<TaskDetail> tasks = getProjectManagerService().getTasksNotCancelledByMotherId(
-        getComponentId(), Integer.parseInt(id), getFiltre());
-    for (TaskDetail task : tasks) {
-      enrichirTask(task);
-    }
-    return tasks;
+    return applyFilter(tasks);
   }
 
   public List<TaskDetail> getPotentialPreviousTasks() {
@@ -610,11 +598,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
    */
   private ProjectManagerService getProjectManagerService() {
     if (projectManagerService == null) {
-      try {
-        projectManagerService = ProjectManagerService.get();
-      } catch (Exception e) {
-        throw new ProjectManagerRuntimeException(e);
-      }
+      projectManagerService = ProjectManagerService.get();
     }
     return projectManagerService;
   }
