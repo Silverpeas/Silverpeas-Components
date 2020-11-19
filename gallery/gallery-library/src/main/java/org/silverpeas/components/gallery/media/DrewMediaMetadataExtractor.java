@@ -56,7 +56,7 @@ public class DrewMediaMetadataExtractor extends AbstractMediaMetadataExtractor {
   @Override
   public List<MetaData> extractImageExifMetaData(File image)
       throws MediaMetadataException, IOException {
-    return extractImageExifMetaData(image, I18NHelper.defaultLanguage);
+    return extractImageExifMetaData(image, I18NHelper.DEFAULT_LANGUAGE);
   }
 
   @Override
@@ -144,7 +144,7 @@ public class DrewMediaMetadataExtractor extends AbstractMediaMetadataExtractor {
   @Override
   public List<MetaData> extractImageIptcMetaData(File image)
       throws MediaMetadataException, IOException {
-    return extractImageIptcMetaData(image, I18NHelper.defaultLanguage);
+    return extractImageIptcMetaData(image, I18NHelper.DEFAULT_LANGUAGE);
   }
 
   @Override

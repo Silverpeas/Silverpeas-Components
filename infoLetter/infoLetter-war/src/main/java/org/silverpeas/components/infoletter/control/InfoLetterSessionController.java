@@ -179,7 +179,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
       content = FileUtils.readFileToString(template);
     }
     WysiwygController
-        .save(content, getComponentId(), ilp.getId(), getUserId(), I18NHelper.defaultLanguage,
+        .save(content, getComponentId(), ilp.getId(), getUserId(), I18NHelper.DEFAULT_LANGUAGE,
             true);
     // Classify content on PdC
     classifyInfoLetterPublication(ilp);
@@ -377,7 +377,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
   // copie d'un repertoire wysiwyg vers un autre
   public void copyWYSIWYG(String publicationSource, String target) {
     try {
-      if (WysiwygController.haveGotWysiwyg(getComponentId(), target, I18NHelper.defaultLanguage)) {
+      if (WysiwygController.haveGotWysiwyg(getComponentId(), target, I18NHelper.DEFAULT_LANGUAGE)) {
         WysiwygController.deleteWysiwygAttachments(getComponentId(), target);
       }
       WysiwygController
@@ -390,12 +390,12 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
   public boolean isTemplateExist(InfoLetterPublicationPdC ilp) {
     String template = WysiwygController
         .load(getComponentId(), InfoLetterPublication.TEMPLATE_ID + ilp.getLetterId(),
-            I18NHelper.defaultLanguage);
+            I18NHelper.DEFAULT_LANGUAGE);
     return !"<body></body>".equalsIgnoreCase(template);
   }
 
   public String getTemplate(InfoLetterPublicationPdC ilp) {
-    return WysiwygController.getWysiwygPath(getComponentId(), I18NHelper.defaultLanguage,
+    return WysiwygController.getWysiwygPath(getComponentId(), I18NHelper.DEFAULT_LANGUAGE,
         InfoLetterPublication.TEMPLATE_ID + ilp.getLetterId());
   }
 
@@ -606,6 +606,6 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
   public void updateContentInfoLetterPublication(String content, InfoLetterPublicationPdC ilp) {
     // Update the Wysiwyg if exists, create one otherwise
     WysiwygController.updateFileAndAttachment(content, getComponentId(), ilp.getId(), getUserId(),
-        I18NHelper.defaultLanguage);
+        I18NHelper.DEFAULT_LANGUAGE);
   }
 }

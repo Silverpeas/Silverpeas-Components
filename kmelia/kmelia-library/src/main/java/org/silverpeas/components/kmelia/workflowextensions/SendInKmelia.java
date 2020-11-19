@@ -237,7 +237,7 @@ public class SendInKmelia extends ExternalActionImpl {
       } else if ("wysiwyg".equals(fieldTemplate.getDisplayerName())) {
         WysiwygFCKFieldDisplayer displayer = new WysiwygFCKFieldDisplayer();
         fieldValue = displayer.duplicateContent(fieldTemplate, fromPK, toPK,
-            I18NHelper.defaultLanguage);
+            I18NHelper.DEFAULT_LANGUAGE);
       }
     } catch (WorkflowException e) {
       SilverLogger.getLogger(this).warn(e);
@@ -472,7 +472,7 @@ public class SendInKmelia extends ExternalActionImpl {
   }
 
   private String getLanguage() {
-    return I18NHelper.defaultLanguage;
+    return I18NHelper.DEFAULT_LANGUAGE;
   }
 
   private KmeliaService getKmeliaService() {

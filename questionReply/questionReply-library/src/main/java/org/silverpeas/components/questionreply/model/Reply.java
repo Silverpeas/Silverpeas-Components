@@ -175,7 +175,7 @@ public class Reply extends SilverpeasBean implements Contribution, WithAttachmen
 
   public String loadWysiwygContent() {
    this.wysiwygContent = WysiwygController.load(getPK().getInstanceId(), getPK().getId(),
-          I18NHelper.defaultLanguage);
+          I18NHelper.DEFAULT_LANGUAGE);
     return wysiwygContent;
   }
 

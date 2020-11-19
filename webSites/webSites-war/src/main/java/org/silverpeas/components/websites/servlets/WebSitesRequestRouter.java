@@ -746,7 +746,7 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
             .withBrowseInfo(URLEncoder.encode(nameSite, "UTF-8"))
             .withFileName(URLEncoder.encode(name, "UTF-8") + FOLDER_PATH_FILTER +
                 URLEncoder.encode(path, "UTF-8"))
-            .withLanguage(I18NHelper.defaultLanguage)
+            .withLanguage(I18NHelper.DEFAULT_LANGUAGE)
             .withComeBackUrl(URLEncoder.encode(URLUtil.getApplicationURL() +
                 URLUtil.getURL(scc.getSpaceId(), scc.getComponentId()) + "FromWysiwyg?Path=" +
                 path + "&name=" + name + "&nameSite=" + nameSite + "&profile=" + userRole + "&id=" +

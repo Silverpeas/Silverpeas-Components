@@ -89,7 +89,7 @@ public class AdvancedNotificationFormatter extends AbstractNotificationFormatter
   @Override
   public String formatMessage(Message message, String lang, boolean moderate) {
     SilverpeasTemplate template = getTemplate(message, "", moderate);
-    String currentLanguage = I18NHelper.defaultLanguage;
+    String currentLanguage = I18NHelper.DEFAULT_LANGUAGE;
     if (StringUtil.isDefined(lang)) {
       currentLanguage = lang;
     }

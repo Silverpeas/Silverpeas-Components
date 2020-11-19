@@ -25,7 +25,6 @@
 package org.silverpeas.components.quickinfo.model;
 
 import org.silverpeas.components.delegatednews.model.DelegatedNews;
-import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.comment.service.CommentServiceProvider;
 import org.silverpeas.core.contribution.ContributionVisibility;
@@ -387,7 +386,7 @@ public class News extends SilverpeasJpaEntity<News, UuidIdentifier> implements S
   public int getNumberOfAttachments() {
     List<SimpleDocument> attachments = AttachmentServiceProvider.getAttachmentService().
         listDocumentsByForeignKeyAndType(getForeignPK().toResourceReference(), DocumentType.attachment,
-            I18NHelper.defaultLanguage);
+            I18NHelper.DEFAULT_LANGUAGE);
     return attachments.size();
   }
 

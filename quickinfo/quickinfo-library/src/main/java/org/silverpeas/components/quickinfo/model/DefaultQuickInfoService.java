@@ -218,7 +218,7 @@ public class DefaultQuickInfoService implements QuickInfoService {
     // saving WYSIWYG content
     WysiwygController.save(news.getContentToStore(), news.getComponentInstanceId(),
         news.getPublicationId(),
-            publication.getUpdaterId(), I18NHelper.defaultLanguage, false);
+            publication.getUpdaterId(), I18NHelper.DEFAULT_LANGUAGE, false);
 
     // Attach uploaded files
     Attachments.from(uploadedFiles).attachTo(news.getPublication());

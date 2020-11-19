@@ -34,7 +34,7 @@ public interface StatisticService {
    * @return the number of consulted publications (number of access to publications) which respect
    * the statistic filter parameters. If statistic filter is null return -1.
    */
-  public Integer getNbConsultedPublication(StatsFilterVO statFilter);
+  Integer getNbConsultedPublication(StatsFilterVO statFilter);
 
   /**
    * @param statFilter the statistic filter (Date range, group identifier, application and topic
@@ -42,7 +42,7 @@ public interface StatisticService {
    * @return the number of statistic activity it means the number of created or modified publication
    * which respect the statistic filter given in parameter. If statistic filter is null return -1.
    */
-  public Integer getNbStatisticActivityByPeriod(StatsFilterVO statFilter);
+  Integer getNbStatisticActivityByPeriod(StatsFilterVO statFilter);
 
   /**
    * @param statFilter the statistic filter (Date range, group identifier, application and topic
@@ -51,12 +51,12 @@ public interface StatisticService {
    * of modified publications in a specific time interval (between statFilter.startDate and
    * statFilter.endDate)
    */
-  public StatisticActivityVO getStatisticActivity(StatsFilterVO statFilter);
+  StatisticActivityVO getStatisticActivity(StatsFilterVO statFilter);
 
   /**
    * @param statFilter the statistic filter (Date range, application and topic identifier, group
    * identifier)
    * @return the number of different consulted publications. If statistic filter is null return -1.
    */
-  public Integer getNumberOfDifferentConsultedPublications(StatsFilterVO statFilter);
+  Integer getNumberOfDifferentConsultedPublications(StatsFilterVO statFilter);
 }

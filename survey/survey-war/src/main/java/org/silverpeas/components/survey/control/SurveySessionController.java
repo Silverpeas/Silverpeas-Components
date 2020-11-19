@@ -979,7 +979,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
       Date creationDate = new Date();
       String filename = fileSynthesis.getName();
       SimpleAttachment file =
-          new SimpleAttachment(FileUtil.getFilename(filename), I18NHelper.defaultLanguage, filename,
+          new SimpleAttachment(FileUtil.getFilename(filename), I18NHelper.DEFAULT_LANGUAGE, filename,
               "", fileSynthesis.getSize(), FileUtil.getMimeType(filename), this.getUserId(),
               creationDate, null);
       SimpleDocument document = new SimpleDocument(new SimpleDocumentPK(null, survey.
@@ -1001,14 +1001,14 @@ public class SurveySessionController extends AbstractComponentSessionController 
   public void removeSynthesisFile(String idDocument) {
     SimpleDocumentPK primaryKey = new SimpleDocumentPK(idDocument);
     SimpleDocument document = AttachmentServiceProvider.getAttachmentService()
-        .searchDocumentById(primaryKey, I18NHelper.defaultLanguage);
+        .searchDocumentById(primaryKey, I18NHelper.DEFAULT_LANGUAGE);
     AttachmentServiceProvider.getAttachmentService().deleteAttachment(document);
   }
 
   public List<SimpleDocument> getAllSynthesisFile(String surveyId) {
     SimpleDocumentPK surveyForeignKey = new SimpleDocumentPK(surveyId, this.getComponentId());
     return AttachmentServiceProvider.getAttachmentService()
-        .listDocumentsByForeignKey(surveyForeignKey.toResourceReference(), I18NHelper.defaultLanguage);
+        .listDocumentsByForeignKey(surveyForeignKey.toResourceReference(), I18NHelper.DEFAULT_LANGUAGE);
   }
 
   public QuestionResult getSuggestion(String userId, String questionId, String answerId)

@@ -153,7 +153,7 @@ public class UserRecord implements DataRecord {
 
   @Override
   public String getLanguage() {
-    return I18NHelper.defaultLanguage;
+    return I18NHelper.DEFAULT_LANGUAGE;
   }
 
   @Override

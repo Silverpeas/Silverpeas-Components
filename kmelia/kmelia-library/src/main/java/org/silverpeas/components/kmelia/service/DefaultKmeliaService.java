@@ -3448,7 +3448,7 @@ public class DefaultKmeliaService implements KmeliaService {
     try {
       Date creationDate = new Date();
       SimpleAttachment file =
-          new SimpleAttachment(FileUtil.getFilename(filename), I18NHelper.defaultLanguage, filename,
+          new SimpleAttachment(FileUtil.getFilename(filename), I18NHelper.DEFAULT_LANGUAGE, filename,
               "", contents.length, FileUtil.getMimeType(filename), userId, creationDate, null);
       boolean versioningActive = getBooleanValue(getOrganisationController().
           getComponentParameterValue(pubPK.getComponentName(), VERSION_MODE));
