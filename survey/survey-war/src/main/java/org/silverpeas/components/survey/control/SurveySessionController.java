@@ -29,7 +29,9 @@ import org.silverpeas.components.survey.notification.SurveyUserNotification;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.component.model.Profile;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.clipboard.ClipboardException;
 import org.silverpeas.core.clipboard.ClipboardSelection;
@@ -113,6 +115,11 @@ public class SurveySessionController extends AbstractComponentSessionController 
   private boolean hasAlreadyParticipated = false;
   public static final String COOKIE_NAME = "surpoll";
   private List<PdcPosition> newSurveyPositions = null;
+  public static final String DISPLAY_COMMENTS_FOR_NOBODY = "0";
+  public static final String DISPLAY_COMMENTS_FOR_MANAGERS = "1";
+  public static final String DISPLAY_COMMENTS_FOR_PUBLISHERS = "2";
+  public static final String DISPLAY_COMMENTS_FOR_ALL = "3";
+  public static final String PARAM_DISPLAY_COMMENTS = "displayComments";
 
   /**
    * Creates new sessionClientController
@@ -151,6 +158,14 @@ public class SurveySessionController extends AbstractComponentSessionController 
    */
   public boolean isParticipationMultipleAllowedForUser() {
     return participationMultipleAllowedForUser;
+  }
+
+  public String getDisplayCommentsMode() {
+    String parameterValue = this.getComponentParameterValue("displayComments");
+    if (parameterValue == null || parameterValue.length() <= 0) {
+      return DISPLAY_COMMENTS_FOR_ALL;
+    }
+    return parameterValue;
   }
 
   /**
@@ -1134,6 +1149,26 @@ public class SurveySessionController extends AbstractComponentSessionController 
       questionsV.set(Integer.parseInt(parameters.getQuestionId()), questionObject);
       this.setSessionQuestions(questionsV);
     }
+  }
+
+  /**
+   * Display comments ?
+   * @param userProfile
+   * @return true/false
+   */
+  public boolean isDisplayCommentsEnabled(String userProfile, String userId) {
+    SilverpeasRole greatestUserRole = SilverpeasRole.getHighestFrom(SilverpeasRole.from(userProfile));
+    final String value = getComponentParameterValue(PARAM_DISPLAY_COMMENTS);
+    if (DISPLAY_COMMENTS_FOR_NOBODY.equals(value))
+      return false;
+    if (StringUtil.isDefined(userId) && userId.equals(getUserId()))
+      return true;
+    if (DISPLAY_COMMENTS_FOR_PUBLISHERS.equals(value)) {
+      return greatestUserRole.isGreaterThanOrEquals(SilverpeasRole.publisher);
+    } else if (DISPLAY_COMMENTS_FOR_MANAGERS.equals(value)) {
+      return greatestUserRole.isGreaterThanOrEquals(SilverpeasRole.admin);
+    }
+    return DISPLAY_COMMENTS_FOR_ALL.equals(value);
   }
 
   private static class Parameters {

@@ -144,6 +144,9 @@
     int nbQuestions = new Integer((String) request.getParameter("NbQuestions")).intValue();
     String comment = (String) request.getParameter("Comment");
     String isAnonymousComment = (String) request.getParameter("anonymousComment");
+    comment = (comment==null) ? "" :  comment;
+    isAnonymousComment = (isAnonymousComment==null) ? "" :  isAnonymousComment;
+
     Map<String, List<String>> hash = surveyScc.getSessionResponses();
     if (hash == null)
       hash = new HashMap<String, List<String>>();
@@ -252,8 +255,7 @@
     browseBar.setComponentName(surveyScc.getComponentLabel(), "surveyList.jsp?Action=View");
     browseBar.setExtraInformation(resources.getString("survey.preview"));
 
-    String surveyPart =
-        displaySurveyPreview(survey, gef, m_context, surveyScc, resources, settings);
+    String surveyPart = displaySurveyPreview(survey, gef, m_context, surveyScc, resources, settings);
 
     window.addBody(surveyPart);
     out.println(window.print());
@@ -274,9 +276,7 @@
     browseBar.setComponentName(surveyScc.getComponentLabel(), "surveyList.jsp?Action=View");
     browseBar.setExtraInformation(survey.getHeader().getTitle());
 
-    String surveyPart =
-        displaySurvey(survey, gef, m_context, surveyScc, resources, settings, profile,
-            pollingStationMode, participated);
+    String surveyPart = displaySurvey(survey, gef, m_context, surveyScc, resources, settings, profile, pollingStationMode, participated);
 
     // notification
     OperationPane operationPane = window.getOperationPane();
@@ -306,8 +306,7 @@
     browseBar.setComponentName(surveyScc.getComponentLabel(), "surveyList.jsp?Action=View");
     browseBar.setExtraInformation(survey.getHeader().getTitle());
 
-    String surveyPart =
-        displaySurveyComments(surveyScc, survey, gef, resources, profile, pollingStationMode, participated);
+    String surveyPart = displaySurveyComments(surveyScc, survey, gef, resources, profile, pollingStationMode, participated);
 
     window.addBody(surveyPart);
     out.println(window.print());
@@ -614,11 +613,8 @@ function clipboardCopy() {
 </view:operationPane>
 <view:window>
 <%
-String surveyPart =
-    displaySurveyResult(choice, survey, gef, m_context, surveyScc, resources, isClosed,
-        settings, participated, profile, request);
-out.println(displayTabs(surveyScc, survey.getHeader().getPK().getId(), gef, action,
-    profile, resources, pollingStationMode, participated).print());
+String surveyPart = displaySurveyResult(choice, survey, gef, m_context, surveyScc, resources, isClosed, settings, participated, profile, request);
+out.println(displayTabs(surveyScc, survey.getHeader().getPK().getId(), gef, action, profile, resources, pollingStationMode, participated).print());
 out.println(surveyPart);
 %>
 <view:pdcClassification componentId="<%= componentId %>" contentId="<%= surveyId %>" />

@@ -137,5 +137,60 @@
         <message lang="de">Einträge in allen Umfragen dieser Instanz, bleiben anonym.</message>
       </help>
     </parameter>
+    <parameter>
+      <name>displayComments</name>
+      <label>
+        <message lang="fr">Afficher les commentaires</message>
+        <message lang="en">Display the comments</message>
+        <message lang="de">Display the comments</message>
+      </label>
+      <order>3</order>
+      <mandatory>true</mandatory>
+      <value>0</value>
+      <options>
+        <option>
+          <name>
+            <message lang="fr">Désactivé</message>
+            <message lang="en">Deactivated</message>
+            <message lang="de">Untauglich</message>
+          </name>
+          <value>0</value>
+        </option>
+        <option>
+          <name>
+            <message lang="fr">Pour les gestionnaires</message>
+            <message lang="en">For the managers</message>
+            <message lang="de">Für Manager</message>
+          </name>
+          <value>1</value>
+        </option>
+        <option>
+          <name>
+            <message lang="fr">Pour les publieurs</message>
+            <message lang="en">For the publishers</message>
+            <message lang="de">Für Beiträger</message>
+          </name>
+          <value>2</value>
+        </option>
+        <option>
+          <name>
+            <message lang="fr">Pour tous les utilisateurs</message>
+            <message lang="en">For all users</message>
+            <message lang="de">für alle Benutzer</message>
+          </name>
+          <value>3</value>
+        </option>
+      </options>
+      <type>select</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Ce paramètre permet d'afficher les commentaires des participants. L'état Désactivé a une double portée: en affichage et en saisie.</message>
+        <message lang="en">This feature allows to display the participants comments.</message>
+        <message lang="de">This feature allows to display the participants comments.</message>
+      </help>
+      <warning>
+      </warning>
+      <personalSpaceValue>no</personalSpaceValue>
+    </parameter>
   </parameters>
 </WAComponent>

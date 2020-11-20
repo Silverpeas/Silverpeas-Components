@@ -51,13 +51,19 @@ body {
   border-bottom:1px solid #CCCCCC;
 }
 
-.questionResults .displayUserName,.questionResults .displayUserName a {
+.questionResults .displayUserName {
   background-color: #E4E4E4;
-    font-size: 11px;
-    font-weight: 100;
-    line-height: 29px;
-    margin-right: 5px;
-    padding-left: 10px;
+  color: rgb(8, 46, 74);
+  font-size: 11px;
+  font-weight: 100;
+  line-height: 29px;
+  margin-right: 10px;
+  padding-left: 10px;
+}
+
+.questionResults .displayUserName a {
+  color: rgb(8, 46, 74);
+  font-size: 11px;
 }
 
 .questionResults tbody tr td {
