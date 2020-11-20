@@ -185,8 +185,8 @@
       <updatable>always</updatable>
       <help>
         <message lang="fr">Ce paramètre permet d'afficher les commentaires des participants. L'état Désactivé a une double portée: en affichage et en saisie.</message>
-        <message lang="en">This feature allows to display the participants comments.</message>
-        <message lang="de">This feature allows to display the participants comments.</message>
+        <message lang="en">This feature allows to display the participants comments. Deactivated affects both display and creation form.</message>
+        <message lang="de">This feature allows to display the participants comments. Deactivated affects both display and creation form.</message>
       </help>
       <warning>
       </warning>
