@@ -148,7 +148,7 @@
         </option>
       </options>
       <type>select</type>
-      <updatable>creation</updatable>
+      <updatable>always</updatable>
       <help>
         <message lang="fr">Active l'organisation arborescente de dossiers.</message>
         <message lang="en">Activates the tree organization of folders.</message>
