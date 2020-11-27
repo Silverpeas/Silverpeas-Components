@@ -25,13 +25,9 @@ package org.silverpeas.components.rssaggregator.service;
 
 import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
-import com.rometools.rome.io.FeedException;
 import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
 import org.apache.http.HttpHeaders;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.silverpeas.components.rssaggregator.model.RSSItem;
 import org.silverpeas.components.rssaggregator.model.RssAgregatorException;
 import org.silverpeas.components.rssaggregator.model.SPChannel;
@@ -42,14 +38,15 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
-import java.io.IOException;
-import java.security.GeneralSecurityException;
+import java.io.InputStream;
+import java.net.http.HttpClient;
+import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.silverpeas.core.util.HttpUtil.httpClient;
-import static org.silverpeas.core.util.HttpUtil.httpClientTrustingAnySslContext;
+import static java.net.http.HttpResponse.BodyHandlers.ofInputStream;
+import static org.silverpeas.core.util.HttpUtil.*;
 
 @Service
 public class DefaultRSSService implements RSSService {
@@ -98,15 +95,16 @@ public class DefaultRSSService implements RSSService {
     final String channelUrl = channel.getUrl();
     if (StringUtil.isDefined(channelUrl)) {
       try {
-        final HttpGet httpGet = new HttpGet(channelUrl);
-        httpGet.addHeader(HttpHeaders.ACCEPT, MimeTypes.RSS_MIME_TYPE);
-        try (CloseableHttpClient httpClient = channel.isSafeUrl() ? httpClientTrustingAnySslContext() : httpClient();
-             CloseableHttpResponse response = httpClient.execute(httpGet)) {
+        final HttpClient httpClient = channel.isSafeUrl() ? httpClientTrustingAnySslContext() : httpClient();
+        final HttpResponse<InputStream> response = httpClient.send(toUrl(channelUrl)
+            .header(HttpHeaders.ACCEPT, MimeTypes.RSS_MIME_TYPE)
+            .build(), ofInputStream());
+        try (final InputStream body = response.body()) {
           final SyndFeedInput input = new SyndFeedInput();
-          final SyndFeed feed = input.build(new XmlReader(response.getEntity().getContent()));
+          final SyndFeed feed = input.build(new XmlReader(body));
           channel.setFeed(feed);
         }
-      } catch (IOException | FeedException | GeneralSecurityException e) {
+      } catch (Exception e) {
         throw new RssAgregatorException(e.getMessage(), e);
       }
     }

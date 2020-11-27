@@ -23,9 +23,9 @@
  */
 package org.silverpeas.components.gallery.constant;
 
-import org.silverpeas.core.util.StringUtil;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.text.MessageFormat;
@@ -33,9 +33,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static java.util.Optional.empty;
+import static java.util.Optional.of;
 
 /**
  * @author: Yohann Chastagnier
@@ -70,7 +74,7 @@ public enum StreamingProvider {
       isExtractorPattern = null;
     }
     this.oembedUrlPattern = oembedUrlPattern;
-    this.regexpDetectionParts = new ArrayList<String>();
+    this.regexpDetectionParts = new ArrayList<>();
     this.regexpDetectionParts.add(name());
     Collections.addAll(this.regexpDetectionParts, regexpDetectionParts);
   }
@@ -113,7 +117,7 @@ public enum StreamingProvider {
    * @param homepageUrl the streaming home page url.
    * @return the oembed url as string.
    */
-  public static String getOembedUrl(String homepageUrl) {
+  public static Optional<String> getOembedUrl(String homepageUrl) {
     StreamingProvider streamingProvider = StreamingProvider.fromUrl(homepageUrl);
     if (streamingProvider != unknown) {
       final String streamingId;
@@ -122,9 +126,9 @@ public enum StreamingProvider {
       } else {
         streamingId = streamingProvider.extractStreamingId(homepageUrl);
       }
-      return MessageFormat.format(streamingProvider.oembedUrlPattern, streamingId);
+      return of(MessageFormat.format(streamingProvider.oembedUrlPattern, streamingId));
     }
-    return null;
+    return empty();
   }
 
   @JsonValue
