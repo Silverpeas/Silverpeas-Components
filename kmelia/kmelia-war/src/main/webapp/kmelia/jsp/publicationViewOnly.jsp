@@ -59,7 +59,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
   String user_id = kmeliaScc.getUserId();
 
   //Calcul du chemin de la publication
-  currentTopic = kmeliaScc.getPublicationTopic(id);
+  currentTopic = kmeliaScc.getBestTopicDetailsOfPublication(id);
   Collection pathColl = currentTopic.getPath();
   pathString = displayPath(pathColl, false, 3);
 

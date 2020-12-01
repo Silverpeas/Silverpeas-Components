@@ -470,7 +470,7 @@ public class ODTDocumentBuilder {
     String theTopicId = this.topicIdToConsider;
     if (theTopicId == null) {
       NodePK pk = getKmeliaService().
-          getPublicationFatherPK(publication.getPk(), getUser().getId());
+          getBestLocationOfPublicationForUser(publication.getPk(), getUser().getId());
       theTopicId = pk.getId();
     }
     return theTopicId;

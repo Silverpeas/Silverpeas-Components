@@ -89,6 +89,7 @@ public class KmeliaTransversal implements PublicationHelper {
           .excludingTrashNodeOnComponentInstanceIds(componentIds)
           .ofStatus(PublicationDetail.VALID_STATUS)
           .visibleAt(OffsetDateTime.now())
+          .takingAliasesIntoAccount()
           .orderByDescendingBeginDate()
           .limitTo(nbPublis));
     } catch (Exception e) {
@@ -117,6 +118,7 @@ public class KmeliaTransversal implements PublicationHelper {
           .ofStatus(PublicationDetail.VALID_STATUS)
           .visibleAt(OffsetDateTime.now())
           .lastUpdatedSince(OffsetDateTime.ofInstant(since.toInstant(), ZoneId.systemDefault()))
+          .takingAliasesIntoAccount()
           .orderByDescendingLastUpdateDate()
           .limitTo(nbPublis));
     } catch (Exception e) {
@@ -150,6 +152,7 @@ public class KmeliaTransversal implements PublicationHelper {
         .excludingTrashNodeOnComponentInstanceIds(componentId)
         .ofStatus(PublicationDetail.VALID_STATUS)
         .visibleAt(OffsetDateTime.now())
+        .takingAliasesIntoAccount()
         .orderByDescendingLastUpdateDate());
   }
 
