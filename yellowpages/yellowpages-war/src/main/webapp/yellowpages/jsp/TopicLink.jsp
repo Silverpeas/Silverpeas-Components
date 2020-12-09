@@ -91,7 +91,7 @@ private String afficheArbo(ArrayPane arrayPane, String idNode, YellowpagesSessio
 
 <% 
 TopicDetail currentTopic = yellowpagesScc.getCurrentTopic();
-String contactId = request.getParameter("ContactId");
+String contactId = org.owasp.encoder.Encode.forUriComponent(request.getParameter("ContactId"));
 
 String linkedPathString = yellowpagesScc.getPath();
 %>

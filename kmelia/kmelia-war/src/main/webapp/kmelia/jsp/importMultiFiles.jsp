@@ -36,7 +36,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ include file="checkKmelia.jsp" %>
 
 <%
-	String topicId = request.getParameter("TopicId");
+	String topicId = org.owasp.encoder.Encode.forUriComponent(request.getParameter("TopicId"));
 	String message = "";
 	if (request.getAttribute("Message") != null) {
 		message = (String) request.getAttribute("Message");

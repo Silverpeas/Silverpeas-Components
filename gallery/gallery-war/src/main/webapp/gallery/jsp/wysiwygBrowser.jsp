@@ -25,6 +25,7 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="org.silverpeas.core.util.ResourceLocator" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%
 	response.setDateHeader("Expires", -1);
 	response.setHeader( "Pragma", "no-cache" );
@@ -32,9 +33,9 @@
 %>
 
 <%
-String componentId 	= request.getParameter("ComponentId");
-String language 	= request.getParameter("Language");
-String fieldName    = request.getParameter("FieldName");
+String componentId 	= Encode.forUriComponent(request.getParameter("ComponentId"));
+String language 	= Encode.forUriComponent(request.getParameter("Language"));
+String fieldName    = Encode.forUriComponent(request.getParameter("FieldName"));
 
 String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 %>

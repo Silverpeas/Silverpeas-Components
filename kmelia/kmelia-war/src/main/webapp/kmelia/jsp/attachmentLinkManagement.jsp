@@ -51,6 +51,7 @@ String contextName = ResourceLocator.getGeneralSettingBundle().getString("Applic
 %>
 
 <%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <html>
 <head>
 <title></title>
@@ -144,7 +145,7 @@ function displayHomeMessage(){
 
 function selectAttachment(url,img,label){
 	<%if (request.getParameter("fieldname")!=null){ %>
-		window.opener.insertAttachmentLink<%=request.getParameter("fieldname")%>(url,img,label);
+		window.opener.insertAttachmentLink<%=Encode.forUriComponent(request.getParameter("fieldname"))%>(url,img,label);
 	<%} else {%>
 		window.opener.insertAttachmentLink(url,img,label);
 	<%} %>

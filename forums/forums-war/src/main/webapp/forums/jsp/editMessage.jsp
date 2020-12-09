@@ -34,6 +34,7 @@
 <%@ page import="org.silverpeas.components.forums.control.helpers.ForumListHelper"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window" %>
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 
 <%@ include file="checkForums.jsp"%>
 <%
@@ -79,7 +80,7 @@ public void listFolders(JspWriter out, String userId, boolean admin, int rootId,
     boolean allowMessagesInRoot = false;
 
     int reqForum = getIntParameter(request, "forumId", 0);
-    String call = request.getParameter("call");
+    String call = Encode.forHtml(request.getParameter("call"));
     String backURL = ActionUrl.getUrl(call, -1, reqForum);
     pageContext.setAttribute("backURL", backURL);
 
@@ -164,7 +165,7 @@ function validateMessage() {
 
 function cancel() {
   sp.editor.wysiwyg.lastBackupManager.clear();
-  sp.formConfig('${pageScope.backURL}').submit();
+  sp.formRequest('${pageScope.backURL}').submit();
 }
 <% } %>
 </script>

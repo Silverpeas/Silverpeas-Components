@@ -36,7 +36,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%
 
 //R�cup�ration des param�tres
-String fatherId = (String) request.getParameter("Id");
+String fatherId = org.owasp.encoder.Encode.forUriComponent(request.getParameter("Id"));
 String path = (String) request.getParameter("Path");
 String name = (String) request.getParameter("Name"); //ancien nom
 String action = (String) request.getParameter("Action");

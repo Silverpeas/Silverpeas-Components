@@ -28,9 +28,9 @@
 <%@ include file="checkWhitePages.jsp" %>
 
 <script language="JavaScript">
-<!--
-	self.opener.location = "<%=routerUrl%>consultCard?userCardId=<%=request.getParameter("userCardId")%>";
-	self.close();
+  <!--
+  self.opener.location = "<%=routerUrl%>consultCard?userCardId=<%=org.owasp.encoder.Encode.forUriComponent(request.getParameter("userCardId"))%>";
+  self.close();
 
-//-->
+  //-->
 </script>

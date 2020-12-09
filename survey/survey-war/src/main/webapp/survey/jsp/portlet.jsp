@@ -49,6 +49,7 @@ String action_prev = "ViewOpenedSurveys";
 if (action != null) {
     action_prev = action;
 }
+action_prev = org.owasp.encoder.Encode.forUriComponent(action_prev);
 
 String iconsPath = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 

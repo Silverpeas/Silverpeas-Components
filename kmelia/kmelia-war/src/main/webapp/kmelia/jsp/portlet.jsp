@@ -34,11 +34,13 @@ String translation = request.getParameter("Translation");
 if (translation == null) {
 	translation = kmeliaScc.getLanguage();
 }
+translation = org.owasp.encoder.Encode.forUriComponent(translation);
 
 String rootId = "0";
 if (id == null) {
   id = rootId;
 }
+id = org.owasp.encoder.Encode.forUriComponent(id);
 
 TopicDetail currentTopic = kmeliaScc.getTopic(id);
 kmeliaScc.setSessionTopic(currentTopic);

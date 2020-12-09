@@ -34,7 +34,7 @@
 String nameSite = (String) request.getParameter("nameSite");
 String path = (String) request.getParameter("Path");
 String action = (String) request.getParameter("Action");
-String id = (String) request.getParameter("id");
+String id = org.owasp.encoder.Encode.forUriComponent(request.getParameter("id"));
 
 //Icons
 String mandatoryField = m_context + "/util/icons/mandatoryField.gif";

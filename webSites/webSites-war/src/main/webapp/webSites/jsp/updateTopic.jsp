@@ -40,7 +40,7 @@ String name = "";
 String description = "";
 
 //R�cup�ration des param�tres
-String id = request.getParameter("ChildId");
+String id = org.owasp.encoder.Encode.forUriComponent(request.getParameter("ChildId"));
 String path = request.getParameter("Path");
 
 //Icons

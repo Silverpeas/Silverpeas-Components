@@ -40,7 +40,7 @@
 <%
 
 // Retrieve parameters
-String fatherId = request.getParameter("Id");
+String fatherId = org.owasp.encoder.Encode.forUriComponent(request.getParameter("Id"));
 String path = request.getParameter("Path");
 String action = request.getParameter("Action");
 //Icons
