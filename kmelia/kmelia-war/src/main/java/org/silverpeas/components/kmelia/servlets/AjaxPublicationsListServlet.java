@@ -1095,9 +1095,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         }
 
         writer.write("<li>");
-        writer.write("<div class=\"publication-name line1\"><a href=\"javascript:onClick=publicationGoToFromMain('" + pub.getPK().
-              getId() + "')\">" + Encode.forHtml(pub.getName(language)) + "</a>" + shortcut +
-              "</div>");
+        writer.write("<div class=\"publication-name line1\"><a class=\"sp-permalink\"" +
+            " href=\"" + pub.getPermalink() +"\">" + Encode.forHtml(pub.getName(language)) + "</a>" + shortcut + "</div>");
 
         if (kmeliaScc.showUserNameInList()) {
           writer.write("<span class=\"publication-user\">");

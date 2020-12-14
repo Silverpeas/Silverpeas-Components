@@ -717,9 +717,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     }
   }
 
-  public synchronized TopicDetail getPublicationTopic(String pubId) {
-    TopicDetail currentTopic = getKmeliaService()
-        .getPublicationFather(getPublicationPK(pubId), isTreeStructure(), getUserId());
+  public synchronized TopicDetail getBestTopicDetailsOfPublication(String pubId) {
+    final TopicDetail currentTopic = getKmeliaService()
+        .getBestTopicDetailOfPublicationForUser(getPublicationPK(pubId), isTreeStructure(), getUserId());
     setSessionTopic(currentTopic);
     applyVisibilityFilter();
     return currentTopic;
@@ -812,8 +812,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     return getKmeliaService().getPathList(pk);
   }
 
-  public NodePK getAllowedPublicationFather(String pubId) {
-    return getKmeliaService().getPublicationFatherPK(getPublicationPK(pubId), getUserId());
+  public NodePK getBestAllowedPublicationFather(String pubId) {
+    return getKmeliaService().getBestLocationOfPublicationForUser(getPublicationPK(pubId), getUserId());
   }
 
   public synchronized String createPublication(PublicationDetail pubDetail,

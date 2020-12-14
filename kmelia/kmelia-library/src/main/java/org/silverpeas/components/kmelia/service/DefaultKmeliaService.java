@@ -289,6 +289,7 @@ public class DefaultKmeliaService implements KmeliaService {
                   .excludingNodes(NodePK.ROOT_NODE_ID)
                   .ofStatus(PublicationDetail.VALID_STATUS)
                   .visibleAt(OffsetDateTime.now())
+                  .takingAliasesIntoAccount()
                   .orderByDescendingBeginDate()
                   .limitTo(limit));
           return asRankedKmeliaPublication(pubDetails);
@@ -766,8 +767,8 @@ public class DefaultKmeliaService implements KmeliaService {
   }
 
   private List<KmeliaPublication> asRankedKmeliaPublication(NodePK fatherPK, Collection<PublicationDetail> pubDetails) {
-    final Collection<PublicationPK> pubPks = pubDetails.stream().map(PublicationDetail::getPK).collect(Collectors.toList());
-    final Map<String, List<Location>> locationsByPublication = publicationService.getAllLocationsByPublicationIds(pubPks);
+    final Collection<String> pubIds = pubDetails.stream().map(PublicationDetail::getId).collect(Collectors.toSet());
+    final Map<String, List<Location>> locationsByPublication = publicationService.getAllLocationsByPublicationIds(pubIds);
     final List<KmeliaPublication> publications = new ArrayList<>(pubDetails.size());
     int i = -1;
     for (final PublicationDetail publicationDetail : pubDetails) {
@@ -1686,21 +1687,22 @@ public class DefaultKmeliaService implements KmeliaService {
   }
 
   @Override
-  public TopicDetail getPublicationFather(PublicationPK pubPK, boolean isTreeStructureUsed,
-      String userId) {
+  public TopicDetail getBestTopicDetailOfPublicationForUser(PublicationPK pubPK,
+      boolean isTreeStructureUsed, String userId) {
     // fetch one of the publication fathers
-    NodePK fatherPK = getPublicationFatherPK(pubPK, userId);
-    String profile = KmeliaHelper.getProfile(getUserRoles(pubPK.getInstanceId(), userId));
+    final NodePK fatherPK = getBestLocationOfPublicationForUser(pubPK, userId);
+    final String profile = KmeliaHelper.getProfile(getUserRoles(pubPK.getInstanceId(), userId));
     return goTo(fatherPK, userId, isTreeStructureUsed, profile, false);
   }
 
   @Override
-  public NodePK getPublicationFatherPK(PublicationPK pubPK, String userId) {
+  public NodePK getBestLocationOfPublicationForUser(PublicationPK pubPK, String userId) {
     final Location root = new Location(NodePK.ROOT_NODE_ID, pubPK.getInstanceId());
     return getPublicationLocations(pubPK, false).stream()
-        .sorted(comparing(Location::isAlias)
-                .thenComparing(l -> !l.getInstanceId().equals(pubPK.getInstanceId()))
-                .thenComparing(Location::getInstanceId))
+        .sorted(comparing((Location l) -> !l.getInstanceId().equals(pubPK.getInstanceId()))
+                .thenComparing(Location::isAlias)
+                .thenComparing(Location::getInstanceId)
+                .thenComparing(Location::getId))
         .filter(l -> NodeAccessControl.get().isUserAuthorized(userId, l))
         .findFirst()
         .orElse(root);

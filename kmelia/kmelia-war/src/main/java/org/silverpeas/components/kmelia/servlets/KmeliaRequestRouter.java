@@ -1005,18 +1005,16 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
         destination = rootDestination + "publicationPaths.jsp";
       } else if (function.equals("SetPath")) {
-        String[] topics = request.getParameterValues("topicChoice");
-        String loadedComponentIds = request.getParameter("LoadedComponentIds");
-
-        Location location;
-        List<Location> locations = new ArrayList<>();
+        final String[] topics = request.getParameterValues("topicChoice");
+        final List<String> loadedComponentIds = request.getParameterAsList("LoadedComponentIds");
+        final List<Location> locations = new ArrayList<>();
         for (int i = 0; topics != null && i < topics.length; i++) {
           String topicId = topics[i];
           StringTokenizer tokenizer = new StringTokenizer(topicId, ",");
           String nodeId = tokenizer.nextToken();
           String instanceId = tokenizer.nextToken();
 
-          location = new Location(nodeId, instanceId);
+          Location location = new Location(nodeId, instanceId);
           location.setAsAlias(kmelia.getUserId());
           locations.add(location);
         }
@@ -1810,12 +1808,13 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
       if (!StringUtil.isDefined(id)) {
         pk = kmeliaSC.getCurrentFolderPK();
       } else {
-        // get publication parent
-        pk = kmeliaSC.getAllowedPublicationFather(id);
+        // get best location on the component instance
+        pk = kmeliaSC.getBestAllowedPublicationFather(id);
         if (!pk.getInstanceId().equals(kmeliaSC.getComponentId())) {
+          // the user is not allowed to access the publication on this instance even as an alias
           throw new AliasOnOtherKmeliaException(id, pk);
         }
-        kmeliaSC.getPublicationTopic(id);
+        kmeliaSC.getBestTopicDetailsOfPublication(id);
       }
 
       Collection<NodeDetail> pathColl = kmeliaSC.getTopicPath(pk.getId());
