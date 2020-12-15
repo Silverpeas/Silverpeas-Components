@@ -285,23 +285,37 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
    * given user. If the main location of the publication isn't accessible by the user, then the
    * first accessible alias of the publication is returned. If no aliases are accessible or defined,
    * the the details of the root topic is returned.
+   * <p>
+   *  The component instance set to given {@link PublicationPK} gives the priority of the
+   *  resulting {@link TopicDetail}. For example, into case of a main publication on instance A with
+   *  aliases on instance B, if component instance id set to given {@link PublicationPK} is the B
+   *  one, then {@link TopicDetail} result is about the best father PK (the best location) on
+   *  instance B (so an alias in that case).
+   * </p>
    * @param pubPK the unique identifier of the publication.
    * @param isTreeStructureUsed is the tree view of the topics enabled?
    * @param userId the unique identifier of a user.
    * @return the details of the topic in which the publication is accessible by the given user.
    */
-  TopicDetail getPublicationFather(PublicationPK pubPK, boolean isTreeStructureUsed, String userId);
+  TopicDetail getBestTopicDetailOfPublicationForUser(PublicationPK pubPK, boolean isTreeStructureUsed, String userId);
 
   /**
    * Gets the father of the specified publication according to the rights of the user. If the main
    * location of the publication isn't accessible by the user, then the first accessible alias of
    * the publication is returned. If no aliases are accessible or defined, the the root topic is
    * returned.
+   * <p>
+   *  The component instance set to given {@link PublicationPK} gives the priority of the
+   *  resulting {@link NodePK}. For example, into case of a main publication on instance A with
+   *  aliases on instance B, if component instance id set to given {@link PublicationPK} is the B
+   *  one, then the best father PK (the best location) on instance B is returned (so an alias in
+   *  that case).
+   * </p>
    * @param pubPK the unique identifier of the publication
    * @param userId the unique identifier of a user.
    * @return a topic in which the publication is accessible by the given user.
    */
-  NodePK getPublicationFatherPK(PublicationPK pubPK, String userId);
+  NodePK getBestLocationOfPublicationForUser(PublicationPK pubPK, String userId);
 
   /**
    * gets a list of PublicationDetail corresponding to the links parameter
