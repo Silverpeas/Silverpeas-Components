@@ -29,7 +29,7 @@ body.treeView > div[id*="kmelia"] > div.kmelia  #topPage,
 body.treeView > div[id*="kmelia"] > div.kmelia  #topPage .cellBodyWindows .tableFrame,
 body.treeView > div[id*="kmelia"] > div.kmelia  #topPage .cellBodyWindows .tableFrame .hautFrame{
 	height:100%;
-	padding:0;
+	padding:0;pubsSort
 	margin:0;
 }
 
@@ -157,7 +157,7 @@ body.treeView > div[id*="kmelia"] > div.kmelia  #topPage .cellBodyWindows{
 }
 
 #sortingList {
-  float: right;
+  float: left;
 }
 
 #templates .template {
@@ -202,6 +202,11 @@ body.treeView > div[id*="kmelia"] > div.kmelia  #topPage .cellBodyWindows{
   margin-top: 3px;
   margin-right: 3px;
   position: relative;
+}
+
+#pubList #pubsSort a#resetSort {
+  padding-top: 9px;
+  float: left;
 }
 
 #pubList ul {

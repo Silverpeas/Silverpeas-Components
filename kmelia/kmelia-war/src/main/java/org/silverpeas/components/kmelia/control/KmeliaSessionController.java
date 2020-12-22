@@ -32,6 +32,7 @@ import org.silverpeas.components.kmelia.KmeliaCopyDetail;
 import org.silverpeas.components.kmelia.KmeliaPasteDetail;
 import org.silverpeas.components.kmelia.KmeliaPublicationHelper;
 import org.silverpeas.components.kmelia.SearchContext;
+import org.silverpeas.components.kmelia.Sort;
 import org.silverpeas.components.kmelia.export.ExportFileNameProducer;
 import org.silverpeas.components.kmelia.export.KmeliaPublicationExporter;
 import org.silverpeas.components.kmelia.model.*;
@@ -182,7 +183,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   private List<String> sessionCombination = null;
   // Specific Kmax
   private String sessionTimeCriteria = null;
-  private String sortValue = null;
+  private Sort sortValue = new Sort();
   private int rang = 0;
   public static final String TAB_PREVIEW = "tabpreview";
   public static final String TAB_HEADER = "tabheader";
@@ -270,7 +271,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     }
   }
 
-  public int getDefaultSortValue() {
+  private int getDefaultSortValue() {
     String defaultSortValue = getComponentParameterValue("publicationSort");
     if (!StringUtil.isDefined(defaultSortValue)) {
       defaultSortValue = getSettings().getString("publications.sort.default", "2");
@@ -1044,11 +1045,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   public synchronized void orderPubs() {
-    if (!StringUtil.isDefined(getSortValue())) {
-      orderPubs(-1);
-    } else {
-      orderPubs(Integer.parseInt(getSortValue()));
-    }
+    orderPubs(getSortValue());
   }
 
   private void applyVisibilityFilter() {
@@ -1069,40 +1066,49 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     List<KmeliaPublication> publicationsToSort = new ArrayList<>(publications);
 
     int sort = sortType;
-    if (isManualSortingUsed(publicationsToSort) && sort == -1) {
-      // display publications according to manual order defined by admin
-      sort = 99;
-    } else if (sort == -1) {
-      // display publications according to default sort defined on application level or instance
-      // level
+    boolean manualSortingUsed = isManualSortingUsed(publicationsToSort);
+
+    if (manualSortingUsed && !getSort().isExplicitSort()) {
+      // publications are sorted manually and another sort is not explicitly chosen by the user
+      // so publications are displayed according to manual order defined by admin
+      sort = Sort.SORT_MANUAL;
+    } else if (getSortValue() == Sort.SORT_MANUAL) {
+      // Current sort is manual but publications are not sorted manually
+      // so publications are displayed according to default sort defined on application level
+      // or instance level
       sort = getDefaultSortValue();
     }
 
+    // store current sort
+    this.sortValue.setCurrentSort(sort);
+    this.sortValue.setManualSortEnable(manualSortingUsed);
+    this.sortValue.setExplicitSort(false);
+
     switch (sort) {
-      case 0:
+      case Sort.SORT_CREATOR_ASC:
         Collections.sort(publicationsToSort, new PubliAuthorComparatorAsc());
         break;
-      case 1:
+      case Sort.SORT_UPDATE_ASC:
         Collections.sort(publicationsToSort, new PubliUpdateDateComparatorAsc());
         break;
-      case 2:
+      case Sort.SORT_UPDATE_DESC:
         Collections.sort(publicationsToSort, new PubliUpdateDateComparatorAsc());
         Collections.reverse(publicationsToSort);
         break;
-      case 3:
+      case Sort.SORT_IMPORTANCE_ASC:
         Collections.sort(publicationsToSort, new PubliImportanceComparatorDesc());
         break;
-      case 4:
+      case Sort.SORT_TITLE_ASC:
         publicationsToSort = sortByTitle(publicationsToSort);
         break;
-      case 5:
+      case Sort.SORT_CREATION_ASC:
         Collections.sort(publicationsToSort, new PubliCreationDateComparatorAsc());
         break;
-      case 6:
+      case Sort.SORT_CREATION_DESC:
         Collections.sort(publicationsToSort, new PubliCreationDateComparatorAsc());
         Collections.reverse(publicationsToSort);
         break;
-      case 7:
+      case Sort.SORT_DESCRIPTION_ASC:
         publicationsToSort = sortByDescription(publicationsToSort);
         break;
       default:
@@ -1171,6 +1177,16 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   public void orderPublications(List<String> sortedPubIds) {
     getPublicationService().changePublicationsOrder(sortedPubIds, getCurrentFolderPK());
+  }
+
+  public void resetPublicationsOrder() {
+    // reset order in database
+    getPublicationService().resetPublicationsOrder(getCurrentFolderPK());
+    // reload session cache
+    getPublicationsOfCurrentFolder();
+    // order publications according to default sort
+    this.sortValue.setCurrentSort(getDefaultSortValue());
+    orderPubs();
   }
 
   public Collection<PublicationDetail> getAllPublications() {
@@ -1480,15 +1496,18 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     this.sessionTimeCriteria = timeCriteria;
   }
 
-  public String getSortValue() {
-    return this.sortValue;
+  public int getSortValue() {
+    return this.sortValue.getCurrentSort();
   }
 
   public void setSortValue(String sort) {
-    if (isDefined(sort)) {
-      this.sortValue = sort;
-    }
+    this.sortValue.setCurrentSort(Integer.parseInt(sort));
+    this.sortValue.setExplicitSort(true);
     orderPubs();
+  }
+
+  public Sort getSort() {
+    return this.sortValue;
   }
 
   public TopicDetail getSessionTopic() {
@@ -2072,10 +2091,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   public int getRang() {
     return rang;
-  }
-
-  private boolean isDefined(String param) {
-    return (param != null && param.length() > 0 && !"".equals(param) && !"null".equals(param));
   }
 
   private synchronized boolean isDragAndDropEnableByUser() {

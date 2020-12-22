@@ -24,11 +24,14 @@
 package org.silverpeas.components.kmelia.servlets;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.ecs.html.A;
+import org.apache.ecs.html.Option;
 import org.apache.ecs.wml.Alignment;
 import org.apache.ecs.wml.Img;
 import org.owasp.encoder.Encode;
 import org.silverpeas.components.kmelia.KmeliaConstants;
 import org.silverpeas.components.kmelia.KmeliaPublicationHelper;
+import org.silverpeas.components.kmelia.Sort;
 import org.silverpeas.components.kmelia.control.KmeliaSessionController;
 import org.silverpeas.components.kmelia.model.KmeliaPublication;
 import org.silverpeas.components.kmelia.model.KmeliaPublicationComparator;
@@ -150,6 +153,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       String index = req.getParameter("Index");
       String nbItemsPerPage = req.getParameter("NbItemsPerPage");
       String sort = req.getParameter("Sort");
+      boolean resetManualSort = StringUtil.getBooleanValue(req.getParameter("ResetManualSort"));
       String sToPortlet = req.getParameter("ToPortlet");
       String pubIdToHighlight = req.getParameter("PubIdToHighLight");
       String query = req.getParameter("Query");
@@ -169,6 +173,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       }
       if (StringUtil.isDefined(sort)) {
         kmeliaSC.setSortValue(sort);
+      } else if (resetManualSort) {
+        kmeliaSC.resetPublicationsOrder();
       }
 
       boolean sortAllowed = true;
@@ -299,7 +305,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     out.write("<form name=\"publicationsForm\" onsubmit=\"return false;\">");
     if (!pubs.isEmpty()) {
       out.write(board.printBefore());
-      displayPublicationsListHeader(nbPubs, sortAllowed, pagination, resources, kmeliaScc, out);
+      displayPublicationsListHeader(allPubs, sortAllowed, pagination, resources, kmeliaScc, out);
       out.write("<ul>");
       for (KmeliaPublication aPub : pubs) {
         PublicationDetail pub = aPub.getDetail();
@@ -758,7 +764,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
   }
 
   String displayPermalink(PublicationDetail pub, KmeliaSessionController kmeliaScc,
-      MultiSilverpeasBundle resources) throws IOException {
+      MultiSilverpeasBundle resources) {
     String link;
     if (!pub.getPK().getInstanceId().equals(kmeliaScc.getComponentId())) {
       link = URLUtil
@@ -774,51 +780,69 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 
   void displaySortingListBox(MultiSilverpeasBundle resources, KmeliaSessionController ksc, Writer out)
       throws IOException {
+
+    boolean manualSort = ksc.getSort().getCurrentSort() == Sort.SORT_MANUAL;
+
     out.
         write(
             "<select name=\"sortBy\" id=\"sortingList\" onChange=\"javascript:sortGoTo(this" +
                 ".selectedIndex);\">");
     out.write("<option>" + resources.getString("SortBy") + "</option>");
     out.write("<option>-------------------------------</option>");
-    out.write("<option value=\"1\" id=\"sort1\" " + isSelectedSort(ksc, "1") + ">" + resources.
-        getString("DateAsc") + "</option>");
-    out.write("<option value=\"2\" id=\"sort2\" " + isSelectedSort(ksc, "2") + ">" + resources.
-        getString("DateDesc") + "</option>");
-    out.write("<option value=\"5\" id=\"sort5\" " + isSelectedSort(ksc, "5") + ">" + resources.
-        getString("CreateDateAsc") + "</option>");
-    out.write("<option value=\"6\" id=\"sort6\" " + isSelectedSort(ksc, "6") + ">" + resources.
-        getString("CreateDateDesc") + "</option>");
-    out.write("<option value=\"0\" id=\"sort0\" " + isSelectedSort(ksc, "0") + ">" + resources.
-        getString("PubAuteur") + "</option>");
+    out.write(getSortingListBoxEntry(Sort.SORT_UPDATE_ASC, resources.getString("DateAsc"), ksc));
+    out.write(getSortingListBoxEntry(Sort.SORT_UPDATE_DESC, resources.getString("DateDesc"), ksc));
+    out.write(getSortingListBoxEntry(Sort.SORT_CREATION_ASC, resources.getString("CreateDateAsc"), ksc));
+    out.write(getSortingListBoxEntry(Sort.SORT_CREATION_DESC, resources.getString("CreateDateDesc"), ksc));
+    out.write(getSortingListBoxEntry(Sort.SORT_CREATOR_ASC, resources.getString("PubAuteur"), ksc));
     if (ksc.isFieldImportanceVisible()) {
-      out.write("<option value=\"3\" id=\"sort3\" " + isSelectedSort(ksc, "3") + ">" + resources.
-          getString("PubImportance") + "</option>");
+      out.write(getSortingListBoxEntry(Sort.SORT_IMPORTANCE_ASC, resources.getString("PubImportance"), ksc));
     }
-    out.write("<option value=\"4\" id=\"sort4\" " + isSelectedSort(ksc, "4") + ">" + resources.
-        getString("PubTitre") + "</option>");
-    out.write("<option value=\"7\" id=\"sort7\" " + isSelectedSort(ksc, "7") + ">" + resources.
-        getString("PubDescription") + "</option>");
-    out.write("<option value=\"-1\" id=\"sort-1\" " + isSelectedSort(ksc, "-1") + ">" + resources.
-        getString("kmelia.publis.sort.-1") + "</option>");
+    out.write(getSortingListBoxEntry(Sort.SORT_TITLE_ASC, resources.getString("PubTitre"), ksc));
+    out.write(getSortingListBoxEntry(Sort.SORT_DESCRIPTION_ASC, resources.getString("PubDescription"), ksc));
+
+    if (manualSort) {
+      out.write(
+          getSortingListBoxEntry(Sort.SORT_MANUAL, resources.getString("kmelia.sort.manual"), ksc));
+    }
     out.write("</select>");
-  }
 
-  private String isSelectedSort(KmeliaSessionController ksc, String sort) {
-    if (sort.equals(ksc.getSortValue())) {
-      return "selected=\"selected\"";
+    if (manualSort && SilverpeasRole.admin == ksc.getHighestSilverpeasUserRole()) {
+      // Display link to reset manual sort
+      Img img = new Img();
+      img.setSrc(resources.getIcon("kmelia.delete"));
+
+      A resetSort = new A();
+      resetSort.setHref("#");
+      resetSort.setOnClick("resetSort()");
+      resetSort.setID("resetSort");
+      resetSort.addElement(img);
+      resetSort.setTitle(resources.getString("kmelia.sort.manual.reset"));
+
+      out.write(resetSort.toString());
     }
-    return "";
   }
 
-  void displayPublicationsListHeader(int nbPubs, boolean sortAllowed, Pagination pagination,
-      MultiSilverpeasBundle resources, KmeliaSessionController ksc, Writer out) throws IOException {
+  private String getSortingListBoxEntry(int value, String label, KmeliaSessionController ksc) {
+    Option option = new Option(label, value);
+    option.setID("sort"+value);
+    option.setSelected(isSelectedSort(ksc, value));
+    return option.toString();
+  }
+
+  private boolean isSelectedSort(KmeliaSessionController ksc, int sort) {
+    return sort == ksc.getSortValue();
+  }
+
+  private void displayPublicationsListHeader(List<KmeliaPublication> allPubs, boolean sortAllowed,
+      Pagination pagination, MultiSilverpeasBundle resources, KmeliaSessionController ksc,
+      Writer out) throws IOException {
     String publicationSrc = resources.getIcon("kmelia.publication");
     out.write("<div id=\"pubsHeader\">");
     Img img = new Img(publicationSrc).setAlt("");
     out.write(img.toString());
     out.write("<span id=\"pubsCounter\">");
     out.write("<span>" + pagination.printCounter() + "</span> ");
-    if (nbPubs > 1) {
+    if (allPubs.size() > 1) {
       out.write(resources.getString("GML.publications"));
     } else {
       out.write(resources.getString("GML.publication"));
