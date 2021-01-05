@@ -107,6 +107,14 @@
   if (kmeliaPublication.isAlias()) {
     componentInstanceIdOfAlias = contextComponentId;
   }
+  String pubPermalink = "";
+  if (URLUtil.displayUniversalLinks()) {
+    if (!pubDetail.getPK().getInstanceId().equals(contextComponentId)) {
+      pubPermalink = URLUtil.getSimpleURL(URLUtil.URL_PUBLI, pubDetail.getPK().getId(), contextComponentId);
+    } else {
+      pubPermalink = URLUtil.getSimpleURL(URLUtil.URL_PUBLI, pubDetail.getPK().getId());
+    }
+  }
 
   String linkedPathString = kmeliaScc.getSessionPath();
 
@@ -447,7 +455,7 @@
         function addFavorite() {
           var name = $("#breadCrumb").text();
           var description = "<%=WebEncodeHelper.javaStringToJsString(pubDetail.getDescription(language))%>";
-          var url = "<%=URLUtil.getSimpleURL(URLUtil.URL_PUBLI, pubDetail.getPK().getId())%>";
+          var url = "<%=pubPermalink%>";
           postNewLink(name, url, description);
         }
 
@@ -499,7 +507,7 @@
         if (sharingAllowed) {
           operationPane.addOperation("useless", resources.getString("GML.share"), "javascript:pubShare()");
         }
-        if (!currentUser.isAnonymous()) {
+        if (StringUtil.isDefined(pubPermalink) && !currentUser.isAnonymous()) {
           operationPane.addOperation(favoriteAddSrc, resources.getString("FavoritesAddPublication") + " " + resources.getString("FavoritesAdd2"), "javascript:addFavorite()");
         }
         operationPane.addLine();
@@ -599,17 +607,10 @@
           <% } %>
 
 
-		    <% if (URLUtil.displayUniversalLinks()) {
-		            String link = null;
-		            if (!pubDetail.getPK().getInstanceId().equals(contextComponentId)) {
-		              link = URLUtil.getSimpleURL(URLUtil.URL_PUBLI, pubDetail.getPK().getId(),
-		                  contextComponentId);
-		            } else {
-		              link = URLUtil.getSimpleURL(URLUtil.URL_PUBLI, pubDetail.getPK().getId());
-		            }%>
+		    <% if (StringUtil.isDefined(pubPermalink)) {%>
           <fmt:message var="permalinkHelp" key="kmelia.CopyPublicationLink"/>
           <c:set var="permalinkIconUrl"><%=resources.getIcon("kmelia.link")%></c:set>
-          <viewTags:displayPermalinkInfo link="<%=link%>" help="${permalinkHelp}" iconUrl="${permalinkIconUrl}"/>
+          <viewTags:displayPermalinkInfo link="<%=pubPermalink%>" help="${permalinkHelp}" iconUrl="${permalinkIconUrl}"/>
         <% }%>
         </div>
       <%
