@@ -43,10 +43,11 @@ public class Inequality extends AbstractColumnValuePredicate {
     final Object value = getNormalizedValue();
     if (value == null) {
       q = query.where(getColumn().getName() + " is not null");
-    } else {
+    } else if (getColumn().isOfTypeText()) {
       q = query.where("lower(" + getColumn().getName() + ") != lower(?)", value);
+    } else {
+      q = query.where(getColumn().getName() + " != ?", value);
     }
     return q;
   }
 }
-  
