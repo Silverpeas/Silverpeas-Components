@@ -34,6 +34,7 @@ import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 
 public class QuestionTemplate implements RecordTemplate {
+  private static final String CONTENT = "Content";
   private LocalizationBundle label = null;
   private String language;
   private boolean readonly;
@@ -56,7 +57,7 @@ public class QuestionTemplate implements RecordTemplate {
    */
   public String[] getFieldNames() {
     String[] fieldNames = new String[1];
-    fieldNames[0] = "Content";
+    fieldNames[0] = CONTENT;
 
     return fieldNames;
   }
@@ -67,11 +68,11 @@ public class QuestionTemplate implements RecordTemplate {
   public FieldTemplate[] getFieldTemplates() {
     try {
       FieldTemplate[] templates = new FieldTemplate[1];
-      templates[0] = getFieldTemplate("Content");
+      templates[0] = getFieldTemplate(CONTENT);
 
       return templates;
     } catch (FormException fe) {
-      return null;
+      return new FieldTemplate[0];
     }
   }
 
@@ -99,7 +100,7 @@ public class QuestionTemplate implements RecordTemplate {
    * @throws FormException if the field name is unknown.
    */
   public int getFieldIndex(String fieldName) throws FormException {
-    if (fieldName.equals("Content")) {
+    if (fieldName.equals(CONTENT)) {
       return 0;
     } else {
       return -1;
@@ -118,7 +119,7 @@ public class QuestionTemplate implements RecordTemplate {
    */
   public boolean checkDataRecord(DataRecord record) {
     try {
-      String value = (String) (record.getField("Content").getObjectValue());
+      String value = (String) (record.getField(CONTENT).getObjectValue());
       return (value != null && value.length() > 0);
     } catch (FormException fe) {
       return false;

@@ -39,7 +39,8 @@ import org.silverpeas.core.util.logging.SilverLogger;
 
 public class UserTemplate implements RecordTemplate {
 
-  private LocalizationBundle label = null;
+  private static final String SPECIFIC_DETAILS = "SpecificDetails";
+  private LocalizationBundle label;
   private HtmlForm viewForm;
 
   /**
@@ -70,7 +71,7 @@ public class UserTemplate implements RecordTemplate {
     fieldNames[5] = "LastName";
     fieldNames[6] = "Mail";
     fieldNames[7] = "AccessLevel";
-    fieldNames[8] = "SpecificDetails";
+    fieldNames[8] = SPECIFIC_DETAILS;
 
     return fieldNames;
   }
@@ -90,7 +91,7 @@ public class UserTemplate implements RecordTemplate {
       fieldTemplates[5] = getFieldTemplate("LastName");
       fieldTemplates[6] = getFieldTemplate("Mail");
       fieldTemplates[7] = getFieldTemplate("AccessLevel");
-      fieldTemplates[8] = getFieldTemplate("SpecificDetails");
+      fieldTemplates[8] = getFieldTemplate(SPECIFIC_DETAILS);
     } catch (FormException ex) {
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     }
@@ -105,7 +106,7 @@ public class UserTemplate implements RecordTemplate {
   public FieldTemplate getFieldTemplate(String fieldName) throws FormException {
     GenericFieldTemplate fieldTemplate = null;
 
-    if (!fieldName.equals("SpecificDetails")) {
+    if (!fieldName.equals(SPECIFIC_DETAILS)) {
       fieldTemplate = new GenericFieldTemplate(fieldName, TextField.TYPE);
       fieldTemplate.setLabel(label.getString(fieldName));
       fieldTemplate.setDisplayerName("simpletext");
