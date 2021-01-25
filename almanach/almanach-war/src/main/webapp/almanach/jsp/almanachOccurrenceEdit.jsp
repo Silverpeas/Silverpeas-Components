@@ -38,7 +38,7 @@
 
 <fmt:message var="modifyMenuLabel" key="GML.modify"/>
 
-<view:setConstant var="publisherRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.publisher"/>
+<view:setConstant var="publisherRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.PUBLISHER"/>
 <c:set var="highestUserRole" value="${requestScope.highestUserRole}"/>
 
 <c:set var="currentUser" value="${requestScope.currentUser}"/>

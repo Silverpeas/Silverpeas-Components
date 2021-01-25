@@ -85,7 +85,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
   ValidatorsList validatorsList = kmeliaPublication.getValidators();
   boolean validatorsOK = validatorsList.isValidationOperational();
-  boolean modificationAllowed = pubDetail.canBeModifiedBy(currentUser) && (!SilverpeasRole.writer.isInRole(profile) || validatorsOK);
+  boolean modificationAllowed = pubDetail.canBeModifiedBy(currentUser) && (!SilverpeasRole.WRITER.isInRole(profile) || validatorsOK);
 
 	//Vrai si le user connecte est le createur de cette publication ou si il est admin
 	boolean isOwner = false;

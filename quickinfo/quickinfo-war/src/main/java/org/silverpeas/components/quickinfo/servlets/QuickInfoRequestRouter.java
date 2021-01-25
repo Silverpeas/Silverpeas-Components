@@ -194,7 +194,7 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
   }
 
   private boolean isContributor(SilverpeasRole role) {
-    return role.isGreaterThanOrEquals(SilverpeasRole.publisher);
+    return role.isGreaterThanOrEquals(SilverpeasRole.PUBLISHER);
   }
 
   private void setCommonAttributesToAddOrUpdate(QuickInfoSessionController quickInfo, News news,

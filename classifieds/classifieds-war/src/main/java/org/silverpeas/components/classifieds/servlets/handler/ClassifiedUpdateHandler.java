@@ -91,7 +91,7 @@ public class ClassifiedUpdateHandler extends FunctionHandler {
       }
       //Update classified
       classifiedsSC
-          .updateClassified(classified, true, SilverpeasRole.admin.isInRole(highestRole.getName()),
+          .updateClassified(classified, true, SilverpeasRole.ADMIN.isInRole(highestRole.getName()),
               publish);
       request.setAttribute("ClassifiedId", classifiedId);
 

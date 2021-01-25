@@ -53,7 +53,7 @@
 <c:set var="dragAndDropEnable" value="${kmeliaCtrl.dragAndDropEnable and kmeliaCtrl.attachmentsEnabled}"/>
 <c:if test="${dragAndDropEnable}">
 
-  <view:setConstant var="writerRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.writer"/>
+  <view:setConstant var="writerRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.WRITER"/>
   <jsp:useBean id="writerRole" type="org.silverpeas.core.admin.user.model.SilverpeasRole"/>
 
     <c:set var="_ddIsI18n" value="${silfn:isI18n() && silfn:isDefined(contentLanguage)}"/>
@@ -69,7 +69,7 @@
 
     <view:includePlugin name="dragAndDropUpload"/>
 
-    <view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.admin"/>
+    <view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.ADMIN"/>
     <jsp:useBean id="adminRole" type="org.silverpeas.core.admin.user.model.SilverpeasRole"/>
 
     <c:set var="ignoreFolders" value="${not highestUserRole.isGreaterThanOrEquals(adminRole) or (forceIgnoreFolder != null and forceIgnoreFolder)}"/>

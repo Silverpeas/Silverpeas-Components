@@ -46,7 +46,7 @@ Button searchButton = gef.getFormButton(" OK ", "javascript:onClick=search();", 
 	<div id="titreTopics" class="bgDegradeGris  header">
 		<h4 class="clean">
 			<%
-			  if (SilverpeasRole.admin.equals(SilverpeasRole.valueOf(profile))) {
+			  if (SilverpeasRole.ADMIN.equals(SilverpeasRole.from(profile))) {
 				out.println("<a href=\"ViewCategory\">"+resource.getString("GML.categories")+"</a>");
 			  }
 			  else {
@@ -92,7 +92,7 @@ Button searchButton = gef.getFormButton(" OK ", "javascript:onClick=search();", 
 		<div id="titreLiens" class="bgDegradeGris  header"> 
 			<h4 class="clean">
 				<%
-				if (SilverpeasRole.admin.equals(SilverpeasRole.valueOf(profile))) {
+				if (SilverpeasRole.ADMIN.equals(SilverpeasRole.from(profile))) {
 					String url = m_context + blogUrl + "Main";
 						String lien = m_context + URLUtil.getURL(URLUtil.CMP_MYLINKSPEAS) + "ComponentLinks?InstanceId="+ instanceId + "&amp;UrlReturn=" + url;
 						out.println("<a href=\""+lien+"\">"+resource.getString("blog.links")+"</a>");

@@ -203,7 +203,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       } else if (toPortlet) {
         sortAllowed = false;
         publications = kmeliaSC.getSessionPublicationsList();
-        role = SilverpeasRole.user.toString();
+        role = SilverpeasRole.USER.toString();
       } else if (searchInProgress) {
         publications = kmeliaSC.search(query);
       } else {
@@ -219,7 +219,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 
       if (KmeliaHelper.isToolbox(componentId)) {
         String profile = kmeliaSC.getUserTopicProfile(kmeliaSC.getCurrentFolderId());
-        linksAllowed = !SilverpeasRole.user.isInRole(profile);
+        linksAllowed = !SilverpeasRole.USER.isInRole(profile);
       }
 
       res.setContentType("text/xml");
@@ -325,7 +325,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         }
 
         if (pub.getStatus() != null && pub.isValid()) {
-          if (pub.haveGotClone() && CLONE_STATUS.equals(pub.getCloneStatus()) && !user.isInRole(profile)) {
+          if (pub.haveGotClone() && CLONE_STATUS.equals(pub.getCloneStatus()) && !USER.isInRole(profile)) {
             pubColor = "blue";
             pubState = resources.getString("kmelia.UpdateInProgress");
           } else if (DRAFT_STATUS.equals(pub.getCloneStatus())) {
@@ -334,7 +334,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
               pubState = resources.getString("PubStateDraft");
             }
           } else if (TO_VALIDATE_STATUS.equals(pub.getCloneStatus())) {
-            if (admin.isInRole(profile) || publisher.isInRole(profile) ||
+            if (ADMIN.isInRole(profile) || PUBLISHER.isInRole(profile) ||
                 currentUserId.equals(currentUser.getId())) {
               pubColor = "red";
               pubState = resources.getString("kmelia.PubStateToValidate");
@@ -356,9 +356,9 @@ public class AjaxPublicationsListServlet extends HttpServlet {
             }
           }
         } else {
-          boolean hasModificationAccess = admin.isInRole(profile) || publisher.isInRole(profile) ||
+          boolean hasModificationAccess = ADMIN.isInRole(profile) || PUBLISHER.isInRole(profile) ||
               pub.isPublicationEditor(currentUserId) ||
-              (!user.isInRole(profile) && kmeliaScc.isCoWritingEnable());
+              (!USER.isInRole(profile) && kmeliaScc.isCoWritingEnable());
           if (pub.getStatus() != null && pub.isDraft()) {
             // en mode brouillon, si on est en co-rédaction et si on autorise
             // le mode brouillon visible par tous,
@@ -366,13 +366,13 @@ public class AjaxPublicationsListServlet extends HttpServlet {
             // lecteurs sinon, seules les publications brouillons de l'utilisateur sont visibles
             if (pub.isPublicationEditor(currentUserId) ||
                 ((kmeliaScc.isCoWritingEnable() && kmeliaScc.isDraftVisibleWithCoWriting()) &&
-                    !user.isInRole(profile))) {
+                    !USER.isInRole(profile))) {
               pubColor = "gray";
               pubState = resources.getString("PubStateDraft");
             }
           } else if (pub.getStatus() != null && pub.isRefused()) {
-            if (admin.isInRole(profile) || publisher.isInRole(profile) ||
-                (writer.isInRole(profile) &&
+            if (ADMIN.isInRole(profile) || PUBLISHER.isInRole(profile) ||
+                (WRITER.isInRole(profile) &&
                     (pub.isPublicationEditor(currentUserId) || kmeliaScc.isCoWritingEnable()))) {
               pubColor = "red";
               pubState = resources.getString("PublicationRefused");
@@ -806,7 +806,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     }
     out.write("</select>");
 
-    if (manualSort && SilverpeasRole.admin == ksc.getHighestSilverpeasUserRole()) {
+    if (manualSort && SilverpeasRole.ADMIN == ksc.getHighestSilverpeasUserRole()) {
       // Display link to reset manual sort
       Img img = new Img();
       img.setSrc(resources.getIcon("kmelia.delete"));

@@ -71,8 +71,8 @@
       surveyScc.isParticipationMultipleAllowedForUser();
   
   String destinationPath = "surveyDetail.jsp?Action=ViewCurrentQuestions&Participated="+participated+"&SurveyId="+surveyId;
-  if ((SilverpeasRole.admin.toString().equals(profile) ||
-      SilverpeasRole.publisher.toString().equals(profile)) &&
+  if ((SilverpeasRole.ADMIN.toString().equals(profile) ||
+      SilverpeasRole.PUBLISHER.toString().equals(profile)) &&
       !participated) {
       destinationPath = "surveyDetail.jsp?Action=ViewResult&Participated="+participated+"&SurveyId="+surveyId;
   }
@@ -588,8 +588,8 @@ function clipboardCopy() {
 
   <%
   if (survey.getHeader().getResultMode() == QuestionContainerHeader.DELAYED_RESULTS &&
-      (SilverpeasRole.admin.toString().equals(profile) ||
-      SilverpeasRole.publisher.toString().equals(profile))) {
+      (SilverpeasRole.ADMIN.toString().equals(profile) ||
+      SilverpeasRole.PUBLISHER.toString().equals(profile))) {
   %>
     <fmt:message key="survey.publishResult" var="publishMsg" />
     <c:set var="publishAction">javaScript:onClick=PublishResult('${publishMsg}');</c:set>
@@ -599,8 +599,8 @@ function clipboardCopy() {
   %>
 
   <%
-  if (SilverpeasRole.admin.toString().equals(profile) ||
-      SilverpeasRole.publisher.toString().equals(profile)) {
+  if (SilverpeasRole.ADMIN.toString().equals(profile) ||
+      SilverpeasRole.PUBLISHER.toString().equals(profile)) {
   %>
     <fmt:message key="GML.export" var="exportMsg" />
     <c:set var="exportAction">javaScript:onClick=Export('ExportCSV?SurveyId=<%=surveyId%>');</c:set>

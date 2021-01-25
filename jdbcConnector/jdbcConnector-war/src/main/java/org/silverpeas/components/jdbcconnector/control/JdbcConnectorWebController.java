@@ -97,7 +97,7 @@ public class JdbcConnectorWebController extends
   @Path("Main")
   @Homepage
   @RedirectToInternalJsp("jdbcConnector.jsp")
-  @LowestRoleAccess(value = SilverpeasRole.reader)
+  @LowestRoleAccess(value = SilverpeasRole.READER)
   public void home(final JdbcConnectorWebRequestContext context) {
     viewResultSet(context);
   }
@@ -105,7 +105,7 @@ public class JdbcConnectorWebController extends
   @GET
   @Path("ViewResultSet")
   @RedirectToInternalJsp("jdbcConnector.jsp")
-  @LowestRoleAccess(value = SilverpeasRole.reader)
+  @LowestRoleAccess(value = SilverpeasRole.READER)
   public void viewResultSet(final JdbcConnectorWebRequestContext context) {
     if (requester.isDataSourceDefined()) {
       String reload = context.getRequest().getParameter("reload");
@@ -120,7 +120,7 @@ public class JdbcConnectorWebController extends
   @GET
   @Path("portlet")
   @RedirectToInternalJsp("portlet.jsp")
-  @LowestRoleAccess(value = SilverpeasRole.reader)
+  @LowestRoleAccess(value = SilverpeasRole.READER)
   public void portlet(final JdbcConnectorWebRequestContext context) {
     home(context);
   }
@@ -128,7 +128,7 @@ public class JdbcConnectorWebController extends
   @GET
   @Path("ParameterRequest")
   @RedirectToInternalJsp("requestParameters.jsp")
-  @LowestRoleAccess(value = SilverpeasRole.publisher, onError = @RedirectTo("Main"))
+  @LowestRoleAccess(value = SilverpeasRole.PUBLISHER, onError = @RedirectTo("Main"))
   public void editSQLRequest(final JdbcConnectorWebRequestContext context) {
     HttpRequest request = context.getRequest();
     request.setAttribute("sqlRequestInError", lastSqlQueryInError);
@@ -140,7 +140,7 @@ public class JdbcConnectorWebController extends
   @POST
   @Path("DoRequest")
   @RedirectToInternalJsp("jdbcConnector.jsp")
-  @LowestRoleAccess(value = SilverpeasRole.reader)
+  @LowestRoleAccess(value = SilverpeasRole.READER)
   public void performSQLRequest(final JdbcConnectorWebRequestContext context) {
     if (requester.isDataSourceDefined()) {
       executeSQLQuery(context);
@@ -152,7 +152,7 @@ public class JdbcConnectorWebController extends
   @GET
   @Path("ParameterConnection")
   @RedirectToInternalJsp("connectionParameters.jsp")
-  @LowestRoleAccess(value = SilverpeasRole.admin, onError = @RedirectTo("Main"))
+  @LowestRoleAccess(value = SilverpeasRole.ADMIN, onError = @RedirectTo("Main"))
   public void editConnection(final JdbcConnectorWebRequestContext context) {
     context.getRequest()
         .setAttribute("currentConnectionInfo", requester.getCurrentConnectionInfo());
@@ -162,7 +162,7 @@ public class JdbcConnectorWebController extends
   @POST
   @Path("UpdateConnection")
   @RedirectToInternal("{nextView}")
-  @LowestRoleAccess(value = SilverpeasRole.publisher, onError = @RedirectTo("Main"))
+  @LowestRoleAccess(value = SilverpeasRole.PUBLISHER, onError = @RedirectTo("Main"))
   public void saveConnection(final JdbcConnectorWebRequestContext context) {
     String nextView = "ParameterRequest";
     String dataSource = context.getRequest().getParameter("DataSource");
@@ -193,7 +193,7 @@ public class JdbcConnectorWebController extends
   @POST
   @Path("SetSQLRequest")
   @RedirectToInternal("{nextView}")
-  @LowestRoleAccess(value = SilverpeasRole.publisher, onError = @RedirectTo("Main"))
+  @LowestRoleAccess(value = SilverpeasRole.PUBLISHER, onError = @RedirectTo("Main"))
   public void saveSQLRequest(final JdbcConnectorWebRequestContext context) {
     String nextView = "Main";
     String sqlRequest = context.getRequest().getParameter("SQLReq");
@@ -214,7 +214,7 @@ public class JdbcConnectorWebController extends
   @GET
   @Path("RequestEditor")
   @RedirectToInternalJsp("requestEditor.jsp")
-  @LowestRoleAccess(value = SilverpeasRole.publisher, onError = @RedirectTo("Main"))
+  @LowestRoleAccess(value = SilverpeasRole.PUBLISHER, onError = @RedirectTo("Main"))
   public void openRequestEditor(final JdbcConnectorWebRequestContext context) {
     HttpRequest request = context.getRequest();
     try {

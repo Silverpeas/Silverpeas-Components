@@ -41,8 +41,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static org.silverpeas.core.admin.user.model.SilverpeasRole.admin;
-import static org.silverpeas.core.admin.user.model.SilverpeasRole.writer;
+import static org.silverpeas.core.admin.user.model.SilverpeasRole.ADMIN;
+import static org.silverpeas.core.admin.user.model.SilverpeasRole.WRITER;
 
 /**
  * @author emmanuel.hugonnet@silverpeas.org
@@ -273,7 +273,7 @@ public class ReplyEntity implements WebEntity {
    * @return itself.
    */
   public ReplyEntity withProfile(final SilverpeasRole profile) {
-    this.readOnly = profile != admin && profile != writer;
+    this.readOnly = profile != ADMIN && profile != WRITER;
     return this;
   }
 

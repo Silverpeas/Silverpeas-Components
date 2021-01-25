@@ -61,8 +61,8 @@ StyleSheet styleSheet = (StyleSheet) request.getAttribute("StyleSheet");
   cal.setTime(post.getDateEvent());
   String day = resource.getString("GML.jour" + cal.get(java.util.Calendar.DAY_OF_WEEK));
 
-  if (SilverpeasRole.admin.equals(SilverpeasRole.valueOf(profile)) ||
-      SilverpeasRole.publisher.equals(SilverpeasRole.valueOf(profile))) {
+  if (SilverpeasRole.ADMIN.equals(SilverpeasRole.from(profile)) ||
+      SilverpeasRole.PUBLISHER.equals(SilverpeasRole.from(profile))) {
     operationPane.addOperation("useless", resource.getString("blog.updatePost"),
         "EditPost?PostId=" + postId);
     if (post.getPublication().getStatus().equals(PublicationDetail.DRAFT_STATUS)) {

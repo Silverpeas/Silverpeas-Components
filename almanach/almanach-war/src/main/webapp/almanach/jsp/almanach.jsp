@@ -50,8 +50,8 @@
 <c:set var="isPdcUsed" value="<%=AlmanachSettings.isPdcUsed(componentId)%>"/>
 <c:set var="filterOnPdc" value="<%=AlmanachSettings.isFilterOnPdcActivated(componentId)%>"/>
 
-<view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.admin"/>
-<view:setConstant var="publisherRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.publisher"/>
+<view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.ADMIN"/>
+<view:setConstant var="publisherRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.PUBLISHER"/>
 
 <c:set var="canCreateEvent" value="${highestUserRole.isGreaterThanOrEquals(publisherRole)}"/>
 

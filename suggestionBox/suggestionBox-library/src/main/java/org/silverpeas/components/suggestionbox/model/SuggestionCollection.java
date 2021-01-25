@@ -275,9 +275,9 @@ public class SuggestionCollection implements Collection<Suggestion> {
           if (actual.getValidation().isInDraft() || actual.getValidation().isRefused()) {
             User updater = suggestion.getLastUpdater();
             SilverpeasRole highestUserRole = suggestionBox.getHighestUserRole(updater);
-            if (highestUserRole.isGreaterThanOrEquals(SilverpeasRole.writer)) {
+            if (highestUserRole.isGreaterThanOrEquals(SilverpeasRole.WRITER)) {
               ContributionValidation validation = actual.getValidation();
-              if (highestUserRole.isGreaterThanOrEquals(SilverpeasRole.publisher)) {
+              if (highestUserRole.isGreaterThanOrEquals(SilverpeasRole.PUBLISHER)) {
                 validation.setStatus(ContributionStatus.VALIDATED);
                 validation.setDate(new Date());
                 validation.setValidator(updater);
@@ -334,7 +334,7 @@ public class SuggestionCollection implements Collection<Suggestion> {
           if (actual.getValidation().isPendingValidation()) {
             User updater = suggestion.getLastUpdater();
             SilverpeasRole highestUserRole = suggestionBox.getHighestUserRole(updater);
-            if (highestUserRole.isGreaterThanOrEquals(SilverpeasRole.publisher)) {
+            if (highestUserRole.isGreaterThanOrEquals(SilverpeasRole.PUBLISHER)) {
               ContributionValidation actualValidation = actual.getValidation();
               actualValidation.setStatus(validation.getStatus());
               actualValidation.setComment(validation.getComment());

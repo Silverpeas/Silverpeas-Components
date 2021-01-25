@@ -394,7 +394,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     int messageId = 0;
 
     try {
-      if (!isValidationActive() || admin.isInRole(getHighestSilverpeasUserRole().getName()) ||
+      if (!isValidationActive() || ADMIN.isInRole(getHighestSilverpeasUserRole().getName()) ||
           isModerator(getUserId(), forumId)) {
         status = Message.STATUS_VALIDATE;
       }
@@ -437,7 +437,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     try {
       if (currentStatus == null) {
         currentStatus = Message.STATUS_FOR_VALIDATION;
-        if (!isValidationActive() || admin.isInRole(getHighestSilverpeasUserRole().getName()) ||
+        if (!isValidationActive() || ADMIN.isInRole(getHighestSilverpeasUserRole().getName()) ||
             isModerator(getUserId(), message.getForumId())) {
           currentStatus = Message.STATUS_VALIDATE;
         }
@@ -540,7 +540,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     if (!isAdmin() || isUser()) {
       String[] profiles = getUserRoles();
       for (String profile : profiles) {
-        if (reader.isInRole(profile)) {
+        if (READER.isInRole(profile)) {
           return true;
         }
       }
@@ -551,7 +551,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   public boolean isUser() {
     String[] profiles = getUserRoles();
     for (String profile : profiles) {
-      if (user.isInRole(profile)) {
+      if (USER.isInRole(profile)) {
         return true;
       }
     }
@@ -561,7 +561,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   public boolean isAdmin() {
     String[] profiles = getUserRoles();
     for (String profile : profiles) {
-      if (admin.isInRole(profile)) {
+      if (ADMIN.isInRole(profile)) {
         return true;
       }
     }

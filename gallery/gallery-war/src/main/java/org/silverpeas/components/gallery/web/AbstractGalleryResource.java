@@ -344,8 +344,8 @@ abstract class AbstractGalleryResource extends RESTWebService {
    */
   private boolean isUserPrivileged() {
     Collection<SilverpeasRole> userRoles = getUserRoles();
-    return EnumSet.of(SilverpeasRole.admin, SilverpeasRole.publisher, SilverpeasRole.writer,
-        SilverpeasRole.privilegedUser).stream().anyMatch(userRoles::contains);
+    return EnumSet.of(SilverpeasRole.ADMIN, SilverpeasRole.PUBLISHER, SilverpeasRole.WRITER,
+        SilverpeasRole.PRIVILEGED_USER).stream().anyMatch(userRoles::contains);
   }
 
   /**

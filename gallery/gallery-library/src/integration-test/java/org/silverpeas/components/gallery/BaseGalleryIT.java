@@ -144,11 +144,11 @@ public abstract class BaseGalleryIT extends DataSetTest {
 
     for (String instanceId : new String[]{INSTANCE_A, GALLERY0, GALLERY1, GALLERY2}) {
       when(getOrganisationControllerMock().getUserProfiles(publisherUser.getId(), instanceId))
-          .thenReturn(new String[]{SilverpeasRole.reader.name(), SilverpeasRole.publisher.name()});
+          .thenReturn(new String[]{SilverpeasRole.READER.getName(), SilverpeasRole.PUBLISHER.getName()});
       when(getOrganisationControllerMock().getUserProfiles(writerUser.getId(), instanceId))
-          .thenReturn(new String[]{SilverpeasRole.reader.name(), SilverpeasRole.writer.name()});
+          .thenReturn(new String[]{SilverpeasRole.READER.getName(), SilverpeasRole.WRITER.getName()});
       when(getOrganisationControllerMock().getUserProfiles(userUser.getId(), instanceId))
-          .thenReturn(new String[]{SilverpeasRole.reader.name()});
+          .thenReturn(new String[]{SilverpeasRole.READER.getName()});
     }
   }
 

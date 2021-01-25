@@ -63,22 +63,22 @@ public class KmeliaHelper implements Serializable {
     if (ArrayUtil.isEmpty(profiles)) {
       return null;
     }
-    SilverpeasRole flag = SilverpeasRole.user;
+    SilverpeasRole flag = SilverpeasRole.USER;
     for (String profile : profiles) {
-      SilverpeasRole role = SilverpeasRole.valueOf(profile);
+      SilverpeasRole role = SilverpeasRole.from(profile);
       switch (role) {
-        case admin:
-          return SilverpeasRole.admin.toString();
-        case publisher:
-          flag = SilverpeasRole.publisher;
+        case ADMIN:
+          return SilverpeasRole.ADMIN.toString();
+        case PUBLISHER:
+          flag = SilverpeasRole.PUBLISHER;
           break;
-        case writer:
-          if (flag != SilverpeasRole.publisher) {
-            flag = SilverpeasRole.writer;
+        case WRITER:
+          if (flag != SilverpeasRole.PUBLISHER) {
+            flag = SilverpeasRole.WRITER;
           }
           break;
-        case supervisor:
-          flag = SilverpeasRole.supervisor;
+        case SUPERVISOR:
+          flag = SilverpeasRole.SUPERVISOR;
           break;
         default:
           break;

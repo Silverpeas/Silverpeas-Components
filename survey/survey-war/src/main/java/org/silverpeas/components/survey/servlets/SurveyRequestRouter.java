@@ -84,14 +84,14 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
    * @return string representation of current user flag
    */
   private String getFlag(String[] profiles) {
-    String flag = SilverpeasRole.user.toString();
+    String flag = SilverpeasRole.USER.toString();
     for (String profile : profiles) {
-      if (SilverpeasRole.publisher.isInRole(profile) || ("userMultiple".equals(profile) &&
-          !flag.equals(SilverpeasRole.publisher.toString()))) {
+      if (SilverpeasRole.PUBLISHER.isInRole(profile) || ("userMultiple".equals(profile) &&
+          !flag.equals(SilverpeasRole.PUBLISHER.toString()))) {
         flag = profile;
       }
       // if admin, return it, we won't find a better profile
-      if (SilverpeasRole.admin.isInRole(profile)) {
+      if (SilverpeasRole.ADMIN.isInRole(profile)) {
         return profile;
       }
     }
@@ -150,8 +150,8 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
         // the flag is the best user's profile
         destination = rootDest + "surveyList.jsp?Profile=" + flag;
       } else if (function.startsWith("SurveyCreation") || function.startsWith("surveyCreator")) {
-        if (flag.equals(SilverpeasRole.admin.toString()) ||
-            flag.equals(SilverpeasRole.publisher.toString())) {
+        if (flag.equals(SilverpeasRole.ADMIN.toString()) ||
+            flag.equals(SilverpeasRole.PUBLISHER.toString())) {
           surveySC.sendNewSurveyAction(request);
           destination = rootDest + "surveyCreator.jsp";
         } else {

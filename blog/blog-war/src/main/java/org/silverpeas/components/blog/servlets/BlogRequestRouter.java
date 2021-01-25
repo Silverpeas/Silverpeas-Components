@@ -74,12 +74,12 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
 
   // recherche du profile de l'utilisateur
   public String getFlag(String[] profiles) {
-    String flag = SilverpeasRole.user.toString();
+    String flag = SilverpeasRole.USER.toString();
     for (String profile : profiles) {
-      if (SilverpeasRole.admin.isInRole(profile)) {
+      if (SilverpeasRole.ADMIN.isInRole(profile)) {
         return profile;
       }
-      if (SilverpeasRole.publisher.isInRole(profile)) {
+      if (SilverpeasRole.PUBLISHER.isInRole(profile)) {
         flag = profile;
       }
     }

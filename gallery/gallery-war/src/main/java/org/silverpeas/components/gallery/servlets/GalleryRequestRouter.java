@@ -495,7 +495,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         String albumId = request.getParameter(ALBUM_ID_FIRST_LETTER_UPPERCASE);
 
         // check user rights
-        if (!highestUserRole.isGreaterThanOrEquals(SilverpeasRole.publisher)) {
+        if (!highestUserRole.isGreaterThanOrEquals(SilverpeasRole.PUBLISHER)) {
           throw new AccessForbiddenException("Media edition fobidden");
         }
 
@@ -599,7 +599,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         // placement par lot
         String albumId = request.getParameter(ALBUM_ID_FIRST_LETTER_UPPERCASE);
         // check user rights
-        if (!highestUserRole.isGreaterThanOrEquals(SilverpeasRole.publisher)) {
+        if (!highestUserRole.isGreaterThanOrEquals(SilverpeasRole.PUBLISHER)) {
           throw new AccessForbiddenException("Media adding into gallery forbidden");
         }
         processSelection(request, gallerySC);
@@ -1075,7 +1075,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
           destination = getDestination(ORDER_VIEW_LIST_FUNC, gallerySC, request);
         } else if (ORDER_VIEW_LIST_FUNC.equals(function)) {
           Collection<Order> orders;
-          if (highestUserRole == SilverpeasRole.admin) {
+          if (highestUserRole == SilverpeasRole.ADMIN) {
             // if manager retrieve all orders
             orders = gallerySC.getAllOrders();
           } else {
@@ -1091,7 +1091,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
             orderId = (String) request.getAttribute(ORDER_ID);
           }
 
-          if (highestUserRole == SilverpeasRole.admin || gallerySC.isAccessAuthorized(orderId)) {
+          if (highestUserRole == SilverpeasRole.ADMIN || gallerySC.isAccessAuthorized(orderId)) {
             gallerySC.setCurrentOrderId(orderId);
 
             destination = getDestination(ORDER_VIEW_PAGIN_FUNC, gallerySC, request);
@@ -1232,11 +1232,11 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
   private boolean isLinkDownloadable(final GallerySessionController gallerySC,
       final SilverpeasRole highestUserRole, final Media media) {
-    if (gallerySC.getHighestSilverpeasUserRole().isGreaterThanOrEquals(SilverpeasRole.publisher)) {
+    if (gallerySC.getHighestSilverpeasUserRole().isGreaterThanOrEquals(SilverpeasRole.PUBLISHER)) {
       return true;
     }
-    return (SilverpeasRole.privilegedUser == highestUserRole && media.isDownloadable()) ||
-        (SilverpeasRole.writer == highestUserRole &&
+    return (SilverpeasRole.PRIVILEGED_USER == highestUserRole && media.isDownloadable()) ||
+        (SilverpeasRole.WRITER == highestUserRole &&
             media.getCreatorId().equals(gallerySC.getUserId()));
   }
 
@@ -1462,8 +1462,8 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
     request.setAttribute(IS_BASKET, gallerySC.isBasket());
     request.setAttribute(IS_ORDER, gallerySC.isOrder());
 
-    boolean allowedToUpdateMedia = userRole.isGreaterThanOrEquals(SilverpeasRole.publisher) ||
-        (userRole == SilverpeasRole.writer && media.getCreatorId().equals(gallerySC.getUserId()));
+    boolean allowedToUpdateMedia = userRole.isGreaterThanOrEquals(SilverpeasRole.PUBLISHER) ||
+        (userRole == SilverpeasRole.WRITER && media.getCreatorId().equals(gallerySC.getUserId()));
     request.setAttribute("UpdateMediaAllowed", allowedToUpdateMedia);
 
     request.setAttribute("ShowCommentsTab", gallerySC.areCommentsEnabled());

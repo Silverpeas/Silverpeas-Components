@@ -35,8 +35,8 @@
 <fmt:setLocale value="${currentUserLanguage}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 
-<view:setConstant var="adminRole"          constant="org.silverpeas.core.admin.user.model.SilverpeasRole.admin"/>
-<view:setConstant var="publisherRole"      constant="org.silverpeas.core.admin.user.model.SilverpeasRole.publisher"/>
+<view:setConstant var="adminRole"          constant="org.silverpeas.core.admin.user.model.SilverpeasRole.ADMIN"/>
+<view:setConstant var="publisherRole"      constant="org.silverpeas.core.admin.user.model.SilverpeasRole.PUBLISHER"/>
 <view:setConstant var="comparingColumn"    constant="org.silverpeas.components.jdbcconnector.control.JdbcConnectorWebController.COMPARING_COLUMN"/>
 <view:setConstant var="comparingOperator"  constant="org.silverpeas.components.jdbcconnector.control.JdbcConnectorWebController.COMPARING_OPERATOR"/>
 <view:setConstant var="comparingValue"     constant="org.silverpeas.components.jdbcconnector.control.JdbcConnectorWebController.COMPARING_VALUE"/>

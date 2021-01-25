@@ -331,7 +331,7 @@ public class MediaTest {
 
     @Override
     protected SilverpeasRole getHighestUserRole(final User user) {
-      return SilverpeasRole.reader;
+      return SilverpeasRole.READER;
     }
 
     @Override

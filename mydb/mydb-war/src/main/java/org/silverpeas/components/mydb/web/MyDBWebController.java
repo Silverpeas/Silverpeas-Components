@@ -139,13 +139,13 @@ public class MyDBWebController
   @Path("Main")
   @Homepage
   @RedirectToInternal("{nextView}")
-  @LowestRoleAccess(value = SilverpeasRole.reader)
+  @LowestRoleAccess(value = SilverpeasRole.READER)
   public void home(final MyDBWebRequestContext context) {
     String nextView = "ConnectionSetting";
     if (this.connectionInfo.isDefined()) {
       if (connectionInfoIsValid(context)) {
         nextView = "ViewTable";
-      } else if (!context.getHighestUserRole().isGreaterThanOrEquals(SilverpeasRole.admin)) {
+      } else if (!context.getHighestUserRole().isGreaterThanOrEquals(SilverpeasRole.ADMIN)) {
         nextView = "Error";
         context.getRequest().setAttribute("errorMessageKey", "mydb.error.dataSource");
       }
@@ -156,7 +156,7 @@ public class MyDBWebController
   @GET
   @Path("Error")
   @RedirectToInternalJsp("error.jsp")
-  @LowestRoleAccess(value = SilverpeasRole.reader)
+  @LowestRoleAccess(value = SilverpeasRole.READER)
   public void error(final MyDBWebRequestContext context) {
     // nothing to do. Just redirect to the JSP
   }
@@ -164,7 +164,7 @@ public class MyDBWebController
   @GET
   @Path("ViewTable")
   @RedirectToInternalJsp("mydb.jsp")
-  @LowestRoleAccess(value = SilverpeasRole.reader)
+  @LowestRoleAccess(value = SilverpeasRole.READER)
   public void viewTableContent(final MyDBWebRequestContext context) {
     try {
       if (!tableView.isDefined() && connectionInfo.isDefaultTableNameDefined()) {
@@ -186,7 +186,7 @@ public class MyDBWebController
   @GET
   @Path("NewRow")
   @RedirectToInternalJsp("rowForm.jsp")
-  @LowestRoleAccess(value = SilverpeasRole.publisher)
+  @LowestRoleAccess(value = SilverpeasRole.PUBLISHER)
   public void getNewTableRowForm(final MyDBWebRequestContext context) {
     if (tableView.isDefined()) {
       context.getRequest().setAttribute(ALL_COLUMNS, tableView.getColumns());
@@ -199,7 +199,7 @@ public class MyDBWebController
   @GET
   @Path("GetRow")
   @RedirectToInternalJsp("rowForm.jsp")
-  @LowestRoleAccess(value = SilverpeasRole.publisher)
+  @LowestRoleAccess(value = SilverpeasRole.PUBLISHER)
   public void getTableRowForm(final MyDBWebRequestContext context) {
     try {
       if (tableView.isDefined()) {
@@ -225,7 +225,7 @@ public class MyDBWebController
   @GET
   @Path("ViewTargetTable")
   @RedirectToInternalJsp("fkTable.jsp")
-  @LowestRoleAccess(value = SilverpeasRole.publisher)
+  @LowestRoleAccess(value = SilverpeasRole.PUBLISHER)
   public void getForeignKeyTableViewFrom(final MyDBWebRequestContext context) {
     try {
       final String targetTableName = context.getRequest().getParameter(TABLE_VIEW);
@@ -283,7 +283,7 @@ public class MyDBWebController
   @POST
   @Path("AddRow")
   @RedirectToInternalJsp("mydb.jsp")
-  @LowestRoleAccess(value = SilverpeasRole.publisher)
+  @LowestRoleAccess(value = SilverpeasRole.PUBLISHER)
   public void addNewTableRow(final MyDBWebRequestContext context) {
     final HttpRequest request = context.getRequest();
     try {
@@ -324,7 +324,7 @@ public class MyDBWebController
   @POST
   @Path("UpdateRow")
   @RedirectToInternalJsp("mydb.jsp")
-  @LowestRoleAccess(value = SilverpeasRole.publisher)
+  @LowestRoleAccess(value = SilverpeasRole.PUBLISHER)
   public void updateTableRow(final MyDBWebRequestContext context) {
     final HttpRequest request = context.getRequest();
     try {
@@ -385,7 +385,7 @@ public class MyDBWebController
   @POST
   @Path("DeleteRow")
   @RedirectToInternalJsp("mydb.jsp")
-  @LowestRoleAccess(value = SilverpeasRole.publisher)
+  @LowestRoleAccess(value = SilverpeasRole.PUBLISHER)
   public void deleteTableRow(final MyDBWebRequestContext context) {
     final HttpRequest request = context.getRequest();
     try {
@@ -418,7 +418,7 @@ public class MyDBWebController
   @POST
   @Path("SetTable")
   @Produces(MediaType.APPLICATION_JSON)
-  @LowestRoleAccess(value = SilverpeasRole.reader)
+  @LowestRoleAccess(value = SilverpeasRole.READER)
   public void selectTable(final MyDBWebRequestContext context) {
     HttpRequest request = context.getRequest();
     final String tableName = request.getParameter(TABLE_VIEW);
@@ -433,7 +433,7 @@ public class MyDBWebController
   @POST
   @Path("FilterTable")
   @RedirectToInternalJsp("mydb.jsp")
-  @LowestRoleAccess(value = SilverpeasRole.reader)
+  @LowestRoleAccess(value = SilverpeasRole.READER)
   public void filterTableContent(final MyDBWebRequestContext context) {
     try {
       if (connectionInfo.isDefined()) {
@@ -448,7 +448,7 @@ public class MyDBWebController
   @GET
   @Path("ConnectionSetting")
   @RedirectToInternalJsp("connectionSettings.jsp")
-  @LowestRoleAccess(value = SilverpeasRole.admin, onError = @RedirectTo("Main"))
+  @LowestRoleAccess(value = SilverpeasRole.ADMIN, onError = @RedirectTo("Main"))
   public void editConnection(final MyDBWebRequestContext context) {
     context.getRequest().setAttribute("currentConnectionInfo", connectionInfo);
     context.getRequest().setAttribute("availableDataSources", DataSourceDefinition.getAll());
@@ -457,7 +457,7 @@ public class MyDBWebController
   @POST
   @Path("UpdateConnection")
   @RedirectToInternal("{nextView}")
-  @LowestRoleAccess(value = SilverpeasRole.publisher, onError = @RedirectTo("Main"))
+  @LowestRoleAccess(value = SilverpeasRole.PUBLISHER, onError = @RedirectTo("Main"))
   public void saveConnection(final MyDBWebRequestContext context) {
     String dataSource = context.getRequest().getParameter("DataSource");
     String login = context.getRequest().getParameter("Login");

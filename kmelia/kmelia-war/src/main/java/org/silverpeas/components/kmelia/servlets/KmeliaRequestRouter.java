@@ -391,7 +391,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         }
       } else if (function.equals("ToAddTopic")) {
         String topicId = request.getParameter("Id");
-        if (!SilverpeasRole.admin.isInRole(kmelia.getUserTopicProfile(topicId))) {
+        if (!SilverpeasRole.ADMIN.isInRole(kmelia.getUserTopicProfile(topicId))) {
           destination = "/admin/jsp/accessForbidden.jsp";
         } else {
           String isLink = request.getParameter("IsLink");
@@ -418,9 +418,9 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
       } else if ("ToUpdateTopic".equals(function)) {
         String id = request.getParameter("Id");
         NodeDetail node = kmelia.getSubTopicDetail(id);
-        if (!SilverpeasRole.admin.isInRole(kmelia.getUserTopicProfile(id)) &&
-            !SilverpeasRole.admin.isInRole(kmelia.getUserTopicProfile(NodePK.ROOT_NODE_ID)) &&
-            !SilverpeasRole.admin
+        if (!SilverpeasRole.ADMIN.isInRole(kmelia.getUserTopicProfile(id)) &&
+            !SilverpeasRole.ADMIN.isInRole(kmelia.getUserTopicProfile(NodePK.ROOT_NODE_ID)) &&
+            !SilverpeasRole.ADMIN
                 .isInRole(kmelia.getUserTopicProfile(node.getFatherPK().getId()))) {
           destination = "/admin/jsp/accessForbidden.jsp";
         } else {
@@ -1253,7 +1253,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         destination = getDestination("GoToCurrentTopic", kmelia, request);
       } else if (function.equals("ToOrderTopics")) {
         String id = request.getParameter("Id");
-        if (!SilverpeasRole.admin.isInRole(kmelia.getUserTopicProfile(id))) {
+        if (!SilverpeasRole.ADMIN.isInRole(kmelia.getUserTopicProfile(id))) {
           destination = "/admin/jsp/accessForbidden.jsp";
         } else {
           TopicDetail topic = kmelia.getTopic(id);
@@ -1263,7 +1263,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
       } else if ("ViewTopicProfiles".equals(function)) {
         String role = request.getParameter("Role");
         if (!StringUtil.isDefined(role)) {
-          role = SilverpeasRole.admin.toString();
+          role = SilverpeasRole.ADMIN.toString();
         }
 
         String id = request.getParameter("NodeId");
@@ -1952,7 +1952,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
     ContributionStatus statusBeforeSave = publication.isValid() ? ContributionStatus.VALIDATED :
         ContributionStatus.from(publication.getStatus());
     ContributionStatus statusAfterSave = ContributionStatus.UNKNOWN;
-    if (highestSilverpeasUserRoleOnCurrentTopic.isGreaterThanOrEquals(SilverpeasRole.publisher)) {
+    if (highestSilverpeasUserRoleOnCurrentTopic.isGreaterThanOrEquals(SilverpeasRole.PUBLISHER)) {
       statusAfterSave = ContributionStatus.VALIDATED;
     }
     request.setAttribute("subscriptionManagementContext", SubscriptionManagementContext

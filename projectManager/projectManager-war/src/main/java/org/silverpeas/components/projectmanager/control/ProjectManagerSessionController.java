@@ -143,7 +143,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     enrichirTask(task);
     task.setAttachments(getAttachments(Integer.toString(task.getId())));
     task.setLevel(level);
-    if (SilverpeasRole.admin.isInRole(getRole())) {
+    if (SilverpeasRole.ADMIN.isInRole(getRole())) {
       task.setDeletionAvailable(true);
       task.setUpdateAvailable(true);
     } else {

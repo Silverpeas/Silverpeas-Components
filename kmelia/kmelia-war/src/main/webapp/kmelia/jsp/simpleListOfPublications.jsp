@@ -65,8 +65,10 @@ String urlTopic	= URLUtil.getSimpleURL(URLUtil.URL_COMPONENT, componentId, true)
 
 String userId = kmeliaScc.getUserId();
 
-boolean userCanCreatePublications = SilverpeasRole.admin.isInRole(profile) || SilverpeasRole.publisher.isInRole(profile) || SilverpeasRole.writer.isInRole(profile);
-boolean userCanValidatePublications = SilverpeasRole.admin.isInRole(profile) || SilverpeasRole.publisher.isInRole(profile);
+boolean userCanCreatePublications = SilverpeasRole.ADMIN.isInRole(profile) || SilverpeasRole.PUBLISHER
+    .isInRole(profile) || SilverpeasRole.WRITER.isInRole(profile);
+boolean userCanValidatePublications = SilverpeasRole.ADMIN.isInRole(profile) || SilverpeasRole.PUBLISHER
+    .isInRole(profile);
 
 boolean userCanSeeStats = kmeliaScc.isStatisticAllowed();
 
@@ -164,7 +166,7 @@ window.SUBSCRIPTION_PROMISE.then(function() {
 
         //Display operations
         OperationPane operationPane = window.getOperationPane();
-        if (SilverpeasRole.admin.isInRole(profile)){
+        if (SilverpeasRole.ADMIN.isInRole(profile)){
           	if (kmeliaScc.isPdcUsed()) {
 	        	operationPane.addOperation("useless", resources.getString("GML.PDCParam"), "javascript:onClick=openSPWindow('"+m_context+"/RpdcUtilization/jsp/Main?ComponentId="+kmeliaScc.getComponentId()+"','utilizationPdc1')");
                 operationPane.addOperation("useless", resources.getString("GML.PDCPredefinePositions"), "javascript:onClick=openPredefinedPdCClassification(" + id + ");");
@@ -175,7 +177,7 @@ window.SUBSCRIPTION_PROMISE.then(function() {
           	if (kmeliaScc.isWysiwygOnTopicsEnabled()) {
 				operationPane.addOperation("useless", kmeliaScc.getString("TopicWysiwyg"), "javascript:onClick=topicWysiwyg('"+id+"')");
 			}
-          if (SilverpeasRole.admin.isInRole(profile)) {
+          if (SilverpeasRole.ADMIN.isInRole(profile)) {
             operationPane.addOperation("useless", resources.getString("GML.manageSubscriptions"), "ManageSubscriptions");
           }
           	if (kmeliaScc.isExportComponentAllowed() && kmeliaScc.isExportZipAllowed()) {

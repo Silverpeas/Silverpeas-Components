@@ -120,7 +120,7 @@ public class AlmanachWebController
   @GET
   @Path("calendars/{id}/subscriptions/manage")
   @RedirectTo("{destination}")
-  @LowestRoleAccess(SilverpeasRole.admin)
+  @LowestRoleAccess(SilverpeasRole.ADMIN)
   public void manageCalendarSubscriptions(AlmanachWebRequestContext context) {
     final String calendarId = context.getPathVariables().get("id");
     final Calendar calendar = Calendar.getById(calendarId);
@@ -137,7 +137,7 @@ public class AlmanachWebController
   @GET
   @Path("calendars/events/new")
   @RedirectToInternalJsp("almanachOccurrenceEdit.jsp")
-  @LowestRoleAccess(SilverpeasRole.publisher)
+  @LowestRoleAccess(SilverpeasRole.PUBLISHER)
   public void newEvent(AlmanachWebRequestContext context) {
     processNewEvent(context);
   }
@@ -163,7 +163,7 @@ public class AlmanachWebController
   @GET
   @Path("calendars/occurrences/{occurrenceId}/edit")
   @RedirectToInternalJsp("almanachOccurrenceEdit.jsp")
-  @LowestRoleAccess(SilverpeasRole.publisher)
+  @LowestRoleAccess(SilverpeasRole.PUBLISHER)
   public void editOccurrence(AlmanachWebRequestContext context) {
     viewOccurrence(context);
   }

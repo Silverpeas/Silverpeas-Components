@@ -59,8 +59,8 @@ WallPaper wallPaper = (WallPaper) request.getAttribute("WallPaper");
 StyleSheet styleSheet = (StyleSheet) request.getAttribute("StyleSheet");
 Date dateCalendar = DateUtil.parse(dateCal);
 
-if (SilverpeasRole.admin.equals(SilverpeasRole.valueOf(profile)) || SilverpeasRole.publisher.equals(SilverpeasRole.valueOf(profile))) {
-  if (SilverpeasRole.admin.equals(SilverpeasRole.valueOf(profile))) {
+if (SilverpeasRole.ADMIN.equals(SilverpeasRole.from(profile)) || SilverpeasRole.PUBLISHER.equals(SilverpeasRole.from(profile))) {
+  if (SilverpeasRole.ADMIN.equals(SilverpeasRole.from(profile))) {
     if (isPdcUsed) {
       operationPane.addOperation("useless", resource.getString("GML.PDCParam"),
           "javascript:onClick=openSPWindow('" + m_context +
@@ -70,7 +70,7 @@ if (SilverpeasRole.admin.equals(SilverpeasRole.valueOf(profile)) || SilverpeasRo
     operationPane.addLine();
   }
   operationPane.addOperationOfCreation(resource.getIcon("blog.addPost"), resource.getString("blog.newPost"), "NewPost");
-  if (SilverpeasRole.admin.equals(SilverpeasRole.valueOf(profile))) {
+  if (SilverpeasRole.ADMIN.equals(SilverpeasRole.from(profile))) {
    operationPane.addOperation("useless", resource.getString("blog.viewCategory"), "ViewCategory");
 
    String url = m_context + blogUrl + "Main";
@@ -261,7 +261,8 @@ function hideStyleSheetFile() {
            // le billet en mode brouillon n'est pas visible si ce n'est pas le createur
            visible = false;
            // sauf si le mode "brouillon visible" est actif et que le user est bloggeur
-           if (isDraftVisible && (SilverpeasRole.admin.equals(SilverpeasRole.valueOf(profile)) || SilverpeasRole.publisher.equals(SilverpeasRole.valueOf(profile)))) {
+           if (isDraftVisible && (SilverpeasRole.ADMIN.equals(SilverpeasRole.from(profile)) || SilverpeasRole.PUBLISHER
+               .equals(SilverpeasRole.from(profile)))) {
             visible = true;
            }
           }

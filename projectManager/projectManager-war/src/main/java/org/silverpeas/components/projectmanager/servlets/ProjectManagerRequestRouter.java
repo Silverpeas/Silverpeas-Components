@@ -103,7 +103,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter<ProjectM
           destination = rootDestination + "tasksList.jsp";
         } else {
           // le projet n'a pas encore été défini.
-          if (SilverpeasRole.admin.isInRole(role)) {
+          if (SilverpeasRole.ADMIN.isInRole(role)) {
             String orgaFullName = projectManagerSC.getUserFullName();
             request.setAttribute("Organisateur", orgaFullName);
             destination = rootDestination + "projectDefinition.jsp";

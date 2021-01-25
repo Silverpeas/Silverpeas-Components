@@ -127,7 +127,7 @@ public class QuestionResource extends QuestionReplyBaseWebService {
   List<Question> extractVisibleQuestions(List<Question> questions) {
     SilverpeasRole profile = getUserProfile();
     List<Question> visibleQuestions;
-    if (profile == SilverpeasRole.user) {
+    if (profile == SilverpeasRole.USER) {
       visibleQuestions = new ArrayList<Question>(questions.size());
       for (Question question : questions) {
         if (question.getPublicReplyNumber() > 0) {

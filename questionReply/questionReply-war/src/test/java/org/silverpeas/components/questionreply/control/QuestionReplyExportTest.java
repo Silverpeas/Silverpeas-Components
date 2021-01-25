@@ -53,17 +53,17 @@ public class QuestionReplyExportTest {
     Reply publicReply = new Reply();
     publicReply.setPublicReply(1);
     QuestionReplySessionController adminScc = mock(QuestionReplySessionController.class);
-    when(adminScc.getUserRole()).thenReturn(SilverpeasRole.admin);
+    when(adminScc.getUserRole()).thenReturn(SilverpeasRole.ADMIN);
     QuestionReplySessionController writerScc = mock(QuestionReplySessionController.class);
-    when(writerScc.getUserRole()).thenReturn(SilverpeasRole.writer);
+    when(writerScc.getUserRole()).thenReturn(SilverpeasRole.WRITER);
     QuestionReplySessionController publisherCreatorScc = mock(QuestionReplySessionController.class);
-    when(publisherCreatorScc.getUserRole()).thenReturn(SilverpeasRole.publisher);
+    when(publisherCreatorScc.getUserRole()).thenReturn(SilverpeasRole.PUBLISHER);
     when(publisherCreatorScc.getUserId()).thenReturn("10");
     QuestionReplySessionController publisherScc = mock(QuestionReplySessionController.class);
-    when(publisherScc.getUserRole()).thenReturn(SilverpeasRole.publisher);
+    when(publisherScc.getUserRole()).thenReturn(SilverpeasRole.PUBLISHER);
     when(publisherScc.getUserId()).thenReturn("20");
     QuestionReplySessionController userScc = mock(QuestionReplySessionController.class);
-    when(userScc.getUserRole()).thenReturn(SilverpeasRole.user);
+    when(userScc.getUserRole()).thenReturn(SilverpeasRole.USER);
     when(userScc.getUserId()).thenReturn("20");
     QuestionReplyExport instance = new QuestionReplyExport(null, null);
     assertThat("Admin should see everything", instance.isReplyVisible(question, privateReply,

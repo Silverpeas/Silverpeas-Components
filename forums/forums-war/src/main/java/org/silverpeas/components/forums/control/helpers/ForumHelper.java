@@ -241,7 +241,7 @@ public class ForumHelper {
           // Notation
           SilverpeasRole highestUserRole = fsc.getHighestSilverpeasUserRole();
           boolean canUserRating =
-              highestUserRole != null && highestUserRole.isGreaterThanOrEquals(SilverpeasRole.user);
+              highestUserRole != null && highestUserRole.isGreaterThanOrEquals(SilverpeasRole.USER);
           RaterRatingEntity raterRatingEntity = RaterRatingEntity.fromRateable(message);
           out.print("<td  align=\"center\">");
           out.write(raterRatingEntity

@@ -151,7 +151,7 @@ public class SendInKmelia extends ExternalActionImpl {
 
     Parameter draftOutParameter = getTriggerParameter("forceDraftOut");
     if (draftOutParameter != null && StringUtil.getBooleanValue(draftOutParameter.getValue())) {
-      getKmeliaService().draftOutPublication(pubPK, nodePK, SilverpeasRole.admin.toString());
+      getKmeliaService().draftOutPublication(pubPK, nodePK, SilverpeasRole.ADMIN.toString());
     }
   }
 

@@ -61,7 +61,7 @@ public abstract class AbstractSuggestionBoxUserNotification<T>
   protected Collection<String> getSuggestionBoxModerators() {
     return CollectionUtil.asList(OrganizationControllerProvider.getOrganisationController()
         .getUsersIdsByRoleNames(getComponentInstanceId(),
-            Collections.singletonList(SilverpeasRole.admin.name())));
+            Collections.singletonList(SilverpeasRole.ADMIN.getName())));
   }
 
 

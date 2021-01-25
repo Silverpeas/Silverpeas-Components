@@ -40,8 +40,8 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.silverpeas.core.admin.user.model.SilverpeasRole.admin;
-import static org.silverpeas.core.admin.user.model.SilverpeasRole.publisher;
+import static org.silverpeas.core.admin.user.model.SilverpeasRole.ADMIN;
+import static org.silverpeas.core.admin.user.model.SilverpeasRole.PUBLISHER;
 
 /**
  * @author emmanuel.hugonnet@silverpeas.org
@@ -286,23 +286,23 @@ public class QuestionEntity implements WebEntity {
   }
 
   boolean isQuestionUpdatable(User user, SilverpeasRole profile) {
-    return !((profile == publisher && !this.getCreatorId().equals(user.getId())) ||
-        (profile == publisher && this.getStatus() != Question.NEW) ||
-        (profile == SilverpeasRole.user));
+    return !((profile == PUBLISHER && !this.getCreatorId().equals(user.getId())) ||
+        (profile == PUBLISHER && this.getStatus() != Question.NEW) ||
+        (profile == SilverpeasRole.USER));
   }
 
   boolean isQuestionCloseable(User user, SilverpeasRole profile) {
-    return publisher != profile && this.getStatus() == Question.WAITING &&
+    return PUBLISHER != profile && this.getStatus() == Question.WAITING &&
         isQuestionUpdatable(user, profile);
   }
 
   boolean isQuestionReplyable(User user, SilverpeasRole profile) {
-    return publisher != profile && this.getStatus() != Question.CLOSED &&
+    return PUBLISHER != profile && this.getStatus() != Question.CLOSED &&
         isQuestionUpdatable(user, profile);
   }
 
   boolean isQuestionReopenable(SilverpeasRole profile) {
-    return this.getStatus() == Question.CLOSED && profile == admin;
+    return this.getStatus() == Question.CLOSED && profile == ADMIN;
   }
 
   @Override

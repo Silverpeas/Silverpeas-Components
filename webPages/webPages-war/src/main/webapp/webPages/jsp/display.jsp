@@ -39,7 +39,7 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 
-<view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.admin"/>
+<view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.ADMIN"/>
 
 <fmt:message key="webPages.edit" var="editLabel"/>
 <fmt:message key="GML.manageSubscriptions" var="manageSubscriptionLabel"/>

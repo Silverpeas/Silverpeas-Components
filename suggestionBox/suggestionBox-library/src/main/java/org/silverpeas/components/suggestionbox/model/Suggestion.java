@@ -250,7 +250,7 @@ public class Suggestion extends SilverpeasJpaEntity<Suggestion, UuidIdentifier>
   public boolean isPublishableBy(User user) {
     return (getValidation().isInDraft() || getValidation().isRefused()) && (user.isAccessAdmin()
         || (getCreator().equals(user) && getSuggestionBox().getHighestUserRole(user)
-        .isGreaterThanOrEquals(SilverpeasRole.writer)));
+        .isGreaterThanOrEquals(SilverpeasRole.WRITER)));
   }
 
   /**

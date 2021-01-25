@@ -756,7 +756,7 @@ public class DefaultKmeliaService implements KmeliaService {
     String currentUserId = userId;
     try {
       // Give the publications associated to basket topic and visibility period expired
-      if (SilverpeasRole.admin.isInRole(userProfile)) {// Admin can see all Publis in the basket.
+      if (SilverpeasRole.ADMIN.isInRole(userProfile)) {// Admin can see all Publis in the basket.
         currentUserId = null;
       }
       return
@@ -951,7 +951,7 @@ public class DefaultKmeliaService implements KmeliaService {
         status = PublicationDetail.DRAFT_STATUS;
       } else {
         String profile = getProfile(pubDetail.getCreatorId(), nodePK);
-        if (SilverpeasRole.publisher.isInRole(profile) || SilverpeasRole.admin.isInRole(profile)) {
+        if (SilverpeasRole.PUBLISHER.isInRole(profile) || SilverpeasRole.ADMIN.isInRole(profile)) {
           status = PublicationDetail.VALID_STATUS;
         }
       }
@@ -967,7 +967,7 @@ public class DefaultKmeliaService implements KmeliaService {
     if (!status.equals(PublicationDetail.DRAFT_STATUS)) {
       status = PublicationDetail.TO_VALIDATE_STATUS;
       String profile = getProfile(pub.getUpdaterId(), to);
-      if (SilverpeasRole.publisher.isInRole(profile) || SilverpeasRole.admin.isInRole(profile)) {
+      if (SilverpeasRole.PUBLISHER.isInRole(profile) || SilverpeasRole.ADMIN.isInRole(profile)) {
         status = PublicationDetail.VALID_STATUS;
       }
     }
@@ -1005,10 +1005,10 @@ public class DefaultKmeliaService implements KmeliaService {
     final String profile =
         getProfileForDirectNodeOfPublication(pubDetail.getUpdaterId(), pubDetail.getPK(), father);
     final String status;
-    if (SilverpeasRole.writer.isInRole(profile)) {
+    if (SilverpeasRole.WRITER.isInRole(profile)) {
       status = PublicationDetail.TO_VALIDATE_STATUS;
     } else if (pubDetail.isRefused() &&
-        (SilverpeasRole.admin.isInRole(profile) || SilverpeasRole.publisher.isInRole(profile))) {
+        (SilverpeasRole.ADMIN.isInRole(profile) || SilverpeasRole.PUBLISHER.isInRole(profile))) {
       status = PublicationDetail.VALID_STATUS;
     } else {
       status = newStatus;
@@ -1401,8 +1401,8 @@ public class DefaultKmeliaService implements KmeliaService {
       final PublicationDetail pubDetail) {
     // check if user have sufficient rights to update a publication
     String profile = getProfileOnPublication(userId, pubDetail.getPK());
-    if ("supervisor".equals(profile) || SilverpeasRole.publisher.isInRole(profile) ||
-        SilverpeasRole.admin.isInRole(profile) || SilverpeasRole.writer.isInRole(profile)) {
+    if ("supervisor".equals(profile) || SilverpeasRole.PUBLISHER.isInRole(profile) ||
+        SilverpeasRole.ADMIN.isInRole(profile) || SilverpeasRole.WRITER.isInRole(profile)) {
       updatePublication(pubDetail, KmeliaHelper.PUBLICATION_CONTENT, false);
     } else {
       SilverLogger.getLogger(this)
@@ -1890,8 +1890,8 @@ public class DefaultKmeliaService implements KmeliaService {
     } else {
       // It's not a targeted validation
       List<String> roles = new ArrayList<>(2);
-      roles.add(SilverpeasRole.admin.name());
-      roles.add(SilverpeasRole.publisher.name());
+      roles.add(SilverpeasRole.ADMIN.getName());
+      roles.add(SilverpeasRole.PUBLISHER.getName());
 
       if (KmeliaHelper.isKmax(pubPK.getInstanceId())) {
         allValidators.addAll(Arrays.asList(
@@ -2381,7 +2381,7 @@ public class DefaultKmeliaService implements KmeliaService {
 
   private void sendTodosAndNotificationsOnDraftOut(PublicationDetail pubDetail, NodePK topicPK,
       String userProfile) {
-    if (SilverpeasRole.writer.isInRole(userProfile)) {
+    if (SilverpeasRole.WRITER.isInRole(userProfile)) {
       createTodosForPublication(pubDetail, true);
     }
     // Subscriptions and supervisors are supported by kmelia and filebox only
@@ -2621,7 +2621,7 @@ public class DefaultKmeliaService implements KmeliaService {
       // tries to notify updater
       String profile = getProfileOnPublication(pub.getMostRecentUpdater(), pub.getPK());
       if (profile != null &&
-          SilverpeasRole.from(profile).isGreaterThanOrEquals(SilverpeasRole.writer)) {
+          SilverpeasRole.from(profile).isGreaterThanOrEquals(SilverpeasRole.WRITER)) {
         notification = new KmeliaNoMoreValidatorPublicationUserNotification(null, pub);
       } else {
         // notify current user
@@ -3727,7 +3727,7 @@ public class DefaultKmeliaService implements KmeliaService {
     String instanceId = node.getNodePK().getInstanceId();
     if (isRightsOnTopicsEnabled(instanceId)) {
       if (isUserComponentAdmin(instanceId, userId) ||
-          SilverpeasRole.admin.getName().equals(getUserTopicProfile(node.getNodePK(), userId))) {
+          SilverpeasRole.ADMIN.getName().equals(getUserTopicProfile(node.getNodePK(), userId))) {
         // user is admin of application or admin of folder, all subfolders must be shown
         setRole(node.getChildrenDetails(), userId);
       } else {
@@ -3851,15 +3851,15 @@ public class DefaultKmeliaService implements KmeliaService {
   @Override
   public boolean isUserCanWrite(String componentId, String userId) {
     String[] grantedRoles =
-        new String[]{SilverpeasRole.admin.name(), SilverpeasRole.publisher.name(),
-            SilverpeasRole.writer.name()};
+        new String[]{SilverpeasRole.ADMIN.getName(), SilverpeasRole.PUBLISHER.getName(),
+            SilverpeasRole.WRITER.getName()};
     return checkUserRoles(componentId, userId, grantedRoles);
   }
 
   @Override
   public boolean isUserCanPublish(String componentId, String userId) {
     String[] grantedRoles =
-        new String[]{SilverpeasRole.admin.name(), SilverpeasRole.publisher.name()};
+        new String[]{SilverpeasRole.ADMIN.getName(), SilverpeasRole.PUBLISHER.getName()};
     return checkUserRoles(componentId, userId, grantedRoles);
   }
 
@@ -4312,7 +4312,7 @@ public class DefaultKmeliaService implements KmeliaService {
     if (StringUtil.isDefined(copyDetail.getPublicationStatus())) {
       String profile = getProfile(userId, nodePK);
       if (!copyDetail.getPublicationStatus().equals(PublicationDetail.DRAFT_STATUS)) {
-        if (SilverpeasRole.from(profile).isGreaterThanOrEquals(SilverpeasRole.publisher)) {
+        if (SilverpeasRole.from(profile).isGreaterThanOrEquals(SilverpeasRole.PUBLISHER)) {
           newPubli.setStatus(PublicationDetail.VALID_STATUS);
         } else {
           // case of writer
@@ -4419,14 +4419,14 @@ public class DefaultKmeliaService implements KmeliaService {
   private boolean isVisibleInDraft(final PublicationDetail detail, final SilverpeasRole profile,
       final String userId, final boolean coWriting) {
     return userId.equals(detail.getCreatorId()) || userId.equals(detail.getUpdaterId()) ||
-        (coWriting && isDraftVisibleWithCoWriting() && profile != SilverpeasRole.user);
+        (coWriting && isDraftVisibleWithCoWriting() && profile != SilverpeasRole.USER);
   }
 
   private boolean isVisibleInPublished(final PublicationDetail detail, final SilverpeasRole profile,
       final String userId, final boolean coWriting) {
-    return profile == SilverpeasRole.admin || profile == SilverpeasRole.publisher ||
+    return profile == SilverpeasRole.ADMIN || profile == SilverpeasRole.PUBLISHER ||
         userId.equals(detail.getCreatorId()) || userId.equals(detail.getUpdaterId()) ||
-        (profile != SilverpeasRole.user && coWriting);
+        (profile != SilverpeasRole.USER && coWriting);
   }
 
   private boolean isVisible(final PublicationDetail detail, final SilverpeasRole profile,
@@ -4434,8 +4434,8 @@ public class DefaultKmeliaService implements KmeliaService {
     if (detail.isVisible()) {
       return true;
     } else {
-      if (profile == SilverpeasRole.admin || userId.equals(detail.getUpdaterId()) ||
-          (profile != SilverpeasRole.user && coWriting)) {
+      if (profile == SilverpeasRole.ADMIN || userId.equals(detail.getUpdaterId()) ||
+          (profile != SilverpeasRole.USER && coWriting)) {
         return true;
       }
     }
@@ -4501,7 +4501,7 @@ public class DefaultKmeliaService implements KmeliaService {
     for (String userId : validatorIds) {
       String profile = getProfileOnPublication(userId, publication.getPK());
       if (profile != null &&
-          SilverpeasRole.from(profile).isGreaterThanOrEquals(SilverpeasRole.publisher)) {
+          SilverpeasRole.from(profile).isGreaterThanOrEquals(SilverpeasRole.PUBLISHER)) {
         activeValidatorIds.add(userId);
       }
     }

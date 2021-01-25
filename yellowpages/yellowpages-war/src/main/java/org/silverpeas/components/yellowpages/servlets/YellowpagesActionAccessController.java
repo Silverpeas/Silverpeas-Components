@@ -37,8 +37,8 @@ public class YellowpagesActionAccessController {
   private Map<String, SilverpeasRole> actionRole = new HashMap<>();
 
   public YellowpagesActionAccessController() {
-    actionRole.put("Main", SilverpeasRole.reader);
-    actionRole.put("DeleteContact", SilverpeasRole.writer);
+    actionRole.put("Main", SilverpeasRole.READER);
+    actionRole.put("DeleteContact", SilverpeasRole.WRITER);
   }
 
 

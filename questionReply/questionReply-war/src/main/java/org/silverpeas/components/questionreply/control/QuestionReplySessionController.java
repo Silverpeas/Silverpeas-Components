@@ -103,13 +103,13 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    */
   public Collection<Question> getQuestions() throws QuestionReplyException {
     switch (userProfil) {
-      case user:
+      case USER:
         return getUserQuestions();
-      case writer:
+      case WRITER:
         return getWriterQuestions();
-      case publisher:
+      case PUBLISHER:
         return getPublisherQuestions();
-      case admin:
+      case ADMIN:
         return getAdminQuestions();
       default:
         break;
@@ -138,12 +138,12 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
 
   public Collection<Reply> getRepliesForQuestion(long id) throws QuestionReplyException {
     switch (userProfil) {
-      case user:
+      case USER:
         return getPublicRepliesForQuestion(id);
-      case publisher:
+      case PUBLISHER:
         return getPrivateRepliesForQuestion(id);
-      case writer:
-      case admin:
+      case WRITER:
+      case ADMIN:
         return getAllRepliesForQuestion(id);
       default:
         break;
@@ -441,11 +441,11 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   }
 
   public void setUserProfil(String profil) {
-    this.userProfil = SilverpeasRole.valueOf(profil);
+    this.userProfil = SilverpeasRole.from(profil);
   }
 
   public String getUserProfil() {
-    return this.userProfil.name();
+    return this.userProfil.getName();
   }
 
   public SilverpeasRole getUserRole() {
@@ -455,15 +455,15 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   @Override
   public SilverpeasRole getHighestSilverpeasUserRole() {
     SilverpeasRole highestUserRole = SilverpeasRole.getHighestFrom(getSilverpeasUserRoles());
-    if (highestUserRole == null || SilverpeasRole.user.isGreaterThanOrEquals(highestUserRole)) {
-      highestUserRole = SilverpeasRole.user;
+    if (highestUserRole == null || SilverpeasRole.USER.isGreaterThanOrEquals(highestUserRole)) {
+      highestUserRole = SilverpeasRole.USER;
     }
     return highestUserRole;
   }
 
   public boolean isUserExpert() {
     Collection<SilverpeasRole> userRoles = getSilverpeasUserRoles();
-    return userRoles.contains(SilverpeasRole.writer) || userRoles.contains(SilverpeasRole.admin);
+    return userRoles.contains(SilverpeasRole.WRITER) || userRoles.contains(SilverpeasRole.ADMIN);
   }
 
   /*
@@ -579,7 +579,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    * @param question
    */
   private void notifyQuestionFromExpert(Question question) {
-    final List<String> profiles = singletonList(SilverpeasRole.writer.name());
+    final List<String> profiles = singletonList(SilverpeasRole.WRITER.getName());
     String[] usersIds = getOrganisationController().getUsersIdsByRoleNames(getComponentId(), profiles);
     notifyTemplateQuestion(question, Stream.of(usersIds).collect(Collectors.toSet()));
   }

@@ -141,12 +141,12 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   // Current User operations
 
   private String getFlag(String[] profiles) {
-    String flag = SilverpeasRole.user.toString();
+    String flag = SilverpeasRole.USER.toString();
     for (String profile1 : profiles) {
-      if (SilverpeasRole.admin.isInRole(profile1)) {
+      if (SilverpeasRole.ADMIN.isInRole(profile1)) {
         return profile1;
       }
-      if (SilverpeasRole.publisher.isInRole(profile1)) {
+      if (SilverpeasRole.PUBLISHER.isInRole(profile1)) {
         flag = profile1;
       }
     }

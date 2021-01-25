@@ -9,7 +9,7 @@
 <fmt:setLocale value="${currentUserLanguage}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 
-<view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.admin"/>
+<view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.ADMIN"/>
 
 <c:if test="${not requestScope.highestUserRole.isGreaterThanOrEquals(adminRole)}">
   <c:redirect url="/Error403.jsp"/>

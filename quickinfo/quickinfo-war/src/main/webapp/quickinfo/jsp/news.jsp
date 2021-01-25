@@ -166,7 +166,7 @@ function onDelete(id) {
   <%-- Attachments --%>
   <c:set var="callbackUrl"><%=
 	URLUtil.getURL("useless", news.getComponentInstanceId()) + (viewOnly ? "ViewOnly" : "View") + "?Id=" + news.getId()%></c:set>
-  <c:set var="highestUserRoleForAttachments" value="<%= SilverpeasRole.READER_ROLES.contains(highestUserRole) ? SilverpeasRole.user : SilverpeasRole.admin %>"/>
+  <c:set var="highestUserRoleForAttachments" value="<%= SilverpeasRole.READER_ROLES.contains(highestUserRole) ? SilverpeasRole.USER : SilverpeasRole.ADMIN %>"/>
   <viewTags:displayAttachments componentInstanceId="${news.componentInstanceId}"
                                resourceId="${news.publicationId}"
                                resourceType="${news.publication.contributionType}"

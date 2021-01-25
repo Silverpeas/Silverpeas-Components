@@ -275,8 +275,8 @@ public abstract class Media implements SilverContentInterface, Serializable {
   public boolean canBeAccessedBy(final User user) {
     return SilverContentInterface.super.canBeAccessedBy(user) &&
         (isVisible(DateUtil.getDate()) || (user.isAccessAdmin() || getHighestUserRole(user)
-            .isGreaterThanOrEquals(SilverpeasRole.publisher) || (getHighestUserRole(user)
-            .isGreaterThanOrEquals(SilverpeasRole.writer) && user.getId().equals(getCreatorId()))));
+            .isGreaterThanOrEquals(SilverpeasRole.PUBLISHER) || (getHighestUserRole(user)
+            .isGreaterThanOrEquals(SilverpeasRole.WRITER) && user.getId().equals(getCreatorId()))));
   }
 
   /**

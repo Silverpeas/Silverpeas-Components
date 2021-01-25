@@ -481,7 +481,7 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
   private boolean checkIsAdmin(final boolean throwException,
       final Collection<SilverpeasRole> userRoles)
       throws SilverCrawlerForbiddenActionException {
-    if (!userRoles.contains(SilverpeasRole.admin)) {
+    if (!userRoles.contains(SilverpeasRole.ADMIN)) {
       if (throwException) {
         throw new SilverCrawlerForbiddenActionException("userRoles: " + String.join(", ",
             userRoles.stream().map(SilverpeasRole::getName).collect(Collectors.toList())));
@@ -697,7 +697,7 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
     // Step 1 - Checks user profile
     Collection<SilverpeasRole> roles = getSilverpeasUserRoles();
     SilverpeasRole highestRole = SilverpeasRole.getHighestFrom(roles);
-    if (highestRole != SilverpeasRole.admin && highestRole != SilverpeasRole.publisher) {
+    if (highestRole != SilverpeasRole.ADMIN && highestRole != SilverpeasRole.PUBLISHER) {
       return false;
     }
 

@@ -384,10 +384,10 @@ public class MediaCriteria {
           (getRequester().isAccessAdmin() ||
           (isComponentCriteriaDefined && getComponentHighestRequesterRole() != null &&
           getComponentHighestRequesterRole()
-              .isGreaterThanOrEquals(SilverpeasRole.publisher)))) {
+              .isGreaterThanOrEquals(SilverpeasRole.PUBLISHER)))) {
         theVisibility = FORCE_GET_ALL;
       } else if (isComponentCriteriaDefined &&
-          getComponentHighestRequesterRole() == SilverpeasRole.writer) {
+          getComponentHighestRequesterRole() == SilverpeasRole.WRITER) {
         creatorForVisibility = getRequester();
       }
     }

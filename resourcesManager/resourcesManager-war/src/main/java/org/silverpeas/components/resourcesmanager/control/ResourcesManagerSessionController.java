@@ -494,8 +494,8 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
     SelectionUsersGroups sug = new SelectionUsersGroups();
     sug.setComponentId(getComponentId());
     ArrayList<String> profiles = new ArrayList<>(2);
-    profiles.add(SilverpeasRole.publisher.toString());
-    profiles.add(SilverpeasRole.admin.toString());
+    profiles.add(SilverpeasRole.PUBLISHER.toString());
+    profiles.add(SilverpeasRole.ADMIN.toString());
     sug.setProfileNames(profiles);
     sel.setExtraParams(sug);
     return Selection.getSelectionURL();

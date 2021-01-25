@@ -259,7 +259,7 @@ public class SuggestionBoxWebController extends
   @Path(PATH_SUGGESTIONS_PENDING)
   @NavigationStep(identifier = SUGGESTION_LIST_NS_ID, contextIdentifier = "SuggestionsInValidation")
   @RedirectToInternalJsp("suggestionList.jsp")
-  @LowestRoleAccess(SilverpeasRole.publisher)
+  @LowestRoleAccess(SilverpeasRole.PUBLISHER)
   public void listSuggestionsInPendingValidation(SuggestionBoxWebRequestContext context) {
     List<SuggestionEntity> suggestions =
         getWebServiceProvider().getSuggestionsForValidation(context.getSuggestionBox());
@@ -276,7 +276,7 @@ public class SuggestionBoxWebController extends
   @Path(PATH_SUGGESTIONS_MINE)
   @NavigationStep(identifier = SUGGESTION_LIST_NS_ID, contextIdentifier = "MySuggestions")
   @RedirectToInternalJsp("suggestionList.jsp")
-  @LowestRoleAccess(SilverpeasRole.writer)
+  @LowestRoleAccess(SilverpeasRole.WRITER)
   public void listCurrentUserSuggestions(SuggestionBoxWebRequestContext context) {
     List<SuggestionEntity> suggestions = getWebServiceProvider()
         .getAllSuggestionsProposedBy(context.getSuggestionBox(), context.getUser());
@@ -304,7 +304,7 @@ public class SuggestionBoxWebController extends
    */
   @GET
   @Path("edito/modify")
-  @LowestRoleAccess(SilverpeasRole.admin)
+  @LowestRoleAccess(SilverpeasRole.ADMIN)
   public Navigation modifyEdito(SuggestionBoxWebRequestContext context) {
     final SuggestionBox suggestionBox = context.getSuggestionBox();
     return context
@@ -333,7 +333,7 @@ public class SuggestionBoxWebController extends
   @GET
   @Path("suggestions/new")
   @RedirectToInternalJsp("suggestionEdit.jsp")
-  @LowestRoleAccess(SilverpeasRole.writer)
+  @LowestRoleAccess(SilverpeasRole.WRITER)
   public void newSuggestion(SuggestionBoxWebRequestContext context) {
     // just go to the JSP view
   }
@@ -346,7 +346,7 @@ public class SuggestionBoxWebController extends
   @POST
   @Path("suggestions/add")
   @RedirectToInternal("suggestions/{id}")
-  @LowestRoleAccess(SilverpeasRole.writer)
+  @LowestRoleAccess(SilverpeasRole.WRITER)
   public void addSuggestion(SuggestionBoxWebRequestContext context) {
     SuggestionBox suggestionBox = context.getSuggestionBox();
     String title = context.getRequest().getParameter("title");
@@ -381,7 +381,7 @@ public class SuggestionBoxWebController extends
       context.getRequest().setAttribute("suggestion", entity);
       boolean isPublishable = entity.isPublishableBy(context.getUser());
       boolean isModeratorView = entity.getValidation().isPendingValidation() && context.
-          getHighestUserRole().isGreaterThanOrEquals(SilverpeasRole.publisher);
+          getHighestUserRole().isGreaterThanOrEquals(SilverpeasRole.PUBLISHER);
       context.getRequest().setAttribute("isModeratorView", isModeratorView);
       context.getRequest().setAttribute("isPublishable", isPublishable);
       context.getRequest().setAttribute("isEditable", (isPublishable || isModeratorView));
@@ -402,7 +402,7 @@ public class SuggestionBoxWebController extends
   @GET
   @Path("suggestions/{id}/edit")
   @RedirectToInternalJsp("suggestionEdit.jsp")
-  @LowestRoleAccess(SilverpeasRole.writer)
+  @LowestRoleAccess(SilverpeasRole.WRITER)
   public void editSuggestion(SuggestionBoxWebRequestContext context) {
     String suggestionId = context.getPathVariables().get("id");
     SuggestionBox suggestionBox = context.getSuggestionBox();
@@ -430,7 +430,7 @@ public class SuggestionBoxWebController extends
   @POST
   @Path("suggestions/{id}")
   @RedirectToInternal("suggestions/{id}")
-  @LowestRoleAccess(SilverpeasRole.writer)
+  @LowestRoleAccess(SilverpeasRole.WRITER)
   public void updateSuggestion(SuggestionBoxWebRequestContext context) {
     String id = context.getPathVariables().get("id");
     SuggestionBox suggestionBox = context.getSuggestionBox();
@@ -457,7 +457,7 @@ public class SuggestionBoxWebController extends
   @POST
   @Path("suggestions/{id}/delete")
   @RedirectToPreviousNavigationStep
-  @LowestRoleAccess(SilverpeasRole.writer)
+  @LowestRoleAccess(SilverpeasRole.WRITER)
   public void deleteSuggestion(SuggestionBoxWebRequestContext context) {
     String id = context.getPathVariables().get("id");
     SuggestionBox suggestionBox = context.getSuggestionBox();
@@ -468,7 +468,7 @@ public class SuggestionBoxWebController extends
   @POST
   @Path("suggestions/{id}/publish")
   @RedirectToPreviousNavigationStep
-  @LowestRoleAccess(SilverpeasRole.writer)
+  @LowestRoleAccess(SilverpeasRole.WRITER)
   public void publishSuggestion(SuggestionBoxWebRequestContext context) {
     String id = context.getPathVariables().get("id");
     SuggestionBox suggestionBox = context.getSuggestionBox();
@@ -479,7 +479,7 @@ public class SuggestionBoxWebController extends
   @POST
   @Path("suggestions/{id}/approve")
   @RedirectToPreviousNavigationStep
-  @LowestRoleAccess(SilverpeasRole.publisher)
+  @LowestRoleAccess(SilverpeasRole.PUBLISHER)
   public void approveSuggestion(SuggestionBoxWebRequestContext context) {
     String id = context.getPathVariables().get("id");
     SuggestionBox suggestionBox = context.getSuggestionBox();
@@ -492,7 +492,7 @@ public class SuggestionBoxWebController extends
   @POST
   @Path("suggestions/{id}/refuse")
   @RedirectToPreviousNavigationStep
-  @LowestRoleAccess(SilverpeasRole.publisher)
+  @LowestRoleAccess(SilverpeasRole.PUBLISHER)
   public void refuseSuggestion(SuggestionBoxWebRequestContext context) {
     String id = context.getPathVariables().get("id");
     SuggestionBox suggestionBox = context.getSuggestionBox();

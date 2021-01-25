@@ -30,8 +30,8 @@ MultiSilverpeasBundle resources, boolean pollingStationMode, boolean participate
 
 	tabbedPane.addTab(label, "surveyDetail.jsp?Action=ViewCurrentQuestions&Participated="+participated+"&SurveyId="+surveyId, tabValid, true);
 
-  if ((SilverpeasRole.admin.toString().equals(profile) ||
-      SilverpeasRole.publisher.toString().equals(profile)) &&
+  if ((SilverpeasRole.ADMIN.toString().equals(profile) ||
+      SilverpeasRole.PUBLISHER.toString().equals(profile)) &&
       !participated) {
       tabbedPane.addTab(resources.getString("survey.results"), "surveyDetail.jsp?Action=ViewResult&Participated="+participated+"&SurveyId="+surveyId, action.equals("ViewResult"), true);
   }
@@ -551,8 +551,8 @@ String displaySurveyResultOfUser(String userId, Collection resultsByUser,
         r += board.printAfter();
         r += "<br/>";
 
-      if (SilverpeasRole.admin.toString().equals(profile) ||
-          SilverpeasRole.publisher.toString().equals(profile)) {
+      if (SilverpeasRole.ADMIN.toString().equals(profile) ||
+          SilverpeasRole.PUBLISHER.toString().equals(profile)) {
 
         r += "<div class=\"surveyResult\">";
 
@@ -713,8 +713,8 @@ String displaySurveyResult(String choice, QuestionContainerDetail survey, Graphi
           r += "/"+nbRegistered;
         }
         if (!anonymous &&
-            ((SilverpeasRole.admin.toString().equals(profile) ||
-            SilverpeasRole.publisher.toString().equals(profile)) ||
+            ((SilverpeasRole.ADMIN.toString().equals(profile) ||
+            SilverpeasRole.PUBLISHER.toString().equals(profile)) ||
             (resultMode == QuestionContainerHeader.IMMEDIATE_RESULTS ||
             (resultMode == QuestionContainerHeader.DELAYED_RESULTS &&
             (resultView == QuestionContainerHeader.DETAILED_DISPLAY_RESULTS ||
@@ -766,8 +766,8 @@ String displaySurveyResult(String choice, QuestionContainerDetail survey, Graphi
         }
         r += "</div>";
 
-      if ((SilverpeasRole.admin.toString().equals(profile) ||
-          SilverpeasRole.publisher.toString().equals(profile)) ||
+      if ((SilverpeasRole.ADMIN.toString().equals(profile) ||
+          SilverpeasRole.PUBLISHER.toString().equals(profile)) ||
           resultMode == QuestionContainerHeader.IMMEDIATE_RESULTS ||
            (resultMode == QuestionContainerHeader.DELAYED_RESULTS &&
            resultView != QuestionContainerHeader.NOTHING_DISPLAY_RESULTS)) {
@@ -778,8 +778,8 @@ String displaySurveyResult(String choice, QuestionContainerDetail survey, Graphi
 				  // l'enquete n'est pas anonyme, proposer le choix d'affichage
 	        r += "   <div class=\"sousNavBulle\">";
 	        r += "    <p>"+resources.getString("survey.results")+" "+resources.getString("survey.choice")+" : ";
-	        if((SilverpeasRole.admin.toString().equals(profile) ||
-              SilverpeasRole.publisher.toString().equals(profile)) ||
+	        if((SilverpeasRole.ADMIN.toString().equals(profile) ||
+              SilverpeasRole.PUBLISHER.toString().equals(profile)) ||
               resultView == QuestionContainerHeader.TWICE_DISPLAY_RESULTS) {
             String active = "";
             if (choice.equals("C")) {
@@ -791,13 +791,13 @@ String displaySurveyResult(String choice, QuestionContainerDetail survey, Graphi
              active = "active";
             }
             r += "    <a onClick=\"changeScope('detail', '"+participated+"', '"+surveyId+"')\" href=\"#\" class=\""+active+"\" id=\"scope-detail\">"+resources.getString("survey.D")+"</a>";
-          } else if((SilverpeasRole.admin.toString().equals(profile) ||
-	            SilverpeasRole.publisher.toString().equals(profile)) ||
+          } else if((SilverpeasRole.ADMIN.toString().equals(profile) ||
+	            SilverpeasRole.PUBLISHER.toString().equals(profile)) ||
 	            resultView == QuestionContainerHeader.CLASSIC_DISPLAY_RESULTS) {
 	          choice = "C";
 	          r += "    <a onClick=\"changeScope('classic', '"+participated+"', '"+surveyId+"')\" href=\"#\" class=\"active\" id=\"scope-classic\">"+resources.getString("survey.C")+"</a>";
-	      } else if((SilverpeasRole.admin.toString().equals(profile) ||
-	            SilverpeasRole.publisher.toString().equals(profile)) ||
+	      } else if((SilverpeasRole.ADMIN.toString().equals(profile) ||
+	            SilverpeasRole.PUBLISHER.toString().equals(profile)) ||
 	            resultView == QuestionContainerHeader.DETAILED_DISPLAY_RESULTS) {
 	          choice = "D";
 	          r += "    <a onClick=\"changeScope('detail', '"+participated+"', '"+surveyId+"')\" href=\"#\" class=\"active\" id=\"scope-detail\">"+resources.getString("survey.D")+"</a>";

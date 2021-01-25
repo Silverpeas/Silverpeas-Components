@@ -42,8 +42,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static org.silverpeas.core.admin.user.model.SilverpeasRole.admin;
-import static org.silverpeas.core.admin.user.model.SilverpeasRole.user;
+import static org.silverpeas.core.admin.user.model.SilverpeasRole.ADMIN;
+import static org.silverpeas.core.admin.user.model.SilverpeasRole.USER;
 
 public class DelegatedNewsSessionController extends AbstractComponentSessionController {
 
@@ -65,7 +65,7 @@ public class DelegatedNewsSessionController extends AbstractComponentSessionCont
   public boolean isUser() {
     String[] profiles = getUserRoles();
     for (String profile : profiles) {
-      if (user.isInRole(profile)) {
+      if (USER.isInRole(profile)) {
         return true;
       }
     }
@@ -75,7 +75,7 @@ public class DelegatedNewsSessionController extends AbstractComponentSessionCont
   public boolean isAdmin() {
     String[] profiles = getUserRoles();
     for (String profile : profiles) {
-      if (admin.isInRole(profile)) {
+      if (ADMIN.isInRole(profile)) {
         return true;
       }
     }

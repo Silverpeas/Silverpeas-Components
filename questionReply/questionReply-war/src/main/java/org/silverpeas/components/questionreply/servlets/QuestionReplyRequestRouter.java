@@ -275,7 +275,7 @@ public class QuestionReplyRequestRouter
         scc.setUserProfil();
         flag = scc.getUserProfil();
         if ("publisher".equals(flag) || "admin".equals(flag) || "writer".equals(flag)) {
-          scc.setUserProfil(publisher.name());
+          scc.setUserProfil(PUBLISHER.getName());
           request.setAttribute("question", scc.getNewQuestion());
           request.setAttribute("AllCategories", scc.getAllCategories());
           destination = "/questionReply/jsp/addQ.jsp";

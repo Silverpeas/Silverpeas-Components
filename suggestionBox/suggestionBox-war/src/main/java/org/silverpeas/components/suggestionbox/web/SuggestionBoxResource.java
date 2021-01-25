@@ -103,7 +103,7 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
       suggestionBoxWebManager
           .deleteSuggestion(getSuggestionBox(), suggestion, getUser());
       return null;
-    }).lowestAccessRole(SilverpeasRole.writer).execute();
+    }).lowestAccessRole(SilverpeasRole.WRITER).execute();
   }
 
   /**
@@ -121,7 +121,7 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
       final Suggestion suggestion = getSuggestionBox().getSuggestions().get(suggestionId);
       return suggestionBoxWebManager
           .publishSuggestion(getSuggestionBox(), suggestion, getUser());
-    }).lowestAccessRole(SilverpeasRole.writer).execute();
+    }).lowestAccessRole(SilverpeasRole.WRITER).execute();
   }
 
   /**
@@ -138,7 +138,7 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
   public Collection<SuggestionEntity> getSuggestionsInDraft() {
     return process(() -> suggestionBoxWebManager
         .getSuggestionsInDraftFor(getSuggestionBox(), getUser()))
-        .lowestAccessRole(SilverpeasRole.writer).execute();
+        .lowestAccessRole(SilverpeasRole.WRITER).execute();
   }
 
   /**
@@ -155,7 +155,7 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
   public Collection<SuggestionEntity> getSuggestionsOutOfDraft() {
     return process(() -> suggestionBoxWebManager
         .getSuggestionsOutOfDraftFor(getSuggestionBox(), getUser()))
-        .lowestAccessRole(SilverpeasRole.writer).execute();
+        .lowestAccessRole(SilverpeasRole.WRITER).execute();
   }
 
   /**
@@ -171,7 +171,7 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
   public Collection<SuggestionEntity> getSuggestionsInPendingValidation() {
     return process(
         () -> suggestionBoxWebManager.getSuggestionsInPendingValidation(getSuggestionBox()))
-        .lowestAccessRole(SilverpeasRole.publisher).execute();
+        .lowestAccessRole(SilverpeasRole.PUBLISHER).execute();
   }
 
   /**

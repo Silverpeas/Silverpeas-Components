@@ -79,9 +79,9 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
    */
   public String getProfile() {
     final SilverpeasRole highestRole = getHighestSilverpeasUserRole();
-    final SilverpeasRole normalizedRole = highestRole.isGreaterThanOrEquals(SilverpeasRole.publisher)
+    final SilverpeasRole normalizedRole = highestRole.isGreaterThanOrEquals(SilverpeasRole.PUBLISHER)
         ? highestRole
-        : SilverpeasRole.user;
+        : SilverpeasRole.USER;
     return normalizedRole.getName();
   }
 

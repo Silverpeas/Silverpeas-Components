@@ -43,7 +43,7 @@
 <c:set var="kmeliaCtrl" value="${requestScope.kmelia}"/>
 <jsp:useBean id="kmeliaCtrl" type="org.silverpeas.components.kmelia.control.KmeliaSessionController"/>
 
-<view:setConstant var="writerRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.writer"/>
+<view:setConstant var="writerRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.WRITER"/>
 <jsp:useBean id="writerRole" type="org.silverpeas.core.admin.user.model.SilverpeasRole"/>
 
 <view:setConstant constant="org.silverpeas.components.kmelia.control.KmeliaSessionController.CLIPBOARD_STATE.IS_EMPTY" var="IS_EMPTY_CLIPBOARD_STATE"/>

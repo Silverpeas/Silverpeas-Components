@@ -32,27 +32,26 @@ import org.silverpeas.core.util.StringUtil;
 
 public class KmeliaPublicationHelper {
 
+  private KmeliaPublicationHelper() {
+  }
+
   public static boolean isUserConsideredAsOwner(String instanceId, String currentUserId,
       String profile, User ownerDetail) {
-    if ("admin".equals(profile) || "publisher".equals(profile) || "supervisor".equals(profile)
-        || (ownerDetail != null && currentUserId.equals(ownerDetail.getId()) && "writer".equals(
-        profile))) {
+    if (hasWritePrivilege(currentUserId, profile, ownerDetail)) {
       return true;
     } else if ("writer".equals(profile)) {
       // check if co-writing is enabled
-      return StringUtil.getBooleanValue(getParameterValue(instanceId, InstanceParameters.coWriting));
+      return StringUtil.getBooleanValue(
+          getParameterValue(instanceId, InstanceParameters.coWriting));
     }
     return false;
   }
 
   public static boolean isRemovable(String instanceId, String currentUserId, String profile,
       User ownerDetail) {
-    if ("admin".equals(profile) || "publisher".equals(profile) || "supervisor".equals(profile)
-        || (ownerDetail != null && currentUserId.equals(ownerDetail.getId()) && "writer".equals(
-        profile))) {
-      boolean removeOnlyForAdmin =
-          StringUtil.getBooleanValue(getParameterValue(instanceId,
-          InstanceParameters.suppressionOnlyForAdmin));
+    if (hasWritePrivilege(currentUserId, profile, ownerDetail)) {
+      boolean removeOnlyForAdmin = StringUtil.getBooleanValue(
+          getParameterValue(instanceId, InstanceParameters.suppressionOnlyForAdmin));
       return !removeOnlyForAdmin || "admin".equals(profile);
     }
     return false;
@@ -60,16 +59,14 @@ public class KmeliaPublicationHelper {
 
   public static boolean isCanBeCut(String instanceId, String currentUserId, String profile,
       User ownerDetail) {
-    return !KmeliaHelper.isKmax(instanceId) && isUserConsideredAsOwner(instanceId, currentUserId,
-        profile, ownerDetail);
+    return !KmeliaHelper.isKmax(instanceId) &&
+        isUserConsideredAsOwner(instanceId, currentUserId, profile, ownerDetail);
   }
 
   public static boolean isCreationAllowed(NodePK pk, String profile) {
-    boolean publicationsInTopic =
-        !pk.isRoot() || (pk.isRoot() && (isPublicationsOnRootAllowed(pk.getInstanceId())
-        || !isTreeEnabled(pk
-        .getInstanceId())));
-    return !SilverpeasRole.user.isInRole(profile) && publicationsInTopic;
+    boolean publicationsInTopic = !pk.isRoot() || (pk.isRoot() &&
+        (isPublicationsOnRootAllowed(pk.getInstanceId()) || !isTreeEnabled(pk.getInstanceId())));
+    return !SilverpeasRole.USER.isInRole(profile) && publicationsInTopic;
   }
 
   public static boolean isPublicationsOnRootAllowed(String instanceId) {
@@ -89,7 +86,14 @@ public class KmeliaPublicationHelper {
   }
 
   private static String getParameterValue(String instanceId, String name) {
-    return OrganizationControllerProvider.getOrganisationController().getComponentParameterValue(
-        instanceId, name);
+    return OrganizationControllerProvider.getOrganisationController()
+        .getComponentParameterValue(instanceId, name);
+  }
+
+  private static boolean hasWritePrivilege(String currentUserId, String profile, User owner) {
+    SilverpeasRole role = SilverpeasRole.from(profile);
+    return role == SilverpeasRole.ADMIN || role == SilverpeasRole.PUBLISHER ||
+        role == SilverpeasRole.SUPERVISOR ||
+        (owner != null && currentUserId.equals(owner.getId()) && role == SilverpeasRole.WRITER);
   }
 }

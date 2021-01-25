@@ -62,6 +62,6 @@ public class BlogPostWriteAccessController extends AbstractAccessController<Stri
       final AccessControlContext context) {
     String[] roles = organisationController.getUserProfiles(userId, blogId);
     return componentAccessController.isUserAuthorized(userId, blogId) &&
-        (SilverpeasRole.publisher.isInRole(roles) || SilverpeasRole.admin.isInRole(roles));
+        (SilverpeasRole.PUBLISHER.isInRole(roles) || SilverpeasRole.ADMIN.isInRole(roles));
   }
 }

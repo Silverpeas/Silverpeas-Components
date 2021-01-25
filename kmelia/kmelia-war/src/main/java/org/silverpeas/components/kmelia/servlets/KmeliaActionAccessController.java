@@ -8,7 +8,7 @@
  *
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS", SilverpeasRole.reader) applications as described in Silverpeas's
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "https://www.silverpeas.org/legal/floss_exception.html"
@@ -39,13 +39,13 @@ public class KmeliaActionAccessController {
   private Map<String, SilverpeasRole> actionRole = new HashMap<>();
 
   public KmeliaActionAccessController() {
-    actionRole.put("Main", SilverpeasRole.reader);
-    actionRole.put("DeletePublication", SilverpeasRole.writer);
-    actionRole.put("NewPublication", SilverpeasRole.writer);
-    actionRole.put("ToUpdatePublicationHeader", SilverpeasRole.writer);
-    actionRole.put("ToPubliContent", SilverpeasRole.writer);
-    actionRole.put("AddLinksToPublication", SilverpeasRole.writer);
-    actionRole.put("DeleteSeeAlso", SilverpeasRole.writer);
+    actionRole.put("Main", SilverpeasRole.READER);
+    actionRole.put("DeletePublication", SilverpeasRole.WRITER);
+    actionRole.put("NewPublication", SilverpeasRole.WRITER);
+    actionRole.put("ToUpdatePublicationHeader", SilverpeasRole.WRITER);
+    actionRole.put("ToPubliContent", SilverpeasRole.WRITER);
+    actionRole.put("AddLinksToPublication", SilverpeasRole.WRITER);
+    actionRole.put("DeleteSeeAlso", SilverpeasRole.WRITER);
   }
 
 

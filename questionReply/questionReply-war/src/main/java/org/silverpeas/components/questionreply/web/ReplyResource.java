@@ -156,7 +156,7 @@ public class ReplyResource extends QuestionReplyBaseWebService {
     boolean isPrivate = reply.getPublicReply() <= 0;
     if (isPrivate) {
       boolean isAuthor = questionAuthor.equals(userId);
-      if (SilverpeasRole.user == role || (SilverpeasRole.publisher == role && !isAuthor)) {
+      if (SilverpeasRole.USER == role || (SilverpeasRole.PUBLISHER == role && !isAuthor)) {
         return false;
       }
     }

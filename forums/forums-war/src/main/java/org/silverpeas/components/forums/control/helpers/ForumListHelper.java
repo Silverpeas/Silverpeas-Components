@@ -150,7 +150,7 @@ public class ForumListHelper {
       // 6ème colonne : notation
       SilverpeasRole highestUserRole = fsc.getHighestSilverpeasUserRole();
       boolean canUserRating =
-          highestUserRole != null && highestUserRole.isGreaterThanOrEquals(SilverpeasRole.user);
+          highestUserRole != null && highestUserRole.isGreaterThanOrEquals(SilverpeasRole.USER);
       RaterRatingEntity raterRatingEntity = RaterRatingEntity.fromRateable(forum);
       out.print("<td class=\"ArrayCell\">");
       out.write(raterRatingEntity

@@ -29,8 +29,8 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 
-<view:setConstant var="writerRole"                          constant="org.silverpeas.core.admin.user.model.SilverpeasRole.writer"/>
-<view:setConstant var="publisherRole"                       constant="org.silverpeas.core.admin.user.model.SilverpeasRole.publisher"/>
+<view:setConstant var="writerRole"                          constant="org.silverpeas.core.admin.user.model.SilverpeasRole.WRITER"/>
+<view:setConstant var="publisherRole"                       constant="org.silverpeas.core.admin.user.model.SilverpeasRole.PUBLISHER"/>
 <view:setConstant var="AllSuggestionsViewContext"           constant="org.silverpeas.components.suggestionbox.control.SuggestionBoxWebController.ViewContext.AllSuggestions"/>
 <view:setConstant var="SuggestionsInValidationViewContext"  constant="org.silverpeas.components.suggestionbox.control.SuggestionBoxWebController.ViewContext.SuggestionsInValidation"/>
 <view:setConstant var="MySuggestionsViewContext"            constant="org.silverpeas.components.suggestionbox.control.SuggestionBoxWebController.ViewContext.MySuggestions"/>

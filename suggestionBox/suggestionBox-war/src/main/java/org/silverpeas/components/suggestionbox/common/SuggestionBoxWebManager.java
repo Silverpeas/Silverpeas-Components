@@ -64,7 +64,7 @@ import static org.silverpeas.core.contribution.ContributionStatus.PENDING_VALIDA
 public class SuggestionBoxWebManager {
 
   private static final List<SilverpeasRole> MODERATOR_ROLES =
-      CollectionUtil.asList(SilverpeasRole.admin, SilverpeasRole.publisher);
+      CollectionUtil.asList(SilverpeasRole.ADMIN, SilverpeasRole.PUBLISHER);
 
   protected SuggestionBoxWebManager() {
   }
@@ -243,7 +243,7 @@ public class SuggestionBoxWebManager {
       }
       if ((suggestion.getValidation().isPendingValidation() ||
               suggestion.getValidation().isValidated()) &&
-              (fromUser.isAccessAdmin() || SilverpeasRole.admin == highestRole)) {
+              (fromUser.isAccessAdmin() || SilverpeasRole.ADMIN == highestRole)) {
         return true;
       }
     }
@@ -390,7 +390,7 @@ public class SuggestionBoxWebManager {
     assertSuggestionIsDefined(suggestion);
     if (!user.isAccessAdmin() && !user.equals(suggestion.getCreator())) {
       SilverpeasRole highestRole = getHighestUserRoleFrom(user, suggestion.getSuggestionBox());
-      if (SilverpeasRole.admin != highestRole) {
+      if (SilverpeasRole.ADMIN != highestRole) {
         throw new WebApplicationException(Response.Status.FORBIDDEN);
       }
     }

@@ -306,7 +306,7 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
    */
   private void loadNewsLists(boolean reload) {
     if (mainList == null || reload) {
-      if (getHighestSilverpeasUserRole().isGreaterThanOrEquals(SilverpeasRole.publisher)) {
+      if (getHighestSilverpeasUserRole().isGreaterThanOrEquals(SilverpeasRole.PUBLISHER)) {
         getQuickInfos();
       } else {
         getVisibleQuickInfos();

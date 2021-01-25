@@ -87,7 +87,7 @@ public class NewsResource extends AbstractNewsResource {
   }
 
   private boolean isContributor() {
-    return getHighestUserRole().isGreaterThanOrEquals(SilverpeasRole.publisher);
+    return getHighestUserRole().isGreaterThanOrEquals(SilverpeasRole.PUBLISHER);
   }
 
 }

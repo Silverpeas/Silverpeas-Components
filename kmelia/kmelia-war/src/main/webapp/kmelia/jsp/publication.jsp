@@ -141,8 +141,8 @@
 
   ValidatorsList validatorsList = kmeliaPublication.getValidators();
   boolean validatorsOK = validatorsList.isValidationOperational();
-  boolean modificationAllowed = (SilverpeasRole.writer.isInRole(profile) && validatorsOK) ||
-      SilverpeasRole.from(profile).isGreaterThanOrEquals(SilverpeasRole.publisher);
+  boolean modificationAllowed = (SilverpeasRole.WRITER.isInRole(profile) && validatorsOK) ||
+      SilverpeasRole.from(profile).isGreaterThanOrEquals(SilverpeasRole.PUBLISHER);
 
   //Vrai si le user connecte est le createur de cette publication ou si il est admin
   boolean isOwner = false;
@@ -211,7 +211,7 @@
   boolean attachmentsUpdatable = attachmentsEnabled && isOwner && !pubDetail.haveGotClone();
   
   if (isOwner && !validatorsOK) {
-    if (SilverpeasRole.writer.isInRole(profile)) {
+    if (SilverpeasRole.WRITER.isInRole(profile)) {
       String selectUserLab = resources.getString("kmelia.SelectValidator");
       String link =
           "&nbsp;<a href=\"#\" onclick=\"javascript:SP_openWindow('SelectValidator','selectUser',800,600,'');\">";
@@ -249,7 +249,7 @@
 <c:set var="publicationRaterRatingEntity" value="<%=RaterRatingEntity.fromRateable(pubDetail)%>"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.kmelia">
+<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.kmelia" xml:lang="${userLanguage}">
   <head>
     <view:looknfeel/>
     <title></title>
@@ -513,7 +513,7 @@
         operationPane.addLine();
 
         if (isOwner && modificationAllowed) {
-          if (!"supervisor".equals(profile)) {
+          if (!SilverpeasRole.SUPERVISOR.getName().equals(profile)) {
             if (attachmentsUpdatable) {
             	operationPane.addOperation("#", resources.getString("kmelia.AddFile"), "javascript:addAttachment('" +pubDetail.getId() + "')");
             }
@@ -555,7 +555,7 @@
             operationPane.addOperation(pubValidateSrc, resources.getString("PubValidate?"), "javaScript:pubValidate()");
             operationPane.addOperation(pubUnvalidateSrc, resources.getString("PubUnvalidate?"), "javaScript:pubUnvalidate()");
           }
-          if (profile.equals("supervisor")) {
+          if (SilverpeasRole.SUPERVISOR.getName().equals(profile)) {
             operationPane.addLine();
             operationPane.addOperation(pubUnvalidateSrc, resources.getString("kmelia.PubSuspend"), "javaScript:pubSuspend()");
           }
@@ -593,7 +593,7 @@
       <div class="rightContent">
       	<div id="statPublication" class="bgDegradeGris">
       		<p id="statInfo">
-      			<b><%= kmeliaPublication.getNbAccess()%> <%=resources.getString("GML.stats.views") %></b>
+      			<strong><%= kmeliaPublication.getNbAccess()%> <%=resources.getString("GML.stats.views") %></strong>
       			<% if (ratingsAllowed) { %>
             		<viewTags:displayContributionRating raterRating="${publicationRaterRatingEntity}"/>
 				    <% } %>
@@ -672,20 +672,20 @@
 			         <div id="infoPublication" class="bgDegradeGris crud-container">
 
 			         			<% if (kmeliaScc.isAuthorUsed() && StringUtil.isDefined(pubDetail.getAuthor())) { %>
-									<p id="authorInfo"><%=resources.getString("GML.author")%> : <b><%=pubDetail.getAuthor()%></b></p>
+									<p id="authorInfo"><%=resources.getString("GML.author")%> : <strong><%=pubDetail.getAuthor()%></strong></p>
 								<% }%>
 
 			         			<% if (updaterId != null) {%>
 								  	<div id="lastModificationInfo" class="paragraphe">
 								  		<%=resources.getString("PubDateUpdate")%>
-                                        <b><%=resources.getOutputDate(pubDetail.getUpdateDate())%></b> <%=resources.getString("GML.by")%> <view:username userId="<%=kmeliaPublication.getLastModifier().getId()%>"/>
+                                        <strong><%=resources.getOutputDate(pubDetail.getUpdateDate())%></strong> <%=resources.getString("GML.by")%> <view:username userId="<%=kmeliaPublication.getLastModifier().getId()%>"/>
 								  		<div class="profilPhoto"><view:image src="<%=kmeliaPublication.getLastModifier().getAvatar() %>" type="avatar" css="defaultAvatar"/></div>
 							  		</div>
 							  	 <% }%>
 								<c:if test="${view:isDefined(requestScope['Publication'].creator) && view:isDefined(requestScope['Publication'].creator.id)}">
                     <div id="createdInfo" class="paragraphe">
                      <%=resources.getString("PubDateCreation")%>
-                     <b><%=resources.getOutputDate(pubDetail.getCreationDate())%></b> <%=resources.getString("GML.by")%> <view:username userId="${requestScope['Publication'].creator.id}"/>
+                     <strong><%=resources.getOutputDate(pubDetail.getCreationDate())%></strong> <%=resources.getString("GML.by")%> <view:username userId="${requestScope['Publication'].creator.id}"/>
                      <div class="profilPhoto"><view:image src="<%=kmeliaPublication.getCreator().getAvatar() %>" type="avatar" css="defaultAvatar"/></div>
                    </div>
                 </c:if>
@@ -693,7 +693,7 @@
 						          // Displaying all validator's name and final validation date
 						          if (pubDetail.isValid() && StringUtil.isDefined(pubDetail.getValidatorId()) && pubDetail.getValidateDate() != null) { %>
 						            <p id="validationInfo"><%=resources.getString("kmelia.validation")%> <fmt:message key="GML.date.the" var="theLabel"/>${fn:toLowerCase(theLabel)}
-						            	<b><%=resources.getOutputDate(pubDetail.getValidateDate())%></b> <br/> <%=resources.getString("GML.by")%>
+						            	<strong><%=resources.getOutputDate(pubDetail.getValidateDate())%></strong> <br/> <%=resources.getString("GML.by")%>
 						            <% List<ValidationStep> validationSteps = pubComplete.getValidationSteps();
 						            if (validationSteps != null && !validationSteps.isEmpty()) {
 						              Collections.reverse(validationSteps); //display steps from in order of validation
@@ -745,7 +745,7 @@
                       <% if (isOwner && kmeliaScc.getInvisibleTabs().indexOf(KmeliaSessionController.TAB_READER_LIST) == -1) { %>
                         <a id="readingControlLink" href="ReadingControl">&gt;&gt; <%=resources.getString("PubGererControlesLecture") %></a>
                       <% } else { %>
-                        <br clear="all" />
+                        <br />
                       <% } %>
                   </div>
         <%
@@ -884,9 +884,11 @@
       <div id="publication-refusal-form" style="display: none;">
       	<form name="refusalForm" action="Unvalidate" method="post">
         <table>
+          <caption></caption>
+          <th id="nothing"></th>
         	<tr>
-        		<td class="txtlibform" valign="top"><%=kmeliaScc.getString("RefusalMotive")%></td>
-        		<td><textarea name="Motive" id="refusal-motive" rows="10" cols="60"></textarea>&nbsp;<img border="0" src="<%=resources.getIcon("kmelia.mandatory")%>" width="5" height="5"/></td>
+        		<td class="txtlibform"><%=kmeliaScc.getString("RefusalMotive")%></td>
+        		<td><textarea name="Motive" id="refusal-motive" rows="10" cols="60"></textarea>&nbsp;<img alt="" border="0" src="<%=resources.getIcon("kmelia.mandatory")%>" width="5" height="5"/></td>
         	</tr>
         </table>
         </form>

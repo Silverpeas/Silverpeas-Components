@@ -45,10 +45,10 @@
 <c:set var="userId" value="${sessionScope.SilverSessionController.userId}"/>
 <jsp:useBean id="userId" type="java.lang.String"/>
 
-<view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.admin"/>
-<view:setConstant var="publisherRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.publisher"/>
-<view:setConstant var="writerRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.writer"/>
-<view:setConstant var="userRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.user"/>
+<view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.ADMIN"/>
+<view:setConstant var="publisherRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.PUBLISHER"/>
+<view:setConstant var="writerRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.WRITER"/>
+<view:setConstant var="userRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.USER"/>
 
 <fmt:message var="permalinkIcon" key='gallery.link' bundle='${icons}'/>
 <c:url var="permalinkIconUrl" value="${permalinkIcon}"/>

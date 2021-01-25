@@ -125,7 +125,7 @@ public class FileImport {
     try {
       File tempFolder = unzipUploadedFile();
 
-      if (!kmeliaScc.getHighestSilverpeasUserRole().isGreaterThanOrEquals(SilverpeasRole.admin)) {
+      if (!kmeliaScc.getHighestSilverpeasUserRole().isGreaterThanOrEquals(SilverpeasRole.ADMIN)) {
         FileUtil.moveAllFilesAtRootFolder(tempFolder);
       }
 

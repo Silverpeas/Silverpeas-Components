@@ -44,9 +44,9 @@
 <c:set var="suggestionBox"    value="${requestScope.currentSuggestionBox}"/>
 <c:set var="suggestionBoxId"  value="${suggestionBox.id}"/>
 
-<view:setConstant var="adminRole"                 constant="org.silverpeas.core.admin.user.model.SilverpeasRole.admin"/>
-<view:setConstant var="writerRole"                constant="org.silverpeas.core.admin.user.model.SilverpeasRole.writer"/>
-<view:setConstant var="publisherRole"             constant="org.silverpeas.core.admin.user.model.SilverpeasRole.publisher"/>
+<view:setConstant var="adminRole"                 constant="org.silverpeas.core.admin.user.model.SilverpeasRole.ADMIN"/>
+<view:setConstant var="writerRole"                constant="org.silverpeas.core.admin.user.model.SilverpeasRole.WRITER"/>
+<view:setConstant var="publisherRole"             constant="org.silverpeas.core.admin.user.model.SilverpeasRole.PUBLISHER"/>
 <view:setConstant var="STATUS_REFUSED"            constant="org.silverpeas.core.contribution.ContributionStatus.REFUSED"/>
 <view:setConstant var="STATUS_VALIDATED"          constant="org.silverpeas.core.contribution.ContributionStatus.VALIDATED"/>
 <view:setConstant var="STATUS_PENDING_VALIDATION" constant="org.silverpeas.core.contribution.ContributionStatus.PENDING_VALIDATION"/>

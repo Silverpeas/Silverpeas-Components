@@ -76,9 +76,9 @@ public class JSONServlet extends HttpServlet {
       String profile = kmeliaSC.getUserTopicProfile(id);
 
       // getting operations of topic according to profile and current
-      boolean isAdmin = SilverpeasRole.admin.isInRole(profile);
-      boolean isPublisher = SilverpeasRole.publisher.isInRole(profile);
-      boolean isWriter = SilverpeasRole.writer.isInRole(profile);
+      boolean isAdmin = SilverpeasRole.ADMIN.isInRole(profile);
+      boolean isPublisher = SilverpeasRole.PUBLISHER.isInRole(profile);
+      boolean isWriter = SilverpeasRole.WRITER.isInRole(profile);
       boolean isRoot = NodePK.ROOT_NODE_ID.equals(id);
       boolean isBasket = NodePK.BIN_NODE_ID.equals(id);
       boolean canShowStats = kmeliaSC.isStatisticAllowed();
@@ -128,7 +128,7 @@ public class JSONServlet extends HttpServlet {
         boolean publicationsInTopic = !isRoot ||
             (isRoot && (kmeliaSC.getNbPublicationsOnRoot() == 0 || !kmeliaSC.isTreeStructure()));
         boolean addPublicationAllowed =
-            !SilverpeasRole.user.isInRole(profile) && publicationsInTopic;
+            !SilverpeasRole.USER.isInRole(profile) && publicationsInTopic;
         boolean operationsOnSelectionAllowed = (isAdmin || isPublisher) && publicationsInTopic;
 
         operations.put("addPubli", addPublicationAllowed);

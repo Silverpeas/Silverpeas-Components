@@ -35,9 +35,9 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 
-<view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.admin"/>
-<view:setConstant var="publisherRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.publisher"/>
-<view:setConstant var="userRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.user"/>
+<view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.ADMIN"/>
+<view:setConstant var="publisherRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.PUBLISHER"/>
+<view:setConstant var="userRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.USER"/>
 
 <view:setConstant var="SMALL_RESOLUTION" constant="org.silverpeas.components.gallery.constant.MediaResolution.SMALL"/>
 <view:setConstant var="PREVIEW_RESOLUTION" constant="org.silverpeas.components.gallery.constant.MediaResolution.PREVIEW"/>

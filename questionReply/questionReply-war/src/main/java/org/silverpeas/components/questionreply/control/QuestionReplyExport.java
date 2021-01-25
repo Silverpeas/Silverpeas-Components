@@ -225,9 +225,9 @@ public class QuestionReplyExport {
       String userId) {
     boolean isPrivate = reply.getPublicReply() == 0;
     boolean isPublisherQuestion = true;
-    if (SilverpeasRole.publisher == role && isPrivate) {
+    if (SilverpeasRole.PUBLISHER == role && isPrivate) {
       isPublisherQuestion = question.getCreatorId().equals(userId);
     }
-    return !(isPrivate && SilverpeasRole.user == role || !isPublisherQuestion);
+    return !(isPrivate && SilverpeasRole.USER == role || !isPublisherQuestion);
   }
 }

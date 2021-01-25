@@ -54,10 +54,10 @@ public class KmeliaUserTreeViewFilterTest {
   private static final String USER_ID = "26";
   private static final String INSTANCE_ID = "instanceId";
   private static final NodePK ROOT_NODE_PK = new NodePK(NodePK.ROOT_NODE_ID, INSTANCE_ID);
-  private static final String USER_ROLE = SilverpeasRole.user.getName();
-  private static final String READER_ROLE = SilverpeasRole.reader.getName();
-  private static final String WRITER_ROLE = SilverpeasRole.writer.getName();
-  private static final String ADMIN_ROLE = SilverpeasRole.admin.getName();
+  private static final String USER_ROLE = SilverpeasRole.USER.getName();
+  private static final String READER_ROLE = SilverpeasRole.READER.getName();
+  private static final String WRITER_ROLE = SilverpeasRole.WRITER.getName();
+  private static final String ADMIN_ROLE = SilverpeasRole.ADMIN.getName();
 
   private static final int ROOT_NODE_ID = Integer.parseInt(ROOT_NODE_PK.getId());
   private static final int NODE_A_ID = 10;

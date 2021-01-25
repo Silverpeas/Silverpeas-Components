@@ -29,7 +29,7 @@
 <c:set var="highestUserRole" value="${requestScope.highestUserRole}"/>
 <jsp:useBean id="highestUserRole" type="org.silverpeas.core.admin.user.model.SilverpeasRole"/>
 
-<view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.admin"/>
+<view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.ADMIN"/>
 
 <%@ attribute name="subAlbumList" required="true"
               type="java.util.List"

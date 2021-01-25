@@ -39,7 +39,7 @@
 <view:setConstant var="CALENDAR_EVENT_TYPE" constant="org.silverpeas.core.calendar.CalendarEvent.TYPE"/>
 
 <c:set var="highestUserRole"        value="${requestScope.highestUserRole}"/>
-<view:setConstant var="publisherRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.publisher"/>
+<view:setConstant var="publisherRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.PUBLISHER"/>
 
 <c:set var="currentUser"            value="${requestScope.currentUser}"/>
 <c:set var="currentUserId"          value="${currentUser.id}"/>

@@ -382,8 +382,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   public boolean isStatisticAllowed() {
     boolean statisticEnabled = getSettings().getBoolean("kmelia.stats.enable", false);
     return statisticEnabled && !isToolbox() &&
-        (getHighestSilverpeasUserRole().isGreaterThanOrEquals(SilverpeasRole.publisher) ||
-        getSilverpeasUserRoles().contains(SilverpeasRole.supervisor));
+        (getHighestSilverpeasUserRole().isGreaterThanOrEquals(SilverpeasRole.PUBLISHER) ||
+        getSilverpeasUserRoles().contains(SilverpeasRole.SUPERVISOR));
   }
 
   public boolean openSingleAttachmentAutomatically() {
@@ -651,7 +651,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   public boolean isUserComponentAdmin() {
-    return SilverpeasRole.admin.isInRole(KmeliaHelper.getSilverpeasRole(getSilverpeasUserRoles()));
+    return SilverpeasRole.ADMIN.isInRole(KmeliaHelper.getSilverpeasRole(getSilverpeasUserRoles()));
   }
 
   /*
@@ -780,9 +780,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     }
     NodeDetail node = getNodeHeader(topicId);
     // check if user is allowed to delete this topic
-    if (SilverpeasRole.admin.isInRole(getUserTopicProfile(topicId)) ||
-        SilverpeasRole.admin.isInRole(getUserTopicProfile(NodePK.ROOT_NODE_ID)) ||
-        SilverpeasRole.admin.isInRole(getUserTopicProfile(node.getFatherPK().getId()))) {
+    if (SilverpeasRole.ADMIN.isInRole(getUserTopicProfile(topicId)) ||
+        SilverpeasRole.ADMIN.isInRole(getUserTopicProfile(NodePK.ROOT_NODE_ID)) ||
+        SilverpeasRole.ADMIN.isInRole(getUserTopicProfile(node.getFatherPK().getId()))) {
       // First, remove rights on topic and its descendants
       List<NodeDetail> treeview = getNodeService().getSubTree(getNodePK(topicId));
       for (NodeDetail nodeToDelete : treeview) {
@@ -1299,7 +1299,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   public boolean isPublicationValidatorsOK() {
-    if (getSessionPubliOrClone() != null && SilverpeasRole.writer.isInRole(getUserTopicProfile()) &&
+    if (getSessionPubliOrClone() != null && SilverpeasRole.WRITER.isInRole(getUserTopicProfile()) &&
         (isTargetValidationEnable() || isTargetMultiValidationEnable())) {
       return CollectionUtil
           .isNotEmpty(getKmeliaService().getActiveValidatorIds(getSessionPubliOrClone().getPk()));
@@ -1638,8 +1638,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     sug.setComponentId(getComponentId());
 
     List<String> profiles = new ArrayList<>();
-    profiles.add(SilverpeasRole.publisher.toString());
-    profiles.add(SilverpeasRole.admin.toString());
+    profiles.add(SilverpeasRole.PUBLISHER.toString());
+    profiles.add(SilverpeasRole.ADMIN.toString());
 
     NodeDetail node = getNodeHeader(getCurrentFolderId());
     if (StringUtil.isDefined(folderId) && !getCurrentFolderId().equals(folderId)) {
@@ -3288,7 +3288,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     String profile = getUserTopicProfile(nodeId);
     if (profile != null) {
       return SilverpeasRole.getHighestFrom(SilverpeasRole.from(profile))
-          .isGreaterThanOrEquals(SilverpeasRole.admin);
+          .isGreaterThanOrEquals(SilverpeasRole.ADMIN);
     }
     return isUserComponentAdmin();
   }
@@ -3393,7 +3393,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   public boolean isTemplatesSelectionEnabledForRole(SilverpeasRole role) {
     return !isXMLFormEnabledForPublications() && isContentEnabled() &&
-        SilverpeasRole.admin.equals(role);
+        SilverpeasRole.ADMIN.equals(role);
   }
 
   private String getXMLFormNameForPublications() {

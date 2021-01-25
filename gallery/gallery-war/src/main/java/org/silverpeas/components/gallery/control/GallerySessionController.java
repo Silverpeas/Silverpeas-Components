@@ -687,18 +687,18 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     }
     // Retrieve album creator
     AlbumDetail album = getAlbum(albumId);
-    return SilverpeasRole.admin == userRole ||
-        (SilverpeasRole.publisher == userRole && album.getCreatorId().equals(userId));
+    return SilverpeasRole.ADMIN == userRole ||
+        (SilverpeasRole.PUBLISHER == userRole && album.getCreatorId().equals(userId));
   }
 
   public boolean isMediaAdmin(SilverpeasRole userRole, String mediaId, String userId) {
     if (mediaId == null) {
-      return isAdminOrPublisher(userRole) || userRole == SilverpeasRole.writer;
+      return isAdminOrPublisher(userRole) || userRole == SilverpeasRole.WRITER;
     }
     // retrieve media creator
     Media media = getMedia(mediaId);
     return isAdminOrPublisher(userRole) ||
-        (userRole == SilverpeasRole.writer && media.getCreatorId().equals(userId));
+        (userRole == SilverpeasRole.WRITER && media.getCreatorId().equals(userId));
   }
 
   public void copySelectedMedia(Collection<String> mediaIds) throws ClipboardException {
@@ -1101,7 +1101,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     String exportParam = getComponentParameterValue("exportImages");
     return ExportOptionValue.YES_ALL.name().equalsIgnoreCase(exportParam) ||
         (ExportOptionValue.YES_PUBLISHER.name().equalsIgnoreCase(exportParam) &&
-            getHighestSilverpeasUserRole().isGreaterThanOrEquals(SilverpeasRole.publisher));
+            getHighestSilverpeasUserRole().isGreaterThanOrEquals(SilverpeasRole.PUBLISHER));
   }
 
   public void setViewNotVisible(boolean isViewNotVisible) {
@@ -1147,7 +1147,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   }
 
   protected boolean isAdminOrPublisher(SilverpeasRole userRole) {
-    return userRole.isGreaterThanOrEquals(SilverpeasRole.publisher);
+    return userRole.isGreaterThanOrEquals(SilverpeasRole.PUBLISHER);
   }
 
   /**
@@ -1289,8 +1289,8 @@ public final class GallerySessionController extends AbstractComponentSessionCont
    */
   public MediaResolution getImageResolutionPreview(Media media) {
     SilverpeasRole highestUserRole = this.getHighestSilverpeasUserRole();
-    if (highestUserRole.isGreaterThanOrEquals(SilverpeasRole.publisher) ||
-        (highestUserRole == SilverpeasRole.writer && media.getCreatorId().equals(this.getUserId()))) {
+    if (highestUserRole.isGreaterThanOrEquals(SilverpeasRole.PUBLISHER) ||
+        (highestUserRole == SilverpeasRole.WRITER && media.getCreatorId().equals(this.getUserId()))) {
       return MediaResolution.PREVIEW;
     } else {
       return getImagePreviewSize();

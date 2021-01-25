@@ -42,7 +42,7 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 
 <c:set var='highestUserRole' value='<%=SilverpeasRole.from((String) request.getAttribute("Profile"))%>'/>
-<view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.admin"/>
+<view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.ADMIN"/>
 
 <fmt:message key="GML.ForbiddenAccessContent" var="labelForbiddenAccess"/>
 
