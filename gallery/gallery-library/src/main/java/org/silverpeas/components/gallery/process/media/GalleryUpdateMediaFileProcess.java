@@ -31,8 +31,8 @@ import org.silverpeas.components.gallery.process.AbstractGalleryFileProcess;
 import org.silverpeas.core.process.io.file.FileHandler;
 import org.silverpeas.core.process.management.ProcessExecutionContext;
 import org.silverpeas.core.process.session.ProcessSession;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 /**
  * Process to update a media on file system
@@ -112,8 +112,8 @@ public class GalleryUpdateMediaFileProcess extends AbstractGalleryFileProcess {
     }
 
     if (!getMedia().getType().isStreaming() && !hasBeenProcessed) {
-      SilverTrace.warn("Gallery", GalleryUpdateMediaFileProcess.class.getName(),
-          getMedia().getType().name() + " media type is never processed");
+      SilverLogger.getLogger(this)
+          .warn(getMedia().getType().name() + " media type is never processed");
     }
   }
 }

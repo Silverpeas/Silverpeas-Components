@@ -24,15 +24,15 @@
 
 package org.silverpeas.processmanager.record;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.field.TextFieldImpl;
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.logging.SilverLogger;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class QuestionRecord implements DataRecord {
 
@@ -94,7 +94,7 @@ public class QuestionRecord implements DataRecord {
     try {
       return getField(fieldName);
     } catch (FormException e) {
-      SilverTrace.warn("processManager", "QuestionRecord.getField", "form.EXP_UNKNOWN_FIELD", e);
+      SilverLogger.getLogger(this).error(e);
     }
     return null;
   }

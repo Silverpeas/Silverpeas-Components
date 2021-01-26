@@ -24,8 +24,6 @@
 
 package org.silverpeas.components.silvercrawler.statistic;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -66,8 +64,6 @@ public class HistoryDAO {
 
   public static Collection<HistoryDetail> getHistoryDetailByObject(Connection con, String tableName,
       String path, String componentId) throws SQLException {
-    SilverTrace
-        .info("silverCrawler", "HistoryDAO.getHistoryDetailByObject", "root.MSG_GEN_ENTER_METHOD");
     String selectStatement = "select * from " + tableName + " where path = ? and componentId = ? ";
 
     try (PreparedStatement prepStmt = con.prepareStatement(selectStatement)) {
@@ -100,8 +96,6 @@ public class HistoryDAO {
 
   public static void deleteHistoryByObject(Connection con, String tableName, String path,
       String componentId) throws SQLException {
-    SilverTrace
-        .info("statistic", "HistoryObjectDAO.deleteHistoryByObject", "root.MSG_GEN_ENTER_METHOD");
     String query = "delete from " + tableName + " where path = ? and componentId = ?";
     try (PreparedStatement prepStmt = con.prepareStatement(query)) {
       // initialisation des paramètres

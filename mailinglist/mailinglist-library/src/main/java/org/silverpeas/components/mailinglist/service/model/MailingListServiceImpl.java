@@ -36,7 +36,6 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
-import org.silverpeas.core.silvertrace.SilverTrace;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -81,8 +80,6 @@ public class MailingListServiceImpl implements MailingListService {
         if (!componentId.equalsIgnoreCase(currentId)) {
           String param = organisationController.getComponentParameterValue(id, PARAM_ADDRESS);
           if (param != null && param.equalsIgnoreCase(subscribedAddress)) {
-            SilverTrace.error("mailinglist", "MailingListServiceImpl.createMailingList",
-                "mailinglist.creation.existingAddress", subscribedAddress);
             throw new MailingListRuntimeException(
                 "MailingListServiceImpl",
                 SilverpeasRuntimeException.ERROR, "Address already subscribed");

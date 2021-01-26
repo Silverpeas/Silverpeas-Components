@@ -23,7 +23,15 @@
  */
 package org.silverpeas.processmanager.service;
 
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.model.DocumentType;
+import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.contribution.attachment.model.UnlockContext;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
@@ -35,7 +43,11 @@ import org.silverpeas.core.contribution.content.form.field.FileField;
 import org.silverpeas.core.contribution.content.form.field.TextField;
 import org.silverpeas.core.contribution.content.form.form.XmlForm;
 import org.silverpeas.core.contribution.content.form.record.GenericDataRecord;
-import org.silverpeas.processmanager.ProcessManagerException;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.MimeTypes;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.workflow.api.Workflow;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.event.TaskDoneEvent;
@@ -44,20 +56,7 @@ import org.silverpeas.core.workflow.api.model.ProcessModel;
 import org.silverpeas.core.workflow.api.task.Task;
 import org.silverpeas.core.workflow.api.user.User;
 import org.silverpeas.core.workflow.engine.user.UserImpl;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
-import org.silverpeas.core.contribution.attachment.model.DocumentType;
-import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.contribution.attachment.model.UnlockContext;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.util.MimeTypes;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.processmanager.ProcessManagerException;
 
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
@@ -144,61 +143,56 @@ public class DefaultProcessManagerService implements ProcessManagerService {
     // Default instance ID
     String instanceId = "unknown";
 
-    try {
-      ProcessModel processModel = getProcessModel(componentId);
-      XmlForm form = (XmlForm) getCreationForm(processModel);
-      GenericDataRecord data = (GenericDataRecord) getEmptyCreationRecord(processModel, userRole);
-      PagesContext pagesContext =
-          new PagesContext("creationForm", "0", getLanguage(), true, componentId, userId);
-      boolean versioningUsed = StringUtil.getBooleanValue(OrganizationControllerProvider.
-          getOrganisationController().getComponentParameterValue(componentId, VERSION_MODE));
-      pagesContext.setVersioningUsed(versioningUsed);
+    ProcessModel processModel = getProcessModel(componentId);
+    XmlForm form = (XmlForm) getCreationForm(processModel);
+    GenericDataRecord data = (GenericDataRecord) getEmptyCreationRecord(processModel, userRole);
+    PagesContext pagesContext =
+        new PagesContext("creationForm", "0", getLanguage(), true, componentId, userId);
+    boolean versioningUsed = StringUtil.getBooleanValue(OrganizationControllerProvider.
+        getOrganisationController().getComponentParameterValue(componentId, VERSION_MODE));
+    pagesContext.setVersioningUsed(versioningUsed);
 
-      // 1 - Populate form data (save file on disk, populate file field)
-      List<String> attachmentIds = new ArrayList<>();
+    // 1 - Populate form data (save file on disk, populate file field)
+    List<String> attachmentIds = new ArrayList<>();
 
-      // Populate file name and file content
-      for (Map.Entry<String, ?> entry : metadata.entrySet()) {
-        String fieldName = entry.getKey();
-        Object fieldValue = entry.getValue();
+    // Populate file name and file content
+    for (Map.Entry<String, ?> entry : metadata.entrySet()) {
+      String fieldName = entry.getKey();
+      Object fieldValue = entry.getValue();
 
-        String fieldType = retrieveMatchingFieldTypeName(fieldValue);
-        Field field = findMatchingField(form, data, fieldName, fieldType);
+      String fieldType = retrieveMatchingFieldTypeName(fieldValue);
+      Field field = findMatchingField(form, data, fieldName, fieldType);
 
-        if (fieldValue == null) {
-          populateSimpleField(field, fieldName, null, fieldType);
-        } else if (fieldValue instanceof Collection<?>) {
-          populateListField(field, fieldName, (Collection<?>) fieldValue, fieldType);
-        } else if (FileField.TYPE.equals(fieldType)) {
-          attachmentIds.add(
-              populateFileField(form, data, (FileField) field, fieldName, (FileContent) fieldValue,
-                  pagesContext));
-        } else {
-          populateSimpleField(field, fieldName, fieldValue, fieldType);
-        }
-
+      if (fieldValue == null) {
+        populateSimpleField(field, fieldName, null, fieldType);
+      } else if (fieldValue instanceof Collection<?>) {
+        populateListField(field, fieldName, (Collection<?>) fieldValue, fieldType);
+      } else if (FileField.TYPE.equals(fieldType)) {
+        attachmentIds.add(
+            populateFileField(form, data, (FileField) field, fieldName, (FileContent) fieldValue,
+                pagesContext));
+      } else {
+        populateSimpleField(field, fieldName, fieldValue, fieldType);
       }
 
-      // 2 - Create process instance
-      instanceId = createProcessInstance(processModel, userId, userRole, data);
-
-      // 3 - Update attachment foreignkey
-      // Attachment's foreignkey must be set with the just created instanceId
-      for (String attachmentId : attachmentIds) {
-        SimpleDocumentPK pk = new SimpleDocumentPK(attachmentId, componentId);
-        SimpleDocument document = AttachmentServiceProvider.getAttachmentService().
-            searchDocumentById(pk, null);
-        document.setForeignId(instanceId);
-        AttachmentServiceProvider.getAttachmentService().lock(attachmentId, userId, null);
-        AttachmentServiceProvider.getAttachmentService().updateAttachment(document, false, false);
-        AttachmentServiceProvider.getAttachmentService()
-            .unlock(new UnlockContext(attachmentId, userId, null));
-      }
-    } catch (ProcessManagerException e) {
-      SilverTrace
-          .error("processManager", "DefaultProcessManagerService.createProcess()", "root.MSG_GEN_ERROR", e);
-      throw e;
     }
+
+    // 2 - Create process instance
+    instanceId = createProcessInstance(processModel, userId, userRole, data);
+
+    // 3 - Update attachment foreignkey
+    // Attachment's foreignkey must be set with the just created instanceId
+    for (String attachmentId : attachmentIds) {
+      SimpleDocumentPK pk = new SimpleDocumentPK(attachmentId, componentId);
+      SimpleDocument document = AttachmentServiceProvider.getAttachmentService().
+          searchDocumentById(pk, null);
+      document.setForeignId(instanceId);
+      AttachmentServiceProvider.getAttachmentService().lock(attachmentId, userId, null);
+      AttachmentServiceProvider.getAttachmentService().updateAttachment(document, false, false);
+      AttachmentServiceProvider.getAttachmentService()
+          .unlock(new UnlockContext(attachmentId, userId, null));
+    }
+
     return instanceId;
   }
 
@@ -227,8 +221,6 @@ public class DefaultProcessManagerService implements ProcessManagerService {
       }
       return retrieveMatchingFieldTypeName(col.iterator().next());
     } else {
-      SilverTrace.error("processManager", "DefaultProcessManagerService.retrieveMatchingFieldTypeName()",
-          "processManager.FORM_FIELD_BAD_TYPE", "type: " + value.getClass().getName());
       throw new ProcessManagerException("DefaultProcessManagerService", "processManager.FORM_FIELD_BAD_TYPE",
           "type: " + value.getClass().getName());
     }
@@ -265,9 +257,6 @@ public class DefaultProcessManagerService implements ProcessManagerService {
         try {
           return data.getField(fieldName);
         } catch (FormException e) {
-          SilverTrace.error("processManager", "DefaultProcessManagerService.findMatchingField()",
-              "processManager.FORM_FIELD_NOT_FOUND",
-              "field name: " + name + ", field type: " + typeName, e);
           throw new ProcessManagerException("DefaultProcessManagerService",
               "processManager.FORM_FIELD_BAD_TYPE",
               "field name: " + name + ", field type: " + typeName, e);
@@ -275,8 +264,6 @@ public class DefaultProcessManagerService implements ProcessManagerService {
       }
     }
 
-    SilverTrace.error("processManager", "DefaultProcessManagerService.findMatchingField()",
-        "processManager.FORM_FIELD_NOT_FOUND", "field name: " + name + ", field type: " + typeName);
     throw new ProcessManagerException("DefaultProcessManagerService", "processManager.FORM_FIELD_NOT_FOUND",
         "field name: " + name + ", field type: " + typeName);
   }
@@ -321,8 +308,6 @@ public class DefaultProcessManagerService implements ProcessManagerService {
       }
 
     } catch (FormException e) {
-      SilverTrace.error("processManager", "DefaultProcessManagerService.populateSimpleField()",
-          "processManager.FORM_FIELD_ERROR", "field name: " + name + ", field type: " + type, e);
       throw new ProcessManagerException("DefaultProcessManagerService", "processManager.FORM_FIELD_ERROR",
           "field name: " + name + ", field type: " + type, e);
     }
@@ -364,9 +349,6 @@ public class DefaultProcessManagerService implements ProcessManagerService {
         }
         String str = getSimpleFieldValueString(value, type);
         if (str == null) {
-          SilverTrace.error("processManager", "DefaultProcessManagerService.populateListField()",
-              "processManager.FORM_FIELD_COLLECTION_NOT_ALLOWED",
-              "field name: " + name + ", field type: " + type);
           throw new ProcessManagerException("DefaultProcessManagerService",
               "processManager.FORM_FIELD_COLLECTION_NOT_ALLOWED",
               "field name: " + name + ", field type: " + type);
@@ -376,8 +358,6 @@ public class DefaultProcessManagerService implements ProcessManagerService {
       field.setStringValue(valuesStr.toString());
 
     } catch (FormException e) {
-      SilverTrace.error("processManager", "DefaultProcessManagerService.populateListField()",
-          "processManager.FORM_FIELD_ERROR", "field name: " + name + ", field type: " + type, e);
       throw new ProcessManagerException("DefaultProcessManagerService", "processManager.FORM_FIELD_ERROR",
           "field name: " + name + ", field type: " + type, e);
     }

@@ -24,15 +24,14 @@
 
 package org.silverpeas.components.scheduleevent.servlets.handlers;
 
-import java.util.Iterator;
-import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.silverpeas.components.scheduleevent.control.ScheduleEventSessionController;
 import org.silverpeas.components.scheduleevent.service.model.beans.DateOption;
 import org.silverpeas.components.scheduleevent.service.model.beans.ScheduleEvent;
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.logging.SilverLogger;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Iterator;
+import java.util.Set;
 
 public class ScheduleEventAddOptionsHourRequestHandler implements ScheduleEventRequestHandler {
 
@@ -50,9 +49,7 @@ public class ScheduleEventAddOptionsHourRequestHandler implements ScheduleEventR
       try {
         hour = Integer.parseInt(hourFromParameters);
       } catch (Exception e) {
-        SilverTrace.warn("scheduleevent", "ScheduleEventRequestRouter.getDestination",
-            "root.MSG_GEN_PARAM_VALUE", "hour is not a int = "
-            + hourFromParameters);
+        SilverLogger.getLogger(this).error("Hour is not a int = " + hourFromParameters, e);
         hour = 8; // morning by default
       }
       aDate.setHour(hour);

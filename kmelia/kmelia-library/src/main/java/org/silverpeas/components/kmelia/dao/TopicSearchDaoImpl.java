@@ -27,9 +27,9 @@ package org.silverpeas.components.kmelia.dao;
 import org.silverpeas.components.kmelia.model.MostInterestedQueryVO;
 import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -60,8 +60,8 @@ public class TopicSearchDaoImpl implements TopicSearchDao {
       mostInterestedQueries = jdbcSqlQuery
           .execute(row -> new MostInterestedQueryVO(row.getString("query"), row.getInt("nb")));
     } catch (SQLException e) {
-      SilverTrace.error("kmelia", TopicSearchDaoImpl.class.getSimpleName(),
-          "Problem to execute SQL query " + QUERY_GET_LIST_MOST_INTERESTED_QUERY +
+      SilverLogger.getLogger(this)
+          .error("Problem to execute SQL query " + QUERY_GET_LIST_MOST_INTERESTED_QUERY +
               " with intanceId = " + instanceId, e);
     }
     return mostInterestedQueries;

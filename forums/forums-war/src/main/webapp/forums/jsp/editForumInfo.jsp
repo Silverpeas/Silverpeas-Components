@@ -99,9 +99,8 @@ public void listFolders(JspWriter out, int rootId, int forumId, int parentId, St
             }
         }
     }
-    catch (IOException ioe)
-    {
-        SilverTrace.info("forums", "JSPeditForumInfo.listFolders()", "root.EX_NO_MESSAGE", null, ioe);
+    catch (IOException ioe) {
+        SilverLogger.getLogger(this).error(ioe);
     }
 }
 %>

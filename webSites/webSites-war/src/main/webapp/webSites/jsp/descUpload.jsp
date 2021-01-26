@@ -54,12 +54,9 @@
    * appartient
    */
   private boolean appartient(IconDetail iconDetail, Collection c) {
-    SilverTrace.info("websites", "JSPdescUpload", "root.MSG_GEN_PARAM_VALUE", "appartient");
     boolean ok = false;
 
     String theId = iconDetail.getIconPK().getId();
-    SilverTrace.info("websites", "JSPdescUpload", "root.MSG_GEN_PARAM_VALUE", "theId= " + theId);
-
     Iterator i = c.iterator();
     while (i.hasNext() && !ok) {
       String id = (String) i.next();
@@ -91,9 +88,6 @@
     arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"topic\" value=\"" +
         rootFolder.getNodeDetail().getNodePK().getId() + "\">");
 
-    SilverTrace.info("websites", "JSPdescUpload.afficheArbo()", "root.MSG_GEN_PARAM_VALUE",
-        "name Theme =" + rootFolder.getNodeDetail().getName() + ", nbEsp = " + nbEsp);
-
     resultat = arrayPane.print();
 
     Collection<NodeDetail> subThemes = rootFolder.getNodeDetail().getChildrenDetails();
@@ -102,8 +96,6 @@
       while (coll.hasNext()) {
         NodeDetail theme = (NodeDetail) coll.next();
         String idTheme = theme.getNodePK().getId();
-        SilverTrace.info("websites", "JSPdescUpload.afficheArbo()", "root.MSG_GEN_PARAM_VALUE",
-            "name ss Theme =" + theme.getName() + ", id= " + idTheme + ", nbEsp = " + N);
         resultat = afficheArbo(arrayPane, idTheme, scc, N);
       }
     }
@@ -126,8 +118,6 @@
       while (coll.hasNext()) {
         NodeDetail theme = (NodeDetail) coll.next();
         String idTheme = theme.getNodePK().getId();
-        SilverTrace.info("websites", "JSPdescUpload.nbThemes()", "root.MSG_GEN_PARAM_VALUE",
-            "name ss Theme =" + theme.getName() + ", N= " + N);
         N = nbThemes(idTheme, scc, N);
       }
     }

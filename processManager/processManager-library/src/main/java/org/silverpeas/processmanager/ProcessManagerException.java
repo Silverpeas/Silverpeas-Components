@@ -34,7 +34,7 @@ public class ProcessManagerException extends SilverpeasException {
   private static final long serialVersionUID = 4403838459103863944L;
 
   /**
-   * Returns the module name (as known by SilverTrace).
+   * Returns the module name.
    */
   @Override
   public String getModule() {

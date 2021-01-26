@@ -24,13 +24,13 @@
 package org.silverpeas.components.datawarning.model;
 
 import org.silverpeas.components.datawarning.DataWarningException;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.exception.WithNested;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -347,8 +347,7 @@ public class DataWarningQueryResult extends Object {
         return uf.getValue(persoUID, "");
       }
     } catch (Exception e) {
-      SilverTrace.warn("dataWarning", "DataWarningQueryResult.returnPersoValue()",
-          "root.MSG_GEN_ENTER_METHOD", "UserId=" + userId, e);
+      SilverLogger.getLogger(this).error(e);
       return "";
     }
   }

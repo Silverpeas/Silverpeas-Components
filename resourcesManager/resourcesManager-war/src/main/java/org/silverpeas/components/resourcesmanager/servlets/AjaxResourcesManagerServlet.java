@@ -23,23 +23,22 @@
  */
 package org.silverpeas.components.resourcesmanager.servlets;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.components.resourcesmanager.control.ResourcesManagerSessionController;
 import org.silverpeas.components.resourcesmanager.model.Resource;
 import org.silverpeas.components.resourcesmanager.util.ResourceUtil;
 import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.http.HttpRequest;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.util.Date;
-import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
-import org.silverpeas.core.web.http.HttpRequest;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.Date;
+import java.util.List;
 
 public class AjaxResourcesManagerServlet extends HttpServlet {
   private static final long serialVersionUID = -8949667715718523202L;
@@ -63,9 +62,6 @@ public class AjaxResourcesManagerServlet extends HttpServlet {
       HttpRequest requestWrapper = (HttpRequest) req;
       try {
         Long reservationId = requestWrapper.getParameterAsLong("reservationId");
-        SilverTrace
-            .info("resourcesmanager", "AjaxResourcesManagerServlet", "root.MSG_GEN_PARAM_VALUE",
-                "reservationId=" + reservationId);
         String beginDate = req.getParameter("beginDate");
         String beginHour = req.getParameter("beginHour");
         String endDate = req.getParameter("endDate");
@@ -87,25 +83,17 @@ public class AjaxResourcesManagerServlet extends HttpServlet {
           resourceNames.append(resource.getName());
         }
 
-        SilverTrace
-            .info("resourcesmanager", "AjaxResourcesManagerServlet", "root.MSG_GEN_PARAM_VALUE",
-                " avant concaténation listResourceName= " + resourceNames);
         if (resourceNames.length() > 0) {
           resourceNames
               .insert(0, sessionController.getString("resourcesManager.resourceUnReservable"));
         }
 
-        SilverTrace
-            .info("resourcesmanager", "AjaxResourcesManagerServlet", "root.MSG_GEN_PARAM_VALUE",
-                "listResourceName= " + resourceNames.toString());
         res.setHeader("charset", "UTF-8");
 
         Writer writer = res.getWriter();
         writer.write(resourceNames.toString());
       } catch (Exception e) {
-        SilverTrace
-            .error("resourcesmanager", "AjaxResourcesManagerServlet", "exception in doPost method",
-                e);
+        SilverLogger.getLogger(this).error(e);
       }
     }
   }

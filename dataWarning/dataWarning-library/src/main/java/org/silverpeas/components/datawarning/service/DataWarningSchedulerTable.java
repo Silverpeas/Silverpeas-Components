@@ -23,7 +23,8 @@
  */
 package org.silverpeas.components.datawarning.service;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.logging.SilverLogger;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -69,7 +70,7 @@ public class DataWarningSchedulerTable {
         schedulers.remove(instanceId);
       }
     } catch (Exception e) {
-      SilverTrace.error("dataWarning", "DataWarningSchedulerTable.removeScheduler()", "", e);
+      SilverLogger.getLogger(DataWarningSchedulerTable.class).error(e);
     }
   }
 

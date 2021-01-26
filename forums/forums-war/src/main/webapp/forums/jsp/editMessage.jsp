@@ -67,9 +67,8 @@ public void listFolders(JspWriter out, String userId, boolean admin, int rootId,
             listFolders(out, userId, admin, sonId, parentId, indent + "-", resource, fsc);
         }
     }
-    catch (IOException ioe)
-    {
-        SilverTrace.info("forums", "JSPeditMessage.listFolders()", "root.EX_NO_MESSAGE", null, ioe);
+    catch (IOException ioe) {
+        SilverLogger.getLogger(this).error(ioe);
     }
 }
 %>

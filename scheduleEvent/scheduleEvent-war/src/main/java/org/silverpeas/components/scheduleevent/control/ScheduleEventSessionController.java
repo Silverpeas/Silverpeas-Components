@@ -20,11 +20,7 @@
  */
 package org.silverpeas.components.scheduleevent.control;
 
-import org.silverpeas.core.calendar.CalendarEvent;
-import org.silverpeas.core.importexport.ExportException;
-import org.silverpeas.core.importexport.Exporter;
-import org.silverpeas.core.importexport.ical.ICalExporterProvider;
-import org.silverpeas.core.importexport.ical.ExportableCalendar;
+import org.apache.commons.io.FileUtils;
 import org.silverpeas.components.scheduleevent.notification.ScheduleEventUserCallAgainNotification;
 import org.silverpeas.components.scheduleevent.notification.ScheduleEventUserNotification;
 import org.silverpeas.components.scheduleevent.service.CalendarEventEncoder;
@@ -45,20 +41,24 @@ import org.silverpeas.components.scheduleevent.view.OptionDateVO;
 import org.silverpeas.components.scheduleevent.view.ScheduleEventDetailVO;
 import org.silverpeas.components.scheduleevent.view.ScheduleEventVO;
 import org.silverpeas.components.scheduleevent.view.TimeVO;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.calendar.CalendarEvent;
+import org.silverpeas.core.importexport.ExportException;
+import org.silverpeas.core.importexport.Exporter;
+import org.silverpeas.core.importexport.ical.ExportableCalendar;
+import org.silverpeas.core.importexport.ical.ICalExporterProvider;
+import org.silverpeas.core.notification.message.MessageNotifier;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
+import org.silverpeas.core.util.Pair;
+import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.web.selection.SelectionUsersGroups;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.apache.commons.io.FileUtils;
-import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.notification.message.MessageNotifier;
-import org.silverpeas.core.util.Pair;
-import org.silverpeas.core.util.ResourceLocator;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -164,8 +164,7 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
 
       return Selection.getSelectionURL();
     } else {
-      SilverTrace.warn("scheduleevent", "ScheduleEventSessionController.initSelectUsersPanel",
-          "Security alert from user " + getUserId());
+      SilverLogger.getLogger(this).warn("Security alert from user " + getUserId());
       return "/admin/jsp/accessForbidden.jsp";
     }
   }
@@ -279,9 +278,7 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
           .buildAndSend(new ScheduleEventUserNotification(currentScheduleEvent, getUserDetail()));
 
     } catch (Exception e) {
-      SilverTrace.warn("scheduleevent",
-          "ScheduleEventSessionController.sendSubscriptionsNotification()",
-          "scheduleEvent.EX_IMPOSSIBLE_DALERTER_LES_UTILISATEURS", "", e);
+      SilverLogger.getLogger(this).error(e);
     }
   }
 
@@ -294,9 +291,7 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
       MessageNotifier.addSuccess(getString("scheduleevent.callagain.ok"));
 
     } catch (Exception e) {
-      SilverTrace.warn("scheduleevent",
-          "ScheduleEventSessionController.sendSubscriptionsNotification()",
-          "scheduleEvent.EX_IMPOSSIBLE_DALERTER_LES_UTILISATEURS", "", e);
+      SilverLogger.getLogger(this).error(e);
     }
   }
 
@@ -336,8 +331,7 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
       }
       getScheduleEventService().updateScheduleEventStatus(id, newStatus);
     } else {
-      SilverTrace.warn("scheduleevent", "ScheduleEventSessionController.switchState",
-          "Security alert from user " + getUserId());
+      SilverLogger.getLogger(this).warn("Security alert from user " + getUserId());
     }
   }
 
@@ -350,8 +344,7 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
     if (isUserOwnerOfEvent(scheduleEvent)) {
       getScheduleEventService().deleteScheduleEvent(scheduleEvent);
     } else {
-      SilverTrace.warn("scheduleevent", "ScheduleEventSessionController.delete",
-          "Security alert from user " + getUserId());
+      SilverLogger.getLogger(this).warn("Security alert from user " + getUserId());
     }
   }
 

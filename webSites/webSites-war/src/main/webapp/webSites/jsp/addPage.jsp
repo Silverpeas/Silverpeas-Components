@@ -195,7 +195,6 @@ else if (action.equals("verif")) { //vient de addPage
 
     //VERIFICATION COTE SERVEUR
     String name = (String) request.getParameter("nomPage");
-    SilverTrace.info("websites", "JSPaddPage", "root.MSG_GEN_PARAM_VALUE", "nomPage = "+name+" id="+id);
 %>
       <HTML>
       <HEAD>
@@ -217,13 +216,6 @@ else if (action.equals("addPage")) { //vient de verifAjoutPage
 
     //SERVER OK, AJOUT PAGE
     String name = (String) request.getParameter("nomPage"); //vient de verifAjoutPage
-    SilverTrace.info("websites", "JSPaddPage", "root.MSG_GEN_PARAM_VALUE", "ajout nomPage = "+name);
-    SilverTrace.info("websites", "JSPaddPage", "root.MSG_GEN_PARAM_VALUE",
-                         "ajout Page = "+path+"\\\\"+name);
-    String code = "<HTML><HEAD></HEAD><BODY></BODY></HTML>";
-    SilverTrace.info("websites", "JSPaddPage", "root.MSG_GEN_PARAM_VALUE",
-                         "ajout Page code = "+code);
-
     /* Creer une nouvelle page sur le serveur */
     scc.createFile(path, name, code);
 %>

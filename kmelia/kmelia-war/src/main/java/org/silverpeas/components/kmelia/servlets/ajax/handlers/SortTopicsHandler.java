@@ -23,16 +23,15 @@
  */
 package org.silverpeas.components.kmelia.servlets.ajax.handlers;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.StringTokenizer;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.components.kmelia.control.KmeliaSessionController;
 import org.silverpeas.components.kmelia.servlets.ajax.AjaxHandler;
 import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.util.logging.SilverLogger;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
 
 public class SortTopicsHandler implements AjaxHandler {
 
@@ -51,7 +50,7 @@ public class SortTopicsHandler implements AjaxHandler {
       kmelia.getNodeService().sortNodes(pks);
       return "ok";
     } catch (Exception e) {
-      SilverTrace.error("kmelia", "SortTopicsHandler.handleRequest", "root.MSG_GEN_PARAM_VALUE", e);
+      SilverLogger.getLogger(this).error(e);
       return e.getMessage();
     }
   }

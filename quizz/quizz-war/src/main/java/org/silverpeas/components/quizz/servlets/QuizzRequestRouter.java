@@ -24,17 +24,17 @@
 
 package org.silverpeas.components.quizz.servlets;
 
+import org.silverpeas.components.quizz.control.QuizzSessionController;
+import org.silverpeas.core.questioncontainer.container.model.QuestionContainerDetail;
+import org.silverpeas.core.questioncontainer.question.model.Question;
+import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.export.ExportCSVBuilder;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.questioncontainer.question.model.Question;
-import org.silverpeas.core.questioncontainer.container.model.QuestionContainerDetail;
-import org.silverpeas.components.quizz.control.QuizzSessionController;
-import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.core.util.ResourceLocator;
 
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
@@ -113,8 +113,7 @@ public class QuizzRequestRouter extends ComponentRequestRouter<QuizzSessionContr
         try {
           quizzSC.copySurvey(quizzId);
         } catch (Exception e) {
-          SilverTrace.warn("Quizz", "QuizzRequestRouter.getDestination()", "root.EX_CLIPBOARD_COPY_FAILED",
-              "function = " + function, e);
+          SilverLogger.getLogger(this).error(e);
         }
         destination = URLUtil.getURL(URLUtil.CMP_CLIPBOARD, null, null) +
             "Idle.jsp?message=REFRESHCLIPBOARD";
@@ -122,8 +121,7 @@ public class QuizzRequestRouter extends ComponentRequestRouter<QuizzSessionContr
         try {
           quizzSC.paste();
         } catch (Exception e) {
-          SilverTrace.warn("Quizz", "QuizzRequestRouter.getDestination()", "root.EX_CLIPBOARD_PASTE_FAILED",
-              "function = " + function, e);
+          SilverLogger.getLogger(this).error(e);
         }
         destination = getDestination("Main", quizzSC, request);
       } else if (function.startsWith("searchResult")) {

@@ -23,24 +23,23 @@
  */
 package org.silverpeas.components.whitepages.servlets;
 
-import org.silverpeas.core.contribution.content.form.DataRecord;
-import org.silverpeas.core.contribution.content.form.FieldTemplate;
-import org.silverpeas.core.contribution.content.form.Form;
-import org.silverpeas.core.contribution.content.form.PagesContext;
-import org.silverpeas.core.web.mvc.controller.ComponentContext;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.components.whitepages.WhitePagesException;
 import org.silverpeas.components.whitepages.control.WhitePagesSessionController;
 import org.silverpeas.components.whitepages.filters.LoginFilter;
 import org.silverpeas.components.whitepages.model.Card;
 import org.silverpeas.components.whitepages.model.SearchField;
 import org.silverpeas.components.whitepages.model.SearchFieldsType;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.FieldTemplate;
+import org.silverpeas.core.contribution.content.form.Form;
+import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.index.indexing.model.FieldDescription;
-import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -424,9 +423,6 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter<WhitePagesSe
       request.setAttribute("javax.servlet.jsp.jspException", e);
       destination = "/admin/jsp/errorpage.jsp";
     }
-    SilverTrace
-        .info("whitePages", "WhitePagesRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
-            "destination " + destination);
     return destination;
   }
 

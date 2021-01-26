@@ -32,7 +32,7 @@ import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -92,8 +92,7 @@ public class StatisticServiceImpl implements
               statFilter.getStartDate(), statFilter.getEndDate(), userIds);
 
         } catch (Exception e) {
-          SilverTrace.error("kmelia", getClass().getSimpleName() + ".getNbConsultedPublication",
-              "Error when counting number of access (getCountByPeriodAndUser)", e);
+          SilverLogger.getLogger(this).error("Error when counting number of access", e);
         }
 
       } else {
@@ -101,8 +100,7 @@ public class StatisticServiceImpl implements
           nbPubli = getStatisticService().getCountByPeriod(publiPKs, 1, "Publication",
               statFilter.getStartDate(), statFilter.getEndDate());
         } catch (Exception e) {
-          SilverTrace.error("kmelia", getClass().getSimpleName() + ".getNbConsultedPublication",
-              "Error when counting number of access (getCountByPeriod)", e);
+          SilverLogger.getLogger(this).error("Error when counting number of access", e);
         }
 
       }
@@ -137,8 +135,7 @@ public class StatisticServiceImpl implements
         userIds.add(userId);
       }
     } catch (AdminException e) {
-      SilverTrace.error("kmelia", getClass().getSimpleName() + ".getStatisticActivityByPeriod",
-          "Error when loading the list of filtered users", e);
+      SilverLogger.getLogger(this).error("Error when loading the list of filtered users", e);
     }
     return userIds;
   }
@@ -310,16 +307,16 @@ public class StatisticServiceImpl implements
         return getStatisticService().getDistinctCountByPeriodUser(publiPKs, 1, "Publication",
             statFilter.getStartDate(), statFilter.getEndDate(), userIds);
       } catch (Exception e) {
-        SilverTrace.error("kmelia", getClass().getSimpleName() + ".getNumberOfDifferentConsu...",
-            "Error when computing distinct access to publication", e);
+        SilverLogger.getLogger(this)
+            .error("Error when computing distinct access to publication", e);
       }
     } else {
       try {
         return getStatisticService().getDistinctCountByPeriod(publiPKs, 1, "Publication",
             statFilter.getStartDate(), statFilter.getEndDate());
       } catch (Exception e) {
-        SilverTrace.error("kmelia", getClass().getSimpleName() + ".getNumberOfDifferentConsu...",
-            "Error when computing distinct access to publication", e);
+        SilverLogger.getLogger(this)
+            .error("Error when computing distinct access to publication", e);
       }
     }
     return nbPubli;

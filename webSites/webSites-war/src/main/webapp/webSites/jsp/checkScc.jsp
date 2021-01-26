@@ -36,7 +36,6 @@
 <%@ page import="org.silverpeas.core.contribution.publication.model.PublicationDetail"%>
 <%@ page import="org.silverpeas.core.node.model.NodeDetail"%>
 <%@ page import="org.silverpeas.core.node.model.NodePK"%>
-<%@ page import="org.silverpeas.core.silvertrace.SilverTrace"%>
 
 <%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.core.util.URLUtil"%>

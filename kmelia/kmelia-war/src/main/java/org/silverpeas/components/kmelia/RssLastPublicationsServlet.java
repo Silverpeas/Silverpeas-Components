@@ -39,12 +39,12 @@ import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.personalization.service.PersonalizationServiceProvider;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.controller.SilverpeasWebUtil;
 
@@ -127,8 +127,7 @@ public class RssLastPublicationsServlet extends HttpServlet {
         objectNotFound(request, response);
       }
     } catch (Exception e) {
-      SilverTrace.error("kmelia", "RssLastPublicationsServlet.doPost()", "root.MSG_GEN_PARAM_VALUE",
-          e);
+      SilverLogger.getLogger(this).error(e);
       objectNotFound(request, response);
     }
   }

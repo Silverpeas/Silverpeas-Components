@@ -26,12 +26,12 @@ package org.silverpeas.components.whitepages.filters;
 
 import org.silverpeas.components.whitepages.control.CardManager;
 import org.silverpeas.components.whitepages.model.Card;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.admin.component.model.CompoSpace;
 import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -78,8 +78,7 @@ public class LoginFilter implements Filter {
      * If no main session controller, forward user to timeout page
      */
     if (mainSessionCtrl == null) {
-      SilverTrace.warn("whitePages", "LoginFilter.doFilter", "root.MSG_GEN_SESSION_TIMEOUT",
-          "NewSessionId=" + session.getId());
+      SilverLogger.getLogger(this).warn("Session timeout. New session id: " + session.getId());
       RequestDispatcher dispatcher = request.getRequestDispatcher(
           ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout"));
       dispatcher.forward(request, response);
@@ -131,7 +130,7 @@ public class LoginFilter implements Filter {
           }
         }
       } catch (Exception e) {
-        SilverTrace.warn("whitePages", "LoginFilter.doFilter", "root.EX_IGNORED", e);
+        SilverLogger.getLogger(this).warn(e);
       }
 
       chain.doFilter(request, response);

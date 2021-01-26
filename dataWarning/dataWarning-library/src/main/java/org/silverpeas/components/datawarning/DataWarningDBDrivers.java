@@ -23,9 +23,9 @@
  */
 package org.silverpeas.components.datawarning;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.XmlSettingBundle;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -59,8 +59,7 @@ public final class DataWarningDBDrivers extends Object {
         allDBDrivers.put(driversUniqueIds[j], sortedDBDrivers[j]);
       }
     } catch (Exception e) {
-      SilverTrace.error("dataWarning", "DataWarningDBDrivers.loadDrivers",
-          "DataWarning.MSG_load_DRIVERS_FAIL", null, e);
+      SilverLogger.getLogger(this).error(e);
     }
   }
 

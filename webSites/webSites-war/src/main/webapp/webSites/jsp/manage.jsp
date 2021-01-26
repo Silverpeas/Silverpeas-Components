@@ -140,7 +140,6 @@ function openSPWindow(fonction, windowName){
 <%
 
   ArrayList arraySites = new ArrayList(listeSites);
-  SilverTrace.info("websites", "JSPmanage", "root.MSG_GEN_PARAM_VALUE", "taille de l'arraySites= "+arraySites.size());
 
   Window window = gef.getWindow();
   String bodyPart="";

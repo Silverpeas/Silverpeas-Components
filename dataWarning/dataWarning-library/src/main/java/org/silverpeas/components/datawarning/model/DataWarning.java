@@ -26,11 +26,10 @@ package org.silverpeas.components.datawarning.model;
 import org.silverpeas.components.datawarning.DataWarningDBDriver;
 import org.silverpeas.components.datawarning.DataWarningDBDrivers;
 import org.silverpeas.components.datawarning.DataWarningException;
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.sql.Connection;
@@ -193,8 +192,7 @@ public class DataWarning extends SilverpeasBean {
       try {
         con.close();
       } catch (Exception e) {
-        SilverTrace.error("dataWarning", "DataWarning.closeConnection()",
-            DATA_WARNING_EX_DATA_ACCESS_FAILED, e);
+        SilverLogger.getLogger(this).error(e);
       }
     }
   }

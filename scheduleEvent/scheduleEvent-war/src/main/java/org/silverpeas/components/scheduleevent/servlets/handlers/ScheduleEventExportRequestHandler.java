@@ -24,13 +24,13 @@
 
 package org.silverpeas.components.scheduleevent.servlets.handlers;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.silverpeas.core.importexport.ExportException;
 import org.silverpeas.components.scheduleevent.control.ScheduleEventSessionController;
 import org.silverpeas.components.scheduleevent.service.model.beans.ScheduleEvent;
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.importexport.ExportException;
 import org.silverpeas.core.util.file.FileServerUtils;
+import org.silverpeas.core.util.logging.SilverLogger;
+
+import javax.servlet.http.HttpServletRequest;
 
 public class ScheduleEventExportRequestHandler implements ScheduleEventRequestHandler {
   private String jspDestination;
@@ -51,8 +51,7 @@ public class ScheduleEventExportRequestHandler implements ScheduleEventRequestHa
         request.setAttribute("icsName", icsFile);
         request.setAttribute("icsURL", FileServerUtils.getUrlToTempDir(icsFile));
       } catch (ExportException ex) {
-        SilverTrace.error("scheduleevent", getClass().getSimpleName() + ".getDestination()",
-                "root.EX_NO_MESSAGE", ex.getMessage());
+        SilverLogger.getLogger(this).error(ex);
         request.setAttribute("messageKey", "scheduleevent.export.ical.failure");
       }
       return this.jspDestination;

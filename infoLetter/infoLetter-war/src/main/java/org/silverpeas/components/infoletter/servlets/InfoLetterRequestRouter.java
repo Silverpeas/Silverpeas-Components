@@ -29,7 +29,6 @@ import org.silverpeas.components.infoletter.model.InfoLetter;
 import org.silverpeas.components.infoletter.model.InfoLetterPublication;
 import org.silverpeas.components.infoletter.model.InfoLetterPublicationPdC;
 import org.silverpeas.core.persistence.jdbc.bean.IdPK;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
@@ -535,9 +534,6 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
       destination = "/admin/jsp/errorpageMain.jsp";
     }
 
-    SilverTrace
-        .info("infoLetter", "infoLetterRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
-            "Destination=" + destination);
     return destination;
   }
 

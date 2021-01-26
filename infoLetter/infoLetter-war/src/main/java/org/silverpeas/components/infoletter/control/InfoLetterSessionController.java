@@ -48,7 +48,6 @@ import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelp
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.persistence.jdbc.bean.IdPK;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.subscription.constant.SubscriberType;
 import org.silverpeas.core.subscription.util.SubscriptionSubscriberMapBySubscriberType;
 import org.silverpeas.core.util.DateUtil;
@@ -198,9 +197,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
       try {
         ilClassification = PdcClassificationEntity.fromJSON(positions);
       } catch (DecodingException e) {
-        SilverTrace
-            .error("Forum", "ForumActionHelper.actionManagement", "PdcClassificationEntity error",
-                "Problem to read JSON", e);
+        SilverLogger.getLogger(this).error("Unable to decode JSON: " + positions, e);
       }
       if (ilClassification != null && !ilClassification.isUndefined()) {
         List<PdcPosition> pdcPositions = ilClassification.getPdcPositions();

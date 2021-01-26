@@ -157,7 +157,7 @@
         }
     }
     catch (NumberFormatException nfe) {
-      SilverTrace.info("forums", "JSPviewMessage", "root.EX_NO_MESSAGE", null, nfe);
+      SilverLogger.getLogger(this).error(nfe);
     }
     String backURL = ActionUrl.getUrl(call, -1, forumId);
 

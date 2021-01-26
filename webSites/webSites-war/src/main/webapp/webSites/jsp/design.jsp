@@ -76,15 +76,12 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 		searchOk = false;
 	}
 
-  SilverTrace.info("webSites", "JSPdesign", "root.MSG_GEN_PARAM_VALUE", "ACTION = "+action);
-
 	UserDetail user = scc.getUserDetail(auteur);
 	if (user != null) {
 	auteur = user.getDisplayedName();
 	}
 	Collection collectionRep = affichageChemin(scc, currentPath);
 	String infoPath = displayPath(collectionRep, true, 3, "design.jsp?Action=view&Path=", nomSite);
-	SilverTrace.info("webSites", "JSPdesign", "root.MSG_GEN_PARAM_VALUE", "infoPath = "+infoPath);
 %>
 
 <!-- design -->

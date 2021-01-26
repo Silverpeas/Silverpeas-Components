@@ -27,11 +27,11 @@ import org.silverpeas.components.mailinglist.service.MailingListServicesProvider
 import org.silverpeas.components.mailinglist.service.model.beans.Attachment;
 import org.silverpeas.components.mailinglist.service.model.beans.MailingList;
 import org.silverpeas.components.mailinglist.service.model.beans.Message;
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
 
 public class MessageProcessor implements MailingListRoutage {
 
@@ -120,8 +120,7 @@ public class MessageProcessor implements MailingListRoutage {
     try {
       MailingListServicesProvider.getNotificationHelper().notify(message, list);
     } catch (Exception e) {
-      SilverTrace
-          .error("mailinglist", "MailSender.sendMail", "mailinglist.external.notification.send", e);
+      SilverLogger.getLogger(MessageProcessor.class).error(e);
     }
   }
 

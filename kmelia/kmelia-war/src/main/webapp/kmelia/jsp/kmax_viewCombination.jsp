@@ -33,7 +33,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="org.silverpeas.core.node.coordinates.model.Coordinate"%>
 <%@ page import="org.silverpeas.core.node.coordinates.model.CoordinatePoint"%>
 <%@ page import="org.silverpeas.components.kmelia.jstl.KmeliaDisplayHelper"%>
-<%@ page import="org.silverpeas.core.silvertrace.SilverTrace" %>
+<%@ page import="org.silverpeas.core.util.logging.SilverLogger" %>
 
 
 <%@ include file="checkKmelia.jsp" %>
@@ -49,7 +49,7 @@ CoordinatePoint getPoint(NodeDetail nodeDetail, Collection points, String transl
 				NodeDetail pointDetail = kmeliaScc.getNodeHeader(Integer.toString(point.getNodeId()));
 				point.setName(pointDetail.getName(translation));
 			}  catch (Exception e) {
-				SilverTrace.error( "kmax", "kmax_viewCombination.jsp", "kmelia.EX_IMPOSSIBLE_DACCEDER_AU_THEME", e );
+				SilverLogger.getLogger(this).error(e);
 			}
 			return point;
 		}

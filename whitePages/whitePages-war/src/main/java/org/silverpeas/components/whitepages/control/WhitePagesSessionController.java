@@ -64,7 +64,6 @@ import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.pdc.pdc.model.Value;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.Link;
 import org.silverpeas.core.util.LocalizationBundle;
@@ -74,6 +73,7 @@ import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.file.FileUploadUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
@@ -403,9 +403,6 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
       getCurrentCreateCard().readCardRecord().setId(userCardId);
       getCardTemplate().getRecordSet().save(getCurrentCreateCard().readCardRecord());
       setCurrentUserCards(new ArrayList<WhitePagesCard>());
-      SilverTrace.spy("whitePages", "WhitePagesSessionController.insertCard", getSpaceId(),
-          getComponentId(), userCardId, getUserDetail().getId(), SilverTrace.SPY_ACTION_CREATE);
-
     } catch (PublicationTemplateException e) {
       throw new WhitePagesException("WhitePagesSessionController.insertCard",
           SilverpeasException.ERROR, "whitePages.EX_CANT_GET_PUBLICATIONTEMPLATE", "", e);
@@ -425,10 +422,6 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
       getCurrentCard().readCardRecord().setId(getCurrentCard().getPK().getId());
       getCardTemplate().getRecordSet().save(getCurrentCard().readCardRecord());
       getCardManager().indexCard(getCurrentCard());
-      SilverTrace
-          .spy("whitePages", "WhitePagesSessionController.saveCard", getSpaceId(), getComponentId(),
-              getCurrentCard().getPK().getId(), getUserDetail().getId(),
-              SilverTrace.SPY_ACTION_UPDATE);
     } catch (PublicationTemplateException e) {
       throw new WhitePagesException("WhitePagesSessionController.saveCard",
           SilverpeasException.ERROR, "whitePages.EX_CANT_GET_PUBLICATIONTEMPLATE", "", e);
@@ -508,8 +501,6 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
         for (String userCardId : userCardIds) {
           DataRecord data = getCardTemplate().getRecordSet().getRecord(userCardId);
           getCardTemplate().getRecordSet().delete(data);
-          SilverTrace.spy("whitePages", "WhitePagesSessionController.delete", getSpaceId(),
-              getComponentId(), userCardId, getUserDetail().getId(), SilverTrace.SPY_ACTION_DELETE);
         }
         getCardManager().delete(userCardIds);
       }
@@ -746,8 +737,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
         contentId = "" + contentManager
             .getSilverContentId(currentCard.getPK().getId(), currentCard.getInstanceId());
       } catch (ContentManagerException ignored) {
-        SilverTrace.error("whitePages", "WhitePagesSessionController",
-            "whitePages.EX_UNKNOWN_CONTENT_MANAGER", ignored);
+        SilverLogger.getLogger(this).error(ignored);
         contentId = null;
       }
     }
@@ -815,8 +805,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
       FieldTemplate[] fields = recordTemplate.getFieldTemplates();
       return Arrays.asList(fields);
     } catch (FormException e) {
-      SilverTrace.error("whitePages", "WhitePagesSessionController.getAllXmlFieldsForSearch",
-          "whitePages.CANT_GET_XML_FIELDS", e);
+      SilverLogger.getLogger(this).error(e);
     }
     return new ArrayList<>();
   }
@@ -876,8 +865,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
           }
         }
       } catch (Exception e) {
-        SilverTrace.error("whitePages", "WhitePagesSessionController.getSearchFields",
-            "whitePages.CANT_GET_XML_FIELDS", e);
+        SilverLogger.getLogger(this).error(e);
       }
     }
     return fields;

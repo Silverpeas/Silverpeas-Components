@@ -29,7 +29,7 @@ import org.silverpeas.components.mailinglist.service.event.MessageListener;
 import org.silverpeas.components.mailinglist.service.model.beans.MailingList;
 import org.silverpeas.components.mailinglist.service.model.beans.Message;
 import org.silverpeas.components.mailinglist.service.notification.NotificationHelper;
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 public class MailingListComponent implements MessageListener {
 
@@ -68,8 +68,7 @@ public class MailingListComponent implements MessageListener {
         try {
           helper.notify(message, list);
         } catch (Exception e) {
-          SilverTrace.error("mailinglist", "MailingListComponent.onMessage",
-              "mailinglist.notification.error", e);
+          SilverLogger.getLogger(this).error(e);
         }
       }
     }

@@ -27,7 +27,7 @@ import org.silverpeas.components.datawarning.DataWarningException;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -202,14 +202,9 @@ public class DataWarningQuery extends SilverpeasBean {
           j++;
         }
       }
-      SilverTrace
-          .info("dataWarning", "DataWarningQueryResult.executeQuery()", "root.MSG_GEN_PARAM_VALUE",
-              "Nb de Lignes = " + valret.getNbRows());
     } catch (Exception e) {
       valret.addError(e, getQuery());
-      SilverTrace
-          .warn("dataWarning", "DataWarningQueryResult.executeQuery()", "root.MSG_GEN_PARAM_VALUE",
-              getQuery(), e);
+      SilverLogger.getLogger(this).error("Fail to execute query " + getQuery(), e);
     } finally {
       DBUtil.close(rs, prepStmt);
       dataModel.closeConnection(con);

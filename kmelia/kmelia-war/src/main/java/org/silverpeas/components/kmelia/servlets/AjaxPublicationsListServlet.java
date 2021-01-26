@@ -51,7 +51,6 @@ import org.silverpeas.core.date.TemporalFormatter;
 import org.silverpeas.core.io.media.image.thumbnail.ThumbnailSettings;
 import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
 import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
@@ -960,8 +959,6 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       MultiSilverpeasBundle resources, boolean attachmentLink, boolean previewable, boolean viewable,
       final boolean isDownloadAllowedForReaders, final boolean isUserAllowedToDownloadFile,
       String id) {
-    SilverTrace
-        .info("kmelia", "AjaxPublicationsListServlet.displayFile()", "root.MSG_GEN_ENTER_METHOD");
     StringBuilder result = new StringBuilder(1024);
 
     if (!attachmentLink) {

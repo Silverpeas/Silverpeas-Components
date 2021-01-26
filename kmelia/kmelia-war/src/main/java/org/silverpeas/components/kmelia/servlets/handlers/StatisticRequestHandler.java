@@ -24,14 +24,10 @@
 package org.silverpeas.components.kmelia.servlets.handlers;
 
 import org.silverpeas.components.kmelia.control.KmeliaSessionController;
-import org.silverpeas.components.kmelia.service.KmeliaHelper;
 import org.silverpeas.components.kmelia.model.StatsFilterVO;
 import org.silverpeas.components.kmelia.search.KmeliaSearchServiceProvider;
+import org.silverpeas.components.kmelia.service.KmeliaHelper;
 import org.silverpeas.components.kmelia.stats.StatisticService;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.web.selection.Selection;
-import org.silverpeas.core.web.selection.SelectionUsersGroups;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.node.model.NodePK;
@@ -39,6 +35,10 @@ import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.selection.Selection;
+import org.silverpeas.core.web.selection.SelectionUsersGroups;
 
 import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
@@ -99,8 +99,8 @@ public class StatisticRequestHandler {
         startDate = DateUtil.parse(beginDateStr);
         endDate = DateUtil.parse(endDateStr);
       } catch (ParseException e) {
-        SilverTrace.error("kmelia", getClass().getSimpleName() + "processStatisticRequestHandler",
-            "Error when parsing date from request startDate=" + beginDateStr + ", endDate=" +
+        SilverLogger.getLogger(this)
+            .error("Error when parsing date from request startDate=" + beginDateStr + ", endDate=" +
                 endDateStr, e);
       }
     }

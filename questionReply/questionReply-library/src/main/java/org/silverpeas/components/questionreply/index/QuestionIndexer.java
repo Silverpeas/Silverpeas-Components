@@ -30,7 +30,6 @@ import org.silverpeas.core.annotation.Technical;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -75,9 +74,6 @@ public class QuestionIndexer {
    * @param question
    */
   public void deleteIndex(Question question) {
-    SilverTrace
-        .info("questionReply", "QuestionManager.deleteQuestionIndex()", "root.MSG_GEN_ENTER_METHOD",
-            "Question = " + question.toString());
     IndexEntryKey indexEntry =
         new IndexEntryKey(question.getInstanceId(), "Question", question.getPK().getId());
     IndexEngineProxy.removeIndexEntry(indexEntry);

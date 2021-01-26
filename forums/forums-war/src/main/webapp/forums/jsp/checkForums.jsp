@@ -32,7 +32,6 @@
 <%@ page import="org.silverpeas.core.util.StringUtil"%>
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper"%>
 <%@ page import="org.silverpeas.core.util.URLUtil"%>
-<%@ page import="org.silverpeas.core.silvertrace.SilverTrace"%>
 <%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.core.admin.user.model.UserDetail"%>
 <%@ page import="org.silverpeas.components.forums.service.ForumsException"%>
@@ -51,6 +50,7 @@
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window"%>
 <%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
+<%@ page import="org.silverpeas.core.util.logging.SilverLogger" %>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%!  
   public static String IMAGE_UPDATE = "../../util/icons/update.gif";
@@ -106,8 +106,7 @@
       }
       out.print("\"");
     } catch (IOException ioe) {
-      SilverTrace.info("forums", "JSPmessagesListManager.addBodyOnload()",
-          "root.EX_NO_MESSAGE", null, ioe);
+      SilverLogger.getLogger(this).error(ioe);
     }
   }
 

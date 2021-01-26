@@ -41,13 +41,13 @@ import org.silverpeas.core.questioncontainer.container.service.QuestionContainer
 import org.silverpeas.core.questioncontainer.question.model.Question;
 import org.silverpeas.core.questioncontainer.result.model.QuestionResult;
 import org.silverpeas.core.questioncontainer.score.model.ScoreDetail;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.csv.CSVRow;
 import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.export.ExportCSVBuilder;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
@@ -628,8 +628,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
       QuestionContainerPK qcPK = new QuestionContainerPK(objectId, getSpaceId(), getComponentId());
       silverObjectId = questionContainerService.getSilverObjectId(qcPK);
     } catch (Exception e) {
-      SilverTrace.error("quizz", "QuizzSessionController.getSilverObjectId()",
-          "root.EX_CANT_GET_LANGUAGE_RESOURCE", "objectId=" + objectId, e);
+      SilverLogger.getLogger(this).error(e);
     }
     return silverObjectId;
   }
@@ -642,8 +641,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
       List<CSVRow> rows = questionContainerService.exportCSV(quizz, true);
       csvBuilder.addLines(rows);
     } catch (Exception e) {
-      SilverTrace
-          .error("quizzSession", "QuizzSessionController.exportQuizzCSV", "quizzId=" + quizzId, e);
+      SilverLogger.getLogger(this).error(e);
     }
     return csvBuilder;
   }
@@ -702,8 +700,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
       try {
         surveyClassification = PdcClassificationEntity.fromJSON(positions);
       } catch (DecodingException e) {
-        SilverTrace.error("survey", "SurveySessionController.sendNewSurveyAction",
-            "PdcClassificationEntity error", "Problem to read JSON", e);
+        SilverLogger.getLogger(this).error(e);
       }
       if (surveyClassification != null && !surveyClassification.isUndefined()) {
         List<PdcPosition> pdcPositions = surveyClassification.getPdcPositions();

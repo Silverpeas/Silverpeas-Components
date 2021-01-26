@@ -27,8 +27,8 @@ import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -70,7 +70,7 @@ public class SiteDetail extends PublicationDetail {
       try {
         theCreationDate = DateUtil.parse(date);
       } catch (ParseException e) {
-        SilverTrace.error(SITE_TYPE, "SiteDetail constructor", "Problem to parse date", e);
+        SilverLogger.getLogger(this).error(e);
       }
       this.setCreationDate(theCreationDate);
     }

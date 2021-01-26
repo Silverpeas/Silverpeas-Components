@@ -66,8 +66,6 @@ private String afficheArbo(ArrayPane arrayPane, String idNode, WebSiteSessionCon
   arrayLine.addArrayCellText(espace+rootFolder.getNodeDetail().getName());
   arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"topic\" value=\""+rootFolder.getNodeDetail().getNodePK().getId()+"\">");
 
-  SilverTrace.info("webSites", "JSPdescBookmark.afficheArbo()", "root.MSG_GEN_PARAM_VALUE", "name Theme ="+rootFolder.getNodeDetail().getName()+", nbEsp = "+nbEsp);
-
   resultat = arrayPane.print();
 
   Collection<NodeDetail> subThemes = rootFolder.getNodeDetail().getChildrenDetails();
@@ -76,7 +74,6 @@ private String afficheArbo(ArrayPane arrayPane, String idNode, WebSiteSessionCon
       while (coll.hasNext()) {
             NodeDetail theme = (NodeDetail) coll.next();
             String idTheme = theme.getNodePK().getId();
-            SilverTrace.info("webSites", "JSPdescBookmark.afficheArbo()", "root.MSG_GEN_PARAM_VALUE", "name ss Theme ="+theme.getName()+", id= "+idTheme+", nbEsp = "+N);
             resultat = afficheArbo(arrayPane, idTheme, scc, N);
       }
  }
@@ -98,7 +95,6 @@ private int nbThemes(String idNode, WebSiteSessionController scc, int nb) throws
       while (coll.hasNext()) {
             NodeDetail theme = (NodeDetail) coll.next();
             String idTheme = theme.getNodePK().getId();
-            SilverTrace.info("webSites", "JSPdescBookmark.nbThemes()", "root.MSG_GEN_PARAM_VALUE", "name ss Theme ="+theme.getName()+", N= "+N);
             N = nbThemes(idTheme, scc, N);
       }
   }

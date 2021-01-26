@@ -30,8 +30,6 @@
 
 <%
 
-SilverTrace.info("websites", "JSPaddTopic", "root.MSG_GEN_ENTER_METHOD");
-
 //Recuperation des parametres
 String fatherId = org.owasp.encoder.Encode.forUriComponent(request.getParameter("Id"));
 String path = request.getParameter("Path");

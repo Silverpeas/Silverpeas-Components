@@ -41,7 +41,6 @@ import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Inject;
@@ -374,9 +373,6 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
   }
 
   private void createReservationIndex(Reservation reservation) {
-    SilverTrace
-        .info("resourceManager", "resourceManagerBmEJB.createIndex()", "root.MSG_GEN_ENTER_METHOD",
-            "reservation = " + reservation);
     if (reservation != null) {
       FullIndexEntry indexEntry = new FullIndexEntry(reservation.getInstanceId(), "Reservation",
           reservation.getIdAsString());

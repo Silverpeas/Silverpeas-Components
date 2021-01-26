@@ -29,13 +29,13 @@ package org.silverpeas.components.websites.siteManage.dao;
  * @version
  */
 
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.components.websites.siteManage.model.IconDetail;
 import org.silverpeas.components.websites.siteManage.model.SiteDetail;
 import org.silverpeas.components.websites.siteManage.model.SitePK;
+import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.exception.UtilException;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -69,9 +69,7 @@ public class SiteDAO {
     try {
       dbConnect.close();
     } catch (SQLException se) {
-      SilverTrace
-          .error("webSites", "SiteDAO.closeConnection()", "root.EX_CONNECTION_CLOSE_FAILED", "",
-              se);
+      SilverLogger.getLogger(this).error(se);
     }
   }
 
@@ -336,8 +334,7 @@ public class SiteDAO {
       rs1 = stmt.executeQuery(queryStr1);
 
       if (!rs1.next()) {
-        SilverTrace.error("webSites", "SiteDAO.DAOgetWebSite()", "root.EX_RECORD_NOT_FOUND",
-            "IDSITE = " + pk.getId());
+        SilverLogger.getLogger(this).error("Record not found for site " + pk.getId());
       }
       String idSite = Integer.toString(rs1.getInt(1));
       String name = rs1.getString(2);
@@ -522,9 +519,8 @@ public class SiteDAO {
 
       int resultCount = stmt.executeUpdate();
       if (resultCount != 1) {
-        SilverTrace
-            .error("webSites", "SiteDAO.DAOcreateWebSite()", "webSites.EX_RECORD_INSERTION_PROBLEM",
-                "query = " + queryStr + "resultCount = " + resultCount);
+        SilverLogger.getLogger(this)
+            .error("Cannot save data with query " + queryStr + ": result count = " + resultCount);
       }
     } finally {
       DBUtil.close(stmt);
@@ -547,9 +543,8 @@ public class SiteDAO {
         stmt.setInt(2, Integer.parseInt(idIcon));
         int resultCount = stmt.executeUpdate();
         if (resultCount != 1) {
-          SilverTrace.error("webSites", "SiteDAO.DAOassociateIcons()",
-              "webSites.EX_RECORD_INSERTION_PROBLEM",
-              "query = " + queryStr + "resultCount = " + resultCount);
+          SilverLogger.getLogger(this)
+              .error("Cannot save data with query " + queryStr + ": result count = " + resultCount);
         }
       }
     } finally {
@@ -574,9 +569,8 @@ public class SiteDAO {
 
       int resultCount = stmt.executeUpdate();
       if (resultCount != 1) {
-        SilverTrace.error("webSites", "SiteDAO.DAOpublishDepublishSite()",
-            "webSites.EX_RECORD_UPDATE_PROBLEM",
-            "query = " + queryStr + "resultCount = " + resultCount);
+        SilverLogger.getLogger(this)
+            .error("Cannot update data with query " + queryStr + ": result count = " + resultCount);
       }
     } finally {
       DBUtil.close(stmt);
@@ -637,9 +631,9 @@ public class SiteDAO {
       prepStmt.setInt(1, Integer.parseInt(pk.getId()));
       int resultCount = prepStmt.executeUpdate();
       if (resultCount != 1) {
-        SilverTrace
-            .error("webSites", "SiteDAO.DAOdeleteWebSite()", "webSites.EX_RECORD_DELETE_PROBLEM",
-                "deleteStr = " + deleteStr + ", resultCount = " + resultCount);
+        SilverLogger.getLogger(this)
+            .error(
+                "Cannot delete data with query " + deleteStr + ": result count = " + resultCount);
       }
     } finally {
       DBUtil.close(prepStmt);
@@ -690,10 +684,9 @@ public class SiteDAO {
 
       int resultCount = prepStmt.executeUpdate();
       if (resultCount != 1) {
-        SilverTrace.error("webSites", "SiteDAO.DAOupdateWebSite()",
-            "webSites.webSites.EX_RECORD_UPDATE_PROBLEM",
-            "updateStr = " + updateStr + ", Site= " + description.toString() + ", resultCount = " +
-                resultCount);
+        SilverLogger.getLogger(this)
+            .error("Cannot update site " + description.toString() + " with query " + updateStr +
+                ": result count = " + resultCount);
       }
     } finally {
       DBUtil.close(prepStmt);

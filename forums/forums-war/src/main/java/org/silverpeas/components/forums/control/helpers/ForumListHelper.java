@@ -23,15 +23,15 @@
  */
 package org.silverpeas.components.forums.control.helpers;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.components.forums.control.ForumsSessionController;
 import org.silverpeas.components.forums.model.Forum;
 import org.silverpeas.components.forums.url.ActionUrl;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.util.ArrayUtil;
-import org.silverpeas.core.util.WebEncodeHelper;
-import org.silverpeas.core.webapi.rating.RaterRatingEntity;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
+import org.silverpeas.core.util.WebEncodeHelper;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.webapi.rating.RaterRatingEntity;
 
 import javax.servlet.jsp.JspWriter;
 import java.io.IOException;
@@ -217,9 +217,7 @@ public class ForumListHelper {
       }
       out.println("</tr>");
     } catch (IOException ioe) {
-      SilverTrace
-          .info("forums", "JSPforumsListManager.displayForumLine()", "root.EX_NO_MESSAGE", null,
-              ioe);
+      SilverLogger.getLogger(ForumListHelper.class).error(ioe);
     }
   }
 
@@ -267,9 +265,7 @@ public class ForumListHelper {
             currentForumId, 0, fsc, isSubscriberByInheritance);
       }
     } catch (IOException ioe) {
-      SilverTrace
-          .info("forums", "JSPforumsListManager.displayForumsList()", "root.EX_NO_MESSAGE", null,
-              ioe);
+      SilverLogger.getLogger(ForumListHelper.class).error(ioe);
     }
   }
 
