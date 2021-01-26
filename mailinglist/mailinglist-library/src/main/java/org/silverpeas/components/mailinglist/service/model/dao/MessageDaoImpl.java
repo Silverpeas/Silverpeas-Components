@@ -28,7 +28,6 @@ import org.silverpeas.components.mailinglist.service.model.beans.Attachment;
 import org.silverpeas.components.mailinglist.service.model.beans.Message;
 import org.silverpeas.components.mailinglist.service.util.OrderBy;
 import org.silverpeas.core.annotation.Repository;
-import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.security.encryption.cipher.CryptMD5;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -212,7 +211,7 @@ public class MessageDaoImpl implements MessageDao {
           deleteFile(file);
         }
       }
-    } catch (UtilException ex) {
+    } catch (Exception ex) {
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     }
   }
