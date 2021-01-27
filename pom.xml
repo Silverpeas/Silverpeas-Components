@@ -35,7 +35,7 @@
 
   <groupId>org.silverpeas</groupId>
   <artifactId>components</artifactId>
-  <version>6.1.2-SNAPSHOT</version>
+  <version>6.1.3-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Silverpeas Components</name>
   <url>https://www.silverpeas.org/docs/components</url>
@@ -65,7 +65,7 @@
 
   <properties>
     <!-- property used by the CI to both deploy a build version and release the next stable version -->
-    <next.release>6.1.2</next.release>
+    <next.release>6.1.3</next.release>
     <core.version>${project.version}</core.version>
   </properties>
 
