@@ -29,7 +29,7 @@
   <parent>
     <groupId>org.silverpeas.components</groupId>
     <artifactId>suggestionbox</artifactId>
-    <version>6.2</version>
+    <version>6.2.1-SNAPSHOT-SNAPSHOT</version>
   </parent>
 
   <groupId>org.silverpeas.components.suggestionbox</groupId>
