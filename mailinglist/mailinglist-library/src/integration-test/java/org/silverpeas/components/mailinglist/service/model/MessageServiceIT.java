@@ -34,8 +34,10 @@ import org.silverpeas.components.mailinglist.service.model.beans.MailingList;
 import org.silverpeas.components.mailinglist.service.model.beans.MailingListActivity;
 import org.silverpeas.components.mailinglist.service.model.beans.Message;
 import org.silverpeas.components.mailinglist.service.util.OrderBy;
+import org.silverpeas.core.index.indexing.IndexingLogger;
 import org.silverpeas.core.test.rule.DbSetupRule;
 
+import javax.inject.Inject;
 import java.util.Calendar;
 import java.util.List;
 import java.util.TimeZone;
@@ -67,6 +69,14 @@ public class MessageServiceIT {
         warBuilder -> {
           warBuilder.addAsResource("org/silverpeas/util/attachment/Attachment.properties");
         }).build();
+  }
+
+  @Inject
+  public IndexingLogger indexingLogger;
+
+  @Before
+  public void initIndexLogger() throws Exception {
+    indexingLogger.init();
   }
 
   @Test
