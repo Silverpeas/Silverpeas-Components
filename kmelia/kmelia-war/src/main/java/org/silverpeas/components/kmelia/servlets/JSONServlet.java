@@ -100,7 +100,7 @@ public class JSONServlet extends HttpServlet {
         operations.put("pdc", isRoot && kmeliaSC.isPdcUsed() && isAdmin);
         operations.put("predefinedPdcPositions", kmeliaSC.isPdcUsed() && isAdmin);
         operations.put("templates",
-            kmeliaSC.isTemplatesSelectionEnabledForRole(SilverpeasRole.from(profile)));
+            kmeliaSC.isTemplatesSelectionEnabledForRole(SilverpeasRole.fromString(profile)));
         operations.put("exporting",
             kmeliaSC.isExportComponentAllowed() && kmeliaSC.isExportZipAllowed() &&
                 (isAdmin || kmeliaSC.isExportAllowedToUsers()));

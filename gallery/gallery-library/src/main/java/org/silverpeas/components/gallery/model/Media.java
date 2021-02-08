@@ -555,7 +555,7 @@ public abstract class Media implements SilverContentInterface, Serializable {
    */
   protected SilverpeasRole getHighestUserRole(final User user) {
     Set<SilverpeasRole> userRoles =
-        SilverpeasRole.from(OrganizationControllerProvider.getOrganisationController()
+        SilverpeasRole.fromStrings(OrganizationControllerProvider.getOrganisationController()
             .getUserProfiles(user.getId(), getComponentInstanceId()));
     return SilverpeasRole.getHighestFrom(userRoles);
   }

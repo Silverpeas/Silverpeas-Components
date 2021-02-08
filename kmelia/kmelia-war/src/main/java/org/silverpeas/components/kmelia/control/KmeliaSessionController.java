@@ -606,7 +606,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   @Override
   public SilverpeasRole getHighestSilverpeasUserRole() {
-    SilverpeasRole userRole = SilverpeasRole.from(getProfile());
+    SilverpeasRole userRole = SilverpeasRole.fromString(getProfile());
     return userRole != null ? userRole : super.getHighestSilverpeasUserRole();
   }
 
@@ -1051,7 +1051,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   private void applyVisibilityFilter() {
     final List<KmeliaPublication> publications = getSessionPublicationsList();
     setSessionPublicationsList(getKmeliaService()
-        .filterPublications(publications, getComponentId(), SilverpeasRole.from(getProfile()),
+        .filterPublications(publications, getComponentId(), SilverpeasRole.fromString(getProfile()),
             getUserId()));
   }
 
@@ -3287,7 +3287,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   public boolean isTopicAdmin(final String nodeId) {
     String profile = getUserTopicProfile(nodeId);
     if (profile != null) {
-      return SilverpeasRole.getHighestFrom(SilverpeasRole.from(profile))
+      return SilverpeasRole.getHighestFrom(SilverpeasRole.fromString(profile))
           .isGreaterThanOrEquals(SilverpeasRole.ADMIN);
     }
     return isUserComponentAdmin();

@@ -418,7 +418,7 @@ public class SuggestionBoxWebManager {
    */
   private static SilverpeasRole getHighestUserRoleFrom(User user,
       SuggestionBox suggestionBox) {
-    return SilverpeasRole.getHighestFrom(SilverpeasRole.from(OrganizationController.get()
+    return SilverpeasRole.getHighestFrom(SilverpeasRole.fromStrings(OrganizationController.get()
             .getUserProfiles(user.getId(), suggestionBox.getComponentInstanceId())));
   }
 

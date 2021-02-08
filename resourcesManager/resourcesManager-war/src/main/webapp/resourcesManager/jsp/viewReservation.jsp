@@ -233,7 +233,7 @@ function refuseResource(resourceId, resourceName, objectView) {
   <viewTags:viewAttachmentsAsContent componentInstanceId="<%=componentId%>"
                                      resourceType="Reservation"
                                      resourceId="<%=String.valueOf(reservationId)%>"
-                                     highestUserRole="<%=SilverpeasRole.from(profileForAttachments)%>"/>
+                                     highestUserRole="<%=SilverpeasRole.fromString(profileForAttachments)%>"/>
 <br/>
 <%=buttonPane.print() %>
 </view:frame>

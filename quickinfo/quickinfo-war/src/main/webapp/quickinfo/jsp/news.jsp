@@ -42,7 +42,7 @@
 <c:set var="index" value="${requestScope['Index']}"/>
 <c:set var="role" value="${requestScope['Role']}"/>
 <jsp:useBean id="role" type="java.lang.String"/>
-<c:set var="highestUserRole" value="<%=SilverpeasRole.from(role)%>"/>
+<c:set var="highestUserRole" value="<%=SilverpeasRole.fromString(role)%>"/>
 <jsp:useBean id="highestUserRole" type="org.silverpeas.core.admin.user.model.SilverpeasRole"/>
 <c:set var="contributor" value="${role == 'admin' || role == 'publisher'}"/>
 <c:set var="userId" value="${sessionScope['SilverSessionController'].userId}"/>

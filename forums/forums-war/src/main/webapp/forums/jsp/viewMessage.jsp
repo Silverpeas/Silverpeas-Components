@@ -432,7 +432,7 @@
                                       <viewTags:viewAttachmentsAsContent componentInstanceId="${componentId}"
                                                                          resourceType="<%=currentMessage.RESOURCE_TYPE%>"
                                                                          resourceId="<%=String.valueOf(currentMessage.getId())%>"
-                                                                         highestUserRole="<%=SilverpeasRole.from(profile)%>"/>
+                                                                         highestUserRole="<%=SilverpeasRole.fromString(profile)%>"/>
                                     </div>
                                   <div class="messageFooter">
                                         <input name="checkbox" type="checkbox" <%if (isSubscriber || isMessageSubscriberByInheritance) {%>checked<%}%>

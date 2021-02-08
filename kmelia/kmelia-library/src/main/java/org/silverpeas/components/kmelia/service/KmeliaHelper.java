@@ -65,7 +65,7 @@ public class KmeliaHelper implements Serializable {
     }
     SilverpeasRole flag = SilverpeasRole.USER;
     for (String profile : profiles) {
-      SilverpeasRole role = SilverpeasRole.from(profile);
+      SilverpeasRole role = SilverpeasRole.fromString(profile);
       switch (role) {
         case ADMIN:
           return SilverpeasRole.ADMIN.toString();

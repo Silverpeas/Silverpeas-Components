@@ -41,7 +41,7 @@
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 
-<c:set var='highestUserRole' value='<%=SilverpeasRole.from((String) request.getAttribute("Profile"))%>'/>
+<c:set var='highestUserRole' value='<%=SilverpeasRole.fromString((String) request.getAttribute("Profile"))%>'/>
 <view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.ADMIN"/>
 
 <fmt:message key="GML.ForbiddenAccessContent" var="labelForbiddenAccess"/>

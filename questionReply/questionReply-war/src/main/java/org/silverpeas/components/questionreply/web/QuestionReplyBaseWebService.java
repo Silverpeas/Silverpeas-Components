@@ -48,7 +48,7 @@ public abstract class QuestionReplyBaseWebService extends RESTWebService {
         getOrganisationController().getUserProfiles(getUser().getId(), getComponentId());
     SilverpeasRole profile = USER;
     for (String currentRole : roles) {
-      SilverpeasRole role = SilverpeasRole.from(currentRole);
+      SilverpeasRole role = SilverpeasRole.fromString(currentRole);
       switch (role) {
         case ADMIN:
           return ADMIN;

@@ -932,7 +932,7 @@ public class DefaultKmeliaService implements KmeliaService {
       // publication is definitely deleted or orphaned. In that case, we take the profile of the
       // user in the concerned kmelia instance. This shouldn't occur!
       SilverLogger.getLogger(this).warn("The publication {0} is orphaned!", pubPK);
-      profile = SilverpeasRole.getHighestFrom(SilverpeasRole.from(
+      profile = SilverpeasRole.getHighestFrom(SilverpeasRole.fromStrings(
           getOrganisationController().getUserProfiles(userId, pubPK.getInstanceId()))).getName();
 
     }
@@ -2621,7 +2621,7 @@ public class DefaultKmeliaService implements KmeliaService {
       // tries to notify updater
       String profile = getProfileOnPublication(pub.getMostRecentUpdater(), pub.getPK());
       if (profile != null &&
-          SilverpeasRole.from(profile).isGreaterThanOrEquals(SilverpeasRole.WRITER)) {
+          SilverpeasRole.fromString(profile).isGreaterThanOrEquals(SilverpeasRole.WRITER)) {
         notification = new KmeliaNoMoreValidatorPublicationUserNotification(null, pub);
       } else {
         // notify current user
@@ -3865,7 +3865,7 @@ public class DefaultKmeliaService implements KmeliaService {
 
   private boolean checkUserRoles(String componentId, String userId, String... roles) {
     SilverpeasRole userProfile =
-        SilverpeasRole.from(KmeliaHelper.getProfile(getUserRoles(componentId, userId)));
+        SilverpeasRole.fromString(KmeliaHelper.getProfile(getUserRoles(componentId, userId)));
     boolean checked = userProfile.isInRole(roles);
 
     if (!checked && isRightsOnTopicsEnabled(componentId)) {
@@ -3879,7 +3879,7 @@ public class DefaultKmeliaService implements KmeliaService {
           String[] profiles = adminController.getProfilesByObjectAndUserId(
               ProfiledObjectId.fromNode(descendant.getNodePK().getId()), componentId, userId);
           if (profiles != null && profiles.length > 0) {
-            userProfile = SilverpeasRole.from(KmeliaHelper.getProfile(profiles));
+            userProfile = SilverpeasRole.fromString(KmeliaHelper.getProfile(profiles));
             checked = userProfile.isInRole(roles);
           }
         }
@@ -4312,7 +4312,7 @@ public class DefaultKmeliaService implements KmeliaService {
     if (StringUtil.isDefined(copyDetail.getPublicationStatus())) {
       String profile = getProfile(userId, nodePK);
       if (!copyDetail.getPublicationStatus().equals(PublicationDetail.DRAFT_STATUS)) {
-        if (SilverpeasRole.from(profile).isGreaterThanOrEquals(SilverpeasRole.PUBLISHER)) {
+        if (SilverpeasRole.fromString(profile).isGreaterThanOrEquals(SilverpeasRole.PUBLISHER)) {
           newPubli.setStatus(PublicationDetail.VALID_STATUS);
         } else {
           // case of writer
@@ -4501,7 +4501,7 @@ public class DefaultKmeliaService implements KmeliaService {
     for (String userId : validatorIds) {
       String profile = getProfileOnPublication(userId, publication.getPK());
       if (profile != null &&
-          SilverpeasRole.from(profile).isGreaterThanOrEquals(SilverpeasRole.PUBLISHER)) {
+          SilverpeasRole.fromString(profile).isGreaterThanOrEquals(SilverpeasRole.PUBLISHER)) {
         activeValidatorIds.add(userId);
       }
     }

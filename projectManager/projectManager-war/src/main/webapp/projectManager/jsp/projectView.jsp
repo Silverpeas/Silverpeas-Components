@@ -69,7 +69,7 @@ out.println(tabbedPane.print());
   <viewTags:displayAttachments componentInstanceId="<%=componentId%>"
                                resourceId="<%=String.valueOf(project.getId())%>"
                                resourceType="<%=project.getContributionType()%>"
-                               highestUserRole="<%=SilverpeasRole.from(role)%>"/>
+                               highestUserRole="<%=SilverpeasRole.fromString(role)%>"/>
 </div>
 
 <div class="principalContent">

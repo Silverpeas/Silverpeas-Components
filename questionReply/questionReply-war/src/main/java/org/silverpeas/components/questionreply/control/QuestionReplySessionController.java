@@ -441,7 +441,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   }
 
   public void setUserProfil(String profil) {
-    this.userProfil = SilverpeasRole.from(profil);
+    this.userProfil = SilverpeasRole.fromString(profil);
   }
 
   public String getUserProfil() {

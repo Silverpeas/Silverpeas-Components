@@ -294,7 +294,7 @@ public class MediaCriteria {
 
   private SilverpeasRole getComponentHighestRequesterRole() {
     if (componentHighestRequesterRole == null) {
-      Set<SilverpeasRole> requesterRoles = SilverpeasRole.from(
+      Set<SilverpeasRole> requesterRoles = SilverpeasRole.fromStrings(
           OrganizationControllerProvider.getOrganisationController()
               .getUserProfiles(getRequester().getId(), getComponentInstanceId()));
       componentHighestRequesterRole = SilverpeasRole.getHighestFrom(requesterRoles);

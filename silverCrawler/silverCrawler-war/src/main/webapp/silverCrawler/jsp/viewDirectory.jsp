@@ -44,7 +44,7 @@
 <view:setConstant var="publisherRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.PUBLISHER"/>
 
 <c:set var="componentId" value="${requestScope.browseContext[3]}"/>
-<c:set var="highestUserRole" value='<%=SilverpeasRole.from((String)request.getAttribute("Profile"))%>'/>
+<c:set var="highestUserRole" value='<%=SilverpeasRole.fromString((String)request.getAttribute("Profile"))%>'/>
 
 <fmt:message var="labelSearch" key="GML.search"/>
 

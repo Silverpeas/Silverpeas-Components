@@ -91,7 +91,7 @@ public class KmeliaPublicationHelper {
   }
 
   private static boolean hasWritePrivilege(String currentUserId, String profile, User owner) {
-    SilverpeasRole role = SilverpeasRole.from(profile);
+    SilverpeasRole role = SilverpeasRole.fromString(profile);
     return role == SilverpeasRole.ADMIN || role == SilverpeasRole.PUBLISHER ||
         role == SilverpeasRole.SUPERVISOR ||
         (owner != null && currentUserId.equals(owner.getId()) && role == SilverpeasRole.WRITER);

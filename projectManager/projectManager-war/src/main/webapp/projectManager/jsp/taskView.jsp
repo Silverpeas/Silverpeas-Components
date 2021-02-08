@@ -73,7 +73,7 @@ out.println(window.printBefore());
   <viewTags:displayAttachments componentInstanceId="<%=componentId%>"
                                resourceId="<%=String.valueOf(task.getId())%>"
                                resourceType="<%=task.getContributionType()%>"
-                               highestUserRole="<%=SilverpeasRole.from(role)%>"
+                               highestUserRole="<%=SilverpeasRole.fromString(role)%>"
                                reloadCallbackUrl="${callbackUrl}"/>
 </div>
 
@@ -206,7 +206,7 @@ out.println(window.printBefore());
   <viewTags:viewAttachmentsAsContent componentInstanceId="<%= componentId %>"
                                    resourceType="Task"
                                    resourceId="<%=String.valueOf(task.getId())%>"
-                                   highestUserRole="<%=SilverpeasRole.from(role)%>"/>
+                                   highestUserRole="<%=SilverpeasRole.fromString(role)%>"/>
 
   <view:comments userId="<%=User.getCurrentRequester().getId()%>" componentId="<%=componentId%>"
                  resourceType="<%=task.getContributionType()%>" resourceId="<%=String.valueOf(task.getId())%>" />

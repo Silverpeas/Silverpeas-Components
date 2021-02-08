@@ -142,7 +142,7 @@
   ValidatorsList validatorsList = kmeliaPublication.getValidators();
   boolean validatorsOK = validatorsList.isValidationOperational();
   boolean modificationAllowed = (SilverpeasRole.WRITER.isInRole(profile) && validatorsOK) ||
-      SilverpeasRole.from(profile).isGreaterThanOrEquals(SilverpeasRole.PUBLISHER);
+      SilverpeasRole.fromString(profile).isGreaterThanOrEquals(SilverpeasRole.PUBLISHER);
 
   //Vrai si le user connecte est le createur de cette publication ou si il est admin
   boolean isOwner = false;
@@ -647,7 +647,7 @@
                                      resourceId="<%=id%>"
                                      resourceType="<%=resourceType%>"
                                      contentLanguage="<%=language%>"
-                                     highestUserRole="<%=SilverpeasRole.from(attProfile)%>"
+                                     highestUserRole="<%=SilverpeasRole.fromString(attProfile)%>"
                                      reloadCallbackUrl="${callbackUrl}"
                                      hasToBeIndexed="<%=StringUtil.getBooleanValue(indexIt)%>"
                                      attachmentPosition="${attachmentPosition}"
@@ -838,7 +838,7 @@
                                          resourceType="<%=resourceType %>"
                                          resourceId="<%=id%>"
                                          contentLanguage="<%=contentLanguage%>"
-                                         highestUserRole="<%=SilverpeasRole.from(attProfile)%>"/>
+                                         highestUserRole="<%=SilverpeasRole.fromString(attProfile)%>"/>
       <%
 
       if (kmeliaScc.getInvisibleTabs().indexOf(kmeliaScc.TAB_COMMENT) == -1 && !kmaxMode)	 {

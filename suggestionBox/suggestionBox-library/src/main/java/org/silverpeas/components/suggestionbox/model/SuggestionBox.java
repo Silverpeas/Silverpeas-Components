@@ -152,7 +152,7 @@ public class SuggestionBox extends SilverpeasJpaEntity<SuggestionBox, UuidIdenti
   public SilverpeasRole getHighestUserRole(User user) {
     String[] profiles = OrganizationControllerProvider.getOrganisationController()
         .getUserProfiles(user.getId(), getComponentInstanceId());
-    Set<SilverpeasRole> userRoles = SilverpeasRole.from(profiles);
+    Set<SilverpeasRole> userRoles = SilverpeasRole.fromStrings(profiles);
     SilverpeasRole role = SilverpeasRole.getHighestFrom(userRoles);
     return role != null ? role : SilverpeasRole.READER;
   }

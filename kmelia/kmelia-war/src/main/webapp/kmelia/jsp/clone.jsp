@@ -393,7 +393,7 @@ $(function() {
   <viewTags:viewAttachmentsAsContent componentInstanceId="<%= componentId %>"
                                      resourceType="<%= resourceType%>"
                                      resourceId="<%=id%>"
-                                     highestUserRole="<%=SilverpeasRole.from(profile)%>"/>
+                                     highestUserRole="<%=SilverpeasRole.fromString(profile)%>"/>
   <%
 
 		out.println("</div>");
