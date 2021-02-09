@@ -23,7 +23,10 @@
  */
 package org.silverpeas.components.kmelia;
 
-public class Sort {
+import java.io.Serializable;
+
+public class Sort implements Serializable {
+  private static final long serialVersionUID = 123918700477888284L;
 
   public static final int SORT_CREATOR_ASC = 0;
   public static final int SORT_UPDATE_ASC = 1;

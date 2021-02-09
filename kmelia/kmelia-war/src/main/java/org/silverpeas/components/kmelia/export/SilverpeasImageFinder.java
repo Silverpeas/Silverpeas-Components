@@ -23,19 +23,24 @@
  */
 package org.silverpeas.components.kmelia.export;
 
-import org.apache.commons.lang3.SystemUtils;
-import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.components.gallery.service.GalleryService;
 import org.silverpeas.components.gallery.model.MediaPK;
 import org.silverpeas.components.gallery.model.Photo;
+import org.silverpeas.components.gallery.service.GalleryService;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileServerUtils;
-import org.silverpeas.core.util.ServiceProvider;
 
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.UnaryOperator;
+import java.util.regex.Matcher;
+
+import static java.util.regex.Pattern.compile;
+import static org.silverpeas.core.contribution.attachment.AttachmentServiceProvider.getAttachmentService;
 
 /**
  * A finder of images that were uploaded by a Silverpeas component instance, whatever this component
@@ -50,7 +55,7 @@ import java.util.Map;
  */
 public class SilverpeasImageFinder {
 
-  private static SilverpeasImageFinder instance = new SilverpeasImageFinder();
+  private static final SilverpeasImageFinder instance = new SilverpeasImageFinder();
   private static final String ATTACHED_FILE = "attached_file";
   private static final String SERVED_FILE = "FileServer";
   private static final String IMAGE_IN_GALLERY = "GalleryInWysiwyg";
@@ -73,9 +78,8 @@ public class SilverpeasImageFinder {
    * of Silverpeas. This path is Silverpeas component dependent, so that only a given Silverpeas
    * component can process it.
    * @return the URI of the image in the server.
-   * @throws Exception if an error occurs while finding the image referenced by the specified href.
    */
-  public String findImageReferenceddBy(String href) throws Exception {
+  public String findImageReferencedBy(String href) {
     String path;
     if (isAnAttachment(href)) {
       path = findWithAttachmentController(href);
@@ -87,12 +91,7 @@ public class SilverpeasImageFinder {
     } else {
       path = FileRepositoryManager.getUploadPath() + href;
     }
-    if (SystemUtils.IS_OS_WINDOWS) {
-      path = "file:/" + path.replaceAll("\\\\", "/");
-    } else {
-      path = "file://" + path;
-    }
-    return path.replaceAll(" ", "%20");
+    return Paths.get(path).toUri().toString();
   }
 
   private boolean isAnAttachment(String href) {
@@ -108,22 +107,14 @@ public class SilverpeasImageFinder {
   }
 
   private String findWithAttachmentController(String href) {
-    String attachmentId = null;
-    String lang = null;
-    String[] tokens = href.split("/");
-    for (int i = 0; i < tokens.length; i++) {
-      if (ATTACHMENT_ID_KEY.equals(tokens[i])) {
-        attachmentId = tokens[++i];
-      }
-      if (LANGUAGE_KEY.equals(tokens[i])) {
-        lang = tokens[++i];
-      }
-      if (attachmentId != null && lang != null) {
-        break;
-      }
-    }
-    SimpleDocument attachment = AttachmentServiceProvider.getAttachmentService().searchDocumentById(
-        new SimpleDocumentPK(attachmentId), lang);
+    final UnaryOperator<String> extractor = p -> {
+      final Matcher matcher = compile(".*/" + p + "/([^/]+).*").matcher(href);
+      return matcher.matches() ? matcher.group(1) : StringUtil.EMPTY;
+    };
+    final String attachmentId = extractor.apply(ATTACHMENT_ID_KEY);
+    final String lang = extractor.apply(LANGUAGE_KEY);
+    final SimpleDocument attachment = getAttachmentService()
+        .searchDocumentById(new SimpleDocumentPK(attachmentId), lang);
     return attachment.getAttachmentPath();
   }
 
@@ -135,7 +126,7 @@ public class SilverpeasImageFinder {
     return FileRepositoryManager.getAbsolutePath(componentId) + directory + "/" + sourceFile;
   }
 
-  private String findWithGalleryComponent(String href) throws Exception {
+  private String findWithGalleryComponent(String href) {
     Map<String, String> parameters = getQueryParameters(href);
     String imageId = parameters.get("ImageId");
     String componentId = parameters.get("ComponentId");
@@ -156,7 +147,7 @@ public class SilverpeasImageFinder {
     return queryParameters;
   }
 
-  private GalleryService getGalleryService() throws Exception {
+  private GalleryService getGalleryService() {
     return ServiceProvider.getService(GalleryService.class);
   }
 }

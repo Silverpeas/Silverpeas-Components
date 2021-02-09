@@ -23,16 +23,9 @@
  */
 package org.silverpeas.components.websites.siteManage.dao;
 
-/**
- *
- * @author cbonin
- * @version
- */
-
 import org.silverpeas.components.websites.siteManage.model.IconDetail;
 import org.silverpeas.components.websites.siteManage.model.SiteDetail;
 import org.silverpeas.components.websites.siteManage.model.SitePK;
-import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -48,13 +41,15 @@ import java.util.List;
 
 public class SiteDAO {
 
+  private static final String WHERE_SITE_ID_CLAUSE = " where siteId = ?";
+  private static final String RESULT_COUNT_MSG_PART = ": result count = ";
   private Connection dbConnection;
   private static final String TABLE_SITE_NAME = "SC_WebSites_Site";
   private static final String TABLE_ICONS_NAME = "SC_WebSites_Icons";
   private static final String TABLE_SITE_ICONS_NAME = "SC_WebSites_SiteIcons";
   private static final String TABLE_PUBLICATION_NAME = "SB_Publication_Publi";
 
-  private String componentId;
+  private final String componentId;
 
   public SiteDAO(String componentId) {
     this.componentId = componentId;
@@ -76,7 +71,7 @@ public class SiteDAO {
   /**
    * getIdPublication
    */
-  public String getIdPublication(String idSite) throws SQLException, UtilException {
+  public String getIdPublication(String idSite) throws SQLException {
     try {
       dbConnection = openConnection();
       return daoGetIdPublication(idSite);
@@ -88,7 +83,7 @@ public class SiteDAO {
   /**
    * getAllWebSite
    */
-  public Collection<SiteDetail> getAllWebSite() throws SQLException, UtilException {
+  public Collection<SiteDetail> getAllWebSite() throws SQLException {
     try {
       dbConnection = openConnection();
       return daoGetAllWebSite();
@@ -100,7 +95,7 @@ public class SiteDAO {
   /**
    * getWebSite
    */
-  public SiteDetail getWebSite(SitePK pk) throws SQLException, UtilException {
+  public SiteDetail getWebSite(SitePK pk) throws SQLException {
     try {
       dbConnection = openConnection();
       return daoGetWebSite(pk);
@@ -112,7 +107,7 @@ public class SiteDAO {
   /**
    * getWebSites
    */
-  public List<SiteDetail> getWebSites(List<String> ids) throws SQLException, UtilException {
+  public List<SiteDetail> getWebSites(List<String> ids) throws SQLException {
     try {
       dbConnection = openConnection();
       return daoGetWebSites(ids);
@@ -124,10 +119,10 @@ public class SiteDAO {
   /**
    * getIcons
    */
-  public Collection<IconDetail> getIcons(SitePK pk) throws SQLException, UtilException {
+  public Collection<IconDetail> getIcons(SitePK pk) throws SQLException {
     try {
       dbConnection = openConnection();
-      return (daoGetIcons(pk));
+      return daoGetIcons(pk);
     } finally {
       closeConnection(dbConnection);
     }
@@ -136,10 +131,10 @@ public class SiteDAO {
   /**
    * getNextId
    */
-  public String getNextId() throws SQLException, UtilException {
+  public String getNextId() throws SQLException {
     try {
       dbConnection = openConnection();
-      return (daoGetNextId());
+      return daoGetNextId();
     } finally {
       closeConnection(dbConnection);
     }
@@ -148,10 +143,10 @@ public class SiteDAO {
   /**
    * getAllIcons
    */
-  public Collection<IconDetail> getAllIcons() throws SQLException, UtilException {
+  public Collection<IconDetail> getAllIcons() throws SQLException {
     try {
       dbConnection = openConnection();
-      return (daoGetAllIcons());
+      return daoGetAllIcons();
     } finally {
       closeConnection(dbConnection);
     }
@@ -160,7 +155,7 @@ public class SiteDAO {
   /**
    * createWebSite
    */
-  public void createWebSite(SiteDetail description) throws SQLException, UtilException {
+  public void createWebSite(SiteDetail description) throws SQLException {
     try {
       dbConnection = openConnection();
       daoCreateWebSite(description);
@@ -173,7 +168,7 @@ public class SiteDAO {
    * associateIcons
    */
   public void associateIcons(String id, Collection<String> liste)
-      throws SQLException, UtilException {
+      throws SQLException {
     try {
       dbConnection = openConnection();
       daoAssociateIcons(id, liste);
@@ -185,7 +180,7 @@ public class SiteDAO {
   /**
    * publish
    */
-  public void publish(Collection<String> liste) throws SQLException, UtilException {
+  public void publish(Collection<String> liste) throws SQLException {
     try {
       dbConnection = openConnection();
       daoPublish(liste);
@@ -197,7 +192,7 @@ public class SiteDAO {
   /**
    * dePublish
    */
-  public void dePublish(Collection<String> liste) throws SQLException, UtilException {
+  public void dePublish(Collection<String> liste) throws SQLException {
     try {
       dbConnection = openConnection();
       daoDePublish(liste);
@@ -209,7 +204,7 @@ public class SiteDAO {
   /**
    * deleteWebSites
    */
-  public void deleteWebSites(Collection<String> liste) throws SQLException, UtilException {
+  public void deleteWebSites(Collection<String> liste) throws SQLException {
     try {
       dbConnection = openConnection();
       daoDeleteWebSites(liste);
@@ -238,7 +233,7 @@ public class SiteDAO {
   /**
    * deleteWebSites
    */
-  public void updateWebSite(SiteDetail description) throws SQLException, UtilException {
+  public void updateWebSite(SiteDetail description) throws SQLException {
     try {
       dbConnection = openConnection();
       daoUpdateWebSite(description);
@@ -377,7 +372,7 @@ public class SiteDAO {
         }
         paramBuffer.append(param).append(id);
       }
-      if (ids.size() > 0) {
+      if (!ids.isEmpty()) {
         StringBuilder queryStr1 = new StringBuilder();
         queryStr1.append(
             "select siteId, siteName, siteDescription, sitePage, siteType, siteAuthor, " +
@@ -439,7 +434,7 @@ public class SiteDAO {
       stmt = dbConnection.createStatement();
       rs1 = stmt.executeQuery(queryStr1.toString());
       while (rs1.next()) {
-        String idIcon = Integer.valueOf(rs1.getInt(1)).toString();
+        String idIcon = Integer.toString(rs1.getInt(1));
         String name = rs1.getString(2);
         String description = rs1.getString(3);
         String address = rs1.getString(4);
@@ -455,9 +450,8 @@ public class SiteDAO {
 
   /**
    * @return
-   * @throws SQLException
    */
-  private String daoGetNextId() throws SQLException {
+  private String daoGetNextId() {
     int nextid = DBUtil.getNextId(TABLE_SITE_NAME, "siteId");
     return Integer.toString(nextid);
   }
@@ -480,7 +474,7 @@ public class SiteDAO {
       stmt = dbConnection.createStatement();
       rs1 = stmt.executeQuery(queryStr1);
       while (rs1.next()) {
-        String idIcon = Integer.valueOf(rs1.getInt(1)).toString();
+        String idIcon = Integer.toString(rs1.getInt(1));
         String name = rs1.getString(2);
         String description = rs1.getString(3);
         String address = rs1.getString(4);
@@ -520,7 +514,7 @@ public class SiteDAO {
       int resultCount = stmt.executeUpdate();
       if (resultCount != 1) {
         SilverLogger.getLogger(this)
-            .error("Cannot save data with query " + queryStr + ": result count = " + resultCount);
+            .error("Cannot save data with query " + queryStr + RESULT_COUNT_MSG_PART + resultCount);
       }
     } finally {
       DBUtil.close(stmt);
@@ -544,7 +538,7 @@ public class SiteDAO {
         int resultCount = stmt.executeUpdate();
         if (resultCount != 1) {
           SilverLogger.getLogger(this)
-              .error("Cannot save data with query " + queryStr + ": result count = " + resultCount);
+              .error("Cannot save data with query " + queryStr + RESULT_COUNT_MSG_PART + resultCount);
         }
       }
     } finally {
@@ -570,7 +564,7 @@ public class SiteDAO {
       int resultCount = stmt.executeUpdate();
       if (resultCount != 1) {
         SilverLogger.getLogger(this)
-            .error("Cannot update data with query " + queryStr + ": result count = " + resultCount);
+            .error("Cannot update data with query " + queryStr + RESULT_COUNT_MSG_PART + resultCount);
       }
     } finally {
       DBUtil.close(stmt);
@@ -602,7 +596,7 @@ public class SiteDAO {
    * @throws SQLException
    */
   private void daoDeleteAssociateIcons(SitePK pk) throws SQLException {
-    String deleteStr = "delete from " + TABLE_SITE_ICONS_NAME + " where siteId = ?";
+    String deleteStr = "delete from " + TABLE_SITE_ICONS_NAME + WHERE_SITE_ID_CLAUSE;
 
 
     PreparedStatement prepStmt = null;
@@ -622,7 +616,7 @@ public class SiteDAO {
    */
   private void daoDeleteWebSite(SitePK pk) throws SQLException {
     daoDeleteAssociateIcons(pk);
-    String deleteStr = "delete from " + TABLE_SITE_NAME + " where siteId = ?";
+    String deleteStr = "delete from " + TABLE_SITE_NAME + WHERE_SITE_ID_CLAUSE;
 
 
     PreparedStatement prepStmt = null;
@@ -633,7 +627,7 @@ public class SiteDAO {
       if (resultCount != 1) {
         SilverLogger.getLogger(this)
             .error(
-                "Cannot delete data with query " + deleteStr + ": result count = " + resultCount);
+                "Cannot delete data with query " + deleteStr + RESULT_COUNT_MSG_PART + resultCount);
       }
     } finally {
       DBUtil.close(prepStmt);
@@ -666,7 +660,7 @@ public class SiteDAO {
     String updateStr =
         "update " + TABLE_SITE_NAME + " set " + "siteName = ?, " + "siteDescription = ?, " +
             "sitePage = ?, " + "siteAuthor = ?, " + "siteDate = ?, " + "siteState = ?, " +
-            "popup = ? " + " where siteId = ?";
+            "popup = ? " + WHERE_SITE_ID_CLAUSE;
 
 
     PreparedStatement prepStmt = null;
@@ -686,7 +680,7 @@ public class SiteDAO {
       if (resultCount != 1) {
         SilverLogger.getLogger(this)
             .error("Cannot update site " + description.toString() + " with query " + updateStr +
-                ": result count = " + resultCount);
+                RESULT_COUNT_MSG_PART + resultCount);
       }
     } finally {
       DBUtil.close(prepStmt);

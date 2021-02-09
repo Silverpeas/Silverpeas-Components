@@ -412,7 +412,7 @@ public class SiteDesignActionHandler {
   public String removeDoubleAntiSlash(String chemin) {
     /* ex : id\\rep1\\rep11\\rep111 */
     /* res = id\rep1\rep11\re111 */
-    return chemin.replaceAll("\\\\\\\\", "\\\\");
+    return chemin.replace("\\\\", "\\");
   }
 
   public String finNode(WebSiteSessionController scc, String path) {

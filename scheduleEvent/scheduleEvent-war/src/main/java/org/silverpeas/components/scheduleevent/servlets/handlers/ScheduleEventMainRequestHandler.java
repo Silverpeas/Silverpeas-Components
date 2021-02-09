@@ -29,7 +29,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.silverpeas.components.scheduleevent.control.ScheduleEventSessionController;
 import org.silverpeas.components.scheduleevent.service.model.beans.ScheduleEvent;
-import org.silverpeas.components.scheduleevent.control.ScheduleEventSessionController;
 
 public class ScheduleEventMainRequestHandler implements ScheduleEventRequestHandler {
   private String jspDestination;

@@ -33,7 +33,7 @@ import org.silverpeas.core.util.logging.SilverLogger;
 import javax.servlet.http.HttpServletRequest;
 
 public class ScheduleEventExportRequestHandler implements ScheduleEventRequestHandler {
-  private String jspDestination;
+  private final String jspDestination;
 
   public ScheduleEventExportRequestHandler(String jspDestination) {
     this.jspDestination = jspDestination;
@@ -58,6 +58,6 @@ public class ScheduleEventExportRequestHandler implements ScheduleEventRequestHa
     }
 
     // error page
-    throw new Exception("No current event ");
+    throw new ExportException("No current event ");
   }
 }

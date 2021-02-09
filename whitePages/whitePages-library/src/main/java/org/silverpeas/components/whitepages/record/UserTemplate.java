@@ -23,6 +23,8 @@
  */
 package org.silverpeas.components.whitepages.record;
 
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.Form;
@@ -31,17 +33,16 @@ import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.silverpeas.core.contribution.content.form.field.TextField;
 import org.silverpeas.core.contribution.content.form.form.HtmlForm;
 import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 public class UserTemplate implements RecordTemplate {
+  private static final long serialVersionUID = -6724850073409580787L;
 
   private static final String SPECIFIC_DETAILS = "SpecificDetails";
-  private LocalizationBundle label;
-  private HtmlForm viewForm;
+  private final transient LocalizationBundle label;
+  private transient HtmlForm viewForm;
 
   /**
    * A UserTemplate is built from a fileName and a language : use addFieldTemplate for each field.

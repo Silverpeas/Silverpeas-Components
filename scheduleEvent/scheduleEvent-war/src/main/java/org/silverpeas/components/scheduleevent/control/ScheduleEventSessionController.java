@@ -62,8 +62,8 @@ import org.silverpeas.core.web.selection.SelectionUsersGroups;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -73,7 +73,9 @@ import java.util.Set;
 import static org.silverpeas.core.importexport.ExportDescriptor.withWriter;
 
 public class ScheduleEventSessionController extends AbstractComponentSessionController {
+  private static final long serialVersionUID = -1306206668466915664L;
 
+  private static final String SECURITY_ALERT_FROM_USER_MSG_PREFIX = "Security alert from user ";
   private Selection sel = null;
   private ScheduleEvent currentScheduleEvent = null;
   private static final String ICS_PREFIX = "scheduleevent";
@@ -129,7 +131,7 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
 
   public String initSelectUsersPanel() {
     if (isUserOwnerOfEvent(getCurrentScheduleEvent())) {
-      String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
+      String appContext = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
       Pair<String, String> hostComponentName = new Pair<>(getComponentName(), "");
       Pair<String, String>[] hostPath = new Pair[1];
       hostPath[0] = new Pair<>(getString("scheduleevent.form.selectContributors"), "");
@@ -144,7 +146,8 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
       sel.setSelectedSets(new String[0]);
 
       // constraints
-      String hostDirection, cancelDirection;
+      String hostDirection;
+      String cancelDirection;
       if (currentScheduleEvent.getId() == null) {
         hostDirection = "ConfirmUsers?popupMode=Yes";
         cancelDirection = "ConfirmScreen?popupMode=Yes";
@@ -153,8 +156,8 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
         cancelDirection = "Detail?scheduleEventId=" + currentScheduleEvent.getId();
       }
       String hostUrl =
-          m_context + URLUtil.getURL(URLUtil.CMP_SCHEDULE_EVENT, null, null) + hostDirection;
-      String cancelUrl = m_context + URLUtil.getURL(URLUtil.CMP_SCHEDULE_EVENT, null, null) +
+          appContext + URLUtil.getURL(URLUtil.CMP_SCHEDULE_EVENT, null, null) + hostDirection;
+      String cancelUrl = appContext + URLUtil.getURL(URLUtil.CMP_SCHEDULE_EVENT, null, null) +
           cancelDirection;
       sel.setGoBackURL(hostUrl);
       sel.setCancelURL(cancelUrl);
@@ -164,13 +167,13 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
 
       return Selection.getSelectionURL();
     } else {
-      SilverLogger.getLogger(this).warn("Security alert from user " + getUserId());
+      SilverLogger.getLogger(this).warn(SECURITY_ALERT_FROM_USER_MSG_PREFIX + getUserId());
       return "/admin/jsp/accessForbidden.jsp";
     }
   }
 
   private static String[] getContributorsUserIds(Set<Contributor> contributors) {
-    Set<String> result = new HashSet<String>(contributors.size());
+    Set<String> result = new HashSet<>(contributors.size());
     for (Contributor subscriber : contributors) {
       if (subscriber.getUserId() != -1) {
         result.add(String.valueOf(subscriber.getUserId()));
@@ -302,8 +305,8 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
   public List<ScheduleEvent> getScheduleEventsByUserId() {
     Set<ScheduleEvent> allEvents = getScheduleEventService().listAllScheduleEventsByUserId(
         getUserId());
-    List<ScheduleEvent> results = new ArrayList<ScheduleEvent>(allEvents);
-    Collections.sort(results, new ScheduleEventComparator());
+    List<ScheduleEvent> results = new ArrayList<>(allEvents);
+    results.sort(new ScheduleEventComparator());
 
     return results;
   }
@@ -313,7 +316,7 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
     // update last visited date
     if (event != null) {
       if (event.canBeAccessedBy(getUserDetail())) {
-        getScheduleEventService().setLastVisited(event, Integer.valueOf(getUserId()));
+        getScheduleEventService().setLastVisited(event, Integer.parseInt(getUserId()));
       } else {
         event = null;
       }
@@ -331,7 +334,7 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
       }
       getScheduleEventService().updateScheduleEventStatus(id, newStatus);
     } else {
-      SilverLogger.getLogger(this).warn("Security alert from user " + getUserId());
+      SilverLogger.getLogger(this).warn(SECURITY_ALERT_FROM_USER_MSG_PREFIX + getUserId());
     }
   }
 
@@ -344,7 +347,7 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
     if (isUserOwnerOfEvent(scheduleEvent)) {
       getScheduleEventService().deleteScheduleEvent(scheduleEvent);
     } else {
-      SilverLogger.getLogger(this).warn("Security alert from user " + getUserId());
+      SilverLogger.getLogger(this).warn(SECURITY_ALERT_FROM_USER_MSG_PREFIX + getUserId());
     }
   }
 
@@ -376,10 +379,6 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
   public ScheduleEvent purgeOldResponseForUserId(ScheduleEvent scheduleEvent) {
     return getScheduleEventService().purgeOldResponseForUserId(scheduleEvent,
         Integer.parseInt(getUserId()));
-  }
-
-  public Double getSubscribersRateAnswerFor(ScheduleEvent event) {
-    return 0.0;
   }
 
   public Set<OptionDateVO> getCurrentOptionalDateIndexes() throws Exception {
@@ -417,13 +416,18 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
    * Exports the current ScheduleEvent in iCal format. The iCal file is generated into the temporary
    * directory.
    * @return the iCal file name into which is generated the current ScheduleEvent.
-   * @throws Exception
+   * @throws ExportException on export error.
    */
-  public String exportToICal(ScheduleEvent event) throws Exception {
+  public String exportToICal(ScheduleEvent event) throws ExportException {
 
     // construction de la liste des dates retenues de l'événement
-    List<DateOption> listDateOption = new ArrayList<DateOption>();
-    ScheduleEventDetailVO scheduleEventDetailVO = new ScheduleEventDetailVO(this, event);
+    List<DateOption> listDateOption = new ArrayList<>();
+    ScheduleEventDetailVO scheduleEventDetailVO;
+    try {
+      scheduleEventDetailVO = new ScheduleEventDetailVO(this, event);
+    } catch (Exception e) {
+      throw new  ExportException(e);
+    }
     BestTimeVO bestTimeVO = scheduleEventDetailVO.getBestTimes();
     if (bestTimeVO.isBestDateExists()) {
       List<TimeVO> listTimeVO = bestTimeVO.getTimes();
@@ -451,8 +455,7 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
     Exporter<ExportableCalendar> iCalExporter = ICalExporterProvider.getICalExporter();
     String icsFileName = ICS_PREFIX + getUserId() + ".ics";
     String icsFilePath = FileRepositoryManager.getTemporaryPath() + icsFileName;
-    FileWriter fileWriter = new FileWriter(icsFilePath);
-    try {
+    try (final FileWriter fileWriter = new FileWriter(icsFilePath)) {
       iCalExporter.exports(withWriter(fileWriter), () -> ExportableCalendar.with(eventsToExport));
     } catch (ExportException ex) {
       File fileToDelete = new File(icsFilePath);
@@ -460,6 +463,8 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
         FileUtils.deleteQuietly(fileToDelete);
       }
       throw ex;
+    } catch (IOException e) {
+     throw new ExportException(e);
     }
 
     return icsFileName;

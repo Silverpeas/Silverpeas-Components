@@ -23,40 +23,79 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="org.silverpeas.core.util.ResourceLocator" %>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="org.owasp.encoder.Encode" %>
+<%@ page import="org.silverpeas.core.util.StringUtil" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%
-	response.setDateHeader("Expires", -1);
-	response.setHeader( "Pragma", "no-cache" );
-	response.setHeader( "Cache-control", "no-cache" );
+  response.setDateHeader("Expires", -1);
+  response.setHeader("Pragma", "no-cache");
+  response.setHeader("Cache-control", "no-cache");
 %>
 
-<%
-String componentId 	= Encode.forUriComponent(request.getParameter("ComponentId"));
-String language 	= Encode.forUriComponent(request.getParameter("Language"));
-String fieldName    = Encode.forUriComponent(request.getParameter("FieldName"));
+<c:set var="componentId" value='<%=StringUtil.defaultStringIfNotDefined(Encode.forUriComponent(request.getParameter("ComponentId")))%>'/>
+<c:set var="language" value='<%=StringUtil.defaultStringIfNotDefined(Encode.forUriComponent(request.getParameter("Language")))%>'/>
+<c:set var="fieldName" value='<%=StringUtil.defaultStringIfNotDefined(Encode.forUriComponent(request.getParameter("FieldName")))%>'/>
+<c:url var="galleryUrl" value="/GalleryInWysiwyg/dummy">
+  <c:param name="ComponentId" value="${componentId}"/>
+  <c:param name="Language" value="${language}"/>
+</c:url>
 
-String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
-%>
+<view:sp-page>
+  <view:sp-head-part noLookAndFeel="true">
+    <style type="text/css">
 
-<html>
-<head>
-<title></title>
-<script type="text/javascript">
-function selectImage(url)
-{
-<%if(fieldName != null){%>
-    window.opener.choixImageInGallery<%=fieldName%>(url);
-<%}else{%>
-	window.opener.choixImageInGallery(url);
-<%}%>
-	window.close();
-}
-</script>
-</head>
-<frameset cols="200,600" rows="*" framespacing="0" frameborder="NO">
-  <frame src="<%=m_context%>/GalleryInWysiwyg/dummy?ComponentId=<%=componentId%>&Language=<%=language%>" name="treeview" scrolling="AUTO" frameborder="no">
-  <frame src="wysiwygImages.jsp" name="images" scrolling="AUTO" frameborder="NO">
-</frameset><noframes></noframes>
-</html>
+      html, body, div {
+        width: 100%;
+        height: 100%;
+      }
+
+      div {
+        display: table-cell;
+      }
+
+      div, iframe {
+        padding: 0;
+        margin: 0;
+        border: none;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        border: none;
+        overflow: hidden;
+      }
+
+      #layout {
+        display: table;
+      }
+
+      #left {
+        width: 200px;
+      }
+
+      #right {
+        width: auto;
+      }
+    </style>
+    <script type="text/javascript">
+      function selectImage(url) {
+        window.opener.choixImageInGallery${silfn:escapeJs(fieldName)}(url);
+        window.close();
+      }
+    </script>
+  </view:sp-head-part>
+  <view:sp-body-part>
+    <div id="layout">
+      <div id="left">
+        <iframe src="${galleryUrl}" name="treeview" title="" height="100%" width="100%"></iframe>
+      </div>
+      <div id="right">
+        <iframe src="wysiwygImages.jsp" name="images" title="" height="100%" width="100%"></iframe>
+      </div>
+    </div>
+  </view:sp-body-part>
+</view:sp-page>

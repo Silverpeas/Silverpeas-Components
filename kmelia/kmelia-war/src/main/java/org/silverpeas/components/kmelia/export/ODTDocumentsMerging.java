@@ -305,7 +305,7 @@ class ODTDocumentsMerging extends TextDocument {
     URI imageURI = null;
     SilverpeasImageFinder imageFinder = SilverpeasImageFinder.getImageFinder();
     try {
-      String imagePath = imageFinder.findImageReferenceddBy(href);
+      String imagePath = imageFinder.findImageReferencedBy(href);
       imageURI = URI.create(imagePath);
     } catch (Exception ex) {
       SilverLogger.getLogger(this)

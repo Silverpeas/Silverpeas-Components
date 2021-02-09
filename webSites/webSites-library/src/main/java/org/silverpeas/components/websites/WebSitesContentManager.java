@@ -69,11 +69,10 @@ public class WebSitesContentManager extends AbstractContentInterface implements 
     return Optional.ofNullable(getWebSiteService().getWebSite(componentInstanceId, resourceId));
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   protected List<Contribution> getAccessibleContributions(
       final List<ResourceReference> resourceReferences, final String currentUserId) {
-    return (List) resourceReferences.stream()
+    return resourceReferences.stream()
         .collect(groupingBy(ResourceReference::getComponentInstanceId,
                  mapping(ResourceReference::getLocalId, toList())))
         .entrySet().stream()
