@@ -55,7 +55,7 @@
   List listDocument = (List) request.getAttribute("ListDocument");
   String choice = (String) request.getAttribute("ResultDisplayMode");
   if (StringUtil.isNotDefined(choice)) {
-    choice = request.getParameter("Choice");
+    choice = org.owasp.encoder.Encode.forUriComponent(request.getParameter("Choice"));
   }
   if (StringUtil.isNotDefined(choice)) {
     choice = "D";
@@ -646,7 +646,7 @@ out.println(surveyPart);
       checked = "checked=\"checked\"";
     }
     %>
-    <span class="champs-ui-dialog"><input name="checkedViewC" type="checkbox" <%=checked%>/><b>${classicMsg}</b><br />${classicDescMsg}</span>
+    <span class="champs-ui-dialog"><input name="checkedViewC" type="checkbox" <%=checked%>/><strong>${classicMsg}</strong><br />${classicDescMsg}</span>
     <% 
     //Si Mode anonyme ou Enquete anonyme -> le mode détaillé n'a pas lieu d'être
     String disabled = "";
@@ -660,7 +660,7 @@ out.println(surveyPart);
       checked = "checked=\"checked\"";
     }
     %>
-    <span class="champs-ui-dialog"><input name="checkedViewD" type="checkbox" <%=checked%> <%=disabled%>/><b>${detailedMsg}</b><br />${detailedDescMsg}</span>
+    <span class="champs-ui-dialog"><input name="checkedViewD" type="checkbox" <%=checked%> <%=disabled%>/><strong>${detailedMsg}</strong><br />${detailedDescMsg}</span>
   </div>
   <div id="synthesisFile-publishResultDialog">
     <label class="label-ui-dialog" for="synthesisFile">${synthesisFileMsg}</label>
@@ -672,7 +672,7 @@ out.println(surveyPart);
     <span class="champs-ui-dialog">
     <a href="<%=url%>" target="_blank"><%=simpleDocument.getFilename()%></a>
     <%=FileRepositoryManager.formatFileSize(simpleDocument.getSize())%>    
-    <a href="javascript:onclick=hideSynthesisFile();"><img src="<%=deleteSrc%>" border="0"/></a>
+    <a href="javascript:onclick=hideSynthesisFile();"><img src="<%=deleteSrc%>" border="0" alt=""/></a>
     <input type="hidden" name="idSynthesisFile" value="<%=simpleDocument.getId()%>"/>
     </span>  
     </div>
