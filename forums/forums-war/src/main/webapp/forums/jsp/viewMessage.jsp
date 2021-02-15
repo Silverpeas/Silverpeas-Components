@@ -197,7 +197,7 @@
 <c:set var="messageRaterRatingEntity" value="<%=RaterRatingEntity.fromRateable(message)%>"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.forums">
+<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.forums" xml:lang="${requestScope.resources.language}">
 <head>
     <title><c:out value="${pageScope.title}" /></title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -314,10 +314,23 @@
               <viewTags:displayContributionRating readOnly="${not(isAdmin or isUser)}" canUserRating="${isAdmin or isUser}" raterRating="${messageRaterRatingEntity}"/>
             </div>
             <%
+              ForumHelper.PrintOutParameters viewParams = new ForumHelper.PrintOutParameters()
+                  .setWriter(out)
+                  .setTranslations(resource)
+                  .setForumView(false)
+                  .setForumId(folderId)
+                  .setMessageId(messageId)
+                  .setSimpleMode(true)
+                  .setCall("viewForum")
+                  .setSessionController(fsc)
+                  .setResources(resources);
+              ForumHelper.RoleMask roleMask = new ForumHelper.RoleMask()
+                  .setUserId(userId)
+                  .setAdmin(isAdmin)
+                  .setModerator(isModerator)
+                  .setReader(isReader);
               ForumHelper
-                  .displaySingleMessageList(out, resource, userId, isAdmin, isModerator, isReader,
-                      false, folderId, messageId, true, "viewForum", fsc, resources,
-                      isMessageSubscriberByInheritance);
+                  .displaySingleMessageList(viewParams, roleMask, isMessageSubscriberByInheritance);
                 %>
            <%
 
@@ -384,7 +397,7 @@
 %>
 
                     <div id="msgContent<%=currentId%>" class="contourintfdcolor">
-                        <a name="msg<%=currentId%>"/>
+                        <a id="msg<%=currentId%>"/>
                           <div id="author<%=i%>" class="user">
                             <div class="profilPhoto"><view:image src="<%=avatar%>" alt="<%=authorLabel%>" type="avatar" /></div>
                             <div class="info">
@@ -398,7 +411,7 @@
                                 <div class="messageHeader">
                                   <span class="txtnav"><%=currentMessage.getTitle()%></span>&nbsp;<span class="txtnote"><%=convertDate(currentMessage.getDate(), resources)%></span>
                                       <% if (displayAllMessages) { %>
-                                          <a href="javascript:scrollTop()"><img src="<%=context%>/util/icons/arrow/arrowUp.gif" align="middle" border="0"/></a>
+                                          <a href="javascript:scrollTop()"><img alt="" src="<%=context%>/util/icons/arrow/arrowUp.gif" border="0"/></a>
                                       <% } %>
                                 </div>
                                     <div class="messageContent">
@@ -442,24 +455,24 @@
                                              <% if (forumActive) { %>
                                               <div class="messageActions">
                                               <% if ((isAdmin || isUser) && STATUS_VALIDATE.equals(status)) { %>
-                                                  <a href="javascript:replyMessage(<%=currentId%>)"><img src="<%=context%>/util/icons/reply.gif" align="middle" border="0" alt="<%=resource.getString("replyMessage")%>" title="<%=resource.getString("replyMessage")%>"/></a>&nbsp;
+                                                  <a href="javascript:replyMessage(<%=currentId%>)"><img src="<%=context%>/util/icons/reply.gif" border="0" alt="<%=resource.getString("replyMessage")%>" title="<%=resource.getString("replyMessage")%>"/></a>&nbsp;
                                               <%  }
                                                 if (userId.equals(authorId) || isAdmin || isModerator) {
                                                   if (isModerator && STATUS_FOR_VALIDATION.equals(status)) {
                                             %>
                                                     <a href="javascript:valideMessage(<%=currentId%>)"><img
-                                                        src="<%=context%>/util/icons/ok.gif" align="middle" border="0" alt="<%=resource.getString("valideMessage")%>" title="<%=resource.getString("valideMessage")%>"/></a>&nbsp;
+                                                        src="<%=context%>/util/icons/ok.gif" border="0" alt="<%=resource.getString("valideMessage")%>" title="<%=resource.getString("valideMessage")%>"/></a>&nbsp;
                                                     <a href="javascript:refuseMessage(<%=currentId%>)"><img
-                                                      src="<%=context%>/util/icons/wrong.gif" align="middle" border="0" alt="<%=resource.getString("refuseMessage")%>" title="<%=resource.getString("refuseMessage")%>"/></a>&nbsp;
+                                                      src="<%=context%>/util/icons/wrong.gif" border="0" alt="<%=resource.getString("refuseMessage")%>" title="<%=resource.getString("refuseMessage")%>"/></a>&nbsp;
                                             <% } %>
-                                               <a href="javascript:editMessage(<%=currentId%>)"><img src="<%=context%>/util/icons/update.gif" align="middle" border="0" alt="<%=resource.getString("editMessage")%>" title="<%=resource.getString("editMessage")%>"/></a>&nbsp;
-                                               <a href="javascript:deleteMessage(<%=currentId%>, <%=parentId%>, true)"><img src="<%=context%>/util/icons/delete.gif" align="middle" border="0" alt="<%=resource.getString("deleteMessage")%>" title="<%=resource.getString("deleteMessage")%>"/></a>&nbsp;
+                                               <a href="javascript:editMessage(<%=currentId%>)"><img src="<%=context%>/util/icons/update.gif" border="0" alt="<%=resource.getString("editMessage")%>" title="<%=resource.getString("editMessage")%>"/></a>&nbsp;
+                                               <a href="javascript:deleteMessage(<%=currentId%>, <%=parentId%>, true)"><img src="<%=context%>/util/icons/delete.gif" border="0" alt="<%=resource.getString("deleteMessage")%>" title="<%=resource.getString("deleteMessage")%>"/></a>&nbsp;
                                             <% } %>
                                               </div>
                                            <% } %>
                                         </div>
                               </div>
-                              <br clear="all"/>
+                              <br />
                     </div><%
 
         }
@@ -478,13 +491,13 @@
 								<div class="field" id="messageTitleArea">
 									<label for="messageTitle" class="txtlibform"><fmt:message key='messageTitle'/></label>
 									<div class="champs">
-										<input type="text" id="messageTitle" name="messageTitle" size="88" maxlength="<%=DBUtil.getTextFieldLength()%>"/>&nbsp;<img src="<%=context%>/util/icons/mandatoryField.gif" width="5" height="5"/>
+										<input type="text" id="messageTitle" name="messageTitle" size="88" maxlength="<%=DBUtil.getTextFieldLength()%>"/>&nbsp;<img alt="" src="<%=context%>/util/icons/mandatoryField.gif" width="5" height="5"/>
 									</div>
 								</div>
 								<div class="field" id="messageTextArea">
 									<label for="messageText" class="txtlibform"><fmt:message key='messageText'/></label>
 									<div class="champs">
-										<textarea name="messageText" id="messageText"></textarea>&nbsp;<img src="<%=context%>/util/icons/mandatoryField.gif" width="5" height="5"/>
+										<textarea name="messageText" id="messageText"></textarea>&nbsp;<img alt="" src="<%=context%>/util/icons/mandatoryField.gif" width="5" height="5"/>
 									</div>
 								</div>
 								<div class="field" id="messageSubscriptionArea">

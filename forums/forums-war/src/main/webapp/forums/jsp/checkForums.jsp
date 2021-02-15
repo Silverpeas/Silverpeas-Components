@@ -116,8 +116,7 @@
         out.print("resizeFrame();");
       }
     } catch (IOException ioe) {
-      SilverTrace.info("forums", "JSPmessagesListManager.addJsResizeFrameCall()",
-          "root.EX_NO_MESSAGE", null, ioe);
+      SilverLogger.getLogger(this).error(ioe);
     }
   }
 %>

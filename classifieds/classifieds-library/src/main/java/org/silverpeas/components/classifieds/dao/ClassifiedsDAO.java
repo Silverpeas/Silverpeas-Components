@@ -127,7 +127,7 @@ public class ClassifiedsDAO {
       String query = "delete from SC_Classifieds_Classifieds where classifiedId = ? ";
       // initialisation des paramètres
       prepStmt = con.prepareStatement(query);
-      prepStmt.setInt(1, new Integer(classifiedId));
+      prepStmt.setInt(1, Integer.valueOf(classifiedId));
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
@@ -376,7 +376,7 @@ public class ClassifiedsDAO {
       String query = "delete from SC_Classifieds_Subscribes where subscribeId = ? ";
       // initialisation des paramètres
       prepStmt = con.prepareStatement(query);
-      prepStmt.setInt(1, new Integer(subscribeId));
+      prepStmt.setInt(1, Integer.valueOf(subscribeId));
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
@@ -485,7 +485,7 @@ public class ClassifiedsDAO {
     String description = rs.getString("description");
     Integer price = 0;
     if (rs.getString("price") != null) {
-      price = new Integer(rs.getString("price"));
+      price = Integer.valueOf(rs.getString("price"));
     }
     String creatorId = rs.getString("creatorId");
     Date creationDate = new Date(Long.parseLong(rs.getString("creationDate")));

@@ -73,8 +73,15 @@ a.txtnote:hover {
   background-color: #EAEAEA;
 }
 
+.tabContainer {
+  width: 100%;
+}
+
 .testTableau {
   border: 1px solid #CCCCCC;
+  width: 100%;
+  text-align: center;
+  border-spacing: 1px;
 }
 
 .testTableau tr td:first-child.ArrayCell img:first-child { 

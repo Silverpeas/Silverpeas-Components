@@ -59,6 +59,18 @@ public class ForumHelper {
   public static final String STATUS_VALIDATE = "V";
   public static final String STATUS_FOR_VALIDATION = "A";
   public static final String STATUS_REFUSED = "R";
+  private static final String LINK_TO = "<a href=\"";
+  private static final String IMAGE_DEFAULT_ATTR = " align=\"middle\" border=\"0\" alt=\"";
+  private static final String EDIT_MESSAGE = "editMessage";
+  private static final String TITLE = "\" title=\"";
+  private static final String EDIT_MESSAGE_KEYWORDS = "editMessageKeywords";
+  private static final String TD_DEFAULT_ATTR = "    <td align=\"center\"><span class=\"txtnote\">";
+  private static final String VIEW_MESSAGE = "viewMessage";
+  private static final String SPAN_TD_END = "</span></td>";
+  private static final String TABLE_END = "</table>";
+  private static final String LINK_END = "\"></a>";
+  private static final String NBSP = "&nbsp;";
+  private static final String TD_END = "</td>";
 
   private ForumHelper() {
 
@@ -114,11 +126,9 @@ public class ForumHelper {
     }
   }
 
-
-  private static void displayMessageLine(Message message, JspWriter out, LocalizationBundle resource,
-      String userId, boolean admin, boolean moderator, boolean reader, boolean view, int depth,
-      boolean simpleMode, String call, ForumsSessionController fsc, MultiSilverpeasBundle resources,
-      final boolean isSubscriberByInheritance) {
+  private static void displayMessageLine(PrintOutParameters params, Message message,
+      RoleMask roleMask, int depth, final boolean isSubscriberByInheritance) {
+    ForumsSessionController fsc = params.sessionController;
     try {
       int messageId = message.getId();
       String messageTitle = message.getTitle();
@@ -126,245 +136,283 @@ public class ForumHelper {
       String messageAuthor = fsc.getAuthorName(message.getAuthor());
       int messageParent = message.getParentId();
       if (messageAuthor == null) {
-        messageAuthor = resource.getString("inconnu");
+        messageAuthor = params.getTranslations().getString("inconnu");
       }
       int forumId = message.getForumId();
       boolean isSubscriber = fsc.isMessageSubscriber(messageId);
-      String cellWidth = (simpleMode ? " width=\"15\"" : "");
-      int lineHeight = ((fsc.isExternal() && reader) ? 16 : 24);
+      String cellWidth = (params.isSimpleMode() ? " width=\"15\"" : "");
+      int lineHeight = ((fsc.isExternal() && roleMask.isReader()) ? 16 : 24);
       // isAutorized : si l'utilisateur est autorisé à modifier le message
-      boolean isAutorized = admin || moderator || userId.equals(author);
+      boolean isAutorized = roleMask.isAdmin() || roleMask.isModerator() || roleMask.isAbout(author);
+      params.setMessageId(messageId)
+          .setForumId(forumId);
+
       if (message.isValid() || (!message.isValid() && isAutorized)) {
 
-        out.println("  <tr id=\"msgLine" + messageId + "\" height=\"" + lineHeight + "\">");
+        params.getWriter().println("  <tr id=\"msgLine" + messageId + "\" height=\"" + lineHeight + "\">");
 
-        // abonnement
-        out.print("    <td" + cellWidth + ">");
-        if (isSubscriber || isSubscriberByInheritance) {
-          out.print("<div class=\"messageFooter\">");
-          out.print("<input name=\"checkbox\" type=\"checkbox\" checked ");
-          if (!isSubscriber) {
-            out.print("disabled ");
-          } else {
-            out.print("title=\"" + resource.getString("unsubscribeMessage") + "\" ");
-          }
-          out.print("onclick=\"javascript:window.location.href='");
-          out.print(
-              ActionUrl.getUrl((view ? "viewForum" : "viewMessage"), call, 13, messageId, forumId));
-          out.print("'\"/></div>");
-        } else {
-          out.print("&nbsp;");
-        }
-        out.println("</td>");
+        printOutSubscriptionMessage(params, isSubscriberByInheritance, isSubscriber, cellWidth);
 
-        out.print("    <td" + cellWidth + ">");
+        printOutMessageReadStatus(params, roleMask.getUserId(), roleMask.isReader(), messageParent, cellWidth);
 
-        // rechercher si l'utilisateur a des messages non lus sur ce sujet
-        if (messageParent == 0 && (!fsc.isExternal() || !reader)) {
-          boolean isNewMessage = fsc.isNewMessage(userId, forumId, messageId);
-          out.print(
-              "<img src=\"icons/" + (isNewMessage ? "newMessage" : "noNewMessage") + ".gif\">");
-        }
-        out.println("</td>");
+        printOutMessageProperties(params, message, depth, messageTitle, messageAuthor);
 
-        // Titre du message
-        out.print("    <td class=\"txtnote\">");
-        out.print("<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">");
-        out.print("<tr>");
-        out.print("<td width=\"" + depth * 10 + "\">");
-        if (depth > 0) {
-          out.print("<img src=\"icons/1px.gif\" width=\"" + depth * 10 + "\" height=\"1\">");
-        }
-        out.print("</td><td align=\"left\"><a href=\"");
-        if (fsc.isDisplayAllMessages() && !view) {
-          out.print("javascript:scrollMessage('" + messageId + "')");
-        } else {
-          out.print(
-              ActionUrl.getUrl("viewMessage", call, 1, messageId, forumId, !simpleMode, false));
-        }
-        out.print("\">");
-        out.print("<span class=\"message_" + message.getStatus() + "\"><b>");
-        out.print(WebEncodeHelper.javaStringToHtmlString(messageTitle));
-        // Auteur du message
-        out.print("</b>");
-        out.print(simpleMode ? "&nbsp;" : "<br>");
-        out.print("(" + messageAuthor);
-        // Date de Creation
-        out.print("&nbsp;-&nbsp;" + convertDate(message.getDate(), resources));
-        out.print(")");
-        if (message.isToBeValidated()) {
-          out.println(" - " + resource.getString("toValidate"));
-        } else if (message.isRefused()) {
-          out.println(" - " + resource.getString("refused"));
-        }
-        out.println("</span>");
-
-        out.print("</a>");
-        out.print("</td>");
-        out.print("</tr>");
-        out.print("</table>");
-        out.println("</td>");
-
-        if (!simpleMode) {
-          // Dernier post
-          out.print("    <td align=\"center\"><span class=\"txtnote\">");
-          int lastMessageId = -1;
-          String lastMessageDate = "";
-          String lastMessageUser = "";
-          Object[] lastMessage = fsc.getLastMessage(forumId, messageId);
-          if (ArrayUtil.isNotEmpty(lastMessage)) {
-            lastMessageId = Integer.parseInt((String) lastMessage[0]);
-            lastMessageDate = convertDate((Date) lastMessage[1], resources);
-            lastMessageUser = (String) lastMessage[2];
-          }
-          if (lastMessageDate != null) {
-            out.print("<a href=\"" +
-                ActionUrl.getUrl("viewMessage", call, 1, lastMessageId, forumId, true, false) +
-                "\">");
-            out.print(WebEncodeHelper.javaStringToHtmlString(lastMessageDate));
-            out.print("<br/>");
-            out.print(WebEncodeHelper.javaStringToHtmlString(lastMessageUser));
-            out.print("</a>");
-          }
-          out.println("</span></td>");
-
-          // Nombres de réponses
-          out.print("    <td align=\"center\"><span class=\"txtnote\">");
-          out.print(fsc.getNbResponses(forumId, messageId));
-          out.println("</span></td>");
-
-          // Nombres de vues
-          out.print("    <td align=\"center\"><span class=\"txtnote\">");
-          out.print(fsc.getMessageStat(messageId));
-          out.println("</span></td>");
-
-          // Notation
-          SilverpeasRole highestUserRole = fsc.getHighestSilverpeasUserRole();
-          boolean canUserRating =
-              highestUserRole != null && highestUserRole.isGreaterThanOrEquals(SilverpeasRole.USER);
-          RaterRatingEntity raterRatingEntity = RaterRatingEntity.fromRateable(message);
-          out.print("<td  align=\"center\">");
-          out.write(raterRatingEntity
-              .toJSonScript("raterRatingEntity_" + raterRatingEntity.getContributionId()));
-          out.write("<div silverpeas-rating readonly=\"true\" raterRating=\"raterRatingEntity_" +
-              raterRatingEntity.getContributionId() +
-              "\" shownbraterratings=\"false\" canuserrating=\"" + canUserRating +
-              "\"></div>");
-          out.println("</td>");
+        if (!params.isSimpleMode()) {
+          printOutAdditionalInfo(params, message);
         }
       }
       // Opérations
-      if (isAutorized) {
-        int opCellWidth = 40;
-        if (depth == 0) {
-          opCellWidth += 20;
-        }
-        if (!simpleMode) {
-          opCellWidth += 20;
-        }
-        out.print("    <td align=\"center\" width=\"" + opCellWidth + "\">");
-        if (messageParent == 0 && (admin || moderator)) {
-          out.print("<a href=\"");
-          out.print(ActionUrl.getUrl("editMessage", call, 3, messageId, forumId));
-          out.print("\"><img src=" + IMAGE_MOVE + " align=\"middle\" border=\"0\" alt=\"" +
-              resource.getString("moveMessage") + "\" title=\"" +
-              resource.getString("moveMessage") + "\"></a>");
-          out.print("&nbsp;");
-        }
+      printOutActions(params, roleMask, depth, messageParent, isAutorized);
 
-        if (!view) {
-          out.print("<a href=\"javascript:editMessage(" + messageId + ")\">");
-          out.print("<img src=" + IMAGE_UPDATE + " align=\"middle\" border=\"0\" alt=\"" +
-              resource.getString("editMessage") + "\" title=\"" +
-              resource.getString("editMessage") + "\"></a>");
-          out.print("&nbsp;");
-        }
-        out.print("<a href=\"javascript:deleteMessage(" + messageId + ", " + messageParent +
-                ", false)\">");
-        out.print("<img src=" + IMAGE_DELETE + " align=\"middle\" border=\"0\" alt=\"" +
-            resource.getString("deleteMessage") + "\" title=\"" +
-            resource.getString("deleteMessage") + "\"></a>");
-
-        if (!simpleMode) {
-          out.print("&nbsp;");
-          out.print("<a href=\"");
-          out.print(ActionUrl.getUrl("editMessageKeywords", call, -1, messageId, forumId));
-          out.print("\"><img src=" + IMAGE_WORD + " align=\"middle\" border=\"0\" alt=\"" +
-              resource.getString("editMessageKeywords") + "\" title=\"" +
-              resource.getString("editMessageKeywords") + "\"></a>");
-        }
-
-        out.println("</td>");
-      }
-
-      out.println("  </tr>");
+      params.getWriter().println("  </tr>");
     } catch (IOException ioe) {
       SilverLogger.getLogger(ForumHelper.class).warn(ioe);
     }
   }
 
-  public static void displayMessagesList(JspWriter out, LocalizationBundle resource, String userId,
-      boolean admin, boolean moderator, boolean reader, boolean view, int currentForumId,
-      boolean simpleMode, String call, ForumsSessionController fsc, MultiSilverpeasBundle resources,
+  private static void printOutActions(final PrintOutParameters params, final RoleMask roleMask,
+      final int depth, final int messageParent, final boolean isAutorized)
+      throws IOException {
+    JspWriter out = params.getWriter();
+    if (isAutorized) {
+      int opCellWidth = 40;
+      if (depth == 0) {
+        opCellWidth += 20;
+      }
+      if (!params.isForumView()) {
+        opCellWidth += 20;
+      }
+      out.print("    <td align=\"center\" width=\"" + opCellWidth + "\">");
+      if (messageParent == 0 && (roleMask.isAdmin() || roleMask.isModerator())) {
+        out.print(LINK_TO);
+        out.print(ActionUrl.getUrl(EDIT_MESSAGE, params.getCall(), 3, params.getMessageId(),
+            params.getForumId()));
+        out.print("\"><img src=" + IMAGE_MOVE + IMAGE_DEFAULT_ATTR +
+            params.getTranslations().getString("moveMessage") + TITLE +
+            params.getTranslations().getString("moveMessage") + LINK_END);
+        out.print(NBSP);
+      }
+
+      if (!params.isForumView()) {
+        out.print("<a href=\"javascript:editMessage(" + params.getMessageId() + ")\">");
+        out.print("<img src=" + IMAGE_UPDATE + IMAGE_DEFAULT_ATTR +
+            params.getTranslations().getString(EDIT_MESSAGE) + TITLE +
+            params.getTranslations().getString(EDIT_MESSAGE) + LINK_END);
+        out.print(NBSP);
+      }
+      out.print(
+          "<a href=\"javascript:deleteMessage(" + params.getMessageId() + ", " + messageParent +
+              ", false)\">");
+      out.print("<img src=" + IMAGE_DELETE + IMAGE_DEFAULT_ATTR +
+          params.getTranslations().getString("deleteMessage") + TITLE +
+          params.getTranslations().getString("deleteMessage") + LINK_END);
+
+      if (!params.isSimpleMode()) {
+        out.print(NBSP);
+        out.print(LINK_TO);
+        out.print(
+            ActionUrl.getUrl(EDIT_MESSAGE_KEYWORDS, params.getCall(), -1, params.getMessageId(),
+                params.getForumId()));
+        out.print("\"><img src=" + IMAGE_WORD + IMAGE_DEFAULT_ATTR +
+            params.getTranslations().getString(EDIT_MESSAGE_KEYWORDS) + TITLE +
+            params.getTranslations().getString(EDIT_MESSAGE_KEYWORDS) + LINK_END);
+      }
+
+      out.println(TD_END);
+    }
+  }
+
+  private static void printOutAdditionalInfo(final PrintOutParameters params, final Message message)
+      throws IOException {
+    // Dernier post
+    JspWriter out = params.getWriter();
+    out.print(TD_DEFAULT_ATTR);
+    int lastMessageId = -1;
+    String lastMessageDate = "";
+    String lastMessageUser = "";
+    Object[] lastMessage =
+        params.getSessionController().getLastMessage(params.getForumId(), params.getMessageId());
+    if (ArrayUtil.isNotEmpty(lastMessage)) {
+      lastMessageId = Integer.parseInt((String) lastMessage[0]);
+      lastMessageDate = convertDate((Date) lastMessage[1], params.getResources());
+      lastMessageUser = (String) lastMessage[2];
+    }
+    if (lastMessageDate != null) {
+      out.print(LINK_TO +
+          ActionUrl.getUrl(VIEW_MESSAGE, params.getCall(), 1, lastMessageId, params.getForumId(),
+              true, false) + "\">");
+      out.print(WebEncodeHelper.javaStringToHtmlString(lastMessageDate));
+      out.print("<br/>");
+      out.print(WebEncodeHelper.javaStringToHtmlString(lastMessageUser));
+      out.print("</a>");
+    }
+    out.println(SPAN_TD_END);
+
+    // Nombres de réponses
+    out.print(TD_DEFAULT_ATTR);
+    out.print(
+        params.getSessionController().getNbResponses(params.getForumId(), params.getMessageId()));
+    out.println(SPAN_TD_END);
+
+    // Nombres de vues
+    out.print(TD_DEFAULT_ATTR);
+    out.print(params.getSessionController().getMessageStat(params.getMessageId()));
+    out.println(SPAN_TD_END);
+
+    // Notation
+    SilverpeasRole highestUserRole = params.getSessionController().getHighestSilverpeasUserRole();
+    boolean canUserRating =
+        highestUserRole != null && highestUserRole.isGreaterThanOrEquals(SilverpeasRole.USER);
+    RaterRatingEntity raterRatingEntity = RaterRatingEntity.fromRateable(message);
+    out.print("<td  align=\"center\">");
+    out.write(raterRatingEntity.toJSonScript(
+        "raterRatingEntity_" + raterRatingEntity.getContributionId()));
+    out.write("<div silverpeas-rating readonly=\"true\" raterRating=\"raterRatingEntity_" +
+        raterRatingEntity.getContributionId() + "\" shownbraterratings=\"false\" canuserrating=\"" +
+        canUserRating + "\"></div>");
+    out.println(TD_END);
+  }
+
+  private static void printOutMessageProperties(final PrintOutParameters params,
+      final Message message, final int depth, final String messageTitle, final String messageAuthor)
+      throws IOException {
+    // Titre du message
+    JspWriter out = params.getWriter();
+    out.print("    <td class=\"txtnote\">");
+    out.print("<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">");
+    out.print("<tr>");
+    out.print("<td width=\"" + depth * 10 + "\">");
+    if (depth > 0) {
+      out.print("<img src=\"icons/1px.gif\" width=\"" + depth * 10 + "\" height=\"1\">");
+    }
+    out.print("</td><td align=\"left\"><a href=\"");
+    if (params.getSessionController().isDisplayAllMessages() && !params.isForumView()) {
+      out.print("javascript:scrollMessage('" + params.getMessageId() + "')");
+    } else {
+      out.print(ActionUrl.getUrl(VIEW_MESSAGE, params.getCall(), 1, params.getMessageId(),
+          params.getForumId(), !params.isSimpleMode(), false));
+    }
+    out.print("\">");
+    out.print("<span class=\"message_" + message.getStatus() + "\"><b>");
+    out.print(WebEncodeHelper.javaStringToHtmlString(messageTitle));
+    out.print("</b>");
+    // Auteur du message
+    out.print(params.isSimpleMode() ? NBSP : "<br>");
+    out.print("(" + messageAuthor);
+    // Date de Creation
+    out.print("&nbsp;-&nbsp;" + convertDate(message.getDate(), params.getResources()));
+    out.print(")");
+    if (message.isToBeValidated()) {
+      out.println(" - " + params.getTranslations().getString("toValidate"));
+    } else if (message.isRefused()) {
+      out.println(" - " + params.getTranslations().getString("refused"));
+    }
+    out.println("</span>");
+
+    out.print("</a>");
+    out.print(TD_END);
+    out.print("</tr>");
+    out.print(TABLE_END);
+    out.println(TD_END);
+  }
+
+  private static void printOutMessageReadStatus(final PrintOutParameters params,
+      final String userId, final boolean reader, final int messageParent, final String cellWidth)
+      throws IOException {
+    JspWriter out = params.getWriter();
+    out.print("    <td" + cellWidth + ">");
+
+    // rechercher si l'utilisateur a des messages non lus sur ce sujet
+    if (messageParent == 0 && (!params.getSessionController().isExternal() || !reader)) {
+      boolean isNewMessage = params.getSessionController()
+          .isNewMessage(userId, params.getForumId(), params.getMessageId());
+      out.print("<img src=\"icons/" + (isNewMessage ? "newMessage" : "noNewMessage") + ".gif\">");
+    }
+    out.println(TD_END);
+  }
+
+  private static void printOutSubscriptionMessage(final PrintOutParameters params,
+      final boolean isSubscriberByInheritance, final boolean isSubscriber, final String cellWidth)
+      throws IOException {
+    JspWriter out = params.getWriter();
+    out.print("    <td" + cellWidth + ">");
+    if (isSubscriber || isSubscriberByInheritance) {
+      out.print("<div class=\"messageFooter\">");
+      out.print("<input name=\"checkbox\" type=\"checkbox\" checked ");
+      if (!isSubscriber) {
+        out.print("disabled ");
+      } else {
+        out.print("title=\"" + params.getTranslations().getString("unsubscribeMessage") + "\" ");
+      }
+      out.print("onclick=\"javascript:window.location.href='");
+      out.print(
+          ActionUrl.getUrl((params.isForumView() ? "viewForum" : VIEW_MESSAGE), params.getCall(),
+              13, params.messageId, params.forumId));
+      out.print("'\"/></div>");
+    } else {
+      out.print(NBSP);
+    }
+    out.println(TD_END);
+  }
+
+  public static void displayMessagesList(PrintOutParameters params, RoleMask roleMask,
       boolean isSubscriberByInheritance) {
     try {
-      Message[] messages = fsc.getMessagesList(currentForumId);
+      Message[] messages = params.getSessionController().getMessagesList(params.getForumId());
       if (messages.length > 0) {
-        scanMessage(messages, out, resource, userId, currentForumId, admin, moderator, reader, view,
-            0, 0, 0, simpleMode, call, fsc, resources, isSubscriberByInheritance);
+        params.setMessageId(0);
+        scanMessage(messages, params, roleMask, 0, 0, isSubscriberByInheritance);
       } else {
         int colspan = 6;
-        if (admin || moderator) {
+        if (roleMask.isAdmin() || roleMask.isModerator()) {
           colspan++;
         }
-        out.println("<tr><td colspan=\"" + colspan + "\" align=center><span class=\"txtnote\">" +
-            resource.getString("noMessages") + "</span></td></tr>");
+        params.getWriter().println("<tr><td colspan=\"" + colspan + "\" align=center><span class=\"txtnote\">" +
+            params.getTranslations().getString("noMessages") + "</span></td></tr>");
       }
     } catch (IOException ioe) {
       SilverLogger.getLogger(ForumHelper.class).warn(ioe);
     }
   }
 
-  public static void displaySingleMessageList(JspWriter out, LocalizationBundle resource,
-      String userId, boolean admin, boolean moderator, boolean reader, boolean view,
-      int currentForumId, int messageId, boolean simpleMode, String call,
-      ForumsSessionController fsc, MultiSilverpeasBundle resources, boolean isSubscriberByInheritance) {
+  public static void displaySingleMessageList(PrintOutParameters params, RoleMask roleMask,
+      boolean isSubscriberByInheritance) {
+    ForumsSessionController fsc = params.getSessionController();
+    JspWriter out = params.getWriter();
     try {
+      int messageId = params.getMessageId();
       int parent = fsc.getMessageParentId(messageId);
       while (parent > 0) {
         messageId = parent;
         parent = fsc.getMessageParentId(messageId);
       }
+      params.setMessageId(messageId);
 
-      Message[] messages = fsc.getMessagesList(currentForumId);
+      Message[] messages = fsc.getMessagesList(params.getForumId());
       int messagesCount = messages.length;
-      if (messagesCount > 0) {
-        out.println(
-            "<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"2\" " +
-                "class=\"principal-message\">");
 
-        displayOneMessage(messages, out, resource, userId, admin, moderator, reader, view,
-            messageId, 0, simpleMode, call, fsc, resources, isSubscriberByInheritance);
-        out.println("</table>");
+      if (messagesCount > 0) {
+        out.println("<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"2\" " +
+            "class=\"principal-message\">");
+
+        displayOneMessage(messages, params, roleMask, 0, isSubscriberByInheritance);
+        out.println(TABLE_END);
 
         if (messagesCount > 1) {
           out.println("<div class=\"answer-message\" id=\"msgDiv\">");
           out.println("<table id=\"msgTable\" width=\"100%\" border=\"0\" cellspacing=\"0\" " +
-              "cellpadding" +
-              "=\"2\">");
-          scanMessage(messages, out, resource, userId, currentForumId, admin, moderator, reader,
-              view, messageId, 1, -1, simpleMode, call, fsc, resources, isSubscriberByInheritance);
-          out.println("</table>");
+              "cellpadding" + "=\"2\">");
+          scanMessage(messages, params, roleMask, 1, -1, isSubscriberByInheritance);
+          out.println(TABLE_END);
           out.println("</div>");
         }
       } else {
+        out.println("<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" " +
+            "class=\"contourintfdcolor\">");
         out.println(
-            "<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" " +
-                "class=\"contourintfdcolor\">");
-        out.println(
-            "<tr><td align=\"center\"><span class=\"txtnav\">" + resource.getString("noMessages") +
-                "</span></td></tr>");
-        out.println("</table>");
+            "<tr><td align=\"center\"><span class=\"txtnav\">" +
+                params.getTranslations().getString("noMessages") + "</span></td></tr>");
+        out.println(TABLE_END);
       }
     } catch (Exception e) {
       SilverLogger.getLogger(ForumHelper.class).warn(e);
@@ -376,45 +424,42 @@ public class ForumHelper {
     }
   }
 
-  private static void scanMessage(Message[] messages, JspWriter out, LocalizationBundle resource,
-      String userId, int currentPage, boolean admin, boolean moderator, boolean reader,
-      boolean view, int currentMessageId, int depth, int maxDepth, boolean simpleMode, String call,
-      ForumsSessionController fsc, MultiSilverpeasBundle resources, boolean isSubscriberByInheritance) {
+  private static void scanMessage(Message[] messages, PrintOutParameters params, RoleMask roleMask,
+      int depth, int maxDepth, boolean isSubscriberByInheritance) {
+    int currentMessageId = params.getMessageId();
     for (Message message : messages) {
       int parentId = message.getParentId();
       if (parentId == currentMessageId) {
         int messageId = message.getId();
+        params.setMessageId(messageId);
 
         // Verifying subscription by inheritance
         boolean isMessageSubscriberByInheritance = isSubscriberByInheritance;
         if (!isMessageSubscriberByInheritance) {
-          isMessageSubscriberByInheritance = fsc.isMessageSubscriberByInheritance(messageId);
+          isMessageSubscriberByInheritance =
+              params.getSessionController().isMessageSubscriberByInheritance(messageId);
         }
 
-        displayMessageLine(message, out, resource, userId, admin, moderator, reader, view, depth,
-            simpleMode, call, fsc, resources, isMessageSubscriberByInheritance);
+        displayMessageLine(params, message, roleMask, depth, isMessageSubscriberByInheritance);
         boolean hasChildren = hasMessagesChildren(messages, messageId);
         if (hasChildren && (maxDepth == -1 || depth < maxDepth)) {
-          scanMessage(messages, out, resource, userId, currentPage, admin, moderator, reader, view,
-              messageId, (depth + 1), maxDepth, simpleMode, call, fsc, resources,
+          scanMessage(messages, params, roleMask,depth + 1, maxDepth,
               isMessageSubscriberByInheritance);
         }
       }
     }
   }
 
-  private static void displayOneMessage(Message[] messages, JspWriter out, LocalizationBundle resource,
-      String userId, boolean admin, boolean moderator, boolean reader, boolean view,
-      int currentMessageId, int depth, boolean simpleMode, String call, ForumsSessionController fsc,
-      MultiSilverpeasBundle resources, boolean isSubscriberByInheritance) {
+  private static void displayOneMessage(Message[] messages, PrintOutParameters params,
+      RoleMask roleMask, int depth, boolean isSubscriberByInheritance) {
     int i = 0;
     boolean loop = true;
+    int currentMessageId = params.getMessageId();
     while ((i < messages.length) && loop) {
       Message message = messages[i];
       int messageId = message.getId();
       if (messageId == currentMessageId) {
-        displayMessageLine(message, out, resource, userId, admin, moderator, reader, view, depth,
-            simpleMode, call, fsc, resources, isSubscriberByInheritance);
+        displayMessageLine(params, message, roleMask, depth, isSubscriberByInheritance);
         loop = false;
       }
       i++;
@@ -428,5 +473,145 @@ public class ForumHelper {
       }
     }
     return false;
+  }
+
+  public static class RoleMask {
+
+    private String userId;
+    private boolean[] rights = new boolean[] {false, false, false};
+
+    public boolean isAbout(final String userId) {
+      return this.userId.equals(userId);
+    }
+
+    public String getUserId() {
+      return userId;
+    }
+
+    public boolean isAdmin() {
+      return rights[0];
+    }
+
+    public boolean isModerator() {
+      return rights[1];
+    }
+
+    public boolean isReader() {
+      return rights[2];
+    }
+
+    public RoleMask setAdmin(boolean isAdmin) {
+      this.rights[0] = isAdmin;
+      return this;
+    }
+
+    public RoleMask setModerator(boolean isModerator) {
+      this.rights[1] = isModerator;
+      return this;
+    }
+
+    public RoleMask setReader(boolean isReader) {
+      this.rights[2] = isReader;
+      return this;
+    }
+
+    public RoleMask setUserId(String id) {
+      this.userId = id;
+      return this;
+    }
+  }
+
+  public static class PrintOutParameters {
+    private JspWriter writer;
+    private ForumsSessionController sessionController;
+    private MultiSilverpeasBundle resources;
+    private LocalizationBundle translations;
+    private String call;
+    private int messageId;
+    private int forumId;
+    private boolean simpleMode;
+    private boolean view;
+
+    public JspWriter getWriter() {
+      return writer;
+    }
+
+    public PrintOutParameters setWriter(final JspWriter writer) {
+      this.writer = writer;
+      return this;
+    }
+
+    public ForumsSessionController getSessionController() {
+      return sessionController;
+    }
+
+    public PrintOutParameters setSessionController(
+        final ForumsSessionController sessionController) {
+      this.sessionController = sessionController;
+      return this;
+    }
+
+    public MultiSilverpeasBundle getResources() {
+      return resources;
+    }
+
+    public PrintOutParameters setResources(final MultiSilverpeasBundle resources) {
+      this.resources = resources;
+      return this;
+    }
+
+    public LocalizationBundle getTranslations() {
+      return translations;
+    }
+
+    public PrintOutParameters setTranslations(final LocalizationBundle translations) {
+      this.translations = translations;
+      return this;
+    }
+
+    public int getMessageId() {
+      return messageId;
+    }
+
+    public PrintOutParameters setMessageId(final int messageId) {
+      this.messageId = messageId;
+      return this;
+    }
+
+    public int getForumId() {
+      return forumId;
+    }
+
+    public PrintOutParameters setForumId(final int forumId) {
+      this.forumId = forumId;
+      return this;
+    }
+
+    public boolean isSimpleMode() {
+      return simpleMode;
+    }
+
+    public PrintOutParameters setSimpleMode(final boolean simpleMode) {
+      this.simpleMode = simpleMode;
+      return this;
+    }
+
+    public boolean isForumView() {
+      return view;
+    }
+
+    public PrintOutParameters setForumView(final boolean view) {
+      this.view = view;
+      return this;
+    }
+
+    public String getCall() {
+      return call;
+    }
+
+    public PrintOutParameters setCall(final String call) {
+      this.call = call;
+      return this;
+    }
   }
 }

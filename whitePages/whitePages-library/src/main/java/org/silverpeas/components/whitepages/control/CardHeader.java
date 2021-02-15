@@ -50,7 +50,7 @@ public final class CardHeader extends AbstractBean
   private String instanceId;
   private String date;
   private String creatorId;
-  private final static SettingBundle whitePagesIcons =
+  private static final SettingBundle whitePagesIcons =
       ResourceLocator.getSettingBundle("org.silverpeas.whitePages.settings.whitePagesIcons");
 
   public void init(long id, Card card) {
@@ -119,7 +119,7 @@ public final class CardHeader extends AbstractBean
     return "consultIdentity?userCardId=" + id;
   }
 
-  static private UserRecord getUserRecord(Card card) {
+  private static UserRecord getUserRecord(Card card) {
     try {
       UserTemplate templateUser = getUserTemplate(card.getInstanceId());
       card.writeUserRecord(templateUser.getRecord(card.getUserId()));
@@ -129,7 +129,7 @@ public final class CardHeader extends AbstractBean
     }
   }
 
-  static private UserTemplate getUserTemplate(String instanceId) {
+  private static UserTemplate getUserTemplate(String instanceId) {
     UserTemplate template = templates.get(instanceId);
 
     if (template == null) {
@@ -145,7 +145,7 @@ public final class CardHeader extends AbstractBean
     return template;
   }
 
-  static private String getParam(String paramName, String instanceId) {
+  private static String getParam(String paramName, String instanceId) {
     return AdministrationServiceProvider.getAdminService()
         .getComponentParameterValue(instanceId, paramName);
   }
@@ -154,7 +154,7 @@ public final class CardHeader extends AbstractBean
 
   @Override
   public String getId() {
-    return (new Long(id)).toString();
+    return String.valueOf(id);
   }
 
   @Override

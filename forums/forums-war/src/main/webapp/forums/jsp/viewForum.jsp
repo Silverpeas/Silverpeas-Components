@@ -79,12 +79,13 @@
 <c:set var="currentForumRaterRatingEntity" value="${requestScope.currentForumRaterRatingEntity}" />
 <c:set var="isActive"  value="${requestScope.currentForum.active}" />
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.forums">
+<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.forums" xml:lang="${sessionScope[sessionController].language}">
   <head>
     <title><c:out value="${currentForum.name}" /></title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <view:looknfeel />
     <view:includePlugin name="rating" />
+    <link type="text/css" rel="stylesheet" href="<c:url value="/forums/jsp/styleSheets/forums.css"/>"/>
     <script type="text/javascript" src="<c:url value="/forums/jsp/javaScript/forums.js" />" ></script>
     <script type="text/javascript">
       <% if (isAdmin || isUser || isModerator) { %>
@@ -171,20 +172,24 @@
     <view:window>
       <view:frame>
       	<view:areaOfOperationOfCreation/>
-        <table class="intfdcolor4" border="0" cellspacing="0" cellpadding="0" width="98%">
+        <table class="intfdcolor4 tabContainer" border="0">
+          <caption></caption>
+          <th scope="col"></th>
           <c:if test="${requestScope.nbChildrens > 0}">
             <tr>
-              <td valign="top">
-                <table width="100%" border="0" align="center" cellpadding="4" cellspacing="1" class="testTableau">
+              <td>
+                <table border="0" class="testTableau">
+                  <caption></caption>
+                  <th scope="col"></th>
                   <tr class="ArrayColumn">
-                    <td colspan="2" nowrap="nowrap" align="center"><fmt:message key="theme" /></td>
-                    <td nowrap="nowrap" align="center"><fmt:message key="forums.nbSubjects" /></td>
-                    <td nowrap="nowrap" align="center"><fmt:message key="forums.nbMessages" /></td>
-                    <td nowrap="nowrap" align="center"><fmt:message key="forums.lastMessage" /></td>
-                    <td nowrap="nowrap" align="center"><fmt:message key="forums.notation" /></td>
-                    <td nowrap="nowrap" align="center"><fmt:message key="subscribeMessage" /></td>
+                    <td><fmt:message key="theme" /></td>
+                    <td><fmt:message key="forums.nbSubjects" /></td>
+                    <td><fmt:message key="forums.nbMessages" /></td>
+                    <td><fmt:message key="forums.lastMessage" /></td>
+                    <td<fmt:message key="forums.notation" /></td>
+                    <td><fmt:message key="subscribeMessage" /></td>
                     <c:if test="${isAdmin || isModerator}">
-                      <td nowrap="nowrap" align="center"><fmt:message key="operations" /></td>
+                      <td><fmt:message key="operations" /></td>
                     </c:if>
                   </tr>
                   <%ForumListHelper.displayChildForums(out, resources, isAdmin, isModerator, isReader, forumId, "main", fsc, isForumSubscriberByInheritance);%>
@@ -203,7 +208,7 @@
           <tr>
             <td valign="top">
                 <form name="nameForm" action="" method="post">
-                      <table width="100%" border="0" align="center" cellpadding="4" cellspacing="1" class="testTableau">
+                      <table border="0" class="testTableau">
                         <%-- affichage de l'entete des colonnes --%>
                         <tr class="ArrayColumn">
                           <td nowrap="nowrap" align="center" colspan="3"><fmt:message key="forums.nbSubjects"/></td>
@@ -216,8 +221,21 @@
                           </c:if>
                         </tr><%
 fsc.deployAllMessages(forumId);
-ForumHelper.displayMessagesList(out, resource, userId, isAdmin, isModerator, isReader, true, forumId, false,
-"viewForum", fsc, resources, isForumSubscriberByInheritance);
+ForumHelper.PrintOutParameters params = new ForumHelper.PrintOutParameters()
+    .setWriter(out)
+    .setTranslations(resource)
+    .setForumId(forumId)
+    .setForumView(true)
+    .setSimpleMode(false)
+    .setCall("viewForum")
+    .setSessionController(fsc)
+    .setResources(resources);
+ForumHelper.RoleMask roleMask = new ForumHelper.RoleMask()
+    .setUserId(userId)
+    .setAdmin(isAdmin)
+    .setModerator(isModerator)
+    .setReader(isReader);
+ForumHelper.displayMessagesList(params, roleMask, isForumSubscriberByInheritance);
                         %>
                       </table>
                 </form>

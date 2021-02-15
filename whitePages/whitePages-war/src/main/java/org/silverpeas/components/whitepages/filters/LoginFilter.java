@@ -35,7 +35,6 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -59,10 +58,7 @@ public class LoginFilter implements Filter {
 
   public static final String ATTRIBUTE_FORCE_CARD_CREATION = "forceCardCreation";
   public static final String ATTRIBUTE_COMPONENT_ID = "RedirectToComponentId";
-  /**
-   * Configuration du filtre, permettant de récupérer les paramètres.
-   */
-  FilterConfig config = null;
+
 
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
       throws IOException, ServletException {
@@ -89,65 +85,55 @@ public class LoginFilter implements Filter {
      */
     else {
       String userId = mainSessionCtrl.getUserId();
-      try {
-        CompoSpace[] availableInstances =
-            AdministrationServiceProvider.getAdminService().getCompoForUser(userId, "whitePages");
-
-        for (final CompoSpace availableInstance : availableInstances) {
-          String instanceId = availableInstance.getComponentId();
-
-          /* Retrieve component */
-          ComponentInst instance =
-              AdministrationServiceProvider.getAdminService().getComponentInst(instanceId);
-
-          /* Is user is administrator for that instance */
-          boolean userIsAdmin = false;
-          String[] activeProfiles =
-              AdministrationServiceProvider.getAdminService().getCurrentProfiles(userId, instance);
-          for (final String activeProfile : activeProfiles) {
-            if ("admin".equals(activeProfile)) {
-              userIsAdmin = true;
-            }
-          }
-
-          /* Is forcedCardFilling parameter turned on */
-          String forcedCardFilling = AdministrationServiceProvider.getAdminService()
-              .getComponentParameterValue(instanceId, "isForcedCardFilling");
-          boolean isForcedCardFilling =
-              ((forcedCardFilling != null) && (forcedCardFilling.equals("yes")));
-
-          /*
-           * Redirect user if and only if user is no admin and forcedCardFilling parameter turned on
-           */
-          if (isForcedCardFilling && !userIsAdmin) {
-            CardManager cardManager = CardManager.getInstance();
-            Card userCard = cardManager.getUserCard(userId, instanceId);
-            if ((userCard == null) || (!cardManager.isPublicationClassifiedOnPDC(userCard))) {
-              session.setAttribute(ATTRIBUTE_COMPONENT_ID, instanceId);
-              session.setAttribute(ATTRIBUTE_FORCE_CARD_CREATION, instanceId);
-              break;
-            }
-          }
-        }
-      } catch (Exception e) {
-        SilverLogger.getLogger(this).warn(e);
-      }
+      retrievesAllWhitePagesInstances(session, userId);
 
       chain.doFilter(request, response);
     }
   }
 
-  public FilterConfig getFilterConfig() {
-    return config;
-  }
+  private void retrievesAllWhitePagesInstances(final HttpSession session, final String userId) {
+    try {
+      CompoSpace[] availableInstances =
+          AdministrationServiceProvider.getAdminService().getCompoForUser(userId, "whitePages");
 
-  public void setFilterConfig(FilterConfig arg0) {
-  }
+      for (final CompoSpace availableInstance : availableInstances) {
+        String instanceId = availableInstance.getComponentId();
 
-  public void init(FilterConfig arg0) {
-  }
+        /* Retrieve component */
+        ComponentInst instance =
+            AdministrationServiceProvider.getAdminService().getComponentInst(instanceId);
 
-  public void destroy() {
+        /* Is user is administrator for that instance */
+        boolean userIsAdmin = false;
+        String[] activeProfiles =
+            AdministrationServiceProvider.getAdminService().getCurrentProfiles(userId, instance);
+        for (final String activeProfile : activeProfiles) {
+          if ("admin".equals(activeProfile)) {
+            userIsAdmin = true;
+          }
+        }
 
+        /* Is forcedCardFilling parameter turned on */
+        String forcedCardFilling = AdministrationServiceProvider.getAdminService()
+            .getComponentParameterValue(instanceId, "isForcedCardFilling");
+        boolean isForcedCardFilling =
+            ((forcedCardFilling != null) && (forcedCardFilling.equals("yes")));
+
+        /*
+         * Redirect user if and only if user is no admin and forcedCardFilling parameter turned on
+         */
+        if (isForcedCardFilling && !userIsAdmin) {
+          CardManager cardManager = CardManager.getInstance();
+          Card userCard = cardManager.getUserCard(userId, instanceId);
+          if ((userCard == null) || (!cardManager.isPublicationClassifiedOnPDC(userCard))) {
+            session.setAttribute(ATTRIBUTE_COMPONENT_ID, instanceId);
+            session.setAttribute(ATTRIBUTE_FORCE_CARD_CREATION, instanceId);
+            break;
+          }
+        }
+      }
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).warn(e);
+    }
   }
 }

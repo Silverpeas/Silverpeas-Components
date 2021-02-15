@@ -114,8 +114,7 @@ public void listFolders(JspWriter out, String userId, boolean admin, int rootId,
     }
     catch (NumberFormatException nfe)
     {
-        SilverTrace.warn(
-            "forums", "JSPeditMessage", "forums.EXE_PARSE_INT_FAILED", "params = "+params, nfe);
+        SilverLogger.getLogger(this).error(nfe);
     }
 
     String parentTitle = "";
@@ -131,7 +130,7 @@ public void listFolders(JspWriter out, String userId, boolean admin, int rootId,
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="${requestScope.resources.language}">
 <head>
     <title></title>
     <view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
@@ -192,7 +191,9 @@ function cancel() {
     	<form name="forumsForm" action="<%=formAction%>" method="post">
 
 		<input type="hidden" name="messageId" value="<%=messageId%>"/>
-        <table border="0" cellspacing="0" cellpadding="5" width="100%">
+        <table border="0">
+          <caption></caption>
+          <th scope="col"></th>
         	<tr>
             	<td class="txtlibform"><%=resource.getString("forum")%>:</td><td><%=folderName%></td>
 			</tr>
@@ -232,13 +233,13 @@ function cancel() {
 			<div class="field" id="messageTitleArea">
 				<label for="messageTitle" class="txtlibform"><fmt:message key='messageTitle'/></label>
 				<div class="champs">
-					<input type="text" id="messageTitle" name="messageTitle" size="88" maxlength="<%=DBUtil.getTextFieldLength()%>"/>&nbsp;<img src="<%=context%>/util/icons/mandatoryField.gif" width="5" height="5"/>
+					<input type="text" id="messageTitle" name="messageTitle" size="88" maxlength="<%=DBUtil.getTextFieldLength()%>"/>&nbsp;<img alt="" src="<%=context%>/util/icons/mandatoryField.gif" width="5" height="5"/>
 				</div>
 			</div>
 			<div class="field" id="messageTextArea">
 				<label for="messageText" class="txtlibform"><fmt:message key='messageText'/></label>
 				<div class="champs">
-					<textarea name="messageText" id="messageText"></textarea>&nbsp;<img src="<%=context%>/util/icons/mandatoryField.gif" width="5" height="5"/>
+					<textarea name="messageText" id="messageText"></textarea>&nbsp;<img alt="" src="<%=context%>/util/icons/mandatoryField.gif" width="5" height="5"/>
 				</div>
 			</div>
 			<div class="field" id="messageKeywordsArea">
