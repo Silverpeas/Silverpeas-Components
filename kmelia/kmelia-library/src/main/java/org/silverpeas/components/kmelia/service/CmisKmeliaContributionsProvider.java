@@ -28,6 +28,7 @@ import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundExcept
 import org.silverpeas.components.kmelia.KmeliaPublicationHelper;
 import org.silverpeas.components.kmelia.model.KmeliaPublication;
 import org.silverpeas.core.ResourceIdentifier;
+import org.silverpeas.core.admin.component.model.SilverpeasSharedComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Service;
@@ -62,7 +63,10 @@ public class CmisKmeliaContributionsProvider implements CmisContributionsProvide
   public List<I18nContribution> getAllowedRootContributions(final ResourceIdentifier appId,
       final User user) {
     String kmeliaId = appId.asString();
-    if (!controller.isComponentAvailableToUser(kmeliaId, user.getId())) {
+    if (controller.getComponentInstance(kmeliaId)
+        .filter(SilverpeasSharedComponentInstance.class::isInstance)
+        .map(SilverpeasSharedComponentInstance.class::cast)
+        .filter(i -> i.getName().equals("kmelia") && i.canBeAccessedBy(user)).isEmpty()) {
       throw new CmisObjectNotFoundException(
           String.format("The application %s doesn't exist or is not accessible to user %s",
               kmeliaId, user.getId()));

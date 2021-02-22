@@ -2226,7 +2226,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       return inheritedProfile;
     } else {
       // merge des profiles
-      ProfileInst newProfile = profile.copy();
+      ProfileInst newProfile = new ProfileInst(profile);
       newProfile.addGroups(inheritedProfile.getAllGroups());
       newProfile.addUsers(inheritedProfile.getAllUsers());
 

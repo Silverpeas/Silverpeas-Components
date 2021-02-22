@@ -4097,7 +4097,7 @@ public class DefaultKmeliaService implements KmeliaService {
                 nodeToCopy.getNodePK().getInstanceId());
         for (ProfileInst nodeToPasteProfile : topicProfiles) {
           if (nodeToPasteProfile != null) {
-            ProfileInst nodeProfileInst = nodeToPasteProfile.copy();
+            ProfileInst nodeProfileInst = new ProfileInst(nodeToPasteProfile);
             nodeProfileInst.setId(UNDEFINED_NODE_ID);
             nodeProfileInst.setComponentFatherId(getComponentLocalId(nodePK.getInstanceId()));
             nodeProfileInst.setObjectId(
