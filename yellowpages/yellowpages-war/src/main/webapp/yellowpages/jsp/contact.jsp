@@ -33,6 +33,11 @@
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+
+<c:set var="userLanguage" value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
+<fmt:setLocale value="${userLanguage}" />
+<view:setBundle basename="org.silverpeas.yellowpages.multilang.yellowpagesBundle" />
 
 <%
   response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
@@ -51,7 +56,14 @@
 %>
 
 <view:link href="/util/styleSheets/fieldset.css"/>
+<view:link href="styleSheets/printContact.css"/>
 
+<script type="text/javascript">
+  function closePopup() {
+    window.contactPopup.close();
+  }
+</script>
+<div id="printSection">
 <fieldset id="identity-base" class="skinFieldset">
   <legend class="without-img"><%=WebEncodeHelper
       .javaStringToHtmlString(contact.getFirstName()) %> <%= WebEncodeHelper
@@ -97,3 +109,10 @@
   %>
 </fieldset>
 <% } %>
+</div>
+<view:buttonPane>
+  <fmt:message key="GML.print" var="labelPrint"/>
+  <fmt:message key="GML.close" var="labelClose"/>
+  <view:button label="${labelPrint}" action="javascript:window.print()"/>
+  <view:button label="${labelClose}" action="javascript:closePopup()"/>
+</view:buttonPane>
