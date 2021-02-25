@@ -370,8 +370,8 @@ public class KmeliaPublication implements SilverpeasContent {
    * @return an unmodifiable list with the comments on this publication.
    */
   public List<Comment> getComments() {
-    return Collections.unmodifiableList(getCommentService().getAllCommentsOnPublication(
-        PublicationDetail.getResourceType(), pk));
+    return Collections.unmodifiableList(getCommentService().getAllCommentsOnResource(
+        PublicationDetail.getResourceType(), new ResourceReference(pk)));
   }
 
   /**
@@ -518,8 +518,8 @@ public class KmeliaPublication implements SilverpeasContent {
    * @return the number.
    */
   public int getNumberOfComments() {
-    return getCommentService().getCommentsCountOnPublication(PublicationDetail.getResourceType(),
-        getPk());
+    return getCommentService().getCommentsCountOnResource(PublicationDetail.getResourceType(),
+        new ResourceReference(getPk()));
   }
 
   /**

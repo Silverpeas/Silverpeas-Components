@@ -23,7 +23,9 @@
  */
 package org.silverpeas.components.blog.control;
 
-public class StyleSheet {
+import java.io.Serializable;
+
+public class StyleSheet implements Serializable {
 
   private String name = null;
   private String url = null;

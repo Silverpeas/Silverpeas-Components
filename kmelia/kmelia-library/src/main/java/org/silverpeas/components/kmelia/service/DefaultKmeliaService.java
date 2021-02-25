@@ -2767,7 +2767,8 @@ public class DefaultKmeliaService implements KmeliaService {
       try {
         // index comments
         getCommentService()
-            .indexAllCommentsOnPublication(pubDetail.getContributionType(), pubDetail.getPK());
+            .indexAllCommentsOnPublication(pubDetail.getContributionType(),
+                new ResourceReference(pubDetail.getPK()));
       } catch (Exception e) {
         SilverLogger.getLogger(this).error("Indexing comments failed for publication {0}",
             new String[]{pubDetail.getPK().getId()}, e);
@@ -2776,17 +2777,16 @@ public class DefaultKmeliaService implements KmeliaService {
   }
 
   private void unIndexExternalElementsOfPublication(PublicationPK pubPK) {
+    ResourceReference ref = new ResourceReference(pubPK);
     try {
-      getAttachmentService()
-          .unindexAttachmentsOfExternalObject(pubPK.toResourceReference());
+      getAttachmentService().unindexAttachmentsOfExternalObject(ref);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error("Unindexing versioning documents failed for publication {0}",
           new String[] {pubPK.getId()}, e);
     }
     try {
       // index comments
-      getCommentService()
-          .unindexAllCommentsOnPublication(PublicationDetail.getResourceType(), pubPK);
+      getCommentService().unindexAllCommentsOnPublication(PublicationDetail.getResourceType(), ref);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error("Unindexing versioning documents failed for publication {0}",
           new String[] {pubPK.getId()}, e);

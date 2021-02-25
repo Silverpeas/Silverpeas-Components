@@ -37,7 +37,7 @@ import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.comment.service.CommentServiceProvider;
 import org.silverpeas.core.comment.socialnetwork.SocialInformationComment;
-import org.silverpeas.core.date.period.Period;
+import org.silverpeas.core.date.Period;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.socialnetwork.provider.SocialMediaCommentProvider;
 
@@ -61,7 +61,7 @@ public class SocialGalleryMediaComment implements SocialMediaCommentProvider {
   private List<SocialInformation> decorate(List<SocialInformationComment> listSocialInformation) {
     final List<SocialInformation> info = new ArrayList<>(listSocialInformation.size());
     for (SocialInformationComment socialInformation : listSocialInformation) {
-      String resourceId = socialInformation.getComment().getForeignKey().getId();
+      String resourceId = socialInformation.getComment().getResourceReference().getLocalId();
       String instanceId = socialInformation.getComment().getComponentInstanceId();
 
       MediaPK mediaPk = new MediaPK(resourceId, instanceId);
@@ -77,32 +77,17 @@ public class SocialGalleryMediaComment implements SocialMediaCommentProvider {
     return info;
   }
 
-  /**
-   * get list of SocialInformation
-   * @param userId
-   * @param begin
-   * @param end
-   * @return List<SocialInformation>
-   */
   @Override
   public List<SocialInformation> getSocialInformationList(String userId, Date begin,
       Date end) {
     List<SocialInformationComment> listSocialInformation =
         CommentServiceProvider.getCommentService()
             .getSocialInformationCommentsListByUserId(getListResourceType(), userId,
-                Period.from(begin, end));
+                Period.between(begin.toInstant(), end.toInstant()));
 
     return decorate(listSocialInformation);
   }
 
-  /**
-   * get list of socialInformation of my contacts according to ids of my contacts
-   * @param myId
-   * @param myContactsIds
-   * @param begin
-   * @param end
-   * @return List<SocialInformation>
-   */
   @Override
   public List<SocialInformation> getSocialInformationListOfMyContacts(
       final String myId, final List<String> myContactsIds, final Date begin, final Date end) {
@@ -114,7 +99,7 @@ public class SocialGalleryMediaComment implements SocialMediaCommentProvider {
     List<SocialInformationComment> listSocialInformation =
         CommentServiceProvider.getCommentService()
             .getSocialInformationCommentsListOfMyContacts(getListResourceType(), myContactsIds,
-                instanceIds, Period.from(begin, end));
+                instanceIds, Period.between(begin.toInstant(), end.toInstant()));
 
     return decorate(listSocialInformation);
   }

@@ -367,7 +367,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
 
     //supprime les commentaires
     ResourceReference pk = new ResourceReference(classifiedId, getComponentId());
-    getCommentService().deleteAllCommentsOnPublication(ClassifiedDetail.getResourceType(), pk);
+    getCommentService().deleteAllCommentsOnResource(ClassifiedDetail.getResourceType(), pk);
   }
 
   /**

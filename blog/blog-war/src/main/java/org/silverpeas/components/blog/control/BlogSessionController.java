@@ -32,11 +32,12 @@ import org.silverpeas.components.blog.model.Category;
 import org.silverpeas.components.blog.model.PostDetail;
 import org.silverpeas.components.blog.service.BlogService;
 import org.silverpeas.components.blog.service.BlogServiceFactory;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.comment.model.Comment;
-import org.silverpeas.core.comment.model.CommentPK;
+import org.silverpeas.core.comment.model.CommentId;
 import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.comment.service.CommentServiceProvider;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
@@ -67,6 +68,7 @@ import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.AccessControlException;
 import java.text.ParseException;
@@ -86,14 +88,14 @@ public final class BlogSessionController extends AbstractComponentSessionControl
   private static final String BANNER_PNG = "banner.png";
   private static final String BANNER_GIF = "banner.gif";
   private static final String BANNER_JPG = "banner.jpg";
-  private Calendar currentBeginDate = Calendar.getInstance();
-  private Calendar currentEndDate = Calendar.getInstance();
-  private String serverURL = null;
+  private final Calendar currentBeginDate = Calendar.getInstance();
+  private final Calendar currentEndDate = Calendar.getInstance();
+  private final String serverURL;
   private WallPaper wallPaper = null;
   private StyleSheet styleSheet = null;
   private static final String FORBIDEN_ACCESS_MSG = "blog.error.access";
 
-  private BlogPostWriteAccessControl accessController = BlogPostWriteAccessControl.get();
+  private transient BlogPostWriteAccessControl accessController;
 
   /**
    * Standard Session Controller Constructeur
@@ -112,10 +114,17 @@ public final class BlogSessionController extends AbstractComponentSessionControl
   }
 
   public void checkWriteAccessOnBlogPost() {
-    if (!accessController.isUserAuthorized(getUserId(), getComponentId())) {
+    if (!getAccessController().isUserAuthorized(getUserId(), getComponentId())) {
       String errorMsg = getMultilang().getString(FORBIDEN_ACCESS_MSG);
       throw new AccessControlException(errorMsg);
     }
+  }
+
+  private BlogPostWriteAccessControl getAccessController() {
+    if (accessController == null) {
+      accessController = BlogPostWriteAccessControl.get();
+    }
+    return accessController;
   }
 
   public Collection<PostDetail> lastPosts() {
@@ -256,19 +265,14 @@ public final class BlogSessionController extends AbstractComponentSessionControl
     // supprimer les commentaires
     Collection<Comment> comments = getAllComments(postId);
     for (Comment comment : comments) {
-      CommentPK commentPK = comment.getCommentPK();
-      getCommentService().deleteComment(commentPK);
+      CommentId commentID = comment.getIdentifier();
+      getCommentService().deleteComment(commentID);
     }
   }
 
   public Collection<Comment> getAllComments(String postId) {
-    CommentPK foreignPk = new CommentPK(postId, null, getComponentId());
-    return getCommentService().getAllCommentsOnPublication(PostDetail.getResourceType(), foreignPk);
-  }
-
-  public Comment getComment(String commentId) {
-    CommentPK commentPK = new CommentPK(commentId);
-    return getCommentService().getComment(commentPK);
+    ResourceReference ref = new ResourceReference(postId, getComponentId());
+    return getCommentService().getAllCommentsOnResource(PostDetail.getResourceType(), ref);
   }
 
   public Collection<NodeDetail> getAllCategories() {
@@ -328,8 +332,7 @@ public final class BlogSessionController extends AbstractComponentSessionControl
   public String getRSSUrl() {
     if (isUseRss()) {
       //replace to remove when all composants will be XHTML compliant
-      return super.getRSSUrl()
-          .replaceAll("&", "&amp;");
+      return super.getRSSUrl().replace("&", "&amp;");
     }
     return null;
   }
@@ -572,7 +575,7 @@ public final class BlogSessionController extends AbstractComponentSessionControl
                 FileUtil.getMimeType(file.getName()), ""));
         this.styleSheet.setSize(FileRepositoryManager.formatFileSize(file.length()));
         try {
-          this.styleSheet.setContent(FileUtils.readFileToString(file, "UTF-8"));
+          this.styleSheet.setContent(FileUtils.readFileToString(file, StandardCharsets.UTF_8));
         } catch (IOException e) {
           SilverLogger.getLogger(this).warn(e);
           this.styleSheet.setContent(null);
@@ -635,7 +638,7 @@ public final class BlogSessionController extends AbstractComponentSessionControl
 
   private void setStylesheetContent(final File fileStyleSheet) {
     try {
-      this.styleSheet.setContent(FileUtils.readFileToString(fileStyleSheet, "UTF-8"));
+      this.styleSheet.setContent(FileUtils.readFileToString(fileStyleSheet, StandardCharsets.UTF_8));
     } catch (IOException e) {
       SilverLogger.getLogger(this).warn(e);
       this.styleSheet.setContent(null);

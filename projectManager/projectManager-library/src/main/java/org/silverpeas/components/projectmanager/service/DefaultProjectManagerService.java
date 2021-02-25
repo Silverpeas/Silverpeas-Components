@@ -27,6 +27,7 @@ import org.silverpeas.components.projectmanager.model.ProjectManagerDAO;
 import org.silverpeas.components.projectmanager.model.ProjectManagerRuntimeException;
 import org.silverpeas.components.projectmanager.model.TaskDetail;
 import org.silverpeas.components.projectmanager.model.TaskPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
@@ -259,13 +260,14 @@ public class DefaultProjectManagerService implements ProjectManagerService {
     removeTodo(id, instanceId);
     // supprime les fichiers joint à la tâche
     TaskPK taskPK = new TaskPK(id, instanceId);
+    ResourceReference ref = new ResourceReference(taskPK);
     List<SimpleDocument> attachments = AttachmentServiceProvider.getAttachmentService().
-        listDocumentsByForeignKey(taskPK.toResourceReference(), null);
+        listDocumentsByForeignKey(ref, null);
     for (SimpleDocument attachment : attachments) {
       AttachmentServiceProvider.getAttachmentService().deleteAttachment(attachment);
     }
     // supprime les commentaires de la tâche
-    getCommentService().deleteAllCommentsOnPublication(TaskDetail.getResourceType(), taskPK);
+    getCommentService().deleteAllCommentsOnResource(TaskDetail.getResourceType(), ref);
     // suppression de l'index
     removeIndex(id, instanceId);
   }
@@ -859,10 +861,11 @@ public class DefaultProjectManagerService implements ProjectManagerService {
     // index task itself
     createIndex(task);
     TaskPK taskPK = new TaskPK(task.getId(), task.getInstanceId());
+    ResourceReference ref = new ResourceReference(taskPK);
     AttachmentServiceProvider.getAttachmentService()
-        .indexAllDocuments(taskPK.toResourceReference(), null, null);
+        .indexAllDocuments(ref, null, null);
     // index comments
-    getCommentService().indexAllCommentsOnPublication(TaskDetail.getResourceType(), taskPK);
+    getCommentService().indexAllCommentsOnPublication(TaskDetail.getResourceType(), ref);
   }
 
   private Connection getConnection() {

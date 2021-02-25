@@ -52,7 +52,7 @@ public class AlbumDetail extends NodeDetail {
     setStatus(node.getStatus());
     setFatherPK(node.getFatherPK());
     setChildrenDetails(node.getChildrenDetails());
-    setType(node.getType());
+    setNodeType(node.getNodeType());
     setOrder(node.getOrder());
     setTranslations(node.getTranslations());
   }

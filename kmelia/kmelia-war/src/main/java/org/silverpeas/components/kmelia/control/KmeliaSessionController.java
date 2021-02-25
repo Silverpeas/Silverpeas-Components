@@ -52,9 +52,6 @@ import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.clipboard.ClipboardException;
 import org.silverpeas.core.clipboard.ClipboardSelection;
-import org.silverpeas.core.comment.model.Comment;
-import org.silverpeas.core.comment.service.CommentService;
-import org.silverpeas.core.comment.service.CommentServiceProvider;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.Attachments;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
@@ -286,14 +283,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   public KmeliaSessionController setKmaxMode(final boolean kmaxMode) {
     isKmaxMode = kmaxMode;
     return this;
-  }
-
-  /**
-   * Gets a business service of comments.
-   * @return a DefaultCommentService instance.
-   */
-  protected CommentService getCommentService() {
-    return CommentServiceProvider.getCommentService();
   }
 
   public KmeliaService getKmeliaService() {
@@ -1271,11 +1260,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   public void setIndexOfFirstPubToDisplay(String index) {
     this.indexOfFirstPubToDisplay = Integer.parseInt(index);
-  }
-
-  public List<Comment> getAllComments(String id) {
-    return getCommentService()
-        .getAllCommentsOnPublication(PublicationDetail.getResourceType(), getPublicationPK(id));
   }
 
   public void processTopicWysiwyg(String topicId) {

@@ -25,6 +25,7 @@
 package org.silverpeas.components.quickinfo.model;
 
 import org.silverpeas.components.delegatednews.model.DelegatedNews;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.comment.service.CommentServiceProvider;
 import org.silverpeas.core.contribution.ContributionVisibility;
@@ -231,7 +232,8 @@ public class News extends SilverpeasJpaEntity<News, UuidIdentifier> implements S
 
   public int getNumberOfComments() {
     CommentService commentService = CommentServiceProvider.getCommentService();
-    return commentService.getCommentsCountOnPublication(CONTRIBUTION_TYPE, getPK());
+    return commentService.getCommentsCountOnResource(CONTRIBUTION_TYPE,
+        new ResourceReference(getPK()));
   }
 
   /**

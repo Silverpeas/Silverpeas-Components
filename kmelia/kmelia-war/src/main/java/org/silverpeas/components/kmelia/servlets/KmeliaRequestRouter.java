@@ -462,7 +462,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         I18NHelper.setI18NInfo(topic, request);
 
         if (StringUtil.isDefined(path)) {
-          topic.setType(NodeDetail.FILE_LINK_TYPE);
+          topic.setNodeType(NodeDetail.FILE_LINK_TYPE);
           topic.setPath(path);
         }
 
@@ -499,7 +499,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         NodeDetail topic = new NodeDetail(id, name, description, 0, "X");
         I18NHelper.setI18NInfo(topic, request);
         if (StringUtil.isDefined(path)) {
-          topic.setType(NodeDetail.FILE_LINK_TYPE);
+          topic.setNodeType(NodeDetail.FILE_LINK_TYPE);
           topic.setPath(path);
         }
         boolean goToProfilesDefinition = false;

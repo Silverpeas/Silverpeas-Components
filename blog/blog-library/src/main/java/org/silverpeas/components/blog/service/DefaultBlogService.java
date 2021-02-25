@@ -34,7 +34,6 @@ import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.comment.model.Comment;
-import org.silverpeas.core.comment.model.CommentPK;
 import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
@@ -246,7 +245,7 @@ public class DefaultBlogService implements BlogService, Initialization {
       PostDAO.deleteDateEvent(con, pubPK.getId());
       // Delete comments
       ResourceReference resourceReference = new ResourceReference(postId, instanceId);
-      getCommentService().deleteAllCommentsOnPublication(PostDetail.getResourceType(),
+      getCommentService().deleteAllCommentsOnResource(PostDetail.getResourceType(),
           resourceReference);
       // Delete wysiwyg content
       WysiwygController.deleteFileAndAttachment(instanceId, postId);
@@ -281,10 +280,9 @@ public class DefaultBlogService implements BlogService, Initialization {
         cat = getCategory(nodePK);
       }
       // rechercher le nombre de commentaire
-      CommentPK foreignPk = new CommentPK(publication.getPK().getId(), null, publication.getPK().
-          getInstanceId());
+      ResourceReference ref = new ResourceReference(publication.getPK());
       List<Comment> comments =
-          getCommentService().getAllCommentsOnPublication(PostDetail.getResourceType(), foreignPk);
+          getCommentService().getAllCommentsOnResource(PostDetail.getResourceType(), ref);
 
       // recherche de la date d'evenement
       Date dateEvent;
@@ -579,7 +577,8 @@ public class DefaultBlogService implements BlogService, Initialization {
   private void indexExternalElementsOfPublication(PublicationPK pubPK) {
     try {
       // index comments
-      getCommentService().indexAllCommentsOnPublication(PostDetail.getResourceType(), pubPK);
+      getCommentService().indexAllCommentsOnPublication(PostDetail.getResourceType(),
+          new ResourceReference(pubPK));
     } catch (Exception e) {
       SilverLogger.getLogger(this).error("Comment index failure for publication {0}",
           new String[]{pubPK.toString()}, e);

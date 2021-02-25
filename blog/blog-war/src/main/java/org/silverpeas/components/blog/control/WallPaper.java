@@ -23,7 +23,9 @@
  */
 package org.silverpeas.components.blog.control;
 
-public class WallPaper {
+import java.io.Serializable;
+
+public class WallPaper implements Serializable {
 
   private String name = null;
   private String url = null;

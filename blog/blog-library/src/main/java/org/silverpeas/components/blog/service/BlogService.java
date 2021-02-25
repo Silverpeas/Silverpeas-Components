@@ -46,49 +46,49 @@ public interface BlogService extends ApplicationService<PostDetail> {
     return ServiceProvider.getService(BlogService.class);
   }
 
-  public String createPost(final PostDetail post);
+  String createPost(final PostDetail post);
 
-  public String createPost(final PostDetail post, PdcClassification classification);
+  String createPost(final PostDetail post, PdcClassification classification);
 
-  public void updatePost(final PostDetail post);
+  void updatePost(final PostDetail post);
 
-  public void deletePost(String postId, String instanceId);
+  void deletePost(String postId, String instanceId);
 
-  public Collection<PostDetail> getAllPosts(String instanceId);
+  Collection<PostDetail> getAllPosts(String instanceId);
 
-  public Collection<PostDetail> getAllValidPosts(String instanceId, int nbReturned);
+  Collection<PostDetail> getAllValidPosts(String instanceId, int nbReturned);
 
-  public Date getDateEvent(String pubId);
+  Date getDateEvent(String pubId);
 
-  public Collection<PostDetail> getPostsByCategory(String categoryId, String instanceId);
+  Collection<PostDetail> getPostsByCategory(String categoryId, String instanceId);
 
-  public Collection<PostDetail> getPostsByArchive(String beginDate, String endDate,
+  Collection<PostDetail> getPostsByArchive(String beginDate, String endDate,
           String instanceId);
 
-  public Collection<PostDetail> getPostsByDate(String date, String instanceId);
+  Collection<PostDetail> getPostsByDate(String date, String instanceId);
 
-  public Collection<PostDetail> getResultSearch(String word, String userId, String instanceId);
+  Collection<PostDetail> getResultSearch(String word, String userId, String instanceId);
 
-  public String createCategory(final Category category);
+  String createCategory(final Category category);
 
-  public void deleteCategory(String categoryId, String instanceId);
+  void deleteCategory(String categoryId, String instanceId);
 
-  public void updateCategory(final Category category);
+  void updateCategory(final Category category);
 
-  public Category getCategory(final NodePK nodePK);
+  Category getCategory(final NodePK nodePK);
 
-  public Collection<NodeDetail> getAllCategories(String instanceId);
+  Collection<NodeDetail> getAllCategories(String instanceId);
 
-  public Collection<Archive> getAllArchives(String instanceId);
+  Collection<Archive> getAllArchives(String instanceId);
 
-  public void indexBlog(String componentId);
+  void indexBlog(String componentId);
 
-  public void externalElementsOfPublicationHaveChanged(final PublicationPK pubPK, String userId);
+  void externalElementsOfPublicationHaveChanged(final PublicationPK pubPK, String userId);
 
-  public boolean isSubscribed(final String userId, final String instanceId);
+  boolean isSubscribed(final String userId, final String instanceId);
 
-  public void sendSubscriptionsNotification(final NodePK fatherPK, PostDetail post, Comment comment,
+  void sendSubscriptionsNotification(final NodePK fatherPK, PostDetail post, Comment comment,
           String type, String senderId);
 
-  public void draftOutPost(final PostDetail post);
+  void draftOutPost(final PostDetail post);
 }

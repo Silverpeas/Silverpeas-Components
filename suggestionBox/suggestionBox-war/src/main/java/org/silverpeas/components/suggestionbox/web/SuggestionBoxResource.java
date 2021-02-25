@@ -59,6 +59,7 @@ import static org.silverpeas.components.suggestionbox.web.SuggestionBoxResourceU
 
 /**
  * A REST Web resource giving suggestion data.
+ *
  * @author Yohann Chastagnier
  */
 @WebService
@@ -73,8 +74,9 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
   private SuggestionBoxWebManager suggestionBoxWebManager;
 
   /**
-   * Gets the JSON representation of an suggestion.
-   * If it doesn't exist, a 404 HTTP code is returned.
+   * Gets the JSON representation of an suggestion. If it doesn't exist, a 404 HTTP code is
+   * returned.
+   *
    * @param suggestionId the identifier of the suggestion
    * @return the response to the HTTP GET request with the JSON representation of the asked
    * suggestion.
@@ -91,8 +93,9 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
   }
 
   /**
-   * Deletes the suggestion identified by the specified identifier.
-   * If it doesn't exist, a 404 HTTP code is returned.
+   * Deletes the suggestion identified by the specified identifier. If it doesn't exist, a 404 HTTP
+   * code is returned.
+   *
    * @param suggestionId the identifier of the suggestion.
    */
   @DELETE
@@ -100,15 +103,15 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
   public void deleteSuggestion(@PathParam("suggestionId") final String suggestionId) {
     process(() -> {
       final Suggestion suggestion = getSuggestionBox().getSuggestions().get(suggestionId);
-      suggestionBoxWebManager
-          .deleteSuggestion(getSuggestionBox(), suggestion, getUser());
+      suggestionBoxWebManager.deleteSuggestion(getSuggestionBox(), suggestion, getUser());
       return null;
     }).lowestAccessRole(SilverpeasRole.WRITER).execute();
   }
 
   /**
-   * Publishes the suggestion identified by the specified identifier.
-   * If it doesn't exist, a 404 HTTP code is returned.
+   * Publishes the suggestion identified by the specified identifier. If it doesn't exist, a 404
+   * HTTP code is returned.
+   *
    * @param suggestionId the identifier of the suggestion.
    * @return the response to the HTTP PUT request with the JSON representation of the published
    * suggestion.
@@ -119,16 +122,16 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
   public SuggestionEntity publishSuggestion(@PathParam("suggestionId") final String suggestionId) {
     return process(() -> {
       final Suggestion suggestion = getSuggestionBox().getSuggestions().get(suggestionId);
-      return suggestionBoxWebManager
-          .publishSuggestion(getSuggestionBox(), suggestion, getUser());
+      return suggestionBoxWebManager.publishSuggestion(getSuggestionBox(), suggestion, getUser());
     }).lowestAccessRole(SilverpeasRole.WRITER).execute();
   }
 
   /**
-   * Gets the JSON representation of a list of suggestion that are in draft for the user
-   * behind the service call.
-   * @return the response to the HTTP GET request with the JSON representation of the asked
-   * list of suggestions.
+   * Gets the JSON representation of a list of suggestion that are in draft for the user behind the
+   * service call.
+   *
+   * @return the response to the HTTP GET request with the JSON representation of the asked list of
+   * suggestions.
    * @see SuggestionBoxWebManager#getSuggestionsInDraftFor(SuggestionBox, User)
    * @see WebProcess#execute()
    */
@@ -136,16 +139,16 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
   @Path(BOX_SUGGESTION_URI_PART + "/inDraft")
   @Produces(MediaType.APPLICATION_JSON)
   public Collection<SuggestionEntity> getSuggestionsInDraft() {
-    return process(() -> suggestionBoxWebManager
-        .getSuggestionsInDraftFor(getSuggestionBox(), getUser()))
-        .lowestAccessRole(SilverpeasRole.WRITER).execute();
+    return process(() -> suggestionBoxWebManager.getSuggestionsInDraftFor(getSuggestionBox(),
+        getUser())).lowestAccessRole(SilverpeasRole.WRITER).execute();
   }
 
   /**
-   * Gets the JSON representation of a list of suggestion that are out of draft for the user
-   * behind the service call.
-   * @return the response to the HTTP GET request with the JSON representation of the asked
-   * list of suggestions.
+   * Gets the JSON representation of a list of suggestion that are out of draft for the user behind
+   * the service call.
+   *
+   * @return the response to the HTTP GET request with the JSON representation of the asked list of
+   * suggestions.
    * @see SuggestionBoxWebManager#getSuggestionsInDraftFor(SuggestionBox, User)
    * @see WebProcess#execute()
    */
@@ -153,15 +156,15 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
   @Path(BOX_SUGGESTION_URI_PART + "/outOfDraft")
   @Produces(MediaType.APPLICATION_JSON)
   public Collection<SuggestionEntity> getSuggestionsOutOfDraft() {
-    return process(() -> suggestionBoxWebManager
-        .getSuggestionsOutOfDraftFor(getSuggestionBox(), getUser()))
-        .lowestAccessRole(SilverpeasRole.WRITER).execute();
+    return process(() -> suggestionBoxWebManager.getSuggestionsOutOfDraftFor(getSuggestionBox(),
+        getUser())).lowestAccessRole(SilverpeasRole.WRITER).execute();
   }
 
   /**
    * Gets the JSON representation of a list of suggestion that are pending validation.
-   * @return the response to the HTTP GET request with the JSON representation of the asked
-   * list of suggestions.
+   *
+   * @return the response to the HTTP GET request with the JSON representation of the asked list of
+   * suggestions.
    * @see SuggestionBoxWebManager#getSuggestionsInPendingValidation(SuggestionBox)
    * @see WebProcess#execute()
    */
@@ -169,24 +172,24 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
   @Path(BOX_SUGGESTION_URI_PART + "/pendingValidation")
   @Produces(MediaType.APPLICATION_JSON)
   public Collection<SuggestionEntity> getSuggestionsInPendingValidation() {
-    return process(
-        () -> suggestionBoxWebManager.getSuggestionsInPendingValidation(getSuggestionBox()))
-        .lowestAccessRole(SilverpeasRole.PUBLISHER).execute();
+    return process(() -> suggestionBoxWebManager.getSuggestionsInPendingValidation(
+        getSuggestionBox())).lowestAccessRole(SilverpeasRole.PUBLISHER).execute();
   }
 
   /**
    * Gets the JSON representation of a list of suggestions that are published, bu default sorted by
    * date of validation (from the newer to the older).
+   *
    * @param authorId if this parameter is set, then the suggestions to get will be those proposed by
-   * the author with the specified user unique identifier.
-   * @param page if this parameter is set, then the pagination is activated and only the published
-   * suggestions matching the specified pagination criterion are sent back. The parameter is
-   * semicolon-separated criterion: the first part is the page number and the second part is the
-   * count of suggestions to sent back.
+   *                 the author with the specified user unique identifier.
+   * @param page     if this parameter is set, then the pagination is activated and only the
+   *                 published suggestions matching the specified pagination criterion are sent
+   *                 back. The parameter is semicolon-separated criterion: the first part is the
+   *                 page number and the second part is the count of suggestions to sent back.
    * @param property the property by which the asked published suggestions should be sorted. If no
-   * such property exists for the suggestions, then no sorting is performed.
-   * @return the response to the HTTP GET request with the JSON representation of the asked
-   * list of suggestions.
+   *                 such property exists for the suggestions, then no sorting is performed.
+   * @return the response to the HTTP GET request with the JSON representation of the asked list of
+   * suggestions.
    * @see SuggestionBoxWebManager#getPublishedSuggestions(SuggestionBox)
    * @see WebProcess#execute()
    */
@@ -194,8 +197,7 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
   @Path(BOX_SUGGESTION_URI_PART + "/published")
   @Produces(MediaType.APPLICATION_JSON)
   public Collection<SuggestionEntity> getPublishedSuggestions(
-      @QueryParam("author") final String authorId,
-      @QueryParam("page") final String page,
+      @QueryParam("author") final String authorId, @QueryParam("page") final String page,
       @QueryParam("sortby") final String property) {
     return process(() -> {
       PaginationPage pagination = fromPage(page);
@@ -208,19 +210,18 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
         }
         List<SuggestionEntity> suggestions = suggestionBoxWebManager.
             getSuggestionsByCriteria(SuggestionCriteria.from(getSuggestionBox())
-                    .createdBy(author)
-                    .statusIsOneOf(ContributionStatus.VALIDATED)
-                    .paginatedBy(pagination)
-                    .applyJoinOnData(commentJoinData)
-                    .orderedBy(QUERY_ORDER_BY.fromPropertyName(property)));
+                .createdBy(author)
+                .statusIsOneOf(ContributionStatus.VALIDATED)
+                .paginatedBy(pagination)
+                .applyJoinOnData(commentJoinData)
+                .orderedBy(QUERY_ORDER_BY.fromPropertyName(property)));
         if (suggestions instanceof PaginationList) {
           String maxlength = String.valueOf(((PaginationList) suggestions).originalListSize());
           getHttpServletResponse().setHeader(RESPONSE_HEADER_ARRAYSIZE, maxlength);
         }
         return suggestions;
       } else if (author != null) {
-        return suggestionBoxWebManager
-            .getPublishedSuggestionsFor(getSuggestionBox(), author);
+        return suggestionBoxWebManager.getPublishedSuggestionsFor(getSuggestionBox(), author);
       }
       return suggestionBoxWebManager.getPublishedSuggestions(getSuggestionBox());
     }).execute();
@@ -228,13 +229,12 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
 
 
   /**
-   * Gets the JSON representation of a list of the last comments that were posted on the
-   * suggestions
+   * Gets the JSON representation of a list of the last comments that were posted on the suggestions
    * of the current suggestion box. The comments are sorted in descent order, that is to say from
    * the newer to the older one.
-   * @param count the number of comments to return. If this parameter isn't set, then only the
-   * first
-   * 5 last comments are sent back.
+   *
+   * @param count the number of comments to return. If this parameter isn't set, then only the first
+   *              5 last comments are sent back.
    * @return a collection of comments on the suggestions, ready to be serialized in JSON.
    */
   @GET
@@ -242,12 +242,12 @@ public class SuggestionBoxResource extends AbstractSuggestionBoxResource {
   @Produces(MediaType.APPLICATION_JSON)
   public Collection<SuggestionCommentEntity> getLastComments(@QueryParam("count") final int count) {
     SuggestionBox suggestionBox = getSuggestionBox();
-    List<Comment> comments = commentService
-        .getLastComments(suggestionBox.getComponentInstanceId(), (count <= 0 ? 5 : count));
-    List<SuggestionCommentEntity> commentEntities =
-        new ArrayList<SuggestionCommentEntity>(comments.size());
+    List<Comment> comments = commentService.getLastComments(suggestionBox.getComponentInstanceId(),
+        (count <= 0 ? 5 : count));
+    List<SuggestionCommentEntity> commentEntities = new ArrayList<>(comments.size());
     for (Comment comment : comments) {
-      Suggestion suggestion = suggestionBox.getSuggestions().get(comment.getForeignKey().getId());
+      Suggestion suggestion =
+          suggestionBox.getSuggestions().get(comment.getResourceReference().getLocalId());
       commentEntities.add(SuggestionCommentEntity.fromComment(comment).onSuggestion(suggestion));
     }
     return commentEntities;

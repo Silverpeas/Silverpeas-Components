@@ -35,6 +35,7 @@ import org.odftoolkit.simple.text.Section;
 import org.odftoolkit.simple.text.list.ListItem;
 import org.silverpeas.components.kmelia.model.KmeliaPublication;
 import org.silverpeas.components.kmelia.service.KmeliaService;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
@@ -251,7 +252,7 @@ public class ODTDocumentBuilder {
       int i = 1;
       for (Comment comment : comments) {
         Row row = commentsTable.getRowByIndex(i++);
-        row.getCellByIndex(0).setStringValue(comment.getOwnerDetail().getDisplayedName());
+        row.getCellByIndex(0).setStringValue(comment.getCreator().getDisplayedName());
         row.getCellByIndex(1).setStringValue(comment.getMessage());
         row.getCellByIndex(2).setStringValue(formatDate(comment.getCreationDate()));
         row.getCellByIndex(3).setStringValue(formatDate(comment.getLastUpdateDate()));
@@ -261,8 +262,8 @@ public class ODTDocumentBuilder {
 
   private void buildContentSection(final TextDocument odtDocument,
       final KmeliaPublication publication) throws Exception {
-    String htmlContent = WysiwygController.load(publication.getPk().getInstanceId(), publication.
-        getPk().getId(), getLanguage());
+    String htmlContent = WysiwygController.load(publication.getComponentInstanceId(),
+        publication.getId(), getLanguage());
     if (isDefined(htmlContent)) {
       buildWithHTMLText(htmlContent, in(odtDocument));
     } else {
@@ -308,19 +309,19 @@ public class ODTDocumentBuilder {
     String templateId = publication.getDetail().getInfoId();
     if (!isInteger(templateId)) {
       PublicationTemplate template = PublicationTemplateManager.getInstance().
-          getPublicationTemplate(publication.getPk().getInstanceId() + ":" + templateId);
+          getPublicationTemplate(publication.getComponentInstanceId() + ":" + templateId);
       Form viewForm = template.getViewForm();
       RecordSet recordSet = template.getRecordSet();
-      DataRecord dataRecord = recordSet.getRecord(publication.getPk().getId(), getLanguage());
+      DataRecord dataRecord = recordSet.getRecord(publication.getId(), getLanguage());
       if (dataRecord == null) {
         dataRecord = recordSet.getEmptyRecord();
-        dataRecord.setId(publication.getPk().getId());
+        dataRecord.setId(publication.getId());
       }
       PagesContext context = new PagesContext();
       context.setRenderingContext(RenderingContext.EXPORT);
       context.setLanguage(getLanguage());
-      context.setComponentId(publication.getPk().getInstanceId());
-      context.setObjectId(publication.getPk().getId());
+      context.setComponentId(publication.getComponentInstanceId());
+      context.setObjectId(publication.getId());
       context.setBorderPrinted(false);
       context.setContentLanguage(getLanguage());
       context.setUserId(getUser().getId());
@@ -345,7 +346,7 @@ public class ODTDocumentBuilder {
   private void buildAttachmentsSection(final TextDocument odtDocument,
       final KmeliaPublication publication) {
     List<SimpleDocument> attachments = AttachmentServiceProvider.getAttachmentService()
-        .listDocumentsByForeignKey(publication.getPk().toResourceReference(), getLanguage());
+        .listDocumentsByForeignKey(publication.getIdentifier().toReference(), getLanguage());
     boolean hasNoAttachmentToDisplay = true;
     Table attachmentsTable = odtDocument.getTableByName(LIST_OF_ATTACHMENTS);
     int i = 1;
@@ -386,7 +387,7 @@ public class ODTDocumentBuilder {
         for (KmeliaPublication aLinkedPublication : linkedPublications) {
           PublicationDetail publicationDetail = aLinkedPublication.getDetail();
           if (publicationDetail.isValid() &&
-              !publicationDetail.getPK().getId().equals(publication.getPk().getId())) {
+              !publicationDetail.getId().equals(publication.getId())) {
             TextAElement hyperlink = new TextAElement(odtDocument.getContentDom());
             hyperlink.setXlinkHrefAttribute(aLinkedPublication.getURL());
             hyperlink.setXlinkTypeAttribute("simple");
