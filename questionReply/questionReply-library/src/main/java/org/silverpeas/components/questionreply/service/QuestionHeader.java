@@ -24,8 +24,10 @@
 package org.silverpeas.components.questionreply.service;
 
 import org.silverpeas.components.questionreply.model.Question;
+import org.silverpeas.core.Identifiable;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.model.LocalizedContribution;
 import org.silverpeas.core.i18n.AbstractBean;
 import org.silverpeas.core.persistence.jdbc.bean.IdPK;
 import org.silverpeas.core.util.DateUtil;
@@ -35,9 +37,10 @@ import java.text.ParseException;
 import java.util.Date;
 
 /**
- * The questionReply implementation of SilverContentInterface
+ * A question
  */
-public final class QuestionHeader extends AbstractBean implements SilverContentInterface {
+public final class QuestionHeader extends AbstractBean implements LocalizedContribution,
+    Identifiable {
 
   private static final long serialVersionUID = 311303663095375317L;
   private long id;
@@ -66,27 +69,27 @@ public final class QuestionHeader extends AbstractBean implements SilverContentI
   }
 
   @Override
-  public String getURL() {
-    return "ConsultQuestionQuery?questionId=" + id;
-  }
-
-  @Override
   public String getId() {
     return Long.toString(id);
   }
 
-  @Override
   public String getInstanceId() {
     return instanceId;
   }
 
+  @Override
+  public ContributionIdentifier getIdentifier() {
+    return ContributionIdentifier.from(getInstanceId(), getId(), getContributionType());
+  }
+
+  @Override
   public String getTitle() {
     return this.title;
   }
 
   @Override
-  public String getDate() {
-    return this.date;
+  public String getContributionType() {
+    return "Question";
   }
 
   @Override
@@ -116,18 +119,8 @@ public final class QuestionHeader extends AbstractBean implements SilverContentI
     return getCreator();
   }
 
-  @Override
-  public String getIconUrl() {
-    return "questionReplySmall.gif";
-  }
-
-  @Override
   public String getCreatorId() {
     return this.creatorId;
   }
 
-  @Override
-  public String getSilverCreationDate() {
-    return this.date;
-  }
 }

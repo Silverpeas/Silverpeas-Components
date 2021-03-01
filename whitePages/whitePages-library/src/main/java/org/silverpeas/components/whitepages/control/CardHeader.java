@@ -27,11 +27,13 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.components.whitepages.model.Card;
 import org.silverpeas.components.whitepages.record.UserRecord;
 import org.silverpeas.components.whitepages.record.UserTemplate;
+import org.silverpeas.core.Identifiable;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.model.LocalizedContribution;
 import org.silverpeas.core.i18n.AbstractBean;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ResourceLocator;
@@ -44,17 +46,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * The fileboxplus implementation of SilverContentInterface
- */
 public final class CardHeader extends AbstractBean
-    implements SilverContentInterface, Comparable<CardHeader> {
+    implements LocalizedContribution, Identifiable, Comparable<CardHeader> {
 
   private static final long serialVersionUID = -8781512864589764317L;
   private long id;
   private String instanceId;
-  private String date;
-  private String creatorId;
+  private final String date;
+  private final String creatorId;
   private static final SettingBundle whitePagesIcons =
       ResourceLocator.getSettingBundle("org.silverpeas.whitePages.settings.whitePagesIcons");
 
@@ -108,10 +107,6 @@ public final class CardHeader extends AbstractBean
     return buffer.toString();
   }
 
-  public CardHeader(long id, Card card) {
-    init(id, card);
-  }
-
   public CardHeader(long id, Card card, String instanceId, String date, String creatorId) {
     this.instanceId = instanceId;
     this.date = date;
@@ -119,7 +114,6 @@ public final class CardHeader extends AbstractBean
     init(id, card);
   }
 
-  @Override
   public String getURL() {
     return "consultIdentity?userCardId=" + id;
   }
@@ -162,9 +156,13 @@ public final class CardHeader extends AbstractBean
     return String.valueOf(id);
   }
 
-  @Override
   public String getInstanceId() {
     return instanceId;
+  }
+
+  @Override
+  public ContributionIdentifier getIdentifier() {
+    return ContributionIdentifier.from(getInstanceId(), getId(), getContributionType());
   }
 
   @Override
@@ -173,23 +171,12 @@ public final class CardHeader extends AbstractBean
   }
 
   @Override
-  public String getDate() {
-    return this.date;
+  public String getContributionType() {
+    return "BusinessCard";
   }
 
-  @Override
-  public String getIconUrl() {
-    return "whitePagesSmall.gif";
-  }
-
-  @Override
   public String getCreatorId() {
     return this.creatorId;
-  }
-
-  @Override
-  public String getSilverCreationDate() {
-    return this.date;
   }
 
   @Override

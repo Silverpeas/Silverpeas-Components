@@ -35,7 +35,6 @@ import org.odftoolkit.simple.text.Section;
 import org.odftoolkit.simple.text.list.ListItem;
 import org.silverpeas.components.kmelia.model.KmeliaPublication;
 import org.silverpeas.components.kmelia.service.KmeliaService;
-import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;

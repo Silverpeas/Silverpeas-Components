@@ -25,6 +25,7 @@ package org.silverpeas.components.websites.servlets;
 
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.websites.control.WebSiteSessionController;
+import org.silverpeas.components.websites.model.SiteDetailBuilder;
 import org.silverpeas.components.websites.service.WebSitesException;
 import org.silverpeas.components.websites.servlets.design.SiteDesignActionHandler;
 import org.silverpeas.components.websites.model.FolderDetail;
@@ -204,9 +205,17 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
       String id = scc.getNextId();
 
       // Persist uploaded website inside database, type=2
-      SiteDetail descriptionSite =
-          new SiteDetail(id, scc.getComponentId(), nomSite, description, nomPage, 2, null, null,
-              0, popup);
+      SiteDetail descriptionSite = new SiteDetailBuilder().setSiteId(id)
+          .setApplicationId(scc.getComponentId())
+          .setName(nomSite)
+          .setDescription(description)
+          .setPage(nomPage)
+          .setType(2)
+          .setCreatorId(null)
+          .setDate(null)
+          .setState(0)
+          .setPopup(popup)
+          .createSiteDetail();
 
       descriptionSite.setPositions(positions);
       int result = scc.createWebSiteFromZipFile(descriptionSite, fileItem);
@@ -334,9 +343,17 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
     SiteDetail ancien = scc.getWebSite(id);
     int type = ancien.getSiteType();
           /* update description en BD */
-    SiteDetail descriptionSite2 =
-        new SiteDetail(id, scc.getComponentId(), nomSite, description, nomPage, type, null, null,
-            etat, popup);
+    SiteDetail descriptionSite2 = new SiteDetailBuilder().setSiteId(id)
+        .setApplicationId(scc.getComponentId())
+        .setName(nomSite)
+        .setDescription(description)
+        .setPage(nomPage)
+        .setType(type)
+        .setCreatorId(null)
+        .setDate(null)
+        .setState(etat)
+        .setPopup(popup)
+        .createSiteDetail();
 
     scc.updateWebSite(descriptionSite2);
     if (listIcons.size() > 0) {
@@ -412,9 +429,17 @@ public class WebSitesRequestRouter extends ComponentRequestRouter<WebSiteSession
     String id = scc.getNextId();
 
           /* Persist siteDetail inside database, type 1 = bookmark */
-    SiteDetail descriptionSite =
-        new SiteDetail(id, scc.getComponentId(), nomSite, description, nomPage, 1, null, null, 0,
-            popup);
+    SiteDetail descriptionSite = new SiteDetailBuilder().setSiteId(id)
+        .setApplicationId(scc.getComponentId())
+        .setName(nomSite)
+        .setDescription(description)
+        .setPage(nomPage)
+        .setType(1)
+        .setCreatorId(null)
+        .setDate(null)
+        .setState(0)
+        .setPopup(popup)
+        .createSiteDetail();
     descriptionSite.setPositions(positions);
 
     String pubId = scc.createWebSite(descriptionSite);
