@@ -130,13 +130,11 @@
     }
 
     function contactGoToUserInTopic(id, topic) {
-      windowName = "contactWindow";
-      windowParams =
-          "directories=0,menubar=0,toolbar=0,alwaysRaised, scrollbars=yes, resizable=yes";
       width = <%=resources.getSetting("popupWidth", 600)%>;
       height = <%=resources.getSetting("popupHeight", 480)%>;
       url = "ContactView?ContactId=" + id + "&TopicId=" + topic;
-      jQuery.popup.load(url).show('free', {
+      window.contactPopup = jQuery.popup.load(url);
+      window.contactPopup.show('free', {
         title : 'Contact', width : width, height : height
       });
     }

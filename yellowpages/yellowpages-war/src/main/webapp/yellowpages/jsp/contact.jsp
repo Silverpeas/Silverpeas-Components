@@ -73,6 +73,20 @@
   </c:when>
   <c:otherwise>
     <view:link href="/util/styleSheets/fieldset.css"/>
-    <yellowpagesTags:contactView contact="<%=contact%>" userLanguage="<%=resources.getLanguage()%>" formView="<%=formView%>" context="<%=context%>"/>
+    <view:link href="styleSheets/printContact.css"/>
+    <script type="text/javascript">
+      function closePopup() {
+        window.contactPopup.close();
+      }
+    </script>
+    <div id="printSection">
+      <yellowpagesTags:contactView contact="<%=contact%>" userLanguage="<%=resources.getLanguage()%>" formView="<%=formView%>" context="<%=context%>"/>
+    </div>
+    <view:buttonPane>
+      <fmt:message key="GML.print" var="labelPrint"/>
+      <fmt:message key="GML.close" var="labelClose"/>
+      <view:button label="${labelPrint}" action="javascript:window.print()"/>
+      <view:button label="${labelClose}" action="javascript:closePopup()"/>
+    </view:buttonPane>
   </c:otherwise>
 </c:choose>
