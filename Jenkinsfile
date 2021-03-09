@@ -4,7 +4,7 @@ pipeline {
   environment {
     lockFilePath = null
     version = null
-    silverpeasCore = 'Master'
+    silverpeasCore = 'Stable'
   }
   agent {
     docker {

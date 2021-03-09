@@ -25,7 +25,10 @@
 package org.silverpeas.components.mydb.model.predicates;
 
 import org.silverpeas.components.mydb.model.DbColumn;
+import org.silverpeas.components.mydb.service.MyDBRuntimeException;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
+
+import static java.text.MessageFormat.format;
 
 /**
  * The like predicate.
@@ -45,7 +48,14 @@ public class Like extends AbstractColumnValuePredicate {
 
   @Override
   public JdbcSqlQuery apply(final JdbcSqlQuery query) {
-    return query.where("lower(" + getColumn().getName() + ") like lower(?)", getNormalizedValue());
+    final Object normalizedValue = getNormalizedValue();
+    if (getColumn().isOfTypeText()) {
+      return query.where("lower(" + getColumn().getName() + ") like lower(?)", normalizedValue);
+    } else {
+      throw new MyDBRuntimeException(format(
+          "Operator ''like'' cannot be applied to column ''{0}'' of type ''{1}'' with value " +
+              "''{2}''.\n\nPlease trying with a column of text type",
+          getColumn().getName(), getColumn().getTypeName(), normalizedValue));
+    }
   }
 }
-  
