@@ -30,11 +30,11 @@ import org.silverpeas.components.mydb.model.DbTable;
 import org.silverpeas.components.mydb.model.TableRow;
 import org.silverpeas.components.mydb.service.MyDBRuntimeException;
 import org.silverpeas.core.admin.PaginationPage;
+import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.SilverpeasArrayList;
 import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.util.logging.SilverLogger;
-import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,6 +56,7 @@ import static org.silverpeas.core.util.Mutable.empty;
  */
 public class TableView {
 
+  private final LocalizationBundle message;
   private final Map<Integer, Pair<String, String>> orderBies = new HashMap<>(50);
   private Optional<DbTable> table = Optional.empty();
   private TableRowsFilter filter = new TableRowsFilter();
@@ -65,8 +66,10 @@ public class TableView {
 
   /**
    * Constructs an empty table view. This view is on nothing.
+   * @param message
    */
-  TableView() {
+  TableView(final LocalizationBundle message) {
+    this.message = message;
   }
 
   public PaginationPage getPagination() {
@@ -168,7 +171,7 @@ public class TableView {
     try {
       table.ifPresent(t -> rows.set(applyFilter(t)));
     } catch (final MyDBRuntimeException e) {
-      WebMessager.getInstance().addSevere(e.getMessage());
+      MyDBMessageManager.get().setError(message.getString("mydb.error.filter.criteria"), e);
       SilverLogger.getLogger(this).error(e);
     }
     lastRows = convertList(this, rows.orElseGet(SilverpeasArrayList::new), emptySet());

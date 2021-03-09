@@ -33,5 +33,8 @@ import org.silverpeas.core.web.mvc.webcomponent.WebComponentRequestContext;
  */
 public class MyDBWebRequestContext
     extends WebComponentRequestContext<MyDBWebController> {
+
+  public MyDBMessageManager getMyDBMessageManager() {
+    return MyDBMessageManager.get();
+  }
 }
-  

@@ -1,10 +1,3 @@
-<%@ include file="head.jsp" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
-
 <%--
   ~ Copyright (C) 2000 - 2021 Silverpeas
   ~
@@ -28,6 +21,14 @@
   ~ You should have received a copy of the GNU Affero General Public License
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --%>
+
+<%@ include file="head.jsp" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/mydb" prefix="mydbTags" %>
 
 <c:set var="currentUserLanguage" value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
 <fmt:setLocale value="${currentUserLanguage}"/>
@@ -134,6 +135,7 @@
     <view:tab label="${settings}" action="ConnectionSetting" selected="true"/>
   </view:tabs>
   <view:frame>
+    <mydbTags:messages/>
     <form id="processForm" name="processForm" action="UpdateConnection" method="post">
       <fieldset class="skinFieldset">
         <legend></legend>

@@ -28,6 +28,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/mydb" prefix="mydbTags" %>
 
 <c:set var="currentUserLanguage" value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
 <fmt:setLocale value="${currentUserLanguage}"/>
@@ -354,6 +355,7 @@
   </c:if>
   <view:frame>
     <view:areaOfOperationOfCreation/>
+    <mydbTags:messages/>
     <c:if test="${currentUserCanManageRows}">
       <div id="selection" style="padding-bottom: 10px">
         <label for="table"><fmt:message key="mydb.tables"/></label>

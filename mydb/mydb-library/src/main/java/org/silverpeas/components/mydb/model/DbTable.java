@@ -37,7 +37,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toMap;
 
 /**
  * Table loaded from the database referred by a {@link MyDBConnectionInfo} instance.
@@ -220,7 +223,7 @@ public class DbTable {
     final Map<String, Object> criteria;
     if (!pkColumns.isEmpty()) {
       criteria = pkColumns.stream()
-          .collect(Collectors.toMap(DbColumn::getName,
+          .collect(toMap(DbColumn::getName,
               pk -> row.getFieldValue(pk.getName()).toSQLObject()));
     } else {
       criteria = tableRowToMap(row);
@@ -229,9 +232,10 @@ public class DbTable {
   }
 
   private Map<String, Object> tableRowToMap(final TableRow tableRow) {
-    final Map<String, Object> rows = new HashMap<>();
-    tableRow.getFields().forEach((key, value) -> rows.put(key, value.toSQLObject()));
-    return rows;
+    return tableRow.getFields()
+        .entrySet()
+        .stream()
+        .filter(Predicate.not(e -> e.getKey().equalsIgnoreCase("SP_MAX_ROW_COUNT")))
+        .collect(HashMap::new, (h, e) -> h.put(e.getKey(), e.getValue().toSQLObject()), HashMap::putAll);
   }
 }
-  
