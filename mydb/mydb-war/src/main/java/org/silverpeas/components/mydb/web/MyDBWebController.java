@@ -103,7 +103,7 @@ public class MyDBWebController
   private static final String ERROR_INVALID_ROW_KEY = "mydb.error.invalidRow";
 
   private MyDBConnectionInfo connectionInfo;
-  private transient TableView tableView = new TableView();
+  private transient TableView tableView;
   private String mainArrayPaneName;
 
   /**
@@ -119,6 +119,7 @@ public class MyDBWebController
 
   @Override
   protected void onInstantiation(final MyDBWebRequestContext context) {
+    tableView = new TableView(getMultilang());
     final String instanceId = context.getComponentInstanceId();
     mainArrayPaneName = "Table" + instanceId;
     final List<MyDBConnectionInfo> availableConnectionInfo =
@@ -179,7 +180,7 @@ public class MyDBWebController
       tableView.setOrderBy(getOrderByFrom(request, tableView.getOrderBies(), getSessionTableViewId()));
       setUpRequestAttributes(request);
     } catch (MyDBRuntimeException e) {
-      context.getMessager().addError(e.getLocalizedMessage());
+      context.getMyDBMessageManager().setError(getString("mydb.error.table.read"), e);
     }
   }
 
@@ -233,7 +234,7 @@ public class MyDBWebController
       final Map<String, String> fields = parseForeignKeyRow(selectedRow);
       final Optional<DbTable> targetTable = DbTable.table(targetTableName, connectionInfo);
       if (targetTable.isPresent()) {
-        final TableView targetTableView = new TableView();
+        final TableView targetTableView = new TableView(getMultilang());
         targetTableView.setTable(targetTable);
         final HttpRequest request = context.getRequest();
         final String fkArrayPaneName = "FkTable@" + targetTableName;
@@ -488,8 +489,8 @@ public class MyDBWebController
       connectionInfo.checkConnection();
       return true;
     } catch (MyDBException e) {
+      context.getMyDBMessageManager().setError(getString("mydb.error.invalidConnectionSettings"));
       SilverLogger.getLogger(this).error(e);
-      context.getMessager().addError(getString("mydb.error.invalidConnectionSettings"));
       return false;
     }
   }

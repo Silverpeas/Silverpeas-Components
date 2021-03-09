@@ -32,3 +32,7 @@
   display: table-cell;
   vertical-align: middle;
 }
+
+#technicalError a {
+  font-size: 0.80em;
+}
