@@ -453,6 +453,16 @@ body.treeView > div[id*="kmelia"] > div.kmelia  #topPage .cellBodyWindows{
   background: url("../../../kmelia/jsp/icons/pack_big_icons.gif")  3px -696px no-repeat;
   border:1px solid #FFFBBB ;
   background-color:#FFFFDC;}
+
+#subTopics ul li#topic_notvisibleContributions a {
+  background: url("../../../kmelia/jsp/icons/pack_big_icons.gif")  3px -796px no-repeat;
+  border:1px solid #EAEAEA ;
+  border-radius:10px;
+  background-color:#EAEAEA;}
+#subTopics ul li#topic_notvisibleContributions a:hover {
+  background: url("../../../kmelia/jsp/icons/pack_big_icons.gif")  3px -896px no-repeat;
+  border:1px solid #FFFBBB ;
+  background-color:#FFFFDC;}
 	
 #subTopics ul li a strong {
   display:block;

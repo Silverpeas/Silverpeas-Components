@@ -3643,7 +3643,7 @@ public class DefaultKmeliaService implements KmeliaService {
       // adding special folder "to validate"
       if (isUserCanValidate(instanceId, userId)) {
         NodeDetail temp = new NodeDetail();
-        temp.getNodePK().setId("tovalidate");
+        temp.getNodePK().setId(KmeliaHelper.SPECIALFOLDER_TOVALIDATE);
         temp.setName(getMultilang().getString("ToValidateShort"));
         if (isNbItemsDisplayed(instanceId)) {
           int nbPublisToValidate = getPublicationsToValidate(instanceId, userId).size();
@@ -3652,9 +3652,21 @@ public class DefaultKmeliaService implements KmeliaService {
         children.add(temp);
       }
 
-      // adding special folder "trash"
-      if (isUserCanWrite(instanceId, userId) && trash != null) {
-        children.add(trash);
+      // adding special folders "non visible publications" and "trash"
+      if (isUserCanWrite(instanceId, userId)) {
+
+        NodeDetail temp = new NodeDetail();
+        temp.getNodePK().setId(KmeliaHelper.SPECIALFOLDER_NONVISIBLEPUBS);
+        temp.setName(getMultilang().getString("kmelia.folder.nonvisiblepubs"));
+        if (isNbItemsDisplayed(instanceId)) {
+          int nbPublis = getNonVisiblePublications(instanceId, userId).size();
+          temp.setNbObjects(nbPublis);
+        }
+        children.add(temp);
+
+        if (trash != null) {
+          children.add(trash);
+        }
       }
 
       root.setChildrenDetails(children);
@@ -3779,7 +3791,7 @@ public class DefaultKmeliaService implements KmeliaService {
   @Override
   public String getUserTopicProfile(NodePK pk, String userId) {
     if (!isRightsOnTopicsEnabled(pk.getInstanceId()) ||
-        KmeliaHelper.isToValidateFolder(pk.getId())) {
+        KmeliaHelper.isSpecialFolder(pk.getId())) {
       return KmeliaHelper.getProfile(getUserRoles(pk.getInstanceId(), userId));
     }
 
@@ -4535,6 +4547,26 @@ public class DefaultKmeliaService implements KmeliaService {
     original.setUpdateDateMustBeSet(false);
     original.setIndexOperation(IndexManager.NONE);
     publicationService.setDetail(original);
+  }
+
+  @Override
+  public List<KmeliaPublication> getNonVisiblePublications(String componentId, String userId) {
+    try {
+      Collection<PublicationDetail> temp = publicationService.getPublicationsByCriteria(
+          PublicationCriteria
+              .onComponentInstanceIds(componentId)
+              .ofStatus(PublicationDetail.VALID_STATUS)
+              .nonVisibleAt(OffsetDateTime.now())
+              .excludingNodes(NodePK.BIN_NODE_ID)
+              .orderByDescendingLastUpdateDate());
+      // only publications allowed by current user must be returned
+      List<PublicationDetail> publications = PublicationAccessControl.get()
+          .filterAuthorizedByUser(userId, temp)
+          .collect(Collectors.toList());
+      return asKmeliaPublication(publications);
+    } catch (Exception e) {
+      throw new KmeliaRuntimeException(e);
+    }
   }
 
   private class PublicationConcernedByUpdate {

@@ -138,6 +138,14 @@ function getToValidateFolderId() {
 	return "<%=KmeliaHelper.SPECIALFOLDER_TOVALIDATE%>";
 }
 
+function getNonVisiblePubsFolderId() {
+  return "<%=KmeliaHelper.SPECIALFOLDER_NONVISIBLEPUBS%>";
+}
+
+function isSpecialFolder(id) {
+  return id === getToValidateFolderId() || id === getNonVisiblePubsFolderId();
+}
+
 function getCurrentFolderId() {
   return "<%=id%>";
 }
@@ -384,24 +392,29 @@ function displayTopicContent(id) {
 	}
 
   var displayPublicationPromise;
-	if (id == getToValidateFolderId() || id == "1") {
+	if (isSpecialFolder(id) || id === "1") {
 		muteDragAndDrop(); //mute dropzone
 		$("#footer").css({'visibility':'hidden'}); //hide footer
 		$("#searchZone").css({'display':'none'}); //hide search
 
-		if (id == getToValidateFolderId())	{
+		if (id === getToValidateFolderId())	{
 			hideOperations();
-			displayPublicationPromise = displayPublications(id);
 
 			//update breadcrumb
       removeBreadCrumbElements();
       addBreadCrumbElement("#", "<%=resources.getString("ToValidate")%>");
+    } else if (id === getNonVisiblePubsFolderId()) {
+      hideOperations();
+
+      //update breadcrumb
+      removeBreadCrumbElements();
+      addBreadCrumbElement("#", "<%=resources.getString("kmelia.folder.nonvisiblepubs")%>");
 		} else {
 			displayOperations(id);
-			displayPublicationPromise = displayPublications(id);
 			displayPath(id);
 		}
-	} else {
+    displayPublicationPromise = displayPublications(id);
+  } else {
 		if (searchInProgress) {
 			doPagination(<%=currentPageIndex%>);
 		} else {
@@ -458,7 +471,7 @@ function customMenu(node) {
 	if (params["rightsOnTopic"]) {
 		userRole = node.original.attr["role"];
 	}
-	if (nodeType == getToValidateFolderId()) {
+	if (isSpecialFolder(nodeType)) {
     	return false;
     } else if (nodeType == "bin") {
     	var binItems = {
@@ -826,7 +839,7 @@ $(document).ready(function() {
       // The `root` node
       "root" : {
         // those prevent the functions with the same name to be used on `root` nodes
-        "valid_children" : ["bin", getToValidateFolderId()]
+        "valid_children" : ["bin", getToValidateFolderId(), getNonVisiblePubsFolderId()]
       },
       // The `bin` node
       "bin" : {
@@ -836,9 +849,15 @@ $(document).ready(function() {
       },
       // The `to validate` node
       "<%=KmeliaHelper.SPECIALFOLDER_TOVALIDATE%>" : {
-        // can have files and folders inside, but NOT other `drive` nodes
+        // can have files only
         "valid_children" : -1,
         "icon" : getWebContext() + "/util/icons/ok_alpha.gif"
+      },
+      // The 'non visible publications' node
+      "<%=KmeliaHelper.SPECIALFOLDER_NONVISIBLEPUBS%>" : {
+        // can have files only
+        "valid_children" : -1,
+        "icon" : getWebContext() + "/util/icons/masque.gif"
       },
       "folder" : {
         // those prevent the functions with the same name to be used on `root` nodes
@@ -962,7 +981,7 @@ $(document).on("dnd_stop.vakata", function(event, data) {
     var targetId = extractFolderId(target.attr('id'));
     if (targetId && targetId !== window.__spTreeviewDndContext.lastTarget.id) {
       target = treeview.get_node('#' + targetId);
-      if (targetId == getToValidateFolderId() || targetId == getCurrentNodeId()) {
+      if (isSpecialFolder(targetId) || targetId === getCurrentNodeId()) {
         canBeDropped = false;
       } else if (target.type !== 'root' || arePublicationsOnRootAllowed()) {
         var pubId = extractPublicationId(data.data.nodes[0].id);

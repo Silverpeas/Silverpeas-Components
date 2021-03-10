@@ -569,7 +569,7 @@ function getDateFormat() {
 }
 
 function displayTopicInformation(id) {
-  if (id !== "0" && id !== "1" && id !== getToValidateFolderId()) {
+  if (id !== "0" && id !== "1" && id !== getToValidateFolderId() && id !== getNonVisiblePubsFolderId()) {
     $("#footer").css({'visibility': 'visible'});
     var url = getWebContext() + "/services/folders/" + getComponentId() + "/" + id;
     $.getJSON(url, function(topic) {

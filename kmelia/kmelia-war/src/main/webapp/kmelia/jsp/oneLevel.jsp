@@ -144,6 +144,14 @@ function getTranslation() {
 function getToValidateFolderId() {
   return "<%=KmeliaHelper.SPECIALFOLDER_TOVALIDATE%>";
 }
+
+function getNonVisiblePubsFolderId() {
+  return "<%=KmeliaHelper.SPECIALFOLDER_NONVISIBLEPUBS%>";
+}
+
+function isSpecialFolder(id) {
+  return id === getToValidateFolderId() || id === getNonVisiblePubsFolderId();
+}
 </script>
 </head>
 <body id="kmelia" onunload="closeWindows();">
@@ -260,24 +268,30 @@ function displayTopicContent(id) {
 
   setCurrentNodeId(id);
 
-  if (id === getToValidateFolderId() || id === "1") {
+  if (isSpecialFolder(id) || id === "1") {
     muteDragAndDrop(); //mute dropzone
     $("#footer").css({'visibility':'hidden'}); //hide footer
     $("#searchZone").css({'display':'none'}); //hide search
     $("#subTopics").empty();
 
-    if (id === getToValidateFolderId())  {
+    if (id === getToValidateFolderId()) {
       hideOperations();
-      displayPublications(id);
 
       //update breadcrumb
-            removeBreadCrumbElements();
-            addBreadCrumbElement("#", "<%=resources.getString("ToValidate")%>");
+      removeBreadCrumbElements();
+      addBreadCrumbElement("#", "<%=resources.getString("ToValidate")%>");
+    } else if (id === getNonVisiblePubsFolderId())  {
+      hideOperations();
+
+      //update breadcrumb
+      removeBreadCrumbElements();
+      addBreadCrumbElement("#", "<%=resources.getString("kmelia.folder.nonvisiblepubs")%>");
     } else {
-      displayPublications(id);
       displayPath(id);
       displayOperations(id);
     }
+    displayPublications(id);
+
   } else {
     if (searchInProgress) {
       doPagination(<%=currentPageIndex%>);
@@ -309,18 +323,22 @@ function displaySubTopics(id) {
         $("#subTopics").append("<ul>");
         var basket = "";
         var tovalidate = "";
+        var nonVisiblePubs = "";
         $.each(data, function(i, folder) {
             var folderId = folder.attr["id"];
             if (folderId === "1") {
               basket = getSubFolder(folder);
             } else if (folderId === getToValidateFolderId()) {
               tovalidate = getSubFolder(folder);
+            } else if (folderId === getNonVisiblePubsFolderId()) {
+              nonVisiblePubs = getSubFolder(folder);
             } else if (folderId !== "2") {
               $("#subTopics ul").append(getSubFolder(folder));
             }
         });
         if (id === "0") {
           $("#subTopics ul").append(tovalidate);
+          $("#subTopics ul").append(nonVisiblePubs);
           $("#subTopics ul").append(basket);
         }
         $("#subTopics").append("</ul>");
@@ -347,6 +365,8 @@ function getSubFolder(folder) {
   str += '<a href="#" onclick="topicGoTo(\''+id+'\')" ';
   if (id === getToValidateFolderId()) {
     str += 'class="toValidate"';
+  } else if (id === getNonVisiblePubsFolderId()) {
+    str += 'class="nonVisiblePubs"';
   } else if (id === "1") {
     str += 'class="trash"';
   } else if (folderType === '<%=NodeType.FOLDER_WITH_RIGHTS%>') {

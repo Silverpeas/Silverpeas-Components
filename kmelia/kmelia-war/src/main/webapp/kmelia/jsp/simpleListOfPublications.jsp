@@ -75,7 +75,7 @@ boolean userCanSeeStats = kmeliaScc.isStatisticAllowed();
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.kmelia" xml:lang="<%=language%>">
+<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.kmelia" lang="<%=language%>">
 <head>
 <view:looknfeel/>
 	<title></title>
@@ -216,6 +216,7 @@ window.SUBSCRIPTION_PROMISE.then(function() {
           	operationPane.addOperation("useless", resources.getString("PubBasket"), "GoToBasket");
           	if (userCanValidatePublications) {
           		operationPane.addOperation("useless", resources.getString("ToValidate"), "ViewPublicationsToValidate");
+              operationPane.addOperation("useless", resources.getString("kmelia.folder.nonvisiblepubs"), "ViewPublicationsNonVisibles");
           	}
   		}
       if (userCanSeeStats) {

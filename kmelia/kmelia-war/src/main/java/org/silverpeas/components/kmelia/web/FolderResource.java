@@ -23,6 +23,7 @@ package org.silverpeas.components.kmelia.web;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.owasp.encoder.Encode;
+import org.silverpeas.components.kmelia.service.KmeliaHelper;
 import org.silverpeas.components.kmelia.service.KmeliaService;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.annotation.WebService;
@@ -239,16 +240,21 @@ public class FolderResource extends RESTWebService {
     LocalizationBundle messages =
         ResourceLocator.getLocalizationBundle("org.silverpeas.kmelia.multilang.kmeliaBundle", lang);
     for (NodeEntity child : children) {
-      if (child.getAttr().getId().equalsIgnoreCase("tovalidate")) {
+      if (KmeliaHelper.isToValidateFolder(child.getAttr().getId())) {
         child.setType(NodeType.TO_VALIDATE);
         child.getState().opened(false).setSelected(false);
         child.setText(Encode.forHtml(messages.getString("ToValidateShort")));
         child.getAttr().setDescription(messages.getString("kmelia.tovalidate.desc"));
-      } else if (child.getAttr().getId().equalsIgnoreCase("1")) {
+      } else if (child.getAttr().getId().equalsIgnoreCase(NodePK.BIN_NODE_ID)) {
         child.setType(NodeType.BIN);
         child.getState().opened(false).setSelected(false);
         child.setText(Encode.forHtml(messages.getString("kmelia.basket")));
         child.getAttr().setDescription(messages.getString("kmelia.basket.desc"));
+      } else if (KmeliaHelper.isNonVisiblePubsFolder(child.getAttr().getId())) {
+        child.setType(NodeType.NOT_VISIBLE_CONTRIBUTIONS);
+        child.getState().opened(false).setSelected(false);
+        child.setText(Encode.forHtml(messages.getString("kmelia.folder.nonvisiblepubs")));
+        child.getAttr().setDescription(messages.getString("kmelia.folder.nonvisiblepubs.desc"));
       }
     }
     return children.toArray(new NodeEntity[0]);

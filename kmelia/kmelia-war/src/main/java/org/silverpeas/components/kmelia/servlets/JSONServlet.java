@@ -24,6 +24,7 @@
 package org.silverpeas.components.kmelia.servlets;
 
 import org.silverpeas.components.kmelia.control.KmeliaSessionController;
+import org.silverpeas.components.kmelia.service.KmeliaHelper;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.node.model.NodeDetail;
@@ -41,6 +42,9 @@ import java.io.Writer;
 public class JSONServlet extends HttpServlet {
 
   private static final long serialVersionUID = 1L;
+
+  private static final String OP_DELETE_PUBLICATIONS = "deletePublications";
+  private static final String OP_EXPORT_PUBLICATIONS = "exportSelection";
 
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res) {
@@ -75,35 +79,39 @@ public class JSONServlet extends HttpServlet {
 
   private String getOperations(String id, KmeliaSessionController kmeliaSC) {
     return JSONCodec.encodeObject(operations -> {
-      // getting profile
-      String profile = kmeliaSC.getUserTopicProfile(id);
 
-      // getting operations of topic according to profile and current
-      boolean isAdmin = SilverpeasRole.ADMIN.isInRole(profile);
-      boolean isPublisher = SilverpeasRole.PUBLISHER.isInRole(profile);
-      boolean isWriter = SilverpeasRole.WRITER.isInRole(profile);
-      boolean isUser = SilverpeasRole.USER.isInRole(profile);
-      boolean isRoot = NodePK.ROOT_NODE_ID.equals(id);
-      boolean isBasket = NodePK.BIN_NODE_ID.equals(id);
-      boolean canShowStats = kmeliaSC.isStatisticAllowed();
-      Role role = new Role().setAdmin(isAdmin)
-          .setPublisher(isPublisher)
-          .setWriter(isWriter)
-          .setUser(isUser);
+      if (KmeliaHelper.isNonVisiblePubsFolder(id)) {
+        operations.put(OP_DELETE_PUBLICATIONS, true);
+        operations.put(OP_EXPORT_PUBLICATIONS, true);
+      } else {
+        // getting profile
+        String profile = kmeliaSC.getUserTopicProfile(id);
 
-      if (isBasket) {
-        addBasketOperations(operations, role);
-      } else if (StringUtil.isDefined(profile)) {
-        NodeDetail node = kmeliaSC.getNodeHeader(id);
-        UserDetail user = kmeliaSC.getUserDetail();
-        // general operations
-        addGeneralOperations(kmeliaSC, operations, role, profile, isRoot, node);
+        // getting operations of topic according to profile and current
+        boolean isAdmin = SilverpeasRole.ADMIN.isInRole(profile);
+        boolean isPublisher = SilverpeasRole.PUBLISHER.isInRole(profile);
+        boolean isWriter = SilverpeasRole.WRITER.isInRole(profile);
+        boolean isUser = SilverpeasRole.USER.isInRole(profile);
+        boolean isRoot = NodePK.ROOT_NODE_ID.equals(id);
+        boolean isBasket = NodePK.BIN_NODE_ID.equals(id);
+        boolean canShowStats = kmeliaSC.isStatisticAllowed();
+        Role role = new Role().setAdmin(isAdmin).setPublisher(isPublisher).setWriter(isWriter)
+            .setUser(isUser);
 
-        // topic operations
-        addTopicOperations(kmeliaSC, operations, role, isRoot, node, user);
+        if (isBasket) {
+          addBasketOperations(operations, role);
+        } else if (StringUtil.isDefined(profile)) {
+          NodeDetail node = kmeliaSC.getNodeHeader(id);
+          UserDetail user = kmeliaSC.getUserDetail();
+          // general operations
+          addGeneralOperations(kmeliaSC, operations, role, profile, isRoot, node);
 
-        // publication operations
-        addPublicationOperations(kmeliaSC, operations, role, isRoot, canShowStats, user);
+          // topic operations
+          addTopicOperations(kmeliaSC, operations, role, isRoot, node, user);
+
+          // publication operations
+          addPublicationOperations(kmeliaSC, operations, role, isRoot, canShowStats, user);
+        }
       }
       return operations;
     });
@@ -128,9 +136,9 @@ public class JSONServlet extends HttpServlet {
 
     operations.put("sortPublications", role.isAdmin() && publicationsInTopic);
 
-    operations.put("deletePublications", operationsOnSelectionAllowed);
+    operations.put(OP_DELETE_PUBLICATIONS, operationsOnSelectionAllowed);
 
-    operations.put("exportSelection", !user.isAnonymous());
+    operations.put(OP_EXPORT_PUBLICATIONS, !user.isAnonymous());
     operations.put("manageSubscriptions", role.isAdmin());
     operations.put("subscriptions", isRoot && !user.isAnonymous());
     operations.put("topicSubscriptions", !isRoot && !user.isAnonymous());
@@ -183,10 +191,10 @@ public class JSONServlet extends HttpServlet {
   private void addBasketOperations(final JSONCodec.JSONObject operations, final Role role) {
     boolean binOperationsAllowed = role.isAdmin() || role.isPublisher() || role.isWriter();
     operations.put("emptyTrash", binOperationsAllowed);
-    operations.put("exportSelection", binOperationsAllowed);
+    operations.put(OP_EXPORT_PUBLICATIONS, binOperationsAllowed);
     operations.put("copyPublications", binOperationsAllowed);
     operations.put("cutPublications", binOperationsAllowed);
-    operations.put("deletePublications", binOperationsAllowed);
+    operations.put(OP_DELETE_PUBLICATIONS, binOperationsAllowed);
   }
 
   private static class Role {
