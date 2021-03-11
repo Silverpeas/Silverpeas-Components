@@ -235,7 +235,7 @@ public class DbTable {
     return tableRow.getFields()
         .entrySet()
         .stream()
-        .filter(Predicate.not(e -> e.getKey().equalsIgnoreCase("SP_MAX_ROW_COUNT")))
+        .filter(e -> !e.getKey().equalsIgnoreCase("SP_MAX_ROW_COUNT"))
         .collect(HashMap::new, (h, e) -> h.put(e.getKey(), e.getValue().toSQLObject()), HashMap::putAll);
   }
 }
