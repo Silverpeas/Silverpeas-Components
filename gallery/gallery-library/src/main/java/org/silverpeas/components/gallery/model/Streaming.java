@@ -130,7 +130,7 @@ public class Streaming extends Media {
    * @return a JSON structure as string that represents oembed data.
    */
   public static String getJsonOembedAsString(String homepageUrl) {
-    return StreamingProvider.getOembedUrl(homepageUrl).map(oembedUrl -> {
+    return StreamingProvider.getOembedUrl(homepageUrl).map(u -> u.replace("http:", "https:")).map(oembedUrl -> {
       try {
         final HttpResponse<String> response = httpClient().send(toUrl(oembedUrl)
             .header("Accept", APPLICATION_JSON)

@@ -48,8 +48,8 @@ public enum StreamingProvider {
   unknown(null, null),
   youtube("(?i)(\\?|&)v=([a-z0-9]+)", "http://www.youtube.com/oembed?url={0}&format=json", "youtu"),
   vimeo("(?i)(/|=)([0-9]+)", "http://vimeo.com/api/oembed.json?url=http://vimeo.com/{0}"),
-  dailymotion("(?i)(/video/)([a-z0-9]+)",
-      "http://www.dailymotion.com/services/oembed?url=http://www.dailymotion.com/video/{0}"),
+  dailymotion("(?i)(/video/|dai.ly/)([a-z0-9]+)",
+      "http://www.dailymotion.com/services/oembed?url=http://www.dailymotion.com/video/{0}", "dai.ly"),
   soundcloud("(?i)(soundcloud.com/)(.+)",
       "http://soundcloud.com/oembed?url=http://soundcloud.com/{0}&format=json");
 
