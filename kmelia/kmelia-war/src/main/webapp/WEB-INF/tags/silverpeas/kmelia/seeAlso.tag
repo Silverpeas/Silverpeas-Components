@@ -42,7 +42,7 @@
               description="Publication identifier" %>
 
 <%@ attribute name="links" required="true"
-              type="java.util.List"
+              type="java.util.List<org.silverpeas.core.contribution.publication.model.PublicationLink>"
               description="Links of the publication" %>
 
 <%@ attribute name="enabled" required="true"

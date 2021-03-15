@@ -42,7 +42,7 @@ public class ForumDetail extends AbstractBean
     implements LocalizedContribution, Identifiable, Serializable {
 
   private static final long serialVersionUID = -5500661559879178630L;
-  private static final String TYPE = "forum";
+  private static final String TYPE = Forum.RESOURCE_TYPE;
   private final ForumPK pk;
   private final Date creationDate;
   private final String creatorId;
