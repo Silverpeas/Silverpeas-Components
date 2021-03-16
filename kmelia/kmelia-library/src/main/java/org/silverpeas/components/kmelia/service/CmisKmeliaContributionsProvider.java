@@ -30,6 +30,7 @@ import org.silverpeas.components.kmelia.model.KmeliaPublication;
 import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.admin.component.model.SilverpeasSharedComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.cmis.CmisContributionsProvider;
@@ -66,7 +67,8 @@ public class CmisKmeliaContributionsProvider implements CmisContributionsProvide
     if (controller.getComponentInstance(kmeliaId)
         .filter(SilverpeasSharedComponentInstance.class::isInstance)
         .map(SilverpeasSharedComponentInstance.class::cast)
-        .filter(i -> i.getName().equals("kmelia") && i.canBeAccessedBy(user)).isEmpty()) {
+        .filter(i -> i.getName().equals("kmelia") && i.canBeAccessedBy(user))
+        .isEmpty()) {
       throw new CmisObjectNotFoundException(
           String.format("The application %s doesn't exist or is not accessible to user %s",
               kmeliaId, user.getId()));
@@ -92,8 +94,11 @@ public class CmisKmeliaContributionsProvider implements CmisContributionsProvide
     NodePK folderPK = toNodePK(folder);
     try {
       String profile = kmeliaService.getUserTopicProfile(folderPK, user.getId());
+      List<KmeliaPublication> pubsInFolder =
+          kmeliaService.getPublicationsOfFolder(folderPK, profile, user.getId(), treeEnabled);
       Stream<? extends I18nContribution> publications =
-          kmeliaService.getPublicationsOfFolder(folderPK, profile, user.getId(), treeEnabled)
+          kmeliaService.filterPublications(pubsInFolder, folder.getComponentInstanceId(),
+              SilverpeasRole.fromString(profile), user.getId())
               .stream()
               .filter(k -> !k.isAlias())
               .map(KmeliaPublication::getDetail);

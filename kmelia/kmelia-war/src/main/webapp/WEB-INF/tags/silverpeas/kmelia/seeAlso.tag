@@ -59,12 +59,13 @@
       </div>
       <ul>
         <c:forEach var="seeAlso" items="${links}">
+          <jsp:useBean id="seeAlso" type="org.silverpeas.core.contribution.publication.model.PublicationLink"/>
           <c:set var="seeAlsoClassName" value="seeAlso"/>
           <c:if test="${seeAlso.reverse}">
             <c:set var="seeAlsoClassName" value="seeAlsoReverse"/>
           </c:if>
           <li id="link-${seeAlso.id}" class="showActionsOnMouseOver ${seeAlsoClassName}">
-            <a href="${seeAlso.pub.permalink}" class="sp-permalink" title="${seeAlso.pub.description}">${seeAlso.pub.name} <span>- <view:formatDate value="${seeAlso.pub.updateDate}"/></span></a>
+            <a href="${seeAlso.pub.permalink}" class="sp-permalink" title="${seeAlso.pub.description}">${seeAlso.pub.name} <span>- <view:formatDate value="${seeAlso.pub.lastUpdateDate}"/></span></a>
             <c:if test="${not readOnly && not seeAlso.reverse}">
               <div class="actionShownOnMouseOver"><a class="delete" href="#" onclick="deleteLink('${seeAlso.id}');return false;" title="${labelDelete}">${labelDelete}</a></div>
             </c:if>
