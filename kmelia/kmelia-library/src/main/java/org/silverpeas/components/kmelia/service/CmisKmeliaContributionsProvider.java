@@ -90,18 +90,24 @@ public class CmisKmeliaContributionsProvider implements CmisContributionsProvide
   @Override
   public List<I18nContribution> getAllowedContributionsInFolder(final ContributionIdentifier folder,
       final User user) {
-    boolean treeEnabled = KmeliaPublicationHelper.isTreeEnabled(folder.getComponentInstanceId());
+    String kmeliaId = folder.getComponentInstanceId();
+    boolean treeEnabled = KmeliaPublicationHelper.isTreeEnabled(kmeliaId);
     NodePK folderPK = toNodePK(folder);
     try {
       String profile = kmeliaService.getUserTopicProfile(folderPK, user.getId());
-      List<KmeliaPublication> pubsInFolder =
-          kmeliaService.getPublicationsOfFolder(folderPK, profile, user.getId(), treeEnabled);
-      Stream<? extends I18nContribution> publications =
-          kmeliaService.filterPublications(pubsInFolder, folder.getComponentInstanceId(),
-              SilverpeasRole.fromString(profile), user.getId())
-              .stream()
-              .filter(k -> !k.isAlias())
-              .map(KmeliaPublication::getDetail);
+      Stream<? extends I18nContribution> publications;
+      if (!folderPK.isRoot() || KmeliaPublicationHelper.isPublicationsOnRootAllowed(kmeliaId)) {
+        List<KmeliaPublication> pubsInFolder =
+            kmeliaService.getPublicationsOfFolder(folderPK, profile, user.getId(), treeEnabled);
+        publications =
+            kmeliaService.filterPublications(pubsInFolder, kmeliaId,
+                SilverpeasRole.fromString(profile), user.getId())
+                .stream()
+                .filter(k -> !k.isAlias())
+                .map(KmeliaPublication::getDetail);
+      } else {
+        publications = Stream.empty();
+      }
       Stream<? extends I18nContribution> subFolders =
           kmeliaService.getFolderChildren(folderPK, user.getId())
               .stream()

@@ -48,7 +48,7 @@ public class KmeliaNodeSimulationElementLister extends AbstractKmeliaSimulationE
 
   @Override
   public void listElements(final WAPrimaryKey sourcePK, final String language) {
-    NodePK nodePK = (NodePK) sourcePK;
+    NodePK nodePK = new NodePK(sourcePK.getId(), sourcePK.getInstanceId());
 
     // Retrieving all nodes to copy or move
     List<NodeDetail> treeToPaste = getNodeService().getSubTree(nodePK);
