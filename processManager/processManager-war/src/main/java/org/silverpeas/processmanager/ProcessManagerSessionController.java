@@ -70,6 +70,7 @@ import org.silverpeas.core.workflow.api.instance.UpdatableProcessInstance;
 import org.silverpeas.core.workflow.api.model.*;
 import org.silverpeas.core.workflow.api.task.Task;
 import org.silverpeas.core.workflow.api.user.Replacement;
+import org.silverpeas.core.workflow.api.user.ReplacementList;
 import org.silverpeas.core.workflow.api.user.User;
 import org.silverpeas.core.workflow.api.user.UserInfo;
 import org.silverpeas.core.workflow.api.user.UserSettings;
@@ -2119,9 +2120,9 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    * @param role the role the current user and the incumbent must have.
    * @return the optional current replacement.
    */
-  private Optional<Replacement> getCurrentUserReplacement(String incumbentId, String role) {
-    return Replacement.getAllBy(currentUser, peasId)
-        .stream()
+  private <T extends Replacement<T>> Optional<T> getCurrentUserReplacement(String incumbentId, String role) {
+    ReplacementList<T> replacements = Replacement.getAllBy(currentUser, peasId);
+    return replacements.stream()
         .filterOnIncumbent(incumbentId)
         .filterCurrentAt(LocalDate.now())
         .filterOnAtLeastOneRole(role)

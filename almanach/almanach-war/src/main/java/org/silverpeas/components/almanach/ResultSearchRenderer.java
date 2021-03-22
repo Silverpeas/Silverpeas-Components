@@ -27,6 +27,7 @@ import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.Priority;
 import org.silverpeas.core.calendar.Recurrence;
 import org.silverpeas.core.date.TemporalConverter;
+import org.silverpeas.core.date.TemporalConverter.Conversion;
 import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
@@ -42,6 +43,8 @@ import org.silverpeas.core.web.search.ResultDisplayer;
 import org.silverpeas.core.web.search.SearchResultContentVO;
 
 import javax.inject.Named;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.Properties;
 
@@ -102,12 +105,17 @@ public class ResultSearchRenderer extends AbstractResultDisplayer implements Res
    */
   private void setEventAttributes(CalendarEvent event, SilverpeasTemplate template,
       MultiSilverpeasBundle settings) {
-    final Date startDate = TemporalConverter.applyByType(event.getStartDate(),
-        d -> Date.from(d.atStartOfDay(event.getCalendar().getZoneId()).toInstant()),
-        o -> Date.from(o.atZoneSameInstant(event.getCalendar().getZoneId()).toInstant()));
-    final Date endDate = TemporalConverter.applyByType(event.getEndDate(),
-        d -> Date.from(d.atStartOfDay(event.getCalendar().getZoneId()).toInstant()),
-        o -> Date.from(o.atZoneSameInstant(event.getCalendar().getZoneId()).toInstant()));
+    Conversion<LocalDate, Date> convertLocalDate =
+        Conversion.of(LocalDate.class,
+            d -> Date.from(d.atStartOfDay(event.getCalendar().getZoneId()).toInstant()));
+    Conversion<OffsetDateTime, Date> convertOffsetDateTime =
+        Conversion.of(OffsetDateTime.class,
+            o -> Date.from(o.atZoneSameInstant(event.getCalendar().getZoneId()).toInstant()));
+
+    Date startDate = TemporalConverter.applyByType(event.getStartDate(), convertLocalDate,
+        convertOffsetDateTime);
+    Date endDate =
+        TemporalConverter.applyByType(event.getEndDate(), convertLocalDate, convertOffsetDateTime);
     template.setAttribute("evtStartDate", startDate);
     template.setAttribute("evtEndDate", endDate);
     String location = event.getLocation();

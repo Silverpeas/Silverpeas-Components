@@ -60,7 +60,7 @@ public class MailingListServiceIT {
   }
 
   @Test
-  public void testCreateMailingList() {
+  public void createMailingList() {
     MailingListService mailingListService = getMailingListService();
     MailingList mailingList = new MailingList();
     mailingList.setComponentId("100");
@@ -90,7 +90,7 @@ public class MailingListServiceIT {
   }
 
   @Test
-  public void testAddExternalUser() {
+  public void addExternalUser() {
     MailingListService mailingListService = getMailingListService();
     MailingList mailingList = new MailingList();
     mailingList.setComponentId("100");
@@ -136,7 +136,7 @@ public class MailingListServiceIT {
   }
 
   @Test
-  public void testAddInternalSubscribers() {
+  public void addInternalSubscribers() {
     MailingListService mailingListService = getMailingListService();
     MailingList mailingList = new MailingList();
     mailingList.setComponentId("100");
@@ -204,7 +204,7 @@ public class MailingListServiceIT {
   }
 
   @Test
-  public void testAddExternalUsers() {
+  public void addExternalUsers() {
     MailingListService mailingListService = getMailingListService();
     MailingList mailingList = new MailingList();
     mailingList.setComponentId("100");
@@ -257,7 +257,7 @@ public class MailingListServiceIT {
   }
 
   @Test
-  public void testRemoveExternalUser() {
+  public void removeExternalUser() {
     MailingListService mailingListService = getMailingListService();
     MailingList mailingList = new MailingList();
     mailingList.setComponentId("100");
@@ -300,7 +300,7 @@ public class MailingListServiceIT {
   }
 
   @Test
-  public void testDeleteMailingList() {
+  public void deleteMailingList() {
     MailingListService mailingListService = getMailingListService();
     ExternalUser tahiti = new ExternalUser();
     tahiti.setEmail("bob.tahiti@silverpeas.com");
@@ -333,7 +333,7 @@ public class MailingListServiceIT {
   }
 
   @Test
-  public void testListMailingList() {
+  public void listMailingList() {
     MailingListService mailingListService = getMailingListService();
     MailingList mailingList = new MailingList();
     mailingList.setComponentId("100");
@@ -382,7 +382,7 @@ public class MailingListServiceIT {
   }
 
   @Test
-  public void testGetMailingList() {
+  public void getMailingList() {
     MailingListService mailingListService = getMailingListService();
     MailingList mailingList = new MailingList();
     mailingList.setComponentId("100");
@@ -395,10 +395,10 @@ public class MailingListServiceIT {
     skinner.setComponentId("100");
     mailingList.addExternalSubscriber(skinner);
     mailingListService.createMailingList(mailingList);
-    List mailingLists = mailingListService.listAllMailingLists();
+    List<MailingList> mailingLists = mailingListService.listAllMailingLists();
     assertNotNull(mailingLists);
     assertEquals(1, mailingLists.size());
-    mailingList = (MailingList) mailingLists.iterator().next();
+    mailingList = mailingLists.iterator().next();
     assertEquals("100", mailingList.getComponentId());
     assertEquals("Liste de diffusion de test", mailingList.getName());
     assertTrue(mailingList.isModerated());

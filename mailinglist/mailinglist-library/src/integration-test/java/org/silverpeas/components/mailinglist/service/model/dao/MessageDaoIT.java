@@ -21,8 +21,6 @@
 package org.silverpeas.components.mailinglist.service.model.dao;
 
 import org.apache.commons.io.FileUtils;
-import org.dbunit.DataSourceDatabaseTester;
-import org.dbunit.IDatabaseTester;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -37,16 +35,16 @@ import org.silverpeas.components.mailinglist.service.model.beans.Attachment;
 import org.silverpeas.components.mailinglist.service.model.beans.Message;
 import org.silverpeas.components.mailinglist.service.util.OrderBy;
 import org.silverpeas.core.persistence.Transaction;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.test.rule.DbSetupRule;
 import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
 import org.silverpeas.core.util.file.FileFolderManager;
 
-import javax.annotation.Resource;
-import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Connection;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -70,7 +68,6 @@ public class MessageDaoIT {
   private static final Path COPY_PATH =
       Paths.get("org/silverpeas/components/mailinglist/service/job/lemonde.html");
 
-  private IDatabaseTester databaseTester;
   private String copyPath;
 
 
@@ -85,15 +82,11 @@ public class MessageDaoIT {
     return MailingListWarBuilder.onWarForTestClass(MessageDaoIT.class).build();
   }
 
-  @Resource(lookup = "java:/datasources/silverpeas")
-  private DataSource dataSource;
-
-
   @Before
   public void setUpTest() {
-    databaseTester = new DataSourceDatabaseTester(getDataSource());
-    copyPath = Paths.get(mavenTargetDirectoryRule.getResourceTestDirFile().getPath(),
-        COPY_PATH.toString()).toString();
+    copyPath =
+        Paths.get(mavenTargetDirectoryRule.getResourceTestDirFile().getPath(), COPY_PATH.toString())
+            .toString();
   }
 
   @After
@@ -106,16 +99,12 @@ public class MessageDaoIT {
     return MessageDao.get();
   }
 
-  private DataSource getDataSource() {
-    return dataSource;
-  }
-
   protected void copyFile(String filePath, String targetPath) throws IOException {
     FileUtils.copyFile(new File(filePath), new File(targetPath));
   }
 
   @Test
-  public void testCreateSimpleMessage() {
+  public void createSimpleMessage() {
     Calendar sentDate = Calendar.getInstance();
     String id = Transaction.performInOne(() -> {
       Message message = new Message();
@@ -135,7 +124,7 @@ public class MessageDaoIT {
     assertNotNull(savedMessage);
     assertEquals(textEmailContent, savedMessage.getBody());
     assertEquals("componentId", savedMessage.getComponentId());
-    assertEquals(true, savedMessage.isModerated());
+    assertTrue(savedMessage.isModerated());
     assertEquals(textEmailContent.substring(0, 200), savedMessage.getSummary());
     assertEquals("bart.simpson@ilverpeas.com", savedMessage.getSender());
     assertEquals("0000001747b40c85", savedMessage.getMessageId());
@@ -149,7 +138,7 @@ public class MessageDaoIT {
   }
 
   @Test
-  public void testCreateSimpleMessageWithCompleteId() {
+  public void createSimpleMessageWithCompleteId() {
     MessageDao messageDao = getMessageDAO();
     Calendar sentDate = Calendar.getInstance();
     String id = Transaction.performInOne(() -> {
@@ -170,7 +159,7 @@ public class MessageDaoIT {
     assertNotNull(savedMessage);
     assertEquals(textEmailContent, savedMessage.getBody());
     assertEquals("componentId", savedMessage.getComponentId());
-    assertEquals(true, savedMessage.isModerated());
+    assertTrue(savedMessage.isModerated());
     assertEquals(textEmailContent.substring(0, 200), savedMessage.getSummary());
     assertEquals("bart.simpson@ilverpeas.com", savedMessage.getSender());
     assertEquals("<510A99E9.5060702@silverpeas.com>", savedMessage.getMessageId());
@@ -184,7 +173,7 @@ public class MessageDaoIT {
   }
 
   @Test
-  public void testRecreateSimpleMessage() {
+  public void recreateSimpleMessage() {
     MessageDao messageDao = getMessageDAO();
     Calendar sentDate = Calendar.getInstance();
     String id = Transaction.performInOne(() -> {
@@ -206,7 +195,7 @@ public class MessageDaoIT {
     assertNotNull(savedMessage);
     assertEquals(textEmailContent, savedMessage.getBody());
     assertEquals("componentId", savedMessage.getComponentId());
-    assertEquals(true, savedMessage.isModerated());
+    assertTrue(savedMessage.isModerated());
     assertEquals(textEmailContent.substring(0, 200), savedMessage.getSummary());
     assertEquals("bart.simpson@ilverpeas.com", savedMessage.getSender());
     assertEquals("0000001747b40c85", savedMessage.getMessageId());
@@ -235,7 +224,7 @@ public class MessageDaoIT {
   }
 
   @Test
-  public void testCreateSimpleHtmlMessage() {
+  public void createSimpleHtmlMessage() {
     MessageDao messageDao = getMessageDAO();
     Calendar sentDate = Calendar.getInstance();
     Message message = new Message();
@@ -257,7 +246,7 @@ public class MessageDaoIT {
     assertNotNull(savedMessage);
     assertEquals(html, savedMessage.getBody());
     assertEquals("componentId", savedMessage.getComponentId());
-    assertEquals(true, savedMessage.isModerated());
+    assertTrue(savedMessage.isModerated());
     assertEquals(textEmailContent.substring(0, 200), savedMessage.getSummary());
     assertEquals("bart.simpson@ilverpeas.com", savedMessage.getSender());
     assertEquals("0000001747b40c10", savedMessage.getMessageId());
@@ -271,7 +260,7 @@ public class MessageDaoIT {
   }
 
   @Test
-  public void testCreateMessageWithAttachments() {
+  public void createMessageWithAttachments() {
     MessageDao messageDao = getMessageDAO();
     Calendar sentDate = Calendar.getInstance();
     Message message = new Message();
@@ -297,7 +286,7 @@ public class MessageDaoIT {
     assertNotNull(savedMessage);
     assertEquals(textEmailContent, savedMessage.getBody());
     assertEquals("componentId", savedMessage.getComponentId());
-    assertEquals(true, savedMessage.isModerated());
+    assertTrue(savedMessage.isModerated());
     assertEquals(textEmailContent.substring(0, 200), savedMessage.getSummary());
     assertEquals("bart.simpson@ilverpeas.com", savedMessage.getSender());
     assertEquals("0000001747b40c11", savedMessage.getMessageId());
@@ -321,7 +310,7 @@ public class MessageDaoIT {
   }
 
   @Test
-  public void testUpdateMessage() {
+  public void updateMessage() {
     MessageDao messageDao = getMessageDAO();
     Calendar sentDate = Calendar.getInstance();
     String id = Transaction.performInOne(() -> {
@@ -337,12 +326,12 @@ public class MessageDaoIT {
       return messageDao.saveMessage(message);
     });
     assertNotNull(id);
-    Transaction.performInOne(()-> {
+    Transaction.performInOne(() -> {
       Message savedMessage = messageDao.findMessageById(id);
       assertNotNull(savedMessage);
       assertEquals(textEmailContent, savedMessage.getBody());
       assertEquals("componentId", savedMessage.getComponentId());
-      assertEquals(true, savedMessage.isModerated());
+      assertTrue(savedMessage.isModerated());
       assertEquals(textEmailContent.substring(0, 200), savedMessage.getSummary());
       assertEquals("bart.simpson@ilverpeas.com", savedMessage.getSender());
       assertEquals("0000001747b40c13", savedMessage.getMessageId());
@@ -360,7 +349,7 @@ public class MessageDaoIT {
     assertEquals(1, updatedMessage.getVersion());
     assertEquals(textEmailContent, updatedMessage.getBody());
     assertEquals("componentId", updatedMessage.getComponentId());
-    assertEquals(false, updatedMessage.isModerated());
+    assertFalse(updatedMessage.isModerated());
     assertEquals(textEmailContent.substring(0, 200), updatedMessage.getSummary());
     assertEquals("bart.simpson@ilverpeas.com", updatedMessage.getSender());
     assertEquals("0000001747b40c13", updatedMessage.getMessageId());
@@ -372,10 +361,10 @@ public class MessageDaoIT {
   }
 
   @Test
-  public void testUpdateMessageWithAttachment() {
+  public void updateMessageWithAttachment() {
     MessageDao messageDao = getMessageDAO();
     Calendar sentDate = Calendar.getInstance();
-    String id = Transaction.performInOne(()-> {
+    String id = Transaction.performInOne(() -> {
       Message message = new Message();
       message.setBody(textEmailContent);
       message.setComponentId("componentId");
@@ -393,12 +382,12 @@ public class MessageDaoIT {
       return messageDao.saveMessage(message);
     });
     assertNotNull(id);
-    Transaction.performInOne(()-> {
+    Transaction.performInOne(() -> {
       Message savedMessage = messageDao.findMessageById(id);
       assertNotNull(savedMessage);
       assertEquals(textEmailContent, savedMessage.getBody());
       assertEquals("componentId", savedMessage.getComponentId());
-      assertEquals(true, savedMessage.isModerated());
+      assertTrue(savedMessage.isModerated());
       assertEquals(textEmailContent.substring(0, 200), savedMessage.getSummary());
       assertEquals("bart.simpson@ilverpeas.com", savedMessage.getSender());
       assertEquals("0000001747b40c14", savedMessage.getMessageId());
@@ -427,7 +416,7 @@ public class MessageDaoIT {
     assertNotNull(updatedMessage);
     assertEquals(textEmailContent, updatedMessage.getBody());
     assertEquals("componentId", updatedMessage.getComponentId());
-    assertEquals(false, updatedMessage.isModerated());
+    assertFalse(updatedMessage.isModerated());
     assertEquals(textEmailContent.substring(0, 200), updatedMessage.getSummary());
     assertEquals("bart.simpson@ilverpeas.com", updatedMessage.getSender());
     assertEquals("0000001747b40c14", updatedMessage.getMessageId());
@@ -449,7 +438,7 @@ public class MessageDaoIT {
   }
 
   @Test
-  public void testDeleteMessageWithAttachments() throws Exception {
+  public void deleteMessageWithAttachments() throws Exception {
     MessageDao messageDao = getMessageDAO();
     copyFile(copyPath, attachmentPath + "lemonde2.html");
     copyFile(copyPath, attachmentPath + "lemonde.html");
@@ -486,7 +475,7 @@ public class MessageDaoIT {
       assertNotNull(savedMessage);
       assertEquals(textEmailContent, savedMessage.getBody());
       assertEquals("componentId", savedMessage.getComponentId());
-      assertEquals(true, savedMessage.isModerated());
+      assertTrue(savedMessage.isModerated());
       assertEquals(textEmailContent.substring(0, 200), savedMessage.getSummary());
       assertEquals("bart.simpson@ilverpeas.com", savedMessage.getSender());
       assertEquals("0000001747b40c15", savedMessage.getMessageId());
@@ -512,7 +501,7 @@ public class MessageDaoIT {
   }
 
   @Test
-  public void testDeleteMessageWithAttachmentShared() throws Exception {
+  public void deleteMessageWithAttachmentShared() throws Exception {
     MessageDao messageDao = getMessageDAO();
     copyFile(copyPath, attachmentPath + "lemonde2.html");
     copyFile(copyPath, attachmentPath + "toto\\lemonde2.html");
@@ -561,7 +550,7 @@ public class MessageDaoIT {
       assertNotNull(tempId);
       String id2 = messageDao.saveMessage(message2);
       assertNotNull(id2);
-      assertFalse(id2.equals(tempId));
+      assertNotEquals(id2, tempId);
       return tempId;
     });
 
@@ -583,10 +572,10 @@ public class MessageDaoIT {
   }
 
   @Test
-  public void testListMessagesOfMailingList() throws Exception {
+  public void listMessagesOfMailingList() throws Exception {
     MessageDao messageDao = getMessageDAO();
     Calendar sentDate = Calendar.getInstance();
-    Transaction.performInOne(()-> {
+    Transaction.performInOne(() -> {
 
       sentDate.set(Calendar.YEAR, 2008);
       sentDate.set(Calendar.MONTH, Calendar.MARCH);
@@ -646,7 +635,8 @@ public class MessageDaoIT {
       messageDao.saveMessage(message);
       return null;
     });
-    List messages = messageDao.listAllMessagesOfMailingList("componentId", 0, 10, orderByDate);
+    List<Message> messages =
+        messageDao.listAllMessagesOfMailingList("componentId", 0, 10, orderByDate);
     assertNotNull(messages);
     assertEquals(3, messages.size());
     assertEquals(3, countRowsInTable("SC_MAILINGLIST_MESSAGE"));
@@ -662,22 +652,22 @@ public class MessageDaoIT {
         messageDao.listDisplayableMessagesOfMailingList("componentId", -1, -1, 0, 10, orderByDate);
     assertNotNull(messages);
     assertEquals(2, messages.size());
-    messages = messageDao
-        .listDisplayableMessagesOfMailingList("componentId", -1, 2008, 0, 10, orderByDate);
+    messages = messageDao.listDisplayableMessagesOfMailingList("componentId", -1, 2008, 0, 10,
+        orderByDate);
     assertNotNull(messages);
     assertEquals(2, messages.size());
-    messages = messageDao
-        .listDisplayableMessagesOfMailingList("componentId", -1, 2007, 0, 10, orderByDate);
+    messages = messageDao.listDisplayableMessagesOfMailingList("componentId", -1, 2007, 0, 10,
+        orderByDate);
     assertNotNull(messages);
     assertEquals(0, messages.size());
-    messages = messageDao
-        .listDisplayableMessagesOfMailingList("componentId", Calendar.MARCH, 2008, 0, 10,
+    messages =
+        messageDao.listDisplayableMessagesOfMailingList("componentId", Calendar.MARCH, 2008, 0, 10,
             orderByDate);
     assertNotNull(messages);
     assertEquals(1, messages.size());
-    messages = messageDao
-        .listDisplayableMessagesOfMailingList("componentId", Calendar.FEBRUARY, 2008, 0, 10,
-            orderByDate);
+    messages =
+        messageDao.listDisplayableMessagesOfMailingList("componentId", Calendar.FEBRUARY, 2008, 0,
+            10, orderByDate);
     assertNotNull(messages);
     assertEquals(1, messages.size());
     messages =
@@ -712,7 +702,7 @@ public class MessageDaoIT {
   }
 
   @Test
-  public void testListActivityMessages() throws Exception {
+  public void listActivityMessages() throws Exception {
     MessageDao messageDao = getMessageDAO();
     Calendar sentDate = Calendar.getInstance();
     Date message1SentDate = sentDate.getTime();
@@ -765,15 +755,15 @@ public class MessageDaoIT {
       return messageDao.saveMessage(message);
     });
 
-    List messages = messageDao.listActivityMessages("componentId", 5, orderByDate);
+    List<Message> messages = messageDao.listActivityMessages("componentId", 5, orderByDate);
     assertNotNull(messages);
     assertEquals(2, messages.size());
     assertEquals(3, countRowsInTable("SC_MAILINGLIST_MESSAGE"));
     assertEquals(2, countRowsInTable("SC_MAILINGLIST_ATTACHMENT"));
-    Message activityMessage = (Message) messages.get(0);
+    Message activityMessage = messages.get(0);
     assertEquals(textEmailContent, activityMessage.getBody());
     assertEquals("componentId", activityMessage.getComponentId());
-    assertEquals(true, activityMessage.isModerated());
+    assertTrue(activityMessage.isModerated());
     assertEquals(textEmailContent.substring(0, 200), activityMessage.getSummary());
     assertEquals("bart.simpson@ilverpeas.com", activityMessage.getSender());
     assertEquals("0000001747b40c19", activityMessage.getMessageId());
@@ -782,10 +772,10 @@ public class MessageDaoIT {
     assertEquals(2, activityMessage.getAttachments().size());
     assertEquals(30000, activityMessage.getAttachmentsSize());
 
-    activityMessage = (Message) messages.get(1);
+    activityMessage = messages.get(1);
     assertEquals(textEmailContent, activityMessage.getBody());
     assertEquals("componentId", activityMessage.getComponentId());
-    assertEquals(true, activityMessage.isModerated());
+    assertTrue(activityMessage.isModerated());
     assertEquals(textEmailContent.substring(0, 200), activityMessage.getSummary());
     assertEquals("bart.simpson@ilverpeas.com", activityMessage.getSender());
     assertEquals("0000001747b40c21", activityMessage.getMessageId());
@@ -796,7 +786,7 @@ public class MessageDaoIT {
   }
 
   @Test
-  public void testListActivities() {
+  public void listActivities() {
     MessageDao messageDao = getMessageDAO();
     Transaction.performInOne(() -> {
       Calendar sentDate = Calendar.getInstance();
@@ -883,7 +873,7 @@ public class MessageDaoIT {
   }
 
   @Test
-  public void testCreateMessagesWithSameAttachments() {
+  public void createMessagesWithSameAttachments() {
     MessageDao messageDao = getMessageDAO();
     Calendar sentDate = Calendar.getInstance();
     String id1 = Transaction.performInOne(() -> {
@@ -910,7 +900,7 @@ public class MessageDaoIT {
     assertNotNull(savedMessage);
     assertEquals(textEmailContent, savedMessage.getBody());
     assertEquals("componentId", savedMessage.getComponentId());
-    assertEquals(true, savedMessage.isModerated());
+    assertTrue(savedMessage.isModerated());
     assertEquals(textEmailContent.substring(0, 200), savedMessage.getSummary());
     assertEquals("bart.simpson@ilverpeas.com", savedMessage.getSender());
     assertEquals("0000001747b40c26", savedMessage.getMessageId());
@@ -956,7 +946,7 @@ public class MessageDaoIT {
     assertNotNull(savedMessage);
     assertEquals(textEmailContent, savedMessage.getBody());
     assertEquals("componentId", savedMessage.getComponentId());
-    assertEquals(true, savedMessage.isModerated());
+    assertTrue(savedMessage.isModerated());
     assertEquals(textEmailContent.substring(0, 200), savedMessage.getSummary());
     assertEquals("bart.simpson@ilverpeas.com", savedMessage.getSender());
     assertEquals("0000001747b40c27", savedMessage.getMessageId());
@@ -993,7 +983,9 @@ public class MessageDaoIT {
     return props.getProperty("upload.dir", "c:\\tmp\\uploads");
   }
 
-  private int countRowsInTable(String table) throws Exception {
-    return databaseTester.getConnection().getRowCount(table);
+  private long countRowsInTable(String table) throws Exception {
+    try (Connection connection = dbSetupRule.getSafeConnectionFromDifferentThread()) {
+      return JdbcSqlQuery.createCountFor(table).executeWith(connection);
+    }
   }
 }

@@ -26,52 +26,52 @@ package org.silverpeas.components.mailinglist.service.model.beans;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 
 import javax.persistence.*;
+import java.time.Instant;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "sc_mailinglist_message",
-    uniqueConstraints = @UniqueConstraint(columnNames = {"mailId", "componentId"}))
-@Access(javax.persistence.AccessType.PROPERTY)
-@NamedQueries({
-    @NamedQuery(name = "findMessage", query = "from Message where componentId = :componentId and " +
-        "messageId = :messageId"),
-    @NamedQuery(name = "countOfMessages", query = "select count(m) from Message m where m" +
-        ".componentId = :componentId"),
-    @NamedQuery(name = "countOfMessagesByModeration", query = "select count(m) from Message m " +
-        "where m.componentId = :componentId and m.moderated = :moderated"),
-    @NamedQuery(name = "findActivitiesFromMessages", query =
-        "select new org.silverpeas.components.mailinglist.service.model.beans.Activity(count(m), m.year, " +
-            "m.month) from Message m where m.componentId = :componentId and m.moderated = " +
-            ":moderated " +
-            "group by m.year, m.month")})
+@Table(name = "sc_mailinglist_message", uniqueConstraints = @UniqueConstraint(columnNames = {
+    "mailId", "componentId"}))
+@NamedQuery(name = "findMessage", query =
+    "from Message where componentId = :componentId and messageId = :messageId")
+@NamedQuery(name = "countOfMessages", query =
+    "select count(m) from Message m where m.componentId = :componentId")
+@NamedQuery(name = "countOfMessagesByModeration", query =
+    "select count(m) from Message m where m.componentId = :componentId and m.moderated = :moderated")
+@NamedQuery(name = "findActivitiesFromMessages", query =
+    "select new org.silverpeas.components.mailinglist.service.model.beans.Activity(count(m), " +
+        "m.year, m.month) from Message m where m.componentId = :componentId and " +
+        "m.moderated = :moderated group by m.year, m.month")
 public class Message extends IdentifiableObject {
-
-  private Set<Attachment> attachments = new HashSet<>();
-  private String title;
-  private String sender;
-  private Date sentDate;
-  private String body;
-  private String summary;
-  private boolean moderated;
-  private String messageId;
-  private String referenceId;
-  private String componentId;
-  private String contentType;
 
   @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
   @JoinColumn(name = "messageId")
+  private Set<Attachment> attachments = new HashSet<>();
+  private String title;
+  private String sender;
+  private Instant sentDate;
+  @Lob
+  private String body;
+  private String summary;
+  private boolean moderated;
+  @Column(name = "mailId", nullable = false)
+  private String messageId;
+  private String referenceId;
+  @Column(name = "componentId", nullable = false)
+  private String componentId;
+  private String contentType;
+  @Column(name = "messageYear")
+  private int year;
+  @Column(name = "messageMonth")
+  private int month;
+
   public Set<Attachment> getAttachments() {
     return attachments;
   }
 
-  public void setAttachments(Set<Attachment> attachments) {
-    this.attachments = attachments;
-  }
-
-  @Basic
   public String getTitle() {
     return title;
   }
@@ -80,7 +80,6 @@ public class Message extends IdentifiableObject {
     this.title = title;
   }
 
-  @Basic
   public String getSender() {
     return sender;
   }
@@ -89,21 +88,23 @@ public class Message extends IdentifiableObject {
     this.sender = sender;
   }
 
-  @Temporal(javax.persistence.TemporalType.TIMESTAMP)
   public Date getSentDate() {
     if (sentDate == null) {
       return null;
     }
-    return new Date(sentDate.getTime());
+    return Date.from(sentDate);
   }
 
   public void setSentDate(Date date) {
     if (date != null) {
-      this.sentDate = new Date(date.getTime());
+      this.sentDate = date.toInstant();
+      Calendar calend = Calendar.getInstance();
+      calend.setTime(getSentDate());
+      this.year = calend.get(Calendar.YEAR);
+      this.month = calend.get(Calendar.MONTH);
     }
   }
 
-  @Lob
   public String getBody() {
     return body;
   }
@@ -112,7 +113,6 @@ public class Message extends IdentifiableObject {
     this.body = body;
   }
 
-  @Basic
   public String getSummary() {
     return summary;
   }
@@ -121,7 +121,6 @@ public class Message extends IdentifiableObject {
     this.summary = summary;
   }
 
-  @Basic
   public boolean isModerated() {
     return moderated;
   }
@@ -130,11 +129,6 @@ public class Message extends IdentifiableObject {
     this.moderated = moderated;
   }
 
-  public void setAttachmentsSize(long size) {
-    // do nothing
-  }
-
-  @Basic
   public long getAttachmentsSize() {
     long size = 0;
     for (Attachment attachment : attachments) {
@@ -143,12 +137,10 @@ public class Message extends IdentifiableObject {
     return size;
   }
 
-  @Transient
   public String getAttachmentsSizeToDisplay() {
     return FileRepositoryManager.formatFileSize(getAttachmentsSize());
   }
 
-  @Column(name = "mailId", nullable = false)
   public String getMessageId() {
     return messageId;
   }
@@ -157,7 +149,6 @@ public class Message extends IdentifiableObject {
     this.messageId = messageId;
   }
 
-  @Basic
   public String getReferenceId() {
     return referenceId;
   }
@@ -166,7 +157,6 @@ public class Message extends IdentifiableObject {
     this.referenceId = referenceId;
   }
 
-  @Column(name = "componentId", nullable = false)
   public String getComponentId() {
     return componentId;
   }
@@ -175,31 +165,14 @@ public class Message extends IdentifiableObject {
     this.componentId = componentId;
   }
 
-  @Column(name = "messageYear")
   public int getYear() {
-    if (this.sentDate != null) {
-      Calendar calend = Calendar.getInstance();
-      calend.setTime(this.sentDate);
-      return calend.get(Calendar.YEAR);
-    }
-    return 0;
+    return this.year;
   }
 
-  public void setYear(int year) {
-  }
-
-  @Column(name = "messageMonth")
   public int getMonth() {
-    if (this.sentDate != null) {
-      Calendar calend = Calendar.getInstance();
-      calend.setTime(this.sentDate);
-      return calend.get(Calendar.MONTH);
-    }
-    return 0;
+    return this.month;
   }
 
-  public void setMonth(int month) {
-  }
 
   @Override
   public int hashCode() {
@@ -241,7 +214,6 @@ public class Message extends IdentifiableObject {
     return true;
   }
 
-  @Basic
   public String getContentType() {
     return contentType;
   }
