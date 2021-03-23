@@ -41,8 +41,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import static java.time.OffsetDateTime.now;
 import static org.silverpeas.core.admin.service.AdministrationServiceProvider.getAdminService;
+import static org.silverpeas.core.contribution.publication.dao.PublicationCriteria.onComponentInstanceIds;
+import static org.silverpeas.core.contribution.publication.model.PublicationDetail.VALID_STATUS;
 
 @Service
 public class StatisticServiceImpl implements
@@ -145,22 +149,16 @@ public class StatisticServiceImpl implements
    * @return the list of application publications which respects the stats filter constraint
    */
   private List<PublicationDetail> getValidApplicationPublications(StatsFilterVO statFilter) {
-    NodePK fatherPK =
-        new NodePK(Integer.toString(statFilter.getTopicId()), statFilter.getInstanceId());
-    Collection<PublicationDetail> validPubli;
-    List<PublicationDetail> publis = new ArrayList<>();
-    List<NodeDetail> nodes = getNodeService().getSubTree(fatherPK);
-    if (nodes != null) {
-      List<String> fatherIds = new ArrayList<>();
-      for (NodeDetail node : nodes) {
-        fatherIds.add(node.getId());
-      }
-      validPubli =
-          getPublicationService().getDetailsByFatherIdsAndStatus(fatherIds,
-              statFilter.getInstanceId(), null, "Valid");
-      publis.addAll(validPubli);
-    }
-    return publis;
+    final NodePK fatherPK = new NodePK(Integer.toString(statFilter.getTopicId()),
+        statFilter.getInstanceId());
+    return getPublicationService().getPublicationsByCriteria(
+        onComponentInstanceIds(statFilter.getInstanceId()).onNodes(
+            getNodeService().getSubTree(fatherPK)
+                .stream()
+                .map(NodeDetail::getId)
+                .collect(Collectors.toSet()))
+            .ofStatus(VALID_STATUS)
+            .visibleAt(now()));
   }
 
   /**

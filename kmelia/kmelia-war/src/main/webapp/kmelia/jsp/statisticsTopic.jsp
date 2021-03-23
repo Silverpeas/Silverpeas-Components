@@ -50,10 +50,8 @@
 <fmt:formatDate var="endDateStr" value="${endDate}" pattern="${dateFormat}"/> 
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html>
-<head>
-<title><fmt:message key="kmelia.stat.title" /></title>
-<view:looknfeel withCheckFormScript="true"/>
+<view:sp-page>
+<view:sp-head-part withCheckFormScript="true">
 <view:includePlugin name="datepicker"/>
 <script type="text/javascript">
 function filterStat() {
@@ -95,6 +93,7 @@ function filterStat() {
        
   switch(errorNb) {
    case 0 :
+     spProgressMessage.show();
      document.statForm.submit();
     break;
    case 1 :
@@ -155,8 +154,8 @@ $(document).ready(function() {
 });
 
 </script>
-</head>
-<body class="topic-statistics">
+</view:sp-head-part>
+<view:sp-body-part cssClass="topic-statistics">
 <fmt:message key="kmelia.stat.browsebar" var="browseBarLabel" />
 <view:browseBar extraInformations='${browseBarLabel}'/>
 <view:window>
@@ -252,5 +251,6 @@ $(document).ready(function() {
 
 </view:frame>
 </view:window>
-</body>
-</html>
+<view:progressMessage/>
+</view:sp-body-part>
+</view:sp-page>
