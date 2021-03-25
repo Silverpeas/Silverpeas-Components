@@ -105,6 +105,10 @@ public class DefaultRSSService implements RSSService {
           channel.setFeed(feed);
         }
       } catch (Exception e) {
+        SilverLogger.getLogger(this).silent(e);
+        if (e instanceof InterruptedException) {
+          Thread.currentThread().interrupt();
+        }
         throw new RssAgregatorException(e.getMessage(), e);
       }
     }

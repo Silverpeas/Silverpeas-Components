@@ -149,6 +149,9 @@ public class Streaming extends Media {
         throw wae;
       } catch (Exception e) {
         SilverLogger.getLogger(Streaming.class).error("{0} -> {1}", oembedUrl, e.getMessage());
+        if (e instanceof InterruptedException) {
+          Thread.currentThread().interrupt();
+        }
         throw new WebApplicationException(e);
       }
     }).orElse(EMPTY);

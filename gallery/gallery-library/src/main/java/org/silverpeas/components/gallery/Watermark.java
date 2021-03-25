@@ -132,6 +132,9 @@ public class Watermark {
         cachedFile = null;
         SilverLogger.getLogger(this).warn(e);
         SilverLogger.getLogger(this).warn("impossible to save image from URL {0}", imageUrl);
+        if (e instanceof InterruptedException) {
+          Thread.currentThread().interrupt();
+        }
       }
     }
     return cachedFile;
