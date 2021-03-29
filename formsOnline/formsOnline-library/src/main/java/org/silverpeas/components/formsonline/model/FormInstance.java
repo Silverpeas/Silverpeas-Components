@@ -147,7 +147,7 @@ public class FormInstance implements SilverpeasContent {
   }
 
   @Override
-  public Date getLastModificationDate() {
+  public Date getLastUpdateDate() {
     return getValidationDate() != null ? getValidationDate() : getCreationDate();
   }
 
@@ -337,7 +337,7 @@ public class FormInstance implements SilverpeasContent {
   }
 
   @Override
-  public User getLastModifier() {
+  public User getLastUpdater() {
     return validations.getFinalValidation()
         .map(ContributionValidation::getValidator)
         .orElseGet(this::getCreator);

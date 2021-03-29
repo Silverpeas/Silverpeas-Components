@@ -55,7 +55,7 @@ public abstract class AbstractKmeliaFolderUserNotification
   protected void performNotificationResource(final String language, final NodeDetail resource,
       final NotificationResourceData notificationResourceData) {
     notificationResourceData.setResourceId(resource.getId());
-    notificationResourceData.setResourceType(resource.getType());
+    notificationResourceData.setResourceType(resource.getNodeType());
     notificationResourceData.setResourceName(resource.getName(language));
     notificationResourceData.setResourceDescription(resource.getDescription(language));
   }

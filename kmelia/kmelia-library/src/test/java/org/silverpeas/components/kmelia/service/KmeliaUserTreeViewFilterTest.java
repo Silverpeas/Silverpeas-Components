@@ -49,7 +49,7 @@ import static org.mockito.Mockito.when;
  * @author Yohann Chastagnier
  */
 @EnableSilverTestEnv
-public class KmeliaUserTreeViewFilterTest {
+class KmeliaUserTreeViewFilterTest {
 
   private static final String USER_ID = "26";
   private static final String INSTANCE_ID = "instanceId";
@@ -59,15 +59,15 @@ public class KmeliaUserTreeViewFilterTest {
   private static final String WRITER_ROLE = SilverpeasRole.WRITER.getName();
   private static final String ADMIN_ROLE = SilverpeasRole.ADMIN.getName();
 
-  private static final int ROOT_NODE_ID = Integer.parseInt(ROOT_NODE_PK.getId());
-  private static final int NODE_A_ID = 10;
-  private static final int NODE_AA_ID = 11;
-  private static final int NODE_AAA_ID = 12;
-  private static final int NODE_AAB_ID = 13;
-  private static final int NODE_AB_ID = 14;
-  private static final int NODE_ABA_ID = 15;
-  private static final int NODE_B_ID = 16;
-  private static final int NODE_BA_ID = 17;
+  private static final String ROOT_NODE_ID = ROOT_NODE_PK.getId();
+  private static final String NODE_A_ID = "10";
+  private static final String NODE_AA_ID = "11";
+  private static final String NODE_AAA_ID = "12";
+  private static final String NODE_AAB_ID = "13";
+  private static final String NODE_AB_ID = "14";
+  private static final String NODE_ABA_ID = "15";
+  private static final String NODE_B_ID = "16";
+  private static final String NODE_BA_ID = "17";
 
   @TestManagedMock
   private OrganizationController organisationController;
@@ -88,14 +88,15 @@ public class KmeliaUserTreeViewFilterTest {
   }
 
   @Test
-  public void setBestUserRoleAndFilterOnNotExistingTree() {
+  void setBestUserRoleAndFilterOnNotExistingTree() {
+    KmeliaUserTreeViewFilter filter =
+        KmeliaUserTreeViewFilter.from(USER_ID, INSTANCE_ID, ROOT_NODE_PK, READER_ROLE, false);
     assertThrows(NullPointerException.class,
-        () -> KmeliaUserTreeViewFilter.from(USER_ID, INSTANCE_ID, ROOT_NODE_PK, READER_ROLE, false)
-            .setBestUserRoleAndFilter(null));
+        () -> filter.setBestUserRoleAndFilter(null));
   }
 
   @Test
-  public void setBestUserRoleAndFilterOnEmptyTree() {
+  void setBestUserRoleAndFilterOnEmptyTree() {
     List<NodeDetail> emptyTree = new ArrayList<NodeDetail>();
     KmeliaUserTreeViewFilter
         .from(USER_ID, INSTANCE_ID, ROOT_NODE_PK, READER_ROLE, false)
@@ -108,7 +109,7 @@ public class KmeliaUserTreeViewFilterTest {
   }
 
   @Test
-  public void setBestUserRoleAndFilterOnCommonTreeWithoutNodeRightManagement() {
+  void setBestUserRoleAndFilterOnCommonTreeWithoutNodeRightManagement() {
     List<NodeDetail> commonTree = buildCommonTree();
     KmeliaUserTreeViewFilter
         .from(USER_ID, INSTANCE_ID, ROOT_NODE_PK, READER_ROLE, false)
@@ -126,7 +127,7 @@ public class KmeliaUserTreeViewFilterTest {
   }
 
   @Test
-  public void
+  void
   setBestUserRoleAndFilterOnCommonTreeWithoutNodeRightManagementAndDisplaying12PublisOnRootNode() {
     when(organisationController.getComponentParameterValue(INSTANCE_ID, "nbPubliOnRoot"))
         .thenReturn("12");
@@ -148,7 +149,7 @@ public class KmeliaUserTreeViewFilterTest {
   }
 
   @Test
-  public void setBestUserRoleAndFilterOnCommonTreeWithRightHandlingOnNodeAAButNoUserRight() {
+  void setBestUserRoleAndFilterOnCommonTreeWithRightHandlingOnNodeAAButNoUserRight() {
     List<NodeDetail> commonTree = buildCommonTree();
 
     NodeDetail node_AA = commonTree.get(2);
@@ -174,7 +175,7 @@ public class KmeliaUserTreeViewFilterTest {
   }
 
   @Test
-  public void
+  void
   setBestUserRoleAndFilterOnCommonTreeWithRightHandlingOnNodeAAandNodeAABbutNoUserRight() {
     List<NodeDetail> commonTree = buildCommonTree();
 
@@ -211,7 +212,7 @@ public class KmeliaUserTreeViewFilterTest {
   }
 
   @Test
-  public void
+  void
   setBestUserRoleAndFilterOnCommonTreeWithRightHandlingOnNodeAAandNodeAABwithUserRightOnAABAndDisplaying12PublisOnRootNode() {
     when(organisationController.getComponentParameterValue(INSTANCE_ID, "nbPubliOnRoot"))
         .thenReturn("12");
@@ -239,7 +240,7 @@ public class KmeliaUserTreeViewFilterTest {
     assertTree(commonTree,
         Pair.of(ROOT_NODE_ID, USER_ROLE),
         Pair.of(NODE_A_ID, READER_ROLE),
-        Pair.of(NODE_AA_ID, (String) null),
+        Pair.of(NODE_AA_ID, null),
         Pair.of(NODE_AAB_ID, WRITER_ROLE),
         Pair.of(NODE_AB_ID, READER_ROLE),
         Pair.of(NODE_ABA_ID, READER_ROLE),
@@ -256,7 +257,7 @@ public class KmeliaUserTreeViewFilterTest {
   }
 
   @Test
-  public void setBestUserRoleAndFilterOnCommonTreeWithRightHandlingOnAllNodesButNoUserRight() {
+  void setBestUserRoleAndFilterOnCommonTreeWithRightHandlingOnAllNodesButNoUserRight() {
     List<NodeDetail> commonTree = buildCommonTree();
 
     for (NodeDetail node : commonTree) {
@@ -270,7 +271,7 @@ public class KmeliaUserTreeViewFilterTest {
   }
 
   @Test
-  public void setBestUserRoleAndFilterOnCommonTreeWithRightHandlingOnAllNodesWithUserRightOnAAA() {
+  void setBestUserRoleAndFilterOnCommonTreeWithRightHandlingOnAllNodesWithUserRightOnAAA() {
     List<NodeDetail> commonTree = buildCommonTree();
 
     for (NodeDetail node : commonTree) {
@@ -284,14 +285,14 @@ public class KmeliaUserTreeViewFilterTest {
         .from(USER_ID, INSTANCE_ID, ROOT_NODE_PK, READER_ROLE, true)
         .setBestUserRoleAndFilter(commonTree);
     assertTree(commonTree,
-        Pair.of(ROOT_NODE_ID, (String) null),
-        Pair.of(NODE_A_ID, (String) null),
-        Pair.of(NODE_AA_ID, (String) null),
+        Pair.of(ROOT_NODE_ID, null),
+        Pair.of(NODE_A_ID, null),
+        Pair.of(NODE_AA_ID, null),
         Pair.of(NODE_AAA_ID, WRITER_ROLE));
   }
 
   @Test
-  public void setBestUserRoleAndFilterOnCommonTreeWithRightHandlingOnAllNodesWithUserRightOnBA() {
+  void setBestUserRoleAndFilterOnCommonTreeWithRightHandlingOnAllNodesWithUserRightOnBA() {
     List<NodeDetail> commonTree = buildCommonTree();
 
     for (NodeDetail node : commonTree) {
@@ -305,13 +306,13 @@ public class KmeliaUserTreeViewFilterTest {
         .from(USER_ID, INSTANCE_ID, ROOT_NODE_PK, READER_ROLE, true)
         .setBestUserRoleAndFilter(commonTree);
     assertTree(commonTree,
-        Pair.of(ROOT_NODE_ID, (String) null),
-        Pair.of(NODE_B_ID, (String) null),
+        Pair.of(ROOT_NODE_ID, null),
+        Pair.of(NODE_B_ID, null),
         Pair.of(NODE_BA_ID, WRITER_ROLE));
   }
 
   @Test
-  public void
+  void
   setBestUserRoleAndFilterOnPartOfCommonTreeWithoutSpecificNodeRightAndDisplaying12PublisOnRootNode() {
     when(organisationController.getComponentParameterValue(INSTANCE_ID, "nbPubliOnRoot"))
         .thenReturn("12");
@@ -320,7 +321,9 @@ public class KmeliaUserTreeViewFilterTest {
     Iterator<NodeDetail> treeIt = commonTree.iterator();
     while(treeIt.hasNext()) {
       NodeDetail node = treeIt.next();
-      if (!(node.getId() >= NODE_A_ID && node.getId() <= NODE_AAB_ID)) {
+      int nodeId = Integer.parseInt(node.getId());
+      if (!(nodeId >= Integer.parseInt(NODE_A_ID) &&
+          nodeId <= Integer.parseInt(NODE_AAB_ID))) {
         treeIt.remove();
       }
     }
@@ -337,23 +340,28 @@ public class KmeliaUserTreeViewFilterTest {
   }
 
   @Test
-  public void
+  void
   setBestUserRoleAndFilterOnPartOfCommonTreeWithRightHandlingOnAandABandDisplaying12PublisOnRootNode() {
     when(organisationController.getComponentParameterValue(INSTANCE_ID, "nbPubliOnRoot"))
         .thenReturn("12");
 
     List<NodeDetail> commonTree = buildCommonTree();
     Iterator<NodeDetail> treeIt = commonTree.iterator();
+    int nodeAId = Integer.parseInt(NODE_A_ID);
+    int nodeAABId = Integer.parseInt(NODE_AAB_ID);
     while(treeIt.hasNext()) {
       NodeDetail node = treeIt.next();
-      if (!(node.getId() >= NODE_A_ID && node.getId() <= NODE_AAB_ID)) {
+      int nodeId = Integer.parseInt(node.getId());
+      if (!(nodeId >= nodeAId && nodeId <= nodeAABId)) {
         treeIt.remove();
       }
     }
     assertThat(commonTree, hasSize(4));
 
+    int nodeAAId = Integer.parseInt(NODE_AA_ID);
     for (NodeDetail node : commonTree) {
-      if (node.getId() >= NODE_A_ID && node.getId() <= NODE_AA_ID) {
+      int nodeId = Integer.parseInt(node.getId());
+      if (nodeId >= nodeAId && nodeId <= nodeAAId) {
         node.setRightsDependsOnMe();
       }
     }
@@ -374,9 +382,9 @@ public class KmeliaUserTreeViewFilterTest {
 
   @SuppressWarnings("unchecked")
   private void assertTree(List<NodeDetail> actualTree,
-      Pair<Integer, String>... expectedNodeRightPairs) {
+      Pair<String, String>... expectedNodeRightPairs) {
     assertThat(actualTree, hasSize(expectedNodeRightPairs.length));
-    Pair<Integer, String>[] actualNodeRightPairs = new Pair[expectedNodeRightPairs.length];
+    Pair<String, String>[] actualNodeRightPairs = new Pair[expectedNodeRightPairs.length];
     for (int i = 0; i < actualTree.size(); i++) {
       final NodeDetail actualNode = actualTree.get(i);
       actualNodeRightPairs[i] = Pair.of(actualNode.getId(), actualNode.getUserRole());
@@ -398,7 +406,7 @@ public class KmeliaUserTreeViewFilterTest {
    * --BA (17)
    */
   private List<NodeDetail> buildCommonTree() {
-    NodeDetail root = createNode(0, "");
+    NodeDetail root = createNode(NodePK.ROOT_NODE_ID, "");
     NodeDetail nodeA = createNode(NODE_A_ID, "A");
     NodeDetail nodeAA = createNode(NODE_AA_ID, "AA");
     NodeDetail nodeAAA = createNode(NODE_AAA_ID, "AAA");
@@ -437,23 +445,23 @@ public class KmeliaUserTreeViewFilterTest {
     return nodes;
   }
 
-  private NodeDetail createNode(int id, final String name) {
+  private NodeDetail createNode(String id, final String name) {
     NodeDetail node = new NodeDetail();
-    node.setNodePK(new NodePK(String.valueOf(id), INSTANCE_ID));
-    node.setChildrenDetails(new ArrayList<NodeDetail>());
+    node.setNodePK(new NodePK(id, INSTANCE_ID));
+    node.setChildrenDetails(new ArrayList<>());
     node.setName(name);
     return node;
   }
 
-  private static class UserNodeRoleMapping extends HashMap<Integer, List<String>> {
+  private static class UserNodeRoleMapping extends HashMap<String, List<String>> {
     private static final long serialVersionUID = -6232421131041246806L;
 
-    static UserNodeRoleMapping from(int nodeId, String... roles) {
+    static UserNodeRoleMapping from(String nodeId, String... roles) {
       UserNodeRoleMapping mapping = new UserNodeRoleMapping();
       return mapping.put(nodeId, roles);
     }
 
-    UserNodeRoleMapping put(Integer nodeId, String... roles) {
+    UserNodeRoleMapping put(String nodeId, String... roles) {
       put(nodeId, CollectionUtil.asList(roles));
       return this;
     }

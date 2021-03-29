@@ -52,7 +52,7 @@ public class ExifProperty {
    * @return the label
    */
   public String getLabel() {
-    return labels.get(I18NHelper.defaultLanguage);
+    return labels.get(I18NHelper.DEFAULT_LANGUAGE);
   }
 
   /**

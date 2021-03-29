@@ -84,9 +84,9 @@ public class WebPagesIndexer implements ComponentIndexation {
   private FullIndexEntry getFullIndexEntry(ComponentInst component) {
     FullIndexEntry indexEntry =
         new FullIndexEntry(component.getId(), "Component", component.getId());
-    indexEntry.setCreationDate(component.getCreateDate());
+    indexEntry.setCreationDate(component.getCreationDate());
     indexEntry.setCreationUser(component.getCreatorUserId());
-    indexEntry.setLastModificationDate(component.getUpdateDate());
+    indexEntry.setLastModificationDate(component.getLastUpdateDate());
     indexEntry.setLastModificationUser(component.getUpdaterUserId());
     indexEntry.setTitle(component.getLabel());
     indexEntry.setPreview(component.getDescription());

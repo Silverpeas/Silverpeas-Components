@@ -176,7 +176,7 @@ public class AlbumMediaNotificationManager {
     }
 
     private void clearJobCache() {
-      final String cacheKey = buildKey(sender, instanceId, String.valueOf(album.getId()));
+      final String cacheKey = buildKey(sender, instanceId, album.getId());
       contextCache.remove(cacheKey);
     }
 
@@ -186,7 +186,7 @@ public class AlbumMediaNotificationManager {
 
     private void putIntoCache() {
       if (isMediaToProcess()) {
-        contextCache.put(buildKey(sender, instanceId, String.valueOf(album.getId())),
+        contextCache.put(buildKey(sender, instanceId, album.getId()),
             NotificationAlbumJob.this);
       }
     }

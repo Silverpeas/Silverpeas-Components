@@ -28,7 +28,7 @@ import org.silverpeas.components.infoletter.model.InfoLetterService;
 import org.silverpeas.components.infoletter.service.InfoLetterServiceProvider;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.contribution.contentcontainer.content.AbstractContentInterface;
+import org.silverpeas.core.contribution.contentcontainer.content.AbstractSilverpeasContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.persistence.jdbc.bean.IdPK;
@@ -40,10 +40,10 @@ import java.util.stream.Collectors;
 import static org.silverpeas.components.infoletter.model.InfoLetterPublication.PUBLICATION_VALIDEE;
 
 /**
- * The infoletter implementation of ContentInterface.
+ * The infoletter implementation of SilverpeasContentManager.
  */
 @Service
-public class InfoLetterContentManager extends AbstractContentInterface {
+public class InfoLetterContentManager extends AbstractSilverpeasContentManager {
 
   private static final String CONTENT_ICON_FILE_NAME = "infoLetterSmall.gif";
 

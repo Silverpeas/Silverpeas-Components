@@ -25,8 +25,8 @@
 package org.silverpeas.components.forums.model;
 
 import org.jetbrains.annotations.NotNull;
+import org.silverpeas.core.util.ContributionPath;
 import org.silverpeas.core.util.Pair;
-import org.silverpeas.core.util.ResourcePath;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
  * List of {@link Message} which represents a path.
  * @author silveryocha
  */
-public class MessagePath extends ResourcePath<Message> {
+public class MessagePath extends ContributionPath<Message> {
   private static final long serialVersionUID = 6399724102076584647L;
 
   private final ForumPath forumPath;
@@ -43,17 +43,6 @@ public class MessagePath extends ResourcePath<Message> {
   public MessagePath(final ForumPath forumPath, final @NotNull Collection<Message> c) {
     super(c);
     this.forumPath = forumPath;
-  }
-
-  @Override
-  protected String getInstanceId(final Message message) {
-    return message.getInstanceId();
-  }
-
-  @SuppressWarnings("unchecked")
-  @Override
-  protected Integer getId(final Message message) {
-    return message.getId();
   }
 
   @Override
@@ -72,14 +61,14 @@ public class MessagePath extends ResourcePath<Message> {
   }
 
   private String formatMessagePath(final String language) {
-    final String currentResourceIdPath = stream().map(this::getId).map(String::valueOf)
-        .collect(Collectors.joining(","));
-    Pair<String, String> lastPath = lastPathByLanguage
-        .computeIfAbsent(language, l -> Pair.of("", ""));
+    final String currentResourceIdPath =
+        stream().map(Message::getIdAsString).collect(Collectors.joining(","));
+    Pair<String, String> lastPath =
+        lastPathByLanguage.computeIfAbsent(language, l -> Pair.of("", ""));
     if (!currentResourceIdPath.equals(lastPath.getFirst())) {
       final StringBuilder result = new StringBuilder();
       for (Message message : this) {
-        result.insert(0, SEP + getLabel(message, language));
+        result.insert(0, Constants.DEFAULT_SEPARATOR + getLabel(message, language));
       }
       lastPath = Pair.of(currentResourceIdPath, result.toString());
       lastPathByLanguage.put(language, lastPath);

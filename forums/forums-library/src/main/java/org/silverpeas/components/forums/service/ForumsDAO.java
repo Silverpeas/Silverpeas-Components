@@ -1601,10 +1601,20 @@ public class ForumsDAO {
   private static Forum resultSet2Forum(ResultSet rs) throws SQLException {
     String category = rs.getString(FORUM_COLUMN_CATEGORY_ID);
     category = (category != null ? category.trim() : null);
-    return new Forum(rs.getInt(FORUM_COLUMN_FORUM_ID), rs.getString(FORUM_COLUMN_FORUM_NAME).trim(),
-        rs.getString(FORUM_COLUMN_FORUM_DESCRIPTION), (rs.getInt(FORUM_COLUMN_FORUM_ACTIVE) == 1),
-        rs.getInt(FORUM_COLUMN_FORUM_PARENT), category, rs.
-        getString(FORUM_COLUMN_FORUM_CREATION_DATE), rs.getString(FORUM_COLUMN_INSTANCE_ID));
+    try {
+      Date date = DateUtil.parseDate(rs.getString(FORUM_COLUMN_FORUM_CREATION_DATE));
+      Forum forum = new Forum(rs.getInt(FORUM_COLUMN_FORUM_ID),
+          rs.getString(FORUM_COLUMN_INSTANCE_ID),
+          rs.getString(FORUM_COLUMN_FORUM_NAME).trim(),
+          rs.getString(FORUM_COLUMN_FORUM_DESCRIPTION),
+          (rs.getInt(FORUM_COLUMN_FORUM_ACTIVE) == 1),
+          rs.getInt(FORUM_COLUMN_FORUM_PARENT),
+          category);
+      forum.setCreationDate(date);
+      return forum;
+    } catch (ParseException e) {
+      throw new SQLException(e);
+    }
   }
 
   /**
@@ -1634,10 +1644,14 @@ public class ForumsDAO {
   private static Message resultSet2Message(ResultSet rs, String instanceId) throws SQLException {
     Timestamp timestamp = rs.getTimestamp(MESSAGE_COLUMN_MESSAGE_DATE);
     Date date = (timestamp != null ? new Date(timestamp.getTime()) : null);
-    return new Message(rs.getInt(MESSAGE_COLUMN_MESSAGE_ID),
+    Message message = new Message(rs.getInt(MESSAGE_COLUMN_MESSAGE_ID),
+        instanceId,
         rs.getString(MESSAGE_COLUMN_MESSAGE_TITLE).trim(),
-        rs.getString(MESSAGE_COLUMN_MESSAGE_AUTHOR), date, rs.getInt(MESSAGE_COLUMN_FORUM_ID),
-        rs.getInt(MESSAGE_COLUMN_MESSAGE_PARENT_ID), instanceId,
-        rs.getString(MESSAGE_COLUMN_STATUS));
+        rs.getString(MESSAGE_COLUMN_MESSAGE_AUTHOR),
+        date,
+        rs.getInt(MESSAGE_COLUMN_FORUM_ID),
+        rs.getInt(MESSAGE_COLUMN_MESSAGE_PARENT_ID));
+    message.setStatus(rs.getString(MESSAGE_COLUMN_STATUS));
+    return message;
   }
 }

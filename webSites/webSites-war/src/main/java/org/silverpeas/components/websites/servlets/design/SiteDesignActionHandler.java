@@ -24,9 +24,10 @@
 package org.silverpeas.components.websites.servlets.design;
 
 import org.silverpeas.components.websites.control.WebSiteSessionController;
+import org.silverpeas.components.websites.model.SiteDetailBuilder;
 import org.silverpeas.components.websites.service.WebSitesException;
 import org.silverpeas.components.websites.servlets.WebSitesRequestRouter;
-import org.silverpeas.components.websites.siteManage.model.SiteDetail;
+import org.silverpeas.components.websites.model.SiteDetail;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.web.http.HttpRequest;
@@ -293,9 +294,17 @@ public class SiteDesignActionHandler {
       }
     }
 
-    SiteDetail descriptionSite2 =
-        new SiteDetail(id, controller.getComponentId(), nomSite, description, nomPage, type, null, null,
-            Integer.parseInt(etat), popup);
+    SiteDetail descriptionSite2 = new SiteDetailBuilder().setSiteId(id)
+        .setApplicationId(controller.getComponentId())
+        .setName(nomSite)
+        .setDescription(description)
+        .setPage(nomPage)
+        .setType(type)
+        .setCreatorId(null)
+        .setDate(null)
+        .setState(Integer.parseInt(etat))
+        .setPopup(popup)
+        .createSiteDetail();
 
     if (searchOk) {
             /* update description en BD */
@@ -349,9 +358,17 @@ public class SiteDesignActionHandler {
     controller.createFolder(controller.getWebSitePathById(id));
 
     // Persist siteDetail inside database type 0 = site cree
-    SiteDetail descriptionSite =
-        new SiteDetail(id, controller.getComponentId(), nomSite, description, nomPage, 0, null, null, 0,
-            popup);
+    SiteDetail descriptionSite = new SiteDetailBuilder().setSiteId(id)
+        .setApplicationId(controller.getComponentId())
+        .setName(nomSite)
+        .setDescription(description)
+        .setPage(nomPage)
+        .setType(0)
+        .setCreatorId(null)
+        .setDate(null)
+        .setState(0)
+        .setPopup(popup)
+        .createSiteDetail();
     descriptionSite.setPositions(positions);
 
     String pubId = controller.createWebSite(descriptionSite);

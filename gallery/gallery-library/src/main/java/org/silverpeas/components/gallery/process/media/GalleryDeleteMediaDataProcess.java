@@ -30,6 +30,7 @@ import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.components.gallery.model.MediaPK;
 import org.silverpeas.components.gallery.notification.AlbumMediaEventNotifier;
 import org.silverpeas.components.gallery.process.AbstractGalleryDataProcess;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.comment.service.CommentServiceProvider;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.FormException;
@@ -90,7 +91,8 @@ public class GalleryDeleteMediaDataProcess extends AbstractGalleryDataProcess {
     // Supprimer les commentaires
     final MediaPK mediaPK = getMedia().getMediaPK();
     CommentServiceProvider.getCommentService()
-        .deleteAllCommentsOnPublication(getMedia().getContributionType(), mediaPK);
+        .deleteAllCommentsOnResource(getMedia().getContributionType(),
+            new ResourceReference(mediaPK));
 
     // Supprime le silverObject correspond
     getGalleryContentManager().deleteSilverContent(getMedia());

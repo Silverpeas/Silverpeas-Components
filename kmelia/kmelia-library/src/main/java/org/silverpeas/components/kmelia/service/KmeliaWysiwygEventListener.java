@@ -58,7 +58,7 @@ public class KmeliaWysiwygEventListener extends CDIResourceEventListener<Wysiwyg
 
   private void anExternalPublicationElementHaveChanged(WysiwygContent content) {
     if (isAboutKmeliaPublication(content)) {
-      ContributionIdentifier id = content.getContribution().getContributionId();
+      ContributionIdentifier id = content.getContribution().getIdentifier();
       PublicationPK pubPK =
           new PublicationPK(id.getLocalId(), id.getComponentInstanceId());
       kmeliaService.externalElementsOfPublicationHaveChanged(pubPK, content.getAuthor().getId());
@@ -67,9 +67,9 @@ public class KmeliaWysiwygEventListener extends CDIResourceEventListener<Wysiwyg
 
   private boolean isAboutKmeliaPublication(WysiwygContent content) {
     final Contribution contribution = content.getContribution();
-    return !contribution.getContributionId().getLocalId().startsWith("Node") && (
-        contribution.getContributionId().getComponentInstanceId().startsWith("kmax") ||
-        contribution.getContributionId().getComponentInstanceId().startsWith("kmelia") ||
-        contribution.getContributionId().getComponentInstanceId().startsWith("toolbox"));
+    return !contribution.getIdentifier().getLocalId().startsWith("Node") && (
+        contribution.getIdentifier().getComponentInstanceId().startsWith("kmax") ||
+        contribution.getIdentifier().getComponentInstanceId().startsWith("kmelia") ||
+        contribution.getIdentifier().getComponentInstanceId().startsWith("toolbox"));
   }
 }

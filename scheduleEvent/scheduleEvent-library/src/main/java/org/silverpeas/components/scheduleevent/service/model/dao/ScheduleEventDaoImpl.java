@@ -24,8 +24,8 @@ import org.silverpeas.components.scheduleevent.constant.ScheduleEventConstant;
 import org.silverpeas.components.scheduleevent.service.model.beans.Contributor;
 import org.silverpeas.components.scheduleevent.service.model.beans.Response;
 import org.silverpeas.components.scheduleevent.service.model.beans.ScheduleEvent;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.annotation.Repository;
-import org.silverpeas.core.comment.model.CommentPK;
 import org.silverpeas.core.comment.service.CommentServiceProvider;
 
 import javax.persistence.EntityManager;
@@ -69,8 +69,8 @@ public class ScheduleEventDaoImpl implements ScheduleEventDao {
     // delete related schedule event comments
     CommentServiceProvider
         .getCommentService()
-        .deleteAllCommentsOnPublication(ScheduleEvent.getResourceType(),
-            new CommentPK(scheduleEvent.getId().toString(), ScheduleEventConstant.TOOL_ID));
+        .deleteAllCommentsOnResource(ScheduleEvent.getResourceType(),
+            new ResourceReference(scheduleEvent.getId(), ScheduleEventConstant.TOOL_ID));
   }
 
   @Override
@@ -84,7 +84,7 @@ public class ScheduleEventDaoImpl implements ScheduleEventDao {
         ScheduleEvent.class);
     query.setParameter("authorId", Integer.valueOf(userId));
     List<ScheduleEvent> events = query.getResultList();
-    return new HashSet<ScheduleEvent>(events);
+    return new HashSet<>(events);
   }
 
   @SuppressWarnings("unchecked")
@@ -94,7 +94,7 @@ public class ScheduleEventDaoImpl implements ScheduleEventDao {
         ScheduleEvent.class);
     query.setParameter("contributorId", Integer.valueOf(userId));
     List<ScheduleEvent> events = query.getResultList();
-    return new HashSet<ScheduleEvent>(events);
+    return new HashSet<>(events);
   }
 
   @Override

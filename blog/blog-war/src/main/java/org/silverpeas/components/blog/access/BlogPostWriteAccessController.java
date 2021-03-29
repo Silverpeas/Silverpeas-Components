@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.blog.access;
 
+import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.annotation.Service;
@@ -55,6 +56,11 @@ public class BlogPostWriteAccessController extends AbstractAccessController<Stri
    * Hidden constructor.
    */
   protected BlogPostWriteAccessController() {
+  }
+
+  @Override
+  public boolean isUserAuthorized(final String userId, final ResourceIdentifier id) {
+    return isUserAuthorized(userId, id.asString());
   }
 
   @Override

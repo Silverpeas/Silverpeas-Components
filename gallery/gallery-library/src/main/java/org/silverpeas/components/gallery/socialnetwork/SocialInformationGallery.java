@@ -21,7 +21,6 @@
 package org.silverpeas.components.gallery.socialnetwork;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import org.silverpeas.components.gallery.model.InternalMedia;
 import org.silverpeas.components.gallery.model.MediaWithStatus;
 import org.silverpeas.core.socialnetwork.model.AbstractSocialInformation;
@@ -31,7 +30,7 @@ import org.silverpeas.core.util.StringUtil;
 public class SocialInformationGallery extends AbstractSocialInformation {
 
   public SocialInformationGallery(MediaWithStatus picture) {
-
+    super(picture.getMedia().getMediaPK().toResourceReference());
     setTitle(picture.getMedia().getTitle());
     setUpdated(picture.isUpdate());
 

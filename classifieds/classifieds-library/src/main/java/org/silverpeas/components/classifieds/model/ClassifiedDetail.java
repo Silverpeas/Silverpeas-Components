@@ -182,7 +182,7 @@ public class ClassifiedDetail implements SilverpeasContent {
   }
 
   @Override
-  public Date getLastModificationDate() {
+  public Date getLastUpdateDate() {
     return getUpdateDate();
   }
 
@@ -200,7 +200,7 @@ public class ClassifiedDetail implements SilverpeasContent {
   }
 
   @Override
-  public User getLastModifier() {
+  public User getLastUpdater() {
     return getCreator();
   }
 

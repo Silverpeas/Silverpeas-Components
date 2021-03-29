@@ -63,7 +63,7 @@ public class TopicComparator implements Comparator<NodeDetail> {
   @Override
   public int compare(NodeDetail node1, NodeDetail node2) {
     int result = 0;
-    if (node1.getId() > 2 && node2.getId() > 2) {
+    if (node1.isChild() && node2.isChild()) {
       String name1 = node1.getName().toLowerCase();
       String name2 = node2.getName().toLowerCase();
       if (useCriteria) {

@@ -141,7 +141,7 @@ public class SuggestionRepository implements EntityRepository<Suggestion> {
     for (Suggestion suggestion : suggestions) {
       WysiwygController
           .deleteWysiwygAttachments(suggestion.getComponentInstanceId(), suggestion.getId());
-      commentService.deleteAllCommentsOnPublication(suggestion.getContributionType(),
+      commentService.deleteAllCommentsOnResource(suggestion.getContributionType(),
           new ResourceReference(suggestion.getId(), suggestion.getComponentInstanceId()));
     }
   }
@@ -201,7 +201,7 @@ public class SuggestionRepository implements EntityRepository<Suggestion> {
 
   private void withCommentCount(final Suggestion suggestion) {
     if (suggestion != null) {
-      int count = commentService.getCommentsCountOnPublication(suggestion.getContributionType(),
+      int count = commentService.getCommentsCountOnResource(suggestion.getContributionType(),
           new ResourceReference(suggestion.getId(), suggestion.getComponentInstanceId()));
       suggestion.setCommentCount(count);
     }

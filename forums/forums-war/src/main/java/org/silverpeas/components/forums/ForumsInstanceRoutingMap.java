@@ -9,35 +9,36 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception. You should have received a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.components.websites.siteManage.model;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+package org.silverpeas.components.forums;
 
-public class WebSitesRuntimeException extends SilverpeasRuntimeException {
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.web.mvc.route.AbstractComponentInstanceRoutingMap;
 
-  private static final long serialVersionUID = 623321175232812644L;
+import javax.inject.Named;
+import java.net.URI;
 
-  public WebSitesRuntimeException(final String message) {
-    super(message);
-  }
+/**
+ * @author silveryocha
+ */
+@Named
+public class ForumsInstanceRoutingMap extends AbstractComponentInstanceRoutingMap {
 
-  public WebSitesRuntimeException(final String message, final Throwable cause) {
-    super(message, cause);
-  }
-
-  public WebSitesRuntimeException(final Throwable cause) {
-    super(cause);
+  @Override
+  public URI getViewPage(final ContributionIdentifier contributionIdentifier) {
+    return newUriBuilder(getBaseForPages(), "viewForum").queryParam("forumId",
+        contributionIdentifier.getLocalId()).build();
   }
 }

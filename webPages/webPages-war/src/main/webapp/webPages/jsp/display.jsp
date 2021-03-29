@@ -117,7 +117,7 @@
               form.display(out, context, data);
             } else {
           %>
-          <view:displayWysiwyg objectId="<%=componentId%>" componentId="<%=componentId %>" language="<%=I18NHelper.defaultLanguage %>"/>
+          <view:displayWysiwyg objectId="<%=componentId%>" componentId="<%=componentId %>" language="<%=I18NHelper.DEFAULT_LANGUAGE %>"/>
           <%
             }
           %>

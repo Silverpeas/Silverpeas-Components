@@ -142,6 +142,7 @@ import static org.silverpeas.core.contribution.attachment.AttachmentService.VERS
 import static org.silverpeas.core.contribution.attachment.AttachmentServiceProvider.getAttachmentService;
 import static org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController.deleteWysiwygAttachmentsOnly;
 import static org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController.haveGotWysiwyg;
+import static org.silverpeas.core.node.model.NodePK.UNDEFINED_NODE_ID;
 import static org.silverpeas.core.persistence.Transaction.getTransaction;
 import static org.silverpeas.core.util.StringUtil.*;
 
@@ -313,7 +314,7 @@ public class DefaultKmeliaService implements KmeliaService {
 
   private void addAccordingToRights(final String userId, final List<NodeDetail> availableChildren,
       final NodeDetail child) {
-    final int rightsDependsOn = child.getRightsDependsOn();
+    final String rightsDependsOn = child.getRightsDependsOn();
     final boolean nodeAvailable = getOrganisationController()
         .isObjectAvailableToUser(ProfiledObjectId.fromNode(rightsDependsOn),
             child.getNodePK().getInstanceId(), userId);
@@ -326,12 +327,12 @@ public class DefaultKmeliaService implements KmeliaService {
   }
 
   private void addDescendantIfAvailable(final String userId,
-      final List<NodeDetail> availableChildren, final NodeDetail child, final int rightsDependsOn,
+      final List<NodeDetail> availableChildren, final NodeDetail child, final String rightsDependsOn,
       final Iterator<NodeDetail> descendants) {
     boolean childAllowed = false;
     while (!childAllowed && descendants.hasNext()) {
       NodeDetail descendant = descendants.next();
-      if (descendant.getRightsDependsOn() != rightsDependsOn
+      if (!descendant.getRightsDependsOn().equals(rightsDependsOn)
           && getOrganisationController().isObjectAvailableToUser(ProfiledObjectId.fromNode(descendant.getRightsDependsOn()),
               descendant.getNodePK().getInstanceId(), userId)) {
         // different rights of father check if it is available
@@ -392,14 +393,13 @@ public class DefaultKmeliaService implements KmeliaService {
   @Override
   public NodePK addSubTopic(NodePK fatherPK, NodeDetail subTopic, String alertType) {
     // Construction de la date de création (date courante)
-    String creationDate = DateUtil.today2SQLDate();
-    subTopic.setCreationDate(creationDate);
+    subTopic.setCreationDate(new Date());
     // Web visibility parameter. The topic is by default invisible.
     subTopic.setStatus("Invisible");
     // add new topic to current topic
     NodePK pk = addToTopic(fatherPK, subTopic);
     // Creation alert
-    if (!"-1".equals(pk.getId())) {
+    if (!UNDEFINED_NODE_ID.equals(pk.getId())) {
       subTopic.setNodePK(pk);
       subTopic.setFatherPK(fatherPK);
       topicCreationAlert(subTopic, NotifAction.CREATE, alertType);
@@ -452,7 +452,7 @@ public class DefaultKmeliaService implements KmeliaService {
   }
 
   private void updateNode(final NodeDetail newNode, final NodeDetail oldNode) {
-    if (oldNode.getRightsDependsOn() != newNode.getRightsDependsOn()) {
+    if (!oldNode.getRightsDependsOn().equals(newNode.getRightsDependsOn())) {
       // rights dependency have changed
       if (!newNode.haveRights()) {
 
@@ -1412,7 +1412,7 @@ public class DefaultKmeliaService implements KmeliaService {
   }
 
   private boolean isClone(PublicationDetail publication) {
-    return isDefined(publication.getCloneId()) && !"-1".equals(publication.getCloneId()) &&
+    return isDefined(publication.getCloneId()) && !UNDEFINED_NODE_ID.equals(publication.getCloneId()) &&
         !isDefined(publication.getCloneStatus());
   }
 
@@ -1818,7 +1818,7 @@ public class DefaultKmeliaService implements KmeliaService {
 
   private void addPublicationsToValidate(final String userId,
       final Collection<PublicationDetail> publications, final PublicationDetail publi) {
-    boolean isClone = publi.isValidationRequired() && !"-1".equals(publi.getCloneId());
+    boolean isClone = publi.isValidationRequired() && !UNDEFINED_NODE_ID.equals(publi.getCloneId());
     if (isClone) {
       if (isUserCanValidatePublication(publi.getPK(), userId)) {
         // publication to validate is a clone, get original one
@@ -2109,8 +2109,8 @@ public class DefaultKmeliaService implements KmeliaService {
     clone.setStatus(refPub.getStatus());
     clone.setTargetValidatorId(refPub.getTargetValidatorId());
     clone.setCloneId(refPub.getCloneId());
-    if (refPub.getUpdateDate() != null) {
-      clone.setUpdateDate(new Date(refPub.getUpdateDate().getTime()));
+    if (refPub.getLastUpdateDate() != null) {
+      clone.setUpdateDate(new Date(refPub.getLastUpdateDate().getTime()));
     }
     clone.setUpdaterId(refPub.getUpdaterId());
     if (refPub.getValidateDate() != null) {
@@ -2138,7 +2138,7 @@ public class DefaultKmeliaService implements KmeliaService {
     PublicationPK pubPK = currentPubDetail.getPK();
     // merging clone data on the original ones
     String cloneId = currentPubDetail.getCloneId();
-    if (!"-1".equals(cloneId)) {
+    if (!UNDEFINED_NODE_ID.equals(cloneId)) {
       final PublicationDetail currentClonedPubDetail =
           clonePublication(cloneId, pubPK, validatorUserId, validationDate);
       currentPubDetail = currentClonedPubDetail;
@@ -2513,7 +2513,7 @@ public class DefaultKmeliaService implements KmeliaService {
 
     // check if we have to take care of topic's rights
     if (node != null && node.haveRights()) {
-      int rightsDependsOn = node.getRightsDependsOn();
+      String rightsDependsOn = node.getRightsDependsOn();
       List<String> profileNames = new ArrayList<>(4);
       profileNames.add(KmeliaHelper.ROLE_ADMIN);
       profileNames.add(KmeliaHelper.ROLE_PUBLISHER);
@@ -2767,7 +2767,8 @@ public class DefaultKmeliaService implements KmeliaService {
       try {
         // index comments
         getCommentService()
-            .indexAllCommentsOnPublication(pubDetail.getContributionType(), pubDetail.getPK());
+            .indexAllCommentsOnPublication(pubDetail.getContributionType(),
+                new ResourceReference(pubDetail.getPK()));
       } catch (Exception e) {
         SilverLogger.getLogger(this).error("Indexing comments failed for publication {0}",
             new String[]{pubDetail.getPK().getId()}, e);
@@ -2776,17 +2777,16 @@ public class DefaultKmeliaService implements KmeliaService {
   }
 
   private void unIndexExternalElementsOfPublication(PublicationPK pubPK) {
+    ResourceReference ref = new ResourceReference(pubPK);
     try {
-      getAttachmentService()
-          .unindexAttachmentsOfExternalObject(pubPK.toResourceReference());
+      getAttachmentService().unindexAttachmentsOfExternalObject(ref);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error("Unindexing versioning documents failed for publication {0}",
           new String[] {pubPK.getId()}, e);
     }
     try {
       // index comments
-      getCommentService()
-          .unindexAllCommentsOnPublication(PublicationDetail.getResourceType(), pubPK);
+      getCommentService().unindexAllCommentsOnPublication(PublicationDetail.getResourceType(), ref);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error("Unindexing versioning documents failed for publication {0}",
           new String[] {pubPK.getId()}, e);
@@ -2943,9 +2943,9 @@ public class DefaultKmeliaService implements KmeliaService {
   public NodePK addAxis(NodeDetail axis, String componentId) {
     NodePK axisPK = new NodePK("toDefine", componentId);
     NodeDetail rootDetail =
-        new NodeDetail("0", "Root", "desc", 1,"-1");
+        new NodeDetail("0", "Root", "desc", 1,UNDEFINED_NODE_ID);
     rootDetail.getNodePK().setComponentName(componentId);
-    rootDetail.setCreationDate(UNKNOWN);
+    rootDetail.setCreationDate(null);
     rootDetail.setCreatorId(UNKNOWN);
     rootDetail.setPath("/0");
     rootDetail.setStatus(NodeDetail.STATUS_VISIBLE);
@@ -3049,7 +3049,7 @@ public class DefaultKmeliaService implements KmeliaService {
   public NodePK addPosition(String fatherId, NodeDetail position, String componentId,
       String userId) {
     position.getNodePK().setComponentName(componentId);
-    position.setCreationDate(DateUtil.today2SQLDate());
+    position.setCreationDate(new Date());
     position.setCreatorId(userId);
     NodeDetail fatherDetail;
     NodePK componentPK = null;
@@ -3448,7 +3448,7 @@ public class DefaultKmeliaService implements KmeliaService {
     try {
       Date creationDate = new Date();
       SimpleAttachment file =
-          new SimpleAttachment(FileUtil.getFilename(filename), I18NHelper.defaultLanguage, filename,
+          new SimpleAttachment(FileUtil.getFilename(filename), I18NHelper.DEFAULT_LANGUAGE, filename,
               "", contents.length, FileUtil.getMimeType(filename), userId, creationDate, null);
       boolean versioningActive = getBooleanValue(getOrganisationController().
           getComponentParameterValue(pubPK.getComponentName(), VERSION_MODE));
@@ -3787,7 +3787,7 @@ public class DefaultKmeliaService implements KmeliaService {
 
     // check if we have to take care of topic's rights
     if (node != null && node.haveRights()) {
-      int rightsDependsOn = node.getRightsDependsOn();
+      String rightsDependsOn = node.getRightsDependsOn();
       return KmeliaHelper.getProfile(
           getOrganisationController().getUserProfiles(userId, pk.getInstanceId(),
               ProfiledObjectId.fromNode(rightsDependsOn)));
@@ -4066,11 +4066,11 @@ public class DefaultKmeliaService implements KmeliaService {
   @Action(ActionType.COPY)
   @Override
   public NodeDetail copyNode(@SourcePK @TargetPK KmeliaCopyDetail copyDetail) {
-    HashMap<Integer, Integer> oldAndNewIds = new HashMap<>();
+    HashMap<String, String> oldAndNewIds = new HashMap<>();
     return copyNode(copyDetail, oldAndNewIds);
   }
 
-  private NodeDetail copyNode(KmeliaCopyDetail copyDetail, HashMap<Integer, Integer> oldAndNewIds) {
+  private NodeDetail copyNode(KmeliaCopyDetail copyDetail, HashMap<String, String> oldAndNewIds) {
     NodePK nodePKToCopy = copyDetail.getFromNodePK();
     NodePK targetPK = copyDetail.getToNodePK();
     String userId = copyDetail.getUserId();
@@ -4083,12 +4083,12 @@ public class DefaultKmeliaService implements KmeliaService {
     node.setNodePK(nodePK);
     node.setCreatorId(userId);
     node.setRightsDependsOn(father.getRightsDependsOn());
-    node.setCreationDate(DateUtil.today2SQLDate());
+    node.setCreationDate(new Date());
     nodePK = nodeService.createNode(node, father);
 
     // duplicate rights
     if (copyDetail.isNodeRightsMustBeCopied()) {
-      oldAndNewIds.put(Integer.parseInt(nodePKToCopy.getId()), Integer.parseInt(nodePK.getId()));
+      oldAndNewIds.put(nodePKToCopy.getId(), nodePK.getId());
       setNodeRightDependency(oldAndNewIds, nodeToCopy, nodePK, node);
       // Set topic rights if necessary
       if (nodeToCopy.haveLocalRights()) {
@@ -4097,8 +4097,8 @@ public class DefaultKmeliaService implements KmeliaService {
                 nodeToCopy.getNodePK().getInstanceId());
         for (ProfileInst nodeToPasteProfile : topicProfiles) {
           if (nodeToPasteProfile != null) {
-            ProfileInst nodeProfileInst = nodeToPasteProfile.copy();
-            nodeProfileInst.setId("-1");
+            ProfileInst nodeProfileInst = new ProfileInst(nodeToPasteProfile);
+            nodeProfileInst.setId(UNDEFINED_NODE_ID);
             nodeProfileInst.setComponentFatherId(getComponentLocalId(nodePK.getInstanceId()));
             nodeProfileInst.setObjectId(
                 new ProfiledObjectId(ProfiledObjectType.NODE, nodePK.getId()));
@@ -4169,14 +4169,14 @@ public class DefaultKmeliaService implements KmeliaService {
     profile.setGroups(verifiedGroupIds);
   }
 
-  private void setNodeRightDependency(final HashMap<Integer, Integer> oldAndNewIds,
+  private void setNodeRightDependency(final HashMap<String, String> oldAndNewIds,
       final NodeDetail nodeToCopy, final NodePK nodePK, final NodeDetail node) {
     if (nodeToCopy.haveRights()) {
       if (nodeToCopy.haveLocalRights()) {
-        node.setRightsDependsOn(Integer.parseInt(nodePK.getId()));
+        node.setRightsDependsOn(nodePK.getId());
       } else {
-        int oldRightsDependsOn = nodeToCopy.getRightsDependsOn();
-        Integer newRightsDependsOn = oldAndNewIds.get(Integer.valueOf(oldRightsDependsOn));
+        String oldRightsDependsOn = nodeToCopy.getRightsDependsOn();
+        String newRightsDependsOn = oldAndNewIds.get(oldRightsDependsOn);
         node.setRightsDependsOn(newRightsDependsOn);
       }
       nodeService.updateRightsDependency(node);
@@ -4254,7 +4254,7 @@ public class DefaultKmeliaService implements KmeliaService {
       newPubli.setCreatorId(publiToCopy.getCreatorId());
       newPubli.setCreationDate(publiToCopy.getCreationDate());
       newPubli.setUpdaterId(publiToCopy.getUpdaterId());
-      newPubli.setUpdateDate(publiToCopy.getUpdateDate());
+      newPubli.setUpdateDate(publiToCopy.getLastUpdateDate());
       newPubli.setStatus(publiToCopy.getStatus());
       newPubli.setTargetValidatorId(publiToCopy.getTargetValidatorId());
     } else {
@@ -4453,7 +4453,7 @@ public class DefaultKmeliaService implements KmeliaService {
       clone.setValidateDate(validationDate != null ? validationDate : new Date());
     }
     clone.setStatus(PublicationDetail.VALID_STATUS);
-    clone.setCloneId("-1");
+    clone.setCloneId(UNDEFINED_NODE_ID);
     clone.setCloneStatus(null);
     return clone;
   }

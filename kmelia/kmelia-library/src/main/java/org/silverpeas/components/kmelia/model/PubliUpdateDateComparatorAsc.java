@@ -33,7 +33,7 @@ public class PubliUpdateDateComparatorAsc implements Comparator<KmeliaPublicatio
   @Override
   public int compare(KmeliaPublication p1, KmeliaPublication p2) {
     int compareResult =
-        p1.getDetail().getUpdateDate().compareTo(p2.getDetail().getUpdateDate());
+        p1.getDetail().getLastUpdateDate().compareTo(p2.getDetail().getLastUpdateDate());
     if (compareResult == 0) {
       // both objects have been created on the same date
       compareResult = p1.getDetail().getId().compareTo(p2.getDetail().getId());

@@ -27,33 +27,25 @@
  *
  * Created on 9 Avril 2001, 16:40
  */
-package org.silverpeas.components.websites.siteManage.model;
-
-/**
- * @author cbonin
- */
+package org.silverpeas.components.websites.model;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.ResourceReference;
 
 import java.io.Serializable;
 
-public class SitePK extends WAPrimaryKey implements Serializable {
+/**
+ * Primary key of a site.
+ */
+public class SitePK extends ResourceReference implements Serializable {
 
   private static final long serialVersionUID = 3986172113206842129L;
-
-  public SitePK(String id) {
-    super(id);
-  }
 
   public SitePK(String id, String componentName) {
     super(id, componentName);
   }
 
-  public SitePK(String id, WAPrimaryKey pk) {
-    super(id, pk);
-  }
-
+  @Override
   public String getRootTableName() {
     return "site";
   }

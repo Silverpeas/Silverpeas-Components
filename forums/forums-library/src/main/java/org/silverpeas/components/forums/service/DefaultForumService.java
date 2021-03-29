@@ -73,7 +73,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.silverpeas.core.i18n.I18NHelper.defaultLanguage;
+import static org.silverpeas.core.i18n.I18NHelper.DEFAULT_LANGUAGE;
 
 /**
  * Forums service layer which manage forums application
@@ -1014,7 +1014,7 @@ public class DefaultForumService implements ForumService {
       indexEntry.setTitle(message.getTitle());
       indexEntry.setCreationDate(message.getDate());
       indexEntry.setCreationUser(message.getAuthor());
-      WysiwygController.addToIndex(indexEntry, new ResourceReference(messagePK), defaultLanguage);
+      WysiwygController.addToIndex(indexEntry, new ResourceReference(messagePK), DEFAULT_LANGUAGE);
       IndexEngineProxy.addIndexEntry(indexEntry);
     }
 
@@ -1272,26 +1272,26 @@ public class DefaultForumService implements ForumService {
 
   protected String getWysiwygContent(String componentId, String messageId) {
     String text = "";
-    if (WysiwygController.haveGotWysiwyg(componentId, messageId, defaultLanguage)) {
-      text = WysiwygController.load(componentId, messageId, defaultLanguage);
+    if (WysiwygController.haveGotWysiwyg(componentId, messageId, DEFAULT_LANGUAGE)) {
+      text = WysiwygController.load(componentId, messageId, DEFAULT_LANGUAGE);
     }
     return text;
   }
 
   private void createWysiwyg(MessagePK messagePK, String text, String userId) {
     WysiwygController.createUnindexedFileAndAttachment(text, new ResourceReference(messagePK),
-        userId, defaultLanguage);
+        userId, DEFAULT_LANGUAGE);
   }
 
   private void updateWysiwyg(MessagePK messagePK, String text, String userId) {
     String componentId = messagePK.getComponentName();
     String messageId = messagePK.getId();
-    if (WysiwygController.haveGotWysiwyg(componentId, messageId, defaultLanguage)) {
+    if (WysiwygController.haveGotWysiwyg(componentId, messageId, DEFAULT_LANGUAGE)) {
       WysiwygController
-          .updateFileAndAttachment(text, componentId, messageId, userId, defaultLanguage);
+          .updateFileAndAttachment(text, componentId, messageId, userId, DEFAULT_LANGUAGE);
     } else {
       WysiwygController.createUnindexedFileAndAttachment(text, new ResourceReference(messagePK),
-          userId, defaultLanguage);
+          userId, DEFAULT_LANGUAGE);
     }
   }
 

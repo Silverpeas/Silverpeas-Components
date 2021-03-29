@@ -524,7 +524,7 @@ public class MediaDAO {
       mediaSave = createUpdateFor(GALLERY_MEDIA_TABLE);
     }
     mediaSave.addSaveParam("mediaType", media.getType(), isInsert);
-    mediaSave.addSaveParam(INSTANCE_ID_PARAM, media.getComponentInstanceId(), isInsert);
+    mediaSave.addSaveParam(INSTANCE_ID_PARAM, media.getInstanceId(), isInsert);
     mediaSave.addSaveParam("title", media.getTitle(), isInsert);
     mediaSave.addSaveParam("description", media.getDescription(), isInsert);
     mediaSave.addSaveParam("author", media.getAuthor(), isInsert);

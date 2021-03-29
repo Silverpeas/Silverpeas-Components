@@ -48,7 +48,7 @@ function goFiles (){
 	<table width="100%">
 		<tr>
       <td>
-		    <view:displayWysiwyg objectId="<%=parution%>" componentId="<%=componentId %>" language="<%=I18NHelper.defaultLanguage %>" />
+		    <view:displayWysiwyg objectId="<%=parution%>" componentId="<%=componentId %>" language="<%=I18NHelper.DEFAULT_LANGUAGE %>" />
 		  </td>
 		  <td valign="top">
 			<%

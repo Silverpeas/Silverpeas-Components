@@ -128,7 +128,7 @@ class GalleryAlbumMediaSubscriptionNotificationBuilderTest {
     when(organizationController.getComponentInstance(componentInstance.getId()))
         .thenReturn(optionalInstance);
     when(componentInstanceProvider.getById(componentInstance.getId())).thenReturn(optionalInstance);
-    componentImplementations = (Map) FieldUtils
+    componentImplementations = (Map<String, ResourceSubscriptionService>) FieldUtils
         .readDeclaredStaticField(ResourceSubscriptionProvider.class, "componentImplementations",
             true);
     componentImplementations.put(componentInstance.getName(), subscriptionService);

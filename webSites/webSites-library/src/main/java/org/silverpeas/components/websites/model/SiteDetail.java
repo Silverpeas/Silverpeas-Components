@@ -21,26 +21,24 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.components.websites.siteManage.model;
+package org.silverpeas.components.websites.model;
 
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagementEngine;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagementEngineProvider;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
-
-import java.text.ParseException;
-import java.util.Date;
 
 public class SiteDetail extends PublicationDetail {
   private static final long serialVersionUID = 1435448496246944796L;
   private SitePK sitePk = new SitePK("", "");
+
   /**
    * page interne creee (0) ou externe (1) ou page interne uploadee (2)
    */
   private int siteType;
-  /** site non publie (0) ou publie (1) */
+  /**
+   * site non publie (0) ou publie (1)
+   */
   private int state;
   private int popup = 1;
   private String silverObjectId;
@@ -48,34 +46,12 @@ public class SiteDetail extends PublicationDetail {
 
   public static final String SITE_TYPE = "Website";
 
-  /**
-   * SiteDetail default constructor
-   * @param idSite
-   * @param applicationId
-   * @param name
-   * @param description
-   * @param page
-   * @param type
-   * @param creatorId
-   * @param date
-   * @param state
-   * @param popup
-   */
-  public SiteDetail(String idSite, String applicationId, String name, String description,
-      String page, int type, String creatorId, String date, int state, int popup) {
-    super("X", name, description, null, null, null, creatorId, Integer.toString(type), idSite, "",
+  public SiteDetail(String siteId, String applicationId, String name, String description,
+      String page, int type, String creatorId) {
+    super("X", name, description, null, null, null, creatorId, Integer.toString(type), siteId, "",
         page);
-    if (date != null) {
-      Date theCreationDate = null;
-      try {
-        theCreationDate = DateUtil.parse(date);
-      } catch (ParseException e) {
-        SilverLogger.getLogger(this).error(e);
-      }
-      this.setCreationDate(theCreationDate);
-    }
-    SitePK sitePK = new SitePK(idSite, applicationId);
-    init(sitePK, type, state, popup);
+    SitePK sitePK = new SitePK(siteId, applicationId);
+    setSitePK(sitePK);
   }
 
   // sitePk
@@ -133,16 +109,6 @@ public class SiteDetail extends PublicationDetail {
   }
 
   /**
-   * init
-   */
-  private void init(SitePK sitePK, int type, int state, int popup) {
-    this.setSitePK(sitePK);
-    this.siteType = type;
-    this.state = state;
-    this.popup = popup;
-  }
-
-  /**
    * toString
    */
   @Override
@@ -168,9 +134,10 @@ public class SiteDetail extends PublicationDetail {
   @Override
   public String getSilverpeasContentId() {
     if (this.silverObjectId == null) {
-      ContentManager contentManager = ContentManagerProvider.getContentManager();
+      ContentManagementEngine contentMgtEngine =
+          ContentManagementEngineProvider.getContentManagementEngine();
       try {
-        int objectId = contentManager.getSilverContentId(this.getId(), this.getInstanceId());
+        int objectId = contentMgtEngine.getSilverContentId(this.getId(), this.getInstanceId());
         if (objectId >= 0) {
           this.silverObjectId = String.valueOf(objectId);
         }
@@ -179,6 +146,16 @@ public class SiteDetail extends PublicationDetail {
       }
     }
     return this.silverObjectId;
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    return super.equals(o);
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
   }
 
 }

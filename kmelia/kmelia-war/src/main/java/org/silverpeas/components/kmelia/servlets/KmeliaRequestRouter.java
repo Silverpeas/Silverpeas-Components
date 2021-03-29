@@ -462,23 +462,23 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         I18NHelper.setI18NInfo(topic, request);
 
         if (StringUtil.isDefined(path)) {
-          topic.setType(NodeDetail.FILE_LINK_TYPE);
+          topic.setNodeType(NodeDetail.FILE_LINK_TYPE);
           topic.setPath(path);
         }
 
-        int rightsDependsOn = -1;
+        String rightsDependsOn = NodeDetail.NO_RIGHTS_DEPENDENCY;
         if (StringUtil.isDefined(rightsUsed)) {
           if ("father".equalsIgnoreCase(rightsUsed)) {
             NodeDetail father = kmelia.getCurrentFolder();
             rightsDependsOn = father.getRightsDependsOn();
           } else {
-            rightsDependsOn = 0;
+            rightsDependsOn = NodePK.ROOT_NODE_ID;
           }
           topic.setRightsDependsOn(rightsDependsOn);
         }
         NodePK nodePK = kmelia.addSubTopic(topic, alertType, parentId);
         if (kmelia.isRightsOnTopicsEnabled()) {
-          if (rightsDependsOn == 0) {
+          if (rightsDependsOn.equals(NodePK.ROOT_NODE_ID)) {
             request.setAttribute("NodeId", nodePK.getId());
             destination = getDestination("ViewTopicProfiles", kmelia, request);
           } else {
@@ -499,17 +499,18 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         NodeDetail topic = new NodeDetail(id, name, description, 0, "X");
         I18NHelper.setI18NInfo(topic, request);
         if (StringUtil.isDefined(path)) {
-          topic.setType(NodeDetail.FILE_LINK_TYPE);
+          topic.setNodeType(NodeDetail.FILE_LINK_TYPE);
           topic.setPath(path);
         }
         boolean goToProfilesDefinition = false;
         if (kmelia.isRightsOnTopicsEnabled()) {
-          int rightsUsed = Integer.parseInt(request.getParameter("RightsUsed"));
+          String rightsUsed = request.getParameter("RightsUsed");
           topic.setRightsDependsOn(rightsUsed);
 
           // process destination
           NodeDetail oldTopic = kmelia.getNodeHeader(id);
-          if (oldTopic.getRightsDependsOn() != rightsUsed && rightsUsed != -1) {
+          if (!oldTopic.getRightsDependsOn().equals(rightsUsed) &&
+              !rightsUsed.equals(NodeDetail.NO_RIGHTS_DEPENDENCY)) {
             // rights dependency have changed and  folder uses its own rights
             goToProfilesDefinition = true;
           }
@@ -1278,11 +1279,11 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         NodeDetail topic = kmelia.getNodeHeader(id);
         ProfileInst profile;
         if (topic.haveInheritedRights()) {
-          profile = kmelia.getTopicProfile(role, Integer.toString(topic.getRightsDependsOn()));
+          profile = kmelia.getTopicProfile(role, topic.getRightsDependsOn());
 
           request.setAttribute("RightsDependsOn", "AnotherTopic");
         } else if (topic.haveLocalRights()) {
-          profile = kmelia.getTopicProfile(role, Integer.toString(topic.getRightsDependsOn()));
+          profile = kmelia.getTopicProfile(role, topic.getRightsDependsOn());
 
           request.setAttribute("RightsDependsOn", "ThisTopic");
         } else {
@@ -1343,7 +1344,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         String newAxisDescription = request.getParameter("Description");
         NodeDetail axis =
             new NodeDetail("-1", newAxisName, newAxisDescription, 0, "X");
-        axis.setCreationDate(DateUtil.today2SQLDate());
+        axis.setCreationDate(new Date());
         axis.setCreatorId(kmelia.getUserId());
         // I18N
         I18NHelper.setI18NInfo(axis, request);

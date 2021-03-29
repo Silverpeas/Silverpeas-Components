@@ -52,9 +52,6 @@ import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.clipboard.ClipboardException;
 import org.silverpeas.core.clipboard.ClipboardSelection;
-import org.silverpeas.core.comment.model.Comment;
-import org.silverpeas.core.comment.service.CommentService;
-import org.silverpeas.core.comment.service.CommentServiceProvider;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.Attachments;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
@@ -286,14 +283,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   public KmeliaSessionController setKmaxMode(final boolean kmaxMode) {
     isKmaxMode = kmaxMode;
     return this;
-  }
-
-  /**
-   * Gets a business service of comments.
-   * @return a DefaultCommentService instance.
-   */
-  protected CommentService getCommentService() {
-    return CommentServiceProvider.getCommentService();
   }
 
   public KmeliaService getKmeliaService() {
@@ -752,7 +741,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     nd.getNodePK().setComponentName(getComponentId());
     if (isTopicAdmin(nd.getNodePK().getId())) {
       nd.setCreatorId(getUserId());
-      nd.setCreationDate(DateUtil.today2SQLDate());
+      nd.setCreationDate(new Date());
       final NodePK updatedNodePK = getKmeliaService().updateTopic(nd, alertType);
       if (updatedNodePK.getId().equals(getCurrentFolderId())) {
         processBreadcrumb(getCurrentFolderId());
@@ -1238,7 +1227,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     NodePK nodePK = new NodePK(topicId, getComponentId());
     List<NodeDetail> nodes = getNodeService().getSubTree(nodePK);
     for (NodeDetail node : nodes) {
-      fatherIds.add(Integer.toString(node.getId()));
+      fatherIds.add(node.getId());
     }
     // création de pubPK
     Collection<PublicationDetail> allPublications =
@@ -1271,11 +1260,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   public void setIndexOfFirstPubToDisplay(String index) {
     this.indexOfFirstPubToDisplay = Integer.parseInt(index);
-  }
-
-  public List<Comment> getAllComments(String id) {
-    return getCommentService()
-        .getAllCommentsOnPublication(PublicationDetail.getResourceType(), getPublicationPK(id));
   }
 
   public void processTopicWysiwyg(String topicId) {
@@ -2226,7 +2210,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       return inheritedProfile;
     } else {
       // merge des profiles
-      ProfileInst newProfile = profile.copy();
+      ProfileInst newProfile = new ProfileInst(profile);
       newProfile.addGroups(inheritedProfile.getAllGroups());
       newProfile.addUsers(inheritedProfile.getAllUsers());
 
@@ -2866,7 +2850,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     final String nodePathSep = "/";
     final String safeCurrentFolderPath = getCurrentFolder().getFullPath().replaceFirst("[/]+$", "") + nodePathSep;
     TopicSearch newTS = new TopicSearch(getComponentId(), currentFolder.getId(),
-        Integer.parseInt(getUserId()), getLanguage(), query.toLowerCase(), new Date());
+        getUserId(), getLanguage(), query.toLowerCase(), new Date());
     KmeliaSearchServiceProvider.getTopicSearchService().createTopicSearch(newTS);
 
     List<KmeliaPublication> userPublications = new ArrayList<>();

@@ -118,7 +118,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
     try (Connection con = DBUtil.openConnection()) {
       IdPK pkR = (IdPK) replyDao.add(con, reply);
       WysiwygController.createFileAndAttachment(reply.readCurrentWysiwygContent(),
-          new ResourceReference(pkR), reply.getCreatorId(), I18NHelper.defaultLanguage);
+          new ResourceReference(pkR), reply.getCreatorId(), I18NHelper.DEFAULT_LANGUAGE);
       long idR = pkR.getIdAsLong();
       if (question.hasNewStatus()) {
         question.waitForAnswer();
@@ -524,7 +524,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
     try {
       replyDao.remove(con, replyId);
       WysiwygController
-          .deleteFile(replyId.getInstanceId(), replyId.getId(), I18NHelper.defaultLanguage);
+          .deleteFile(replyId.getInstanceId(), replyId.getId(), I18NHelper.DEFAULT_LANGUAGE);
     } catch (PersistenceException e) {
 
       throw new QuestionReplyException(e);
@@ -787,7 +787,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
       WAPrimaryKey pkR = replyDao.add(con, reply);
       reply.getPK().setId(pkR.getId());
       WysiwygController.createFileAndAttachment(reply.readCurrentWysiwygContent(),
-          new ResourceReference(pkR), reply.getCreatorId(), I18NHelper.defaultLanguage);
+          new ResourceReference(pkR), reply.getCreatorId(), I18NHelper.DEFAULT_LANGUAGE);
       questionIndexer.createIndex(question, Collections.singletonList(reply));
       Question updatedQuestion = getQuestion(idQ);
       contentManager.createSilverContent(con, updatedQuestion);
@@ -843,14 +843,14 @@ public class SilverpeasQuestionManager implements QuestionManager {
 
   protected void updateWysiwygContent(Reply reply) {
     if (WysiwygController.haveGotWysiwyg(reply.getPK().getInstanceId(), reply.getPK().getId(),
-        I18NHelper.defaultLanguage)) {
+        I18NHelper.DEFAULT_LANGUAGE)) {
       WysiwygController
           .updateFileAndAttachment(reply.readCurrentWysiwygContent(), reply.getPK().getInstanceId(),
-              reply.getPK().getId(), reply.getCreatorId(), I18NHelper.defaultLanguage);
+              reply.getPK().getId(), reply.getCreatorId(), I18NHelper.DEFAULT_LANGUAGE);
     } else {
       WysiwygController.createUnindexedFileAndAttachment(reply.readCurrentWysiwygContent(),
           new ResourceReference(reply.getPK()),
-              reply.getCreatorId(), I18NHelper.defaultLanguage);
+              reply.getCreatorId(), I18NHelper.DEFAULT_LANGUAGE);
     }
   }
 

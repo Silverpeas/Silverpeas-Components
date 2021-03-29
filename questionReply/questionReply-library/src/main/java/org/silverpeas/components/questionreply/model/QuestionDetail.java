@@ -25,9 +25,9 @@
 package org.silverpeas.components.questionreply.model;
 
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagementEngine;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagementEngineProvider;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -80,10 +80,10 @@ public class QuestionDetail implements SilverpeasContent {
   @Override
   public String getSilverpeasContentId() {
     if (this.silverObjectId == null) {
-      ContentManager contentManager = ContentManagerProvider.getContentManager();
+      ContentManagementEngine contentMgtEngine = ContentManagementEngineProvider.getContentManagementEngine();
       try {
         int objectId =
-            contentManager.getSilverContentId(this.getId(), this.getComponentInstanceId());
+            contentMgtEngine.getSilverContentId(this.getId(), this.getComponentInstanceId());
         if (objectId >= 0) {
           this.silverObjectId = String.valueOf(objectId);
         }
@@ -112,12 +112,12 @@ public class QuestionDetail implements SilverpeasContent {
   }
 
   @Override
-  public User getLastModifier() {
+  public User getLastUpdater() {
     return getCreator();
   }
 
   @Override
-  public Date getLastModificationDate() {
+  public Date getLastUpdateDate() {
     return getCreationDate();
   }
 

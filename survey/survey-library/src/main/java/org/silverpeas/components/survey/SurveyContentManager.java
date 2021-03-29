@@ -49,7 +49,7 @@ package org.silverpeas.components.survey;
 
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.contribution.contentcontainer.content.AbstractContentInterface;
+import org.silverpeas.core.contribution.contentcontainer.content.AbstractSilverpeasContentManager;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerPK;
 import org.silverpeas.core.questioncontainer.container.service.QuestionContainerService;
@@ -61,10 +61,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * The survey implementation of ContentInterface
+ * The survey implementation of SilverpeasContentManager
  */
 @Service
-public class SurveyContentManager extends AbstractContentInterface {
+public class SurveyContentManager extends AbstractSilverpeasContentManager {
 
   private static final String SURVEY_CONTENT_ICON_FILE_NAME = "surveySmall.gif";
   private static final String POLLING_CONTENT_ICON_FILE_NAME = "pollingStationSmall.gif";

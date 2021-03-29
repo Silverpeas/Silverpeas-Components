@@ -329,8 +329,8 @@ $(function() {
        		<% if (updaterId != null) {%>
 			  	<div id="lastModificationInfo" class="paragraphe">
 			  		<%=resources.getString("PubDateUpdate")%>  <br />
-                                   <b><%=resources.getOutputDate(pubDetail.getUpdateDate())%></b> <%=resources.getString("GML.by")%> <view:username userId="<%=kmeliaPublication.getLastModifier().getId()%>"/>
-			  		<div class="profilPhoto"><img src="<%=m_context %><%=kmeliaPublication.getLastModifier().getAvatar() %>" alt="" class="defaultAvatar"/></div>
+                                   <b><%=resources.getOutputDate(pubDetail.getLastUpdateDate())%></b> <%=resources.getString("GML.by")%> <view:username userId="<%=kmeliaPublication.getLastUpdater().getId()%>"/>
+			  		<div class="profilPhoto"><img src="<%=m_context %><%=kmeliaPublication.getLastUpdater().getAvatar() %>" alt="" class="defaultAvatar"/></div>
 		  		</div>
 		  	<% }%>
 

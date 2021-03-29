@@ -160,13 +160,13 @@ public final class PostDetail implements SilverpeasContent {
   }
 
   @Override
-  public User getLastModifier() {
-    return publication.getLastModifier();
+  public User getLastUpdater() {
+    return publication.getLastUpdater();
   }
 
   @Override
-  public Date getLastModificationDate() {
-    return publication.getLastModificationDate();
+  public Date getLastUpdateDate() {
+    return publication.getLastUpdateDate();
   }
 
   @Override

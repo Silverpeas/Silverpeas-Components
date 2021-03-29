@@ -785,10 +785,10 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
       final RecordSet recordSet = template.getRecordSet();
       final FieldTemplate[] fields = template.getRecordTemplate().getFieldTemplates();
       final DataRecord dataRecord = recordSet.getRecord(request.getId());
-      final Map<String, String> values = dataRecord.getValues(I18NHelper.defaultLanguage);
+      final Map<String, String> values = dataRecord.getValues(I18NHelper.DEFAULT_LANGUAGE);
       for (final FieldTemplate field : fields) {
         final String value = values.get(field.getFieldName());
-        content.addElement(field.getLabel(I18NHelper.defaultLanguage));
+        content.addElement(field.getLabel(I18NHelper.DEFAULT_LANGUAGE));
         content.addElement(" : ");
         content.addElement(value);
         content.addElement(new BR());

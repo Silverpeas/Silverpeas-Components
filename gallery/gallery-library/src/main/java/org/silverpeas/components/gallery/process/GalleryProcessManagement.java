@@ -46,7 +46,6 @@ import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.process.ProcessProvider;
 import org.silverpeas.core.process.management.ProcessExecutionContext;
 import org.silverpeas.core.process.util.ProcessList;
-import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 
@@ -54,7 +53,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Date;
 
-import static org.silverpeas.components.gallery.GalleryComponentSettings.*;
+import static org.silverpeas.components.gallery.GalleryComponentSettings.getWatermark;
 
 /**
  * @author Yohann Chastagnier
@@ -234,7 +233,7 @@ public class GalleryProcessManagement {
       final String name, final String albumId) {
     final AlbumDetail newAlbum =
         new AlbumDetail(new NodeDetail(UNKNOWN, name, null, 0, UNKNOWN));
-    newAlbum.setCreationDate(DateUtil.date2SQLDate(new Date()));
+    newAlbum.setCreationDate(new Date());
     newAlbum.setCreatorId(user.getId());
     newAlbum.getNodePK().setComponentName(componentInstanceId);
     newAlbum.setNodePK(

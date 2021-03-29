@@ -59,7 +59,7 @@ public class KmeliaTopicUserNotification extends AbstractKmeliaFolderUserNotific
   @Override
   protected Collection<String> getUserIdsToNotify() {
     boolean haveRights = getResource().haveRights();
-    int rightsDependOn = getResource().getRightsDependsOn();
+    String rightsDependOn = getResource().getRightsDependsOn();
     NodeDetail fatherDetail = getNodeHeader(getResource().getFatherPK());
     if (fatherDetail != null) {
       // Case of creation only
@@ -80,7 +80,7 @@ public class KmeliaTopicUserNotification extends AbstractKmeliaFolderUserNotific
     return Arrays.asList(users);
   }
 
-  private String[] getUsersWithModificationRights(final int rightsDependOn) {
+  private String[] getUsersWithModificationRights(final String rightsDependOn) {
     final String[] users;
     final List<String> profileNames = new ArrayList<>();
     profileNames.add("admin");

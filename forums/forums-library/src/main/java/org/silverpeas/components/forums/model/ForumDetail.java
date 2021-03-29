@@ -23,34 +23,32 @@
  */
 package org.silverpeas.components.forums.model;
 
-import org.silverpeas.components.forums.ForumsContentManager;
-import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
+import org.silverpeas.core.Identifiable;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.model.LocalizedContribution;
 import org.silverpeas.core.i18n.AbstractBean;
-import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * This object contains the description of a forum
+ *
  * @author Marc Guillemin
  */
 public class ForumDetail extends AbstractBean
-    implements SilverContentInterface, Serializable {
+    implements LocalizedContribution, Identifiable, Serializable {
 
   private static final long serialVersionUID = -5500661559879178630L;
-  private static final String TYPE = "forum";
-  private ForumPK pk;
-  private Date creationDate;
-  private String creatorId;
-  // added for the components - PDC integration
-  private String silverObjectId;
-  private String iconUrl;
+  private static final String TYPE = Forum.RESOURCE_TYPE;
+  private final ForumPK pk;
+  private final Date creationDate;
+  private final String creatorId;
 
-  public ForumDetail(ForumPK pk, String name, String description,
-      String creatorId, Date creationDate) {
+  public ForumDetail(ForumPK pk, String name, String description, String creatorId,
+      Date creationDate) {
     this.pk = pk;
     setName(name);
     setDescription(description);
@@ -62,11 +60,6 @@ public class ForumDetail extends AbstractBean
     return pk;
   }
 
-  public void setCreatorId(String creatorId) {
-    this.creatorId = creatorId;
-  }
-
-  @Override
   public String getCreatorId() {
     return creatorId;
   }
@@ -76,38 +69,32 @@ public class ForumDetail extends AbstractBean
     return creationDate;
   }
 
+  @Override
+  public Date getLastUpdateDate() {
+    return getCreationDate();
+  }
+
+  @Override
+  public User getCreator() {
+    return User.getById(getCreatorId());
+  }
+
+  @Override
+  public User getLastUpdater() {
+    return getCreator();
+  }
+
   public String toString() {
     String result = "ForumDetail {" + "\n";
 
     result = result + "  getPK().getId() = " + getPK().getId() + "\n";
-    result = result + "  getPK().getComponent() = "
-        + getPK().getComponentName() + "\n";
+    result = result + "  getPK().getComponent() = " + getPK().getComponentName() + "\n";
     result = result + "  getName() = " + getName() + "\n";
     result = result + "  getDescription() = " + getDescription() + "\n";
     result = result + "  getCreatorId() = " + getCreatorId() + "\n";
     result = result + "  getCreationDate() = " + getCreationDate() + "\n";
-    result = result + "  getSilverObjectId()  = " + getSilverObjectId() + "\n";
     result = result + "}";
     return result;
-  }
-
-  public void setSilverObjectId(String silverObjectId) {
-    this.silverObjectId = silverObjectId;
-  }
-
-  public void setSilverObjectId(int silverObjectId) {
-    this.silverObjectId = Integer.toString(silverObjectId);
-  }
-
-  public String getSilverObjectId() {
-    return this.silverObjectId;
-  }
-
-  // methods to be implemented by SilverContentInterface
-
-  @Override
-  public String getURL() {
-    return "searchResult?Type=Forum&Id=" + getId();
   }
 
   @Override
@@ -115,29 +102,13 @@ public class ForumDetail extends AbstractBean
     return getPK().getId();
   }
 
-  @Override
   public String getInstanceId() {
     return getPK().getComponentName();
   }
 
   @Override
-  public String getDate() {
-    String formattedDate = null;
-    try {
-      formattedDate = DateUtil.formatDate(getCreationDate());
-    } catch (Exception e) {
-      SilverLogger.getLogger(this).warn(e);
-    }
-    return formattedDate;
-  }
-
-  public void setIconUrl(String iconUrl) {
-    this.iconUrl = iconUrl;
-  }
-
-  @Override
-  public String getIconUrl() {
-    return this.iconUrl;
+  public ContributionIdentifier getIdentifier() {
+    return ContributionIdentifier.from(getInstanceId(), getId(), getContributionType());
   }
 
   @Override
@@ -146,70 +117,25 @@ public class ForumDetail extends AbstractBean
   }
 
   @Override
-  public String getSilverCreationDate() {
-    return getDate();
+  public String getContributionType() {
+    return TYPE;
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(final Object o) {
     if (this == o) {
       return true;
     }
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-
-    ForumDetail that = (ForumDetail) o;
-
-    if (creationDate != null ? !creationDate.equals(
-        that.creationDate) : that.creationDate != null) {
-      return false;
-    }
-    if (creatorId != null ? !creatorId.equals(that.creatorId) : that.creatorId != null) {
-      return false;
-    }
-    if (getDescription() != null ? !getDescription().equals(that.getDescription()) :
-        that.getDescription() != null) {
-      return false;
-    }
-    if (iconUrl != null ? !iconUrl.equals(that.iconUrl) : that.iconUrl != null) {
-      return false;
-    }
-    if (getName() != null ? !getName().equals(that.getName()) : that.getName() != null) {
-      return false;
-    }
-    if (pk != null ? !pk.equals(that.pk) : that.pk != null) {
-      return false;
-    }
-    return silverObjectId != null ? silverObjectId.equals(that.silverObjectId) : that.silverObjectId == null;
+    final ForumDetail that = (ForumDetail) o;
+    return Objects.equals(pk, that.pk) && Objects.equals(creationDate, that.creationDate) &&
+        Objects.equals(creatorId, that.creatorId);
   }
 
   @Override
   public int hashCode() {
-    int result = pk != null ? pk.hashCode() : 0;
-    result = 31 * result + (getName() != null ? getName().hashCode() : 0);
-    result = 31 * result + (getDescription() != null ? getDescription().hashCode() : 0);
-    result = 31 * result + (creationDate != null ? creationDate.hashCode() : 0);
-    result = 31 * result + (creatorId != null ? creatorId.hashCode() : 0);
-    result = 31 * result + (silverObjectId != null ? silverObjectId.hashCode() : 0);
-    result = 31 * result + (iconUrl != null ? iconUrl.hashCode() : 0);
-    return result;
-  }
-
-  @Override
-  public String getContributionType() {
-    return TYPE;
-  }
-
-  @Override
-  public String getSilverpeasContentId() {
-    if (this.silverObjectId == null) {
-      ForumsContentManager contentManager = ServiceProvider.getService(ForumsContentManager.class);
-      int objectId = contentManager.getSilverContentId(getId(), getComponentInstanceId());
-      if (objectId >= 0) {
-        this.silverObjectId = String.valueOf(objectId);
-      }
-    }
-    return this.silverObjectId;
+    return Objects.hash(pk, creationDate, creatorId);
   }
 }

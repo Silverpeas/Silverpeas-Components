@@ -24,7 +24,7 @@
 package org.silverpeas.components.kmelia.service;
 
 import org.silverpeas.core.NotSupportedException;
-import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.process.annotation.SimulationElementLister;
@@ -43,7 +43,7 @@ public abstract class AbstractKmeliaSimulationElementLister extends SimulationEl
     super(parentElementLister);
   }
 
-  private NodeService nodeService = NodeService.get();
+  private final NodeService nodeService = NodeService.get();
   private PublicationService publicationService;
 
   public NodeService getNodeService() {
@@ -58,7 +58,8 @@ public abstract class AbstractKmeliaSimulationElementLister extends SimulationEl
   }
 
   @Override
-  public void listElements(final Object source, final String language, final WAPrimaryKey targetPK) {
+  public void listElements(final Object source, final String language,
+      final ResourceReference targetPK) {
     throw new NotSupportedException("This method isn't supported by this class");
   }
 }

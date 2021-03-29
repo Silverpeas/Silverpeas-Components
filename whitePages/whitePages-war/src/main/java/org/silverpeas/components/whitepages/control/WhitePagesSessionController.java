@@ -43,9 +43,9 @@ import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RecordTemplate;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagementEngine;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagementEngineProvider;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
@@ -733,9 +733,9 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
 
     if (currentCard != null) {
       try {
-        ContentManager contentManager = ContentManagerProvider.getContentManager();
-        contentId = "" + contentManager
-            .getSilverContentId(currentCard.getPK().getId(), currentCard.getInstanceId());
+        ContentManagementEngine contentMgtEngine = ContentManagementEngineProvider.getContentManagementEngine();
+        contentId = String.valueOf(contentMgtEngine
+            .getSilverContentId(currentCard.getPK().getId(), currentCard.getInstanceId()));
       } catch (ContentManagerException ignored) {
         SilverLogger.getLogger(this).error(ignored);
         contentId = null;

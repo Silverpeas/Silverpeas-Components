@@ -679,7 +679,7 @@ public class TaskDetail implements Serializable {
     }
 
     @Override
-    public ContributionIdentifier getContributionId() {
+    public ContributionIdentifier getIdentifier() {
       return ContributionIdentifier
           .from(task.getInstanceId(), String.valueOf(task.getId()), task.getContributionType());
     }
@@ -695,12 +695,12 @@ public class TaskDetail implements Serializable {
     }
 
     @Override
-    public User getLastModifier() {
+    public User getLastUpdater() {
       throw new NotSupportedException(NOT_SUPPORTED_MESSAGE);
     }
 
     @Override
-    public Date getLastModificationDate() {
+    public Date getLastUpdateDate() {
       throw new NotSupportedException(NOT_SUPPORTED_MESSAGE);
     }
   }

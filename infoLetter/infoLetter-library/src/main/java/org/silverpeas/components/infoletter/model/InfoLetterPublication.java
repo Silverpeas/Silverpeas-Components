@@ -207,7 +207,7 @@ public class InfoLetterPublication extends SilverpeasBean implements Comparable<
   public String _getContent() {
     if (this.content == null) {
       this.content =
-          WysiwygController.load(getInstanceId(), getPK().getId(), I18NHelper.defaultLanguage);
+          WysiwygController.load(getInstanceId(), getPK().getId(), I18NHelper.DEFAULT_LANGUAGE);
     }
     return this.content;
   }

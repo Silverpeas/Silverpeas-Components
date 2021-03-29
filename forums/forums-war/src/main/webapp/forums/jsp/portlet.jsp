@@ -77,12 +77,12 @@ function goto_jsp(url) {
     if (categories != null)
     {
       for (final NodeDetail uneCategory : categories) {
-        int id = uneCategory.getId();
+        String id = uneCategory.getId();
         String nom = uneCategory.getName();
         String description = uneCategory.getDescription();
         ForumListHelper
             .displayForumsList(out, resources, isAdmin, isModerator, false, 0, "main", fsc,
-                Integer.toString(id), nom, description, isForumSubscriberByInheritance);
+                id, nom, description, isForumSubscriberByInheritance);
       }
     } 
 

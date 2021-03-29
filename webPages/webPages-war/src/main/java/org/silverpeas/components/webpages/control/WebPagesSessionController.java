@@ -90,7 +90,7 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
    */
   public boolean haveGotWysiwygNotEmpty() {
     return WysiwygController.haveGotWysiwyg(getComponentId(), getComponentId(),
-        I18NHelper.defaultLanguage);
+        I18NHelper.DEFAULT_LANGUAGE);
   }
 
   public String manageSubscriptions() {
@@ -212,7 +212,7 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
               getUserId());
       context.setEncoding("UTF-8");
       context.setObjectId("0");
-      context.setContentLanguage(I18NHelper.defaultLanguage);
+      context.setContentLanguage(I18NHelper.DEFAULT_LANGUAGE);
 
       form.update(items, data, context);
       set.save(data);

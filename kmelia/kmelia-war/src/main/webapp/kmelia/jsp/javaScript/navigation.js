@@ -890,12 +890,8 @@ function doPagination(index, nbItemsPerPage) {
 }
 
 function showStats() {
-  //alert("Current componentId = " + getComponentId() + " and topicId=" + getCurrentNodeId());
-  //TODO call how to update HTML from this page with new Ajax call
-  //var url = getWebContext() + "/Rkmelia/statistic?componentId=" + getComponentId() + "&topicId=" + getCurrentNodeId();
-  var url = "statistics?componentId=" + getComponentId() + "&topicId=" + getCurrentNodeId();
-  //alert("loading url " + url);
-  location.href = url;
+  spProgressMessage.show();
+  location.href = "statistics?componentId=" + getComponentId() + "&topicId=" + getCurrentNodeId();
 }
 
 function changeStatus(nodeId, currentStatus) {

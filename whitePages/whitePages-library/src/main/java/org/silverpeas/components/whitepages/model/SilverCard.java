@@ -79,12 +79,12 @@ public class SilverCard implements SilverpeasContent {
   }
 
   @Override
-  public User getLastModifier() {
+  public User getLastUpdater() {
     return getCreator();
   }
 
   @Override
-  public Date getLastModificationDate() {
+  public Date getLastUpdateDate() {
     return getCreationDate();
   }
 

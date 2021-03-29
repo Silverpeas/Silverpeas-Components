@@ -28,9 +28,9 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%@ page import="org.silverpeas.components.websites.control.WebSiteSessionController"%>
-<%@ page import="org.silverpeas.components.websites.siteManage.model.FolderDetail"%>
-<%@ page import="org.silverpeas.components.websites.siteManage.model.IconDetail"%>
-<%@ page import="org.silverpeas.components.websites.siteManage.model.SiteDetail"%>
+<%@ page import="org.silverpeas.components.websites.model.FolderDetail"%>
+<%@ page import="org.silverpeas.components.websites.model.IconDetail"%>
+<%@ page import="org.silverpeas.components.websites.model.SiteDetail"%>
 <%@ page import="org.silverpeas.core.admin.user.model.UserDetail"%>
 
 <%@ page import="org.silverpeas.core.contribution.publication.model.PublicationDetail"%>

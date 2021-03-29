@@ -23,12 +23,12 @@
  */
 package org.silverpeas.components.kmelia.service;
 
-import org.silverpeas.core.io.media.image.thumbnail.control.ThumbnailSimulationElement;
-import org.silverpeas.core.WAPrimaryKey;
-import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.contribution.attachment.process.AttachmentSimulationElementLister;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
-import org.silverpeas.core.contribution.attachment.process.AttachmentSimulationElementLister;
+import org.silverpeas.core.io.media.image.thumbnail.control.ThumbnailSimulationElement;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.process.annotation.SimulationElementLister;
 
 import java.util.Collection;
@@ -50,21 +50,18 @@ public class KmeliaPublicationSimulationElementLister
   }
 
   @Override
-  public void listElements(final WAPrimaryKey sourcePK, final String language) {
+  public void listElements(final ResourceReference sourcePK, final String language) {
     if (sourcePK instanceof NodePK) {
       listPublicationDocumentsFromNode((NodePK) sourcePK, language);
+    } else if (sourcePK instanceof PublicationPK) {
+      listPublicationDocumentsFromPublication(
+          getPublicationService().getDetail((PublicationPK) sourcePK), language);
     } else {
-      listPublicationDocumentsFromPublication(getPublicationService()
-          .getDetail(new PublicationPK(sourcePK.getId(), sourcePK.getInstanceId())), language);
+      throw new IllegalArgumentException(
+          "The reference " + sourcePK.getClass().getSimpleName() + " isn't taken in charge");
     }
   }
 
-  /**
-   * Gets the list of attachments associated to a node
-   * @param nodePK
-   * @param language
-   * @return
-   */
   private void listPublicationDocumentsFromNode(NodePK nodePK, String language) {
 
     // Retrieving all publication of a node
@@ -76,12 +73,6 @@ public class KmeliaPublicationSimulationElementLister
     }
   }
 
-  /**
-   * Gets the list of attachments associated to a publication
-   * @param publication
-   * @param language
-   * @return
-   */
   private void listPublicationDocumentsFromPublication(PublicationDetail publication,
       String language) {
 

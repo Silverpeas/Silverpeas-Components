@@ -193,7 +193,7 @@ function sortNode(updatedNodeJSON)
       	icon.setSpacing("30");
       	ligne.addArrayCellIconPane(icon);
 			
-		int id = uneCategory.getId();
+		String id = uneCategory.getId();
 		String nom = uneCategory.getName();
 		ArrayCell cell4Name = ligne.addArrayCellText(uneCategory.getName());
 		cell4Name.setStyleSheet("categ-title");

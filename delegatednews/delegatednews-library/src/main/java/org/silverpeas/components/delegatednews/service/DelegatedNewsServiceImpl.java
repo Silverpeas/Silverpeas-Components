@@ -63,8 +63,8 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService, Component
 
   @Override
   public void submitNews(Contribution contribution, Period visibilityPeriod, String userId) {
-    DelegatedNews delegatedNews = new DelegatedNews(contribution.getContributionId(),
-        contribution.getLastModifier().getId(), new Date(), visibilityPeriod);
+    DelegatedNews delegatedNews = new DelegatedNews(contribution.getIdentifier(),
+        contribution.getLastUpdater().getId(), new Date(), visibilityPeriod);
     notifyDelegatedNewsToValidate(delegatedNews, userId);
     dao.saveAndFlush(delegatedNews);
   }

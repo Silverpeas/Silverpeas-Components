@@ -188,8 +188,8 @@
           endDate = "";
         }
       }
-      if (pubDetail.getUpdateDate() != null) {
-        updateDate = resources.getOutputDate(pubDetail.getUpdateDate());
+      if (pubDetail.getLastUpdateDate() != null) {
+        updateDate = resources.getOutputDate(pubDetail.getLastUpdateDate());
         updater = kmeliaScc.getUserDetail(pubDetail.getUpdaterId());
       } else {
         updateDate = "";
@@ -692,8 +692,8 @@
 					<label class="txtlibform"><%=resources.getString("kmelia.header.contributors") %></label>
 					<% if (StringUtil.isDefined(updateDate) && updater != null) {%>
 					<div class="champs">
-						<%=resources.getString("PubDateUpdate")%> <br /><b><%=updateDate%></b> <%=resources.getString("kmelia.By")%> <view:username userId="<%=kmeliaPublication.getLastModifier().getId()%>"/>
-						<div class="profilPhoto"><view:image src="<%=kmeliaPublication.getLastModifier().getAvatar() %>" type="avatar" css="defaultAvatar"/></div>
+						<%=resources.getString("PubDateUpdate")%> <br /><b><%=updateDate%></b> <%=resources.getString("kmelia.By")%> <view:username userId="<%=kmeliaPublication.getLastUpdater().getId()%>"/>
+						<div class="profilPhoto"><view:image src="<%=kmeliaPublication.getLastUpdater().getAvatar() %>" type="avatar" css="defaultAvatar"/></div>
 					</div>
 					<% } %>
 				</div>

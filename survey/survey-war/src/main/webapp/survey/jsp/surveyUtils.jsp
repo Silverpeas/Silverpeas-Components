@@ -657,9 +657,9 @@ String displaySurveyResult(String choice, QuestionContainerDetail survey, Graphi
 	          for(SimpleDocument simpleDocument : listDocument) {
 	            String url = m_context +  simpleDocument.getAttachmentURL();
 	            String permalink = m_context + "/File/"+simpleDocument.getId();
-	            String dateDocument = resources.getOutputDate(simpleDocument.getCreated());
-	            if(simpleDocument.getUpdated() != null) {
-	              dateDocument = resources.getOutputDate(simpleDocument.getUpdated());
+	            String dateDocument = resources.getOutputDate(simpleDocument.getCreationDate());
+	            if(simpleDocument.getLastUpdateDate() != null) {
+	              dateDocument = resources.getOutputDate(simpleDocument.getLastUpdateDate());
 	            }
 
 	            r += "    <li class=\"attachmentListItem\">";

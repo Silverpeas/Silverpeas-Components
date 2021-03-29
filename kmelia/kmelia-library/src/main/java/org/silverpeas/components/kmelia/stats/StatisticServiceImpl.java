@@ -22,7 +22,7 @@ package org.silverpeas.components.kmelia.stats;
 
 import org.silverpeas.components.kmelia.model.StatisticActivityVO;
 import org.silverpeas.components.kmelia.model.StatsFilterVO;
-import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.annotation.Service;
@@ -32,20 +32,27 @@ import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import static java.time.OffsetDateTime.now;
 import static org.silverpeas.core.admin.service.AdministrationServiceProvider.getAdminService;
+import static org.silverpeas.core.contribution.publication.dao.PublicationCriteria.onComponentInstanceIds;
+import static org.silverpeas.core.contribution.publication.model.PublicationDetail.VALID_STATUS;
 
 @Service
 public class StatisticServiceImpl implements
     org.silverpeas.components.kmelia.stats.StatisticService {
 
+  private static final String PUBLICATION_TYPE = "Publication";
   @Inject
   private PublicationService publicationService;
   @Inject
@@ -53,9 +60,6 @@ public class StatisticServiceImpl implements
   @Inject
   private StatisticService statisticService;
 
-  /*
-   * @Inject private KmeliaService kmeliaBm;
-   */
   @Override
   public Integer getNbConsultedPublication(StatsFilterVO statFilter) {
     if (statFilter != null) {
@@ -69,8 +73,8 @@ public class StatisticServiceImpl implements
     if (statFilter != null) {
       // Retrieve the list of topic application publications
       List<PublicationDetail> publis = getValidApplicationPublications(statFilter);
-      if (publis != null && publis.size() > 0) {
-        return countGlobalPublicationActivity(statFilter, publis);
+      if (!publis.isEmpty()) {
+        return (int)countGlobalPublicationActivity(statFilter, publis);
       }
       return 0;
     }
@@ -80,27 +84,29 @@ public class StatisticServiceImpl implements
   private Integer getNumberOfConsultedPublications(StatsFilterVO statFilter) {
     List<PublicationDetail> publis = getValidApplicationPublications(statFilter);
     int nbPubli = 0;
-    if (publis != null && publis.size() > 0) {
+    if (!publis.isEmpty()) {
       Integer groupId = statFilter.getGroupId();
-      List<WAPrimaryKey> publiPKs = getPrimaryKeysFromPublis(publis);
+      List<ResourceReference> publiPKs = getReferencesToPublications(publis);
       if (groupId != null) {
         // Retrieve the list of user identifiers
         List<String> userIds = getListUserIdsFromGroup(groupId);
         try {
           // Retrieve the number of publication
-          nbPubli = getStatisticService().getCountByPeriodAndUser(publiPKs, "Publication",
+          nbPubli = getStatisticService().getCountByPeriodAndUser(publiPKs, PUBLICATION_TYPE,
               statFilter.getStartDate(), statFilter.getEndDate(), userIds);
 
         } catch (Exception e) {
-          SilverLogger.getLogger(this).error("Error when counting number of access", e);
+          SilverLogger.getLogger(this)
+              .error("Error when counting number of access (getCountByPeriodAndUser)", e);
         }
 
       } else {
         try {
-          nbPubli = getStatisticService().getCountByPeriod(publiPKs, 1, "Publication",
+          nbPubli = getStatisticService().getCountByPeriod(publiPKs, 1, PUBLICATION_TYPE,
               statFilter.getStartDate(), statFilter.getEndDate());
         } catch (Exception e) {
-          SilverLogger.getLogger(this).error("Error when counting number of access", e);
+          SilverLogger.getLogger(this)
+              .error("Error when counting number of access (getCountByPeriod)", e);
         }
 
       }
@@ -110,13 +116,13 @@ public class StatisticServiceImpl implements
 
   /**
    * @param publis the list of publication detail where we extract WAPrimaryKey
-   * @return
+   * @return a list of references to the specified publications
    */
-  private List<WAPrimaryKey> getPrimaryKeysFromPublis(List<PublicationDetail> publis) {
-    List<WAPrimaryKey> publiPKs = new ArrayList<>();
+  private List<ResourceReference> getReferencesToPublications(List<PublicationDetail> publis) {
+    List<ResourceReference> publiPKs = new ArrayList<>();
     // Check access for each publication
     for (PublicationDetail publi : publis) {
-      publiPKs.add(publi.getPK());
+      publiPKs.add(new ResourceReference(publi.getPK()));
     }
     return publiPKs;
   }
@@ -131,9 +137,7 @@ public class StatisticServiceImpl implements
     try {
       Group selectedGroup = getAdminService().getGroup(Integer.toString(groupId));
       String[] arrayUserIds = selectedGroup.getUserIds();
-      for (String userId : arrayUserIds) {
-        userIds.add(userId);
-      }
+      Collections.addAll(userIds, arrayUserIds);
     } catch (AdminException e) {
       SilverLogger.getLogger(this).error("Error when loading the list of filtered users", e);
     }
@@ -145,22 +149,16 @@ public class StatisticServiceImpl implements
    * @return the list of application publications which respects the stats filter constraint
    */
   private List<PublicationDetail> getValidApplicationPublications(StatsFilterVO statFilter) {
-    NodePK fatherPK =
-        new NodePK(Integer.toString(statFilter.getTopicId()), statFilter.getInstanceId());
-    Collection<PublicationDetail> validPubli;
-    List<PublicationDetail> publis = new ArrayList<>();
-    List<NodeDetail> nodes = getNodeService().getSubTree(fatherPK);
-    if (nodes != null) {
-      List<String> fatherIds = new ArrayList<>();
-      for (NodeDetail node : nodes) {
-        fatherIds.add(Integer.toString(node.getId()));
-      }
-      validPubli =
-          getPublicationService().getDetailsByFatherIdsAndStatus(fatherIds,
-              statFilter.getInstanceId(), null, "Valid");
-      publis.addAll(validPubli);
-    }
-    return publis;
+    final NodePK fatherPK = new NodePK(Integer.toString(statFilter.getTopicId()),
+        statFilter.getInstanceId());
+    return getPublicationService().getPublicationsByCriteria(
+        onComponentInstanceIds(statFilter.getInstanceId()).onNodes(
+            getNodeService().getSubTree(fatherPK)
+                .stream()
+                .map(NodeDetail::getId)
+                .collect(Collectors.toSet()))
+            .ofStatus(VALID_STATUS)
+            .visibleAt(now()));
   }
 
   /**
@@ -170,9 +168,9 @@ public class StatisticServiceImpl implements
    * @param isUpdate true if counting update publication activity
    * @return the number of global (create/modify) activity which happens on the list of publications
    */
-  private int countPublicationActivity(StatsFilterVO statFilter,
+  private long countPublicationActivity(StatsFilterVO statFilter,
       Collection<PublicationDetail> publis, boolean isCreate, boolean isUpdate) {
-    int nbPubli = 0;
+    long nbPubli;
     Date startTime = statFilter.getStartDate();
     Date endTime = statFilter.getEndDate();
     Integer groupId = statFilter.getGroupId();
@@ -180,22 +178,20 @@ public class StatisticServiceImpl implements
     if (groupId != null) {
       List<String> userIds = getListUserIdsFromGroup(groupId);
       if (!userIds.isEmpty()) {
-        for (PublicationDetail publi : publis) {
-          for (String userId : userIds) {
-            if (isPubliActivityInsideTimeInterval(startTime, endTime, publi, isCreate, isUpdate)
-                && isUserRelatedWithPubli(publi, userId)) {
-              nbPubli++;
-            }
-          }
-        }
+        nbPubli = publis.stream()
+            .filter(
+                p -> isPubliActivityInsideTimeInterval(startTime, endTime, p, isCreate, isUpdate))
+            .flatMap(p -> userIds.stream().map(u -> Pair.of(p, u)))
+            .filter(pu -> isUserRelatedWithPubli(pu.getFirst(), pu.getSecond()))
+            .count();
+      } else {
+        nbPubli = 0;
       }
     } else {
       // Check activity for each publication
-      for (PublicationDetail publi : publis) {
-        if (isPubliActivityInsideTimeInterval(startTime, endTime, publi, isCreate, isUpdate)) {
-          nbPubli++;
-        }
-      }
+      nbPubli = publis.stream()
+          .filter(p -> isPubliActivityInsideTimeInterval(startTime, endTime, p, isCreate, isUpdate))
+          .count();
     }
     return nbPubli;
   }
@@ -222,7 +218,7 @@ public class StatisticServiceImpl implements
   private boolean isPubliActivityInsideTimeInterval(Date startTime, Date endTime,
       PublicationDetail publi, boolean isCreate, boolean isUpdate) {
     Date createDate = publi.getCreationDate();
-    Date updateDate = publi.getUpdateDate();
+    Date updateDate = publi.getLastUpdateDate();
     return (isCreate && (createDate.after(startTime) || createDate.equals(startTime)) && createDate.
         before(endTime)) || (isUpdate && (updateDate.after(startTime) || updateDate.
         equals(startTime)) && updateDate
@@ -244,10 +240,9 @@ public class StatisticServiceImpl implements
   @Override
   public StatisticActivityVO getStatisticActivity(StatsFilterVO statFilter) {
     List<PublicationDetail> publis = getValidApplicationPublications(statFilter);
-    int nbCreate = countCreatePublicationActivity(statFilter, publis);
-    int nbUpdate = countUpdatePublicationActivity(statFilter, publis);
-    StatisticActivityVO statActivity = new StatisticActivityVO(nbCreate, nbUpdate);
-    return statActivity;
+    long nbCreate = countCreatePublicationActivity(statFilter, publis);
+    long nbUpdate = countUpdatePublicationActivity(statFilter, publis);
+    return new StatisticActivityVO((int)nbCreate, (int)nbUpdate);
   }
 
   /**
@@ -255,7 +250,7 @@ public class StatisticServiceImpl implements
    * @param publis the list of PublicationDetail
    * @return the number of global (create/modify) activity which happens on the list of publications
    */
-  private int countCreatePublicationActivity(StatsFilterVO statFilter,
+  private long countCreatePublicationActivity(StatsFilterVO statFilter,
       List<PublicationDetail> publis) {
     return countPublicationActivity(statFilter, publis, true, false);
   }
@@ -265,7 +260,7 @@ public class StatisticServiceImpl implements
    * @param publis the list of PublicationDetail
    * @return the number of global (create/modify) activity which happens on the list of publications
    */
-  private int countUpdatePublicationActivity(StatsFilterVO statFilter,
+  private long countUpdatePublicationActivity(StatsFilterVO statFilter,
       List<PublicationDetail> publis) {
     return countPublicationActivity(statFilter, publis, false, true);
   }
@@ -275,7 +270,7 @@ public class StatisticServiceImpl implements
    * @param publis the list of PublicationDetail
    * @return the number of global (create/modify) activity which happens on the list of publications
    */
-  private int countGlobalPublicationActivity(StatsFilterVO statFilter,
+  private long countGlobalPublicationActivity(StatsFilterVO statFilter,
       List<PublicationDetail> publis) {
     return countPublicationActivity(statFilter, publis, true, true);
   }
@@ -284,7 +279,7 @@ public class StatisticServiceImpl implements
   public Integer getNumberOfDifferentConsultedPublications(StatsFilterVO statFilter) {
     if (statFilter != null) {
       List<PublicationDetail> publis = getValidApplicationPublications(statFilter);
-      if (publis != null && publis.size() > 0) {
+      if (!publis.isEmpty()) {
         return countDistinctConsultedPublications(statFilter, publis);
       }
     }
@@ -299,12 +294,12 @@ public class StatisticServiceImpl implements
   private Integer countDistinctConsultedPublications(StatsFilterVO statFilter,
       List<PublicationDetail> publis) {
     int nbPubli = 0;
-    List<WAPrimaryKey> publiPKs = getPrimaryKeysFromPublis(publis);
+    List<ResourceReference> publiPKs = getReferencesToPublications(publis);
     if (statFilter.getGroupId() != null) {
       // Retrieve the list of user identifiers
       List<String> userIds = getListUserIdsFromGroup(statFilter.getGroupId());
       try {
-        return getStatisticService().getDistinctCountByPeriodUser(publiPKs, 1, "Publication",
+        return getStatisticService().getDistinctCountByPeriodUser(publiPKs, 1, PUBLICATION_TYPE,
             statFilter.getStartDate(), statFilter.getEndDate(), userIds);
       } catch (Exception e) {
         SilverLogger.getLogger(this)
@@ -312,7 +307,7 @@ public class StatisticServiceImpl implements
       }
     } else {
       try {
-        return getStatisticService().getDistinctCountByPeriod(publiPKs, 1, "Publication",
+        return getStatisticService().getDistinctCountByPeriod(publiPKs, 1, PUBLICATION_TYPE,
             statFilter.getStartDate(), statFilter.getEndDate());
       } catch (Exception e) {
         SilverLogger.getLogger(this)

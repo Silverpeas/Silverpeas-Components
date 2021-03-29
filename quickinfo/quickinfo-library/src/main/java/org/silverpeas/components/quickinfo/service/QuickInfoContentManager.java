@@ -26,7 +26,7 @@ package org.silverpeas.components.quickinfo.service;
 
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.contribution.contentcontainer.content.AbstractContentInterface;
+import org.silverpeas.core.contribution.contentcontainer.content.AbstractSilverpeasContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
 import org.silverpeas.core.contribution.model.Contribution;
@@ -41,7 +41,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class QuickInfoContentManager extends AbstractContentInterface {
+public class QuickInfoContentManager extends AbstractSilverpeasContentManager {
 
   private static final String CONTENT_ICON_FILE_NAME = "quickinfoSmall.gif";
 

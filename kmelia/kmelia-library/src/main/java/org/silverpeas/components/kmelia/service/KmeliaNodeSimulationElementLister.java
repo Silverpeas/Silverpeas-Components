@@ -24,10 +24,9 @@
 package org.silverpeas.components.kmelia.service;
 
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.contribution.attachment.process.AttachmentSimulationElementLister;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.contribution.attachment.process.AttachmentSimulationElementLister;
 import org.silverpeas.core.process.annotation.SimulationElementLister;
 
 import java.util.List;
@@ -47,8 +46,8 @@ public class KmeliaNodeSimulationElementLister extends AbstractKmeliaSimulationE
   }
 
   @Override
-  public void listElements(final WAPrimaryKey sourcePK, final String language) {
-    NodePK nodePK = (NodePK) sourcePK;
+  public void listElements(final ResourceReference sourcePK, final String language) {
+    NodePK nodePK = new NodePK(sourcePK.getId(), sourcePK.getInstanceId());
 
     // Retrieving all nodes to copy or move
     List<NodeDetail> treeToPaste = getNodeService().getSubTree(nodePK);

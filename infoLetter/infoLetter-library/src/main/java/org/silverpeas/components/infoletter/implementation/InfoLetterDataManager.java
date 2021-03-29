@@ -372,7 +372,7 @@ public class InfoLetterDataManager implements InfoLetterService {
       String basicTemplate = "<body></body>";
       WysiwygController.createUnindexedFileAndAttachment(basicTemplate,
           new ResourceReference(InfoLetterPublication.TEMPLATE_ID + letterPK.getId(), componentId), userId,
-          I18NHelper.defaultLanguage);
+          I18NHelper.DEFAULT_LANGUAGE);
     } catch (Exception e) {
       throw new InfoLetterException(e);
     }

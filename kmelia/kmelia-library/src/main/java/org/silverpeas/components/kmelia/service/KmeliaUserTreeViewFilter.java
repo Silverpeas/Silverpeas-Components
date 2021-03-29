@@ -45,7 +45,7 @@ import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
  * @author Yohann Chastagnier
  */
 class KmeliaUserTreeViewFilter {
-  private final static String NODE_TO_EXCLUDE = "@@@NODE_TO_EXCLUDE@@@";
+  private static final String NODE_TO_EXCLUDE = "@@@NODE_TO_EXCLUDE@@@";
 
   private final OrganizationController orga = OrganizationController.get();
 
@@ -56,7 +56,7 @@ class KmeliaUserTreeViewFilter {
   private final boolean isRightsOnTopicsUsed;
 
 
-  private Map<Integer, List<String>> nodeUserRoles = null;
+  private Map<String, List<String>> nodeUserRoles = null;
 
   /**
    * Initializing the instance.
@@ -142,7 +142,7 @@ class KmeliaUserTreeViewFilter {
     String bestNodeUserRole = bestParentNodeUserRole;
     boolean hasUserNodeAccess = false;
     if (node.haveRights()) {
-      int rightsDependsOn = node.getRightsDependsOn();
+      String rightsDependsOn = node.getRightsDependsOn();
       String[] profiles = getNodeUserRoles(rightsDependsOn);
       bestNodeUserRole = ArrayUtil.isEmpty(profiles) ? null : KmeliaHelper.getProfile(profiles);
     }
@@ -171,11 +171,11 @@ class KmeliaUserTreeViewFilter {
    * @param nodeId a node identifier.
    * @return a list of role.
    */
-  private String[] getNodeUserRoles(Integer nodeId) {
+  private String[] getNodeUserRoles(String nodeId) {
     if (nodeUserRoles == null) {
       nodeUserRoles = orga.getUserObjectProfiles(userId, instanceId, ProfiledObjectType.NODE);
     }
     List<String> roles = nodeUserRoles.get(nodeId);
-    return (roles != null) ? roles.toArray(new String[roles.size()]) : new String[0];
+    return (roles != null) ? roles.toArray(new String[0]) : new String[0];
   }
 }

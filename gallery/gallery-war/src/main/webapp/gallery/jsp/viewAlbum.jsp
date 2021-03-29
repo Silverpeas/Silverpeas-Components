@@ -489,7 +489,7 @@ SUBSCRIPTION_PROMISE.then(function() {
     </c:if>
     <div id="footer" class="txtBaseline">
         ${albumCreatedByLabel} <view:username userId="${currentAlbum.creatorId}"/>
-      - ${silfn:formatStringDate(currentAlbum.creationDate, userLanguage)}
+      - ${silfn:formatDate(currentAlbum.creationDate, userLanguage)}
       - <a href="${currentAlbum.permalink}" title="${permalinkAlt}" class="sp-permalink"><img src="${permalinkIcon}" alt="${permalinkAlt}"/></a>
     </div>
 

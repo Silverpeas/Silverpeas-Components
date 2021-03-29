@@ -24,14 +24,19 @@
 
 package org.silverpeas.components.forums.model;
 
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.contribution.model.Contribution;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.rating.service.RatingService;
 import org.silverpeas.core.contribution.rating.model.ContributionRating;
 import org.silverpeas.core.contribution.rating.model.ContributionRatingPK;
 import org.silverpeas.core.contribution.rating.model.Rateable;
 
 import java.io.Serializable;
+import java.util.Date;
+import java.util.Objects;
 
-public class Forum implements Rateable, Serializable {
+public class Forum implements Contribution, Rateable, Serializable {
 
   public static final String RESOURCE_TYPE = "Forum";
   private static final long serialVersionUID = -2933341803291325081L;
@@ -41,25 +46,20 @@ public class Forum implements Rateable, Serializable {
   private boolean active;
   private int parentId;
   private String category;
-  private String creationDate;
+  private Date creationDate;
   private String instanceId;
   private ForumPK pk;
   private ContributionRating contributionRating;
 
-  public Forum(int id, String name, String description, boolean active, int parentId, String category) {
+  public Forum(int id, String instanceId, String name, String description, boolean active,
+      int parentId, String category) {
     this.id = id;
+    this.instanceId = instanceId;
     this.name = name;
     this.description = description;
     this.active = active;
     this.parentId = parentId;
     this.category = category;
-  }
-
-  public Forum(int id, String name, String description, boolean active,
-      int parentId, String category, String creationDate, String instanceId) {
-    this(id, name, description, active, parentId, category);
-    this.instanceId = instanceId;
-    this.creationDate = creationDate;
     this.pk = new ForumPK(instanceId, String.valueOf(id));
   }
 
@@ -75,6 +75,12 @@ public class Forum implements Rateable, Serializable {
     this.id = id;
   }
 
+  @Override
+  public ContributionIdentifier getIdentifier() {
+    return ContributionIdentifier.from(getInstanceId(), getIdAsString(), RESOURCE_TYPE);
+  }
+
+  @Override
   public String getName() {
     return name;
   }
@@ -83,6 +89,7 @@ public class Forum implements Rateable, Serializable {
     this.name = name;
   }
 
+  @Override
   public String getDescription() {
     return description;
   }
@@ -119,11 +126,26 @@ public class Forum implements Rateable, Serializable {
     this.category = category;
   }
 
-  public String getCreationDate() {
+  public Date getCreationDate() {
     return creationDate;
   }
 
-  public void setCreationDate(String creationDate) {
+  @Override
+  public Date getLastUpdateDate() {
+    return getCreationDate();
+  }
+
+  @Override
+  public User getCreator() {
+    return User.getById("0");
+  }
+
+  @Override
+  public User getLastUpdater() {
+    return getCreator();
+  }
+
+  public void setCreationDate(Date creationDate) {
     this.creationDate = creationDate;
   }
 
@@ -167,23 +189,22 @@ public class Forum implements Rateable, Serializable {
     if (parentId != forum.parentId) {
       return false;
     }
-    if (category != null ? !category.equals(forum.category) : forum.category != null) {
+    if (!Objects.equals(category, forum.category)) {
       return false;
     }
-    if (creationDate != null ? !creationDate.equals(
-        forum.creationDate) : forum.creationDate != null) {
+    if (!Objects.equals(creationDate, forum.creationDate)) {
       return false;
     }
-    if (description != null ? !description.equals(forum.description) : forum.description != null) {
+    if (!Objects.equals(description, forum.description)) {
       return false;
     }
-    if (instanceId != null ? !instanceId.equals(forum.instanceId) : forum.instanceId != null) {
+    if (!Objects.equals(instanceId, forum.instanceId)) {
       return false;
     }
-    if (name != null ? !name.equals(forum.name) : forum.name != null) {
+    if (!Objects.equals(name, forum.name)) {
       return false;
     }
-    return pk != null ? pk.equals(forum.pk) : forum.pk == null;
+    return Objects.equals(pk, forum.pk);
   }
 
   @Override

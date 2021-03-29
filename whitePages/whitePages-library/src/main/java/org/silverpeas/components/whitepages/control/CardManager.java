@@ -33,9 +33,9 @@ import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.RecordSet;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagementEngine;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagementEngineProvider;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.exception.SilverpeasException;
@@ -360,8 +360,8 @@ public class CardManager {
 
   public boolean isPublicationClassifiedOnPDC(Card card)
       throws ContentManagerException, PdcException {
-    ContentManager aContentManager = ContentManagerProvider.getContentManager();
-    int contentId = aContentManager.getSilverContentId(card.getPK().getId(), card.getInstanceId());
+    ContentManagementEngine contentMgtEngine = ContentManagementEngineProvider.getContentManagementEngine();
+    int contentId = contentMgtEngine.getSilverContentId(card.getPK().getId(), card.getInstanceId());
     PdcManager pdcManager = PdcManager.get();
 
     List<ClassifyPosition> positions = pdcManager.getPositions(contentId, card.getInstanceId());

@@ -226,15 +226,6 @@ public abstract class Media implements SilverContentInterface, Serializable {
   }
 
   @Override
-  public User getLastModifier() {
-    return getLastUpdater();
-  }
-
-  @Override
-  public Date getLastModificationDate() {
-    return getLastUpdateDate();
-  }
-
   public Date getLastUpdateDate() {
     return lastUpdateDate != null ? lastUpdateDate : getCreationDate();
   }
@@ -243,6 +234,7 @@ public abstract class Media implements SilverContentInterface, Serializable {
     this.lastUpdateDate = lastUpdateDate;
   }
 
+  @Override
   public User getLastUpdater() {
     if (StringUtil.isDefined(getLastUpdatedBy())) {
       if (lastUpdater == null || !getLastUpdatedBy().equals(lastUpdater.getId())) {
@@ -556,7 +548,7 @@ public abstract class Media implements SilverContentInterface, Serializable {
   protected SilverpeasRole getHighestUserRole(final User user) {
     Set<SilverpeasRole> userRoles =
         SilverpeasRole.fromStrings(OrganizationControllerProvider.getOrganisationController()
-            .getUserProfiles(user.getId(), getComponentInstanceId()));
+            .getUserProfiles(user.getId(), getInstanceId()));
     return SilverpeasRole.getHighestFrom(userRoles);
   }
 

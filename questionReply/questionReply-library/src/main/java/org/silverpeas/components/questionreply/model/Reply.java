@@ -84,7 +84,7 @@ public class Reply extends SilverpeasBean implements Contribution, WithAttachmen
   }
 
   @Override
-  public ContributionIdentifier getContributionId() {
+  public ContributionIdentifier getIdentifier() {
     return ContributionIdentifier.from(getPK());
   }
 
@@ -103,12 +103,12 @@ public class Reply extends SilverpeasBean implements Contribution, WithAttachmen
   }
 
   @Override
-  public User getLastModifier() {
+  public User getLastUpdater() {
     return getCreator();
   }
 
   @Override
-  public Date getLastModificationDate() {
+  public Date getLastUpdateDate() {
     return getCreationDate();
   }
 
@@ -175,7 +175,7 @@ public class Reply extends SilverpeasBean implements Contribution, WithAttachmen
 
   public String loadWysiwygContent() {
    this.wysiwygContent = WysiwygController.load(getPK().getInstanceId(), getPK().getId(),
-          I18NHelper.defaultLanguage);
+          I18NHelper.DEFAULT_LANGUAGE);
     return wysiwygContent;
   }
 
