@@ -26,7 +26,8 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="org.silverpeas.core.util.ResourceLocator" %>
 <%@ page import="org.owasp.encoder.Encode" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
+<%@ page import="org.silverpeas.core.util.StringUtil" %>
+
 <%
 	response.setDateHeader("Expires", -1);
 	response.setHeader( "Pragma", "no-cache" );
@@ -46,8 +47,12 @@ String m_context = ResourceLocator.getGeneralSettingBundle().getString("Applicat
 <title></title>
 <script type="text/javascript">
 function selectImage(url) {
-    window.opener.choixImageInGallery${silfn:escapeJs(fieldName)}(url);
-    window.close();
+  <%if(StringUtil.isDefined(fieldName)){%>
+  window.opener.choixImageInGallery<%=fieldName%>(url);
+  <%}else{%>
+  window.opener.choixImageInGallery(url);
+  <%}%>
+  window.close();
 }
 </script>
 </head>
