@@ -129,7 +129,7 @@ public class HyperlinkRequestRouter extends ComponentRequestRouter<HyperlinkSess
         request.setAttribute("Method", methodType);
         destination = AUTHENTICATION_DEST;
       } else {
-        final String finalAimedUrl = formatAimedUrl(hyperlinkSCC, request, aimedUrl);
+        final String finalAimedUrl = formatAimedUrl(hyperlinkSCC, request, aimedUrl, isInternalLink);
         request.setAttribute("IsInternalLink", isInternalLink);
         if(request.getParameterAsBoolean("fromRedirect")) {
           destination = finalAimedUrl;
@@ -145,7 +145,7 @@ public class HyperlinkRequestRouter extends ComponentRequestRouter<HyperlinkSess
   }
 
   private String formatAimedUrl(final HyperlinkSessionController hyperlinkSCC,
-      final HttpRequest request, final String originalAimedUrl) {
+      final HttpRequest request, final String originalAimedUrl, boolean internalLink) {
     final User user = hyperlinkSCC.getUserDetail();
     String aimedUrl = originalAimedUrl;
     aimedUrl = getParsedDestination(aimedUrl, USER_LOGIN, encode(user.getLogin()));
@@ -166,10 +166,11 @@ public class HyperlinkRequestRouter extends ComponentRequestRouter<HyperlinkSess
       aimedUrl = getParsedDestination(aimedUrl, USER_PASSWORD, encode("??????"));
     }
     aimedUrl = getParsedDestinationWithExtraInfos(aimedUrl, hyperlinkSCC);
-    return UriBuilder.fromUri(aimedUrl)
-        .queryParam("Referer", hyperlinkSCC.getComponentId())
-        .build()
-        .toString();
+    UriBuilder uriBuilder = UriBuilder.fromUri(aimedUrl);
+    if (internalLink) {
+      uriBuilder.queryParam("Referer", hyperlinkSCC.getComponentId());
+    }
+    return uriBuilder.build().toString();
   }
 
   /**
