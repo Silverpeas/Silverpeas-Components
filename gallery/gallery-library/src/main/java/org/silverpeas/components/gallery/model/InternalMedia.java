@@ -195,11 +195,14 @@ public abstract class InternalMedia extends Media {
     potentialFileNames.add(getFileName());
     if (getType().isPhoto()) {
       final String thumbnailSuffix = mediaResolution.getThumbnailSuffix();
+      final String originalFileExt = "." + FilenameUtils.getExtension(getFileName());
       if (mediaResolution == MediaResolution.NORMAL) {
-        potentialFileNames.add(getId() + thumbnailSuffix + ".jpg");
+        potentialFileNames.add(getId() + thumbnailSuffix + originalFileExt);
       } else if (StringUtil.isDefined(thumbnailSuffix)) {
-        final String originalFileExt = "." + FilenameUtils.getExtension(getFileName());
         potentialFileNames.set(0, getId() + thumbnailSuffix + originalFileExt);
+      }
+      if (!".jpg".equalsIgnoreCase(originalFileExt)) {
+        // this case is about taking in charge the old medias
         potentialFileNames.add(getId() + thumbnailSuffix + ".jpg");
       }
     }

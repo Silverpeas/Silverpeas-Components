@@ -25,7 +25,6 @@ package org.silverpeas.components.gallery;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.components.gallery.constant.MediaMimeType;
 import org.silverpeas.components.gallery.constant.MediaResolution;
 import org.silverpeas.components.gallery.constant.MediaType;
@@ -67,6 +66,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import static org.apache.commons.io.FilenameUtils.getExtension;
 import static org.apache.commons.io.filefilter.FileFilterUtils.*;
 import static org.silverpeas.components.gallery.constant.MediaResolution.*;
 import static org.silverpeas.core.io.media.image.ImageInfoType.HEIGHT_IN_PIXEL;
@@ -572,7 +572,7 @@ public class MediaUtil {
           new MediaResolution[]{LARGE, PREVIEW, MEDIUM, SMALL, TINY};
       final HandledFile originalFile = super.getHandledFile();
       final HandledFile[] sources = Stream.of(thumbnailSrc).toArray(HandledFile[]::new);
-      final String originalFileExt = "." + FilenameUtils.getExtension(photo.getFileName());
+      final String originalFileExt = "." + getExtension(photo.getFileName());
       for (MediaResolution mediaResolution : mediaResolutions) {
         final boolean watermarkApplicable = mediaResolution.isWatermarkApplicable();
         final int index = watermarkApplicable && thumbnailSrc[1] != null ? 1 : 0;
@@ -654,10 +654,11 @@ public class MediaUtil {
     }
 
     private void createNormals(final Photo photo) {
+      final String originalFileExt = "." + getExtension(photo.getFileName());
       // Normal duplication (for orientation)
       final HandledFile normalFile = super.getHandledFile()
           .getParentHandledFile()
-          .getHandledFile(photo.getId() + "_normal.jpg");
+          .getHandledFile(photo.getId() + "_normal" + originalFileExt);
       getImageTool().convert(super.getHandledFile().getFile(), normalFile.getFile(),
           OrientationOption.auto());
       thumbnailSrc[0] = normalFile;
@@ -665,13 +666,13 @@ public class MediaUtil {
       if (!watermarkNormalOptions.isEmpty()) {
         final HandledFile watermarkFile = super.getHandledFile()
             .getParentHandledFile()
-            .getHandledFile(photo.getId() + "_watermark.jpg");
+            .getHandledFile(photo.getId() + "_watermark" + originalFileExt);
         getImageTool().convert(super.getHandledFile().getFile(), watermarkFile.getFile(),
             watermarkNormalOptions);
       }
       if (!watermarkThumbnailOptions.isEmpty()) {
         final HandledFile watermarkFileForThumbnails = super.getHandledFile().getParentHandledFile()
-            .getHandledFile(photo.getId() + "_watermark_for_thumbnails.jpg");
+            .getHandledFile(photo.getId() + "_watermark_for_thumbnails" + originalFileExt);
         getImageTool()
             .convert(super.getHandledFile().getFile(), watermarkFileForThumbnails.getFile(),
                 watermarkThumbnailOptions);
