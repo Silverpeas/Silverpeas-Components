@@ -35,6 +35,7 @@ import org.silverpeas.components.infoletter.notification.InfoLetterSubscriptionP
 import org.silverpeas.components.infoletter.service.InfoLetterServiceProvider;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.exception.DecodingException;
@@ -69,12 +70,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toCollection;
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
 /**
@@ -557,19 +559,13 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
    * @return Set of emails
    */
   private Set<String> getEmailsManagers() {
-    Set<String> emails = new LinkedHashSet<>();
-    List<String> roles = new ArrayList<>();
-    roles.add("admin");
-    String[] userIds = getOrganisationController().getUsersIdsByRoleNames(getComponentId(), roles);
-    if (userIds != null) {
-      for (String userId : userIds) {
-        String email = getUserDetail(userId).geteMail();
-        if (StringUtil.isDefined(email)) {
-          emails.add(email);
-        }
-      }
-    }
-    return emails;
+    final List<String> roles = List.of("admin");
+    return Stream.of(getOrganisationController().getUsersIdsByRoleNames(getComponentId(), roles))
+        .map(this::getUserDetail)
+        .filter(User::isValidState)
+        .map(User::geteMail)
+        .filter(StringUtil::isDefined)
+        .collect(toCollection(LinkedHashSet::new));
   }
 
   /**
