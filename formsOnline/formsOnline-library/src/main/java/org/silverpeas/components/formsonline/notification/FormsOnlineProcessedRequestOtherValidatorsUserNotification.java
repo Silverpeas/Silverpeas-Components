@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2021 Silverpeas
+ * Copyright (C) 2000 - 2020 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -25,54 +25,39 @@ package org.silverpeas.components.formsonline.notification;
 
 import org.silverpeas.components.formsonline.model.FormInstance;
 import org.silverpeas.components.formsonline.model.FormInstanceValidation;
-import org.silverpeas.components.formsonline.model.FormInstanceValidationType;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 
 import java.util.Optional;
 
-import static java.util.Optional.ofNullable;
-import static org.silverpeas.core.notification.user.client.constant.NotifAction.VALIDATE;
-
 /**
  * @author Nicolas EYSSERIC
  */
-public class FormsOnlineProcessedRequestUserNotification
+public class FormsOnlineProcessedRequestOtherValidatorsUserNotification
     extends AbstractFormsOnlineProcessedRequestUserNotification {
 
-  public FormsOnlineProcessedRequestUserNotification(final FormInstance resource,
+  public FormsOnlineProcessedRequestOtherValidatorsUserNotification(final FormInstance resource,
       final NotifAction action) {
     super(resource, action);
-    final Optional<FormInstanceValidationType> pendingValidation = ofNullable(resource.getPendingValidation())
-        .filter(v -> VALIDATE == action)
-        .map(FormInstanceValidation::getValidationType);
-    if (pendingValidation.filter(FormInstanceValidationType::isFinal).isPresent()) {
-      setUserIdsToNotify(resource.getForm().getReceiversAsUsers());
-      setGroupIdsToNotify(resource.getForm().getReceiversAsGroups());
-    } else if (pendingValidation.filter(FormInstanceValidationType::isIntermediate).isPresent()) {
-      setUserIdsToNotify(resource.getForm().getIntermediateReceiversAsUsers());
-      setGroupIdsToNotify(resource.getForm().getIntermediateReceiversAsGroups());
-    } else {
-      setUserIdsToNotify(null);
-      setGroupIdsToNotify(null);
+    Optional<FormInstanceValidation> latestValidation = resource.getValidations().getLatestValidation();
+    if (latestValidation.isPresent()) {
+      if (latestValidation.get().getValidationType().isFinal()) {
+        setUserIdsToNotify(resource.getForm().getReceiversAsUsers());
+        setGroupIdsToNotify(resource.getForm().getReceiversAsGroups());
+      } else if (latestValidation.get().getValidationType().isIntermediate()) {
+        setUserIdsToNotify(resource.getForm().getIntermediateReceiversAsUsers());
+        setGroupIdsToNotify(resource.getForm().getIntermediateReceiversAsGroups());
+      }
     }
   }
 
   @Override
   protected String getBundleSubjectKey() {
-    return "formsOnline.msgFormToValid";
+    return "formsOnline.msgFormProcessed";
   }
 
   @Override
   protected String getTemplateFileName() {
-    return "notificationProcessed";
+    return "notificationProcessedOtherValidatorsSameLevel";
   }
 
-  /**
-   * The meaning of the returned step number is "TO VALIDATE".
-   * @return the next step number as integer.
-   */
-  @Override
-  protected int getCurrentValidationStep() {
-    return super.getCurrentValidationStep() + 1;
-  }
 }
