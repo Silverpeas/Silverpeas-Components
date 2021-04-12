@@ -29,6 +29,9 @@ import org.silverpeas.components.formsonline.model.RequestsByStatus.ValidationMe
 import org.silverpeas.components.formsonline.notification.FormsOnlineCanceledRequestUserNotification;
 import org.silverpeas.components.formsonline.notification.FormsOnlinePendingValidationRequestUserNotification;
 import org.silverpeas.components.formsonline.notification.FormsOnlineProcessedRequestFollowingUserNotification;
+
+import org.silverpeas.components.formsonline.notification
+    .FormsOnlineProcessedRequestOtherValidatorsUserNotification;
 import org.silverpeas.components.formsonline.notification.FormsOnlineProcessedRequestUserNotification;
 import org.silverpeas.components.formsonline.notification.FormsOnlineValidationRequestUserNotification;
 import org.silverpeas.core.admin.PaginationPage;
@@ -643,10 +646,16 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
         : NotifAction.VALIDATE;
     // notify sender
     buildAndSend(new FormsOnlineValidationRequestUserNotification(request, action));
-    // notify the request processed
+    // notify next validators the request is processed
     buildAndSend(new FormsOnlineProcessedRequestUserNotification(request, action));
     // notify validator followers of the processed request
     buildAndSend(new FormsOnlineProcessedRequestFollowingUserNotification(request, action));
+    if (StringUtil.getBooleanValue(organizationController
+        .getComponentParameterValue(request.getComponentInstanceId(),
+            FormsOnlineComponentSettings.PARAM_WORKGROUP))) {
+      // notify other validators of this validation level that the request has been processed
+      buildAndSend(new FormsOnlineProcessedRequestOtherValidatorsUserNotification(request, action));
+    }
   }
 
   @Override
@@ -788,12 +797,15 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
       final Map<String, String> values = dataRecord.getValues(I18NHelper.defaultLanguage);
       for (final FieldTemplate field : fields) {
         final String value = values.get(field.getFieldName());
-        content.addElement(field.getLabel(I18NHelper.defaultLanguage));
-        content.addElement(" : ");
-        content.addElement(value);
-        content.addElement(new BR());
-        if (StringUtil.isDefined(value) && field.getTypeName().equals(FileField.TYPE)) {
-          docs.addAll(getFiles(dataRecord, field, request.getComponentInstanceId()));
+        if (StringUtil.isDefined(value)) {
+          // only defined fields are sent
+          content.addElement(field.getLabel(I18NHelper.defaultLanguage));
+          content.addElement(" : ");
+          content.addElement(value);
+          content.addElement(new BR());
+          if (field.getTypeName().equals(FileField.TYPE)) {
+            docs.addAll(getFiles(dataRecord, field, request.getComponentInstanceId()));
+          }
         }
       }
       return Pair.of(content.toString(), docs);
