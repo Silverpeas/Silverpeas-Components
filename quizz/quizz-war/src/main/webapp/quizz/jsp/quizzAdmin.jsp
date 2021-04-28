@@ -89,12 +89,6 @@ function deleteQuizz(quizz_id)
   if (rep==true)
     self.location="deleteQuizz.jsp?quizz_id="+quizz_id
 }
-
-function clipboardPaste() { 
-  top.IdleFrame.document.location.replace('../..<%=URLUtil.getURL(URLUtil.CMP_CLIPBOARD)%>paste?compR=Rquizz&SpaceFrom=<%=quizzScc.getSpaceId()%>&ComponentFrom=<%=quizzScc.getComponentId()%>&JSPPage=<%=response.encodeURL(URLEncoder.encode("Main"))%>&TargetFrame=MyMain&message=REFRESH');
-  // forcer le rafraichissmeent de la page
-  document.location.reload();   
-}
 </script>
 </head>
 <body>
@@ -125,7 +119,7 @@ function clipboardPaste() {
 			if (isAdmin) {
 				operationPane.addOperation(resources.getIcon("quizz.paste"),
 						resources.getString("GML.paste"),
-						"javascript:onClick=clipboardPaste()");
+						"paste");
 			}
 			out.println(window.printBefore());
 %>
