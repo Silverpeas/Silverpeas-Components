@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.silverpeas.components</groupId>
     <artifactId>yellowpages</artifactId>
-    <version>6.1.3-SNAPSHOT</version>
+    <version>6.1.4-SNAPSHOT</version>
   </parent>
 
   <groupId>org.silverpeas.components.yellowpages</groupId>
