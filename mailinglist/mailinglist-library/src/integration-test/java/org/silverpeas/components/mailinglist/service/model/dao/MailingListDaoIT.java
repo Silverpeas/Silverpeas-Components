@@ -20,12 +20,9 @@
  */
 package org.silverpeas.components.mailinglist.service.model.dao;
 
-import org.dbunit.DataSourceDatabaseTester;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,18 +32,16 @@ import org.silverpeas.components.mailinglist.service.model.beans.InternalGroupSu
 import org.silverpeas.components.mailinglist.service.model.beans.InternalUserSubscriber;
 import org.silverpeas.components.mailinglist.service.model.beans.MailingList;
 import org.silverpeas.core.persistence.Transaction;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.test.rule.DbSetupRule;
 
-import javax.annotation.Resource;
-import javax.sql.DataSource;
+import java.sql.Connection;
 import java.util.List;
 
 import static org.junit.Assert.*;
 
 @RunWith(Arquillian.class)
 public class MailingListDaoIT {
-
-  private DataSourceDatabaseTester databaseTester;
 
   @Rule
   public DbSetupRule dbSetupRule = DbSetupRule.createTablesFrom("create-database.sql");
@@ -56,20 +51,8 @@ public class MailingListDaoIT {
     return MailingListWarBuilder.onWarForTestClass(MailingListDaoIT.class).build();
   }
 
-  @Resource(lookup = "java:/datasources/silverpeas")
-  private DataSource dataSource;
-
-  @Before
-  public void setUpTest() throws Exception {
-    databaseTester = new DataSourceDatabaseTester(dataSource);
-  }
-
-  @After
-  public void tearDownTest() throws Exception {
-  }
-
   @Test
-  public void testCreateMailingList() throws Exception {
+  public void createMailingList() throws Exception {
     MailingListDao mailingListDao = getMailingListDAO();
     String id = Transaction.performInOne(() -> {
       MailingList mailingList = new MailingList();
@@ -111,7 +94,7 @@ public class MailingListDaoIT {
   }
 
   @Test
-  public void testUpdateMailingList() throws Exception {
+  public void updateMailingList() throws Exception {
     MailingListDao mailingListDao = getMailingListDAO();
     String id = Transaction.performInOne(() -> {
       MailingList mailingList = new MailingList();
@@ -127,7 +110,7 @@ public class MailingListDaoIT {
     assertEquals(1, countRowsInTable("SC_MAILINGLIST_EXTERNAL_USER"));
 
     Transaction.performInOne(() -> {
-      MailingList  mailingList = mailingListDao.findById(id);
+      MailingList mailingList = mailingListDao.findById(id);
       assertNotNull(mailingList);
       assertNotNull(mailingList.getExternalSubscribers());
       assertEquals(1, mailingList.getExternalSubscribers().size());
@@ -163,7 +146,7 @@ public class MailingListDaoIT {
   }
 
   @Test
-  public void testDeleteMailingList() throws Exception {
+  public void deleteMailingList() throws Exception {
     MailingListDao mailingListDao = getMailingListDAO();
 
     String id = Transaction.performInOne(() -> {
@@ -195,7 +178,7 @@ public class MailingListDaoIT {
   }
 
   @Test
-  public void testFindByComponentId() throws Exception {
+  public void findByComponentId() throws Exception {
     MailingListDao mailingListDao = getMailingListDAO();
 
     String id = Transaction.performInOne(() -> {
@@ -223,7 +206,7 @@ public class MailingListDaoIT {
   }
 
   @Test
-  public void testListMailingList() throws Exception {
+  public void listMailingList() throws Exception {
     MailingListDao mailingListDao = getMailingListDAO();
 
     Transaction.performInOne(() -> {
@@ -246,15 +229,17 @@ public class MailingListDaoIT {
       return null;
     });
 
-    List mailingLists = mailingListDao.listMailingLists();
+    List<MailingList> mailingLists = mailingListDao.listMailingLists();
     assertEquals(2, countRowsInTable("SC_MAILINGLIST_LIST"));
     assertEquals(2, countRowsInTable("SC_MAILINGLIST_EXTERNAL_USER"));
     assertNotNull(mailingLists);
     assertEquals(2, mailingLists.size());
   }
 
-  private int countRowsInTable(String table) throws Exception {
-    return databaseTester.getConnection().getRowCount(table);
+  private long countRowsInTable(String table) throws Exception {
+    try (Connection connection = dbSetupRule.getSafeConnectionFromDifferentThread()) {
+      return JdbcSqlQuery.createCountFor(table).executeWith(connection);
+    }
   }
 
   private MailingListDao getMailingListDAO() {

@@ -48,39 +48,38 @@ import static org.junit.Assert.*;
 public class MessageServiceIT {
 
   private static final OrderBy orderByDate = new OrderBy("sentDate", false);
-  private static final String textEmailContent = "Bonjour famille Simpson, "
-      + "j'espère que vous allez bien. Ici tout se passe bien et Krusty est très "
-      + "sympathique. Surtout depuis que Tahiti Bob est retourné en prison. Je "
-      + "dois remplacer l'homme canon dans la prochaine émission.\nBart";
+  private static final String textEmailContent = "Bonjour famille Simpson, " +
+      "j'espère que vous allez bien. Ici tout se passe bien et Krusty est très " +
+      "sympathique. Surtout depuis que Tahiti Bob est retourné en prison. Je " +
+      "dois remplacer l'homme canon dans la prochaine émission.\nBart";
   private static final String attachmentPath =
       "c:\\tmp\\uploads\\componentId\\mailId@silverpeas.com\\";
   private MessageService messageService;
 
   @Rule
-  public DbSetupRule dbSetupRule =
-      DbSetupRule.createTablesFrom("create-database.sql")
-          .loadInitialDataSetFrom("test-message-service-dataset.sql");
+  public DbSetupRule dbSetupRule = DbSetupRule.createTablesFrom("create-database.sql")
+      .loadInitialDataSetFrom("test-message-service-dataset.sql");
   private TimeZone defaultTimeZone;
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return MailingListWarBuilder.onWarForTestClass(MessageServiceIT.class).testFocusedOn(
-        warBuilder -> {
-          warBuilder.addAsResource("org/silverpeas/util/attachment/Attachment.properties");
-        }).build();
+    return MailingListWarBuilder.onWarForTestClass(MessageServiceIT.class)
+        .testFocusedOn(warBuilder -> warBuilder.addAsResource(
+            "org/silverpeas/util/attachment/Attachment.properties"))
+        .build();
   }
 
   @Test
-  public void testGetMessage() {
+  public void getMessage() {
     Message savedMessage = messageService.getMessage("1");
     assertNotNull(savedMessage);
     assertEquals(textEmailContent.replaceAll("\n", ""), savedMessage.getBody());
     assertEquals("componentId", savedMessage.getComponentId());
-    assertEquals(true, savedMessage.isModerated());
+    assertTrue(savedMessage.isModerated());
     assertEquals(textEmailContent.substring(0, 200), savedMessage.getSummary());
     assertEquals("bart.simpson@silverpeas.com", savedMessage.getSender());
     assertEquals("0000001747b40c8d", savedMessage.getMessageId());
-    assertEquals(1204367655000l, savedMessage.getSentDate().getTime());
+    assertEquals(1204364055000L, savedMessage.getSentDate().getTime());
     assertEquals("Simple database message", savedMessage.getTitle());
     assertEquals("text/plain", savedMessage.getContentType());
     assertEquals(2008, savedMessage.getYear());
@@ -101,7 +100,7 @@ public class MessageServiceIT {
   }
 
   @Test
-  public void testSaveMessage() {
+  public void saveMessage() {
     Calendar sentDate = Calendar.getInstance();
     sentDate.set(Calendar.MILLISECOND, 0);
     Message message = new Message();
@@ -127,7 +126,7 @@ public class MessageServiceIT {
     assertNotNull(savedMessage);
     assertEquals(textEmailContent, savedMessage.getBody());
     assertEquals("componentId", savedMessage.getComponentId());
-    assertEquals(true, savedMessage.isModerated());
+    assertTrue(savedMessage.isModerated());
     assertEquals(textEmailContent.substring(0, 200), savedMessage.getSummary());
     assertEquals("bart.simpson@ilverpeas.com", savedMessage.getSender());
     assertEquals("0000001747b40c85", savedMessage.getMessageId());
@@ -151,7 +150,7 @@ public class MessageServiceIT {
   }
 
   @Test
-  public void testResaveMessage() {
+  public void saveAgainMessage() {
     Calendar sentDate = Calendar.getInstance();
     sentDate.set(Calendar.MILLISECOND, 0);
     Message message = new Message();
@@ -177,7 +176,7 @@ public class MessageServiceIT {
     assertNotNull(savedMessage);
     assertEquals(textEmailContent, savedMessage.getBody());
     assertEquals("componentId", savedMessage.getComponentId());
-    assertEquals(true, savedMessage.isModerated());
+    assertTrue(savedMessage.isModerated());
     assertEquals(textEmailContent.substring(0, 200), savedMessage.getSummary());
     assertEquals("bart.simpson@ilverpeas.com", savedMessage.getSender());
     assertEquals("0000001747b40c85", savedMessage.getMessageId());
@@ -222,7 +221,7 @@ public class MessageServiceIT {
   }
 
   @Test
-  public void testListMessages() {
+  public void listMessages() {
     MailingList mailingList = new MailingList();
     mailingList.setComponentId("componentId");
     List<Message> messages = messageService.listMessages(mailingList, 0, orderByDate);
@@ -234,44 +233,41 @@ public class MessageServiceIT {
   }
 
   @Test
-  public void testGetTotalNumberOfMessages() {
+  public void getTotalNumberOfMessages() {
     MailingList mailingList = new MailingList();
     mailingList.setComponentId("componentId");
     assertEquals(3, messageService.getTotalNumberOfMessages(mailingList));
   }
 
   @Test
-  public void testListDisplayableMessages() {
+  public void listDisplayableMessages() {
     MailingList mailingList = new MailingList();
     mailingList.setComponentId("componentId");
-    List<Message> messages = messageService.listDisplayableMessages(mailingList, -1, -1,
-        0, orderByDate);
+    List<Message> messages =
+        messageService.listDisplayableMessages(mailingList, -1, -1, 0, orderByDate);
     assertNotNull(messages);
     assertEquals(2, messages.size());
     assertEquals("1", messages.get(0).getId());
     assertEquals("2", messages.get(1).getId());
-    messages = messageService.listDisplayableMessages(mailingList, -1, 2008, 0,
+    messages = messageService.listDisplayableMessages(mailingList, -1, 2008, 0, orderByDate);
+    assertNotNull(messages);
+    assertEquals(2, messages.size());
+    assertEquals("1", messages.get(0).getId());
+    assertEquals("2", messages.get(1).getId());
+    messages = messageService.listDisplayableMessages(mailingList, Calendar.FEBRUARY, 2008, 0,
         orderByDate);
-    assertNotNull(messages);
-    assertEquals(2, messages.size());
-    assertEquals("1", messages.get(0).getId());
-    assertEquals("2", messages.get(1).getId());
-    messages = messageService.listDisplayableMessages(mailingList,
-        Calendar.FEBRUARY, 2008, 0, orderByDate);
     assertNotNull(messages);
     assertEquals(1, messages.size());
     assertEquals("2", messages.get(0).getId());
-    messages = messageService.listDisplayableMessages(mailingList,
-        Calendar.MARCH, 2008, 0, orderByDate);
+    messages =
+        messageService.listDisplayableMessages(mailingList, Calendar.MARCH, 2008, 0, orderByDate);
     assertNotNull(messages);
     assertEquals(1, messages.size());
     assertEquals("1", messages.get(0).getId());
-    messages = messageService.listDisplayableMessages(mailingList, -1, 2007, 0,
-        orderByDate);
+    messages = messageService.listDisplayableMessages(mailingList, -1, 2007, 0, orderByDate);
     assertNotNull(messages);
     assertEquals(0, messages.size());
-    messages = messageService.listDisplayableMessages(mailingList, 2,
-        orderByDate);
+    messages = messageService.listDisplayableMessages(mailingList, 2, orderByDate);
     assertNotNull(messages);
     assertEquals(2, messages.size());
     assertEquals("1", messages.get(0).getId());
@@ -279,18 +275,17 @@ public class MessageServiceIT {
   }
 
   @Test
-  public void testListUnmoderatedeMessages() {
+  public void listUnmoderatedeMessages() {
     MailingList mailingList = new MailingList();
     mailingList.setComponentId("componentId");
-    List<Message> messages = messageService.listUnmoderatedeMessages(mailingList, 0,
-        orderByDate);
+    List<Message> messages = messageService.listUnmoderatedeMessages(mailingList, 0, orderByDate);
     assertNotNull(messages);
     assertEquals(1, messages.size());
     assertEquals("3", messages.get(0).getId());
   }
 
   @Test
-  public void testGetNumberOfPagesForUnmoderatedMessages() {
+  public void getNumberOfPagesForUnmoderatedMessages() {
     MailingList mailingList = new MailingList();
     mailingList.setComponentId("componentId");
     long pages = messageService.getNumberOfPagesForUnmoderatedMessages(mailingList);
@@ -302,7 +297,7 @@ public class MessageServiceIT {
   }
 
   @Test
-  public void testGetNumberOfPagesForDisplayableMessages() {
+  public void getNumberOfPagesForDisplayableMessages() {
     MailingList mailingList = new MailingList();
     mailingList.setComponentId("componentId");
     long pages = messageService.getNumberOfPagesForDisplayableMessages(mailingList);
@@ -314,16 +309,16 @@ public class MessageServiceIT {
   }
 
   @Test
-  public void testDeleteMessage() {
+  public void deleteMessage() {
     Message savedMessage = messageService.getMessage("1");
     assertNotNull(savedMessage);
     assertEquals(textEmailContent.replaceAll("\n", ""), savedMessage.getBody());
     assertEquals("componentId", savedMessage.getComponentId());
-    assertEquals(true, savedMessage.isModerated());
+    assertTrue(savedMessage.isModerated());
     assertEquals(textEmailContent.substring(0, 200), savedMessage.getSummary());
     assertEquals("bart.simpson@silverpeas.com", savedMessage.getSender());
     assertEquals("0000001747b40c8d", savedMessage.getMessageId());
-    assertEquals(1204367655000l, savedMessage.getSentDate().getTime());
+    assertEquals(1204364055000L, savedMessage.getSentDate().getTime());
     assertEquals("Simple database message", savedMessage.getTitle());
     assertEquals("text/plain", savedMessage.getContentType());
     assertEquals(2008, savedMessage.getYear());
@@ -347,16 +342,16 @@ public class MessageServiceIT {
   }
 
   @Test
-  public void testModerateMessage() {
+  public void moderateMessage() {
     Message savedMessage = messageService.getMessage("3");
     assertNotNull(savedMessage);
     assertEquals(textEmailContent.replaceAll("\n", ""), savedMessage.getBody());
     assertEquals("componentId", savedMessage.getComponentId());
-    assertEquals(false, savedMessage.isModerated());
+    assertFalse(savedMessage.isModerated());
     assertEquals(textEmailContent.substring(0, 200), savedMessage.getSummary());
     assertEquals("bart.simpson@silverpeas.com", savedMessage.getSender());
     assertEquals("0000001747b40c95", savedMessage.getMessageId());
-    assertEquals(1204454055000l, savedMessage.getSentDate().getTime());
+    assertEquals(1204450455000L, savedMessage.getSentDate().getTime());
     assertEquals("Simple database message 3", savedMessage.getTitle());
     assertEquals("text/plain", savedMessage.getContentType());
     assertEquals(2008, savedMessage.getYear());
@@ -368,13 +363,13 @@ public class MessageServiceIT {
     messageService.moderateMessage("3");
     savedMessage = messageService.getMessage("3");
     assertNotNull(savedMessage);
-    assertEquals(true, savedMessage.isModerated());
+    assertTrue(savedMessage.isModerated());
     assertEquals(textEmailContent.replaceAll("\n", ""), savedMessage.getBody());
     assertEquals("componentId", savedMessage.getComponentId());
     assertEquals(textEmailContent.substring(0, 200), savedMessage.getSummary());
     assertEquals("bart.simpson@silverpeas.com", savedMessage.getSender());
     assertEquals("0000001747b40c95", savedMessage.getMessageId());
-    assertEquals(1204454055000l, savedMessage.getSentDate().getTime());
+    assertEquals(1204450455000L, savedMessage.getSentDate().getTime());
     assertEquals("Simple database message 3", savedMessage.getTitle());
     assertEquals("text/plain", savedMessage.getContentType());
     assertEquals(2008, savedMessage.getYear());
@@ -386,7 +381,7 @@ public class MessageServiceIT {
   }
 
   @Test
-  public void testGetNumberOfPagesForAllMessages() {
+  public void getNumberOfPagesForAllMessages() {
     MailingList mailingList = new MailingList();
     mailingList.setComponentId("componentId");
     long pages = messageService.getNumberOfPagesForAllMessages(mailingList);
@@ -398,7 +393,7 @@ public class MessageServiceIT {
   }
 
   @Test
-  public void testGetActivity() {
+  public void getActivity() {
     MailingList mailingList = new MailingList();
     mailingList.setComponentId("componentId");
     MailingListActivity activity = messageService.getActivity(mailingList);

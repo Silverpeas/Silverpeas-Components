@@ -39,6 +39,8 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 
 @Repository
@@ -46,6 +48,8 @@ import java.util.List;
 @Transactional
 public class MessageDaoImpl implements MessageDao {
 
+  private static final String COMPONENT_ID = "componentId";
+  private static final String MODERATED = "moderated";
   @PersistenceContext
   private EntityManager entityManager;
 
@@ -94,7 +98,7 @@ public class MessageDaoImpl implements MessageDao {
 
   public Message findMessageByMailId(final String messageId, String componentId) {
     TypedQuery<Message> query = getEntityManager().createNamedQuery("findMessage", Message.class);
-    query.setParameter("componentId", componentId);
+    query.setParameter(COMPONENT_ID, componentId);
     query.setParameter("messageId", messageId);
     Message result = null;
     try {
@@ -111,7 +115,7 @@ public class MessageDaoImpl implements MessageDao {
     TypedQuery<Message> query = getEntityManager().createQuery(
         "from Message where componentId = :componentId " + orderBy.getOrderExpression(),
         Message.class);
-    query.setParameter("componentId", componentId);
+    query.setParameter(COMPONENT_ID, componentId);
     query.setFirstResult(page * elementsPerPage);
     query.setMaxResults(elementsPerPage);
     return query.getResultList();
@@ -131,8 +135,8 @@ public class MessageDaoImpl implements MessageDao {
     queryText += " " + orderBy.getOrderExpression();
 
     TypedQuery<Message> query = getEntityManager().createQuery(queryText, Message.class);
-    query.setParameter("componentId", componentId);
-    query.setParameter("moderated", true);
+    query.setParameter(COMPONENT_ID, componentId);
+    query.setParameter(MODERATED, true);
     query.setFirstResult(page * elementsPerPage);
     query.setMaxResults(elementsPerPage);
     return query.getResultList();
@@ -144,8 +148,8 @@ public class MessageDaoImpl implements MessageDao {
     TypedQuery<Message> query = getEntityManager().createQuery(
         "from Message where componentId = :componentId and moderated = :moderated " + orderBy.
         getOrderExpression(), Message.class);
-    query.setParameter("componentId", componentId);
-    query.setParameter("moderated", false);
+    query.setParameter(COMPONENT_ID, componentId);
+    query.setParameter(MODERATED, false);
     query.setFirstResult(page * elementsPerPage);
     query.setMaxResults(elementsPerPage);
     return query.getResultList();
@@ -156,8 +160,8 @@ public class MessageDaoImpl implements MessageDao {
     TypedQuery<Message> query = getEntityManager().createQuery(
         "from Message where componentId = :componentId and moderated = :moderated " + orderBy.
         getOrderExpression(), Message.class);
-    query.setParameter("componentId", componentId);
-    query.setParameter("moderated", true);
+    query.setParameter(COMPONENT_ID, componentId);
+    query.setParameter(MODERATED, true);
     query.setMaxResults(size);
     return query.getResultList();
   }
@@ -166,7 +170,7 @@ public class MessageDaoImpl implements MessageDao {
   public long listTotalNumberOfMessages(String componentId) {
     TypedQuery<Long> query = getEntityManager().
         createNamedQuery("countOfMessages", Long.class);
-    query.setParameter("componentId", componentId);
+    query.setParameter(COMPONENT_ID, componentId);
     return query.getSingleResult();
   }
 
@@ -174,8 +178,8 @@ public class MessageDaoImpl implements MessageDao {
   public long listTotalNumberOfDisplayableMessages(String componentId) {
     TypedQuery<Long> query = getEntityManager().createNamedQuery(
         "countOfMessagesByModeration", Long.class);
-    query.setParameter("componentId", componentId);
-    query.setParameter("moderated", true);
+    query.setParameter(COMPONENT_ID, componentId);
+    query.setParameter(MODERATED, true);
     return query.getSingleResult();
   }
 
@@ -183,8 +187,8 @@ public class MessageDaoImpl implements MessageDao {
   public long listTotalNumberOfUnmoderatedMessages(String componentId) {
     TypedQuery<Long> query = getEntityManager().createNamedQuery(
         "countOfMessagesByModeration", Long.class);
-    query.setParameter("componentId", componentId);
-    query.setParameter("moderated", false);
+    query.setParameter(COMPONENT_ID, componentId);
+    query.setParameter(MODERATED, false);
     return query.getSingleResult();
   }
 
@@ -192,8 +196,8 @@ public class MessageDaoImpl implements MessageDao {
   public List<Activity> listActivity(String componentId) {
     TypedQuery<Activity> query = getEntityManager().createNamedQuery("findActivitiesFromMessages",
         Activity.class);
-    query.setParameter("componentId", componentId);
-    query.setParameter("moderated", true);
+    query.setParameter(COMPONENT_ID, componentId);
+    query.setParameter(MODERATED, true);
     return query.getResultList();
   }
 
@@ -251,7 +255,9 @@ public class MessageDaoImpl implements MessageDao {
   }
 
   private void deleteFile(File file) {
-    if (!file.delete()) {
+    try {
+      Files.delete(file.toPath());
+    } catch (IOException e) {
       SilverLogger.getLogger(this).warn("Cannot delete file {0}", file.getPath());
     }
   }
