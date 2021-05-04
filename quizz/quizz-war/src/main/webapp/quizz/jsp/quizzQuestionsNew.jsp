@@ -212,7 +212,6 @@ String displayQuestion(QuizzSessionController quizzScc, Question question, int i
 		r += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
   r += "</table>";
   r += board.printAfter();
-  r += "<br>";
   r += board.printBefore();
   r += "<table width=\"98%\" border=\"0\" cellspacing=\"0\" cellpadding=\"3\" >";
 
@@ -495,7 +494,7 @@ String displayQuestionPreview(Question question, int i, String m_context, QuizzS
         else
           r += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
         r += "</td></tr></table>";
-        r += "</table><br>";
+        r += board.printAfter();
         r += board.printBefore();
         r += "<table width=\"98%\" border=\"0\" cellspacing=\"0\" cellpadding=\"3\" >";
 
@@ -512,6 +511,7 @@ String displayQuestionPreview(Question question, int i, String m_context, QuizzS
 	           	r += "<option name=\"answer_"+i+"\" value=\"\">"+WebEncodeHelper.javaStringToHtmlString(answer.getLabel())+"</option>";
 	        }
 
+          r += "</select>";
          	r += "</td></tr>";
 		}
 		else
@@ -546,9 +546,10 @@ String displayQuestionPreview(Question question, int i, String m_context, QuizzS
 			      }
 	            r += "<td width=\"40px\" align=\"center\"><input type=\""+inputType+"\" name=\"answer_"+i+"\"></td><td align=\"left\" width=\"100%\">"+Encode.javaStringToHtmlString(answer.getLabel())+"<BR>";
 	            r += "</tr></table>";
+            r += "</td></tr>";
 	        }
 		}
-        r += board.printAfter();
+  r += "</table>";
         r += board.printAfter();
         return r;
 }
