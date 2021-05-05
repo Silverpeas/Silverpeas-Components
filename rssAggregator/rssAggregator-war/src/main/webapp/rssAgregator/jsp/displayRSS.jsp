@@ -69,7 +69,7 @@ void displayChannel(SPChannel spChannel, SimpleDateFormat dateFormatter, String 
 		SyndImage channelImage 	= null;
 		if (feed != null) {
 			channelName 	= feed.getTitle();
-			if (channelName.length() > 40) {
+			if (channelName != null && channelName.length() > 40) {
 				channelName = channelName.substring(0, 39)+"...";
 			}
 			channelImage 	= feed.getImage();
