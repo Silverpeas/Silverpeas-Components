@@ -473,18 +473,17 @@ function placeCells()
 		}
 
 		leftGap = mainDiv.offsetLeft;
-		for (j = 0; j < jLevels[i].length; j++)
-		{
-			if (j > 0)
-			{
+		var levelMaxHeight = 0;
+		for (j = 0; j < jLevels[i].length; j++) {
+			if (j > 0) {
 				jLevels[i][j].leftCell = jLevels[i][j - 1];
 			}
-			if (j < (jLevels[i].length - 1))
-			{
+			if (j < (jLevels[i].length - 1)) {
 				jLevels[i][j].rightCell = jLevels[i][j + 1];
 			}
 
 			div = jLevels[i][j].div;
+
 			if ( (jLevels[i][j].className==3) || (jLevels[i][j].className==4) ) {
 				var x = topGap - H_GAP_SIDEBOX;
 				div.style.top = x + "px";
@@ -492,10 +491,14 @@ function placeCells()
 				div.style.top = topGap + "px";
 			}
 
+			if (div != null && div.offsetHeight > levelMaxHeight) {
+			  levelMaxHeight = div.offsetHeight;
+      }
+
 			div.style.left = leftGap + "px";
 		}
 
-		topGap += V_GAP + (div != null ? div.offsetHeight : 0);
+		topGap += V_GAP + levelMaxHeight;
   }
 
    //resizeBoxes(jLevels);
