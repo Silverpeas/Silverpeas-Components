@@ -543,6 +543,7 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
   public void copySurvey(String quizzId) throws ClipboardException, QuizzException {
     QuestionContainerDetail quizz = getQuizzDetail(quizzId);
     QuestionContainerSelection questionContainerSelect = new QuestionContainerSelection(quizz);
+    addClipboardSelection(questionContainerSelect);
   }
 
   public void paste() throws Exception {
