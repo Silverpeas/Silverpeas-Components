@@ -6,10 +6,11 @@ import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.SilverpeasArrayList;
 import org.silverpeas.core.util.SilverpeasList;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.BiConsumer;
@@ -251,20 +252,22 @@ public class RequestsByStatus {
   @SafeVarargs
   private final SilverpeasList<FormInstance> merge(final SilverpeasList<FormInstance>... lists) {
     int size = 0;
-    int maxSize = 0;
+    long maxSize = 0;
     for (SilverpeasList<FormInstance> list : lists) {
       size += list.size();
       maxSize += list.originalListSize();
     }
-    final List<FormInstance> merge = new ArrayList<>(size);
+    final Map<String, FormInstance> merge = new HashMap<>(size);
     for (SilverpeasList<FormInstance> list : lists) {
-      merge.addAll(list);
+      for (FormInstance formInstance : list) {
+        merge.putIfAbsent(formInstance.getId(), formInstance);
+      }
     }
-    Stream<FormInstance> resultStream = merge.stream().sorted(FORM_INSTANCE_COMPARATOR);
+    Stream<FormInstance> resultStream = merge.values().stream().sorted(FORM_INSTANCE_COMPARATOR);
     if (paginationPage != null) {
       resultStream = resultStream.limit(paginationPage.getPageSize());
     }
-    return PaginationList.from(resultStream.collect(Collectors.toList()), maxSize);
+    return PaginationList.from(resultStream.collect(Collectors.toList()), maxSize - (size - merge.values().size()));
   }
 
   public static class MergeRuleByStates {
