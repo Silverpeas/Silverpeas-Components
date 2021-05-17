@@ -39,8 +39,8 @@ suggestionBox.controller('mainController',
         });
       }
 
-      if (context.userRole !== 'admin' && context.userRole !== 'publisher' &&
-          context.userRole !== 'writer') {
+      if (context.userRole !== 'ADMIN' && context.userRole !== 'PUBLISHER' &&
+          context.userRole !== 'WRITER') {
         $scope.readerView = 'lecteur-view';
       }
 
