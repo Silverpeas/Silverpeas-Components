@@ -24,7 +24,7 @@
 
 package org.silverpeas.components.forums.subscription;
 
-import org.silverpeas.core.subscription.SubscriptionResourceType;
+import org.silverpeas.core.subscription.SubscriptionContributionType;
 
 /**
  * @author silveryocha
@@ -38,7 +38,7 @@ public class ForumSubscriptionConstants {
   /**
    * The resource is a forum. Used by component instances handling forums.
    */
-  public static final SubscriptionResourceType FORUM = new SubscriptionResourceType() {
+  public static final SubscriptionContributionType FORUM = new SubscriptionContributionType() {
     private static final long serialVersionUID = 3236120504338259771L;
 
     @Override
@@ -55,7 +55,7 @@ public class ForumSubscriptionConstants {
   /**
    * The resource is a message in a given forum. Used by component instances handling forums.
    */
-  public static final SubscriptionResourceType FORUM_MESSAGE = new SubscriptionResourceType() {
+  public static final SubscriptionContributionType FORUM_MESSAGE = new SubscriptionContributionType() {
     private static final long serialVersionUID = -383051167261054926L;
 
     @Override
