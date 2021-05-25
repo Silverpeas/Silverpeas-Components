@@ -143,6 +143,7 @@
   boolean validatorsOK = validatorsList.isValidationOperational();
   boolean modificationAllowed = (SilverpeasRole.WRITER.isInRole(profile) && validatorsOK) ||
       SilverpeasRole.fromString(profile).isGreaterThanOrEquals(SilverpeasRole.PUBLISHER);
+  boolean isAdmin = SilverpeasRole.ADMIN.isInRole(profile);
 
   //Vrai si le user connecte est le createur de cette publication ou si il est admin
   boolean isOwner = false;
@@ -258,6 +259,7 @@
     <view:includePlugin name="wysiwyg"/>
     <view:includePlugin name="popup"/>
     <view:includePlugin name="rating" />
+    <view:includePlugin name="subscription"/>
     <script type="text/javascript" src="<%=m_context%>/kmelia/jsp/javaScript/glossaryHighlight.js"></script>
     <script type="text/javascript">
 
@@ -468,6 +470,14 @@
           };
           createSharingTicketPopup(sharingObject);
         }
+
+        SUBSCRIPTION_PROMISE.then(function() {
+          window.spSubManager = new SilverpeasSubscriptionManager({
+            componentInstanceId : '<%=contextComponentId%>',
+            subscriptionResourceType : jQuery.subscription.subscriptionType.<%=kmeliaPublication.isAlias() ? "PUBLICATION_ALIAS" : "PUBLICATION"%>,
+            resourceId : '${publication.id}'
+          });
+        });
     </script>
   </head>
   <body class="yui-skin-sam" onunload="closeWindows()" onload="openSingleAttachment()" id="<%=componentId%>">
@@ -506,6 +516,12 @@
         }
         if (sharingAllowed) {
           operationPane.addOperation("useless", resources.getString("GML.share"), "javascript:pubShare()");
+        }
+        if (isOwner || isAdmin) {
+          operationPane.addOperation("useless", resources.getString("GML.manageSubscriptions"), "ManageSubscriptions");
+        }
+        if (!currentUser.isAccessGuest() && !currentUser.isAnonymous()) {
+          operationPane.addOperation("useless", "<span id='subscriptionMenuLabel'></span>", "javascript:spSubManager.switchUserSubscription()");
         }
         if (StringUtil.isDefined(pubPermalink) && !currentUser.isAnonymous()) {
           operationPane.addOperation(favoriteAddSrc, resources.getString("FavoritesAddPublication") + " " + resources.getString("FavoritesAdd2"), "javascript:addFavorite()");

@@ -53,6 +53,7 @@ import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.comment.service.CommentServiceProvider;
 import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
@@ -1354,7 +1355,9 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     final NodePK albumPK = currentAlbum.getNodePK();
     final List<NodeDetail> albumPath = getPath(albumPK);
     albumPath.remove(0);
-    subscriptionContext.initializeFromNode(NodeSubscriptionResource.from(albumPK), albumPath);
+    subscriptionContext.initialize(NodeSubscriptionResource.from(albumPK))
+        .atLocation(new Location(albumPK.getId(), albumPK.getInstanceId()))
+        .withNodePath(albumPath);
     return subscriptionContext.getDestinationUrl();
   }
 }

@@ -9,36 +9,32 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception. You should have received a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.components.forums.subscription;
 
-import org.silverpeas.components.forums.model.ForumPK;
-import org.silverpeas.core.subscription.SubscriptionSubscriber;
-import org.silverpeas.core.subscription.service.PKSubscription;
+package org.silverpeas.components.kmelia.subscription;
+
+import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.contribution.publication.subscription.AbstractPublicationSubscriptionService;
 
 /**
- * User: Yohann Chastagnier
- * Date: 07/06/13
+ * @author silveryocha
  */
-public class ForumSubscription extends PKSubscription<ForumSubscriptionResource> {
+@Service
+public class KmeliaSubscriptionService extends AbstractPublicationSubscriptionService {
 
-  public ForumSubscription(final String subscriberId, final ForumPK forumPK) {
-    super(subscriberId, new ForumSubscriptionResource(forumPK));
-  }
-
-  public ForumSubscription(final SubscriptionSubscriber subscriber,
-      final ForumSubscriptionResource resource, final String creatorId) {
-    super(subscriber, resource, creatorId);
+  @Override
+  protected String getHandledComponentName() {
+    return "kmelia";
   }
 }

@@ -24,6 +24,9 @@
 package org.silverpeas.components.kmelia.notification;
 
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.publication.subscription.PublicationAliasSubscriptionResource;
+import org.silverpeas.core.contribution.publication.subscription.PublicationSubscriptionResource;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.notification.user.UserSubscriptionNotificationBehavior;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
@@ -33,7 +36,6 @@ import org.silverpeas.core.subscription.util.SubscriptionSubscriberMapBySubscrib
 
 import java.util.Collection;
 
-import static org.silverpeas.core.subscription.service.ResourceSubscriptionProvider.getSubscribersOfComponent;
 import static org.silverpeas.core.subscription.service.ResourceSubscriptionProvider.getSubscribersOfSubscriptionResource;
 
 /**
@@ -48,10 +50,16 @@ public class KmeliaSubscriptionPublicationUserNotification
   public KmeliaSubscriptionPublicationUserNotification(final NodePK nodePK,
       final PublicationDetail resource, final NotifAction action) {
     super(nodePK, resource, action);
-    if (getNodePK().isRoot()) {
-      subscriberIdsByTypes = getSubscribersOfComponent(getComponentInstanceId()).indexBySubscriberType();
+    if (getResource().isAlias()) {
+      subscriberIdsByTypes = getSubscribersOfSubscriptionResource(
+          PublicationAliasSubscriptionResource.from(new PublicationPK(resource.getId(),
+              getNodePK().getComponentInstanceId()))).indexBySubscriberType();
+      // In case of alias, parent subscriptions MUST be retrieved manually
+      subscriberIdsByTypes.addAll(getSubscribersOfSubscriptionResource(
+          NodeSubscriptionResource.from(getNodePK())).indexBySubscriberType());
     } else {
-      subscriberIdsByTypes = getSubscribersOfSubscriptionResource(NodeSubscriptionResource.from(getNodePK())).indexBySubscriberType();
+      subscriberIdsByTypes = getSubscribersOfSubscriptionResource(
+          PublicationSubscriptionResource.from(resource.getPK())).indexBySubscriberType();
     }
   }
 

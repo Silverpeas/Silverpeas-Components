@@ -72,6 +72,8 @@ import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.model.PublicationSelection;
 import org.silverpeas.core.contribution.publication.model.ValidationStep;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
+import org.silverpeas.core.contribution.publication.subscription.PublicationAliasSubscriptionResource;
+import org.silverpeas.core.contribution.publication.subscription.PublicationSubscriptionResource;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
@@ -110,6 +112,7 @@ import org.silverpeas.core.security.authorization.NodeAccessControl;
 import org.silverpeas.core.security.authorization.PublicationAccessControl;
 import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
+import org.silverpeas.core.subscription.SubscriptionResource;
 import org.silverpeas.core.subscription.service.ComponentSubscriptionResource;
 import org.silverpeas.core.subscription.service.NodeSubscriptionResource;
 import org.silverpeas.core.template.SilverpeasTemplate;
@@ -126,6 +129,7 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.web.selection.SelectionUsersGroups;
 import org.silverpeas.core.web.subscription.SubscriptionContext;
+import org.silverpeas.core.web.subscription.SubscriptionResourcePath;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -136,6 +140,7 @@ import java.nio.file.Files;
 import java.text.ParseException;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.silverpeas.components.kmelia.control.KmeliaSessionController.CLIPBOARD_STATE.*;
 import static org.silverpeas.components.kmelia.export.KmeliaPublicationExporter.*;
@@ -3126,13 +3131,34 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   public String manageSubscriptions() {
     final SubscriptionContext subscriptionContext = getSubscriptionContext();
-    if (getCurrentFolder().getNodePK().isRoot()) {
+    if (getSessionPublication() != null) {
+      PublicationDetail publication = getSessionPublication().getDetail();
+      List<NodeDetail> nodePath = getTopicPath(getCurrentFolderId());
+      nodePath.remove(0);
+      final SubscriptionResource resource;
+      if (publication.isAlias()) {
+        publication = publication.copy();
+        final Location location = new Location(getCurrentFolderId(), getComponentId());
+        location.setAsAlias(getUserId());
+        publication.setAuthorizedLocation(location);
+        resource = PublicationAliasSubscriptionResource.from(new PublicationPK(publication.getId(), getComponentId()));
+      } else {
+        resource = PublicationSubscriptionResource.from(publication);
+      }
+      subscriptionContext.initialize(resource)
+          .atLocation(new Location(getCurrentFolderId(), getComponentId()))
+          .withPath(Stream.concat(nodePath.stream()
+                                    .map(p -> new SubscriptionResourcePath(p.getName(getLanguage()), p.getLink())),
+                    Stream.of(new SubscriptionResourcePath(publication.getName(getLanguage()), publication.getPermalink())))
+              .collect(Collectors.toList()));
+    } else if (getCurrentFolder().getNodePK().isRoot()) {
       subscriptionContext.initialize(ComponentSubscriptionResource.from(getComponentId()));
     } else {
       List<NodeDetail> nodePath = getTopicPath(getCurrentFolderId());
       nodePath.remove(0);
-      subscriptionContext.initializeFromNode(NodeSubscriptionResource.from(getCurrentFolderPK()),
-          nodePath);
+      subscriptionContext.initialize(NodeSubscriptionResource.from(getCurrentFolderPK()))
+          .atLocation(new Location(getCurrentFolderId(), getComponentId()))
+          .withNodePath(nodePath);
     }
     return subscriptionContext.getDestinationUrl();
   }
