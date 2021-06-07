@@ -2232,7 +2232,7 @@ public class DefaultKmeliaService implements KmeliaService {
 
         // Modification de la publication de reference
         currentPubDetail.setCloneStatus(PublicationDetail.REFUSED_STATUS);
-        currentPubDetail.setUpdateDateMustBeSet(false);
+        currentPubDetail.setUpdateDataMustBeSet(false);
         publicationService.setDetail(currentPubDetail);
 
         // we have to alert publication's last updater
@@ -2351,10 +2351,10 @@ public class DefaultKmeliaService implements KmeliaService {
           PublicationDetail clone = publicationService.getDetail(pubDetail.getClonePK());
           clone.setStatus(PublicationDetail.TO_VALIDATE_STATUS);
           clone.setIndexOperation(IndexManager.NONE);
-          clone.setUpdateDateMustBeSet(false);
+          clone.setUpdateDataMustBeSet(false);
           publicationService.setDetail(clone);
           changedPublication = clone;
-          pubDetail.setUpdateDateMustBeSet(false);
+          pubDetail.setUpdateDataMustBeSet(false);
           pubDetail.setCloneStatus(PublicationDetail.TO_VALIDATE_STATUS);
         } else {
           pubDetail.setStatus(PublicationDetail.TO_VALIDATE_STATUS);
@@ -3564,7 +3564,7 @@ public class DefaultKmeliaService implements KmeliaService {
       refPub.setCloneId(cloneId);
       refPub.setCloneStatus(nextStatus);
       refPub.setStatusMustBeChecked(false);
-      refPub.setUpdateDateMustBeSet(false);
+      refPub.setUpdateDataMustBeSet(false);
       updatePublication(refPub);
 
       // paste vignette
@@ -4544,7 +4544,7 @@ public class DefaultKmeliaService implements KmeliaService {
     //remove reference to clone from original publication
     original.setCloneId(null);
     original.setCloneStatus(null);
-    original.setUpdateDateMustBeSet(false);
+    original.setUpdateDataMustBeSet(false);
     original.setIndexOperation(IndexManager.NONE);
     publicationService.setDetail(original);
   }

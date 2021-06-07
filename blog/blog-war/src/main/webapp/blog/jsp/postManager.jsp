@@ -254,10 +254,9 @@
     %>
 		<view:button action="javascript:onClick=sendData();" disabled="false"
                    label="${validateLabel}">
-      <view:confirmComponentSubscriptionNotificationSending
+      <view:handleContributionManagementContext
+          contributionId="<%=post.getIdentifier()%>"
           jsValidationCallbackMethodName="isCorrectForm"
-          contributionType="<%=post.getContributionType()%>"
-          contributionLocalId="<%=postId%>"
           contributionIndexable="<%=post.isIndexable()%>"/>
 		</view:button>
     <%

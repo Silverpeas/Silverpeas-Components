@@ -329,10 +329,9 @@ $(document).ready(function() {
 </c:when>
 <c:otherwise>
 	<view:button label="${buttonOK}" action="javascript:onclick=saveNews()">
-    <view:confirmComponentSubscriptionNotificationSending
+    <view:handleContributionManagementContext
+        contributionId="<%=news != null ? news.getIdentifier() : null%>"
         jsValidationCallbackMethodName="isCorrectForm"
-        contributionType="<%=news != null ? news.getContributionType() : null%>"
-        contributionLocalId="<%=news != null ? news.getId() : null%>"
         contributionIndexable="true"/>
   </view:button>
 </c:otherwise>

@@ -672,7 +672,7 @@
                                      showDescription="<%=showInfo%>"
                                      showFileSize="<%=showFileSize%>"
                                      showMenuNotif="${true}"
-                                     subscriptionManagementContext="${requestScope.subscriptionManagementContext}"/>
+                                     contributionManagementContext="${requestScope.contributionManagementContext}"/>
         <%
 
 			        }
