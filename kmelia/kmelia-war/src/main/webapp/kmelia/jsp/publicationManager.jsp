@@ -802,18 +802,17 @@
             <c:set var="saveAction"><%="javascript:onClick=sendData();"%></c:set>
             <c:set var="cancelLabel"><%=resources.getString("GML.cancel")%></c:set>
             <view:button label="${saveLabel}" action="${saveAction}">
-              <c:set var="subscriptionManagementContext" value="${requestScope.subscriptionManagementContext}"/>
-              <c:if test="${not empty subscriptionManagementContext}">
-                <jsp:useBean id="subscriptionManagementContext" type="org.silverpeas.core.subscription.util.SubscriptionManagementContext"/>
-                <c:if test="${subscriptionManagementContext.entityStatusBeforePersistAction.validated
-                      and subscriptionManagementContext.entityStatusAfterPersistAction.validated
-                      and subscriptionManagementContext.entityPersistenceAction.update}">
-                  <view:confirmResourceSubscriptionNotificationSending
+              <c:set var="contributionManagementContext" value="${requestScope.contributionManagementContext}"/>
+              <c:if test="${not empty contributionManagementContext}">
+                <jsp:useBean id="contributionManagementContext" type="org.silverpeas.core.contribution.util.ContributionManagementContext"/>
+                <c:if test="${contributionManagementContext.entityStatusBeforePersistAction.validated
+                      and contributionManagementContext.entityStatusAfterPersistAction.validated
+                      and contributionManagementContext.entityPersistenceAction.update}">
+                  <view:handleContributionManagementContext
+                      contributionId="${contributionManagementContext.contributionId}"
                       jsValidationCallbackMethodName="isCorrectHeaderForm"
-                      subscriptionResourceType="${subscriptionManagementContext.linkedSubscriptionResource.type}"
-                      subscriptionResourceId="${subscriptionManagementContext.linkedSubscriptionResource.id}"
-                      contributionLocalId="<%=pubDetail.getId()%>"
-                      contributionType="<%=pubDetail.getContributionType()%>"
+                      subscriptionResourceType="${contributionManagementContext.linkedSubscriptionResource.type}"
+                      subscriptionResourceId="${contributionManagementContext.linkedSubscriptionResource.id}"
                       contributionIndexable="<%=pubDetail.isIndexable()%>"/>
 
                 </c:if>

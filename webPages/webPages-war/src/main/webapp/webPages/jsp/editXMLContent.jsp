@@ -95,13 +95,14 @@
       <c:set var="cancelLabel"><%=resource.getString("GML.cancel")%>
       </c:set>
       <view:button label="${saveLabel}" action="javascript:onClick=save();">
-        <c:set var="subscriptionManagementContext" value="${requestScope.subscriptionManagementContext}"/>
-        <c:if test="${not empty subscriptionManagementContext}">
+        <c:set var="contributionManagementContext" value="${requestScope.contributionManagementContext}"/>
+        <c:if test="${not empty contributionManagementContext}">
           <c:set var="formData" value="<%=data%>"/>
-          <jsp:useBean id="subscriptionManagementContext" type="org.silverpeas.core.subscription.util.SubscriptionManagementContext"/>
+          <jsp:useBean id="contributionManagementContext" type="org.silverpeas.core.contribution.util.ContributionManagementContext"/>
           <c:if test="${not empty formData and not formData.new
-                    and subscriptionManagementContext.entityPersistenceAction.update}">
-            <view:confirmComponentSubscriptionNotificationSending
+                    and contributionManagementContext.entityPersistenceAction.update}">
+            <view:handleContributionManagementContext
+                contributionId="${contributionManagementContext.contributionId}"
                 jsValidationCallbackMethodName="isCorrectForm"/>
           </c:if>
         </c:if>

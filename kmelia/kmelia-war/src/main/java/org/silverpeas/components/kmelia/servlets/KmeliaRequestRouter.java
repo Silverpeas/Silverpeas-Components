@@ -55,6 +55,7 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
+import org.silverpeas.core.contribution.util.ContributionManagementContext;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.importexport.report.ImportReport;
 import org.silverpeas.core.importexport.versioning.DocumentVersion;
@@ -64,7 +65,6 @@ import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.security.authorization.PublicationAccessControl;
 import org.silverpeas.core.subscription.SubscriptionResource;
-import org.silverpeas.core.subscription.util.SubscriptionManagementContext;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.MimeTypes;
@@ -373,7 +373,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           request.setAttribute("TaxonomyOK", kmelia.isPublicationTaxonomyOK());
           request.setAttribute("ValidatorsOK", kmelia.isPublicationValidatorsOK());
           request.setAttribute("Publication", kmelia.getSessionPubliOrClone());
-          setupRequestForSubscriptionNotificationSending(request,
+          setupRequestForContributionManagementContext(request,
               highestSilverpeasUserRoleOnCurrentTopic, kmelia.getCurrentFolderPK(),
               kmelia.getSessionPubliOrClone().getDetail());
         } else if ("New".equals(action)) {
@@ -682,7 +682,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           request.setAttribute("SeeAlsoEnabled", kmelia.isSeeAlsoEnabled());
 
           // Subscription management
-          setupRequestForSubscriptionNotificationSending(request,
+          setupRequestForContributionManagementContext(request,
               highestSilverpeasUserRoleOnCurrentTopic, kmelia.getCurrentFolderPK(),
               kmeliaPublication.getDetail());
 
@@ -1177,7 +1177,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         }
 
         // Subscription management
-        setupRequestForSubscriptionNotificationSending(request,
+        setupRequestForContributionManagementContext(request,
             highestSilverpeasUserRoleOnCurrentTopic, kmelia.getCurrentFolderPK(), publication);
 
         WysiwygRouting routing = new WysiwygRouting();
@@ -1218,7 +1218,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         request.setAttribute("IsChangingTemplateAllowed",
             templates.size() >= 2 || (!templates.isEmpty() && wysiwygUsable));
 
-        setupRequestForSubscriptionNotificationSending(request,
+        setupRequestForContributionManagementContext(request,
             highestSilverpeasUserRoleOnCurrentTopic, kmelia.getCurrentFolderPK(),
             kmelia.getSessionPubliOrClone().getDetail());
 
@@ -1949,7 +1949,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
    * @param currentFolderPK the primary key of the current folder.
    * @param publication the current handled publication.
    */
-  private void setupRequestForSubscriptionNotificationSending(HttpRequest request,
+  private void setupRequestForContributionManagementContext(HttpRequest request,
       SilverpeasRole highestSilverpeasUserRoleOnCurrentTopic, NodePK currentFolderPK,
       PublicationDetail publication) {
     ContributionStatus statusBeforeSave = publication.isValid() ? ContributionStatus.VALIDATED :
@@ -1963,8 +1963,9 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
     final SubscriptionResource resource = publication.isAlias() ?
         PublicationAliasSubscriptionResource.from(publicationPK) :
         PublicationSubscriptionResource.from(publicationPK);
-    request.setAttribute("subscriptionManagementContext", SubscriptionManagementContext
-        .on(resource, publication.getId())
+    request.setAttribute("contributionManagementContext", ContributionManagementContext
+        .on(publication)
+        .aboutSubscriptionResource(resource)
         .forPersistenceAction(statusBeforeSave, ActionType.UPDATE, statusAfterSave));
   }
 
