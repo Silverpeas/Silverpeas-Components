@@ -52,19 +52,13 @@ String		rootId				= "0";
 //R?cup?ration des param?tres
 String 	profile			= (String) request.getAttribute("Profile");
 String  translation 	= (String) request.getAttribute("Language");
-boolean	isGuest			= ((Boolean) request.getAttribute("IsGuest")).booleanValue();
 boolean displayNBPublis = ((Boolean) request.getAttribute("DisplayNBPublis")).booleanValue();
 Boolean rightsOnTopics  = (Boolean) request.getAttribute("RightsOnTopicsEnabled");
 Boolean displaySearch	= (Boolean) request.getAttribute("DisplaySearch");
+SearchContext searchContext = (SearchContext) request.getAttribute("SearchContext");
 int		currentPageIndex = (Integer) request.getAttribute("PageIndex");
 
-SearchContext searchContext = (SearchContext) request.getAttribute("SearchContext");
-String query = "";
-if (searchContext != null) {
-  query = searchContext.getQuery();
-}
-
-String		pubIdToHighlight	= (String) request.getAttribute("PubIdToHighlight"); //used when we have found publication from search (only toolbox)
+String pubIdToHighlight	= (String) request.getAttribute("PubIdToHighlight"); //used when we have found publication from search (only toolbox)
 
 String id = (String) request.getAttribute("CurrentFolderId");
 String language = kmeliaScc.getLanguage();
@@ -192,16 +186,7 @@ var searchFolderId = "<%=id%>";
          <div class="wrap">
             <div class="resizable resizable1"><div id="treeDiv1"></div></div>
 				<div id="rightSide" class="resizable resizable2">
-					<% if (displaySearch.booleanValue()) {
-						Button searchButton = gef.getFormButton(resources.getString("GML.search"), "javascript:onClick=searchInTopic();", false); %>
-						<div id="searchZone">
-							<view:board>
-								<table id="searchLine">
-									<tr><td><div id="searchLabel"><%=resources.getString("kmelia.SearchInTopics") %></div>&nbsp;<input type="text" id="topicQuery" size="50" value="<%=query %>" onkeydown="checkSubmitToSearch(event)"/></td><td><%=searchButton.print() %></td></tr>
-								</table>
-							</view:board>
-						</div>
-					<% } %>
+          <kmelia:searchZone enabled="<%=displaySearch%>"/>
 					<div id="topicDescription"></div>
 					<view:areaOfOperationOfCreation/>
           <div class="dragAndDropUpload" style="min-height: 75px">

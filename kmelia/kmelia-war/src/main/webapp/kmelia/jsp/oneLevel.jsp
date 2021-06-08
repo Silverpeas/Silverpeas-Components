@@ -171,16 +171,7 @@ function isSpecialFolder(id) {
 <view:frame>
           <div id="subTopics"></div>
 
-          <% if (displaySearch.booleanValue()) {
-            Button searchButton = gef.getFormButton(resources.getString("GML.search"), "javascript:onClick=searchInTopic();", false); %>
-            <div id="searchZone">
-            <view:board>
-            <table id="searchLine">
-            <tr><td><div id="searchLabel"><%=resources.getString("kmelia.SearchInTopics") %></div>&nbsp;<input type="text" id="topicQuery" size="50" value="<%=query%>" onkeydown="checkSubmitToSearch(event);"/></td><td><%=searchButton.print() %></td></tr>
-            </table>
-            </view:board>
-            </div>
-          <% } %>
+          <kmelia:searchZone enabled="<%=displaySearch%>"/>
 
           <div id="topicDescription"></div>
           <view:areaOfOperationOfCreation/>
