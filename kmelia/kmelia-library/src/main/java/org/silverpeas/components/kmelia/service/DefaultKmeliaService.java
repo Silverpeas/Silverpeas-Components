@@ -1202,8 +1202,7 @@ public class DefaultKmeliaService implements KmeliaService {
       sendPublicationToBasket(pub.getPK());
     } else {
       // update parent
-      publicationService.removeAllFathers(pub.getPK());
-      publicationService.addFather(pub.getPK(), to);
+      publicationService.movePublication(pub.getPK(), to, false);
       pub.setTargetValidatorId(pasteContext.getTargetValidatorIds());
       processPublicationAfterMove(pub, to, pasteContext.getUserId());
     }
