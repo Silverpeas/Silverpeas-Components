@@ -22,50 +22,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.components.forums.subscription;
+package org.silverpeas.components.kmelia.subscription;
 
-import org.silverpeas.core.subscription.SubscriptionContributionType;
+import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.contribution.publication.subscription.AbstractPublicationSubscriptionService;
 
 /**
  * @author silveryocha
  */
-public class ForumSubscriptionConstants {
+@Service
+public class KmeliaSubscriptionService extends AbstractPublicationSubscriptionService {
 
-  private ForumSubscriptionConstants() {
-    // Constant class
+  @Override
+  protected String getHandledComponentName() {
+    return "kmelia";
   }
-
-  /**
-   * The resource is a forum. Used by component instances handling forums.
-   */
-  public static final SubscriptionContributionType FORUM = new SubscriptionContributionType() {
-    private static final long serialVersionUID = 3236120504338259771L;
-
-    @Override
-    public int priority() {
-      return 100;
-    }
-
-    @Override
-    public String getName() {
-      return "FORUM";
-    }
-  };
-
-  /**
-   * The resource is a message in a given forum. Used by component instances handling forums.
-   */
-  public static final SubscriptionContributionType FORUM_MESSAGE = new SubscriptionContributionType() {
-    private static final long serialVersionUID = -383051167261054926L;
-
-    @Override
-    public int priority() {
-      return 101;
-    }
-
-    @Override
-    public String getName() {
-      return "FORUM_MESSAGE";
-    }
-  };
 }

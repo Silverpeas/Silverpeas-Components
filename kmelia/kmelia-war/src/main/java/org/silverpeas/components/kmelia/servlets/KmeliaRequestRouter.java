@@ -49,6 +49,8 @@ import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationLink;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.publication.subscription.PublicationAliasSubscriptionResource;
+import org.silverpeas.core.contribution.publication.subscription.PublicationSubscriptionResource;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
@@ -61,7 +63,7 @@ import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.security.authorization.PublicationAccessControl;
-import org.silverpeas.core.subscription.service.NodeSubscriptionResource;
+import org.silverpeas.core.subscription.SubscriptionResource;
 import org.silverpeas.core.subscription.util.SubscriptionManagementContext;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.LocalizationBundle;
@@ -1956,8 +1958,13 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
     if (highestSilverpeasUserRoleOnCurrentTopic.isGreaterThanOrEquals(SilverpeasRole.PUBLISHER)) {
       statusAfterSave = ContributionStatus.VALIDATED;
     }
+    final PublicationPK publicationPK = new PublicationPK(publication.getId(),
+        currentFolderPK.getComponentInstanceId());
+    final SubscriptionResource resource = publication.isAlias() ?
+        PublicationAliasSubscriptionResource.from(publicationPK) :
+        PublicationSubscriptionResource.from(publicationPK);
     request.setAttribute("subscriptionManagementContext", SubscriptionManagementContext
-        .on(NodeSubscriptionResource.from(currentFolderPK), publication.getId())
+        .on(resource, publication.getId())
         .forPersistenceAction(statusBeforeSave, ActionType.UPDATE, statusAfterSave));
   }
 

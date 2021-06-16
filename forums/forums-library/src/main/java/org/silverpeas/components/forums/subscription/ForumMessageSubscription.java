@@ -23,16 +23,22 @@
  */
 package org.silverpeas.components.forums.subscription;
 
-import org.silverpeas.core.subscription.service.PKSubscription;
 import org.silverpeas.components.forums.model.MessagePK;
+import org.silverpeas.core.subscription.SubscriptionSubscriber;
+import org.silverpeas.core.subscription.service.PKSubscription;
 
 /**
  * User: Yohann Chastagnier
  * Date: 07/06/13
  */
-public class ForumMessageSubscription extends PKSubscription {
+public class ForumMessageSubscription extends PKSubscription<ForumMessageSubscriptionResource> {
 
   public ForumMessageSubscription(final String subscriberId, final MessagePK messagePK) {
     super(subscriberId, new ForumMessageSubscriptionResource(messagePK));
+  }
+
+  public ForumMessageSubscription(final SubscriptionSubscriber subscriber,
+      final ForumMessageSubscriptionResource resource, final String creatorId) {
+    super(subscriber, resource, creatorId);
   }
 }

@@ -28,7 +28,7 @@ import org.silverpeas.components.forums.model.ForumPK;
 import org.silverpeas.components.forums.model.Message;
 import org.silverpeas.components.forums.model.MessagePK;
 import org.silverpeas.core.subscription.SubscriptionResourceType;
-import org.silverpeas.core.subscription.SubscriptionResourceTypeRegistry;
+import org.silverpeas.core.subscription.SubscriptionFactory;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.subscription.SubscriptionSubscriber;
 import org.silverpeas.core.subscription.service.AbstractResourceSubscriptionService;
@@ -55,8 +55,12 @@ public class ForumsSubscriptionService extends AbstractResourceSubscriptionServi
   @Override
   public void init() throws Exception {
     super.init();
-    SubscriptionResourceTypeRegistry.get().add(FORUM);
-    SubscriptionResourceTypeRegistry.get().add(FORUM_MESSAGE);
+    SubscriptionFactory.get().register(FORUM,
+        (r, s, i) -> new ForumSubscriptionResource(new ForumPK(i, r)),
+        (s, r, c) -> new ForumSubscription(s, (ForumSubscriptionResource) r, c));
+    SubscriptionFactory.get().register(FORUM_MESSAGE,
+        (r, s, i) -> new ForumMessageSubscriptionResource(new MessagePK(i, r)),
+        (s, r, c) -> new ForumMessageSubscription(s, (ForumMessageSubscriptionResource) r, c));
   }
 
   @Override
