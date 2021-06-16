@@ -106,6 +106,7 @@ import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.model.NodeSelection;
 import org.silverpeas.core.node.service.NodeService;
+import org.silverpeas.core.notification.message.MessageNotifier;
 import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
@@ -3170,10 +3171,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   public String getContentLanguage() {
-    if (getPublicationLanguages().contains(getCurrentLanguage())) {
-      return getCurrentLanguage();
+    if (getSessionPubliOrClone() != null) {
+      if (getPublicationLanguages().contains(getCurrentLanguage())) {
+        return getCurrentLanguage();
+      }
+      return I18NHelper.checkLanguage(getSessionPublication().getDetail().getLanguage());
     }
-    return I18NHelper.checkLanguage(getSessionPublication().getDetail().getLanguage());
+    return getCurrentLanguage();
   }
 
   public void setSearchContext(SearchContext searchContext) {
@@ -3552,6 +3556,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   public void saveXMLFormToPublication(PublicationDetail pubDetail, List<FileItem> items,
       boolean forceUpdatePublication) throws org.silverpeas.core.SilverpeasException {
+    saveXMLFormToPublication(pubDetail, items, forceUpdatePublication, false);
+  }
+  public void saveXMLFormToPublication(PublicationDetail pubDetail, List<FileItem> items,
+      boolean forceUpdatePublication, boolean batchProcessing) throws org.silverpeas.core.SilverpeasException {
     String xmlFormShortName;
 
     // Is it the creation of the content or an update ?
@@ -3596,6 +3604,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       } else {
         // the publication is just created
         context.setContentLanguage(pubDetail.getLanguage());
+      }
+      if (batchProcessing) {
+        context.setUpdatePolicy(PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES);
       }
 
       form.update(items, data, context);
@@ -3657,5 +3668,26 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   private String getPublicationListSessionCacheKey() {
     return KmeliaSessionController.class.getSimpleName() + "#" + getComponentId() +
         "#publicationList";
+  }
+
+  public void saveXMLFormOfSelectedPublications(List<FileItem> items) {
+    List<PublicationPK> success = new ArrayList<>();
+    List<PublicationPK> fail = new ArrayList<>();
+    for (PublicationPK pk : selectedPublicationPKs) {
+      PublicationDetail pubDetail = getPublicationDetail(pk.getId());
+      try {
+        saveXMLFormToPublication(pubDetail, items, true, true);
+        success.add(pk);
+      } catch (Exception e) {
+        SilverLogger.getLogger(this).error("Can't save content of publication #"+pubDetail.getId(), e);
+        fail.add(pk);
+      }
+    }
+    if (fail.isEmpty()) {
+      MessageNotifier.addSuccess(getMultilang().getStringWithParams("kmelia.publications.batch.update.success", success.size()));
+    } else {
+      MessageNotifier.addError(getMultilang().getStringWithParams("kmelia.publications.batch.update.fail", fail.size()));
+    }
+    selectedPublicationPKs.removeAll(success);
   }
 }
