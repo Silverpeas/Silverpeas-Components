@@ -136,6 +136,7 @@ public class JSONServlet extends HttpServlet {
 
     operations.put("sortPublications", role.isAdmin() && publicationsInTopic);
 
+    operations.put("updatePublications", operationsOnSelectionAllowed);
     operations.put(OP_DELETE_PUBLICATIONS, operationsOnSelectionAllowed);
 
     operations.put(OP_EXPORT_PUBLICATIONS, !user.isAnonymous());

@@ -134,6 +134,17 @@ function cutPublications() {
   }, 'text');
 }
 
+function updatePublications() {
+  var componentId = getComponentId();
+  var selectedPublicationIds = getSelectedPublicationIds();
+  var notSelectedPublicationIds = getNotSelectedPublicationIds();
+  var url = getWebContext() + '/Rkmelia/' + componentId + '/ToUpdatePublications';
+  var formRequest = sp.formRequest(url).byPostMethod();
+  formRequest.withParam("SelectedIds", selectedPublicationIds);
+  formRequest.withParam("NotSelectedIds", notSelectedPublicationIds);
+  formRequest.submit();
+}
+
 (function($) {
   window.kmeliaWebService = new function() {
     var __serviceUrl = webContext + '/KmeliaAJAXServlet';

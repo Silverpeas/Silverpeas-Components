@@ -369,6 +369,11 @@ function initOperations(id, op) {
     oMenu.addItem(menuItem, groupIndex);
     groupEmpty = false;
   }
+  if (op.updatePublications) {
+    menuItem = new YAHOO.widget.MenuItem(getString('kmelia.operation.updatePublications'), {url: "javascript:onclick=updatePublications()"});
+    oMenu.addItem(menuItem, groupIndex);
+    groupEmpty = false;
+  }
   if (op.deletePublications) {
     menuItem = new YAHOO.widget.MenuItem(getString('kmelia.operation.deletePublications'), {url: "javascript:onclick=deletePublications()"});
     oMenu.addItem(menuItem, groupIndex);
