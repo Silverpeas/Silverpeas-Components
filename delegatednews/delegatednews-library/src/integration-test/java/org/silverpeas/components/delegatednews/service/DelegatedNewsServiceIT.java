@@ -81,8 +81,9 @@ public class DelegatedNewsServiceIT {
     String contributorId = "1";
     UserDetail contributor = new UserDetail();
     contributor.setId(contributorId);
-    PublicationDetail publi = new PublicationDetail();
-    publi.setPk(new PublicationPK(pubId, instanceId));
+    PublicationDetail publi = PublicationDetail.builder()
+        .setPk(new PublicationPK(pubId, instanceId))
+        .build();
     publi.setAuthor(contributorId);
     publi.setUpdaterId(contributorId);
     service.submitNews(publi, Period.between(LocalDate.MIN, LocalDate.MAX), contributorId);

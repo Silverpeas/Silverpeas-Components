@@ -41,6 +41,7 @@ import org.silverpeas.core.comment.model.CommentId;
 import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.comment.service.CommentServiceProvider;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.exception.EncodingException;
 import org.silverpeas.core.index.indexing.model.IndexManager;
 import org.silverpeas.core.mylinks.model.LinkDetail;
@@ -201,12 +202,15 @@ public final class BlogSessionController extends AbstractComponentSessionControl
   public synchronized String createPost(String title, String categoryId, Date dateEvent,
       PdcClassificationEntity classification) {
     checkWriteAccessOnBlogPost();
-    PublicationDetail pub =
-        new PublicationDetail("X", title, "", null, null, null, null, "1", null, null, "");
-    pub.getPK().setComponentName(getComponentId());
-    pub.setCreatorId(getUserId());
+    PublicationDetail pub = PublicationDetail.builder()
+        .setPk(new PublicationPK(ResourceReference.UNKNOWN_ID, getComponentId()))
+        .setNameAndDescription(title, "")
+        .created(new Date(), getUserId())
+        .setImportance(1)
+        .setContentPagePath("")
+        .build();
+
     pub.setCreatorName(getUserDetail(getUserId()).getDisplayedName());
-    pub.setCreationDate(new Date());
     pub.setIndexOperation(IndexManager.NONE);
 
     PostDetail newPost = new PostDetail(pub, categoryId, dateEvent);
