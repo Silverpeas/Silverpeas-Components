@@ -48,8 +48,14 @@ public class SiteDetail extends PublicationDetail {
 
   public SiteDetail(String siteId, String applicationId, String name, String description,
       String page, int type, String creatorId) {
-    super("X", name, description, null, null, null, creatorId, Integer.toString(type), siteId, "",
-        page);
+    setName(name);
+    setDescription(description);
+    setCreatorId(creatorId);
+    setImportance(type);
+    setVersion(siteId);
+    setKeywords("");
+    setContentPagePath(page);
+
     SitePK sitePK = new SitePK(siteId, applicationId);
     setSitePK(sitePK);
   }

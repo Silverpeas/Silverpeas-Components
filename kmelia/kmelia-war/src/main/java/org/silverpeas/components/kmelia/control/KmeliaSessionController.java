@@ -819,8 +819,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   public synchronized String createPublication(PublicationDetail pubDetail,
       final PdcClassificationEntity classification) {
-    pubDetail.getPK().setSpace(getSpaceId());
-    pubDetail.getPK().setComponentName(getComponentId());
     pubDetail.setCreatorId(getUserId());
     pubDetail.setCreationDate(new Date());
 
@@ -3637,9 +3635,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   public PublicationDetail prepareNewPublication() {
     String volatileId = newVolatileIntegerIdentifierOn(getComponentId());
-    PublicationDetail publication = new PublicationDetail();
-    publication.setPk(getPublicationPK(volatileId));
-    return publication;
+    return PublicationDetail.builder()
+        .setPk(getPublicationPK(volatileId))
+        .build();
   }
 
   public enum CLIPBOARD_STATE {

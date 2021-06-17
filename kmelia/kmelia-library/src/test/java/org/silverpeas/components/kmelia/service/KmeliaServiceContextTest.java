@@ -46,12 +46,15 @@ public class KmeliaServiceContextTest {
   @Before
   public void setup() {
     CacheServiceProvider.clearAllThreadCaches();
-    publication = new PublicationDetail();
-    publication.setPk(new PublicationPK("id", "instanceId"));
-    publicationA = new PublicationDetail();
-    publicationA.setPk(new PublicationPK("otherId", "instanceId"));
-    publicationB = new PublicationDetail();
-    publicationB.setPk(new PublicationPK("id", "otherInstanceId"));
+    publication = PublicationDetail.builder()
+        .setPk(new PublicationPK("id", "instanceId"))
+        .build();
+    publicationA = PublicationDetail.builder()
+        .setPk(new PublicationPK("otherId", "instanceId"))
+        .build();
+    publicationB = PublicationDetail.builder()
+        .setPk(new PublicationPK("id", "otherInstanceId"))
+        .build();
     assertClearedContext();
   }
 

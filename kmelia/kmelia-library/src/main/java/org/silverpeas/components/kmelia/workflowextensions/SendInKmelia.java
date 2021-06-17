@@ -114,7 +114,13 @@ public class SendInKmelia extends ExternalActionImpl {
     pubName = applySubstitution(role, pubTitle, pubName);
     String desc = "";
     desc = applySubstitution(role, pubDesc, desc);
-    PublicationDetail pubDetail = new PublicationDetail(pubPK, pubName, desc, now, now, null, userId, 1, null, null, null);
+    PublicationDetail pubDetail = PublicationDetail.builder(getLanguage())
+        .setPk(pubPK)
+        .setNameAndDescription(pubName, desc)
+        .created(now, userId)
+        .setBeginDateTime(now, null)
+        .setImportance(1)
+        .build();
 
     if (formIsUsed) {
       pubDetail.setInfoId(xmlFormName);
@@ -131,8 +137,8 @@ public class SendInKmelia extends ExternalActionImpl {
     }
 
     // 3 - Copy all instance regular files to publication
-    ResourceReference
-        fromPK = new ResourceReference(getProcessInstance().getInstanceId(), getProcessInstance().getModelId());
+    ResourceReference fromPK = new ResourceReference(getProcessInstance().getInstanceId(),
+        getProcessInstance().getModelId());
     ResourceReference toPK = new ResourceReference(pubPK);
     copyFiles(fromPK, toPK, DocumentType.attachment, DocumentType.attachment);
 
@@ -194,9 +200,11 @@ public class SendInKmelia extends ExternalActionImpl {
     return result;
   }
 
-  public void populateFields(String pubId, ResourceReference fromPK, ResourceReference toPK, String xmlFormName) {
+  public void populateFields(String pubId, ResourceReference fromPK, ResourceReference toPK,
+      String xmlFormName) {
     // Get the current instance
-    UpdatableProcessInstance currentProcessInstance = (UpdatableProcessInstance) getProcessInstance();
+    UpdatableProcessInstance currentProcessInstance =
+        (UpdatableProcessInstance) getProcessInstance();
     try {
       // register xmlForm of publication
       PublicationTemplateManager.getInstance()
@@ -236,8 +244,8 @@ public class SendInKmelia extends ExternalActionImpl {
         fieldValue = copyFormFile(fromPK, toPK, ((FileField) fieldOfFolder).getAttachmentId());
       } else if ("wysiwyg".equals(fieldTemplate.getDisplayerName())) {
         WysiwygFCKFieldDisplayer displayer = new WysiwygFCKFieldDisplayer();
-        fieldValue = displayer.duplicateContent(fieldTemplate, fromPK, toPK,
-            I18NHelper.DEFAULT_LANGUAGE);
+        fieldValue =
+            displayer.duplicateContent(fieldTemplate, fromPK, toPK, I18NHelper.DEFAULT_LANGUAGE);
       }
     } catch (WorkflowException e) {
       SilverLogger.getLogger(this).warn(e);
@@ -245,12 +253,15 @@ public class SendInKmelia extends ExternalActionImpl {
     return fieldValue;
   }
 
-  private String copyFormFile(ResourceReference fromPK, ResourceReference toPK, String attachmentId) {
+  private String copyFormFile(ResourceReference fromPK, ResourceReference toPK,
+      String attachmentId) {
     SimpleDocument attachment;
     if (StringUtil.isDefined(attachmentId)) {
       AttachmentService service = AttachmentServiceProvider.getAttachmentService();
       // Retrieve attachment detail to copy
-      attachment = service.searchDocumentById(new SimpleDocumentPK(attachmentId, fromPK.getInstanceId()), null);
+      attachment =
+          service.searchDocumentById(new SimpleDocumentPK(attachmentId, fromPK.getInstanceId()),
+              null);
       if (attachment != null) {
         SimpleDocumentPK copyPK = copyFileWithoutDocumentTypeChange(attachment, toPK);
         return copyPK.getId();
@@ -259,12 +270,12 @@ public class SendInKmelia extends ExternalActionImpl {
     return null;
   }
 
-  private Map<String, String> copyFiles(ResourceReference fromPK, ResourceReference toPK, DocumentType fromType,
-      DocumentType toType) {
+  private Map<String, String> copyFiles(ResourceReference fromPK, ResourceReference toPK,
+      DocumentType fromType, DocumentType toType) {
     Map<String, String> fileIds = new HashMap<>();
     try {
-      List<SimpleDocument> origins = AttachmentServiceProvider.getAttachmentService().
-          listDocumentsByForeignKeyAndType(fromPK, fromType, getLanguage());
+      List<SimpleDocument> origins = AttachmentServiceProvider.getAttachmentService()
+          .listDocumentsByForeignKeyAndType(fromPK, fromType, getLanguage());
       for (SimpleDocument origin : origins) {
         SimpleDocumentPK copyPk = copyFile(origin, toPK, toType);
         fileIds.put(origin.getId(), copyPk.getId());
@@ -276,11 +287,13 @@ public class SendInKmelia extends ExternalActionImpl {
     return fileIds;
   }
 
-  private SimpleDocumentPK copyFileWithoutDocumentTypeChange(SimpleDocument file, ResourceReference toPK) {
+  private SimpleDocumentPK copyFileWithoutDocumentTypeChange(SimpleDocument file,
+      ResourceReference toPK) {
     return copyFile(file, toPK, null);
   }
 
-  private SimpleDocumentPK copyFile(SimpleDocument file, ResourceReference toPK, DocumentType type) {
+  private SimpleDocumentPK copyFile(SimpleDocument file, ResourceReference toPK,
+      DocumentType type) {
     if (type != null) {
       file.setDocumentType(type);
     }
@@ -309,7 +322,8 @@ public class SendInKmelia extends ExternalActionImpl {
     return new byte[0];
   }
 
-  private void generatePDFStep(final String role, HistoryStep step, com.lowagie.text.Document document) {
+  private void generatePDFStep(final String role, HistoryStep step,
+      com.lowagie.text.Document document) {
     if (step != null) {
       generatePDFStepHeader(role, step, document);
       generatePDFStepContent(role, step, document);
@@ -385,7 +399,8 @@ public class SendInKmelia extends ExternalActionImpl {
       if ("#question#".equals(step.getAction()) || "#response#".equals(step.getAction())) {
         form = null;
       } else {
-        form = getProcessInstance().getProcessModel().getPresentationForm(step.getAction(), role, getLanguage());
+        form = getProcessInstance().getProcessModel()
+            .getPresentationForm(step.getAction(), role, getLanguage());
       }
 
       if (form != null && step.getActionRecord() != null) {
@@ -400,7 +415,8 @@ public class SendInKmelia extends ExternalActionImpl {
         tableContent.setWidthPercentage(100);
         List<FieldTemplate> fieldTemplates = form.getFieldTemplates();
         for (FieldTemplate fieldTemplate : fieldTemplates) {
-          generatePdfFieldContent(step, data, pageContext, tableContent, (GenericFieldTemplate) fieldTemplate);
+          generatePdfFieldContent(step, data, pageContext, tableContent,
+              (GenericFieldTemplate) fieldTemplate);
         }
         document.add(tableContent);
       }
@@ -422,8 +438,9 @@ public class SendInKmelia extends ExternalActionImpl {
 
       // wysiwyg field
       if ("wysiwyg".equals(fieldTemplate.getDisplayerName())) {
-        String file = WysiwygFCKFieldDisplayer
-            .getFile(componentId, getProcessInstance().getInstanceId(), fieldTemplate.getFieldName(), getLanguage());
+        String file =
+            WysiwygFCKFieldDisplayer.getFile(componentId, getProcessInstance().getInstanceId(),
+                fieldTemplate.getFieldName(), getLanguage());
 
         // Extract the text content of the html code
         Source source = new Source(new FileInputStream(file));
@@ -431,15 +448,16 @@ public class SendInKmelia extends ExternalActionImpl {
       } else if (FileField.TYPE.equals(fieldTemplate.getTypeName())) {
         // Field file type
         if (StringUtil.isDefined(field.getValue())) {
-          SimpleDocument doc = AttachmentServiceProvider.getAttachmentService().
-              searchDocumentById(new SimpleDocumentPK(field.getValue(), componentId), null);
+          SimpleDocument doc = AttachmentServiceProvider.getAttachmentService()
+              .searchDocumentById(new SimpleDocumentPK(field.getValue(), componentId), null);
           if (doc != null) {
             fieldValue = doc.getFilename();
           }
         }
       } else {
         // Other field types
-        FieldDisplayer fieldDisplayer = TypeManager.getInstance().getDisplayer(fieldTemplate.getTypeName(), "simpletext");
+        FieldDisplayer<Field> fieldDisplayer =
+            TypeManager.getInstance().getDisplayer(fieldTemplate.getTypeName(), "simpletext");
         StringWriter sw = new StringWriter();
         PrintWriter out = new PrintWriter(sw);
         fieldDisplayer.display(out, field, fieldTemplate, pageContext);
@@ -479,7 +497,8 @@ public class SendInKmelia extends ExternalActionImpl {
     return kmeliaService;
   }
 
-  private void addPdfHistory(final String pdfHistoryName, final String role, PublicationPK pubPK, String userId) {
+  private void addPdfHistory(final String pdfHistoryName, final String role, PublicationPK pubPK,
+      String userId) {
     final String fileName;
     if (pdfHistoryName != null && !pdfHistoryName.trim().isEmpty()) {
       if (!pdfHistoryName.endsWith(".pdf")) {
@@ -584,8 +603,8 @@ public class SendInKmelia extends ExternalActionImpl {
               newNodePK = getNodeService().createNode(newNode);
             } catch (Exception e) {
               SilverLogger.getLogger(this)
-                  .warn("Cannot create node {0} in path {1}: {2}",
-                      name, explicitPath, e.getMessage());
+                  .warn("Cannot create node {0} in path {1}: {2}", name, explicitPath,
+                      e.getMessage());
               return "0";
             }
             parentId = newNodePK.getId();
@@ -622,7 +641,8 @@ public class SendInKmelia extends ExternalActionImpl {
       if (getTriggerParameter("addPDFHistory") != null) {
         addPDFHistory = StringUtil.getBooleanValue(getTriggerParameter("addPDFHistory").getValue());
         if (getTriggerParameter("addPDFHistoryFirst") != null) {
-          addPDFHistoryFirst = StringUtil.getBooleanValue(getTriggerParameter("addPDFHistoryFirst").getValue());
+          addPDFHistoryFirst =
+              StringUtil.getBooleanValue(getTriggerParameter("addPDFHistoryFirst").getValue());
         } else {
           addPDFHistoryFirst = true;
         }

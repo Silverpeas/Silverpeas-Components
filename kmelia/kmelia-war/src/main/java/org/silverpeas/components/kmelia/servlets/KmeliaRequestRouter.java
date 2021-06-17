@@ -1598,15 +1598,23 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
       jDraftOutDate = DateUtil.stringToDate(draftOutDate, kmelia.getLanguage());
     }
 
-    String pubId = "X";
+    String pubId = ResourceReference.UNKNOWN_ID;
     if (StringUtil.isDefined(id)) {
       pubId = id;
     }
-    PublicationDetail pubDetail =
-        new PublicationDetail(pubId, name, description, null, jBeginDate, jEndDate, null,
-            importance, version, keywords, "", status, "", author);
-    pubDetail.setBeginHour(beginHour);
-    pubDetail.setEndHour(endHour);
+
+    PublicationDetail pubDetail = PublicationDetail.builder(kmelia.getLanguage())
+        .setPk(new PublicationPK(pubId, kmelia.getSpaceId(), kmelia.getComponentId()))
+        .setNameAndDescription(name, description)
+        .setBeginDateTime(jBeginDate, beginHour)
+        .setEndDateTime(jEndDate, endHour)
+        .setImportance(Integer.parseInt(importance))
+        .setVersion(version)
+        .setKeywords(keywords)
+        .setContentPagePath("")
+        .build();
+
+    pubDetail.setAuthor(author);
     pubDetail.setStatus(status);
     pubDetail.setDraftOutDate(jDraftOutDate);
     if (StringUtil.isDefined(targetValidatorId)) {

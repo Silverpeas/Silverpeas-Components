@@ -23,6 +23,7 @@ package org.silverpeas.components.kmelia;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
 import org.silverpeas.components.kmelia.service.KmeliaService;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.PagesContext;
@@ -239,8 +240,8 @@ public class PublicationImport {
 
     Date jBeginDate = null;
     Date jEndDate = null;
-    Date jCreationDate = null;
-    Date jUpdateDate = null;
+    Date jCreationDate;
+    Date jUpdateDate;
 
     if (StringUtil.isDefined(beginDate)) {
       jBeginDate = DateUtil.stringToDate(beginDate, language);
@@ -250,22 +251,35 @@ public class PublicationImport {
     }
     if (StringUtil.isDefined(creationDate)) {
       jCreationDate = DateUtil.stringToDate(creationDate, language);
+    } else {
+      jCreationDate = new Date();
     }
     if (StringUtil.isDefined(updateDate)) {
       jUpdateDate = DateUtil.stringToDate(updateDate, language);
+    } else {
+      jUpdateDate = jCreationDate;
     }
 
     if (!StringUtil.isInteger(importance)) {
       importance = "5";
     }
 
-    String pubId = (StringUtil.isDefined(id) ? id : "X");
-    PublicationDetail pubDetail = new PublicationDetail(pubId, name,
-        description, jCreationDate, jBeginDate, jEndDate, null, importance, version,
-        keywords, "", status, "", author);
-    pubDetail.setBeginHour(beginHour);
-    pubDetail.setEndHour(endHour);
-    pubDetail.setUpdateDate(jUpdateDate);
+    String pubId = StringUtil.isDefined(id) ? id : ResourceReference.UNKNOWN_ID;
+    PublicationDetail pubDetail = PublicationDetail.builder(language)
+        .setPk(new PublicationPK(pubId, spaceId, componentId))
+        .setNameAndDescription(name, description)
+        .created(jCreationDate, userId)
+        .updated(jUpdateDate, userId)
+        .setImportance(Integer.parseInt(importance))
+        .setVersion(version)
+        .setKeywords(keywords)
+        .setContentPagePath("")
+        .setBeginDateTime(jBeginDate, beginHour)
+        .setEndDateTime(jEndDate, endHour)
+        .build();
+
+    pubDetail.setAuthor(author);
+    pubDetail.setStatus(status);
 
     if (StringUtil.isDefined(validatorId)) {
       pubDetail.setTargetValidatorId(validatorId);
@@ -287,13 +301,6 @@ public class PublicationImport {
    * @return The id of the newly created publication.
    */
   private String createPublication(PublicationDetail pubDetail) {
-    pubDetail.getPK().setSpace(spaceId);
-    pubDetail.getPK().setComponentName(componentId);
-    pubDetail.setCreatorId(userId);
-    if (pubDetail.getCreationDate() == null) {
-      pubDetail.setCreationDate(new Date());
-    }
-
     NodePK nodePK = new NodePK(topicId, spaceId, componentId);
     return kmeliaService.createPublicationIntoTopic(pubDetail, nodePK);
   }
