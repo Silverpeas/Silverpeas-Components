@@ -38,7 +38,10 @@ import org.silverpeas.components.kmelia.export.KmeliaPublicationExporter;
 import org.silverpeas.components.kmelia.model.*;
 import org.silverpeas.components.kmelia.search.KmeliaSearchServiceProvider;
 import org.silverpeas.components.kmelia.service.KmeliaHelper;
+import org.silverpeas.components.kmelia.service.KmeliaNodeSimulationElementLister;
+import org.silverpeas.components.kmelia.service.KmeliaPublicationSimulationElementLister;
 import org.silverpeas.components.kmelia.service.KmeliaService;
+import org.silverpeas.core.ActionType;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.ProfiledObjectId;
 import org.silverpeas.core.admin.ProfiledObjectType;
@@ -107,6 +110,7 @@ import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
+import org.silverpeas.core.process.annotation.SimulationActionProcessProcessor;
 import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.NodeAccessControl;
 import org.silverpeas.core.security.authorization.PublicationAccessControl;
@@ -2373,16 +2377,65 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     pasteDetail.setUserId(getUserId());
     List<Object> pastedItems = new ArrayList<>();
     try {
-      Collection<ClipboardSelection> selectedObjects = getClipboardSelectedObjects();
+      final NodeDetail targetNode = getNodeHeader(pasteDetail.getToPK().getId());
+      final Collection<ClipboardSelection> selectedObjects = getClipboardSelectedObjects();
+      final List<PublicationPK> pubPkMoved = new ArrayList<>();
+      final List<PublicationPK> publicationPkCopied = new ArrayList<>();
+      final List<NodePK> nodePkMoved = new ArrayList<>();
+      final List<NodePK> nodePkCopied = new ArrayList<>();
       for (ClipboardSelection selection : selectedObjects) {
         if (selection == null) {
           continue;
         }
-        Object pastedItem = pasteClipboardSelection(selection, pasteDetail);
-        if (pastedItem != null) {
-          pastedItems.add(pastedItem);
+        if (selection.isDataFlavorSupported(PublicationSelection.PublicationDetailFlavor)) {
+          PublicationSelection.TransferData data = (PublicationSelection.TransferData) selection.getTransferData(
+              PublicationSelection.PublicationDetailFlavor);
+          final PublicationDetail pub = data.getPublicationDetail();
+          Optional.of(pub)
+              .filter(p -> selection.isCutted())
+              .ifPresentOrElse(p -> pubPkMoved.add(pub.getPK()),
+                  () -> publicationPkCopied.add(pub.getPK()));
+        } else if (selection.isDataFlavorSupported(NodeSelection.NodeDetailFlavor)) {
+          final NodeDetail node = (NodeDetail) selection.getTransferData(NodeSelection.NodeDetailFlavor);
+          // check if current topic is a subTopic of node
+          Optional.of(node)
+              .filter(n -> !n.equals(targetNode) && !n.isFatherOf(targetNode))
+              .ifPresent(n -> Optional.of(n)
+                  .filter(nd -> selection.isCutted())
+                  .ifPresentOrElse(nd -> nodePkMoved.add(node.getNodePK()),
+                      () -> nodePkCopied.add(node.getNodePK())));
         }
       }
+      SimulationActionProcessProcessor.get()
+          .withContext(s -> s.getSourcePKs().addAll(pubPkMoved))
+            .listElementsWith(KmeliaPublicationSimulationElementLister::new)
+            .byAction(() -> ActionType.MOVE)
+          .andWithContext(s -> s.getSourcePKs().addAll(publicationPkCopied))
+            .listElementsWith(KmeliaPublicationSimulationElementLister::new)
+            .byAction(() -> ActionType.COPY)
+          .andWithContext(s -> s.getSourcePKs().addAll(nodePkMoved))
+            .listElementsWith(KmeliaNodeSimulationElementLister::new)
+            .byAction(() -> ActionType.MOVE)
+          .andWithContext(s -> s.getSourcePKs().addAll(nodePkCopied))
+            .listElementsWith(KmeliaNodeSimulationElementLister::new)
+            .byAction(() -> ActionType.COPY)
+          .toTargets(t -> t.getTargetPKs().add(targetNode.getNodePK()))
+          .setLanguage(() -> currentLanguage)
+          .execute(() -> {
+            selectedObjects.stream()
+                .filter(Objects::nonNull)
+                .map(s -> {
+                  try {
+                    return pasteClipboardSelection(s, pasteDetail, targetNode);
+                  } catch (UnsupportedFlavorException e) {
+                    throw new KmeliaRuntimeException(e);
+                  }
+                })
+                .filter(Objects::nonNull)
+                .forEach(pastedItems::add);
+            return null;
+          });
+
     } catch (ClipboardException | UnsupportedFlavorException e) {
       throw new KmeliaRuntimeException(e);
     }
@@ -2391,15 +2444,14 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   private Object pasteClipboardSelection(ClipboardSelection selection,
-      KmeliaPasteDetail pasteDetail) throws UnsupportedFlavorException {
-    NodeDetail folder = getNodeHeader(pasteDetail.getToPK().getId());
+      KmeliaPasteDetail pasteDetail, final NodeDetail targetNode) throws UnsupportedFlavorException {
     if (selection.isDataFlavorSupported(PublicationSelection.PublicationDetailFlavor)) {
       PublicationSelection.TransferData data = (PublicationSelection.TransferData) selection.getTransferData(
           PublicationSelection.PublicationDetailFlavor);
       PublicationDetail pub = data.getPublicationDetail();
       if (selection.isCutted()) {
         pasteDetail.setFromPK(data.getFatherPK());
-        movePublication(pub.getPK(), folder.getNodePK(), pasteDetail);
+        movePublication(pub.getPK(), targetNode.getNodePK(), pasteDetail);
       } else {
         KmeliaCopyDetail copyDetail = KmeliaCopyDetail.fromPasteDetail(pasteDetail);
         copyDetail.setFromNodePK(data.getFatherPK());
@@ -2409,11 +2461,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     } else if (selection.isDataFlavorSupported(NodeSelection.NodeDetailFlavor)) {
       NodeDetail node = (NodeDetail) selection.getTransferData(NodeSelection.NodeDetailFlavor);
       // check if current topic is a subTopic of node
-      boolean pasteAllowed = !node.equals(folder) && !node.isFatherOf(folder);
+      boolean pasteAllowed = !node.equals(targetNode) && !node.isFatherOf(targetNode);
       if (pasteAllowed) {
         if (selection.isCutted()) {
           // move node
-          getKmeliaService().moveNode(node.getNodePK(), folder.getNodePK(), pasteDetail);
+          getKmeliaService().moveNode(node.getNodePK(), targetNode.getNodePK(), pasteDetail);
         } else {
           // copy node
           KmeliaCopyDetail copyDetail = KmeliaCopyDetail.fromPasteDetail(pasteDetail);
