@@ -51,6 +51,7 @@ public class KmeliaHelper implements Serializable {
   public static final String ROLE_WRITER = "writer";
   public static final String ROLE_READER = "user";
   public static final String SPECIALFOLDER_TOVALIDATE = "tovalidate";
+  public static final String SPECIALFOLDER_NONVISIBLEPUBS = "notvisibleContributions";
 
   private KmeliaHelper() {
   }
@@ -143,5 +144,13 @@ public class KmeliaHelper implements Serializable {
 
   public static boolean isToValidateFolder(String id) {
     return SPECIALFOLDER_TOVALIDATE.equalsIgnoreCase(id);
+  }
+
+  public static boolean isNonVisiblePubsFolder(String id) {
+    return SPECIALFOLDER_NONVISIBLEPUBS.equalsIgnoreCase(id);
+  }
+
+  public static boolean isSpecialFolder(String id) {
+    return isToValidateFolder(id) || isNonVisiblePubsFolder(id);
   }
 }

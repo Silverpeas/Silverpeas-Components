@@ -581,7 +581,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         if (!kmaxMode) {
           boolean checkPath = StringUtil.getBooleanValue(request.getParameter("CheckPath"));
           boolean fromSearch = searchScope != null || kmelia.getSearchContext() != null;
-          if (fromSearch || checkPath || KmeliaHelper.isToValidateFolder(kmelia.getCurrentFolderId())) {
+          if (fromSearch || checkPath || KmeliaHelper.isSpecialFolder(kmelia.getCurrentFolderId())) {
             processPath(kmelia, id);
           } else {
             processPath(kmelia, null);

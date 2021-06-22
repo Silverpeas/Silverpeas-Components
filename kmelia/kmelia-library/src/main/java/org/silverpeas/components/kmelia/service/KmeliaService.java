@@ -696,4 +696,6 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
   void performReminder(final Reminder reminder);
 
   void deleteClone(PublicationPK pk);
+
+  List<KmeliaPublication> getNonVisiblePublications(String componentId, String userId);
 }

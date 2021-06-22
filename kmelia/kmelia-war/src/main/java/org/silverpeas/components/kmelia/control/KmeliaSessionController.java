@@ -620,7 +620,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     String nodeId = id;
     if (!StringUtil.isDefined(id)) {
       nodeId = getCurrentFolderId();
-      if (!KmeliaHelper.isToValidateFolder(nodeId)) {
+      if (!KmeliaHelper.isSpecialFolder(nodeId)) {
         try {
           // check that current node still exists
           getKmeliaService().getNodeHeader(nodeId, getComponentId());
@@ -640,7 +640,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   public boolean isCurrentTopicAvailable() {
     if (isRightsOnTopicsEnabled()) {
-      if (KmeliaHelper.isToValidateFolder(getCurrentFolderId())) {
+      if (KmeliaHelper.isSpecialFolder(getCurrentFolderId())) {
         return true;
       }
       return NodeAccessControl.get().isUserAuthorized(getUserId(), getCurrentFolderPK());
@@ -1523,7 +1523,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     if (!id.equals(currentFolderId)) {
       indexOfFirstPubToDisplay = 0;
       resetSelectedPublicationPKs();
-      if (!KmeliaHelper.SPECIALFOLDER_TOVALIDATE.equalsIgnoreCase(id)) {
+      if (!KmeliaHelper.isSpecialFolder(id)) {
         processBreadcrumb(id);
       }
     }
@@ -3154,15 +3154,17 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   public List<KmeliaPublication> getPublicationsOfCurrentFolder() {
     List<KmeliaPublication> publications;
-    if (!KmeliaHelper.SPECIALFOLDER_TOVALIDATE.equalsIgnoreCase(currentFolderId)) {
+    if (KmeliaHelper.isToValidateFolder(currentFolderId)){
+      publications = getKmeliaService().getPublicationsToValidate(getComponentId(), getUserId());
+    } else if (KmeliaHelper.isNonVisiblePubsFolder(currentFolderId)) {
+      publications = getKmeliaService().getNonVisiblePublications(getComponentId(), getUserId());
+    } else {
       publications = getKmeliaService()
           .getPublicationsOfFolder(new NodePK(currentFolderId, getComponentId()),
               getUserTopicProfile(currentFolderId), getUserId(), isTreeStructure());
-    } else {
-      publications = getKmeliaService().getPublicationsToValidate(getComponentId(), getUserId());
+      applyVisibilityFilter();
     }
     setSessionPublicationsList(publications);
-    applyVisibilityFilter();
     return getSessionPublicationsList();
   }
 
