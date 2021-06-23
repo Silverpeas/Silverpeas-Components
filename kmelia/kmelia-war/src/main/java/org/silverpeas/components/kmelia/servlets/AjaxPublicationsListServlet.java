@@ -24,6 +24,7 @@
 package org.silverpeas.components.kmelia.servlets;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.ecs.html.A;
 import org.apache.ecs.html.Option;
 import org.apache.ecs.wml.Alignment;
@@ -45,14 +46,20 @@ import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.content.form.FieldTemplate;
+import org.silverpeas.core.contribution.content.form.Form;
+import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.date.TemporalFormatter;
+import org.silverpeas.core.index.indexing.model.FieldDescription;
+import org.silverpeas.core.index.search.model.QueryDescription;
 import org.silverpeas.core.io.media.image.thumbnail.ThumbnailSettings;
 import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
+import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
@@ -157,12 +164,17 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       String pubIdToHighlight = req.getParameter("PubIdToHighLight");
       String query = req.getParameter("Query");
 
+      QueryDescription queryDescription = new QueryDescription(query);
+      PagesContext formContext = new PagesContext();
+      initSearch(queryDescription, formContext, req, kmeliaSC);
+
       String selectedPublicationIds = req.getParameter("SelectedPubIds");
       String notSelectedPublicationIds = req.getParameter("NotSelectedPubIds");
       List<PublicationPK> selectedIds =
           kmeliaSC.processSelectedPublicationIds(selectedPublicationIds, notSelectedPublicationIds);
       boolean toPortlet = StringUtil.getBooleanValue(sToPortlet);
-      boolean searchInProgress = StringUtil.isDefined(query);
+      boolean searchInProgress = kmeliaSC.getSearchContext() != null;
+      boolean newSearchInProgress = !queryDescription.isEmpty();
 
       if (StringUtil.isDefined(index)) {
         kmeliaSC.setIndexOfFirstPubToDisplay(index);
@@ -174,6 +186,12 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         kmeliaSC.setSortValue(sort);
       } else if (resetManualSort) {
         kmeliaSC.resetPublicationsOrder();
+      }
+
+      if (queryDescription.isEmpty() && StringUtil.isNotDefined(index) &&
+          StringUtil.isNotDefined(nbItemsPerPage) && StringUtil.isNotDefined(sort)) {
+        kmeliaSC.setSearchContext(null);
+        searchInProgress = false;
       }
 
       boolean sortAllowed = true;
@@ -203,8 +221,13 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         sortAllowed = false;
         publications = kmeliaSC.getSessionPublicationsList();
         role = SilverpeasRole.USER.toString();
+      } else if (newSearchInProgress) {
+        publications = kmeliaSC.search(queryDescription, formContext);
       } else if (searchInProgress) {
-        publications = kmeliaSC.search(query);
+        publications = kmeliaSC.getSearchContext().getResults();
+        if (StringUtil.isDefined(index)) {
+          kmeliaSC.getSearchContext().setPaginationIndex(StringUtil.asInt(index, 0));
+        }
       } else {
         publications = kmeliaSC.getSessionPublicationsList();
       }
@@ -1168,6 +1191,31 @@ public class AjaxPublicationsListServlet extends HttpServlet {
           validatorsList.getValidatorNames());
     } else {
       return resources.getString("kmelia.publication.validators.nomore");
+    }
+  }
+
+  private void initSearch(QueryDescription queryDescription, PagesContext formContext,
+      HttpServletRequest req, KmeliaSessionController kmeliaSC) {
+    Form searchForm = kmeliaSC.getXmlFormSearchForPublications();
+    if (searchForm != null) {
+      List<FieldTemplate> fields = searchForm.getFieldTemplates();
+      for(FieldTemplate field : fields) {
+        String fieldName = field.getFieldName();
+        String[] fieldValues = req.getParameterValues(fieldName);
+        if (ArrayUtil.isNotEmpty(fieldValues)) {
+
+          String fieldValue = fieldValues[0];
+          if (fieldValues.length > 1) {
+            String operator = req.getParameter(fieldName + "Operator");
+            formContext.setSearchOperator(fieldName, operator);
+            fieldValue = StringUtils.join(fieldValues, " "+operator+" ");
+          }
+
+          queryDescription.addFieldQuery(
+              new FieldDescription(searchForm.getFormName() + "$$" + fieldName,
+                  fieldValue, kmeliaSC.getLanguage()));
+        }
+      }
     }
   }
   

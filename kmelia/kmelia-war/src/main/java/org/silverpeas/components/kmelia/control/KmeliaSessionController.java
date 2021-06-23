@@ -61,6 +61,7 @@ import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RecordSet;
@@ -94,6 +95,7 @@ import org.silverpeas.core.importexport.report.ComponentReport;
 import org.silverpeas.core.importexport.report.ImportReport;
 import org.silverpeas.core.importexport.report.MassiveReport;
 import org.silverpeas.core.importexport.report.UnitReport;
+import org.silverpeas.core.index.indexing.model.FieldDescription;
 import org.silverpeas.core.index.indexing.model.IndexManager;
 import org.silverpeas.core.index.search.model.MatchingIndexEntry;
 import org.silverpeas.core.index.search.model.QueryDescription;
@@ -1264,6 +1266,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   public int getIndexOfFirstPubToDisplay() {
+    if (getSearchContext() != null) {
+      return getSearchContext().getPaginationIndex();
+    }
     return indexOfFirstPubToDisplay;
   }
 
@@ -1530,7 +1535,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     if (resetSessionPublication) {
       setSessionPublication(null);
     }
-    setSearchContext(null);
     currentFolderId = id;
   }
 
@@ -2889,18 +2893,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   /**
    * Get publications and aliases of this topic and its subtopics answering to the query
-   * @param query the query
+   * @param queryDescription the query
    * @return List of Kmelia publications
    */
-  public synchronized List<KmeliaPublication> search(String query) {
+  public synchronized List<KmeliaPublication> search(QueryDescription queryDescription,
+      PagesContext formContext) {
 
-    SearchContext previousSearch = getSearchContext();
-    boolean newSearch =
-        previousSearch == null || !previousSearch.getQuery().equalsIgnoreCase(query);
-    if (!newSearch) {
-      // process cached results
-      return getSessionPublicationsList();
-    }
+    String query = queryDescription.getQuery();
 
     // Insert this new search inside persistence layer in order to compute statistics
     final NodeDetail currentFolder = getCurrentFolder();
@@ -2911,7 +2910,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     KmeliaSearchServiceProvider.getTopicSearchService().createTopicSearch(newTS);
 
     List<KmeliaPublication> userPublications = new ArrayList<>();
-    QueryDescription queryDescription = new QueryDescription(query);
     queryDescription.setSearchingUser(getUserId());
     queryDescription.setRequestedFolder(getCurrentFolder().getFullPath());
     queryDescription.addComponent(getComponentId());
@@ -2949,7 +2947,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     }
 
     // store "in session" current search context
-    SearchContext aSearchContext = new SearchContext(query);
+    formContext.setLanguage(getLanguage());
+    SearchContext aSearchContext = new SearchContext(queryDescription, formContext);
+    aSearchContext.setNode(currentFolder);
+    aSearchContext.setResults(userPublications);
     setSearchContext(aSearchContext);
 
     // store results and keep search results order
@@ -3175,7 +3176,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     return I18NHelper.checkLanguage(getSessionPublication().getDetail().getLanguage());
   }
 
-  private void setSearchContext(SearchContext searchContext) {
+  public void setSearchContext(SearchContext searchContext) {
     this.searchContext = searchContext;
   }
 
@@ -3470,6 +3471,67 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   public Form getXmlFormForPublications() {
     Form formUpdate = null;
+    try {
+      PublicationTemplateImpl pubTemplate = (PublicationTemplateImpl) getTemplateForPublications();
+      if (pubTemplate != null) {
+        formUpdate = pubTemplate.getUpdateForm();
+        RecordSet recordSet = pubTemplate.getRecordSet();
+
+        DataRecord record = recordSet.getEmptyRecord();
+
+        formUpdate.setData(record);
+      }
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e);
+    }
+    return formUpdate;
+  }
+
+  public Form getXmlFormSearchForPublications() {
+    Form form = null;
+    try {
+      PublicationTemplateImpl pubTemplate = (PublicationTemplateImpl) getTemplateForPublications();
+      if (pubTemplate != null) {
+        form = pubTemplate.getSearchForm();
+        DataRecord emptyRecord = pubTemplate.getRecordSet().getEmptyRecord();
+        form.setData(emptyRecord);
+        setSearchCriteria(emptyRecord);
+      }
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e);
+    }
+    return form;
+  }
+
+  private void setSearchCriteria(DataRecord record) {
+    if (getSearchContext() != null) {
+      QueryDescription queryDescription = getSearchContext().getQueryDescription();
+      if (queryDescription != null && queryDescription.getMultiFieldQuery() != null) {
+        for (FieldDescription fieldDescription : queryDescription.getMultiFieldQuery()) {
+          try {
+            Field field = record.getField(extractFieldName(fieldDescription.getFieldName()));
+            if (field != null) {
+              field.setValue(
+                  fieldDescription.getContent().replace(" OR ", "##").replace(" AND ", "##"));
+            }
+          } catch (Exception e) {
+            SilverLogger.getLogger(this).error(e);
+          }
+        }
+      }
+    }
+  }
+
+  private String extractFieldName(String completeFieldName) {
+    String[] fieldNameParts = StringUtil.split(completeFieldName, "$$");
+    if (fieldNameParts.length ==  2) {
+      return fieldNameParts[1];
+    }
+    return "";
+  }
+
+  private PublicationTemplate getTemplateForPublications() {
+    PublicationTemplate template = null;
     List<String> forms = getModelUsed();
     if (forms.size() == 1 && !"WYSIWYG".equals(forms.get(0))) {
       String form = forms.get(0);
@@ -3479,19 +3541,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController
         getPublicationTemplateManager()
             .addDynamicPublicationTemplate(getComponentId() + ":" + formShort, form);
 
-        PublicationTemplateImpl pubTemplate = (PublicationTemplateImpl) getPublicationTemplateManager()
+        template = getPublicationTemplateManager()
             .getPublicationTemplate(getComponentId() + ':' + formShort, form);
-        formUpdate = pubTemplate.getUpdateForm();
-        RecordSet recordSet = pubTemplate.getRecordSet();
-
-        DataRecord record = recordSet.getEmptyRecord();
-
-        formUpdate.setData(record);
       } catch (Exception e) {
         SilverLogger.getLogger(this).error(e);
       }
     }
-    return formUpdate;
+    return template;
   }
 
   public void saveXMLFormToPublication(PublicationDetail pubDetail, List<FileItem> items,

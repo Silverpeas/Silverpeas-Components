@@ -227,6 +227,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         request.setAttribute("WysiwygDescription", kmelia.getWysiwygOnTopic());
         request.setAttribute("PageIndex", kmelia.getIndexOfFirstPubToDisplay());
 
+        request.setAttribute("ExtraForm", kmelia.getXmlFormSearchForPublications());
+
         if (kmelia.isTreeviewUsed()) {
           destination = rootDestination + "treeview.jsp";
         } else if (kmelia.isTreeStructure()) {
@@ -246,7 +248,9 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
       } else if (function.equals("ViewPublicationsToValidate")) {
         destination = rootDestination + "publicationsToValidate.jsp";
       } else if ("GoBackToResults".equals(function)) {
-        request.setAttribute("SearchContext", kmelia.getSearchContext());
+        SearchContext searchContext = kmelia.getSearchContext();
+        request.setAttribute("SearchContext", searchContext);
+        kmelia.setCurrentFolderId(searchContext.getNode().getId(), true);
         destination = getDestination("GoToCurrentTopic", kmelia, request);
       } else if (function.startsWith("searchResult")) {
         String id = request.getParameter("Id");
@@ -1820,7 +1824,11 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         kmeliaSC.getBestTopicDetailsOfPublication(id);
       }
 
-      Collection<NodeDetail> pathColl = kmeliaSC.getTopicPath(pk.getId());
+      String nodeId = pk.getId();
+      /*if (kmeliaSC.getSearchContext() != null) {
+          nodeId = kmeliaSC.getSearchContext().getNode().getId();
+      }*/
+      Collection<NodeDetail> pathColl = kmeliaSC.getTopicPath(nodeId);
       String linkedPathString = kmeliaSC.displayPath(pathColl, true, 3);
       String pathString = kmeliaSC.displayPath(pathColl, false, 3);
       kmeliaSC.setSessionPath(linkedPathString);

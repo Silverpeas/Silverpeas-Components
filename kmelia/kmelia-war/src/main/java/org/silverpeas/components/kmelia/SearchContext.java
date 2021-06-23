@@ -23,7 +23,13 @@
  */
 package org.silverpeas.components.kmelia;
 
+import org.silverpeas.components.kmelia.model.KmeliaPublication;
+import org.silverpeas.core.contribution.content.form.PagesContext;
+import org.silverpeas.core.index.search.model.QueryDescription;
+import org.silverpeas.core.node.model.NodeDetail;
+
 import java.io.Serializable;
+import java.util.List;
 
 public class SearchContext implements Serializable {
 
@@ -31,17 +37,50 @@ public class SearchContext implements Serializable {
   public static final int GLOBAL = 1;
   public static final int LOCAL = 2;
 
-  private String query;
+  private QueryDescription queryDescription;
+  private NodeDetail node;
+  private List<KmeliaPublication> results;
+  private int paginationIndex;
+  private PagesContext formContext;
 
-  public SearchContext(String query) {
-    this.query = query;
+  public SearchContext(QueryDescription queryDescription, PagesContext formContext) {
+    this.queryDescription = queryDescription;
+    this.formContext = formContext;
   }
 
   public String getQuery() {
-    return query;
-  }
-  public void setQuery(String query) {
-    this.query = query;
+    return queryDescription.getQuery();
   }
 
+  public NodeDetail getNode() {
+    return node;
+  }
+
+  public void setNode(final NodeDetail node) {
+    this.node = node;
+  }
+
+  public QueryDescription getQueryDescription() {
+    return queryDescription;
+  }
+
+  public List<KmeliaPublication> getResults() {
+    return results;
+  }
+
+  public void setResults(final List<KmeliaPublication> results) {
+    this.results = results;
+  }
+
+  public int getPaginationIndex() {
+    return paginationIndex;
+  }
+
+  public void setPaginationIndex(final int paginationIndex) {
+    this.paginationIndex = paginationIndex;
+  }
+
+  public PagesContext getFormContext() {
+    return formContext;
+  }
 }
