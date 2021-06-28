@@ -29,8 +29,8 @@ import org.silverpeas.components.webpages.model.WebPagesException;
 import org.silverpeas.core.ActionType;
 import org.silverpeas.core.contribution.ContributionStatus;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.util.ContributionManagementContext;
 import org.silverpeas.core.subscription.service.ComponentSubscriptionResource;
-import org.silverpeas.core.subscription.util.SubscriptionManagementContext;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.look.LookHelper;
@@ -171,8 +171,9 @@ public class WebPagesRequestRouter extends ComponentRequestRouter<WebPagesSessio
       String componentInstanceId) {
     ContributionStatus statusBeforeSave = ContributionStatus.VALIDATED;
     ContributionStatus statusAfterSave = ContributionStatus.VALIDATED;
-    request.setAttribute("subscriptionManagementContext", SubscriptionManagementContext
-        .on(ComponentSubscriptionResource.from(componentInstanceId), componentInstanceId)
+    request.setAttribute("contributionManagementContext", ContributionManagementContext
+        .atComponentInstanceId(componentInstanceId)
+        .aboutSubscriptionResource(ComponentSubscriptionResource.from(componentInstanceId))
         .forPersistenceAction(statusBeforeSave, ActionType.UPDATE, statusAfterSave));
   }
 

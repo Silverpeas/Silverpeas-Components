@@ -143,6 +143,7 @@ import static org.silverpeas.core.contribution.attachment.AttachmentServiceProvi
 import static org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController.deleteWysiwygAttachmentsOnly;
 import static org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController.haveGotWysiwyg;
 import static org.silverpeas.core.node.model.NodePK.UNDEFINED_NODE_ID;
+import static org.silverpeas.core.notification.system.ResourceEvent.Type.MOVE;
 import static org.silverpeas.core.persistence.Transaction.getTransaction;
 import static org.silverpeas.core.util.StringUtil.*;
 
@@ -961,19 +962,20 @@ public class DefaultKmeliaService implements KmeliaService {
     return pubDetail;
   }
 
-  private boolean changePublicationStatusOnMove(PublicationDetail pub, NodePK to) {
+  private Pair<Boolean, String> changePublicationStatusOnMove(PublicationDetail pub, NodePK to,
+      final String currentUserId) {
     String oldStatus = pub.getStatus();
     String status = pub.getStatus();
     if (!status.equals(PublicationDetail.DRAFT_STATUS)) {
       status = PublicationDetail.TO_VALIDATE_STATUS;
-      String profile = getProfile(pub.getUpdaterId(), to);
+      String profile = getProfile(currentUserId, to);
       if (SilverpeasRole.PUBLISHER.isInRole(profile) || SilverpeasRole.ADMIN.isInRole(profile)) {
         status = PublicationDetail.VALID_STATUS;
       }
     }
     pub.setStatus(status);
     KmeliaHelper.checkIndex(pub);
-    return !oldStatus.equals(status);
+    return Pair.of(!oldStatus.equals(status), status);
   }
 
   /**
@@ -1150,6 +1152,7 @@ public class DefaultKmeliaService implements KmeliaService {
     return beginVisibilityPeriodUpdated || endVisibilityPeriodUpdated;
   }
 
+  @Transactional
   @SimulationActionProcess(elementLister = KmeliaPublicationSimulationElementLister.class)
   @Action(ActionType.MOVE)
   @Override
@@ -1169,6 +1172,7 @@ public class DefaultKmeliaService implements KmeliaService {
     }
   }
 
+  @Transactional
   @SimulationActionProcess(elementLister = KmeliaPublicationSimulationElementLister.class)
   @Action(ActionType.MOVE)
   @Override
@@ -1198,8 +1202,7 @@ public class DefaultKmeliaService implements KmeliaService {
       sendPublicationToBasket(pub.getPK());
     } else {
       // update parent
-      publicationService.removeAllFathers(pub.getPK());
-      publicationService.addFather(pub.getPK(), to);
+      publicationService.movePublication(pub.getPK(), to, false);
       pub.setTargetValidatorId(pasteContext.getTargetValidatorIds());
       processPublicationAfterMove(pub, to, pasteContext.getUserId());
     }
@@ -1322,13 +1325,18 @@ public class DefaultKmeliaService implements KmeliaService {
     }
   }
 
-  private void processPublicationAfterMove(PublicationDetail pub, NodePK to, String userId) {
-    // update last modifier
-    pub.setUpdaterId(userId);
+  private void processPublicationAfterMove(PublicationDetail pub, NodePK to, String currentUserId) {
     // status must be checked according to topic rights and last modifier (current user)
-    boolean statusChanged = changePublicationStatusOnMove(pub, to);
+    final Pair<Boolean, String> statusChanges = changePublicationStatusOnMove(pub, to, currentUserId);
+    final boolean statusChanged = statusChanges.getFirst();
     // update publication
-    publicationService.setDetail(pub, statusChanged);
+    if (!statusChanged) {
+      pub.setUpdateDataMustBeSet(false);
+    } else if (!PublicationDetail.VALID_STATUS.equals(statusChanges.getSecond())) {
+      // update last modifier
+      pub.setUpdaterId(currentUserId);
+    }
+    publicationService.setDetail(pub, false, MOVE);
 
     // check visibility on taxonomy
     updateSilverContentVisibility(pub);
@@ -2232,7 +2240,7 @@ public class DefaultKmeliaService implements KmeliaService {
 
         // Modification de la publication de reference
         currentPubDetail.setCloneStatus(PublicationDetail.REFUSED_STATUS);
-        currentPubDetail.setUpdateDateMustBeSet(false);
+        currentPubDetail.setUpdateDataMustBeSet(false);
         publicationService.setDetail(currentPubDetail);
 
         // we have to alert publication's last updater
@@ -2351,10 +2359,10 @@ public class DefaultKmeliaService implements KmeliaService {
           PublicationDetail clone = publicationService.getDetail(pubDetail.getClonePK());
           clone.setStatus(PublicationDetail.TO_VALIDATE_STATUS);
           clone.setIndexOperation(IndexManager.NONE);
-          clone.setUpdateDateMustBeSet(false);
+          clone.setUpdateDataMustBeSet(false);
           publicationService.setDetail(clone);
           changedPublication = clone;
-          pubDetail.setUpdateDateMustBeSet(false);
+          pubDetail.setUpdateDataMustBeSet(false);
           pubDetail.setCloneStatus(PublicationDetail.TO_VALIDATE_STATUS);
         } else {
           pubDetail.setStatus(PublicationDetail.TO_VALIDATE_STATUS);
@@ -3564,7 +3572,7 @@ public class DefaultKmeliaService implements KmeliaService {
       refPub.setCloneId(cloneId);
       refPub.setCloneStatus(nextStatus);
       refPub.setStatusMustBeChecked(false);
-      refPub.setUpdateDateMustBeSet(false);
+      refPub.setUpdateDataMustBeSet(false);
       updatePublication(refPub);
 
       // paste vignette
@@ -4544,7 +4552,7 @@ public class DefaultKmeliaService implements KmeliaService {
     //remove reference to clone from original publication
     original.setCloneId(null);
     original.setCloneStatus(null);
-    original.setUpdateDateMustBeSet(false);
+    original.setUpdateDataMustBeSet(false);
     original.setIndexOperation(IndexManager.NONE);
     publicationService.setDetail(original);
   }
