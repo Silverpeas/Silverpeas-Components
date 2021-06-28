@@ -79,13 +79,13 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
   private int nbItemsPerPage = DEFAULT_NBITEMS_PERPAGE;
   private Map<String, String> fields1 = null;
   private Map<String, String> fields2 = null;
-  private CommentService commentService = null;
-  private MultiSilverpeasBundle resources = null;
-  private ClassifiedService classifiedService;
+  private transient CommentService commentService = null;
+  private transient MultiSilverpeasBundle resources = null;
+  private transient ClassifiedService classifiedService;
 
-  private SearchContext searchContext = null;
+  private transient SearchContext searchContext = null;
   private List<ClassifiedDetail> sessionClassifieds = null;
-  Pagination pagination = null;
+  transient Pagination pagination = null;
   private ListIndex currentIndex = new ListIndex(0);
   private int currentScope = SCOPE_ALL;
 
@@ -578,9 +578,15 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
       long size = fileImage.getSize();
       String mimeType = FileUtil.getMimeType(fileName);
 
-      SimpleDocument sd = new SimpleDocument(sdPK, classifiedId, 0, false,
-          new SimpleAttachment(fileName, getLanguage(), "", "", size, mimeType, getUserId(),
-              creationDate, null));
+      SimpleAttachment attachment = SimpleAttachment.builder(getLanguage())
+          .setFilename(fileName)
+          .setTitle("")
+          .setDescription("")
+          .setSize(size)
+          .setContentType(mimeType)
+          .setCreationData(getUserId(), creationDate)
+          .build();
+      SimpleDocument sd = new SimpleDocument(sdPK, classifiedId, 0, false, attachment);
       sd.setDocumentType(DocumentType.attachment);
 
       AttachmentServiceProvider.getAttachmentService()

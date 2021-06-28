@@ -889,9 +889,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
       String resultMode = request.getParameter("resultMode");
       int resultModeInt = Integer.parseInt(resultMode);
       int resultView = QuestionContainerHeader.TWICE_DISPLAY_RESULTS;
-      if (resultModeInt == QuestionContainerHeader.IMMEDIATE_RESULTS) {
-        resultView = QuestionContainerHeader.TWICE_DISPLAY_RESULTS;
-      } else if (resultModeInt == QuestionContainerHeader.DELAYED_RESULTS) {
+      if (resultModeInt == QuestionContainerHeader.DELAYED_RESULTS) {
         resultView = QuestionContainerHeader.NOTHING_DISPLAY_RESULTS;
       }
 
@@ -978,14 +976,19 @@ public class SurveySessionController extends AbstractComponentSessionController 
     try {
       Date creationDate = new Date();
       String filename = fileSynthesis.getName();
-      SimpleAttachment file =
-          new SimpleAttachment(FileUtil.getFilename(filename), I18NHelper.DEFAULT_LANGUAGE, filename,
-              "", fileSynthesis.getSize(), FileUtil.getMimeType(filename), this.getUserId(),
-              creationDate, null);
-      SimpleDocument document = new SimpleDocument(new SimpleDocumentPK(null, survey.
-          getComponentInstanceId()), survey.getId(), 0, false, file);
-      AttachmentServiceProvider.getAttachmentService().createAttachment(document, fileSynthesis.
-          getInputStream(), true);
+      SimpleAttachment file = SimpleAttachment.builder(I18NHelper.DEFAULT_LANGUAGE)
+          .setFilename(FileUtil.getFilename(filename))
+          .setTitle(filename)
+          .setDescription("")
+          .setSize(fileSynthesis.getSize())
+          .setContentType(FileUtil.getMimeType(filename))
+          .setCreationData(getUserId(), creationDate)
+          .build();
+      SimpleDocument document =
+          new SimpleDocument(new SimpleDocumentPK(null, survey.getComponentInstanceId()),
+              survey.getId(), 0, false, file);
+      AttachmentServiceProvider.getAttachmentService()
+          .createAttachment(document, fileSynthesis.getInputStream(), true);
     } catch (IOException e) {
       throw new SurveyException(
           "Cannot save into a file the synthesis of the survey " + survey.getId(), e);

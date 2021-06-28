@@ -106,9 +106,12 @@ public class KmeliaPublicationBatchSimulationElementLister
 
   private SimpleDocument createDummySimpleDocument(PublicationDetail pub, FileItem item, String fileName) {
     // the UUID make same document non unique in order to count rightly the amount of bytes written on the server
-    final SimpleAttachment attachment = new SimpleAttachment(fileName + UUID.randomUUID(), null,
-        null, null, item.getSize(), FileUtil.getMimeType(fileName), currentUser.getId(), new Date(),
-        null);
+    final SimpleAttachment attachment = SimpleAttachment.builder()
+        .setFilename(fileName + UUID.randomUUID())
+        .setSize(item.getSize())
+        .setContentType(FileUtil.getMimeType(fileName))
+        .setCreationData(currentUser.getId(), new Date())
+        .build();
     final SimpleDocumentPK documentPk = new SimpleDocumentPK(null, pub.getInstanceId());
     final SimpleDocument document = new SimpleDocument(documentPk, pub.getId(), 0, false, null, attachment);
     document.setDocumentType(DocumentType.form);

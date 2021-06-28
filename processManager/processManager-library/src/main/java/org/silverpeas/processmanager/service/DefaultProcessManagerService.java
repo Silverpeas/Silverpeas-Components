@@ -84,6 +84,10 @@ public class DefaultProcessManagerService implements ProcessManagerService {
    * Default role for creating workflow processes.
    */
   public static final String DEFAULT_ROLE = "supervisor";
+  private static final String FR_LANG = "fr";
+  private static final String FIELD_TYPE = ", field type: ";
+  private static final String DEFAULT_PROCESS_MANAGER_SERVICE = "DefaultProcessManagerService";
+  private static final String FIELD_NAME = "field name: ";
 
   /**
    * Create a process instance for a specific workflow component, by a specific user using one role
@@ -140,9 +144,6 @@ public class DefaultProcessManagerService implements ProcessManagerService {
     if (metadata == null) {
       metadata = Collections.emptyMap();
     }
-    // Default instance ID
-    String instanceId = "unknown";
-
     ProcessModel processModel = getProcessModel(componentId);
     XmlForm form = (XmlForm) getCreationForm(processModel);
     GenericDataRecord data = (GenericDataRecord) getEmptyCreationRecord(processModel, userRole);
@@ -178,7 +179,7 @@ public class DefaultProcessManagerService implements ProcessManagerService {
     }
 
     // 2 - Create process instance
-    instanceId = createProcessInstance(processModel, userId, userRole, data);
+    String instanceId = createProcessInstance(processModel, userId, userRole, data);
 
     // 3 - Update attachment foreignkey
     // Attachment's foreignkey must be set with the just created instanceId
@@ -221,7 +222,7 @@ public class DefaultProcessManagerService implements ProcessManagerService {
       }
       return retrieveMatchingFieldTypeName(col.iterator().next());
     } else {
-      throw new ProcessManagerException("DefaultProcessManagerService", "processManager.FORM_FIELD_BAD_TYPE",
+      throw new ProcessManagerException(DEFAULT_PROCESS_MANAGER_SERVICE, "processManager.FORM_FIELD_BAD_TYPE",
           "type: " + value.getClass().getName());
     }
   }
@@ -257,15 +258,15 @@ public class DefaultProcessManagerService implements ProcessManagerService {
         try {
           return data.getField(fieldName);
         } catch (FormException e) {
-          throw new ProcessManagerException("DefaultProcessManagerService",
+          throw new ProcessManagerException(DEFAULT_PROCESS_MANAGER_SERVICE,
               "processManager.FORM_FIELD_BAD_TYPE",
-              "field name: " + name + ", field type: " + typeName, e);
+              FIELD_NAME + name + FIELD_TYPE + typeName, e);
         }
       }
     }
 
-    throw new ProcessManagerException("DefaultProcessManagerService", "processManager.FORM_FIELD_NOT_FOUND",
-        "field name: " + name + ", field type: " + typeName);
+    throw new ProcessManagerException(DEFAULT_PROCESS_MANAGER_SERVICE, "processManager.FORM_FIELD_NOT_FOUND",
+        FIELD_NAME + name + FIELD_TYPE + typeName);
   }
 
   /**
@@ -308,8 +309,8 @@ public class DefaultProcessManagerService implements ProcessManagerService {
       }
 
     } catch (FormException e) {
-      throw new ProcessManagerException("DefaultProcessManagerService", "processManager.FORM_FIELD_ERROR",
-          "field name: " + name + ", field type: " + type, e);
+      throw new ProcessManagerException(DEFAULT_PROCESS_MANAGER_SERVICE, "processManager.FORM_FIELD_ERROR",
+          FIELD_NAME + name + FIELD_TYPE + type, e);
     }
   }
 
@@ -349,17 +350,17 @@ public class DefaultProcessManagerService implements ProcessManagerService {
         }
         String str = getSimpleFieldValueString(value, type);
         if (str == null) {
-          throw new ProcessManagerException("DefaultProcessManagerService",
+          throw new ProcessManagerException(DEFAULT_PROCESS_MANAGER_SERVICE,
               "processManager.FORM_FIELD_COLLECTION_NOT_ALLOWED",
-              "field name: " + name + ", field type: " + type);
+              FIELD_NAME + name + FIELD_TYPE + type);
         }
         valuesStr.append(str);
       }
       field.setStringValue(valuesStr.toString());
 
     } catch (FormException e) {
-      throw new ProcessManagerException("DefaultProcessManagerService", "processManager.FORM_FIELD_ERROR",
-          "field name: " + name + ", field type: " + type, e);
+      throw new ProcessManagerException(DEFAULT_PROCESS_MANAGER_SERVICE, "processManager.FORM_FIELD_ERROR",
+          FIELD_NAME + name + FIELD_TYPE + type, e);
     }
   }
 
@@ -401,7 +402,7 @@ public class DefaultProcessManagerService implements ProcessManagerService {
       Action creation = processModel.getCreateAction(currentRole);
       return processModel.getNewActionRecord(creation.getName(), currentRole, getLanguage(), null);
     } catch (WorkflowException e) {
-      throw new ProcessManagerException("DefaultProcessManagerService", "processManager.UNKNOWN_ACTION", e);
+      throw new ProcessManagerException(DEFAULT_PROCESS_MANAGER_SERVICE, "processManager.UNKNOWN_ACTION", e);
     }
   }
 
@@ -413,11 +414,9 @@ public class DefaultProcessManagerService implements ProcessManagerService {
 
     try {
       User user = new UserImpl(UserDetail.getById(userId));
-      Task creationTask =
-          Workflow.getTaskManager().getCreationTask(user, currentRole, processModel);
-      return creationTask;
+      return Workflow.getTaskManager().getCreationTask(user, currentRole, processModel);
     } catch (WorkflowException e) {
-      throw new ProcessManagerException("DefaultProcessManagerService",
+      throw new ProcessManagerException(DEFAULT_PROCESS_MANAGER_SERVICE,
           "processManager.CREATION_TASK_UNAVAILABLE", e);
     }
   }
@@ -429,7 +428,7 @@ public class DefaultProcessManagerService implements ProcessManagerService {
     try {
       return Workflow.getProcessModelManager().getProcessModel(modelId);
     } catch (WorkflowException e) {
-      throw new ProcessManagerException("DefaultProcessManagerService",
+      throw new ProcessManagerException(DEFAULT_PROCESS_MANAGER_SERVICE,
           "processManager.UNKNOWN_PROCESS_MODEL", modelId, e);
     }
   }
@@ -453,27 +452,34 @@ public class DefaultProcessManagerService implements ProcessManagerService {
       }
       SimpleDocument ad =
           createSimpleDocument(foreignId, pagesContext.getComponentId(), logicalName, mimeType,
-              fileContent, DocumentType.attachment, pagesContext.getUserId(),
+              fileContent, pagesContext.getUserId(),
               pagesContext.isVersioningUsed());
+      ad.setDocumentType(DocumentType.attachment);
       attachmentId = ad.getId();
     }
     return attachmentId;
   }
 
   private SimpleDocument createSimpleDocument(String foreignId, String componentId, String fileName,
-      String mimeType, byte[] content, DocumentType context, String userId, boolean versioned) {
+      String mimeType, byte[] content, String userId, boolean versioned) {
 
     // create AttachmentPK with spaceId and componentId
     SimpleDocumentPK simpleDocPk = new SimpleDocumentPK(null, componentId);
-    SimpleDocument doc = new SimpleDocument(simpleDocPk, foreignId, 0, versioned, userId,
-        new SimpleAttachment(fileName, getLanguage(), fileName, "", content.length, mimeType,
-            userId, new Date(), null));
-    doc.setDocumentType(context);
+    SimpleAttachment attachment = SimpleAttachment.builder(getLanguage())
+        .setFilename(fileName)
+        .setTitle(fileName)
+        .setDescription("")
+        .setSize(content.length)
+        .setContentType(mimeType)
+        .setCreationData(userId, new Date())
+        .build();
+    SimpleDocument doc =
+        new SimpleDocument(simpleDocPk, foreignId, 0, versioned, userId, attachment);
     return AttachmentServiceProvider.getAttachmentService()
         .createAttachment(doc, new ByteArrayInputStream(content));
   }
 
   private String getLanguage() {
-    return "fr";
+    return FR_LANG;
   }
 }

@@ -280,6 +280,14 @@ public class KmeliaPublication implements SilverpeasContent {
   }
 
   /**
+   * Is this publication visible?
+   * @return true if this publication is visible, false otherwise.
+   */
+  public boolean isVisible() {
+    return getDetail().isVisible();
+  }
+
+  /**
    * Gets the primary key of this publication.
    *
    * @return the publication primary key.

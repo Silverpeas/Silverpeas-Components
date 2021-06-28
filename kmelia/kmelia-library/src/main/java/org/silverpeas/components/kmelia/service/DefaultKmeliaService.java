@@ -669,7 +669,8 @@ public class DefaultKmeliaService implements KmeliaService {
       profile = getProfile(userId, nodePK);
     }
 
-    KmeliaUserTreeViewFilter.from(userId, instanceId, nodePK, profile, isRightsOnTopicsUsed)
+    KmeliaUserTreeViewFilter
+        .from(userId, instanceId, nodePK, profile, isRightsOnTopicsUsed)
         .setBestUserRoleAndFilter(allowedTree);
 
     if (displayNb) {
@@ -3503,10 +3504,14 @@ public class DefaultKmeliaService implements KmeliaService {
       String description, byte[] contents) {
     try {
       Date creationDate = new Date();
-      SimpleAttachment file =
-          new SimpleAttachment(FileUtil.getFilename(filename), I18NHelper.DEFAULT_LANGUAGE,
-              filename, "", contents.length, FileUtil.getMimeType(filename), userId, creationDate,
-              null);
+      SimpleAttachment file = SimpleAttachment.builder(I18NHelper.DEFAULT_LANGUAGE)
+          .setFilename(FileUtil.getFilename(filename))
+          .setTitle(filename)
+          .setDescription("")
+          .setSize(contents.length)
+          .setContentType(FileUtil.getMimeType(filename))
+          .setCreationData(userId, creationDate)
+          .build();
       boolean versioningActive = getBooleanValue(
           getOrganisationController().getComponentParameterValue(pubPK.getComponentName(),
               VERSION_MODE));
@@ -3827,18 +3832,18 @@ public class DefaultKmeliaService implements KmeliaService {
   }
 
   private boolean isRightsOnTopicsEnabled(String componentId) {
-    return getBooleanValue(getOrganisationController().getComponentParameterValue(componentId,
-        InstanceParameters.rightsOnFolders));
+    return getBooleanValue(getOrganisationController()
+        .getComponentParameterValue(componentId, InstanceParameters.rightsOnFolders));
   }
 
   private boolean isNbItemsDisplayed(String componentId) {
-    return getBooleanValue(getOrganisationController().getComponentParameterValue(componentId,
-        InstanceParameters.displayNbItemsOnFolders));
+    return getBooleanValue(getOrganisationController()
+        .getComponentParameterValue(componentId, InstanceParameters.displayNbItemsOnFolders));
   }
 
   private boolean isCoWritingEnable(String componentId) {
-    return getBooleanValue(getOrganisationController().getComponentParameterValue(componentId,
-        InstanceParameters.coWriting));
+    return getBooleanValue(getOrganisationController()
+        .getComponentParameterValue(componentId, InstanceParameters.coWriting));
   }
 
   private boolean isDraftVisibleWithCoWriting() {
