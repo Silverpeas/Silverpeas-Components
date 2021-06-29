@@ -54,6 +54,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 
@@ -342,7 +343,7 @@ public class KmeliaPublication implements SilverpeasContent {
   @Override
   public User getCreator() {
     String creatorId = getDetail().getCreatorId();
-    return getOrganizationController().getUserDetail(creatorId);
+    return User.getById(creatorId);
   }
 
   /**
@@ -359,7 +360,7 @@ public class KmeliaPublication implements SilverpeasContent {
     if (modifierId == null) {
       lastModifier = getCreator();
     } else {
-      lastModifier = getOrganizationController().getUserDetail(modifierId);
+      lastModifier = User.getById(modifierId);
     }
     return lastModifier;
   }
@@ -407,7 +408,7 @@ public class KmeliaPublication implements SilverpeasContent {
       return false;
     }
     final KmeliaPublication other = (KmeliaPublication) obj;
-    return this.pk == other.pk || (this.pk != null && this.pk.equals(other.pk));
+    return Objects.equals(this.pk, other.pk);
   }
 
   @Override
@@ -458,7 +459,7 @@ public class KmeliaPublication implements SilverpeasContent {
 
   @Override
   public String getComponentInstanceId() {
-    return getDetail().getComponentInstanceId();
+    return getDetail().getInstanceId();
   }
 
   @Override
