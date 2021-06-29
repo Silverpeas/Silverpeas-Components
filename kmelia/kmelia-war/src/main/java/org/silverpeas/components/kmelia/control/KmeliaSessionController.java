@@ -45,6 +45,7 @@ import org.silverpeas.components.kmelia.service.KmeliaService;
 import org.silverpeas.components.kmelia.service.KmeliaXmlFormUpdateContext;
 import org.silverpeas.core.ActionType;
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.ProfiledObjectId;
 import org.silverpeas.core.admin.ProfiledObjectType;
 import org.silverpeas.core.admin.component.model.ComponentInst;
@@ -126,6 +127,7 @@ import org.silverpeas.core.subscription.service.NodeSubscriptionResource;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.core.util.*;
+import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
 import org.silverpeas.core.util.file.FileFolderManager;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileUploadUtil;
@@ -3115,9 +3117,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController
         String[] str = StringUtil.splitByWholeSeparator(tokenizer.nextToken(), "-");
         PublicationPK pk = new PublicationPK(str[0], str[1]);
         PublicationAccessControl publicationAccessController = PublicationAccessControl.get();
-        if (publicationAccessController.isUserAuthorized(getUserId(), pk,
-            AccessControlContext.init())) {
-          this.selectedPublicationPKs.add(pk);
+        if (!this.selectedPublicationPKs.contains(pk) &&
+            publicationAccessController.isUserAuthorized(getUserId(), pk,
+                AccessControlContext.init())) {
+            this.selectedPublicationPKs.add(pk);
         }
       }
     }
@@ -3680,32 +3683,39 @@ public class KmeliaSessionController extends AbstractComponentSessionController
         .stream()
         .collect(toMap(PublicationDetail::getPK, p -> p));
     final KmeliaXmlFormUpdateContext updateContext = new KmeliaXmlFormUpdateContext(items, true).batchProcessing();
-    SimulationActionProcessProcessor.get()
-        .withContext(s -> s.getSourcePKs().addAll(publicationCache.keySet()))
-            .listElementsWith(() -> new KmeliaPublicationBatchSimulationElementLister(publicationCache, updateContext, getUserDetail()))
-            .byAction(() -> ActionType.UPDATE)
-        .toTargets(t -> t.getTargetPKs().add(getCurrentFolderPK()))
-        .setLanguage(this::getCurrentLanguage)
-        .execute(() -> {
-          final List<PublicationPK> success = new ArrayList<>();
-          final List<PublicationPK> fail = new ArrayList<>();
-          publicationCache.forEach((k, p) -> {
-            try {
-              Optional.of(saveXMLFormToPublication(p, updateContext))
-                  .filter(Boolean.TRUE::equals)
-                  .ifPresentOrElse(t -> success.add(k), () -> fail.add(k));
-            } catch (Exception e) {
-              SilverLogger.getLogger(this).error("Can't save content of publication #" + p.getId(), e);
-              fail.add(k);
+    try {
+      SimulationActionProcessProcessor.get()
+          .withContext(s -> s.getSourcePKs().addAll(publicationCache.keySet()))
+          .listElementsWith(() -> new KmeliaPublicationBatchSimulationElementLister(publicationCache,
+              updateContext, getUserDetail()))
+          .byAction(() -> ActionType.UPDATE)
+          .toTargets(t -> t.getTargetPKs().add(getCurrentFolderPK()))
+          .setLanguage(this::getCurrentLanguage)
+          .execute(() -> {
+            final List<PublicationPK> success = new ArrayList<>();
+            final List<PublicationPK> fail = new ArrayList<>();
+            publicationCache.forEach((k, p) -> {
+              try {
+                Optional.of(saveXMLFormToPublication(p, updateContext))
+                    .filter(Boolean.TRUE::equals)
+                    .ifPresentOrElse(t -> success.add(k), () -> fail.add(k));
+              } catch (Exception e) {
+                SilverLogger.getLogger(this).error("Can't save content of publication #" + p.getId(), e);
+                fail.add(k);
+              }
+            });
+            if (fail.isEmpty()) {
+              messager.addSuccess(getMultilang().getStringWithParams("kmelia.publications.batch.update.success",
+                  success.size()));
+            } else {
+              messager.addError(
+                  getMultilang().getStringWithParams("kmelia.publications.batch.update.fail", fail.size()));
             }
+            selectedPublicationPKs.removeAll(success);
+            return null;
           });
-          if (fail.isEmpty()) {
-            messager.addSuccess(getMultilang().getStringWithParams("kmelia.publications.batch.update.success", success.size()));
-          } else {
-            messager.addError(getMultilang().getStringWithParams("kmelia.publications.batch.update.fail", fail.size()));
-          }
-          selectedPublicationPKs.removeAll(success);
-          return null;
-        });
+    } catch (Exception e) {
+      SilverpeasTransverseErrorUtil.stopTransverseErrorIfAny(new SilverpeasRuntimeException(e));
+    }
   }
 }

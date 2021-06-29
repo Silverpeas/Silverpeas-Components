@@ -26,6 +26,7 @@ package org.silverpeas.components.kmelia.servlets;
 import org.silverpeas.components.kmelia.control.KmeliaSessionController;
 import org.silverpeas.components.kmelia.service.KmeliaHelper;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
@@ -94,7 +95,6 @@ public class JSONServlet extends HttpServlet {
         boolean isUser = SilverpeasRole.USER.isInRole(profile);
         boolean isRoot = NodePK.ROOT_NODE_ID.equals(id);
         boolean isBasket = NodePK.BIN_NODE_ID.equals(id);
-        boolean canShowStats = kmeliaSC.isStatisticAllowed();
         Role role = new Role().setAdmin(isAdmin).setPublisher(isPublisher).setWriter(isWriter)
             .setUser(isUser);
 
@@ -110,7 +110,7 @@ public class JSONServlet extends HttpServlet {
           addTopicOperations(kmeliaSC, operations, role, isRoot, node, user);
 
           // publication operations
-          addPublicationOperations(kmeliaSC, operations, role, isRoot, canShowStats, user);
+          addPublicationOperations(kmeliaSC, operations, role, isRoot, user);
         }
       }
       return operations;
@@ -120,36 +120,33 @@ public class JSONServlet extends HttpServlet {
 
   private void addPublicationOperations(final KmeliaSessionController kmeliaSC,
       final JSONCodec.JSONObject operations, final Role role,
-      final boolean isRoot, final boolean canShowStats, final UserDetail user) {
+      final boolean isRoot, final UserDetail user) {
     boolean publicationsInTopic =
         !isRoot || (kmeliaSC.getNbPublicationsOnRoot() == 0 || !kmeliaSC.isTreeStructure());
     boolean addPublicationAllowed = !role.isUser() && publicationsInTopic;
     boolean operationsOnSelectionAllowed =
         (role.isAdmin() || role.isPublisher()) && publicationsInTopic;
+    boolean somePublicationsExist = !kmeliaSC.getSessionPublicationsList().isEmpty();
+    boolean oneTemplateUsed = kmeliaSC.getXmlFormForPublications() != null;
 
     operations.put("addPubli", addPublicationAllowed);
     operations.put("importFile", addPublicationAllowed && kmeliaSC.isImportFileAllowed());
     operations.put("importFiles", addPublicationAllowed && kmeliaSC.isImportFilesAllowed());
-    operations.put("copyPublications", operationsOnSelectionAllowed);
-    operations.put("cutPublications", operationsOnSelectionAllowed);
+    operations.put("copyPublications", operationsOnSelectionAllowed && somePublicationsExist);
+    operations.put("cutPublications", operationsOnSelectionAllowed && somePublicationsExist);
     operations.put("paste", addPublicationAllowed);
 
-    operations.put("sortPublications", role.isAdmin() && publicationsInTopic);
+    operations.put("sortPublications", role.isAdmin() && publicationsInTopic && somePublicationsExist);
 
-    operations.put("updatePublications", operationsOnSelectionAllowed);
-    operations.put(OP_DELETE_PUBLICATIONS, operationsOnSelectionAllowed);
+    operations.put("updatePublications",
+        operationsOnSelectionAllowed && somePublicationsExist && oneTemplateUsed);
+    operations.put(OP_DELETE_PUBLICATIONS, operationsOnSelectionAllowed && somePublicationsExist);
 
-    operations.put(OP_EXPORT_PUBLICATIONS, !user.isAnonymous());
+    operations.put(OP_EXPORT_PUBLICATIONS, !user.isAnonymous() && somePublicationsExist);
     operations.put("manageSubscriptions", role.isAdmin());
     operations.put("subscriptions", isRoot && !user.isAnonymous());
     operations.put("topicSubscriptions", !isRoot && !user.isAnonymous());
     operations.put("favorites", !isRoot && !user.isAnonymous());
-    if (isRoot && canShowStats) {
-      operations.put("statistics", true);
-    }
-    operations.put("mylinks", !user.isAnonymous());
-    operations.put("notify", !user.isAnonymous() && kmeliaSC.isNotificationAllowed());
-    operations.put("responsibles", !user.isAnonymous());
   }
 
   private void addTopicOperations(final KmeliaSessionController kmeliaSC,
@@ -174,6 +171,9 @@ public class JSONServlet extends HttpServlet {
   private void addGeneralOperations(final KmeliaSessionController kmeliaSC,
       final JSONCodec.JSONObject operations, final Role role, final String profile,
       final boolean isRoot, final NodeDetail node) {
+
+    User user = kmeliaSC.getUserDetail();
+
     operations.putJSONObject("context",
         c -> c.put("componentId", kmeliaSC.getComponentId()).put("nodeId", node.getId()));
     operations.put("admin", kmeliaSC.isComponentManageable());
@@ -187,6 +187,13 @@ public class JSONServlet extends HttpServlet {
     operations.put("exportPDF",
         kmeliaSC.isExportComponentAllowed() && kmeliaSC.isExportPdfAllowed() &&
             (role.isAdmin() || role.isPublisher()));
+
+    if (isRoot && kmeliaSC.isStatisticAllowed()) {
+      operations.put("statistics", true);
+    }
+    operations.put("mylinks", !user.isAnonymous());
+    operations.put("notify", !user.isAnonymous() && kmeliaSC.isNotificationAllowed());
+    operations.put("responsibles", !user.isAnonymous());
   }
 
   private void addBasketOperations(final JSONCodec.JSONObject operations, final Role role) {
