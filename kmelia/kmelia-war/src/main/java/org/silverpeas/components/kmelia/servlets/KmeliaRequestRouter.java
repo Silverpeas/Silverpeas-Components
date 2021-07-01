@@ -1523,6 +1523,18 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         String userIds = request.getParameter("ValideurId");
         kmelia.setPublicationValidator(userIds);
         destination = getDestination("ViewPublication", kmelia, request);
+      } else if ("ToUpdatePublications".equals(function)) {
+        String selectedIds = request.getParameter("SelectedIds");
+        String notSelectedIds = request.getParameter("NotSelectedIds");
+        List<PublicationPK> pks = kmelia.processSelectedPublicationIds(selectedIds, notSelectedIds);
+        request.setAttribute("Form", kmelia.getXmlFormForPublications());
+        request.setAttribute("Language", kmelia.getLanguage());
+        request.setAttribute("NumberOfSelectedPublications", pks.size());
+        destination = rootDestination + "updatePublicationsContent.jsp";
+      } else if ("UpdatePublications".equals(function)) {
+        List<FileItem> items = request.getFileItems();
+        kmelia.saveXMLFormOfSelectedPublications(items);
+        destination = getDestination("GoToCurrentTopic", kmelia, request);
       } else {
         destination = rootDestination + function;
       }

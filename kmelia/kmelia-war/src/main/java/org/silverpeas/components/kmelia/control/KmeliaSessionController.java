@@ -39,10 +39,13 @@ import org.silverpeas.components.kmelia.model.*;
 import org.silverpeas.components.kmelia.search.KmeliaSearchServiceProvider;
 import org.silverpeas.components.kmelia.service.KmeliaHelper;
 import org.silverpeas.components.kmelia.service.KmeliaNodeSimulationElementLister;
+import org.silverpeas.components.kmelia.service.KmeliaPublicationBatchSimulationElementLister;
 import org.silverpeas.components.kmelia.service.KmeliaPublicationSimulationElementLister;
 import org.silverpeas.components.kmelia.service.KmeliaService;
+import org.silverpeas.components.kmelia.service.KmeliaXmlFormUpdateContext;
 import org.silverpeas.core.ActionType;
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.ProfiledObjectId;
 import org.silverpeas.core.admin.ProfiledObjectType;
 import org.silverpeas.core.admin.component.model.ComponentInst;
@@ -124,6 +127,7 @@ import org.silverpeas.core.subscription.service.NodeSubscriptionResource;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.core.util.*;
+import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
 import org.silverpeas.core.util.file.FileFolderManager;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileUploadUtil;
@@ -132,6 +136,7 @@ import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
 import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.web.selection.SelectionUsersGroups;
 import org.silverpeas.core.web.subscription.SubscriptionContext;
@@ -148,6 +153,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 import static org.silverpeas.components.kmelia.control.KmeliaSessionController.CLIPBOARD_STATE.*;
 import static org.silverpeas.components.kmelia.export.KmeliaPublicationExporter.*;
 import static org.silverpeas.core.admin.component.model.ComponentInst.getComponentLocalId;
@@ -2489,7 +2496,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
           .filter(c -> c.isDataFlavorSupported(PublicationSelection.PublicationDetailFlavor)
                     || c.isDataFlavorSupported(NodeSelection.NodeDetailFlavor))
           .map(c -> c.isCutted() ? HAS_CUTS : HAS_COPIES)
-          .collect(Collectors.toSet());
+          .collect(toSet());
       final CLIPBOARD_STATE state;
       if (states.size() == 1) {
         state = states.iterator().next();
@@ -3110,9 +3117,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController
         String[] str = StringUtil.splitByWholeSeparator(tokenizer.nextToken(), "-");
         PublicationPK pk = new PublicationPK(str[0], str[1]);
         PublicationAccessControl publicationAccessController = PublicationAccessControl.get();
-        if (publicationAccessController.isUserAuthorized(getUserId(), pk,
-            AccessControlContext.init())) {
-          this.selectedPublicationPKs.add(pk);
+        if (!this.selectedPublicationPKs.contains(pk) &&
+            publicationAccessController.isUserAuthorized(getUserId(), pk,
+                AccessControlContext.init())) {
+            this.selectedPublicationPKs.add(pk);
         }
       }
     }
@@ -3170,10 +3178,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   public String getContentLanguage() {
-    if (getPublicationLanguages().contains(getCurrentLanguage())) {
-      return getCurrentLanguage();
+    if (getSessionPubliOrClone() != null) {
+      if (getPublicationLanguages().contains(getCurrentLanguage())) {
+        return getCurrentLanguage();
+      }
+      return I18NHelper.checkLanguage(getSessionPublication().getDetail().getLanguage());
     }
-    return I18NHelper.checkLanguage(getSessionPublication().getDetail().getLanguage());
+    return getCurrentLanguage();
   }
 
   public void setSearchContext(SearchContext searchContext) {
@@ -3552,12 +3563,16 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   public void saveXMLFormToPublication(PublicationDetail pubDetail, List<FileItem> items,
       boolean forceUpdatePublication) throws org.silverpeas.core.SilverpeasException {
-    String xmlFormShortName;
+    saveXMLFormToPublication(pubDetail, new KmeliaXmlFormUpdateContext(items, forceUpdatePublication));
+  }
 
+  public boolean saveXMLFormToPublication(PublicationDetail pubDetail,
+      final KmeliaXmlFormUpdateContext updateContext) throws org.silverpeas.core.SilverpeasException {
+    final String xmlFormShortName;
     // Is it the creation of the content or an update ?
-    String infoId = pubDetail.getInfoId();
+    final String infoId = pubDetail.getInfoId();
     if (infoId == null || "0".equals(infoId)) {
-      xmlFormShortName = FileUploadUtil.getParameter(items, "KmeliaPubFormName");
+      xmlFormShortName = updateContext.getXmlFormShortNameFromItems();
 
       // The publication have no content
       // We have to register xmlForm to publication
@@ -3565,23 +3580,22 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       updatePublication(pubDetail);
     } else {
       xmlFormShortName = pubDetail.getInfoId();
-    }
-    String pubId = pubDetail.getPK().getId();
-
-    try {
-      PublicationTemplate pub = getPublicationTemplateManager()
-          .getPublicationTemplate(getComponentId() + ":" + xmlFormShortName);
-      RecordSet set = pub.getRecordSet();
-      Form form = pub.getUpdateForm();
-      String language = pubDetail.getLanguageToDisplay(getCurrentLanguage());
-      DataRecord data = set.getRecord(pubId, language);
-      if (data == null || (language != null && !language.equals(data.getLanguage()))) {
-        // This publication haven't got any content at all or for requested language
-        data = set.getEmptyRecord();
-        data.setId(pubId);
-        data.setLanguage(language);
+      if (!xmlFormShortName.equals(updateContext.getXmlFormShortNameFromItems())) {
+        SilverLogger.getLogger(this)
+            .error("{0} and {1} mismatch, no update performed for pub {2}", xmlFormShortName,
+                updateContext.getXmlFormShortNameFromItems(), pubDetail.getPK());
+        return false;
       }
-      PagesContext context = new PagesContext();
+    }
+    final String pubId = pubDetail.getPK().getId();
+    try {
+      final Pair<PublicationTemplate, DataRecord> pubData =
+          updateContext.getOrInitializePublicationDataRecordOf(
+          pubDetail, getCurrentLanguage());
+      final Form form = pubData.getFirst().getUpdateForm();
+      final RecordSet set = pubData.getFirst().getRecordSet();
+      final DataRecord data = pubData.getSecond();
+      final PagesContext context = new PagesContext();
       context.setLanguage(getLanguage());
       context.setComponentId(getComponentId());
       context.setUserId(getUserId());
@@ -3590,37 +3604,36 @@ public class KmeliaSessionController extends AbstractComponentSessionController
         context.setNodeId(getCurrentFolderId());
       }
       context.setObjectId(pubId);
-      if (forceUpdatePublication) {
+      if (updateContext.isForceUpdatePublication()) {
         // case of a modification of the publication
         context.setContentLanguage(getContentLanguage());
       } else {
         // the publication is just created
         context.setContentLanguage(pubDetail.getLanguage());
       }
-
-      form.update(items, data, context);
+      if (updateContext.isBatchProcessing()) {
+        context.setUpdatePolicy(PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES);
+      }
+      form.update(updateContext.getItems(), data, context);
       set.save(data);
     } catch (Exception e) {
       throw new org.silverpeas.core.SilverpeasException("Can't save XML form of publication", e);
     }
-
-    String volatileId = FileUploadUtil.getParameter(items, "VolatileId");
-    if (StringUtil.isDefined(volatileId)) {
-      // Attaching all documents linked to volatile publication to the persisted one
-      List<SimpleDocumentPK> movedDocumentPks = AttachmentServiceProvider.getAttachmentService()
-          .moveAllDocuments(getPublicationPK(volatileId).toResourceReference(),
-              pubDetail.getPK().toResourceReference());
-      if (!movedDocumentPks.isEmpty()) {
+    Optional.ofNullable(FileUploadUtil.getParameter(updateContext.getItems(), "VolatileId"))
+        .filter(StringUtil::isDefined)
+        // Attaching all documents linked to volatile publication to the persisted one
+        .map(v -> Pair.of(v, AttachmentServiceProvider.getAttachmentService()
+            .moveAllDocuments(getPublicationPK(v).toResourceReference(),
+                pubDetail.getPK().toResourceReference())))
+        .filter(p -> !p.getSecond().isEmpty())
         // Change images path in wysiwyg
-        WysiwygController.wysiwygPlaceHaveChanged(getComponentId(), volatileId,
-            getComponentId(), pubId);
-      }
-    }
-
-    if (forceUpdatePublication) {
+        .ifPresent(p -> WysiwygController.wysiwygPlaceHaveChanged(getComponentId(), p.getFirst(),
+            getComponentId(), pubId));
+    if (updateContext.isForceUpdatePublication()) {
       // update publication to change updateDate and updaterId
       updatePublication(pubDetail);
     }
+    return true;
   }
 
   public void saveXMLForm(List<FileItem> items, boolean forceUpdatePublication)
@@ -3657,5 +3670,52 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   private String getPublicationListSessionCacheKey() {
     return KmeliaSessionController.class.getSimpleName() + "#" + getComponentId() +
         "#publicationList";
+  }
+
+  public void saveXMLFormOfSelectedPublications(List<FileItem> items) {
+    final WebMessager messager = WebMessager.getInstance();
+    if (selectedPublicationPKs.isEmpty()) {
+      messager.addSuccess(getMultilang().getString("kmelia.publications.batch.update.none"));
+      return;
+    }
+    final Map<PublicationPK, PublicationDetail> publicationCache = getPublicationService().getByIds(
+        selectedPublicationPKs.stream().map(PublicationPK::getId).collect(toSet()))
+        .stream()
+        .collect(toMap(PublicationDetail::getPK, p -> p));
+    final KmeliaXmlFormUpdateContext updateContext = new KmeliaXmlFormUpdateContext(items, true).batchProcessing();
+    try {
+      SimulationActionProcessProcessor.get()
+          .withContext(s -> s.getSourcePKs().addAll(publicationCache.keySet()))
+          .listElementsWith(() -> new KmeliaPublicationBatchSimulationElementLister(publicationCache,
+              updateContext, getUserDetail()))
+          .byAction(() -> ActionType.UPDATE)
+          .toTargets(t -> t.getTargetPKs().add(getCurrentFolderPK()))
+          .setLanguage(this::getCurrentLanguage)
+          .execute(() -> {
+            final List<PublicationPK> success = new ArrayList<>();
+            final List<PublicationPK> fail = new ArrayList<>();
+            publicationCache.forEach((k, p) -> {
+              try {
+                Optional.of(saveXMLFormToPublication(p, updateContext))
+                    .filter(Boolean.TRUE::equals)
+                    .ifPresentOrElse(t -> success.add(k), () -> fail.add(k));
+              } catch (Exception e) {
+                SilverLogger.getLogger(this).error("Can't save content of publication #" + p.getId(), e);
+                fail.add(k);
+              }
+            });
+            if (fail.isEmpty()) {
+              messager.addSuccess(getMultilang().getStringWithParams("kmelia.publications.batch.update.success",
+                  success.size()));
+            } else {
+              messager.addError(
+                  getMultilang().getStringWithParams("kmelia.publications.batch.update.fail", fail.size()));
+            }
+            selectedPublicationPKs.removeAll(success);
+            return null;
+          });
+    } catch (Exception e) {
+      SilverpeasTransverseErrorUtil.stopTransverseErrorIfAny(new SilverpeasRuntimeException(e));
+    }
   }
 }
