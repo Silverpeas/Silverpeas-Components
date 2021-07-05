@@ -29,7 +29,6 @@
 <%@taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <%@ include file="check.jsp" %>
 
-<%@page import="org.silverpeas.core.contribution.content.form.DataRecord" %>
 <%@page import="org.silverpeas.core.contribution.content.form.Form" %>
 <%@page import="org.silverpeas.core.contribution.content.form.PagesContext" %>
 
@@ -39,12 +38,14 @@
 
 <%
   Form formUpdate = (Form) request.getAttribute("Form");
-  DataRecord data = (DataRecord) request.getAttribute("Data");
+  Form formUpdate2 = (Form) request.getAttribute("OtherForm");
+  boolean otherFormDefined = formUpdate2 != null;
 
   PagesContext context =
       new PagesContext("myForm", "0", resource.getLanguage(), false, componentId, "useless");
   context.setObjectId("0");
   context.setBorderPrinted(false);
+  context.setShowMandatorySnippet(!otherFormDefined);
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -52,12 +53,26 @@
 <head>
   <view:looknfeel/>
   <view:includePlugin name="wysiwyg"/>
-  <% formUpdate.displayScripts(out, context);%>
+  <%
+    formUpdate.displayScripts(out, context);
+    if (otherFormDefined) {
+      context.setMultiFormInPage(otherFormDefined);
+      context.setFormIndex("2");
+      context.setShowMandatorySnippet(true);
+      formUpdate2.displayScripts(out, context);
+    }
+  %>
   <script type="text/javascript">
     function isCorrectForm() {
       var result = false;
       ifCorrectFormExecute(function() {
-        result = true;
+        <% if (otherFormDefined) { %>
+        ifCorrectForm2Execute(function() {
+        <% } %>
+          result = true;
+        <% if (otherFormDefined) { %>
+        });
+        <% } %>
       });
       return result;
     }
@@ -82,7 +97,10 @@
         <td id="richContent">
           <form name="myForm" method="post" action="UpdateXMLContent" enctype="multipart/form-data" accept-charset="UTF-8">
             <%
-              formUpdate.display(out, context, data);
+              formUpdate.display(out, context);
+              if (otherFormDefined) {
+                formUpdate2.display(out, context);
+              }
             %>
           </form>
         </td>
@@ -97,7 +115,7 @@
       <view:button label="${saveLabel}" action="javascript:onClick=save();">
         <c:set var="contributionManagementContext" value="${requestScope.contributionManagementContext}"/>
         <c:if test="${not empty contributionManagementContext}">
-          <c:set var="formData" value="<%=data%>"/>
+          <c:set var="formData" value="<%=formUpdate.getData()%>"/>
           <jsp:useBean id="contributionManagementContext" type="org.silverpeas.core.contribution.util.ContributionManagementContext"/>
           <c:if test="${not empty formData and not formData.new
                     and contributionManagementContext.entityPersistenceAction.update}">

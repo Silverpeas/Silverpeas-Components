@@ -101,7 +101,7 @@ public class WebPagesRequestRouter extends ComponentRequestRouter<WebPagesSessio
           destination = getDestination(FUNCTION_PREVIEW, webPagesSC, request);
         }
       } else if (FUNCTION_EDIT.equals(function)) {
-        if (webPagesSC.isXMLTemplateUsed()) {
+        if (webPagesSC.isXMLTemplateUsed(WebPagesSessionController.PARAM_MAIN_TEMPLATE)) {
           destination = getDestination("EditXMLContent", webPagesSC, request);
         } else {
           WysiwygRouting routing = new WysiwygRouting();
@@ -118,9 +118,9 @@ public class WebPagesRequestRouter extends ComponentRequestRouter<WebPagesSessio
       } else if (FUNCTION_PREVIEW.equals(function)) {
         processHaveGotContent(webPagesSC, request);
         request.setAttribute("SubscriptionEnabled", webPagesSC.isSubscriptionUsed());
-        if (webPagesSC.isXMLTemplateUsed()) {
-          request.setAttribute("Form", webPagesSC.getViewForm());
-          request.setAttribute("Data", webPagesSC.getDataRecord());
+        if (webPagesSC.isXMLTemplateUsed(WebPagesSessionController.PARAM_MAIN_TEMPLATE)) {
+          request.setAttribute("Form", webPagesSC.getViewForm(WebPagesSessionController.PARAM_MAIN_TEMPLATE));
+          request.setAttribute("OtherForm", webPagesSC.getViewForm(WebPagesSessionController.PARAM_OTHER_TEMPLATE));
         }
         if (!"Portlet".equals(request.getAttribute(ACTION_ATTR))) {
           if (!USER.equals(webPagesSC.getProfile())) {
@@ -138,8 +138,8 @@ public class WebPagesRequestRouter extends ComponentRequestRouter<WebPagesSessio
         destination = webPagesSC.manageSubscriptions();
       } else if ("EditXMLContent".equals(function)) {
         // user wants to edit data
-        request.setAttribute("Form", webPagesSC.getUpdateForm());
-        request.setAttribute("Data", webPagesSC.getDataRecord());
+        request.setAttribute("Form", webPagesSC.getUpdateForm(WebPagesSessionController.PARAM_MAIN_TEMPLATE));
+        request.setAttribute("OtherForm", webPagesSC.getUpdateForm(WebPagesSessionController.PARAM_OTHER_TEMPLATE));
 
         setupRequestForSubscriptionNotificationSending(request, webPagesSC.getComponentId());
 
@@ -180,8 +180,8 @@ public class WebPagesRequestRouter extends ComponentRequestRouter<WebPagesSessio
   private boolean processHaveGotContent(WebPagesSessionController webPagesSC,
       HttpServletRequest request) throws WebPagesException {
     boolean haveGotContent;
-    if (webPagesSC.isXMLTemplateUsed()) {
-      haveGotContent = webPagesSC.isXMLContentDefined();
+    if (webPagesSC.isXMLTemplateUsed(WebPagesSessionController.PARAM_MAIN_TEMPLATE)) {
+      haveGotContent = webPagesSC.isXMLContentDefined(WebPagesSessionController.PARAM_MAIN_TEMPLATE);
     } else {
       haveGotContent = webPagesSC.haveGotWysiwygNotEmpty();
     }
