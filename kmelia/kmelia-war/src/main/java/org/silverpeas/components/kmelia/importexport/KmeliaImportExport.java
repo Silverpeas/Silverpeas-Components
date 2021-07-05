@@ -20,7 +20,7 @@
  */
 package org.silverpeas.components.kmelia.importexport;
 
-import org.silverpeas.components.kmelia.KmeliaException;
+import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
 import org.silverpeas.components.kmelia.service.KmeliaHelper;
 import org.silverpeas.components.kmelia.service.KmeliaService;
 import org.silverpeas.core.admin.ProfiledObjectId;
@@ -72,7 +72,7 @@ public class KmeliaImportExport extends GEDImportExport {
 
   @Override
   protected void updatePublication(PublicationDetail pubDetTemp,
-      PublicationDetail pubDetailToCreate, UserDetail userDetail) throws Exception {
+      PublicationDetail pubDetailToCreate, UserDetail userDetail) {
     // Ces tests sont utiles dans le cas d'une publication à mettre à jour par id
     if (StringUtil.isDefined(pubDetailToCreate.getName())) {
       pubDetTemp.setName(pubDetailToCreate.getName());
@@ -98,7 +98,7 @@ public class KmeliaImportExport extends GEDImportExport {
 
   @Override
   protected String createPublicationIntoTopic(PublicationDetail pubDetTemp, NodePK topicPK,
-      UserDetail userDetail) throws Exception {
+      UserDetail userDetail) {
     OrganizationController orgnaisationController = OrganizationControllerProvider
         .getOrganisationController();
     if (pubDetTemp.isStatusMustBeChecked()) {
@@ -127,7 +127,7 @@ public class KmeliaImportExport extends GEDImportExport {
   }
 
   @Override
-  protected void addPublicationToTopic(PublicationPK pubPK, NodePK topicPK) throws Exception {
+  protected void addPublicationToTopic(PublicationPK pubPK, NodePK topicPK) {
     getKmeliaService().addPublicationToTopic(pubPK, topicPK, false);
   }
 
@@ -241,15 +241,14 @@ public class KmeliaImportExport extends GEDImportExport {
   }
 
   @Override
-  public void publicationNotClassifiedOnPDC(String pubId) throws Exception {
+  public void publicationNotClassifiedOnPDC(String pubId) {
     try {
       PublicationDetail publication = getKmeliaService().getPublicationDetail(
           new PublicationPK(pubId, getCurrentComponentId()));
       publication.setStatus(DRAFT_STATUS);
       getKmeliaService().updatePublication(publication);
     } catch (Exception e) {
-      throw new KmeliaException("GEDImportExport.publicationNotClassifiedOnPDC(String)",
-          KmeliaException.ERROR, "importExport.EX_GET_SILVERPEASOBJECTID", "pubId = " + pubId, e);
+      throw new KmeliaRuntimeException("Error while updating publication " + pubId, e);
     }
   }
 
@@ -260,15 +259,14 @@ public class KmeliaImportExport extends GEDImportExport {
    * @return pubDetail
    */
   @Override
-  protected PublicationDetail createPublication(PublicationDetail pubDetail) throws Exception {
+  protected PublicationDetail createPublication(PublicationDetail pubDetail) {
     try {
       pubDetail.setStatus(VALID_STATUS);
       String pubId = getKmeliaService().createKmaxPublication(pubDetail);
       pubDetail.getPK().setId(pubId);
       return pubDetail;
     } catch (Exception re) {
-      throw new KmeliaException("GEDImportExport.createPublication()", KmeliaException.ERROR,
-          "importExport.EX_PUBLICATION_CREATE", re);
+      throw new KmeliaRuntimeException("Cannot create KMax publication", re);
     }
   }
 }
