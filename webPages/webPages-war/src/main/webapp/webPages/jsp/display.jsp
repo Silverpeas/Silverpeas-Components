@@ -29,7 +29,6 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
 <%@ include file="check.jsp" %>
-<%@page import="org.silverpeas.core.contribution.content.form.DataRecord" %>
 <%@page import="org.silverpeas.core.contribution.content.form.Form" %>
 <%@page import="org.silverpeas.core.contribution.content.form.PagesContext" %>
 <%@ page import="org.silverpeas.core.i18n.I18NHelper" %>
@@ -63,7 +62,7 @@
 
 <%
   Form form = (Form) request.getAttribute("Form");
-  DataRecord data = (DataRecord) request.getAttribute("Data");
+  Form otherForm = (Form) request.getAttribute("OtherForm");
   PagesContext context = new PagesContext("myForm", "0", resource.getLanguage(), false, componentId, "useless");
   context.setObjectId("0");
   context.setBorderPrinted(false);
@@ -113,8 +112,11 @@
       <c:choose>
         <c:when test="${haveGotContent}">
           <%
-            if (data != null) {
-              form.display(out, context, data);
+            if (form != null) {
+              form.display(out, context);
+              if (otherForm != null) {
+                otherForm.display(out, context);
+              }
             } else {
           %>
           <view:displayWysiwyg objectId="<%=componentId%>" componentId="<%=componentId %>" language="<%=I18NHelper.DEFAULT_LANGUAGE %>"/>

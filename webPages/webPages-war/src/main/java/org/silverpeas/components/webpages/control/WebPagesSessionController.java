@@ -30,7 +30,6 @@ import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Form;
-import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
@@ -44,6 +43,7 @@ import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.subscription.ResourceSubscriptionService;
 import org.silverpeas.core.subscription.service.ComponentSubscriptionResource;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
@@ -57,6 +57,8 @@ import java.util.List;
 public class WebPagesSessionController extends AbstractComponentSessionController {
 
   private String usedTemplate = null;
+  public static final String PARAM_MAIN_TEMPLATE = "xmlTemplate";
+  public static final String PARAM_OTHER_TEMPLATE = "xmlTemplate2";
 
   /**
    * Standard Session Controller Constructor
@@ -70,7 +72,8 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
             "org.silverpeas.webpages.multilang.webPagesBundle",
             "org.silverpeas.webpages.settings.webPagesIcons");
 
-    registerXMLForm();
+    registerXMLForm(PARAM_MAIN_TEMPLATE);
+    registerXMLForm(PARAM_OTHER_TEMPLATE);
   }
 
   /**
@@ -115,165 +118,193 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
   /*
    * XML template management
    */
-  private String getUsedXMLTemplate() {
-    return getComponentParameterValue("xmlTemplate");
+  private String getUsedXMLTemplate(String param) {
+    return getComponentParameterValue(param);
   }
 
-  private String getUsedXMLTemplateShortname() {
-    String xmlFormName = getUsedXMLTemplate();
-    return xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName.indexOf('.'));
+  private String getUsedXMLTemplateShortname(String param) {
+    String xmlFormName = getUsedXMLTemplate(param);
+    if (StringUtil.isDefined(xmlFormName)) {
+      return xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName.indexOf('.'));
+    }
+    return null;
   }
 
-  public boolean isXMLTemplateUsed() {
-    return StringUtil.isDefined(getUsedXMLTemplate());
+  public boolean isXMLTemplateUsed(String param) {
+    return StringUtil.isDefined(getUsedXMLTemplate(param));
   }
 
-  private PublicationTemplate getXMLTemplate() throws WebPagesException {
-    if (isTemplateChanged()) {
-      registerXMLForm();
+  private PublicationTemplate getXMLTemplate(String param) throws WebPagesException {
+    if (!isXMLTemplateUsed(param)) {
+      return null;
+    }
+    if (isTemplateChanged(param)) {
+      registerXMLForm(param);
     }
     try {
       return PublicationTemplateManager.getInstance().
-              getPublicationTemplate(getComponentId() + ":" + getUsedXMLTemplateShortname());
+              getPublicationTemplate(getComponentId() + ":" + getUsedXMLTemplateShortname(param));
     } catch (PublicationTemplateException e) {
       throw new WebPagesException("WebPagesSessionController.getXMLTemplate()",
               SilverpeasException.ERROR, "webPages.EX_CANT_GET_TEMPLATE", e);
     }
   }
 
-  public DataRecord getDataRecord() throws WebPagesException {
+  public DataRecord getDataRecord(String param) throws WebPagesException {
     try {
-      PublicationTemplate pubTemplate = getXMLTemplate();
-
-      RecordSet recordSet = pubTemplate.getRecordSet();
-      DataRecord data = recordSet.getRecord("0");
-      if (data == null) {
-        data = recordSet.getEmptyRecord();
-        data.setId("0");
+      PublicationTemplate pubTemplate = getXMLTemplate(param);
+      if (pubTemplate != null) {
+        RecordSet recordSet = pubTemplate.getRecordSet();
+        DataRecord data = recordSet.getRecord("0");
+        if (data == null) {
+          data = recordSet.getEmptyRecord();
+          data.setId("0");
+        }
+        return data;
       }
-
-      return data;
     } catch (Exception e) {
       throw new WebPagesException("WebPagesSessionController.getDataRecord()",
               SilverpeasException.ERROR, "webPages.EX_CANT_GET_DATA", e);
     }
+    return null;
   }
 
-  public boolean isXMLContentDefined() throws WebPagesException {
-    DataRecord data;
+  public boolean isXMLContentDefined(String param) throws WebPagesException {
+    DataRecord data = null;
     try {
-      PublicationTemplate pubTemplate = getXMLTemplate();
-
-      RecordSet recordSet = pubTemplate.getRecordSet();
-      data = recordSet.getRecord("0");
-      return data != null;
+      PublicationTemplate pubTemplate = getXMLTemplate(param);
+      if (pubTemplate != null) {
+        RecordSet recordSet = pubTemplate.getRecordSet();
+        data = recordSet.getRecord("0");
+      }
     } catch (Exception e) {
       throw new WebPagesException("WebPagesSessionController.isXMLContentDefined()",
               SilverpeasException.ERROR, "webPages.EX_CANT_GET_DATA", e);
     }
+    return data != null;
   }
 
-  public Form getViewForm() throws WebPagesException {
+  public Form getViewForm(String param) throws WebPagesException {
     try {
-      PublicationTemplate pubTemplate = getXMLTemplate();
-
-      return pubTemplate.getViewForm();
+      PublicationTemplate pubTemplate = getXMLTemplate(param);
+      if (pubTemplate != null) {
+        Form form = pubTemplate.getViewForm();
+        if (form != null) {
+          form.setData(getDataRecord(param));
+        }
+        return form;
+      }
     } catch (PublicationTemplateException e) {
       throw new WebPagesException("WebPagesSessionController.getViewForm()",
               SilverpeasException.ERROR, "webPages.EX_CANT_GET_VIEWFORM", e);
     }
+    return null;
   }
 
-  public Form getUpdateForm() throws WebPagesException {
+  public Form getUpdateForm(String param) throws WebPagesException {
     try {
-      PublicationTemplate pubTemplate = getXMLTemplate();
-
-      return pubTemplate.getUpdateForm();
+      PublicationTemplate pubTemplate = getXMLTemplate(param);
+      if (pubTemplate != null) {
+        Form form = pubTemplate.getUpdateForm();
+        if (form != null) {
+          form.setData(getDataRecord(param));
+        }
+        return form;
+      }
     } catch (PublicationTemplateException e) {
       throw new WebPagesException("WebPagesSessionController.getUpdateForm()",
               SilverpeasException.ERROR, "webPages.EX_CANT_GET_UPDATEFORM", e);
     }
+    return null;
   }
 
   public void saveDataRecord(List<FileItem> items) throws WebPagesException {
     // save data in database
-    RecordSet set;
-    try {
-      PublicationTemplate pub = getXMLTemplate();
-      set = pub.getRecordSet();
-      Form form = pub.getUpdateForm();
-      DataRecord data = set.getRecord("0");
-      if (data == null) {
-        data = set.getEmptyRecord();
-        data.setId("0");
-      }
+    PagesContext context = new PagesContext("useless", "0", getLanguage(), false, getComponentId(),
+            getUserId());
+    context.setEncoding(Charsets.UTF_8.name());
+    context.setObjectId("0");
+    context.setContentLanguage(I18NHelper.DEFAULT_LANGUAGE);
 
-      PagesContext context = new PagesContext("useless", "0", getLanguage(), false, getComponentId(),
-              getUserId());
-      context.setEncoding("UTF-8");
-      context.setObjectId("0");
-      context.setContentLanguage(I18NHelper.DEFAULT_LANGUAGE);
-
-      form.update(items, data, context);
-      set.save(data);
-    } catch (Exception e) {
-      throw new WebPagesException("WebPagesSessionController.saveDataRecord()",
-              SilverpeasException.ERROR, "webPages.EX_CANT_SAVE_DATA", e);
-    }
+    saveDataRecord(PARAM_MAIN_TEMPLATE, items, context);
+    saveDataRecord(PARAM_OTHER_TEMPLATE, items, context);
 
     // send subscriptions
     WebPagesUserNotifier.notify(getNodePK(), getUserId());
 
     // index updated data
-    indexForm(set);
+    indexForms();
   }
 
-  private void indexForm(RecordSet recordSet) throws WebPagesException {
-    try {
-      if (recordSet == null) {
-        PublicationTemplate pub = getXMLTemplate();
-        recordSet = pub.getRecordSet();
-      }
-    } catch (Exception e) {
-      throw new WebPagesException("WebPagesSessionController.indexForm()",
-          SilverpeasException.ERROR, "webPages.EX_CANT_GET_FORM", e);
-    }
+  private void indexForms() {
+
     // index data
-    try {
-      FullIndexEntry indexEntry =
-              new FullIndexEntry(getComponentId(), "Component", getComponentId());
-      indexEntry.setCreationDate(new Date());
-      indexEntry.setCreationUser(getUserId());
-      indexEntry.setTitle(getComponentLabel());
-      ComponentInstLight component = getOrganisationController().getComponentInstLight(getComponentId());
-      if (component != null) {
-        indexEntry.setPreview(component.getDescription());
-      }
-
-      recordSet.indexRecord("0", getUsedXMLTemplateShortname(), indexEntry);
-
-      IndexEngineProxy.addIndexEntry(indexEntry);
-    } catch (FormException e) {
-      throw new WebPagesException("WebPagesSessionController.indexForm()",
-              SilverpeasException.ERROR, "webPages.EX_CANT_INDEX_DATA", e);
+    FullIndexEntry indexEntry =
+            new FullIndexEntry(getComponentId(), "Component", "0");
+    indexEntry.setCreationDate(new Date());
+    indexEntry.setCreationUser(getUserId());
+    indexEntry.setTitle(getComponentLabel());
+    ComponentInstLight component = getOrganisationController().getComponentInstLight(getComponentId());
+    if (component != null) {
+      indexEntry.setPreview(component.getDescription());
     }
+
+    indexFormContent(PARAM_MAIN_TEMPLATE, indexEntry);
+    indexFormContent(PARAM_OTHER_TEMPLATE, indexEntry);
+
+    IndexEngineProxy.addIndexEntry(indexEntry);
   }
 
-  private boolean isTemplateChanged() {
-    return isXMLTemplateUsed() && !getUsedXMLTemplate().equals(usedTemplate);
+  private boolean isTemplateChanged(String param) {
+    return isXMLTemplateUsed(param) && !getUsedXMLTemplate(param).equals(usedTemplate);
   }
 
-  private void registerXMLForm() {
-    if (isXMLTemplateUsed()) {
+  private void registerXMLForm(String param) {
+    if (isXMLTemplateUsed(param)) {
       // register xmlForm to component
       try {
         PublicationTemplateManager.getInstance()
-            .addDynamicPublicationTemplate(getComponentId() + ":" + getUsedXMLTemplateShortname(),
-                getUsedXMLTemplate());
-        usedTemplate = getUsedXMLTemplate();
+            .addDynamicPublicationTemplate(getComponentId() + ":" + getUsedXMLTemplateShortname(param),
+                getUsedXMLTemplate(param));
+        usedTemplate = getUsedXMLTemplate(param);
       } catch (PublicationTemplateException e) {
         SilverLogger.getLogger(this).error(e);
       }
+    }
+  }
+
+  public void saveDataRecord(String param, List<FileItem> items, PagesContext context)
+      throws WebPagesException {
+    // save data in database
+    try {
+      PublicationTemplate pub = getXMLTemplate(param);
+      if (pub != null) {
+        RecordSet set = pub.getRecordSet();
+        Form form = pub.getUpdateForm();
+        DataRecord data = set.getRecord("0");
+        if (data == null) {
+          data = set.getEmptyRecord();
+          data.setId("0");
+        }
+
+        form.update(items, data, context);
+        set.save(data);
+      }
+    } catch (Exception e) {
+      throw new WebPagesException("WebPagesSessionController.saveDataRecord()",
+          SilverpeasException.ERROR, "webPages.EX_CANT_SAVE_DATA", e);
+    }
+  }
+
+  private void indexFormContent(String param, FullIndexEntry indexEntry) {
+    try {
+      PublicationTemplate pub = getXMLTemplate(param);
+      if (pub != null) {
+        RecordSet recordSet = pub.getRecordSet();
+        recordSet.indexRecord("0", getUsedXMLTemplateShortname(PARAM_MAIN_TEMPLATE), indexEntry);
+      }
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e);
     }
   }
 }
