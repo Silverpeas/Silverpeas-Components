@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.kmelia;
 
+import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
 import org.silverpeas.components.kmelia.service.KmeliaService;
 import org.silverpeas.core.admin.component.ApplicationResourcePasting;
 import org.silverpeas.core.admin.component.model.PasteDetail;
@@ -31,14 +32,26 @@ import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygControlle
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
+import org.silverpeas.core.pdc.pdc.model.PdcClassification;
+import org.silverpeas.core.pdc.pdc.model.PdcException;
+import org.silverpeas.core.pdc.pdc.model.UsedAxis;
+import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
+import org.silverpeas.core.pdc.pdc.service.PdcManager;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
 @Named("kmelia" + ApplicationResourcePasting.NAME_SUFFIX)
 public class KmeliaResourcePasting implements ApplicationResourcePasting {
+
+  @Inject
+  private PdcManager pdcManager;
+
+  @Inject
+  private PdcClassificationService classificationService;
 
   @Inject
   private NodeService nodeService;
@@ -47,10 +60,34 @@ public class KmeliaResourcePasting implements ApplicationResourcePasting {
   private KmeliaService kmeliaService;
 
   @Override
+  @Transactional
   public void paste(PasteDetail pasteDetail) {
     String fromComponentId = pasteDetail.getFromComponentId();
     String toComponentId = pasteDetail.getToComponentId();
 
+    // copy the utilized part of the PdC if any
+    try {
+      List<UsedAxis> usedAxis = pdcManager.getUsedAxisByInstanceId(fromComponentId);
+      for(UsedAxis axis: usedAxis) {
+        UsedAxis copy = axis.copy();
+        copy.setInstanceId(toComponentId);
+        pdcManager.addUsedAxis(copy);
+      }
+    } catch (PdcException e) {
+      throw new KmeliaRuntimeException(e.getMessage());
+    }
+
+    // copy the predefined classification on the PdC if any
+    PdcClassification appClassification =
+        classificationService.getPreDefinedClassification(fromComponentId);
+    if (!appClassification.isEmpty() &&
+        appClassification.isPredefinedForTheWholeComponentInstance()) {
+      PdcClassification copy = appClassification.copy()
+          .inComponentInstance(toComponentId);
+      classificationService.savePreDefinedClassification(copy);
+    }
+
+    // copy nodes and publications
     KmeliaCopyDetail copyDetail = new KmeliaCopyDetail(pasteDetail);
     copyDetail.addOption(KmeliaCopyDetail.NODE_RIGHTS, "true");
     copyDetail.addOption(KmeliaCopyDetail.ADMINISTRATIVE_OPERATION, Boolean.TRUE.toString());
@@ -69,7 +106,7 @@ public class KmeliaResourcePasting implements ApplicationResourcePasting {
     WysiwygController.copy(fromComponentId, "Node_" + NodePK.ROOT_NODE_ID, toComponentId,
         "Node_" + NodePK.ROOT_NODE_ID, pasteDetail.getUserId());
 
-    // copy first level of nodes
+    // copy recursively the first-level nodes (direct children of the root node)
     List<NodeDetail> firstLevelNodes = nodeService.getHeadersByLevel(rootPK, 2);
     for (NodeDetail nodeToPaste : firstLevelNodes) {
       if (nodeToPaste.isChild()) {
