@@ -52,7 +52,13 @@ function openPredefinedPdCClassification(nodeId) {
   if (nodeId != 0) {
     uri += "&nodeId=" + nodeId;
   }
-  SP_openWindow(uri, "Classification", '650', '600', 'scrollbars=yes, resizable, alwaysRaised');
+
+  window.requestEditorDialog = jQuery.popup.load(uri);
+  window.requestEditorDialog.show('free', {
+    title: getString('GML.PDCPositionsPredefinition'),
+    closeOnEscape: true,
+    resizable: true,
+    width: '800px'});
 }
 
 function displayTopicDescription(id) {
