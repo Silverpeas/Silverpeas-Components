@@ -4106,32 +4106,15 @@ public class DefaultKmeliaService implements KmeliaService {
     node.setCreationDate(new Date());
     nodePK = nodeService.createNode(node, father);
 
+    // duplicate the predefined classification on the PdC if any
+    copyNodePredefinedClassification(nodeToCopy.getNodePK(), nodePK);
+
     // duplicate rights
     if (copyDetail.isNodeRightsMustBeCopied()) {
       oldAndNewIds.put(nodePKToCopy.getId(), nodePK.getId());
-      setNodeRightDependency(oldAndNewIds, nodeToCopy, nodePK, node);
-      // Set topic rights if necessary
-      if (nodeToCopy.haveLocalRights()) {
-        List<ProfileInst> topicProfiles = adminController.getProfilesByObject(
-            ProfiledObjectId.fromNode(nodeToCopy.getNodePK().getId()),
-                nodeToCopy.getNodePK().getInstanceId());
-        for (ProfileInst nodeToPasteProfile : topicProfiles) {
-          if (nodeToPasteProfile != null) {
-            ProfileInst nodeProfileInst = new ProfileInst(nodeToPasteProfile);
-            nodeProfileInst.setId(UNDEFINED_NODE_ID);
-            nodeProfileInst.setComponentFatherId(getComponentLocalId(nodePK.getInstanceId()));
-            nodeProfileInst.setObjectId(
-                new ProfiledObjectId(ProfiledObjectType.NODE, nodePK.getId()));
-            nodeProfileInst.setParentObjectId(
-                new ProfiledObjectId(ProfiledObjectType.NODE, father.getNodePK().getId()));
-
-            checkNodeProfile(nodeProfileInst, nodePK.getInstanceId());
-
-            // Add the profile
-            adminController.addProfileInst(nodeProfileInst, userId);
-          }
-        }
-      }
+      setNodeRightsDependency(oldAndNewIds, nodeToCopy, nodePK, node);
+      // Set topic rights if any
+      copyNodeRights(userId, nodeToCopy, father, nodePK);
     }
 
     // paste wysiwyg attached to node
@@ -4159,6 +4142,44 @@ public class DefaultKmeliaService implements KmeliaService {
       }
     }
     return node;
+  }
+
+  private void copyNodeRights(final String userId, final NodeDetail nodeToCopy, final NodeDetail father,
+      final NodePK nodePK) {
+    if (nodeToCopy.haveLocalRights()) {
+      List<ProfileInst> topicProfiles = adminController.getProfilesByObject(
+          ProfiledObjectId.fromNode(nodeToCopy.getNodePK()
+              .getId()), nodeToCopy.getNodePK()
+              .getInstanceId());
+      for (ProfileInst nodeToPasteProfile : topicProfiles) {
+        if (nodeToPasteProfile != null) {
+          ProfileInst nodeProfileInst = new ProfileInst(nodeToPasteProfile);
+          nodeProfileInst.setId(UNDEFINED_NODE_ID);
+          nodeProfileInst.setComponentFatherId(getComponentLocalId(nodePK.getInstanceId()));
+          nodeProfileInst.setObjectId(
+              new ProfiledObjectId(ProfiledObjectType.NODE, nodePK.getId()));
+          nodeProfileInst.setParentObjectId(
+              new ProfiledObjectId(ProfiledObjectType.NODE, father.getNodePK().getId()));
+
+          checkNodeProfile(nodeProfileInst, nodePK.getInstanceId());
+
+          // Add the profile
+          adminController.addProfileInst(nodeProfileInst, userId);
+        }
+      }
+    }
+  }
+
+  private void copyNodePredefinedClassification(final NodePK nodeToCopy, final NodePK nodePK) {
+    PdcClassification nodeClassification =
+        pdcClassificationService.getPreDefinedClassification(nodeToCopy.getId(),
+            nodeToCopy.getComponentInstanceId());
+    if (!nodeClassification.isEmpty() && nodeClassification.isPredefinedForANode()) {
+      PdcClassification copy = nodeClassification.copy()
+          .forNode(nodePK.getId())
+          .inComponentInstance(nodePK.getComponentInstanceId());
+      pdcClassificationService.savePreDefinedClassification(copy);
+    }
   }
 
   /*
@@ -4189,7 +4210,7 @@ public class DefaultKmeliaService implements KmeliaService {
     profile.setGroups(verifiedGroupIds);
   }
 
-  private void setNodeRightDependency(final HashMap<String, String> oldAndNewIds,
+  private void setNodeRightsDependency(final HashMap<String, String> oldAndNewIds,
       final NodeDetail nodeToCopy, final NodePK nodePK, final NodeDetail node) {
     if (nodeToCopy.haveRights()) {
       if (nodeToCopy.haveLocalRights()) {

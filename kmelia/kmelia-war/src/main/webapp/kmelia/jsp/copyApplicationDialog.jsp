@@ -11,6 +11,7 @@
 <input type="checkbox" id="<%=KmeliaCopyDetail.PUBLICATION_HEADER%>" name="<%=KmeliaCopyDetail.PUBLICATION_HEADER%>" value="true" checked="checked" onclick="javascript:checkHeaderClick(this)" /> <fmt:message key="kmelia.app.copy.option.header"/><br/>
 <input type="checkbox" id="<%=KmeliaCopyDetail.PUBLICATION_CONTENT%>" name="<%=KmeliaCopyDetail.PUBLICATION_CONTENT%>" value="true" checked="checked" onclick="javascript:checkClick(this)" /> <fmt:message key="kmelia.app.copy.option.content"/><br />
 <input type="checkbox" id="<%=KmeliaCopyDetail.PUBLICATION_FILES%>" name="<%=KmeliaCopyDetail.PUBLICATION_FILES%>" value="true" checked="checked" onclick="javascript:checkClick(this)" /> <fmt:message key="kmelia.app.copy.option.files"/>
+<input type="hidden" id="<%=KmeliaCopyDetail.PUBLICATION_PDC%>" name="<%=KmeliaCopyDetail.PUBLICATION_PDC%>" value="true"/>
 </p>
 
 <script type="text/javascript">
