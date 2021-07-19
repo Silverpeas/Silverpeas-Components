@@ -420,6 +420,11 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         }
 
         String cssClasses = "important" + pub.getImportance();
+
+        if (pub.isNew()) {
+          cssClasses += " new-contribution";
+        }
+
         if (toSearch) {
           if (aPub.isRead()) {
             cssClasses += " read";
