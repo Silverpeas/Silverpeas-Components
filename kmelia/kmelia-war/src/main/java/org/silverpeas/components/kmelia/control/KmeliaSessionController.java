@@ -117,6 +117,7 @@ import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.process.annotation.SimulationActionProcessProcessor;
 import org.silverpeas.core.security.authorization.AccessControlContext;
+import org.silverpeas.core.security.authorization.AccessControlOperation;
 import org.silverpeas.core.security.authorization.NodeAccessControl;
 import org.silverpeas.core.security.authorization.PublicationAccessControl;
 import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
@@ -150,9 +151,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.text.ParseException;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 import static org.silverpeas.components.kmelia.control.KmeliaSessionController.CLIPBOARD_STATE.*;
@@ -1311,11 +1314,49 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   /**
-   * @param links
-   * @return
+   * Gets the authorized publications from given references into a context of read.
+   * @param references the list of {@link ResourceReference} instance.
+   * @return a collection of {@link KmeliaPublication} instance.
    */
-  public synchronized Collection<KmeliaPublication> getPublications(List<ResourceReference> links) {
-    return getKmeliaService().getPublications(links, getUserId(), true);
+  public synchronized <T extends ResourceReference> Collection<KmeliaPublication> getPublications(
+      List<T> references) {
+    return getKmeliaService().getPublications(references, getUserId(), AccessControlContext.init(),
+        getCurrentFolderPK());
+  }
+
+  /**
+   * Gets the authorized publications from given references into context of modification.
+   * <p>
+   *   Clones are handled.
+   * </p>
+   * @param references the list of {@link ResourceReference} instance.
+   * @return a collection of pair of {@link KmeliaPublication} instances. On left the
+   * publication, on right the optional clone.
+   */
+  public synchronized <T extends ResourceReference> Collection<Pair<KmeliaPublication,
+      KmeliaPublication>> getPublicationsForModification(
+      List<T> references) {
+    final List<KmeliaPublication> publications = getKmeliaService().getPublications(references,
+        getUserId(),
+        AccessControlContext.init().onOperationsOf(AccessControlOperation.MODIFICATION),
+        getCurrentFolderPK());
+    final Predicate<PublicationDetail> hasClone = k -> k.isValid() && k.haveGotClone() && !k.isClone();
+    final Map<PublicationPK, KmeliaPublication> clones = getKmeliaService().getPublications(
+        publications.stream()
+            .map(KmeliaPublication::getDetail)
+            .filter(hasClone)
+            .map(PublicationDetail::getClonePK)
+            .collect(Collectors.toList()), getUserId(), null, null)
+        .stream()
+        .collect(toMap(KmeliaPublication::getPk, k -> k));
+    return publications.stream()
+        .map(k -> ofNullable(clones.getOrDefault(k.getDetail().getClonePK(), null))
+            .map(c -> {
+              c.getDetail().setAlias(k.isAlias());
+              return Pair.of(k, c);
+            })
+            .orElseGet(() -> Pair.of(k, null)))
+        .collect(Collectors.toList());
   }
 
   public synchronized boolean validatePublication(String publicationId) {
@@ -2715,7 +2756,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
    * @return the URL of right version or null
    */
   private String getDocumentVersionURL(final SimpleDocument document, final boolean fromAlias) {
-    return Optional.ofNullable(document.getLastPublicVersion())
+    return ofNullable(document.getLastPublicVersion())
         .map(v -> {
           if (!fromAlias && v.getVersionMaster().canBeAccessedBy(getUserDetail())) {
             return v.getVersionMaster();
@@ -3161,9 +3202,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   public List<KmeliaPublication> getPublicationsOfCurrentFolder() {
     if (KmeliaHelper.isToValidateFolder(currentFolderId)){
-      setSessionPublicationsList(getKmeliaService().getPublicationsToValidate(getComponentId(), getUserId()));
+      setSessionPublicationsList(
+          getKmeliaService().getPublicationsToValidate(getComponentId(), getUserId()));
     } else if (KmeliaHelper.isNonVisiblePubsFolder(currentFolderId)) {
-      setSessionPublicationsList(getKmeliaService().getNonVisiblePublications(getComponentId(), getUserId()));
+      setSessionPublicationsList(
+          getKmeliaService().getNonVisiblePublications(getComponentId(), getUserId()));
     } else {
       setSessionPublicationsList(getKmeliaService()
           .getPublicationsOfFolder(new NodePK(currentFolderId, getComponentId()),
@@ -3615,7 +3658,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     } catch (Exception e) {
       throw new org.silverpeas.core.SilverpeasException("Can't save XML form of publication", e);
     }
-    Optional.ofNullable(FileUploadUtil.getParameter(updateContext.getItems(), "VolatileId"))
+    ofNullable(FileUploadUtil.getParameter(updateContext.getItems(), "VolatileId"))
         .filter(StringUtil::isDefined)
         // Attaching all documents linked to volatile publication to the persisted one
         .map(v -> Pair.of(v, AttachmentServiceProvider.getAttachmentService()
@@ -3670,19 +3713,25 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   public void saveXMLFormOfSelectedPublications(List<FileItem> items) {
     final WebMessager messager = WebMessager.getInstance();
-    if (selectedPublicationPKs.isEmpty()) {
+    final Map<PublicationPK, Pair<KmeliaPublication, KmeliaPublication>> authorizedPublicationsOrClonesByPubOrClonePks =
+        getPublicationsForModification(selectedPublicationPKs)
+            .stream()
+            .filter(p -> Objects.equals(p.getFirst().getComponentInstanceId(), getComponentId()))
+            .collect(toMap(p -> p.getSecond() != null ? p.getSecond().getPk() : p.getFirst().getPk(), p -> p));
+    if (authorizedPublicationsOrClonesByPubOrClonePks.isEmpty()) {
       messager.addSuccess(getMultilang().getString("kmelia.publications.batch.update.none"));
       return;
     }
-    final Map<PublicationPK, PublicationDetail> publicationCache = getPublicationService().getByIds(
-        selectedPublicationPKs.stream().map(PublicationPK::getId).collect(toSet()))
+    final Map<PublicationPK, PublicationDetail> publicationOrCloneCache = authorizedPublicationsOrClonesByPubOrClonePks
+        .entrySet()
         .stream()
-        .collect(toMap(PublicationDetail::getPK, p -> p));
+        .map(e -> e.getValue().getSecond() != null ? e.getValue().getSecond() : e.getValue().getFirst())
+        .collect(toMap(KmeliaPublication::getPk, KmeliaPublication::getDetail));
     final KmeliaXmlFormUpdateContext updateContext = new KmeliaXmlFormUpdateContext(items, true).batchProcessing();
     try {
       SimulationActionProcessProcessor.get()
-          .withContext(s -> s.getSourcePKs().addAll(publicationCache.keySet()))
-          .listElementsWith(() -> new KmeliaPublicationBatchSimulationElementLister(publicationCache,
+          .withContext(s -> s.getSourcePKs().addAll(publicationOrCloneCache.keySet()))
+          .listElementsWith(() -> new KmeliaPublicationBatchSimulationElementLister(publicationOrCloneCache,
               updateContext, getUserDetail()))
           .byAction(() -> ActionType.UPDATE)
           .toTargets(t -> t.getTargetPKs().add(getCurrentFolderPK()))
@@ -3690,14 +3739,15 @@ public class KmeliaSessionController extends AbstractComponentSessionController
           .execute(() -> {
             final List<PublicationPK> success = new ArrayList<>();
             final List<PublicationPK> fail = new ArrayList<>();
-            publicationCache.forEach((k, p) -> {
+            publicationOrCloneCache.forEach((k, p) -> {
+              final PublicationPK selectedPk = authorizedPublicationsOrClonesByPubOrClonePks.get(k).getFirst().getPk();
               try {
                 Optional.of(saveXMLFormToPublication(p, updateContext))
                     .filter(Boolean.TRUE::equals)
-                    .ifPresentOrElse(t -> success.add(k), () -> fail.add(k));
+                    .ifPresentOrElse(t -> success.add(selectedPk), () -> fail.add(selectedPk));
               } catch (Exception e) {
                 SilverLogger.getLogger(this).error("Can't save content of publication #" + p.getId(), e);
-                fail.add(k);
+                fail.add(selectedPk);
               }
             });
             if (fail.isEmpty()) {

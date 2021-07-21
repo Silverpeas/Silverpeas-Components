@@ -102,6 +102,7 @@ import org.silverpeas.core.personalorganizer.model.TodoDetail;
 import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
 import org.silverpeas.core.process.annotation.SimulationActionProcess;
 import org.silverpeas.core.reminder.Reminder;
+import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.security.authorization.NodeAccessControl;
 import org.silverpeas.core.security.authorization.PublicationAccessControl;
@@ -1761,7 +1762,7 @@ public class DefaultKmeliaService implements KmeliaService {
   }
 
   @Override
-  public List<PublicationDetail> getPublicationDetails(List<ResourceReference> links) {
+  public <T extends ResourceReference> List<PublicationDetail> getPublicationDetails(List<T> links) {
     try {
       return publicationService.getPublications(links.stream()
           .map(l -> new PublicationPK(l.getId(), l.getInstanceId()))
@@ -1772,22 +1773,25 @@ public class DefaultKmeliaService implements KmeliaService {
   }
 
   @Override
-  public List<KmeliaPublication> getPublications(final List<ResourceReference> links, String userId,
-      boolean accessControlFiltering) {
+  public <T extends ResourceReference> List<KmeliaPublication> getPublications(
+      final List<T> references, String userId, AccessControlContext accessControlContext,
+      final NodePK contextFolder) {
     // initialization of the publications list
     final List<PublicationDetail> publications;
-    if (accessControlFiltering) {
-      final Map<PublicationPK, ResourceReference> indexedReferences = new HashMap<>(links.size());
-      links.forEach(l -> indexedReferences.put(new PublicationPK(l.getId(), l.getInstanceId()), l));
-      final List<ResourceReference> authorizedLinks = new ArrayList<>(links.size());
+    if (accessControlContext != null) {
+      final Map<PublicationPK, ResourceReference> indexedReferences = new HashMap<>(references.size());
+      references.forEach(l -> indexedReferences.put(new PublicationPK(l.getId(), l.getInstanceId()), l));
+      final List<ResourceReference> authorizedLinks = new ArrayList<>(references.size());
       PublicationAccessControl.get()
-          .filterAuthorizedByUser(indexedReferences.keySet(), userId)
+          .filterAuthorizedByUser(indexedReferences.keySet(), userId, accessControlContext)
           .forEach(p -> authorizedLinks.add(indexedReferences.get(p)));
       publications = getPublicationDetails(authorizedLinks);
     } else {
-      publications = getPublicationDetails(links);
+      publications = getPublicationDetails(references);
     }
-    return asKmeliaPublication(publications);
+    return contextFolder != null ?
+        asRankedKmeliaPublication(contextFolder, publications) :
+        asKmeliaPublication(publications);
   }
 
   /**

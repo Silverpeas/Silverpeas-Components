@@ -39,6 +39,7 @@ import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.notification.user.UserNotification;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.reminder.Reminder;
+import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
 import org.silverpeas.core.util.ServiceProvider;
 
@@ -322,18 +323,24 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
    * @param links list of publication (componentID + publicationId)
    * @return a list of PublicationDetail
    */
-  List<PublicationDetail> getPublicationDetails(List<ResourceReference> links);
+  <T extends ResourceReference> List<PublicationDetail> getPublicationDetails(List<T> links);
 
   /**
-   * Gets a list of publications with optional control access filtering
-   * @param links list of publication defined by his id and component id
+   * Gets a list of publications with optional control access filtering.
+   * <p>
+   * When a folder is given as context, then the ALIAS information is computed on each publication.
+   * </p>
+   * @param references list of publication represented as {@link ResourceReference} instances.
    * @param userId identifier User. allow to check if the publication is accessible for current
    * user
-   * @param accessControlFiltering true to filter the publication according user rights.
+   * @param accessControlContext optional access control context to filter the publication
+   * according user rights. If not specified, no filtering is performed.
+   * @param contextFolder optional folder that represents if specified the folder into which the
+   * given references are retrieved. It is MANDATORY to determinate alias status.
    * @return a collection of Kmelia publications
    */
-  List<KmeliaPublication> getPublications(List<ResourceReference> links, String userId,
-      boolean accessControlFiltering);
+  <T extends ResourceReference> List<KmeliaPublication> getPublications(List<T> references,
+      String userId, AccessControlContext accessControlContext, final NodePK contextFolder);
 
   /**
    * Gets the publications linked with the specified one and for which the specified user is
