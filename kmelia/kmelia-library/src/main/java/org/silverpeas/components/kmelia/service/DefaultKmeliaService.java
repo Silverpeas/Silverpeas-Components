@@ -4283,6 +4283,7 @@ public class DefaultKmeliaService implements KmeliaService {
     PublicationDetail newPubli = PublicationDetail.builder(publiToCopy.getLanguage())
         .setPk(toPubPK)
         .setNameAndDescription(publiToCopy.getName(), publiToCopy.getDescription())
+        .setVersion(publiToCopy.getVersion())
         .setKeywords(publiToCopy.getKeywords())
         .setBeginDateTime(publiToCopy.getBeginDate(), publiToCopy.getBeginHour())
         .setEndDateTime(publiToCopy.getEndDate(), publiToCopy.getEndHour())

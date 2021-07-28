@@ -96,6 +96,7 @@ import java.util.List;
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.*;
 import static org.silverpeas.core.contribution.publication.model.PublicationDetail.*;
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion.scriptContent;
 
 /**
  * @author ehugonnet
@@ -490,6 +491,10 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       out.write("</div>");
     }
     out.write("</form>");
+    out.write(scriptContent("sp.selection.newCheckboxMonitor('form[name=publicationsForm] input[name=C1]')" +
+        ".addEventListener('change', function(){" +
+        "if(typeof showPublicationCheckedBoxes === 'function') {showPublicationCheckedBoxes();}" +
+        "}, 'displayPublication');").toString());
   }
 
   void displayFilePreviewJavascript(String componentId, final String contentLanguage, Writer out)
