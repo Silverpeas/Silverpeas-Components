@@ -24,10 +24,11 @@
 package org.silverpeas.components.websites.servlets.design;
 
 import org.silverpeas.components.websites.control.WebSiteSessionController;
+import org.silverpeas.components.websites.model.SiteDetail;
 import org.silverpeas.components.websites.model.SiteDetailBuilder;
 import org.silverpeas.components.websites.service.WebSitesException;
 import org.silverpeas.components.websites.servlets.WebSitesRequestRouter;
-import org.silverpeas.components.websites.model.SiteDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.web.http.HttpRequest;
@@ -38,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import static java.util.Optional.ofNullable;
 import static org.silverpeas.components.websites.servlets.WebSitesUtil.buildTab;
 import static org.silverpeas.components.websites.servlets.WebSitesUtil.getComponentURL;
 
@@ -115,7 +117,7 @@ public class SiteDesignActionHandler {
       final HttpRequest request) {
     SiteDetail site = controller.getSessionSite();
     request.setAttribute("Site", site);
-    return site.getPK().getId();
+    return ofNullable(site.getPK()).map(PublicationPK::getId).orElse(StringUtil.EMPTY);
   }
 
   private void setSiteToDesign(final WebSiteSessionController controller, final HttpRequest request,

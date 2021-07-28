@@ -126,7 +126,10 @@ public class News extends SilverpeasJpaEntity<News, UuidIdentifier> implements S
 
   public News(String name, String description, Period visibilityPeriod, boolean important,
       boolean ticker, boolean mandatory) {
-    this.publication = new PublicationDetail(name, description, visibilityPeriod, null, null);
+    this.publication = PublicationDetail.builder()
+        .setNameAndDescription(name, description)
+        .build();
+    this.publication.setVisibilityPeriod(visibilityPeriod);
     setImportant(important);
     setTicker(ticker);
     setMandatory(mandatory);

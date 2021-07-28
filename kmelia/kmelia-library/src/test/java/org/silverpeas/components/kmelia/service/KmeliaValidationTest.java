@@ -214,9 +214,10 @@ public class KmeliaValidationTest {
   }
 
   private PublicationDetail createPublication(String status) {
-    PublicationDetail publication = new PublicationDetail();
     PublicationPK pk = new PublicationPK(String.valueOf(counter++), INSTANCE_ID);
-    publication.setPk(pk);
+    PublicationDetail publication = builder()
+        .setPk(pk)
+        .build();
     publication.setStatus(status);
     return publication;
   }
