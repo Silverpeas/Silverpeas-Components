@@ -3160,18 +3160,16 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   public List<KmeliaPublication> getPublicationsOfCurrentFolder() {
-    List<KmeliaPublication> publications;
     if (KmeliaHelper.isToValidateFolder(currentFolderId)){
-      publications = getKmeliaService().getPublicationsToValidate(getComponentId(), getUserId());
+      setSessionPublicationsList(getKmeliaService().getPublicationsToValidate(getComponentId(), getUserId()));
     } else if (KmeliaHelper.isNonVisiblePubsFolder(currentFolderId)) {
-      publications = getKmeliaService().getNonVisiblePublications(getComponentId(), getUserId());
+      setSessionPublicationsList(getKmeliaService().getNonVisiblePublications(getComponentId(), getUserId()));
     } else {
-      publications = getKmeliaService()
+      setSessionPublicationsList(getKmeliaService()
           .getPublicationsOfFolder(new NodePK(currentFolderId, getComponentId()),
-              getUserTopicProfile(currentFolderId), getUserId(), isTreeStructure());
+              getUserTopicProfile(currentFolderId), getUserId(), isTreeStructure()));
       applyVisibilityFilter();
     }
-    setSessionPublicationsList(publications);
     return getSessionPublicationsList();
   }
 
