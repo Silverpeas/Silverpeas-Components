@@ -1529,16 +1529,13 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
       } else if ("ToUpdatePublications".equals(function)) {
         final String selectedIds = request.getParameter("SelectedIds");
         final String notSelectedIds = request.getParameter("NotSelectedIds");
-        final List<PublicationDetail> authorizedPublications = kmelia.getPublicationsForModification(
+        final List<KmeliaPublication> authorizedPublications = kmelia.getPublicationsForModification(
             kmelia.processSelectedPublicationIds(selectedIds, notSelectedIds))
             .stream()
             .map(p -> p.getSecond() != null ? p.getSecond() : p.getFirst())
             .filter(p -> Objects.equals(p.getComponentInstanceId(), kmelia.getComponentId()))
-            .map(KmeliaPublication::getDetail)
             .collect(Collectors.toList());
-        setupRequestForContributionBatchManagementContext(request,
-            highestSilverpeasUserRoleOnCurrentTopic, kmelia.getCurrentFolderPK(),
-            authorizedPublications);
+        setupRequestForContributionBatchManagementContext(request, kmelia, authorizedPublications);
         request.setAttribute("Form", kmelia.getXmlFormForPublications());
         request.setAttribute("Language", kmelia.getLanguage());
         request.setAttribute("NumberOfSelectedPublications", authorizedPublications.size());
@@ -2013,30 +2010,24 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
   /**
    * Setup the request to manager some behaviors around validation of modifications.
    * @param request the current request.
-   * @param highestSilverpeasUserRoleOnCurrentTopic the highest role the user has on the current
-   * folder.
-   * @param currentFolderPK the primary key of the current folder.
    * @param publications the current handled publications.
    */
   private void setupRequestForContributionBatchManagementContext(HttpRequest request,
-      SilverpeasRole highestSilverpeasUserRoleOnCurrentTopic, NodePK currentFolderPK,
-      List<PublicationDetail> publications) {
-    if (highestSilverpeasUserRoleOnCurrentTopic != null &&
-        highestSilverpeasUserRoleOnCurrentTopic.isGreaterThanOrEquals(SilverpeasRole.PUBLISHER)) {
-      final ContributionBatchManagementContext context = ContributionBatchManagementContext
-          .initialize()
-          .forPersistenceAction(ActionType.UPDATE);
-      publications.stream().forEach(p -> {
-        final String componentInstanceId = currentFolderPK.getComponentInstanceId();
-        final PublicationPK publicationPK = new PublicationPK(p.getId(), componentInstanceId);
-        final SubscriptionResource resource = p.isAlias() ?
-            PublicationAliasSubscriptionResource.from(publicationPK) :
-            PublicationSubscriptionResource.from(publicationPK);
-        context.addContributionContext(p, p.getContributionStatus(),
-            new Location(currentFolderPK.getId(), componentInstanceId), resource);
-      });
-      request.setAttribute("contributionBatchManagementContext", context);
-    }
+      KmeliaSessionController kmeliaSC, List<KmeliaPublication> publications) {
+    final ContributionBatchManagementContext context = ContributionBatchManagementContext
+        .initialize()
+        .forPersistenceAction(ActionType.UPDATE);
+    final String componentInstanceId = kmeliaSC.getComponentId();
+    publications.stream().forEach(k -> {
+      final PublicationDetail publication = k.getDetail();
+      final PublicationPK publicationPK = new PublicationPK(publication.getId(), componentInstanceId);
+      final SubscriptionResource resource = publication.isAlias() ?
+          PublicationAliasSubscriptionResource.from(publicationPK) :
+          PublicationSubscriptionResource.from(publicationPK);
+      context.addContributionContext(publication, publication.getContributionStatus(),
+          new Location(k.getLocation().getId(), componentInstanceId), resource);
+    });
+    request.setAttribute("contributionBatchManagementContext", context);
   }
 
   /**

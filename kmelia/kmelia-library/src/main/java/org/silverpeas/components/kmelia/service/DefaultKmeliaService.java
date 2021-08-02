@@ -128,10 +128,13 @@ import java.sql.Connection;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.singletonList;
 import static java.util.Comparator.comparing;
+import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.toMap;
 import static org.silverpeas.components.kmelia.model.KmeliaPublication.fromDetail;
 import static org.silverpeas.components.kmelia.notification.KmeliaDelayedVisibilityUserNotificationReminder.KMELIA_DELAYED_VISIBILITY_USER_NOTIFICATION;
 import static org.silverpeas.components.kmelia.service.KmeliaOperationContext.OperationType.*;
@@ -146,6 +149,7 @@ import static org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygCo
 import static org.silverpeas.core.node.model.NodePK.UNDEFINED_NODE_ID;
 import static org.silverpeas.core.notification.system.ResourceEvent.Type.MOVE;
 import static org.silverpeas.core.persistence.Transaction.getTransaction;
+import static org.silverpeas.core.security.authorization.AccessControlOperation.MODIFICATION;
 import static org.silverpeas.core.util.StringUtil.*;
 
 /**
@@ -168,6 +172,7 @@ public class DefaultKmeliaService implements KmeliaService {
   private static final String NODE_PREFIX = "Node_";
   private static final String ADMIN_ROLE = "admin";
   private static final String ALIASES_CACHE_KEY = "NEW_PUB_ALIASES";
+  private static final Predicate<PublicationDetail> HAS_CLONE = k -> k.isValid() && k.haveGotClone() && !k.isClone();
   @Inject
   private NodeService nodeService;
   @Inject
@@ -1762,9 +1767,9 @@ public class DefaultKmeliaService implements KmeliaService {
   }
 
   @Override
-  public <T extends ResourceReference> List<PublicationDetail> getPublicationDetails(List<T> links) {
+  public <T extends ResourceReference> List<PublicationDetail> getPublicationDetails(List<T> references) {
     try {
-      return publicationService.getPublications(links.stream()
+      return publicationService.getPublications(references.stream()
           .map(l -> new PublicationPK(l.getId(), l.getInstanceId()))
           .collect(Collectors.toSet()));
     } catch (Exception e) {
@@ -1774,24 +1779,56 @@ public class DefaultKmeliaService implements KmeliaService {
 
   @Override
   public <T extends ResourceReference> List<KmeliaPublication> getPublications(
-      final List<T> references, String userId, AccessControlContext accessControlContext,
-      final NodePK contextFolder) {
+      final List<T> references, String userId, final NodePK contextFolder,
+      boolean accessControlFiltering) {
     // initialization of the publications list
     final List<PublicationDetail> publications;
-    if (accessControlContext != null) {
-      final Map<PublicationPK, ResourceReference> indexedReferences = new HashMap<>(references.size());
-      references.forEach(l -> indexedReferences.put(new PublicationPK(l.getId(), l.getInstanceId()), l));
-      final List<ResourceReference> authorizedLinks = new ArrayList<>(references.size());
-      PublicationAccessControl.get()
-          .filterAuthorizedByUser(indexedReferences.keySet(), userId, accessControlContext)
-          .forEach(p -> authorizedLinks.add(indexedReferences.get(p)));
-      publications = getPublicationDetails(authorizedLinks);
+    if (accessControlFiltering) {
+      final Map<PublicationPK, ResourceReference> indexedReferences = references.stream()
+          .collect(toMap(r -> new PublicationPK(r.getId(), r.getInstanceId()), r -> r));
+      final List<ResourceReference> authorizedReferences = PublicationAccessControl.get()
+          .filterAuthorizedByUser(indexedReferences.keySet(), userId)
+          .map(indexedReferences::get)
+          .collect(Collectors.toList());
+      publications = getPublicationDetails(authorizedReferences);
     } else {
       publications = getPublicationDetails(references);
     }
     return contextFolder != null ?
         asRankedKmeliaPublication(contextFolder, publications) :
         asKmeliaPublication(publications);
+  }
+
+  @Override
+  public <T extends ResourceReference> List<Pair<KmeliaPublication, KmeliaPublication>> getPublicationsForModification(
+      final List<T> references, final String userId) {
+    // initialization of the publications list
+    final Map<PublicationPK, ResourceReference> indexedReferences = references.stream()
+        .collect(toMap(r -> new PublicationPK(r.getId(), r.getInstanceId()), r -> r));
+    final AccessControlContext modificationContext = AccessControlContext.init().onOperationsOf(MODIFICATION);
+    final List<ResourceReference> authorizedReferences = PublicationAccessControl.get()
+        .filterAuthorizedByUser(indexedReferences.keySet(), userId, modificationContext)
+        .map(indexedReferences::get)
+        .collect(Collectors.toList());
+    final List<PublicationDetail> publications = getPublicationDetails(authorizedReferences);
+    final List<String> pubIds = authorizedReferences.stream()
+        .map(ResourceReference::getId)
+        .collect(Collectors.toList());
+    final Map<String, List<Location>> locationsByPublication =
+        publicationService.getAllLocationsByPublicationIds(pubIds);
+    final Map<PublicationPK, PublicationDetail> clones = getPublicationDetails(
+            publications.stream()
+                .filter(HAS_CLONE)
+                .map(PublicationDetail::getClonePK)
+                .collect(Collectors.toList()))
+        .stream()
+        .collect(toMap(PublicationDetail::getPK, k -> k));
+    return publications.stream()
+        .map(p -> KmeliaPublication.fromDetail(p, null, locationsByPublication))
+        .map(k -> ofNullable(HAS_CLONE.test(k.getDetail()) ? clones.getOrDefault(k.getDetail().getClonePK(), null) : null)
+            .map(c -> Pair.of(k, KmeliaPublication.fromDetail(c, k.getLocation(), locationsByPublication)))
+            .orElseGet(() -> Pair.of(k, null)))
+        .collect(Collectors.toList());
   }
 
   /**

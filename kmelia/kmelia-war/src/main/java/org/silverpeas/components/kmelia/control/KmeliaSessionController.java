@@ -117,7 +117,6 @@ import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.process.annotation.SimulationActionProcessProcessor;
 import org.silverpeas.core.security.authorization.AccessControlContext;
-import org.silverpeas.core.security.authorization.AccessControlOperation;
 import org.silverpeas.core.security.authorization.NodeAccessControl;
 import org.silverpeas.core.security.authorization.PublicationAccessControl;
 import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
@@ -151,7 +150,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.text.ParseException;
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -1320,8 +1318,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
    */
   public synchronized <T extends ResourceReference> Collection<KmeliaPublication> getPublications(
       List<T> references) {
-    return getKmeliaService().getPublications(references, getUserId(), AccessControlContext.init(),
-        getCurrentFolderPK());
+    return getKmeliaService().getPublications(references, getUserId(), getCurrentFolderPK(), true);
   }
 
   /**
@@ -1335,28 +1332,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
    */
   public synchronized <T extends ResourceReference> Collection<Pair<KmeliaPublication,
       KmeliaPublication>> getPublicationsForModification(
-      List<T> references) {
-    final List<KmeliaPublication> publications = getKmeliaService().getPublications(references,
-        getUserId(),
-        AccessControlContext.init().onOperationsOf(AccessControlOperation.MODIFICATION),
-        getCurrentFolderPK());
-    final Predicate<PublicationDetail> hasClone = k -> k.isValid() && k.haveGotClone() && !k.isClone();
-    final Map<PublicationPK, KmeliaPublication> clones = getKmeliaService().getPublications(
-        publications.stream()
-            .map(KmeliaPublication::getDetail)
-            .filter(hasClone)
-            .map(PublicationDetail::getClonePK)
-            .collect(Collectors.toList()), getUserId(), null, null)
-        .stream()
-        .collect(toMap(KmeliaPublication::getPk, k -> k));
-    return publications.stream()
-        .map(k -> ofNullable(clones.getOrDefault(k.getDetail().getClonePK(), null))
-            .map(c -> {
-              c.getDetail().setAlias(k.isAlias());
-              return Pair.of(k, c);
-            })
-            .orElseGet(() -> Pair.of(k, null)))
-        .collect(Collectors.toList());
+      final List<T> references) {
+    return getKmeliaService().getPublicationsForModification(references, getUserId());
   }
 
   public synchronized boolean validatePublication(String publicationId) {
