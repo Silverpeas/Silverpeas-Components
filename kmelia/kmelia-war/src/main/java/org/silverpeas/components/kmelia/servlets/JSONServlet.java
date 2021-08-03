@@ -138,9 +138,8 @@ public class JSONServlet extends HttpServlet {
 
     operations.put("sortPublications", role.isAdmin() && publicationsInTopic && somePublicationsExist);
 
-    operations.put("updatePublications",
-        operationsOnSelectionAllowed && somePublicationsExist && oneTemplateUsed);
-    operations.put(OP_DELETE_PUBLICATIONS, operationsOnSelectionAllowed && somePublicationsExist);
+    operations.put("updatePublications",operationsOnSelectionAllowed && oneTemplateUsed);
+    operations.put(OP_DELETE_PUBLICATIONS, operationsOnSelectionAllowed);
 
     operations.put(OP_EXPORT_PUBLICATIONS, !user.isAnonymous() && somePublicationsExist);
     operations.put("manageSubscriptions", role.isAdmin());

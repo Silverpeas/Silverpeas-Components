@@ -109,6 +109,18 @@ const __updateDataAndUI = function(data) {
   updateHtmlContainingAngularDirectives($('#pubList'), data);
   activateUserZoom();
   showPublicationCheckedBoxes();
+  setTimeout(checkMenuItemsAboutSelection, 0);
+  $.closeProgressMessage();
+}
+
+function checkMenuItemsAboutSelection() {
+  if ($("#pubList ul>li").length > 0 ){
+    $("#menuitem-updatepubs").show();
+    $("#menuitem-deletepubs").show();
+  } else {
+    $("#menuitem-updatepubs").hide();
+    $("#menuitem-deletepubs").hide();
+  }
 }
 
 function sortGoTo(selectedIndex) {
@@ -372,12 +384,12 @@ function initOperations(id, op) {
     groupEmpty = false;
   }
   if (op.updatePublications) {
-    menuItem = new YAHOO.widget.MenuItem(getString('kmelia.operation.updatePublications'), {url: "javascript:onclick=updatePublications()"});
+    menuItem = new YAHOO.widget.MenuItem(getString('kmelia.operation.updatePublications'), {url: "javascript:onclick=updatePublications()", id: "menuitem-updatepubs"});
     oMenu.addItem(menuItem, groupIndex);
     groupEmpty = false;
   }
   if (op.deletePublications) {
-    menuItem = new YAHOO.widget.MenuItem(getString('kmelia.operation.deletePublications'), {url: "javascript:onclick=deletePublications()"});
+    menuItem = new YAHOO.widget.MenuItem(getString('kmelia.operation.deletePublications'), {url: "javascript:onclick=deletePublications()", id: "menuitem-deletepubs"});
     oMenu.addItem(menuItem, groupIndex);
     groupEmpty = false;
   }
