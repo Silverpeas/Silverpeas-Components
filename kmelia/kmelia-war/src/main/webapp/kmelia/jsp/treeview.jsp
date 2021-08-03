@@ -400,14 +400,14 @@ function displayTopicContent(id) {
 		}
     displayPublicationPromise = displayPublications(id);
   } else {
+    displayPath(id);
+    displayOperations(id);
+    $("#searchZone").css({'display':'block'});
 		if (searchInProgress) {
 			doPagination(<%=currentPageIndex%>);
 		} else {
 			displayPublicationPromise = displayPublications(id);
 		}
-		displayPath(id);
-		displayOperations(id);
-		$("#searchZone").css({'display':'block'});
 	}
 
 	//display topic information

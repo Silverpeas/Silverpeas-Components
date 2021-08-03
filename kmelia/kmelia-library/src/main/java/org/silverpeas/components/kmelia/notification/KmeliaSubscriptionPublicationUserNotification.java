@@ -31,12 +31,12 @@ import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.notification.user.UserSubscriptionNotificationBehavior;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.subscription.constant.SubscriberType;
-import org.silverpeas.core.subscription.service.NodeSubscriptionResource;
 import org.silverpeas.core.subscription.util.SubscriptionSubscriberMapBySubscriberType;
 
 import java.util.Collection;
 
 import static org.silverpeas.core.subscription.service.ResourceSubscriptionProvider.getSubscribersOfSubscriptionResource;
+import static org.silverpeas.core.subscription.service.ResourceSubscriptionProvider.getSubscribersOfSubscriptionResourceOnLocation;
 
 /**
  * @author Yohann Chastagnier
@@ -51,12 +51,9 @@ public class KmeliaSubscriptionPublicationUserNotification
       final PublicationDetail resource, final NotifAction action) {
     super(nodePK, resource, action);
     if (getResource().isAlias()) {
-      subscriberIdsByTypes = getSubscribersOfSubscriptionResource(
+      subscriberIdsByTypes = getSubscribersOfSubscriptionResourceOnLocation(
           PublicationAliasSubscriptionResource.from(new PublicationPK(resource.getId(),
-              getNodePK().getComponentInstanceId()))).indexBySubscriberType();
-      // In case of alias, parent subscriptions MUST be retrieved manually
-      subscriberIdsByTypes.addAll(getSubscribersOfSubscriptionResource(
-          NodeSubscriptionResource.from(getNodePK())).indexBySubscriberType());
+              getNodePK().getComponentInstanceId())), getNodePK().getLocalId()).indexBySubscriberType();
     } else {
       subscriberIdsByTypes = getSubscribersOfSubscriptionResource(
           PublicationSubscriptionResource.from(resource.getPK())).indexBySubscriberType();

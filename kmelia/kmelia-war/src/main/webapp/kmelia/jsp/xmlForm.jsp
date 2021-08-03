@@ -170,7 +170,8 @@
                       jsValidationCallbackMethodName="isCorrectForm"
                       subscriptionResourceType="${contributionManagementContext.linkedSubscriptionResource.type}"
                       subscriptionResourceId="${contributionManagementContext.linkedSubscriptionResource.id}"
-                      contributionIndexable="<%=pubDetail.isIndexable()%>"/>
+                      contributionIndexable="<%=pubDetail.isIndexable()%>"
+                      location="${contributionManagementContext.location}"/>
 
                 </c:if>
               </c:if>

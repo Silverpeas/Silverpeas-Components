@@ -55,6 +55,7 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
+import org.silverpeas.core.contribution.util.ContributionBatchManagementContext;
 import org.silverpeas.core.contribution.util.ContributionManagementContext;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.importexport.report.ImportReport;
@@ -95,7 +96,9 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.StringTokenizer;
+import java.util.stream.Collectors;
 
 import static org.silverpeas.core.contribution.model.CoreContributionType.NODE;
 
@@ -1524,12 +1527,18 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         kmelia.setPublicationValidator(userIds);
         destination = getDestination("ViewPublication", kmelia, request);
       } else if ("ToUpdatePublications".equals(function)) {
-        String selectedIds = request.getParameter("SelectedIds");
-        String notSelectedIds = request.getParameter("NotSelectedIds");
-        List<PublicationPK> pks = kmelia.processSelectedPublicationIds(selectedIds, notSelectedIds);
+        final String selectedIds = request.getParameter("SelectedIds");
+        final String notSelectedIds = request.getParameter("NotSelectedIds");
+        final List<KmeliaPublication> authorizedPublications = kmelia.getPublicationsForModification(
+            kmelia.processSelectedPublicationIds(selectedIds, notSelectedIds))
+            .stream()
+            .map(p -> p.getSecond() != null ? p.getSecond() : p.getFirst())
+            .filter(p -> Objects.equals(p.getComponentInstanceId(), kmelia.getComponentId()))
+            .collect(Collectors.toList());
+        setupRequestForContributionBatchManagementContext(request, kmelia, authorizedPublications);
         request.setAttribute("Form", kmelia.getXmlFormForPublications());
         request.setAttribute("Language", kmelia.getLanguage());
-        request.setAttribute("NumberOfSelectedPublications", pks.size());
+        request.setAttribute("NumberOfSelectedPublications", authorizedPublications.size());
         destination = rootDestination + "updatePublicationsContent.jsp";
       } else if ("UpdatePublications".equals(function)) {
         List<FileItem> items = request.getFileItems();
@@ -1970,7 +1979,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
   }
 
   /**
-   * Setup the request to manager some behaviors around subscription notification sending.
+   * Setup the request to manager some behaviors around validation of modifications.
    * @param request the current request.
    * @param highestSilverpeasUserRoleOnCurrentTopic the highest role the user has on the current
    * folder.
@@ -1986,15 +1995,39 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
     if (highestSilverpeasUserRoleOnCurrentTopic.isGreaterThanOrEquals(SilverpeasRole.PUBLISHER)) {
       statusAfterSave = ContributionStatus.VALIDATED;
     }
-    final PublicationPK publicationPK = new PublicationPK(publication.getId(),
-        currentFolderPK.getComponentInstanceId());
+    final String componentInstanceId = currentFolderPK.getComponentInstanceId();
+    final PublicationPK publicationPK = new PublicationPK(publication.getId(), componentInstanceId);
     final SubscriptionResource resource = publication.isAlias() ?
         PublicationAliasSubscriptionResource.from(publicationPK) :
         PublicationSubscriptionResource.from(publicationPK);
     request.setAttribute("contributionManagementContext", ContributionManagementContext
         .on(publication)
         .aboutSubscriptionResource(resource)
+        .atLocation(new Location(currentFolderPK.getId(), componentInstanceId))
         .forPersistenceAction(statusBeforeSave, ActionType.UPDATE, statusAfterSave));
+  }
+
+  /**
+   * Setup the request to manager some behaviors around validation of modifications.
+   * @param request the current request.
+   * @param publications the current handled publications.
+   */
+  private void setupRequestForContributionBatchManagementContext(HttpRequest request,
+      KmeliaSessionController kmeliaSC, List<KmeliaPublication> publications) {
+    final ContributionBatchManagementContext context = ContributionBatchManagementContext
+        .initialize()
+        .forPersistenceAction(ActionType.UPDATE);
+    final String componentInstanceId = kmeliaSC.getComponentId();
+    publications.stream().forEach(k -> {
+      final PublicationDetail publication = k.getDetail();
+      final PublicationPK publicationPK = new PublicationPK(publication.getId(), componentInstanceId);
+      final SubscriptionResource resource = publication.isAlias() ?
+          PublicationAliasSubscriptionResource.from(publicationPK) :
+          PublicationSubscriptionResource.from(publicationPK);
+      context.addContributionContext(publication, publication.getContributionStatus(),
+          new Location(k.getLocation().getId(), componentInstanceId), resource);
+    });
+    request.setAttribute("contributionBatchManagementContext", context);
   }
 
   /**
@@ -2013,7 +2046,9 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
     return pks;
   }
 
-  private class AliasOnOtherKmeliaException extends Exception {
+  private static class AliasOnOtherKmeliaException extends Exception {
+    private static final long serialVersionUID = 2594081198295164318L;
+
     private final String pubId;
     private final NodePK aliasLocation;
 

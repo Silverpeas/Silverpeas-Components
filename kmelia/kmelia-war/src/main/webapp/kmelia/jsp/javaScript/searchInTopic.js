@@ -11,10 +11,7 @@ function searchInTopic() {
   var ieFix = new Date().getTime();
   var componentId = getComponentId();
   $.get(getWebContext()+'/RAjaxPublicationsListServlet?'+serializedExtraFormSearch, {Index:0,Query:topicQuery,ComponentId:componentId,IEFix:ieFix},
-      function(data){
-        $.closeProgressMessage();
-        $('#pubList').html(data);
-      },"html");
+      __updateDataAndUI,"html");
 	return;
 }
 

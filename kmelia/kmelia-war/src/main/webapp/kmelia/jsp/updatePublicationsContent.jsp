@@ -48,11 +48,8 @@
 
       String linkedPathString = kmeliaScc.getSessionPath();
 %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="<%=currentLang%>">
-  <head>
-  	<title></title>
-    <view:looknfeel/>
+<view:sp-page>
+  <view:sp-head-part>
     <view:includePlugin name="wysiwyg"/>
     <% formUpdate.displayScripts(out, context);%>
     <script type="text/javascript">
@@ -79,41 +76,41 @@
         location.href = "GoToCurrentTopic";
       }
     </script>
-  </head>
-  <body class="yui-skin-sam">
-    <%
-          Window window = gef.getWindow();
-
-          BrowseBar browseBar = window.getBrowseBar();
-          browseBar.setPath(linkedPathString);
-
-          out.println(window.printBefore());
-    %>
-    <view:frame>
-      <div class="inlineMessage">
-        <%=resources.getStringWithParams("kmelia.publications.batch.update", Integer.toString(nbPublis))%>
-      </div>
-    <view:board>
-    <form name="myForm" method="post" action="UpdatePublications" enctype="multipart/form-data" accept-charset="UTF-8">
-      <%
-            formUpdate.display(out, context);
-      %>
-      <input type="hidden" name="KmeliaPubFormName" value="<%=formUpdate.getFormName()%>"/>
-    </form>
-    </view:board>
-    <view:buttonPane>
-      <c:set var="saveLabel"><%=resources.getString("GML.validate")%></c:set>
-      <c:set var="cancelLabel"><%=resources.getString("GML.cancel")%></c:set>
-      <view:button label="${saveLabel}" action="javascript:onClick=B_VALIDER_ONCLICK();"/>
-      <view:button label="${cancelLabel}" action="javascript:onClick=B_ANNULER_ONCLICK();"/>
-    </view:buttonPane>
-    </view:frame>
-    <%
-          out.println(window.printAfter());%>
-	<script type="text/javascript">
-    	document.myForm.elements[1].focus();
-  	</script>
-  <view:progressMessage/>
-  
-  </body>
-</html>
+  </view:sp-head-part>
+  <view:sp-body-part cssClass="yui-skin-sam">
+    <view:browseBar componentId="<%=componentId%>" path="<%=linkedPathString%>" />
+    <view:window>
+      <view:frame>
+        <div class="inlineMessage">
+          <%=resources.getStringWithParams("kmelia.publications.batch.update", Integer.toString(nbPublis))%>
+        </div>
+      <view:board>
+      <form name="myForm" method="post" action="UpdatePublications" enctype="multipart/form-data" accept-charset="UTF-8">
+        <% formUpdate.display(out, context);%>
+        <input type="hidden" name="KmeliaPubFormName" value="<%=formUpdate.getFormName()%>"/>
+      </form>
+      </view:board>
+      <view:buttonPane>
+        <c:set var="saveLabel"><%=resources.getString("GML.validate")%></c:set>
+        <c:set var="cancelLabel"><%=resources.getString("GML.cancel")%></c:set>
+        <view:button label="${saveLabel}" action="javascript:onClick=B_VALIDER_ONCLICK();">
+          <c:set var="contributionBatchManagementContext" value="${requestScope.contributionBatchManagementContext}"/>
+          <c:if test="${not empty contributionBatchManagementContext}">
+            <jsp:useBean id="contributionBatchManagementContext" type="org.silverpeas.core.contribution.util.ContributionBatchManagementContext"/>
+            <c:if test="${contributionBatchManagementContext.entityPersistenceAction.update}">
+              <view:handleContributionBatchManagementContext
+                  context="${contributionBatchManagementContext}"
+                  jsValidationCallbackMethodName="isCorrectForm"/>
+            </c:if>
+          </c:if>
+        </view:button>
+        <view:button label="${cancelLabel}" action="javascript:onClick=B_ANNULER_ONCLICK();"/>
+      </view:buttonPane>
+      </view:frame>
+    </view:window>
+    <script type="text/javascript">
+      document.myForm.elements[1].focus();
+    </script>
+    <view:progressMessage/>
+  </view:sp-body-part>
+</view:sp-page>

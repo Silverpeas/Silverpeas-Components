@@ -40,6 +40,7 @@ import org.silverpeas.core.notification.user.UserNotification;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.reminder.Reminder;
 import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.Collection;
@@ -319,21 +320,49 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
 
   /**
    * gets a list of PublicationDetail corresponding to the links parameter
-   * @param links list of publication (componentID + publicationId)
+   * @param references list of publication (componentID + publicationId)
    * @return a list of PublicationDetail
    */
-  List<PublicationDetail> getPublicationDetails(List<ResourceReference> links);
+  <T extends ResourceReference> List<PublicationDetail> getPublicationDetails(List<T> references);
 
   /**
-   * Gets a list of publications with optional control access filtering
-   * @param links list of publication defined by his id and component id
+   * Gets a list of publications with optional control access filtering.
+   * <p>
+   * When a folder is given as context, then the ALIAS information is computed on each publication.
+   * </p>
+   * @param references list of publication represented as {@link ResourceReference} instances.
    * @param userId identifier User. allow to check if the publication is accessible for current
    * user
+   * @param contextFolder optional folder that represents if specified the folder into which the
+   * given references are retrieved. It is MANDATORY to determinate alias status.
    * @param accessControlFiltering true to filter the publication according user rights.
    * @return a collection of Kmelia publications
    */
-  List<KmeliaPublication> getPublications(List<ResourceReference> links, String userId,
-      boolean accessControlFiltering);
+  <T extends ResourceReference> List<KmeliaPublication> getPublications(List<T> references,
+      String userId, final NodePK contextFolder, boolean accessControlFiltering);
+
+  /**
+   * Gets a list of {@link Pair} of {@link KmeliaPublication} instances into context of
+   * modification by a user represented by the given user id.
+   * On the left of a {@link Pair} instance, there is a publication that can not be a null value.
+   * On the right, there is the clone of the publication if any, and so, it can be null if the
+   * publication has got no clone.
+   * <p>
+   * The main location is computed for each publication (and clone) by taking care about
+   * performances.
+   * </p>
+   * <p>
+   * This service guarantees that the returned {@link KmeliaPublication} instances each aims the
+   * main location.
+   * </p>
+   * @param references list of publication represented as {@link ResourceReference} instances.
+   * @param userId identifier User. allow to check if the publication is accessible for current
+   * user
+   * @return a list of {@link Pair} of {@link KmeliaPublication} instances. A pair represents on
+   * the left the publication and the eventual corresponding clone on the right if it exists.
+   */
+  <T extends ResourceReference> List<Pair<KmeliaPublication, KmeliaPublication>> getPublicationsForModification(
+      List<T> references, String userId);
 
   /**
    * Gets the publications linked with the specified one and for which the specified user is
