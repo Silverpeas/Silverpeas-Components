@@ -99,6 +99,7 @@
   String pubName = pubDetail.getName(language);
   String resourceType = pubDetail.getContributionType();
   String id = pubDetail.getPK().getId();
+  String newCssClass = pubDetail.isNew() ? "new-contribution" : "";
 
   String contextComponentId = componentId;
   //surcharge le componentId du composant courant (cas de l'alias)
@@ -781,7 +782,7 @@
         /*********************************************************************************************************************/
         /** Colonne Pricipale																							    **/
         /*********************************************************************************************************************/
-    	 out.println("<div class=\"principalContent\">");
+    	 out.println("<div class=\"principalContent " + newCssClass + "\">");
 
          if (StringUtil.isDefined(screenMessage)) {
            out.println(screenMessage);
