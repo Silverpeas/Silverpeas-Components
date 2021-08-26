@@ -121,6 +121,14 @@ function setCurrentNodeId(id){
 	currentNodeId = id;
 }
 
+function showPublicationOperations() {
+  // not implemented but necessary to prevent javascript errors
+}
+
+function hidePublicationOperations () {
+  // not implemented but necessary to prevent javascript errors
+}
+
 function doPagination(index, nbItemsPerPage){
 	var ieFix = new Date().getTime();
 	$.get('<%=contextName%>/RAjaxPublicationsListServlet', {Index:index,NbItemsPerPage:nbItemsPerPage,ComponentId:currentComponent,attachmentLink:1,IEFix:ieFix},
@@ -131,7 +139,7 @@ function doPagination(index, nbItemsPerPage){
 
 function displayPublications(CompoId,topicId){
 	var ieFix = new Date().getTime();
-	$.get('<%=contextName%>/RAjaxPublicationsListServlet', {ComponentId:CompoId,TopicToLinkId:topicId,attachmentLink:1,IEFix:ieFix},
+	$.get('<%=contextName%>/RAjaxPublicationsListServlet', {ComponentId:CompoId,Id:topicId,attachmentLink:1,IEFix:ieFix},
 			function(data){
 				$('#pubList').html(data);
 			},"html");
