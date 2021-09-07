@@ -145,6 +145,30 @@ function updatePublications() {
   formRequest.submit();
 }
 
+function selectAllPublications(select) {
+  var componentId = getComponentId();
+  var url = getWebContext() + '/KmeliaAJAXServlet';
+  $.post(url, {ComponentId: componentId, Action: 'SELECTALLPUBLICATIONS', Selected: select},
+      function(data) {
+        if (data === "ok") {
+          // select (or unselect) all checkboxes
+          $("#pubList .selection input:checkbox").prop("checked", select);
+
+          // revert action in menu
+          if (select) {
+            showPublicationCheckedBoxes();
+            $("#menuitem-selectAllPubs a").text(getString('kmelia.operation.publications.unselect'));
+            $("#menuitem-selectAllPubs a").attr("href", "javascript:onclick=selectAllPublications(false)");
+          } else {
+            $("#menuitem-selectAllPubs a").text(getString('kmelia.operation.publications.select'));
+            $("#menuitem-selectAllPubs a").attr("href", "javascript:onclick=selectAllPublications(true)");
+          }
+        } else {
+          notyError(data);
+        }
+      }, 'text');
+}
+
 (function($) {
   window.kmeliaWebService = new function() {
     var __serviceUrl = webContext + '/KmeliaAJAXServlet';

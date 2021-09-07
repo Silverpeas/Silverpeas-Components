@@ -368,6 +368,16 @@ function initOperations(id, op) {
     oMenu.addItem(menuItem, groupIndex);
     groupEmpty = false;
   }
+  if (op.selectAllPublications) {
+    menuItem = new YAHOO.widget.MenuItem(getString('kmelia.operation.publications.select'), {url: "javascript:onclick=selectAllPublications(true)", id: "menuitem-selectAllPubs"});
+    oMenu.addItem(menuItem, groupIndex);
+    groupEmpty = false;
+  }
+  if (op.unselectAllPublications) {
+    menuItem = new YAHOO.widget.MenuItem(getString('kmelia.operation.publications.unselect'), {url: "javascript:onclick=selectAllPublications(false)", id: "menuitem-selectAllPubs"});
+    oMenu.addItem(menuItem, groupIndex);
+    groupEmpty = false;
+  }
   if (op.copyPublications) {
     menuItem = new YAHOO.widget.MenuItem(getString('kmelia.operation.copyPublications'), {url: "javascript:onclick=copyPublications()"});
     oMenu.addItem(menuItem, groupIndex);

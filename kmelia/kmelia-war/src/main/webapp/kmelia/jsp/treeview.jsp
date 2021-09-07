@@ -52,7 +52,7 @@ String		rootId				= "0";
 //R?cup?ration des param?tres
 String 	profile			= (String) request.getAttribute("Profile");
 String  translation 	= (String) request.getAttribute("Language");
-boolean displayNBPublis = ((Boolean) request.getAttribute("DisplayNBPublis")).booleanValue();
+boolean displayNBPublis = (Boolean) request.getAttribute("DisplayNBPublis");
 Boolean rightsOnTopics  = (Boolean) request.getAttribute("RightsOnTopicsEnabled");
 Boolean displaySearch	= (Boolean) request.getAttribute("DisplaySearch");
 SearchContext searchContext = (SearchContext) request.getAttribute("SearchContext");
@@ -70,7 +70,7 @@ if (id == null) {
 String userId = kmeliaScc.getUserId();
 
 boolean userCanManageRoot = "admin".equalsIgnoreCase(profile);
-boolean userCanManageTopics = rightsOnTopics.booleanValue() || "admin".equalsIgnoreCase(profile) || kmeliaScc.isTopicManagementDelegated();
+boolean userCanManageTopics = rightsOnTopics || "admin".equalsIgnoreCase(profile) || kmeliaScc.isTopicManagementDelegated();
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
