@@ -45,7 +45,8 @@ public enum AjaxOperation {
   CopyPublications(new CopyPublicationsHandler(), true),
   CutPublications(new CutPublicationsHandler(), true),
   GetClipboardState(new GetClipboardStateHandler(), true),
-  GetPublicationAuthorizations(new GetPublicationAuthorizationsHandler(), true);
+  GetPublicationAuthorizations(new GetPublicationAuthorizationsHandler(), true),
+  SELECTALLPUBLICATIONS(new SelectAllPublicationsHandler(), true);
 
   private AjaxHandler handler;
   private boolean controllerRequired;

@@ -233,6 +233,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   private String customPublicationTemplateName = null;
   private SearchContext searchContext = null;
 
+  // select/deselect all
+  private boolean allPublicationsListSelected = false;
+
   /**
    * Creates new sessionClientController
    * @param mainSessionCtrl
@@ -1551,6 +1554,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     if (!id.equals(currentFolderId)) {
       indexOfFirstPubToDisplay = 0;
       resetSelectedPublicationPKs();
+      setAllPublicationsListSelected(false);
       if (!KmeliaHelper.isSpecialFolder(id)) {
         processBreadcrumb(id);
       }
@@ -3739,6 +3743,27 @@ public class KmeliaSessionController extends AbstractComponentSessionController
           });
     } catch (Exception e) {
       SilverpeasTransverseErrorUtil.stopTransverseErrorIfAny(new SilverpeasRuntimeException(e));
+    }
+  }
+
+  public boolean isAllPublicationsListSelected() {
+    return allPublicationsListSelected;
+  }
+
+  public void setAllPublicationsListSelected(final boolean allPublicationsListSelected) {
+    this.allPublicationsListSelected = allPublicationsListSelected;
+  }
+
+  public void selectAllPublications(boolean selected) {
+    resetSelectedPublicationPKs();
+    setAllPublicationsListSelected(selected);
+    if (!selected) {
+      return;
+    }
+
+    List<KmeliaPublication> publications = getSessionPublicationsList();
+    for (KmeliaPublication publication : publications) {
+      selectedPublicationPKs.add(publication.getPk());
     }
   }
 }
