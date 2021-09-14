@@ -161,12 +161,13 @@ function validateMessage() {
         $(document.forumsForm).submit();
     }
 }
+<% } %>
 
 function cancel() {
   sp.editor.wysiwyg.lastBackupManager.clear();
   sp.formConfig('${pageScope.backURL}').submit();
 }
-<% } %>
+
 </script>
 </head>
 <body <%addBodyOnload(out, fsc, (move ? "" : "init();"));%>>
