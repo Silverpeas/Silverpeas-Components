@@ -121,7 +121,7 @@ Button searchButton = gef.getFormButton(" OK ", "javascript:onClick=search();", 
 		      	if (unLink.isPopup())
 		      	   target = "target=\"_blank\"";
 		      	%>
-		        <li><a title="<%=description%>" href="<%=lien%>" <%=target%>><%=nameLink%></a></li>
+		        <li><a title="<%=description%>" href="<%=lien%>" <%=target%>><%=WebEncodeHelper.javaStringToHtmlString(nameLink)%></a></li>
 		        <%
 			}
 			
