@@ -183,7 +183,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   private List<String> sessionCombination = null;
   // Specific Kmax
   private String sessionTimeCriteria = null;
-  private Sort sortValue = new Sort();
+  private Sort sortValue;
   private int rang = 0;
   public static final String TAB_PREVIEW = "tabpreview";
   public static final String TAB_HEADER = "tabheader";
@@ -245,6 +245,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   private void init() {
+    sortValue = new Sort();
+    sortValue.setCurrentSort(getDefaultSortValue());
+
     // Remove all data store by this SessionController
     removeSessionObjects();
     currentLanguage = getLanguage();
