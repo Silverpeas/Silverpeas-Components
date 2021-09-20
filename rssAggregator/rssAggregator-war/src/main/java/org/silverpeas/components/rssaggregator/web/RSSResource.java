@@ -28,8 +28,8 @@ import org.silverpeas.components.rssaggregator.model.RssAgregatorException;
 import org.silverpeas.components.rssaggregator.service.RSSServiceProvider;
 import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.webapi.base.RESTWebService;
-import org.silverpeas.core.webapi.base.annotation.Authorized;
+import org.silverpeas.core.web.rs.RESTWebService;
+import org.silverpeas.core.web.rs.annotation.Authorized;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

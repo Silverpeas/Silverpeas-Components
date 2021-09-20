@@ -30,7 +30,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.date.Period;
-import org.silverpeas.core.webapi.base.WebEntity;
+import org.silverpeas.core.web.rs.WebEntity;
 import org.silverpeas.core.webapi.profile.UserProfileEntity;
 
 import javax.xml.bind.annotation.XmlAccessType;

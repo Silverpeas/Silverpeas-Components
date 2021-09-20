@@ -29,13 +29,14 @@ pipeline {
           sh "/opt/wildfly-for-tests/wildfly-*.Final/bin/standalone.sh -c standalone-full.xml &> /dev/null &"
           checkParentPOMVersion(version)
           boolean coreDependencyExists = existsDependency(version, 'core')
-          if (!coreDependencyExists) {
-            def coreVersion = getCoreDependencyVersion()
-            sh """
-sed -i -e "s/<core.version>[\\\${}0-9a-zA-Z.-]\\+/<core.version>${coreVersion}/g" pom.xml
-"""
+          def coreVersion
+          if (coreDependencyExists) {
+            coreVersion = version
+          } else {
+            coreVersion = getCoreDependencyVersion()
           }
           sh """
+sed -i -e "s/<core.version>[\\\${}0-9a-zA-Z.-]\\+/<core.version>${coreVersion}/g" pom.xml
 mvn -U versions:set -DgenerateBackupPoms=false -DnewVersion=${version}
 mvn clean install -Pdeployment -Djava.awt.headless=true -Dcontext=ci
 /opt/wildfly-for-tests/wildfly-*.Final/bin/jboss-cli.sh --connect :shutdown

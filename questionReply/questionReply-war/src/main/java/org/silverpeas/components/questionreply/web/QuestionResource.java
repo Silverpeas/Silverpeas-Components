@@ -27,7 +27,7 @@ import org.silverpeas.components.questionreply.model.Question;
 import org.silverpeas.components.questionreply.service.QuestionManagerProvider;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.annotation.WebService;
-import org.silverpeas.core.webapi.base.annotation.Authorized;
+import org.silverpeas.core.web.rs.annotation.Authorized;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

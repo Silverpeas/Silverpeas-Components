@@ -66,7 +66,7 @@
   <properties>
     <!-- property used by the CI to both deploy a build version and release the next stable version -->
     <next.release>6.3</next.release>
-    <core.version>${project.version}</core.version>
+    <core.version>6.3-SNAPSHOT</core.version>
   </properties>
 
   <dependencies>

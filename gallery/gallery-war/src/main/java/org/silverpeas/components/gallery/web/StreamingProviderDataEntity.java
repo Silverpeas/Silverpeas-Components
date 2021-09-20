@@ -24,7 +24,7 @@
 package org.silverpeas.components.gallery.web;
 
 import org.silverpeas.components.gallery.constant.StreamingProvider;
-import org.silverpeas.core.webapi.base.WebEntity;
+import org.silverpeas.core.web.rs.WebEntity;
 import org.silverpeas.components.gallery.model.Streaming;
 import org.silverpeas.core.io.media.Definition;
 import org.silverpeas.core.webapi.media.MediaDefinitionEntity;

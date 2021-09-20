@@ -3,7 +3,7 @@ package org.silverpeas.components.quickinfo.web;
 import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.annotation.WebService;
-import org.silverpeas.core.webapi.base.annotation.Authorized;
+import org.silverpeas.core.web.rs.annotation.Authorized;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
