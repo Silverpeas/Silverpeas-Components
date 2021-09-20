@@ -26,7 +26,7 @@ package org.silverpeas.components.gallery.web;
 import org.silverpeas.components.gallery.constant.MediaResolution;
 import org.silverpeas.components.gallery.constant.MediaType;
 import org.silverpeas.components.gallery.model.Media;
-import org.silverpeas.core.webapi.base.WebEntity;
+import org.silverpeas.core.web.rs.WebEntity;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 

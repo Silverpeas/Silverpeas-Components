@@ -62,13 +62,8 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
   private List<News> notYetVisibleList;
   private List<News> noMoreVisibleList;
   private List<News> currentList;
-  private ListIndex currentIndex = new ListIndex(0);
+  private final ListIndex currentIndex = new ListIndex(0);
 
-  /**
-   * Creates new QuickInfoSessionController
-   * @param mainSessionCtrl
-   * @param componentContext
-   */
   public QuickInfoSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext, QuickInfoComponentSettings.MESSAGES_PATH,

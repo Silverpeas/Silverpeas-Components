@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.gallery;
 
+import org.silverpeas.components.gallery.stub.SessionManagementStub;
 import org.silverpeas.core.test.BasicCoreWarBuilder;
 
 /**
@@ -37,7 +38,9 @@ public class GalleryWarBuilder extends BasicCoreWarBuilder {
    */
   protected <T> GalleryWarBuilder(final Class<T> test) {
     super(test);
+    addClasses(SessionManagementStub.class);
     addPackages(true, "org.silverpeas.components.gallery");
+    addMavenDependencies("org.silverpeas.core:silverpeas-core-rs");
     addMavenDependencies("org.apache.httpcomponents:httpclient");
     addMavenDependencies("org.silverpeas.core.services:silverpeas-core-comment");
     addAsResource("org/silverpeas/gallery/multilang/galleryBundle.properties");

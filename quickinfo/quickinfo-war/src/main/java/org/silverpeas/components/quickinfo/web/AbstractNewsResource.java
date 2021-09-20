@@ -3,7 +3,7 @@ package org.silverpeas.components.quickinfo.web;
 import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.components.quickinfo.model.QuickInfoService;
 import org.silverpeas.components.quickinfo.model.QuickInfoServiceProvider;
-import org.silverpeas.core.webapi.base.RESTWebService;
+import org.silverpeas.core.web.rs.RESTWebService;
 
 import java.util.List;
 import java.util.stream.Collectors;

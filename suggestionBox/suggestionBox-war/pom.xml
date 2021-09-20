@@ -54,6 +54,11 @@
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core</groupId>
+      <artifactId>silverpeas-core-rs</artifactId>
+      <version>${core.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.silverpeas.core</groupId>
       <artifactId>silverpeas-core-web</artifactId>
       <version>${core.version}</version>
 	  <scope>provided</scope>

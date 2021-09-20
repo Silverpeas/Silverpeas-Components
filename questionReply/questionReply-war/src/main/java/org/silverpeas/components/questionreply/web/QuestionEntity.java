@@ -30,7 +30,7 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.persistence.jdbc.bean.IdPK;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.webapi.base.WebEntity;
+import org.silverpeas.core.web.rs.WebEntity;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;

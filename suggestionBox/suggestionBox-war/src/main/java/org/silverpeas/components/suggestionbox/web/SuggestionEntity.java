@@ -27,7 +27,7 @@ import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.web.SilverpeasWebResource;
-import org.silverpeas.core.webapi.base.WebEntity;
+import org.silverpeas.core.web.rs.WebEntity;
 import org.silverpeas.core.webapi.rating.RaterRatingEntity;
 import org.silverpeas.core.webapi.validation.ContributionValidationEntity;
 import org.springframework.util.ReflectionUtils;
