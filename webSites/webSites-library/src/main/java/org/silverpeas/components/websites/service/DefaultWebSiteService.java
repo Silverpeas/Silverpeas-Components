@@ -322,7 +322,7 @@ public class DefaultWebSiteService implements WebSiteService {
   @Override
   public String createPublication(String componentId, PublicationDetail pubDetail) {
 
-    pubDetail.getPK().setComponentName(componentId);
+    pubDetail.setPk(new PublicationPK("-1", componentId));
     pubDetail.setStatus(PublicationDetail.VALID_STATUS);
     try {
       // create the publication
