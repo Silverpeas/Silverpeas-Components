@@ -23,8 +23,10 @@
  */
 package org.silverpeas.components.kmelia.notification;
 
+import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.publication.subscription.LocationFilterDirective;
 import org.silverpeas.core.contribution.publication.subscription.PublicationAliasSubscriptionResource;
 import org.silverpeas.core.contribution.publication.subscription.PublicationSubscriptionResource;
 import org.silverpeas.core.node.model.NodePK;
@@ -35,8 +37,10 @@ import org.silverpeas.core.subscription.util.SubscriptionSubscriberMapBySubscrib
 
 import java.util.Collection;
 
+import static java.util.function.Predicate.not;
+import static org.silverpeas.core.contribution.publication.subscription.LocationFilterDirective.withLocationFilter;
+import static org.silverpeas.core.contribution.publication.subscription.OnLocationDirective.onLocationId;
 import static org.silverpeas.core.subscription.service.ResourceSubscriptionProvider.getSubscribersOfSubscriptionResource;
-import static org.silverpeas.core.subscription.service.ResourceSubscriptionProvider.getSubscribersOfSubscriptionResourceOnLocation;
 
 /**
  * @author Yohann Chastagnier
@@ -51,12 +55,14 @@ public class KmeliaSubscriptionPublicationUserNotification
       final PublicationDetail resource, final NotifAction action) {
     super(nodePK, resource, action);
     if (getResource().isAlias()) {
-      subscriberIdsByTypes = getSubscribersOfSubscriptionResourceOnLocation(
-          PublicationAliasSubscriptionResource.from(new PublicationPK(resource.getId(),
-              getNodePK().getComponentInstanceId())), getNodePK().getLocalId()).indexBySubscriberType();
-    } else {
       subscriberIdsByTypes = getSubscribersOfSubscriptionResource(
-          PublicationSubscriptionResource.from(resource.getPK())).indexBySubscriberType();
+          PublicationAliasSubscriptionResource.from(new PublicationPK(resource.getId(),
+              getNodePK().getComponentInstanceId())), onLocationId(getNodePK().getLocalId())).indexBySubscriberType();
+    } else {
+      final LocationFilterDirective filter = withLocationFilter(not(Location::isAlias)
+          .and(l -> l.getComponentInstanceId().equals(getComponentInstanceId())));
+      subscriberIdsByTypes = getSubscribersOfSubscriptionResource(
+          PublicationSubscriptionResource.from(resource.getPK()), filter).indexBySubscriberType();
     }
   }
 
