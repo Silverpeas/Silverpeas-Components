@@ -27,6 +27,7 @@ import org.silverpeas.components.forums.model.Forum;
 import org.silverpeas.components.forums.model.ForumPK;
 import org.silverpeas.components.forums.model.Message;
 import org.silverpeas.components.forums.model.MessagePK;
+import org.silverpeas.core.subscription.SubscriberDirective;
 import org.silverpeas.core.subscription.SubscriptionResourceType;
 import org.silverpeas.core.subscription.SubscriptionFactory;
 import org.silverpeas.core.annotation.Service;
@@ -71,7 +72,7 @@ public class ForumsSubscriptionService extends AbstractResourceSubscriptionServi
   @Override
   public SubscriptionSubscriberList getSubscribersOfComponentAndTypedResource(
       final String componentInstanceId, final SubscriptionResourceType resourceType,
-      final String resourceId) {
+      final String resourceId, final SubscriberDirective... directives) {
     SubscriptionResourceType nextTypeToHandle = resourceType;
 
     Collection<SubscriptionSubscriber> subscribers = new HashSet<>();
