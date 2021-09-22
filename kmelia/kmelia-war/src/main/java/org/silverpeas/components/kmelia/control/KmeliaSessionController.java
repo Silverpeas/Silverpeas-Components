@@ -1446,6 +1446,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       setCurrentFolderId(topicDetail.getNodePK().getId(), true);
       Collection<KmeliaPublication> publications = topicDetail.getKmeliaPublications();
       setSessionPublicationsList((List<KmeliaPublication>) publications);
+    } else {
+      setCurrentFolderId(NodePK.ROOT_NODE_ID, true);
     }
   }
 
