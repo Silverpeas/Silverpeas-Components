@@ -45,7 +45,6 @@ import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.exception.EncodingException;
 import org.silverpeas.core.index.indexing.model.IndexManager;
 import org.silverpeas.core.mylinks.model.LinkDetail;
-import org.silverpeas.core.mylinks.service.MyLinksService;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
@@ -64,6 +63,7 @@ import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.subscription.SubscriptionContext;
+import org.silverpeas.core.webapi.mylinks.MyLinksWebManager;
 import org.silverpeas.core.webapi.node.NodeEntity;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 
@@ -310,7 +310,7 @@ public final class BlogSessionController extends AbstractComponentSessionControl
   }
 
   public Collection<LinkDetail> getAllLinks() {
-    return getMyLinksBm().getAllLinksByInstance(getComponentId());
+    return MyLinksWebManager.get().getAllLinksOfInstance(getComponentId());
   }
 
   public Collection<PostDetail> getResultSearch(String word) {
@@ -355,10 +355,6 @@ public final class BlogSessionController extends AbstractComponentSessionControl
    */
   protected CommentService getCommentService() {
     return CommentServiceProvider.getCommentService();
-  }
-
-  public MyLinksService getMyLinksBm() {
-    return ServiceProvider.getService(MyLinksService.class);
   }
 
   private BlogService getBlogService() {
