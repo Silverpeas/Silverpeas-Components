@@ -119,7 +119,7 @@ public class KmeliaCopyDetail extends PasteDetailFromToPK<NodePK, NodePK> {
   }
 
   public boolean isNodeRightsMustBeCopied() {
-    return getOptions() != null && StringUtil.getBooleanValue(getOptions().get(NODE_RIGHTS));
+    return isMustBeCopied(NODE_RIGHTS);
   }
 
   private boolean isMustBeCopied(String optionName) {

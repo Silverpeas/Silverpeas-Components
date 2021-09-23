@@ -4104,13 +4104,15 @@ public class DefaultKmeliaService implements KmeliaService {
       KmeliaPasteDetail pasteContext) {
     List<NodeDetail> treeToPaste = nodeService.getSubTree(nodePK);
 
+    boolean rightsOnTopicsEnabled = isRightsOnTopicsEnabled(to.getInstanceId());
+
     // move node and subtree
-    nodeService.moveNode(nodePK, to);
+    nodeService.moveNode(nodePK, to, rightsOnTopicsEnabled);
 
     for (NodeDetail fromNode : treeToPaste) {
       if (fromNode != null) {
         NodePK toNodePK = new NodePK(fromNode.getNodePK().getId(), to);
-        checkNodeRights(fromNode);
+        checkNodeRights(fromNode, rightsOnTopicsEnabled);
         // move rich description of node
         if (!nodePK.getInstanceId().equals(to.getInstanceId())) {
           WysiwygController.move(fromNode.getNodePK().getInstanceId(),
@@ -4126,17 +4128,25 @@ public class DefaultKmeliaService implements KmeliaService {
     return getNodeHeader(nodePK);
   }
 
-  private void checkNodeRights(final NodeDetail node) {
+  private void checkNodeRights(final NodeDetail node, final boolean rightsOnTopicsEnabled) {
     if (node.haveLocalRights()) {
       List<ProfileInst> profiles =
           adminController.getProfilesByObject(ProfiledObjectId.fromNode(node.getNodePK().getId()),
               node.getNodePK().getInstanceId());
-      for (ProfileInst profile : profiles) {
-        if (profile != null && StringUtil.isDefined(profile.getId())) {
+      if (rightsOnTopicsEnabled) {
+        // adjusting previous rights according to target component
+        for (ProfileInst profile : profiles) {
+          if (profile != null && StringUtil.isDefined(profile.getId())) {
 
-          checkNodeProfile(profile, node.getNodePK().getInstanceId());
+            checkNodeProfile(profile, node.getNodePK().getInstanceId());
 
-          adminController.updateProfileInst(profile);
+            adminController.updateProfileInst(profile);
+          }
+        }
+      } else {
+        // target component does not use specific rights, so removing rights
+        for (ProfileInst profile: profiles) {
+          adminController.deleteProfileInst(profile.getId());
         }
       }
     }
@@ -4164,18 +4174,21 @@ public class DefaultKmeliaService implements KmeliaService {
     String userId = copyDetail.getUserId();
     NodeDetail nodeToCopy = nodeService.getDetail(nodePKToCopy);
     NodeDetail father = getNodeHeader(targetPK);
+    boolean rightsOnTopicsEnabled = isRightsOnTopicsEnabled(targetPK.getInstanceId());
 
     // paste topic
     NodePK nodePK = new NodePK(UNKNOWN, targetPK);
     NodeDetail node = new NodeDetail(nodeToCopy);
     node.setNodePK(nodePK);
     node.setCreatorId(userId);
-    node.setRightsDependsOn(father.getRightsDependsOn());
+    if (rightsOnTopicsEnabled) {
+      node.setRightsDependsOn(father.getRightsDependsOn());
+    }
     node.setCreationDate(DateUtil.today2SQLDate());
     nodePK = nodeService.createNode(node, father);
 
     // duplicate rights
-    if (copyDetail.isNodeRightsMustBeCopied()) {
+    if (rightsOnTopicsEnabled && copyDetail.isNodeRightsMustBeCopied()) {
       oldAndNewIds.put(Integer.parseInt(nodePKToCopy.getId()), Integer.parseInt(nodePK.getId()));
       setNodeRightDependency(oldAndNewIds, nodeToCopy, nodePK, node);
       // Set topic rights if necessary
