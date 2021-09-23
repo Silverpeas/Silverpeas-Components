@@ -20,6 +20,7 @@
  */
 package org.silverpeas.components.kmelia.importexport;
 
+import org.silverpeas.components.kmelia.InstanceParameters;
 import org.silverpeas.components.kmelia.KmeliaException;
 import org.silverpeas.components.kmelia.service.KmeliaHelper;
 import org.silverpeas.components.kmelia.service.KmeliaService;
@@ -103,8 +104,8 @@ public class KmeliaImportExport extends GEDImportExport {
         .getOrganisationController();
     if (pubDetTemp.isStatusMustBeChecked()) {
       final String profile;
-      if ("yes".equalsIgnoreCase(orgnaisationController.getComponentParameterValue(topicPK
-          .getInstanceId(), "rightsOnTopics"))) {
+      if (StringUtil.getBooleanValue(orgnaisationController.getComponentParameterValue(topicPK
+          .getInstanceId(), InstanceParameters.rightsOnFolders))) {
         NodeDetail topic = getNodeService().getHeader(topicPK);
         if (topic.haveRights()) {
           profile = KmeliaHelper.getProfile(orgnaisationController.getUserProfiles(userDetail.getId(),
