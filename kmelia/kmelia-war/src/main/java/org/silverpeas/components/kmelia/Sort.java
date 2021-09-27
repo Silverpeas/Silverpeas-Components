@@ -23,7 +23,9 @@
  */
 package org.silverpeas.components.kmelia;
 
-public class Sort {
+import java.io.Serializable;
+
+public class Sort implements Serializable {
 
   public static final int SORT_CREATOR_ASC = 0;
   public static final int SORT_UPDATE_ASC = 1;
