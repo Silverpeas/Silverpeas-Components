@@ -504,7 +504,7 @@ function addCategory() {
 function updateCategory(id) {
   document.categoryForm.action = "UpdateCategory";
   document.categoryForm.CategoryId.value = id;
-  $("#addOrUpdateCategory #categoryName").val($('#c'+id+" a.categoryTitle").text());
+  $("#addOrUpdateCategory #categoryName").val($("#c"+id+" h3").text());
   $("#addOrUpdateCategory #categoryDescription").val($('#c'+id+" .categoryDescription").text());
   // open modal dialog
   $('#addOrUpdateCategory').popup('validation', {
