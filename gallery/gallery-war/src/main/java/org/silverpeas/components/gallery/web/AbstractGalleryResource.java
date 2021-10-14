@@ -44,7 +44,7 @@ import org.silverpeas.core.io.media.video.ThumbnailPeriod;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.http.FileResponse;
-import org.silverpeas.core.webapi.base.RESTWebService;
+import org.silverpeas.core.web.rs.RESTWebService;
 
 import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;

@@ -26,8 +26,8 @@ import org.silverpeas.core.annotation.WebService;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationRuntimeException;
 import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.webapi.base.RESTWebService;
-import org.silverpeas.core.webapi.base.annotation.Authorized;
+import org.silverpeas.core.web.rs.RESTWebService;
+import org.silverpeas.core.web.rs.annotation.Authorized;
 import org.silverpeas.core.webapi.publication.PublicationEntity;
 
 import javax.ws.rs.Consumes;

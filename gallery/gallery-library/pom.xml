@@ -23,6 +23,11 @@
       <version>${core.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.silverpeas.core</groupId>
+      <artifactId>silverpeas-core-rs</artifactId>
+      <version>${core.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.silverpeas.core.services</groupId>
       <artifactId>silverpeas-core-silverstatistics</artifactId>
       <version>${core.version}</version>
