@@ -101,7 +101,7 @@ body.topBarEnabled#home {
 	font-size:30px;
 	line-height:48px;
 	color:#363839;
-	font-weight:100;
+	font-weight:normal;
 	position:absolute;
 	left:237px;
 	top:57px;
@@ -117,7 +117,7 @@ body.topBarEnabled#home {
 }
 #home #banner  h1 strong{
 	color:#7eb73b;
-	font-weight:100;
+	font-weight:normal;
 }
 
 #home #principal-link ul {

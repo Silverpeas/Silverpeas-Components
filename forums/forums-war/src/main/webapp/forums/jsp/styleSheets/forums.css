@@ -183,7 +183,7 @@ div.contourintfdcolor{
   background: url("../icons/shape.png") no-repeat scroll 0 0 transparent;  
   color: #FFF;
   font-size: 16px;
-  font-weight: 100;
+  font-weight:normal;
   height: 38px;
   left: 33px;
   line-height: 37px;
