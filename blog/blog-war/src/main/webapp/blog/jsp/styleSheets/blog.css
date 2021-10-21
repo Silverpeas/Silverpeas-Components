@@ -18,7 +18,7 @@
 }
 #blog #blogContainer #bandeau h2 a{
 	font-size:100%;
-	font-weight:100;
+	font-weight:normal;
 	color:#333;
 	padding-left:7px;
 	line-height: 50px;
@@ -174,13 +174,13 @@
 
 .titreTicket > a {
 	font-size:180%;
-	font-weight: 100;
+	font-weight:normal;
 	color:#4d4d4d;
 }
 
 .infoTicket {
 	font-size: 100%;
-	font-weight: 100;
+	font-weight:normal;
 	color: #999999;
 }
 
@@ -229,13 +229,13 @@
 
 #viewPost .titreTicket {
 	font-size:180%;
-	font-weight: 100;
+	font-weight:normal;
 	color:#4d4d4d;
 }
 
 #viewPostDraft .titreTicket {
 	font-size:180%;
-	font-weight: 100;
+	font-weight:normal;
 	color: #FF6F6F;
 }
 
