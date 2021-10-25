@@ -26,12 +26,14 @@ package org.silverpeas.components.kmelia.service;
 
 import org.apache.chemistry.opencmis.commons.exceptions.CmisNotSupportedException;
 import org.apache.chemistry.opencmis.commons.exceptions.CmisObjectNotFoundException;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisPermissionDeniedException;
+import org.apache.chemistry.opencmis.commons.exceptions.CmisServiceUnavailableException;
 import org.silverpeas.components.kmelia.KmeliaPublicationHelper;
 import org.silverpeas.components.kmelia.model.KmeliaPublication;
+import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
 import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.admin.component.model.SilverpeasSharedComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.cmis.CmisContributionsProvider;
@@ -42,6 +44,9 @@ import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.security.authorization.AccessControlContext;
+import org.silverpeas.core.security.authorization.AccessControlOperation;
+import org.silverpeas.core.security.authorization.PublicationAccessControl;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -65,6 +70,9 @@ public class CmisKmeliaContributionsProvider implements CmisContributionsProvide
   @Inject
   private OrganizationController controller;
 
+  @Inject
+  private PublicationAccessControl accessControl;
+
   @Override
   public List<I18nContribution> getAllowedRootContributions(final ResourceIdentifier appId,
       final User user) {
@@ -77,7 +85,7 @@ public class CmisKmeliaContributionsProvider implements CmisContributionsProvide
       return getAllowedContributionsInFolder(rootId, user);
     } else {
       String profile = kmeliaService.getUserTopicProfile(root, user.getId());
-      return kmeliaService.getPublicationsOfFolder(root, profile, user.getId(), treeEnabled)
+      return kmeliaService.getPublicationsOfFolder(root, profile, user.getId(), false)
           .stream()
           .map(KmeliaPublication::getDetail)
           .collect(Collectors.toList());
@@ -95,18 +103,29 @@ public class CmisKmeliaContributionsProvider implements CmisContributionsProvide
       String profile = kmeliaService.getUserTopicProfile(folderPK, user.getId());
       Stream<? extends I18nContribution> publications;
       if (!folderPK.isRoot() || KmeliaPublicationHelper.isPublicationsOnRootAllowed(kmeliaId)) {
-        List<KmeliaPublication> pubsInFolder =
-            kmeliaService.getPublicationsOfFolder(folderPK, profile, user.getId(), treeEnabled);
-        publications =
-            kmeliaService.filterPublications(pubsInFolder, kmeliaId,
-                SilverpeasRole.fromString(profile), user.getId())
-                .stream()
-                .filter(k -> !k.isAlias() && k.isVisible())
-                .map(KmeliaPublication::getDetail);
+        var pubsInFolder = accessControl.filterAuthorizedByUser(user.getId(),
+                kmeliaService.getPublicationsOfFolder(folderPK, profile, user.getId(), treeEnabled)
+                    .stream()
+                    .filter(k -> !k.isAlias() && k.isVisible())
+                    .map(KmeliaPublication::getDetail)
+                    .collect(Collectors.toList()))
+            .collect(Collectors.toList());
+        var drafts = accessControl.filterAuthorizedByUser(user.getId(),
+                pubsInFolder.stream()
+                    .filter(this::isInDraft)
+                    .collect(Collectors.toList()), AccessControlContext.init()
+                    .onOperationsOf(AccessControlOperation.MODIFICATION))
+            .collect(Collectors.toMap(PublicationDetail::getId, p -> {
+              PublicationPK pk = new PublicationPK(p.getCloneId(), p.getInstanceId());
+              return kmeliaService.getPublicationDetail(pk);
+            }));
+        publications = pubsInFolder.stream()
+            .map(p -> drafts.getOrDefault(p.getId(), p));
       } else {
         publications = Stream.empty();
       }
-      Stream<? extends I18nContribution> subFolders =
+
+      var subFolders =
           kmeliaService.getFolderChildren(folderPK, user.getId())
               .stream()
               .filter(n -> !KmeliaHelper.isToValidateFolder(n.getNodePK()
@@ -119,6 +138,18 @@ public class CmisKmeliaContributionsProvider implements CmisContributionsProvide
     } catch (Exception e) {
       throw new CmisObjectNotFoundException(e.getMessage());
     }
+  }
+
+  @Override
+  public I18nContribution getContribution(final ContributionIdentifier contributionId,
+      final User user) {
+    if (contributionId.getType().equals(NodeDetail.TYPE)) {
+      return getNodeDetail(contributionId, user);
+    } else if (contributionId.getType().equals(PublicationDetail.TYPE)) {
+      return getPublicationDetail(contributionId, user);
+    }
+    throw new CmisNotSupportedException("Don't support such contribution types " +
+        contributionId.getType());
   }
 
   @Override
@@ -154,6 +185,10 @@ public class CmisKmeliaContributionsProvider implements CmisContributionsProvide
     return new NodePK(identifier.getLocalId(), identifier.getComponentInstanceId());
   }
 
+  private PublicationPK toPublicationPK(final ContributionIdentifier identifier) {
+    return new PublicationPK(identifier.getLocalId(), identifier.getComponentInstanceId());
+  }
+
   private PublicationDetail toPublicationDetail(final I18nContribution contribution,
       final String language) {
     PublicationDetail publication;
@@ -167,8 +202,10 @@ public class CmisKmeliaContributionsProvider implements CmisContributionsProvide
           .setPk(pk)
           .setNameAndDescription(contribution.getName(), contribution.getDescription())
           .setImportance(1)
-          .created(contribution.getCreationDate(), contribution.getCreator().getId())
-          .updated(contribution.getLastUpdateDate(), contribution.getLastUpdater().getId())
+          .created(contribution.getCreationDate(), contribution.getCreator()
+              .getId())
+          .updated(contribution.getLastUpdateDate(), contribution.getLastUpdater()
+              .getId())
           .build();
     }
     return publication;
@@ -184,6 +221,55 @@ public class CmisKmeliaContributionsProvider implements CmisContributionsProvide
       throw new CmisObjectNotFoundException(
           String.format("The application %s doesn't exist or is not accessible to user %s",
               kmeliaId, user.getId()));
+    }
+  }
+
+  private boolean isInDraft(final PublicationDetail publication) {
+    return publication.isValid() && publication.haveGotClone() && !publication.isClone();
+  }
+
+  private NodeDetail getNodeDetail(final ContributionIdentifier id, final User user) {
+    NodeDetail node;
+    try {
+      node = kmeliaService.getNodeHeader(id.getLocalId(), id.getComponentInstanceId());
+      if (node == null) {
+        throw new KmeliaRuntimeException("");
+      }
+    } catch (Exception e) {
+      throw new CmisObjectNotFoundException(String.format("Folder %s not found!", id.asString()));
+    }
+
+    if (node.isBin() || node.isUnclassified() || KmeliaHelper.isToValidateFolder(node.getId()) ||
+        node.getId().equals(KmeliaHelper.SPECIALFOLDER_NONVISIBLEPUBS)) {
+      throw new CmisPermissionDeniedException("Forbidden access to special folders!");
+    }
+
+    if (!node.canBeAccessedBy(user)) {
+      throw new CmisPermissionDeniedException("Forbidden access to folder " + id.asString());
+    }
+
+    return node;
+  }
+
+  private PublicationDetail getPublicationDetail(final ContributionIdentifier id, final User user) {
+    try {
+      PublicationDetail publication = kmeliaService.getPublicationDetail(toPublicationPK(id));
+      if (publication == null) {
+        throw new CmisObjectNotFoundException(String.format("Publication %s not found!",
+            id.asString()));
+      }
+      if (!publication.canBeAccessedBy(user)) {
+        throw new CmisPermissionDeniedException("Forbidden access to publication " + id.asString());
+      }
+      if (isInDraft(publication) &&
+        accessControl.isUserAuthorized(user.getId(), publication,
+            AccessControlContext.init().onOperationsOf(AccessControlOperation.MODIFICATION))) {
+        PublicationPK pk = new PublicationPK(publication.getCloneId(), publication.getInstanceId());
+        return kmeliaService.getPublicationDetail(pk);
+      }
+      return publication;
+    } catch (Exception e) {
+      throw new CmisServiceUnavailableException(e.getMessage());
     }
   }
 }

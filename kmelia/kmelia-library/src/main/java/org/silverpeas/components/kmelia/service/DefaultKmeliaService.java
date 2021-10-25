@@ -213,7 +213,7 @@ public class DefaultKmeliaService implements KmeliaService {
   }
 
   private boolean isDraftModeUsed(String componentId) {
-    return "yes".equals(
+    return StringUtil.getBooleanValue(
         getOrganisationController().getComponentParameterValue(componentId, "draft"));
   }
 
@@ -4496,7 +4496,7 @@ public class DefaultKmeliaService implements KmeliaService {
         if (detail.isDraft()) {
           // si le theme est en co-rédaction et si on autorise le mode brouillon visible par tous
           // toutes les publications en mode brouillon sont visibles par tous, sauf les lecteurs
-          // sinon, seule les publications brouillon de l'utilisateur sont visibles
+          // sinon, seules les publications brouillon sont visibles à l'utilisateur
           if (isVisibleInDraft(detail, profile, userId, coWriting)) {
             return true;
           }
@@ -4513,7 +4513,8 @@ public class DefaultKmeliaService implements KmeliaService {
   private boolean isVisibleInDraft(final PublicationDetail detail, final SilverpeasRole profile,
       final String userId, final boolean coWriting) {
     return userId.equals(detail.getCreatorId()) || userId.equals(detail.getUpdaterId()) ||
-        (coWriting && isDraftVisibleWithCoWriting() && profile != SilverpeasRole.USER);
+        (coWriting && isDraftVisibleWithCoWriting() && profile != SilverpeasRole.USER) ||
+        (detail.haveGotClone() && profile.isGreaterThanOrEquals(SilverpeasRole.PUBLISHER));
   }
 
   private boolean isVisibleInPublished(final PublicationDetail detail, final SilverpeasRole profile,
