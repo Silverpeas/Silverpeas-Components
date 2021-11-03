@@ -3591,6 +3591,7 @@ public class DefaultKmeliaService implements KmeliaService {
       List<SimpleDocument> documents = getAttachmentService().listDocumentsByForeignKey(
           new ResourceReference(fromId, fromComponentId), null);
       Map<String, String> attachmentIds = new HashMap<>(documents.size());
+      Collections.reverse(documents);
       for (SimpleDocument document : documents) {
         getAttachmentService().cloneDocument(document, cloneId);
       }
