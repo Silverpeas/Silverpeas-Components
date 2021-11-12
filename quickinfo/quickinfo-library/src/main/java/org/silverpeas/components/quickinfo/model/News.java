@@ -41,6 +41,7 @@ import org.silverpeas.core.contribution.model.WithPermanentLink;
 import org.silverpeas.core.contribution.model.WithThumbnail;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.publication.model.PublicationPath;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.io.media.image.thumbnail.control.ThumbnailController;
@@ -68,6 +69,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import static org.silverpeas.core.date.TemporalConverter.asDate;
 import static org.silverpeas.core.date.TemporalConverter.asOffsetDateTime;
@@ -280,6 +282,12 @@ public class News extends SilverpeasJpaEntity<News, UuidIdentifier> implements S
    */
   public static String getResourceType() {
     return CONTRIBUTION_TYPE;
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public Optional<PublicationPath> getResourcePath() {
+    return getPublication().getResourcePath();
   }
 
   public void setImportant(boolean important) {

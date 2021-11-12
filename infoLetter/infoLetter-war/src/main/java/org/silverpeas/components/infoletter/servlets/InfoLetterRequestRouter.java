@@ -28,18 +28,27 @@ import org.silverpeas.components.infoletter.control.InfoLetterSessionController;
 import org.silverpeas.components.infoletter.model.InfoLetter;
 import org.silverpeas.components.infoletter.model.InfoLetterPublication;
 import org.silverpeas.components.infoletter.model.InfoLetterPublicationPdC;
+import org.silverpeas.core.contribution.content.ddwe.DragAndDropWbeFile;
+import org.silverpeas.core.contribution.content.ddwe.model.DragAndDropWebEditorStore;
 import org.silverpeas.core.persistence.jdbc.bean.IdPK;
 import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
+import org.silverpeas.core.webapi.wbe.WbeFileEdition;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+
+import static org.silverpeas.core.util.StringUtil.EMPTY;
+import static org.silverpeas.core.util.StringUtil.isNotDefined;
+import static org.silverpeas.core.web.ddwe.DragAndDropEditorConfig.withConnectors;
 
 /**
  * Class declaration
@@ -252,13 +261,28 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
       } else if (function.startsWith("EditContent")) {
         String parution = param(request, "parution");
         if (StringUtil.isDefined(parution)) {
+          destination = null;
           IdPK publiPK = new IdPK();
           publiPK.setId(parution);
           InfoLetterPublicationPdC ilp = infoLetterSC.getInfoLetterPublication(publiPK);
-          request.setAttribute("parution", parution);
-          request.setAttribute("parutionTitle", ilp.getTitle());
-          request.setAttribute("parutionContent", ilp._getContent());
-          destination = "editLetter.jsp";
+          if (!request.getParameterAsBoolean("old")) {
+            final DragAndDropWebEditorStore store = new DragAndDropWebEditorStore(ilp.getIdentifier());
+            final String parutionParam = "?parution=" + parution;
+            final String cancelUrl = "ParutionHeaders" + parutionParam;
+            destination = WbeFileEdition.get()
+                .initializeWith(request, new DragAndDropWbeFile(store),
+                    withConnectors("SaveContent" + parutionParam, cancelUrl)
+                        .build()::applyTo)
+                .orElse(null);
+          }
+          if (isNotDefined(destination)) {
+            request.setAttribute("parution", parution);
+            request.setAttribute("parutionTitle", ilp.getTitle());
+            request.setAttribute("parutionContent", ilp._getContent());
+            destination = "editLetter.jsp";
+          } else {
+            return destination;
+          }
         } else {
           destination = setMainContext(infoLetterSC, request);
         }
@@ -515,6 +539,22 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
           IdPK publiPK = new IdPK();
           publiPK.setId(parution);
           InfoLetterPublicationPdC ilp = infoLetterSC.getInfoLetterPublication(publiPK);
+          if (isNotDefined(content)) {
+            // For now looking into Drag & Drop Edition Content
+            final DragAndDropWebEditorStore store = new DragAndDropWebEditorStore(ilp.getIdentifier());
+            content = store.getFile()
+                .getContainer()
+                .getTmpContent()
+                .map(c -> {
+                  final String jsonContent = c.getValue();
+                  store.getFile().getContainer().getOrCreateContent().setValue(jsonContent);
+                  store.save();
+                  @SuppressWarnings("unchecked")
+                  final Map<String, String> decoded = JSONCodec.decode(jsonContent, Map.class);
+                  return decoded.getOrDefault("gjs-inlinedHtml", EMPTY);
+                })
+                .orElse(content);
+          }
           infoLetterSC.updateContentInfoLetterPublication(content, ilp);
           request.setAttribute("parution", parution);
           request.setAttribute("parutionTitle", ilp.getTitle());

@@ -23,24 +23,31 @@
  */
 package org.silverpeas.components.infoletter.model;
 
-import java.util.List;
-import java.util.Set;
-
-import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
+import org.silverpeas.core.ApplicationService;
+import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.WAPrimaryKey;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * Contract to access info letter data
  * @author
  */
-public interface InfoLetterService {
+public interface InfoLetterService extends ApplicationService {
 
   static InfoLetterService get() {
     return ServiceProvider.getService(InfoLetterService.class);
   }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  Optional<InfoLetterPublicationPdC> getContributionById(ContributionIdentifier contributionId);
 
   /**
    * Create information letter

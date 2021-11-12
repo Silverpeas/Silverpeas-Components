@@ -29,6 +29,7 @@ import org.silverpeas.components.infoletter.model.InfoLetter;
 import org.silverpeas.components.infoletter.model.InfoLetterPublication;
 import org.silverpeas.components.infoletter.model.InfoLetterPublicationPdC;
 import org.silverpeas.components.infoletter.model.InfoLetterService;
+import org.silverpeas.core.ApplicationServiceProvider;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.WAPrimaryKey;
@@ -45,6 +46,7 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocumentMailAttac
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformer;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.contribution.content.wysiwyg.service.process.MailContentProcess;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.mail.MailSending;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
@@ -60,9 +62,13 @@ import org.silverpeas.core.subscription.service.GroupSubscriptionSubscriber;
 import org.silverpeas.core.subscription.service.ResourceSubscriptionProvider;
 import org.silverpeas.core.subscription.service.UserSubscriptionSubscriber;
 import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.internet.InternetAddress;
@@ -71,10 +77,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.silverpeas.core.mail.MailAddress.eMail;
@@ -86,7 +94,14 @@ import static org.silverpeas.core.mail.MailContent.getHtmlBodyPartFromHtmlConten
  * @author
  */
 @Service
+@Named("infoLetter" + ApplicationServiceProvider.SERVICE_NAME_SUFFIX)
 public class InfoLetterDataManager implements InfoLetterService {
+
+  private static final String MESSAGES_PATH
+      = "org.silverpeas.infoLetter.multilang.infoLetterBundle";
+  private static final String SETTINGS_PATH
+      = "org.silverpeas.infoLetter.settings.infoLetterSettings";
+  private static final SettingBundle settings = ResourceLocator.getSettingBundle(SETTINGS_PATH);
 
   private static final String TABLE_EXTERNAL_EMAILS = "SC_IL_ExtSus";
   private static final String INSTANCE_ID = "instanceId = '";
@@ -96,6 +111,33 @@ public class InfoLetterDataManager implements InfoLetterService {
 
   @Inject
   private InfoLetterContentManager infoLetterContentManager;
+
+  @Override
+  public Optional<InfoLetterPublicationPdC> getContributionById(
+      final ContributionIdentifier contributionId) {
+    if (InfoLetterPublicationPdC.TYPE.equals(contributionId.getType())) {
+      final String localId = contributionId.getLocalId();
+      final IdPK pk = new IdPK(localId);
+      return Optional.ofNullable(getInfoLetterPublication(pk));
+    }
+    throw new IllegalStateException(
+        MessageFormat.format("type {0} is not handled", contributionId.getType()));
+  }
+
+  @Override
+  public SettingBundle getComponentSettings() {
+    return settings;
+  }
+
+  @Override
+  public LocalizationBundle getComponentMessages(final String language) {
+    return ResourceLocator.getLocalizationBundle(MESSAGES_PATH, language);
+  }
+
+  @Override
+  public boolean isRelatedTo(final String instanceId) {
+    return instanceId.startsWith("infoLetter");
+  }
 
   public InfoLetterDataManager() {
     try {

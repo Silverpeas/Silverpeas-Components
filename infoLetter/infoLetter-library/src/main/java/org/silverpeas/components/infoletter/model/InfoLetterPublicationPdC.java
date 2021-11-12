@@ -30,6 +30,7 @@ import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 
 /**
  * @author lbertin
@@ -37,11 +38,11 @@ import java.util.Collections;
 public class InfoLetterPublicationPdC extends InfoLetterPublication
     implements SilverContentInterface {
   private static final long serialVersionUID = -2174573301215680444L;
+  public static final String TYPE = "publication";
   /**
    * icone d'une publication
    */
   private String iconUrl = "infoLetterSmall.gif";
-  private static final String TYPE = "publication";
 
   private String silverObjectId;
   private String positions;
@@ -142,6 +143,12 @@ public class InfoLetterPublicationPdC extends InfoLetterPublication
   @Override
   public String getContributionType() {
     return TYPE;
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public Optional<InfoLetterPath> getResourcePath() {
+    return Optional.of(this).map(InfoLetterPath::getPath);
   }
 
   @Override

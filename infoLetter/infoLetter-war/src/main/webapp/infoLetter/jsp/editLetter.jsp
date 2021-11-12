@@ -82,6 +82,9 @@
 </head>
 <body>
 <view:browseBar extraInformations="${parutionTitle}"/>
+<view:operationPane>
+  <view:operation action="EditContent?parution=${parution}&wbe=true" altText="Editer avec l'éditeur' Drag & Drop"/>
+</view:operationPane>
 <view:window>
 <view:tabs>
   <fmt:message key='infoLetter.headerLetter' var="tmpLabel"/>

@@ -76,14 +76,14 @@ String parution = (String) request.getAttribute("parution");
 
 %>
 <view:displayWysiwyg objectId="<%=parution%>" componentId="<%=componentId %>" language="<%=resource.getLanguage() %>" />
-<form name="headerParution" action="ParutionHeaders" method="post">
+<form name="headerParution" action="ParutionHeaders" method="get">
 	<input type="hidden" name="parution" value="<%= parution %>"/>
   <input type="hidden" name="ReturnUrl" value="Preview"/>
 </form>
-<form name="editParution" action="EditContent" method="post">
+<form name="editParution" action="EditContent" method="get">
   <input type="hidden" name="parution" value="<%= parution %>"/>
 </form>
-<form name="attachedFiles" action="FilesEdit" method="post">
+<form name="attachedFiles" action="FilesEdit" method="get">
 	<input type="hidden" name="parution" value="<%= parution %>"/>
 </form>
 

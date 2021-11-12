@@ -38,6 +38,7 @@ import org.silverpeas.core.contribution.publication.model.CompletePublication;
 import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.publication.model.PublicationPath;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
@@ -498,6 +499,12 @@ public class KmeliaPublication implements SilverpeasContent {
   @Override
   public String getContributionType() {
     return getDetail().getContributionType();
+  }
+
+  @SuppressWarnings({"unchecked"})
+  @Override
+  public Optional<PublicationPath> getResourcePath() {
+    return getDetail().getResourcePath();
   }
 
   /**

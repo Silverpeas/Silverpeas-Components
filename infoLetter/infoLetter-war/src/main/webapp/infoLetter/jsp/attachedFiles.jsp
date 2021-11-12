@@ -86,13 +86,13 @@ String url = (String) request.getAttribute("url");
 out.flush();
 displayAttachmentEdit(parution, spaceId, componentId, url, request, response);
 %>
-<form name="headerParution" action="ParutionHeaders" method="post">
+<form name="headerParution" action="ParutionHeaders" method="get">
 	<input type="hidden" name="parution" value="<%= parution %>"/>
 </form>
-<form name="editParution" action="EditContent" method="post">
+<form name="editParution" action="EditContent" method="get">
   <input type="hidden" name="parution" value="<%= parution %>"/>
 </form>
-<form name="viewParution" action="Preview" method="post">
+<form name="viewParution" action="Preview" method="get">
 	<input type="hidden" name="parution" value="<%= parution %>"/>
 </form>
 
