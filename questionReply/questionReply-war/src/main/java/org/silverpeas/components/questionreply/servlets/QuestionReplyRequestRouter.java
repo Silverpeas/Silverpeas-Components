@@ -50,6 +50,8 @@ public class QuestionReplyRequestRouter
     extends ComponentRequestRouter<QuestionReplySessionController> {
 
   private static final long serialVersionUID = 442480445762334578L;
+  private static final String PARAM_QUESTION_ID = "QuestionId";
+  private static final String PARAM_CATEGORY_ID = "CategoryId";
 
   /**
    * This method has to be implemented in the component request rooter class. returns the session
@@ -97,18 +99,18 @@ public class QuestionReplyRequestRouter
         request.setAttribute("Flag", flag);
         request.setAttribute("Categories", scc.getAllCategories());
         request.setAttribute("PDCUsed", scc.isPDCUsed());
-        if (request.getAttribute("QuestionId") != null) {
-          Question question =
-              scc.getQuestion(Long.parseLong((String) request.getAttribute("QuestionId")));
-          String categoryId = question.getCategoryId();
+        String questionId = (String) request.getAttribute(PARAM_QUESTION_ID);
+        String categoryId = (String) request.getAttribute(PARAM_CATEGORY_ID);
+        if (StringUtil.isDefined(questionId)) {
+          Question question = scc.getQuestion(Long.parseLong(questionId));
+          categoryId = question.getCategoryId();
           if (!StringUtil.isDefined(categoryId)) {
             categoryId = "null";
           }
-          destination = "/questionReply/jsp/listQuestionsDHTML.jsp?categoryId=" + categoryId +
-              "&questionId=" + question.getPK().getId();
-        } else {
-          destination = "/questionReply/jsp/listQuestionsDHTML.jsp";
+          questionId = question.getPK().getId();
         }
+        destination = "/questionReply/jsp/listQuestionsDHTML.jsp" + "?categoryId=" + categoryId +
+            "&questionId=" + questionId;
       } else if ("DeleteQ".equals(function)) {
         String id = request.getParameter("Id");
         if (StringUtil.isLong(id)) {
@@ -155,7 +157,7 @@ public class QuestionReplyRequestRouter
         }
       } else if ("CloseQuestion".equals(function)) {
         if (scc.isUserExpert()) {
-          scc.closeQuestion(Long.parseLong(request.getParameter("QuestionId")));
+          scc.closeQuestion(Long.parseLong(request.getParameter(PARAM_QUESTION_ID)));
           destination = getDestination("Main", scc, request);
         } else {
           destination = "/admin/jsp/errorpage.jsp";
@@ -173,11 +175,11 @@ public class QuestionReplyRequestRouter
 
         Question question = scc.getQuestion(Long.parseLong(questionId));
         scc.setCurrentQuestion(question);
-        request.setAttribute("QuestionId", questionId);
+        request.setAttribute(PARAM_QUESTION_ID, questionId);
         destination = getDestination("Main", scc, request);
       } else if ("UpdateQ".equals(function)) {
         // mettre à jour la question courante
-        String questionId = request.getParameter("QuestionId");
+        String questionId = request.getParameter(PARAM_QUESTION_ID);
         Question question = scc.getQuestion(Long.parseLong(questionId));
         scc.setCurrentQuestion(question);
         request.setAttribute("question", question);
@@ -185,7 +187,7 @@ public class QuestionReplyRequestRouter
         request.setAttribute("AllCategories", scc.getAllCategories());
         destination = "/questionReply/jsp/updateQ.jsp";
       } else if ("DeleteR".equals(function)) {
-        String questionId = request.getParameter("QuestionId");
+        String questionId = request.getParameter(PARAM_QUESTION_ID);
         if (StringUtil.isLong(questionId) && scc.isUserExpert()) {
           Question question = scc.getQuestion(Long.parseLong(questionId));
           scc.setCurrentQuestion(question);
@@ -200,12 +202,12 @@ public class QuestionReplyRequestRouter
         destination = getDestination("Main", scc, request);
       } else if ("EffectiveUpdateQ".equals(function)) {
         scc.updateCurrentQuestion(request.getParameter("title"), request.getParameter("content"),
-            request.getParameter("CategoryId"));
+            request.getParameter(PARAM_CATEGORY_ID));
         String questionId = request.getParameter("questionId");
-        request.setAttribute("QuestionId", questionId);
+        request.setAttribute(PARAM_QUESTION_ID, questionId);
         destination = getDestination("Main", scc, request);
       } else if ("CreateRQuery".equals(function)) {
-        String id = request.getParameter("QuestionId");
+        String id = request.getParameter(PARAM_QUESTION_ID);
         Question question = scc.getQuestion(Long.parseLong(id));
         scc.setCurrentQuestion(question);
         // passer le paramètre pour savoir si on utilise les réponses privées
@@ -228,7 +230,7 @@ public class QuestionReplyRequestRouter
         scc.saveNewReply(request.getUploadedFiles());
 
         if (scc.getCurrentQuestion() != null) {
-          request.setAttribute("QuestionId", scc.getCurrentQuestion().getPK().getId());
+          request.setAttribute(PARAM_QUESTION_ID, scc.getCurrentQuestion().getPK().getId());
         }
 
         destination = getDestination("Main", scc, request);
@@ -236,7 +238,7 @@ public class QuestionReplyRequestRouter
         request.setAttribute("reply", scc.getCurrentReply());
         destination = "/questionReply/jsp/updateR.jsp";
       } else if ("UpdateR".equals(function)) {
-        String questionId = request.getParameter("QuestionId");
+        String questionId = request.getParameter(PARAM_QUESTION_ID);
         Question question = scc.getQuestion(Long.parseLong(questionId));
         scc.setCurrentQuestion(question);
         String id = request.getParameter("replyId");
@@ -247,7 +249,7 @@ public class QuestionReplyRequestRouter
       } else if ("EffectiveUpdateR".equals(function)) {
         scc.updateCurrentReply(request.getParameter("title"), request.getParameter("content"));
         if (scc.getCurrentQuestion() != null) {
-          request.setAttribute("QuestionId", scc.getCurrentQuestion().getPK().getId());
+          request.setAttribute(PARAM_QUESTION_ID, scc.getCurrentQuestion().getPK().getId());
         }
 
         destination = getDestination("Main", scc, request);
@@ -259,7 +261,7 @@ public class QuestionReplyRequestRouter
       } else if ("EffectiveCreateQR".equals(function)) {
 
         scc.setNewQuestionContent(request.getParameter("title"), request.getParameter("content"),
-            request.getParameter("CategoryId"));
+            request.getParameter(PARAM_CATEGORY_ID));
         scc.setNewReplyContent(request.getParameter("titleR"), request.getParameter("contentR"), 1,
             0);
         // Get classification positions
@@ -268,7 +270,7 @@ public class QuestionReplyRequestRouter
         String id = Long.toString(questionId);
         scc.classifyQuestionReply(questionId, positions);
         scc.getQuestion(questionId);
-        request.setAttribute("QuestionId", id);
+        request.setAttribute(PARAM_QUESTION_ID, id);
         request.setAttribute("contentId", scc.getCurrentQuestionContentId());
         destination = getDestination("Main", scc, request);
       } else if ("CreateQQuery".equals(function)) {
@@ -285,12 +287,12 @@ public class QuestionReplyRequestRouter
       } else if ("EffectiveCreateQ".equals(function)) {
         if ("publisher".equals(flag) || "admin".equals(flag) || "writer".equals(flag)) {
           scc.setNewQuestionContent(request.getParameter("title"), request.getParameter("content"),
-              request.getParameter("CategoryId"));
+              request.getParameter(PARAM_CATEGORY_ID));
           long questionId = scc.saveNewQuestion();
           String id = Long.toString(questionId);
           String positions = request.getParameter("Positions");
           scc.classifyQuestionReply(questionId, positions);
-          request.setAttribute("QuestionId", id);
+          request.setAttribute(PARAM_QUESTION_ID, id);
           destination = getDestination("Main", scc, request);
         } else {
           destination = "/admin/jsp/errorpage.jsp";
@@ -308,7 +310,7 @@ public class QuestionReplyRequestRouter
         scc.createCategory(category);
         destination = getDestination("Main", scc, request);
       } else if ("UpdateCategory".equals(function)) {
-        String categoryId = request.getParameter("CategoryId");
+        String categoryId = request.getParameter(PARAM_CATEGORY_ID);
         Category category = scc.getCategory(categoryId);
         String name = request.getParameter("Name");
         category.setName(name);
@@ -319,7 +321,7 @@ public class QuestionReplyRequestRouter
 
         destination = getDestination("Main", scc, request);
       } else if ("DeleteCategory".equals(function)) {
-        String categoryId = request.getParameter("CategoryId");
+        String categoryId = request.getParameter(PARAM_CATEGORY_ID);
         scc.deleteCategory(categoryId);
 
         destination = getDestination("Main", scc, request);
@@ -330,26 +332,25 @@ public class QuestionReplyRequestRouter
 
         if ("Question".equals(type)) {
           // traitement des questions
-          request.setAttribute("QuestionId", id);
-          destination = getDestination("Main", scc, request);
+          request.setAttribute(PARAM_QUESTION_ID, id);
         } else if (type.startsWith("Reply")) {
           // traitement des réponses, on arrive sur la question contenant la réponse
           Reply reply = scc.getReply(Long.parseLong(id));
           long questionId = reply.getQuestionId();
-          request.setAttribute("QuestionId", Long.toString(questionId));
-          destination = getDestination("Main", scc, request);
+          request.setAttribute(PARAM_QUESTION_ID, Long.toString(questionId));
         } else if (type.startsWith("Publication")) {
           // traitement des fichiers joints
           Reply reply = scc.getReply(Long.valueOf(id));
           long questionId = reply.getQuestionId();
-          request.setAttribute("QuestionId", Long.toString(questionId));
-          destination = getDestination("Main", scc, request);
+          request.setAttribute(PARAM_QUESTION_ID, Long.toString(questionId));
+        } else if ("Node".equalsIgnoreCase(type)) {
+          request.setAttribute(PARAM_CATEGORY_ID, id);
         } else {
           if (StringUtil.isDefined(id)) {
-            request.setAttribute("QuestionId", id);
+            request.setAttribute(PARAM_QUESTION_ID, id);
           }
-          destination = getDestination("Main", scc, request);
         }
+        destination = getDestination("Main", scc, request);
       } else if ("Export".equals(function)) {
         MultiSilverpeasBundle resource = (MultiSilverpeasBundle) request.getAttribute("resources");
         ExportReport report = scc.export(resource);
