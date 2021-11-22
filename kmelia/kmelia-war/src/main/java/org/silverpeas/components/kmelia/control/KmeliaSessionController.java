@@ -2945,6 +2945,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     queryDescription.setSearchingUser(getUserId());
     queryDescription.setRequestedFolder(getCurrentFolder().getFullPath());
     queryDescription.addComponent(getComponentId());
+    queryDescription.setRequestedLanguage("*");
 
     try {
       List<MatchingIndexEntry> results = getSearchEngine().search(queryDescription).getEntries();
