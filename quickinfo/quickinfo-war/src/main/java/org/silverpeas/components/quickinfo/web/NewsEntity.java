@@ -24,8 +24,8 @@
 package org.silverpeas.components.quickinfo.web;
 
 import org.silverpeas.components.quickinfo.model.News;
+import org.silverpeas.core.contribution.model.Thumbnail;
 import org.silverpeas.core.date.TimeUnit;
-import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.UnitUtil;
 import org.silverpeas.core.util.time.Duration;
@@ -90,7 +90,7 @@ public class NewsEntity implements WebEntity {
   }
 
   void setExtraInfo(News news) {
-    ThumbnailDetail thumbnail = news.getThumbnail();
+    Thumbnail thumbnail = news.getThumbnail();
     if (thumbnail != null) {
       setThumbnailURL(thumbnail.getURL());
     }

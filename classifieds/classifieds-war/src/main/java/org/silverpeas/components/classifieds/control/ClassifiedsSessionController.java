@@ -150,7 +150,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @return classified : ClassifiedDetail
    */
   public ClassifiedDetail getClassified(String classifiedId) {
-    ClassifiedDetail classified = getClassifiedService().getContentById(classifiedId);
+    ClassifiedDetail classified = getClassifiedService().getContributionById(classifiedId);
     classified.setCreatorName(getUserDetail(classified.getCreatorId()).getDisplayedName());
     classified.setCreatorEmail(getUserDetail(classified.getCreatorId()).geteMail());
     if (StringUtil.isDefined(classified.getValidatorId())) {

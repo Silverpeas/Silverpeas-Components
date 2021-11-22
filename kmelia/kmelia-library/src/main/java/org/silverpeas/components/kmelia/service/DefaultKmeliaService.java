@@ -116,6 +116,7 @@ import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import javax.ws.rs.WebApplicationException;
@@ -152,13 +153,14 @@ import static org.silverpeas.core.security.authorization.AccessControlOperation.
 import static org.silverpeas.core.util.StringUtil.*;
 
 /**
- * This is the KMelia Service controller of the MVC. It controls all the activities that happen in a
+ * This is the Kmelia Service controller of the MVC. It controls all the activities that happen in a
  * client session. It also provides mechanisms to access other services. Service which manage kmelia
  * and kmax application.
  * @author Nicolas Eysseric
  */
 @Service
 @Singleton
+@Named("kmeliaService")
 @Transactional(Transactional.TxType.SUPPORTS)
 public class DefaultKmeliaService implements KmeliaService {
 
@@ -1504,7 +1506,7 @@ public class DefaultKmeliaService implements KmeliaService {
       removeAllTodosForPublication(pubPK);
 
       // publication is no more accessible
-      updateSilverContentVisibility(pubPK, false);
+      updateSilverContentVisibility(pubPK);
 
       unIndexExternalElementsOfPublication(pubPK);
     } catch (Exception e) {
@@ -2687,7 +2689,7 @@ public class DefaultKmeliaService implements KmeliaService {
     }
   }
 
-  private String addTodo(PublicationDetail pubDetail, String[] users) {
+  private void addTodo(PublicationDetail pubDetail, String[] users) {
     LocalizationBundle message = ResourceLocator.getLocalizationBundle(MESSAGES_PATH);
 
     TodoDetail todo = new TodoDetail();
@@ -2707,7 +2709,7 @@ public class DefaultKmeliaService implements KmeliaService {
     todo.setDelegatorId(pubDetail.getMostRecentUpdater());
     todo.setExternalId(pubDetail.getPK().getId());
 
-    return calendar.addToDo(todo);
+    calendar.addToDo(todo);
   }
 
   /*
@@ -2795,10 +2797,10 @@ public class DefaultKmeliaService implements KmeliaService {
     }
   }
 
-  private void updateSilverContentVisibility(PublicationPK pubPK, boolean isVisible) {
+  private void updateSilverContentVisibility(PublicationPK pubPK) {
     PublicationDetail pubDetail = getPublicationDetail(pubPK);
     try {
-      kmeliaContentManager.updateSilverContentVisibility(pubDetail, isVisible);
+      kmeliaContentManager.updateSilverContentVisibility(pubDetail, false);
     } catch (Exception e) {
       throw new KmeliaRuntimeException(e);
     }
@@ -4061,8 +4063,8 @@ public class DefaultKmeliaService implements KmeliaService {
   }
 
   @Override
-  public KmeliaPublication getContentById(String contentId) {
-    return getPublication(new PublicationPK(contentId));
+  public KmeliaPublication getContributionById(String contributionId) {
+    return getPublication(new PublicationPK(contributionId));
   }
 
   @Override

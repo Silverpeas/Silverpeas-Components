@@ -45,7 +45,7 @@ public class ClassifiedsInstanceManualUserNotification extends
   @Override
   protected boolean check(final NotificationContext context) {
     final String classifiedId = context.getContributionId();
-    final ClassifiedDetail classified = getClassifiedService().getContentById(classifiedId);
+    final ClassifiedDetail classified = getClassifiedService().getContributionById(classifiedId);
     context.put(CLASSIFIED_KEY, classified);
     return classified.canBeAccessedBy(context.getSender());
   }

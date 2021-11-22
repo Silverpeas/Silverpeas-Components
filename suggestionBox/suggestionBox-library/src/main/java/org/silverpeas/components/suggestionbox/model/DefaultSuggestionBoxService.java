@@ -27,7 +27,6 @@ import org.silverpeas.components.suggestionbox.SuggestionBoxComponentSettings;
 import org.silverpeas.components.suggestionbox.repository.SuggestionBoxRepository;
 import org.silverpeas.core.ApplicationService;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.rating.service.RatingService;
@@ -35,6 +34,7 @@ import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.SettingBundle;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.transaction.Transactional;
 
 /**
@@ -43,13 +43,11 @@ import javax.transaction.Transactional;
  * @author mmoquillon
  */
 @Service
+@Named("suggestionBoxService")
 public class DefaultSuggestionBoxService implements SuggestionBoxService {
 
   @Inject
   private SuggestionBoxRepository suggestionBoxRepository;
-
-  @Inject
-  private CommentService commentService;
 
   @Override
   public SuggestionBox getByComponentInstanceId(String componentInstanceId) {
@@ -92,8 +90,8 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService {
   }
 
   @Override
-  public Suggestion getContentById(String contentId) {
-    return Suggestion.getById(contentId);
+  public Suggestion getContributionById(String contributionId) {
+    return Suggestion.getById(contributionId);
   }
 
   @Override

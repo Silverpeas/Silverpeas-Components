@@ -34,6 +34,7 @@ import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
+import org.silverpeas.core.contribution.model.WithPermanentLink;
 import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.notification.system.ResourceEvent;
@@ -55,7 +56,7 @@ import java.util.stream.Stream;
 /**
  * This class represents a Media and provides all the common data.
  */
-public abstract class Media implements SilverContentInterface, Serializable {
+public abstract class Media implements SilverContentInterface, Serializable, WithPermanentLink {
   private static final long serialVersionUID = -3193781401588525351L;
 
   public static final FileBasePath BASE_PATH = FileBasePath.UPLOAD_PATH;
@@ -283,6 +284,7 @@ public abstract class Media implements SilverContentInterface, Serializable {
    * Gets the permalink of a media.
    * @return the permalink string of a media.
    */
+  @Override
   public String getPermalink() {
     return URLUtil.getPermalink(URLUtil.Permalink.MEDIA, getId());
   }

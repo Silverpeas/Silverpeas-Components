@@ -57,6 +57,6 @@ public class BlogInstanceManualUserNotification extends
   }
 
   private PostDetail getPost(final String postId) {
-    return BlogService.get().getContentById(postId);
+    return BlogService.get().getContributionById(postId);
   }
 }

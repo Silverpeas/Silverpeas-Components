@@ -58,6 +58,7 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -73,6 +74,7 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.*;
  * Services provided by the Classified Silverpeas component.
  */
 @Service
+@Named("classifiedService")
 public class DefaultClassifiedService implements ClassifiedService {
 
   private static final String MESSAGES_PATH =
@@ -88,7 +90,7 @@ public class DefaultClassifiedService implements ClassifiedService {
   private OrganizationController organizationController;
 
   @Override
-  public ClassifiedDetail getContentById(String classifiedId) {
+  public ClassifiedDetail getContributionById(String classifiedId) {
     Connection con = openConnection();
     try {
       return ClassifiedsDAO.getClassified(con, classifiedId);
@@ -139,7 +141,7 @@ public class DefaultClassifiedService implements ClassifiedService {
 
   private void deleteClassified(String instanceId, String classifiedId, PublicationTemplate template) {
 
-    ClassifiedDetail classified = getContentById(classifiedId);
+    ClassifiedDetail classified = getContributionById(classifiedId);
 
     // remove form content
     try {
@@ -182,7 +184,7 @@ public class DefaultClassifiedService implements ClassifiedService {
   public void unpublishClassified(String classifiedId) {
     Connection con = openConnection();
     try {
-      ClassifiedDetail classified = getContentById(classifiedId);
+      ClassifiedDetail classified = getContributionById(classifiedId);
       classified.setStatus(ClassifiedDetail.UNPUBLISHED);
       classified.setUpdateDate(new Date());
       updateClassified(classified);
@@ -290,7 +292,7 @@ public class DefaultClassifiedService implements ClassifiedService {
   public void validateClassified(String classifiedId, String userId) {
 
     try {
-      ClassifiedDetail classified = getContentById(classifiedId);
+      ClassifiedDetail classified = getContributionById(classifiedId);
       if (classified.isToValidate()) {
         classified.setValidatorId(userId);
         classified.setValidateDate(new Date());
@@ -308,7 +310,7 @@ public class DefaultClassifiedService implements ClassifiedService {
   public void refusedClassified(String classifiedId, String userId, String refusalMotive) {
 
     try {
-      ClassifiedDetail classified = getContentById(classifiedId);
+      ClassifiedDetail classified = getContributionById(classifiedId);
       classified.setStatus(ClassifiedDetail.REFUSED);
       updateClassified(classified);
       sendValidationNotification(classified.getCreatorId(), classified, refusalMotive, userId);
@@ -368,7 +370,7 @@ public class DefaultClassifiedService implements ClassifiedService {
       for (MatchingIndexEntry matchIndex : result) {
         if (CLASSIFIED_TYPE.equals(matchIndex.getObjectType())) {
           //return only valid classifieds
-          ClassifiedDetail classified = this.getContentById(matchIndex.getObjectId());
+          ClassifiedDetail classified = this.getContributionById(matchIndex.getObjectId());
           if (classified != null && classified.isValid()) {
             classifieds.add(classified);
 
@@ -454,7 +456,7 @@ public class DefaultClassifiedService implements ClassifiedService {
 
   @Override
   public void draftOutClassified(String classifiedId, String profile, boolean isValidationEnabled) {
-    ClassifiedDetail classified = getContentById(classifiedId);
+    ClassifiedDetail classified = getContributionById(classifiedId);
     String status = classified.getStatus();
     if (classified.isDraft()) {
       if("admin".equals(profile) || !isValidationEnabled) {
@@ -481,7 +483,7 @@ public class DefaultClassifiedService implements ClassifiedService {
 
   @Override
   public void draftInClassified(String classifiedId) {
-    ClassifiedDetail classified = getContentById(classifiedId);
+    ClassifiedDetail classified = getContributionById(classifiedId);
     String status = classified.getStatus();
     if (classified.isToValidate() || classified.isValid()) {
       status = ClassifiedDetail.DRAFT;

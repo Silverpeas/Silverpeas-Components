@@ -80,6 +80,7 @@ import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
@@ -115,6 +116,7 @@ import static org.silverpeas.core.util.StringUtil.isNotDefined;
 
 @Service
 @Singleton
+@Named("formsOnlineService")
 public class DefaultFormsOnlineService implements FormsOnlineService, Initialization {
 
   private static final String IN_COMPONENT_MSG_PART = " in component ";
@@ -317,6 +319,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
         final BiConsumer<RequestsByStatus, SilverpeasList<FormInstance>> merge = rule.getMerger();
         final SilverpeasList<FormInstance> result =
             getDAO().getSentFormInstances(form.getPK(), userId, states, paginationPage);
+        //noinspection SimplifyStreamApiCallChains
         merge.accept(requests, result.stream()
                                      .map(l -> {
                                        l.setForm(form);
@@ -376,7 +379,8 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
         final Optional<FormInstanceValidationType> pendingValidationTypeFilter = filter
             .getPendingValidationType();
         final SilverpeasList<FormInstance> result = getDAO().getReceivedRequests(form, states, validationCriteria,
-                ofNullable(paginationPage).filter(p -> !pendingValidationTypeFilter.isPresent()).orElse(null));
+                ofNullable(paginationPage).filter(p -> pendingValidationTypeFilter.isEmpty()).orElse(null));
+        @SuppressWarnings("SimplifyStreamApiCallChains")
         Stream<FormInstance> resultStream = result.stream().map(l -> {
           l.setForm(form);
           return l;
@@ -405,7 +409,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
                 .reduce((a, b) -> b);
             return previousType
                 .map(p ->r.getValidations().getValidationOfType(p).filter(FormInstanceValidation::isValidated).isPresent()
-                         && !r.getValidations().getValidationOfType(type).isPresent())
+                         && r.getValidations().getValidationOfType(type).isEmpty())
                 .orElseGet(() -> r.getValidations().isEmpty());
           });
     }
@@ -566,7 +570,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
     return request;
   }
 
-  private FormInstance updateRequest(FormInstance request, List<FileItem> items,
+  private void updateRequest(FormInstance request, List<FileItem> items,
       boolean draft) throws FormsOnlineException {
 
     FormDetail formDetail = request.getForm();
@@ -599,7 +603,6 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
               request.getComponentInstanceId(), e);
     }
 
-    return request;
   }
 
   @Override
@@ -865,7 +868,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
   }
 
   @Override
-  public FormInstance getContentById(final String contentId) {
+  public FormInstance getContributionById(final String contributionId) {
     return null;
   }
 

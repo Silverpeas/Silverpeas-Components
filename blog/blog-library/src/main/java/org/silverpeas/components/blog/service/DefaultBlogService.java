@@ -31,7 +31,6 @@ import org.silverpeas.components.blog.model.Category;
 import org.silverpeas.components.blog.model.PostDetail;
 import org.silverpeas.components.blog.notification.BlogUserSubscriptionNotification;
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.service.CommentService;
@@ -54,7 +53,6 @@ import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelp
 import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
-import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.pdc.subscription.service.PdcSubscriptionManager;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
@@ -69,13 +67,13 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -89,6 +87,7 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.*;
  * different services for which it is interested.
  */
 @Service
+@Named("blogService")
 public class DefaultBlogService implements BlogService, Initialization {
 
   private static final String MESSAGES_PATH = "org.silverpeas.blog.multilang.blogBundle";
@@ -99,11 +98,7 @@ public class DefaultBlogService implements BlogService, Initialization {
   @Inject
   private CommentService commentService;
   @Inject
-  private OrganizationController organizationController;
-  @Inject
   private PdcManager pdcManager;
-  @Inject
-  private PdcClassificationService pdcClassificationService;
   @Inject
   private PdcSubscriptionManager pdcSubscriptionManager;
   @Inject
@@ -115,8 +110,9 @@ public class DefaultBlogService implements BlogService, Initialization {
   }
 
   @Override
-  public PostDetail getContentById(String contentId) {
-    PublicationDetail publication = getPublicationService().getDetail(new PublicationPK(contentId));
+  public PostDetail getContributionById(String contributionId) {
+    PublicationDetail publication = getPublicationService().getDetail(new PublicationPK(
+        contributionId));
     return getPost(publication);
   }
 
@@ -291,6 +287,7 @@ public class DefaultBlogService implements BlogService, Initialization {
       }
 
       PostDetail post = new PostDetail(publication, cat, comments.size(), dateEvent);
+      //noinspection removal
       post.setCreatorName(publication.getCreator().getDisplayedName());
 
       return post;
@@ -352,18 +349,18 @@ public class DefaultBlogService implements BlogService, Initialization {
     NodePK pk = new NodePK(categoryId, null, instanceId);
     Collection<PostDetail> posts = new ArrayList<>();
     try (Connection con = openConnection()) {
-      // rechercher les publications classée
+      // looking for classified publications
       Collection<String> lastEvents = PostDAO.getAllEvents(con, instanceId);
 
       Collection<PublicationPK> publications = getPublicationService().getPubPKsInFatherPK(pk);
-      PublicationPK[] allPubs = publications.toArray(new PublicationPK[publications.size()]);
+      PublicationPK[] allPubs = publications.toArray(new PublicationPK[0]);
       for (String pubId : lastEvents) {
         int j;
         for (int i = 0; i < allPubs.length; i++) {
           j = allPubs.length - i - 1;
           PublicationPK pubPK = allPubs[j];
           if (pubPK.getId().equals(pubId)) {
-            posts.add(getContentById(pubId));
+            posts.add(getContributionById(pubId));
           }
         }
       }
@@ -387,6 +384,7 @@ public class DefaultBlogService implements BlogService, Initialization {
       // rechercher les publications classée par date d'évènement
       Collection<String> lastEvents = PostDAO.getEventsByDates(con, instanceId, beginDate, endDate);
 
+      @SuppressWarnings("DuplicatedCode")
       Collection<PublicationDetail> publications =
           getPublicationService().getAllPublications(instanceId);
       for (String pubId : lastEvents) {
@@ -426,7 +424,7 @@ public class DefaultBlogService implements BlogService, Initialization {
         for (MatchingIndexEntry matchIndex : result) {
           String objectId = matchIndex.getObjectId();
           if (pubId.equals(objectId) && !postIds.contains(objectId)) {
-            PostDetail post = getContentById(objectId);
+            PostDetail post = getContributionById(objectId);
             postIds.add(objectId);
             posts.add(post);
           }
@@ -487,7 +485,7 @@ public class DefaultBlogService implements BlogService, Initialization {
   public Collection<NodeDetail> getAllCategories(String instanceId) {
     NodePK nodePK = new NodePK(NodePK.ROOT_NODE_ID, instanceId);
     List<NodeDetail> result = new ArrayList<>(getNodeBm().getChildrenDetails(nodePK));
-    Collections.sort(result, new NodeOrderComparator());
+    result.sort(new NodeOrderComparator());
     return result;
   }
 
@@ -612,9 +610,9 @@ public class DefaultBlogService implements BlogService, Initialization {
     return calendar.getTime();
   }
 
-  private int createSilverContent(Connection con, PublicationDetail pubDetail, String creatorId) {
+  private void createSilverContent(Connection con, PublicationDetail pubDetail, String creatorId) {
     try {
-      return blogContentManager.createSilverContent(con, pubDetail, creatorId);
+      blogContentManager.createSilverContent(con, pubDetail, creatorId);
     } catch (ContentManagerException e) {
       throw new BlogRuntimeException(e);
     }

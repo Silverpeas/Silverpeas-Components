@@ -49,13 +49,13 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.PagesContext;
+import org.silverpeas.core.contribution.model.Thumbnail;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.date.TemporalFormatter;
 import org.silverpeas.core.index.indexing.model.FieldDescription;
 import org.silverpeas.core.index.search.model.QueryDescription;
 import org.silverpeas.core.io.media.image.thumbnail.ThumbnailSettings;
-import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
@@ -452,7 +452,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
           out.write("</span>");
         }
         if (!seeAlso) {
-          ThumbnailDetail thumbnail = pub.getThumbnail();
+          Thumbnail thumbnail = pub.getThumbnail();
           if (thumbnail != null && Boolean.valueOf(resources.getSetting("isVignetteVisible"))) {
             out.write("<span class=\"thumbnail\">");
             displayThumbnail(pub, kmeliaScc, publicationSettings, out);
@@ -778,7 +778,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       vignetteUrl = FileServerUtils.getUrl(pub.getPK().
               getComponentName(), "vignette", pub.getImage(), pub.getImageMimeType(),
           publicationSettings.getString("imagesSubDirectory"));
-      if (StringUtil.isDefined(pub.getThumbnail().getCropFileName())) {
+      if (pub.getThumbnail().isCropped()) {
         // thumbnail is cropped, no resize
         width = null;
         height = null;

@@ -60,6 +60,7 @@ import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.SettingBundle;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.transaction.Transactional;
 import java.io.File;
 import java.sql.Connection;
@@ -76,6 +77,7 @@ import static org.silverpeas.components.gallery.model.MediaCriteria.QUERY_ORDER_
  * DefaultGalleryService is the service layer which manage a media gallery
  */
 @Service
+@Named("galleryService")
 @Transactional(Transactional.TxType.SUPPORTS)
 public class DefaultGalleryService implements GalleryService {
 
@@ -88,8 +90,8 @@ public class DefaultGalleryService implements GalleryService {
   private NodeDAO nodeDAO;
 
   @Override
-  public Media getContentById(final String contentId) {
-    return getMedia(new MediaPK(contentId));
+  public Media getContributionById(final String contributionId) {
+    return getMedia(new MediaPK(contributionId));
   }
 
   @Override
@@ -488,6 +490,7 @@ public class DefaultGalleryService implements GalleryService {
 
   private void createIndex(final UserDetail user, final Media media) {
     try {
+      @SuppressWarnings("removal")
       final GalleryProcessManagement processManagement =
           new GalleryProcessManagement(user, media.getComponentInstanceId());
       processManagement.addIndexMediaProcesses(media);

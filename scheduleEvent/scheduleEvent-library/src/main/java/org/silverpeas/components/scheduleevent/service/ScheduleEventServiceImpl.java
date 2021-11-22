@@ -29,11 +29,13 @@ import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Set;
 
 @Service
+@Named("scheduledEventService")
 public class ScheduleEventServiceImpl implements ScheduleEventService {
 
   private static final String MESSAGES_PATH
@@ -90,7 +92,7 @@ public class ScheduleEventServiceImpl implements ScheduleEventService {
     Iterator<Contributor> iter = contributors.iterator();
     boolean finish = false;
     while (iter.hasNext() && !finish) {
-      Contributor contrib = (Contributor) iter.next();
+      Contributor contrib = iter.next();
       if (userId == contrib.getUserId()) {
         contrib.setLastVisit(new Date());
         finish = true;
@@ -106,8 +108,8 @@ public class ScheduleEventServiceImpl implements ScheduleEventService {
   }
 
   @Override
-  public ScheduleEvent getContentById(String contentId) {
-    return findScheduleEvent(contentId);
+  public ScheduleEvent getContributionById(String contributionId) {
+    return findScheduleEvent(contributionId);
   }
 
   @Override

@@ -65,6 +65,7 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -85,6 +86,7 @@ import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassifica
 import static org.silverpeas.core.persistence.Transaction.performInOne;
 
 @Service
+@Named("quickInfoService")
 public class DefaultQuickInfoService implements QuickInfoService {
 
   private static final String ASSOCIATED_TO_THE_NEWS_MSG = " associated to the news ";
@@ -98,8 +100,8 @@ public class DefaultQuickInfoService implements QuickInfoService {
   private NewsEventNotifier notifier;
 
   @Override
-  public News getContentById(String contentId) {
-    return getNews(contentId);
+  public News getContributionById(String contributionId) {
+    return getNews(contributionId);
   }
 
   @Override
@@ -291,10 +293,14 @@ public class DefaultQuickInfoService implements QuickInfoService {
     final String[] allowedComponentIds = OrganizationController.get()
         .getComponentIdsForUser(userId, QuickInfoComponentSettings.COMPONENT_NAME);
     int limit = QuickInfoComponentSettings.getSettings().getInteger("news.all.limit", 30);
+    //noinspection SimplifyStreamApiCallChains
     return newsRepository.getByComponentIds(asList(allowedComponentIds))
         .stream()
         .filter(n -> n.getPublishDate() != null)
-        .peek(n -> decorateNews(singletonList(n), false))
+        .map(n -> {
+          decorateNews(singletonList(n), false);
+          return n;
+        })
         .filter(VISIBLE_PREDICATE)
         .limit(limit)
         .collect(Collectors.toList());

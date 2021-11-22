@@ -97,7 +97,7 @@ class KmeliaUserTreeViewFilterTest {
 
   @Test
   void setBestUserRoleAndFilterOnEmptyTree() {
-    List<NodeDetail> emptyTree = new ArrayList<NodeDetail>();
+    List<NodeDetail> emptyTree = new ArrayList<>();
     KmeliaUserTreeViewFilter
         .from(USER_ID, INSTANCE_ID, ROOT_NODE_PK, READER_ROLE, false)
         .setBestUserRoleAndFilter(emptyTree);
@@ -416,7 +416,7 @@ class KmeliaUserTreeViewFilterTest {
     NodeDetail nodeB = createNode(NODE_B_ID, "B");
     NodeDetail nodeBA = createNode(NODE_BA_ID, "BA");
 
-    List<NodeDetail> nodes = new ArrayList<NodeDetail>();
+    List<NodeDetail> nodes = new ArrayList<>();
 
     nodes.add(root);
     root.getChildrenDetails().add(nodeA);

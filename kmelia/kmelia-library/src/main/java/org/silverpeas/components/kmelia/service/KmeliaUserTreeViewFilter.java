@@ -94,17 +94,8 @@ class KmeliaUserTreeViewFilter {
    */
   void setBestUserRoleAndFilter(List<NodeDetail> tree) {
     if (isRightsOnTopicsUsed) {
-
-      Iterator<NodeDetail> treeIt = tree.iterator();
-      while (treeIt.hasNext()) {
-        NodeDetail node = treeIt.next();
-        if (!setBestUserNodeRole(node, bestUserComponentInstanceRole)) {
-          treeIt.remove();
-        }
-      }
-
+      tree.removeIf(node -> !setBestUserNodeRole(node, bestUserComponentInstanceRole));
     } else {
-
       for (NodeDetail node : tree) {
         node.setUserRole(bestUserComponentInstanceRole);
       }

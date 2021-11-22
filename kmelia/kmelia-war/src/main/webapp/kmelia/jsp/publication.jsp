@@ -126,6 +126,7 @@
   String pubUnvalidateSrc = m_context + "/util/icons/publicationUnvalidate.gif";
   String alertSrc = m_context + "/util/icons/alert.gif";
   String deletePubliSrc = m_context + "/util/icons/publicationDelete.gif";
+  String basketIcon = m_context + "/util/icons/basketAdd.jpg";
   String pdfSrc = m_context + "/util/icons/publication_to_pdf.gif";
   String pubDraftInSrc = m_context + "/util/icons/publicationDraftIn.gif";
   String pubDraftOutSrc = m_context + "/util/icons/publicationDraftOut.gif";
@@ -564,6 +565,10 @@
           if (isOwner) {
             operationPane.addOperation(resources.getIcon("kmelia.cut"), resources.getString("GML.cut"), "javascript:clipboardCut()");
           }
+        }
+        if (!currentUser.isAccessGuest() && !currentUser.isAnonymous()) {
+          operationPane.addLine();
+          operationPane.addOperation(basketIcon, resources.getString("GML.putInBasket"), "javascript:putInBasket()");
         }
         if (!toolboxMode && isOwner) {
           if (userCanValidate) {

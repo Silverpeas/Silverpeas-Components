@@ -188,7 +188,7 @@ public final class BlogSessionController extends AbstractComponentSessionControl
 
   public PostDetail getPost(String postId) {
     // rechercher la publication associé au billet
-    PostDetail post = getBlogService().getContentById(postId);
+    PostDetail post = getBlogService().getContributionById(postId);
 
     // mettre à jour les dates de début et de fin en fonction de la date du post
     Calendar calendar = Calendar.getInstance();

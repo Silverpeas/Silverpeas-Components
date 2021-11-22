@@ -35,7 +35,9 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.ContributionModel;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
+import org.silverpeas.core.contribution.model.Thumbnail;
 import org.silverpeas.core.contribution.model.WithAttachment;
+import org.silverpeas.core.contribution.model.WithPermanentLink;
 import org.silverpeas.core.contribution.model.WithThumbnail;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
@@ -56,13 +58,12 @@ import org.silverpeas.core.util.URLUtil;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -73,17 +74,16 @@ import static org.silverpeas.core.date.TemporalConverter.asOffsetDateTime;
 
 @Entity
 @Table(name = "sc_quickinfo_news")
-@NamedQueries({
-    @NamedQuery(name = "newsFromComponentInstances", query = "select n from News n where n" +
-        ".componentInstanceId in :componentInstanceIds order by n.publishDate DESC" +
-        ", n.lastUpdateDate DESC"),
-    @NamedQuery(name = "newsByForeignId", query = "select n from News n where n.publicationId = " +
-        ":foreignId"),
-    @NamedQuery(name = "newsMandatories", query = "select n from News n where n.mandatory = " +
-        ":mandatory"),
-    @NamedQuery(name = "newsForTicker", query = "select n from News n where n.ticker = :ticker")})
+@NamedQuery(name = "newsFromComponentInstances", query = "select n from News n where n" +
+    ".componentInstanceId in :componentInstanceIds order by n.publishDate DESC" +
+    ", n.lastUpdateDate DESC")
+@NamedQuery(name = "newsByForeignId", query = "select n from News n where n.publicationId = " +
+    ":foreignId")
+@NamedQuery(name = "newsMandatories", query = "select n from News n where n.mandatory = " +
+    ":mandatory")
+@NamedQuery(name = "newsForTicker", query = "select n from News n where n.ticker = :ticker")
 public class News extends SilverpeasJpaEntity<News, UuidIdentifier> implements SilverpeasContent,
-    WithAttachment, WithThumbnail, WithReminder {
+    WithAttachment, WithThumbnail, WithReminder, WithPermanentLink {
 
   public static final String CONTRIBUTION_TYPE = "News";
 
@@ -226,7 +226,8 @@ public class News extends SilverpeasJpaEntity<News, UuidIdentifier> implements S
     return modes;
   }
 
-  public ThumbnailDetail getThumbnail() {
+  @Override
+  public Thumbnail getThumbnail() {
     ThumbnailDetail thumbnail =
         new ThumbnailDetail(getComponentInstanceId(), Integer.parseInt(getPublicationId()),
             ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
@@ -338,6 +339,7 @@ public class News extends SilverpeasJpaEntity<News, UuidIdentifier> implements S
     return Collections.emptyList();
   }
 
+  @Override
   public String getPermalink() {
     return URLUtil.getSimpleURL(URLUtil.URL_PUBLI, getPublicationId());
   }
@@ -380,7 +382,7 @@ public class News extends SilverpeasJpaEntity<News, UuidIdentifier> implements S
   public Date getOnlineDate() {
     if (getPublishDate() != null) {
       final Date visibilityStart = asDate(asOffsetDateTime(getPublication().getVisibility().getPeriod().getStartDate())
-          .atZoneSameInstant(ZoneOffset.systemDefault()));
+          .atZoneSameInstant(ZoneId.systemDefault()));
       if (visibilityStart.after(getPublishDate())) {
         return visibilityStart;
       }

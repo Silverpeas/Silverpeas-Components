@@ -43,7 +43,7 @@ public class GoToPost extends GoTo {
   public String getDestination(String objectId, HttpServletRequest req, HttpServletResponse res)
       throws Exception {
     BlogService service = BlogServiceFactory.getBlogService();
-    PostDetail post = service.getContentById(objectId);
+    PostDetail post = service.getContributionById(objectId);
     String componentId = post.getPublication().getInstanceId();
     String gotoURL = URLUtil.getURL(null, componentId) + post.getPublication().getURL();
 
