@@ -40,6 +40,7 @@
 <%@ page import="org.silverpeas.core.notification.user.NotificationContext" %>
 <%@ page import="java.util.Date" %>
 <%@ page import="java.util.StringTokenizer" %>
+<%@ page import="org.silverpeas.core.contribution.model.Thumbnail" %>
 
 <c:set var="userLanguage" value="${requestScope.resources.language}"/>
 <fmt:setLocale value="${userLanguage}"/>
@@ -124,7 +125,7 @@
     boolean isFieldVersionVisible = kmeliaScc.isFieldVersionVisible();
     boolean isNotificationAllowed = kmeliaScc.isNotificationAllowed();
     ThumbnailSettings thumbnailSettings = kmeliaScc.getThumbnailSettings();
-    ThumbnailDetail thumbnail = null;
+    Thumbnail thumbnail = null;
 
     boolean isAutomaticDraftOutEnabled = StringUtil.isDefined(resources.getSetting("cronAutomaticDraftOut"));
 

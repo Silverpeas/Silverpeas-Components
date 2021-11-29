@@ -99,8 +99,7 @@ public class ScheduledUnpublishExpiredClassifieds implements SchedulerEventListe
         if (classifieds != null) {
           for (final ClassifiedDetail classified : classifieds) {
             // unpublish classified
-            int classifiedId = classified.getClassifiedId();
-            classifiedService.unpublishClassified(Integer.toString(classifiedId));
+            classifiedService.unpublishClassified(classified.getIdentifier());
           }
         }
       }

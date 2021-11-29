@@ -33,26 +33,11 @@ import java.util.List;
  */
 public class MediaDataUpdateDelegate extends AbstractMediaDataDelegate {
 
-  /**
-   * Default constructor
-   * @param mediaType
-   * @param language
-   * @param albumId
-   * @param parameters
-   */
   public MediaDataUpdateDelegate(final MediaType mediaType, final String language,
       final String albumId, final List<FileItem> parameters) {
     super(mediaType, language, albumId, parameters);
   }
 
-  /**
-   * Default constructor
-   * @param mediaType
-   * @param language
-   * @param albumId
-   * @param parameters
-   * @param skipEmptyValues
-   */
   public MediaDataUpdateDelegate(final MediaType mediaType, final String language,
       final String albumId, final List<FileItem> parameters, final boolean skipEmptyValues) {
     super(mediaType, language, albumId, parameters, skipEmptyValues);

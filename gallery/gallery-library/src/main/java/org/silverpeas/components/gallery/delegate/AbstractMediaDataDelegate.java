@@ -61,26 +61,11 @@ public abstract class AbstractMediaDataDelegate {
   private final List<FileItem> parameters;
   private final String albumId;
 
-  /**
-   * Default constructor
-   * @param mediaType
-   * @param language
-   * @param albumId
-   * @param parameters
-   */
   public AbstractMediaDataDelegate(final MediaType mediaType, final String language,
       final String albumId, final List<FileItem> parameters) {
     this(mediaType, language, albumId, parameters, true);
   }
 
-  /**
-   * Default constructor
-   * @param mediaType
-   * @param language
-   * @param albumId
-   * @param parameters
-   * @param skipEmptyValues
-   */
   public AbstractMediaDataDelegate(final MediaType mediaType, final String language,
       final String albumId, final List<FileItem> parameters, final boolean skipEmptyValues) {
     this.mediaType = mediaType;
@@ -96,7 +81,7 @@ public abstract class AbstractMediaDataDelegate {
 
   /**
    * Checks if header data exists
-   * @return
+   * @return true if the header data is set. False otherwise.
    */
   public boolean isHeaderData() {
     return headerData != null;
@@ -104,7 +89,7 @@ public abstract class AbstractMediaDataDelegate {
 
   /**
    * Get the photo header data
-   * @return
+   * @return a {@link HeaderData} instance.
    */
   public HeaderData getHeaderData() {
     if (headerData == null) {
@@ -115,14 +100,17 @@ public abstract class AbstractMediaDataDelegate {
 
   /**
    * Checks if a form exists
-   * @return
+   * @return true if there is both a form set and the corresponding parameters to that form.
+   * False otherwise.
    */
   public boolean isForm() {
     return recordSet != null && form != null && parameters != null;
   }
 
   /**
-   * Set a form
+   * Set a form.
+   * @param recordSet the set of form's records
+   * @param form the form definition.
    */
   public void setForm(final RecordSet recordSet, final Form form) {
     this.recordSet = recordSet;
@@ -131,19 +119,23 @@ public abstract class AbstractMediaDataDelegate {
 
   /**
    * Perform a header data update
-   * @param media
+   * @param media the media to update with the header data.
    */
   public void updateHeader(final Media media) {
     if (!skipEmptyValues && media.getType().isStreaming()) {
       final Optional<StreamingProvider> streamingProvider =
-          StreamingProvidersRegistry.get().getFromUrl(getHeaderData().getHompageUrl());
+          StreamingProvidersRegistry.get().getFromUrl(getHeaderData().getHomepageUrl());
       if (streamingProvider.isEmpty()) {
         throw new GalleryRuntimeException("Streaming homepage URL must be defined and supported");
       }
       Streaming streaming = media.getStreaming();
-      streaming.setHomepageUrl(getHeaderData().getHompageUrl());
+      streaming.setHomepageUrl(getHeaderData().getHomepageUrl());
       streaming.setProvider(streamingProvider.get());
     }
+    updateMedia(media);
+  }
+
+  private void updateMedia(final Media media) {
     if (!skipEmptyValues || StringUtil.isDefined(getHeaderData().getTitle())) {
       media.setTitle(getHeaderData().getTitle());
     }
@@ -156,16 +148,11 @@ public abstract class AbstractMediaDataDelegate {
     if (!skipEmptyValues || StringUtil.isDefined(getHeaderData().getKeyWord())) {
       media.setKeyWord(getHeaderData().getKeyWord());
     }
-    if (!skipEmptyValues || getHeaderData().getBeginVisibilityDate() != null) {
-      media.setVisibilityPeriod(Period
-          .getPeriodWithUndefinedIfNull(getHeaderData().getBeginVisibilityDate(),
-              media.getVisibilityPeriod().getEndDate()));
-    }
-    if (!skipEmptyValues || getHeaderData().getEndVisibilityDate() != null) {
-      media.setVisibilityPeriod(Period
-          .getPeriodWithUndefinedIfNull(media.getVisibilityPeriod().getBeginDate(),
-              getHeaderData().getEndVisibilityDate()));
-    }
+    updateMediaVisibilityPeriod(media);
+    updateMediaDownloadPeriod(media);
+  }
+
+  private void updateMediaDownloadPeriod(final Media media) {
     if (media instanceof InternalMedia) {
       if (!skipEmptyValues || getHeaderData().getBeginDownloadDate() != null) {
         ((InternalMedia) media).setDownloadPeriod(Period
@@ -183,9 +170,23 @@ public abstract class AbstractMediaDataDelegate {
     }
   }
 
+  private void updateMediaVisibilityPeriod(final Media media) {
+    if (!skipEmptyValues || getHeaderData().getBeginVisibilityDate() != null) {
+      media.setVisibilityPeriod(Period
+          .getPeriodWithUndefinedIfNull(getHeaderData().getBeginVisibilityDate(),
+              media.getVisibilityPeriod().getEndDate()));
+    }
+    if (!skipEmptyValues || getHeaderData().getEndVisibilityDate() != null) {
+      media.setVisibilityPeriod(Period
+          .getPeriodWithUndefinedIfNull(media.getVisibilityPeriod().getBeginDate(),
+              getHeaderData().getEndVisibilityDate()));
+    }
+  }
+
   /**
    * Perform a form update
-   * @param pagesContext
+   * @param mediaId the unique identifier of the media for which the form has to be updated
+   * @param pagesContext pages context of an updated form
    */
   public void updateForm(final String mediaId, final PagesContext pagesContext) throws
       FormException {
@@ -205,7 +206,7 @@ public abstract class AbstractMediaDataDelegate {
    */
   public class HeaderData {
 
-    private String hompageUrl = null;
+    private String homepageUrl = null;
     private String title = null;
     private String description = null;
     private String author = null;
@@ -217,12 +218,6 @@ public abstract class AbstractMediaDataDelegate {
     private Date endDownloadDate = null;
     private List<PdcPosition> pdcPositions = null;
 
-    /**
-     * Internal tool
-     * @param stringDate
-     * @return
-     * @throws ParseException
-     */
     private Date stringToDate(final String stringDate) throws ParseException {
       Date date = null;
       if (stringDate != null && StringUtil.isDefined(stringDate.trim())) {
@@ -231,12 +226,12 @@ public abstract class AbstractMediaDataDelegate {
       return date;
     }
 
-    private String getHompageUrl() {
-      return hompageUrl;
+    private String getHomepageUrl() {
+      return homepageUrl;
     }
 
-    public void setHompageUrl(final String hompageUrl) {
-      this.hompageUrl = hompageUrl;
+    public void setHomepageUrl(final String homepageUrl) {
+      this.homepageUrl = homepageUrl;
     }
 
     private String getTitle() {
@@ -341,7 +336,7 @@ public abstract class AbstractMediaDataDelegate {
 
   /**
    * Gets the file from parameters
-   * @return
+   * @return a {@link FileItem} object
    */
   public FileItem getFileItem() {
     return FileUploadUtil.getFile(parameters, "WAIMGVAR0");

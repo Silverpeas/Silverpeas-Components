@@ -20,27 +20,23 @@
  */
 package org.silverpeas.components.scheduleevent.service.model.dao;
 
-import org.silverpeas.components.scheduleevent.service.model.beans.Contributor;
 import org.silverpeas.components.scheduleevent.service.model.beans.ScheduleEvent;
+
 import java.util.Set;
 
 public interface ScheduleEventDao {
 
-  public String createScheduleEvent(ScheduleEvent scheduleEvent);
+  void createScheduleEvent(ScheduleEvent scheduleEvent);
 
-  public Set<ScheduleEvent> listScheduleEventsByCreatorId(String userId);
+  Set<ScheduleEvent> listScheduleEventsByCreatorId(String userId);
 
-  public Set<ScheduleEvent> listScheduleEventsByContributorId(String userId);
+  Set<ScheduleEvent> listScheduleEventsByContributorId(String userId);
 
-  public void deleteScheduleEvent(ScheduleEvent scheduleEvent);
+  void deleteScheduleEvent(ScheduleEvent scheduleEvent);
 
-  public void updateScheduleEvent(ScheduleEvent scheduleEvent);
+  void updateScheduleEvent(ScheduleEvent scheduleEvent);
 
-  public ScheduleEvent getScheduleEvent(String scheduleEventId);
+  ScheduleEvent getScheduleEvent(String scheduleEventId);
 
-  public void purgeResponseScheduleEvent(ScheduleEvent scheduleEvent, int userId);
-
-  public Contributor getContributor(String id);
-
-  public void deleteContributor(Contributor contrib);
+  void purgeResponseScheduleEvent(ScheduleEvent scheduleEvent, int userId);
 }

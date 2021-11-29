@@ -25,6 +25,8 @@
 package org.silverpeas.components.classifieds.notification;
 
 import org.silverpeas.components.classifieds.model.ClassifiedDetail;
+import org.silverpeas.core.NotFoundException;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.notification.user.AbstractComponentInstanceManualUserNotification;
 import org.silverpeas.core.notification.user.NotificationContext;
 import org.silverpeas.core.notification.user.UserNotification;
@@ -45,7 +47,11 @@ public class ClassifiedsInstanceManualUserNotification extends
   @Override
   protected boolean check(final NotificationContext context) {
     final String classifiedId = context.getContributionId();
-    final ClassifiedDetail classified = getClassifiedService().getContributionById(classifiedId);
+    final String instanceId = context.getComponentId();
+    final ContributionIdentifier id = ContributionIdentifier.from(instanceId, classifiedId,
+        ClassifiedDetail.getResourceType());
+    final ClassifiedDetail classified = getClassifiedService().getContributionById(id)
+        .orElseThrow(() -> new NotFoundException("No classified found with id " + id.asString()));
     context.put(CLASSIFIED_KEY, classified);
     return classified.canBeAccessedBy(context.getSender());
   }

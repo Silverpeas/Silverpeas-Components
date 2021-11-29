@@ -335,6 +335,10 @@
         top.IdleFrame.location.href = '../..<%=kmeliaScc.getComponentUrl()%>cut.jsp?Id=<%=id%>';
       }
 
+      function putInBasket() {
+
+      }
+
       function compileResult(fileName) {
         SP_openWindow(fileName, "PdfGeneration","770", "550", "toolbar=no, directories=no, menubar=no, locationbar=no ,resizable, scrollbars");
       }

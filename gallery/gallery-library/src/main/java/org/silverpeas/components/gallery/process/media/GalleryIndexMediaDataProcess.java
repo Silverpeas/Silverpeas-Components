@@ -44,8 +44,8 @@ import java.util.Collection;
 public class GalleryIndexMediaDataProcess extends AbstractGalleryDataProcess {
 
   /**
-   * Default hidden conctructor
-   * @param media
+   * Default hidden constructor
+   * @param media the media for which a process is constructed
    */
   protected GalleryIndexMediaDataProcess(final Media media) {
     super(media);
@@ -53,8 +53,8 @@ public class GalleryIndexMediaDataProcess extends AbstractGalleryDataProcess {
 
   /**
    * Process to index a media in Database
-   * @param media
-   * @return
+   * @param media the media
+   * @return the process of indexing a media
    */
   public static GalleryIndexMediaDataProcess getInstance(final Media media) {
     return new GalleryIndexMediaDataProcess(media);
@@ -68,7 +68,7 @@ public class GalleryIndexMediaDataProcess extends AbstractGalleryDataProcess {
    */
   @Override
   protected void processData(final ProcessExecutionContext context,
-      final ProcessSession session) throws Exception {
+      final ProcessSession session) {
     // Nothing to do
   }
 
@@ -77,7 +77,7 @@ public class GalleryIndexMediaDataProcess extends AbstractGalleryDataProcess {
    * @see AbstractProcess#onSuccessful()
    */
   @Override
-  public void onSuccessful() throws Exception {
+  public void onSuccessful() {
     if (getMedia() != null) {
       // Index the Media
       FullIndexEntry indexEntry = setUpIndexEntry();

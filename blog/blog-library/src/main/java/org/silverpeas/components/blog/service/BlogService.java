@@ -23,28 +23,33 @@
  */
 package org.silverpeas.components.blog.service;
 
-import java.util.Collection;
-import java.util.Date;
-
-import org.silverpeas.core.ApplicationService;
 import org.silverpeas.components.blog.model.Archive;
 import org.silverpeas.components.blog.model.Category;
 import org.silverpeas.components.blog.model.PostDetail;
+import org.silverpeas.core.ApplicationService;
 import org.silverpeas.core.comment.model.Comment;
-import org.silverpeas.core.pdc.pdc.model.PdcClassification;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.util.ServiceProvider;
+
+import java.util.Collection;
+import java.util.Date;
+import java.util.Optional;
 
 /**
  * Services provided by the Blog Silverpeas component.
  */
-public interface BlogService extends ApplicationService<PostDetail> {
+public interface BlogService extends ApplicationService {
 
   static BlogService get() {
     return ServiceProvider.getService(BlogService.class);
   }
+
+  @Override
+  @SuppressWarnings("unchecked")
+  Optional<PostDetail> getContributionById(ContributionIdentifier contributionId);
 
   String createPost(final PostDetail post);
 
@@ -69,7 +74,7 @@ public interface BlogService extends ApplicationService<PostDetail> {
 
   Collection<PostDetail> getResultSearch(String word, String userId, String instanceId);
 
-  String createCategory(final Category category);
+  void createCategory(final Category category);
 
   void deleteCategory(String categoryId, String instanceId);
 
@@ -82,8 +87,6 @@ public interface BlogService extends ApplicationService<PostDetail> {
   Collection<Archive> getAllArchives(String instanceId);
 
   void indexBlog(String componentId);
-
-  void externalElementsOfPublicationHaveChanged(final PublicationPK pubPK, String userId);
 
   boolean isSubscribed(final String userId, final String instanceId);
 

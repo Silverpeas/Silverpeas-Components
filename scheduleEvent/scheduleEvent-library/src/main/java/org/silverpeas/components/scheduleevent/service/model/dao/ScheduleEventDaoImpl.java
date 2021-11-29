@@ -21,7 +21,6 @@
 package org.silverpeas.components.scheduleevent.service.model.dao;
 
 import org.silverpeas.components.scheduleevent.constant.ScheduleEventConstant;
-import org.silverpeas.components.scheduleevent.service.model.beans.Contributor;
 import org.silverpeas.components.scheduleevent.service.model.beans.Response;
 import org.silverpeas.components.scheduleevent.service.model.beans.ScheduleEvent;
 import org.silverpeas.core.ResourceReference;
@@ -49,9 +48,8 @@ public class ScheduleEventDaoImpl implements ScheduleEventDao {
   }
 
   @Override
-  public String createScheduleEvent(ScheduleEvent scheduleEvent) {
+  public void createScheduleEvent(ScheduleEvent scheduleEvent) {
     getEntityManager().persist(scheduleEvent);
-    return scheduleEvent.getId();
   }
 
   @Override
@@ -87,7 +85,6 @@ public class ScheduleEventDaoImpl implements ScheduleEventDao {
     return new HashSet<>(events);
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public Set<ScheduleEvent> listScheduleEventsByContributorId(String userId) {
     TypedQuery<ScheduleEvent> query = getEntityManager().createNamedQuery("findByContributor",
@@ -112,17 +109,5 @@ public class ScheduleEventDaoImpl implements ScheduleEventDao {
         getEntityManager().remove(response);
       }
     }
-  }
-
-  @Override
-  public Contributor getContributor(String contributorId) {
-    return getEntityManager().find(Contributor.class, contributorId);
-  }
-
-  @Override
-  public void deleteContributor(Contributor contributor) {
-    EntityManager entityManager = getEntityManager();
-    Contributor attachedContributor = entityManager.merge(contributor);
-    entityManager.remove(attachedContributor);
   }
 }

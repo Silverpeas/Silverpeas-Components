@@ -36,6 +36,7 @@ import org.silverpeas.components.gallery.model.OrderRow;
 import org.silverpeas.components.gallery.model.Photo;
 import org.silverpeas.core.ApplicationService;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.index.search.model.QueryDescription;
 import org.silverpeas.core.node.model.NodeDetail;
@@ -45,8 +46,13 @@ import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import java.io.File;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
-public interface GalleryService extends ApplicationService<Media> {
+public interface GalleryService extends ApplicationService {
+
+  @Override
+  @SuppressWarnings("unchecked")
+  Optional<Media> getContributionById(final ContributionIdentifier contributionId);
 
   AlbumDetail getAlbum(NodePK nodePK);
 
@@ -72,7 +78,8 @@ public interface GalleryService extends ApplicationService<Media> {
 
   List<Media> getMedia(List<String> mediaIds, final String componentInstanceId);
 
-  List<Media> getMedia(List<String> mediaIds, final String componentInstanceId, MediaCriteria.VISIBILITY visibility);
+  List<Media> getMedia(List<String> mediaIds, final String componentInstanceId,
+      MediaCriteria.VISIBILITY visibility);
 
   Collection<Photo> getAllPhotos(NodePK nodePK);
 
@@ -82,11 +89,7 @@ public interface GalleryService extends ApplicationService<Media> {
 
   long countAllMedia(NodePK nodePK, MediaCriteria.VISIBILITY visibility);
 
-  Collection<Media> getAllMedia(NodePK nodePK);
-
   Collection<Media> getAllMedia(NodePK nodePK, MediaCriteria.VISIBILITY visibility);
-
-  Collection<Media> getAllMedia(String instanceId);
 
   Collection<Media> getAllMedia(String instanceId, MediaCriteria.VISIBILITY visibility);
 
@@ -137,24 +140,21 @@ public interface GalleryService extends ApplicationService<Media> {
   void deleteOrders(List<Order> orders);
 
   /**
-   * get my list of SocialInformationGallery according to options and number of Item and the first
-   * Index
-   *
-   * @return: List <SocialInformation>
-   * @param userId
-   * @param period
-   * @return
+   * Gets the list of social information about the media for the specified user and in the given
+   * period of time.
+   * @param userId the unique identifier of a user
+   * @param period interval of time in which the media were created or updated.
+   * @return a list of {@link SocialInformation} objects.
    */
   List<SocialInformation> getAllMediaByUserId(String userId, Period period);
 
   /**
-   * get list of SocialInformationGallery of my contacts according to options and number of Item and
-   * the first Index
-   *
-   * @param listOfUserId
-   * @param availableComponent
-   * @param period
-   * @return List<SocialInformation>
+   * Gets the list of social information of the specified users about all the media in the given
+   * component instances and in the specified period of time.
+   * @param listOfUserId a list of unique identifier of users.
+   * @param availableComponent a list of unique identifier of component instances.
+   * @param period interval of time in which the media were created or updated.
+   * @return a list of {@link SocialInformation} objects.
    */
   List<SocialInformation> getSocialInformationListOfMyContacts(List<String> listOfUserId,
       List<String> availableComponent, Period period);

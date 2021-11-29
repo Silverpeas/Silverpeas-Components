@@ -34,24 +34,11 @@ import java.util.List;
  */
 public class MediaDataCreateDelegate extends AbstractMediaDataDelegate {
 
-  /**
-   * Default constructor
-   * @param mediaType
-   * @param language
-   * @param albumId
-   * @param parameters
-   */
   public MediaDataCreateDelegate(final MediaType mediaType, final String language,
       final String albumId, final List<FileItem> parameters) {
     super(mediaType, language, albumId, parameters, false);
   }
 
-  /**
-   * Default constructor
-   * @param mediaType
-   * @param language
-   * @param albumId
-   */
   public MediaDataCreateDelegate(final MediaType mediaType, final String language,
       final String albumId) {
     super(mediaType, language, albumId, null, false);
@@ -59,7 +46,7 @@ public class MediaDataCreateDelegate extends AbstractMediaDataDelegate {
 
   /**
    * Gets a new media instance according to known media type.
-   * @return
+   * @return a media.
    */
   public Media newInstance() {
     return getMediaType().newInstance();

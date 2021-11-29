@@ -87,8 +87,8 @@ public class MediaDAO {
    * @param criteria the media criteria.
    * @return the media behind the criteria, null if no media found and throws
    * {@link IllegalArgumentException} if several media are found.
-   * @throws SQLException
-   * @throws IllegalArgumentException
+   * @throws SQLException on SQL error
+   * @throws IllegalArgumentException on bad argument
    */
   public static Media getByCriteria(final MediaCriteria criteria)
       throws SQLException {
@@ -177,7 +177,7 @@ public class MediaDAO {
    * Adding all data of photos.
    * @param media the list of media that have not been yet decorated.
    * @param photos indexed photo media to decorate.
-   * @throws SQLException
+   * @throws SQLException on SQL error
    */
   private static void decoratePhotos(List<Media> media, Map<String, Photo> photos)
       throws SQLException {
@@ -211,7 +211,7 @@ public class MediaDAO {
    * Adding all data of videos.
    * @param media the list of media that have not been yet decorated.
    * @param videos indexed video media to decorate.
-   * @throws SQLException
+   * @throws SQLException on SQL error
    */
   private static void decorateVideos(List<Media> media, Map<String, Video> videos)
       throws SQLException {
@@ -247,7 +247,7 @@ public class MediaDAO {
    * Adding all data of sounds.
    * @param media the list of media that have not been yet decorated.
    * @param sounds indexed sound media to decorate.
-   * @throws SQLException
+   * @throws SQLException on SQL error
    */
   private static void decorateSounds(List<Media> media, Map<String, Sound> sounds)
       throws SQLException {
@@ -282,7 +282,7 @@ public class MediaDAO {
    * Adding all data of streamings.
    * @param media the list of media that have not been yet decorated.
    * @param streamings indexed streaming media to decorate.
-   * @throws SQLException
+   * @throws SQLException on SQL error
    */
   private static void decorateStreamings(List<Media> media, Map<String, Streaming> streamings)
       throws SQLException {
@@ -323,7 +323,7 @@ public class MediaDAO {
     iMedia.setFileSize(rsw.getLong(3));
     iMedia.setFileMimeType(MediaMimeType.fromMimeType(rsw.getString(4)));
     iMedia.setDownloadAuthorized(rsw.getInt(5) == 1);
-    iMedia.setDownloadPeriod(getPeriod(rsw, 6, 7));
+    iMedia.setDownloadPeriod(getPeriod(rsw));
   }
 
   /**
@@ -341,20 +341,18 @@ public class MediaDAO {
   }
 
   /**
-   * Gets a period.
+   * Gets a period from the specified result set.
    * @param rsw the wrapper of the result set.
-   * @param indexBegin the index of the start date information in the current result set row.
-   * @param indexEnd the index of the end date information in the current result set row.
    * @return the period guessed from the given indexes of start and end date information.
-   * @throws SQLException
+   * @throws SQLException on SQL data fetching
    */
-  private static Period getPeriod(ResultSetWrapper rsw, int indexBegin, int indexEnd)
+  private static Period getPeriod(ResultSetWrapper rsw)
       throws SQLException {
-    Date begin = rsw.getDateFromLong(indexBegin);
+    Date begin = rsw.getDateFromLong(6);
     if (begin == null) {
       begin = DateUtil.MINIMUM_DATE;
     }
-    Date end = rsw.getDateFromLong(indexEnd);
+    Date end = rsw.getDateFromLong(7);
     if (end == null) {
       end = DateUtil.MAXIMUM_DATE;
     }
@@ -366,7 +364,7 @@ public class MediaDAO {
    * @param context the context of save operation.
    * @param media the media to save.
    * @return the id of the saved media.
-   * @throws SQLException
+   * @throws SQLException on SQL error
    */
   public static String saveMedia(OperationContext context, Media media) throws SQLException {
     JdbcSqlQueries updateQueries = new JdbcSqlQueries();
@@ -593,7 +591,7 @@ public class MediaDAO {
   /**
    * Deletes the specified media (and its album links).
    * @param media the media to delete.
-   * @throws SQLException
+   * @throws SQLException on SQL error
    */
   public static void deleteMedia(Media media) throws SQLException {
     String mediaId = media.getId();
@@ -628,7 +626,7 @@ public class MediaDAO {
    * Saves the album link for the given media.
    * @param media the media that must be associated to the given album.
    * @param albumId the identifier of the album.
-   * @throws SQLException
+   * @throws SQLException on SQL error
    */
   public static void saveMediaPath(Media media, String albumId) throws SQLException {
     List<?> pathParams =
@@ -650,7 +648,7 @@ public class MediaDAO {
   /**
    * Deletes the album links of the specified media.
    * @param media the media for which all album links must be deleted.
-   * @throws SQLException
+   * @throws SQLException on SQL error
    */
   public static void deleteAllMediaPath(Media media) throws SQLException {
     createDeleteFor(GALLERY_PATH_TABLE)
@@ -661,7 +659,7 @@ public class MediaDAO {
    * Gets the identifier list of albums which the given media is associated to.
    * @param media the media aimed.
    * @return the identifier list of albums in which the given media is attached to.
-   * @throws SQLException
+   * @throws SQLException on SQL error
    */
   public static Collection<String> getAlbumIdsOf(Media media) throws SQLException {
     return createSelect(
@@ -676,7 +674,7 @@ public class MediaDAO {
    * @param userId the identifier of a user.
    * @param period the period on which the data are requested.
    * @return List<SocialInformation>
-   * @throws SQLException
+   * @throws SQLException on SQL error
    */
   public static List<SocialInformation> getAllMediaIdByUserId(String userId, Period period)
       throws SQLException {
@@ -703,7 +701,7 @@ public class MediaDAO {
    * @param availableComponents the list of available components.
    * @param period the period on which the data are requested.
    * @return the information for social data.
-   * @throws SQLException
+   * @throws SQLException on SQL error
    */
   public static List<SocialInformation> getSocialInformationListOfMyContacts(List<String> userIds,
       List<String> availableComponents, Period period) throws SQLException {

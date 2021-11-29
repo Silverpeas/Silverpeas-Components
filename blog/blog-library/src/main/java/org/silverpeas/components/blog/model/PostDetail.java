@@ -149,6 +149,7 @@ public final class PostDetail implements SilverpeasContent {
     return publication.getPK().getInstanceId();
   }
 
+  @SuppressWarnings("removal")
   @Override
   public User getCreator() {
     return publication.getCreator();
@@ -181,7 +182,7 @@ public final class PostDetail implements SilverpeasContent {
 
   @Override
   public String getContributionType() {
-    return TYPE;
+    return getResourceType();
   }
 
   /**

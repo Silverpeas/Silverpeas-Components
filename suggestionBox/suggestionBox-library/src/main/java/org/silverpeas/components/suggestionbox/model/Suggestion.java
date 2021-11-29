@@ -71,7 +71,7 @@ public class Suggestion extends SilverpeasJpaEntity<Suggestion, UuidIdentifier>
    * @return either NONE suggestion if it exists no suggestions with the specified identifier or
    * the asked suggestion.
    */
-  public static final Suggestion getById(String identifier) {
+  public static Suggestion getById(String identifier) {
     Suggestion suggestion = SuggestionRepository.get().getById(identifier);
     return (suggestion == null ? Suggestion.NONE:suggestion);
   }
@@ -165,11 +165,7 @@ public class Suggestion extends SilverpeasJpaEntity<Suggestion, UuidIdentifier>
    * @param count the number of comments.
    */
   public void setCommentCount(int count) {
-    if (count >= 0) {
-      this.commentCount = count;
-    } else {
-      this.commentCount = 0;
-    }
+    this.commentCount = Math.max(count, 0);
   }
 
   /**

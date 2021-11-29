@@ -29,7 +29,9 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.admin.service.DefaultOrganizationController;
 import org.silverpeas.core.admin.service.OrganizationController;
@@ -60,7 +62,6 @@ import static org.silverpeas.core.test.rule.DbSetupRule.getActualDataSet;
  * Base class for tests in the gallery component.
  * It prepares the database to use in tests.
  */
-@SuppressWarnings("CdiManagedBeanInconsistencyInspection")
 @RunWith(Arquillian.class)
 public abstract class BaseGalleryIT extends DataSetTest {
 
@@ -92,7 +93,7 @@ public abstract class BaseGalleryIT extends DataSetTest {
   protected UserDetail publisherUser;
   protected UserDetail writerUser;
   protected UserDetail userUser;
-  private TimeZone defaultTimeZone;
+  private static TimeZone defaultTimeZone;
 
   @Deployment
   public static Archive<?> createTestArchive() {
@@ -113,12 +114,14 @@ public abstract class BaseGalleryIT extends DataSetTest {
     return DATASET_XML_SCRIPT;
   }
 
+  @BeforeClass
+  public static void setUpTimeZone() {
+    defaultTimeZone = TimeZone.getDefault();
+    TimeZone.setDefault(TimeZone.getTimeZone("Europe/Paris"));
+  }
+
   @Before
   public void setUp() throws Exception {
-
-    this.defaultTimeZone = TimeZone.getDefault();
-    TimeZone.setDefault(TimeZone.getTimeZone("Europe/Paris"));
-
     verifyDataBeforeTest();
 
     adminAccessUser = new UserDetail();
@@ -152,9 +155,13 @@ public abstract class BaseGalleryIT extends DataSetTest {
     }
   }
 
+  @AfterClass
+  public static void restoreTimeZone() {
+    TimeZone.setDefault(defaultTimeZone);
+  }
+
   @After
   public void tearDown() {
-    TimeZone.setDefault(defaultTimeZone);
     CacheServiceProvider.clearAllThreadCaches();
   }
 
@@ -198,7 +205,7 @@ public abstract class BaseGalleryIT extends DataSetTest {
   @Priority(APPLICATION + 10)
   public static class StubbedOrganizationController extends DefaultOrganizationController {
 
-    private OrganizationController mock = mock(OrganizationController.class);
+    private final OrganizationController mock = mock(OrganizationController.class);
 
     static OrganizationController getMock() {
       return ((StubbedOrganizationController) ServiceProvider

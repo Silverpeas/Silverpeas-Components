@@ -45,6 +45,7 @@ import org.silverpeas.components.gallery.model.Photo;
 import org.silverpeas.components.gallery.process.GalleryProcessManagement;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.index.search.model.QueryDescription;
 import org.silverpeas.core.index.search.model.SearchResult;
@@ -69,6 +70,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.silverpeas.components.gallery.model.MediaCriteria.QUERY_ORDER_BY.CREATE_DATE_DESC;
 import static org.silverpeas.components.gallery.model.MediaCriteria.QUERY_ORDER_BY.IDENTIFIER_DESC;
@@ -90,8 +92,9 @@ public class DefaultGalleryService implements GalleryService {
   private NodeDAO nodeDAO;
 
   @Override
-  public Media getContributionById(final String contributionId) {
-    return getMedia(new MediaPK(contributionId));
+  public Optional<Media> getContributionById(final ContributionIdentifier contributionId) {
+    return Optional.ofNullable(getMedia(
+        new MediaPK(contributionId.getLocalId(), contributionId.getComponentInstanceId())));
   }
 
   @Override
@@ -164,8 +167,8 @@ public class DefaultGalleryService implements GalleryService {
   public void deleteAlbum(final UserDetail user, final String componentInstanceId,
       final NodePK nodePK) {
     try {
-      final GalleryProcessManagement processManagement = new GalleryProcessManagement(user,
-          componentInstanceId);
+      final GalleryProcessManagement processManagement =
+          new GalleryProcessManagement(user, componentInstanceId);
       processManagement.addDeleteAlbumProcesses(nodePK);
       processManagement.execute();
     } catch (final Exception e) {
@@ -191,7 +194,8 @@ public class DefaultGalleryService implements GalleryService {
   public Media getMedia(final MediaPK mediaPK, final MediaCriteria.VISIBILITY visibility) {
     try {
       return MediaDAO.getByCriteria(MediaCriteria.fromComponentInstanceId(mediaPK.getInstanceId())
-              .identifierIsOneOf(mediaPK.getId()).withVisibility(visibility));
+          .identifierIsOneOf(mediaPK.getId())
+          .withVisibility(visibility));
     } catch (final Exception e) {
       throw new GalleryRuntimeException(e);
     }
@@ -215,24 +219,14 @@ public class DefaultGalleryService implements GalleryService {
   }
 
   @Override
-  public Collection<Media> getAllMedia(final String instanceId) {
-    return getAllMedia(instanceId, MediaCriteria.VISIBILITY.BY_DEFAULT);
-  }
-
-  @Override
   public Collection<Media> getAllMedia(final String instanceId,
       final MediaCriteria.VISIBILITY visibility) {
     try {
-      return MediaDAO.findByCriteria(
-          MediaCriteria.fromComponentInstanceId(instanceId).withVisibility(visibility));
+      return MediaDAO.findByCriteria(MediaCriteria.fromComponentInstanceId(instanceId)
+          .withVisibility(visibility));
     } catch (final Exception e) {
       throw new GalleryRuntimeException(e);
     }
-  }
-
-  @Override
-  public Collection<Media> getAllMedia(final NodePK nodePK) {
-    return getAllMedia(nodePK, MediaCriteria.VISIBILITY.BY_DEFAULT);
   }
 
   @Override
@@ -241,9 +235,9 @@ public class DefaultGalleryService implements GalleryService {
     try {
       final String albumId = nodePK.getId();
       final String instanceId = nodePK.getInstanceId();
-      return MediaDAO.findByCriteria(
-          MediaCriteria.fromComponentInstanceId(instanceId).albumIdentifierIsOneOf(albumId)
-              .withVisibility(visibility));
+      return MediaDAO.findByCriteria(MediaCriteria.fromComponentInstanceId(instanceId)
+          .albumIdentifierIsOneOf(albumId)
+          .withVisibility(visibility));
     } catch (final Exception e) {
       throw new GalleryRuntimeException(e);
     }
@@ -259,9 +253,9 @@ public class DefaultGalleryService implements GalleryService {
     try {
       final String albumId = nodePK.getId();
       final String instanceId = nodePK.getInstanceId();
-      return MediaDAO.countByCriteria(
-          MediaCriteria.fromComponentInstanceId(instanceId).albumIdentifierIsOneOf(albumId)
-              .withVisibility(visibility));
+      return MediaDAO.countByCriteria(MediaCriteria.fromComponentInstanceId(instanceId)
+          .albumIdentifierIsOneOf(albumId)
+          .withVisibility(visibility));
     } catch (final Exception e) {
       throw new GalleryRuntimeException(e);
     }
@@ -299,14 +293,16 @@ public class DefaultGalleryService implements GalleryService {
   public void paste(final UserDetail user, final String componentInstanceId,
       final GalleryPasteDelegate delegate) {
     try {
-      final GalleryProcessManagement processManagement = new GalleryProcessManagement(user,
-          componentInstanceId);
+      final GalleryProcessManagement processManagement =
+          new GalleryProcessManagement(user, componentInstanceId);
       // MediaList
-      if (delegate.getAlbum().hasFather()) {
-        for (final Map.Entry<Media, Boolean> mediaToPaste : delegate.getMediaToPaste().entrySet()) {
-          processManagement.addPasteMediaProcesses(
-              getMedia(mediaToPaste.getKey().getMediaPK(), MediaCriteria.VISIBILITY.FORCE_GET_ALL),
-              delegate.getAlbum().getNodePK(), mediaToPaste.getValue());
+      if (delegate.getAlbum()
+          .hasFather()) {
+        for (final Map.Entry<Media, Boolean> mediaToPaste : delegate.getMediaToPaste()
+            .entrySet()) {
+          processManagement.addPasteMediaProcesses(getMedia(mediaToPaste.getKey()
+              .getMediaPK(), MediaCriteria.VISIBILITY.FORCE_GET_ALL), delegate.getAlbum()
+              .getNodePK(), mediaToPaste.getValue());
         }
       }
       // Albums
@@ -338,12 +334,11 @@ public class DefaultGalleryService implements GalleryService {
   public Media createMedia(final UserDetail user, final String componentInstanceId,
       final Watermark watermark, final MediaDataCreateDelegate delegate) {
     try {
-      final GalleryProcessManagement processManagement = new GalleryProcessManagement(user,
-          componentInstanceId);
+      final GalleryProcessManagement processManagement =
+          new GalleryProcessManagement(user, componentInstanceId);
       Media newMedia = delegate.newInstance();
-      processManagement
-          .addCreateMediaProcesses(newMedia, delegate.getAlbumId(), delegate.getFileItem(),
-              watermark, delegate);
+      processManagement.addCreateMediaProcesses(newMedia, delegate.getAlbumId(),
+          delegate.getFileItem(), watermark, delegate);
       processManagement.execute();
       return newMedia;
     } catch (final Exception e) {
@@ -357,11 +352,11 @@ public class DefaultGalleryService implements GalleryService {
       final Collection<String> mediaIds, final String albumId,
       final MediaDataUpdateDelegate delegate) {
     try {
-      final GalleryProcessManagement processManagement = new GalleryProcessManagement(user,
-          componentInstanceId);
+      final GalleryProcessManagement processManagement =
+          new GalleryProcessManagement(user, componentInstanceId);
       for (final String mediaId : mediaIds) {
-        processManagement
-            .addUpdateMediaProcesses(getMedia(new MediaPK(mediaId, componentInstanceId)), null, delegate);
+        processManagement.addUpdateMediaProcesses(
+            getMedia(new MediaPK(mediaId, componentInstanceId)), null, delegate);
       }
       processManagement.execute();
     } catch (final Exception e) {
@@ -374,8 +369,8 @@ public class DefaultGalleryService implements GalleryService {
   public void updateMedia(final UserDetail user, final String componentInstanceId,
       final Media media, final Watermark watermark, final MediaDataUpdateDelegate delegate) {
     try {
-      final GalleryProcessManagement processManagement = new GalleryProcessManagement(user,
-          componentInstanceId);
+      final GalleryProcessManagement processManagement =
+          new GalleryProcessManagement(user, componentInstanceId);
       processManagement.addUpdateMediaProcesses(media, watermark, delegate);
       processManagement.execute();
     } catch (final Exception e) {
@@ -388,11 +383,11 @@ public class DefaultGalleryService implements GalleryService {
   public void deleteMedia(final UserDetail user, final String componentInstanceId,
       final Collection<String> mediaIds) {
     try {
-      final GalleryProcessManagement processManagement = new GalleryProcessManagement(user,
-          componentInstanceId);
+      final GalleryProcessManagement processManagement =
+          new GalleryProcessManagement(user, componentInstanceId);
       for (final String mediaId : mediaIds) {
-        processManagement
-            .addDeleteMediaProcesses(getMedia(new MediaPK(mediaId, componentInstanceId)));
+        processManagement.addDeleteMediaProcesses(
+            getMedia(new MediaPK(mediaId, componentInstanceId)));
       }
       processManagement.execute();
     } catch (final Exception e) {
@@ -477,8 +472,8 @@ public class DefaultGalleryService implements GalleryService {
           throw new GalleryRuntimeException(e);
         }
 
-        final Collection<Media> media = getAllMedia(album.getNodePK(),
-            MediaCriteria.VISIBILITY.FORCE_GET_ALL);
+        final Collection<Media> media =
+            getAllMedia(album.getNodePK(), MediaCriteria.VISIBILITY.FORCE_GET_ALL);
         if (media != null) {
           for (final Media aMedia : media) {
             createIndex(user, aMedia);
@@ -490,8 +485,7 @@ public class DefaultGalleryService implements GalleryService {
 
   private void createIndex(final UserDetail user, final Media media) {
     try {
-      @SuppressWarnings("removal")
-      final GalleryProcessManagement processManagement =
+      @SuppressWarnings("removal") final GalleryProcessManagement processManagement =
           new GalleryProcessManagement(user, media.getComponentInstanceId());
       processManagement.addIndexMediaProcesses(media);
       processManagement.execute();
@@ -505,8 +499,8 @@ public class DefaultGalleryService implements GalleryService {
 
     int silverObjectId;
     try {
-      silverObjectId = galleryContentManager.getSilverContentId(mediaPK.getId(), mediaPK
-          .getInstanceId());
+      silverObjectId =
+          galleryContentManager.getSilverContentId(mediaPK.getId(), mediaPK.getInstanceId());
 
       if (silverObjectId == -1) {
         Media media = getMedia(mediaPK, MediaCriteria.VISIBILITY.FORCE_GET_ALL);
@@ -531,7 +525,8 @@ public class DefaultGalleryService implements GalleryService {
   public Collection<Media> search(final QueryDescription query) {
     final Collection<Media> mediaList = new ArrayList<>();
     try {
-      final List<SearchResult> results = SearchService.get().search(query);
+      final List<SearchResult> results = SearchService.get()
+          .search(query);
       // création des médias à partir des résultats
       // Ne retourne que les médias
       results.stream()
@@ -573,8 +568,8 @@ public class DefaultGalleryService implements GalleryService {
   @Override
   public List<Order> getAllOrders(final String userId, final String instanceId) {
     try {
-      return OrderDAO.findByCriteria(
-          MediaOrderCriteria.fromComponentInstanceId(instanceId).withOrdererId(userId));
+      return OrderDAO.findByCriteria(MediaOrderCriteria.fromComponentInstanceId(instanceId)
+          .withOrdererId(userId));
     } catch (final Exception e) {
       throw new GalleryRuntimeException(e);
     }
@@ -603,8 +598,8 @@ public class DefaultGalleryService implements GalleryService {
   @Override
   public Order getOrder(final String orderId, final String instanceId) {
     try {
-      return OrderDAO.getByCriteria(
-          MediaOrderCriteria.fromComponentInstanceId(instanceId).identifierIsOneOf(orderId));
+      return OrderDAO.getByCriteria(MediaOrderCriteria.fromComponentInstanceId(instanceId)
+          .identifierIsOneOf(orderId));
     } catch (final Exception e) {
       throw new GalleryRuntimeException(e);
     }
@@ -657,8 +652,8 @@ public class DefaultGalleryService implements GalleryService {
   public List<SocialInformation> getSocialInformationListOfMyContacts(
       final List<String> listOfUserId, final List<String> availableComponent, final Period period) {
     try {
-      return MediaDAO
-          .getSocialInformationListOfMyContacts(listOfUserId, availableComponent, period);
+      return MediaDAO.getSocialInformationListOfMyContacts(listOfUserId, availableComponent,
+          period);
     } catch (final SQLException e) {
       throw new GalleryRuntimeException(e);
     }

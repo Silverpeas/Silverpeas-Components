@@ -26,6 +26,8 @@ package org.silverpeas.components.blog.notification;
 
 import org.silverpeas.components.blog.model.PostDetail;
 import org.silverpeas.components.blog.service.BlogService;
+import org.silverpeas.core.NotFoundException;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.notification.user.AbstractComponentInstanceManualUserNotification;
 import org.silverpeas.core.notification.user.NotificationContext;
 import org.silverpeas.core.notification.user.UserNotification;
@@ -36,15 +38,18 @@ import javax.inject.Named;
  * @author silveryocha
  */
 @Named
-public class BlogInstanceManualUserNotification extends
-    AbstractComponentInstanceManualUserNotification {
+public class BlogInstanceManualUserNotification
+    extends AbstractComponentInstanceManualUserNotification {
 
   private static final String POST_KEY = "PostDetailKey";
 
   @Override
   protected boolean check(final NotificationContext context) {
     final String postId = context.getContributionId();
-    final PostDetail post = getPost(postId);
+    final String instanceId = context.getComponentId();
+    ContributionIdentifier identifier =
+        ContributionIdentifier.from(instanceId, postId, PostDetail.getResourceType());
+    final PostDetail post = getPost(identifier);
     context.put(POST_KEY, post);
     return post.canBeAccessedBy(context.getSender());
   }
@@ -52,11 +57,14 @@ public class BlogInstanceManualUserNotification extends
   @Override
   public UserNotification createUserNotification(final NotificationContext context) {
     final PostDetail post = context.getObject(POST_KEY);
-    context.put(NotificationContext.PUBLICATION_ID, post.getPublication().getId());
+    context.put(NotificationContext.PUBLICATION_ID, post.getPublication()
+        .getId());
     return new BlogUserAlertNotification(post, context.getSender()).build();
   }
 
-  private PostDetail getPost(final String postId) {
-    return BlogService.get().getContributionById(postId);
+  private PostDetail getPost(final ContributionIdentifier postId) {
+    return BlogService.get()
+        .getContributionById(postId)
+        .orElseThrow(() -> new NotFoundException("No such post " + postId.asString()));
   }
 }

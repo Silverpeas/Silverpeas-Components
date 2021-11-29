@@ -54,6 +54,7 @@ import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.content.form.field.FileField;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
@@ -868,8 +869,8 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
   }
 
   @Override
-  public FormInstance getContributionById(final String contributionId) {
-    return null;
+  public Optional<FormInstance> getContributionById(final ContributionIdentifier contributionId) {
+    return Optional.empty();
   }
 
   @Override

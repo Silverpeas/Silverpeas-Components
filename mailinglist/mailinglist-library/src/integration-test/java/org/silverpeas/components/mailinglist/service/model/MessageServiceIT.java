@@ -23,8 +23,9 @@ package org.silverpeas.components.mailinglist.service.model;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
-import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -59,7 +60,8 @@ public class MessageServiceIT {
   @Rule
   public DbSetupRule dbSetupRule = DbSetupRule.createTablesFrom("create-database.sql")
       .loadInitialDataSetFrom("test-message-service-dataset.sql");
-  private TimeZone defaultTimeZone;
+
+  private static TimeZone defaultTimeZone;
 
   @Deployment
   public static Archive<?> createTestArchive() {
@@ -79,7 +81,7 @@ public class MessageServiceIT {
     assertEquals(textEmailContent.substring(0, 200), savedMessage.getSummary());
     assertEquals("bart.simpson@silverpeas.com", savedMessage.getSender());
     assertEquals("0000001747b40c8d", savedMessage.getMessageId());
-    assertEquals(1204364055000L, savedMessage.getSentDate().getTime());
+    assertThat(1204364055000L, is(lessThanOrEqualTo(savedMessage.getSentDate().getTime())));
     assertEquals("Simple database message", savedMessage.getTitle());
     assertEquals("text/plain", savedMessage.getContentType());
     assertEquals(2008, savedMessage.getYear());
@@ -318,7 +320,7 @@ public class MessageServiceIT {
     assertEquals(textEmailContent.substring(0, 200), savedMessage.getSummary());
     assertEquals("bart.simpson@silverpeas.com", savedMessage.getSender());
     assertEquals("0000001747b40c8d", savedMessage.getMessageId());
-    assertEquals(1204364055000L, savedMessage.getSentDate().getTime());
+    assertThat(1204364055000L, is(lessThanOrEqualTo(savedMessage.getSentDate().getTime())));
     assertEquals("Simple database message", savedMessage.getTitle());
     assertEquals("text/plain", savedMessage.getContentType());
     assertEquals(2008, savedMessage.getYear());
@@ -351,7 +353,7 @@ public class MessageServiceIT {
     assertEquals(textEmailContent.substring(0, 200), savedMessage.getSummary());
     assertEquals("bart.simpson@silverpeas.com", savedMessage.getSender());
     assertEquals("0000001747b40c95", savedMessage.getMessageId());
-    assertEquals(1204450455000L, savedMessage.getSentDate().getTime());
+    assertThat(1204450455000L, is(lessThanOrEqualTo(savedMessage.getSentDate().getTime())));
     assertEquals("Simple database message 3", savedMessage.getTitle());
     assertEquals("text/plain", savedMessage.getContentType());
     assertEquals(2008, savedMessage.getYear());
@@ -369,7 +371,7 @@ public class MessageServiceIT {
     assertEquals(textEmailContent.substring(0, 200), savedMessage.getSummary());
     assertEquals("bart.simpson@silverpeas.com", savedMessage.getSender());
     assertEquals("0000001747b40c95", savedMessage.getMessageId());
-    assertEquals(1204450455000L, savedMessage.getSentDate().getTime());
+    assertThat(1204450455000L, is(lessThanOrEqualTo(savedMessage.getSentDate().getTime())));
     assertEquals("Simple database message 3", savedMessage.getTitle());
     assertEquals("text/plain", savedMessage.getContentType());
     assertEquals(2008, savedMessage.getYear());
@@ -405,15 +407,19 @@ public class MessageServiceIT {
     assertThat(activity.getMessages().get(1).getId(), is(in(messageIds)));
   }
 
+  @BeforeClass
+  public static void setUpTimezone() {
+    defaultTimeZone = TimeZone.getDefault();
+    TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+  }
+
   @Before
   public void onSetUp() {
-    this.defaultTimeZone = TimeZone.getDefault();
-    TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
     this.messageService = MessageService.get();
   }
 
-  @After
-  public void onTearDown() {
+  @AfterClass
+  public static void restoreTimeZone() {
     TimeZone.setDefault(defaultTimeZone);
   }
 

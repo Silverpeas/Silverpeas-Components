@@ -20,16 +20,6 @@
  */
 package org.silverpeas.components.gallery.socialnetwork;
 
-/**
- * SocialGallery is the class representing the events of the gallery
- *
- *
- * @author bourakbi
- * @see SocialInformation
- * @see SocialInformationGallery
- *
- */
-
 import org.silverpeas.components.gallery.service.GalleryService;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
@@ -43,6 +33,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * It represents the social events of galleries
+ *
+ * @author bourakbi
+ * @see SocialInformation
+ * @see SocialInformationGallery
+ */
 @Provider
 public class SocialGalleryMedia implements SocialMediaProvider {
 
@@ -50,32 +47,31 @@ public class SocialGalleryMedia implements SocialMediaProvider {
   }
 
   /**
-   * get the my SocialInformationGallery according to number of Item and the first Index
-   * @param userId the user identifier
-   * @param begin date
-   * @param end date
-   * @return List<SocialInformationGallery>
+   * get the social information of the specified user between the specified period of time.
+   * @param userId the user identifier.
+   * @param begin the date at which starts the period.
+   * @param end the date at which ends the period.
+   * @return a list of social information
    */
   @Override
-  @SuppressWarnings("unchecked")
   public List<SocialInformation> getSocialInformationList(String userId, Date begin, Date end) {
     return getGalleryService().getAllMediaByUserId(userId, Period.from(begin, end));
   }
 
   /**
-   * get the SocialInformationGallery of my contatcs according to number of Item and the first
-   * Index
-   * @param myId
-   * @param myContactsIds
-   * @param begin date
-   * @param end date
-   * @return List
+   * get the social information of the specified contacts of the specified user between the
+   * specified period of time.
+   * @param userId the user identifier.
+   * @param myContactsIds the identifiers of the contacts.
+   * @param begin the date at which starts the period.
+   * @param end the date at which ends the period.
+   * @return a list of social information
    */
   @Override
-  public List<SocialInformation> getSocialInformationListOfMyContacts(String myId,
+  public List<SocialInformation> getSocialInformationListOfMyContacts(String userId,
       List<String> myContactsIds, Date begin, Date end) {
     List<SocialInformation> listSocialInfo = new ArrayList<>();
-    List<String> listComponents = this.getListAvailable(myId);
+    List<String> listComponents = this.getListAvailable(userId);
     if (!listComponents.isEmpty()) {
       listSocialInfo = getGalleryService()
           .getSocialInformationListOfMyContacts(myContactsIds, listComponents,

@@ -32,6 +32,7 @@ import org.silverpeas.components.blog.model.Category;
 import org.silverpeas.components.blog.model.PostDetail;
 import org.silverpeas.components.blog.service.BlogService;
 import org.silverpeas.components.blog.service.BlogServiceFactory;
+import org.silverpeas.core.NotFoundException;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.service.AdminController;
@@ -40,6 +41,7 @@ import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.model.CommentId;
 import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.comment.service.CommentServiceProvider;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.exception.EncodingException;
@@ -188,11 +190,15 @@ public final class BlogSessionController extends AbstractComponentSessionControl
 
   public PostDetail getPost(String postId) {
     // rechercher la publication associé au billet
-    PostDetail post = getBlogService().getContributionById(postId);
+    ContributionIdentifier identifier =
+        ContributionIdentifier.from(getComponentId(), postId, PostDetail.getResourceType());
+    PostDetail post = getBlogService().getContributionById(identifier)
+        .orElseThrow(() -> new NotFoundException("No such post " + postId));
 
     // mettre à jour les dates de début et de fin en fonction de la date du post
     Calendar calendar = Calendar.getInstance();
-    calendar.setTime(post.getPublication().getCreationDate());
+    calendar.setTime(post.getPublication()
+        .getCreationDate());
     setMonthFirstDay(calendar);
     setMonthLastDay(calendar);
 
@@ -292,7 +298,8 @@ public final class BlogSessionController extends AbstractComponentSessionControl
   public synchronized void createCategory(Category category) {
     category.setCreationDate(new Date());
     category.setCreatorId(getUserId());
-    category.getNodePK().setComponentName(getComponentId());
+    category.getNodePK()
+        .setComponentName(getComponentId());
 
     getBlogService().createCategory(category);
   }
@@ -310,7 +317,8 @@ public final class BlogSessionController extends AbstractComponentSessionControl
   }
 
   public Collection<LinkDetail> getAllLinks() {
-    return MyLinksWebManager.get().getAllLinksOfInstance(getComponentId());
+    return MyLinksWebManager.get()
+        .getAllLinksOfInstance(getComponentId());
   }
 
   public Collection<PostDetail> getResultSearch(String word) {
@@ -336,7 +344,8 @@ public final class BlogSessionController extends AbstractComponentSessionControl
   public String getRSSUrl() {
     if (isUseRss()) {
       //replace to remove when all composants will be XHTML compliant
-      return super.getRSSUrl().replace("&", "&amp;");
+      return super.getRSSUrl()
+          .replace("&", "&amp;");
     }
     return null;
   }
@@ -394,8 +403,8 @@ public final class BlogSessionController extends AbstractComponentSessionControl
     currentBeginDate.set(Calendar.DATE, 1);
 
     currentEndDate.add(Calendar.MONTH, 1);
-    currentEndDate.
-        set(Calendar.DAY_OF_MONTH, currentEndDate.getActualMaximum(Calendar.DAY_OF_MONTH));
+    currentEndDate.set(Calendar.DAY_OF_MONTH,
+        currentEndDate.getActualMaximum(Calendar.DAY_OF_MONTH));
   }
 
   public void previousMonth() {
@@ -403,8 +412,8 @@ public final class BlogSessionController extends AbstractComponentSessionControl
     currentBeginDate.set(Calendar.DATE, 1);
 
     currentEndDate.add(Calendar.MONTH, -1);
-    currentEndDate.
-        set(Calendar.DAY_OF_MONTH, currentEndDate.getActualMaximum(Calendar.DAY_OF_MONTH));
+    currentEndDate.set(Calendar.DAY_OF_MONTH,
+        currentEndDate.getActualMaximum(Calendar.DAY_OF_MONTH));
   }
 
   public String getServerURL() {
@@ -419,7 +428,9 @@ public final class BlogSessionController extends AbstractComponentSessionControl
     final SilverpeasRole highestSilverpeasUserRole = getHighestSilverpeasUserRole();
     List<NodeEntity> listNodeEntity = new ArrayList<>();
     for (NodeDetail node : listNode) {
-      NodeEntity nodeEntity = NodeEntity.fromNodeDetail(highestSilverpeasUserRole, node, node.getNodePK().getId());
+      NodeEntity nodeEntity = NodeEntity.fromNodeDetail(highestSilverpeasUserRole, node,
+          node.getNodePK()
+              .getId());
       listNodeEntity.add(nodeEntity);
     }
     return listAsJSON(listNodeEntity);
@@ -450,7 +461,8 @@ public final class BlogSessionController extends AbstractComponentSessionControl
     try {
       files = (List<File>) FileFolderManager.getAllFile(path);
     } catch (UtilException e) {
-      SilverLogger.getLogger(this).silent(e);
+      SilverLogger.getLogger(this)
+          .silent(e);
       files = new ArrayList<>();
     }
 
@@ -459,8 +471,8 @@ public final class BlogSessionController extends AbstractComponentSessionControl
           BANNER_PNG.equals(file.getName())) {
         this.wallPaper = new WallPaper();
         this.wallPaper.setName(file.getName());
-        this.wallPaper.setUrl(FileServerUtils
-            .getOnlineURL(this.getComponentId(), file.getName(), file.getName(),
+        this.wallPaper.setUrl(
+            FileServerUtils.getOnlineURL(this.getComponentId(), file.getName(), file.getName(),
                 FileUtil.getMimeType(file.getName()), ""));
         this.wallPaper.setSize(FileRepositoryManager.formatFileSize(file.length()));
         break;
@@ -488,8 +500,8 @@ public final class BlogSessionController extends AbstractComponentSessionControl
     }
 
     if (extension == null ||
-        (!"gif".equalsIgnoreCase(extension) && !"jpg".equalsIgnoreCase(extension) && !"png".
-            equalsIgnoreCase(extension))) {
+        (!"gif".equalsIgnoreCase(extension) && !"jpg".equalsIgnoreCase(extension) &&
+            !"png".equalsIgnoreCase(extension))) {
       throw new BlogRuntimeException(
           fileItemWallPaper.getName() + " wallpaper format isn't supported");
     }
@@ -514,9 +526,8 @@ public final class BlogSessionController extends AbstractComponentSessionControl
       //save the information
       this.wallPaper = new WallPaper();
       this.wallPaper.setName(nameFile);
-      this.wallPaper.setUrl(FileServerUtils
-          .getOnlineURL(this.getComponentId(), nameFile, nameFile, FileUtil.getMimeType(nameFile),
-              ""));
+      this.wallPaper.setUrl(FileServerUtils.getOnlineURL(this.getComponentId(), nameFile, nameFile,
+          FileUtil.getMimeType(nameFile), ""));
       this.wallPaper.setSize(FileRepositoryManager.formatFileSize(fileWallPaper.length()));
     } catch (Exception ex) {
       throw new BlogRuntimeException(ex);
@@ -532,21 +543,24 @@ public final class BlogSessionController extends AbstractComponentSessionControl
     try {
       Files.deleteIfExists(banner.toPath());
     } catch (IOException e) {
-      SilverLogger.getLogger(this).warn(THE_WALLPAPER_DELETION_FAILED, BANNER_GIF);
+      SilverLogger.getLogger(this)
+          .warn(THE_WALLPAPER_DELETION_FAILED, BANNER_GIF);
     }
 
     banner = new File(path, BANNER_JPG);
     try {
       Files.deleteIfExists(banner.toPath());
     } catch (IOException e) {
-      SilverLogger.getLogger(this).warn(THE_WALLPAPER_DELETION_FAILED, BANNER_JPG);
+      SilverLogger.getLogger(this)
+          .warn(THE_WALLPAPER_DELETION_FAILED, BANNER_JPG);
     }
 
     banner = new File(path, BANNER_PNG);
     try {
       Files.deleteIfExists(banner.toPath());
     } catch (IOException e) {
-      SilverLogger.getLogger(this).warn(THE_WALLPAPER_DELETION_FAILED, BANNER_PNG);
+      SilverLogger.getLogger(this)
+          .warn(THE_WALLPAPER_DELETION_FAILED, BANNER_PNG);
     }
 
     this.wallPaper = null;
@@ -562,7 +576,8 @@ public final class BlogSessionController extends AbstractComponentSessionControl
     try {
       files = (List<File>) FileFolderManager.getAllFile(path);
     } catch (UtilException e) {
-      SilverLogger.getLogger(this).silent(e);
+      SilverLogger.getLogger(this)
+          .silent(e);
       files = new ArrayList<>();
     }
 
@@ -570,14 +585,15 @@ public final class BlogSessionController extends AbstractComponentSessionControl
       if (STYLES_CSS.equals(file.getName())) {
         this.styleSheet = new StyleSheet();
         this.styleSheet.setName(file.getName());
-        this.styleSheet.setUrl(FileServerUtils
-            .getOnlineURL(this.getComponentId(), file.getName(), file.getName(),
+        this.styleSheet.setUrl(
+            FileServerUtils.getOnlineURL(this.getComponentId(), file.getName(), file.getName(),
                 FileUtil.getMimeType(file.getName()), ""));
         this.styleSheet.setSize(FileRepositoryManager.formatFileSize(file.length()));
         try {
           this.styleSheet.setContent(FileUtils.readFileToString(file, StandardCharsets.UTF_8));
         } catch (IOException e) {
-          SilverLogger.getLogger(this).warn(e);
+          SilverLogger.getLogger(this)
+              .warn(e);
           this.styleSheet.setContent(null);
         }
         break;
@@ -625,9 +641,8 @@ public final class BlogSessionController extends AbstractComponentSessionControl
       //save the information
       this.styleSheet = new StyleSheet();
       this.styleSheet.setName(nameFile);
-      this.styleSheet.setUrl(FileServerUtils
-          .getOnlineURL(this.getComponentId(), nameFile, nameFile, FileUtil.getMimeType(nameFile),
-              ""));
+      this.styleSheet.setUrl(FileServerUtils.getOnlineURL(this.getComponentId(), nameFile, nameFile,
+          FileUtil.getMimeType(nameFile), ""));
       this.styleSheet.setSize(FileRepositoryManager.formatFileSize(fileStyleSheet.length()));
       setStylesheetContent(fileStyleSheet);
 
@@ -638,9 +653,11 @@ public final class BlogSessionController extends AbstractComponentSessionControl
 
   private void setStylesheetContent(final File fileStyleSheet) {
     try {
-      this.styleSheet.setContent(FileUtils.readFileToString(fileStyleSheet, StandardCharsets.UTF_8));
+      this.styleSheet.setContent(
+          FileUtils.readFileToString(fileStyleSheet, StandardCharsets.UTF_8));
     } catch (IOException e) {
-      SilverLogger.getLogger(this).warn(e);
+      SilverLogger.getLogger(this)
+          .warn(e);
       this.styleSheet.setContent(null);
     }
   }
@@ -654,7 +671,8 @@ public final class BlogSessionController extends AbstractComponentSessionControl
     try {
       Files.deleteIfExists(styles.toPath());
     } catch (IOException e) {
-      SilverLogger.getLogger(this).warn(e);
+      SilverLogger.getLogger(this)
+          .warn(e);
     }
 
     this.styleSheet = null;

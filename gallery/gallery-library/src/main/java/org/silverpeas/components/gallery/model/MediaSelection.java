@@ -35,7 +35,7 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 public class MediaSelection extends ClipboardSelection {
 
   private static final long serialVersionUID = -4373774805830276786L;
-  private Media currentMedia;
+  private final Media currentMedia;
   public static final DataFlavor MediaFlavor = new DataFlavor(Media.class, "Media");
 
 

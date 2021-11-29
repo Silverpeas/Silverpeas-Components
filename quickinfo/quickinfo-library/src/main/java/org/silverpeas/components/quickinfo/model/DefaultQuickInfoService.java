@@ -38,12 +38,12 @@ import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.contribution.ContributionManager;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.Attachments;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
@@ -74,6 +74,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -100,8 +101,8 @@ public class DefaultQuickInfoService implements QuickInfoService {
   private NewsEventNotifier notifier;
 
   @Override
-  public News getContributionById(String contributionId) {
-    return getNews(contributionId);
+  public Optional<News> getContributionById(ContributionIdentifier contributionId) {
+    return Optional.of(getNews(contributionId.getLocalId()));
   }
 
   @Override
@@ -362,8 +363,8 @@ public class DefaultQuickInfoService implements QuickInfoService {
   @Override
   public void performReminder(final Reminder reminder) {
     if (QUICKINFO_DELAYED_VISIBILITY_USER_NOTIFICATION.asString().equals(reminder.getProcessName())) {
-      ContributionManager.get().getById(reminder.getContributionId()).ifPresent(
-          p -> sendSubscriptionsNotification((News) p, NotifAction.CREATE));
+      getContributionById(reminder.getContributionId())
+          .ifPresent(n -> sendSubscriptionsNotification(n, NotifAction.CREATE));
     }
   }
 

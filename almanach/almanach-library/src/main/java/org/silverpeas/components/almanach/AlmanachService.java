@@ -22,32 +22,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.components.quickinfo.model;
+package org.silverpeas.components.almanach;
 
+import org.silverpeas.core.ApplicationServiceProvider;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.contribution.ComponentInstanceContributionManager;
-import org.silverpeas.core.contribution.model.Contribution;
-import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.calendar.AbstractCalendarService;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.SettingBundle;
 
 import javax.inject.Named;
-import java.text.MessageFormat;
-import java.util.Optional;
 
 /**
- * Contribution manager centralization about the kmelia contributions.
+ * Implementation of the calendar service for the Almanach application.
  * @author silveryocha
  */
 @Service
-@Named("quickinfo" + ComponentInstanceContributionManager.Constants.NAME_SUFFIX)
-public class QuickInfoInstanceContributionManager implements ComponentInstanceContributionManager {
+@Named("almanach" + ApplicationServiceProvider.SERVICE_NAME_SUFFIX)
+public class AlmanachService extends AbstractCalendarService {
 
   @Override
-  public Optional<Contribution> getById(final ContributionIdentifier contributionId) {
-    if (News.CONTRIBUTION_TYPE.equals(contributionId.getType())) {
-      final String localId = contributionId.getLocalId();
-      return Optional.ofNullable(QuickInfoService.get().getNews(localId));
-    }
-    throw new IllegalStateException(
-        MessageFormat.format("type {0} is not handled", contributionId.getType()));
+  public SettingBundle getComponentSettings() {
+    return AlmanachSettings.getSettings();
+  }
+
+  @Override
+  public LocalizationBundle getComponentMessages(final String language) {
+    return AlmanachSettings.getMessagesIn(language);
+  }
+
+  @Override
+  public boolean isRelatedTo(final String instanceId) {
+    return instanceId.startsWith("almanach");
   }
 }

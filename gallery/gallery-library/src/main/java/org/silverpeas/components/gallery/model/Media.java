@@ -80,6 +80,7 @@ public abstract class Media implements SilverContentInterface, Serializable, Wit
     mediaPK = new MediaPK(null);
   }
 
+  @SuppressWarnings("IncompleteCopyConstructor")
   protected Media(final Media other) {
     if (other.mediaPK != null) {
       this.mediaPK = new MediaPK(other.mediaPK.getId(), other.mediaPK.getInstanceId());
@@ -299,7 +300,7 @@ public abstract class Media implements SilverContentInterface, Serializable, Wit
 
   /**
    * Gets the Application URL thumbnail of the media according the specified media resolution.
-   * @param mediaResolution
+   * @param mediaResolution resolution of the media
    * @return the URL of media thumbnail.
    */
   public String getApplicationThumbnailUrl(MediaResolution mediaResolution) {
@@ -337,7 +338,7 @@ public abstract class Media implements SilverContentInterface, Serializable, Wit
 
   /**
    * Gets the original URL of a media with cache handling.
-   * @return
+   * @return the URL of the media
    */
   public String getApplicationOriginalUrl() {
     if (StringUtil.isNotDefined(getId())) {

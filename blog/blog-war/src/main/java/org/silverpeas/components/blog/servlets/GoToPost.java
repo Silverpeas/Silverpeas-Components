@@ -32,6 +32,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.silverpeas.components.blog.model.PostDetail;
+import org.silverpeas.core.NotFoundException;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.web.util.servlet.GoTo;
 import org.silverpeas.core.util.URLUtil;
 
@@ -40,16 +43,17 @@ public class GoToPost extends GoTo {
   private static final long serialVersionUID = 4824194822323955033L;
 
   @Override
-  public String getDestination(String objectId, HttpServletRequest req, HttpServletResponse res)
-      throws Exception {
+  public String getDestination(String objectId, HttpServletRequest req, HttpServletResponse res) {
     BlogService service = BlogServiceFactory.getBlogService();
-    PostDetail post = service.getContributionById(objectId);
+    PostDetail post = service.getContributionById(
+            ContributionIdentifier.from("", objectId, PostDetail.getResourceType()))
+        .orElseThrow(() -> new NotFoundException("No post with id " + objectId));
     String componentId = post.getPublication().getInstanceId();
     String gotoURL = URLUtil.getURL(null, componentId) + post.getPublication().getURL();
 
     // force context of GraphicElementFactory
     setGefSpaceId(req, componentId);
 
-    return "goto=" + URLEncoder.encode(gotoURL, "UTF-8");
+    return "goto=" + URLEncoder.encode(gotoURL, Charsets.UTF_8);
   }
 }

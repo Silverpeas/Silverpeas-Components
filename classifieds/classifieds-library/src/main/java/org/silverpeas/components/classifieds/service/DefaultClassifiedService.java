@@ -31,6 +31,7 @@ import org.silverpeas.components.classifieds.model.Subscribe;
 import org.silverpeas.components.classifieds.notification.ClassifiedSubscriptionUserNotification;
 import org.silverpeas.components.classifieds.notification.ClassifiedSupervisorUserNotification;
 import org.silverpeas.components.classifieds.notification.ClassifiedValidationUserNotification;
+import org.silverpeas.core.NotFoundException;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.UserDetail;
@@ -41,6 +42,7 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.RecordSet;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
@@ -67,6 +69,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 
@@ -85,19 +88,17 @@ public class DefaultClassifiedService implements ClassifiedService {
   public static final String CLASSIFIED = "classified";
   public static final String CLASSIFIEDS_IN_APPLICATION = "classifieds in application";
   public static final String CLASSIFIED_TYPE = "Classified";
+  private static final String NO_SUCH_CLASSIFIED = "No such classified ";
 
   @Inject
   private OrganizationController organizationController;
 
   @Override
-  public ClassifiedDetail getContributionById(String classifiedId) {
-    Connection con = openConnection();
-    try {
-      return ClassifiedsDAO.getClassified(con, classifiedId);
+  public Optional<ClassifiedDetail> getContributionById(ContributionIdentifier classifiedId) {
+    try (Connection con = openConnection()) {
+      return Optional.ofNullable(ClassifiedsDAO.getClassified(con, classifiedId.getLocalId()));
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException(failureOnGetting(CLASSIFIED, classifiedId), e);
-    } finally {
-      closeConnection(con);
     }
   }
 
@@ -118,8 +119,7 @@ public class DefaultClassifiedService implements ClassifiedService {
 
   @Override
   public String createClassified(ClassifiedDetail classified) {
-    Connection con = openConnection();
-    try {
+    try (Connection con = openConnection()) {
       String id = ClassifiedsDAO.createClassified(con, classified);
       classified.setClassifiedId(Integer.parseInt(id));
       createIndex(classified);
@@ -129,37 +129,37 @@ public class DefaultClassifiedService implements ClassifiedService {
       return id;
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException(failureOnAdding(CLASSIFIED, ""), e);
-    } finally {
-      closeConnection(con);
     }
   }
 
   @Override
-  public void deleteClassified(String instanceId, String classifiedId) {
-    deleteClassified(instanceId, classifiedId, getTemplate(instanceId));
+  public void deleteClassified(final ContributionIdentifier classifiedId) {
+    deleteClassified(classifiedId, getTemplate(classifiedId.getComponentInstanceId()));
   }
 
-  private void deleteClassified(String instanceId, String classifiedId, PublicationTemplate template) {
+  private void deleteClassified(ContributionIdentifier classifiedId, PublicationTemplate template) {
 
-    ClassifiedDetail classified = getContributionById(classifiedId);
+    ClassifiedDetail classified = getContributionById(classifiedId).orElseThrow(
+        () -> new NotFoundException(NO_SUCH_CLASSIFIED + classifiedId.asString()));
 
     // remove form content
     try {
       RecordSet set = template.getRecordSet();
-      set.delete(classifiedId);
+      set.delete(classifiedId.getLocalId());
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException(
-          failureOnDeleting("form of the classified", classifiedId), e);
+          failureOnDeleting("form of the classified", classifiedId.getLocalId()), e);
     }
 
     // remove attached files
     try {
-      ResourceReference classifiedForeignKey = new ResourceReference(classifiedId, instanceId);
-      List<SimpleDocument> images = AttachmentServiceProvider.getAttachmentService().
-          listDocumentsByForeignKeyAndType(classifiedForeignKey, DocumentType.attachment, null);
+      ResourceReference classifiedForeignKey = new ResourceReference(classifiedId);
+      List<SimpleDocument> images = AttachmentServiceProvider.getAttachmentService()
+          .listDocumentsByForeignKeyAndType(classifiedForeignKey, DocumentType.attachment, null);
       for (SimpleDocument classifiedImage : images) {
         //delete the picture file in the file server and database
-        AttachmentServiceProvider.getAttachmentService().deleteAttachment(classifiedImage);
+        AttachmentServiceProvider.getAttachmentService()
+            .deleteAttachment(classifiedImage);
       }
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException(
@@ -167,13 +167,10 @@ public class DefaultClassifiedService implements ClassifiedService {
     }
 
     // remove classified itself
-    Connection con = openConnection();
-    try {
-      ClassifiedsDAO.deleteClassified(con, classifiedId);
+    try (Connection con = openConnection()) {
+      ClassifiedsDAO.deleteClassified(con, classifiedId.getLocalId());
     } catch (SQLException e) {
       throw new ClassifiedsRuntimeException(failureOnDeleting(CLASSIFIED, classifiedId), e);
-    } finally {
-      closeConnection(con);
     }
 
     // remove index
@@ -181,17 +178,15 @@ public class DefaultClassifiedService implements ClassifiedService {
   }
 
   @Override
-  public void unpublishClassified(String classifiedId) {
-    Connection con = openConnection();
+  public void unpublishClassified(final ContributionIdentifier classifiedId) {
     try {
-      ClassifiedDetail classified = getContributionById(classifiedId);
+      ClassifiedDetail classified = getContributionById(classifiedId).orElseThrow(
+          () -> new NotFoundException(NO_SUCH_CLASSIFIED + classifiedId.asString()));
       classified.setStatus(ClassifiedDetail.UNPUBLISHED);
       classified.setUpdateDate(new Date());
       updateClassified(classified);
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException(failureOnUpdate(CLASSIFIED, classifiedId), e);
-    } finally {
-      closeConnection(con);
     }
   }
 
@@ -200,7 +195,7 @@ public class DefaultClassifiedService implements ClassifiedService {
     PublicationTemplate template = getTemplate(instanceId);
     Collection<ClassifiedDetail> classifieds = getAllClassifieds(instanceId);
     for (ClassifiedDetail classified : classifieds) {
-      deleteClassified(instanceId, Integer.toString(classified.getClassifiedId()), template);
+      deleteClassified(classified.getIdentifier(), template);
     }
   }
 
@@ -210,8 +205,7 @@ public class DefaultClassifiedService implements ClassifiedService {
 
   @Override
   public void updateClassified(ClassifiedDetail classified, boolean notify) {
-    Connection con = openConnection();
-    try {
+    try (Connection con = openConnection()) {
       ClassifiedsDAO.updateClassified(con, classified);
       createIndex(classified);
       if (notify) {
@@ -219,80 +213,53 @@ public class DefaultClassifiedService implements ClassifiedService {
       }
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException(failureOnUpdate(CLASSIFIED, classified), e);
-    } finally {
-      closeConnection(con);
     }
   }
 
   @Override
   public Collection<ClassifiedDetail> getAllClassifieds(String instanceId) {
-    Connection con = openConnection();
-    try {
+    try (Connection con = openConnection()) {
       return ClassifiedsDAO.getAllClassifieds(con, instanceId);
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException(
           failureOnGetting("all classifieds in application", instanceId), e);
-    } finally {
-      closeConnection(con);
     }
   }
 
   @Override
   public String getNbTotalClassifieds(String instanceId) {
-    Connection con = openConnection();
-    try {
+    try (Connection con = openConnection()) {
       return ClassifiedsDAO.getNbTotalClassifieds(con, instanceId);
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException(failureOnGetting(CLASSIFIED, "count"), e);
-    } finally {
-      closeConnection(con);
     }
   }
 
   @Override
   public List<ClassifiedDetail> getClassifiedsByUser(String instanceId, String userId) {
-    Connection con = openConnection();
-    try {
+    try (Connection con = openConnection()) {
       return ClassifiedsDAO.getClassifiedsByUser(con, instanceId, userId);
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException(failureOnGetting("classifieds of the user", userId), e);
-    } finally {
-      closeConnection(con);
     }
   }
 
   @Override
   public List<ClassifiedDetail> getClassifiedsToValidate(String instanceId) {
-    Connection con = openConnection();
-    try {
-      return ClassifiedsDAO.getClassifiedsWithStatus(con,
-          instanceId, ClassifiedDetail.TO_VALIDATE, 0, -1);
+    try (Connection con = openConnection()) {
+      return ClassifiedsDAO.getClassifiedsWithStatus(con, instanceId, ClassifiedDetail.TO_VALIDATE,
+          0, -1);
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException(
           failureOnGetting("classifieds to validate in application", instanceId), e);
-    } finally {
-      closeConnection(con);
     }
   }
 
   @Override
-  public Collection<ClassifiedDetail> getUnpublishedClassifieds(String instanceId, String userId) {
-    Connection con = openConnection();
+  public void validateClassified(ContributionIdentifier classifiedId, String userId) {
     try {
-      return ClassifiedsDAO.getUnpublishedClassifieds(con, instanceId, userId);
-    } catch (Exception e) {
-      throw new ClassifiedsRuntimeException(
-          failureOnGetting("unpublished classifieds of the user", userId), e);
-    } finally {
-      closeConnection(con);
-    }
-  }
-
-  @Override
-  public void validateClassified(String classifiedId, String userId) {
-
-    try {
-      ClassifiedDetail classified = getContributionById(classifiedId);
+      ClassifiedDetail classified = getContributionById(classifiedId).orElseThrow(
+          () -> new NotFoundException(NO_SUCH_CLASSIFIED + classifiedId.asString()));
       if (classified.isToValidate()) {
         classified.setValidatorId(userId);
         classified.setValidateDate(new Date());
@@ -307,10 +274,11 @@ public class DefaultClassifiedService implements ClassifiedService {
   }
 
   @Override
-  public void refusedClassified(String classifiedId, String userId, String refusalMotive) {
-
+  public void refusedClassified(ContributionIdentifier classifiedId, String userId,
+      String refusalMotive) {
     try {
-      ClassifiedDetail classified = getContributionById(classifiedId);
+      ClassifiedDetail classified = getContributionById(classifiedId).orElseThrow(
+          () -> new NotFoundException(NO_SUCH_CLASSIFIED + classifiedId.asString()));
       classified.setStatus(ClassifiedDetail.REFUSED);
       updateClassified(classified);
       sendValidationNotification(classified.getCreatorId(), classified, refusalMotive, userId);
@@ -322,13 +290,12 @@ public class DefaultClassifiedService implements ClassifiedService {
   private void sendValidationNotification(final String userId, final ClassifiedDetail classified,
       final String refusalMotive, final String userIdWhoRefuse) {
     try {
-
-      UserNotificationHelper.buildAndSend(new ClassifiedValidationUserNotification(classified,
-          userIdWhoRefuse,
-          refusalMotive, userId));
-
+      UserNotificationHelper.buildAndSend(
+          new ClassifiedValidationUserNotification(classified, userIdWhoRefuse, refusalMotive,
+              userId));
     } catch (Exception e) {
-      SilverLogger.getLogger(this).error(e);
+      SilverLogger.getLogger(this)
+          .error(e);
     }
   }
 
@@ -336,27 +303,21 @@ public class DefaultClassifiedService implements ClassifiedService {
   public void sendSubscriptionsNotification(final String field1, final String field2,
       final ClassifiedDetail classified) {
     try {
-
       UserNotificationHelper.buildAndSend(new ClassifiedSubscriptionUserNotification(classified,
-          getUsersBySubscribe(
-          field1, field2)));
-
+          getUsersBySubscribe(field1, field2)));
     } catch (Exception e) {
-      SilverLogger.getLogger(this).error(e);
+      SilverLogger.getLogger(this)
+          .error(e);
     }
   }
 
   @Override
   public Collection<ClassifiedDetail> getAllClassifiedsToUnpublish(int nbDays, String instanceId) {
-    Connection con = openConnection();
-
-    try {
+    try (Connection con = openConnection()) {
       return ClassifiedsDAO.getAllClassifiedsToUnpublish(con, nbDays, instanceId);
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException(
           failureOnGetting("all classifieds to unpublish in application", instanceId), e);
-    } finally {
-      closeConnection(con);
     }
   }
 
@@ -364,25 +325,26 @@ public class DefaultClassifiedService implements ClassifiedService {
   public List<ClassifiedDetail> search(QueryDescription query) {
     List<ClassifiedDetail> classifieds = new ArrayList<>();
     try {
-      List<MatchingIndexEntry> result = SearchEngineProvider.getSearchEngine().search(query).
-          getEntries();
+      List<MatchingIndexEntry> result = SearchEngineProvider.getSearchEngine()
+          .search(query)
+          .getEntries();
       //classified creation from the results
       for (MatchingIndexEntry matchIndex : result) {
         if (CLASSIFIED_TYPE.equals(matchIndex.getObjectType())) {
           //return only valid classifieds
-          ClassifiedDetail classified = this.getContributionById(matchIndex.getObjectId());
-          if (classified != null && classified.isValid()) {
-            classifieds.add(classified);
-
-          }
+          ContributionIdentifier classifiedId =
+              ContributionIdentifier.from("", matchIndex.getObjectId(),
+                  ClassifiedDetail.getResourceType());
+          getContributionById(classifiedId)
+              .filter(ClassifiedDetail::isValid)
+              .ifPresent(classifieds::add);
         }
       }
       // sort the classifieds from the more newer to the older
       Collections.reverse(classifieds);
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException(e.getMessage(), e);
-    }
-    return classifieds;
+    } return classifieds;
   }
 
   @Override
@@ -406,9 +368,8 @@ public class DefaultClassifiedService implements ClassifiedService {
   private void createIndex(ClassifiedDetail classified, PublicationTemplate template) {
     FullIndexEntry indexEntry;
     if (classified != null) {
-      indexEntry =
-          new FullIndexEntry(classified.getInstanceId(), CLASSIFIED_TYPE, Integer.toString(classified
-          .getClassifiedId()));
+      indexEntry = new FullIndexEntry(classified.getInstanceId(), CLASSIFIED_TYPE,
+          Integer.toString(classified.getClassifiedId()));
       indexEntry.setTitle(classified.getTitle());
       indexEntry.setPreview(classified.getDescription());
       indexEntry.setCreationDate(classified.getCreationDate());
@@ -422,8 +383,7 @@ public class DefaultClassifiedService implements ClassifiedService {
         String classifiedId = Integer.toString(classified.getClassifiedId());
         set.indexRecord(classifiedId, xmlFormShortName, indexEntry);
       } catch (Exception e) {
-        throw new ClassifiedsRuntimeException(failureOnIndexing(CLASSIFIED, classified.getId()),
-            e);
+        throw new ClassifiedsRuntimeException(failureOnIndexing(CLASSIFIED, classified.getId()), e);
       }
       IndexEngineProxy.addIndexEntry(indexEntry);
     }
@@ -436,8 +396,8 @@ public class DefaultClassifiedService implements ClassifiedService {
       if (StringUtil.isDefined(xmlFormName)) {
         String xmlFormShortName =
             xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName.indexOf('.'));
-        return PublicationTemplateManager.getInstance().getPublicationTemplate(
-            instanceId + ":" + xmlFormShortName);
+        return PublicationTemplateManager.getInstance()
+            .getPublicationTemplate(instanceId + ":" + xmlFormShortName);
       }
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException(
@@ -448,18 +408,18 @@ public class DefaultClassifiedService implements ClassifiedService {
   }
 
   public void deleteIndex(ClassifiedDetail classified) {
-    IndexEntryKey indexEntry =
-        new IndexEntryKey(classified.getInstanceId(), CLASSIFIED_TYPE, Integer.toString(classified
-        .getClassifiedId()));
+    IndexEntryKey indexEntry = new IndexEntryKey(classified.getInstanceId(), CLASSIFIED_TYPE,
+        Integer.toString(classified.getClassifiedId()));
     IndexEngineProxy.removeIndexEntry(indexEntry);
   }
 
   @Override
-  public void draftOutClassified(String classifiedId, String profile, boolean isValidationEnabled) {
-    ClassifiedDetail classified = getContributionById(classifiedId);
+  public void draftOutClassified(ContributionIdentifier classifiedId, String profile, boolean isValidationEnabled) {
+    ClassifiedDetail classified = getContributionById(classifiedId)
+        .orElseThrow(() -> new NotFoundException(NO_SUCH_CLASSIFIED + classifiedId.asString()));
     String status = classified.getStatus();
     if (classified.isDraft()) {
-      if("admin".equals(profile) || !isValidationEnabled) {
+      if ("admin".equals(profile) || !isValidationEnabled) {
         status = ClassifiedDetail.VALID;
       } else {
         status = ClassifiedDetail.TO_VALIDATE;
@@ -476,14 +436,16 @@ public class DefaultClassifiedService implements ClassifiedService {
       try {
         UserNotificationHelper.buildAndSend(new ClassifiedSupervisorUserNotification(classified));
       } catch (Exception e) {
-        SilverLogger.getLogger(this).error(e);
+        SilverLogger.getLogger(this)
+            .error(e);
       }
     }
   }
 
   @Override
-  public void draftInClassified(String classifiedId) {
-    ClassifiedDetail classified = getContributionById(classifiedId);
+  public void draftInClassified(ContributionIdentifier classifiedId) {
+    ClassifiedDetail classified = getContributionById(classifiedId)
+        .orElseThrow(() -> new NotFoundException(NO_SUCH_CLASSIFIED + classifiedId.asString()));
     String status = classified.getStatus();
     if (classified.isToValidate() || classified.isValid()) {
       status = ClassifiedDetail.DRAFT;
@@ -494,8 +456,7 @@ public class DefaultClassifiedService implements ClassifiedService {
 
   @Override
   public void createSubscribe(Subscribe subscribe) {
-    Connection con = openConnection();
-    try {
+    try (Connection con = openConnection()) {
       if (checkSubscription(subscribe)) {
         String id = ClassifiedsDAO.createSubscribe(con, subscribe);
         subscribe.setSubscribeId(id);
@@ -503,20 +464,15 @@ public class DefaultClassifiedService implements ClassifiedService {
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException(
           failureOnSubscribing(CLASSIFIEDS_IN_APPLICATION, subscribe.getInstanceId()), e);
-    } finally {
-      closeConnection(con);
     }
   }
 
   @Override
   public void deleteSubscribe(String subscribeId) {
-    Connection con = openConnection();
-    try {
+    try (Connection con = openConnection()) {
       ClassifiedsDAO.deleteSubscribe(con, subscribeId);
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException(failureOnDeleting("subscription", subscribeId), e);
-    } finally {
-      closeConnection(con);
     }
   }
 
@@ -525,8 +481,9 @@ public class DefaultClassifiedService implements ClassifiedService {
       Collection<Subscribe> subscriptions =
           getSubscribesByUser(subscribe.getInstanceId(), subscribe.getUserId());
       for (Subscribe sub : subscriptions) {
-        if (sub.getField1().equals(subscribe.getField1()) && sub.getField2().equals(subscribe.
-            getField2())) {
+        if (sub.getField1()
+            .equals(subscribe.getField1()) && sub.getField2()
+            .equals(subscribe.getField2())) {
           return false;
         }
       }
@@ -539,38 +496,29 @@ public class DefaultClassifiedService implements ClassifiedService {
 
   @Override
   public Collection<Subscribe> getSubscribesByUser(String instanceId, String userId) {
-    Connection con = openConnection();
-    try {
+    try (Connection con = openConnection()) {
       return ClassifiedsDAO.getSubscribesByUser(con, instanceId, userId);
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException(failureOnGetting("subscriptions of the user", userId),
           e);
-    } finally {
-      closeConnection(con);
     }
   }
 
   @Override
   public Collection<String> getUsersBySubscribe(String field1, String field2) {
-    Connection con = openConnection();
-    try {
+    try (Connection con = openConnection()) {
       return ClassifiedsDAO.getUsersBySubscribe(con, field1, field2);
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException(failureOnGetting("subscriptions", ""), e);
-    } finally {
-      closeConnection(con);
     }
   }
 
   public Collection<Subscribe> getAllSubscribes(String instanceId) {
-    Connection con = openConnection();
-    try {
+    try (Connection con = openConnection()) {
       return ClassifiedsDAO.getAllSubscribes(con, instanceId);
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException(
           failureOnGetting("subscriptions for application", instanceId), e);
-    } finally {
-      closeConnection(con);
     }
   }
 
@@ -584,35 +532,32 @@ public class DefaultClassifiedService implements ClassifiedService {
 
   @Override
   public List<ClassifiedDetail> getAllValidClassifieds(String instanceId) {
-    Connection con = openConnection();
-    try {
-      return ClassifiedsDAO
-          .getClassifiedsWithStatus(con, instanceId, ClassifiedDetail.VALID, -1, -1);
+    try (Connection con = openConnection()) {
+      return ClassifiedsDAO.getClassifiedsWithStatus(con, instanceId, ClassifiedDetail.VALID, -1,
+          -1);
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException(
           failureOnGetting("valid classifieds in application", instanceId), e);
-    } finally {
-      closeConnection(con);
     }
   }
 
   @Override
   public List<ClassifiedDetail> getAllValidClassifieds(String instanceId,
-      Map<String, String> mapFields1, Map<String, String> mapFields2,
-      String searchField1, String searchField2,
-      int firstItemIndex, int elementsPerPage) {
-    Connection con = openConnection();
-    try {
-      List<ClassifiedDetail> listClassified = ClassifiedsDAO.getClassifiedsWithStatus(con,
-          instanceId, ClassifiedDetail.VALID, firstItemIndex, elementsPerPage);
+      Map<String, String> mapFields1, Map<String, String> mapFields2, String searchField1,
+      String searchField2, int firstItemIndex, int elementsPerPage) {
+    try (Connection con = openConnection()) {
+      List<ClassifiedDetail> listClassified =
+          ClassifiedsDAO.getClassifiedsWithStatus(con, instanceId, ClassifiedDetail.VALID,
+              firstItemIndex, elementsPerPage);
 
       // add the search fields
-      String xmlFormName = organizationController
-          .getComponentParameterValue(instanceId, "XMLFormName");
+      String xmlFormName =
+          organizationController.getComponentParameterValue(instanceId, "XMLFormName");
 
       for (ClassifiedDetail classified : listClassified) {
         // add the creator name
-        classified.setCreatorName(UserDetail.getById(classified.getCreatorId()).getDisplayedName());
+        classified.setCreatorName(UserDetail.getById(classified.getCreatorId())
+            .getDisplayedName());
 
         setClassification(classified, searchField1, searchField2, xmlFormName);
 
@@ -623,8 +568,6 @@ public class DefaultClassifiedService implements ClassifiedService {
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException(
           failureOnGetting("valid classifieds in application", instanceId), e);
-    } finally {
-      closeConnection(con);
     }
   }
 
@@ -632,8 +575,8 @@ public class DefaultClassifiedService implements ClassifiedService {
     try {
       String classifiedId = Integer.toString(classified.getClassifiedId());
       ResourceReference classifiedForeignKey = new ResourceReference(classifiedId, instanceId);
-      List<SimpleDocument> listSimpleDocument = AttachmentServiceProvider.getAttachmentService().
-          listDocumentsByForeignKeyAndType(classifiedForeignKey, DocumentType.attachment, null);
+      List<SimpleDocument> listSimpleDocument = AttachmentServiceProvider.getAttachmentService()
+          .listDocumentsByForeignKeyAndType(classifiedForeignKey, DocumentType.attachment, null);
       classified.setImages(listSimpleDocument);
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException(
@@ -670,19 +613,11 @@ public class DefaultClassifiedService implements ClassifiedService {
           classified.setSearchValue2(searchValue2);
         }
       } catch (Exception e) {
-        throw new ClassifiedsRuntimeException(failureOnGetting(CLASSIFIED, classified.getId()),
-            e);
+        throw new ClassifiedsRuntimeException(failureOnGetting(CLASSIFIED, classified.getId()), e);
       }
     }
   }
 
-  private void closeConnection(Connection con) {
-    try {
-      con.close();
-    } catch (SQLException e) {
-      throw new ClassifiedsRuntimeException(e.getMessage(), e);
-    }
-  }
 
   private Connection openConnection() {
     Connection con;

@@ -32,7 +32,6 @@ import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionValidationContext;
 
-import javax.enterprise.inject.Alternative;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -78,7 +77,7 @@ public class SessionManagementStub implements SessionManagement {
   }
 
   @Override
-  public boolean isUserConnected(final UserDetail userDetail) {
+  public boolean isUserConnected(final User userDetail) {
     return false;
   }
 
@@ -99,7 +98,7 @@ public class SessionManagementStub implements SessionManagement {
   }
 
   @Override
-  public SessionInfo openSession(final UserDetail user) {
+  public SessionInfo openSession(final User user) {
     SessionInfo session = new SessionInfo(UUID.randomUUID()
         .toString(), user);
     return openSession(session);
@@ -111,7 +110,7 @@ public class SessionManagementStub implements SessionManagement {
   }
 
   @Override
-  public SessionInfo openSession(final UserDetail user, final HttpServletRequest request) {
+  public SessionInfo openSession(final User user, final HttpServletRequest request) {
     HttpSession httpSession = request.getSession();
     SessionInfo session = new SessionInfo(httpSession.getId(), user);
     return openSession(session);

@@ -29,6 +29,7 @@ import org.silverpeas.core.ApplicationService;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.publication.model.CompletePublication;
 import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
@@ -45,28 +46,23 @@ import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * This is the Service interface controller of the MVC. It controls all the activities that happen
  * in a client session. It also provides mechanisms to access other services.
  * @author Nicolas Eysseric
  */
-public interface KmeliaService extends ApplicationService<KmeliaPublication> {
+public interface KmeliaService extends ApplicationService {
 
   static KmeliaService get() {
     return ServiceProvider.getSingleton(KmeliaService.class);
   }
 
-  /**
-   * Return the detail of a topic.
-   * @param nodePK
-   * @param userId
-   * @param isTreeStructureUsed
-   * @param userProfile
-   * @param mustUserRightsBeChecked
-   * @return the detail of a topic.
-   * @
-   */
+  @Override
+  @SuppressWarnings("unchecked")
+  Optional<KmeliaPublication> getContributionById(ContributionIdentifier contributionId);
+
   TopicDetail goTo(NodePK nodePK, String userId, boolean isTreeStructureUsed, String userProfile,
       boolean mustUserRightsBeChecked);
 
@@ -100,8 +96,7 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
   NodePK addSubTopic(NodePK fatherPK, NodeDetail subtopic, String alertType);
 
   /**
-   * Update a subtopic to currentTopic and alert users - If a subtopic of same name already exists
-   * a
+   * Update a subtopic to currentTopic and alert users - If a subtopic of same name already exists a
    * NodePK with id=-1 is returned else the new topic NodePK
    * @param topic the NodeDetail of the updated sub topic
    * @param alertType Alert all users, only publishers or nobody of the topic creation alertType =
@@ -124,20 +119,15 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
   NodeDetail getSubTopicDetail(NodePK nodePK);
 
   /**
-   * Delete a topic and all descendants. Delete all links between descendants and publications.
-   * This
+   * Delete a topic and all descendants. Delete all links between descendants and publications. Its
    * publications will be visible in the Declassified zone. Delete All subscriptions and favorites
-   * on this topics and all descendants
+   * on its topics and all descendants
    * @param nodePK the id of the topic to delete
    * @since 1.0
    */
   void deleteTopic(NodePK nodePK);
 
-  void changeSubTopicsOrder(String way, NodePK nodePK, NodePK fatherPK);
-
   void changeTopicStatus(String newStatus, NodePK nodePK, boolean recursiveChanges);
-
-  void sortSubTopics(NodePK fatherPK);
 
   void sortSubTopics(NodePK fatherPK, boolean recursive, String[] criteria);
 
@@ -167,7 +157,7 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
    * @param instanceId the identifier of the instance.
    * @param userId the identifier of the user for which access controls MUST be verified.
    * @param limit the maximum number of publications to return (0 = no limit).
-   * @return alist of {@link KmeliaPublication} instances.
+   * @return a list of {@link KmeliaPublication} instances.
    */
   List<KmeliaPublication> getLatestAuthorizedPublications(String instanceId, String userId,
       int limit);
@@ -200,8 +190,7 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
   String createPublicationIntoTopic(PublicationDetail pubDetail, NodePK fatherPK);
 
   /**
-   * Creates a new publication into the specified topic and with the specified classification on
-   * the
+   * Creates a new publication into the specified topic and with the specified classification on the
    * PdC.
    * @param pubDetail the detail about the publication to create.
    * @param fatherPK the unique identifier of the topic into which the publication is published.
@@ -226,7 +215,6 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
    * Delete a publication If this publication is in the basket or in the DZ, it's deleted from the
    * database Else it only send to the basket
    * @param pubPK the id of the publication to delete
-   * @return a TopicDetail
    * @see TopicDetail
    * @since 1.0
    */
@@ -246,14 +234,6 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
 
   void addPublicationToTopicWithoutNotifications(PublicationPK pubPK, NodePK fatherPK,
       boolean isACreation);
-
-  /**
-   * Delete a path between publication and topic
-   * @param pubPK the id of the publication
-   * @param fatherPK the id of the topic
-   * @since 1.0
-   */
-  void deletePublicationFromTopic(PublicationPK pubPK, NodePK fatherPK);
 
   /**
    * Updates the publication links
@@ -287,18 +267,19 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
    * first accessible alias of the publication is returned. If no aliases are accessible or defined,
    * the the details of the root topic is returned.
    * <p>
-   *  The component instance set to given {@link PublicationPK} gives the priority of the
-   *  resulting {@link TopicDetail}. For example, into case of a main publication on instance A with
-   *  aliases on instance B, if component instance id set to given {@link PublicationPK} is the B
-   *  one, then {@link TopicDetail} result is about the best father PK (the best location) on
-   *  instance B (so an alias in that case).
+   * The component instance set to given {@link PublicationPK} gives the priority of the resulting
+   * {@link TopicDetail}. For example, into case of a main publication on instance A with aliases on
+   * instance B, if component instance id set to given {@link PublicationPK} is the B one, then
+   * {@link TopicDetail} result is about the best father PK (the best location) on instance B (so an
+   * alias in that case).
    * </p>
    * @param pubPK the unique identifier of the publication.
    * @param isTreeStructureUsed is the tree view of the topics enabled?
    * @param userId the unique identifier of a user.
    * @return the details of the topic in which the publication is accessible by the given user.
    */
-  TopicDetail getBestTopicDetailOfPublicationForUser(PublicationPK pubPK, boolean isTreeStructureUsed, String userId);
+  TopicDetail getBestTopicDetailOfPublicationForUser(PublicationPK pubPK,
+      boolean isTreeStructureUsed, String userId);
 
   /**
    * Gets the father of the specified publication according to the rights of the user. If the main
@@ -306,11 +287,10 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
    * the publication is returned. If no aliases are accessible or defined, the the root topic is
    * returned.
    * <p>
-   *  The component instance set to given {@link PublicationPK} gives the priority of the
-   *  resulting {@link NodePK}. For example, into case of a main publication on instance A with
-   *  aliases on instance B, if component instance id set to given {@link PublicationPK} is the B
-   *  one, then the best father PK (the best location) on instance B is returned (so an alias in
-   *  that case).
+   * The component instance set to given {@link PublicationPK} gives the priority of the resulting
+   * {@link NodePK}. For example, into case of a main publication on instance A with aliases on
+   * instance B, if component instance id set to given {@link PublicationPK} is the B one, then the
+   * best father PK (the best location) on instance B is returned (so an alias in that case).
    * </p>
    * @param pubPK the unique identifier of the publication
    * @param userId the unique identifier of a user.
@@ -342,11 +322,10 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
       String userId, final NodePK contextFolder, boolean accessControlFiltering);
 
   /**
-   * Gets a list of {@link Pair} of {@link KmeliaPublication} instances into context of
-   * modification by a user represented by the given user id.
-   * On the left of a {@link Pair} instance, there is a publication that can not be a null value.
-   * On the right, there is the clone of the publication if any, and so, it can be null if the
-   * publication has got no clone.
+   * Gets a list of {@link Pair} of {@link KmeliaPublication} instances into context of modification
+   * by a user represented by the given user id. On the left of a {@link Pair} instance, there is a
+   * publication that can not be a null value. On the right, there is the clone of the publication
+   * if any, and so, it can be null if the publication has got no clone.
    * <p>
    * The main location is computed for each publication (and clone) by taking care about
    * performances.
@@ -358,8 +337,8 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
    * @param references list of publication represented as {@link ResourceReference} instances.
    * @param userId identifier User. allow to check if the publication is accessible for current
    * user
-   * @return a list of {@link Pair} of {@link KmeliaPublication} instances. A pair represents on
-   * the left the publication and the eventual corresponding clone on the right if it exists.
+   * @return a list of {@link Pair} of {@link KmeliaPublication} instances. A pair represents on the
+   * left the publication and the eventual corresponding clone on the right if it exists.
    */
   <T extends ResourceReference> List<Pair<KmeliaPublication, KmeliaPublication>> getPublicationsForModification(
       List<T> references, String userId);
@@ -389,7 +368,7 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
    * @param userId id of the user who validate
    * @param force if true, force to validate publication (bypass pending validations)
    * @param hasUserNoMoreValidationRight true if the given id represents a user which has no more
-   *        validation right (deleted user for example)
+   * validation right (deleted user for example)
    * @return true if the validation process is complete (ie all validators have validate)
    * @
    */
@@ -410,7 +389,7 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
   PublicationDetail draftOutPublicationWithoutNotifications(PublicationPK pubPK, NodePK topicPK,
       String userProfile);
 
-  PublicationDetail draftOutPublication(PublicationPK pubPK, NodePK topicPK, String userProfile,
+  void draftOutPublication(PublicationPK pubPK, NodePK topicPK, String userProfile,
       boolean forceUpdateDate);
 
   /**
@@ -423,7 +402,8 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
 
   void movePublication(PublicationPK pubPK, NodePK to, KmeliaPasteDetail pasteContext);
 
-  void movePublicationInSameApplication(PublicationPK pubPK, NodePK from, KmeliaPasteDetail pasteContext);
+  void movePublicationInSameApplication(PublicationPK pubPK, NodePK from,
+      KmeliaPasteDetail pasteContext);
 
   /**
    * alert that an external elements of publication (wysiwyg, attachment, versioning) has been
@@ -445,8 +425,8 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
    * Send an email to alert users of a attachment
    * @param pubPK the publication Id
    */
-  UserNotification getUserNotification(PublicationPK pubPK,
-      SimpleDocumentPK documentPk, NodePK topicPK);
+  UserNotification getUserNotification(PublicationPK pubPK, SimpleDocumentPK documentPk,
+      NodePK topicPK);
 
   /**
    * Send a notification to alert users about a folder
@@ -467,161 +447,153 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
 
   void deleteSilverContent(PublicationPK pubPK);
 
-  String getWysiwyg(PublicationPK pubPK, String language);
-
   void setModelUsed(String[] models, String instanceId, String nodeId);
 
   Collection<String> getModelUsed(String instanceId, String nodeId);
 
   /**
-   * Get list of Axis
-   * @param componentId
-   * @return List of Axis
-   * @
+   * Get the axis on which publications are categorized in the specified component instance.
+   * @param componentId the unique identifier of a component instance.
+   * @return a list of axis as {@link NodeDetail} instances.
    */
   List<NodeDetail> getAxis(String componentId);
 
   /**
-   * Get list of Axis Headers
-   * @param componentId
-   * @return List of Axis Headers
-   * @
+   * Get the header of the axis on which publications are categorized in the specified component
+   * instance.
+   * @param componentId the unique identifier of a component instance.
+   * @return a list of axis headers as {@link NodeDetail} instances.
    */
   List<NodeDetail> getAxisHeaders(String componentId);
 
   /**
-   * Add an axis
-   * @param axis
-   * @param componentId
-   * @return
-   * @
+   * Add the given axis into the specified component instance.
+   * @param axis the axis to add.
+   * @param componentId the unique identifier of the component instance.
+   * @return the identifier of the new added axis.
    */
   NodePK addAxis(NodeDetail axis, String componentId);
 
   /**
-   * Update an axis
-   * @param axis
-   * @param componentId
-   * @
+   * Update the given axis in the specified component instance.
+   * @param axis the axis from which its counterpart in the data source will be updated.
+   * @param componentId the unique identifier of a component instance.
    */
   void updateAxis(NodeDetail axis, String componentId);
 
   /**
-   * Delete axis
-   * @param axisId
-   * @param componentId
-   * @
+   * Delete the given axis in the specified component instance.
+   * @param axisId the unique identifier of the axis to delete.
+   * @param componentId the unique identifier of a component instance.
    */
   void deleteAxis(String axisId, String componentId);
 
   /**
-   * Get Node Header
-   * @param id
-   * @param componentId
-   * @return NodeDetail
+   * Get the header of the specified node.
+   * @param id the unique identifier of a node
+   * @param componentId the unique identifier of the component instance in which the node is.
+   * @return a {@link NodeDetail} instance.
    * @
    */
   NodeDetail getNodeHeader(String id, String componentId);
 
   /**
-   * Add position to a axis
-   * @param fatherId
-   * @param position
-   * @param componentId
-   * @param userId
-   * @return NodePK
-   * @
+   * Add position to an axis in the given component instance and for the specified user.
+   * @param fatherId the identifier of the position that will be the father of the new one.
+   * @param position the position to add.
+   * @param componentId the unique identifier of the component instance.
+   * @param userId the unique identifier of a user.
+   * @return the identifier of the new position.
    */
   NodePK addPosition(String fatherId, NodeDetail position, String componentId, String userId);
 
   /**
    * Update a position in an axis
-   * @param position
-   * @param componentId
-   * @
+   * @param position the position from which its counterpart in the data source will be updated.
+   * @param componentId the unique identifier of the component instance in which belongs the axis.
    */
   void updatePosition(NodeDetail position, String componentId);
 
   /**
    * Delete a position in an axis
-   * @param positionId
-   * @param componentId
-   * @
+   * @param positionId the unique identifier of the position to delete.
+   * @param componentId the unique identifier of the component instance in which belongs the axis.
    */
   void deletePosition(String positionId, String componentId);
 
   /**
-   * Get path from a position
-   * @param positionId
-   * @param componentId
-   * @return
-   * @
+   * Get path of a position in an axis.
+   * @param positionId the unique identifier of a position.
+   * @param componentId the unique identifier of the component instance in which belongs the axis.
+   * @return the path of the position with a {@link NodeDetail} instance for each path's node.
    */
   Collection<NodeDetail> getPath(String positionId, String componentId);
 
   /**
-   * Get publications in a combination
-   * @param combination
-   * @param componentId
-   * @return Collection of publication
-   * @
+   * Get publications categorized in a combination of positions.
+   * @param combination a list of positions composing the combination.
+   * @param componentId the unique identifier of the component instance in which belongs the
+   * combination.
+   * @return the publications that satisfy the combination of positions.
    */
   List<KmeliaPublication> search(List<String> combination, String componentId);
 
   /**
-   * Get publications in a combination with time criteria
-   * @param combination
-   * @param componentId
-   * @return Collection of publication
-   * @
+   * Get publications categorized in a combination of positions and that are visible or created
+   * the given number of days ago.
+   * @param combination a list of positions composing the combination.
+   * @param nbDays the number of days before today.
+   * @param componentId the unique identifier of the component instance in which belongs the
+   * combination.
+   * @return the publications that satisfy the combination of positions and the time criteria.
    */
   List<KmeliaPublication> search(List<String> combination, int nbDays, String componentId);
 
   /**
-   * Get publications with no classement
-   * @param componentId
-   * @return Collection of publication
-   * @
+   * Get publications that aren't categorized on any axis.
+   * @param componentId the unique identifier of a component instance.
+   * @return the uncategorized publications.
    */
   Collection<KmeliaPublication> getUnbalancedPublications(String componentId);
 
   void indexKmax(String componentId);
 
   /**
-   * Get a publication of a user
-   * @param pubId , pubId
-   * @return a Kmelia publication
-   * @
+   * Get the given publication for the given user.
+   * @param pubId the unique identifier of a publication.
+   * @param currentUserId the unique identifier of the user for whom the publications are asked.
+   * @return the publication as a {@link KmeliaPublication} instance.
    */
   KmeliaPublication getKmaxPublication(String pubId, String currentUserId);
 
   /**
-   * Get Collection of coordinates for a publication
-   * @param pubId , componentId
+   * Get the coordinates for the given publication on the axis of the specified component instance.
+   * @param pubId the unique identifier of a publication.
+   * @param componentId the unique identifier of the component instance.
    * @return a collection of coordinates
-   * @
    */
   Collection<Coordinate> getPublicationCoordinates(String pubId, String componentId);
 
   /**
-   * Add a combination for this publication
-   * @param pubId , combination, componentId
-   * @return
-   * @
+   * Add for the given publication a combination of position on the axis of the component instance.
+   * @param pubId the unique identifier of a publication.
+   * @param combination a list of coordinate identifiers.
+   * @param componentId the unique identifier of the component instance.
    */
   void addPublicationToCombination(String pubId, List<String> combination, String componentId);
 
   /**
-   * Remove a combination for this publication
-   * @param pubId , combinationId, componentId
-   * @return
-   * @
+   * Remove for the given publication the specified combination of positions on the axis of the
+   * component instance.
+   * @param pubId the unique identifier of a publication.
+   * @param combinationId the unique identifier of a combination of positions.
+   * @param componentId the unique identifier of the component instance.
    */
   void deletePublicationFromCombination(String pubId, String combinationId, String componentId);
 
   /**
-   * Create a new Publication (only the header - parameters)
-   * @param pubDetail a PublicationDetail
+   * Create a new publication (only the header, no content) in a Kmax instance.
+   * @param pubDetail the publication to create.
    * @return the id of the new publication
    * @see org.silverpeas.core.contribution.publication.model.PublicationDetail
    * @since 1.0
@@ -629,9 +601,8 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
   String createKmaxPublication(PublicationDetail pubDetail);
 
   /**
-   * Gets all the locations of the specified publication; whatever the component instance.
-   * If the given publication is a clone, then gets all the locations of the main
-   * publication.
+   * Gets all the locations of the specified publication; whatever the component instance. If the
+   * given publication is a clone, then gets all the locations of the main publication.
    * @param pubPK the unique identifier of the publication.
    * @return a collection of the locations of the given publication.
    */
@@ -657,12 +628,12 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
   void doAutomaticDraftOut();
 
   /**
-   * Clone CompletePublication. Create new publication based on pubDetail object if not null or
+   * Clone the given publication. Create new publication based on pubDetail object if not null or
    * CompletePublication otherwise. Original publication will not be modified (except references to
-   * clone : cloneId and cloneStatus).
+   * clone: cloneId and cloneStatus).
    * @param pubDetail If not null, attribute values are set to the clone
    * @param nextStatus Draft or Clone
-   * @return
+   * @return the identifier of the cloned publication.
    */
   String clonePublication(CompletePublication refPubComplete, PublicationDetail pubDetail,
       String nextStatus);
@@ -674,9 +645,9 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
   Collection<NodeDetail> getFolderChildren(NodePK nodePK, String userId);
 
   /**
-   * Gets the details about the specified folder. The difference with
-   * {@link KmeliaService#getNodeHeader(String, String)} is that the children are also set as well
-   * as other information like the number of publications.
+   * Gets the details about the specified folder. The difference with {@link
+   * KmeliaService#getNodeHeader(String, String)} is that the children are also set as well as other
+   * information like the number of publications.
    * @param nodePK the unique identifier of the folder.
    * @param userId the unique identifier of the user for which the folder is asked.
    * @return the {@link NodeDetail} instance corresponding to the folder.
@@ -700,26 +671,24 @@ public interface KmeliaService extends ApplicationService<KmeliaPublication> {
   List<HistoryObjectDetail> getLastAccess(PublicationPK pk, NodePK nodePK, String excludedUserId,
       final int maxResult);
 
-  NodeDetail copyNode(KmeliaCopyDetail copyDetail);
+  void copyNode(KmeliaCopyDetail copyDetail);
 
   void copyPublications(KmeliaCopyDetail copyDetail);
 
-  PublicationPK copyPublication(PublicationDetail publi, KmeliaCopyDetail copyDetail);
+  void copyPublication(PublicationDetail publi, KmeliaCopyDetail copyDetail);
 
-  NodeDetail moveNode(NodePK nodePK, NodePK to, KmeliaPasteDetail pasteContext);
+  void moveNode(NodePK nodePK, NodePK to, KmeliaPasteDetail pasteContext);
 
   List<KmeliaPublication> filterPublications(List<KmeliaPublication> publications,
       String instanceId, SilverpeasRole profile, String userId);
-
-  boolean isPublicationVisible(PublicationDetail detail, SilverpeasRole profile, String userId);
 
   void userHaveBeenDeleted(String userId);
 
   List<String> getActiveValidatorIds(PublicationPK pk);
 
   /**
-   * Performs processes about kmelia linked to given reminder.<br/>
-   * If kmelia is not concerned, nothing is performed.
+   * Performs processes about kmelia linked to given reminder.<br/> If kmelia is not concerned,
+   * nothing is performed.
    * @param reminder a {@link Reminder} instance.
    */
   void performReminder(final Reminder reminder);

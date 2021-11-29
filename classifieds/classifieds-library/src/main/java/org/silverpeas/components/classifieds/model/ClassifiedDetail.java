@@ -211,7 +211,7 @@ public class ClassifiedDetail implements SilverpeasContent {
 
   @Override
   public String getComponentInstanceId() {
-    return instanceId;
+    return getInstanceId();
   }
 
   @Override

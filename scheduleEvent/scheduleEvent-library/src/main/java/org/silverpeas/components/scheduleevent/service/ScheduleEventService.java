@@ -22,17 +22,23 @@ package org.silverpeas.components.scheduleevent.service;
 
 import org.silverpeas.core.ApplicationService;
 import org.silverpeas.components.scheduleevent.service.model.beans.ScheduleEvent;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.util.ServiceProvider;
 
+import java.util.Optional;
 import java.util.Set;
 
-public interface ScheduleEventService extends ApplicationService<ScheduleEvent> {
+public interface ScheduleEventService extends ApplicationService {
 
   static ScheduleEventService get() {
     return ServiceProvider.getService(ScheduleEventService.class);
   }
 
-  String createScheduleEvent(ScheduleEvent scheduleEvent);
+  @Override
+  @SuppressWarnings("unchecked")
+  Optional<ScheduleEvent> getContributionById(ContributionIdentifier contributionId);
+
+  void createScheduleEvent(ScheduleEvent scheduleEvent);
 
   void deleteScheduleEvent(ScheduleEvent scheduleEvent);
 
@@ -48,5 +54,4 @@ public interface ScheduleEventService extends ApplicationService<ScheduleEvent> 
 
   void setLastVisited(ScheduleEvent event, int userId);
 
-  void deleteContributor(String id);
 }

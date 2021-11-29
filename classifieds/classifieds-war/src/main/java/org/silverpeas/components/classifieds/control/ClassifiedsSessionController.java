@@ -30,6 +30,7 @@ import org.silverpeas.components.classifieds.model.Subscribe;
 import org.silverpeas.components.classifieds.notification.ClassifiedOwnerNotification;
 import org.silverpeas.components.classifieds.service.ClassifiedService;
 import org.silverpeas.components.classifieds.service.ClassifiedServiceProvider;
+import org.silverpeas.core.NotFoundException;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.UserDetail;
@@ -43,6 +44,7 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
@@ -95,10 +97,9 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @param componentContext The component's profile
    */
   public ClassifiedsSessionController(MainSessionController mainSessionCtrl,
-          ComponentContext componentContext) {
+      ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext, ClassifiedsComponentSettings.MESSAGES_PATH,
-            ClassifiedsComponentSettings.ICONS_PATH,
-            ClassifiedsComponentSettings.SETTINGS_PATH);
+        ClassifiedsComponentSettings.ICONS_PATH, ClassifiedsComponentSettings.SETTINGS_PATH);
 
     nbItemsPerPage = getResources().getSetting("nbElementsPerPage", DEFAULT_NBITEMS_PERPAGE);
 
@@ -107,10 +108,10 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
     String xmlFormShortName;
     if (StringUtil.isDefined(xmlFormName)) {
       xmlFormShortName =
-              xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName.indexOf('.'));
+          xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName.indexOf('.'));
       try {
-        getPublicationTemplateManager().addDynamicPublicationTemplate(getComponentId() + ":"
-                + xmlFormShortName, xmlFormName);
+        getPublicationTemplateManager().addDynamicPublicationTemplate(
+            getComponentId() + ":" + xmlFormShortName, xmlFormName);
       } catch (PublicationTemplateException e) {
         throw new SilverpeasRuntimeException(e);
       }
@@ -119,7 +120,8 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
 
   public ClassifiedsComponentSettings getInstanceSettings() {
     ClassifiedsComponentSettings instanceSettings = new ClassifiedsComponentSettings();
-    instanceSettings.setCommentsEnabled(isParamEnabled(ClassifiedsComponentSettings.PARAM_COMMENTS));
+    instanceSettings.setCommentsEnabled(
+        isParamEnabled(ClassifiedsComponentSettings.PARAM_COMMENTS));
     instanceSettings.setPhotosAllowed(isParamEnabled(ClassifiedsComponentSettings.PARAM_PHOTOS));
     instanceSettings.setPriceAllowed(isParamEnabled(ClassifiedsComponentSettings.PARAM_PRICE));
     return instanceSettings;
@@ -139,7 +141,8 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    */
   public synchronized MultiSilverpeasBundle getResources() {
     if (resources == null) {
-      resources = new MultiSilverpeasBundle(getMultilang(), getIcon(), getSettings(), getLanguage());
+      resources =
+          new MultiSilverpeasBundle(getMultilang(), getIcon(), getSettings(), getLanguage());
     }
     return resources;
   }
@@ -150,7 +153,10 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @return classified : ClassifiedDetail
    */
   public ClassifiedDetail getClassified(String classifiedId) {
-    ClassifiedDetail classified = getClassifiedService().getContributionById(classifiedId);
+    ContributionIdentifier id = ContributionIdentifier.from(getComponentId(), classifiedId,
+        ClassifiedDetail.getResourceType());
+    ClassifiedDetail classified = getClassifiedService().getContributionById(id)
+        .orElseThrow(() -> new NotFoundException("No classified found with id " + id.asString()));
     classified.setCreatorName(getUserDetail(classified.getCreatorId()).getDisplayedName());
     classified.setCreatorEmail(getUserDetail(classified.getCreatorId()).geteMail());
     if (StringUtil.isDefined(classified.getValidatorId())) {
@@ -223,8 +229,8 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
 
   private void enrichClassified(ClassifiedDetail classified) {
     setImagesToClassified(classified);
-    getClassifiedService()
-        .setClassification(classified, getSearchFields1(), getSearchFields2(), getXMLFormName());
+    getClassifiedService().setClassification(classified, getSearchFields1(), getSearchFields2(),
+        getXMLFormName());
   }
 
   /**
@@ -254,8 +260,10 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @param highestRole : ClassifiedsRole
    */
   public synchronized void draftOutClassified(String classifiedId, ClassifiedsRole highestRole) {
-    getClassifiedService()
-        .draftOutClassified(classifiedId, highestRole.getName(), isValidationEnabled());
+    ContributionIdentifier id = ContributionIdentifier.from(getComponentId(), classifiedId,
+      ClassifiedDetail.getResourceType());
+    getClassifiedService().draftOutClassified(id, highestRole.getName(),
+        isValidationEnabled());
     if (!isValidationEnabled() &&
         (highestRole == ClassifiedsRole.PUBLISHER || highestRole == ClassifiedsRole.MANAGER)) {
       sendSubscriptionsNotification(classifiedId);
@@ -267,7 +275,9 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @param classifiedId : String
    */
   public synchronized void draftInClassified(String classifiedId) {
-    getClassifiedService().draftInClassified(classifiedId);
+    ContributionIdentifier id = ContributionIdentifier.from(getComponentId(), classifiedId,
+        ClassifiedDetail.getResourceType());
+    getClassifiedService().draftInClassified(id);
   }
 
   /**
@@ -276,7 +286,9 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @param classifiedId : String
    */
   public synchronized void validateClassified(String classifiedId) {
-    getClassifiedService().validateClassified(classifiedId, getUserId());
+    ContributionIdentifier id = ContributionIdentifier.from(getComponentId(), classifiedId,
+        ClassifiedDetail.getResourceType());
+    getClassifiedService().validateClassified(id, getUserId());
 
     // remove classified from validation list
     removeCurrentClassifiedFromSession();
@@ -298,7 +310,9 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @param motive : String
    */
   public synchronized void refusedClassified(String classifiedId, String motive) {
-    getClassifiedService().refusedClassified(classifiedId, getUserId(), motive);
+    ContributionIdentifier id = ContributionIdentifier.from(getComponentId(), classifiedId,
+        ClassifiedDetail.getResourceType());
+    getClassifiedService().refusedClassified(id, getUserId(), motive);
 
     // remove classified from validation list
     removeCurrentClassifiedFromSession();
@@ -363,7 +377,9 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    */
   public void deleteClassified(String classifiedId) {
     //supprime la petite annonce et ses images
-    getClassifiedService().deleteClassified(this.getComponentId(), classifiedId);
+    ContributionIdentifier id = ContributionIdentifier.from(getComponentId(), classifiedId,
+        ClassifiedDetail.getResourceType());
+    getClassifiedService().deleteClassified(id);
 
     //supprime les commentaires
     ResourceReference pk = new ResourceReference(classifiedId, getComponentId());
@@ -378,7 +394,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @param isAdmin : boolean
    */
   public synchronized void updateClassified(ClassifiedDetail classified, boolean isUpdate,
-          boolean isAdmin, boolean publish) {
+      boolean isAdmin, boolean publish) {
     boolean notify = false;
     if (isUpdate) {
       classified.setUpdateDate(new Date());
@@ -406,7 +422,8 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
   }
 
   /**
-   * send a notification for subscribers when classified (corresponding to classifiedId) is modified
+   * send a notification for subscribers when classified (corresponding to classifiedId) is
+   * modified
    * @param classifiedId : String
    */
   private void sendSubscriptionsNotification(String classifiedId) {
@@ -416,12 +433,15 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
       if (pubTemplate != null) {
         RecordSet recordSet = pubTemplate.getRecordSet();
         DataRecord data = recordSet.getRecord(classifiedId);
-        String field1 = data.getField(getSearchFields1()).getValue();
-        String field2 = data.getField(getSearchFields2()).getValue();
+        String field1 = data.getField(getSearchFields1())
+            .getValue();
+        String field2 = data.getField(getSearchFields2())
+            .getValue();
         getClassifiedService().sendSubscriptionsNotification(field1, field2, classified);
       }
     } catch (Exception e) {
-      SilverLogger.getLogger(this).error("Can't send subscriptions notifications", e);
+      SilverLogger.getLogger(this)
+          .error("Can't send subscriptions notifications", e);
     }
   }
 
@@ -468,7 +488,8 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
       try {
         PublicationTemplate pubTemplate = getPublicationTemplate();
         if (pubTemplate != null) {
-          GenericFieldTemplate field = (GenericFieldTemplate) pubTemplate.getRecordTemplate().getFieldTemplate(listName);
+          GenericFieldTemplate field = (GenericFieldTemplate) pubTemplate.getRecordTemplate()
+              .getFieldTemplate(listName);
           return field.getKeyValuePairs(getLanguage());
         }
       } catch (Exception e) {
@@ -486,23 +507,23 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @return a collection of Subscribe
    */
   public Collection<Subscribe> getSubscribesByUser() {
-      Collection<Subscribe> subscribes =
-          getClassifiedService().getSubscribesByUser(getComponentId(), getUserId());
+    Collection<Subscribe> subscribes =
+        getClassifiedService().getSubscribesByUser(getComponentId(), getUserId());
 
-      if (fields1 == null) {
-        fields1 = createListField(getSearchFields1());
-      }
-      if (fields2 == null) {
-        fields2 = createListField(getSearchFields2());
-      }
+    if (fields1 == null) {
+      fields1 = createListField(getSearchFields1());
+    }
+    if (fields2 == null) {
+      fields2 = createListField(getSearchFields2());
+    }
 
-      for (Subscribe subscribe : subscribes) {
-        // ajout des libellés
-        subscribe.setFieldName1(fields1.get(subscribe.getField1()));
-        subscribe.setFieldName2(fields2.get(subscribe.getField2()));
-      }
+    for (Subscribe subscribe : subscribes) {
+      // ajout des libellés
+      subscribe.setFieldName1(fields1.get(subscribe.getField1()));
+      subscribe.setFieldName2(fields2.get(subscribe.getField2()));
+    }
 
-      return subscribes;
+    return subscribes;
   }
 
   public void setCurrentFirstItemIndex(String index) {
@@ -601,8 +622,9 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @param listImage : Collection de FileItem
    * @param classifiedId : String
    */
-  private synchronized void createClassifiedImages(Collection<FileItem> listImage, String classifiedId) {
-    for(FileItem fileImage : listImage) {
+  private synchronized void createClassifiedImages(Collection<FileItem> listImage,
+      String classifiedId) {
+    for (FileItem fileImage : listImage) {
       createClassifiedImage(fileImage, classifiedId);
     }
   }
@@ -623,9 +645,8 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
     if (classified != null) {
       ResourceReference classifiedForeignKey =
           new ResourceReference(classified.getId(), getComponentId());
-      List<SimpleDocument> listSimpleDocument =
-          AttachmentServiceProvider.getAttachmentService().listDocumentsByForeignKeyAndType(
-              classifiedForeignKey, DocumentType.attachment, null);
+      List<SimpleDocument> listSimpleDocument = AttachmentServiceProvider.getAttachmentService()
+          .listDocumentsByForeignKeyAndType(classifiedForeignKey, DocumentType.attachment, null);
       classified.setImages(listSimpleDocument);
     }
   }
@@ -638,10 +659,10 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    */
   public void updateClassifiedImage(FileItem fileImage, String imageId, String classifiedId) {
     SimpleDocumentPK sdPK = new SimpleDocumentPK(imageId, getComponentId());
-    SimpleDocument classifiedImage =
-        AttachmentServiceProvider.getAttachmentService().searchDocumentById(sdPK, null);
+    SimpleDocument classifiedImage = AttachmentServiceProvider.getAttachmentService()
+        .searchDocumentById(sdPK, null);
 
-    if(classifiedImage != null) {
+    if (classifiedImage != null) {
       Date updateDate = new Date();
       String fileName = FileUtil.getFilename(fileImage.getName());
       long size = fileImage.getSize();
@@ -675,14 +696,15 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    */
   public void deleteClassifiedImage(String imageId) {
     SimpleDocumentPK sdPK = new SimpleDocumentPK(imageId, getComponentId());
-    SimpleDocument classifiedImage =
-        AttachmentServiceProvider.getAttachmentService().searchDocumentById(sdPK, null);
+    SimpleDocument classifiedImage = AttachmentServiceProvider.getAttachmentService()
+        .searchDocumentById(sdPK, null);
 
-    if(classifiedImage != null) {
+    if (classifiedImage != null) {
       //delete the actual picture file in the file server and database
-      AttachmentServiceProvider.getAttachmentService().deleteAttachment(classifiedImage);
+      AttachmentServiceProvider.getAttachmentService()
+          .deleteAttachment(classifiedImage);
     } else {
-      throw new SilverpeasRuntimeException("Image "+imageId+" does not exist");
+      throw new SilverpeasRuntimeException("Image " + imageId + " does not exist");
     }
   }
 
@@ -692,7 +714,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    */
   public boolean isHomePageDisplayCategorized() {
     String parameterHomePage = getComponentParameterValue("homePage");
-    if(StringUtil.isDefined(parameterHomePage)) {
+    if (StringUtil.isDefined(parameterHomePage)) {
       return "0".equalsIgnoreCase(getComponentParameterValue("homePage"));
     }
     return true;
@@ -729,7 +751,8 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
   /**
    * Gets the template of the publication based on the classified XML form.
    * @return the publication template for classifieds.
-   * @throws PublicationTemplateException if an error occurs while getting the publication template.
+   * @throws PublicationTemplateException if an error occurs while getting the publication
+   * template.
    */
   public PublicationTemplate getPublicationTemplate() throws PublicationTemplateException {
     PublicationTemplate pubTemplate = null;
@@ -737,9 +760,8 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
     if (StringUtil.isDefined(xmlFormName)) {
       String xmlFormShortName =
           xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName.indexOf('.'));
-      pubTemplate =
-          getPublicationTemplateManager().getPublicationTemplate(
-              getComponentId() + ":" + xmlFormShortName, xmlFormName);
+      pubTemplate = getPublicationTemplateManager().getPublicationTemplate(
+          getComponentId() + ":" + xmlFormShortName, xmlFormName);
     }
     return pubTemplate;
   }
@@ -790,8 +812,9 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
   }
 
   public void notifyOwner(String message) {
-    UserNotificationHelper.buildAndSend(new ClassifiedOwnerNotification(getCurrentClassified(),
-        getUserId(), message));
-    WebMessager.getInstance().addSuccess(getString("classifieds.notif.sent"));
+    UserNotificationHelper.buildAndSend(
+        new ClassifiedOwnerNotification(getCurrentClassified(), getUserId(), message));
+    WebMessager.getInstance()
+        .addSuccess(getString("classifieds.notif.sent"));
   }
 }

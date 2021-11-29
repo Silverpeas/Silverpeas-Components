@@ -26,6 +26,7 @@ package org.silverpeas.components.quickinfo.model;
 
 import org.silverpeas.components.quickinfo.NewsByStatus;
 import org.silverpeas.core.ApplicationService;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.reminder.Reminder;
@@ -33,12 +34,17 @@ import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
-public interface QuickInfoService extends ApplicationService<News> {
+public interface QuickInfoService extends ApplicationService {
 
   static QuickInfoService get() {
     return ServiceProvider.getService(QuickInfoService.class);
   }
+
+  @Override
+  @SuppressWarnings("unchecked")
+  Optional<News> getContributionById(ContributionIdentifier contributionId);
 
   News create(News news);
 

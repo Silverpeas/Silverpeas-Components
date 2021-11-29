@@ -27,6 +27,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.ApplicationService;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ServiceProvider;
@@ -34,13 +35,18 @@ import org.silverpeas.core.util.ServiceProvider;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
-public interface FormsOnlineService extends ApplicationService<FormInstance> {
+public interface FormsOnlineService extends ApplicationService {
 
   static FormsOnlineService get() {
     return ServiceProvider.getService(FormsOnlineService.class);
   }
+
+  @Override
+  @SuppressWarnings("unchecked")
+  Optional<FormInstance> getContributionById(final ContributionIdentifier contributionId);
 
   List<FormDetail> getAllForms(String appId, String userId, boolean withSendInfo)
       throws FormsOnlineException;
@@ -67,14 +73,14 @@ public interface FormsOnlineService extends ApplicationService<FormInstance> {
       final PaginationPage paginationPage) throws FormsOnlineException;
 
   /**
-   * Gets the {@link FormInstanceValidationType} instances mapped by form identifiers of the the
+   * Gets the {@link FormInstanceValidationType} instances mapped by form identifiers of the
    * validator represented by given validator id and validator group ids on the given component
    * instance.
    * @param appId the identifier of the component instance.
    * @param validatorId the identifier of the validator.
    * @param formIds optional filter about form identifiers in order to reduce the search load.
    * @return {@link FormInstanceValidationType} instances mapped by form identifiers.
-   * @throws FormsOnlineException
+   * @throws FormsOnlineException if an error occurs
    */
   Map<String, Set<FormInstanceValidationType>> getValidatorFormIdsWithValidationTypes(String appId,
       String validatorId, final Collection<String> formIds) throws FormsOnlineException;

@@ -53,13 +53,13 @@ import static org.mockito.Mockito.*;
 
 @EnableSilverTestEnv
 @TestManagedBeans(AlbumMediaEventNotifier.class)
-public class MediaTest {
-  private UserDetail userForTest = new UserDetail();
-  private UserDetail lastUpdaterForTest = new UserDetail();
-  private Date createDate = Timestamp.valueOf("2013-02-12 14:56:38.452");
-  private Date lastUpdateDate = Timestamp.valueOf("2013-04-02 10:47:10.102");
-  private Date beginVisibilityDate = DateUtils.addDays(DateUtil.getNow(), -50);
-  private Date endVisibilityDate = DateUtils.addDays(DateUtil.getNow(), 50);
+class MediaTest {
+  private final UserDetail userForTest = new UserDetail();
+  private final UserDetail lastUpdaterForTest = new UserDetail();
+  private final Date createDate = Timestamp.valueOf("2013-02-12 14:56:38.452");
+  private final Date lastUpdateDate = Timestamp.valueOf("2013-04-02 10:47:10.102");
+  private final Date beginVisibilityDate = DateUtils.addDays(DateUtil.getNow(), -50);
+  private final Date endVisibilityDate = DateUtils.addDays(DateUtil.getNow(), 50);
 
   @BeforeEach
   public void setup(@TestManagedMock final ComponentAccessControl componentAccessController) {
@@ -80,7 +80,7 @@ public class MediaTest {
   }
 
   @Test
-  public void justInstantiatedTest() {
+  void justInstantiatedTest() {
     Media media = new MediaForTest();
     assertThat(media.getMediaPK(), notNullValue());
     assertThat(media.getMediaPK().getId(), nullValue());
@@ -89,24 +89,24 @@ public class MediaTest {
     assertThat(media.getInstanceId(), nullValue());
     MatcherAssert.assertThat(media.getType(), Matchers.is(MediaType.Photo));
     assertThat(media.getContributionType(), is(MediaType.Photo.name()));
-    assertThat(media.getTitle(), isEmptyString());
-    assertThat(media.getName(), isEmptyString());
-    assertThat(media.getName("en"), isEmptyString());
-    assertThat(media.getDescription(), isEmptyString());
-    assertThat(media.getDescription("en"), isEmptyString());
-    assertThat(media.getAuthor(), isEmptyString());
-    assertThat(media.getKeyWord(), isEmptyString());
+    assertThat(media.getTitle(), is(emptyString()));
+    assertThat(media.getName(), is(emptyString()));
+    assertThat(media.getName("en"), is(emptyString()));
+    assertThat(media.getDescription(), is(emptyString()));
+    assertThat(media.getDescription("en"), is(emptyString()));
+    assertThat(media.getAuthor(), is(emptyString()));
+    assertThat(media.getKeyWord(), is(emptyString()));
     assertThat(media.getVisibilityPeriod(), sameInstance(Period.UNDEFINED));
     assertThat(media.getCreationDate(), nullValue());
     assertThat(media.getSilverCreationDate(), nullValue());
     assertThat(media.getCreator(), nullValue());
     assertThat(media.getCreatorId(), nullValue());
-    assertThat(media.getCreatorName(), isEmptyString());
+    assertThat(media.getCreatorName(), is(emptyString()));
     assertThat(media.getLastUpdateDate(), nullValue());
     assertThat(media.getDate(), nullValue());
     assertThat(media.getLastUpdater(), nullValue());
     assertThat(media.getLastUpdatedBy(), nullValue());
-    assertThat(media.getLastUpdaterName(), isEmptyString());
+    assertThat(media.getLastUpdaterName(), is(emptyString()));
     assertThat(media.canBeAccessedBy(userForTest), is(false));
     assertThat(media.getPermalink(), is("/silverpeas/Media/null"));
     assertThat(media.isPreviewable(), is(true));
@@ -119,13 +119,13 @@ public class MediaTest {
   }
 
   @Test
-  public void justCreatedTest() {
+  void justCreatedTest() {
     Media media = defaultMedia();
     assertDefaultMedia(media);
   }
 
   @Test
-  public void justUpdatedTest() {
+  void justUpdatedTest() {
     Media media = defaultMedia();
     media.setLastUpdateDate(lastUpdateDate);
     media.setLastUpdater(lastUpdaterForTest);
@@ -146,29 +146,29 @@ public class MediaTest {
     media.setKeyWord(null);
     media.setTitle(null);
     media.setDescription(null);
-    assertThat(media.getAuthor(), isEmptyString());
-    assertThat(media.getKeyWord(), isEmptyString());
-    assertThat(media.getTitle(), isEmptyString());
-    assertThat(media.getName(), isEmptyString());
-    assertThat(media.getName("en"), isEmptyString());
-    assertThat(media.getDescription(), isEmptyString());
-    assertThat(media.getDescription("en"), isEmptyString());
+    assertThat(media.getAuthor(), is(emptyString()));
+    assertThat(media.getKeyWord(), is(emptyString()));
+    assertThat(media.getTitle(), is(emptyString()));
+    assertThat(media.getName(), is(emptyString()));
+    assertThat(media.getName("en"), is(emptyString()));
+    assertThat(media.getDescription(), is(emptyString()));
+    assertThat(media.getDescription("en"), is(emptyString()));
 
     media.setAuthor("   ");
     media.setKeyWord("      ");
     media.setTitle("   ");
     media.setDescription("      ");
-    assertThat(media.getAuthor(), isEmptyString());
-    assertThat(media.getKeyWord(), isEmptyString());
-    assertThat(media.getTitle(), isEmptyString());
-    assertThat(media.getName(), isEmptyString());
-    assertThat(media.getName("en"), isEmptyString());
-    assertThat(media.getDescription(), isEmptyString());
-    assertThat(media.getDescription("en"), isEmptyString());
+    assertThat(media.getAuthor(), is(emptyString()));
+    assertThat(media.getKeyWord(), is(emptyString()));
+    assertThat(media.getTitle(), is(emptyString()));
+    assertThat(media.getName(), is(emptyString()));
+    assertThat(media.getName("en"), is(emptyString()));
+    assertThat(media.getDescription(), is(emptyString()));
+    assertThat(media.getDescription("en"), is(emptyString()));
   }
 
   @Test
-  public void canAccessBy() {
+  void canAccessBy() {
     Media media = defaultMedia();
 
     assertThat(media.getInstanceId(), is("instanceId"));
@@ -193,7 +193,7 @@ public class MediaTest {
   }
 
   @Test
-  public void isVisible() {
+  void isVisible() {
     Media media = defaultMedia();
 
     media.setVisibilityPeriod(null);
@@ -287,14 +287,14 @@ public class MediaTest {
   }
 
   @Test
-  public void testAddToAlbums(@TestManagedMock GalleryService mediaServiceMock) {
+  void testAddToAlbums(@TestManagedMock GalleryService mediaServiceMock) {
     Media media = defaultMedia();
     media.addToAlbums("1", "2");
     verify(mediaServiceMock, times(1)).addMediaToAlbums(media, "1", "2");
   }
 
   @Test
-  public void testSetToAlbums(@TestManagedMock GalleryService mediaServiceMock) {
+  void testSetToAlbums(@TestManagedMock GalleryService mediaServiceMock) {
     Media media = defaultMedia();
     media.setToAlbums("1", "2");
     verify(mediaServiceMock, times(1)).removeMediaFromAllAlbums(media);
@@ -302,7 +302,7 @@ public class MediaTest {
   }
 
   @Test
-  public void testRemoveMediaFromAllAlbums(@TestManagedMock GalleryService mediaServiceMock) {
+  void testRemoveMediaFromAllAlbums(@TestManagedMock GalleryService mediaServiceMock) {
     Media media = defaultMedia();
     media.removeFromAllAlbums();
     verify(mediaServiceMock, times(1)).removeMediaFromAllAlbums(media);

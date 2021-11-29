@@ -29,6 +29,7 @@ import org.silverpeas.core.ApplicationService;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.rating.service.RatingService;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.SettingBundle;
@@ -36,6 +37,7 @@ import org.silverpeas.core.util.SettingBundle;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.transaction.Transactional;
+import java.util.Optional;
 
 /**
  * The default implementation of the {@link SuggestionBoxService} interface and of the
@@ -90,8 +92,8 @@ public class DefaultSuggestionBoxService implements SuggestionBoxService {
   }
 
   @Override
-  public Suggestion getContributionById(String contributionId) {
-    return Suggestion.getById(contributionId);
+  public Optional<Suggestion> getContributionById(final ContributionIdentifier contributionId) {
+    return Optional.of(Suggestion.getById(contributionId.getLocalId()));
   }
 
   @Override

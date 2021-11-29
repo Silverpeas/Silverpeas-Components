@@ -24,7 +24,10 @@
 package org.silverpeas.components.suggestionbox.model;
 
 import org.silverpeas.core.ApplicationService;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.util.ServiceProvider;
+
+import java.util.Optional;
 
 /**
  * A business service to provide a high level interface in the management of the suggestion boxes
@@ -37,15 +40,19 @@ import org.silverpeas.core.util.ServiceProvider;
  * <p/>
  * @author mmoquillon
  */
-public interface SuggestionBoxService extends ApplicationService<Suggestion> {
+public interface SuggestionBoxService extends ApplicationService {
 
   /**
    * Gets an object of this interface. The default implementation is used.
    * @return a SuggestionBoxService object.
    */
-  public static SuggestionBoxService get() {
+  static SuggestionBoxService get() {
     return ServiceProvider.getService(SuggestionBoxService.class);
   }
+
+  @Override
+  @SuppressWarnings("unchecked")
+  Optional<Suggestion> getContributionById(final ContributionIdentifier contributionId);
 
   /**
    * @param componentInstanceId the identifier of a suggestion box instance.
@@ -53,23 +60,23 @@ public interface SuggestionBoxService extends ApplicationService<Suggestion> {
    * @see org.silverpeas.components.suggestionbox.model.SuggestionBox#getByComponentInstanceId
    * (String)
    */
-  public SuggestionBox getByComponentInstanceId(String componentInstanceId);
+  SuggestionBox getByComponentInstanceId(String componentInstanceId);
 
   /**
    * Indexes all the validated suggestions of the specified suggestion box.
    * @param suggestionBox the suggestion box on which the indexation is performed.
    */
-  public void indexSuggestionBox(SuggestionBox suggestionBox);
+  void indexSuggestionBox(SuggestionBox suggestionBox);
 
   /**
    * Saves the specified suggestion box.
    * @param box the box to save in Silverpeas.
    */
-  public void saveSuggestionBox(final SuggestionBox box);
+  void saveSuggestionBox(final SuggestionBox box);
 
   /**
    * Deletes the specified suggestion box.
    * @param box the box to delete from Silverpeas.
    */
-  public void deleteSuggestionBox(final SuggestionBox box);
+  void deleteSuggestionBox(final SuggestionBox box);
 }

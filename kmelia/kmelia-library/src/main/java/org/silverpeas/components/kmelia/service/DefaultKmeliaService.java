@@ -21,7 +21,6 @@
 package org.silverpeas.components.kmelia.service;
 
 import org.apache.commons.io.FilenameUtils;
-import org.jetbrains.annotations.NotNull;
 import org.silverpeas.components.kmelia.InstanceParameters;
 import org.silverpeas.components.kmelia.KmeliaContentManager;
 import org.silverpeas.components.kmelia.KmeliaCopyDetail;
@@ -46,7 +45,6 @@ import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.comment.service.CommentService;
-import org.silverpeas.core.contribution.ContributionManager;
 import org.silverpeas.core.contribution.attachment.AttachmentException;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
@@ -60,6 +58,7 @@ import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.silverpeas.core.contribution.content.form.record.GenericRecordSet;
 import org.silverpeas.core.contribution.content.wysiwyg.WysiwygException;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.publication.dao.PublicationCriteria;
 import org.silverpeas.core.contribution.publication.model.CompletePublication;
 import org.silverpeas.core.contribution.publication.model.Location;
@@ -173,7 +172,8 @@ public class DefaultKmeliaService implements KmeliaService {
   private static final String NODE_PREFIX = "Node_";
   private static final String ADMIN_ROLE = "admin";
   private static final String ALIASES_CACHE_KEY = "NEW_PUB_ALIASES";
-  private static final Predicate<PublicationDetail> HAS_CLONE = k -> k.isValid() && k.haveGotClone() && !k.isClone();
+  private static final Predicate<PublicationDetail> HAS_CLONE = k -> k.isValid() &&
+      k.haveGotClone() && !k.isClone();
   @Inject
   private NodeService nodeService;
   @Inject
@@ -222,7 +222,7 @@ public class DefaultKmeliaService implements KmeliaService {
   public TopicDetail goTo(NodePK pk, String userId, boolean isTreeStructureUsed, String userProfile,
       boolean mustUserRightsBeChecked) {
     Collection<NodeDetail> newPath = new ArrayList<>();
-    NodeDetail nodeDetail = null;
+    NodeDetail nodeDetail;
 
     // get the basic information (Header) of this topic
     try {
@@ -255,7 +255,7 @@ public class DefaultKmeliaService implements KmeliaService {
   @Override
   public List<KmeliaPublication> getPublicationsOfFolder(NodePK pk, String userProfile,
       String userId, boolean isTreeStructureUsed) {
-    Collection<PublicationDetail> pubDetails = null;
+    Collection<PublicationDetail> pubDetails;
 
     // get the publications associated to this topic
     if (pk.isTrash()) {
@@ -390,16 +390,6 @@ public class DefaultKmeliaService implements KmeliaService {
     return theNodePK;
   }
 
-  /**
-   * Add a subtopic to currentTopic and alert users - If a subtopic of same name already exists a
-   * NodePK with id=-1 is returned else the new topic NodePK
-   * @param fatherPK
-   * @param subTopic the NodeDetail of the new sub topic
-   * @param alertType Alert all users, only publishers or nobody of the topic creation alertType =
-   * "All"|"Publisher"|"None"
-   * @return If a subtopic of same name already exists a NodePK with id=-1 is returned else the new
-   * topic NodePK
-   */
   @Override
   public NodePK addSubTopic(NodePK fatherPK, NodeDetail subTopic, String alertType) {
     // Construction de la date de création (date courante)
@@ -538,68 +528,6 @@ public class DefaultKmeliaService implements KmeliaService {
   }
 
   @Override
-  public void changeSubTopicsOrder(String way, NodePK subTopicPK, NodePK fatherPK) {
-    List<NodeDetail> subTopics;
-    try {
-      subTopics = (List<NodeDetail>) nodeService.getChildrenDetails(fatherPK);
-    } catch (Exception e) {
-      throw new KmeliaRuntimeException(e);
-    }
-
-    if (subTopics != null && !subTopics.isEmpty()) {
-      int indexOfTopic;
-
-      if (fatherPK.isRoot() && !KmeliaHelper.isToolbox(subTopicPK.getInstanceId())) {
-        // search the place of the basket
-        indexOfTopic = getIndexOfNode("1", subTopics);
-        // remove the node
-        subTopics.remove(indexOfTopic);
-        // search the place of the declassified
-        indexOfTopic = getIndexOfNode("2", subTopics);
-        // remove the node
-        subTopics.remove(indexOfTopic);
-      }
-
-      // search the place of the topic we want to move
-      indexOfTopic = getIndexOfNode(subTopicPK.getId(), subTopics);
-      // get the node to move
-      NodeDetail node2move = subTopics.get(indexOfTopic);
-      // remove the node to move
-      subTopics.remove(indexOfTopic);
-
-      if (way.equals("up")) {
-        subTopics.add(indexOfTopic - 1, node2move);
-      } else {
-        subTopics.add(indexOfTopic + 1, node2move);
-      }
-
-      // for each node, change the order and store it
-      for (int i = 0; i < subTopics.size(); i++) {
-        NodeDetail nodeDetail = subTopics.get(i);
-        try {
-          nodeDetail.setOrder(i);
-          nodeService.setDetail(nodeDetail);
-        } catch (Exception e) {
-          throw new KmeliaRuntimeException(e);
-        }
-      }
-    }
-  }
-
-  private int getIndexOfNode(String nodeId, List<NodeDetail> nodes) {
-    int index = 0;
-    if (nodes != null) {
-      for (NodeDetail node : nodes) {
-        if (nodeId.equals(node.getNodePK().getId())) {
-          return index;
-        }
-        index++;
-      }
-    }
-    return index;
-  }
-
-  @Override
   public void changeTopicStatus(String newStatus, NodePK nodePK, boolean recursiveChanges) {
     try {
       if (!recursiveChanges) {
@@ -608,8 +536,7 @@ public class DefaultKmeliaService implements KmeliaService {
       } else {
         List<NodeDetail> subTree = nodeService.getSubTree(nodePK);
         for (NodeDetail aSubTree : subTree) {
-          NodeDetail nodeDetail = aSubTree;
-          changeTopicStatus(newStatus, nodeDetail);
+          changeTopicStatus(newStatus, aSubTree);
         }
       }
     } catch (Exception e) {
@@ -618,13 +545,8 @@ public class DefaultKmeliaService implements KmeliaService {
   }
 
   @Override
-  public void sortSubTopics(NodePK fatherPK) {
-    sortSubTopics(fatherPK, false, null);
-  }
-
-  @Override
   public void sortSubTopics(NodePK fatherPK, boolean recursive, String[] criteria) {
-    List<NodeDetail> subTopics = null;
+    List<NodeDetail> subTopics;
     try {
       subTopics = (List<NodeDetail>) nodeService.getChildrenDetails(fatherPK);
     } catch (Exception e) {
@@ -632,7 +554,7 @@ public class DefaultKmeliaService implements KmeliaService {
     }
 
     if (subTopics != null && !subTopics.isEmpty()) {
-      Collections.sort(subTopics, new TopicComparator(criteria));
+      subTopics.sort(new TopicComparator(criteria));
       // for each node, change the order and store it
       for (int i = 0; i < subTopics.size(); i++) {
         NodeDetail nodeDetail = subTopics.get(i);
@@ -670,8 +592,7 @@ public class DefaultKmeliaService implements KmeliaService {
       profile = getProfile(userId, nodePK);
     }
 
-    KmeliaUserTreeViewFilter
-        .from(userId, instanceId, nodePK, profile, isRightsOnTopicsUsed)
+    KmeliaUserTreeViewFilter.from(userId, instanceId, nodePK, profile, isRightsOnTopicsUsed)
         .setBestUserRoleAndFilter(allowedTree);
 
     if (displayNb) {
@@ -720,8 +641,8 @@ public class DefaultKmeliaService implements KmeliaService {
         if (profile.equals("publisher")) {
           checkVisibility = true;
         }
-        statusSubQuery.append(
-            "sb_publication_publi.pubStatus IN ('Valid','ToValidate') OR (sb_publication_publi" +
+        statusSubQuery.append("sb_publication_publi.pubStatus IN ('Valid','ToValidate') OR " +
+                "(sb_publication_publi" +
                 ".pubStatus = 'Draft' AND sb_publication_publi.pubUpdaterId = '")
             .append(userId)
             .append("') ");
@@ -773,8 +694,9 @@ public class DefaultKmeliaService implements KmeliaService {
 
   private List<KmeliaPublication> asRankedKmeliaPublication(NodePK fatherPK,
       Collection<PublicationDetail> pubDetails) {
-    final Collection<String> pubIds =
-        pubDetails.stream().map(PublicationDetail::getId).collect(Collectors.toSet());
+    final Collection<String> pubIds = pubDetails.stream()
+        .map(PublicationDetail::getId)
+        .collect(Collectors.toSet());
     final Map<String, List<Location>> locationsByPublication =
         publicationService.getAllLocationsByPublicationIds(pubIds);
     final List<KmeliaPublication> publications = new ArrayList<>(pubDetails.size());
@@ -826,9 +748,9 @@ public class DefaultKmeliaService implements KmeliaService {
    */
   @Override
   public Collection<Collection<NodeDetail>> getPathList(PublicationPK pubPK) {
-    Collection<NodePK> fatherPKs = null;
+    Collection<NodePK> fatherPKs;
     try {
-      // get all nodePK whick contains this publication
+      // get PK of all nodes which contain this publication
       fatherPKs = publicationService.getAllFatherPKInSamePublicationComponentInstance(pubPK);
     } catch (Exception e) {
       throw new KmeliaRuntimeException(e);
@@ -941,6 +863,7 @@ public class DefaultKmeliaService implements KmeliaService {
       // publication is definitely deleted or orphaned. In that case, we take the profile of the
       // user in the concerned kmelia instance. This shouldn't occur!
       SilverLogger.getLogger(this).warn("The publication {0} is orphaned!", pubPK);
+      //noinspection ConstantConditions
       profile = SilverpeasRole.getHighestFrom(SilverpeasRole.fromStrings(
           getOrganisationController().getUserProfiles(userId, pubPK.getInstanceId()))).getName();
 
@@ -986,11 +909,6 @@ public class DefaultKmeliaService implements KmeliaService {
     return Pair.of(!oldStatus.equals(status), status);
   }
 
-  /**
-   * determine new publication's status according to actual status and current user's profile
-   * @param pubDetail
-   * @return true if status has changed, false otherwise
-   */
   private boolean changePublicationStatusOnUpdate(PublicationDetail pubDetail) {
     final String previousStatus = pubDetail.getStatus();
     final String newStatus;
@@ -1146,13 +1064,13 @@ public class DefaultKmeliaService implements KmeliaService {
   }
 
   private boolean isVisibilityPeriodUpdated(PublicationDetail pubDetail, PublicationDetail old) {
-    boolean beginVisibilityPeriodUpdated =
-        ((pubDetail.getBeginDate() != null && old.getBeginDate() == null) ||
+    boolean beginVisibilityPeriodUpdated = (
+        (pubDetail.getBeginDate() != null && old.getBeginDate() == null) ||
             (pubDetail.getBeginDate() == null && old.getBeginDate() != null) ||
             (pubDetail.getBeginDate() != null && old.getBeginDate() != null &&
                 !pubDetail.getBeginDate().equals(old.getBeginDate())));
-    boolean endVisibilityPeriodUpdated =
-        ((pubDetail.getEndDate() != null && old.getEndDate() == null) ||
+    boolean endVisibilityPeriodUpdated = (
+        (pubDetail.getEndDate() != null && old.getEndDate() == null) ||
             (pubDetail.getEndDate() == null && old.getEndDate() != null) ||
             (pubDetail.getEndDate() != null && old.getEndDate() != null &&
                 !pubDetail.getEndDate().equals(old.getEndDate())));
@@ -1191,9 +1109,8 @@ public class DefaultKmeliaService implements KmeliaService {
 
     // check if user can cut publication from source folder
     String profile = getUserTopicProfile(from, userId);
-    boolean cutAllowed =
-        KmeliaPublicationHelper.isCanBeCut(from.getComponentName(), userId, profile,
-            pub.getCreator());
+    @SuppressWarnings("removal") boolean cutAllowed = KmeliaPublicationHelper.isCanBeCut(
+        from.getComponentName(), userId, profile, pub.getCreator());
 
     // check if user can paste publication into target folder
     String profileInTarget = getUserTopicProfile(to, userId);
@@ -1250,9 +1167,8 @@ public class DefaultKmeliaService implements KmeliaService {
           pub.getPK().getId(), to.getInstanceId(), pub.getPK().getId());
 
       // move regular files
-      List<SimpleDocument> docs =
-          getAttachmentService().listDocumentsByForeignKeyAndType(fromResourceReference,
-              DocumentType.attachment, null);
+      List<SimpleDocument> docs = getAttachmentService().listDocumentsByForeignKeyAndType(
+          fromResourceReference, DocumentType.attachment, null);
       for (SimpleDocument doc : docs) {
         getAttachmentService().moveDocument(doc, toPubliResourceReference);
       }
@@ -1282,8 +1198,8 @@ public class DefaultKmeliaService implements KmeliaService {
       // Careful! positions must be moved according to taxonomy restrictions of target application
       int fromSilverObjectId = getSilverObjectId(pub.getPK());
       // get positions of cutted publication
-      List<ClassifyPosition> positions =
-          pdcManager.getPositions(fromSilverObjectId, fromComponentId);
+      List<ClassifyPosition> positions = pdcManager.getPositions(fromSilverObjectId,
+          fromComponentId);
 
       // delete taxonomy data relative to moved publication
       deleteSilverContent(pub.getPK());
@@ -1336,7 +1252,8 @@ public class DefaultKmeliaService implements KmeliaService {
 
   private void processPublicationAfterMove(PublicationDetail pub, NodePK to, String currentUserId) {
     // status must be checked according to topic rights and last modifier (current user)
-    final Pair<Boolean, String> statusChanges = changePublicationStatusOnMove(pub, to, currentUserId);
+    final Pair<Boolean, String> statusChanges = changePublicationStatusOnMove(pub, to,
+        currentUserId);
     final boolean statusChanged = statusChanges.getFirst();
     // update publication
     if (!statusChanged) {
@@ -1379,8 +1296,8 @@ public class DefaultKmeliaService implements KmeliaService {
       return;
     }
 
-    PublicationConcernedByUpdate publicationConcernedByUpdate =
-        new PublicationConcernedByUpdate(pubPK).invoke();
+    PublicationConcernedByUpdate publicationConcernedByUpdate = new PublicationConcernedByUpdate(
+        pubPK).invoke();
     if (publicationConcernedByUpdate.isPublicationNotDefined()) {
       return;
     }
@@ -1519,12 +1436,6 @@ public class DefaultKmeliaService implements KmeliaService {
     sendPublicationToBasket(pubPK, KmeliaHelper.isKmax(pubPK.getInstanceId()));
   }
 
-  /**
-   * Add a publication to a topic and send email alerts to topic subscribers
-   * @param pubPK the id of the publication
-   * @param fatherPK the id of the topic
-   * @param isACreation
-   */
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
   public void addPublicationToTopic(PublicationPK pubPK, NodePK fatherPK, boolean isACreation) {
@@ -1555,7 +1466,7 @@ public class DefaultKmeliaService implements KmeliaService {
             // create validation todos for publishers
             createTodosForPublication(pubDetail, true);
           }
-        } else if (!mainPubLocation.isPresent()) {
+        } else if (mainPubLocation.isEmpty()) {
           // The publi have got no father
           // change the end date to make this publi visible
           pubDetail.setEndDate(null);
@@ -1600,8 +1511,8 @@ public class DefaultKmeliaService implements KmeliaService {
       }
 
       // Subscriptions related to aliases
-      Collection<Location> locations =
-          (Collection<Location>) getRequestCacheService().getCache().get(ALIASES_CACHE_KEY);
+      Collection<Location> locations = (Collection<Location>) getRequestCacheService().getCache()
+          .get(ALIASES_CACHE_KEY);
       if (locations == null) {
         locations = getAliases(pubDetail.getPK());
       }
@@ -1610,8 +1521,8 @@ public class DefaultKmeliaService implements KmeliaService {
       // PDC subscriptions
       try {
         int silverObjectId = getSilverObjectId(pubDetail.getPK());
-        List<ClassifyPosition> positions =
-            pdcManager.getPositions(silverObjectId, pubDetail.getPK().getInstanceId());
+        List<ClassifyPosition> positions = pdcManager.getPositions(silverObjectId,
+            pubDetail.getPK().getInstanceId());
         if (positions != null) {
           for (ClassifyPosition position : positions) {
             pdcSubscriptionManager.checkSubscriptions(position.getValues(),
@@ -1655,20 +1566,6 @@ public class DefaultKmeliaService implements KmeliaService {
     }
   }
 
-  @Override
-  public void deletePublicationFromTopic(PublicationPK pubPK, NodePK fatherPK) {
-    try {
-      final Optional<Location> mainLocation = publicationService.getMainLocation(pubPK);
-      if (mainLocation.filter(fatherPK::equals).isPresent()) {
-        sendPublicationToBasket(pubPK);
-      } else {
-        publicationService.removeFather(pubPK, fatherPK);
-      }
-    } catch (Exception e) {
-      throw new KmeliaRuntimeException(e);
-    }
-  }
-
   /**
    * Updates the publication links
    * @param pubPK publication identifier which you want to update links
@@ -1686,14 +1583,11 @@ public class DefaultKmeliaService implements KmeliaService {
 
   @Override
   public CompletePublication getCompletePublication(PublicationPK pubPK) {
-    CompletePublication completePublication = null;
-
     try {
-      completePublication = publicationService.getCompletePublication(pubPK);
+      return publicationService.getCompletePublication(pubPK);
     } catch (Exception e) {
       throw new KmeliaRuntimeException(e);
     }
-    return completePublication;
   }
 
   private KmeliaPublication getPublication(PublicationPK pubPK) {
@@ -1720,7 +1614,7 @@ public class DefaultKmeliaService implements KmeliaService {
     return getPublicationLocations(pubPK, false).stream()
         .sorted(comparing(
             (Location l) -> !l.getInstanceId().equals(pubPK.getInstanceId())).thenComparing(
-            Location::isAlias)
+                Location::isAlias)
             .thenComparing(Location::getInstanceId)
             .thenComparing(Location::getId))
         .filter(l -> NodeAccessControl.get().isUserAuthorized(userId, l))
@@ -1769,7 +1663,8 @@ public class DefaultKmeliaService implements KmeliaService {
   }
 
   @Override
-  public <T extends ResourceReference> List<PublicationDetail> getPublicationDetails(List<T> references) {
+  public <T extends ResourceReference> List<PublicationDetail> getPublicationDetails(
+      List<T> references) {
     try {
       return publicationService.getPublications(references.stream()
           .map(l -> new PublicationPK(l.getId(), l.getInstanceId()))
@@ -1807,7 +1702,8 @@ public class DefaultKmeliaService implements KmeliaService {
     // initialization of the publications list
     final Map<PublicationPK, ResourceReference> indexedReferences = references.stream()
         .collect(toMap(r -> new PublicationPK(r.getId(), r.getInstanceId()), r -> r));
-    final AccessControlContext modificationContext = AccessControlContext.init().onOperationsOf(MODIFICATION);
+    final AccessControlContext modificationContext = AccessControlContext.init()
+        .onOperationsOf(MODIFICATION);
     final List<ResourceReference> authorizedReferences = PublicationAccessControl.get()
         .filterAuthorizedByUser(indexedReferences.keySet(), userId, modificationContext)
         .map(indexedReferences::get)
@@ -1818,11 +1714,11 @@ public class DefaultKmeliaService implements KmeliaService {
         .collect(Collectors.toList());
     final Map<String, List<Location>> locationsByPublication =
         publicationService.getAllLocationsByPublicationIds(pubIds);
-    final Map<PublicationPK, PublicationDetail> clones = getPublicationDetails(
-            publications.stream()
-                .filter(HAS_CLONE)
-                .map(PublicationDetail::getClonePK)
-                .collect(Collectors.toList()))
+    final Map<PublicationPK, PublicationDetail> clones =
+        getPublicationDetails(publications.stream()
+            .filter(HAS_CLONE)
+            .map(PublicationDetail::getClonePK)
+            .collect(Collectors.toList()))
         .stream()
         .collect(toMap(PublicationDetail::getPK, k -> k));
     return publications.stream()
@@ -1996,12 +1892,6 @@ public class DefaultKmeliaService implements KmeliaService {
     }
   }
 
-  /**
-   * @param pubPK
-   * @param allValidators
-   * @return
-   * @
-   */
   private boolean isValidationComplete(PublicationPK pubPK, List<String> allValidators) {
     List<ValidationStep> steps = publicationService.getValidationSteps(pubPK);
 
@@ -2024,7 +1914,7 @@ public class DefaultKmeliaService implements KmeliaService {
   @Override
   public boolean validatePublication(PublicationPK pubPK, String userId, boolean force,
       final boolean hasUserNoMoreValidationRight) {
-    boolean validationComplete = false;
+    boolean validationComplete;
     try {
       CompletePublication currentPub = publicationService.getCompletePublication(pubPK);
       PublicationDetail currentPubDetail = currentPub.getPublicationDetail();
@@ -2355,12 +2245,6 @@ public class DefaultKmeliaService implements KmeliaService {
     }
   }
 
-  /**
-   * Change publication status from draft to valid (for publisher) or toValidate (for redactor).
-   * @param pubPK
-   * @param topicPK
-   * @param userProfile
-   */
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
   public void draftOutPublication(PublicationPK pubPK, NodePK topicPK, String userProfile) {
@@ -2370,12 +2254,6 @@ public class DefaultKmeliaService implements KmeliaService {
     sendTodosAndNotificationsOnDraftOut(pubDetail, topicPK, userProfile);
   }
 
-  /**
-   * This method is here to manage correctly transactional scope of EJB (conflict between EJB and
-   * UserPreferences service)
-   * @param pubPK
-   * @return
-   */
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
   public PublicationDetail draftOutPublicationWithoutNotifications(PublicationPK pubPK,
@@ -2384,15 +2262,15 @@ public class DefaultKmeliaService implements KmeliaService {
   }
 
   @Override
-  public PublicationDetail draftOutPublication(PublicationPK pubPK, NodePK topicPK,
-      String userProfile, boolean forceUpdateDate) {
-    return draftOutPublication(pubPK, topicPK, userProfile, forceUpdateDate, false);
+  public void draftOutPublication(PublicationPK pubPK, NodePK topicPK, String userProfile,
+      boolean forceUpdateDate) {
+    draftOutPublication(pubPK, topicPK, userProfile, forceUpdateDate, false);
   }
 
   private PublicationDetail draftOutPublication(PublicationPK pubPK, NodePK topicPK,
       String userProfile, boolean forceUpdateDate, boolean inTransaction) {
     try {
-      PublicationDetail changedPublication = null;
+      PublicationDetail changedPublication;
       CompletePublication currentPub = publicationService.getCompletePublication(pubPK);
       PublicationDetail pubDetail = currentPub.getPublicationDetail();
       if (userProfile.equals("publisher") || userProfile.equals(ADMIN_ROLE)) {
@@ -2452,10 +2330,6 @@ public class DefaultKmeliaService implements KmeliaService {
     }
   }
 
-  /**
-   * Change publication status from any state to draft.
-   * @param pubPK
-   */
   @Override
   public void draftInPublication(PublicationPK pubPK) {
     draftInPublication(pubPK, null);
@@ -2485,13 +2359,6 @@ public class DefaultKmeliaService implements KmeliaService {
     return new KmeliaNotifyPublicationUserNotification(topicPK, publication.getDetail()).build();
   }
 
-  /**
-   * @param pubPK
-   * @param documentPk
-   * @param topicPK
-   * @return
-   * @
-   */
   @Override
   public UserNotification getUserNotification(PublicationPK pubPK, SimpleDocumentPK documentPk,
       NodePK topicPK) {
@@ -2554,8 +2421,7 @@ public class DefaultKmeliaService implements KmeliaService {
         SilverLogger.getLogger(this)
             .warn(
                 "Performing too much paginated sql queries to retrieve last accesses from pub {0}" +
-                    " on node {1}",
-                pk, nodePK);
+                    " on node {1}", pk, nodePK);
       }
     }
   }
@@ -2677,6 +2543,7 @@ public class DefaultKmeliaService implements KmeliaService {
       UserNotificationBuilder notification;
       // tries to notify updater
       String profile = getProfileOnPublication(pub.getMostRecentUpdater(), pub.getPK());
+      //noinspection ConstantConditions
       if (profile != null &&
           SilverpeasRole.fromString(profile).isGreaterThanOrEquals(SilverpeasRole.WRITER)) {
         notification = new KmeliaNoMoreValidatorPublicationUserNotification(null, pub);
@@ -2750,7 +2617,7 @@ public class DefaultKmeliaService implements KmeliaService {
 
   @Override
   public int getSilverObjectId(PublicationPK pubPK) {
-    int silverObjectId = -1;
+    int silverObjectId;
     PublicationDetail pubDetail;
     try {
       silverObjectId =
@@ -2871,10 +2738,8 @@ public class DefaultKmeliaService implements KmeliaService {
       PublicationDetail pubDetail = getPublicationDetail(pubPK);
       String infoId = pubDetail.getInfoId();
       if (!isInteger(infoId)) {
-        String xmlFormShortName = infoId;
-
         PublicationTemplate pubTemplate = PublicationTemplateManager.getInstance()
-            .getPublicationTemplate(pubDetail.getPK().getInstanceId() + ":" + xmlFormShortName);
+            .getPublicationTemplate(pubDetail.getPK().getInstanceId() + ":" + infoId);
 
         RecordSet set = pubTemplate.getRecordSet();
         set.delete(pubDetail.getPK().getId());
@@ -3110,16 +2975,12 @@ public class DefaultKmeliaService implements KmeliaService {
     position.getNodePK().setComponentName(componentId);
     position.setCreationDate(new Date());
     position.setCreatorId(userId);
-    NodeDetail fatherDetail;
-    NodePK componentPK = null;
-
-    fatherDetail = getNodeHeader(fatherId, componentId);
+    NodeDetail fatherDetail = getNodeHeader(fatherId, componentId);
     try {
-      componentPK = nodeService.createNode(position, fatherDetail);
+      return nodeService.createNode(position, fatherDetail);
     } catch (Exception e) {
       throw new KmaxRuntimeException(e);
     }
-    return componentPK;
   }
 
   @Override
@@ -3171,16 +3032,6 @@ public class DefaultKmeliaService implements KmeliaService {
     return newPath;
   }
 
-  public Collection<Coordinate> getKmaxPathList(PublicationPK pubPK) {
-    Collection<Coordinate> coordinates = null;
-    try {
-      coordinates = getPublicationCoordinates(pubPK.getId(), pubPK.getInstanceId());
-    } catch (Exception e) {
-      throw new KmeliaRuntimeException(e);
-    }
-    return coordinates;
-  }
-
   @Override
   public List<KmeliaPublication> search(List<String> combination, String componentId) {
     Collection<PublicationDetail> publications = searchPublications(combination, componentId);
@@ -3201,7 +3052,7 @@ public class DefaultKmeliaService implements KmeliaService {
     PublicationPK pk = new PublicationPK(USELESS, componentId);
     CoordinatePK coordinatePK = new CoordinatePK(UNKNOWN, pk);
     Collection<PublicationDetail> publications = null;
-    Collection<String> coordinates = null;
+    Collection<String> coordinates;
     try {
       // Remove node "Toutes catégories" (level == 2) from combination
       int nodeLevel;
@@ -3257,7 +3108,7 @@ public class DefaultKmeliaService implements KmeliaService {
       if (nbDays == 0) {
         nbDays = 1;
       }
-      rightNow.add(Calendar.DATE, 0 - nbDays);
+      rightNow.add(Calendar.DATE, -nbDays);
       Date day = rightNow.getTime();
       Iterator<PublicationDetail> it = publications.iterator();
       PublicationDetail pub;
@@ -3290,10 +3141,8 @@ public class DefaultKmeliaService implements KmeliaService {
       Collection<NodeDetail> nodes = nodeService.getAllNodes(nodePK);
       if (nodes != null) {
         for (NodeDetail nodeDetail : nodes) {
-          if ("corbeille".equalsIgnoreCase(nodeDetail.getName()) &&
-              nodeDetail.getNodePK().isTrash()) {
-            // do not index the bin
-          } else {
+          if (!"corbeille".equalsIgnoreCase(nodeDetail.getName()) ||
+              !nodeDetail.getNodePK().isTrash()) {
             nodeService.createIndex(nodeDetail);
           }
         }
@@ -3306,7 +3155,7 @@ public class DefaultKmeliaService implements KmeliaService {
   @Override
   public KmeliaPublication getKmaxPublication(String pubId, String currentUserId) {
     PublicationPK pubPK;
-    CompletePublication completePublication = null;
+    CompletePublication completePublication;
 
     try {
       pubPK = new PublicationPK(pubId);
@@ -3371,6 +3220,7 @@ public class DefaultKmeliaService implements KmeliaService {
     }
   }
 
+  @SuppressWarnings("unchecked")
   protected boolean checkCombination(Collection<Coordinate> coordinates, List<String> combination) {
     for (Coordinate coordinate : coordinates) {
       Collection<CoordinatePoint> points = coordinate.getCoordinatePoints();
@@ -3431,12 +3281,11 @@ public class DefaultKmeliaService implements KmeliaService {
    */
   @Override
   public String createKmaxPublication(PublicationDetail pubDetail) {
-    PublicationPK pubPK = null;
+    PublicationPK pubPK;
     Connection con = getConnection();
     try {
       // create the publication
-      pubDetail =
-          changePublicationStatusOnCreation(pubDetail, new NodePK(USELESS, pubDetail.getPK()));
+      changePublicationStatusOnCreation(pubDetail, new NodePK(USELESS, pubDetail.getPK()));
       pubPK = publicationService.createPublication(pubDetail);
       pubDetail.getPK().setId(pubPK.getId());
 
@@ -3490,8 +3339,8 @@ public class DefaultKmeliaService implements KmeliaService {
   @Override
   public void setAliases(PublicationPK pubPK, List<Location> locations) {
 
-    Pair<Collection<Location>, Collection<Location>> result =
-        publicationService.setAliases(pubPK, locations);
+    Pair<Collection<Location>, Collection<Location>> result = publicationService.setAliases(pubPK,
+        locations);
 
     // Send subscriptions to aliases subscribers
     getRequestCacheService().getCache().put(ALIASES_CACHE_KEY, result.getFirst());
@@ -3565,8 +3414,8 @@ public class DefaultKmeliaService implements KmeliaService {
 
       PublicationDetail clone = getClone(refPub);
 
-      SettingBundle publicationSettings =
-          ResourceLocator.getSettingBundle("org.silverpeas.publication.publicationSettings");
+      SettingBundle publicationSettings = ResourceLocator.getSettingBundle(
+          "org.silverpeas.publication.publicationSettings");
       String absolutePath = FileRepositoryManager.getAbsolutePath(fromComponentId);
 
       if (pubDetail != null) {
@@ -3636,7 +3485,7 @@ public class DefaultKmeliaService implements KmeliaService {
       String vignette = refPub.getImage();
       if (vignette != null) {
         ThumbnailDetail thumbDetail = new ThumbnailDetail(clone.getPK().getInstanceId(),
-            Integer.valueOf(clone.getPK().getId()),
+            Integer.parseInt(clone.getPK().getId()),
             ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
         thumbDetail.setMimeType(refPub.getImageMimeType());
         if (vignette.startsWith("/")) {
@@ -3645,7 +3494,7 @@ public class DefaultKmeliaService implements KmeliaService {
           String thumbnailsSubDirectory = publicationSettings.getString("imagesSubDirectory");
           String from = absolutePath + thumbnailsSubDirectory + File.separator + vignette;
           String type = FilenameUtils.getExtension(vignette);
-          String newVignette = Long.toString(System.currentTimeMillis()) + "." + type;
+          String newVignette = System.currentTimeMillis() + "." + type;
           String to = absolutePath + thumbnailsSubDirectory + File.separator + newVignette;
           FileRepositoryManager.copyFile(from, to);
           thumbDetail.setOriginalFileName(newVignette);
@@ -3698,9 +3547,7 @@ public class DefaultKmeliaService implements KmeliaService {
       for (NodeDetail node : nodes) {
         if (node.getNodePK().isTrash()) {
           trash = node;
-        } else if (node.getNodePK().isUnclassed()) {
-          // do not return it cause it is useless
-        } else {
+        } else if (!node.getNodePK().isUnclassed()) {
           children.add(node);
         }
       }
@@ -3810,9 +3657,6 @@ public class DefaultKmeliaService implements KmeliaService {
         setRole(allowedChildren, userId);
         node.setChildrenDetails(allowedChildren);
       }
-    } else {
-      // no rights are used
-      // keep children as they are
     }
   }
 
@@ -3833,18 +3677,18 @@ public class DefaultKmeliaService implements KmeliaService {
   }
 
   private boolean isRightsOnTopicsEnabled(String componentId) {
-    return getBooleanValue(getOrganisationController()
-        .getComponentParameterValue(componentId, InstanceParameters.rightsOnFolders));
+    return getBooleanValue(getOrganisationController().getComponentParameterValue(componentId,
+        InstanceParameters.rightsOnFolders));
   }
 
   private boolean isNbItemsDisplayed(String componentId) {
-    return getBooleanValue(getOrganisationController()
-        .getComponentParameterValue(componentId, InstanceParameters.displayNbItemsOnFolders));
+    return getBooleanValue(getOrganisationController().getComponentParameterValue(componentId,
+        InstanceParameters.displayNbItemsOnFolders));
   }
 
   private boolean isCoWritingEnable(String componentId) {
-    return getBooleanValue(getOrganisationController()
-        .getComponentParameterValue(componentId, InstanceParameters.coWriting));
+    return getBooleanValue(getOrganisationController().getComponentParameterValue(componentId,
+        InstanceParameters.coWriting));
   }
 
   private boolean isDraftVisibleWithCoWriting() {
@@ -3853,8 +3697,7 @@ public class DefaultKmeliaService implements KmeliaService {
 
   @Override
   public String getUserTopicProfile(NodePK pk, String userId) {
-    if (!isRightsOnTopicsEnabled(pk.getInstanceId()) ||
-        KmeliaHelper.isSpecialFolder(pk.getId())) {
+    if (!isRightsOnTopicsEnabled(pk.getInstanceId()) || KmeliaHelper.isSpecialFolder(pk.getId())) {
       return KmeliaHelper.getProfile(getUserRoles(pk.getInstanceId(), userId));
     }
 
@@ -3938,14 +3781,14 @@ public class DefaultKmeliaService implements KmeliaService {
   }
 
   private boolean checkUserRoles(String componentId, String userId, String... roles) {
-    SilverpeasRole userProfile =
-        SilverpeasRole.fromString(KmeliaHelper.getProfile(getUserRoles(componentId, userId)));
-    boolean checked = userProfile.isInRole(roles);
+    SilverpeasRole userProfile = SilverpeasRole.fromString(
+        KmeliaHelper.getProfile(getUserRoles(componentId, userId)));
+    boolean checked = Objects.requireNonNull(userProfile).isInRole(roles);
 
     if (!checked && isRightsOnTopicsEnabled(componentId)) {
       // check if current user is publisher or admin on at least one descendant
-      Iterator<NodeDetail> descendants =
-          nodeService.getDescendantDetails(getRootPK(componentId)).iterator();
+      Iterator<NodeDetail> descendants = nodeService.getDescendantDetails(getRootPK(componentId))
+          .iterator();
       while (!checked && descendants.hasNext()) {
         NodeDetail descendant = descendants.next();
         if (descendant.haveLocalRights()) {
@@ -3954,7 +3797,7 @@ public class DefaultKmeliaService implements KmeliaService {
               ProfiledObjectId.fromNode(descendant.getNodePK().getId()), componentId, userId);
           if (profiles != null && profiles.length > 0) {
             userProfile = SilverpeasRole.fromString(KmeliaHelper.getProfile(profiles));
-            checked = userProfile.isInRole(roles);
+            checked = Objects.requireNonNull(userProfile).isInRole(roles);
           }
         }
       }
@@ -4053,18 +3896,9 @@ public class DefaultKmeliaService implements KmeliaService {
   }
 
   @Override
-  public String getWysiwyg(PublicationPK pubPK, String language) {
-    try {
-      return WysiwygController.load(pubPK.getInstanceId(), pubPK.getId(),
-          I18NHelper.checkLanguage(language));
-    } catch (Exception e) {
-      throw new KmeliaRuntimeException(e);
-    }
-  }
-
-  @Override
-  public KmeliaPublication getContributionById(String contributionId) {
-    return getPublication(new PublicationPK(contributionId));
+  public Optional<KmeliaPublication> getContributionById(ContributionIdentifier contributionId) {
+    return Optional.of(getPublication(
+        new PublicationPK(contributionId.getLocalId(), contributionId.getComponentInstanceId())));
   }
 
   @Override
@@ -4086,7 +3920,7 @@ public class DefaultKmeliaService implements KmeliaService {
   @SimulationActionProcess(elementLister = KmeliaNodeSimulationElementLister.class)
   @Action(ActionType.MOVE)
   @Override
-  public NodeDetail moveNode(@SourcePK NodePK nodePK, @TargetPK NodePK to,
+  public void moveNode(@SourcePK NodePK nodePK, @TargetPK NodePK to,
       KmeliaPasteDetail pasteContext) {
     List<NodeDetail> treeToPaste = nodeService.getSubTree(nodePK);
 
@@ -4104,7 +3938,6 @@ public class DefaultKmeliaService implements KmeliaService {
           NodeDetail toNode = nodeService.getDetail(toNodePK);
 
           checkNodeRights(fromNode, toNode, rightsOnTopicsEnabled);
-
           // move rich description of node
           if (!nodePK.getInstanceId().equals(to.getInstanceId())) {
             WysiwygController.move(fromNode.getNodePK().getInstanceId(),
@@ -4118,15 +3951,14 @@ public class DefaultKmeliaService implements KmeliaService {
     }
 
     nodePK.setComponentName(to.getInstanceId());
-    return getNodeHeader(nodePK);
   }
 
   private void checkNodeRights(final NodeDetail fromNode, final NodeDetail node,
       final boolean rightsOnTopicsEnabled) {
     if (fromNode.haveLocalRights()) {
-      List<ProfileInst> profiles =
-          adminController.getProfilesByObject(ProfiledObjectId.fromNode(fromNode.getNodePK().getId()),
-              fromNode.getNodePK().getInstanceId());
+      List<ProfileInst> profiles = adminController.getProfilesByObject(
+          ProfiledObjectId.fromNode(fromNode.getNodePK().getId()),
+          fromNode.getNodePK().getInstanceId());
       if (rightsOnTopicsEnabled) {
         // adjusting previous rights according to target component
         for (ProfileInst profile : profiles) {
@@ -4160,12 +3992,12 @@ public class DefaultKmeliaService implements KmeliaService {
   @SimulationActionProcess(elementLister = KmeliaNodeSimulationElementLister.class)
   @Action(ActionType.COPY)
   @Override
-  public NodeDetail copyNode(@SourcePK @TargetPK KmeliaCopyDetail copyDetail) {
+  public void copyNode(@SourcePK @TargetPK KmeliaCopyDetail copyDetail) {
     HashMap<String, String> oldAndNewIds = new HashMap<>();
-    return copyNode(copyDetail, oldAndNewIds);
+    copyNode(copyDetail, oldAndNewIds);
   }
 
-  private NodeDetail copyNode(KmeliaCopyDetail copyDetail, HashMap<String, String> oldAndNewIds) {
+  private void copyNode(KmeliaCopyDetail copyDetail, HashMap<String, String> oldAndNewIds) {
     NodePK nodePKToCopy = copyDetail.getFromNodePK();
     NodePK targetPK = copyDetail.getToNodePK();
     String userId = copyDetail.getUserId();
@@ -4217,7 +4049,6 @@ public class DefaultKmeliaService implements KmeliaService {
         copyNode(folderContentCopy, oldAndNewIds);
       }
     }
-    return node;
   }
 
   private void copyNodeRights(final String userId, final NodeDetail nodeToCopy,
@@ -4225,14 +4056,12 @@ public class DefaultKmeliaService implements KmeliaService {
     if (nodeToCopy.haveLocalRights()) {
       NodeDetail node = nodeService.getDetail(nodePK);
       List<ProfileInst> topicProfiles = adminController.getProfilesByObject(
-          ProfiledObjectId.fromNode(nodeToCopy.getNodePK()
-              .getId()), nodeToCopy.getNodePK().getInstanceId());
+          ProfiledObjectId.fromNode(nodeToCopy.getNodePK().getId()),
+          nodeToCopy.getNodePK().getInstanceId());
       for (ProfileInst nodeToPasteProfile : topicProfiles) {
         if (nodeToPasteProfile != null) {
           ProfileInst nodeProfileInst = new ProfileInst(nodeToPasteProfile);
-
           checkNodeProfile(nodeProfileInst, node);
-
           // Add the profile
           adminController.addProfileInst(nodeProfileInst, userId);
         }
@@ -4313,7 +4142,7 @@ public class DefaultKmeliaService implements KmeliaService {
   @Action(ActionType.COPY)
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
-  public PublicationPK copyPublication(@SourcePK PublicationDetail publiToCopy,
+  public void copyPublication(@SourcePK PublicationDetail publiToCopy,
       @TargetPK KmeliaCopyDetail copyDetail) {
     NodePK toNodePK = copyDetail.getToNodePK();
     String userId = copyDetail.getUserId();
@@ -4325,24 +4154,19 @@ public class DefaultKmeliaService implements KmeliaService {
         Location location = new Location(copyDetail.getToNodePK().getId(), toComponentId);
         location.setAsAlias(userId);
         publicationService.addAliases(publiToCopy.getPK(), singletonList(location));
-        return publiToCopy.getPK();
       } else {
-        PublicationDetail newPubli =
-            copyPublication(publiToCopy, toNodePK, toComponentId, copyDetail, userId);
-        return newPubli.getPK();
+        copyPublication(publiToCopy, toNodePK, toComponentId, copyDetail, userId);
       }
     } catch (Exception ex) {
       SilverLogger.getLogger(this).error("Publication copy failure", ex);
     }
-    return null;
   }
 
-  @NotNull
-  private PublicationDetail copyPublication(final PublicationDetail publiToCopy,
-      final NodePK toNodePK, final String toComponentId, final KmeliaCopyDetail copyDetail,
-      final String userId) throws PdcException, PublicationTemplateException, FormException {
-    ResourceReference toResourceReference =
-        new ResourceReference(ResourceReference.UNKNOWN_ID, toNodePK.getInstanceId());
+  private void copyPublication(final PublicationDetail publiToCopy, final NodePK toNodePK,
+      final String toComponentId, final KmeliaCopyDetail copyDetail, final String userId)
+      throws PdcException, PublicationTemplateException, FormException {
+    ResourceReference toResourceReference = new ResourceReference(ResourceReference.UNKNOWN_ID,
+        toNodePK.getInstanceId());
     PublicationPK toPubPK = new PublicationPK(UNKNOWN, toNodePK);
 
     // Handle duplication as a creation, ignore initial parameters
@@ -4380,8 +4204,8 @@ public class DefaultKmeliaService implements KmeliaService {
 
     String fromId = publiToCopy.getPK().getId();
     String fromComponentId = publiToCopy.getPK().getInstanceId();
-    ResourceReference fromResourceReference =
-        new ResourceReference(publiToCopy.getPK().getId(), fromComponentId);
+    ResourceReference fromResourceReference = new ResourceReference(publiToCopy.getPK().getId(),
+        fromComponentId);
     PublicationPK fromPubPK = new PublicationPK(publiToCopy.getPK().getId(), fromComponentId);
 
     String id = createPublicationIntoTopic(newPubli, toNodePK);
@@ -4417,7 +4241,6 @@ public class DefaultKmeliaService implements KmeliaService {
 
     // Index publication to index its files and content
     publicationService.createIndex(toPubPK);
-    return newPubli;
   }
 
   private void setToByPassDraftMode(@TargetPK final KmeliaCopyDetail copyDetail,
@@ -4425,6 +4248,7 @@ public class DefaultKmeliaService implements KmeliaService {
     if (StringUtil.isDefined(copyDetail.getPublicationStatus())) {
       String profile = getProfile(userId, nodePK);
       if (!copyDetail.getPublicationStatus().equals(PublicationDetail.DRAFT_STATUS)) {
+        //noinspection ConstantConditions
         if (SilverpeasRole.fromString(profile).isGreaterThanOrEquals(SilverpeasRole.PUBLISHER)) {
           newPubli.setStatus(PublicationDetail.VALID_STATUS);
         } else {
@@ -4486,16 +4310,10 @@ public class DefaultKmeliaService implements KmeliaService {
     return filteredPublications;
   }
 
-  public boolean isPublicationVisible(PublicationDetail detail, SilverpeasRole profile,
-      String userId) {
-    boolean coWriting = isCoWritingEnable(detail.getInstanceId());
-    return isPublicationVisible(detail, profile, userId, coWriting);
-  }
-
   @Override
   public void userHaveBeenDeleted(String userId) {
-    List<PublicationDetail> publications =
-        publicationService.removeUserFromTargetValidators(userId);
+    List<PublicationDetail> publications = publicationService.removeUserFromTargetValidators(
+        userId);
     SilverLogger.getLogger(this)
         .debug("User ''{0}'' have been removed from {1} publications as target validator", userId,
             publications.size());
@@ -4508,21 +4326,17 @@ public class DefaultKmeliaService implements KmeliaService {
       String userId, boolean coWriting) {
     if (detail.getStatus() != null) {
       if (detail.isValid()) {
-        if (isVisible(detail, profile, userId, coWriting)) {
-          return true;
-        }
+        return isVisible(detail, profile, userId, coWriting);
       } else {
+        // si le thème est en co-rédaction, toutes les publications sont visibles par tous,
+        // sauf les lecteurs
         if (detail.isDraft()) {
           // si le theme est en co-rédaction et si on autorise le mode brouillon visible par tous
           // toutes les publications en mode brouillon sont visibles par tous, sauf les lecteurs
           // sinon, seules les publications brouillon sont visibles à l'utilisateur
-          if (isVisibleInDraft(detail, profile, userId, coWriting)) {
-            return true;
-          }
-        } else if (isVisibleInPublished(detail, profile, userId, coWriting)) {
-          // si le thème est en co-rédaction, toutes les publications sont visibles par tous,
-          // sauf les lecteurs
-          return true;
+          return isVisibleInDraft(detail, profile, userId, coWriting);
+        } else {
+          return isVisibleInPublished(detail, profile, userId, coWriting);
         }
       }
     }
@@ -4548,12 +4362,9 @@ public class DefaultKmeliaService implements KmeliaService {
     if (detail.isVisible()) {
       return true;
     } else {
-      if (profile == SilverpeasRole.ADMIN || userId.equals(detail.getUpdaterId()) ||
-          (profile != SilverpeasRole.USER && coWriting)) {
-        return true;
-      }
+      return profile == SilverpeasRole.ADMIN || userId.equals(detail.getUpdaterId()) ||
+          (profile != SilverpeasRole.USER && coWriting);
     }
-    return false;
   }
 
   private PublicationDetail clonePublication(String cloneId, PublicationPK pubPK,
@@ -4574,14 +4385,9 @@ public class DefaultKmeliaService implements KmeliaService {
 
   private RecordSet getXMLFormFrom(String infoId, PublicationPK pubPK)
       throws PublicationTemplateException {
-    // register xmlForm to publication
-    String xmlFormShortName = infoId;
-
-    // get xmlContent to paste
-    PublicationTemplateManager publicationTemplateManager =
-        PublicationTemplateManager.getInstance();
+    PublicationTemplateManager publicationTemplateManager = PublicationTemplateManager.getInstance();
     PublicationTemplate pubTemplate = publicationTemplateManager.getPublicationTemplate(
-        pubPK.getInstanceId() + ":" + xmlFormShortName);
+        pubPK.getInstanceId() + ":" + infoId);
 
     return pubTemplate.getRecordSet();
   }
@@ -4589,8 +4395,8 @@ public class DefaultKmeliaService implements KmeliaService {
   protected void onDocumentDeletion(AttachmentRef attachment) {
     Optional<KmeliaOperationContext> context = KmeliaOperationContext.current();
     if (context.isEmpty() || !context.get().isAbout(DELETION)) {
-      PublicationPK pubPK =
-          new PublicationPK(attachment.getForeignId(), attachment.getInstanceId());
+      PublicationPK pubPK = new PublicationPK(attachment.getForeignId(),
+          attachment.getInstanceId());
       externalElementsOfPublicationHaveChanged(pubPK, attachment.getUserId(), false);
     }
   }
@@ -4615,6 +4421,7 @@ public class DefaultKmeliaService implements KmeliaService {
     }
     for (String userId : validatorIds) {
       String profile = getProfileOnPublication(userId, publication.getPK());
+      //noinspection ConstantConditions
       if (profile != null &&
           SilverpeasRole.fromString(profile).isGreaterThanOrEquals(SilverpeasRole.PUBLISHER)) {
         activeValidatorIds.add(userId);
@@ -4626,12 +4433,10 @@ public class DefaultKmeliaService implements KmeliaService {
   @Override
   public void performReminder(final Reminder reminder) {
     if (KMELIA_DELAYED_VISIBILITY_USER_NOTIFICATION.asString().equals(reminder.getProcessName())) {
-      ContributionManager.get().getById(reminder.getContributionId()).ifPresent(p -> {
-        final PublicationDetail publication = (PublicationDetail) p;
-        if (!isPublicationInBasket(publication.getPK())) {
-          sendSubscriptionsNotification(publication, NotifAction.PUBLISHED, false);
-        }
-      });
+      getContributionById(reminder.getContributionId()).filter(
+              p -> !isPublicationInBasket(p.getPk()))
+          .map(KmeliaPublication::getDetail)
+          .ifPresent(p -> sendSubscriptionsNotification(p, NotifAction.PUBLISHED, false));
     }
   }
 
@@ -4656,8 +4461,7 @@ public class DefaultKmeliaService implements KmeliaService {
   public List<KmeliaPublication> getNonVisiblePublications(String componentId, String userId) {
     try {
       Collection<PublicationDetail> temp = publicationService.getPublicationsByCriteria(
-          PublicationCriteria
-              .onComponentInstanceIds(componentId)
+          PublicationCriteria.onComponentInstanceIds(componentId)
               .ofStatus(PublicationDetail.VALID_STATUS)
               .nonVisibleAt(OffsetDateTime.now())
               .excludingNodes(NodePK.BIN_NODE_ID)

@@ -24,6 +24,7 @@ import org.silverpeas.components.scheduleevent.service.model.beans.Contributor;
 import org.silverpeas.components.scheduleevent.service.model.beans.ScheduleEvent;
 import org.silverpeas.components.scheduleevent.service.model.dao.ScheduleEventDao;
 import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
@@ -32,6 +33,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -47,8 +49,8 @@ public class ScheduleEventServiceImpl implements ScheduleEventService {
   private ScheduleEventDao scheduleEventDao;
 
   @Override
-  public String createScheduleEvent(ScheduleEvent scheduleEvent) {
-    return scheduleEventDao.createScheduleEvent(scheduleEvent);
+  public void createScheduleEvent(ScheduleEvent scheduleEvent) {
+    scheduleEventDao.createScheduleEvent(scheduleEvent);
   }
 
   @Override
@@ -102,14 +104,8 @@ public class ScheduleEventServiceImpl implements ScheduleEventService {
   }
 
   @Override
-  public void deleteContributor(String id) {
-    Contributor contrib = scheduleEventDao.getContributor(id);
-    scheduleEventDao.deleteContributor(contrib);
-  }
-
-  @Override
-  public ScheduleEvent getContributionById(String contributionId) {
-    return findScheduleEvent(contributionId);
+  public Optional<ScheduleEvent> getContributionById(ContributionIdentifier contributionId) {
+    return Optional.ofNullable(findScheduleEvent(contributionId.getLocalId()));
   }
 
   @Override

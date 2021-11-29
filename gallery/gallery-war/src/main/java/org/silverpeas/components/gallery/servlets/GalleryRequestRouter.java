@@ -1261,7 +1261,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
     // 1. Getting the header data
     delegate.getHeaderData()
-        .setHompageUrl(request.getParameter(ParameterNames.StreamingHomepageUrl));
+        .setHomepageUrl(request.getParameter(ParameterNames.StreamingHomepageUrl));
     delegate.getHeaderData().setTitle(request.getParameter(ParameterNames.MediaTitle));
     delegate.getHeaderData().setDescription(request.getParameter(ParameterNames.MediaDescription));
     delegate.getHeaderData().setAuthor(request.getParameter(ParameterNames.MediaAuthor));
@@ -1401,7 +1401,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
     // 1. Récupération des données de l'entête
     delegate.getHeaderData()
-        .setHompageUrl(request.getParameter(ParameterNames.StreamingHomepageUrl));
+        .setHomepageUrl(request.getParameter(ParameterNames.StreamingHomepageUrl));
     delegate.getHeaderData().setTitle(request.getParameter(ParameterNames.MediaTitle));
     delegate.getHeaderData().setDescription(request.getParameter(ParameterNames.MediaDescription));
     delegate.getHeaderData().setAuthor(request.getParameter(ParameterNames.MediaAuthor));
