@@ -161,6 +161,8 @@ public class KmeliaImportExport extends GEDImportExport {
       }
       // S'il n'existe pas encore, on le crée et on le configure
       final NodePK parentTopicPk = new NodePK(Integer.toString(topicId), getCurrentComponentId());
+      final NodeDetail father = getNodeService().getDetail(parentTopicPk);
+      nodeDetail.setRightsDependsOn(father.getRightsDependsOn());
       final NodePK newTopicPk = getKmeliaService().addSubTopic(parentTopicPk, nodeDetail, "None");
       if (Integer.parseInt(newTopicPk.getId()) < 0) {
         unitReport.setError(UnitReport.ERROR_ERROR);
@@ -215,6 +217,8 @@ public class KmeliaImportExport extends GEDImportExport {
         final NodePK topicPK = new NodePK(Integer.toString(topicId), getCurrentComponentId());
         nodeDetail.getNodePK().setComponentName(getCurrentComponentId());
         nodeDetail.setCreatorId(getCurrentUserDetail().getId());
+        final NodeDetail father = getNodeService().getDetail(topicPK);
+        nodeDetail.setRightsDependsOn(father.getRightsDependsOn());
         nodePK = getKmeliaService().addSubTopic(topicPK, nodeDetail, "None");
         massiveReport.addOneTopicCreated();
       } catch (Exception ex) {
