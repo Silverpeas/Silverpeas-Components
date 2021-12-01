@@ -95,7 +95,6 @@ public class RequestsByStatus {
     new MergeRuleByStates(asList(STATE_UNREAD, STATE_READ), RequestsByStatus::addToValidate));
 
   static final List<ValidationMergeRuleByStates> VALIDATION_MERGING_RULES_BY_STATES = asList(
-    new ValidationMergeRuleByStates(singletonList(STATE_DRAFT), skipValidationCriteriaIfLastValidatorConfigurer, RequestsByStatus::addDraft),
     new ValidationMergeRuleByStates(singletonList(STATE_REFUSED), skipValidationCriteriaIfLastValidatorConfigurer, RequestsByStatus::addDenied),
     new ValidationMergeRuleByStates(singletonList(STATE_VALIDATED), skipValidationCriteriaIfLastValidatorConfigurer, RequestsByStatus::addValidated),
     new ValidationMergeRuleByStates(singletonList(STATE_ARCHIVED), skipValidationCriteriaIfLastValidatorConfigurer, RequestsByStatus::addArchived),
