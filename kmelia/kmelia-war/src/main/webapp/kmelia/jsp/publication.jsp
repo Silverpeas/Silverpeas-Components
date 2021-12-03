@@ -55,9 +55,6 @@
 <%@ page import="java.util.Optional" %>
 <%@ page import="org.silverpeas.core.contribution.publication.model.Location" %>
 <%@ page import="org.silverpeas.components.kmelia.model.ValidatorsList" %>
-<%@ page import="org.silverpeas.core.webapi.selection.BasketItem" %>
-<%@ page import="org.silverpeas.core.webapi.selection.SelectionBasketEntry" %>
-<%@ page import="org.silverpeas.core.util.JSONCodec" %>
 
 <c:set var="userLanguage" value="${requestScope.resources.language}"/>
 <c:set var="contentLanguage" value="${requestScope.Language}"/>
@@ -253,7 +250,6 @@
 <c:set var="publication" value="<%=pubDetail%>"/>
 <jsp:useBean id="publication" type="org.silverpeas.core.contribution.publication.model.PublicationDetail"/>
 <c:set var="publicationRaterRatingEntity" value="<%=RaterRatingEntity.fromRateable(pubDetail)%>"/>
-<c:set var="publicationBasketItemAsJSON" value="<%=JSONCodec.encode(BasketItem.from(pubDetail))%>"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.kmelia" xml:lang="${userLanguage}">
@@ -269,15 +265,6 @@
     <view:includePlugin name="basketSelection"/>
     <script type="text/javascript" src="<%=m_context%>/kmelia/jsp/javaScript/glossaryHighlight.js"></script>
     <script type="text/javascript">
-
-      function putInBasket() {
-        new BasketService().putNewEntry({
-          item : ${publicationBasketItemAsJSON},
-          context : {
-            reason : 'TRANSFER'
-          }
-        });
-      }
 
       $(function() {
         $( "#publication-export" ).dialog({
@@ -347,6 +334,19 @@
 
       function clipboardCut() {
         top.IdleFrame.location.href = '../..<%=kmeliaScc.getComponentUrl()%>cut.jsp?Id=<%=id%>';
+      }
+
+      function putInBasket() {
+        let basket = new BasketService();
+        basket.putNewEntry({
+          context: {
+            reason: BasketService.Context.transfert
+          },
+          item: {
+            id: '<%= pubDetail.getIdentifier().asString() %>',
+            type: '<%= resourceType %>'
+          }
+        });
       }
 
       function compileResult(fileName) {

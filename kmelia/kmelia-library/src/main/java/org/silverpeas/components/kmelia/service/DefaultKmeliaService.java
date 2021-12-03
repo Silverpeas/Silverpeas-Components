@@ -196,6 +196,7 @@ public class DefaultKmeliaService implements KmeliaService {
   private PdcSubscriptionManager pdcSubscriptionManager;
   @Inject
   private KmeliaContentManager kmeliaContentManager;
+  private PublicationDetail clone;
 
   private int getNbPublicationsOnRoot(String componentId) {
     String parameterValue =
@@ -3388,17 +3389,6 @@ public class DefaultKmeliaService implements KmeliaService {
     PublicationImport publicationImport =
         new PublicationImport(this, componentId, topicId, spaceId, userId);
     return publicationImport.createTopic(name, description);
-  }
-
-  @Override
-  public void doAutomaticDraftOut() {
-    // get all clones with draftoutdate <= current date
-    // pubCloneId <> -1 AND pubCloneStatus == 'Draft'
-    Collection<PublicationDetail> pubs = publicationService.getPublicationsToDraftOut(true);
-    // for each clone, call draftOutPublication method
-    for (PublicationDetail pub : pubs) {
-      draftOutPublication(pub.getClonePK(), null, ADMIN_ROLE, true);
-    }
   }
 
   @Override

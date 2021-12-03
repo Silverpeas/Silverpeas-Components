@@ -134,6 +134,34 @@ function cutPublications() {
   }, 'text');
 }
 
+function putPublicationsInBasket() {
+  let componentId = getComponentId();
+  let selectedPublicationIds = getSelectedPublicationIds();
+  let notSelectedPublicationIds = getNotSelectedPublicationIds();
+  let encodeToId = function(componentId, id) {
+    return componentId + ':Publication' + ':' + id;
+  }
+  let basket = new BasketService();
+  notSelectedPublicationIds.split(',').forEach(id => {
+    basket.deleteEntry({
+      item: {
+        id: encodeToId(componentId, id.trim())
+      }
+    });
+  });
+  selectedPublicationIds.split(',').forEach(id => {
+    basket.putNewEntry({
+      context: {
+        reason: BasketService.Context.transfert
+      },
+      item: {
+        id: encodeToId(componentId, id.trim()),
+        type: 'Publication'
+      }
+    });
+  });
+}
+
 function updatePublications() {
   var componentId = getComponentId();
   var selectedPublicationIds = getSelectedPublicationIds();

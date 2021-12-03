@@ -52,6 +52,7 @@ import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.model.Thumbnail;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.date.TemporalFormatter;
 import org.silverpeas.core.index.indexing.model.FieldDescription;
 import org.silverpeas.core.index.search.model.QueryDescription;
@@ -1185,7 +1186,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     String spaceLabel = Encode.forHtml(
         orga.getSpaceInstLightById(compoInstLight.getDomainFatherId())
             .getName(kmelia.getCurrentLanguage()));
-    return pub.getPublicationService().getMainLocation(pub.getPK())
+    return PublicationService.get().getMainLocation(pub.getPK())
         .map(m -> {
           String topicPathName = spaceLabel + " > " + componentLabel + " > " + kmelia.displayPath(
               kmelia.getKmeliaService().getPath(m.getId(), m.getInstanceId()), false, 3);

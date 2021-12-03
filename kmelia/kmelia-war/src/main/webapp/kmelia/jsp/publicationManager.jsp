@@ -68,7 +68,6 @@
     String targetValidatorName = "";
     String tempId = "";
     String infoId = "0";
-    String draftOutDate = "";
 
     String nextAction = "";
 
@@ -126,8 +125,6 @@
     boolean isNotificationAllowed = kmeliaScc.isNotificationAllowed();
     ThumbnailSettings thumbnailSettings = kmeliaScc.getThumbnailSettings();
     Thumbnail thumbnail = null;
-
-    boolean isAutomaticDraftOutEnabled = StringUtil.isDefined(resources.getSetting("cronAutomaticDraftOut"));
 
     String linkedPathString = displayPath(path, true, 3, language) + name;
     String pathString = displayPath(path, false, 3, language);
@@ -234,10 +231,6 @@
 
       tempId = pubDetail.getCloneId();
       infoId = pubDetail.getInfoId();
-
-      if (pubDetail.getDraftOutDate() != null) {
-        draftOutDate = resources.getInputDate(pubDetail.getDraftOutDate());
-      }
 
       nextAction = "UpdatePublication";
 
@@ -714,14 +707,6 @@
 			<fieldset id="pubDates" class="skinFieldset">
 				<legend><%=resources.getString("kmelia.header.period") %></legend>
 				<div class="fields">
-					<% if (pubDetail != null && isAutomaticDraftOutEnabled && !"-1".equals(pubDetail.getCloneId())) { %>
-					<div class="field" id="draftOutArea">
-						<label for="draftOutDate" class="txtlibform"><%=resources.getString("kmelia.automaticDraftOutDate")%></label>
-						<div class="champs">
-							<input id="draftOutDate" type="text" class="dateToPick" name="KmeliaPubDraftOutDate" value="<%=draftOutDate%>" size="12" maxlength="10"/>
-						</div>
-					</div>
-					<% } %>
 					<div class="field" id="beginArea">
 						<label for="beginDate" class="txtlibform"><%=resources.getString("PubDateDebut")%></label>
 						<div class="champs">

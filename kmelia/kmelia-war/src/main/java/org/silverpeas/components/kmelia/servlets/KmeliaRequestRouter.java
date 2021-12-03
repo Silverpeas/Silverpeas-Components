@@ -1567,20 +1567,15 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
     String targetValidatorId = FileUploadUtil.getParameter(parameters, "KmeliaPubValideurId");
     String tempId = FileUploadUtil.getParameter(parameters, "KmeliaPubTempId");
     String infoId = FileUploadUtil.getParameter(parameters, "KmeliaPubInfoId");
-    String draftOutDate = FileUploadUtil.getParameter(parameters, "KmeliaPubDraftOutDate");
 
     Date jBeginDate = null;
     Date jEndDate = null;
-    Date jDraftOutDate = null;
 
     if (StringUtil.isDefined(beginDate)) {
       jBeginDate = DateUtil.stringToDate(beginDate, kmelia.getLanguage());
     }
     if (StringUtil.isDefined(endDate)) {
       jEndDate = DateUtil.stringToDate(endDate, kmelia.getLanguage());
-    }
-    if (StringUtil.isDefined(draftOutDate)) {
-      jDraftOutDate = DateUtil.stringToDate(draftOutDate, kmelia.getLanguage());
     }
 
     String pubId = ResourceReference.UNKNOWN_ID;
@@ -1601,7 +1596,6 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
     pubDetail.setAuthor(author);
     pubDetail.setStatus(status);
-    pubDetail.setDraftOutDate(jDraftOutDate);
     if (StringUtil.isDefined(targetValidatorId)) {
       pubDetail.setTargetValidatorId(targetValidatorId);
     }

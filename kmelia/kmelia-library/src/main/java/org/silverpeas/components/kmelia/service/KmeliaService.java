@@ -625,8 +625,6 @@ public interface KmeliaService extends ApplicationService {
   String createTopic(String componentId, String topicId, String spaceId, String userId, String name,
       String description);
 
-  void doAutomaticDraftOut();
-
   /**
    * Clone the given publication. Create new publication based on pubDetail object if not null or
    * CompletePublication otherwise. Original publication will not be modified (except references to
