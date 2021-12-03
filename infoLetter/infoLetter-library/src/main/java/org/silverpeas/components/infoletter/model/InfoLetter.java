@@ -24,13 +24,35 @@
 package org.silverpeas.components.infoletter.model;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.contribution.content.ddwe.model.DragAndDropWebEditorStore;
+import org.silverpeas.core.contribution.content.renderer.ContributionContentRenderer;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
+import org.silverpeas.core.contribution.model.ContributionContent;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.model.WysiwygContent;
+import org.silverpeas.core.ddwe.DragAndDropEditorContent;
+import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
-import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.util.StringUtil;
+
+import java.util.Optional;
+import java.util.function.Predicate;
+
+import static java.util.Optional.ofNullable;
+import static org.silverpeas.core.i18n.I18NHelper.DEFAULT_LANGUAGE;
+import static org.silverpeas.core.util.StringUtil.EMPTY;
+import static org.silverpeas.core.util.StringUtil.isNotDefined;
 
 public class InfoLetter extends SilverpeasBean implements Comparable<InfoLetter> {
 
   private static final long serialVersionUID = -4798869204934629386L;
+
+  public static final String TYPE = "Lettre";
+  public static final String TEMPLATE_ID = "template";
 
   /** InfoLetter instance identifier */
   private String instanceId;
@@ -43,6 +65,8 @@ public class InfoLetter extends SilverpeasBean implements Comparable<InfoLetter>
 
   /** InfoLetter frequency */
   private String periode;
+
+  private WysiwygContent templateContent;
 
   /**
    * Default constructor
@@ -108,10 +132,12 @@ public class InfoLetter extends SilverpeasBean implements Comparable<InfoLetter>
 
   // Methodes
 
+  @Override
   public int _getConnectionType() {
     return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
   }
 
+  @Override
   public int compareTo(InfoLetter obj) {
     if (obj == null) {
       return 0;
@@ -140,8 +166,99 @@ public class InfoLetter extends SilverpeasBean implements Comparable<InfoLetter>
         .toHashCode();
   }
 
+  @Override
   public String _getTableName() {
     return "SC_IL_Letter";
   }
 
+  public boolean existsTemplateContent() {
+    return Optional.of(new DragAndDropWebEditorStore(getTemplateIdentifier()))
+        .map(DragAndDropWebEditorStore::getFile)
+        .map(SilverpeasFile::exists)
+        .filter(Boolean.TRUE::equals)
+        .orElseGet(() -> getTemplateWysiwygContent()
+            .map(ContributionContent::getRenderer)
+            .map(ContributionContentRenderer::renderEdition)
+            .filter(StringUtil::isDefined)
+            .filter(Predicate.not("<body></body>"::equalsIgnoreCase))
+            .isPresent());
+  }
+
+  public Optional<WysiwygContent> getTemplateWysiwygContent() {
+    if (this.templateContent == null) {
+      final ContributionIdentifier templateId = getTemplateIdentifier();
+      this.templateContent = WysiwygController.get(templateId.getComponentInstanceId(),
+          templateId.getLocalId(), DEFAULT_LANGUAGE);
+    }
+    return ofNullable(this.templateContent);
+  }
+
+  /**
+   * Saves the template content from the given newsletter.
+   * @param pub the {@link InfoLetterPublication} instance from which the template content MUST
+   * be saved.
+   * <p>
+   *   If a Drag And Drop Web Edition exists, then it is the one stored. Otherwise a WYSIWYG
+   *   content is saved.
+   * </p>
+   */
+  public void saveTemplateContentFrom(final InfoLetterPublication pub) {
+    final ContributionIdentifier pubId = pub.getIdentifier();
+    final String content = Optional.of(new DragAndDropWebEditorStore(pubId))
+        .map(DragAndDropWebEditorStore::getFile)
+        .filter(DragAndDropWebEditorStore.File::exists)
+        .map(DragAndDropWebEditorStore.File::getContainer)
+        .flatMap(DragAndDropWebEditorStore.Container::getContent)
+        .map(DragAndDropWebEditorStore.Content::getValue)
+        .orElseGet(() -> pub.getWysiwygContent()
+            .map(ContributionContent::getRenderer)
+            .map(ContributionContentRenderer::renderEdition)
+            .filter(StringUtil::isDefined)
+            .orElse(EMPTY));
+    final DragAndDropWebEditorStore templateStore = new DragAndDropWebEditorStore(getTemplateIdentifier());
+    templateStore.getFile().getContainer().getOrCreateTmpContent().setValue(content);
+    templateStore.save();
+    saveTemplateContent(null);
+  }
+
+  /**
+   * Saves given content.
+   * <p>
+   *   The given content MAY be directly a WYSIWYG content, in a such case the content has been
+   *   edited by a WYSIWYG editor.
+   * </p>
+   * <p>
+   *   The given content is not defined, in a such case the content has been MAYBE edited by a
+   *   Drag And Drop Web Editor. Then the temporary content is saved into final one and the
+   *   Inlined HTML is saved into WYSIWYG repository.
+   * </p>
+   * @param manualContent a manual content. The content is specified when it comes directly from
+   * a WYSIWYG editing.
+   */
+  public void saveTemplateContent(final String manualContent) {
+    final ContributionIdentifier templateId = getTemplateIdentifier();
+    String wysiwygContent = manualContent;
+    if (isNotDefined(manualContent)) {
+      // For now looking into Drag & Drop Edition Content
+      final DragAndDropWebEditorStore store = new DragAndDropWebEditorStore(templateId);
+      wysiwygContent = store.getFile()
+          .getContainer()
+          .getTmpContent()
+          .map(DragAndDropWebEditorStore.Content::getValue)
+          .map(c -> {
+            store.getFile().getContainer().getOrCreateContent().setValue(c);
+            store.save();
+            final DragAndDropEditorContent content = new DragAndDropEditorContent(c);
+            return content.getSimpleContent().orElseGet(content::getInlinedHtml);
+          })
+          .orElse(manualContent);
+    }
+    // Update the Wysiwyg if exists, create one otherwise
+    WysiwygController.updateFileAndAttachment(wysiwygContent, templateId.getComponentInstanceId(),
+        templateId.getLocalId(), User.getCurrentUser().getId(), I18NHelper.DEFAULT_LANGUAGE);
+  }
+
+  public ContributionIdentifier getTemplateIdentifier() {
+    return ContributionIdentifier.from(getInstanceId(), TEMPLATE_ID + getPK().getId(), TYPE);
+  }
 }

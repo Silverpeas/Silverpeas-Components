@@ -23,13 +23,144 @@
 */
 
 .infoletter fieldset#infoFieldset legend {
-  background:transparent url(../../../util/icons/component/infoLetterSmall.gif) 11px 0px no-repeat;
+  background: transparent url(../../../util/icons/component/infoLetterSmall.gif) 11px 0px no-repeat;
 }
 
 #infoFieldset .field {
   width: 98%;
 }
 
-#infoFieldset #titleArea input{
+#infoFieldset #titleArea input {
   width: 46%;
+}
+
+#infoletter-draft,
+#infoletter-sended-reader {
+  width: calc(100% - 582px - 6%);
+  float: right;
+  padding-left: 3%;
+  border-left: 1px solid #ccc;
+  min-height: 300px;
+}
+
+#infoletter-sended,
+#infoletter-lastNSent {
+  width: 582px;
+  float: left;
+  margin-left: 0;
+  margin-right: 2%;
+  margin-bottom: 2em;
+}
+
+.list-infoletter {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  gap: 10px;
+  flex-flow: wrap;
+}
+
+.list-infoletter li {
+  background-color: #f0f0f0;
+  border: 1px solid #cccccc;
+  border-radius: 8px;
+  padding: 10px;
+  margin: 0;
+  position: relative;
+  text-align: center;
+}
+
+.list-infoletter li {
+  cursor: pointer;
+  display: block;
+  max-width: 165px;
+}
+
+.list-infoletter .title {
+  font-weight: bold;
+  padding-bottom: 0.5em;
+}
+
+.newsletter-thumb {
+  overflow: hidden;
+  width: 165px;
+  height: 283px;
+  display: block;
+  margin: auto;
+}
+
+#infoletter-home-app .header h3 {
+  padding: 0;
+  margin: 0 0 1em;
+  font-size: 130%;
+  font-weight: 100;
+  line-height: 90%;
+}
+
+
+#infoletter-home-app .header h3 strong {
+  display: block;
+  font-size: 90%;
+  font-weight: 100;
+  color: #1c94d4;
+}
+
+.newsletter-thumb iframe {
+  border: none;
+  -ms-zoom: 0.33;
+  -moz-transform: scale(0.33);
+  -moz-transform-origin: 0 0;
+  -o-transform: scale(0.33);
+  -o-transform-origin: 0 0;
+  -webkit-transform: scale(0.33);
+  -webkit-transform-origin: 0 0;
+  pointer-events: none;
+}
+
+.list-infoletter .date {
+  position: absolute;
+  bottom: -1em;
+  left: 10px;
+  background-color: #1c94d4;
+  color: #FFF;
+  padding: 5px;
+  z-index: 10;
+}
+
+
+.list-infoletter li a.delete-button {
+  display: block;
+  text-indent: -3000em;
+  position: absolute;
+  bottom: 0;
+  right: 10px;
+  width: 16px;
+  height: 20px;
+  padding: 0;
+  z-index: 1000;
+}
+
+.list-infoletter li:hover .delete-button {
+  background: transparent url(../../../util/icons/delete.gif) 0 0 no-repeat;
+}
+
+.view-main {
+  display: inline-flex;
+}
+
+.publiDesc {
+  font-weight: bold;
+  color: #666666;
+  padding: 8px;
+  border-left: 6px solid #e4e4e4;
+}
+
+.headerInfoLetter .frequence {
+  background: url(/../../../util/icons/periodicity.gif) 0 0 no-repeat;
+  padding-left: 24px;
+}
+
+.view .moreActions {
+  display: none;
 }

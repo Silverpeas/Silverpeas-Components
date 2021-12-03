@@ -24,22 +24,31 @@
 package org.silverpeas.components.infoletter.model;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.contribution.content.ddwe.model.DragAndDropWebEditorStore;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.model.WysiwygContent;
+import org.silverpeas.core.ddwe.DragAndDropEditorContent;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
-import org.silverpeas.core.WAPrimaryKey;
-import org.silverpeas.core.i18n.I18NHelper;
-import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.util.URLUtil;
+
+import java.util.Optional;
+
+import static java.util.Optional.ofNullable;
+import static org.silverpeas.components.infoletter.model.InfoLetterPublicationPdC.TYPE;
+import static org.silverpeas.core.util.StringUtil.isNotDefined;
 
 /**
  * @author frageade
  */
 public class InfoLetterPublication extends SilverpeasBean implements Comparable<InfoLetter> {
   private static final long serialVersionUID = 2579802983989822400L;
-  public final static int PUBLICATION_EN_REDACTION = 1;
-  public final static int PUBLICATION_VALIDEE = 2;
-
-  public static final String TEMPLATE_ID = "template";
+  public static final int PUBLICATION_EN_REDACTION = 1;
+  public static final int PUBLICATION_VALIDEE = 2;
 
   /**
    * instance identifier
@@ -71,7 +80,7 @@ public class InfoLetterPublication extends SilverpeasBean implements Comparable<
    */
   private int letterId;
 
-  private String content;
+  private WysiwygContent content;
 
   /**
    * Default constructor
@@ -104,6 +113,10 @@ public class InfoLetterPublication extends SilverpeasBean implements Comparable<
     this.parutionDate = parutionDate;
     this.publicationState = publicationState;
     this.letterId = letterId;
+  }
+
+  public ContributionIdentifier getIdentifier() {
+    return ContributionIdentifier.from(getInstanceId(), getPK().getId(), TYPE);
   }
 
   public String getInstanceId() {
@@ -164,10 +177,12 @@ public class InfoLetterPublication extends SilverpeasBean implements Comparable<
 
   // Methodes
 
+  @Override
   public int _getConnectionType() {
     return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
   }
 
+  @Override
   public int compareTo(InfoLetter obj) {
     if (obj == null) {
       return 0;
@@ -196,6 +211,7 @@ public class InfoLetterPublication extends SilverpeasBean implements Comparable<
         .toHashCode();
   }
 
+  @Override
   public String _getTableName() {
     return "SC_IL_Publication";
   }
@@ -204,11 +220,58 @@ public class InfoLetterPublication extends SilverpeasBean implements Comparable<
     return (publicationState == PUBLICATION_VALIDEE);
   }
 
-  public String _getContent() {
+  public Optional<WysiwygContent> getWysiwygContent() {
     if (this.content == null) {
-      this.content =
-          WysiwygController.load(getInstanceId(), getPK().getId(), I18NHelper.DEFAULT_LANGUAGE);
+      this.content = WysiwygController.get(getInstanceId(), getPK().getId(),
+          I18NHelper.DEFAULT_LANGUAGE);
     }
-    return this.content;
+    return ofNullable(this.content);
+  }
+
+  /**
+   * Saves given content.
+   * <p>
+   *   The given content MAY be directly a WYSIWYG content, in a such case the content has been
+   *   edited by a WYSIWYG editor.
+   * </p>
+   * <p>
+   *   The given content is not defined, in a such case the content has been MAYBE edited by a
+   *   Drag And Drop Web Editor. Then the temporary content is saved into final one and the
+   *   Inlined HTML is saved into WYSIWYG repository.
+   * </p>
+   * @param manualContent a manual content. The content is specified when it comes directly from
+   * a WYSIWYG editing.
+   */
+  public void saveContent(final String manualContent) {
+    final ContributionIdentifier identifier = getIdentifier();
+    String wysiwygContent = manualContent;
+    if (isNotDefined(manualContent)) {
+      // For now looking into Drag & Drop Edition Content
+      final DragAndDropWebEditorStore store = new DragAndDropWebEditorStore(identifier);
+      wysiwygContent = store.getFile()
+          .getContainer()
+          .getTmpContent()
+          .map(DragAndDropWebEditorStore.Content::getValue)
+          .map(c -> {
+            store.getFile().getContainer().getOrCreateContent().setValue(c);
+            store.save();
+            final DragAndDropEditorContent editorContent = new DragAndDropEditorContent(c);
+            return editorContent.getSimpleContent().orElseGet(editorContent::getInlinedHtml);
+          })
+          .orElse(manualContent);
+    }
+    // Update the Wysiwyg if exists, create one otherwise
+    WysiwygController.updateFileAndAttachment(wysiwygContent, identifier.getComponentInstanceId(),
+        identifier.getLocalId(), User.getCurrentUser().getId(), I18NHelper.DEFAULT_LANGUAGE);
+  }
+
+  /**
+   * Deletes contents linked to the publication (WYSIWYG and DDWE ones).
+   */
+  public void deleteContent() {
+    final ContributionIdentifier identifier = getIdentifier();
+    WysiwygController.deleteWysiwygAttachments(identifier.getComponentInstanceId(),
+        identifier.getLocalId());
+    new DragAndDropWebEditorStore(identifier).delete();
   }
 }

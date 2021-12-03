@@ -27,12 +27,10 @@ import org.silverpeas.core.ApplicationService;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -44,10 +42,6 @@ public interface InfoLetterService extends ApplicationService {
   static InfoLetterService get() {
     return ServiceProvider.getService(InfoLetterService.class);
   }
-
-  @SuppressWarnings("unchecked")
-  @Override
-  Optional<InfoLetterPublicationPdC> getContributionById(ContributionIdentifier contributionId);
 
   /**
    * Create information letter
@@ -189,4 +183,10 @@ public interface InfoLetterService extends ApplicationService {
    */
   Set<String> sendLetterByMail(InfoLetterPublicationPdC ilp, String server,
       String mimeMultipart, Set<String> listEmailDest, String subject, String emailFrom);
+
+  /**
+   * Indexes all info letter indexable data.
+   * @param componentId the identifier of the concerned component instance.
+   */
+  void indexInfoLetter(String componentId);
 }

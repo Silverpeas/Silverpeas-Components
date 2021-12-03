@@ -23,74 +23,141 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
 <%@ include file="check.jsp" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title><%=resource.getString("GML.popupTitle")%></title>
-<view:looknfeel withCheckFormScript="true"/>
-<script type="text/javascript">
-	function goHeaders (){
-		document.headerParution.submit();
-	}
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 
-  function goEditContent (){
-    document.editParution.submit();
-  }
+<c:set var="resources" value="${requestScope.resources}"/>
+<jsp:useBean id="resources" type="org.silverpeas.core.util.MultiSilverpeasBundle"/>
+<c:set var="userLanguage" value="${resources.language}"/>
+<fmt:setLocale value="${userLanguage}"/>
+<view:setBundle bundle="${resources.multilangBundle}"/>
+<view:setBundle bundle="${resources.iconsBundle}" var="icons"/>
 
-	function goFiles (){
-		document.attachedFiles.submit();
-	}
+<c:set var="origin" value='${silfn:fullApplicationURL(pageContext.request).replaceFirst("(https?://[^/]+)(.*)", "$1")}'/>
+<view:setConstant constant="org.silverpeas.core.admin.user.model.SilverpeasRole.ADMIN" var="adminRole"/>
+<view:setConstant constant="org.silverpeas.components.infoletter.model.InfoLetterPublicationPdC.TYPE" var="resourceType"/>
 
-	function sendLetterToManager (){
-		$.progressMessage();
-		document.headerParution.action = "SendLetterToManager";
-		document.headerParution.submit();
-	}
-</script>
-</head>
-<body>
-<%
-String parutionTitle = (String) request.getAttribute("parutionTitle");
-String parution = (String) request.getAttribute("parution");
+<fmt:message key="infoLetter.sendLetterToManager" var="sendLetterToManagerLabel"/>
+<fmt:message key="infoLetter.sendLetterToManager" var="sendLetterToManagerIcon" bundle="${icons}"/>
+<c:url var="sendLetterToManagerIcon" value="${sendLetterToManagerIcon}"/>
+<fmt:message key="infoLetter.validLetter" var="validLetterLabel"/>
+<fmt:message key="infoLetter.validLetter" var="validLetterIcon" bundle="${icons}"/>
+<c:url var="validLetterIcon" value="${validLetterIcon}"/>
+<fmt:message key="infoLetter.saveTemplate" var="saveTemplateLabel"/>
+<fmt:message key="infoLetter.asTemplate" var="saveTemplateIcon" bundle="${icons}"/>
+<c:url var="saveTemplateIcon" value="${saveTemplateIcon}"/>
+<fmt:message key="infoLetter.confirmResetWithTemplate" var="confirmResetWithTemplate"/>
+<fmt:message key="infoLetter.resetWithTemplate" var="resetWithTemplateLabel"/>
+<fmt:message key="infoLetter.resetWithTemplate" var="resetWithTemplateIcon" bundle="${icons}"/>
+<c:url var="resetWithTemplateIcon" value="${resetWithTemplateIcon}"/>
 
-	browseBar.setPath(WebEncodeHelper.javaStringToHtmlString(parutionTitle));
+<fmt:message key="infoLetter.sendLetter" var="sendLetterMsg"/>
+<fmt:message key="infoLetter.headerLetter" var="headerLetterLabel"/>
+<fmt:message key="infoLetter.editionLetter" var="editionLetterLabel"/>
+<fmt:message key="infoLetter.previewLetter" var="previewLetterLabel"/>
 
-	operationPane.addOperation(resource.getIcon("infoLetter.sendLetterToManager"), resource.getString("infoLetter.sendLetterToManager"), "javascript:sendLetterToManager();");
+<c:set var="componentId" value="<%=componentId%>"/>
+<c:set var="entity" value="${requestScope.entity}"/>
+<jsp:useBean id="entity" type="org.silverpeas.components.infoletter.model.InfoLetterPublicationPdC"/>
+<c:set var="parution" value="${requestScope.parution}"/>
+<c:set var="parutionTitle" value="${requestScope.parutionTitle}"/>
+<c:set var="inlinedCssHtml" value="${requestScope.inlinedCssHtml}"/>
 
-	out.println(window.printBefore());
+<view:sp-page>
+  <view:sp-head-part withCheckFormScript="true">
+    <view:script src="/infoLetter/jsp/javaScripts/infoLetter.js"/>
+    <script type="text/javascript">
+      function goHeaders() {
+        setupCommonParams(sp.navRequest('ParutionHeaders')).go();
+      }
 
-	//Instanciation du cadre avec le view generator
-  TabbedPane tabbedPane = gef.getTabbedPane();
-  tabbedPane.addTab(resource.getString("infoLetter.headerLetter"),"javascript:goHeaders();",false);
-  tabbedPane.addTab(resource.getString("infoLetter.editionLetter"),"javascript:goEditContent()",false);
-  tabbedPane.addTab(resource.getString("infoLetter.previewLetter"),"#",true);
-  tabbedPane.addTab(resource.getString("infoLetter.attachedFiles"),"javascript:goFiles();",false);
+      function goEditContent() {
+        setupCommonParams(sp.navRequest('EditContent')).go();
+      }
 
-  out.println(tabbedPane.print());
+      function sendLetterToManager() {
+        $.progressMessage();
+        setupCommonParams(sp.navRequest('SendLetterToManager')).go();
+      }
 
-	out.println(frame.printBefore());
+      function goValidate() {
+        jQuery.popup.confirm('${silfn:escapeJs(sendLetterMsg)}', function() {
+          $.progressMessage();
+          setupCommonParams(sp.navRequest('ValidateParution')).go();
+        });
+      }
 
-%>
-<view:displayWysiwyg objectId="<%=parution%>" componentId="<%=componentId %>" language="<%=resource.getLanguage() %>" />
-<form name="headerParution" action="ParutionHeaders" method="get">
-	<input type="hidden" name="parution" value="<%= parution %>"/>
-  <input type="hidden" name="ReturnUrl" value="Preview"/>
-</form>
-<form name="editParution" action="EditContent" method="get">
-  <input type="hidden" name="parution" value="<%= parution %>"/>
-</form>
-<form name="attachedFiles" action="FilesEdit" method="get">
-	<input type="hidden" name="parution" value="<%= parution %>"/>
-</form>
+      function goTemplate() {
+        $.progressMessage();
+        setupCommonParams(sp.navRequest('UpdateTemplateFromHeaders')).go();
+      }
 
-<%
-out.println(frame.printAfter());
-out.println(window.printAfter());
-%>
-<view:progressMessage/>
-</body>
-</html>
+      function goResetWithTemplate() {
+        jQuery.popup.confirm('${silfn:escapeJs(confirmResetWithTemplate)}', function() {
+          $.progressMessage();
+          setupCommonParams(sp.navRequest('EditContent')).withParam('resetWithTemplate', true).go();
+        });
+      }
+
+      function setupCommonParams(request) {
+        return request.withParam('parution', '${parution}');
+      }
+    </script>
+  </view:sp-head-part>
+  <view:sp-body-part>
+    <view:browseBar path="${parutionTitle}"/>
+    <view:operationPane>
+      <view:operation action="javascript:sendLetterToManager()" altText="${sendLetterToManagerLabel}" icon="${sendLetterToManagerIcon}"/>
+      <view:operationSeparator/>
+      <view:operation action="javascript:goValidate()" altText="${validLetterLabel}" icon="${validLetterIcon}"/>
+      <view:operationSeparator/>
+      <view:operation action="javascript:goTemplate()" altText="${saveTemplateLabel}" icon="${saveTemplateIcon}"/>
+      <view:operation action="javascript:goResetWithTemplate()" altText="${resetWithTemplateLabel}" icon="${resetWithTemplateIcon}"/>
+    </view:operationPane>
+    <view:window>
+      <view:tabs>
+        <view:tab label="${previewLetterLabel}" action="javascript:void(0)" selected="true"/>
+        <view:tab label="${headerLetterLabel}" action="javascript:goHeaders()" selected="false"/>
+        <view:tab label="${editionLetterLabel}" action="javascript:goEditContent()" selected="false"/>
+      </view:tabs>
+      <view:frame>
+        <div id="preview">
+          <div class="rightContent">
+            <c:set var="callbackUrl" value="Preview?parution=${parution}"/>
+            <viewTags:displayAttachments componentInstanceId="${componentId}"
+                                         resourceId="${parution}"
+                                         resourceType="${resourceType}"
+                                         reloadCallbackUrl="${callbackUrl}"
+                                         highestUserRole="${adminRole}"
+                                         hasToBeIndexed="${false}"
+                                         showIcon="${true}"
+                                         showTitle="${true}"
+                                         showDescription="${true}"
+                                         showFileSize="${true}"
+                                         showMenuNotif="${true}"
+                                         contributionManagementContext="${requestScope.contributionManagementContext}"/>
+          </div>
+          <div class="principalContent">
+            <h2 class="publiName">${silfn:escapeHtml(entity.title)}</h2>
+            <c:if test="${not empty entity.description}">
+              <p class="publiDesc text2">${silfn:escapeHtml(entity.description)}</p>
+            </c:if>
+            <div id="inlined-css-html-container"></div>
+            <script type="text/javascript">
+              whenSilverpeasReady().then(function() {
+                monitorHeightOfIsolatedDisplay('${parution}', '${origin}');
+              });
+            </script>
+          </div>
+        </div>
+      </view:frame>
+    </view:window>
+    <view:progressMessage/>
+  </view:sp-body-part>
+</view:sp-page>

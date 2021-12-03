@@ -30,24 +30,24 @@ import org.silverpeas.components.infoletter.model.InfoLetterPublication;
 import org.silverpeas.components.infoletter.model.InfoLetterPublicationPdC;
 import org.silverpeas.core.contribution.content.ddwe.DragAndDropWbeFile;
 import org.silverpeas.core.contribution.content.ddwe.model.DragAndDropWebEditorStore;
-import org.silverpeas.core.persistence.jdbc.bean.IdPK;
+import org.silverpeas.core.contribution.content.renderer.ContributionContentRenderer;
+import org.silverpeas.core.contribution.model.ContributionContent;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
+import org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBarElement;
 import org.silverpeas.core.webapi.wbe.WbeFileEdition;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
-import static org.silverpeas.core.util.StringUtil.EMPTY;
-import static org.silverpeas.core.util.StringUtil.isNotDefined;
+import static org.silverpeas.core.util.StringUtil.*;
 import static org.silverpeas.core.web.ddwe.DragAndDropEditorConfig.withConnectors;
 
 /**
@@ -57,6 +57,17 @@ import static org.silverpeas.core.web.ddwe.DragAndDropEditorConfig.withConnector
 public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSessionController> {
 
   private static final long serialVersionUID = 5722456216811272025L;
+  private static final String ADMIN = "admin";
+  private static final String PUBLISHER = "publisher";
+  private static final String PARUTION = "parution";
+  private static final String PARUTION_TITLE = "parutionTitle";
+  private static final String TITLE = "title";
+  private static final String DESCRIPTION = "description";
+  private static final String BROWSE_BAR_PATH = "browseBarPath";
+  private static final String LIST_EMAILS = "listEmails";
+  private static final String INLINED_CSS_HTML = "inlinedCssHtml";
+  private static final String HEADER_LETTER_JSP = "headerLetter.jsp";
+  private static final String EMAILS_MANAGER_JSP = "emailsManager.jsp";
 
   /**
    * @param mainSessionCtrl
@@ -86,16 +97,8 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
     String language = infoLetterSC.getLanguage();
     // the flag is the best user's profile
     String flag = getFlag(infoLetterSC.getUserRoles());
-    if (flag.equals("admin")) {
-      request.setAttribute("userIsAdmin", "true");
-    } else {
-      request.setAttribute("userIsAdmin", "false");
-    }
-    if (infoLetterSC.isPdcUsed()) {
-      request.setAttribute("isPdcUsed", "yes");
-    } else {
-      request.setAttribute("isPdcUsed", "no");
-    }
+    request.setAttribute("userIsAdmin", ADMIN.equals(flag));
+    request.setAttribute("isPdcUsed", infoLetterSC.isPdcUsed());
     request.setAttribute("language", language);
     request.setAttribute("browseContext",
         new String[]{infoLetterSC.getSpaceLabel(), infoLetterSC.getComponentLabel(),
@@ -103,64 +106,32 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
             infoLetterSC.getComponentUrl()});
   }
 
-  /**
-   * @param infoLetterSC
-   * @return
-   */
-  private InfoLetter getCurrentLetter(InfoLetterSessionController infoLetterSC) {
-    List<InfoLetter> listLettres = infoLetterSC.getInfoLetters();
-    return listLettres.get(0);
-  }
-
-  /**
-   * @param infoLetterSC
-   * @param request
-   * @return
-   */
   private String setMainContext(InfoLetterSessionController infoLetterSC,
       HttpServletRequest request) {
-    String destination = "listLetterUser.jsp";
     // the flag is the best user's profile
-    String flag = getFlag(infoLetterSC.getUserRoles());
-    InfoLetter defaultLetter = getCurrentLetter(infoLetterSC);
-    List<InfoLetterPublication> listParutions =
-        infoLetterSC.getInfoLetterPublications(defaultLetter.getPK());
-    String letterName = defaultLetter.getName();
-    boolean showHeader = true;
+    loadCommonHomepageDataAndSetRequestAttributes(infoLetterSC, request);
+    final boolean showHeader = infoLetterSC.getSettings().getBoolean("showHeader", false);
+    request.setAttribute("showHeader", showHeader);
+    final boolean isTemplateExist = infoLetterSC.getInfoLetter().existsTemplateContent();
+    request.setAttribute("IsTemplateExist", isTemplateExist);
+    final String flag = getFlag(infoLetterSC.getUserRoles());
+    return (PUBLISHER.equals(flag) || ADMIN.equals(flag)) ?
+        "listLetterAdmin.jsp" :
+        "listLetterUser.jsp";
+  }
 
-    if (letterName == null) {
-      letterName = "";
-    }
-    String letterDescription = defaultLetter.getDescription();
-    if (letterDescription == null) {
-      letterDescription = "";
-    }
-    String letterFrequence = defaultLetter.getPeriode();
-    if (letterFrequence == null) {
-      letterFrequence = "";
-    }
-    if (StringUtil.isDefined(infoLetterSC.getSettings().getString("showHeader")) &&
-        StringUtil.getBooleanValue(infoLetterSC.getSettings().getString("showHeader"))) {
-      showHeader = false;
-    }
+  private void loadCommonHomepageDataAndSetRequestAttributes(
+      final InfoLetterSessionController infoLetterSC, final HttpServletRequest request) {
+    final InfoLetter defaultLetter = infoLetterSC.getInfoLetter();
+    final String letterName = defaultStringIfNotDefined(defaultLetter.getName());
+    final String letterDescription = defaultStringIfNotDefined(defaultLetter.getDescription());
+    final String letterFrequency = defaultStringIfNotDefined(defaultLetter.getPeriode());
+    final List<InfoLetterPublication> listParutions = infoLetterSC.getInfoLetterPublications();
     request.setAttribute("letterName", letterName);
     request.setAttribute("letterDescription", letterDescription);
-    request.setAttribute("letterFrequence", letterFrequence);
+    request.setAttribute("letterFrequence", letterFrequency);
     request.setAttribute("listParutions", listParutions);
-    request.setAttribute("showHeader", showHeader);
-    request.setAttribute("userIsSuscriber", String.valueOf(infoLetterSC.isSuscriber()));
-    boolean isTemplateExist = !listParutions.isEmpty();
-    if (!listParutions.isEmpty()) {
-      InfoLetterPublication pub = listParutions.get(0);
-      IdPK publiPK = new IdPK(pub.getPK().getId());
-      InfoLetterPublicationPdC ilp = infoLetterSC.getInfoLetterPublication(publiPK);
-      isTemplateExist = infoLetterSC.isTemplateExist(ilp);
-    }
-    request.setAttribute("IsTemplateExist", isTemplateExist);
-    if ("publisher".equals(flag) || "admin".equals(flag)) {
-      destination = "listLetterAdmin.jsp";
-    }
-    return destination;
+    request.setAttribute("userIsSuscriber", infoLetterSC.isSubscriber());
   }
 
   /**
@@ -178,107 +149,122 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
     String destination;
     // the flag is the best user's profile
     String flag = getFlag(infoLetterSC.getUserRoles());
-
     try {
       setGlobalInfo(infoLetterSC, request);
-
       if ((function.startsWith("Accueil")) || (function.startsWith("Main"))) {
         destination = setMainContext(infoLetterSC, request);
       } else if ("View".equals(function)) {
-        String parution = param(request, "parution");
+        String parution = defaultStringIfNotDefined(param(request, PARUTION), param(request, "Id"));
         if (StringUtil.isDefined(parution)) {
-          IdPK publiPK = new IdPK();
-          publiPK.setId(parution);
-          InfoLetterPublicationPdC ilp = infoLetterSC.getInfoLetterPublication(publiPK);
-
-          request.setAttribute("parution", parution);
-          request.setAttribute("parutionTitle", ilp.getTitle());
+          InfoLetterPublicationPdC ilp = infoLetterSC.getInfoLetterPublication(parution);
+          request.setAttribute(PARUTION, parution);
+          request.setAttribute(PARUTION_TITLE, ilp.getTitle());
           destination = "viewLetter.jsp";
         } else {
           destination = setMainContext(infoLetterSC, request);
         }
       } else if (function.startsWith("portlet")) {
-        InfoLetter defaultLetter = getCurrentLetter(infoLetterSC);
-        List<InfoLetterPublication> listParutions =
-            infoLetterSC.getInfoLetterPublications(defaultLetter.getPK());
-        String letterName = defaultLetter.getName();
-        if (letterName == null) {
-          letterName = "";
-        }
-        String letterDescription = defaultLetter.getDescription();
-
-        if (letterDescription == null) {
-          letterDescription = "";
-        }
-        String letterFrequence = defaultLetter.getPeriode();
-        if (letterFrequence == null) {
-          letterFrequence = "";
-        }
-        request.setAttribute("letterName", letterName);
-        request.setAttribute("letterDescription", letterDescription);
-        request.setAttribute("letterFrequence", letterFrequence);
-        request.setAttribute("listParutions", listParutions);
-        request.setAttribute("userIsSuscriber", String.valueOf(infoLetterSC.isSuscriber()));
-
-        if ("publisher".equals(flag) || "admin".equals(flag)) {
+        loadCommonHomepageDataAndSetRequestAttributes(infoLetterSC, request);
+        if (PUBLISHER.equals(flag) || ADMIN.equals(flag)) {
           destination = "portletListLetterAdmin.jsp?Profile=" + flag;
         } else {
           destination = "portletListLetterUser.jsp?Profile=" + flag;
 
         }
       } else if (function.startsWith("Preview")) {
-        String parution = param(request, "parution");
+        String parution = param(request, PARUTION);
         if (StringUtil.isDefined(parution)) {
-          IdPK publiPK = new IdPK();
-          publiPK.setId(parution);
-          InfoLetterPublicationPdC ilp = infoLetterSC.getInfoLetterPublication(publiPK);
-          request.setAttribute("parution", parution);
-          request.setAttribute("parutionTitle", ilp.getTitle());
+          InfoLetterPublicationPdC ilp = infoLetterSC.getInfoLetterPublication(parution);
+          request.setAttribute("entity", ilp);
+          request.setAttribute(PARUTION, parution);
+          request.setAttribute(PARUTION_TITLE, ilp.getTitle());
           destination = "previewLetter.jsp";
         } else {
           destination = setMainContext(infoLetterSC, request);
         }
-      } else if (function.startsWith("FilesEdit")) {
-        String parution = param(request, "parution");
-        if (parution.length() <= 0) {
-          parution = param(request, "Id");
+      } else if (function.startsWith("EditTemplateContent")) {
+        final InfoLetter infoLetter = infoLetterSC.getInfoLetter();
+        final DragAndDropWebEditorStore store = new DragAndDropWebEditorStore(infoLetter.getTemplateIdentifier());
+        if (!store.getFile().exists() && infoLetter.existsTemplateContent()) {
+          // If the Drag And Drop editor has not been yet used, taking the WYSIWYG content if any.
+          // It permits retrieving old content of template edited before the introduction
+          // of the Drag And Drop WEB Editor.
+          final String content = infoLetter.getTemplateWysiwygContent()
+              .map(ContributionContent::getRenderer)
+              .map(ContributionContentRenderer::renderEdition)
+              .filter(StringUtil::isDefined)
+              .orElse(EMPTY);
+          store.getFile().getContainer().getOrCreateTmpContent().setValue(content);
+          store.getFile().getContainer().getOrCreateContent().setValue(content);
+          store.save();
+          infoLetter.saveTemplateContent(null);
         }
-        if (StringUtil.isDefined(parution)) {
-          String url = "/RinfoLetter/" + infoLetterSC.getComponentId() + "/FilesEdit";
-
-          IdPK publiPK = new IdPK();
-
-          publiPK.setId(parution);
-          InfoLetterPublicationPdC ilp = infoLetterSC.getInfoLetterPublication(publiPK);
-
-          request.setAttribute("parution", parution);
-          request.setAttribute("url", url);
-          request.setAttribute("parutionTitle", ilp.getTitle());
-          destination = "attachedFiles.jsp";
-        } else {
-          destination = setMainContext(infoLetterSC, request);
-        }
+        return WbeFileEdition.get()
+            .initializeWith(request, new DragAndDropWbeFile(store),
+                withConnectors("SaveTemplateContent", "Main")
+                    .addBrowseBarElement(new BrowseBarElement(infoLetterSC.getString("infoLetter.template"), ""))
+                    .build()::applyTo)
+            .orElse(null);
+      } else if (function.startsWith("SaveTemplateContent")) {
+        final String manualContent = param(request, "editor");
+        final InfoLetter infoLetter = infoLetterSC.getInfoLetter();
+        infoLetter.saveTemplateContent(manualContent);
+        destination = setMainContext(infoLetterSC, request);
       } else if (function.startsWith("EditContent")) {
-        String parution = param(request, "parution");
+        String parution = param(request, PARUTION);
         if (StringUtil.isDefined(parution)) {
           destination = null;
-          IdPK publiPK = new IdPK();
-          publiPK.setId(parution);
-          InfoLetterPublicationPdC ilp = infoLetterSC.getInfoLetterPublication(publiPK);
+          InfoLetterPublicationPdC ilp = infoLetterSC.getInfoLetterPublication(parution);
           if (!request.getParameterAsBoolean("old")) {
             final DragAndDropWebEditorStore store = new DragAndDropWebEditorStore(ilp.getIdentifier());
+            final boolean firstEdition = !store.getFile().exists();
+            final boolean resetWithTemplate = request.getParameterAsBoolean("resetWithTemplate");
+            if (firstEdition || resetWithTemplate) {
+              // If the Drag And Drop editor has not been yet used, taking the WYSIWYG content if any.
+              // It permits retrieving old contents of newsletter edited before the introduction
+              // of the Drag And Drop WEB Editor.
+              final String content = Optional.of(firstEdition)
+                  .filter(Boolean.TRUE::equals)
+                  .flatMap(b -> ilp.getWysiwygContent())
+                  .map(ContributionContent::getRenderer)
+                  .map(ContributionContentRenderer::renderEdition)
+                  .filter(StringUtil::isDefined)
+                  .orElseGet(() -> {
+                    // If no content exists for a newsletter, then initializing it from the template
+                    final InfoLetter infoLetter = infoLetterSC.getInfoLetter();
+                    return Optional.of(new DragAndDropWebEditorStore(infoLetter.getTemplateIdentifier()))
+                        .map(DragAndDropWebEditorStore::getFile)
+                        .filter(DragAndDropWebEditorStore.File::exists)
+                        .map(DragAndDropWebEditorStore.File::getContainer)
+                        .flatMap(DragAndDropWebEditorStore.Container::getContent)
+                        .map(DragAndDropWebEditorStore.Content::getValue)
+                        // If no store exists for template, then taking the template from WYSIWYG context if any
+                        .orElseGet(() -> infoLetter.getTemplateWysiwygContent()
+                            .map(ContributionContent::getRenderer)
+                            .map(ContributionContentRenderer::renderEdition)
+                            .filter(StringUtil::isDefined)
+                            .orElse(EMPTY));
+                  });
+              store.getFile().getContainer().getOrCreateTmpContent().setValue(content);
+              store.getFile().getContainer().getOrCreateContent().setValue(content);
+              store.save();
+              ilp.saveContent(null);
+            }
             final String parutionParam = "?parution=" + parution;
-            final String cancelUrl = "ParutionHeaders" + parutionParam;
+            final String validateUrl = "SaveContent" + parutionParam;
+            final String cancelUrl = "Preview" + parutionParam;
             destination = WbeFileEdition.get()
                 .initializeWith(request, new DragAndDropWbeFile(store),
-                    withConnectors("SaveContent" + parutionParam, cancelUrl)
-                        .build()::applyTo)
+                    withConnectors(validateUrl, cancelUrl).build()::applyTo)
                 .orElse(null);
           }
           if (isNotDefined(destination)) {
-            request.setAttribute("parution", parution);
-            request.setAttribute("parutionTitle", ilp.getTitle());
-            request.setAttribute("parutionContent", ilp._getContent());
+            request.setAttribute(PARUTION, parution);
+            request.setAttribute(PARUTION_TITLE, ilp.getTitle());
+            request.setAttribute("parutionContent", ilp.getWysiwygContent()
+                .map(ContributionContent::getRenderer)
+                .map(ContributionContentRenderer::renderEdition)
+                .orElse(EMPTY));
             destination = "editLetter.jsp";
           } else {
             return destination;
@@ -287,75 +273,58 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
           destination = setMainContext(infoLetterSC, request);
         }
       } else if (function.startsWith("ParutionHeaders")) {
-        String parution = param(request, "parution");
+        String parution = param(request, PARUTION);
         String title = "";
         String description = "";
         String browsBarPath = infoLetterSC.getString("infoLetter.newLetterHeader");
-
         if (!"".equals(parution)) {
-          IdPK publiPK = new IdPK();
-          publiPK.setId(parution);
-          InfoLetterPublicationPdC ilp = infoLetterSC.getInfoLetterPublication(publiPK);
+          InfoLetterPublicationPdC ilp = infoLetterSC.getInfoLetterPublication(parution);
           title = ilp.getTitle();
           description = ilp.getDescription();
           browsBarPath = title;
         }
-        request.setAttribute("parution", parution);
-        request.setAttribute("title", title);
-        request.setAttribute("description", description);
-        request.setAttribute("browseBarPath", browsBarPath);
-
-        destination = "headerLetter.jsp";
+        request.setAttribute(PARUTION, parution);
+        request.setAttribute(TITLE, title);
+        request.setAttribute(DESCRIPTION, description);
+        request.setAttribute(BROWSE_BAR_PATH, browsBarPath);
+        destination = HEADER_LETTER_JSP;
       } else if (function.startsWith("UpdateTemplateFromHeaders")) {
-        String parution = param(request, "parution");
+        String parution = param(request, PARUTION);
         String title = "";
         String description = "";
         String browsBarPath = infoLetterSC.getString("infoLetter.newLetterHeader");
-
         if (StringUtil.isDefined(parution)) {
-          IdPK publiPK = new IdPK();
-
-          publiPK.setId(parution);
-          InfoLetterPublicationPdC ilp = infoLetterSC.getInfoLetterPublication(publiPK);
-
+          InfoLetterPublicationPdC ilp = infoLetterSC.getInfoLetterPublication(parution);
           title = ilp.getTitle();
           description = ilp.getDescription();
           browsBarPath = title;
-
           // Mise a jour du template
           infoLetterSC.updateTemplate(ilp);
         }
-        request.setAttribute("parution", parution);
-        request.setAttribute("title", title);
-        request.setAttribute("description", description);
-        request.setAttribute("browseBarPath", browsBarPath);
-
-        destination = "headerLetter.jsp";
+        request.setAttribute(PARUTION, parution);
+        request.setAttribute(TITLE, title);
+        request.setAttribute(DESCRIPTION, description);
+        request.setAttribute(BROWSE_BAR_PATH, browsBarPath);
+        destination = HEADER_LETTER_JSP;
       } else if (function.startsWith("ValidateParution")) {
-        String parution = param(request, "parution");
+        String parution = param(request, PARUTION);
         String[] emailErrors = new String[0];
         if (StringUtil.isDefined(parution)) {
-          IdPK publiPK = new IdPK();
-
-          publiPK.setId(parution);
-          InfoLetterPublicationPdC ilp = infoLetterSC.getInfoLetterPublication(publiPK);
-
+          InfoLetterPublicationPdC ilp = infoLetterSC.getInfoLetterPublication(parution);
           ilp.setPublicationState(InfoLetterPublication.PUBLICATION_VALIDEE);
           ilp.setParutionDate(DateUtil.date2SQLDate(new java.util.Date()));
           infoLetterSC.updateInfoLetterPublication(ilp);
-          infoLetterSC.createIndex(ilp);
           String server = request.getRequestURL().substring(0,
               request.getRequestURL().toString().indexOf(URLUtil.getApplicationURL()));
-          infoLetterSC.notifyInternalSuscribers(ilp, server);
-
+          infoLetterSC.notifyInternalSubscribers(ilp, server);
           emailErrors = infoLetterSC.sendByMailToExternalSubscribers(ilp, server);
         }
         request.setAttribute("EmailErrors", emailErrors);
         destination = "infoLetterSended.jsp";
       } else if (function.startsWith("ChangeParutionHeaders")) {
-        String parution = param(request, "parution");
-        String title = param(request, "title");
-        String description = param(request, "description");
+        String parution = param(request, PARUTION);
+        String title = param(request, TITLE);
+        String description = param(request, DESCRIPTION);
         List<InfoLetter> listLettres = infoLetterSC.getInfoLetters();
         InfoLetter defaultLetter = listLettres.get(0);
 
@@ -372,133 +341,104 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
           infoLetterSC.createInfoLetterPublication(ilp);
           parution = ilp.getPK().getId();
         } else {
-          IdPK publiPK = new IdPK();
-
-          publiPK.setId(parution);
-          InfoLetterPublicationPdC ilp = infoLetterSC.getInfoLetterPublication(publiPK);
-
+          InfoLetterPublicationPdC ilp = infoLetterSC.getInfoLetterPublication(parution);
           ilp.setTitle(title);
           ilp.setDescription(description);
           infoLetterSC.updateInfoLetterPublication(ilp);
         }
-
-        request.setAttribute("parution", parution);
-        request.setAttribute("title", title);
-        request.setAttribute("description", description);
-        request.setAttribute("browseBarPath", title);
-
-        destination = "headerLetter.jsp";
-      } else if (function.startsWith("DeletePublications")) {
-        String[] publis = request.getParameterValues("publis");
-        if (publis != null) {
-          for (final String publi : publis) {
-            IdPK publiPK = new IdPK();
-            publiPK.setId(publi);
-            infoLetterSC.deleteInfoLetterPublication(publiPK);
-          }
+        request.setAttribute(PARUTION, parution);
+        request.setAttribute(TITLE, title);
+        request.setAttribute(DESCRIPTION, description);
+        request.setAttribute(BROWSE_BAR_PATH, title);
+        destination = HEADER_LETTER_JSP;
+      } else if (function.equals("DeletePublication")) {
+        final String id = request.getParameter("id");
+        if (isDefined(id)) {
+          infoLetterSC.deleteInfoLetterPublication(id);
         }
         destination = setMainContext(infoLetterSC, request);
+      } else if (function.equals("DeletePublications")) {
+        request.getParameterAsList("selectedIds")
+            .forEach(infoLetterSC::deleteInfoLetterPublication);
+        destination = setMainContext(infoLetterSC, request);
       } else if (function.startsWith("LetterHeaders")) {
-        InfoLetter defaultLetter = getCurrentLetter(infoLetterSC);
-        String letterName = defaultLetter.getName();
-
-        if (letterName == null) {
-          letterName = "";
-        }
-        String letterDescription = defaultLetter.getDescription();
-
-        if (letterDescription == null) {
-          letterDescription = "";
-        }
-        String letterFrequence = defaultLetter.getPeriode();
-
-        if (letterFrequence == null) {
-          letterFrequence = "";
-        }
+        InfoLetter defaultLetter = infoLetterSC.getInfoLetter();
+        String letterName = defaultStringIfNotDefined(defaultLetter.getName());
+        String letterDescription = defaultStringIfNotDefined(defaultLetter.getDescription());
+        String letterFrequence = defaultStringIfNotDefined(defaultLetter.getPeriode());
         request.setAttribute("letterName", letterName);
         request.setAttribute("letterDescription", letterDescription);
         request.setAttribute("letterFrequence", letterFrequence);
         destination = "modifHeaders.jsp";
       } else if (function.startsWith("ChangeLetterHeaders")) {
-        InfoLetter defaultLetter = getCurrentLetter(infoLetterSC);
+        InfoLetter defaultLetter = infoLetterSC.getInfoLetter();
         String letterName = param(request, "name");
-        String letterDescription = param(request, "description");
+        String letterDescription = param(request, DESCRIPTION);
         String letterFrequence = param(request, "frequence");
-
         defaultLetter.setName(letterName);
         defaultLetter.setDescription(letterDescription);
         defaultLetter.setPeriode(letterFrequence);
         infoLetterSC.updateInfoLetter(defaultLetter);
-
         destination = setMainContext(infoLetterSC, request);
       } else if (function.startsWith("Emails")) {
-        InfoLetter defaultLetter = getCurrentLetter(infoLetterSC);
-        Set<String> listEmails = infoLetterSC.getEmailsExternalsSuscribers(defaultLetter.getPK());
-
-        request.setAttribute("listEmails", listEmails);
-        destination = "emailsManager.jsp";
+        Set<String> listEmails = infoLetterSC.getEmailsExternalsSubscribers();
+        request.setAttribute(LIST_EMAILS, listEmails);
+        destination = EMAILS_MANAGER_JSP;
       } else if (function.startsWith("SuscribeMe")) {
-        infoLetterSC.suscribeUser();
+        infoLetterSC.subscribeUser();
         destination = setMainContext(infoLetterSC, request);
       } else if (function.startsWith("UnsuscribeMe")) {
-        infoLetterSC.unsuscribeUser();
+        infoLetterSC.unsubscribeUser();
         destination = setMainContext(infoLetterSC, request);
       } else if (function.startsWith("DeleteEmails")) {
         String[] emails = request.getParameterValues("mails");
-        InfoLetter defaultLetter = getCurrentLetter(infoLetterSC);
-
         if (emails != null) {
-          infoLetterSC.deleteExternalsSuscribers(defaultLetter.getPK(), emails);
+          infoLetterSC.deleteExternalsSubscribers(emails);
         }
-        Set<String> listEmails = infoLetterSC.getEmailsExternalsSuscribers(defaultLetter.getPK());
-
-        request.setAttribute("listEmails", listEmails);
-        destination = "emailsManager.jsp";
+        Set<String> listEmails = infoLetterSC.getEmailsExternalsSubscribers();
+        request.setAttribute(LIST_EMAILS, listEmails);
+        destination = EMAILS_MANAGER_JSP;
       } else if (function.startsWith("DeleteAllEmails")) {
-        InfoLetter defaultLetter = getCurrentLetter(infoLetterSC);
-
-        infoLetterSC.deleteAllExternalsSuscribers(defaultLetter.getPK());
-        Set<String> listEmails = infoLetterSC.getEmailsExternalsSuscribers(defaultLetter.getPK());
-
-        request.setAttribute("listEmails", listEmails);
-        destination = "emailsManager.jsp";
+        infoLetterSC.deleteAllExternalsSubscribers();
+        Set<String> listEmails = infoLetterSC.getEmailsExternalsSubscribers();
+        request.setAttribute(LIST_EMAILS, listEmails);
+        destination = EMAILS_MANAGER_JSP;
       } else if (function.startsWith("AddMail")) {
         destination = "addEmail.jsp";
       } else if (function.startsWith("NewMail")) {
         String newmails = param(request, "newmails");
-        InfoLetter defaultLetter = getCurrentLetter(infoLetterSC);
-
-        infoLetterSC.addExternalsSuscribers(defaultLetter.getPK(), newmails);
-        Set<String> listEmails = infoLetterSC.getEmailsExternalsSuscribers(defaultLetter.getPK());
-
-        request.setAttribute("listEmails", listEmails);
-        destination = "emailsManager.jsp";
+        infoLetterSC.addExternalsSubscribers(newmails);
+        Set<String> listEmails = infoLetterSC.getEmailsExternalsSubscribers();
+        request.setAttribute(LIST_EMAILS, listEmails);
+        destination = EMAILS_MANAGER_JSP;
       } else if (function.startsWith("Suscribers")) {
         destination = infoLetterSC.initUserPanel();
       } else if (function.startsWith("RetourPanel")) {
         infoLetterSC.retourUserPanel();
         destination = setMainContext(infoLetterSC, request);
+      } else if (function.equals("ViewInlinedCssHtml")) {
+        final String id = request.getParameter("id");
+        final InfoLetterPublicationPdC pub = infoLetterSC.getInfoLetterPublication(id);
+        request.setAttribute(INLINED_CSS_HTML, pub.getWysiwygContent()
+            .map(ContributionContent::getRenderer)
+            .map(r -> r.renderView(true))
+            .orElse(EMPTY));
+        destination = "inlinedCssHtml.jsp";
       } else if (function.equals("ViewTemplate")) {
-        request.setAttribute("InfoLetter", getCurrentLetter(infoLetterSC));
-
-        destination = "template.jsp";
+        final InfoLetter currentLetter = infoLetterSC.getInfoLetter();
+        request.setAttribute(INLINED_CSS_HTML, currentLetter.getTemplateWysiwygContent()
+            .map(ContributionContent::getRenderer)
+            .map(r -> r.renderView(true))
+            .orElse(EMPTY));
+        destination = "inlinedCssHtml.jsp";
       } else if (function.startsWith("searchResult")) {
-        String id = request.getParameter("Id");
+        String id = defaultStringIfNotDefined(request.getParameter("Id"));
         String type = request.getParameter("Type");
-
-        if (type.equals("Lettre")) {
+        if (InfoLetter.TYPE.equals(type)) {
           destination = setMainContext(infoLetterSC, request);
         } else {
-          if (id == null) {
-            id = "";
-          }
           if (!id.isEmpty()) {
-            IdPK publiPK = new IdPK();
-            publiPK.setId(id);
-            InfoLetterPublicationPdC ilp = infoLetterSC.getInfoLetterPublication(publiPK);
-            request.setAttribute("parution", id);
-            request.setAttribute("parutionTitle", ilp.getTitle());
-            destination = "viewLetter.jsp";
+            return getDestination("View", infoLetterSC, request);
           } else {
             destination = setMainContext(infoLetterSC, request);
           }
@@ -516,50 +456,25 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
         }
         destination = "exportEmailsCsv.jsp";
       } else if (function.startsWith("SendLetterToManager")) {
-        String parution = param(request, "parution");
+        String parution = param(request, PARUTION);
         String[] emailErrors = new String[0];
         if (StringUtil.isDefined(parution)) {
-          IdPK publiPK = new IdPK();
-          publiPK.setId(parution);
-          InfoLetterPublicationPdC ilp = infoLetterSC.getInfoLetterPublication(publiPK);
-
+          InfoLetterPublicationPdC ilp = infoLetterSC.getInfoLetterPublication(parution);
           String server = request.getRequestURL().substring(0,
               request.getRequestURL().toString().indexOf(URLUtil.getApplicationURL()));
           emailErrors = infoLetterSC.notifyManagers(ilp, server);
         }
         request.setAttribute("EmailErrors", emailErrors);
-        request
-            .setAttribute("ReturnUrl", request.getParameter("ReturnUrl") + "?parution=" + parution);
-
+        final String returnUrl = defaultStringIfNotDefined(request.getParameter("ReturnUrl"), "Preview");
+        request.setAttribute("ReturnUrl", returnUrl + "?parution=" + parution);
         destination = "infoLetterSended.jsp";
       } else if (function.startsWith("SaveContent")) {
-        String parution = param(request, "parution");
-        String content = param(request, "editor");
+        String parution = param(request, PARUTION);
+        String manualContent = param(request, "editor");
         if (StringUtil.isDefined(parution)) {
-          IdPK publiPK = new IdPK();
-          publiPK.setId(parution);
-          InfoLetterPublicationPdC ilp = infoLetterSC.getInfoLetterPublication(publiPK);
-          if (isNotDefined(content)) {
-            // For now looking into Drag & Drop Edition Content
-            final DragAndDropWebEditorStore store = new DragAndDropWebEditorStore(ilp.getIdentifier());
-            content = store.getFile()
-                .getContainer()
-                .getTmpContent()
-                .map(c -> {
-                  final String jsonContent = c.getValue();
-                  store.getFile().getContainer().getOrCreateContent().setValue(jsonContent);
-                  store.save();
-                  @SuppressWarnings("unchecked")
-                  final Map<String, String> decoded = JSONCodec.decode(jsonContent, Map.class);
-                  return decoded.getOrDefault("gjs-inlinedHtml", EMPTY);
-                })
-                .orElse(content);
-          }
-          infoLetterSC.updateContentInfoLetterPublication(content, ilp);
-          request.setAttribute("parution", parution);
-          request.setAttribute("parutionTitle", ilp.getTitle());
-
-          destination = "previewLetter.jsp";
+          InfoLetterPublicationPdC ilp = infoLetterSC.getInfoLetterPublication(parution);
+          ilp.saveContent(manualContent);
+          return getDestination("Preview", infoLetterSC, request);
         } else {
           destination = setMainContext(infoLetterSC, request);
         }
@@ -577,18 +492,11 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
     return destination;
   }
 
-  /* getFlag */
-
-  /**
-   * @param profiles
-   * @return
-   */
   private String getFlag(String[] profiles) {
     String flag = "user";
-
     for (final String profile : profiles) {
       // if publisher, return it, we won't find a better profile
-      if (profile.equals("admin")) {
+      if (profile.equals(ADMIN)) {
         return profile;
       } else if (!profile.equals("user")) {
         flag = profile;
@@ -597,19 +505,7 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
     return flag;
   }
 
-  /* recuperation de parametre non nul */
-
-  /**
-   * @param request
-   * @param name
-   * @return
-   */
   private String param(HttpServletRequest request, String name) {
-    String retour = request.getParameter(name);
-
-    if (retour == null) {
-      retour = "";
-    }
-    return retour;
+    return defaultStringIfNotDefined(request.getParameter(name));
   }
 }

@@ -53,13 +53,12 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 import static java.util.Collections.singletonList;
+import static org.silverpeas.core.contribution.content.LinkUrlDataSourceScanner.extractUrlParameters;
 import static org.silverpeas.core.util.StringDataExtractor.RegexpPatternDirective.regexp;
 import static org.silverpeas.core.util.StringDataExtractor.from;
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
@@ -209,12 +208,7 @@ public class GalleryInWysiwygRouter extends HttpServlet {
     public List<LinkUrlDataSource> scanHtml(final String htmlContent) {
       final List<LinkUrlDataSource> result = new ArrayList<>();
       from(htmlContent).withDirectives(singletonList(regexp(GALLERY_CONTENT_LINK_PATTERN, 1))).extract().forEach(l -> {
-        final Map<String, String> params = new HashMap<>();
-        Stream.of(l.substring(l.indexOf('?') + 1).replace(AMP, "&").split("[&]"))
-              .forEach(p -> {
-                final String[] nameValue = p.split("[=]");
-                params.put(nameValue[0], nameValue[1]);
-              });
+        final Map<String, String> params = extractUrlParameters(l);
         final String componentId = params.get("ComponentId");
         // Check component instance application parameter viewInWysiwyg (shared picture) is activated
         boolean isViewInWysiwyg = isViewInWysiwyg(componentId);
@@ -234,32 +228,12 @@ public class GalleryInWysiwygRouter extends HttpServlet {
   }
 
   @Singleton
-  public static class ImageUrlAccordingToHtmlSizeDirectiveTranslator implements
-      ImageUrlAccordingToHtmlSizeDirective.SrcTranslator {
+  public static class ImageUrlAccordingToHtmlSizeDirectiveTranslator extends
+      ImageUrlAccordingToHtmlSizeDirective.SrcWithSizeParametersTranslator {
 
     @Override
     public boolean isCompliantUrl(final String url) {
       return defaultStringIfNotDefined(url).contains("/GalleryInWysiwyg/");
-    }
-
-    @Override
-    public String translateUrl(final String url, final String width, final String height) {
-      // Computing the new src URL
-      // at first, removing the size from the URL
-      String newUrl = url.replaceFirst("(?i)(&|&amp;)size[ ]*=[ ]*[0-9 x]+", "");
-      // then guessing the new src URL
-      StringBuilder sizeUrlPart = new StringBuilder().append(width).append("x").append(height);
-      if (sizeUrlPart.length() > 1) {
-        final String separator;
-        if (url.indexOf('?') < 0) {
-          separator = "?";
-        } else {
-          separator = url.contains(AMP) ? AMP : "&";
-        }
-        sizeUrlPart.insert(0, separator + "Size=");
-        newUrl += sizeUrlPart;
-      }
-      return newUrl;
     }
   }
 }

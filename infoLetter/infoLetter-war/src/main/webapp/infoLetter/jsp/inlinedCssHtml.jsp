@@ -25,25 +25,32 @@
 --%>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="check.jsp" %>
-<%@ page import="org.silverpeas.components.infoletter.model.InfoLetter" %>
-<%@ page import="org.silverpeas.components.infoletter.model.InfoLetterPublication" %>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-
-<%
-InfoLetter infoLetter = (InfoLetter) request.getAttribute("InfoLetter");
-%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title></title>
-<view:looknfeel/>
-</head>
-<body>
-<view:window>
-<view:frame>
-	<view:displayWysiwyg objectId="<%=InfoLetterPublication.TEMPLATE_ID+infoLetter.getPK().getId()%>" componentId="<%=componentId %>" language="<%=resource.getLanguage() %>" />
-</view:frame>
-</view:window>
-</body>
-</html>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<c:set var="inlinedCssHtml" value="${requestScope.inlinedCssHtml}"/>
+<c:set var="origin" value='${silfn:fullApplicationURL(pageContext.request).replaceFirst("(https?://[^/]+)(.*)", "$1")}'/>
+<view:sp-page>
+  <view:sp-head-part noLookAndFeel="true">
+  </view:sp-head-part>
+  <view:sp-body-part>
+    ${inlinedCssHtml}
+    <script type="text/javascript">
+      (function() {
+        function postHeight() {
+          const body = document.body, html = document.documentElement;
+          const height = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
+          window.postMessage(JSON.stringify({'display_height' : height}), '${origin}');
+        }
+        postHeight();
+        document.addEventListener('readystatechange', function() {
+          if (document.readyState === 'complete') {
+            postHeight();
+            setTimeout(postHeight, 0);
+          }
+        });
+      })();
+    </script>
+  </view:sp-body-part>
+</view:sp-page>

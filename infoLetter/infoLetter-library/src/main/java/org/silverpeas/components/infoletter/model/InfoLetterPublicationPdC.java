@@ -26,6 +26,7 @@ package org.silverpeas.components.infoletter.model;
 
 import org.silverpeas.components.infoletter.InfoLetterContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.Collection;
@@ -138,6 +139,11 @@ public class InfoLetterPublicationPdC extends InfoLetterPublication
       }
     }
     return this.silverObjectId;
+  }
+
+  @Override
+  public ContributionIdentifier getIdentifier() {
+    return super.getIdentifier();
   }
 
   @Override

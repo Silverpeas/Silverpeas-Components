@@ -33,25 +33,19 @@ import org.silverpeas.components.infoletter.model.InfoLetterPublicationPdC;
 import org.silverpeas.components.infoletter.model.InfoLetterService;
 import org.silverpeas.components.infoletter.notification.InfoLetterSubscriptionPublicationUserNotification;
 import org.silverpeas.components.infoletter.service.InfoLetterServiceProvider;
-import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.exception.DecodingException;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.exception.UtilTrappedException;
-import org.silverpeas.core.i18n.I18NHelper;
-import org.silverpeas.core.index.indexing.model.FullIndexEntry;
-import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
-import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.persistence.jdbc.bean.IdPK;
 import org.silverpeas.core.subscription.constant.SubscriberType;
 import org.silverpeas.core.subscription.util.SubscriptionSubscriberMapBySubscriberType;
-import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
@@ -69,7 +63,6 @@ import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.ParseException;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -78,19 +71,20 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toCollection;
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
+import static org.silverpeas.core.util.StringUtil.getBooleanValue;
 
-/**
- * Class declaration
- * @author
- */
 public class InfoLetterSessionController extends AbstractComponentSessionController {
+  private static final long serialVersionUID = -4498344315667761189L;
+
+  private static final String PUBLICATION = "Publication";
+  private static final String EMAILS = "Emails";
 
   /**
    * Interface metier du composant
    */
-  private InfoLetterService dataInterface = null;
+  private transient InfoLetterService dataInterface = null;
 
-  public final static String EXPORT_CSV_NAME = "_emails.csv";
+  public static final String EXPORT_CSV_NAME = "_emails.csv";
 
   /**
    * Standard Session Controller Constructeur
@@ -155,8 +149,6 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
   // Mise a jour d'une lettre d'information
   public void updateInfoLetter(InfoLetter ie) {
     dataInterface.updateInfoLetter(ie);
-    deleteIndex(ie);
-    createIndex(ie);
   }
 
   // Recuperation de la liste des lettres
@@ -164,25 +156,22 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     return dataInterface.getInfoLetters(getComponentId());
   }
 
+  /**
+   * Gets the newsletter template
+   */
+  public InfoLetter getInfoLetter() {
+    return getInfoLetters().get(0);
+  }
+
   // Recuperation de la liste des publications
-  public List<InfoLetterPublication> getInfoLetterPublications(WAPrimaryKey letterPK) {
-    return dataInterface.getInfoLetterPublications(letterPK);
+  public List<InfoLetterPublication> getInfoLetterPublications() {
+    return dataInterface.getInfoLetterPublications(getInfoLetter().getPK());
   }
 
   // Creation d'une publication
   public void createInfoLetterPublication(InfoLetterPublicationPdC ilp) throws IOException {
     ilp.setInstanceId(getComponentId());
     dataInterface.createInfoLetterPublication(ilp, getUserId());
-    File template = new File(WysiwygController
-        .getWysiwygPath(getComponentId(), InfoLetterPublication.TEMPLATE_ID + ilp.getLetterId()));
-
-    String content = "";
-    if (template.exists() && template.isFile()) {
-      content = FileUtils.readFileToString(template);
-    }
-    WysiwygController
-        .save(content, getComponentId(), ilp.getId(), getUserId(), I18NHelper.DEFAULT_LANGUAGE,
-            true);
     // Classify content on PdC
     classifyInfoLetterPublication(ilp);
   }
@@ -211,14 +200,8 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
   }
 
   // Suppression d'une publication
-  public void deleteInfoLetterPublication(WAPrimaryKey pk) {
-    deleteIndex(getInfoLetterPublication(pk));
-    try {
-      WysiwygController.deleteWysiwygAttachments(getComponentId(), pk.getId());
-    } catch (Exception e) {
-      throw new InfoLetterException(e);
-    }
-    dataInterface.deleteInfoLetterPublication(pk, getComponentId());
+  public void deleteInfoLetterPublication(String id) {
+    dataInterface.deleteInfoLetterPublication(new IdPK(id), getComponentId());
   }
 
   // Mise a jour d'une publication
@@ -228,8 +211,8 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
   }
 
   // Recuperation d'une publication par sa clef
-  public InfoLetterPublicationPdC getInfoLetterPublication(WAPrimaryKey publiPK) {
-    return dataInterface.getInfoLetterPublication(publiPK);
+  public InfoLetterPublicationPdC getInfoLetterPublication(String id) {
+    return dataInterface.getInfoLetterPublication(new IdPK(id));
   }
 
   /**
@@ -237,7 +220,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
    * @param ilp the infoletter to send
    * @param server
    */
-  public void notifyInternalSuscribers(InfoLetterPublicationPdC ilp, String server) {
+  public void notifyInternalSubscribers(InfoLetterPublicationPdC ilp, String server) {
     if (isNewsLetterSendByMail()) {
       //Send the newsletter by Mail to internal subscribers
       SubscriptionSubscriberMapBySubscriberType subscriberIdsByTypes =
@@ -263,7 +246,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
       Set<String> emails) {
     Set<String> emailErrors = new LinkedHashSet<>();
 
-    if (emails.size() > 0) {
+    if (!emails.isEmpty()) {
       // create the Multipart and its parts to it
       String mimeMultipart = getSettings().getString("SMTPMimeMultipart", "related");
 
@@ -288,11 +271,8 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
    * @return tab of emails in error
    */
   public String[] sendByMailToExternalSubscribers(InfoLetterPublicationPdC ilp, String server) {
-    IdPK letterPK = new IdPK(String.valueOf(ilp.getLetterId()));
-
     // Recuperation de la liste de emails
-    Set<String> extmails = getEmailsExternalsSuscribers(letterPK);
-
+    Set<String> extmails = getEmailsExternalsSubscribers();
     // Removing potential already sent emails
     if (isNewsLetterSendByMail()) {
       // Internal subscribers
@@ -301,7 +281,6 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
       Set<String> internalSubscribersEmails = getEmailsInternalSubscribers(subscriberIdsByTypes);
       extmails.removeAll(internalSubscribersEmails);
     }
-
     return sendLetterByMail(ilp, server, extmails);
   }
 
@@ -318,142 +297,63 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     return sendLetterByMail(ilp, server, extmails);
   }
 
-  public Set<String> getEmailsExternalsSuscribers(WAPrimaryKey letterPK) {
-    return dataInterface.getEmailsExternalsSuscribers(letterPK);
+  public Set<String> getEmailsExternalsSubscribers() {
+    return dataInterface.getEmailsExternalsSuscribers(getInfoLetter().getPK());
   }
 
-  public void addExternalsSuscribers(WAPrimaryKey letterPK, String newmails) {
-    StringTokenizer st = new StringTokenizer(newmails);
-    Set<String> emails = getEmailsExternalsSuscribers(letterPK);
+  public void addExternalsSubscribers(String newMails) {
+    StringTokenizer st = new StringTokenizer(newMails);
+    Set<String> emails = getEmailsExternalsSubscribers();
     while (st.hasMoreTokens()) {
       String mail = st.nextToken().trim();
       if (mail.indexOf('@') > -1) { // Current address contains arobase
-        if (!emails.contains(mail)) {
-          emails.add(mail);
-        }
+        emails.add(mail);
       }
     }
-    dataInterface.setEmailsExternalsSubscribers(letterPK, emails);
+    dataInterface.setEmailsExternalsSubscribers(getInfoLetter().getPK(), emails);
   }
 
-  public void deleteExternalsSuscribers(WAPrimaryKey letterPK, String[] mails) {
+  public void deleteExternalsSubscribers(String[] mails) {
     if (mails != null) {
-      Set<String> curExternalEmails = getEmailsExternalsSuscribers(letterPK);
+      Set<String> curExternalEmails = getEmailsExternalsSubscribers();
       for (String email : mails) {
         curExternalEmails.remove(email);
       }
-      dataInterface.setEmailsExternalsSubscribers(letterPK, curExternalEmails);
+      dataInterface.setEmailsExternalsSubscribers(getInfoLetter().getPK(), curExternalEmails);
     }
   }
 
   /**
    * Remove all external emails
-   * @param letterPK
    */
-  public void deleteAllExternalsSuscribers(WAPrimaryKey letterPK) {
-    Set<String> externalEmails = getEmailsExternalsSuscribers(letterPK);
+  public void deleteAllExternalsSubscribers() {
+    Set<String> externalEmails = getEmailsExternalsSubscribers();
     externalEmails.clear();
-    dataInterface.setEmailsExternalsSubscribers(letterPK, externalEmails);
+    dataInterface.setEmailsExternalsSubscribers(getInfoLetter().getPK(), externalEmails);
   }
 
   // Abonnement d'un utilisateur
-  public void suscribeUser() {
+  public void subscribeUser() {
     dataInterface.toggleSuscriber(getUserId(), getComponentId(), true);
   }
 
   // Desabonnement d'un utilisateur
-  public void unsuscribeUser() {
+  public void unsubscribeUser() {
     dataInterface.toggleSuscriber(getUserId(), getComponentId(), false);
   }
 
   // test d'abonnement d'un utilisateur interne
-  public boolean isSuscriber() {
+  public boolean isSubscriber() {
     return dataInterface.isUserSuscribed(getUserId(), getComponentId());
   }
 
   // Mise a jour du template a partir d'une publication
   public void updateTemplate(InfoLetterPublicationPdC ilp) {
-    copyWYSIWYG(ilp.getPK().getId(), InfoLetterPublication.TEMPLATE_ID + ilp.getLetterId());
-  }
-
-  // copie d'un repertoire wysiwyg vers un autre
-  public void copyWYSIWYG(String publicationSource, String target) {
-    try {
-      if (WysiwygController.haveGotWysiwyg(getComponentId(), target, I18NHelper.DEFAULT_LANGUAGE)) {
-        WysiwygController.deleteWysiwygAttachments(getComponentId(), target);
-      }
-      WysiwygController
-          .copy(getComponentId(), publicationSource, getComponentId(), target, getUserId());
-    } catch (Exception e) {
-      throw new InfoLetterException(e);
-    }
-  }
-
-  public boolean isTemplateExist(InfoLetterPublicationPdC ilp) {
-    String template = WysiwygController
-        .load(getComponentId(), InfoLetterPublication.TEMPLATE_ID + ilp.getLetterId(),
-            I18NHelper.DEFAULT_LANGUAGE);
-    return !"<body></body>".equalsIgnoreCase(template);
-  }
-
-  public String getTemplate(InfoLetterPublicationPdC ilp) {
-    return WysiwygController.getWysiwygPath(getComponentId(), I18NHelper.DEFAULT_LANGUAGE,
-        InfoLetterPublication.TEMPLATE_ID + ilp.getLetterId());
-  }
-
-  // Indexation d'une publication
-  public void createIndex(InfoLetterPublicationPdC ilp) {
-    if (ilp != null) {
-      FullIndexEntry indexEntry =
-          new FullIndexEntry(getComponentId(), "Publication", ilp.getPK().getId());
-      indexEntry.setTitle(ilp.getTitle());
-      indexEntry.setPreview(ilp.getDescription());
-      try {
-        indexEntry.setCreationDate(DateUtil.parse(ilp.getParutionDate()));
-      } catch (ParseException e) {
-        SilverLogger.getLogger(this).warn(e);
-      }
-      indexEntry.setCreationUser(getUserId());
-      IndexEngineProxy.addIndexEntry(indexEntry);
-    }
-  }
-
-  // Suppression de l'index d'une publication
-  private void deleteIndex(InfoLetterPublicationPdC ilp) {
-    IndexEntryKey indexEntry =
-        new IndexEntryKey(getComponentId(), "Publication", ilp.getPK().getId());
-    IndexEngineProxy.removeIndexEntry(indexEntry);
-  }
-
-  // Indexation d'une lettre
-  public void createIndex(InfoLetter il) {
-    if (il != null) {
-      FullIndexEntry indexEntry =
-          new FullIndexEntry(getComponentId(), "Lettre", il.getPK().getId());
-      indexEntry.setTitle(il.getName());
-      indexEntry.setPreview(il.getDescription());
-      IndexEngineProxy.addIndexEntry(indexEntry);
-    }
-  }
-
-  // Suppression de l'index d'une lettre
-  private void deleteIndex(InfoLetter il) {
-    IndexEntryKey indexEntry = new IndexEntryKey(getComponentId(), "Publication", il.getPK().getId());
-    IndexEngineProxy.removeIndexEntry(indexEntry);
+    getInfoLetter().saveTemplateContentFrom(ilp);
   }
 
   public boolean isPdcUsed() {
-    String parameterValue = getComponentParameterValue("usepdc");
-    return "yes".equals(parameterValue.toLowerCase());
-  }
-
-  /**
-   * Method declaration
-   * @return
-   */
-  private InfoLetter getCurrentLetter() {
-    List<InfoLetter> listLettres = getInfoLetters();
-    return listLettres.get(0);
+    return getBooleanValue(getComponentParameterValue("usepdc"));
   }
 
   /**
@@ -472,7 +372,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
       InfoLetterPeasTrappedException ie =
           new InfoLetterPeasTrappedException("InfoLetterSessionController.importCsvEmails",
               SilverpeasException.ERROR, "infoLetter.EX_CSV_FILE", e);
-      ie.setGoBackPage("Emails");
+      ie.setGoBackPage(EMAILS);
       throw ie;
     }
     CSVReader csvReader = new CSVReader(getLanguage());
@@ -482,7 +382,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     try {
       csvValues = csvReader.parseStream(is);
     } catch (UtilTrappedException ute) {
-      ute.setGoBackPage("Emails");
+      ute.setGoBackPage(EMAILS);
       throw ute;
     }
 
@@ -512,7 +412,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
       InfoLetterPeasTrappedException ie =
           new InfoLetterPeasTrappedException("InfoLetterSessionController.importCsvEmails",
               SilverpeasException.ERROR, "infoLetter.EX_CSV_FILE", listErrors.toString());
-      ie.setGoBackPage("Emails");
+      ie.setGoBackPage(EMAILS);
       throw ie;
     }
 
@@ -524,7 +424,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
       emails.add(email);
     }
 
-    dataInterface.setEmailsExternalsSubscribers(this.getCurrentLetter().getPK(), emails);
+    dataInterface.setEmailsExternalsSubscribers(this.getInfoLetter().getPK(), emails);
   }
 
   /**
@@ -536,17 +436,15 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
   public boolean exportCsvEmails() throws IOException, InfoLetterException {
     File fileOutput =
         new File(FileRepositoryManager.getTemporaryPath(), getComponentId() + EXPORT_CSV_NAME);
-
     if (fileOutput.exists()) {//delete the existing file and recreate new one
       FileUtils.forceDelete(fileOutput);
       fileOutput =
           new File(FileRepositoryManager.getTemporaryPath(), getComponentId() + EXPORT_CSV_NAME);
     }
     try {
-      Set<String> emails = getEmailsExternalsSuscribers(getCurrentLetter().getPK());
-
+      Set<String> emails = getEmailsExternalsSubscribers();
       for (String email : emails) {
-        FileUtils.writeStringToFile(fileOutput, email + "\n", true);
+        FileUtils.writeStringToFile(fileOutput, email + "\n", Charsets.UTF_8, true);
       }
     } catch (Exception e) {
       throw new InfoLetterException(e);
@@ -591,17 +489,6 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
    * @return boolean
    */
   public boolean isNewsLetterSendByMail() {
-    return StringUtil.getBooleanValue(getComponentParameterValue("sendNewsletter"));
-  }
-
-  /**
-   * save wysiwyg content of the newsletter
-   * @param content
-   * @param ilp
-   */
-  public void updateContentInfoLetterPublication(String content, InfoLetterPublicationPdC ilp) {
-    // Update the Wysiwyg if exists, create one otherwise
-    WysiwygController.updateFileAndAttachment(content, getComponentId(), ilp.getId(), getUserId(),
-        I18NHelper.DEFAULT_LANGUAGE);
+    return getBooleanValue(getComponentParameterValue("sendNewsletter"));
   }
 }

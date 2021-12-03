@@ -21,49 +21,50 @@
   You should have received a copy of the GNU Affero General Public License
   along with this program. If not, see <http://www.gnu.org/licenses/>.
   --%>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <%@ include file="check.jsp" %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title><%=resource.getString("GML.popupTitle")%></title>
-<view:looknfeel/>
-<%
-String parutionTitle = (String) request.getAttribute("parutionTitle");
-String parution = (String) request.getAttribute("parution");
-%>
-<script type="text/javascript">
-function goFiles (){
-	document.attachedFiles.submit();
-}
-</script>
-</head>
-<body>
-<%
-	browseBar.setPath(WebEncodeHelper.javaStringToHtmlString(parutionTitle));
-	out.println(window.printBefore());
-%>
-<view:frame>
-	<table width="100%">
-		<tr>
-      <td>
-		    <view:displayWysiwyg objectId="<%=parution%>" componentId="<%=componentId %>" language="<%=I18NHelper.DEFAULT_LANGUAGE %>" />
-		  </td>
-		  <td valign="top">
-			<%
-				out.flush();
-				getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachedFiles.jsp?Id="+parution+"&ComponentId="+componentId+"&Context=attachment").include(request, response);
-			%>
-		  </td>
-    </tr>
-	</table>
-	<form name="attachedFiles" action="FilesView" method="POST">
-		<input type="hidden" name="parution" value="<%= parution %>"/>
-	</form>
-</view:frame>
-<%
-	out.println(window.printAfter());
-%>
-</body>
-</html>
+
+<c:set var="origin" value='${silfn:fullApplicationURL(pageContext.request).replaceFirst("(https?://[^/]+)(.*)", "$1")}'/>
+<c:set var="componentId" value="<%=componentId%>"/>
+<c:set var="parution" value="${requestScope.parution}"/>
+<c:set var="parutionTitle" value="${requestScope.parutionTitle}"/>
+<c:set var="inlinedCssHtml" value="${requestScope.inlinedCssHtml}"/>
+
+<view:sp-page>
+  <view:sp-head-part>
+    <view:script src="/infoLetter/jsp/javaScripts/infoLetter.js"/>
+    <script type="text/javascript">
+      function goFiles() {
+        sp.navRequest('FilesView').withParam('parution', ${parution}).go();
+      }
+    </script>
+  </view:sp-head-part>
+  <view:sp-body-part>
+    <view:browseBar path="${parutionTitle}"/>
+    <view:window>
+      <view:frame>
+        <div class="preview view">
+          <div class="rightContent">
+            <c:import url="/attachment/jsp/displayAttachedFiles.jsp">
+              <c:param name="Id" value="${parution}"/>
+              <c:param name="ComponentId" value="${componentId}"/>
+              <c:param name="Context" value="${'attachment'}"/>
+            </c:import>
+          </div>
+          <div class="principalContent">
+            <div id="inlined-css-html-container"></div>
+            <script type="text/javascript">
+              whenSilverpeasReady().then(function() {
+                monitorHeightOfIsolatedDisplay('${parution}', '${origin}');
+              });
+            </script>
+          </div>
+        </div>
+      </view:frame>
+    </view:window>
+  </view:sp-body-part>
+</view:sp-page>

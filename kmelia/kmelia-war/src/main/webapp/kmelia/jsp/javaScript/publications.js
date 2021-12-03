@@ -136,41 +136,50 @@ function cutPublications() {
 
 function putPublicationsInBasket() {
   let selectedPublicationIds = getSelectedPublicationIds();
+  const isPublicationToAdd = selectedPublicationIds.trim().length > 0;
   let notSelectedPublicationIds = getNotSelectedPublicationIds();
   let decodePubId = function(id) {
     let pubIds = id.split('-');
     return pubIds[1] + ':Publication:' + pubIds[0];
   };
   let basket = new BasketService();
+  let deletePromises = [];
 
   // remove from the basket the unselected publications
   if (notSelectedPublicationIds.trim().length > 0) {
     let arrayOfNonSelectedPubIds = notSelectedPublicationIds.split(',');
-    basket.getBasketSelectionElements(BasketService.Context.transfert).then(function(elts) {
-      elts.filter(elt => arrayOfNonSelectedPubIds
-          .filter(id => elt.getId() === decodePubId(id.trim())).length > 0)
-          .forEach(elt => {
-            basket.deleteEntry({
-              item : {
-                id : elt.getId()
-              }
-            });
-          });
-    });
+    deletePromises.push(basket.getBasketSelectionElements(BasketService.Context.transfert).then(function(elts) {
+      const entriesToDelete = elts.filter(function(elt) {
+        return arrayOfNonSelectedPubIds.filter(function(id) {
+          return elt.getId() === decodePubId(id.trim());
+        }).length > 0;
+      })
+      .map(function(elt) {
+        return {
+          item : {
+            id : elt.getId()
+          }
+        }
+      });
+      return basket.deleteEntries(entriesToDelete, isPublicationToAdd);
+    }));
   }
 
   // put into the basket the selected publications
-  if(selectedPublicationIds.trim().length > 0) {
-    selectedPublicationIds.split(',').forEach(id => {
+  if(isPublicationToAdd) {
+    const entriesToAdd = selectedPublicationIds.split(',').map(function(id) {
       let pubId = decodePubId(id.trim());
-      basket.putNewEntry({
+      return {
         context : {
           reason : BasketService.Context.transfert
         }, item : {
           id : pubId, type : 'Publication'
         }
-      });
+      };
     });
+    sp.promise.whenAllResolved(deletePromises).then(function() {
+      basket.putNewEntries(entriesToAdd);
+    })
   }
 }
 
