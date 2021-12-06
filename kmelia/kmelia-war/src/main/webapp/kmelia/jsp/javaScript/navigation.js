@@ -410,6 +410,19 @@ function initOperations(id, op) {
     menuEmpty = false;
   }
 
+  if (op.putPublicationsInBasket)  {
+    menuItem = new YAHOO.widget.MenuItem(getString('kmelia.operation.putPublicationsInBasket'), {
+      url: "javascript:onclick=putPublicationsInBasket()"});
+    oMenu.addItem(menuItem, groupIndex);
+    groupEmpty = false;
+  }
+
+  if (!groupEmpty) {
+    groupIndex++;
+    groupEmpty = true;
+    menuEmpty = false;
+  }
+
   if (op.exportSelection) {
     menuItem = new YAHOO.widget.MenuItem(getString('kmelia.operation.exportSelection'), {
       id: "operation-publications-select",

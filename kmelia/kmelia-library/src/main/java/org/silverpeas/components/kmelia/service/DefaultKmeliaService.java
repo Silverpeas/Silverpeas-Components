@@ -196,7 +196,6 @@ public class DefaultKmeliaService implements KmeliaService {
   private PdcSubscriptionManager pdcSubscriptionManager;
   @Inject
   private KmeliaContentManager kmeliaContentManager;
-  private PublicationDetail clone;
 
   private int getNbPublicationsOnRoot(String componentId) {
     String parameterValue =
@@ -284,7 +283,7 @@ public class DefaultKmeliaService implements KmeliaService {
         throw new KmeliaRuntimeException(e);
       }
     }
-    return asRankedKmeliaPublication(pk, pubDetails);
+    return asLocatedKmeliaPublication(pk, pubDetails);
   }
 
   @SuppressWarnings("unchecked")
@@ -304,7 +303,7 @@ public class DefaultKmeliaService implements KmeliaService {
                           .takingAliasesIntoAccount()
                           .orderByDescendingBeginDate()
                           .limitTo(limit));
-              return asRankedKmeliaPublication(pubDetails);
+              return asKmeliaPublication(pubDetails);
             });
   }
 
@@ -693,31 +692,16 @@ public class DefaultKmeliaService implements KmeliaService {
     }
   }
 
-  private List<KmeliaPublication> asRankedKmeliaPublication(NodePK fatherPK,
+  private List<KmeliaPublication> asLocatedKmeliaPublication(NodePK fatherPK,
       Collection<PublicationDetail> pubDetails) {
     final Collection<String> pubIds = pubDetails.stream()
         .map(PublicationDetail::getId)
         .collect(Collectors.toSet());
     final Map<String, List<Location>> locationsByPublication =
         publicationService.getAllLocationsByPublicationIds(pubIds);
-    final List<KmeliaPublication> publications = new ArrayList<>(pubDetails.size());
-    int i = -1;
-    for (final PublicationDetail publicationDetail : pubDetails) {
-      publications.add(fromDetail(publicationDetail, fatherPK, i++, locationsByPublication));
-    }
-
-    return publications;
-  }
-
-  private List<KmeliaPublication> asRankedKmeliaPublication(
-      Collection<PublicationDetail> pubDetails) {
-    List<KmeliaPublication> publications = new ArrayList<>();
-    int i = -1;
-    for (PublicationDetail publicationDetail : pubDetails) {
-      publications.add(fromDetail(publicationDetail, i++));
-    }
-
-    return publications;
+    return pubDetails.stream()
+        .map(p -> KmeliaPublication.fromDetail(p, fatherPK, locationsByPublication))
+        .collect(Collectors.toList());
   }
 
   private List<KmeliaPublication> asKmeliaPublication(Collection<PublicationDetail> pubDetails) {
@@ -1693,7 +1677,7 @@ public class DefaultKmeliaService implements KmeliaService {
       publications = getPublicationDetails(references);
     }
     return contextFolder != null ?
-        asRankedKmeliaPublication(contextFolder, publications) :
+        asLocatedKmeliaPublication(contextFolder, publications) :
         asKmeliaPublication(publications);
   }
 
@@ -2035,39 +2019,39 @@ public class DefaultKmeliaService implements KmeliaService {
   }
 
   private PublicationDetail getClone(PublicationDetail refPub) {
-    PublicationDetail clone = PublicationDetail.builder(refPub.getLanguage())
+    PublicationDetail copy = PublicationDetail.builder(refPub.getLanguage())
         .setPk(new PublicationPK(refPub.getPK().getId(), refPub.getPK().getInstanceId()))
         .setNameAndDescription(refPub.getName(), refPub.getDescription())
         .build();
-    clone.setAuthor(refPub.getAuthor());
+    copy.setAuthor(refPub.getAuthor());
     if (refPub.getBeginDate() != null) {
-      clone.setBeginDate(new Date(refPub.getBeginDate().getTime()));
+      copy.setBeginDate(new Date(refPub.getBeginDate().getTime()));
     }
-    clone.setBeginHour(refPub.getBeginHour());
-    clone.setContentPagePath(refPub.getContentPagePath());
-    clone.setCreationDate(new Date(refPub.getCreationDate().getTime()));
-    clone.setCreatorId(refPub.getCreatorId());
+    copy.setBeginHour(refPub.getBeginHour());
+    copy.setContentPagePath(refPub.getContentPagePath());
+    copy.setCreationDate(new Date(refPub.getCreationDate().getTime()));
+    copy.setCreatorId(refPub.getCreatorId());
     if (refPub.getEndDate() != null) {
-      clone.setEndDate(new Date(refPub.getEndDate().getTime()));
+      copy.setEndDate(new Date(refPub.getEndDate().getTime()));
     }
-    clone.setEndHour(refPub.getEndHour());
-    clone.setImportance(refPub.getImportance());
-    clone.setInfoId(refPub.getInfoId());
-    clone.setKeywords(refPub.getKeywords());
-    clone.setStatus(refPub.getStatus());
-    clone.setTargetValidatorId(refPub.getTargetValidatorId());
-    clone.setCloneId(refPub.getCloneId());
+    copy.setEndHour(refPub.getEndHour());
+    copy.setImportance(refPub.getImportance());
+    copy.setInfoId(refPub.getInfoId());
+    copy.setKeywords(refPub.getKeywords());
+    copy.setStatus(refPub.getStatus());
+    copy.setTargetValidatorId(refPub.getTargetValidatorId());
+    copy.setCloneId(refPub.getCloneId());
     if (refPub.getLastUpdateDate() != null) {
-      clone.setUpdateDate(new Date(refPub.getLastUpdateDate().getTime()));
+      copy.setUpdateDate(new Date(refPub.getLastUpdateDate().getTime()));
     }
-    clone.setUpdaterId(refPub.getUpdaterId());
+    copy.setUpdaterId(refPub.getUpdaterId());
     if (refPub.getValidateDate() != null) {
-      clone.setValidateDate(new Date(refPub.getValidateDate().getTime()));
+      copy.setValidateDate(new Date(refPub.getValidateDate().getTime()));
     }
-    clone.setValidatorId(refPub.getValidatorId());
-    clone.setVersion(refPub.getVersion());
+    copy.setValidatorId(refPub.getValidatorId());
+    copy.setVersion(refPub.getVersion());
 
-    return clone;
+    return copy;
   }
 
   /**

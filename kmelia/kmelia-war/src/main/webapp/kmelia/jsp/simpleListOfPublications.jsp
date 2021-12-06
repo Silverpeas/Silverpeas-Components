@@ -82,6 +82,7 @@ boolean userCanSeeStats = kmeliaScc.isStatisticAllowed();
 <view:includePlugin name="subscription"/>
 <view:includePlugin name="preview"/>
 <view:includePlugin name="rating" />
+<view:includePlugin name="basketSelection"/>
 
 <view:script src="javaScript/navigation.js"/>
 <view:script src="javaScript/searchInTopic.js"/>
@@ -207,9 +208,9 @@ window.SUBSCRIPTION_PROMISE.then(function() {
     	if (!isGuest) {
 				operationPane.addOperation("useless", resources.getString("kmelia.operation.putPublicationsInBasket"), "javascript:onclick=putPublicationsInBasket()");
 				operationPane.addLine();
-    	  	operationPane.addOperation("useless", resources.getString("kmelia.operation.exportSelection"), "javascript:onclick=exportPublications()");
+    	  operationPane.addOperation("useless", resources.getString("kmelia.operation.exportSelection"), "javascript:onclick=exportPublications()");
     		operationPane.addOperation("useless", "<span id='subscriptionMenuLabel'></span>", "javascript:onClick=spSubManager.switchUserSubscription()");
-      		operationPane.addOperation("useless", resources.getString("FavoritesAdd1")+" "+kmeliaScc.getString("FavoritesAdd2"), "javaScript:addFavorite('"+
+      	operationPane.addOperation("useless", resources.getString("FavoritesAdd1")+" "+kmeliaScc.getString("FavoritesAdd2"), "javaScript:addFavorite('"+
               WebEncodeHelper.javaStringToHtmlString(WebEncodeHelper.javaStringToJsString(namePath))+"','','"+urlTopic+"')");
     	}
 

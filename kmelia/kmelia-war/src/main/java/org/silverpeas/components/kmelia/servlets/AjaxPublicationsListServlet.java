@@ -144,7 +144,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 
       if (StringUtil.isDefined(nodeId)) {
         kmeliaSC.setCurrentFolderId(nodeId, true);
-        kmeliaSC.getPublicationsOfCurrentFolder();
+        kmeliaSC.loadPublicationsOfCurrentFolder();
         // used by drag n drop
         session.setAttribute("Silverpeas_DragAndDrop_TopicId", nodeId);
       }
@@ -271,24 +271,6 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     }
   }
 
-  /**
-   * @param allPubs
-   * @param sortAllowed
-   * @param linksAllowed
-   * @param seeAlso
-   * @param toSearch
-   * @param kmeliaScc
-   * @param profile
-   * @param gef
-   * @param resources
-   * @param selectedIds
-   * @param pubIdToHighlight
-   * @param out
-   * @param linkAttachment indicates if it displays the attachment publication for the link
-   * management administration
-   * @throws IOException
-   * @throws NumberFormatException
-   */
   private void displayPublications(List<KmeliaPublication> allPubs, boolean sortAllowed,
       boolean linksAllowed, boolean seeAlso, boolean toSearch, KmeliaSessionController kmeliaScc,
       String profile, GraphicElementFactory gef, MultiSilverpeasBundle resources,

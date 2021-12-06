@@ -32,9 +32,8 @@ public class PubliRankComparatorAsc implements Comparator<KmeliaPublication> {
 
   @Override
   public int compare(KmeliaPublication p1, KmeliaPublication p2) {
-    int compareResult =
-        Integer.valueOf(p1.getDetail().getExplicitRank()).compareTo(
-            Integer.valueOf(p2.getDetail().getExplicitRank()));
+    int compareResult = Integer.compare(p1.getDetail().getExplicitRank(),
+        p2.getDetail().getExplicitRank());
     if (compareResult == 0) {
       compareResult = p1.getDetail().getId().compareTo(p2.getDetail().getId());
     }

@@ -83,6 +83,7 @@ String userId = kmeliaScc.getUserId();
 <view:includePlugin name="subscription"/>
 <view:includePlugin name="preview"/>
 <view:includePlugin name="rating" />
+<view:includePlugin name="basketSelection"/>
 
 <view:script src="javaScript/navigation.js"/>
 <view:script src="javaScript/searchInTopic.js"/>

@@ -138,6 +138,8 @@ public class JSONServlet extends HttpServlet {
     operations.put("cutPublications", copyCutAllowed);
     operations.put("paste", addPublicationAllowed);
 
+    operations.put("putPublicationsInBasket", publicationsInTopic);
+
     operations.put("sortPublications", role.isAdmin() && publicationsInTopic && somePublicationsExist);
 
     operations.put("updatePublications",operationsOnSelectionAllowed && oneTemplateUsed);

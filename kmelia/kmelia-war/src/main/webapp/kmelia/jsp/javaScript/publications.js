@@ -135,31 +135,43 @@ function cutPublications() {
 }
 
 function putPublicationsInBasket() {
-  let componentId = getComponentId();
   let selectedPublicationIds = getSelectedPublicationIds();
   let notSelectedPublicationIds = getNotSelectedPublicationIds();
-  let encodeToId = function(componentId, id) {
-    return componentId + ':Publication' + ':' + id;
+  let decodePubId = function(id) {
+    let pubIds = id.split('-');
+    return pubIds[1] + ':Publication:' + pubIds[0];
   }
   let basket = new BasketService();
-  notSelectedPublicationIds.split(',').forEach(id => {
-    basket.deleteEntry({
-      item: {
-        id: encodeToId(componentId, id.trim())
-      }
+
+  // remove from the basket the unselected publications
+  if (notSelectedPublicationIds.trim().length > 0) {
+    let arrayOfNonSelectedPubIds = notSelectedPublicationIds.split(',');
+    basket.getBasketSelectionElements(BasketService.Context.transfert).then(function(elts) {
+      elts.filter(elt => arrayOfNonSelectedPubIds
+          .filter(id => elt.getId() === decodePubId(id.trim())).length > 0)
+          .forEach(elt => {
+            basket.deleteEntry({
+              item : {
+                id : elt.getId()
+              }
+            });
+          });
     });
-  });
-  selectedPublicationIds.split(',').forEach(id => {
-    basket.putNewEntry({
-      context: {
-        reason: BasketService.Context.transfert
-      },
-      item: {
-        id: encodeToId(componentId, id.trim()),
-        type: 'Publication'
-      }
+  }
+
+  // put into the basket the selected publications
+  if(selectedPublicationIds.trim().length > 0) {
+    selectedPublicationIds.split(',').forEach(id => {
+      let pubId = decodePubId(id.trim());
+      basket.putNewEntry({
+        context : {
+          reason : BasketService.Context.transfert
+        }, item : {
+          id : pubId, type : 'Publication'
+        }
+      });
     });
-  });
+  }
 }
 
 function updatePublications() {
