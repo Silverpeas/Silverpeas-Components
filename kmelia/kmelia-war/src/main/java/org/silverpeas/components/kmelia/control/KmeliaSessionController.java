@@ -785,7 +785,26 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     nd.getNodePK().setSpace(getSpaceId());
     nd.getNodePK().setComponentName(getComponentId());
     nd.setCreatorId(getUserId());
-    return getKmeliaService().addSubTopic(getNodePK(parentId), nd, alertType);
+    NodePK pk = getKmeliaService().addSubTopic(getNodePK(parentId), nd, alertType);
+
+    // by default, setting father's admin rights
+    // to preventing no more access
+    if (nd.haveRights()) {
+      ProfileInst parentProfile;
+      String profileAdmin = SilverpeasRole.ADMIN.getName();
+      if (NodePK.ROOT_NODE_ID.equals(parentId)) {
+        parentProfile = getProfile(profileAdmin);
+      } else {
+        parentProfile = getTopicProfile(profileAdmin, parentId);
+      }
+      if (parentProfile != null) {
+        updateTopicRole(profileAdmin, pk.getId(),
+            parentProfile.getAllGroups().toArray(new String[0]),
+            parentProfile.getAllUsers().toArray(new String[0]));
+      }
+    }
+
+    return pk;
   }
 
   public synchronized String deleteTopic(String topicId) {
