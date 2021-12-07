@@ -580,7 +580,7 @@
             operationPane.addOperation(resources.getIcon("kmelia.cut"), resources.getString("GML.cut"), "javascript:clipboardCut()");
           }
         }
-        if (!currentUser.isAccessGuest() && !currentUser.isAnonymous()) {
+        if (!currentUser.isAccessGuest() && !currentUser.isAnonymous() && !pubDetail.isDraft() && !pubDetail.isClone()) {
           operationPane.addLine();
           operationPane.addOperation(basketIcon, resources.getString("GML.putInBasket"), "javascript:putInBasket()");
         }

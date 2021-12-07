@@ -87,7 +87,7 @@ import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassifica
 import static org.silverpeas.core.persistence.Transaction.performInOne;
 
 @Service
-@Named("quickInfoService")
+@Named("quickinfoService")
 public class DefaultQuickInfoService implements QuickInfoService {
 
   private static final String ASSOCIATED_TO_THE_NEWS_MSG = " associated to the news ";

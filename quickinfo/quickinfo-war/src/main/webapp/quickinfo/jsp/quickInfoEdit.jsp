@@ -44,11 +44,12 @@
 <%@ page import="org.silverpeas.core.util.URLUtil" %>
 <%@ page import="org.silverpeas.core.persistence.jdbc.DBUtil" %>
 <%@ page import="org.silverpeas.core.contribution.publication.model.PublicationDetail" %>
+<%@ page import="org.silverpeas.core.contribution.model.Thumbnail" %>
 
 <%
 News news = (News) request.getAttribute("info");
 PublicationDetail quickInfoDetail = null;
-ThumbnailDetail thumbnail = null;
+Thumbnail thumbnail = null;
 if (news != null) {
   quickInfoDetail = news.getPublication();
   thumbnail = news.getThumbnail();

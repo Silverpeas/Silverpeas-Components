@@ -75,6 +75,7 @@ pageContext.setAttribute("componentURL", URLUtil.getFullApplicationURL(request)+
 <head>
 <title>QuickInfo - View</title>
 <view:looknfeel/>
+<view:includePlugin name="basketSelection"/>
 <script type="text/javascript" src="js/quickinfo.js"></script>
 <script type="text/javascript">
 function notify() {
@@ -98,6 +99,19 @@ function submitOnHomepage() {
 
 function onDelete(id) {
   location.href="Main";
+}
+
+function putNewsInBasket() {
+	let basket = new BasketService();
+	basket.putNewEntry({
+		context: {
+			reason: BasketService.Context.transfert
+		},
+		item: {
+			id: '${news.identifier.asString()}',
+			type: '${news.contributionType}'
+		}
+	});
 }
 </script>
 </head>
@@ -130,6 +144,11 @@ function onDelete(id) {
 	</c:if>
   <fmt:message var="printMsg" key="GML.print"/>
   <view:operation altText="${printMsg}" action="javascript:window.print()"/>
+	<fmt:message var="putInSelectionBasketMsg" key="GML.putInBasket"/>
+	<c:if test="${not news.draft}">
+		<view:operationSeparator/>
+		<view:operation altText="${putInSelectionBasketMsg}" action="javascript:onclick=putNewsInBasket()"/>
+	</c:if>
 </view:operationPane>
 </c:if>
 <view:window popup="${viewOnly}">
