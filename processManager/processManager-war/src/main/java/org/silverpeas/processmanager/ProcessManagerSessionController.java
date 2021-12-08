@@ -912,7 +912,8 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
         for (int j = 0; actors != null && j < actors.length; j++) {
           GenericFieldTemplate fieldTemplate = new GenericFieldTemplate(
-              state.getName() + "_" + actors[j].getUserRoleName() + "_" + j, "user");
+              processStateName(state.getName()) + "_" + actors[j].getUserRoleName() + "_" + j,
+              "user");
           fieldTemplate.addLabel(state.getLabel(currentRole, getLanguage()), getLanguage());
           fieldTemplate.setDisplayerName("user");
           fieldTemplate.setMandatory(true);
@@ -925,6 +926,15 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       throw new ProcessManagerException(PROCESS_MANAGER_SESSION_CONTROLLER,
           "processManager.GET_ASSIGN_TEMPLATE_FAILED", ex);
     }
+  }
+
+  /**
+   * Deletion of problematic characters in state name (spaces)
+   * @param name
+   * @return
+   */
+  private String processStateName(String name) {
+    return name.replaceAll(" ", "");
   }
 
   /**
@@ -952,7 +962,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
         actors = currentProcessInstance.getWorkingUsers(activeStates[i]);
         for (int j = 0; actors != null && j < actors.length; j++) {
           Field field =
-              data.getField(activeStates[i] + "_" + actors[j].getUserRoleName() + "_" + j);
+              data.getField(processStateName(activeStates[i]) + "_" + actors[j].getUserRoleName() + "_" + j);
           String value = actors[j].getUser().getUserId();
 
           if (value != null) {
@@ -990,7 +1000,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
         // assign new working users
         for (int j = 0; j < oldUsers.length; j++) {
           String roleName = oldUsers[j].getUserRoleName();
-          Field field = data.getField(activeState + "_" + roleName + "_" + j);
+          Field field = data.getField(processStateName(activeState) + "_" + roleName + "_" + j);
           String userId = field.getStringValue();
           User user = Workflow.getUserManager().getUser(userId);
           Actor newActor = Workflow.getProcessInstanceManager().createActor(
