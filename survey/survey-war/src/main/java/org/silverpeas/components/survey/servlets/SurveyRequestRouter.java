@@ -147,7 +147,7 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
       if (function.startsWith("portlet")) {
         destination = rootDest + "portlet.jsp?Profile=" + flag;
       } else if (function.startsWith("Main") || function.startsWith("surveyList")) {
-        // the flag is the best user's profile
+        request.setAttribute("PasteEnabled", surveySC.isPasteEnabled());
         destination = rootDest + "surveyList.jsp?Profile=" + flag;
       } else if (function.startsWith("SurveyCreation") || function.startsWith("surveyCreator")) {
         if (flag.equals(SilverpeasRole.ADMIN.toString()) ||
