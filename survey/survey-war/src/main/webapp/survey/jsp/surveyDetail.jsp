@@ -86,8 +86,6 @@
 
   //Icons
   String alertSrc = m_context + "/util/icons/alert.gif";
-  String exportSrc = m_context + "/util/icons/export.gif";
-  String copySrc = m_context + "util/icons/copy.gif";
   String deleteSrc = m_context + "/util/icons/delete.gif";
 %>
 <c:url value="/util/icons/alert.gif" var="alertSrc"></c:url>
@@ -445,28 +443,22 @@ function clipboardCopy() {
 </head>
 
 <body>
+<view:operationPane>
+  <fmt:message key="GML.notify" var="notifyUserMsg" />
+  <c:set var="notifyUserAction">javaScript:onClick=sp.messager.open('<%= componentId %>', {<%=NotificationContext.CONTRIBUTION_ID%>: '<%=surveyId%>'});</c:set>
+  <view:operation altText="${notifyUserMsg}" icon="${alertSrc}" action="${notifyUserAction}" />
+
+  <fmt:message key="GML.copy" var="copyMsg" />
+  <view:operation altText="${copyMsg}" icon="${copySrc}" action="javaScript:onClick=clipboardCopy();" />
+</view:operationPane>
 <view:window>
+<view:browseBar extraInformations="<%=survey.getHeader().getTitle()%>" componentId="<%=surveyScc.getComponentId()%>"/>
 <%
-    Window window = gef.getWindow();
-    BrowseBar browseBar = window.getBrowseBar();
-    browseBar.setDomainName(surveyScc.getSpaceLabel());
-    browseBar.setComponentName(surveyScc.getComponentLabel(), "surveyList.jsp?Action=View");
-    browseBar.setExtraInformation(survey.getHeader().getTitle());
-  
     participated = false;
     String surveyPart =
         displayQuestions(survey, Integer.parseInt(roundId), gef, m_context, surveyScc,
             resources, settings, profile, pollingStationMode, participated);
-  
-    // notification
-    OperationPane operationPane = window.getOperationPane();
-    operationPane.addOperation(alertSrc, resources.getString("GML.notify"),
-        "javaScript:onClick=sp.messager.open('" + componentId + "', {" + NotificationContext.CONTRIBUTION_ID + ": '" + surveyId + "'});");
-  
-    // copier
-    operationPane.addOperation(copySrc, resources.getString("GML.copy"),
-        "javaScript:onClick=clipboardCopy()");
-  
+
     out.println(surveyPart);
 %>
 <view:pdcClassification componentId="<%= componentId %>" contentId="<%= surveyId %>" />
@@ -474,7 +466,6 @@ function clipboardCopy() {
 </view:window>
 <%
   } else if (action.equals("ViewResult")) {
-    String iconsPath = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
     int resultView = survey.getHeader().getResultView();
 %>
 
@@ -541,7 +532,7 @@ function clipboardCopy() {
     }
 
     function clipboardCopy() {
-        top.IdleFrame.location.href = '../..<%=surveyScc.getComponentUrl()%>copy?Id=<%=survey.getHeader().getId()%>';
+      top.IdleFrame.location.href = '../..<%=surveyScc.getComponentUrl()%>copy?Id=<%=survey.getHeader().getId()%>';
     }
 
     function changeScope(mode, participated, surveyId) {
@@ -608,9 +599,9 @@ function clipboardCopy() {
   <%
   }
   %>
+
   <fmt:message key="GML.copy" var="copyMsg" />
   <view:operation altText="${copyMsg}" icon="${copySrc}" action="javaScript:onClick=clipboardCopy();" />
-  
 </view:operationPane>
 <view:window>
 <%
