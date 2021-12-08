@@ -1,7 +1,9 @@
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane" %>
 <%@ page import="org.silverpeas.core.util.SettingBundle" %>
-<%@ page import="org.silverpeas.core.notification.user.NotificationContext" %><%--
+<%@ page import="org.silverpeas.core.notification.user.NotificationContext" %>
+<%@ page import="org.owasp.encoder.Encode" %>
+<%--
 
     Copyright (C) 2000 - 2021 Silverpeas
 
@@ -49,13 +51,13 @@
 <c:set var="profile" value="${requestScope['Profile']}"/>
 <%
   String action = request.getParameter("Action");
-  String surveyId = request.getParameter("SurveyId");
+  String surveyId = Encode.forUriComponent(request.getParameter("SurveyId"));
   String roundId = request.getParameter("RoundId");
   String profile = (String) request.getAttribute("Profile");
   List listDocument = (List) request.getAttribute("ListDocument");
   String choice = (String) request.getAttribute("ResultDisplayMode");
   if (StringUtil.isNotDefined(choice)) {
-    choice = org.owasp.encoder.Encode.forUriComponent(request.getParameter("Choice"));
+    choice = Encode.forUriComponent(request.getParameter("Choice"));
   }
   if (StringUtil.isNotDefined(choice)) {
     choice = "D";
