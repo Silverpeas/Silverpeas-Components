@@ -1083,6 +1083,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
       parameters.setAnswerCount(item.getString(FileUploadUtil.DEFAULT_ENCODING));
     } else if ("SuggestionAllowed".equals(mpName)) {
       parameters.setSuggestion(item.getString(FileUploadUtil.DEFAULT_ENCODING));
+      answer.setIsOpened(StringUtil.getBooleanValue(parameters.getSuggestion()));
     } else if ("questionStyle".equals(mpName)) {
       parameters.setStyle(item.getString(FileUploadUtil.DEFAULT_ENCODING));
     } else if (mpName.startsWith("answer") || "suggestionLabel".equals(mpName)) {
