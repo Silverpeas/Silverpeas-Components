@@ -646,6 +646,21 @@ public class SurveySessionController extends AbstractComponentSessionController 
     }
   }
 
+  public boolean isPasteEnabled() throws SilverpeasException {
+    try {
+      Collection<ClipboardSelection> clipObjects = getClipboardSelectedObjects();
+      for (ClipboardSelection clipObject : clipObjects) {
+        if (clipObject != null && clipObject.isDataFlavorSupported(
+            QuestionContainerSelection.QuestionContainerDetailFlavor)) {
+          return true;
+        }
+      }
+    } catch (Exception e) {
+      throw new SilverpeasException(e.getMessage(), e);
+    }
+    return false;
+  }
+
   /**
    * Paste surveys which are in the clipboard selection
    * @throws Exception
