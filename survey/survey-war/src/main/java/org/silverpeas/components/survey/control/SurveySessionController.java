@@ -646,6 +646,21 @@ public class SurveySessionController extends AbstractComponentSessionController 
     }
   }
 
+  public boolean isPasteEnabled() throws SilverpeasException {
+    try {
+      Collection<ClipboardSelection> clipObjects = getClipboardSelectedObjects();
+      for (ClipboardSelection clipObject : clipObjects) {
+        if (clipObject != null && clipObject.isDataFlavorSupported(
+            QuestionContainerSelection.QuestionContainerDetailFlavor)) {
+          return true;
+        }
+      }
+    } catch (Exception e) {
+      throw new SilverpeasException(e.getMessage(), e);
+    }
+    return false;
+  }
+
   /**
    * Paste surveys which are in the clipboard selection
    * @throws Exception
@@ -1083,6 +1098,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
       parameters.setAnswerCount(item.getString(FileUploadUtil.DEFAULT_ENCODING));
     } else if ("SuggestionAllowed".equals(mpName)) {
       parameters.setSuggestion(item.getString(FileUploadUtil.DEFAULT_ENCODING));
+      answer.setIsOpened(StringUtil.getBooleanValue(parameters.getSuggestion()));
     } else if ("questionStyle".equals(mpName)) {
       parameters.setStyle(item.getString(FileUploadUtil.DEFAULT_ENCODING));
     } else if (mpName.startsWith("answer") || "suggestionLabel".equals(mpName)) {

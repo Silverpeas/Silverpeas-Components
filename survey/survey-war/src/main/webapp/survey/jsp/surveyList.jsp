@@ -293,10 +293,10 @@
 
 <%
   //Retrieve parameters
-  String action = (String) request.getParameter("Action");
-  String profile = (String) request.getParameter("Profile");
-  String iconsPath =
-      ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
+  String action = request.getParameter("Action");
+  String profile = request.getParameter("Profile");
+  String iconsPath = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
+  boolean pasteEnabled = (Boolean) request.getAttribute("PasteEnabled");
 
   //Icons
   lockSrc = iconsPath + "/util/icons/checkoutFile.gif";
@@ -448,8 +448,10 @@ function openSPWindow(fonction, windowName){
       operationPane.addOperationOfCreation(addSurveySrc, resources.getString("SurveyNewSurvey"),
           "javaScript:createSurvey()");
     }
-    operationPane.addOperation(resources.getIcon("survey.paste"), resources
-        .getString("GML.paste"), "javascript:onClick=clipboardPaste()");
+    if (pasteEnabled) {
+      operationPane.addOperation(resources.getIcon("survey.paste"),
+          resources.getString("GML.paste"), "javascript:onClick=clipboardPaste()");
+    }
   }
   
   out.println(window.printBefore());
