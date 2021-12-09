@@ -44,7 +44,7 @@ import java.util.TimeZone;
  */
 public class CalendarEventEncoder {
 
-  private static SettingBundle settings = ResourceLocator.getSettingBundle(
+  private static final SettingBundle settings = ResourceLocator.getSettingBundle(
       "org.silverpeas.components.scheduleevent.settings.ScheduleEventSettings");
 
   private static SettingBundle getSettings() {
@@ -52,22 +52,20 @@ public class CalendarEventEncoder {
   }
 
   /**
-   * Encodes the specified detailed scheduleevent with the specified dates into calendar events.
+   * Encodes the specified detailed scheduled event with the specified dates into calendar events.
    *
-   * @param eventDetail detail.
+   * @param eventDetail a scheduled event.
    * @param listDateOption list of dates.
    * @return the list of calendar event corresponding to the schedule event.
    */
   public List<CalendarEvent> encode(final ScheduleEvent eventDetail, final List<DateOption> listDateOption) {
     List<CalendarEvent> events = new ArrayList<>();
     Set<Response> listResponse = eventDetail.getResponses();
-    if(eventDetail.getStatus() == ScheduleEventStatus.CLOSED && listResponse.size() > 0) {
+    if(eventDetail.getStatus() == ScheduleEventStatus.CLOSED && !listResponse.isEmpty()) {
       TimeZone timeZone = TimeZone.getTimeZone(getSettings().getString("scheduleevent.timezone"));
       for(DateOption eventDateOption : listDateOption) {
         int endTime = DateOption.MORNING_END_HOUR;
-        if(eventDateOption.getHour() == DateOption.MORNING_BEGIN_HOUR) {
-          endTime = DateOption.MORNING_END_HOUR;
-        } else if(eventDateOption.getHour() == DateOption.AFTERNOON_BEGIN_HOUR) {
+        if(eventDateOption.getHour() == DateOption.AFTERNOON_BEGIN_HOUR) {
           endTime = DateOption.AFTERNOON_END_HOUR;
         }
         OffsetDateTime startDateTime =

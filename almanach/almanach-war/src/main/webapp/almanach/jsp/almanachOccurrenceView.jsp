@@ -55,6 +55,7 @@
 <fmt:message key="GML.notify" var="notifyLabel"/>
 <fmt:message var="modifyLabel" key="GML.modify"/>
 <fmt:message key="GML.delete" var="deleteLabel"/>
+<fmt:message key="GML.putInBasket" var="putInBasket"/>
 
 <c:url var="backUri" value="${requestScope.navigationContext.previousNavigationStep.uri}"/>
 
@@ -65,6 +66,7 @@
   <view:looknfeel withFieldsetStyle="true"/>
   <title></title>
   <view:includePlugin name="calendar"/>
+  <view:includePlugin name="basketSelection"/>
   <view:script src="/almanach/jsp/javaScript/angularjs/services/almanachcalendar.js"/>
   <view:script src="/almanach/jsp/javaScript/angularjs/almanachcalendar.js"/>
 </head>
@@ -87,6 +89,10 @@
         action="angularjs:eventMng.removeOccurrence(ceo)"
         altText="${deleteLabel}"/>
   </c:if>
+  <view:operationSeparator/>
+  <view:operation
+      action="angularjs:putEventOccurrenceInBasket(ceo)"
+      altText="${putInBasket}"/>
 </view:operationPane>
 <view:window>
   <view:frame>

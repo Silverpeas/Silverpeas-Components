@@ -64,6 +64,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -76,7 +77,7 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
   private static final long serialVersionUID = -1306206668466915664L;
 
   private static final String SECURITY_ALERT_FROM_USER_MSG_PREFIX = "Security alert from user ";
-  private Selection sel = null;
+  private final Selection sel;
   private ScheduleEvent currentScheduleEvent = null;
   private static final String ICS_PREFIX = "scheduleevent";
 
@@ -133,6 +134,7 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
     if (isUserOwnerOfEvent(getCurrentScheduleEvent())) {
       String appContext = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
       Pair<String, String> hostComponentName = new Pair<>(getComponentName(), "");
+      //noinspection unchecked
       Pair<String, String>[] hostPath = new Pair[1];
       hostPath[0] = new Pair<>(getString("scheduleevent.form.selectContributors"), "");
 
@@ -179,7 +181,7 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
         result.add(String.valueOf(subscriber.getUserId()));
       }
     }
-    return result.toArray(new String[result.size()]);
+    return result.toArray(new String[0]);
   }
 
   public void setIdUsersAndGroups() {
@@ -204,12 +206,8 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
       if (detail.getId().equals(String.valueOf(currentScheduleEvent.getAuthor()))) {
         foundCreator = true;
       }
-      boolean foundAlreadyCreated = false;
-      for (Contributor contributor : recordedContributors) {
-        if (detail.getId().equals(String.valueOf(contributor.getUserId()))) {
-          foundAlreadyCreated = true;
-        }
-      }
+      boolean foundAlreadyCreated = recordedContributors.stream()
+          .anyMatch(c -> detail.getId().equals(String.valueOf(c.getUserId())));
       if (!foundAlreadyCreated) {
         addContributor(recordedContributors, detail.getId());
       }
@@ -226,7 +224,6 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
     }
 
     UserDetail[] userDetails = SelectionUsersGroups.getUserDetails(selectedUsersIds);
-    boolean found = false;
     Iterator<Contributor> recordedContributorIt = recordedContributors.iterator();
     while (recordedContributorIt.hasNext()) {
       Contributor currentContributor = recordedContributorIt.next();
@@ -234,11 +231,8 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
       if (getUserId().equals(currentContributorUserId)) {
         continue;
       }
-      for (final UserDetail userDetail : userDetails) {
-        if (userDetail.getId().equals(currentContributorUserId)) {
-          found = true;
-        }
-      }
+      boolean found = Arrays.stream(userDetails)
+          .anyMatch(u -> u.getId().equals(currentContributorUserId));
       if (!found) {
         recordedContributorIt.remove();
       }
@@ -401,7 +395,7 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
   }
 
   /**
-   * Converts the specified detailed scheduleevent into a calendar event.
+   * Converts the specified detailed scheduled event into a calendar event.
    * @param event detail.
    * @param listDateOption of dates.
    * @return the calendar events corresponding to the schedule event.

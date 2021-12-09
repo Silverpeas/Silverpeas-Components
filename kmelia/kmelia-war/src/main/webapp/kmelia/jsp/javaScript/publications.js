@@ -140,7 +140,7 @@ function putPublicationsInBasket() {
   let decodePubId = function(id) {
     let pubIds = id.split('-');
     return pubIds[1] + ':Publication:' + pubIds[0];
-  }
+  };
   let basket = new BasketService();
 
   // remove from the basket the unselected publications

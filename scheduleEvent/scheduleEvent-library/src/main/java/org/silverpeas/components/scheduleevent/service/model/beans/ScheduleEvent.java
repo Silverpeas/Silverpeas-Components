@@ -36,10 +36,9 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "sc_scheduleevent_list")
-@NamedQueries({
-  @NamedQuery(name = "findByAuthor", query = "from ScheduleEvent where author = :authorId"),
-  @NamedQuery(name = "findByContributor", query
-      = "select e from Contributor c join c.scheduleEvent e where c.userId = :contributorId")})
+@NamedQuery(name = "findByAuthor", query = "from ScheduleEvent where author = :authorId")
+@NamedQuery(name = "findByContributor", query
+      = "select e from Contributor c join c.scheduleEvent e where c.userId = :contributorId")
 public class ScheduleEvent implements SilverpeasToolContent, ScheduleEventBean, Serializable {
 
   private static final long serialVersionUID = 1L;
@@ -55,13 +54,13 @@ public class ScheduleEvent implements SilverpeasToolContent, ScheduleEventBean, 
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   @JoinColumn(name = "scheduleeventid", nullable = false)
   @OrderBy("day, hour ASC")
-  private final Set<DateOption> dates = new TreeSet<DateOption>();
+  private final Set<DateOption> dates = new TreeSet<>();
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true, mappedBy
       = "scheduleEvent")
-  private final Set<Contributor> contributors = new HashSet<Contributor>();
+  private final Set<Contributor> contributors = new HashSet<>();
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true, mappedBy
       = "scheduleEvent")
-  private final Set<Response> responses = new HashSet<Response>();
+  private final Set<Response> responses = new HashSet<>();
   private int status;
 
   @PrePersist
@@ -222,12 +221,7 @@ public class ScheduleEvent implements SilverpeasToolContent, ScheduleEventBean, 
     }
     ScheduleEvent other = (ScheduleEvent) obj;
     if (id == null) {
-      if (other.id != null) {
-        return false;
-      }
-    } else if (!id.equals(other.id)) {
-      return false;
-    }
-    return true;
+      return other.id == null;
+    } else return id.equals(other.id);
   }
 }
