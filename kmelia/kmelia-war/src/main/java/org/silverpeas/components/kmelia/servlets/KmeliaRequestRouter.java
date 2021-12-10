@@ -44,7 +44,6 @@ import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
-import org.silverpeas.core.contribution.publication.model.CompletePublication;
 import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationLink;
@@ -1116,15 +1115,14 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         // Go to importExportPeas
         destination = "/RimportExportPeas/jsp/SelectExportMode";
       } else if (function.equals("ToPubliContent")) {
-        CompletePublication completePublication =
-            kmelia.getSessionPubliOrClone().getCompleteDetail();
+        PublicationDetail publicationDetail = kmelia.getSessionPubliOrClone().getDetail();
         if (WysiwygController.haveGotWysiwyg(kmelia.getComponentId(),
-            completePublication.getPublicationDetail().getPK().getId(),
+            publicationDetail.getPK().getId(),
             kmelia.getCurrentLanguage())) {
 
           destination = getDestination("ToWysiwyg", kmelia, request);
         } else {
-          String infoId = completePublication.getPublicationDetail().getInfoId();
+          String infoId = publicationDetail.getInfoId();
           if (infoId == null || "0".equals(infoId)) {
             List<String> usedModels = kmelia.getModelUsed();
             if (usedModels.size() == 1) {
