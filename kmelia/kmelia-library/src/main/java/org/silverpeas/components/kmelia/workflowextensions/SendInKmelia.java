@@ -23,12 +23,15 @@
  */
 package org.silverpeas.components.kmelia.workflowextensions;
 
-import com.lowagie.text.Element;
-import com.lowagie.text.Font;
-import com.lowagie.text.Phrase;
-import com.lowagie.text.pdf.PdfPCell;
-import com.lowagie.text.pdf.PdfPTable;
-import com.lowagie.text.pdf.PdfWriter;
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.Font.FontFamily;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 import net.htmlparser.jericho.Source;
 import org.silverpeas.components.kmelia.service.KmeliaService;
 import org.silverpeas.core.ResourceReference;
@@ -70,7 +73,6 @@ import org.silverpeas.core.workflow.external.impl.ExternalActionImpl;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.awt.*;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.PrintWriter;
@@ -301,7 +303,7 @@ public class SendInKmelia extends ExternalActionImpl {
   }
 
   private byte[] generatePDF(final String role, ProcessInstance instance) {
-    com.lowagie.text.Document document = new com.lowagie.text.Document();
+    Document document = new Document();
 
     try {
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -322,8 +324,7 @@ public class SendInKmelia extends ExternalActionImpl {
     return new byte[0];
   }
 
-  private void generatePDFStep(final String role, HistoryStep step,
-      com.lowagie.text.Document document) {
+  private void generatePDFStep(final String role, HistoryStep step, Document document) {
     if (step != null) {
       generatePDFStepHeader(role, step, document);
       generatePDFStepContent(role, step, document);
@@ -331,7 +332,7 @@ public class SendInKmelia extends ExternalActionImpl {
   }
 
   private void generatePDFStepHeader(final String role, HistoryStep step,
-      com.lowagie.text.Document document) {
+      Document document) {
     try {
       String activity = "";
       if (step.getResolvedState() != null) {
@@ -356,11 +357,11 @@ public class SendInKmelia extends ExternalActionImpl {
       }
       header += sAction + " (" + actor + " - " + date + ")";
 
-      Font fontHeader = new Font(Font.HELVETICA, 12, Font.NORMAL);
+      Font fontHeader = new Font(FontFamily.HELVETICA, 12, Font.NORMAL);
 
       PdfPCell pCell = new PdfPCell(new Phrase(header, fontHeader));
       pCell.setFixedHeight(28);
-      pCell.setBackgroundColor(new Color(239, 239, 239));
+      pCell.setBackgroundColor(new BaseColor(239, 239, 239));
       pCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
 
       PdfPTable pTable = new PdfPTable(1);
@@ -393,7 +394,7 @@ public class SendInKmelia extends ExternalActionImpl {
   }
 
   private void generatePDFStepContent(final String role, HistoryStep step,
-      com.lowagie.text.Document document) {
+      Document document) {
     try {
       Form form;
       if ("#question#".equals(step.getAction()) || "#response#".equals(step.getAction())) {
@@ -429,8 +430,8 @@ public class SendInKmelia extends ExternalActionImpl {
       final PagesContext pageContext, final PdfPTable tableContent,
       final GenericFieldTemplate fieldTemplate) {
     try {
-      Font fontLabel = new Font(Font.HELVETICA, 10, Font.BOLD);
-      Font fontValue = new Font(Font.HELVETICA, 10, Font.NORMAL);
+      Font fontLabel = new Font(FontFamily.HELVETICA, 10, Font.BOLD);
+      Font fontValue = new Font(FontFamily.HELVETICA, 10, Font.NORMAL);
       String fieldLabel = fieldTemplate.getLabel(getLanguage());
       String fieldValue = null;
       Field field = data.getField(fieldTemplate.getFieldName());
