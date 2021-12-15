@@ -2584,13 +2584,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController
         if (!first) {
           path.append(" > ");
         }
-        path.append(spaceInPath.getName());
+        path.append(spaceInPath.getName(getLanguage()));
         first = false;
       }
     }
 
     Treeview treeview = new Treeview(path.toString() + " > " +
-        getOrganisationController().getComponentInstLight(instanceId).getLabel(), tree,
+        getOrganisationController().getComponentInstLight(instanceId).getLabel(getLanguage()), tree,
         instanceId);
 
     treeview.setNbAliases(getNbAliasesInComponent(locations, instanceId));
