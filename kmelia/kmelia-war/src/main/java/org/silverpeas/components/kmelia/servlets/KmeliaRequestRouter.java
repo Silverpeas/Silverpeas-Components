@@ -265,9 +265,9 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           request.setAttribute("SearchScope", SearchContext.GLOBAL);
         }
 
-        if (type != null && ("Publication".equals(type) ||
-            "org.silverpeas.core.personalorganizer.model.TodoDetail".equals(type) ||
-            "Attachment".equals(type) || "Document".equals(type) || type.startsWith("Comment"))) {
+        if (type != null &&
+            ("Publication".equals(type) || "TodoDetail".equals(type) || "Attachment".equals(type) ||
+                "Document".equals(type) || type.startsWith("Comment"))) {
           try {
             PublicationDetail pub2Check = kmelia.getPublicationDetail(id);
             // If given PK defines a clone, change PK to master
