@@ -39,7 +39,6 @@ import org.silverpeas.core.ActionType;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.ProfiledObjectId;
-import org.silverpeas.core.admin.ProfiledObjectType;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.ProfileInst;
@@ -4089,17 +4088,26 @@ public class DefaultKmeliaService implements KmeliaService {
       KmeliaPasteDetail pasteContext) {
     List<NodeDetail> treeToPaste = nodeService.getSubTree(nodePK);
 
+    boolean rightsOnTopicsEnabled = isRightsOnTopicsEnabled(to.getInstanceId());
+
     // move node and subtree
-    nodeService.moveNode(nodePK, to);
+    nodeService.moveNode(nodePK, to, rightsOnTopicsEnabled);
 
     for (NodeDetail fromNode : treeToPaste) {
       if (fromNode != null) {
         NodePK toNodePK = new NodePK(fromNode.getNodePK().getId(), to);
-        checkNodeRights(fromNode);
-        // move rich description of node
-        if (!nodePK.getInstanceId().equals(to.getInstanceId())) {
-          WysiwygController.move(fromNode.getNodePK().getInstanceId(),
-              NODE_PREFIX + fromNode.getId(), to.getInstanceId(), NODE_PREFIX + toNodePK.getId());
+        boolean movedToAnotherApp = !nodePK.getInstanceId().equals(to.getInstanceId());
+
+        if (movedToAnotherApp) {
+          NodeDetail toNode = nodeService.getDetail(toNodePK);
+
+          checkNodeRights(fromNode, toNode, rightsOnTopicsEnabled);
+
+          // move rich description of node
+          if (!nodePK.getInstanceId().equals(to.getInstanceId())) {
+            WysiwygController.move(fromNode.getNodePK().getInstanceId(),
+                NODE_PREFIX + fromNode.getId(), to.getInstanceId(), NODE_PREFIX + toNodePK.getId());
+          }
         }
 
         // move publications of node
@@ -4111,17 +4119,29 @@ public class DefaultKmeliaService implements KmeliaService {
     return getNodeHeader(nodePK);
   }
 
-  private void checkNodeRights(final NodeDetail node) {
-    if (node.haveLocalRights()) {
+  private void checkNodeRights(final NodeDetail fromNode, final NodeDetail node,
+      final boolean rightsOnTopicsEnabled) {
+    if (fromNode.haveLocalRights()) {
       List<ProfileInst> profiles =
-          adminController.getProfilesByObject(ProfiledObjectId.fromNode(node.getNodePK().getId()),
-              node.getNodePK().getInstanceId());
-      for (ProfileInst profile : profiles) {
-        if (profile != null && StringUtil.isDefined(profile.getId())) {
+          adminController.getProfilesByObject(ProfiledObjectId.fromNode(fromNode.getNodePK().getId()),
+              fromNode.getNodePK().getInstanceId());
+      if (rightsOnTopicsEnabled) {
+        // adjusting previous rights according to target component
+        for (ProfileInst profile : profiles) {
+          if (profile != null && StringUtil.isDefined(profile.getId())) {
 
-          checkNodeProfile(profile, node.getNodePK().getInstanceId());
+            // removing previous rights (can't be reused cause componentId have changed)
+            adminController.deleteProfileInst(profile.getId());
 
-          adminController.updateProfileInst(profile);
+            // checking rights and add new profile
+            checkNodeProfile(profile, node);
+            adminController.addProfileInst(profile);
+          }
+        }
+      } else {
+        // target component does not use specific rights, so removing rights
+        for (ProfileInst profile: profiles) {
+          adminController.deleteProfileInst(profile.getId());
         }
       }
     }
@@ -4149,13 +4169,14 @@ public class DefaultKmeliaService implements KmeliaService {
     String userId = copyDetail.getUserId();
     NodeDetail nodeToCopy = nodeService.getDetail(nodePKToCopy);
     NodeDetail father = getNodeHeader(targetPK);
+    boolean rightsOnTopicsEnabled = isRightsOnTopicsEnabled(targetPK.getInstanceId());
 
     // paste topic
     NodePK nodePK = new NodePK(UNKNOWN, targetPK);
     NodeDetail node = new NodeDetail(nodeToCopy);
     node.setNodePK(nodePK);
     node.setCreatorId(userId);
-    node.setRightsDependsOn(father.getRightsDependsOn());
+    node.setRightsDependsOn(NodeDetail.NO_RIGHTS_DEPENDENCY);
     node.setCreationDate(new Date());
     nodePK = nodeService.createNode(node, father);
 
@@ -4163,12 +4184,11 @@ public class DefaultKmeliaService implements KmeliaService {
     copyNodePredefinedClassification(nodeToCopy.getNodePK(), nodePK);
 
     // duplicate rights
-    if (copyDetail.isNodeRightsMustBeCopied()) {
+    if (rightsOnTopicsEnabled && copyDetail.isNodeRightsMustBeCopied()) {
       oldAndNewIds.put(nodePKToCopy.getId(), nodePK.getId());
-      setNodeRightsDependency(oldAndNewIds, nodeToCopy, nodePK, node);
+      setNodeRightsDependency(nodeToCopy, father, node);
       // Set topic rights if any
-      copyNodeRights(userId,
-            nodeToCopy, father, nodePK);
+      copyNodeRights(userId, nodeToCopy, nodePK);
     }
 
     // paste wysiwyg attached to node
@@ -4198,24 +4218,18 @@ public class DefaultKmeliaService implements KmeliaService {
     return node;
   }
 
-  private void copyNodeRights(final String userId, final NodeDetail nodeToCopy, final NodeDetail father,
+  private void copyNodeRights(final String userId, final NodeDetail nodeToCopy,
       final NodePK nodePK) {
     if (nodeToCopy.haveLocalRights()) {
+      NodeDetail node = nodeService.getDetail(nodePK);
       List<ProfileInst> topicProfiles = adminController.getProfilesByObject(
           ProfiledObjectId.fromNode(nodeToCopy.getNodePK()
-              .getId()), nodeToCopy.getNodePK()
-              .getInstanceId());
+              .getId()), nodeToCopy.getNodePK().getInstanceId());
       for (ProfileInst nodeToPasteProfile : topicProfiles) {
         if (nodeToPasteProfile != null) {
           ProfileInst nodeProfileInst = new ProfileInst(nodeToPasteProfile);
-          nodeProfileInst.setId(UNDEFINED_NODE_ID);
-          nodeProfileInst.setComponentFatherId(getComponentLocalId(nodePK.getInstanceId()));
-          nodeProfileInst.setObjectId(
-              new ProfiledObjectId(ProfiledObjectType.NODE, nodePK.getId()));
-          nodeProfileInst.setParentObjectId(
-              new ProfiledObjectId(ProfiledObjectType.NODE, father.getNodePK().getId()));
 
-          checkNodeProfile(nodeProfileInst, nodePK.getInstanceId());
+          checkNodeProfile(nodeProfileInst, node);
 
           // Add the profile
           adminController.addProfileInst(nodeProfileInst, userId);
@@ -4241,9 +4255,10 @@ public class DefaultKmeliaService implements KmeliaService {
    * Removes all groups and users which are not authorized to access to component instance.
    *
    */
-  private void checkNodeProfile(ProfileInst profile, String instanceId) {
+  private void checkNodeProfile(ProfileInst profile, NodeDetail node) {
     List<String> verifiedUserIds = new ArrayList<>();
     List<String> verifiedGroupIds = new ArrayList<>();
+    String instanceId = node.getNodePK().getInstanceId();
 
     // check users and groups according to component instance rights
     List<String> userIdsToCheck = profile.getAllUsers();
@@ -4260,19 +4275,21 @@ public class DefaultKmeliaService implements KmeliaService {
       }
     }
 
+    profile.setId("-1");
     profile.setUsers(verifiedUserIds);
     profile.setGroups(verifiedGroupIds);
+    profile.setComponentFatherId(getComponentLocalId(instanceId));
+    profile.setObjectId(ProfiledObjectId.fromNode(node.getId()));
+    profile.setParentObjectId(ProfiledObjectId.fromNode(node.getFatherPK().getId()));
   }
 
-  private void setNodeRightsDependency(final HashMap<String, String> oldAndNewIds,
-      final NodeDetail nodeToCopy, final NodePK nodePK, final NodeDetail node) {
+  private void setNodeRightsDependency(final NodeDetail nodeToCopy, final NodeDetail father,
+      final NodeDetail node) {
     if (nodeToCopy.haveRights()) {
       if (nodeToCopy.haveLocalRights()) {
-        node.setRightsDependsOn(nodePK.getId());
+        node.setRightsDependsOnMe();
       } else {
-        String oldRightsDependsOn = nodeToCopy.getRightsDependsOn();
-        String newRightsDependsOn = oldAndNewIds.get(oldRightsDependsOn);
-        node.setRightsDependsOn(newRightsDependsOn);
+        node.setRightsDependsOn(father.getRightsDependsOn());
       }
       nodeService.updateRightsDependency(node);
     }
