@@ -540,7 +540,6 @@
 <script type="text/javascript">
   jQuery(document).ready(function() {
     init();
-    scrollMessageList(<%=messageId%>);
     <% if (displayAllMessages && scrollToMessage) {%>
     scrollMessage(<%=messageId%>);
     <% } %>
