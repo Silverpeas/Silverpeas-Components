@@ -2521,90 +2521,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     return languages;
   }
 
-  public Collection<Location> getPublicationAliases() {
-    return getKmeliaService().getAliases(getSessionPublication().getDetail().getPK());
-  }
-
-  public void setPublicationAliases(List<Location> locations) {
-    getKmeliaService().setAliases(getSessionPublication().getDetail().getPK(), locations);
-  }
-
   public Collection<Location> getPublicationLocations() {
     return getKmeliaService().getLocations(getSessionPublication().getDetail().getPK());
-  }
-
-  /**
-   * @return a List of Treeview
-   */
-  public List<Treeview> getComponents(Collection<Location> locations) {
-    List<Treeview> result = new ArrayList<>();
-    List<NodeDetail> tree = null;
-    NodePK root = new NodePK(NodePK.ROOT_NODE_ID);
-
-    // adding personal component if current space is personal
-    SpaceInstLight currentSpace =
-        getOrganisationController().getSpaceInstLightById(getSpaceId());
-    if (currentSpace != null && currentSpace.isPersonalSpace()) {
-      tree = initTreeView(locations, result, tree, root, currentSpace, new StringBuilder(),
-          getComponentId());
-    }
-
-    List<SpaceInstLight> spaces = getOrganisationController().getSpaceTreeview(getUserId());
-    for (SpaceInstLight space : spaces) {
-      StringBuilder path = new StringBuilder();
-      String[] componentIds =
-          getOrganisationController().getAvailCompoIdsAtRoot(space.getId(), getUserId());
-      for (String componentId : componentIds) {
-        String instanceId = componentId;
-
-        if (instanceId.startsWith(KMELIA) &&
-            (getKmeliaService().isUserCanPublish(instanceId, getUserId()) ||
-                instanceId.equals(getComponentId()))) {
-          tree = initTreeView(locations, result, tree, root, space, path, instanceId);
-        }
-      }
-    }
-    return result;
-  }
-
-  private List<NodeDetail> initTreeView(final Collection<Location> locations, final List<Treeview> result,
-      List<NodeDetail> tree, final NodePK root, final SpaceInstLight space,
-      final StringBuilder path, final String instanceId) {
-    root.setComponentName(instanceId);
-
-    if (instanceId.equals(getComponentId())) {
-      tree = getKmeliaService().getTreeview(root, null, false, false, getUserId(), false,
-          isRightsOnTopicsEnabled());
-    }
-
-    if (path.length() == 0) {
-      List<SpaceInstLight> sPath = getOrganisationController().getPathToSpace(space.getId());
-      boolean first = true;
-      for (SpaceInstLight spaceInPath : sPath) {
-        if (!first) {
-          path.append(" > ");
-        }
-        path.append(spaceInPath.getName(getLanguage()));
-        first = false;
-      }
-    }
-
-    Treeview treeview = new Treeview(path.toString() + " > " +
-        getOrganisationController().getComponentInstLight(instanceId).getLabel(getLanguage()), tree,
-        instanceId);
-
-    treeview.setNbAliases(getNbAliasesInComponent(locations, instanceId));
-
-    if (instanceId.equals(getComponentId())) {
-      result.add(0, treeview);
-    } else {
-      result.add(treeview);
-    }
-    return tree;
-  }
-
-  public List<NodeDetail> getAliasTreeview() {
-    return getAliasTreeview(getComponentId());
   }
 
   public List<NodeDetail> getAliasTreeview(String instanceId) {
@@ -2615,16 +2533,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
           isRightsOnTopicsEnabled(instanceId));
     }
     return tree;
-  }
-
-  private int getNbAliasesInComponent(Collection<Location> locations, String instanceId) {
-    int nb = 0;
-    for (Location location : locations) {
-      if (location.getInstanceId().equals(instanceId)) {
-        nb++;
-      }
-    }
-    return nb;
   }
 
   private boolean isToolbox() {

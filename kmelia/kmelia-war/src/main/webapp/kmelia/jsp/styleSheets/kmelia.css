@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2020 Silverpeas
+ * Copyright (C) 2000 - 2021 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -453,6 +453,16 @@ body.treeView > div[id*="kmelia"] > div.kmelia  #topPage .cellBodyWindows{
   background: url("../../../kmelia/jsp/icons/pack_big_icons.gif")  3px -696px no-repeat;
   border:1px solid #FFFBBB ;
   background-color:#FFFFDC;}
+
+#subTopics ul li#topic_notvisibleContributions a {
+  background: url("../../../kmelia/jsp/icons/pack_big_icons.gif")  3px -796px no-repeat;
+  border:1px solid #EAEAEA ;
+  border-radius:10px;
+  background-color:#EAEAEA;}
+#subTopics ul li#topic_notvisibleContributions a:hover {
+  background: url("../../../kmelia/jsp/icons/pack_big_icons.gif")  3px -896px no-repeat;
+  border:1px solid #FFFBBB ;
+  background-color:#FFFFDC;}
 	
 #subTopics ul li a strong {
   display:block;
@@ -812,6 +822,7 @@ a.button.refuse span {
 	
  }
 
+
 .wrap #rightSide.resizable > div {
   margin:0 2em 1em 4em;
 }
@@ -1054,13 +1065,180 @@ a.button.refuse span {
 
 
 /*** emplacement ***/
-.kmelia.path #accordion .content {
+#currentLocations {
+    float: right;
+    padding-left: 3%;
+    margin-right: 2%;
+    padding-top: 1em;
+    width: 33%;
+    border-left: 1px solid #ccc;
+    min-height: 300px;
+}
+#currentLocations ul {
+	list-style-type:none;
+	padding:0;
+	margin:0;
+} 
+
+#currentLocations ul li {
+	padding:1em;
+	border-bottom:1px solid #eee;
+	position:relative;
+}
+#currentLocations ul li .location-path{
+	color:#000;
+	font-weight:600;
+}
+
+#currentLocations ul li .location-user{
+	display:block;
+	color:#1c94d4;
+	font-weight:400;
+}
+#currentLocations ul li .location-date{
+	color:#777;
+}
+
+#currentLocations li a.delete-button {
+  display: block;
+  text-indent: -3000em;
+  position: absolute;
+  bottom:1em;
+  right: 1em;
+  width: 16px;
+  height: 20px;
+  padding: 0;
+  z-index: 1000;
+}
+
+#currentLocations li:hover .delete-button {
+  background: transparent url(../../../util/icons/delete.gif) 0 0 no-repeat;
+}
+
+#localLocations, #browserLocation{
+    width: 58%;
+    float: left;
+    margin-left: 0;
+    margin-right: 3%;
+    margin-bottom: 2em;
+}
+
+#localLocations #localTreeview {
+	max-height:250px;
+    overflow: auto;
+}
+
+#browserLocation #currentPath {
+	background-color:#f5f5f5;
+	border-bottom:1px solid #DDD;
+	padding:1em;
+}
+
+#browserLocation #currentPath > a:first-child {
+	text-indent:-300em;
+	background:transparent url(../../../util/icons/Home.gif) 0 -1px no-repeat;
+	display:inline-block;
+	width:22px;
+}
+
+#browserLocation #currentPath a{
+	color: #1c94d4;
+	text-decoration:underline;
+}
+#browserLocation #currentPath a:last-child{
+	font-weight:bold;
+	color:inherit;
+	text-decoration:none;
+}
+#browserLocation #spaces ,
+#browserLocation #components,
+#browserLocation #treeview {
+	padding:0;
+	margin:1em 1em 1em 0;
+	float:left;
+	
+	border:1px solid #DDD;
+	height:300px;
+	overflow:auto;
+}
+#browserLocation #spaces,
+#browserLocation #components {
+	min-width:7em;
+}
+#browserLocation #treeview {
+	margin-right:0;
+	min-width:calc(33.3% - 2px);
+	
+}
+#browserLocation #spaces ul ,
+#browserLocation #components ul,
+#browserLocation #treeview table{
+	padding:0;
+	margin:0;
+	list-style:none;
+}
+#browserLocation #spaces ul li ,
+#browserLocation #components ul li {
+	min-width:13em;
+}
+
+#browserLocation #treeview table{
+	width:100%;
+}
+#browserLocation #treeview  table tr td:first-child{
+	padding:0.25em 1em;
+}
+#browserLocation #spaces ul li ,
+#browserLocation #components ul li{
+	padding:0.5em 1em;
+	border-bottom:1px solid #DDD;	
+}
+#browserLocation #spaces ul li a,
+#browserLocation #components ul li a{
+	display:block;	
+}
+#browserLocation #spaces li a {
+	background:transparent url(../../../util/icons/treeview/plus.gif) 0 0 no-repeat;
+	padding-left:24px;
+}
+#browserLocation #components li a {
+	background:transparent url(../../../util/icons/component/kmeliaSmall.gif) 0 -2px no-repeat;
+	padding-left:24px;
+}
+
+#browserLocation #components h4,
+#browserLocation #spaces h4,
+#browserLocation #treeview h4  {
+	display:block;
+	text-align:center;
+	border-bottom:1px solid #DDD;
+	font-weight:bold;
+	padding:1em 0;
+	margin:0;
+	
+}
+.kmelia.path .header h3 {
+    padding: 0;
+    margin: 0 0 1em;
+    font-size: 130%;
+    font-weight:400;
+    line-height: 90%;
+}
+
+.kmelia.path .header h3 strong {
+    display: block;
+    font-size: 90%;
+    font-weight:400;
+    color: #1c94d4;
+}
+
+.kmelia.path .accordion .content {
 	padding: .5em .5em .5em .7em;
 	overflow: auto;
 	max-height: 250px;
 }
 
-.kmelia.path #accordion .basic a {
+.kmelia.path .accordion .basic a {
 	cursor:pointer;
 	display:block;
 	text-decoration: none;
@@ -1071,32 +1249,58 @@ a.button.refuse span {
 	background: linear-gradient(180deg , rgb(255, 255, 255) 0%, rgb(229, 229, 229) 100%);
 }
 
-.kmelia.path #accordion .ui-icon {
+.kmelia.path .accordion .ui-icon {
 	display: none;
 }
 
-.kmelia.path #accordion .nbAlias {
+.kmelia.path .accordion .nbAlias {
 	position:absolute;
 	right:1em;
 	top:0.5em;
 }
 
-.kmelia.path #accordion .ui-corner-top{
+.kmelia.path .accordion .ui-corner-top{
 	position:relative;
 }
 
-.kmelia.path #accordion table{
-	width:100%;
+.kmelia.path #treeviewFolders {
+	max-height: 258px;
+    overflow: auto;
+    padding-right: 20px;
 }
 
-.kmelia.path #accordion table td {
-	padding:0.25em;
+.kmelia.path #localTreeview table{
+	width:100%;
+}
+.kmelia.path .accordion table td{
+	padding:0.15em 0.25em;
 	border-bottom:1px solid #eee;
 }
 
-.kmelia.path #accordion table tr:nth-child(2n) {
+.kmelia.path .accordion table tr:nth-child(2n),
+#currentLocations ul li:nth-child(2n) {
 	background-color:#FFF
 }
-.kmelia.path #accordion table tr:nth-child(2n+1) {
+.kmelia.path .accordion table tr:nth-child(2n+1),
+#currentLocations ul li:nth-child(2n+1)  {
   background-color:#f5f5f5;
 }
+
+ @media only screen and (max-width: 780px) { 
+	 
+	#currentLocations {
+		float: none;
+		padding:0;
+		margin:0 0 2em 0;
+		width:100%;
+		border-left:0;
+		min-height: auto;
+		
+	}
+	#localLocations, #browserLocation {
+		width: 100%;
+		float: none;
+		padding:0;
+		margin:0 0 2em 0;
+	}
+ }
