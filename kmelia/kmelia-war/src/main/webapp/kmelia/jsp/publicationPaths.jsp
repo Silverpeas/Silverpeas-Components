@@ -25,11 +25,9 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ page import="org.apache.ecs.xhtml.input" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ page import="org.silverpeas.components.kmelia.model.KmeliaPublication" %>
-<%@page import="org.silverpeas.components.kmelia.model.Treeview"%>
-<%@ page import="org.silverpeas.core.contribution.publication.model.Location" %>
-<%@ page import="org.silverpeas.core.util.Mutable" %>
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache"); //HTTP 1.0
@@ -41,93 +39,187 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%
 KmeliaPublication publication 		= (KmeliaPublication) request.getAttribute("Publication");
 String 				linkedPathString 	= (String) request.getAttribute("LinkedPathString");
-Collection<NodeDetail> topics			= (Collection<NodeDetail>) request.getAttribute("Topics");
 String				currentLang 		= (String) request.getAttribute("Language");
-List<Treeview>		components			= (List<Treeview>) request.getAttribute("Components");
-Collection<Location> locations = (Collection<Location>) request.getAttribute("Locations");
 
 String pubName 	= publication.getDetail().getName(currentLang);
 String id 		= publication.getDetail().getPK().getId();
 
-Button validateButton = gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendData();", false);
-Button cancelButton = gef.getFormButton(resources.getString("GML.cancel"), "ViewPublication?PubId="+id, false);
+boolean toolbox = componentId.startsWith("toolbox");
 %>
 
+<c:set var="toolbox" value="<%=toolbox%>"/>
+<fmt:setLocale value="${sessionScope[sessionController].language}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xml:lang="<%=currentLang%>%>">
+<html xml:lang="<%=currentLang%>">
 <head>
 <title></title>
 <view:looknfeel/>
 <script type="text/javascript">
 	$(document).ready(function(){
-		$('#accordion').accordion({   
-			clearStyle: false,  
-			autoHeight: false
-		}).bind("accordionactivate", function(event, ui) {
-			doSomething(ui.newHeader[0].id);
-		});
+    displayLocations();
+    <c:choose>
+      <c:when test="${toolbox}">
+        viewComponent("<%=componentId%>");
+      </c:when>
+      <c:otherwise>
+        viewLocalComponent();
+        $("#browsingArea").show();
+        displaySpaces();
+      </c:otherwise>
+    </c:choose>
 	});
 
-	var doSomething = function(paneId) 
-	{
-		if (loadedPanes.indexOf(","+paneId+",") != "-1")
-		{
-			//Pane already loaded
-		}
-		else
-		{
-			$.post("<%=routerUrl%>ShowAliasTree?ComponentId="+paneId, function(data){
-				$("#content_"+paneId).html(data);
-			});
+  function manageLocation(nodeId, componentId, checkbox) {
+    var locationId = nodeId+"-"+componentId;
+    var uri = webContext+"/services/private/publications/<%=componentId%>/<%=id%>/locations/"+locationId;
+    if (checkbox.checked) {
+      addAlias(uri, locationId)
+    } else {
+      deleteAlias(uri, locationId);
+    }
+  }
 
-			loadedPanes += paneId+",";
-		}
-	};
+	function displaySpaces() {
+    viewSpace('0');
+  }
 
-	var loadedPanes = ",<%=componentId%>,";
-</script>
-<script type="text/javascript">
-function sendData() {
-	var selectedPaths = getSelectedOjects();
-	if (selectedPaths.indexOf(',<%=componentId%>,') == -1) {
-    jQuery.popup.error('<%=WebEncodeHelper.javaStringToHtmlString(WebEncodeHelper.javaStringToJsString(resources.getString("kmelia.paths.mandatory")))%>');
-	} else {
-		document.getElementById("LoadedComponentIds").value=","+loadedPanes+",";
-		document.paths.submit();
-	}
-}
+  const currentPath = new Map();
+	currentPath.set('0', '&nbsp;');
 
-function topicGoTo(id) {
-	location.href="GoToTopic?Id="+id;
-}
+	function processPath(spaceId) {
+	  if (spaceId) {
+      // check if spaceId is not already in path
+      if (currentPath.has(spaceId)) {
+        var deleteNext = false;
+        const oldPath = currentPath;
+        for (const key of oldPath.keys()) {
+          if (deleteNext) {
+            currentPath.delete(key);
+          } else {
+            if (key === spaceId) {
+              deleteNext = true;
+            }
+          }
+        }
+      } else {
+        var spaceLabel = $("#space-" + spaceId).text();
+        currentPath.set(spaceId, spaceLabel);
+      }
 
-function getSelectedOjects() {
-	return getObjects(true);
-}
+      var path = "";
+      for (const key of currentPath.keys()) {
+        if (key !== '0') {
+          path += " > ";
+        }
+        var a = "<a href=\"#\" onclick=\"viewSpace('" + key + "'); return false;\">" + currentPath.get(key) + "</a>";
+        path += a;
+      }
+      $("#currentPath").html(path);
+    }
+  }
 
-function getObjects(selected) {
-	var  items = "";
-	var boxItems = document.paths.topicChoice;
-	if (boxItems != null){
-		// au moins une checkbox exist
-		var nbBox = boxItems.length;
-		if ( (nbBox == null) && (boxItems.checked == selected) ){
-			// il n'y a qu'une checkbox non selectionn�e
-			items += boxItems.value+",";
-		} else{
-			// search not checked boxes 
-			for (i=0;i<boxItems.length ;i++ ){
-				if (boxItems[i].checked == selected){
-					items += boxItems[i].value+",";
-				}
-			}
-		}
-	}
-	return items;
-}
+  function viewSpace(spaceId) {
+    var uri = webContext+"/services/spaces";
+    if (spaceId !== '0') {
+      uri += "/"+spaceId+"/spaces";
+    }
+
+    processPath(spaceId);
+    emptyComponentTreeview();
+    $("#components ul").empty();
+
+    $("#spaces ul").empty();
+    var ajaxRequest = sp.ajaxRequest(uri);
+    ajaxRequest.send().then(function(response) {
+      response.responseAsJson().forEach(function(space) {
+        var li = "<li id=\"space-"+space.id+"\"><a href=\"#\" onclick=\"viewSpace('"+space.id+"'); return false;\">"+space.label+"</a></li>";
+        $("#spaces ul").append(li);
+      });
+    });
+    if (spaceId !== '0') {
+      displayComponents(spaceId);
+    }
+  }
+
+  function displayComponents(spaceId) {
+    var uri = webContext+"/services/spaces/"+spaceId+"/components";
+    $("#components ul").empty();
+    var ajaxRequest = sp.ajaxRequest(uri);
+    ajaxRequest.send().then(function(response) {
+      response.responseAsJson().forEach(function(component) {
+        if (component.name === "kmelia") {
+          var componentId = component.name+component.id;
+          var li = "<li id=\""+componentId+"\"><a href=\"#\" onclick=\"viewComponent('"+componentId+"', true); return false;\">"+component.label+"</a></li>";
+          $("#components ul").append(li);
+        }
+      });
+    });
+  }
+
+  function viewComponent(componentId, addToPath) {
+	  if (addToPath) {
+	    var componentLabel = $("#"+componentId).text();
+	    $("#currentPath").append(" > ").append(componentLabel);
+    }
+	  emptyComponentTreeview();
+    $.post("<%=routerUrl%>ShowAliasTree?ComponentId="+componentId, function(data){
+      $("#treeviewFolders").html(data);
+    });
+  }
+
+  function viewLocalComponent() {
+    $.post("<%=routerUrl%>ShowAliasTree?ComponentId=<%=componentId%>", function(data){
+      $("#localTreeview").html(data);
+    });
+  }
+
+  function emptyComponentTreeview() {
+    $("#treeviewFolders").empty();
+  }
+
+	function deleteAlias(aliasURI, locationId) {
+    var ajaxRequest = sp.ajaxRequest(aliasURI).byDeleteMethod();
+    ajaxRequest.send().then(function() {
+      $("#currentLocations #"+locationId).remove();
+      $("#localTreeview #"+locationId).prop("checked", false);
+      $("#treeviewFolders #"+locationId).prop("checked", false);
+    });
+  }
+
+  function addAlias(aliasURI, locationId) {
+    var ajaxRequest = sp.ajaxRequest(aliasURI).byPutMethod();
+    ajaxRequest.send().then(function() {
+      displayLocations();
+    });
+  }
+
+  function displayLocations() {
+    var ajaxRequest = sp.ajaxRequest(webContext+"/services/private/publications/<%=componentId%>/<%=id%>/locations?lang="+getUserLanguage());
+    ajaxRequest.send().then(function(response) {
+      var lis = "";
+      response.responseAsJson().forEach(function(location) {
+        var locationId = location.id+"-"+location.componentId;
+        var li = "<li id=\""+locationId+"\"><span class=\"location-path\">"+location.path+"</span>";
+        if (location.alias) {
+          li += "<span class=\"location-user\">"+location.user.fullName+"</span>";
+          li += "<span class=\"location-date\">"+sp.moment.displayAsDateTime(location.date)+"</span>";
+          li += "<a class=\"delete-button\" href=\"#\" onclick=\"deleteAlias('"+location.uri+"', '"+locationId+"')\">Supprimer</a>";
+        }
+        li += "</li>";
+        lis += li;
+      });
+      $("#currentLocations ul").html(lis);
+    });
+  }
+
+  function topicGoTo(id) {
+    location.href="GoToTopic?Id="+id;
+  }
 </script>
 </head>
-<body class="kmelia path">
+<body class="kmelia path locations">
   <%
     Window window = gef.getWindow();
     Frame frame = gef.getFrame();
@@ -148,163 +240,52 @@ function getObjects(selected) {
         Board board	= gef.getBoard();
         
         out.println(board.printBefore());
-        
-     	//regarder si la publication est dans la corbeille
-    		if (NodePK.BIN_NODE_ID.equals(publication.getLocation().getId())) {
-    			//la publi est dans la corbeille
-        		out.println(kmeliaScc.getString("kmelia.PubInBasket")+"<br/><br/>");
-    		}
+
+    //regarder si la publication est dans la corbeille
+    if (NodePK.BIN_NODE_ID.equals(publication.getLocation().getId())) {
+      //la publi est dans la corbeille
+      out.println("<div class=\"inlineMessage\">"+kmeliaScc.getString("kmelia.PubInBasket")+"</div>");
+    }
+
         %>
-        <form name="paths" action="SetPath" method="post">
-        	<input type="hidden" name="PubId" value="<%=id%>"/>
-        	<input type="hidden" name="LoadedComponentIds" id="LoadedComponentIds" value=""/> 
-        	
+  <div id="currentLocations">
+    <div class="header">
+      <h3><fmt:message key="kmelia.paths.local"/></h3>
+    </div>
+    <ul></ul>
+  </div>
+
+  <div id="localLocations">
+    <div class="header">
+      <h3><fmt:message key="kmelia.paths.local.add"/></h3>
+    </div>
+    <div id="localTreeview" class="accordion"></div>
+  </div>
+
+  <div id="browserLocation">
+  <div id="browsingArea" style="display:none;">
+    <div class="header">
+      <h3><fmt:message key="kmelia.paths.external.add"/></h3>
+    </div>
+    <div id="currentPath"></div>
+    <div id="spaces">
+      <h4><fmt:message key="GML.spaces"/></h4>
+      <ul></ul>
+    </div>
+    <div id="components">
+      <h4><fmt:message key="GML.components"/></h4>
+      <ul></ul>
+    </div>
+  </div>
+  <div id="treeview" class="accordion">
+    <h4><fmt:message key="GML.folders"/></h4>
+    <div id="treeviewFolders"></div>
+  </div>
+  </div>
+
         <%
-    	if(topics != null && !topics.isEmpty()) {
-    	  	// toolbox case
-    		out.println("<table>");
-    		for (NodeDetail topic : topics) {
-    			if (topic.getId() != 1 && topic.getId() != 2) {
-    				String name = topic.getName(currentLang);
-    				
-    				String ind = "";
-    				if(topic.getLevel() > 2) { // calcul chemin arbre
-    					int sizeOfInd = topic.getLevel() - 2;
-    					if(sizeOfInd > 0) {
-    						for(int i=0;i<sizeOfInd;i++) {
-    							ind += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-    						}
-    					}
-    				}
-    				name = ind + name;	
-    				
-    				// recherche si ce thème est dans la liste des locations de la publication
-            final input topicChoiceInput = new input().setType("checkbox").setName("topicChoice").setValue(topic.getId()+","+topic.getNodePK().getInstanceId());
-            topicChoiceInput.addAttribute("valign","absmiddle");
-            locations.stream()
-              .filter(l -> Integer.toString(topic.getId()).equals(l.getId()))
-              .findFirst()
-              .ifPresent(l -> {
-                topicChoiceInput.setChecked(true);
-                if (!l.isAlias()) {
-                  topicChoiceInput.setReadOnly(true);
-                  topicChoiceInput.setDisabled(true);
-                  topicChoiceInput.setOnClick("return false");
-                }
-              });
-            boolean displayCheckbox = false;
-            if (topic.getUserRole() == null || !topic.getUserRole().equals("user")) {
-              displayCheckbox = true;
-            }
-            out.println("<tr><td width=\"10px\">");
-            if (displayCheckbox) {
-              out.println(topicChoiceInput.toString());
-            } else {
-              out.println("&nbsp;");
-            }
-            out.println("</td><td>"+name+"</td></tr>");
-          }
-    		}
-    		out.println("</table>");
-    	} else {
-    	  	// kmelia case
-			out.println("<div id=\"accordion\" class=\"basic\">");
-	
-	    	Treeview treeview = null;
-	    	String nbAliases = "";
-	    	String panelTitle = "";
-	    	for (int t=0; components != null && t<components.size(); t++) {
-	    		treeview = components.get(t);
-	    		
-	    		nbAliases = "";
-	    		if (t == 0) {
-	    			panelTitle = resources.getString("kmelia.paths.local");
-	    		} else {
-	    			panelTitle = treeview.getPath();
-	    		}
-	    		
-	    		if (treeview.getNbAliases() == 1) {
-	    			nbAliases = "<span class=\"nb_nbAlias\">"+treeview.getNbAliases()+"</span> <span class=\"libelle_nbAlias\">"+resources.getString("kmelia.paths.path")+"</span>";
-	    		} else if (treeview.getNbAliases() > 1) {
-	    			nbAliases = "<span class=\"nb_nbAlias\">"+treeview.getNbAliases()+"</span> <span class=\"libelle_nbAlias\">"+resources.getString("kmelia.paths.paths")+"</span>";
-	    		}  
-	%>
-				<a href="javascript: void(0)" id="<%=treeview.getComponentId()%>"><div class="panelTitle"><%=panelTitle%></div><div class="nbAlias"><%=nbAliases%></div></a>
-					<div id="content_<%=treeview.getComponentId()%>" class="content">
-	<%
-					out.println("<table>");
-					if (t == 0) {
-		    			List<NodeDetail> otherTree = treeview.getTree();
-		    			for (NodeDetail topic : otherTree) {
-		        			if (topic.getId() != 1 && topic.getId() != 2) {
-	    	    				String name = topic.getName(currentLang);
-	    	    				    	    			
-	    	    				String ind = "";
-	    	    				if(topic.getLevel() > 2) { // calcul chemin arbre
-	    	    					int sizeOfInd = topic.getLevel() - 2;
-	    	    					if(sizeOfInd > 0) {
-	    	    						for(int i=0;i<sizeOfInd;i++) {
-	    	    							ind += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-	    	    						}
-	    	    					}
-	    	    				}
-	    	    				name = ind + name;
-	    	    				
-	    	    				// recherche si ce dossier est dans la liste des dossiers de la publication
-                    final Mutable<String> aliasDecoration = Mutable.of("");
-                    final input topicChoiceInput = new input().setType("checkbox").setName("topicChoice").setValue(topic.getId()+","+topic.getNodePK().getInstanceId());
-                    topicChoiceInput.addAttribute("valign","absmiddle");
-                    locations.stream()
-                      .filter(l -> Integer.toString(topic.getId()).equals(l.getId()) && topic.getNodePK().getInstanceId().equals(l.getInstanceId()))
-                      .findFirst()
-                      .ifPresent(l -> {
-                        topicChoiceInput.setChecked(true);
-                        if (l.isAlias()) {
-                          aliasDecoration.set("<span>&nbsp;</span><i>"+l.getAlias().getUserName()+" - "+resources.getOutputDateAndHour(l.getAlias().getDate())+"</i>");
-                        } else {
-                          topicChoiceInput.setReadOnly(true);
-                          topicChoiceInput.setDisabled(true);
-                          topicChoiceInput.setOnClick("return false");
-                        }
-                      });
-                    boolean displayCheckbox = false;
-                    if (topic.getUserRole()==null || !topic.getUserRole().equals("user")) {
-                      displayCheckbox = true;
-                      if ("writer".equals(topic.getUserRole())) {
-                        topicChoiceInput.setReadOnly(true);
-                        topicChoiceInput.setDisabled(true);
-                        topicChoiceInput.setOnClick("return false");
-                      }
-                    }
-                    out.println("<tr><td width=\"10px\">");
-                    if (displayCheckbox) {
-                      out.println(topicChoiceInput.toString());
-                    } else {
-                      out.println("&nbsp;");
-                    }
-                    out.println("</td><td nowrap=\"nowrap\">"+name+"</td><td align=\"right\">"+aliasDecoration.get()+"</td></tr>");
-		        			}
-		        			
-		        		}
-					} else {
-						out.println("<tr><td>Chargement en cours...</td></tr>");
-					}
-					out.println("</table>");
-	%>
-					</div>
-	<%  			
-	    	}
-	    	out.println("</div>");
-    	}
-    	out.println("</form>");
-    	
     	out.println(board.printAfter());
-    	
-    	ButtonPane buttonPane = gef.getButtonPane();
-    	buttonPane.addButton(validateButton);
-    	buttonPane.addButton(cancelButton);
-    	out.println("<br/>"+buttonPane.print());
-    	
+
         out.println(frame.printAfter());
         out.println(window.printAfter());
 %>

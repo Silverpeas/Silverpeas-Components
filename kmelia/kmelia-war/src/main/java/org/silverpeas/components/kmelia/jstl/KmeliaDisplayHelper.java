@@ -162,7 +162,7 @@ public class KmeliaDisplayHelper {
     }
 
     if (invisibleTabs.indexOf(KmeliaSessionController.TAB_ACCESS_PATHS) == -1 && !kmaxMode && !pubDetail.isAlias()) {
-      tabbedPane.addTab(resources.getString("PubGererChemins"), routerUrl
+      tabbedPane.addTab(resources.getString("PubGererChemins")+ " ("+kmeliaScc.getPublicationLocations().size()+")", routerUrl
           + "PublicationPaths?PubId=" + pubId, "ViewPath".equals(action), enabled);
     }
 
