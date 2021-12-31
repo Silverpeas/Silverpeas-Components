@@ -1004,47 +1004,13 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         KmeliaPublication publication = kmelia.getSessionPublication();
         request.setAttribute("Publication", publication);
         request.setAttribute("LinkedPathString", kmelia.getSessionPath());
-        Collection<Location> locations = kmelia.getPublicationLocations();
-        request.setAttribute("Locations", locations);
-        if (toolboxMode) {
-          request.setAttribute("Topics", kmelia.getAllTopics());
-        } else {
-          request.setAttribute("Components", kmelia.getComponents(locations));
-        }
 
         destination = rootDestination + "publicationPaths.jsp";
-      } else if (function.equals("SetPath")) {
-        final String[] topics = request.getParameterValues("topicChoice");
-        final List<String> loadedComponentIds = request.getParameterAsList("LoadedComponentIds");
-        final List<Location> locations = new ArrayList<>();
-        for (int i = 0; topics != null && i < topics.length; i++) {
-          String topicId = topics[i];
-          StringTokenizer tokenizer = new StringTokenizer(topicId, ",");
-          String nodeId = tokenizer.nextToken();
-          String instanceId = tokenizer.nextToken();
-
-          Location location = new Location(nodeId, instanceId);
-          location.setAsAlias(kmelia.getUserId());
-          locations.add(location);
-        }
-
-        // Tous les composants ayant un alias n'ont pas forcément été chargés
-        Collection<Location> oldLocations = kmelia.getPublicationAliases();
-        for (Location oldLocation : oldLocations) {
-          if (!loadedComponentIds.contains(oldLocation.getInstanceId()) && oldLocation.isAlias()) {
-            // le composant de l'alias n'a pas été chargé
-            locations.add(oldLocation);
-          }
-        }
-
-        kmelia.setPublicationAliases(locations);
-
-        destination = getDestination("ViewPublication", kmelia, request);
       } else if (function.equals("ShowAliasTree")) {
         String componentId = request.getParameter("ComponentId");
 
         request.setAttribute("Tree", kmelia.getAliasTreeview(componentId));
-        request.setAttribute("Aliases", kmelia.getPublicationAliases());
+        request.setAttribute("Locations", kmelia.getPublicationLocations());
 
         destination = rootDestination + "treeview4PublicationPaths.jsp";
       } else if ("ToAddLinksToPublication".equals(function)) {
