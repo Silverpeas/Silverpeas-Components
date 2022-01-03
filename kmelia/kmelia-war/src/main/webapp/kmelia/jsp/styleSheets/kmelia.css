@@ -363,9 +363,6 @@ body.treeView > div[id*="kmelia"] > div.kmelia  #topPage .cellBodyWindows{
   vertical-align: middle;
 }
 
-#preview .txtBaseline {
-}
-
 #rightClick-message p {
   background: transparent url("../../../util/icons/rightClick.gif") 7px 0px no-repeat;
   padding-left: 50px;
@@ -398,19 +395,12 @@ body.treeView > div[id*="kmelia"] > div.kmelia  #topPage .cellBodyWindows{
 }
 
 #subTopics ul li {
-  margin:2px 0 0 0;
+  margin:2px 0.5em 0 0;
   height: 63px;
   position:relative;
-}
-
-/*** presentation sur 4 colonnes***/
-#subTopics ul li  {
   display: inline;
   float: left;
-  height: 63px;
-  margin-right: 0.5em;
   width:24%;
-  position:relative;
 }
 
 #subTopics ul li a {
@@ -613,12 +603,10 @@ a.button.refuse span {
 .axisManagment .oneAxis{
   position:relative;
   background-color: #EAEAEA;
-  border-left: 1px solid #CECECE;
   display: inline;
   float: left;
   margin: 5px 25px 5px 4px;
   padding: 6px 15px 14px 14px;
-  position:relative;
   border:1px solid #EAEAEA ;
   border-radius:10px;
 }
@@ -837,10 +825,6 @@ a.button.refuse span {
   z-index: inherit !important;
 }
 
-#footer {
-  text-align: center;
-}
-
 .jstree li.Invisible > a {
   color: #BBBBBB;
 }
@@ -925,8 +909,6 @@ a.button.refuse span {
 #treeDiv1::-webkit-scrollbar-thumb {
   background-color: #d6d6d6;
   border-radius:0.5em;
-}
-#treeDiv1::-webkit-scrollbar-button {
 }
 
 #pubList  .list-publication-home {

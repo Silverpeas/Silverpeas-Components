@@ -930,11 +930,11 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Deletion of problematic characters in state name (spaces)
-   * @param name
-   * @return
+   * @param name name of a state process
+   * @return the normalized name
    */
   private String processStateName(String name) {
-    return name.replaceAll(" ", "");
+    return name.replace(" ", "");
   }
 
   /**
