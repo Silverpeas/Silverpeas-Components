@@ -24,10 +24,11 @@
 
 package org.silverpeas.components.kmelia.stats;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.silverpeas.components.kmelia.model.StatsFilterVO;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.silverpeas.core.test.UnitTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -35,16 +36,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  *
  * @author ebonnet
  */
-public class StatisticServiceTest {
+@UnitTest
+class StatisticServiceTest {
 
   public StatisticServiceTest() {
   }
 
-  @Before
+  @BeforeEach
   public void setUp() {
   }
 
-  @After
+  @AfterEach
   public void tearDown() {
   }
 
@@ -52,7 +54,7 @@ public class StatisticServiceTest {
    * Test of getNbConsultedPublication method, of class StatisticService.
    */
   @Test
-  public void testGetNbConsultedPublication() {
+  void testGetNbConsultedPublication() {
     //System.out.println("getNbConsultedPublication");
     StatsFilterVO statFilter = null;
     StatisticService instance = new StatisticServiceImpl();
@@ -65,7 +67,7 @@ public class StatisticServiceTest {
    * Test of getStatisticActivityByPeriod method, of class StatisticService.
    */
   @Test
-  public void testGetStatisticActivityByPeriod() {
+  void testGetStatisticActivityByPeriod() {
     //System.out.println("getStatisticActivityByPeriod");
     StatsFilterVO statFilter = null;
     StatisticService instance = new StatisticServiceImpl();

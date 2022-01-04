@@ -59,6 +59,10 @@
       <artifactId>itextpdf</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.fasterxml.jackson.module</groupId>
+      <artifactId>jackson-module-jaxb-annotations</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.silverpeas.core</groupId>
       <artifactId>silverpeas-core-test</artifactId>
       <version>${core.version}</version>
@@ -66,17 +70,4 @@
     </dependency>
   </dependencies>
 
-  <build>
-    <testResources>
-      <testResource>
-        <directory>src/test/resources</directory>
-        <filtering>true</filtering>
-      </testResource>
-    </testResources>
-    <!--
-    <filters>
-      <filter>src/test/filters/filters.properties</filter>
-    </filters>
-    -->
-  </build>
 </project>

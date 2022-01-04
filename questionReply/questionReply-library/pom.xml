@@ -42,17 +42,5 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  <build>
-    <testResources>
-      <testResource>
-        <directory>src/test/resources</directory>
-        <filtering>true</filtering>
-      </testResource>
-    </testResources>
-    <!--
-    <filters>
-      <filter>src/test/filters/filters.properties</filter>
-    </filters>
-    -->
-  </build>
+
 </project>

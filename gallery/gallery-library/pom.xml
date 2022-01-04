@@ -81,47 +81,9 @@
     </dependency>
     <dependency>
       <groupId>org.jboss.resteasy</groupId>
-      <artifactId>resteasy-jaxrs</artifactId>
+      <artifactId>resteasy-client</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <showDeprecation>true</showDeprecation>
-        </configuration>
-      </plugin>
-    </plugins>
-    <testResources>
-      <testResource>
-        <directory>src/test/resources</directory>
-        <filtering>true</filtering>
-        <includes>
-          <include>**/*.properties</include>
-        </includes>
-        <excludes>
-          <exclude>**/*.jpg</exclude>
-          <exclude>**/*.xml</exclude>
-        </excludes>
-      </testResource>
-      <testResource>
-        <directory>src/test/resources</directory>
-        <filtering>false</filtering>
-        <includes>
-          <include>**/*.st</include>
-          <include>**/*.jpg</include>
-          <include>**/*.xml</include>
-          <include>**/*.sql</include>
-          <include>**/*.BeanContainer</include>
-        </includes>
-        <excludes>
-          <exclude>**/*.properties</exclude>
-        </excludes>
-      </testResource>
-    </testResources>
-  </build>
 </project>

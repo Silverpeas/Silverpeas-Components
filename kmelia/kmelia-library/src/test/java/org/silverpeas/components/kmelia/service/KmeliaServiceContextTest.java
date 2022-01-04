@@ -23,12 +23,13 @@
  */
 package org.silverpeas.components.kmelia.service;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.test.UnitTest;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -37,13 +38,14 @@ import static org.silverpeas.components.kmelia.service.KmeliaServiceContext.*;
 /**
  * @author Yohann Chastagnier
  */
-public class KmeliaServiceContextTest {
+@UnitTest
+class KmeliaServiceContextTest {
 
   private PublicationDetail publication;
   private PublicationDetail publicationA;
   private PublicationDetail publicationB;
 
-  @Before
+  @BeforeEach
   public void setup() {
     CacheServiceProvider.clearAllThreadCaches();
     publication = PublicationDetail.builder()
@@ -58,7 +60,7 @@ public class KmeliaServiceContextTest {
     assertClearedContext();
   }
 
-  @After
+  @AfterEach
   public void tearDown() {
     CacheServiceProvider.getRequestCacheService().clearAllCaches();
     assertClearedContext();
@@ -74,7 +76,7 @@ public class KmeliaServiceContextTest {
   }
 
   @Test
-  public void publicationCreatedIntoSameRequestContext() {
+  void publicationCreatedIntoSameRequestContext() {
     createdIntoRequestContext(publication);
     assertThat(hasPublicationBeenCreatedFromRequestContext(publication), is(true));
     assertThat(hasPublicationBeenUpdatedFromRequestContext(publication), is(false));
@@ -85,7 +87,7 @@ public class KmeliaServiceContextTest {
   }
 
   @Test
-  public void publicationUpdatedIntoSameRequestContext() {
+  void publicationUpdatedIntoSameRequestContext() {
     updatedIntoRequestContext(publication);
     assertThat(hasPublicationBeenCreatedFromRequestContext(publication), is(false));
     assertThat(hasPublicationBeenUpdatedFromRequestContext(publication), is(true));

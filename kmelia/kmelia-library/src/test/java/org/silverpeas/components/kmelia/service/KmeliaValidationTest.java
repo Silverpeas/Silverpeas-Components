@@ -26,11 +26,10 @@ package org.silverpeas.components.kmelia.service;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
-import org.silverpeas.core.test.extention.TestManagedMock;
 import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.extention.TestManagedMock;
 
 import java.util.Arrays;
 
@@ -42,7 +41,7 @@ import static org.silverpeas.core.contribution.publication.model.PublicationDeta
  * @author Yohann Chastagnier
  */
 @EnableSilverTestEnv
-public class KmeliaValidationTest {
+class KmeliaValidationTest {
 
   private static final String INSTANCE_ID = "instanceId";
   private static final String VALIDATOR_ID = "26";
@@ -59,52 +58,53 @@ public class KmeliaValidationTest {
   }
 
   @Test
-  public void validatePublicationValidationIsNotRequiredShouldNotPerformValidation() {
+  void validatePublicationValidationIsNotRequiredShouldNotPerformValidation() {
     PublicationDetail publication = createPublication(DRAFT_STATUS);
     kmeliaValidation.validate(publication);
-    verifyZeroInteractions(kmeliaService);
+    verifyNoInteractions(kmeliaService);
   }
 
   @Test
-  public void validateAlreadyValidatedPublicationShouldNotPerformValidation() {
+  void validateAlreadyValidatedPublicationShouldNotPerformValidation() {
     PublicationDetail publication = createPublication(VALID_STATUS);
     kmeliaValidation.validate(publication);
-    verifyZeroInteractions(kmeliaService);
+    verifyNoInteractions(kmeliaService);
   }
 
   @Test
-  public void forceValidateAlreadyValidatedPublicationShouldPerformValidation() {
+  void forceValidateAlreadyValidatedPublicationShouldPerformValidation() {
     PublicationDetail publication = createPublication(VALID_STATUS);
-    kmeliaValidation.forceValidation().validate(publication);
-    verify(kmeliaService, times(1))
-        .validatePublication(publication.getPK(), VALIDATOR_ID, true, false);
+    kmeliaValidation.forceValidation()
+        .validate(publication);
+    verify(kmeliaService, times(1)).validatePublication(publication.getPK(), VALIDATOR_ID, true,
+        false);
     verifyNoMoreInteractions(kmeliaService);
   }
 
   @Test
-  public void validatePublicationValidationIsRequiredShouldPerformValidation() {
+  void validatePublicationValidationIsRequiredShouldPerformValidation() {
     PublicationDetail publication = createPublication(TO_VALIDATE_STATUS);
     kmeliaValidation.validate(publication);
-    verify(kmeliaService, times(1))
-        .validatePublication(publication.getPK(), VALIDATOR_ID, false, false);
+    verify(kmeliaService, times(1)).validatePublication(publication.getPK(), VALIDATOR_ID, false,
+        false);
     verifyNoMoreInteractions(kmeliaService);
   }
 
   @Test
-  public void validateSamePublicationValidationIsRequiredShouldPerformOneTimeOnlyTheValidation() {
+  void validateSamePublicationValidationIsRequiredShouldPerformOneTimeOnlyTheValidation() {
     PublicationDetail publication = createPublication(TO_VALIDATE_STATUS);
     kmeliaValidation.validate(Arrays.asList(publication, publication, publication, publication));
     kmeliaValidation.validate(publication);
     kmeliaValidation.validate(publication);
-    verify(kmeliaService, times(1))
-        .validatePublication(publication.getPK(), VALIDATOR_ID, false, false);
+    verify(kmeliaService, times(1)).validatePublication(publication.getPK(), VALIDATOR_ID, false,
+        false);
     verifyNoMoreInteractions(kmeliaService);
   }
 
   @Test
-  public void validateClonedPublicationValidationIsRequiredShouldPerformValidation() {
-    Pair<PublicationDetail, PublicationDetail> publications = createClonedPublication(
-        TO_VALIDATE_STATUS);
+  void validateClonedPublicationValidationIsRequiredShouldPerformValidation() {
+    Pair<PublicationDetail, PublicationDetail> publications =
+        createClonedPublication(TO_VALIDATE_STATUS);
     PublicationDetail orig = publications.getLeft();
     PublicationDetail clone = publications.getRight();
     when(kmeliaService.getPublicationDetail(clone.getPK())).thenReturn(clone);
@@ -115,7 +115,7 @@ public class KmeliaValidationTest {
   }
 
   @Test
-  public void validateClonedPublicationValidationIsNotRequiredShouldNotPerformValidation() {
+  void validateClonedPublicationValidationIsNotRequiredShouldNotPerformValidation() {
     Pair<PublicationDetail, PublicationDetail> publications = createClonedPublication(DRAFT_STATUS);
     PublicationDetail clone = publications.getRight();
     when(kmeliaService.getPublicationDetail(clone.getPK())).thenReturn(clone);
@@ -125,81 +125,84 @@ public class KmeliaValidationTest {
   }
 
   @Test
-  public void forceValidateClonedPublicationAlreadyValidatedShouldPerformValidation() {
+  void forceValidateClonedPublicationAlreadyValidatedShouldPerformValidation() {
     Pair<PublicationDetail, PublicationDetail> publications = createClonedPublication(VALID_STATUS);
     PublicationDetail orig = publications.getLeft();
     PublicationDetail clone = publications.getRight();
     when(kmeliaService.getPublicationDetail(clone.getPK())).thenReturn(clone);
-    kmeliaValidation.forceValidation().validate(clone);
+    kmeliaValidation.forceValidation()
+        .validate(clone);
     verify(kmeliaService, times(1)).getPublicationDetail(clone.getPK());
     verify(kmeliaService, times(1)).validatePublication(orig.getPK(), VALIDATOR_ID, true, false);
     verifyNoMoreInteractions(kmeliaService);
   }
 
   @Test
-  public void setForceAndValidatorHasNoMoreRightIsNotPossible() {
+  void setForceAndValidatorHasNoMoreRightIsNotPossible() {
     assertThrows(IllegalArgumentException.class, () -> kmeliaValidation.forceValidation()
         .validatorHasNoMoreRight()
         .validate(createPublication(TO_VALIDATE_STATUS)));
   }
 
   @Test
-  public void
-  validatePublicationValidationIsNotRequiredByNoMoreRightUserShouldNotPerformValidation() {
+  void validatePublicationValidationIsNotRequiredByNoMoreRightUserShouldNotPerformValidation() {
     PublicationDetail publication = createPublication(DRAFT_STATUS);
-    kmeliaValidation.validatorHasNoMoreRight().validate(publication);
-    verifyZeroInteractions(kmeliaService);
+    kmeliaValidation.validatorHasNoMoreRight()
+        .validate(publication);
+    verifyNoInteractions(kmeliaService);
   }
 
   @Test
-  public void validateAlreadyValidatedPublicationByNoMoreRightShouldNotPerformValidation() {
+  void validateAlreadyValidatedPublicationByNoMoreRightShouldNotPerformValidation() {
     PublicationDetail publication = createPublication(VALID_STATUS);
-    kmeliaValidation.validatorHasNoMoreRight().validate(publication);
-    verifyZeroInteractions(kmeliaService);
+    kmeliaValidation.validatorHasNoMoreRight()
+        .validate(publication);
+    verifyNoInteractions(kmeliaService);
   }
 
   @Test
-  public void validatePublicationValidationIsRequiredByNoMoreRightShouldPerformValidation() {
+  void validatePublicationValidationIsRequiredByNoMoreRightShouldPerformValidation() {
     PublicationDetail publication = createPublication(TO_VALIDATE_STATUS);
-    kmeliaValidation.validatorHasNoMoreRight().validate(publication);
-    verify(kmeliaService, times(1))
-        .validatePublication(publication.getPK(), VALIDATOR_ID, false, true);
+    kmeliaValidation.validatorHasNoMoreRight()
+        .validate(publication);
+    verify(kmeliaService, times(1)).validatePublication(publication.getPK(), VALIDATOR_ID, false,
+        true);
     verifyNoMoreInteractions(kmeliaService);
   }
 
   @Test
-  public void
-  validateSamePublicationValidationIsRequiredByNoMoreRightShouldPerformOneTimeOnlyTheValidation() {
+  void validateSamePublicationValidationIsRequiredByNoMoreRightShouldPerformOneTimeOnlyTheValidation() {
     PublicationDetail publication = createPublication(TO_VALIDATE_STATUS);
     kmeliaValidation.validatorHasNoMoreRight()
         .validate(Arrays.asList(publication, publication, publication, publication));
     kmeliaValidation.validate(publication);
     kmeliaValidation.validate(publication);
-    verify(kmeliaService, times(1))
-        .validatePublication(publication.getPK(), VALIDATOR_ID, false, true);
+    verify(kmeliaService, times(1)).validatePublication(publication.getPK(), VALIDATOR_ID, false,
+        true);
     verifyNoMoreInteractions(kmeliaService);
   }
 
   @Test
-  public void validateClonedPublicationValidationIsRequiredByNoMoreRightShouldPerformValidation() {
-    Pair<PublicationDetail, PublicationDetail> publications = createClonedPublication(
-        TO_VALIDATE_STATUS);
+  void validateClonedPublicationValidationIsRequiredByNoMoreRightShouldPerformValidation() {
+    Pair<PublicationDetail, PublicationDetail> publications =
+        createClonedPublication(TO_VALIDATE_STATUS);
     PublicationDetail orig = publications.getLeft();
     PublicationDetail clone = publications.getRight();
     when(kmeliaService.getPublicationDetail(clone.getPK())).thenReturn(clone);
-    kmeliaValidation.validatorHasNoMoreRight().validate(clone);
+    kmeliaValidation.validatorHasNoMoreRight()
+        .validate(clone);
     verify(kmeliaService, times(1)).getPublicationDetail(clone.getPK());
     verify(kmeliaService, times(1)).validatePublication(orig.getPK(), VALIDATOR_ID, false, true);
     verifyNoMoreInteractions(kmeliaService);
   }
 
   @Test
-  public void
-  validateClonedPublicationValidationIsNotRequiredByNoMoreRightShouldNotPerformValidation() {
+  void validateClonedPublicationValidationIsNotRequiredByNoMoreRightShouldNotPerformValidation() {
     Pair<PublicationDetail, PublicationDetail> publications = createClonedPublication(DRAFT_STATUS);
     PublicationDetail clone = publications.getRight();
     when(kmeliaService.getPublicationDetail(clone.getPK())).thenReturn(clone);
-    kmeliaValidation.validatorHasNoMoreRight().validate(clone);
+    kmeliaValidation.validatorHasNoMoreRight()
+        .validate(clone);
     verify(kmeliaService, times(1)).getPublicationDetail(clone.getPK());
     verifyNoMoreInteractions(kmeliaService);
   }
@@ -215,8 +218,7 @@ public class KmeliaValidationTest {
 
   private PublicationDetail createPublication(String status) {
     PublicationPK pk = new PublicationPK(String.valueOf(counter++), INSTANCE_ID);
-    PublicationDetail publication = builder()
-        .setPk(pk)
+    PublicationDetail publication = builder().setPk(pk)
         .build();
     publication.setStatus(status);
     return publication;

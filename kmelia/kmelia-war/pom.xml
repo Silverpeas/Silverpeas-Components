@@ -11,14 +11,7 @@
   <artifactId>silverpeas-kmelia-war</artifactId>
   <packaging>war</packaging>
   <name>Kmelia Web Application</name>
-  <build>
-    <testResources>
-      <testResource>
-        <directory>src/test/resources</directory>
-        <filtering>true</filtering>
-      </testResource>
-    </testResources>
-  </build>
+
   <dependencies>
     <dependency>
       <groupId>org.silverpeas.core</groupId>
