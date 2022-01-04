@@ -25,21 +25,14 @@ package org.silverpeas.components.gallery.model;
 
 import org.silverpeas.components.gallery.constant.MediaResolution;
 import org.silverpeas.components.gallery.constant.MediaType;
-import org.silverpeas.components.gallery.constant.StreamingProvider;
 import org.silverpeas.core.io.file.SilverpeasFile;
+import org.silverpeas.core.media.streaming.StreamingProvider;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
 
-import javax.ws.rs.WebApplicationException;
-import java.net.http.HttpResponse;
 import java.util.Objects;
+import java.util.Optional;
 
-import static java.net.http.HttpResponse.BodyHandlers.ofString;
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static javax.ws.rs.core.Response.Status.OK;
-import static org.silverpeas.core.util.HttpUtil.httpClient;
-import static org.silverpeas.core.util.HttpUtil.toUrl;
-import static org.silverpeas.core.util.StringUtil.EMPTY;
+import static java.util.Optional.ofNullable;
 
 /**
  * This class represents a Streaming.
@@ -48,7 +41,7 @@ public class Streaming extends Media {
   private static final long serialVersionUID = 5772513957256327862L;
 
   private String homepageUrl = "";
-  private StreamingProvider provider = StreamingProvider.unknown;
+  private StreamingProvider provider;
 
   @Override
   public MediaType getType() {
@@ -85,8 +78,8 @@ public class Streaming extends Media {
    * Gets the streaming provider.
    * @return the streaming provider.
    */
-  public StreamingProvider getProvider() {
-    return provider;
+  public Optional<StreamingProvider> getProvider() {
+    return ofNullable(provider);
   }
 
   /**
@@ -123,40 +116,6 @@ public class Streaming extends Media {
     return "";
   }
 
-  /**
-   * Gets OEMBED data as JSON string.<br>
-   * WARNING: performances can be altered when called from a list treatments as it performs an
-   * HTTP request.
-   * @return a JSON structure as string that represents oembed data.
-   */
-  public static String getJsonOembedAsString(String homepageUrl) {
-    return StreamingProvider.getOembedUrl(homepageUrl).map(u -> u.replace("http:", "https:")).map(oembedUrl -> {
-      try {
-        final HttpResponse<String> response = httpClient().send(toUrl(oembedUrl)
-            .header("Accept", APPLICATION_JSON)
-            .build(), ofString());
-        if (response.statusCode() != OK.getStatusCode()) {
-          throw new WebApplicationException(response.statusCode());
-        }
-        String jsonResponse = response.body();
-        for (StreamingProvider provider : StreamingProvider.values()) {
-          jsonResponse = jsonResponse.replaceAll("(?i)" + provider.name(), provider.name());
-        }
-        return jsonResponse;
-      } catch (WebApplicationException wae) {
-        SilverLogger.getLogger(Streaming.class)
-            .error("{0} -> HTTP ERROR {1}", oembedUrl, wae.getMessage());
-        throw wae;
-      } catch (Exception e) {
-        SilverLogger.getLogger(Streaming.class).error("{0} -> {1}", oembedUrl, e.getMessage());
-        if (e instanceof InterruptedException) {
-          Thread.currentThread().interrupt();
-        }
-        throw new WebApplicationException(e);
-      }
-    }).orElse(EMPTY);
-  }
-
   @Override
   public Streaming getCopy() {
     return new Streaming(this);
@@ -174,7 +133,8 @@ public class Streaming extends Media {
       return false;
     }
     final Streaming streaming = (Streaming) o;
-    return Objects.equals(homepageUrl, streaming.homepageUrl) && provider == streaming.provider;
+    return Objects.equals(homepageUrl, streaming.homepageUrl) &&
+        Objects.equals(provider, streaming.provider);
   }
 
   @Override

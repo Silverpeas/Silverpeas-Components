@@ -23,17 +23,17 @@
  */
 package org.silverpeas.components.gallery.model;
 
-import org.silverpeas.components.gallery.GalleryWarBuilder;
-import org.silverpeas.components.gallery.constant.MediaResolution;
-import org.silverpeas.components.gallery.constant.MediaType;
-import org.silverpeas.components.gallery.constant.StreamingProvider;
-import org.hamcrest.Matchers;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.components.gallery.GalleryWarBuilder;
+import org.silverpeas.components.gallery.constant.MediaResolution;
+import org.silverpeas.components.gallery.constant.MediaType;
 import org.silverpeas.core.io.file.SilverpeasFile;
+import org.silverpeas.core.media.streaming.StreamingProvider;
+import org.silverpeas.core.media.streaming.StreamingProvidersRegistry;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -54,7 +54,7 @@ public class StreamingIT extends AbstractMediaIT {
     Streaming streaming = new Streaming();
     assertThat(streaming.getType(), is(MediaType.Streaming));
     assertThat(streaming.getHomepageUrl(), is(""));
-    assertThat(streaming.getProvider(), Matchers.is(StreamingProvider.unknown));
+    assertThat(streaming.getProvider().isPresent(), is(false));
   }
 
   @Test
@@ -81,7 +81,7 @@ public class StreamingIT extends AbstractMediaIT {
     Streaming streaming = new Streaming();
     streaming.setId("mediaId");
     streaming.setHomepageUrl("anUrl");
-    streaming.setProvider(StreamingProvider.youtube);
+    streaming.setProvider(StreamingProvidersRegistry.get().getByName("youtube").orElse(null));
     assertDefaultStreaming(streaming);
     return streaming;
   }
@@ -90,7 +90,7 @@ public class StreamingIT extends AbstractMediaIT {
     assertThat(streaming.getType(), is(MediaType.Streaming));
     assertThat(streaming.getWorkspaceSubFolderName(), is("streamingmediaId"));
     assertThat(streaming.getHomepageUrl(), is("anUrl"));
-    assertThat(streaming.getProvider(), is(StreamingProvider.youtube));
+    assertThat(streaming.getProvider().map(StreamingProvider::getName).orElse(null), is("youtube"));
     assertThat(streaming.getApplicationOriginalUrl(),
         is(streaming.getApplicationThumbnailUrl(MediaResolution.PREVIEW)));
     assertThat(streaming.getFile(MediaResolution.ORIGINAL), is(SilverpeasFile.NO_FILE));

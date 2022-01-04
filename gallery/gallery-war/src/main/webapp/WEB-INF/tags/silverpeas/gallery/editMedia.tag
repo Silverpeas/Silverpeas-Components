@@ -143,7 +143,7 @@
       </c:when>
       <c:otherwise>
 
-      if (!detectSupportedProvider(media)) {
+      if (!detectSupportedStreamingProvider(media)) {
         errorMsg +=
             "<li>'<fmt:message key="gallery.${fn:toLowerCase(mediaType)}"/>' <fmt:message key="gallery.streaming.format"/></li>";
         errorNb++;

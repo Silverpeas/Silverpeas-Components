@@ -25,7 +25,6 @@ package org.silverpeas.components.gallery.delegate;
 
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.gallery.constant.MediaType;
-import org.silverpeas.components.gallery.constant.StreamingProvider;
 import org.silverpeas.components.gallery.model.GalleryRuntimeException;
 import org.silverpeas.components.gallery.model.InternalMedia;
 import org.silverpeas.components.gallery.model.Media;
@@ -36,6 +35,8 @@ import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.date.period.Period;
+import org.silverpeas.core.media.streaming.StreamingProvider;
+import org.silverpeas.core.media.streaming.StreamingProvidersRegistry;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.StringUtil;
@@ -44,6 +45,7 @@ import org.silverpeas.core.util.file.FileUploadUtil;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Yohann Chastagnier
@@ -133,14 +135,14 @@ public abstract class AbstractMediaDataDelegate {
    */
   public void updateHeader(final Media media) {
     if (!skipEmptyValues && media.getType().isStreaming()) {
-      StreamingProvider streamingProvider =
-          StreamingProvider.fromUrl(getHeaderData().getHompageUrl());
-      if (streamingProvider.isUnknown()) {
+      final Optional<StreamingProvider> streamingProvider =
+          StreamingProvidersRegistry.get().getFromUrl(getHeaderData().getHompageUrl());
+      if (streamingProvider.isEmpty()) {
         throw new GalleryRuntimeException("Streaming homepage URL must be defined and supported");
       }
       Streaming streaming = media.getStreaming();
       streaming.setHomepageUrl(getHeaderData().getHompageUrl());
-      streaming.setProvider(streamingProvider);
+      streaming.setProvider(streamingProvider.get());
     }
     if (!skipEmptyValues || StringUtil.isDefined(getHeaderData().getTitle())) {
       media.setTitle(getHeaderData().getTitle());

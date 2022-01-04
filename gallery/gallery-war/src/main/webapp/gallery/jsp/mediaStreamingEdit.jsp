@@ -27,6 +27,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/gallery" prefix="gallery" %>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/media" prefix="mediaTags" %>
 
 <c:set var="userLanguage" value="${requestScope.resources.language}"/>
 <fmt:setLocale value="${userLanguage}"/>
@@ -42,13 +43,20 @@
 <gallery:editMediaLayout mediaType="${mediaType}">
   <jsp:attribute name="headerBloc">
     <jsp:useBean id="media" scope="request" type="org.silverpeas.components.gallery.model.Streaming"/>
-    <gallery:streamingLibrary/>
+    <mediaTags:streamingLibrary/>
     <script type="text/javascript">
       $(document).ready(function() {
-        var $validateButton = $($('.buttonPane .milieuBoutonV5 a')[0]);
+        var $validateButton = $($('.sp_buttonPane a.sp_button')[0]);
         var $dummyValidate = $('<a>').append('${validateLabel}');
+        $dummyValidate.addClass('sp_button');
         var $validateButtonContainer = $validateButton.parent();
         var oldValue = '${media.homepageUrl}';
+        const releaseValidateButton = function() {
+          $dummyValidate.detach();
+          $validateButtonContainer.prepend($validateButton);
+          $validateButtonContainer.removeClass('validateNotAvailable');
+          $.closeProgressMessage();
+        };
         $('#fileId').on('blur', function() {
           var value = $.trim($(this).val());
           var $title = $('#title');
@@ -65,22 +73,15 @@
               if (providerData.author) {
                 $author.val(providerData.author);
               }
-            }).always(function() {
-              $dummyValidate.detach();
-              $validateButtonContainer.append($validateButton);
-              $validateButtonContainer.removeClass('validateNotAvailable');
-              $.closeProgressMessage();
-            });
+              releaseValidateButton();
+            }, releaseValidateButton);
           } else {
-            $dummyValidate.detach();
-            $validateButtonContainer.append($validateButton);
-            $validateButtonContainer.removeClass('validateNotAvailable');
-            $.closeProgressMessage();
+            releaseValidateButton();
           }
         }).on('focus', function() {
           oldValue = $.trim($(this).val());
           $validateButton.detach();
-          $validateButtonContainer.append($dummyValidate);
+          $validateButtonContainer.prepend($dummyValidate);
           $validateButtonContainer.addClass('validateNotAvailable');
           this.select();
         });
