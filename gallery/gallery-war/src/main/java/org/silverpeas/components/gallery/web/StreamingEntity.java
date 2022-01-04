@@ -23,8 +23,9 @@
  */
 package org.silverpeas.components.gallery.web;
 
-import org.silverpeas.components.gallery.constant.StreamingProvider;
 import org.silverpeas.components.gallery.model.Streaming;
+import org.silverpeas.core.media.streaming.StreamingProvider;
+import org.silverpeas.core.media.streaming.StreamingProvidersRegistry;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -40,7 +41,7 @@ public class StreamingEntity extends AbstractMediaEntity<StreamingEntity> {
   private static final long serialVersionUID = 2338157869917224281L;
 
   @XmlElement
-  private StreamingProvider provider;
+  private String provider;
 
   /**
    * Creates a new streaming entity from the specified streaming.
@@ -56,7 +57,7 @@ public class StreamingEntity extends AbstractMediaEntity<StreamingEntity> {
    */
   private StreamingEntity(final Streaming streaming) {
     super(streaming);
-    provider = streaming.getProvider();
+    provider = streaming.getProvider().map(StreamingProvider::getName).orElse(null);
   }
 
   @SuppressWarnings("UnusedDeclaration")
@@ -65,10 +66,10 @@ public class StreamingEntity extends AbstractMediaEntity<StreamingEntity> {
   }
 
   public StreamingProvider getProvider() {
-    return provider;
+    return StreamingProvidersRegistry.get().getByName(provider).orElse(null);
   }
 
   public void setProvider(final StreamingProvider provider) {
-    this.provider = provider;
+    this.provider = provider.getName();
   }
 }

@@ -221,7 +221,7 @@ public class GalleryResource extends AbstractGalleryResource {
   @GET
   @Path(GALLERY_STREAMINGS_PART + "/{streamingId}/" + GALLERY_STREAMING_PROVIDER_DATA_PART)
   @Produces(MediaType.APPLICATION_JSON)
-  public StreamingProviderDataEntity getStreamingProviderDataFromStreamingId(
+  public Response getStreamingProviderDataFromStreamingId(
       @PathParam("streamingId") final String streamingId) {
     try {
       final Media media = getMediaService().getMedia(new MediaPK(streamingId, getComponentId()));
@@ -229,36 +229,10 @@ public class GalleryResource extends AbstractGalleryResource {
       org.silverpeas.components.gallery.model.Streaming streaming = media.getStreaming();
       checkNotFoundStatus(streaming);
       verifyUserMediaAccess(streaming);
-      return getStreamingProviderDataFromUrl(streaming.getHomepageUrl());
-    } catch (final WebApplicationException ex) {
-      throw ex;
-    } catch (final Exception ex) {
-      throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
-    }
-  }
-
-  /**
-   * Gets the provider data of a streamin from its url. If it doesn't exist, a 404 HTTP code is
-   * returned. If the user isn't authentified, a 401 HTTP code is returned. If a problem occurs
-   * when processing the request, a 503 HTTP code is returned.
-   * @param url the url of the streaming
-   * @return the response to the HTTP GET request content of the asked streaming.
-   */
-  @GET
-  @Path(GALLERY_STREAMINGS_PART + "/" + GALLERY_STREAMING_PROVIDER_DATA_PART)
-  @Produces(MediaType.APPLICATION_JSON)
-  public StreamingProviderDataEntity getStreamingProviderDataFromUrl(
-      @QueryParam("url") final String url) {
-    try {
-      checkNotFoundStatus(url);
-      StreamingProviderDataEntity entity = StreamingProviderDataEntity.from(url);
-      checkNotFoundStatus(entity);
-      if (getHttpRequest().isSecure()) {
-        // Replacing HTTP scheme by HTTPS one
-        entity.setEmbedHtml(entity.getEmbedHtml().replaceAll("http://", "https://"));
-      }
-      // noinspection ConstantConditions
-      return entity.withURI(getUri().getRequestUri());
+      return Response.seeOther(getUri().getBaseUriBuilder()
+          .path("media/streaming/" + GALLERY_STREAMING_PROVIDER_DATA_PART)
+          .queryParam("url", streaming.getHomepageUrl())
+          .build()).build();
     } catch (final WebApplicationException ex) {
       throw ex;
     } catch (final Exception ex) {

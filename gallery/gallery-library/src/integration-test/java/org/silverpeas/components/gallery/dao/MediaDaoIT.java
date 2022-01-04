@@ -26,14 +26,12 @@ package org.silverpeas.components.gallery.dao;
 import org.apache.commons.lang3.time.DateUtils;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ITable;
-import org.hamcrest.Matchers;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.silverpeas.components.gallery.BaseGalleryIT;
 import org.silverpeas.components.gallery.constant.MediaMimeType;
 import org.silverpeas.components.gallery.constant.MediaType;
-import org.silverpeas.components.gallery.constant.StreamingProvider;
 import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.components.gallery.model.MediaCriteria;
 import org.silverpeas.components.gallery.model.Photo;
@@ -44,6 +42,8 @@ import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.cache.service.SessionCacheService;
 import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.io.media.Definition;
+import org.silverpeas.core.media.streaming.StreamingProvider;
+import org.silverpeas.core.media.streaming.StreamingProvidersRegistry;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
@@ -581,7 +581,7 @@ public class MediaDaoIT extends BaseGalleryIT {
 
     assertThat(photo.getFileName(), is("fileName_1"));
     assertThat(photo.getFileSize(), is(101L));
-    assertThat(photo.getFileMimeType(), Matchers.is(MediaMimeType.JPG));
+    assertThat(photo.getFileMimeType(), is(MediaMimeType.JPG));
     assertThat(photo.isDownloadAuthorized(), is(false));
     assertThat(photo.getDownloadPeriod(), sameInstance(Period.UNDEFINED));
 
@@ -676,7 +676,7 @@ public class MediaDaoIT extends BaseGalleryIT {
     assertThat(streaming.getLastUpdater(), is(adminAccessUser));
 
     assertThat(streaming.getHomepageUrl(), is("url_1"));
-    assertThat(streaming.getProvider(), Matchers.is(StreamingProvider.youtube));
+    assertThat(streaming.getProvider().map(StreamingProvider::getName).orElse(null), is("youtube"));
   }
 
   @Test
@@ -1556,7 +1556,7 @@ public class MediaDaoIT extends BaseGalleryIT {
     newStreaming.setKeyWord("streaming keywords");
 
     newStreaming.setHomepageUrl("streaming URL");
-    newStreaming.setProvider(StreamingProvider.vimeo);
+    newStreaming.setProvider(StreamingProvidersRegistry.get().getByName("vimeo").orElse(null));
 
     assertThat(newStreaming.getId(), nullValue());
     String newId = Transaction.performInOne(
@@ -1603,7 +1603,7 @@ public class MediaDaoIT extends BaseGalleryIT {
       TableRow streamingRow = getTableRowFor(streamingTable, "mediaId", newStreaming.getId());
       assertThat(streamingRow.getString("mediaId"), is(newId));
       assertThat(streamingRow.getString("homepageUrl"), is("streaming URL"));
-      assertThat(streamingRow.getString("provider"), is(StreamingProvider.vimeo.name()));
+      assertThat(streamingRow.getString("provider"), is("vimeo"));
     }
 
     // Updating to test (to verify update data in context of creation)
@@ -1678,7 +1678,7 @@ public class MediaDaoIT extends BaseGalleryIT {
         .getStreaming();
 
     streamingToUpdate.setHomepageUrl("streaming URL");
-    streamingToUpdate.setProvider(StreamingProvider.vimeo);
+    streamingToUpdate.setProvider(StreamingProvidersRegistry.get().getByName("vimeo").orElse(null));
 
     String savedMediaId = streamingToUpdate.getId();
     String mediaId = Transaction.performInOne(
@@ -1706,7 +1706,7 @@ public class MediaDaoIT extends BaseGalleryIT {
       TableRow streamingRow = getTableRowFor(streamingTable, "mediaId", streamingToUpdate.getId());
       assertThat(streamingRow.getString("mediaId"), is(mediaIdToUpdate));
       assertThat(streamingRow.getString("homepageUrl"), is("streaming URL"));
-      assertThat(streamingRow.getString("provider"), is(StreamingProvider.vimeo.name()));
+      assertThat(streamingRow.getString("provider"), is("vimeo"));
     }
   }
 

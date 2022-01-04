@@ -25,7 +25,6 @@ package org.silverpeas.components.gallery.dao;
 
 import org.silverpeas.components.gallery.constant.MediaMimeType;
 import org.silverpeas.components.gallery.constant.MediaType;
-import org.silverpeas.components.gallery.constant.StreamingProvider;
 import org.silverpeas.components.gallery.model.InternalMedia;
 import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.components.gallery.model.MediaCriteria;
@@ -38,6 +37,8 @@ import org.silverpeas.components.gallery.model.Video;
 import org.silverpeas.components.gallery.socialnetwork.SocialInformationGallery;
 import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.io.media.Definition;
+import org.silverpeas.core.media.streaming.StreamingProvider;
+import org.silverpeas.core.media.streaming.StreamingProvidersRegistry;
 import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQueries;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
@@ -296,7 +297,8 @@ public class MediaDAO {
           mediaIds.remove(mediaId);
           Streaming currentStreaming = streamings.get(mediaId);
           currentStreaming.setHomepageUrl(row.getString(2));
-          currentStreaming.setProvider(StreamingProvider.from(row.getString(3)));
+          StreamingProvidersRegistry.get().getByName(row.getString(3))
+              .ifPresent(currentStreaming::setProvider);
           return null;
         });
         // Not found
@@ -500,7 +502,9 @@ public class MediaDAO {
       streamingSave = createUpdateFor(GALLERY_STREAMING_TABLE);
     }
     streamingSave.addSaveParam("homepageUrl", streaming.getHomepageUrl(), isInsert);
-    streamingSave.addSaveParam("provider", streaming.getProvider(), isInsert);
+    streamingSave.addSaveParam("provider", streaming.getProvider()
+        .map(StreamingProvider::getName)
+        .orElseThrow(() -> new IllegalArgumentException("Provider MUST exists")), isInsert);
     if (!isInsert) {
       streamingSave.where(MEDIA_ID_CRITERIA, streaming.getId());
     }

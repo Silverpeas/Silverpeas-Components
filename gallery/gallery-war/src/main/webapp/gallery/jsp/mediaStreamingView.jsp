@@ -28,6 +28,7 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/gallery" prefix="gallery" %>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/media" prefix="mediaTags" %>
 
 <c:set var="userLanguage" value="${requestScope.resources.language}"/>
 <fmt:setLocale value="${userLanguage}"/>
@@ -36,7 +37,7 @@
 <gallery:viewMediaLayout>
   <jsp:attribute name="headerBloc">
     <jsp:useBean id="media" scope="request" type="org.silverpeas.components.gallery.model.Streaming"/>
-    <gallery:streamingLibrary/>
+    <mediaTags:streamingLibrary/>
     <script type="text/javascript">
       $(document).ready(function() {
 
