@@ -30,6 +30,7 @@ import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.test.UnitTest;
+import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -38,7 +39,7 @@ import static org.silverpeas.components.kmelia.service.KmeliaServiceContext.*;
 /**
  * @author Yohann Chastagnier
  */
-@UnitTest
+@EnableSilverTestEnv
 class KmeliaServiceContextTest {
 
   private PublicationDetail publication;
