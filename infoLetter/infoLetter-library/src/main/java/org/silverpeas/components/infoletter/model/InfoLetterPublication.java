@@ -24,22 +24,28 @@
 package org.silverpeas.components.infoletter.model;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.content.ddwe.model.DragAndDropWebEditorStore;
+import org.silverpeas.core.contribution.content.renderer.ContributionContentRenderer;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
+import org.silverpeas.core.contribution.model.ContributionContent;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.WysiwygContent;
 import org.silverpeas.core.ddwe.DragAndDropEditorContent;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 
 import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
 import static org.silverpeas.components.infoletter.model.InfoLetterPublicationPdC.TYPE;
+import static org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController.copyDocumentsBetweenTwoResourcesWithSourceContent;
+import static org.silverpeas.core.util.StringUtil.EMPTY;
 import static org.silverpeas.core.util.StringUtil.isNotDefined;
 
 /**
@@ -220,6 +226,43 @@ public class InfoLetterPublication extends SilverpeasBean implements Comparable<
     return (publicationState == PUBLICATION_VALIDEE);
   }
 
+  /**
+   * Initializing the content from the given template.
+   * <p>
+   *   The initialization is using WYSIWYG services and {@link InfoLetterPublication} storing in
+   *   order to handle properly document copying.
+   * </p>
+   * @param infoLetter the template.
+   * @return the inlined HTML content of the parution.
+   */
+  public String initFrom(final InfoLetter infoLetter) {
+    final String templateContent = Optional.of(new DragAndDropWebEditorStore(infoLetter.getTemplateIdentifier()))
+        .map(DragAndDropWebEditorStore::getFile)
+        .filter(DragAndDropWebEditorStore.File::exists)
+        .map(DragAndDropWebEditorStore.File::getContainer)
+        .flatMap(DragAndDropWebEditorStore.Container::getContent)
+        .map(DragAndDropWebEditorStore.Content::getValue)
+        // If no store exists for template, then taking the template from WYSIWYG context if any
+        .orElseGet(() -> infoLetter.getTemplateWysiwygContent()
+            .map(ContributionContent::getRenderer)
+            .map(ContributionContentRenderer::renderEdition)
+            .filter(StringUtil::isDefined)
+            .orElse(EMPTY));
+    // Attaching all documents linked to template to the new parution
+    final ResourceReference templateRef = infoLetter.getTemplateIdentifier().toReference();
+    final ResourceReference parutionRef = getIdentifier().toReference();
+    final String newContent = copyDocumentsBetweenTwoResourcesWithSourceContent(templateRef,
+        parutionRef, templateContent).getFirst();
+    // Saving the new content into Drag And Drop context.
+    final DragAndDropWebEditorStore store = new DragAndDropWebEditorStore(getIdentifier());
+    store.getFile().getContainer().getOrCreateTmpContent().setValue(newContent);
+    store.getFile().getContainer().getOrCreateContent().setValue(newContent);
+    store.save();
+    // Saving WYSIWYG content (which represents the final content).
+    saveContent(new DragAndDropEditorContent(newContent).getInlinedHtml());
+    return newContent;
+  }
+
   public Optional<WysiwygContent> getWysiwygContent() {
     if (this.content == null) {
       this.content = WysiwygController.get(getInstanceId(), getPK().getId(),
@@ -243,6 +286,7 @@ public class InfoLetterPublication extends SilverpeasBean implements Comparable<
    * a WYSIWYG editing.
    */
   public void saveContent(final String manualContent) {
+    this.content = null;
     final ContributionIdentifier identifier = getIdentifier();
     String wysiwygContent = manualContent;
     if (isNotDefined(manualContent)) {
@@ -256,7 +300,7 @@ public class InfoLetterPublication extends SilverpeasBean implements Comparable<
             store.getFile().getContainer().getOrCreateContent().setValue(c);
             store.save();
             final DragAndDropEditorContent editorContent = new DragAndDropEditorContent(c);
-            return editorContent.getSimpleContent().orElseGet(editorContent::getInlinedHtml);
+            return editorContent.getInlinedHtml();
           })
           .orElse(manualContent);
     }

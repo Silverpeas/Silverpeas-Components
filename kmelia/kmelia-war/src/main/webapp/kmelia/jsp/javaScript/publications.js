@@ -8,12 +8,14 @@ function exportPublications() {
 
 function showPublicationOperations(item) {
   //$(item).find(".unit-operation").show();
+  $(item).find(".add-to-basket-selection").show();
   $(item).find(".selection input").show();
   $(item).toggleClass("over-publication", true);
 }
 
 function hidePublicationOperations(item) {
   //$(item).find(".unit-operation").hide();
+  $(item).find(".add-to-basket-selection").hide();
   var input = $(item).find(".selection input");
   if ($(input).is(':checked')) {
     // do not hide checkbox
@@ -134,53 +136,20 @@ function cutPublications() {
   }, 'text');
 }
 
+function putPublicationInBasket(contributionId) {
+  const basketManager = new BasketManager();
+  basketManager.putContributionInBasket(contributionId);
+}
+
 function putPublicationsInBasket() {
-  let selectedPublicationIds = getSelectedPublicationIds();
-  const isPublicationToAdd = selectedPublicationIds.trim().length > 0;
-  let notSelectedPublicationIds = getNotSelectedPublicationIds();
   let decodePubId = function(id) {
     let pubIds = id.split('-');
     return pubIds[1] + ':Publication:' + pubIds[0];
   };
-  let basket = new BasketService();
-  let deletePromises = [];
-
-  // remove from the basket the unselected publications
-  if (notSelectedPublicationIds.trim().length > 0) {
-    let arrayOfNonSelectedPubIds = notSelectedPublicationIds.split(',');
-    deletePromises.push(basket.getBasketSelectionElements(BasketService.Context.transfert).then(function(elts) {
-      const entriesToDelete = elts.filter(function(elt) {
-        return arrayOfNonSelectedPubIds.filter(function(id) {
-          return elt.getId() === decodePubId(id.trim());
-        }).length > 0;
-      })
-      .map(function(elt) {
-        return {
-          item : {
-            id : elt.getId()
-          }
-        }
-      });
-      return basket.deleteEntries(entriesToDelete, isPublicationToAdd);
-    }));
-  }
-
-  // put into the basket the selected publications
-  if(isPublicationToAdd) {
-    const entriesToAdd = selectedPublicationIds.split(',').map(function(id) {
-      let pubId = decodePubId(id.trim());
-      return {
-        context : {
-          reason : BasketService.Context.transfert
-        }, item : {
-          id : pubId, type : 'Publication'
-        }
-      };
-    });
-    sp.promise.whenAllResolved(deletePromises).then(function() {
-      basket.putNewEntries(entriesToAdd);
-    })
-  }
+  let selectedPublicationIds = getSelectedPublicationIds().split(',').map(decodePubId);
+  let notSelectedPublicationIds = getNotSelectedPublicationIds().split(',').map(decodePubId);
+  const basketManager = new BasketManager();
+  basketManager.putContributionsInBasket(selectedPublicationIds, notSelectedPublicationIds);
 }
 
 function updatePublications() {

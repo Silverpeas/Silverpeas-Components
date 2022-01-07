@@ -32,7 +32,6 @@ import org.silverpeas.components.infoletter.model.InfoLetterService;
 import org.silverpeas.components.infoletter.model.InfoLetterTemplateContributionWrapper;
 import org.silverpeas.core.ApplicationServiceProvider;
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.service.OrganizationController;
@@ -44,17 +43,15 @@ import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocumentMailAttachedFile;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformer;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
-import org.silverpeas.core.contribution.content.wysiwyg.service.process.MailContentProcess;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
-import org.silverpeas.core.mail.MailSending;
+import org.silverpeas.core.mail.MailAddress;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.bean.IdPK;
 import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
@@ -77,10 +74,7 @@ import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.mail.MessagingException;
-import javax.mail.Multipart;
 import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMultipart;
 import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -90,14 +84,15 @@ import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import static java.util.stream.Collectors.toSet;
 import static org.silverpeas.core.mail.MailAddress.eMail;
-import static org.silverpeas.core.mail.MailContent.extractTextBodyPartFromHtmlContent;
-import static org.silverpeas.core.mail.MailContent.getHtmlBodyPartFromHtmlContent;
+import static org.silverpeas.core.mail.ReceiverMailAddressSet.with;
 
 /**
  * Class declaration
@@ -452,92 +447,57 @@ public class InfoLetterDataManager implements InfoLetterService {
     return con;
   }
 
-  private void attachFilesToMail(Multipart mp, List<SimpleDocument> listAttachedFiles)
-      throws MessagingException {
-    for (final SimpleDocument attachment : listAttachedFiles) {
-      mp.addBodyPart(new SimpleDocumentMailAttachedFile(attachment).toBodyPart());
-    }
-  }
-
-  private Multipart createContentMessageMail(InfoLetterPublicationPdC ilp, String mimeMultipart)
-      throws MessagingException, SilverpeasException {
-    Multipart multipart = new MimeMultipart(mimeMultipart);
-
-    // create and fill the first message part
-    ResourceReference foreignKey = new ResourceReference(ilp.getPK().getId(), ilp.getComponentInstanceId());
-
-    // Load and transform WYSIWYG content for mailing
-    String wysiwygContent =
-        WysiwygController.load(foreignKey.getInstanceId(), foreignKey.getId(), null);
-    MailContentProcess.MailResult wysiwygMailTransformResult =
-        WysiwygContentTransformer.on(wysiwygContent).toMailContent();
-
-    // Prepare Mail parts
-    final String htmlContent = wysiwygMailTransformResult.getWysiwygContent();
-    if ("alternative".equals(mimeMultipart)) {
-      // First the WYSIWYG as brut text
-      multipart.addBodyPart(extractTextBodyPartFromHtmlContent(htmlContent));
-      // Then all the referenced media content
-      wysiwygMailTransformResult.applyOn(multipart);
-      // Finally the WYSIWYG (the preferred one)
-      multipart.addBodyPart(getHtmlBodyPartFromHtmlContent(htmlContent));
-    } else {
-      // First the WYSIWYG (the main one)
-      multipart.addBodyPart(getHtmlBodyPartFromHtmlContent(htmlContent));
-      // Then all the referenced media content
-      wysiwygMailTransformResult.applyOn(multipart);
-      // Finally the WYSIWYG as brut text
-      multipart.addBodyPart(extractTextBodyPartFromHtmlContent(htmlContent));
-    }
-
-    // Finally explicit attached files
-    List<SimpleDocument> listAttachedFilesFromTab =
-        AttachmentServiceProvider.getAttachmentService().
-            listDocumentsByForeignKeyAndType(foreignKey, DocumentType.attachment, null);
-    attachFilesToMail(multipart, listAttachedFilesFromTab);
-
-    // The completed multipart mail to send
-    return multipart;
+  @Override
+  public Set<String> sendTemplateByMail(final InfoLetter il, final String mimeMultipart,
+      final Set<String> listEmailDest, final String subject, final String emailFrom) {
+    return sendContributionByMail(il.getTemplateIdentifier(), mimeMultipart, listEmailDest, subject,
+        emailFrom);
   }
 
   @Override
-  public Set<String> sendLetterByMail(InfoLetterPublicationPdC ilp, String server,
-      String mimeMultipart, Set<String> listEmailDest, String subject, String emailFrom) {
+  public Set<String> sendLetterByMail(InfoLetterPublicationPdC ilp, String mimeMultipart,
+      Set<String> listEmailDest, String subject, String emailFrom) {
+    return sendContributionByMail(ilp.getIdentifier(), mimeMultipart, listEmailDest, subject,
+        emailFrom);
+  }
 
-    Set<String> emailErrors = new LinkedHashSet<>();
-
-    if (!listEmailDest.isEmpty()) {
+  private Set<String> sendContributionByMail(final ContributionIdentifier cId,
+      final String mimeMultipart, final Set<String> listEmailDest, final String subject,
+      final String emailFrom) {
+    final Set<String> emailErrors = new HashSet<>();
+    final Set<String> emailDest = new HashSet<>();
+    // Verifying emails
+    listEmailDest.forEach(m -> {
       try {
-        // create the Multipart and its parts to it
-        Multipart mp = createContentMessageMail(ilp, mimeMultipart);
-        for (String receiverEmail : listEmailDest) {
-          sendMail(subject, emailFrom, emailErrors, mp, receiverEmail);
-        }
+        new InternetAddress(m);
+        emailDest.add(m);
+      } catch (Exception ex) {
+        SilverLogger.getLogger(this).error(ex);
+        emailErrors.add(m);
+      }
+    });
+    if (!emailDest.isEmpty()) {
+      try {
+        final ResourceReference foreignKey = cId.toReference();
+        final List<SimpleDocument> listAttachedFiles =
+            AttachmentServiceProvider.getAttachmentService().
+                listDocumentsByForeignKeyAndType(foreignKey, DocumentType.attachment, null);
+        final String wysiwygContent =
+            WysiwygController.load(foreignKey.getInstanceId(), foreignKey.getId(), null);
+        WysiwygContentTransformer.on(wysiwygContent)
+            .toMailContent()
+            .withMimeMultipart(mimeMultipart)
+            .addAttachments(listAttachedFiles)
+            .prepareMailSendingFrom(eMail(emailFrom))
+            .to(with(listEmailDest.stream().map(MailAddress::eMail).collect(toSet())))
+            .withSubject(subject)
+            .oneMailPerReceiver()
+            .send();
       } catch (Exception e) {
         throw new InfoLetterException(e);
       }
     }
     return emailErrors;
-  }
-
-  private void sendMail(final String subject, final String emailFrom, final Set<String> emailErrors,
-      final Multipart mp, final String receiverEmail) {
-    try {
-      // Verifying the email
-      new InternetAddress(receiverEmail);
-
-      // Prepare the mail
-      MailSending mail =
-          MailSending.from(eMail(emailFrom)).to(eMail(receiverEmail)).withSubject(subject)
-              .withContent(mp);
-
-      // Sending the mail
-      mail.send();
-
-    } catch (Exception ex) {
-      SilverLogger.getLogger(this).error(ex);
-      emailErrors.add(receiverEmail);
-    }
   }
 
   @Override

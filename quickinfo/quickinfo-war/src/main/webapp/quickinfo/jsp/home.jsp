@@ -1,4 +1,4 @@
-<%--
+<%@ page import="org.silverpeas.core.web.selection.BasketSelectionUI" %><%--
 
     Copyright (C) 2000 - 2022 Silverpeas
 
@@ -44,6 +44,7 @@
 <fmt:message key="quickinfo.portlet.news.more" var="moreNews"/>
 
 <c:set var="listOfNews" value="${requestScope['ListOfNews']}"/>
+<jsp:useBean id="listOfNews" type="java.util.List<org.silverpeas.components.quickinfo.model.News>"/>
 <c:set var="allOtherNews" value="${requestScope['NotVisibleNews']}"/>
 <c:set var="appSettings" value="${requestScope['AppSettings']}"/>
 <c:set var="role" value="${requestScope['Role']}"/>
@@ -61,6 +62,7 @@
 <view:sp-head-part>
   <view:includePlugin name="toggle"/>
   <view:includePlugin name="subscription"/>
+  <view:includePlugin name="basketSelection"/>
 <script type="text/javascript" src="js/quickinfo.js"></script>
 <script type="text/javascript">
 function openPDCSetup() {
@@ -74,6 +76,11 @@ SUBSCRIPTION_PROMISE.then(function() {
 
 function onDelete(id) {
   $("#news-"+id).remove();
+}
+
+function putNewsInBasket(contributionId) {
+  const basketManager = new BasketManager();
+  basketManager.putContributionInBasket(contributionId);
 }
 </script>
 </view:sp-head-part>
@@ -208,6 +215,8 @@ function onDelete(id) {
 				</span>
         <c:if test="${contributor}">
           <div class="operation actionShownOnMouseOver">
+            <c:set var="putIntoBasketSnippet" value='<%=BasketSelectionUI.getPutIntoBasketSelectionHtmlSnippet("@callback@", language)%>'/>
+            ${putIntoBasketSnippet.replace('@callback@', 'putNewsInBasket("'.concat(news.identifier.asString()).concat('")'))}
             <a title="<fmt:message key="GML.modify"/>" href="Edit?Id=${news.id}"><img border="0" title="<fmt:message key="GML.modify"/>" alt="<fmt:message key="GML.modify"/>" src="/silverpeas/util/icons/update.gif" /></a>
             <a title="<fmt:message key="GML.delete"/>" href="javascript:onclick=confirmDelete('${news.id}', '${news.componentInstanceId}', '${deleteConfirmMsg}', onDelete)"><img border="0" title="<fmt:message key="GML.delete"/>" alt="<fmt:message key="GML.delete"/>" src="/silverpeas/util/icons/delete.gif" /></a>
           </div>
@@ -263,6 +272,8 @@ function onDelete(id) {
               </div>
             </c:if>
           </div>
+          <c:set var="putIntoBasketSnippet" value='<%=BasketSelectionUI.getPutIntoBasketSelectionHtmlSnippet("@callback@", language)%>'/>
+          ${putIntoBasketSnippet.replace('@callback@', 'event.stopPropagation();putNewsInBasket("'.concat(news.identifier.asString()).concat('")'))}
         </li>
       </view:accListItems>
     </ul>

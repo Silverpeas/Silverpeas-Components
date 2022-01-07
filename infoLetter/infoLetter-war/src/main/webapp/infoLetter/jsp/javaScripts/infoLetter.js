@@ -23,8 +23,12 @@
  */
 
 function monitorHeightOfIsolatedDisplay(id, origin) {
+  let url = 'ViewTemplateInlinedCssHtml';
+  if (!id.startsWith('template')) {
+    url ='ViewInlinedCssHtml?id=' + id;
+  }
   jQuery('#inlined-css-html-container').embedPlayer({
-    url : 'ViewInlinedCssHtml?id=' + id,
+    url : url,
     width : '100%',
     height : '100%',
     messageEventHandler : __messageEventHandlerForIFrameResize

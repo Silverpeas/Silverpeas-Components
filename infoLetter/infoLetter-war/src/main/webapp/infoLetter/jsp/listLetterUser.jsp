@@ -50,7 +50,7 @@
 <c:set var="publications" value="${requestScope.listParutions}"/>
 <jsp:useBean id="publications" type="java.util.List<org.silverpeas.components.infoletter.model.InfoLetterPublication>"/>
 
-<c:set var="lastNSent" value="${resources.getSetting('lastNSent', 4)}"/>
+<c:set var="lastNSent" value="${resources.getSetting('user.lastNSent', 4)}"/>
 <jsp:useBean id="lastNSent" type="java.lang.Integer"/>
 
 <c:set var="letterName" value="${requestScope.letterName}"/>

@@ -36,6 +36,10 @@ import org.silverpeas.components.infoletter.service.InfoLetterServiceProvider;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.content.ddwe.DragAndDropWbeFile;
+import org.silverpeas.core.contribution.content.ddwe.model.DragAndDropWebEditorStore;
+import org.silverpeas.core.contribution.content.renderer.ContributionContentRenderer;
+import org.silverpeas.core.contribution.model.ContributionContent;
 import org.silverpeas.core.exception.DecodingException;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.exception.UtilTrappedException;
@@ -65,12 +69,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.stream.Stream;
 
+import static java.util.Collections.singleton;
 import static java.util.stream.Collectors.toCollection;
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
+import static org.silverpeas.core.util.StringUtil.EMPTY;
 import static org.silverpeas.core.util.StringUtil.getBooleanValue;
 
 public class InfoLetterSessionController extends AbstractComponentSessionController {
@@ -163,13 +170,62 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     return getInfoLetters().get(0);
   }
 
+  public DragAndDropWbeFile getTemplateFileForEdition() {
+    final InfoLetter infoLetter = getInfoLetter();
+    final DragAndDropWebEditorStore store = new DragAndDropWebEditorStore(infoLetter.getTemplateIdentifier());
+    if (!store.getFile().exists() && infoLetter.existsTemplateContent()) {
+      // If the Drag And Drop editor has not been yet used, taking the WYSIWYG content if any.
+      // It permits retrieving old content of template edited before the introduction
+      // of the Drag And Drop WEB Editor.
+      final String content = infoLetter.getTemplateWysiwygContent()
+          .map(ContributionContent::getRenderer)
+          .map(ContributionContentRenderer::renderEdition)
+          .filter(StringUtil::isDefined)
+          .orElse(EMPTY);
+      store.getFile().getContainer().getOrCreateTmpContent().setValue(content);
+      store.getFile().getContainer().getOrCreateContent().setValue(content);
+      store.save();
+      infoLetter.saveTemplateContent(null);
+    }
+    return new DragAndDropWbeFile(store);
+  }
+
   // Recuperation de la liste des publications
   public List<InfoLetterPublication> getInfoLetterPublications() {
     return dataInterface.getInfoLetterPublications(getInfoLetter().getPK());
   }
 
+  public DragAndDropWbeFile getFileForEditionOf(final InfoLetterPublication ilp) {
+    final DragAndDropWebEditorStore store = new DragAndDropWebEditorStore(ilp.getIdentifier());
+    if (!store.getFile().exists()) {
+      // If the Drag And Drop editor has not been yet used, taking the WYSIWYG content if any.
+      // It permits retrieving old contents of newsletter edited before the introduction
+      // of the Drag And Drop WEB Editor.
+      final Optional<String> legacyContent = ilp.getWysiwygContent()
+          .map(ContributionContent::getRenderer)
+          .map(ContributionContentRenderer::renderEdition)
+          .filter(StringUtil::isDefined);
+      if (legacyContent.isPresent()) {
+        final String content = legacyContent.get();
+        store.getFile().getContainer().getOrCreateTmpContent().setValue(content);
+        store.getFile().getContainer().getOrCreateContent().setValue(content);
+        store.save();
+        ilp.saveContent(null);
+      } else {
+        ilp.initFrom(getInfoLetter());
+      }
+    }
+    return new DragAndDropWbeFile(store);
+  }
+
+  public DragAndDropWbeFile resetWithTemplateFor(final InfoLetterPublication ilp) {
+    final DragAndDropWebEditorStore store = new DragAndDropWebEditorStore(ilp.getIdentifier());
+    ilp.initFrom(getInfoLetter());
+    return new DragAndDropWbeFile(store);
+  }
+
   // Creation d'une publication
-  public void createInfoLetterPublication(InfoLetterPublicationPdC ilp) throws IOException {
+  public void createInfoLetterPublication(InfoLetterPublicationPdC ilp) {
     ilp.setInstanceId(getComponentId());
     dataInterface.createInfoLetterPublication(ilp, getUserId());
     // Classify content on PdC
@@ -218,15 +274,15 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
   /**
    * Notify the newsletter to internal subscribers
    * @param ilp the infoletter to send
-   * @param server
+   *
    */
-  public void notifyInternalSubscribers(InfoLetterPublicationPdC ilp, String server) {
+  public void notifyInternalSubscribers(InfoLetterPublicationPdC ilp) {
     if (isNewsLetterSendByMail()) {
       //Send the newsletter by Mail to internal subscribers
       SubscriptionSubscriberMapBySubscriberType subscriberIdsByTypes =
           dataInterface.getInternalSuscribers(getComponentId()).indexBySubscriberType();
       Set<String> internalSubscribersEmails = getEmailsInternalSubscribers(subscriberIdsByTypes);
-      sendLetterByMail(ilp, server, internalSubscribersEmails);
+      sendLetterByMail(ilp, internalSubscribersEmails);
     } else {
       //Send the newsletter via notification
       UserNotificationHelper.buildAndSend(
@@ -234,16 +290,41 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     }
   }
 
+  /**
+   * Send letter by mail
+   * @param emails
+   * @return tab of dest emails in error
+   */
+  private String[] sendTemplateByMail(Set<String> emails) {
+    Set<String> emailErrors = new LinkedHashSet<>();
+
+    if (!emails.isEmpty()) {
+      final InfoLetter infoLetter = getInfoLetter();
+
+      // create the Multipart and its parts to it
+      String mimeMultipart = getSettings().getString("SMTPMimeMultipart", "related");
+
+      // Subject of the mail
+      String subject = getMultilang().getStringWithParams("infoLetter.emailTemplateSubject",
+          infoLetter.getName());
+
+      // Email address of the manager
+      String emailFrom = getUserDetail().geteMail();
+
+      emailErrors =
+          dataInterface.sendTemplateByMail(infoLetter, mimeMultipart, emails, subject, emailFrom);
+
+    }
+    return emailErrors.toArray(new String[0]);
+  }
 
   /**
    * Send letter by mail
    * @param ilp
-   * @param server
    * @param emails
    * @return tab of dest emails in error
    */
-  public String[] sendLetterByMail(InfoLetterPublicationPdC ilp, String server,
-      Set<String> emails) {
+  private String[] sendLetterByMail(InfoLetterPublicationPdC ilp, Set<String> emails) {
     Set<String> emailErrors = new LinkedHashSet<>();
 
     if (!emails.isEmpty()) {
@@ -258,19 +339,18 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
 
       ilp.setInstanceId(getComponentId());
       emailErrors =
-          dataInterface.sendLetterByMail(ilp, server, mimeMultipart, emails, subject, emailFrom);
+          dataInterface.sendLetterByMail(ilp, mimeMultipart, emails, subject, emailFrom);
 
     }
-    return emailErrors.toArray(new String[emailErrors.size()]);
+    return emailErrors.toArray(new String[0]);
   }
 
   /**
    * Send letter by mail to external subscribers
    * @param ilp
-   * @param server
    * @return tab of emails in error
    */
-  public String[] sendByMailToExternalSubscribers(InfoLetterPublicationPdC ilp, String server) {
+  public String[] sendByMailToExternalSubscribers(InfoLetterPublicationPdC ilp) {
     // Recuperation de la liste de emails
     Set<String> extmails = getEmailsExternalsSubscribers();
     // Removing potential already sent emails
@@ -281,20 +361,29 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
       Set<String> internalSubscribersEmails = getEmailsInternalSubscribers(subscriberIdsByTypes);
       extmails.removeAll(internalSubscribersEmails);
     }
-    return sendLetterByMail(ilp, server, extmails);
+    return sendLetterByMail(ilp, extmails);
+  }
+
+  /**
+   * Send letter to itself.
+   */
+  public String[] notifyMeAboutTemplate() {
+    return sendTemplateByMail(singleton(getUserDetail().geteMail()));
+  }
+
+  /**
+   * Send letter to itself.
+   */
+  public String[] notifyMe(InfoLetterPublicationPdC ilp) {
+    return sendLetterByMail(ilp, singleton(getUserDetail().geteMail()));
   }
 
   /**
    * Send letter to managers
-   * @param ilp
-   * @param server
-   * @return
    */
-  public String[] notifyManagers(InfoLetterPublicationPdC ilp, String server) {
+  public String[] notifyManagers(InfoLetterPublicationPdC ilp) {
     // Recuperation de la liste de emails
-    Set<String> extmails = getEmailsManagers();
-
-    return sendLetterByMail(ilp, server, extmails);
+    return sendLetterByMail(ilp, getEmailsManagers());
   }
 
   public Set<String> getEmailsExternalsSubscribers() {
@@ -345,11 +434,6 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
   // test d'abonnement d'un utilisateur interne
   public boolean isSubscriber() {
     return dataInterface.isUserSuscribed(getUserId(), getComponentId());
-  }
-
-  // Mise a jour du template a partir d'une publication
-  public void updateTemplate(InfoLetterPublicationPdC ilp) {
-    getInfoLetter().saveTemplateContentFrom(ilp);
   }
 
   public boolean isPdcUsed() {

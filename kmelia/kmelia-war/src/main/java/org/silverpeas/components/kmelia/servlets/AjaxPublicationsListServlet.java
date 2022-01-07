@@ -97,6 +97,7 @@ import java.util.List;
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.*;
 import static org.silverpeas.core.contribution.publication.model.PublicationDetail.*;
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.core.web.selection.BasketSelectionUI.getPutIntoBasketSelectionHtmlSnippet;
 import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion.scriptContent;
 
 /**
@@ -455,6 +456,9 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         displayFragmentOfPublication(specificTemplateUsed, aPub, fragmentSettings, language,
             currentUserId, currentTopicId, kmeliaScc, resources, out);
         out.write("</div>");
+        out.write(getPutIntoBasketSelectionHtmlSnippet(
+            String.format("putPublicationInBasket('%s')", pub.getIdentifier().asString()),
+            language));
         out.write("</li>");
       }
       out.write("</ul>");

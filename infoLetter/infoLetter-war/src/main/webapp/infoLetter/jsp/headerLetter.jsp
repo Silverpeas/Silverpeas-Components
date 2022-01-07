@@ -42,6 +42,9 @@
 
 <fmt:message key="GML.validate" var="validateLabel"/>
 <fmt:message key="GML.cancel" var="cancelLabel"/>
+<fmt:message key="infoLetter.sendLetterToMe" var="sendLetterToMeLabel"/>
+<fmt:message key="infoLetter.sendLetterToMe" var="sendLetterToMeIcon" bundle="${icons}"/>
+<c:url var="sendLetterToMeIcon" value="${sendLetterToMeIcon}"/>
 <fmt:message key="infoLetter.sendLetterToManager" var="sendLetterToManagerLabel"/>
 <fmt:message key="infoLetter.sendLetterToManager" var="sendLetterToManagerIcon" bundle="${icons}"/>
 <c:url var="sendLetterToManagerIcon" value="${sendLetterToManagerIcon}"/>
@@ -107,6 +110,11 @@
         sp.navRequest('Accueil').go();
       }
 
+      function sendLetterToMe() {
+        $.progressMessage();
+        setupCommonParams(sp.navRequest('SendLetterToMe')).go();
+      }
+
       function sendLetterToManager() {
         $.progressMessage();
         setupCommonParams(sp.navRequest('SendLetterToManager')).go();
@@ -121,6 +129,7 @@
     <view:browseBar path="${silfn:escapeHtml(browseBarPath)}"/>
     <view:operationPane>
       <c:if test="${not empty parution}">
+        <view:operation action="javascript:sendLetterToMe()" altText="${sendLetterToMeLabel}" icon="${sendLetterToMeIcon}"/>
         <view:operation action="javascript:sendLetterToManager()" altText="${sendLetterToManagerLabel}" icon="${sendLetterToManagerIcon}"/>
       </c:if>
     </view:operationPane>

@@ -29,12 +29,10 @@ import org.silverpeas.components.infoletter.model.InfoLetter;
 import org.silverpeas.components.infoletter.model.InfoLetterPublication;
 import org.silverpeas.components.infoletter.model.InfoLetterPublicationPdC;
 import org.silverpeas.core.contribution.content.ddwe.DragAndDropWbeFile;
-import org.silverpeas.core.contribution.content.ddwe.model.DragAndDropWebEditorStore;
 import org.silverpeas.core.contribution.content.renderer.ContributionContentRenderer;
 import org.silverpeas.core.contribution.model.ContributionContent;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -44,7 +42,6 @@ import org.silverpeas.core.webapi.wbe.WbeFileEdition;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import static org.silverpeas.core.util.StringUtil.*;
@@ -68,6 +65,12 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
   private static final String INLINED_CSS_HTML = "inlinedCssHtml";
   private static final String HEADER_LETTER_JSP = "headerLetter.jsp";
   private static final String EMAILS_MANAGER_JSP = "emailsManager.jsp";
+  private static final String VIEW_TEMPLATE = "ViewTemplate";
+  private static final String PREVIEW = "Preview";
+  private static final String RETURN_URL_ATTR = "ReturnUrl";
+  private static final String INFO_LETTER_SENDED_JSP = "infoLetterSended.jsp";
+  private static final String EMAIL_ERRORS_ATTR = "EmailErrors";
+  private static final String SHOW_HEADER_ATTR = "showHeader";
 
   /**
    * @param mainSessionCtrl
@@ -110,8 +113,8 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
       HttpServletRequest request) {
     // the flag is the best user's profile
     loadCommonHomepageDataAndSetRequestAttributes(infoLetterSC, request);
-    final boolean showHeader = infoLetterSC.getSettings().getBoolean("showHeader", false);
-    request.setAttribute("showHeader", showHeader);
+    final boolean showHeader = infoLetterSC.getSettings().getBoolean(SHOW_HEADER_ATTR, false);
+    request.setAttribute(SHOW_HEADER_ATTR, showHeader);
     final boolean isTemplateExist = infoLetterSC.getInfoLetter().existsTemplateContent();
     request.setAttribute("IsTemplateExist", isTemplateExist);
     final String flag = getFlag(infoLetterSC.getUserRoles());
@@ -164,6 +167,8 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
           destination = setMainContext(infoLetterSC, request);
         }
       } else if (function.startsWith("portlet")) {
+        final boolean showHeader = infoLetterSC.getSettings().getBoolean(SHOW_HEADER_ATTR, false);
+        request.setAttribute(SHOW_HEADER_ATTR, showHeader);
         loadCommonHomepageDataAndSetRequestAttributes(infoLetterSC, request);
         if (PUBLISHER.equals(flag) || ADMIN.equals(flag)) {
           destination = "portletListLetterAdmin.jsp?Profile=" + flag;
@@ -171,7 +176,7 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
           destination = "portletListLetterUser.jsp?Profile=" + flag;
 
         }
-      } else if (function.startsWith("Preview")) {
+      } else if (function.startsWith(PREVIEW)) {
         String parution = param(request, PARUTION);
         if (StringUtil.isDefined(parution)) {
           InfoLetterPublicationPdC ilp = infoLetterSC.getInfoLetterPublication(parution);
@@ -183,25 +188,14 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
           destination = setMainContext(infoLetterSC, request);
         }
       } else if (function.startsWith("EditTemplateContent")) {
-        final InfoLetter infoLetter = infoLetterSC.getInfoLetter();
-        final DragAndDropWebEditorStore store = new DragAndDropWebEditorStore(infoLetter.getTemplateIdentifier());
-        if (!store.getFile().exists() && infoLetter.existsTemplateContent()) {
-          // If the Drag And Drop editor has not been yet used, taking the WYSIWYG content if any.
-          // It permits retrieving old content of template edited before the introduction
-          // of the Drag And Drop WEB Editor.
-          final String content = infoLetter.getTemplateWysiwygContent()
-              .map(ContributionContent::getRenderer)
-              .map(ContributionContentRenderer::renderEdition)
-              .filter(StringUtil::isDefined)
-              .orElse(EMPTY);
-          store.getFile().getContainer().getOrCreateTmpContent().setValue(content);
-          store.getFile().getContainer().getOrCreateContent().setValue(content);
-          store.save();
-          infoLetter.saveTemplateContent(null);
+        if (!ADMIN.equals(flag)) {
+          throwHttpForbiddenError("Only managers can modify the template");
         }
+        final DragAndDropWbeFile file = infoLetterSC.getTemplateFileForEdition();
         return WbeFileEdition.get()
-            .initializeWith(request, new DragAndDropWbeFile(store),
+            .initializeWith(request, file,
                 withConnectors("SaveTemplateContent", "Main")
+                    .setMailMode()
                     .addBrowseBarElement(new BrowseBarElement(infoLetterSC.getString("infoLetter.template"), ""))
                     .build()::applyTo)
             .orElse(null);
@@ -214,48 +208,20 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
         String parution = param(request, PARUTION);
         if (StringUtil.isDefined(parution)) {
           destination = null;
-          InfoLetterPublicationPdC ilp = infoLetterSC.getInfoLetterPublication(parution);
+          final InfoLetterPublicationPdC ilp = infoLetterSC.getInfoLetterPublication(parution);
           if (!request.getParameterAsBoolean("old")) {
-            final DragAndDropWebEditorStore store = new DragAndDropWebEditorStore(ilp.getIdentifier());
-            final boolean firstEdition = !store.getFile().exists();
             final boolean resetWithTemplate = request.getParameterAsBoolean("resetWithTemplate");
-            if (firstEdition || resetWithTemplate) {
-              // If the Drag And Drop editor has not been yet used, taking the WYSIWYG content if any.
-              // It permits retrieving old contents of newsletter edited before the introduction
-              // of the Drag And Drop WEB Editor.
-              final String content = Optional.of(firstEdition)
-                  .filter(Boolean.TRUE::equals)
-                  .flatMap(b -> ilp.getWysiwygContent())
-                  .map(ContributionContent::getRenderer)
-                  .map(ContributionContentRenderer::renderEdition)
-                  .filter(StringUtil::isDefined)
-                  .orElseGet(() -> {
-                    // If no content exists for a newsletter, then initializing it from the template
-                    final InfoLetter infoLetter = infoLetterSC.getInfoLetter();
-                    return Optional.of(new DragAndDropWebEditorStore(infoLetter.getTemplateIdentifier()))
-                        .map(DragAndDropWebEditorStore::getFile)
-                        .filter(DragAndDropWebEditorStore.File::exists)
-                        .map(DragAndDropWebEditorStore.File::getContainer)
-                        .flatMap(DragAndDropWebEditorStore.Container::getContent)
-                        .map(DragAndDropWebEditorStore.Content::getValue)
-                        // If no store exists for template, then taking the template from WYSIWYG context if any
-                        .orElseGet(() -> infoLetter.getTemplateWysiwygContent()
-                            .map(ContributionContent::getRenderer)
-                            .map(ContributionContentRenderer::renderEdition)
-                            .filter(StringUtil::isDefined)
-                            .orElse(EMPTY));
-                  });
-              store.getFile().getContainer().getOrCreateTmpContent().setValue(content);
-              store.getFile().getContainer().getOrCreateContent().setValue(content);
-              store.save();
-              ilp.saveContent(null);
-            }
             final String parutionParam = "?parution=" + parution;
+            if (resetWithTemplate) {
+              infoLetterSC.resetWithTemplateFor(ilp);
+              return getDestination(PREVIEW, infoLetterSC, request);
+            }
+            final DragAndDropWbeFile file = infoLetterSC.getFileForEditionOf(ilp);
             final String validateUrl = "SaveContent" + parutionParam;
-            final String cancelUrl = "Preview" + parutionParam;
+            final String cancelUrl = PREVIEW + parutionParam;
             destination = WbeFileEdition.get()
-                .initializeWith(request, new DragAndDropWbeFile(store),
-                    withConnectors(validateUrl, cancelUrl).build()::applyTo)
+                .initializeWith(request, file,
+                    withConnectors(validateUrl, cancelUrl).setMailMode().build()::applyTo)
                 .orElse(null);
           }
           if (isNotDefined(destination)) {
@@ -288,24 +254,6 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
         request.setAttribute(DESCRIPTION, description);
         request.setAttribute(BROWSE_BAR_PATH, browsBarPath);
         destination = HEADER_LETTER_JSP;
-      } else if (function.startsWith("UpdateTemplateFromHeaders")) {
-        String parution = param(request, PARUTION);
-        String title = "";
-        String description = "";
-        String browsBarPath = infoLetterSC.getString("infoLetter.newLetterHeader");
-        if (StringUtil.isDefined(parution)) {
-          InfoLetterPublicationPdC ilp = infoLetterSC.getInfoLetterPublication(parution);
-          title = ilp.getTitle();
-          description = ilp.getDescription();
-          browsBarPath = title;
-          // Mise a jour du template
-          infoLetterSC.updateTemplate(ilp);
-        }
-        request.setAttribute(PARUTION, parution);
-        request.setAttribute(TITLE, title);
-        request.setAttribute(DESCRIPTION, description);
-        request.setAttribute(BROWSE_BAR_PATH, browsBarPath);
-        destination = HEADER_LETTER_JSP;
       } else if (function.startsWith("ValidateParution")) {
         String parution = param(request, PARUTION);
         String[] emailErrors = new String[0];
@@ -314,13 +262,11 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
           ilp.setPublicationState(InfoLetterPublication.PUBLICATION_VALIDEE);
           ilp.setParutionDate(DateUtil.date2SQLDate(new java.util.Date()));
           infoLetterSC.updateInfoLetterPublication(ilp);
-          String server = request.getRequestURL().substring(0,
-              request.getRequestURL().toString().indexOf(URLUtil.getApplicationURL()));
-          infoLetterSC.notifyInternalSubscribers(ilp, server);
-          emailErrors = infoLetterSC.sendByMailToExternalSubscribers(ilp, server);
+          infoLetterSC.notifyInternalSubscribers(ilp);
+          emailErrors = infoLetterSC.sendByMailToExternalSubscribers(ilp);
         }
-        request.setAttribute("EmailErrors", emailErrors);
-        destination = "infoLetterSended.jsp";
+        request.setAttribute(EMAIL_ERRORS_ATTR, emailErrors);
+        destination = INFO_LETTER_SENDED_JSP;
       } else if (function.startsWith("ChangeParutionHeaders")) {
         String parution = param(request, PARUTION);
         String title = param(request, TITLE);
@@ -416,17 +362,17 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
       } else if (function.startsWith("RetourPanel")) {
         infoLetterSC.retourUserPanel();
         destination = setMainContext(infoLetterSC, request);
-      } else if (function.equals("ViewInlinedCssHtml")) {
-        final String id = request.getParameter("id");
-        final InfoLetterPublicationPdC pub = infoLetterSC.getInfoLetterPublication(id);
-        request.setAttribute(INLINED_CSS_HTML, pub.getWysiwygContent()
+      } else if (function.equals("ViewTemplateInlinedCssHtml")) {
+        final InfoLetter infoLetter = infoLetterSC.getInfoLetter();
+        request.setAttribute(INLINED_CSS_HTML, infoLetter.getTemplateWysiwygContent()
             .map(ContributionContent::getRenderer)
             .map(r -> r.renderView(true))
             .orElse(EMPTY));
         destination = "inlinedCssHtml.jsp";
-      } else if (function.equals("ViewTemplate")) {
-        final InfoLetter currentLetter = infoLetterSC.getInfoLetter();
-        request.setAttribute(INLINED_CSS_HTML, currentLetter.getTemplateWysiwygContent()
+      }  else if (function.equals("ViewInlinedCssHtml")) {
+        final String id = request.getParameter("id");
+        final InfoLetterPublicationPdC pub = infoLetterSC.getInfoLetterPublication(id);
+        request.setAttribute(INLINED_CSS_HTML, pub.getWysiwygContent()
             .map(ContributionContent::getRenderer)
             .map(r -> r.renderView(true))
             .orElse(EMPTY));
@@ -455,26 +401,27 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
               infoLetterSC.getComponentId() + InfoLetterSessionController.EXPORT_CSV_NAME);
         }
         destination = "exportEmailsCsv.jsp";
-      } else if (function.startsWith("SendLetterToManager")) {
+      } else if (function.startsWith("SendLetterTo")) {
         String parution = param(request, PARUTION);
         String[] emailErrors = new String[0];
         if (StringUtil.isDefined(parution)) {
           InfoLetterPublicationPdC ilp = infoLetterSC.getInfoLetterPublication(parution);
-          String server = request.getRequestURL().substring(0,
-              request.getRequestURL().toString().indexOf(URLUtil.getApplicationURL()));
-          emailErrors = infoLetterSC.notifyManagers(ilp, server);
+          emailErrors = function.endsWith("Manager") ?
+              infoLetterSC.notifyManagers(ilp) :
+              infoLetterSC.notifyMe(ilp);
         }
-        request.setAttribute("EmailErrors", emailErrors);
-        final String returnUrl = defaultStringIfNotDefined(request.getParameter("ReturnUrl"), "Preview");
-        request.setAttribute("ReturnUrl", returnUrl + "?parution=" + parution);
-        destination = "infoLetterSended.jsp";
+        request.setAttribute(EMAIL_ERRORS_ATTR, emailErrors);
+        final String returnUrl = defaultStringIfNotDefined(request.getParameter(RETURN_URL_ATTR),
+            PREVIEW);
+        request.setAttribute(RETURN_URL_ATTR, returnUrl + "?parution=" + parution);
+        destination = INFO_LETTER_SENDED_JSP;
       } else if (function.startsWith("SaveContent")) {
         String parution = param(request, PARUTION);
         String manualContent = param(request, "editor");
         if (StringUtil.isDefined(parution)) {
           InfoLetterPublicationPdC ilp = infoLetterSC.getInfoLetterPublication(parution);
           ilp.saveContent(manualContent);
-          return getDestination("Preview", infoLetterSC, request);
+          return getDestination(PREVIEW, infoLetterSC, request);
         } else {
           destination = setMainContext(infoLetterSC, request);
         }

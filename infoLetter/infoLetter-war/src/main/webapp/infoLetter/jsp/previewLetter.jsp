@@ -43,15 +43,15 @@
 <view:setConstant constant="org.silverpeas.core.admin.user.model.SilverpeasRole.ADMIN" var="adminRole"/>
 <view:setConstant constant="org.silverpeas.components.infoletter.model.InfoLetterPublicationPdC.TYPE" var="resourceType"/>
 
+<fmt:message key="infoLetter.sendLetterToMe" var="sendLetterToMeLabel"/>
+<fmt:message key="infoLetter.sendLetterToMe" var="sendLetterToMeIcon" bundle="${icons}"/>
+<c:url var="sendLetterToMeIcon" value="${sendLetterToMeIcon}"/>
 <fmt:message key="infoLetter.sendLetterToManager" var="sendLetterToManagerLabel"/>
 <fmt:message key="infoLetter.sendLetterToManager" var="sendLetterToManagerIcon" bundle="${icons}"/>
 <c:url var="sendLetterToManagerIcon" value="${sendLetterToManagerIcon}"/>
 <fmt:message key="infoLetter.validLetter" var="validLetterLabel"/>
 <fmt:message key="infoLetter.validLetter" var="validLetterIcon" bundle="${icons}"/>
 <c:url var="validLetterIcon" value="${validLetterIcon}"/>
-<fmt:message key="infoLetter.saveTemplate" var="saveTemplateLabel"/>
-<fmt:message key="infoLetter.asTemplate" var="saveTemplateIcon" bundle="${icons}"/>
-<c:url var="saveTemplateIcon" value="${saveTemplateIcon}"/>
 <fmt:message key="infoLetter.confirmResetWithTemplate" var="confirmResetWithTemplate"/>
 <fmt:message key="infoLetter.resetWithTemplate" var="resetWithTemplateLabel"/>
 <fmt:message key="infoLetter.resetWithTemplate" var="resetWithTemplateIcon" bundle="${icons}"/>
@@ -67,7 +67,6 @@
 <jsp:useBean id="entity" type="org.silverpeas.components.infoletter.model.InfoLetterPublicationPdC"/>
 <c:set var="parution" value="${requestScope.parution}"/>
 <c:set var="parutionTitle" value="${requestScope.parutionTitle}"/>
-<c:set var="inlinedCssHtml" value="${requestScope.inlinedCssHtml}"/>
 
 <view:sp-page>
   <view:sp-head-part withCheckFormScript="true">
@@ -81,6 +80,11 @@
         setupCommonParams(sp.navRequest('EditContent')).go();
       }
 
+      function sendLetterToMe() {
+        $.progressMessage();
+        setupCommonParams(sp.navRequest('SendLetterToMe')).go();
+      }
+
       function sendLetterToManager() {
         $.progressMessage();
         setupCommonParams(sp.navRequest('SendLetterToManager')).go();
@@ -91,11 +95,6 @@
           $.progressMessage();
           setupCommonParams(sp.navRequest('ValidateParution')).go();
         });
-      }
-
-      function goTemplate() {
-        $.progressMessage();
-        setupCommonParams(sp.navRequest('UpdateTemplateFromHeaders')).go();
       }
 
       function goResetWithTemplate() {
@@ -113,11 +112,11 @@
   <view:sp-body-part>
     <view:browseBar path="${parutionTitle}"/>
     <view:operationPane>
+      <view:operation action="javascript:sendLetterToMe()" altText="${sendLetterToMeLabel}" icon="${sendLetterToMeIcon}"/>
       <view:operation action="javascript:sendLetterToManager()" altText="${sendLetterToManagerLabel}" icon="${sendLetterToManagerIcon}"/>
       <view:operationSeparator/>
       <view:operation action="javascript:goValidate()" altText="${validLetterLabel}" icon="${validLetterIcon}"/>
       <view:operationSeparator/>
-      <view:operation action="javascript:goTemplate()" altText="${saveTemplateLabel}" icon="${saveTemplateIcon}"/>
       <view:operation action="javascript:goResetWithTemplate()" altText="${resetWithTemplateLabel}" icon="${resetWithTemplateIcon}"/>
     </view:operationPane>
     <view:window>

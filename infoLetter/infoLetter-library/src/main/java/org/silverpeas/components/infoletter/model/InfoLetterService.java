@@ -173,16 +173,27 @@ public interface InfoLetterService extends ApplicationService {
 
   /**
    * Send letter by mail
-   * @param ilp the information letter
-   * @param server
-   * @param mimeMultipart
-   * @param listEmailDest
-   * @param subject
-   * @param emailFrom
+   * @param il the template
+   * @param mimeMultipart please have a look to https://en.wikipedia.org/wiki/MIME#Multipart_subtypes
+   * @param listEmailDest list of email
+   * @param subject subject of email
+   * @param emailFrom sender of email
    * @return list of emails in error
    */
-  Set<String> sendLetterByMail(InfoLetterPublicationPdC ilp, String server,
-      String mimeMultipart, Set<String> listEmailDest, String subject, String emailFrom);
+  Set<String> sendTemplateByMail(InfoLetter il, String mimeMultipart,
+      Set<String> listEmailDest, String subject, String emailFrom);
+
+  /**
+   * Send letter by mail
+   * @param ilp the information letter
+   * @param mimeMultipart please have a look to https://en.wikipedia.org/wiki/MIME#Multipart_subtypes
+   * @param listEmailDest list of email
+   * @param subject subject of email
+   * @param emailFrom sender of email
+   * @return list of emails in error
+   */
+  Set<String> sendLetterByMail(InfoLetterPublicationPdC ilp, String mimeMultipart,
+      Set<String> listEmailDest, String subject, String emailFrom);
 
   /**
    * Indexes all info letter indexable data.

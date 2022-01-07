@@ -102,16 +102,8 @@ function onDelete(id) {
 }
 
 function putNewsInBasket() {
-	let basket = new BasketService();
-	basket.putNewEntry({
-		context: {
-			reason: BasketService.Context.transfert
-		},
-		item: {
-			id: '${news.identifier.asString()}',
-			type: '${news.contributionType}'
-		}
-	});
+  const basketManager = new BasketManager();
+  basketManager.putContributionInBasket('${news.identifier.asString()}');
 }
 </script>
 </head>

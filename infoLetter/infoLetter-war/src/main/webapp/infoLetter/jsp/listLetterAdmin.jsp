@@ -26,7 +26,7 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ include file="check.jsp" %>
 
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
@@ -57,7 +57,7 @@
 <c:set var="publications" value="${requestScope.listParutions}"/>
 <jsp:useBean id="publications" type="java.util.List<org.silverpeas.components.infoletter.model.InfoLetterPublication>"/>
 
-<c:set var="lastNSent" value="${resources.getSetting('lastNSent', 4)}"/>
+<c:set var="lastNSent" value="${resources.getSetting('admin.lastNSent', 4)}"/>
 <jsp:useBean id="lastNSent" type="java.lang.Integer"/>
 
 <c:set var="letterName" value="${requestScope.letterName}"/>
@@ -125,6 +125,7 @@
         });
       }
 
+      <c:if test="${isAdmin}">
       function deleteSelected() {
         jQuery.popup.confirm('${silfn:escapeJs(confirmDeleteMsg)}', function() {
           const ajaxRequest = sp.ajaxRequest("DeletePublications").byPostMethod();
@@ -135,6 +136,7 @@
           });
         });
       }
+      </c:if>
 
       function openEditParution(par) {
         sp.navRequest('Preview').withParam('parution', par).go();
@@ -142,17 +144,6 @@
 
       function openViewParution(par) {
         sp.navRequest('View').withParam('parution', par).go();
-      }
-
-      function openTemplate() {
-        const windowName = "templateWindow";
-        const larg = "600";
-        const haut = "400";
-        const windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
-        if (!templateWindow.closed && templateWindow.name === "templateWindow") {
-          templateWindow.close();
-        }
-        templateWindow = SP_openWindow("ViewTemplate", windowName, larg, haut, windowParams);
       }
 
       function openSPWindow(fonction, windowName) {
@@ -172,10 +163,14 @@
       <c:if test="${showHeader}">
         <view:operation action="LetterHeaders" icon="${modifyHeaderIcon}" altText="${modifyHeaderLabel}"/>
       </c:if>
-      <view:operation action="EditTemplateContent" icon="${modifyTemplateIcon}" altText="${modifyTemplateLabel}"/>
-      <view:operationSeparator/>
+      <c:if test="${isAdmin}">
+        <view:operation action="EditTemplateContent" icon="${modifyTemplateIcon}" altText="${modifyTemplateLabel}"/>
+        <view:operationSeparator/>
+      </c:if>
       <view:operationOfCreation action="ParutionHeaders" icon="${createNewIcon}" altText="${createNewLabel}"/>
-      <view:operation action="javascript:deleteSelected()" icon="${deleteIcon}" altText="${deleteLabel}"/>
+      <c:if test="${isAdmin}">
+        <view:operation action="javascript:deleteSelected()" icon="${deleteIcon}" altText="${deleteLabel}"/>
+      </c:if>
       <view:operationSeparator/>
       <view:operation action="Suscribers" icon="${spSubscriberIcon}" altText="${spSubscriberLabel}"/>
       <view:operation action="Emails" icon="${extSubscriberIcon}" altText="${extSubscriberLabel}"/>
@@ -210,7 +205,7 @@
             <div class="header">
               <h3 class="infoletter-last-title">${lastNSentSectionTitle}</h3>
             </div>
-            <infoLetterTags:infoLetterList newsletters="${lastNSentPublications}"/>
+            <infoLetterTags:infoLetterList newsletters="${lastNSentPublications}" readonly="${not isAdmin}"/>
           </div>
           <div id="infoletter-sended">
             <div class="header">
@@ -234,7 +229,9 @@
                 <view:arrayColumn title="" sortable="false"/>
                 <view:arrayColumn title="${nameLabel}" compareOn="${n -> n.title}"/>
                 <view:arrayColumn title="${dateLabel}" compareOn="${n -> n.parutionDate}"/>
-                <view:arrayColumn title="${operationLabel}" sortable="false"/>
+                <c:if test="${isAdmin}">
+                  <view:arrayColumn title="${operationLabel}" sortable="false"/>
+                </c:if>
                 <view:arrayLines var="pub" items="${sentPublications}">
                   <jsp:useBean id="pub" type="org.silverpeas.components.infoletter.model.InfoLetterPublication"/>
                   <c:set var="pubId" value="${pub.getPK().id}"/>
@@ -257,7 +254,9 @@
                         ${silfn:formatDate(parutionDate, userLanguage)}
                       </c:if>
                     </view:arrayCellText>
-                    <view:arrayCellCheckbox name="selection" value="${pubId}" checked=""/>
+                    <c:if test="${isAdmin}">
+                      <view:arrayCellCheckbox name="selection" value="${pubId}" checked=""/>
+                    </c:if>
                   </view:arrayLine>
                 </view:arrayLines>
               </view:arrayPane>

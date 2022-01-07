@@ -23,192 +23,125 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/infoLetter" prefix="infoLetterTags" %>
 <%@ include file="check.jsp" %>
 <%@ page import="org.silverpeas.core.util.DateUtil" %>
-<%@ page import="org.silverpeas.components.infoletter.model.InfoLetterPublication" %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title><%=resource.getString("GML.popupTitle")%></title>
-<view:looknfeel withCheckFormScript="true"/>
-<script type="text/javascript">
-function goto_jsp(jsp, param)
-{
-  //    alert("../../RinfoLetter/<%=spaceId%>_<%=componentId%>/"+jsp+"?"+param);
-	window.open("../../RinfoLetter/<%=spaceId%>_<%=componentId%>/"+jsp+"?"+param,"MyMain");
-}
+<c:set var="resources" value="${requestScope.resources}"/>
+<jsp:useBean id="resources" type="org.silverpeas.core.util.MultiSilverpeasBundle"/>
+<c:set var="userLanguage" value="${resources.language}"/>
+<fmt:setLocale value="${userLanguage}"/>
+<view:setBundle bundle="${resources.multilangBundle}"/>
+<view:setBundle bundle="${resources.iconsBundle}" var="icons"/>
 
-function submitForm() {
-	if (confirm("<%= resource.getString("infoLetter.confirmDeleteParutions") %>"))
-	document.deletePublications.submit();
-}
+<c:set var="showHeader" value="${requestScope.showHeader}"/>
+<jsp:useBean id="showHeader" type="java.lang.Boolean"/>
+<c:set var="isSuscriber" value="${requestScope.userIsSuscriber}"/>
+<jsp:useBean id="isSuscriber" type="java.lang.Boolean"/>
+<c:set var="isAdmin" value="${requestScope.userIsAdmin}"/>
+<jsp:useBean id="isAdmin" type="java.lang.Boolean"/>
 
-function openEditParution(par) {
-    document.editParution.parution.value = par;
-    document.editParution.submit();
-}
+<c:set var="publications" value="${requestScope.listParutions}"/>
+<jsp:useBean id="publications" type="java.util.List<org.silverpeas.components.infoletter.model.InfoLetterPublication>"/>
 
-function openViewParution(par) {
-    document.viewParution.parution.value = par;
-    document.viewParution.submit();
-}
-</script>
-</head>
-<body bgcolor="#FFFFFF">
-<%
+<c:set var="letterName" value="${requestScope.letterName}"/>
+<c:set var="letterDescription" value="${requestScope.letterDescription}"/>
+<c:set var="letterFrequence" value="${requestScope.letterFrequence}"/>
 
-	browseBar.setComponentName(componentLabel, "javascript:goto_jsp('Main','')");
-	browseBar.setPath("<a href=# onClick=\"goto_jsp('Main','')\">" + resource.getString("infoLetter.listParutions") + "</a>");
-	browseBar.setComponentId(componentId);
-	browseBar.setIgnoreComponentLink(false);
+<fmt:message key="infoLetter.listParutions" var="portletTitle"/>
 
+<c:set var="componentId" value="<%=componentId%>"/>
 
-boolean isSuscriber = "true".equals(((String)request.getAttribute("userIsSuscriber")));
+<view:sp-page>
+  <view:sp-head-part withCheckFormScript="true">
+    <script type="text/javascript">
+      function goToComponentInstance() {
+        top.spWindow.loadComponent('${componentId}');
+      }
 
+      function openEditParution(par) {
+        const url = sp.url.format(webContext + '/RinfoLetter/${componentId}/Preview', {
+          'parution' : par
+        });
+        top.spWindow.loadLink(url);
+      }
 
-if (isSuscriber) operationPane.addOperation(resource.getIcon("infoLetter.desabonner"), resource.getString("infoLetter.desabonner"), "UnsuscribeMe");
-else operationPane.addOperation(resource.getIcon("infoLetter.abonner"), resource.getString("infoLetter.abonner"), "SuscribeMe");
-operationPane.addLine();
-operationPane.addOperation(resource.getIcon("infoLetter.modifierHeader"), resource.getString("infoLetter.modifierHeader"), "LetterHeaders");
-operationPane.addLine();
-operationPane.addOperation(resource.getIcon("infoLetter.newPubli"), resource.getString("infoLetter.newPubli"), "ParutionHeaders");
-operationPane.addLine();
-operationPane.addOperation(resource.getIcon("infoLetter.delPubli"), resource.getString("GML.delete"), "javascript:submitForm();");
-operationPane.addLine();
-operationPane.addOperation(resource.getIcon("infoLetter.access_SilverAbonnes"), resource.getString("infoLetter.access_SilverAbonnes"), "Suscribers");
-operationPane.addLine();
-operationPane.addOperation(resource.getIcon("infoLetter.access_ExternAbonnes"), resource.getString("infoLetter.access_ExternAbonnes"), "Emails");
-
-
-	out.println(window.printBefore());
-
-	//Instanciation du cadre avec le view generator
-
-
-	out.println(frame.printBefore());
-
-%>
-
-<% // Ici debute le code de la page %>
-<center>
-<table width="98%" border="0" cellspacing="0" cellpadding="0" class=intfdcolor4><!--tablcontour-->
-	<tr>
-		<td nowrap>
-			<table border="0" cellspacing="0" cellpadding="5" class="contourintfdcolor" width="100%"><!--tabl1-->
-				<tr align=center>
-					<td  class="intfdcolor4" valign="baseline" align=left>
-						<span class="txtlibform"><%=resource.getString("infoLetter.name")%> :</span>
-					</td>
-					<td  class="intfdcolor4" valign="baseline" align=left>
-					<input type="text" name="name" size="50" maxlength="50" value="<%= (String) request.getAttribute("letterName") %>" readonly="readonly"/>
-					</td>
-				</tr>
-				<tr align=center>
-
-					<td  class="intfdcolor4" valign="top" align=left>
-						<span class="txtlibform"><%=resource.getString("GML.description")%> :</span>
-					</td>
-					<td  class="intfdcolor4" valign="top" align=left>
-					<textarea cols="49" rows="4" name="description" readonly="readonly"><%= (String) request.getAttribute("letterDescription") %></textarea>
-					</td>
-				</tr>
-				<tr align=center>
-
-					<td  class="intfdcolor4" valign="baseline" align=left>
-						<span class="txtlibform"><%=resource.getString("infoLetter.frequence")%> :</span>
-					</td>
-					<td  class="intfdcolor4" valign="baseline" align=left>
-					<input type="text" name="frequence" size="50" maxlength="50" value="<%= (String) request.getAttribute("letterFrequence") %>" readonly="readonly"/>
-					</td>
-				</tr>
-			</table>
-		</td>
-	</tr>
-</table>
-</center>
-<br/>
-<form name="deletePublications" action="DeletePublications" method="post">
-<%
-// Recuperation de la liste des parutions
-List<InfoLetterPublication> publications = (List<InfoLetterPublication>) request.getAttribute("listParutions");
-
-int i=0;
-
-				ArrayPane arrayPane = gef.getArrayPane("InfoLetter", "Main", request, session);
-
-		        //arrayPane.setVisibleLineNumber(10);
-
-				arrayPane.addArrayColumn("");
-				arrayPane.addArrayColumn(resource.getString("infoLetter.name"));
-				arrayPane.addArrayColumn(resource.getString("GML.date"));
-				ArrayColumn arrayColumn1 = arrayPane.addArrayColumn(resource.getString("GML.status"));
-				arrayColumn1.setSortable(false);
-				ArrayColumn arrayColumn2 = arrayPane.addArrayColumn(resource.getString("GML.operation"));
-				arrayColumn2.setSortable(false);
-
-if ((publications != null) && (publications.size()>0)) {
-	for (i = 0; i < publications.size(); i++) {
-						InfoLetterPublication pub = (InfoLetterPublication) publications.get(i);
-						ArrayLine arrayLine = arrayPane.addArrayLine();
-
-						IconPane iconPane1 = gef.getIconPane();
-						Icon debIcon = iconPane1.addIcon();
-						//if (pub._isValid()) debIcon.setProperties(resource.getIcon("infoLetter.minicone"), "", "javascript:openViewParution('" + pub.getPK().getId() + "');");
-						//else debIcon.setProperties(resource.getIcon("infoLetter.minicone"), "", "javascript:openEditParution('" + pub.getPK().getId() + "');");
-						if (pub._isValid()) debIcon.setProperties(resource.getIcon("infoLetter.minicone"), "", "javascript:goto_jsp('View','parution=" + pub.getPK().getId() + "');");
-						else debIcon.setProperties(resource.getIcon("infoLetter.minicone"), "", "javascript:goto_jsp('ParutionHeaders','parution=" + pub.getPK().getId() + "');");
-
-						arrayLine.addArrayCellIconPane(iconPane1);
-
-						//if (pub._isValid()) arrayLine.addArrayCellLink(pub.getTitle(), "javascript:openViewParution('" + pub.getPK().getId() + "');");
-						//else arrayLine.addArrayCellLink(WebEncodeHelper.javaStringToHtmlString(pub.getTitle()), "javascript:openEditParution('" + pub.getPK().getId() + "');");
-
-						if (pub._isValid()) arrayLine.addArrayCellLink(pub.getTitle(), "javascript:goto_jsp('View','parution=" + pub.getPK().getId() + "');");
-						else arrayLine.addArrayCellLink(WebEncodeHelper.javaStringToHtmlString(pub.getTitle()), "javascript:goto_jsp('ParutionHeaders','parution=" + pub.getPK().getId() + "');");
-
-						if (pub._isValid())
-						{
-							java.util.Date date = DateUtil.parse(pub.getParutionDate());
-							ArrayCellText cell = arrayLine.addArrayCellText(resource.getOutputDate(date));
-							cell.setCompareOn(date);
-						}
-						else
-						{
-							arrayLine.addArrayCellText("");
-						}
-
-						IconPane iconPane2 = gef.getIconPane();
-						Icon statusIcon = iconPane2.addIcon();
-						if (pub._isValid()) statusIcon.setProperties(resource.getIcon("infoLetter.visible"), resource.getString("infoLetter.paru"));
-						else statusIcon.setProperties(resource.getIcon("infoLetter.nonvisible"), resource.getString("infoLetter.nonParu"));
-
-						arrayLine.addArrayCellIconPane(iconPane2);
-
-						arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"publis\" value=\"" + pub.getPK().getId() + "\">");
-	}
-}
-
-
-		out.println(arrayPane.print());
-
-%>
-</form>
-<form name="editParution" action="ParutionHeaders" method="post">
-	<input type="hidden" name="parution" value=""/>
-</form>
-
-<form name="viewParution" action="View" method="post">
-	<input type="hidden" name="parution" value=""/>
-</form>
-<% // Ici se termine le code de la page %>
-
-
-<%
-out.println(frame.printAfter());
-out.println(window.printAfter());
-%>
-</body>
-</html>
+      function openViewParution(par) {
+        const url = sp.url.format(webContext + '/RinfoLetter/${componentId}/View', {
+          'parution' : par
+        });
+        top.spWindow.loadLink(url);
+      }
+    </script>
+  </view:sp-head-part>
+  <view:sp-body-part>
+    <view:browseBar componentId="${componentId}" componentJsCallback="goToComponentInstance">
+      <view:browseBarElt label="${portletTitle}" link="javascript:goToComponentInstance()"/>
+    </view:browseBar>
+    <view:window>
+      <view:frame>
+        <c:if test="${showHeader}">
+          <div class="headerInfoLetter">
+            <h2 class="name">${silfn:escapeHtml(letterName)}</h2>
+            <div class="frequence">${silfn:escapeHtml(letterFrequence)}</div>
+            <p class="description componentInstanceIntro">${silfn:escapeHtml(letterDescription)}</p>
+          </div>
+        </c:if>
+        <fmt:message key="infoLetter.name" var="nameLabel"/>
+        <fmt:message key="GML.date" var="dateLabel"/>
+        <fmt:message key="infoLetter.minicone" var="newsletterIcon" bundle="${icons}"/>
+        <c:url var="newsletterIcon" value="${newsletterIcon}"/>
+        <fmt:message key="infoLetter.permalink" var="permlinkIcon" bundle="${icons}"/>
+        <c:url var="permlinkIcon" value="${permlinkIcon}"/>
+        <fmt:message key="infoLetter.nonParu" var="notReleaseLabel"/>
+        <fmt:message key="infoLetter.nonvisible" var="notReleaseIcon" bundle="${icons}"/>
+        <c:url var="notReleaseIcon" value="${notReleaseIcon}"/>
+        <fmt:message key="infoLetter.paru" var="releaseLabel"/>
+        <fmt:message key="infoLetter.visible" var="releaseIcon" bundle="${icons}"/>
+        <c:url var="releaseIcon" value="${releaseIcon}"/>
+        <div id="newsletter-list">
+          <view:arrayPane var="InfoLetter" routingAddress="portlet">
+            <view:arrayColumn title="" sortable="false"/>
+            <view:arrayColumn title="${nameLabel}" compareOn="${n -> n.title}"/>
+            <view:arrayColumn title="${dateLabel}" compareOn="${n -> n.parutionDate}"/>
+            <view:arrayLines var="pub" items="${publications}">
+              <jsp:useBean id="pub" type="org.silverpeas.components.infoletter.model.InfoLetterPublication"/>
+              <c:set var="pubId" value="${pub.getPK().id}"/>
+              <c:set var="accessUrl" value="javascript:open${pub._isValid() ? 'View' : 'Edit'}Parution('${pubId}')"/>
+              <view:arrayLine>
+                <view:arrayCellText>
+                  <a href="${accessUrl}">
+                    <img src="${newsletterIcon}" alt=""/>
+                  </a>
+                </view:arrayCellText>
+                <view:arrayCellText>
+                  <a href="${accessUrl}">${silfn:escapeHtml(pub.title)}</a>
+                  <a href="${pub._getPermalink()}" class="sp-permalink">
+                    <img src="${permlinkIcon}" alt=""/>
+                  </a>
+                </view:arrayCellText>
+                <view:arrayCellText>
+                  <c:if test="${pub._isValid()}">
+                    <c:set var="parutionDate" value="<%=DateUtil.parse(pub.getParutionDate())%>"/>
+                    ${silfn:formatDate(parutionDate, userLanguage)}
+                  </c:if>
+                </view:arrayCellText>
+              </view:arrayLine>
+            </view:arrayLines>
+          </view:arrayPane>
+          <script type="text/javascript">
+            whenSilverpeasReady(function() {
+              sp.arrayPane.ajaxControls('#newsletter-list');
+            });
+          </script>
+        </div>
+      </view:frame>
+    </view:window>
+    <view:progressMessage/>
+  </view:sp-body-part>
+</view:sp-page>

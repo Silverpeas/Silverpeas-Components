@@ -337,16 +337,8 @@
       }
 
       function putInBasket() {
-        let basket = new BasketService();
-        basket.putNewEntry({
-          context: {
-            reason: BasketService.Context.transfert
-          },
-          item: {
-            id: '<%= pubDetail.getIdentifier().asString() %>',
-            type: '<%= resourceType %>'
-          }
-        });
+        const basketManager = new BasketManager();
+        basketManager.putContributionInBasket('<%= pubDetail.getIdentifier().asString() %>');
       }
 
       function compileResult(fileName) {

@@ -223,6 +223,7 @@ body.treeView > div[id*="kmelia"] > div.kmelia  #topPage .cellBodyWindows{
   width: 100%;
   border-bottom:1px solid #ddd;
   display: flex;
+  position: relative;
 }
 
 #pubList ul li:last-child {
@@ -265,6 +266,7 @@ body.treeView > div[id*="kmelia"] > div.kmelia  #topPage .cellBodyWindows{
   top: 3px;
 }
 
+#pubList .add-to-basket-selection,
 #pubList .selection input {
   display: none;
 }

@@ -56,6 +56,7 @@
 #list-news li {
   padding: 0;
   margin: 0 0 2em 0;
+  position: relative;
 }
 
 #list-news .news-illustration {
@@ -97,6 +98,10 @@
   font-size: 0.9em;
   position: relative;
   height: 19px;
+}
+
+#list-news .news-info-fonctionality .operation a {
+  margin-left: 0.5em;
 }
 
 #list-news .news-nb-comments img {
@@ -371,6 +376,14 @@ fieldset#news-thumbnail legend {
   width: auto;
 }
 
+#list-news .operation .add-to-basket-selection {
+  position: relative;
+  right: 0;
+  top: 0;
+  width: 28px;
+  height: 18px;
+  display: inline-block;
+}
 
 /* PRESENTATION DES ACTU EN MODE LECTEUR */
 #list-news-lecteur-view {
@@ -465,4 +478,10 @@ fieldset#news-thumbnail legend {
 
 #list-news-lecteur-view li .news-nb-attached-files-and-comments > div:nth-child(2) {
   margin-left: 1em;
+}
+
+#list-news-lecteur-view .add-to-basket-selection {
+  padding: 0.5em;
+  background-color: #FFF;
+  border-radius: 5px;
 }

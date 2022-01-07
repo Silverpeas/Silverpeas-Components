@@ -44,7 +44,6 @@ import java.util.function.Predicate;
 
 import static java.util.Optional.ofNullable;
 import static org.silverpeas.core.i18n.I18NHelper.DEFAULT_LANGUAGE;
-import static org.silverpeas.core.util.StringUtil.EMPTY;
 import static org.silverpeas.core.util.StringUtil.isNotDefined;
 
 public class InfoLetter extends SilverpeasBean implements Comparable<InfoLetter> {
@@ -194,34 +193,6 @@ public class InfoLetter extends SilverpeasBean implements Comparable<InfoLetter>
   }
 
   /**
-   * Saves the template content from the given newsletter.
-   * @param pub the {@link InfoLetterPublication} instance from which the template content MUST
-   * be saved.
-   * <p>
-   *   If a Drag And Drop Web Edition exists, then it is the one stored. Otherwise a WYSIWYG
-   *   content is saved.
-   * </p>
-   */
-  public void saveTemplateContentFrom(final InfoLetterPublication pub) {
-    final ContributionIdentifier pubId = pub.getIdentifier();
-    final String content = Optional.of(new DragAndDropWebEditorStore(pubId))
-        .map(DragAndDropWebEditorStore::getFile)
-        .filter(DragAndDropWebEditorStore.File::exists)
-        .map(DragAndDropWebEditorStore.File::getContainer)
-        .flatMap(DragAndDropWebEditorStore.Container::getContent)
-        .map(DragAndDropWebEditorStore.Content::getValue)
-        .orElseGet(() -> pub.getWysiwygContent()
-            .map(ContributionContent::getRenderer)
-            .map(ContributionContentRenderer::renderEdition)
-            .filter(StringUtil::isDefined)
-            .orElse(EMPTY));
-    final DragAndDropWebEditorStore templateStore = new DragAndDropWebEditorStore(getTemplateIdentifier());
-    templateStore.getFile().getContainer().getOrCreateTmpContent().setValue(content);
-    templateStore.save();
-    saveTemplateContent(null);
-  }
-
-  /**
    * Saves given content.
    * <p>
    *   The given content MAY be directly a WYSIWYG content, in a such case the content has been
@@ -236,6 +207,7 @@ public class InfoLetter extends SilverpeasBean implements Comparable<InfoLetter>
    * a WYSIWYG editing.
    */
   public void saveTemplateContent(final String manualContent) {
+    this.templateContent = null;
     final ContributionIdentifier templateId = getTemplateIdentifier();
     String wysiwygContent = manualContent;
     if (isNotDefined(manualContent)) {
@@ -248,8 +220,7 @@ public class InfoLetter extends SilverpeasBean implements Comparable<InfoLetter>
           .map(c -> {
             store.getFile().getContainer().getOrCreateContent().setValue(c);
             store.save();
-            final DragAndDropEditorContent content = new DragAndDropEditorContent(c);
-            return content.getSimpleContent().orElseGet(content::getInlinedHtml);
+            return new DragAndDropEditorContent(c).getInlinedHtml();
           })
           .orElse(manualContent);
     }
