@@ -201,7 +201,7 @@ function onDelete(id) {
 	<c:if test="${not empty news.description}">
 		<p class="publiDesc text2"><view:encodeHtmlParagraph string="${news.description}"/></p>
 	</c:if>
-    <div id="richContent">
+    <div id="richContent" class="rich-content">
 		${news.content}
     </div>
 

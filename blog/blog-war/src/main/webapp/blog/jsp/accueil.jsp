@@ -290,8 +290,7 @@ function hideStyleSheetFile() {
 			  <span class="categoryTicket">  <a href="<%="PostByCategory?CategoryId="+categoryId%>" class="versTopic"><%=post.getCategory().getName()%> </a> </span>
 			 </div>
 			  <% } %>
-
-        <div class="contentTicket">
+        <div class="contentTicket rich-content">
           <view:displayWysiwyg objectId="<%=postId%>" componentId="<%=instanceId %>" language="<%=resource.getLanguage() %>" />
         </div>
         <div class="footerTicket">

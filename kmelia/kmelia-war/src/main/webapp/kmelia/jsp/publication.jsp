@@ -825,7 +825,9 @@
 
 				        out.println("<div id=\"richContent\">");
 				        if (WysiwygController.haveGotWysiwygToDisplay(componentId, id, language)) {%>
-                <view:displayWysiwyg objectId="<%=id%>" componentId="<%=componentId%>" language="<%=language%>" axisId="<%=kmeliaScc.getAxisIdGlossary()%>" highlightFirst="<%=String.valueOf(highlightFirst)%>" />
+                  <div class="rich-content">
+                  <view:displayWysiwyg objectId="<%=id%>" componentId="<%=componentId%>" language="<%=language%>" axisId="<%=kmeliaScc.getAxisIdGlossary()%>" highlightFirst="<%=String.valueOf(highlightFirst)%>" />
+                  </div>
                 <%
 				        } else {
 				          Form xmlForm = (Form) request.getAttribute("XMLForm");

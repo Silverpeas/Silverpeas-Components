@@ -441,7 +441,9 @@
                                           <c:param name="CallbackUrl" value="${callBackUrl}" />
                                         </c:import>
                                       </div>
-                                      <%=text%>
+                                      <div class="rich-content">
+                                        <%=text%>
+                                      </div>
                                       <viewTags:viewAttachmentsAsContent componentInstanceId="${componentId}"
                                                                          resourceType="<%=currentMessage.RESOURCE_TYPE%>"
                                                                          resourceId="<%=String.valueOf(currentMessage.getId())%>"

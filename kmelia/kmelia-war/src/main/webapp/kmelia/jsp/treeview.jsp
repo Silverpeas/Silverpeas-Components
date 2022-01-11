@@ -187,7 +187,7 @@ var searchFolderId = "<%=id%>";
             <div class="resizable resizable1"><div id="treeDiv1"></div></div>
 				<div id="rightSide" class="resizable resizable2">
           <kmelia:searchZone enabled="<%=displaySearch%>"/>
-					<div id="topicDescription"></div>
+					<div id="topicDescription" class="rich-content"></div>
 					<view:areaOfOperationOfCreation/>
           <div class="dragAndDropUpload" style="min-height: 75px">
             <div id="pubList">

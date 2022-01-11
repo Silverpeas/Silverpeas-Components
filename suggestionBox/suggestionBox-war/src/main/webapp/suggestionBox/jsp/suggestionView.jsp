@@ -136,7 +136,7 @@
     <div class="principalContent">
       <h2 class="suggestion-title"><c:out value='${suggestion.title}'/></h2>
       <c:if test="${not empty suggestion.content}">
-        <div id="richContent">
+        <div id="richContent" class="rich-content">
             ${suggestion.content}
         </div>
       </c:if>
