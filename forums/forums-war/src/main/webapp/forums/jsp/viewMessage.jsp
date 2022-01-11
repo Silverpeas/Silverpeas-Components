@@ -54,6 +54,7 @@
 <%@ page import="org.silverpeas.core.admin.user.model.User" %>
 <%@ page import="org.silverpeas.core.web.http.HttpRequest" %>
 <%@ page import="org.silverpeas.core.admin.user.model.SilverpeasRole" %>
+<%@ page import="org.silverpeas.core.util.logging.SilverLogger" %>
 <%@ include file="checkForums.jsp"%>
 <%
     int messageId = 0;
@@ -157,7 +158,7 @@
         }
     }
     catch (NumberFormatException nfe) {
-      SilverTrace.info("forums", "JSPviewMessage", "root.EX_NO_MESSAGE", null, nfe);
+      SilverLogger.getLogger("silverpeas.components.forums").info(nfe.getMessage());
     }
     String backURL = ActionUrl.getUrl(call, -1, forumId);
 
@@ -527,7 +528,6 @@
 <script type="text/javascript">
   jQuery(document).ready(function() {
     init();
-    scrollMessageList(<%=messageId%>);
     <% if (displayAllMessages && scrollToMessage) {%>
     scrollMessage(<%=messageId%>);
     <% } %>
