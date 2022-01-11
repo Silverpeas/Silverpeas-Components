@@ -371,8 +371,10 @@ $(function() {
 	        out.println("<div id=\"richContent\">");
 	        if (WysiwygController.haveGotWysiwygToDisplay(componentId, id, resources.getLanguage())) {
 	          %>
+            <div class="rich-content">
 	          <view:displayWysiwyg objectId="<%=id%>" componentId="<%=componentId %>" language="<%=resources.getLanguage() %>" axisId="<%=kmeliaScc.
 	              getAxisIdGlossary() %>" highlightFirst="<%=String.valueOf(highlightFirst) %>"/>
+            </div>
 	          <%
 	        } else {
 	          Form xmlForm = (Form) request.getAttribute("XMLForm");

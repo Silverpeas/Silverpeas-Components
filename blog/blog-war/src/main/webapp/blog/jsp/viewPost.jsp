@@ -148,7 +148,7 @@ out.println(window.printBefore());
 		            </span>
 					</div>
 		         <% } %>		       
-				<div class="contentTicket">
+				<div class="contentTicket rich-content">
 				<view:displayWysiwyg objectId="<%=postId%>" componentId="<%=instanceId %>" language="<%=resource.getLanguage() %>" />
 				</div>   
 				<div class="footerTicket">    	

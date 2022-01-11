@@ -173,7 +173,7 @@ function isSpecialFolder(id) {
 
           <kmelia:searchZone enabled="<%=displaySearch%>"/>
 
-          <div id="topicDescription"></div>
+          <div id="topicDescription" class="rich-content"></div>
           <view:areaOfOperationOfCreation/>
           <div class="dragAndDropUpload" style="min-height: 75px">
             <div id="pubList">

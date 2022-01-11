@@ -323,7 +323,7 @@ $(document).ready(function() {
     }
     answerTitle.append(actionDiv);
     answerBlock.append(answerTitle);
-    answerContentDiv = $('<div>').addClass('answerContent');
+    answerContentDiv = $('<div>').addClass('answerContent rich-content');
     answerAttachmentDiv = $('<div>').addClass('answerAttachment');
     var hasAttachments = answer.attachments != null && answer.attachments.length > 0;
     if(hasAttachments) {

@@ -151,7 +151,7 @@
         <div class="date"></div>
         <p class="quickInfo-description"></p>
 
-        <div id="richContent"></div>
+        <div id="richContent" class="rich-content"></div>
 
       </div>
     </div>
