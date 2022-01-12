@@ -599,7 +599,7 @@
 				    <% } %>
 			    </p>
 
-          <% if (kmeliaScc.getInvisibleTabs().indexOf(kmeliaScc.TAB_COMMENT) == -1 && !kmaxMode)	 { %>
+          <% if (!kmeliaScc.getInvisibleTabs().contains(KmeliaSessionController.TAB_COMMENT))	 { %>
             <p id="commentInfo">
               <fmt:message key="GML.comment.number"/><br />
               <a href="#commentaires">${kmeliaPubli.numberOfComments}</a>
@@ -839,10 +839,8 @@
                                          resourceId="<%=id%>"
                                          contentLanguage="<%=contentLanguage%>"
                                          highestUserRole="<%=SilverpeasRole.from(attProfile)%>"/>
-      <%
 
-      if (kmeliaScc.getInvisibleTabs().indexOf(kmeliaScc.TAB_COMMENT) == -1 && !kmaxMode)	 {
-			      %>
+      <% if (!kmeliaScc.getInvisibleTabs().contains(KmeliaSessionController.TAB_COMMENT)) { %>
       <view:comments	userId="<%= user_id%>" componentId="<%= componentId %>"
       					resourceType="<%= resourceType %>" resourceId="<%= id %>" indexed="<%= indexIt %>"/>
       <% } %>
