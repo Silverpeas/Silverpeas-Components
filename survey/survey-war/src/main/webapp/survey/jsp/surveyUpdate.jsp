@@ -124,8 +124,8 @@ if ("UpdateSurveyHeader".equals(action))
 {
          survey = surveyScc.getSurvey(surveyId);
          QuestionContainerHeader surveyHeader = survey.getHeader();
-         title = Encode.javaStringToHtmlString(surveyHeader.getTitle());
-         description = Encode.javaStringToHtmlString(surveyHeader.getDescription());
+         title = WebEncodeHelper.javaStringToHtmlString(surveyHeader.getTitle());
+         description = WebEncodeHelper.javaStringToHtmlString(surveyHeader.getDescription());
          creationDate = resources.getOutputDate(surveyHeader.getCreationDate());
          beginDate = "";
          if (surveyHeader.getBeginDate() != null)

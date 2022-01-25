@@ -43,8 +43,8 @@ MultiSilverpeasBundle resources, boolean pollingStationMode, boolean participate
 
 //Display the survey header
 String displaySurveyHeader(QuestionContainerHeader surveyHeader, SurveySessionController surveyScc, MultiSilverpeasBundle resources, GraphicElementFactory gef) throws ParseException {
-        String title = Encode.javaStringToHtmlString(surveyHeader.getTitle());
-        String description = Encode.javaStringToHtmlParagraphe(surveyHeader.getDescription());
+        String title = WebEncodeHelper.javaStringToHtmlString(surveyHeader.getTitle());
+        String description = WebEncodeHelper.javaStringToHtmlParagraphe(surveyHeader.getDescription());
         String creationDate = resources.getOutputDate(surveyHeader.getCreationDate());
         String beginDate = "&nbsp;";
         if (surveyHeader.getBeginDate() != null)
@@ -256,7 +256,7 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
         if (!surveyScc.isPollingStationMode())
 	        r += "<tr><td align=\"center\" colspan=\"2\"><b>"+resources.getString("SurveyCreationQuestion")+" n&deg;"+i+ " / " + nbTotalQuestion +"</b><BR></td></tr>";
 
-        r += "<tr><td colspan=\"2\"><img src=\""+m_context+"/util/icons/mandatoryField.gif\" width=\"5\">&nbsp;&nbsp;<B><U>"+Encode.javaStringToHtmlString(question.getLabel())+"</U></B><BR/></td></tr>";
+        r += "<tr><td colspan=\"2\"><img src=\""+m_context+"/util/icons/mandatoryField.gif\" width=\"5\">&nbsp;&nbsp;<B><U>"+WebEncodeHelper.javaStringToHtmlString(question.getLabel())+"</U></B><BR/></td></tr>";
 
 		// traitement du type de question
         String style = question.getStyle();
@@ -297,7 +297,7 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
 	            {
 	            	Answer answer = (Answer) itA.next();
 			String inputValue = answer.getPK().getId()+","+question.getPK().getId();
-			r += "<option value=\""+inputValue+"\" "+selectedStr+">"+Encode.javaStringToHtmlString(answer.getLabel())+"</option>";
+			r += "<option value=\""+inputValue+"\" "+selectedStr+">"+WebEncodeHelper.javaStringToHtmlString(answer.getLabel())+"</option>";
 	            }
 		    r += "<input type=\"text\" name=\"openedAnswer_"+nbQuestionInPage+"\" id=\"openanswer"+nbQuestionInPage+"\" value=\"\" style=\"display: none\"/>";
 	            r += "</td></tr>";
@@ -386,9 +386,9 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
                     endDate = resources.getOutputDate(surveyHeader.getEndDate());
                 r += board.printBefore();
                   r += "<table border=\"0\" cellpadding=\"2\" width=\"100%\">";
-                  r += "<tr><td class=\"textePetitBold\">"+resources.getString("GML.name")+" :</td><td>"+Encode.javaStringToHtmlString(title)+"</td></tr>";
+                  r += "<tr><td class=\"textePetitBold\">"+resources.getString("GML.name")+" :</td><td>"+WebEncodeHelper.javaStringToHtmlString(title)+"</td></tr>";
                   if (StringUtil.isDefined(description))
-                  		r += "<tr><td class=\"textePetitBold\" valign=\"top\">"+resources.getString("SurveyCreationDescription")+" :</td><td>"+Encode.javaStringToHtmlParagraphe(description)+"</td></tr>";
+                  		r += "<tr><td class=\"textePetitBold\" valign=\"top\">"+resources.getString("SurveyCreationDescription")+" :</td><td>"+WebEncodeHelper.javaStringToHtmlParagraphe(description)+"</td></tr>";
                   r += "<tr><td class=\"textePetitBold\">"+resources.getString("SurveyCreationDate")+" :</td><td>"+creationDate+"</td></tr>";
                   r += "<tr><td class=\"textePetitBold\">"+resources.getString("SurveyCreationBeginDate")+" :</td><td>"+beginDate+"</td></tr>";
                   if (StringUtil.isDefined(endDate))
@@ -411,7 +411,7 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
                           //r+="<table cellpadding=0 cellspacing=2 border=0 width=\"98%\" CLASS=intfdcolor><tr><td class=intfdcolor4 nowrap>";
                           r += board.printBefore();
                           r += "<table border=\"0\" width=\"100%\">";
-                          r += "<tr><td colspan=\"2\"><B><U>"+Encode.javaStringToHtmlString(question.getLabel())+"</U></B><BR/></td></tr>";
+                          r += "<tr><td colspan=\"2\"><B><U>"+WebEncodeHelper.javaStringToHtmlString(question.getLabel())+"</U></B><BR/></td></tr>";
 
                           // traitement du type de question
                           String style = question.getStyle();
@@ -437,9 +437,9 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
 	                                {
 	                                    Answer answer = (Answer) itA.next();
 					    if (answer.isOpened()) {
-						r += "<option name=\"openanswer_"+i+"\" value=\"openanswer_"+i+"\">"+Encode.javaStringToHtmlString(answer.getLabel())+"</option>";
+						r += "<option name=\"openanswer_"+i+"\" value=\"openanswer_"+i+"\">"+WebEncodeHelper.javaStringToHtmlString(answer.getLabel())+"</option>";
 					    } else {
-                   				r += "<option name=\"answer_"+i+"\" value=\"\">"+Encode.javaStringToHtmlString(answer.getLabel())+"</option>";
+                   				r += "<option name=\"answer_"+i+"\" value=\"\">"+WebEncodeHelper.javaStringToHtmlString(answer.getLabel())+"</option>";
 					    }
    	                                }
 					r += "<input type=\"text\" id=\"openanswer"+i+"\" name=\"answer_"+i+"\" value=\"\" style=\"display:none\"/>";
@@ -459,12 +459,12 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
 	                                    if (answer.isOpened())
 	                                    {
 	                                        isOpened = 1;
-	                                        r += "<tr><td width=\"40px\" align=\"center\"><input type=\""+inputType+"\" name=\"answer_"+i+"\" value=\"\"></td><td align=\"left\" width=\"100%\">"+Encode.javaStringToHtmlString(answer.getLabel())+"<BR><input type=\"text\" size=\"20\" name=\"openedAnswer_"+i+"\"></td></tr>";
+	                                        r += "<tr><td width=\"40px\" align=\"center\"><input type=\""+inputType+"\" name=\"answer_"+i+"\" value=\"\"></td><td align=\"left\" width=\"100%\">"+WebEncodeHelper.javaStringToHtmlString(answer.getLabel())+"<BR><input type=\"text\" size=\"20\" name=\"openedAnswer_"+i+"\"></td></tr>";
 	                                    }
 	                                    else
 	                                    {
 	                                        if (answer.getImage() == null)
-	                                              r += "<tr><td width=\"40px\" align=\"center\"><input type=\""+inputType+"\" name=\"answer_"+i+"\" value=\"\"></td><td align=\"left\" width=\"100%\">"+Encode.javaStringToHtmlString(answer.getLabel())+"</td></tr>";
+	                                              r += "<tr><td width=\"40px\" align=\"center\"><input type=\""+inputType+"\" name=\"answer_"+i+"\" value=\"\"></td><td align=\"left\" width=\"100%\">"+WebEncodeHelper.javaStringToHtmlString(answer.getLabel())+"</td></tr>";
 	                                        else
 	                                        {
 	                                        	String url = "";
@@ -476,7 +476,7 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
 						                      	{
 	                                            	url = FileServerUtils.getUrl(surveyScc.getComponentId(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
 	                                            }
-	                                            r += "<tr><td width=\"40px\" align=\"center\"><input type=\""+inputType+"\" name=\"answer_"+i+"\" value=\"\"></td><td align=\"left\" width=\"100%\">"+Encode.javaStringToHtmlString(answer.getLabel())+"<BR>";
+	                                            r += "<tr><td width=\"40px\" align=\"center\"><input type=\""+inputType+"\" name=\"answer_"+i+"\" value=\"\"></td><td align=\"left\" width=\"100%\">"+WebEncodeHelper.javaStringToHtmlString(answer.getLabel())+"<BR>";
 	                                            r += "<img src=\""+url+"\" border=\"0\"></td><td>";
 	                                        }
 	                                    }
@@ -542,10 +542,10 @@ String displaySurveyResultOfUser(String userId, Collection resultsByUser,
 
        	r += board.printBefore();
        	r += "<table border=\"0\" cellspacing=\"5\" cellpadding=\"5\" width=\"100%\">";
-       	r += " <tr><td class=\"textePetitBold\" nowrap>"+resources.getString("survey.participationOf")+" : </td><td width=\"90%\">"+Encode.javaStringToHtmlString(
+       	r += " <tr><td class=\"textePetitBold\" nowrap>"+resources.getString("survey.participationOf")+" : </td><td width=\"90%\">"+WebEncodeHelper.javaStringToHtmlString(
             User.getById(userId).getDisplayedName())+"</td></tr>";
         if (!userComment.equals("") && userCommentDetail != null && !userCommentDetail.isAnonymous()) {
-          r += " <tr><td class=\"textePetitBold\" nowrap valign=\"top\">"+resources.getString("survey.Comment")+" : </td><td width=\"90%\">"+Encode.javaStringToHtmlParagraphe(userComment)+"</td></tr>";
+          r += " <tr><td class=\"textePetitBold\" nowrap valign=\"top\">"+resources.getString("survey.Comment")+" : </td><td width=\"90%\">"+WebEncodeHelper.javaStringToHtmlParagraphe(userComment)+"</td></tr>";
         }
         r += "</table>";
         r += board.printAfter();
@@ -566,7 +566,7 @@ String displaySurveyResultOfUser(String userId, Collection resultsByUser,
 	          if (!surveyScc.isPollingStationMode()) {
 	            r += "<tr><th align=\"center\" colspan=\"2\"><b>"+resources.getString("SurveyCreationQuestion")+" n&deg;"+i+"</b></th></tr>";
 	          }
-	          r += "<tr><th colspan=\"2\" align=\"left\"><img src=\""+m_context+"/util/icons/mandatoryField.gif\" width=\"5\"/>&nbsp;&nbsp;<b><u>"+Encode.javaStringToHtmlString(question.getLabel())+"</u></b></th></tr>";
+	          r += "<tr><th colspan=\"2\" align=\"left\"><img src=\""+m_context+"/util/icons/mandatoryField.gif\" width=\"5\"/>&nbsp;&nbsp;<b><u>"+WebEncodeHelper.javaStringToHtmlString(question.getLabel())+"</u></b></th></tr>";
 	          r += " </thead>";
 	          r += "<tbody>";
 
@@ -689,7 +689,7 @@ String displaySurveyResult(String choice, QuestionContainerDetail survey, Graphi
         }
 
         r += "<div class=\"principalContent\">";
-        r += " <h2 class=\"eventName\">"+Encode.javaStringToHtmlString(title)+"</h2>";
+        r += " <h2 class=\"eventName\">"+WebEncodeHelper.javaStringToHtmlString(title)+"</h2>";
         r += " <div class=\"eventInfo\">";
         r += "   <div class=\"surveyDate\">";
         r += "     <div class=\"bloc\">";
@@ -762,7 +762,7 @@ String displaySurveyResult(String choice, QuestionContainerDetail survey, Graphi
         r += "   <br clear=\"left\">&nbsp;";
         r += " </div>";
         if (StringUtil.isDefined(description)) {
-        	r += " <div class=\"surveyDesc\">"+Encode.javaStringToHtmlParagraphe(description)+"</div>";
+        	r += " <div class=\"surveyDesc\">"+WebEncodeHelper.javaStringToHtmlParagraphe(description)+"</div>";
         }
         r += "</div>";
 
@@ -817,7 +817,7 @@ String displaySurveyResult(String choice, QuestionContainerDetail survey, Graphi
 	          if (!surveyScc.isPollingStationMode()) {
 	            questionDecorator = resources.getString("SurveyCreationQuestion")+" n&deg;"+i+"&nbsp;-&nbsp;";
 	          }
-	          r += "<tr><th colspan=\"2\" align=\"left\"><img src=\""+m_context+"/util/icons/mandatoryField.gif\" width=\"5\">&nbsp;&nbsp;"+questionDecorator+Encode.javaStringToHtmlString(question.getLabel())+"</th></tr>";
+	          r += "<tr><th colspan=\"2\" align=\"left\"><img src=\""+m_context+"/util/icons/mandatoryField.gif\" width=\"5\">&nbsp;&nbsp;"+questionDecorator+WebEncodeHelper.javaStringToHtmlString(question.getLabel())+"</th></tr>";
 
 	            String style = question.getStyle();
 	            if (!anonymous && choice.equals("D")) {
@@ -866,7 +866,7 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
             String answer = "";
             while (it.hasNext()) {
                 QuestionResult qR = (QuestionResult) it.next();
-                answer = Encode.javaStringToHtmlParagraphe(qR.getOpenedAnswer());
+                answer = WebEncodeHelper.javaStringToHtmlParagraphe(qR.getOpenedAnswer());
                 if (StringUtil.isDefined(answer)) {
                   r += "<tr><td colspan=\"2\" align=\"left\">&#149; " + answer + "<br></td></tr>";
                 }
@@ -887,14 +887,14 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
             String answer = "";
             while (it.hasNext()) {
                 QuestionResult qR = (QuestionResult) it.next();
-                answer = Encode.javaStringToHtmlParagraphe(qR.getOpenedAnswer());
+                answer = WebEncodeHelper.javaStringToHtmlParagraphe(qR.getOpenedAnswer());
                 if (StringUtil.isDefined(answer)) {
                   String userId = qR.getUserId();
                   UserDetail userDetail = surveyScc.getUserDetail(userId);
                   String userName = userDetail.getDisplayedName();
                   r +=
                       "<tr><td class=\"displayUserName\" width=\"40%\"><a href=\"javaScript:onClick=viewResultByUser('" +
-                          userId + "');\">" + Encode.javaStringToHtmlString(userName) +
+                          userId + "');\">" + WebEncodeHelper.javaStringToHtmlString(userName) +
                           "</a></td><td class=\"freeAnswer\">" + answer + "</td></tr>";
                 }
             }
@@ -914,7 +914,7 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
             String answer = "";
             while (it.hasNext()) {
                 QuestionResult qR = (QuestionResult) it.next();
-                answer = Encode.javaStringToHtmlParagraphe(qR.getOpenedAnswer());
+                answer = WebEncodeHelper.javaStringToHtmlParagraphe(qR.getOpenedAnswer());
                 if (!StringUtil.isDefined(answer))
                     answer = surveyScc.getString("NoResponse");
                 String questionUserId = qR.getUserId();
@@ -946,9 +946,9 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
                     if (answer.isOpened())
                     {
                         if (answer.getNbVoters() == 0) {
-                            r += "<tr><td align=\"left\" nowrap >"+Encode.javaStringToHtmlString(answer.getLabel())+"</td><td>";
+                            r += "<tr><td align=\"left\" nowrap >"+WebEncodeHelper.javaStringToHtmlString(answer.getLabel())+"</td><td>";
                         } else {
-                        	r += "<tr><td align=\"left\" nowrap >"+Encode.javaStringToHtmlString(answer.getLabel())+
+                        	r += "<tr><td align=\"left\" nowrap >"+WebEncodeHelper.javaStringToHtmlString(answer.getLabel())+
                         	    " <A href=\"javaScript:onClick=viewSuggestions('"+answer.getQuestionPK().getId()+"');\">"+
                         		"<img src=\"icons/info.gif\" border=\"0\" align=\"absmiddle\" width=\"15\" height=\"15\"></a></td><td>";
                         }
@@ -956,7 +956,7 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
                     else
                     {
                         if (answer.getImage() == null)
-                              r += "<tr><td class=\"labelAnswer\">"+Encode.javaStringToHtmlString(answer.getLabel())+"</td><td>";
+                              r += "<tr><td class=\"labelAnswer\">"+WebEncodeHelper.javaStringToHtmlString(answer.getLabel())+"</td><td>";
                         else
                         {
                         	String url = "";
@@ -968,7 +968,7 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
 	                      	{
                     		  	url = FileServerUtils.getUrl(answer.getPK().getComponentName(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
                     		}
-                            r += "<tr><td class=\"labelAnswer\" >"+Encode.javaStringToHtmlString(answer.getLabel())+"<BR>";
+                            r += "<tr><td class=\"labelAnswer\" >"+WebEncodeHelper.javaStringToHtmlString(answer.getLabel())+"<BR>";
                             r += "<img src=\""+url+"\" border=\"0\"></td><td width=\"60%\">";
                         }
                     }
@@ -1008,9 +1008,9 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
 			// affichage de la ligne des differentes r�ponses possibles
                     if (answer.isOpened() &&
                         answer.getNbVoters() > 0) {
-						r += "<th> "+Encode.javaStringToHtmlString(answer.getLabel())+" <A href=\"javaScript:onClick=viewSuggestions('"+answer.getQuestionPK().getId()+"');\"><img src=\"icons/info.gif\" border=\"0\" align=\"absmiddle\" width=\"15\" height=\"15\"></a> </th>";
+						r += "<th> "+WebEncodeHelper.javaStringToHtmlString(answer.getLabel())+" <A href=\"javaScript:onClick=viewSuggestions('"+answer.getQuestionPK().getId()+"');\"><img src=\"icons/info.gif\" border=\"0\" align=\"absmiddle\" width=\"15\" height=\"15\"></a> </th>";
                     } else {
-						r += "<th> "+Encode.javaStringToHtmlString(answer.getLabel())+" </th>";
+						r += "<th> "+WebEncodeHelper.javaStringToHtmlString(answer.getLabel())+" </th>";
                     }
                     answerValues.put(answer.getPK().getId(), new Integer(rang));
                 }
@@ -1028,7 +1028,7 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
                 	int position = 1;
                 	if (!saveUser.equals(userId+"-"+participationId))
                 	{
-	                	r += "<tr><td align=\"left\" width=\"40%\" class=\"displayUserName\"><a href=\"javaScript:onClick=viewResultByUser('"+userId+"');\">"+Encode.javaStringToHtmlString(results.getUser(userId).getDisplayedName())+"</a></td>";
+	                	r += "<tr><td align=\"left\" width=\"40%\" class=\"displayUserName\"><a href=\"javaScript:onClick=viewResultByUser('"+userId+"');\">"+WebEncodeHelper.javaStringToHtmlString(results.getUser(userId).getDisplayedName())+"</a></td>";
 	                	// rechercher les réponses pour cet utilisateur
 	                	String value;
 	                	//Collection results = surveyScc.getResultByUser(userId, new ResourceReference(question.getPK()));
@@ -1117,7 +1117,7 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
                     if (answer.isOpened())
                     {
                         if (answer.getNbVoters() == 0) {
-                            r += "<tr><td class=\"labelAnswer\" >"+Encode.javaStringToHtmlString(answer.getLabel())+"</td><td>";
+                            r += "<tr><td class=\"labelAnswer\" >"+WebEncodeHelper.javaStringToHtmlString(answer.getLabel())+"</td><td>";
                         } else {
                           String suggestion = "";
                           if (resultsByUser.contains(answer.getPK().getId())) {
@@ -1126,13 +1126,13 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
                            		suggestion = " : "+questionResult.getOpenedAnswer();
                             }
                           } 
-                          r += "<tr><td class=\"labelAnswer\" >"+Encode.javaStringToHtmlString(answer.getLabel())+suggestion+"</td><td>";
+                          r += "<tr><td class=\"labelAnswer\" >"+WebEncodeHelper.javaStringToHtmlString(answer.getLabel())+suggestion+"</td><td>";
                         }
                     }
                     else
                     {
                         if (answer.getImage() == null)
-                              r += "<tr><td class=\"labelAnswer\" >"+Encode.javaStringToHtmlString(answer.getLabel())+"</td><td>";
+                              r += "<tr><td class=\"labelAnswer\" >"+WebEncodeHelper.javaStringToHtmlString(answer.getLabel())+"</td><td>";
                         else
                         {
                         	String url = "";
@@ -1144,7 +1144,7 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
 	                      	{
                     		  	url = FileServerUtils.getUrl(answer.getPK().getComponentName(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
                     		}
-                            r += "<tr><td class=\"labelAnswer\" >"+Encode.javaStringToHtmlString(answer.getLabel())+"<BR>";
+                            r += "<tr><td class=\"labelAnswer\" >"+WebEncodeHelper.javaStringToHtmlString(answer.getLabel())+"<BR>";
                             r += "<img src=\""+url+"\" border=\"0\" width=\"60%\"/></td><td>";
                         }
                     }
@@ -1201,7 +1201,7 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
                                         userName = resources.getString("UnknownUser");
                                   }
                                   r += "<p>&#149; <B>"+userName+"</B> - "+resources.getOutputDate(comment.getDate())+"<br>";
-                                    r +="&nbsp;&nbsp;"+ Encode.javaStringToHtmlParagraphe(comment.getComment())+"</p>";
+                                    r +="&nbsp;&nbsp;"+ WebEncodeHelper.javaStringToHtmlParagraphe(comment.getComment())+"</p>";
                                 r += "</blockquote></td>";
                               r += "</tr>";
                               oneComment = true;
