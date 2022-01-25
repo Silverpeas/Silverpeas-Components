@@ -399,10 +399,6 @@ public class SurveySessionController extends AbstractComponentSessionController 
     return users;
   }
 
-  public Collection<QuestionResult> getResultByUser(String userId, ResourceReference questionPK) {
-    return getQuestionResultService().getUserQuestionResultsToQuestion(userId, questionPK);
-  }
-
   public Collection<String> getResultByUser(String userId) {
     Collection<QuestionResult> result = new ArrayList<>();
     Collection<String> resultId = new ArrayList<>();

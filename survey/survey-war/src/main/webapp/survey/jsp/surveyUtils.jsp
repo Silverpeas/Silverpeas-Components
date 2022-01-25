@@ -1029,15 +1029,10 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
                 	if (!saveUser.equals(userId+"-"+participationId))
                 	{
 	                	r += "<tr><td align=\"left\" width=\"40%\" class=\"displayUserName\"><a href=\"javaScript:onClick=viewResultByUser('"+userId+"');\">"+WebEncodeHelper.javaStringToHtmlString(results.getUser(userId).getDisplayedName())+"</a></td>";
-	                	// rechercher les réponses pour cet utilisateur
 	                	String value;
-	                	//Collection results = surveyScc.getResultByUser(userId, new ResourceReference(question.getPK()));
-	                	//Iterator it = results.iterator();
 	                	position = 1;
-	                	//while (it.hasNext())
-	                	//{
-	                		QuestionResult qr = results.getQuestionResultByQuestion(question.getPK().getId(), userId, Integer.parseInt(participationId));
-	                		//if (qr.getParticipationId() == Integer.parseInt(participationId)) {
+	                		List<QuestionResult> qrs = results.getQuestionResultByQuestion(question.getPK().getId(), userId, Integer.parseInt(participationId));
+	                		for (QuestionResult qr : qrs) {
                         value = qr.getAnswerPK().getId();
 
                         int valueColonne = (Integer) answerValues.get(value);
@@ -1052,9 +1047,8 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
                           }
                           position = position + 1;
                         }
-                        saveUser = userId+"-"+participationId;
-                      //}
-	                	//}
+                        saveUser = userId + "-" + participationId;
+                      }
 	                	// completer la ligne avec des cases à "vide"
 		              	while (position <= rang)
 		              	{
