@@ -44,6 +44,7 @@
 
 	// context creation
 	PagesContext context = (PagesContext) request.getAttribute("FormContext");
+	context.setFormName("newInstanceForm");
 %>
 
 <fmt:message var="deletionConfirmMessage" key="formsOnline.request.action.delete.confirm"/>
