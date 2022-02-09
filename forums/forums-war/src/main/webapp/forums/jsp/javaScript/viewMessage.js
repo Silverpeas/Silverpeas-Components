@@ -15,6 +15,7 @@ function replyMessage(messageId) {
   scrollMessageList(messageId);
   document.location.href = "#msg" + messageId;
   callResizeFrame();
+  scrollToItem($('fieldset#message'));
 }
 
 function cancelMessage() {
