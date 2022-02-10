@@ -3,7 +3,7 @@
 <%@ tag import="org.silverpeas.components.kmelia.SearchContext" %>
 <%@ tag import="org.silverpeas.core.contribution.content.form.PagesContext" %>
 <%@ tag import="org.silverpeas.core.admin.user.model.User" %><%--
-  Copyright (C) 2000 - 2021 Silverpeas
+  Copyright (C) 2000 - 2022 Silverpeas
   
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU Affero General Public License as
