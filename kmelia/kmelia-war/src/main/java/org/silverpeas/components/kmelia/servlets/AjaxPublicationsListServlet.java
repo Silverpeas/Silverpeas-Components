@@ -567,7 +567,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     template.setAttribute("publication", pub);
     template.setAttribute("link", "javascript:onClick=publicationGoTo('" + pub.getId() + "')");
     template.setAttribute("name", Encode.forHtml(name));
-    template.setAttribute("description", WebEncodeHelper.convertWhiteSpacesForHTMLDisplay(Encode.
+    template.setAttribute("description", WebEncodeHelper.convertBlanksForHtml(Encode.
         forHtml(description)));
     template.setAttribute("showDescription",
         StringUtil.isDefined(description) && !description.equals(name));
@@ -732,7 +732,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     // displays publication description
     if (StringUtil.isDefined(description) && !description.equals(name)) {
       out.write("<p class=\"description line3\">");
-      out.write(WebEncodeHelper.convertWhiteSpacesForHTMLDisplay(Encode.forHtml(description)));
+      out.write(WebEncodeHelper.convertBlanksForHtml(Encode.forHtml(description)));
       out.write("</p>");
     }
 
@@ -1058,7 +1058,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 
       // Add info
       if (StringUtil.isDefined(info) && resources.getSetting("showInfo", true)) {
-        result.append("<br/>").append(WebEncodeHelper.convertWhiteSpacesForHTMLDisplay(info));
+        result.append("<br/>").append(WebEncodeHelper.convertBlanksForHtml(info));
       }
       result.append("</td></tr>");
 
@@ -1165,7 +1165,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
               resources.getString("kmelia.CopyPublicationLink") + "\" title=\"" +
               resources.getString("kmelia.CopyPublicationLink") + "\" /></a>");
         }
-        writer.write("<p class=\"publication-description\">"+WebEncodeHelper.convertWhiteSpacesForHTMLDisplay(Encode.forHtml(pub.
+        writer.write("<p class=\"publication-description\">"+WebEncodeHelper.convertBlanksForHtml(Encode.forHtml(pub.
         getDescription(language))));
         writer.write("</p>");
         writer.write("</li>");

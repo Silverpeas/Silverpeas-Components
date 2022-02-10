@@ -814,7 +814,7 @@
 
 				        out.println("</h2>");
 
-				        String description = WebEncodeHelper.convertWhiteSpacesForHTMLDisplay(WebEncodeHelper.javaStringToHtmlString(pubDetail.getDescription(language)));
+				        String description = WebEncodeHelper.convertBlanksForHtml(WebEncodeHelper.javaStringToHtmlString(pubDetail.getDescription(language)));
 				        if (StringUtil.isDefined(description)) {
 				        	out.println("<p class=\"publiDesc text2\">" + description + "</p>");
 				        }
