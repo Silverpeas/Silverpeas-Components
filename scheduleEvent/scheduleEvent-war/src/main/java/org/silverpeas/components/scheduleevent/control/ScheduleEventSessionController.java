@@ -77,7 +77,7 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
   private static final long serialVersionUID = -1306206668466915664L;
 
   private static final String SECURITY_ALERT_FROM_USER_MSG_PREFIX = "Security alert from user ";
-  private final Selection sel;
+  private final transient Selection sel;
   private ScheduleEvent currentScheduleEvent = null;
   private static final String ICS_PREFIX = "scheduleevent";
 

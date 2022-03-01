@@ -31,7 +31,10 @@ function monitorHeightOfIsolatedDisplay(id, origin) {
     url : url,
     width : '100%',
     height : '100%',
-    messageEventHandler : __messageEventHandlerForIFrameResize
+    messageEventHandlerConfig : {
+      origin : origin,
+      handler : __messageEventHandlerForIFrameResize
+    }
   });
   function __messageEventHandlerForIFrameResize(event) {
     if (event.$iframe && event.origin === origin && typeof event.data === 'string') {

@@ -70,7 +70,6 @@ import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 public class GalleryInWysiwygRouter extends HttpServlet {
 
   private static final long serialVersionUID = 1L;
-  private static final String AMP = "&amp;";
 
   private static SilverpeasFile getSilverpeasFile(final Photo image, final String size,
       final boolean useOriginal) {

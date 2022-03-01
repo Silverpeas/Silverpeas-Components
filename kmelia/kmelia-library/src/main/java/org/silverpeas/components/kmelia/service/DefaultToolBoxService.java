@@ -27,7 +27,6 @@ package org.silverpeas.components.kmelia.service;
 import org.silverpeas.components.kmelia.model.KmeliaPublication;
 import org.silverpeas.core.ApplicationService;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.SettingBundle;

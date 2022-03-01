@@ -71,9 +71,6 @@
   margin: 0;
   position: relative;
   text-align: center;
-}
-
-.list-infoletter li {
   cursor: pointer;
   display: block;
   max-width: 165px;

@@ -83,7 +83,6 @@ import static org.silverpeas.core.util.StringUtil.getBooleanValue;
 public class InfoLetterSessionController extends AbstractComponentSessionController {
   private static final long serialVersionUID = -4498344315667761189L;
 
-  private static final String PUBLICATION = "Publication";
   private static final String EMAILS = "Emails";
 
   /**
