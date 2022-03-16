@@ -82,7 +82,6 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -552,25 +551,9 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   }
 
   public List<ContactFatherDetail> getAllUsers(String nodeId) {
-    List<ContactFatherDetail> users = new ArrayList<>();
-
-    List<String> groupIds = getYellowpagesService().getGroupIds(getNodePK(nodeId));
-    for (String groupId : groupIds) {
-      users.addAll(getAllUsersOfGroup(groupId));
-    }
-    return users;
-  }
-
-  public List<UserDetail> getAllUserDetails(String nodeId) {
-    List<UserDetail> users = new ArrayList<>();
-    List<String> groupIds = getYellowpagesService().getGroupIds(getNodePK(nodeId));
-
-    for (String groupId : groupIds) {
-      UserDetail[] userDetails = getOrganisationController().getAllUsersOfGroup(groupId);
-      users.addAll(Arrays.asList(userDetails));
-    }
-
-    return users;
+    return getYellowpagesService().getGroups(getNodePK(nodeId)).stream()
+        .flatMap(g -> getAllUsersOfGroup(g.getId()).stream())
+        .collect(Collectors.toList());
   }
 
   /**
