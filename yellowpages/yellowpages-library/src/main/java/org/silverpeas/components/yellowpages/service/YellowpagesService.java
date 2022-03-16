@@ -23,6 +23,8 @@
  */
 package org.silverpeas.components.yellowpages.service;
 
+import org.silverpeas.core.admin.user.constant.GroupState;
+import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.contact.model.CompleteContact;
 import org.silverpeas.core.contact.model.ContactDetail;
 import org.silverpeas.core.contact.model.ContactFatherDetail;
@@ -199,7 +201,12 @@ public interface YellowpagesService {
 
   Collection<ContactFatherDetail> getAllContactDetails(NodePK nodePK);
 
-  List<String> getGroupIds(NodePK pk);
+  /**
+   * Gets {@link GroupState#VALID} {@link Group} hosted by the given node.
+   * @param pk the reference to a node.
+   * @return a list of {@link GroupState#VALID} {@link Group} instance.
+   */
+  List<Group> getGroups(NodePK pk);
 
   void addGroup(String groupId, NodePK nodePK);
 

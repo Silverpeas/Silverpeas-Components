@@ -56,7 +56,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
+import static java.util.function.Predicate.not;
 import static org.silverpeas.components.yellowpages.YellowpagesComponentSettings.areUserExtraDataRequired;
 
 /**
@@ -114,17 +117,13 @@ public class DefaultYellowpagesService implements YellowpagesService {
 
   private void addNodeDetailGroups(final NodeDetail nodeDetail,
       final Collection<NodeDetail> childrenPKs) {
-    List<String> groupIds = getGroupIds(nodeDetail.getNodePK());
-    for (String groupId : groupIds) {
-      Group group = getOrganisationController().getGroup(groupId);
-      if (group != null) {
-        NodeDetail nodeGroup = new NodeDetail();
-        nodeGroup.getNodePK().setId(GROUP_PREFIX + group.getId());
-        nodeGroup.setName(group.getName());
-        nodeGroup.setDescription(group.getDescription());
-        childrenPKs.add(nodeGroup);
-      }
-    }
+    getGroups(nodeDetail.getNodePK()).forEach(g -> {
+      NodeDetail nodeGroup = new NodeDetail();
+      nodeGroup.getNodePK().setId(GROUP_PREFIX + g.getId());
+      nodeGroup.setName(g.getName());
+      nodeGroup.setDescription(g.getDescription());
+      childrenPKs.add(nodeGroup);
+    });
   }
 
   /**
@@ -190,22 +189,13 @@ public class DefaultYellowpagesService implements YellowpagesService {
 
   @Override
   public List<NodeDetail> getTree(String instanceId) {
-    List<NodeDetail> result = new ArrayList<>();
-    try (Connection con = getConnection()) {
-      List<NodeDetail> tree = nodeService.getSubTree(new NodePK("0", instanceId));
-      // TODO :getting all groups linked in this component instance
-      for (NodeDetail node : tree) {
-        result.add(node);
-        // pour chaque node, recuperer les groupes associes
-        List<String> groupIds =
-            (List<String>) GroupDAO.getGroupIds(con, node.getNodePK().getId(), instanceId);
-        for (final String groupId : groupIds) {
-          Group group = getOrganisationController().getGroup(groupId);
-          result = addGroup(result, group, node.getLevel() + 1);
-        }
-      }
-    } catch (Exception re) {
-      throw new YellowpagesRuntimeException(re);
+    final List<NodeDetail> result = new ArrayList<>();
+    List<NodeDetail> tree = nodeService.getSubTree(new NodePK("0", instanceId));
+    // TODO :getting all groups linked in this component instance
+    for (NodeDetail node : tree) {
+      result.add(node);
+      // pour chaque node, recuperer les groupes associes
+      getGroups(node.getNodePK()).forEach(g -> addGroup(result, g, node.getLevel() + 1));
     }
     return result;
   }
@@ -816,9 +806,14 @@ public class DefaultYellowpagesService implements YellowpagesService {
   }
 
   @Override
-  public List<String> getGroupIds(NodePK pk) {
+  public List<Group> getGroups(NodePK pk) {
     try (Connection con = getConnection()) {
-      return (List<String>) GroupDAO.getGroupIds(con, pk.getId(), pk.getInstanceId());
+      return GroupDAO.getGroupIds(con, pk.getId(), pk.getInstanceId()).stream()
+          .map(getOrganisationController()::getGroup)
+          .filter(Objects::nonNull)
+          .map(Group.class::cast)
+          .filter(not(Group::isRemovedState))
+          .collect(Collectors.toList());
     } catch (Exception e) {
       throw new YellowpagesRuntimeException(e);
     }
