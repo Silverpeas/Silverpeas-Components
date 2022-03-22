@@ -1564,7 +1564,7 @@ public class DefaultKmeliaService implements KmeliaService {
   }
 
   private boolean isPublicationInBasket(PublicationPK pubPK) {
-    return publicationService.getMainLocation(pubPK).filter(NodePK::isTrash).isPresent();
+    return publicationService.getAllLocations(pubPK).stream().anyMatch(NodePK::isTrash);
   }
 
   @SuppressWarnings("unchecked")
