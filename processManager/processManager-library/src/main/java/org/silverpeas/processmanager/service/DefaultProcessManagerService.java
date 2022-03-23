@@ -23,7 +23,15 @@
  */
 package org.silverpeas.processmanager.service;
 
+import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.model.DocumentType;
+import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.contribution.attachment.model.UnlockContext;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
@@ -32,37 +40,32 @@ import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.field.DateField;
 import org.silverpeas.core.contribution.content.form.field.FileField;
+import org.silverpeas.core.contribution.content.form.field.GroupField;
 import org.silverpeas.core.contribution.content.form.field.TextField;
+import org.silverpeas.core.contribution.content.form.field.UserField;
 import org.silverpeas.core.contribution.content.form.form.XmlForm;
 import org.silverpeas.core.contribution.content.form.record.GenericDataRecord;
-import org.silverpeas.processmanager.ProcessManagerException;
+import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.MimeTypes;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.workflow.api.Workflow;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.event.TaskDoneEvent;
+import org.silverpeas.core.workflow.api.instance.ProcessInstance;
 import org.silverpeas.core.workflow.api.model.Action;
 import org.silverpeas.core.workflow.api.model.ProcessModel;
 import org.silverpeas.core.workflow.api.task.Task;
 import org.silverpeas.core.workflow.api.user.User;
 import org.silverpeas.core.workflow.engine.user.UserImpl;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
-import org.silverpeas.core.contribution.attachment.model.DocumentType;
-import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.contribution.attachment.model.UnlockContext;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.util.MimeTypes;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.processmanager.ProcessManagerException;
 
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.io.ByteArrayInputStream;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -70,8 +73,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static org.silverpeas.core.contribution.attachment.AttachmentService.VERSION_MODE;
 
 /**
  * Process manager service which manage processes
@@ -103,7 +104,7 @@ public class DefaultProcessManagerService implements ProcessManagerService {
   @Override
   public String createProcess(String componentId, String userId, String fileName,
       byte[] fileContent) throws ProcessManagerException {
-    Map<String, FileContent> metadata = new HashMap<>(1);
+    Map<String, Object> metadata = new HashMap<>(1);
     metadata.put(null, new FileContent(fileName, fileContent));
     return createProcess(componentId, userId, DEFAULT_ROLE, metadata);
   }
@@ -136,7 +137,7 @@ public class DefaultProcessManagerService implements ProcessManagerService {
    */
   @Override
   public String createProcess(String componentId, String userId, String userRole,
-      Map<String, ? extends Serializable> metadata) throws ProcessManagerException {
+      Map<String, Object> metadata) throws ProcessManagerException {
     // Default map for metadata is an empty map
     if (metadata == null) {
       metadata = Collections.emptyMap();
@@ -146,38 +147,11 @@ public class DefaultProcessManagerService implements ProcessManagerService {
 
     try {
       ProcessModel processModel = getProcessModel(componentId);
-      XmlForm form = (XmlForm) getCreationForm(processModel);
+      XmlForm form = (XmlForm) getCreationForm(processModel, userRole);
       GenericDataRecord data = (GenericDataRecord) getEmptyCreationRecord(processModel, userRole);
-      PagesContext pagesContext =
-          new PagesContext("creationForm", "0", getLanguage(), true, componentId, userId);
-      boolean versioningUsed = StringUtil.getBooleanValue(OrganizationControllerProvider.
-          getOrganisationController().getComponentParameterValue(componentId, VERSION_MODE));
-      pagesContext.setVersioningUsed(versioningUsed);
 
       // 1 - Populate form data (save file on disk, populate file field)
-      List<String> attachmentIds = new ArrayList<>();
-
-      // Populate file name and file content
-      for (Map.Entry<String, ?> entry : metadata.entrySet()) {
-        String fieldName = entry.getKey();
-        Object fieldValue = entry.getValue();
-
-        String fieldType = retrieveMatchingFieldTypeName(fieldValue);
-        Field field = findMatchingField(form, data, fieldName, fieldType);
-
-        if (fieldValue == null) {
-          populateSimpleField(field, fieldName, null, fieldType);
-        } else if (fieldValue instanceof Collection<?>) {
-          populateListField(field, fieldName, (Collection<?>) fieldValue, fieldType);
-        } else if (FileField.TYPE.equals(fieldType)) {
-          attachmentIds.add(
-              populateFileField(form, data, (FileField) field, fieldName, (FileContent) fieldValue,
-                  pagesContext));
-        } else {
-          populateSimpleField(field, fieldName, fieldValue, fieldType);
-        }
-
-      }
+      List<String> attachmentIds = populateFields(instanceId, componentId, userId, metadata, data, form);
 
       // 2 - Create process instance
       instanceId = createProcessInstance(processModel, userId, userRole, data);
@@ -195,11 +169,47 @@ public class DefaultProcessManagerService implements ProcessManagerService {
             .unlock(new UnlockContext(attachmentId, userId, null));
       }
     } catch (ProcessManagerException e) {
-      SilverTrace
-          .error("processManager", "DefaultProcessManagerService.createProcess()", "root.MSG_GEN_ERROR", e);
+      SilverLogger.getLogger(this).error("DefaultProcessManagerService.createProcess()", e);
       throw e;
     }
     return instanceId;
+  }
+
+  @Override
+  public void doAction(String action, String processId, String componentId, String userId,
+      String userRole, Map<String, Object> metadata) throws ProcessManagerException {
+    try {
+      ProcessModel processModel = getProcessModel(componentId);
+      ProcessInstance processInstance = Workflow.getProcessInstanceManager()
+          .getProcessInstance(processId);
+
+      XmlForm form = (XmlForm) getActionForm(processModel, action, userRole);
+      GenericDataRecord data = (GenericDataRecord) processModel.getNewActionRecord(action, userRole,
+          getLanguage(), null);
+
+      // 1 - Populate form data (save file on disk, populate file field)
+      populateFields(processId, componentId, userId, metadata, data, form);
+
+      // 2 - Create process instance
+      doAction(action, processInstance, processModel, userId, userRole, data);
+
+    } catch (WorkflowException we) {
+      throw new ProcessManagerException(this.getClass().getName(), "processManager.CANT_EXECUTE_ACTION",
+          "action: " + action + ", processInstanceId: " + processId);
+    } catch (ProcessManagerException e) {
+      SilverLogger.getLogger(this).error("DefaultProcessManagerService.doAction()", e);
+      throw e;
+    }
+  }
+
+  @Override
+  public ProcessInstance getProcessInstance(String processId) throws ProcessManagerException {
+    try {
+      return Workflow.getProcessInstanceManager().getProcessInstance(processId);
+    } catch (WorkflowException we) {
+      throw new ProcessManagerException(this.getClass().getName(), "processManager.CANT_GET_INSTANCE",
+          "processInstanceId: " + processId);
+    }
   }
 
   /**
@@ -220,6 +230,10 @@ public class DefaultProcessManagerService implements ProcessManagerService {
       return DateField.TYPE;
     } else if (value instanceof FileContent) {
       return FileField.TYPE;
+    } else if (value instanceof Group) {
+      return GroupField.TYPE;
+    } else if (value instanceof User) {
+      return UserField.TYPE;
     } else if (value instanceof Collection<?>) {
       Collection<?> col = (Collection<?>) value;
       if (col.isEmpty()) {
@@ -227,9 +241,9 @@ public class DefaultProcessManagerService implements ProcessManagerService {
       }
       return retrieveMatchingFieldTypeName(col.iterator().next());
     } else {
-      SilverTrace.error("processManager", "DefaultProcessManagerService.retrieveMatchingFieldTypeName()",
-          "processManager.FORM_FIELD_BAD_TYPE", "type: " + value.getClass().getName());
-      throw new ProcessManagerException("DefaultProcessManagerService", "processManager.FORM_FIELD_BAD_TYPE",
+      SilverLogger.getLogger(this)
+          .error("FORM_FIELD_BAD_TYPE", "type: " + value.getClass().getName());
+      throw new ProcessManagerException(this.getClass().getName(), "processManager.FORM_FIELD_BAD_TYPE",
           "type: " + value.getClass().getName());
     }
   }
@@ -265,20 +279,16 @@ public class DefaultProcessManagerService implements ProcessManagerService {
         try {
           return data.getField(fieldName);
         } catch (FormException e) {
-          SilverTrace.error("processManager", "DefaultProcessManagerService.findMatchingField()",
-              "processManager.FORM_FIELD_NOT_FOUND",
-              "field name: " + name + ", field type: " + typeName, e);
-          throw new ProcessManagerException("DefaultProcessManagerService",
-              "processManager.FORM_FIELD_BAD_TYPE",
-              "field name: " + name + ", field type: " + typeName, e);
+          SilverLogger.getLogger(this).error("FORM_FIELD_NOT_FOUND", log(name, typeName), e);
+          throw new ProcessManagerException(this.getClass().getName(),
+              "processManager.FORM_FIELD_BAD_TYPE", log(name, typeName), e);
         }
       }
     }
 
-    SilverTrace.error("processManager", "DefaultProcessManagerService.findMatchingField()",
-        "processManager.FORM_FIELD_NOT_FOUND", "field name: " + name + ", field type: " + typeName);
-    throw new ProcessManagerException("DefaultProcessManagerService", "processManager.FORM_FIELD_NOT_FOUND",
-        "field name: " + name + ", field type: " + typeName);
+    SilverLogger.getLogger(this).error("FORM_FIELD_NOT_FOUND", log(name, typeName));
+    throw new ProcessManagerException(this.getClass().getName(), "processManager.FORM_FIELD_NOT_FOUND",
+        log(name, typeName));
   }
 
   /**
@@ -294,6 +304,8 @@ public class DefaultProcessManagerService implements ProcessManagerService {
         return value.toString();
       } else if (DateField.TYPE.equals(type)) {
         return (value instanceof Date) ? DateUtil.date2SQLDate((Date) value) : value.toString();
+      } else if (GroupField.TYPE.equals(type)) {
+        return (value instanceof Group) ? ((Group) value).getId() : value.toString();
       }
     }
     return null;
@@ -321,10 +333,9 @@ public class DefaultProcessManagerService implements ProcessManagerService {
       }
 
     } catch (FormException e) {
-      SilverTrace.error("processManager", "DefaultProcessManagerService.populateSimpleField()",
-          "processManager.FORM_FIELD_ERROR", "field name: " + name + ", field type: " + type, e);
-      throw new ProcessManagerException("DefaultProcessManagerService", "processManager.FORM_FIELD_ERROR",
-          "field name: " + name + ", field type: " + type, e);
+      SilverLogger.getLogger(this).error("FORM_FIELD_ERROR", log(name, type), e);
+      throw new ProcessManagerException(this.getClass().getName(), "processManager.FORM_FIELD_ERROR",
+          log(name, type), e);
     }
   }
 
@@ -364,22 +375,18 @@ public class DefaultProcessManagerService implements ProcessManagerService {
         }
         String str = getSimpleFieldValueString(value, type);
         if (str == null) {
-          SilverTrace.error("processManager", "DefaultProcessManagerService.populateListField()",
-              "processManager.FORM_FIELD_COLLECTION_NOT_ALLOWED",
-              "field name: " + name + ", field type: " + type);
-          throw new ProcessManagerException("DefaultProcessManagerService",
-              "processManager.FORM_FIELD_COLLECTION_NOT_ALLOWED",
-              "field name: " + name + ", field type: " + type);
+          SilverLogger.getLogger(this).error("FORM_FIELD_COLLECTION_NOT_ALLOWED", log(name, type));
+          throw new ProcessManagerException(this.getClass().getName(),
+              "processManager.FORM_FIELD_COLLECTION_NOT_ALLOWED", log(name, type));
         }
         valuesStr.append(str);
       }
       field.setStringValue(valuesStr.toString());
 
     } catch (FormException e) {
-      SilverTrace.error("processManager", "DefaultProcessManagerService.populateListField()",
-          "processManager.FORM_FIELD_ERROR", "field name: " + name + ", field type: " + type, e);
-      throw new ProcessManagerException("DefaultProcessManagerService", "processManager.FORM_FIELD_ERROR",
-          "field name: " + name + ", field type: " + type, e);
+      SilverLogger.getLogger(this).error("FORM_FIELD_ERROR", log(name, type), e);
+      throw new ProcessManagerException(this.getClass().getName(), "processManager.FORM_FIELD_ERROR",
+          log(name, type), e);
     }
   }
 
@@ -395,7 +402,7 @@ public class DefaultProcessManagerService implements ProcessManagerService {
       Workflow.getWorkflowEngine().process(event);
       return event.getProcessInstance().getInstanceId();
     } catch (WorkflowException e) {
-      throw new ProcessManagerException("SessionController",
+      throw new ProcessManagerException(this.getClass().getName(),
           "processManager.CREATION_PROCESSING_FAILED", e);
     }
   }
@@ -403,12 +410,12 @@ public class DefaultProcessManagerService implements ProcessManagerService {
   /**
    * Returns the form which starts a new instance.
    */
-  private Form getCreationForm(ProcessModel processModel) throws ProcessManagerException {
+  private Form getCreationForm(ProcessModel processModel, String role) throws ProcessManagerException {
     try {
-      Action creation = processModel.getCreateAction("administrateur");
-      return processModel.getPublicationForm(creation.getName(), "administrateur", getLanguage());
+      Action creation = processModel.getCreateAction(role);
+      return processModel.getPublicationForm(creation.getName(), role, getLanguage());
     } catch (WorkflowException e) {
-      throw new ProcessManagerException("SessionController", "processManager.NO_CREATION_FORM", e);
+      throw new ProcessManagerException(this.getClass().getName(), "processManager.NO_CREATION_FORM", e);
     }
   }
 
@@ -421,7 +428,7 @@ public class DefaultProcessManagerService implements ProcessManagerService {
       Action creation = processModel.getCreateAction(currentRole);
       return processModel.getNewActionRecord(creation.getName(), currentRole, getLanguage(), null);
     } catch (WorkflowException e) {
-      throw new ProcessManagerException("DefaultProcessManagerService", "processManager.UNKNOWN_ACTION", e);
+      throw new ProcessManagerException(this.getClass().getName(), "processManager.UNKNOWN_ACTION", e);
     }
   }
 
@@ -430,14 +437,11 @@ public class DefaultProcessManagerService implements ProcessManagerService {
    */
   private Task getCreationTask(ProcessModel processModel, String userId, String currentRole)
       throws ProcessManagerException {
-
     try {
       User user = new UserImpl(UserDetail.getById(userId));
-      Task creationTask =
-          Workflow.getTaskManager().getCreationTask(user, currentRole, processModel);
-      return creationTask;
+      return Workflow.getTaskManager().getCreationTask(user, currentRole, processModel);
     } catch (WorkflowException e) {
-      throw new ProcessManagerException("DefaultProcessManagerService",
+      throw new ProcessManagerException(this.getClass().getName(),
           "processManager.CREATION_TASK_UNAVAILABLE", e);
     }
   }
@@ -449,7 +453,7 @@ public class DefaultProcessManagerService implements ProcessManagerService {
     try {
       return Workflow.getProcessModelManager().getProcessModel(modelId);
     } catch (WorkflowException e) {
-      throw new ProcessManagerException("DefaultProcessManagerService",
+      throw new ProcessManagerException(this.getClass().getName(),
           "processManager.UNKNOWN_PROCESS_MODEL", modelId, e);
     }
   }
@@ -473,27 +477,103 @@ public class DefaultProcessManagerService implements ProcessManagerService {
       }
       SimpleDocument ad =
           createSimpleDocument(foreignId, pagesContext.getComponentId(), logicalName, mimeType,
-              fileContent, DocumentType.attachment, pagesContext.getUserId(),
-              pagesContext.isVersioningUsed());
+              fileContent, pagesContext.getUserId(), pagesContext.isVersioningUsed());
       attachmentId = ad.getId();
     }
     return attachmentId;
   }
 
   private SimpleDocument createSimpleDocument(String foreignId, String componentId, String fileName,
-      String mimeType, byte[] content, DocumentType context, String userId, boolean versioned) {
+      String mimeType, byte[] content, String userId, boolean versioned) {
 
     // create AttachmentPK with spaceId and componentId
     SimpleDocumentPK simpleDocPk = new SimpleDocumentPK(null, componentId);
     SimpleDocument doc = new SimpleDocument(simpleDocPk, foreignId, 0, versioned, userId,
         new SimpleAttachment(fileName, getLanguage(), fileName, "", content.length, mimeType,
             userId, new Date(), null));
-    doc.setDocumentType(context);
+    doc.setDocumentType(DocumentType.form);
     return AttachmentServiceProvider.getAttachmentService()
         .createAttachment(doc, new ByteArrayInputStream(content));
   }
 
   private String getLanguage() {
-    return "fr";
+    return I18NHelper.defaultLanguage;
+  }
+
+  private String doAction(String action, ProcessInstance processInstance, ProcessModel processModel,
+      String userId, String currentRole, DataRecord data) throws ProcessManagerException {
+    try {
+      Action creation = processModel.getAction(action);
+      TaskDoneEvent event = getTask(processInstance, userId, currentRole).
+          buildTaskDoneEvent(creation.getName(), data);
+      Workflow.getWorkflowEngine().process(event, true);
+      return event.getProcessInstance().getInstanceId();
+    } catch (WorkflowException e) {
+      throw new ProcessManagerException(this.getClass().getName(),
+          "processManager.ACTION_PROCESSING_FAILED", e);
+    }
+  }
+
+  private Task getTask(ProcessInstance processInstance, String userId, String currentRole)
+      throws ProcessManagerException {
+    try {
+      User user = new UserImpl(UserDetail.getById(userId));
+      Task[] tasks =
+          Workflow.getTaskManager().getTasks(user, currentRole, processInstance);
+      if (tasks.length > 0) {
+        return tasks[0];
+      }
+      throw new ProcessManagerException(this.getClass().getName(), "processManager.NO_TASK");
+    } catch (WorkflowException e) {
+      throw new ProcessManagerException(this.getClass().getName(),
+          "processManager.TASK_UNAVAILABLE", e);
+    }
+  }
+
+  private Form getActionForm(ProcessModel processModel, String actionName, String role)
+      throws ProcessManagerException {
+    try {
+      Action action = processModel.getAction(actionName);
+      return processModel.getPublicationForm(action.getName(), role, getLanguage());
+    } catch (WorkflowException e) {
+      throw new ProcessManagerException(this.getClass().getName(), "processManager.NO_ACTION_FORM", e);
+    }
+  }
+
+  private List<String> populateFields(String processId, String componentId, String userId,
+      Map<String, Object> metadata, GenericDataRecord data, XmlForm form)
+      throws ProcessManagerException {
+    List<String> attachmentIds = new ArrayList<>();
+
+    PagesContext pagesContext =
+        new PagesContext("creationForm", "0", getLanguage(), true, componentId, userId);
+    pagesContext.setObjectId(processId);
+
+    // Populate file name and file content
+    for (Map.Entry<String, ?> entry : metadata.entrySet()) {
+      String fieldName = entry.getKey();
+      Object fieldValue = entry.getValue();
+
+      String fieldType = retrieveMatchingFieldTypeName(fieldValue);
+      Field field = findMatchingField(form, data, fieldName, fieldType);
+
+      if (fieldValue == null) {
+        populateSimpleField(field, fieldName, null, fieldType);
+      } else if (fieldValue instanceof Collection<?>) {
+        populateListField(field, fieldName, (Collection<?>) fieldValue, fieldType);
+      } else if (FileField.TYPE.equals(fieldType)) {
+        attachmentIds.add(
+            populateFileField(form, data, (FileField) field, fieldName, (FileContent) fieldValue,
+                pagesContext));
+      } else {
+        populateSimpleField(field, fieldName, fieldValue, fieldType);
+      }
+
+    }
+    return attachmentIds;
+  }
+
+  private String log(String fieldName, String fieldType) {
+    return "field name: " + fieldName + ", field type: " + fieldType;
   }
 }
