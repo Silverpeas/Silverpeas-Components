@@ -23,9 +23,9 @@
  */
 package org.silverpeas.processmanager.service;
 
+import org.silverpeas.core.workflow.api.instance.ProcessInstance;
 import org.silverpeas.processmanager.ProcessManagerException;
 
-import java.io.Serializable;
 import java.util.Map;
 
 public interface ProcessManagerService {
@@ -75,5 +75,11 @@ public interface ProcessManagerService {
    * @throws ProcessManagerException
    */
   String createProcess(String componentId, String userId, String userRole,
-      Map<String, ? extends Serializable> metadata) throws ProcessManagerException;
+      Map<String, Object> metadata) throws ProcessManagerException;
+
+  void doAction(String action, String processId, String componentId, String userId,
+      String userRole, Map<String, Object> metadata) throws ProcessManagerException;
+
+  ProcessInstance getProcessInstance(String processId) throws ProcessManagerException;
+
 }
