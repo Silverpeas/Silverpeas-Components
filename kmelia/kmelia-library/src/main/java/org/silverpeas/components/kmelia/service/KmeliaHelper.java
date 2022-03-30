@@ -124,9 +124,9 @@ public class KmeliaHelper implements Serializable {
         .getNodePK().getInstanceId(), false);
   }
 
-  public static String getDocumentUrl(PublicationDetail pubDetail, SimpleDocument document, NodePK nodePK) {
-    return "/Rkmelia/" + nodePK.getInstanceId()
-        + "/searchResult?Type=Document&Id=" + pubDetail.getPK().getId() + "&DocumentId=" + document.
+  public static String getDocumentUrl(PublicationDetail pubDetail, SimpleDocument document, String instanceId) {
+    return "/Rkmelia/" + instanceId
+        + "/searchResult?Type=Document&Id=" + pubDetail.getId() + "&DocumentId=" + document.
         getId() + "&FileOpened=0";
   }
 
