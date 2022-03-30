@@ -124,7 +124,7 @@ public class KmeliaNotifyPublicationDocumentUserNotification extends
 
   @Override
   protected String getResourceURL(final PublicationDetail resource) {
-    return KmeliaHelper.getDocumentUrl(resource, document, getNodePK());
+    return KmeliaHelper.getDocumentUrl(resource, document, getComponentInstanceId());
   }
 
   @Override
