@@ -24,6 +24,7 @@
 package org.silverpeas.processmanager.service;
 
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
@@ -40,7 +41,9 @@ import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.field.DateField;
 import org.silverpeas.core.contribution.content.form.field.FileField;
+import org.silverpeas.core.contribution.content.form.field.GroupField;
 import org.silverpeas.core.contribution.content.form.field.TextField;
+import org.silverpeas.core.contribution.content.form.field.UserField;
 import org.silverpeas.core.contribution.content.form.form.XmlForm;
 import org.silverpeas.core.contribution.content.form.record.GenericDataRecord;
 import org.silverpeas.core.util.DateUtil;
@@ -48,9 +51,11 @@ import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.workflow.api.Workflow;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.event.TaskDoneEvent;
+import org.silverpeas.core.workflow.api.instance.ProcessInstance;
 import org.silverpeas.core.workflow.api.model.Action;
 import org.silverpeas.core.workflow.api.model.ProcessModel;
 import org.silverpeas.core.workflow.api.task.Task;
@@ -61,7 +66,6 @@ import org.silverpeas.processmanager.ProcessManagerException;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.io.ByteArrayInputStream;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -106,7 +110,7 @@ public class DefaultProcessManagerService implements ProcessManagerService {
   @Override
   public String createProcess(String componentId, String userId, String fileName,
       byte[] fileContent) throws ProcessManagerException {
-    Map<String, FileContent> metadata = new HashMap<>(1);
+    Map<String, Object> metadata = new HashMap<>(1);
     metadata.put(null, new FileContent(fileName, fileContent));
     return createProcess(componentId, userId, DEFAULT_ROLE, metadata);
   }
@@ -139,44 +143,22 @@ public class DefaultProcessManagerService implements ProcessManagerService {
    */
   @Override
   public String createProcess(String componentId, String userId, String userRole,
-      Map<String, ? extends Serializable> metadata) throws ProcessManagerException {
+      Map<String, Object> metadata) throws ProcessManagerException {
     // Default map for metadata is an empty map
     if (metadata == null) {
       metadata = Collections.emptyMap();
     }
     ProcessModel processModel = getProcessModel(componentId);
-    XmlForm form = (XmlForm) getCreationForm(processModel);
+    XmlForm form = (XmlForm) getCreationForm(processModel, userRole);
     GenericDataRecord data = (GenericDataRecord) getEmptyCreationRecord(processModel, userRole);
-    PagesContext pagesContext =
-        new PagesContext("creationForm", "0", getLanguage(), true, componentId, userId);
+    PagesContext pagesContext = new PagesContext("creationForm", "0", getLanguage(), true,
+        componentId, userId);
     boolean versioningUsed = StringUtil.getBooleanValue(OrganizationControllerProvider.
         getOrganisationController().getComponentParameterValue(componentId, VERSION_MODE));
     pagesContext.setVersioningUsed(versioningUsed);
 
     // 1 - Populate form data (save file on disk, populate file field)
-    List<String> attachmentIds = new ArrayList<>();
-
-    // Populate file name and file content
-    for (Map.Entry<String, ?> entry : metadata.entrySet()) {
-      String fieldName = entry.getKey();
-      Object fieldValue = entry.getValue();
-
-      String fieldType = retrieveMatchingFieldTypeName(fieldValue);
-      Field field = findMatchingField(form, data, fieldName, fieldType);
-
-      if (fieldValue == null) {
-        populateSimpleField(field, fieldName, null, fieldType);
-      } else if (fieldValue instanceof Collection<?>) {
-        populateListField(field, fieldName, (Collection<?>) fieldValue, fieldType);
-      } else if (FileField.TYPE.equals(fieldType)) {
-        attachmentIds.add(
-            populateFileField(form, data, (FileField) field, fieldName, (FileContent) fieldValue,
-                pagesContext));
-      } else {
-        populateSimpleField(field, fieldName, fieldValue, fieldType);
-      }
-
-    }
+    List<String> attachmentIds = populateFields(null, componentId, userId, metadata, data, form);
 
     // 2 - Create process instance
     String instanceId = createProcessInstance(processModel, userId, userRole, data);
@@ -185,8 +167,8 @@ public class DefaultProcessManagerService implements ProcessManagerService {
     // Attachment's foreignkey must be set with the just created instanceId
     for (String attachmentId : attachmentIds) {
       SimpleDocumentPK pk = new SimpleDocumentPK(attachmentId, componentId);
-      SimpleDocument document = AttachmentServiceProvider.getAttachmentService().
-          searchDocumentById(pk, null);
+      SimpleDocument document = AttachmentServiceProvider.getAttachmentService().searchDocumentById(
+          pk, null);
       document.setForeignId(instanceId);
       AttachmentServiceProvider.getAttachmentService().lock(attachmentId, userId, null);
       AttachmentServiceProvider.getAttachmentService().updateAttachment(document, false, false);
@@ -195,6 +177,44 @@ public class DefaultProcessManagerService implements ProcessManagerService {
     }
 
     return instanceId;
+  }
+
+  @Override
+  public void doAction(String action, String processId, String componentId, String userId,
+      String userRole, Map<String, Object> metadata) throws ProcessManagerException {
+    try {
+      ProcessModel processModel = getProcessModel(componentId);
+      ProcessInstance processInstance = Workflow.getProcessInstanceManager()
+          .getProcessInstance(processId);
+
+      XmlForm form = (XmlForm) getActionForm(processModel, action, userRole);
+      GenericDataRecord data = (GenericDataRecord) processModel.getNewActionRecord(action, userRole,
+          getLanguage(), null);
+
+      // 1 - Populate form data (save file on disk, populate file field)
+      populateFields(processId, componentId, userId, metadata, data, form);
+
+      // 2 - Create process instance
+      doAction(action, processInstance, processModel, userId, userRole, data);
+
+    } catch (WorkflowException we) {
+      throw new ProcessManagerException(this.getClass().getName(),
+          "processManager.CANT_EXECUTE_ACTION",
+          "action: " + action + ", processInstanceId: " + processId);
+    } catch (ProcessManagerException e) {
+      SilverLogger.getLogger(this).error("DefaultProcessManagerService.doAction()", e);
+      throw e;
+    }
+  }
+
+  @Override
+  public ProcessInstance getProcessInstance(String processId) throws ProcessManagerException {
+    try {
+      return Workflow.getProcessInstanceManager().getProcessInstance(processId);
+    } catch (WorkflowException we) {
+      throw new ProcessManagerException(this.getClass().getName(),
+          "processManager.CANT_GET_INSTANCE", "processInstanceId: " + processId);
+    }
   }
 
   /**
@@ -215,6 +235,10 @@ public class DefaultProcessManagerService implements ProcessManagerService {
       return DateField.TYPE;
     } else if (value instanceof FileContent) {
       return FileField.TYPE;
+    } else if (value instanceof Group) {
+      return GroupField.TYPE;
+    } else if (value instanceof User) {
+      return UserField.TYPE;
     } else if (value instanceof Collection<?>) {
       Collection<?> col = (Collection<?>) value;
       if (col.isEmpty()) {
@@ -222,8 +246,8 @@ public class DefaultProcessManagerService implements ProcessManagerService {
       }
       return retrieveMatchingFieldTypeName(col.iterator().next());
     } else {
-      throw new ProcessManagerException(DEFAULT_PROCESS_MANAGER_SERVICE, "processManager.FORM_FIELD_BAD_TYPE",
-          "type: " + value.getClass().getName());
+      throw new ProcessManagerException(DEFAULT_PROCESS_MANAGER_SERVICE,
+          "processManager.FORM_FIELD_BAD_TYPE", "type: " + value.getClass().getName());
     }
   }
 
@@ -282,6 +306,8 @@ public class DefaultProcessManagerService implements ProcessManagerService {
         return value.toString();
       } else if (DateField.TYPE.equals(type)) {
         return (value instanceof Date) ? DateUtil.date2SQLDate((Date) value) : value.toString();
+      } else if (GroupField.TYPE.equals(type)) {
+        return (value instanceof Group) ? ((Group) value).getId() : value.toString();
       }
     }
     return null;
@@ -384,10 +410,11 @@ public class DefaultProcessManagerService implements ProcessManagerService {
   /**
    * Returns the form which starts a new instance.
    */
-  private Form getCreationForm(ProcessModel processModel) throws ProcessManagerException {
+  private Form getCreationForm(ProcessModel processModel, String role)
+      throws ProcessManagerException {
     try {
-      Action creation = processModel.getCreateAction("administrateur");
-      return processModel.getPublicationForm(creation.getName(), "administrateur", getLanguage());
+      Action creation = processModel.getCreateAction(role);
+      return processModel.getPublicationForm(creation.getName(), role, getLanguage());
     } catch (WorkflowException e) {
       throw new ProcessManagerException("SessionController", "processManager.NO_CREATION_FORM", e);
     }
@@ -443,18 +470,18 @@ public class DefaultProcessManagerService implements ProcessManagerService {
       String extension = FileRepositoryManager.getFileExtension(logicalName);
       String mimeType = FileUtil.getMimeType(logicalName);
       if (mimeType.equals("application/x-zip-compressed")) {
-        if (MimeTypes.JAR_EXTENSION.equalsIgnoreCase(extension) || MimeTypes.WAR_EXTENSION.
-            equalsIgnoreCase(extension) || MimeTypes.EAR_EXTENSION.equalsIgnoreCase(extension)) {
+        if (MimeTypes.JAR_EXTENSION.equalsIgnoreCase(extension) ||
+            MimeTypes.WAR_EXTENSION.equalsIgnoreCase(extension) ||
+            MimeTypes.EAR_EXTENSION.equalsIgnoreCase(extension)) {
           mimeType = MimeTypes.JAVA_ARCHIVE_MIME_TYPE;
         } else if ("3D".equalsIgnoreCase(extension)) {
           mimeType = MimeTypes.SPINFIRE_MIME_TYPE;
         }
       }
-      SimpleDocument ad =
-          createSimpleDocument(foreignId, pagesContext.getComponentId(), logicalName, mimeType,
-              fileContent, pagesContext.getUserId(),
-              pagesContext.isVersioningUsed());
-      ad.setDocumentType(DocumentType.attachment);
+      SimpleDocument ad = createSimpleDocument(foreignId, pagesContext.getComponentId(),
+          logicalName, mimeType, fileContent, pagesContext.getUserId(),
+          pagesContext.isVersioningUsed());
+      ad.setDocumentType(DocumentType.form);
       attachmentId = ad.getId();
     }
     return attachmentId;
@@ -471,10 +498,9 @@ public class DefaultProcessManagerService implements ProcessManagerService {
         .setDescription("")
         .setSize(content.length)
         .setContentType(mimeType)
-        .setCreationData(userId, new Date())
-        .build();
-    SimpleDocument doc =
-        new SimpleDocument(simpleDocPk, foreignId, 0, versioned, userId, attachment);
+        .setCreationData(userId, new Date()).build();
+    SimpleDocument doc = new SimpleDocument(simpleDocPk, foreignId, 0, versioned, userId,
+        attachment);
     return AttachmentServiceProvider.getAttachmentService()
         .createAttachment(doc, new ByteArrayInputStream(content));
   }
@@ -482,4 +508,78 @@ public class DefaultProcessManagerService implements ProcessManagerService {
   private String getLanguage() {
     return FR_LANG;
   }
+
+  private String doAction(String action, ProcessInstance processInstance, ProcessModel processModel,
+      String userId, String currentRole, DataRecord data) throws ProcessManagerException {
+    try {
+      Action creation = processModel.getAction(action);
+      TaskDoneEvent event = getTask(processInstance, userId, currentRole).buildTaskDoneEvent(
+          creation.getName(), data);
+      Workflow.getWorkflowEngine().process(event, true);
+      return event.getProcessInstance().getInstanceId();
+    } catch (WorkflowException e) {
+      throw new ProcessManagerException(this.getClass().getName(),
+          "processManager.ACTION_PROCESSING_FAILED", e);
+    }
+  }
+
+  private Task getTask(ProcessInstance processInstance, String userId, String currentRole)
+      throws ProcessManagerException {
+    try {
+      User user = new UserImpl(UserDetail.getById(userId));
+      Task[] tasks = Workflow.getTaskManager().getTasks(user, currentRole, processInstance);
+      if (tasks.length > 0) {
+        return tasks[0];
+      }
+      throw new ProcessManagerException(this.getClass().getName(), "processManager.NO_TASK");
+    } catch (WorkflowException e) {
+      throw new ProcessManagerException(this.getClass().getName(),
+          "processManager.TASK_UNAVAILABLE", e);
+    }
+  }
+
+  private Form getActionForm(ProcessModel processModel, String actionName, String role)
+      throws ProcessManagerException {
+    try {
+      Action action = processModel.getAction(actionName);
+      return processModel.getPublicationForm(action.getName(), role, getLanguage());
+    } catch (WorkflowException e) {
+      throw new ProcessManagerException(this.getClass().getName(), "processManager.NO_ACTION_FORM",
+          e);
+    }
+  }
+
+  private List<String> populateFields(String processId, String componentId, String userId,
+      Map<String, Object> metadata, GenericDataRecord data, XmlForm form)
+      throws ProcessManagerException {
+    List<String> attachmentIds = new ArrayList<>();
+
+    PagesContext pagesContext = new PagesContext("creationForm", "0", getLanguage(), true,
+        componentId, userId);
+    pagesContext.setObjectId(processId);
+
+    // Populate file name and file content
+    for (Map.Entry<String, ?> entry : metadata.entrySet()) {
+      String fieldName = entry.getKey();
+      Object fieldValue = entry.getValue();
+
+      String fieldType = retrieveMatchingFieldTypeName(fieldValue);
+      Field field = findMatchingField(form, data, fieldName, fieldType);
+
+      if (fieldValue == null) {
+        populateSimpleField(field, fieldName, null, fieldType);
+      } else if (fieldValue instanceof Collection<?>) {
+        populateListField(field, fieldName, (Collection<?>) fieldValue, fieldType);
+      } else if (FileField.TYPE.equals(fieldType)) {
+        attachmentIds.add(
+            populateFileField(form, data, (FileField) field, fieldName, (FileContent) fieldValue,
+                pagesContext));
+      } else {
+        populateSimpleField(field, fieldName, fieldValue, fieldType);
+      }
+
+    }
+    return attachmentIds;
+  }
+
 }
