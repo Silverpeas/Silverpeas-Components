@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.questionreply.model;
 
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
@@ -85,7 +86,7 @@ public class Reply extends SilverpeasBean implements Contribution, WithAttachmen
 
   @Override
   public ContributionIdentifier getIdentifier() {
-    return ContributionIdentifier.from(getPK());
+    return ContributionIdentifier.from(new ResourceReference(getPK()));
   }
 
   @Override
