@@ -40,8 +40,8 @@ public class CreateFolderFormHandler extends FunctionHandler {
       HttpServletRequest request) throws Exception {
 
     // Is User has admin profile
-    String userHisghestRole = getUserHighestRole(sessionController);
-    boolean isAdmin = (userHisghestRole.equals("admin"));
+    String userHighestRole = getUserHighestRole(sessionController);
+    boolean isAdmin = (userHighestRole.equals("admin"));
 
     if (!isAdmin) {
       throw new SilverCrawlerForbiddenActionException("user has not admin rights");

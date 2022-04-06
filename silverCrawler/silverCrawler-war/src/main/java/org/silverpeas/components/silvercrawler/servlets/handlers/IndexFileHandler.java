@@ -39,7 +39,7 @@ public class IndexFileHandler extends FunctionHandler {
       HttpServletRequest request) throws Exception {
 
     // Index requested file
-    String fileName = (String) request.getParameter("FileName");
+    String fileName = request.getParameter("FileName");
     sessionController.indexFile(fileName);
 
     // redirect to "ViewDirectory" use case

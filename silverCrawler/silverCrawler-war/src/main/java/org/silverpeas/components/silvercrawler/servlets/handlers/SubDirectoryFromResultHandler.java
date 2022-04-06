@@ -25,6 +25,7 @@
 package org.silverpeas.components.silvercrawler.servlets.handlers;
 
 import org.silverpeas.components.silvercrawler.control.SilverCrawlerSessionController;
+import org.silverpeas.core.util.file.FileUtil;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -38,7 +39,7 @@ public class SubDirectoryFromResultHandler extends FunctionHandler {
   public String getDestination(SilverCrawlerSessionController sessionController,
       HttpServletRequest request) throws Exception {
     // Update current Path
-    String newPath = request.getParameter("DirectoryPath");
+    String newPath = FileUtil.verifyTaintedData(request.getParameter("DirectoryPath"));
     sessionController.setCurrentPathFromResult(newPath);
 
     // redirect to "ViewDirectory" use case

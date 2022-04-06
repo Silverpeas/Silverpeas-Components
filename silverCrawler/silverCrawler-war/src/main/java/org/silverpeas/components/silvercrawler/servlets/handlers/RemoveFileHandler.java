@@ -25,6 +25,7 @@
 package org.silverpeas.components.silvercrawler.servlets.handlers;
 
 import org.silverpeas.components.silvercrawler.control.SilverCrawlerSessionController;
+import org.silverpeas.core.util.file.FileUtil;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -38,13 +39,13 @@ public class RemoveFileHandler extends FunctionHandler {
   public String getDestination(SilverCrawlerSessionController sessionController,
       HttpServletRequest request) throws Exception {
 
-    // Retrieves files name to be removed
-    String fileName = (String) request.getParameter("FileName");
+    // Retrieving files name to be removed
+    String fileName = FileUtil.verifyTaintedData(request.getParameter("FileName"));
 
     // Is User has admin or publisher profile
-    String userHisghestRole = getUserHighestRole(sessionController);
+    String userHighestRole = getUserHighestRole(sessionController);
     boolean isAdminOrPublisher =
-        (userHisghestRole.equals("admin") || userHisghestRole.equals("publisher"));
+        (userHighestRole.equals("admin") || userHighestRole.equals("publisher"));
 
     // Un-index requested file
     sessionController.unindexFile(fileName);

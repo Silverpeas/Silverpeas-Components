@@ -56,7 +56,7 @@ public class ResolveConflictsHandler extends FunctionHandler {
     // Process upload
     report = sessionController.processLastUpload();
 
-    // Generates messages to display
+    // Generating messages to display
     request.setAttribute("errorMessage", report.displayErrors());
     request.setAttribute("successMessage", report.displaySuccess());
 

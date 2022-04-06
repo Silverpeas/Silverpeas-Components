@@ -25,6 +25,7 @@
 package org.silverpeas.components.silvercrawler.servlets.handlers;
 
 import org.silverpeas.components.silvercrawler.control.SilverCrawlerSessionController;
+import org.silverpeas.core.util.file.FileUtil;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -38,7 +39,7 @@ public class DownloadFolderHandler extends FunctionHandler {
   public String getDestination(SilverCrawlerSessionController sessionController,
       HttpServletRequest request) throws Exception {
     // Get requested folder name
-    String folderName = request.getParameter("FolderName");
+    String folderName = FileUtil.verifyTaintedData(request.getParameter("FolderName"));
 
     // Store objects in request as attributes
     request.setAttribute("ZipInfo", sessionController.zipFolder(folderName));

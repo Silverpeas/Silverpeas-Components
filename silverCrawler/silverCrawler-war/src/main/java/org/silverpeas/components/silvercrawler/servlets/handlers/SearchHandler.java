@@ -27,6 +27,7 @@ package org.silverpeas.components.silvercrawler.servlets.handlers;
 import org.silverpeas.components.silvercrawler.control.SilverCrawlerSessionController;
 import org.silverpeas.components.silvercrawler.model.FileDetail;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.file.FileUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
@@ -41,7 +42,7 @@ public class SearchHandler extends FunctionHandler {
   public String getDestination(SilverCrawlerSessionController sessionController,
       HttpServletRequest request) throws Exception {
 
-    String searchResult = request.getParameter("Id");
+    String searchResult = FileUtil.verifyTaintedData(request.getParameter("Id"));
     if (StringUtil.isDefined(searchResult)) {
       sessionController.setCurrentPathFromResult(searchResult);
       // Go back to main page

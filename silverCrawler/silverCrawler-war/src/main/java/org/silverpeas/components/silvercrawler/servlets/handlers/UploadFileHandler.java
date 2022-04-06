@@ -44,9 +44,9 @@ public class UploadFileHandler extends FunctionHandler {
       HttpServletRequest req) throws Exception {
 
     // Is User has admin or publisher profile
-    String userHisghestRole = getUserHighestRole(sessionController);
+    String userHighestRole = getUserHighestRole(sessionController);
     boolean isAdminOrPublisher =
-        (userHisghestRole.equals("admin") || userHisghestRole.equals("publisher"));
+        (userHighestRole.equals("admin") || userHighestRole.equals("publisher"));
 
     if (!isAdminOrPublisher) {
       req.setAttribute("errorMessage", "User has not admin/publisher rights");

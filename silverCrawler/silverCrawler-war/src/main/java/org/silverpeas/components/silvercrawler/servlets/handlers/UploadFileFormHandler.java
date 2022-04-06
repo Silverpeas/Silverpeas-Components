@@ -40,9 +40,9 @@ public class UploadFileFormHandler extends FunctionHandler {
       HttpServletRequest request) throws Exception {
 
     // Is User has admin or publisher profile
-    String userHisghestRole = getUserHighestRole(sessionController);
+    String userHighestRole = getUserHighestRole(sessionController);
     boolean isAdminOrPublisher =
-        (userHisghestRole.equals("admin") || userHisghestRole.equals("publisher"));
+        (userHighestRole.equals("admin") || userHighestRole.equals("publisher"));
 
     if (!isAdminOrPublisher) {
       throw new SilverCrawlerForbiddenActionException("user has not admin rights");

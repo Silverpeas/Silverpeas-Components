@@ -79,10 +79,10 @@ public class SilverCrawlerFileServer extends SilverpeasAuthenticatedHttpServlet 
 
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException {
-    String sourceFile = req.getParameter("SourceFile");
+    String sourceFile = FileUtil.verifyTaintedData(req.getParameter("SourceFile"));
     String componentId = req.getParameter("ComponentId");
     String typeUpload = req.getParameter("TypeUpload");
-    String path = req.getParameter("Path");
+    String path = FileUtil.verifyTaintedData(req.getParameter("Path"));
 
     try {
       FileUtil.assertPathNotRelative(sourceFile);

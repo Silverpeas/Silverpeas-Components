@@ -25,6 +25,7 @@
 package org.silverpeas.components.silvercrawler.servlets.handlers;
 
 import org.silverpeas.components.silvercrawler.control.SilverCrawlerSessionController;
+import org.silverpeas.core.util.file.FileUtil;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -39,7 +40,7 @@ public class CreateFolderHandler extends FunctionHandler {
       HttpServletRequest request) throws Exception {
 
     // Retrieves parameters
-    String newName = request.getParameter("newName");
+    String newName = FileUtil.verifyTaintedData(request.getParameter("newName"));
 
     // Is User has admin profile
     String userHisghestRole = getUserHighestRole(sessionController);

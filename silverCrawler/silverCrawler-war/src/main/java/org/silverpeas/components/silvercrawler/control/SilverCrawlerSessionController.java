@@ -145,9 +145,9 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
     List<String> newPaths = new ArrayList<>();
     currentPath = rootPath;
     for (final String path : paths) {
+      currentPath = FileUtils.getFile(currentPath, FileUtil.verifyTaintedData(path));
       // on ajoute ce répertoire à la liste
       newPaths.add(path);
-      currentPath = FileUtils.getFile(currentPath, path);
       if (path.equals(directory)) {
         // on est sur le répertoire voulu
         break;
@@ -268,12 +268,12 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
 
   public void unindexPath(String folderName) {
     RepositoryIndexer repositoryIndexer = new RepositoryIndexer(getSpaceId(), getComponentId());
-    Path pathRepository = Paths.get(getFullPath(folderName));
+    Path pathRepository = Paths.get(getFullPath(FileUtil.verifyTaintedData(folderName)));
     repositoryIndexer.removePath(pathRepository, getUserId());
   }
 
   public void unindexFile(String fileName) {
-    Path path = Paths.get(currentPath.getPath(), fileName);
+    Path path = Paths.get(currentPath.getPath(), FileUtil.verifyTaintedData(fileName));
     RepositoryIndexer repositoryIndexer = new RepositoryIndexer(getSpaceId(), getComponentId());
     repositoryIndexer.removePath(path, getUserId());
   }
@@ -292,13 +292,13 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
 
   public void indexPathSelected(Collection<String> dirToIndex) {
     for (final String name : dirToIndex) {
-      indexPath(name);
+      indexPath(FileUtil.verifyTaintedData(name));
     }
   }
 
   public void indexSelectedFiles(Collection<String> fileToIndex) {
     for (final String name : fileToIndex) {
-      indexFile(name);
+      indexFile(FileUtil.verifyTaintedData(name));
     }
   }
 
@@ -513,7 +513,7 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
     }
 
     // Get Full Path
-    String fullPath = getFullPath(folderName);
+    String fullPath = getFullPath(FileUtil.verifyTaintedData(folderName));
 
     FileFolderManager.deleteFolder(fullPath);
   }
@@ -584,7 +584,7 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
     }
 
     // Get Full Path
-    String fullPath = getFullPath(fileName);
+    String fullPath = getFullPath(FileUtil.verifyTaintedData(fileName));
 
     FileFolderManager.deleteFile(fullPath);
   }

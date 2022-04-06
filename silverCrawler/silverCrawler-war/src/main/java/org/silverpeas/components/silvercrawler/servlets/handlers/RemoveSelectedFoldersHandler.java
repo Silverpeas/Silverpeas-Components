@@ -41,22 +41,20 @@ public class RemoveSelectedFoldersHandler extends FunctionHandler {
       HttpServletRequest request) throws Exception {
 
     // Is User has admin profile
-    String userHisghestRole = getUserHighestRole(sessionController);
-    boolean isAdmin = (userHisghestRole.equals("admin"));
+    String userHighestRole = getUserHighestRole(sessionController);
+    boolean isAdmin = (userHighestRole.equals("admin"));
 
     // retrieves folder list
     String[] selectedFolders = request.getParameterValues("checkedDir");
     if (selectedFolders != null) {
-      Collection<String> listFolderToRemove = Arrays.asList(selectedFolders);
-
 
       // Un-index selected folders
-      for (String folder : listFolderToRemove) {
+      for (String folder : selectedFolders) {
         sessionController.unindexPath(folder);
       }
 
       // Remove folders physically
-      for (String folder : listFolderToRemove) {
+      for (String folder : selectedFolders) {
         sessionController.removeSubFolder(folder, isAdmin);
       }
     }

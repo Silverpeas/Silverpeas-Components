@@ -26,6 +26,7 @@ package org.silverpeas.components.silvercrawler.servlets.handlers;
 
 import org.silverpeas.components.silvercrawler.control.SilverCrawlerSessionController;
 import org.silverpeas.components.silvercrawler.model.SilverCrawlerForbiddenActionException;
+import org.silverpeas.core.util.file.FileUtil;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -40,11 +41,11 @@ public class RenameFolderFormHandler extends FunctionHandler {
       HttpServletRequest request) throws Exception {
 
     // Retrieves folder's name to be removed
-    String folderName = request.getParameter("oldName");
+    String folderName = FileUtil.verifyTaintedData(request.getParameter("oldName"));
 
     // Is User has admin profile
-    String userHisghestRole = getUserHighestRole(sessionController);
-    boolean isAdmin = (userHisghestRole.equals("admin"));
+    String userHighestRole = getUserHighestRole(sessionController);
+    boolean isAdmin = (userHighestRole.equals("admin"));
 
     if (!isAdmin) {
       throw new SilverCrawlerForbiddenActionException("user has not admin rights");

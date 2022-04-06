@@ -25,6 +25,7 @@
 package org.silverpeas.components.silvercrawler.servlets.handlers;
 
 import org.silverpeas.components.silvercrawler.control.SilverCrawlerSessionController;
+import org.silverpeas.core.util.file.FileUtil;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -39,9 +40,9 @@ public class ViewHistoryByUserHandler extends FunctionHandler {
       HttpServletRequest request) throws Exception {
 
     // Retrieve parameters
-    String userId = (String) request.getParameter("UserId");
-    String userName = (String) request.getParameter("UserName");
-    String folderName = (String) request.getParameter("FolderName");
+    String userId = request.getParameter("UserId");
+    String userName = request.getParameter("UserName");
+    String folderName = FileUtil.verifyTaintedData(request.getParameter("FolderName"));
 
     // stores objects as request attributes
     request.setAttribute("DownloadsByUser", sessionController.getHistoryByUser(folderName, userId));

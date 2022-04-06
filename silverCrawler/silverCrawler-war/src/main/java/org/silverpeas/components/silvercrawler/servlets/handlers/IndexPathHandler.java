@@ -25,6 +25,7 @@
 package org.silverpeas.components.silvercrawler.servlets.handlers;
 
 import org.silverpeas.components.silvercrawler.control.SilverCrawlerSessionController;
+import org.silverpeas.core.util.file.FileUtil;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -39,7 +40,7 @@ public class IndexPathHandler extends FunctionHandler {
       HttpServletRequest request) throws Exception {
 
     // Index requested path
-    String folderName = (String) request.getParameter("FolderName");
+    String folderName = FileUtil.verifyTaintedData(request.getParameter("FolderName"));
     sessionController.indexPath(folderName);
 
     // redirect to "ViewDirectory" use case

@@ -40,23 +40,21 @@ public class RemoveSelectedFilesHandler extends FunctionHandler {
       HttpServletRequest request) throws Exception {
 
     // Is User has admin or publisher profile
-    String userHisghestRole = getUserHighestRole(sessionController);
+    String userHighestRole = getUserHighestRole(sessionController);
     boolean isAdminOrPublisher =
-        (userHisghestRole.equals("admin") || userHisghestRole.equals("publisher"));
+        (userHighestRole.equals("admin") || userHighestRole.equals("publisher"));
 
     // retrieves file list
     String[] selectedFiles = request.getParameterValues("checkedFile");
     if (selectedFiles != null) {
-      Collection<String> listFilesToRemove = Arrays.asList(selectedFiles);
-
 
       // Un-index requested file
-      for (String fileName : listFilesToRemove) {
+      for (String fileName : selectedFiles) {
         sessionController.unindexFile(fileName);
       }
 
       // Remove folder physically
-      for (String fileName : listFilesToRemove) {
+      for (String fileName : selectedFiles) {
         sessionController.removeFile(fileName, isAdminOrPublisher);
       }
     }
