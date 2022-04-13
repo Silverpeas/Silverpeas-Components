@@ -66,6 +66,7 @@ import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
@@ -84,7 +85,6 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.silverpeas.components.quickinfo.notification.QuickInfoDelayedVisibilityUserNotificationReminder.QUICKINFO_DELAYED_VISIBILITY_USER_NOTIFICATION;
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
-import static org.silverpeas.core.persistence.Transaction.performInOne;
 
 @Service
 @Named("quickinfoService")
@@ -164,6 +164,7 @@ public class DefaultQuickInfoService implements QuickInfoService {
   }
 
   @Override
+  @Transactional
   public News create(final News news) {
     ResourceReference volatileAttachmentSourcePK =
         new ResourceReference(news.getPublicationId(), news.getComponentInstanceId());
@@ -174,12 +175,11 @@ public class DefaultQuickInfoService implements QuickInfoService {
     final PublicationPK pubPK = getPublicationService().createPublication(publication);
     publication.setPk(pubPK);
 
-    News savedNews = performInOne(() -> {
-      news.setId(null);
-      news.setPublicationId(pubPK.getId());
-      news.createdBy(publication.getCreatorId());
-      return newsRepository.save(news);
-    });
+    // Updating the news
+    news.setId(null);
+    news.setPublicationId(pubPK.getId());
+    news.createdBy(publication.getCreatorId());
+    final News savedNews = newsRepository.save(news);
 
     // Attaching all documents linked to volatile news to the persisted news
     List<SimpleDocumentPK> movedDocumentPks = AttachmentServiceProvider.getAttachmentService()
@@ -205,13 +205,28 @@ public class DefaultQuickInfoService implements QuickInfoService {
   }
 
   @Override
+  @Transactional
   public void publish(String id, String userId) {
     News news = getNews(id);
     news.setPublishedBy(userId);
-    publish(news);
+    news.setPublished();
+    news.setPublishDate(new Date());
+    news.lastUpdatedBy(news.getPublishedBy());
+    newsRepository.save(news);
+    PublicationDetail publication = news.getPublication();
+    getPublicationService().setDetail(publication, false);
+    try {
+      quickInfoContentManager.updateSilverContentVisibility(publication, true);
+    } catch (ContentManagerException e) {
+      SilverLogger.getLogger(this)
+          .error("can not update the silver-content of the publication " + publication.getId() +
+              ASSOCIATED_TO_THE_NEWS_MSG + news.getId(), e);
+    }
+    sendSubscriptionsNotification(news, NotifAction.CREATE);
   }
 
   @Override
+  @Transactional
   public void update(final News news, List<PdcPosition> positions,
       Collection<UploadedFile> uploadedFiles, final boolean forcePublishing) {
     final News before = Transaction.performInNew(() -> getNews(news.getId()));
@@ -232,14 +247,13 @@ public class DefaultQuickInfoService implements QuickInfoService {
     }
     getPublicationService().setDetail(publication);
 
-    performInOne(() -> {
-      news.setPublicationId(publication.getId());
-      if (forcePublishing) {
-        news.setPublishDate(new Date());
-        news.setPublishedBy(news.getLastUpdaterId());
-      }
-      return newsRepository.save(news);
-    });
+    // Updating the news
+    news.setPublicationId(publication.getId());
+    if (forcePublishing) {
+      news.setPublishDate(new Date());
+      news.setPublishedBy(news.getLastUpdaterId());
+    }
+    newsRepository.save(news);
 
     // Updating visibility onto taxonomy
     try {
@@ -260,6 +274,7 @@ public class DefaultQuickInfoService implements QuickInfoService {
   }
 
   @Override
+  @Transactional
   public void removeNews(final String id) {
     final News news = getNews(id);
 
@@ -283,7 +298,7 @@ public class DefaultQuickInfoService implements QuickInfoService {
     getStatisticService().deleteStats(news);
 
     // deleting news itself
-    performInOne(() -> newsRepository.deleteById(id));
+    newsRepository.deleteById(id);
 
     notifier.notifyEventOn(ResourceEvent.Type.DELETION, news);
   }
@@ -353,6 +368,7 @@ public class DefaultQuickInfoService implements QuickInfoService {
   }
 
   @Override
+  @Transactional
   public void submitNewsOnHomepage(String id, String userId) {
     News news = getNews(id);
     news.setId(news.getPublicationId());
@@ -366,25 +382,6 @@ public class DefaultQuickInfoService implements QuickInfoService {
       getContributionById(reminder.getContributionId())
           .ifPresent(n -> sendSubscriptionsNotification(n, NotifAction.CREATE));
     }
-  }
-
-  private void publish(final News news) {
-    news.setPublished();
-    news.setPublishDate(new Date());
-    news.lastUpdatedBy(news.getPublishedBy());
-    performInOne(() -> newsRepository.save(news));
-
-    PublicationDetail publication = news.getPublication();
-    getPublicationService().setDetail(publication, false);
-
-    try {
-      quickInfoContentManager.updateSilverContentVisibility(publication, true);
-    } catch (ContentManagerException e) {
-      SilverLogger.getLogger(this)
-          .error("can not update the silver-content of the publication " + publication.getId() +
-              ASSOCIATED_TO_THE_NEWS_MSG + news.getId(), e);
-    }
-    sendSubscriptionsNotification(news, NotifAction.CREATE);
   }
 
   private void sendSubscriptionsNotification(final News news, final NotifAction notifAction) {
