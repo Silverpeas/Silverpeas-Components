@@ -46,7 +46,7 @@ CKEDITOR.editorConfig = function( config )
   config.toolbar_infoLetter_ddwe = [
     { name: 'paragraph',   items : [ 'NumberedList','BulletedList','-','Outdent','Indent','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock' ] },
     { name: 'links',       items : [ 'Link','Unlink'] },
-    { name: 'insert',      items : [ 'Image','mediaofcontribution','imagebank','variables' ] },
+    { name: 'insert',      items : [ 'variables' ] },
     '/',
     { name: 'basicstyles', items : [ 'Bold','Italic','Underline','Strike','-','RemoveFormat' ] },
     { name: 'styles',      items : [ 'Styles','Format','Font','FontSize' ] },
