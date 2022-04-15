@@ -93,9 +93,11 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.*;
 import static org.silverpeas.core.contribution.publication.model.PublicationDetail.*;
+import static org.silverpeas.core.util.StringUtil.EMPTY;
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 import static org.silverpeas.core.web.selection.BasketSelectionUI.getPutIntoBasketSelectionHtmlSnippet;
 import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion.scriptContent;
@@ -316,10 +318,6 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       out.write("<ul>");
       for (KmeliaPublication aPub : pubs) {
         PublicationDetail pub = aPub.getDetail();
-        PublicationDetail pubOrClone = pub;
-        if (pub.haveGotClone() && !pub.isClone()) {
-          pubOrClone = kmeliaScc.getPublicationDetail(pub.getCloneId());
-        }
         User currentUser = aPub.getCreator();
 
         String pubColor = "";
@@ -1135,7 +1133,10 @@ public class AjaxPublicationsListServlet extends HttpServlet {
           shortcut = "";
         }
 
-        writer.write("<li>");
+        final String liClass = Optional.of(" class=\"new-contribution\"")
+            .filter(s -> pub.isNew())
+            .orElse(EMPTY);
+        writer.write("<li" + liClass + ">");
         writer.write("<div class=\"publication-name line1\"><a class=\"sp-permalink\"" +
             " href=\"" + pub.getPermalink() +"\">" + Encode.forHtml(pub.getName(language)) + "</a>" + shortcut + "</div>");
 
