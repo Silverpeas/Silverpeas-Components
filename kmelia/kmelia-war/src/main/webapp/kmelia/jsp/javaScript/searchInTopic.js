@@ -10,7 +10,8 @@ function searchInTopic() {
   $.progressMessage();
   var ieFix = new Date().getTime();
   var componentId = getComponentId();
-  $.get(getWebContext()+'/RAjaxPublicationsListServlet?'+serializedExtraFormSearch, {Index:0,Query:topicQuery,ComponentId:componentId,IEFix:ieFix},
+  $.get(getWebContext()+'/RAjaxPublicationsListServlet?'+serializedExtraFormSearch,
+      {Index:0,SearchRequest:true,Query:topicQuery,ComponentId:componentId,IEFix:ieFix},
       __updateDataAndUI,"html");
 	return;
 }

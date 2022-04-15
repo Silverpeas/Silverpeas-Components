@@ -35,7 +35,10 @@ import org.silverpeas.components.kmelia.SearchContext;
 import org.silverpeas.components.kmelia.Sort;
 import org.silverpeas.components.kmelia.export.ExportFileNameProducer;
 import org.silverpeas.components.kmelia.export.KmeliaPublicationExporter;
-import org.silverpeas.components.kmelia.model.*;
+import org.silverpeas.components.kmelia.model.KmeliaPublication;
+import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
+import org.silverpeas.components.kmelia.model.TopicDetail;
+import org.silverpeas.components.kmelia.model.TopicSearch;
 import org.silverpeas.components.kmelia.search.KmeliaSearchServiceProvider;
 import org.silverpeas.components.kmelia.service.KmeliaHelper;
 import org.silverpeas.components.kmelia.service.KmeliaNodeSimulationElementLister;
@@ -149,6 +152,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.text.ParseException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -1065,39 +1069,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     this.sortValue.setCurrentSort(sort);
     this.sortValue.setManualSortEnable(manualSortingUsed);
     this.sortValue.setExplicitSort(false);
-
-    switch (sort) {
-      case Sort.SORT_CREATOR_ASC:
-        publicationsToSort.sort(new PubliAuthorComparatorAsc());
-        break;
-      case Sort.SORT_UPDATE_ASC:
-        publicationsToSort.sort(new PubliUpdateDateComparatorAsc());
-        break;
-      case Sort.SORT_UPDATE_DESC:
-        publicationsToSort.sort(new PubliUpdateDateComparatorAsc());
-        Collections.reverse(publicationsToSort);
-        break;
-      case Sort.SORT_IMPORTANCE_ASC:
-        publicationsToSort.sort(new PubliImportanceComparatorDesc());
-        break;
-      case Sort.SORT_TITLE_ASC:
-        publicationsToSort = sortByTitle(publicationsToSort);
-        break;
-      case Sort.SORT_CREATION_ASC:
-        publicationsToSort.sort(new PubliCreationDateComparatorAsc());
-        break;
-      case Sort.SORT_CREATION_DESC:
-        publicationsToSort.sort(new PubliCreationDateComparatorAsc());
-        Collections.reverse(publicationsToSort);
-        break;
-      case Sort.SORT_DESCRIPTION_ASC:
-        publicationsToSort = sortByDescription(publicationsToSort);
-        break;
-      default:
-        // display publications according to manual order defined by admin
-        publicationsToSort.sort(new PubliRankComparatorAsc());
-    }
-
+    this.sortValue.withLanguage(getCurrentLanguage()).sort(publicationsToSort);
     return publicationsToSort;
   }
 
@@ -1108,53 +1080,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       }
     }
     return false;
-  }
-
-  private List<KmeliaPublication> sortByTitle(List<KmeliaPublication> publications) {
-    KmeliaPublication[] pubs = publications.toArray(new KmeliaPublication[0]);
-    for (int i = pubs.length; --i >= 0; ) {
-      boolean swapped = false;
-      for (int j = 0; j < i; j++) {
-        if (pubs[j].getDetail().getName(getCurrentLanguage())
-            .compareToIgnoreCase(pubs[j + 1].getDetail().getName(getCurrentLanguage())) > 0) {
-          KmeliaPublication pub = pubs[j];
-          pubs[j] = pubs[j + 1];
-          pubs[j + 1] = pub;
-          swapped = true;
-        }
-      }
-      if (!swapped) {
-        break;
-      }
-    }
-    return Arrays.asList(pubs);
-  }
-
-  private List<KmeliaPublication> sortByDescription(List<KmeliaPublication> publications) {
-    KmeliaPublication[] pubs = publications.toArray(new KmeliaPublication[0]);
-    for (int i = pubs.length; --i >= 0; ) {
-      boolean swapped = false;
-      for (int j = 0; j < i; j++) {
-        String p1 = pubs[j].getDetail().getDescription(getCurrentLanguage());
-        if (p1 == null) {
-          p1 = "";
-        }
-        String p2 = pubs[j + 1].getDetail().getDescription(getCurrentLanguage());
-        if (p2 == null) {
-          p2 = "";
-        }
-        if (p1.compareToIgnoreCase(p2) > 0) {
-          KmeliaPublication pub = pubs[j];
-          pubs[j] = pubs[j + 1];
-          pubs[j + 1] = pub;
-          swapped = true;
-        }
-      }
-      if (!swapped) {
-        break;
-      }
-    }
-    return Arrays.asList(pubs);
   }
 
   public void orderPublications(List<String> sortedPubIds) {
@@ -1242,8 +1167,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     return indexOfFirstPubToDisplay;
   }
 
-  public void setIndexOfFirstPubToDisplay(String index) {
-    this.indexOfFirstPubToDisplay = Integer.parseInt(index);
+  public void setIndexOfFirstPubToDisplay(int index) {
+    this.indexOfFirstPubToDisplay = index;
   }
 
   public void processTopicWysiwyg(String topicId) {
@@ -1487,8 +1412,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     return this.sortValue.getCurrentSort();
   }
 
-  public void setSortValue(String sort) {
-    this.sortValue.setCurrentSort(Integer.parseInt(sort));
+  public void setSortValue(int sort) {
+    this.sortValue.setCurrentSort(sort);
     this.sortValue.setExplicitSort(true);
     orderPubs();
   }
@@ -2729,6 +2654,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
           .filter(i -> PUBLICATION.equals(i.getObjectType()))
           .collect(Collectors.toList());
       final Map<PublicationPK, PublicationDetail> indexedUserPubs = new HashMap<>(results.size());
+      final AtomicInteger rank = new AtomicInteger(0);
       getKmeliaService().getPublicationDetails(results.stream()
                 .map(i -> new ResourceReference(i.getObjectId(), i.getComponent()))
                 .collect(Collectors.toList()))
@@ -2747,6 +2673,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
                     && !(i.getPaths().get(0) + nodePathSep).startsWith(safeCurrentFolderPath))) {
               kPub.getDetail().setAlias(true);
             }
+            kPub.getDetail().setExplicitRank(rank.getAndIncrement());
             return kPub;
           })
           .filter(Objects::nonNull)

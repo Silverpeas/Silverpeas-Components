@@ -24,22 +24,16 @@
 
 package org.silverpeas.components.kmelia.model;
 
-import java.util.Comparator;
+public class PubliUpdateDateComparator extends AbstractPublicationComparator {
+  private static final long serialVersionUID = 1068112817745764999L;
 
-
-public class PubliCreationDateComparatorAsc implements Comparator<KmeliaPublication> {
-  public static final PubliCreationDateComparatorAsc comparator = new PubliCreationDateComparatorAsc();
-
-  @Override
-  public int compare(KmeliaPublication p1, KmeliaPublication p2) {
-    int compareResult =
-        p1.getDetail().getCreationDate().compareTo(p2.getDetail().getCreationDate());
-    if (compareResult == 0) {
-      // both objects have been created on the same date
-      compareResult = p1.getDetail().getId().compareTo(p2.getDetail().getId());
-    }
-
-    return compareResult;
+  public PubliUpdateDateComparator(final boolean asc) {
+    super(asc);
   }
 
+  @Override
+  void setupWith(final KmeliaPublication publication, final boolean asc,
+      final ValueBuffer valueBuffer) {
+    valueBuffer.append(publication.getDetail().getLastUpdateDate(), asc);
+  }
 }

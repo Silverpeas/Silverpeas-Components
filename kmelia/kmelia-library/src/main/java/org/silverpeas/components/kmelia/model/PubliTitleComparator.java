@@ -24,19 +24,19 @@
 
 package org.silverpeas.components.kmelia.model;
 
-import java.util.Comparator;
+public class PubliTitleComparator extends AbstractPublicationComparator {
+  private static final long serialVersionUID = -7689140279802432990L;
 
+  private final String language;
 
-public class PubliAuthorComparatorAsc implements Comparator<KmeliaPublication> {
-  public static final PubliAuthorComparatorAsc comparator = new PubliAuthorComparatorAsc();
+  public PubliTitleComparator(final boolean asc, final String language) {
+    super(asc);
+    this.language = language;
+  }
 
   @Override
-  public int compare(KmeliaPublication p1, KmeliaPublication p2) {
-    int compareResult = p1.getCreator().getLastName().compareTo(p2.getCreator().getLastName());
-    if (compareResult == 0) {
-      compareResult = p1.getDetail().getId().compareTo(p2.getDetail().getId());
-    }
-
-    return compareResult;
+  void setupWith(final KmeliaPublication publication, final boolean asc,
+      final ValueBuffer valueBuffer) {
+    valueBuffer.append(publication.getDetail().getName(language), asc);
   }
 }

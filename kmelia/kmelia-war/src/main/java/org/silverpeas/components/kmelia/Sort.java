@@ -23,7 +23,17 @@
  */
 package org.silverpeas.components.kmelia;
 
+import org.silverpeas.components.kmelia.model.KmeliaPublication;
+import org.silverpeas.components.kmelia.model.PubliAuthorComparator;
+import org.silverpeas.components.kmelia.model.PubliCreationDateComparator;
+import org.silverpeas.components.kmelia.model.PubliDescriptionComparator;
+import org.silverpeas.components.kmelia.model.PubliImportanceComparator;
+import org.silverpeas.components.kmelia.model.PubliRankComparator;
+import org.silverpeas.components.kmelia.model.PubliTitleComparator;
+import org.silverpeas.components.kmelia.model.PubliUpdateDateComparator;
+
 import java.io.Serializable;
+import java.util.List;
 
 public class Sort implements Serializable {
   private static final long serialVersionUID = 123918700477888284L;
@@ -64,5 +74,46 @@ public class Sort implements Serializable {
 
   public void setManualSortEnable(final boolean manualSortEnable) {
     this.manualSortEnable = manualSortEnable;
+  }
+
+  public SortConsumer<List<KmeliaPublication>> withLanguage(final String language) {
+    return p -> {
+      if (p != null) {
+        switch (currentSort) {
+          case SORT_CREATOR_ASC:
+            p.sort(new PubliAuthorComparator(true));
+            break;
+          case SORT_UPDATE_ASC:
+            p.sort(new PubliUpdateDateComparator(true));
+            break;
+          case SORT_UPDATE_DESC:
+            p.sort(new PubliUpdateDateComparator(false));
+            break;
+          case SORT_IMPORTANCE_ASC:
+            p.sort(new PubliImportanceComparator(false));
+            break;
+          case SORT_TITLE_ASC:
+            p.sort(new PubliTitleComparator(true, language));
+            break;
+          case SORT_CREATION_ASC:
+            p.sort(new PubliCreationDateComparator(true));
+            break;
+          case SORT_CREATION_DESC:
+            p.sort(new PubliCreationDateComparator(false));
+            break;
+          case SORT_DESCRIPTION_ASC:
+            p.sort(new PubliDescriptionComparator(true, language));
+            break;
+          default:
+            // display publications according to manual order defined by admin
+            p.sort(new PubliRankComparator(true));
+        }
+      }
+    };
+  }
+
+  @FunctionalInterface
+  public interface SortConsumer<T> {
+    void sort(T t);
   }
 }

@@ -24,20 +24,15 @@
 
 package org.silverpeas.components.kmelia.model;
 
-import java.util.Comparator;
+public class PubliRankComparator extends AbstractPublicationComparator {
+  private static final long serialVersionUID = 7603960874235356977L;
 
-
-public class PubliRankComparatorAsc implements Comparator<KmeliaPublication> {
-  public static final PubliRankComparatorAsc comparator = new PubliRankComparatorAsc();
+  public PubliRankComparator(final boolean asc) {
+    super(asc);
+  }
 
   @Override
-  public int compare(KmeliaPublication p1, KmeliaPublication p2) {
-    int compareResult = Integer.compare(p1.getDetail().getExplicitRank(),
-        p2.getDetail().getExplicitRank());
-    if (compareResult == 0) {
-      compareResult = p1.getDetail().getId().compareTo(p2.getDetail().getId());
-    }
-
-    return compareResult;
+  void setupWith(final KmeliaPublication publication, final boolean asc, ValueBuffer valueBuffer) {
+    valueBuffer.append(publication.getDetail().getExplicitRank(), asc);
   }
 }
