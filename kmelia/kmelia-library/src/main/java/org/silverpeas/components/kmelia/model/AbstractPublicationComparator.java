@@ -24,21 +24,32 @@
 
 package org.silverpeas.components.kmelia.model;
 
-import java.util.Comparator;
+import org.silverpeas.core.util.comparator.AbstractComplexComparator;
 
 
-public class PubliImportanceComparatorDesc implements Comparator<KmeliaPublication> {
-  public static final PubliImportanceComparatorDesc comparator = new PubliImportanceComparatorDesc();
+/**
+ * Each implementation setups the values on which the comparator MUST compare.
+ * In any case the comparison on identifier of publication is then added.
+ */
+public abstract class AbstractPublicationComparator
+    extends AbstractComplexComparator<KmeliaPublication> {
+  private static final long serialVersionUID = -2378713314388688417L;
+
+  private final boolean asc;
+
+  public AbstractPublicationComparator(final boolean asc) {
+    super();
+    this.asc = asc;
+  }
 
   @Override
-  public int compare(KmeliaPublication p1, KmeliaPublication p2) {
-    int compareResult =
-        Integer.valueOf(p2.getDetail().getImportance()).compareTo(
-            p1.getDetail().getImportance());
-    if (compareResult == 0) {
-      compareResult = p1.getDetail().getId().compareTo(p2.getDetail().getId());
-    }
-
-    return compareResult;
+  protected ValueBuffer getValuesToCompare(
+      final KmeliaPublication publication) {
+    final ValueBuffer valueBuffer = new ValueBuffer();
+    setupWith(publication, asc, valueBuffer);
+    return valueBuffer.append(publication.getDetail().getId());
   }
+
+  abstract void setupWith(final KmeliaPublication publication, final boolean asc,
+      final ValueBuffer valueBuffer);
 }

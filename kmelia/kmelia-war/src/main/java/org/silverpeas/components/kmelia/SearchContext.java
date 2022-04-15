@@ -32,16 +32,18 @@ import java.io.Serializable;
 import java.util.List;
 
 public class SearchContext implements Serializable {
+  private static final long serialVersionUID = -9161789940852287117L;
 
   public static final int NONE = 0;
   public static final int GLOBAL = 1;
   public static final int LOCAL = 2;
 
-  private QueryDescription queryDescription;
+  private final QueryDescription queryDescription;
+  private final PagesContext formContext;
+  private final Sort sortContext = new Sort();
   private NodeDetail node;
   private List<KmeliaPublication> results;
   private int paginationIndex;
-  private PagesContext formContext;
 
   public SearchContext(QueryDescription queryDescription, PagesContext formContext) {
     this.queryDescription = queryDescription;
@@ -70,6 +72,7 @@ public class SearchContext implements Serializable {
 
   public void setResults(final List<KmeliaPublication> results) {
     this.results = results;
+    sortContext.setCurrentSort(-1);
   }
 
   public int getPaginationIndex() {
@@ -82,5 +85,14 @@ public class SearchContext implements Serializable {
 
   public PagesContext getFormContext() {
     return formContext;
+  }
+
+  public int getSortValue() {
+    return sortContext.getCurrentSort();
+  }
+
+  public void applySort(int sort) {
+    sortContext.setCurrentSort(sort);
+    sortContext.withLanguage(formContext.getLanguage()).sort(results);
   }
 }

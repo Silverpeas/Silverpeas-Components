@@ -311,7 +311,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
                     nbPubliPerPage = pubIndex;
                   }
                   int ipage = pubIndex / nbPubliPerPage;
-                  kmelia.setIndexOfFirstPubToDisplay(Integer.toString(ipage * nbPubliPerPage));
+                  kmelia.setIndexOfFirstPubToDisplay(ipage * nbPubliPerPage);
                   request.setAttribute("PubIdToHighlight", id);
                   request.setAttribute("Id", kmelia.getCurrentFolderId());
                   destination = getDestination("GoToTopic", kmelia, request);
@@ -1412,7 +1412,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           kmelia.search(combination);
         }
 
-        kmelia.setIndexOfFirstPubToDisplay("0");
+        kmelia.setIndexOfFirstPubToDisplay(0);
         kmelia.orderPubs();
         kmelia.setSessionCombination(combination);
         kmelia.setSessionTimeCriteria(timeCriteria);

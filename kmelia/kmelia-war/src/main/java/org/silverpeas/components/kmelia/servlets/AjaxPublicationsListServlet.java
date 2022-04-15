@@ -71,6 +71,7 @@ import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.viewer.service.ViewerProvider;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
@@ -88,13 +89,13 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.Optional.ofNullable;
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.*;
 import static org.silverpeas.core.contribution.publication.model.PublicationDetail.*;
 import static org.silverpeas.core.util.StringUtil.EMPTY;
@@ -116,17 +117,17 @@ public class AjaxPublicationsListServlet extends HttpServlet {
   }
 
   @Override
-  public void doPost(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException {
-    HttpSession session = req.getSession(true);
+  public void doPost(HttpServletRequest request, HttpServletResponse res)
+      throws IOException {
+    final HttpRequest req = HttpRequest.decorate(request);
+    final HttpSession session = req.getSession(true);
 
     String componentId = req.getParameter("ComponentId");
     String nodeId = req.getParameter("Id");
     String sToLink = req.getParameter("ToLink");
     String topicToLinkId = req.getParameter("TopicToLinkId");
     // check if trying to link attachment
-    String attachmentLink = req.getParameter("attachmentLink");
-    boolean attachmentToLink = StringUtil.getBooleanValue(attachmentLink);
+    boolean attachmentToLink = req.getParameterAsBoolean("attachmentLink");
 
     boolean toLink = StringUtil.getBooleanValue(sToLink);
 
@@ -161,13 +162,14 @@ public class AjaxPublicationsListServlet extends HttpServlet {
           new MultiSilverpeasBundle(kmeliaSC.getMultilang(), kmeliaSC.getIcon(), kmeliaSC.getSettings(),
               kmeliaSC.getLanguage());
 
-      String index = req.getParameter("Index");
-      String nbItemsPerPage = req.getParameter("NbItemsPerPage");
-      String sort = req.getParameter("Sort");
+      Integer index = req.getParameterAsInteger("Index");
+      Integer nbItemsPerPage = req.getParameterAsInteger("NbItemsPerPage");
+      Integer sort = req.getParameterAsInteger("Sort");
       boolean resetManualSort = StringUtil.getBooleanValue(req.getParameter("ResetManualSort"));
-      String sToPortlet = req.getParameter("ToPortlet");
+      boolean toPortlet = req.getParameterAsBoolean("ToPortlet");
       String pubIdToHighlight = req.getParameter("PubIdToHighLight");
       String query = req.getParameter("Query");
+      boolean searchRequest = req.getParameterAsBoolean("SearchRequest");
 
       QueryDescription queryDescription = new QueryDescription(query);
       PagesContext formContext = new PagesContext();
@@ -177,26 +179,27 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       String notSelectedPublicationIds = req.getParameter("NotSelectedPubIds");
       List<PublicationPK> selectedIds =
           kmeliaSC.processSelectedPublicationIds(selectedPublicationIds, notSelectedPublicationIds);
-      boolean toPortlet = StringUtil.getBooleanValue(sToPortlet);
-      boolean searchInProgress = kmeliaSC.getSearchContext() != null;
-      boolean newSearchInProgress = !queryDescription.isEmpty();
+      boolean searchContextExists = kmeliaSC.getSearchContext() != null;
+      boolean newSearchInProgress = searchRequest && !queryDescription.isEmpty();
 
-      if (StringUtil.isDefined(index)) {
+      if (index != null) {
         kmeliaSC.setIndexOfFirstPubToDisplay(index);
       }
-      if (StringUtil.isInteger(nbItemsPerPage)) {
-        kmeliaSC.setNbPublicationsPerPage(Integer.parseInt(nbItemsPerPage));
+      if (nbItemsPerPage != null) {
+        kmeliaSC.setNbPublicationsPerPage(nbItemsPerPage);
       }
-      if (StringUtil.isDefined(sort)) {
+      if (sort != null) {
         kmeliaSC.setSortValue(sort);
+        ofNullable(kmeliaSC.getSearchContext()).ifPresent(c -> c.applySort(sort));
       } else if (resetManualSort) {
         kmeliaSC.resetPublicationsOrder();
       }
 
-      if (queryDescription.isEmpty() && StringUtil.isNotDefined(index) &&
-          StringUtil.isNotDefined(nbItemsPerPage) && StringUtil.isNotDefined(sort)) {
+      if (!newSearchInProgress && searchContextExists && (searchRequest || index == null) &&
+          nbItemsPerPage == null && sort == null) {
         kmeliaSC.setSearchContext(null);
-        searchInProgress = false;
+        searchContextExists = false;
+        kmeliaSC.loadPublicationsOfCurrentFolder();
       }
 
       boolean sortAllowed = true;
@@ -220,7 +223,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         }
         publications = currentTopic.getValidPublications(publicationPK);
         if (resources.getSetting("linkManagerSortByPubId", false)) {
-          Collections.sort(publications, new KmeliaPublicationComparator());
+          publications.sort(new KmeliaPublicationComparator());
         }
       } else if (toPortlet) {
         sortAllowed = false;
@@ -228,10 +231,10 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         role = SilverpeasRole.USER.toString();
       } else if (newSearchInProgress) {
         publications = kmeliaSC.search(queryDescription, formContext);
-      } else if (searchInProgress) {
+      } else if (searchContextExists) {
         publications = kmeliaSC.getSearchContext().getResults();
-        if (StringUtil.isDefined(index)) {
-          kmeliaSC.getSearchContext().setPaginationIndex(StringUtil.asInt(index, 0));
+        if (index != null) {
+          kmeliaSC.getSearchContext().setPaginationIndex(index);
         }
       } else {
         publications = kmeliaSC.getSessionPublicationsList();
@@ -241,7 +244,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         sortAllowed = false;
         linksAllowed = false;
         seeAlso = false;
-        searchInProgress = false;
+        kmeliaSC.setSearchContext(null);
+        searchContextExists = false;
       }
 
       if (KmeliaHelper.isToolbox(componentId)) {
@@ -250,9 +254,10 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       }
 
       res.setContentType("text/xml");
-      res.setHeader("charset", "UTF-8");
+      res.setCharacterEncoding("UTF-8");
 
       Writer writer = res.getWriter();
+      final boolean searchInProgress = newSearchInProgress || searchContextExists;
       if (kmeliaSC.isRightsOnTopicsEnabled() && !kmeliaSC.isCurrentTopicAvailable()) {
         writer.write("<div class=\"inlineMessage-nok\">");
         writer.write(resources.getString("GML.ForbiddenAccessContent"));
@@ -847,7 +852,10 @@ public class AjaxPublicationsListServlet extends HttpServlet {
   }
 
   private boolean isSelectedSort(KmeliaSessionController ksc, int sort) {
-    return sort == ksc.getSortValue();
+    final int currentSort = ksc.getSearchContext() != null ?
+        ksc.getSearchContext().getSortValue() :
+        ksc.getSortValue();
+    return sort == currentSort;
   }
 
   private void displayPublicationsListHeader(List<KmeliaPublication> allPubs, boolean sortAllowed,
