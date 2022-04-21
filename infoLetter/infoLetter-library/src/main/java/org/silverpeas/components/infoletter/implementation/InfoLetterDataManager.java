@@ -387,15 +387,15 @@ public class InfoLetterDataManager implements InfoLetterService {
     try (Connection con = openConnection()) {
       final InfoLetter letter = getInfoLetter(letterPK);
       final int letterId = Integer.parseInt(letterPK.getId());
-      JdbcSqlQuery.createDeleteFor(TABLE_EXTERNAL_EMAILS)
+      JdbcSqlQuery.deleteFrom(TABLE_EXTERNAL_EMAILS)
           .where("instanceId = ?", letter.getInstanceId())
           .and("letter = ?", letterId)
           .executeWith(con);
       for (String email : emails) {
-        JdbcSqlQuery.createInsertFor(TABLE_EXTERNAL_EMAILS)
-            .addInsertParam("letter", letterId)
-            .addInsertParam("email", email)
-            .addInsertParam("instanceId", letter.getInstanceId())
+        JdbcSqlQuery.insertInto(TABLE_EXTERNAL_EMAILS)
+            .withInsertParam("letter", letterId)
+            .withInsertParam("email", email)
+            .withInsertParam("instanceId", letter.getInstanceId())
             .executeWith(con);
       }
     } catch (Exception e) {

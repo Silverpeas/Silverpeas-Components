@@ -188,7 +188,7 @@ public class MediaDAO {
           "P.resolutionW, P.resolutionH from SC_Gallery_Internal I join SC_Gallery_Photo P on I" +
           ".mediaId = P.mediaId where I.mediaId";
       for (Collection<String> mediaIds : idGroups) {
-        createSelect(queryBase).in(mediaIds).execute(row -> {
+        select(queryBase).in(mediaIds).execute(row -> {
           String mediaId = row.getString(1);
           mediaIds.remove(mediaId);
           Photo currentPhoto = photos.get(mediaId);
@@ -222,7 +222,7 @@ public class MediaDAO {
           "V.resolutionW, V.resolutionH, V.bitrate, V.duration from SC_Gallery_Internal I join " +
           "SC_Gallery_Video V on I.mediaId = V.mediaId where I.mediaId";
       for (Collection<String> mediaIds : idGroups) {
-        createSelect(queryBase).in(mediaIds).execute(row -> {
+        select(queryBase).in(mediaIds).execute(row -> {
           String mediaId = row.getString(1);
           mediaIds.remove(mediaId);
           Video currentVideo = videos.get(mediaId);
@@ -258,7 +258,7 @@ public class MediaDAO {
           "S.bitrate, S.duration from SC_Gallery_Internal I join SC_Gallery_Sound S on I.mediaId " +
           "= S.mediaId where I.mediaId";
       for (Collection<String> mediaIds : idGroups) {
-        createSelect(queryBase).in(mediaIds).execute(row -> {
+        select(queryBase).in(mediaIds).execute(row -> {
           String mediaId = row.getString(1);
           mediaIds.remove(mediaId);
           Sound currentSound = sounds.get(mediaId);
@@ -292,7 +292,7 @@ public class MediaDAO {
       String queryBase =
           "S.mediaId, S.homepageUrl, S.provider from SC_Gallery_Streaming S where S.mediaId";
       for (Collection<String> mediaIds : idGroups) {
-        createSelect(queryBase).in(mediaIds).execute(row -> {
+        select(queryBase).in(mediaIds).execute(row -> {
           String mediaId = row.getString(1);
           mediaIds.remove(mediaId);
           Streaming currentStreaming = streamings.get(mediaId);
@@ -373,7 +373,7 @@ public class MediaDAO {
     String uuid = media.getId();
 
     boolean isInsert = !isSqlDefined(uuid) ||
-        createCountFor(GALLERY_MEDIA_TABLE).where(MEDIA_ID_CRITERIA, uuid).execute() == 0;
+        countAll().from(GALLERY_MEDIA_TABLE).where(MEDIA_ID_CRITERIA, uuid).execute() == 0;
 
     // A new ID
     if (isInsert) {
@@ -417,14 +417,14 @@ public class MediaDAO {
     updateQueries.add(prepareSaveInternalMedia(photo, isInsert));
     final JdbcSqlQuery photoSave;
     if (isInsert) {
-      photoSave = createInsertFor(GALLERY_PHOTO_TABLE);
-      photoSave.addInsertParam(MEDIA_ID_PARAM, photo.getId());
+      photoSave = insertInto(GALLERY_PHOTO_TABLE);
+      photoSave.withInsertParam(MEDIA_ID_PARAM, photo.getId());
     } else {
-      photoSave = createUpdateFor(GALLERY_PHOTO_TABLE);
+      photoSave = update(GALLERY_PHOTO_TABLE);
     }
     Definition definition = photo.getDefinition();
-    photoSave.addSaveParam("resolutionW", definition.getWidth(), isInsert);
-    photoSave.addSaveParam("resolutionH", definition.getHeight(), isInsert);
+    photoSave.withSaveParam("resolutionW", definition.getWidth(), isInsert);
+    photoSave.withSaveParam("resolutionH", definition.getHeight(), isInsert);
     if (!isInsert) {
       photoSave.where(MEDIA_ID_CRITERIA, photo.getId());
     }
@@ -443,16 +443,16 @@ public class MediaDAO {
     updateQueries.add(prepareSaveInternalMedia(video, isInsert));
     final JdbcSqlQuery videoSave;
     if (isInsert) {
-      videoSave = createInsertFor(GALLERY_VIDEO_TABLE);
-      videoSave.addInsertParam(MEDIA_ID_PARAM, video.getId());
+      videoSave = insertInto(GALLERY_VIDEO_TABLE);
+      videoSave.withInsertParam(MEDIA_ID_PARAM, video.getId());
     } else {
-      videoSave = createUpdateFor(GALLERY_VIDEO_TABLE);
+      videoSave = update(GALLERY_VIDEO_TABLE);
     }
     Definition definition = video.getDefinition();
-    videoSave.addSaveParam("resolutionW", definition.getWidth(), isInsert);
-    videoSave.addSaveParam("resolutionH", definition.getHeight(), isInsert);
-    videoSave.addSaveParam("bitrate", video.getBitrate(), isInsert);
-    videoSave.addSaveParam("duration", video.getDuration(), isInsert);
+    videoSave.withSaveParam("resolutionW", definition.getWidth(), isInsert);
+    videoSave.withSaveParam("resolutionH", definition.getHeight(), isInsert);
+    videoSave.withSaveParam("bitrate", video.getBitrate(), isInsert);
+    videoSave.withSaveParam("duration", video.getDuration(), isInsert);
     if (!isInsert) {
       videoSave.where(MEDIA_ID_CRITERIA, video.getId());
     }
@@ -471,13 +471,13 @@ public class MediaDAO {
     updateQueries.add(prepareSaveInternalMedia(sound, isInsert));
     final JdbcSqlQuery soundSave;
     if (isInsert) {
-      soundSave = createInsertFor(GALLERY_SOUND_TABLE);
-      soundSave.addInsertParam(MEDIA_ID_PARAM, sound.getId());
+      soundSave = insertInto(GALLERY_SOUND_TABLE);
+      soundSave.withInsertParam(MEDIA_ID_PARAM, sound.getId());
     } else {
-      soundSave = createUpdateFor(GALLERY_SOUND_TABLE);
+      soundSave = update(GALLERY_SOUND_TABLE);
     }
-    soundSave.addSaveParam("bitrate", sound.getBitrate(), isInsert);
-    soundSave.addSaveParam("duration", sound.getDuration(), isInsert);
+    soundSave.withSaveParam("bitrate", sound.getBitrate(), isInsert);
+    soundSave.withSaveParam("duration", sound.getDuration(), isInsert);
     if (!isInsert) {
       soundSave.where(MEDIA_ID_CRITERIA, sound.getId());
     }
@@ -494,13 +494,13 @@ public class MediaDAO {
   private static JdbcSqlQuery prepareSaveStreaming(Streaming streaming, boolean isInsert) {
     final JdbcSqlQuery streamingSave;
     if (isInsert) {
-      streamingSave = createInsertFor(GALLERY_STREAMING_TABLE);
-      streamingSave.addInsertParam(MEDIA_ID_PARAM, streaming.getId());
+      streamingSave = insertInto(GALLERY_STREAMING_TABLE);
+      streamingSave.withInsertParam(MEDIA_ID_PARAM, streaming.getId());
     } else {
-      streamingSave = createUpdateFor(GALLERY_STREAMING_TABLE);
+      streamingSave = update(GALLERY_STREAMING_TABLE);
     }
-    streamingSave.addSaveParam("homepageUrl", streaming.getHomepageUrl(), isInsert);
-    streamingSave.addSaveParam("provider", streaming.getProvider()
+    streamingSave.withSaveParam("homepageUrl", streaming.getHomepageUrl(), isInsert);
+    streamingSave.withSaveParam("provider", streaming.getProvider()
         .map(StreamingProvider::getName)
         .orElseThrow(() -> new IllegalArgumentException("Provider MUST exists")), isInsert);
     if (!isInsert) {
@@ -520,21 +520,21 @@ public class MediaDAO {
       boolean isInsert) {
     final JdbcSqlQuery mediaSave;
     if (isInsert) {
-      mediaSave = createInsertFor(GALLERY_MEDIA_TABLE);
-      mediaSave.addInsertParam(MEDIA_ID_PARAM, media.getId());
+      mediaSave = insertInto(GALLERY_MEDIA_TABLE);
+      mediaSave.withInsertParam(MEDIA_ID_PARAM, media.getId());
     } else {
-      mediaSave = createUpdateFor(GALLERY_MEDIA_TABLE);
+      mediaSave = update(GALLERY_MEDIA_TABLE);
     }
-    mediaSave.addSaveParam("mediaType", media.getType(), isInsert);
-    mediaSave.addSaveParam(INSTANCE_ID_PARAM, media.getInstanceId(), isInsert);
-    mediaSave.addSaveParam("title", media.getTitle(), isInsert);
-    mediaSave.addSaveParam("description", media.getDescription(), isInsert);
-    mediaSave.addSaveParam("author", media.getAuthor(), isInsert);
-    mediaSave.addSaveParam("keyword", media.getKeyWord(), isInsert);
+    mediaSave.withSaveParam("mediaType", media.getType(), isInsert);
+    mediaSave.withSaveParam(INSTANCE_ID_PARAM, media.getInstanceId(), isInsert);
+    mediaSave.withSaveParam("title", media.getTitle(), isInsert);
+    mediaSave.withSaveParam("description", media.getDescription(), isInsert);
+    mediaSave.withSaveParam("author", media.getAuthor(), isInsert);
+    mediaSave.withSaveParam("keyword", media.getKeyWord(), isInsert);
     mediaSave
-        .addSaveParam("beginVisibilityDate", media.getVisibilityPeriod().getBeginDate().getTime(),
+        .withSaveParam("beginVisibilityDate", media.getVisibilityPeriod().getBeginDate().getTime(),
             isInsert);
-    mediaSave.addSaveParam("endVisibilityDate", media.getVisibilityPeriod().getEndDate().getTime(),
+    mediaSave.withSaveParam("endVisibilityDate", media.getVisibilityPeriod().getEndDate().getTime(),
         isInsert);
     Timestamp saveDate = new Timestamp(new Date().getTime());
     if (isInsert) {
@@ -542,15 +542,15 @@ public class MediaDAO {
       media.setCreator(context.getUser());
       media.setLastUpdateDate(saveDate);
       media.setLastUpdater(context.getUser());
-      mediaSave.addInsertParam("createDate", media.getCreationDate());
-      mediaSave.addInsertParam("createdBy", media.getCreatorId());
-      mediaSave.addInsertParam("lastUpdateDate", media.getLastUpdateDate());
-      mediaSave.addInsertParam("lastUpdatedBy", media.getLastUpdatedBy());
+      mediaSave.withInsertParam("createDate", media.getCreationDate());
+      mediaSave.withInsertParam("createdBy", media.getCreatorId());
+      mediaSave.withInsertParam("lastUpdateDate", media.getLastUpdateDate());
+      mediaSave.withInsertParam("lastUpdatedBy", media.getLastUpdatedBy());
     } else if (!context.isUpdatingInCaseOfCreation()) {
       media.setLastUpdateDate(saveDate);
       media.setLastUpdater(context.getUser());
-      mediaSave.addUpdateParam("lastUpdateDate", media.getLastUpdateDate());
-      mediaSave.addUpdateParam("lastUpdatedBy", media.getLastUpdatedBy());
+      mediaSave.withUpdateParam("lastUpdateDate", media.getLastUpdateDate());
+      mediaSave.withUpdateParam("lastUpdatedBy", media.getLastUpdatedBy());
     }
     if (!isInsert) {
       mediaSave.where(MEDIA_ID_CRITERIA, media.getId());
@@ -567,21 +567,21 @@ public class MediaDAO {
   private static JdbcSqlQuery prepareSaveInternalMedia(InternalMedia iMedia, boolean isInsert) {
     final JdbcSqlQuery iMediaSave;
     if (isInsert) {
-      iMediaSave = createInsertFor(GALLERY_INTERNAL_TABLE);
-      iMediaSave.addInsertParam(MEDIA_ID_PARAM, iMedia.getId());
+      iMediaSave = insertInto(GALLERY_INTERNAL_TABLE);
+      iMediaSave.withInsertParam(MEDIA_ID_PARAM, iMedia.getId());
     } else {
-      iMediaSave = createUpdateFor(GALLERY_INTERNAL_TABLE);
+      iMediaSave = update(GALLERY_INTERNAL_TABLE);
     }
-    iMediaSave.addSaveParam("fileName", iMedia.getFileName(), isInsert);
-    iMediaSave.addSaveParam("fileSize", iMedia.getFileSize(), isInsert);
-    iMediaSave.addSaveParam("fileMimeType", iMedia.getFileMimeType().getMimeType(), isInsert);
-    iMediaSave.addSaveParam("download", iMedia.isDownloadAuthorized() ? 1 : 0, isInsert);
+    iMediaSave.withSaveParam("fileName", iMedia.getFileName(), isInsert);
+    iMediaSave.withSaveParam("fileSize", iMedia.getFileSize(), isInsert);
+    iMediaSave.withSaveParam("fileMimeType", iMedia.getFileMimeType().getMimeType(), isInsert);
+    iMediaSave.withSaveParam("download", iMedia.isDownloadAuthorized() ? 1 : 0, isInsert);
     Long beginDate = iMedia.getDownloadPeriod().getBeginDatable().isDefined() ?
         iMedia.getDownloadPeriod().getBeginDate().getTime() : null;
-    iMediaSave.addSaveParam("beginDownloadDate", beginDate, isInsert);
+    iMediaSave.withSaveParam("beginDownloadDate", beginDate, isInsert);
     Long endDate = iMedia.getDownloadPeriod().getEndDatable().isDefined() ?
         iMedia.getDownloadPeriod().getEndDate().getTime() : null;
-    iMediaSave.addSaveParam("endDownloadDate", endDate, isInsert);
+    iMediaSave.withSaveParam("endDownloadDate", endDate, isInsert);
     if (!isInsert) {
       iMediaSave.where(MEDIA_ID_CRITERIA, iMedia.getId());
     }
@@ -596,23 +596,23 @@ public class MediaDAO {
   public static void deleteMedia(Media media) throws SQLException {
     String mediaId = media.getId();
     JdbcSqlQueries updateQueries = new JdbcSqlQueries();
-    updateQueries.add(createDeleteFor(GALLERY_MEDIA_TABLE).where(MEDIA_ID_CRITERIA, mediaId));
+    updateQueries.add(deleteFrom(GALLERY_MEDIA_TABLE).where(MEDIA_ID_CRITERIA, mediaId));
     if (MediaType.Photo == media.getType() || MediaType.Video == media.getType() ||
         MediaType.Sound == media.getType()) {
-      updateQueries.add(createDeleteFor(GALLERY_INTERNAL_TABLE).where(MEDIA_ID_CRITERIA, mediaId));
+      updateQueries.add(deleteFrom(GALLERY_INTERNAL_TABLE).where(MEDIA_ID_CRITERIA, mediaId));
     }
     switch (media.getType()) {
       case Photo:
-        updateQueries.add(createDeleteFor(GALLERY_PHOTO_TABLE).where(MEDIA_ID_CRITERIA, mediaId));
+        updateQueries.add(deleteFrom(GALLERY_PHOTO_TABLE).where(MEDIA_ID_CRITERIA, mediaId));
         break;
       case Video:
-        updateQueries.add(createDeleteFor(GALLERY_VIDEO_TABLE).where(MEDIA_ID_CRITERIA, mediaId));
+        updateQueries.add(deleteFrom(GALLERY_VIDEO_TABLE).where(MEDIA_ID_CRITERIA, mediaId));
         break;
       case Sound:
-        updateQueries.add(createDeleteFor(GALLERY_SOUND_TABLE).where(MEDIA_ID_CRITERIA, mediaId));
+        updateQueries.add(deleteFrom(GALLERY_SOUND_TABLE).where(MEDIA_ID_CRITERIA, mediaId));
         break;
       case Streaming:
-        updateQueries.add(createDeleteFor(GALLERY_STREAMING_TABLE).where(MEDIA_ID_CRITERIA, mediaId));
+        updateQueries.add(deleteFrom(GALLERY_STREAMING_TABLE).where(MEDIA_ID_CRITERIA, mediaId));
         break;
       default:
         SilverLogger.getLogger(MediaDAO.class).warn("Unknown media type: {0}", media.getId());
@@ -632,15 +632,15 @@ public class MediaDAO {
     List<?> pathParams =
         Arrays.asList(media.getId(), media.getInstanceId(), Integer.valueOf(albumId));
 
-    boolean isInsert = createCountFor(GALLERY_PATH_TABLE)
+    boolean isInsert = countAll().from(GALLERY_PATH_TABLE)
         .where("mediaId = ? and instanceId = ? and nodeId = ?", pathParams).execute() == 0;
 
     if (isInsert) {
       Iterator<?> paramIt = pathParams.iterator();
-      JdbcSqlQuery insert = createInsertFor(GALLERY_PATH_TABLE);
-      insert.addInsertParam(MEDIA_ID_PARAM, paramIt.next());
-      insert.addInsertParam(INSTANCE_ID_PARAM, paramIt.next());
-      insert.addInsertParam("nodeId", paramIt.next());
+      JdbcSqlQuery insert = insertInto(GALLERY_PATH_TABLE);
+      insert.withInsertParam(MEDIA_ID_PARAM, paramIt.next());
+      insert.withInsertParam(INSTANCE_ID_PARAM, paramIt.next());
+      insert.withInsertParam("nodeId", paramIt.next());
       insert.execute();
     }
   }
@@ -651,7 +651,7 @@ public class MediaDAO {
    * @throws SQLException on SQL error
    */
   public static void deleteAllMediaPath(Media media) throws SQLException {
-    createDeleteFor(GALLERY_PATH_TABLE)
+    deleteFrom(GALLERY_PATH_TABLE)
         .where("mediaId = ? and instanceId = ?", media.getId(), media.getInstanceId()).execute();
   }
 
@@ -662,10 +662,13 @@ public class MediaDAO {
    * @throws SQLException on SQL error
    */
   public static Collection<String> getAlbumIdsOf(Media media) throws SQLException {
-    return createSelect(
-        "N.NodeId from SC_Gallery_Path P, SB_Node_Node N where P.mediaId = ? and N.nodeId " +
-            "= P.NodeId and P.instanceId = ? and N.instanceId = P.instanceId", media.getId(),
-        media.getInstanceId()).execute(row -> String.valueOf(row.getInt(1)));
+    return select("N.NodeId")
+        .from("SC_Gallery_Path P", "SB_Node_Node N")
+        .where("P.mediaId = ?", media.getId())
+        .and("N.nodeId = P.NodeId")
+        .and("P.instanceId = ?", media.getInstanceId())
+        .and("N.instanceId = P.instanceId")
+        .execute(row -> String.valueOf(row.getInt(1)));
   }
 
   /**

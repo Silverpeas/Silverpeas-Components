@@ -404,7 +404,7 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
     try {
       final List<FormDetail> forms = new ArrayList<>();
       JdbcSqlQuery.executeBySplittingOn(instanceIds, (idBatch, ignore) -> {
-          final JdbcSqlQuery query = JdbcSqlQuery.createSelect("*")
+          final JdbcSqlQuery query = JdbcSqlQuery.select("*")
           .from(FORMS_TABLENAME)
           // 1st criteria : correct instanceId
           .where(INSTANCE_ID).in(instanceIds)
@@ -513,7 +513,7 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
       return new SilverpeasArrayList<>(0);
     }
     final JdbcSqlQuery query = JdbcSqlQuery
-        .createSelect("r.*")
+        .select("r.*")
         .from(FORMS_INSTANCES_TABLENAME + " r")
         .where("instanceid").in(criteria.getComponentInstanceIds());
     if (!criteria.getIds().isEmpty()) {
@@ -631,7 +631,7 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
             return i;
           })
           .collect(toMap(FormInstance::getIdAsInt, r -> r));
-      JdbcSqlQuery.createSelect("*")
+      JdbcSqlQuery.select("*")
           .from(FORMS_INSTANCE_VALIDATIONS_TABLENAME)
           .where(FORM_INST_ID + " BETWEEN ? AND ?", min.get(), max.get())
           .executeWith(con, r -> {
@@ -659,7 +659,7 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
       final Collection<String> formIds) throws FormsOnlineException {
     final Map<String, Set<FormInstanceValidationType>> result = new HashMap<>();
     final JdbcSqlQuery query = JdbcSqlQuery
-        .createSelect("DISTINCT formId, rightType")
+        .select("DISTINCT formId, rightType")
         .from(USER_RIGHTS_TABLENAME)
         .join(FORMS_TABLENAME + " f").on("f." + ID + " = " + FORM_ID)
         .where("f." + INSTANCE_ID + " = ?", instanceId)
@@ -697,7 +697,7 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
     if (!formIds.isEmpty()) {
       final Collection<Integer> asIntegers = formIds.stream().map(Integer::parseInt).collect(toSet());
       final JdbcSqlQuery query = JdbcSqlQuery
-          .createSelect("formId, rightType")
+          .select("formId, rightType")
           .from(USER_RIGHTS_TABLENAME)
           .join(FORMS_TABLENAME).on(ID + " = " + FORM_ID)
           .where(RIGHT_TYPE).in("I", "R")
@@ -759,22 +759,22 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
       if (isInsert) {
         formInstId = DBUtil.getNextId(FORMS_INSTANCES_TABLENAME, "id");
         request.setId(formInstId);
-        formInstanceSave = createInsertFor(FORMS_INSTANCES_TABLENAME);
-        formInstanceSave.addInsertParam(ID, formInstId);
+        formInstanceSave = insertInto(FORMS_INSTANCES_TABLENAME);
+        formInstanceSave.withInsertParam(ID, formInstId);
       } else {
         formInstId = request.getIdAsInt();
-        formInstanceSave = createUpdateFor(FORMS_INSTANCES_TABLENAME);
+        formInstanceSave = update(FORMS_INSTANCES_TABLENAME);
       }
       saveQueries.add(formInstanceSave);
-      formInstanceSave.addSaveParam(FORM_ID, request.getFormId(), isInsert);
-      formInstanceSave.addSaveParam(STATE, request.getState(), isInsert);
-      formInstanceSave.addSaveParam(INSTANCE_ID, request.getComponentInstanceId(), isInsert);
+      formInstanceSave.withSaveParam(FORM_ID, request.getFormId(), isInsert);
+      formInstanceSave.withSaveParam(STATE, request.getState(), isInsert);
+      formInstanceSave.withSaveParam(INSTANCE_ID, request.getComponentInstanceId(), isInsert);
       if (isInsert) {
-        formInstanceSave.addSaveParam(CREATOR_ID, request.getCreatorId(), true);
-        formInstanceSave.addSaveParam(CREATION_DATE, Timestamp.from(Instant.now()), true);
+        formInstanceSave.withSaveParam(CREATOR_ID, request.getCreatorId(), true);
+        formInstanceSave.withSaveParam(CREATION_DATE, Timestamp.from(Instant.now()), true);
       } else {
         if (request.getState() <= FormInstance.STATE_UNREAD) {
-          formInstanceSave.addSaveParam(CREATION_DATE, Timestamp.from(Instant.now()), false);
+          formInstanceSave.withSaveParam(CREATION_DATE, Timestamp.from(Instant.now()), false);
         }
         formInstanceSave.where(ID_CRITERIA, formInstId);
       }
@@ -801,23 +801,23 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
           if (isInsert) {
             validationId = DBUtil.getNextId(FORMS_INSTANCE_VALIDATIONS_TABLENAME, "id");
             v.setId(validationId);
-            validationSave = createInsertFor(FORMS_INSTANCE_VALIDATIONS_TABLENAME);
-            validationSave.addInsertParam(ID, validationId);
+            validationSave = insertInto(FORMS_INSTANCE_VALIDATIONS_TABLENAME);
+            validationSave.withInsertParam(ID, validationId);
           } else {
             validationId = v.getId();
-            validationSave = createUpdateFor(FORMS_INSTANCE_VALIDATIONS_TABLENAME);
+            validationSave = update(FORMS_INSTANCE_VALIDATIONS_TABLENAME);
           }
-          validationSave.addSaveParam(FORM_INST_ID, v.getFormInstance().getIdAsInt(), isInsert);
-          validationSave.addSaveParam(VALIDATION_BY, v.getValidator().getId(), isInsert);
-          validationSave.addSaveParam(VALIDATION_TYPE, v.getValidationType().name(), isInsert);
-          validationSave.addSaveParam("status", v.getStatus().name(), isInsert);
-          validationSave.addSaveParam("validationComment", v.getComment(), isInsert);
-          validationSave.addSaveParam("follower", v.isFollower(), isInsert);
+          validationSave.withSaveParam(FORM_INST_ID, v.getFormInstance().getIdAsInt(), isInsert);
+          validationSave.withSaveParam(VALIDATION_BY, v.getValidator().getId(), isInsert);
+          validationSave.withSaveParam(VALIDATION_TYPE, v.getValidationType().name(), isInsert);
+          validationSave.withSaveParam("status", v.getStatus().name(), isInsert);
+          validationSave.withSaveParam("validationComment", v.getComment(), isInsert);
+          validationSave.withSaveParam("follower", v.isFollower(), isInsert);
           if (isInsert) {
             final Timestamp validationDate = v.getDate() != null
                 ? new Timestamp(v.getDate().getTime())
                 : Timestamp.from(Instant.now());
-            validationSave.addSaveParam("validationDate", validationDate, true);
+            validationSave.withSaveParam("validationDate", validationDate, true);
           } else {
             validationSave.where(ID_CRITERIA, validationId);
           }
@@ -833,8 +833,8 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
         throw new FormsOnlineException(failureOnUpdate(REQUEST_MSG, request.getFormId()));
       }
       Transaction.performInOne(() -> {
-        final JdbcSqlQuery formInstanceStateSave = createUpdateFor(FORMS_INSTANCES_TABLENAME);
-        formInstanceStateSave.addUpdateParam(STATE, request.getState());
+        final JdbcSqlQuery formInstanceStateSave = update(FORMS_INSTANCES_TABLENAME);
+        formInstanceStateSave.withUpdateParam(STATE, request.getState());
         formInstanceStateSave.where(ID_CRITERIA, request.getIdAsInt());
         return formInstanceStateSave.execute();
       });
@@ -855,10 +855,10 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
     try {
       final JdbcSqlQueries deleteQueries = new JdbcSqlQueries();
       deleteQueries.add(JdbcSqlQuery
-          .createDeleteFor(FORMS_INSTANCE_VALIDATIONS_TABLENAME)
+          .deleteFrom(FORMS_INSTANCE_VALIDATIONS_TABLENAME)
           .where("formInstId = ?", Integer.parseInt(pk.getId())));
       deleteQueries.add(JdbcSqlQuery
-          .createDeleteFor(FORMS_INSTANCES_TABLENAME)
+          .deleteFrom(FORMS_INSTANCES_TABLENAME)
           .where("instanceId = ?", pk.getInstanceId())
           .and("id = ?", Integer.parseInt(pk.getId())));
       deleteQueries.execute();

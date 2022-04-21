@@ -129,7 +129,7 @@ class JdbcRequester {
 
   private boolean isAuthorizedTable(final Connection connection, String tableName) {
     try {
-      JdbcSqlQuery.createCountFor(tableName).executeWith(connection);
+      JdbcSqlQuery.countAll().from(tableName).executeWith(connection);
       return true;
     } catch (SQLException e) {
       return false;
@@ -224,7 +224,7 @@ class JdbcRequester {
     Objects.requireNonNull(connection);
     Objects.requireNonNull(tableName);
     Objects.requireNonNull(predicate);
-    JdbcSqlQuery query = JdbcSqlQuery.createSelect("*").from(tableName);
+    JdbcSqlQuery query = JdbcSqlQuery.select("*").from(tableName);
     query = predicate.apply(query).orderBy(orderBy);
     if (pagination != null) {
       query.withPagination(pagination.asCriterion());
@@ -255,7 +255,7 @@ class JdbcRequester {
    */
   long delete(final Connection connection, final String tableName,
       final Map<String, Object> criteria) throws SQLException {
-    final JdbcSqlQuery query = JdbcSqlQuery.createDeleteFor(tableName);
+    final JdbcSqlQuery query = JdbcSqlQuery.deleteFrom(tableName);
     return applyCriteria(query, criteria).executeWith(connection);
   }
 
@@ -270,8 +270,8 @@ class JdbcRequester {
    */
   long update(final Connection connection, final String tableName, final Map<String, Object> values,
       Map<String, Object> criteria) throws SQLException {
-    final JdbcSqlQuery query = JdbcSqlQuery.createUpdateFor(tableName);
-    values.forEach(query::addUpdateParam);
+    final JdbcSqlQuery query = JdbcSqlQuery.update(tableName);
+    values.forEach(query::withUpdateParam);
     return applyCriteria(query, criteria).executeWith(connection);
   }
 
@@ -283,8 +283,8 @@ class JdbcRequester {
    */
   void insert(final Connection connection, final String tableName, final Map<String, Object> values)
       throws SQLException {
-    final JdbcSqlQuery query = JdbcSqlQuery.createInsertFor(tableName);
-    values.forEach(query::addInsertParam);
+    final JdbcSqlQuery query = JdbcSqlQuery.insertInto(tableName);
+    values.forEach(query::withInsertParam);
     query.executeWith(connection);
   }
 
@@ -423,7 +423,7 @@ class JdbcRequester {
     @Nonnull
     private String computeSQLFunction(final Connection connection, final String function) {
       try {
-        return JdbcSqlQuery.createSelect(function)
+        return JdbcSqlQuery.select(function)
             .executeUniqueWith(connection, r -> r.getString(1));
       } catch (SQLException e) {
         // not a function or cannot be computed by the database

@@ -47,15 +47,15 @@ public class MediaOrderSQLQueryBuilder implements MediaOrderCriteriaProcessor {
   @Override
   public void startProcessing() {
     sqlQuery
-        .append("O.orderId, O.userId, O.instanceId, O.createDate, O.processDate, O.processUser ");
+        .append("select O.orderId, O.userId, O.instanceId, O.createDate, O.processDate, O.processUser ");
     from.append("from SC_Gallery_Order O ");
   }
 
   @Override
   public void endProcessing() {
-    sqlQuery.append(from.toString());
+    sqlQuery.append(from);
     if (where.length() > 0) {
-      sqlQuery.append(" where ").append(where.toString());
+      sqlQuery.append(" where ").append(where);
     }
     done = true;
   }
@@ -63,7 +63,7 @@ public class MediaOrderSQLQueryBuilder implements MediaOrderCriteriaProcessor {
   @SuppressWarnings("unchecked")
   @Override
   public JdbcSqlQuery result() {
-    return JdbcSqlQuery.createSelect(sqlQuery.toString(), parameters);
+    return JdbcSqlQuery.create(sqlQuery.toString(), parameters);
   }
 
   @Override
@@ -116,7 +116,7 @@ public class MediaOrderSQLQueryBuilder implements MediaOrderCriteriaProcessor {
         params.append("?");
         parameters.add(identifier);
       }
-      where(conjunction).append("O.orderId in (").append(params.toString()).append(")");
+      where(conjunction).append("O.orderId in (").append(params).append(")");
       conjunction = "";
     }
     return this;

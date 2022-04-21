@@ -58,7 +58,7 @@ public class QuickInfoDelayedVisibilityUserNotificationReminderInitializer
   @Override
   public void init() throws Exception {
     if (!dataFile.exists()) {
-      final List<String> potentialNewsIds = JdbcSqlQuery.createSelect("n.id")
+      final List<String> potentialNewsIds = JdbcSqlQuery.select("n.id")
           .from("sc_quickinfo_news n, sb_publication_publi p")
           .where("CAST(n.foreignid AS INT) = p.pubid")
           .and("p.pubbegindate >= ?", DateUtil.today2SQLDate())

@@ -487,7 +487,7 @@ public class ProjectManagerDAO {
    */
   private static List<TaskDetail> listTasksSortedByStartDate(Connection con,
       UnaryOperator<JdbcSqlQuery> sqlQueryOp) throws SQLException {
-    return sqlQueryOp.apply(JdbcSqlQuery.createSelect("*")
+    return sqlQueryOp.apply(JdbcSqlQuery.select("*")
         .from(PROJECTMANAGER_TASKS_TABLENAME))
         .orderBy("dateDebut ASC, id ASC")
         .executeWith(con, rs -> {

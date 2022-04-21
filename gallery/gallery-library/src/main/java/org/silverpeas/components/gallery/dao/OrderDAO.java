@@ -60,11 +60,11 @@ public class OrderDAO {
 
     // New order
     String uuid = getUniqueId();
-    JdbcSqlQuery insert = createInsertFor(GALLERY_ORDER_TABLE);
-    insert.addInsertParam("orderId", uuid);
-    insert.addInsertParam("userId", userId);
-    insert.addInsertParam("instanceId", instanceId);
-    insert.addInsertParam("createDate", new Timestamp(new Date().getTime()));
+    JdbcSqlQuery insert = insertInto(GALLERY_ORDER_TABLE);
+    insert.withInsertParam("orderId", uuid);
+    insert.withInsertParam("userId", userId);
+    insert.withInsertParam("instanceId", instanceId);
+    insert.withInsertParam("createDate", new Timestamp(new Date().getTime()));
     insert.execute();
 
     // Details of the order
@@ -84,10 +84,10 @@ public class OrderDAO {
    */
   private static void addOrderMedia(String mediaId, String orderId, String instanceId)
       throws SQLException {
-    JdbcSqlQuery insert = createInsertFor(GALLERY_ORDER_DETAIL_TABLE);
-    insert.addInsertParam("orderId", orderId);
-    insert.addInsertParam("mediaId", mediaId);
-    insert.addInsertParam("instanceId", instanceId);
+    JdbcSqlQuery insert = insertInto(GALLERY_ORDER_DETAIL_TABLE);
+    insert.withInsertParam("orderId", orderId);
+    insert.withInsertParam("mediaId", mediaId);
+    insert.withInsertParam("instanceId", instanceId);
     insert.execute();
   }
 
@@ -100,8 +100,8 @@ public class OrderDAO {
     updateOrderStatus(order);
     List<OrderRow> rows = order.getRows();
     for (OrderRow row : rows) {
-      JdbcSqlQuery update = createUpdateFor(GALLERY_ORDER_DETAIL_TABLE);
-      update.addUpdateParam("downloadDecision", row.getDownloadDecision());
+      JdbcSqlQuery update = update(GALLERY_ORDER_DETAIL_TABLE);
+      update.withUpdateParam("downloadDecision", row.getDownloadDecision());
       update.where("orderId = ? and mediaId = ?", row.getOrderId(), row.getMediaId());
       update.execute();
     }
@@ -113,9 +113,9 @@ public class OrderDAO {
    * @throws SQLException
    */
   private static void updateOrderStatus(Order order) throws SQLException {
-    JdbcSqlQuery update = createUpdateFor(GALLERY_ORDER_TABLE);
-    update.addUpdateParam("processDate", new Timestamp(new Date().getTime()));
-    update.addUpdateParam("processUser", order.getProcessUserId());
+    JdbcSqlQuery update = update(GALLERY_ORDER_TABLE);
+    update.withUpdateParam("processDate", new Timestamp(new Date().getTime()));
+    update.withUpdateParam("processUser", order.getProcessUserId());
     update.where(ORDER_ID_CRITERION, order.getOrderId());
     update.execute();
   }
@@ -126,7 +126,7 @@ public class OrderDAO {
    * @throws SQLException
    */
   public static void deleteOrder(Order order) throws SQLException {
-    createDeleteFor(GALLERY_ORDER_TABLE).where(ORDER_ID_CRITERION, order.getOrderId()).execute();
+    deleteFrom(GALLERY_ORDER_TABLE).where(ORDER_ID_CRITERION, order.getOrderId()).execute();
     Collection<OrderRow> orderRows = getAllOrderDetails(order.getOrderId());
     if (orderRows != null) {
       for (final OrderRow row : orderRows) {
@@ -142,7 +142,7 @@ public class OrderDAO {
    * @throws SQLException
    */
   private static void deleteMediaFromOrder(String mediaId, String orderId) throws SQLException {
-    createDeleteFor(GALLERY_ORDER_DETAIL_TABLE).where("mediaId = ? and orderId = ?", mediaId, orderId)
+    deleteFrom(GALLERY_ORDER_DETAIL_TABLE).where("mediaId = ? and orderId = ?", mediaId, orderId)
         .execute();
   }
 
@@ -153,7 +153,7 @@ public class OrderDAO {
    * @throws SQLException
    */
   public static List<OrderRow> getAllOrderDetails(final String orderId) throws SQLException {
-    return createSelect(
+    return select(
         "mediaId, instanceId, downloadDate, downloadDecision from SC_Gallery_OrderDetail")
         .where(ORDER_ID_CRITERION, orderId).execute(row -> {
           String mediaId = row.getString(1);
@@ -171,9 +171,9 @@ public class OrderDAO {
    * @throws SQLException
    */
   public static void updateOrderRow(OrderRow row) throws SQLException {
-    JdbcSqlQuery update = createUpdateFor(GALLERY_ORDER_DETAIL_TABLE);
-    update.addUpdateParam("downloadDate", new Timestamp(new Date().getTime()));
-    update.addUpdateParam("downloadDecision", row.getDownloadDecision());
+    JdbcSqlQuery update = update(GALLERY_ORDER_DETAIL_TABLE);
+    update.withUpdateParam("downloadDate", new Timestamp(new Date().getTime()));
+    update.withUpdateParam("downloadDecision", row.getDownloadDecision());
     update.where("orderId = ? and mediaId = ?", row.getOrderId(), row.getMediaId());
     update.execute();
   }
