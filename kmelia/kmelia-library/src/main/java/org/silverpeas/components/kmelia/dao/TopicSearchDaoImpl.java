@@ -41,27 +41,26 @@ import java.util.List;
 @Repository
 public class TopicSearchDaoImpl implements TopicSearchDao {
 
-  private static final String QUERY_GET_LIST_MOST_INTERESTED_QUERY =
-      "count(*) as nb, query FROM sc_kmelia_search WHERE instanceid = ? GROUP BY query, " +
-          "language ORDER BY nb DESC, query";
-
   private static SettingBundle settings =
       ResourceLocator.getSettingBundle("org.silverpeas.kmelia.settings.kmeliaSettings");
 
   @Override
   public List<MostInterestedQueryVO> getMostInterestedSearch(String instanceId) {
-    // Set the max number of result to retrieve
     JdbcSqlQuery jdbcSqlQuery =
-        JdbcSqlQuery.createSelect(QUERY_GET_LIST_MOST_INTERESTED_QUERY, instanceId).configure(
-            config -> config.withResultLimit(
-                settings.getInteger("kmelia.stats.most.interested.query.limit", 10)));
+        JdbcSqlQuery.select("count(*) as nb, query").from("sc_kmelia_search")
+            .where("instanceid = ?", instanceId)
+            .groupBy("query", "language")
+            .orderBy("nb DESC", "query")
+            .configure(config ->
+                config.withResultLimit(
+                    settings.getInteger("kmelia.stats.most.interested.query.limit", 10)));
     List<MostInterestedQueryVO> mostInterestedQueries = null;
     try {
       mostInterestedQueries = jdbcSqlQuery
           .execute(row -> new MostInterestedQueryVO(row.getString("query"), row.getInt("nb")));
     } catch (SQLException e) {
       SilverLogger.getLogger(this)
-          .error("Problem to execute SQL query " + QUERY_GET_LIST_MOST_INTERESTED_QUERY +
+          .error("Problem to execute SQL query " + jdbcSqlQuery.getSqlQuery() +
               " with intanceId = " + instanceId, e);
     }
     return mostInterestedQueries;

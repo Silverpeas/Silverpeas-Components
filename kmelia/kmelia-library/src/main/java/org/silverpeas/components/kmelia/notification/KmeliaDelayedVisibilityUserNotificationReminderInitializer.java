@@ -59,7 +59,7 @@ public class KmeliaDelayedVisibilityUserNotificationReminderInitializer
   @Override
   public void init() throws Exception {
     if (!dataFile.exists()) {
-      final List<PublicationPK> potentialPubIds = JdbcSqlQuery.createSelect("pubId, instanceId")
+      final List<PublicationPK> potentialPubIds = JdbcSqlQuery.select("pubId, instanceId")
           .from("sb_publication_publi")
           .where("instanceId like 'kmelia%'")
           .and("pubbegindate >= ?", DateUtil.today2SQLDate())

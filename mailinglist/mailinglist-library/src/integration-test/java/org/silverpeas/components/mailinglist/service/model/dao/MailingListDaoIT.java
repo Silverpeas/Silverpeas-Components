@@ -238,7 +238,7 @@ public class MailingListDaoIT {
 
   private long countRowsInTable(String table) throws Exception {
     try (Connection connection = dbSetupRule.getSafeConnectionFromDifferentThread()) {
-      return JdbcSqlQuery.createCountFor(table).executeWith(connection);
+      return JdbcSqlQuery.countAll().from(table).executeWith(connection);
     }
   }
 
