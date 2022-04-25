@@ -24,10 +24,10 @@
 
 package org.silverpeas.components.kmelia.model;
 
-public class PubliAuthorComparator extends AbstractPublicationComparator {
+class PubliAuthorComparator extends AbstractPublicationComparator {
   private static final long serialVersionUID = 80126242548296961L;
 
-  public PubliAuthorComparator(final boolean asc) {
+  PubliAuthorComparator(final boolean asc) {
     super(asc);
   }
 

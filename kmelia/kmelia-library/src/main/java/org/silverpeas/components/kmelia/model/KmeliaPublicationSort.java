@@ -9,33 +9,24 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception. You should have received a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.components.kmelia;
-
-import org.silverpeas.components.kmelia.model.KmeliaPublication;
-import org.silverpeas.components.kmelia.model.PubliAuthorComparator;
-import org.silverpeas.components.kmelia.model.PubliCreationDateComparator;
-import org.silverpeas.components.kmelia.model.PubliDescriptionComparator;
-import org.silverpeas.components.kmelia.model.PubliImportanceComparator;
-import org.silverpeas.components.kmelia.model.PubliRankComparator;
-import org.silverpeas.components.kmelia.model.PubliTitleComparator;
-import org.silverpeas.components.kmelia.model.PubliUpdateDateComparator;
+package org.silverpeas.components.kmelia.model;
 
 import java.io.Serializable;
 import java.util.List;
 
-public class Sort implements Serializable {
+public class KmeliaPublicationSort implements Serializable {
   private static final long serialVersionUID = 123918700477888284L;
 
   public static final int SORT_CREATOR_ASC = 0;
@@ -48,9 +39,13 @@ public class Sort implements Serializable {
   public static final int SORT_DESCRIPTION_ASC = 7;
   public static final int SORT_MANUAL = 99;
 
-  private int currentSort = SORT_UPDATE_DESC;
+  private int currentSort;
   private boolean explicitSort = false;
   private boolean manualSortEnable = false;
+
+  public KmeliaPublicationSort(final int initialSort) {
+    this.currentSort = initialSort;
+  }
 
   public int getCurrentSort() {
     return currentSort;
@@ -76,7 +71,12 @@ public class Sort implements Serializable {
     this.manualSortEnable = manualSortEnable;
   }
 
-  public SortConsumer<List<KmeliaPublication>> withLanguage(final String language) {
+  /**
+   * Gets the publication consumer according to given content language.
+   * @param language a content language (and not the user favorite one).
+   * @return SortConsumer lambda to apply on {@link KmeliaPublication} list.
+   */
+  public SortConsumer<List<KmeliaPublication>> withContentLanguage(final String language) {
     return p -> {
       if (p != null) {
         switch (currentSort) {

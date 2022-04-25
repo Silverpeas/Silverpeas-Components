@@ -24,12 +24,12 @@
 
 package org.silverpeas.components.kmelia.model;
 
-public class PubliDescriptionComparator extends AbstractPublicationComparator {
+class PubliDescriptionComparator extends AbstractPublicationComparator {
   private static final long serialVersionUID = -7689140279802432990L;
 
   private final String language;
 
-  public PubliDescriptionComparator(final boolean asc, final String language) {
+  PubliDescriptionComparator(final boolean asc, final String language) {
     super(asc);
     this.language = language;
   }

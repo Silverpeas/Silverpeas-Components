@@ -32,7 +32,6 @@ import org.apache.ecs.wml.Img;
 import org.owasp.encoder.Encode;
 import org.silverpeas.components.kmelia.KmeliaConstants;
 import org.silverpeas.components.kmelia.KmeliaPublicationHelper;
-import org.silverpeas.components.kmelia.Sort;
 import org.silverpeas.components.kmelia.control.KmeliaSessionController;
 import org.silverpeas.components.kmelia.model.KmeliaPublication;
 import org.silverpeas.components.kmelia.model.KmeliaPublicationComparator;
@@ -96,6 +95,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
+import static org.silverpeas.components.kmelia.model.KmeliaPublicationSort.*;
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.*;
 import static org.silverpeas.core.contribution.publication.model.PublicationDetail.*;
 import static org.silverpeas.core.util.StringUtil.EMPTY;
@@ -190,7 +190,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       }
       if (sort != null) {
         kmeliaSC.setSortValue(sort);
-        ofNullable(kmeliaSC.getSearchContext()).ifPresent(c -> c.applySort(sort));
+        final String contentLanguage = kmeliaSC.getCurrentLanguage();
+        ofNullable(kmeliaSC.getSearchContext()).ifPresent(c -> c.applySort(sort, contentLanguage));
       } else if (resetManualSort) {
         kmeliaSC.resetPublicationsOrder();
       }
@@ -803,7 +804,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
   void displaySortingListBox(MultiSilverpeasBundle resources, KmeliaSessionController ksc, Writer out)
       throws IOException {
 
-    boolean manualSort = ksc.getSort().getCurrentSort() == Sort.SORT_MANUAL;
+    boolean manualSort = ksc.getSort().getCurrentSort() == SORT_MANUAL;
 
     out.
         write(
@@ -811,20 +812,20 @@ public class AjaxPublicationsListServlet extends HttpServlet {
                 ".selectedIndex);\">");
     out.write("<option>" + resources.getString("SortBy") + "</option>");
     out.write("<option>-------------------------------</option>");
-    out.write(getSortingListBoxEntry(Sort.SORT_UPDATE_ASC, resources.getString("DateAsc"), ksc));
-    out.write(getSortingListBoxEntry(Sort.SORT_UPDATE_DESC, resources.getString("DateDesc"), ksc));
-    out.write(getSortingListBoxEntry(Sort.SORT_CREATION_ASC, resources.getString("CreateDateAsc"), ksc));
-    out.write(getSortingListBoxEntry(Sort.SORT_CREATION_DESC, resources.getString("CreateDateDesc"), ksc));
-    out.write(getSortingListBoxEntry(Sort.SORT_CREATOR_ASC, resources.getString("PubAuteur"), ksc));
+    out.write(getSortingListBoxEntry(SORT_UPDATE_ASC, resources.getString("DateAsc"), ksc));
+    out.write(getSortingListBoxEntry(SORT_UPDATE_DESC, resources.getString("DateDesc"), ksc));
+    out.write(getSortingListBoxEntry(SORT_CREATION_ASC, resources.getString("CreateDateAsc"), ksc));
+    out.write(getSortingListBoxEntry(SORT_CREATION_DESC, resources.getString("CreateDateDesc"), ksc));
+    out.write(getSortingListBoxEntry(SORT_CREATOR_ASC, resources.getString("PubAuteur"), ksc));
     if (ksc.isFieldImportanceVisible()) {
-      out.write(getSortingListBoxEntry(Sort.SORT_IMPORTANCE_ASC, resources.getString("PubImportance"), ksc));
+      out.write(getSortingListBoxEntry(SORT_IMPORTANCE_ASC, resources.getString("PubImportance"), ksc));
     }
-    out.write(getSortingListBoxEntry(Sort.SORT_TITLE_ASC, resources.getString("PubTitre"), ksc));
-    out.write(getSortingListBoxEntry(Sort.SORT_DESCRIPTION_ASC, resources.getString("PubDescription"), ksc));
+    out.write(getSortingListBoxEntry(SORT_TITLE_ASC, resources.getString("PubTitre"), ksc));
+    out.write(getSortingListBoxEntry(SORT_DESCRIPTION_ASC, resources.getString("PubDescription"), ksc));
 
     if (manualSort) {
       out.write(
-          getSortingListBoxEntry(Sort.SORT_MANUAL, resources.getString("kmelia.sort.manual"), ksc));
+          getSortingListBoxEntry(SORT_MANUAL, resources.getString("kmelia.sort.manual"), ksc));
     }
     out.write("</select>");
 

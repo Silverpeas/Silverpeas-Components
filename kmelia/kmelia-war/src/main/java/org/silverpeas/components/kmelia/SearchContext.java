@@ -24,6 +24,7 @@
 package org.silverpeas.components.kmelia;
 
 import org.silverpeas.components.kmelia.model.KmeliaPublication;
+import org.silverpeas.components.kmelia.model.KmeliaPublicationSort;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.index.search.model.QueryDescription;
 import org.silverpeas.core.node.model.NodeDetail;
@@ -40,7 +41,7 @@ public class SearchContext implements Serializable {
 
   private final QueryDescription queryDescription;
   private final PagesContext formContext;
-  private final Sort sortContext = new Sort();
+  private final KmeliaPublicationSort sortContext = new KmeliaPublicationSort(-1);
   private NodeDetail node;
   private List<KmeliaPublication> results;
   private int paginationIndex;
@@ -91,8 +92,8 @@ public class SearchContext implements Serializable {
     return sortContext.getCurrentSort();
   }
 
-  public void applySort(int sort) {
+  public void applySort(int sort, final String contentLanguage) {
     sortContext.setCurrentSort(sort);
-    sortContext.withLanguage(formContext.getLanguage()).sort(results);
+    sortContext.withContentLanguage(contentLanguage).sort(results);
   }
 }

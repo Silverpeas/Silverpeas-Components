@@ -32,10 +32,10 @@ import org.silverpeas.components.kmelia.KmeliaCopyDetail;
 import org.silverpeas.components.kmelia.KmeliaPasteDetail;
 import org.silverpeas.components.kmelia.KmeliaPublicationHelper;
 import org.silverpeas.components.kmelia.SearchContext;
-import org.silverpeas.components.kmelia.Sort;
 import org.silverpeas.components.kmelia.export.ExportFileNameProducer;
 import org.silverpeas.components.kmelia.export.KmeliaPublicationExporter;
 import org.silverpeas.components.kmelia.model.KmeliaPublication;
+import org.silverpeas.components.kmelia.model.KmeliaPublicationSort;
 import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
 import org.silverpeas.components.kmelia.model.TopicDetail;
 import org.silverpeas.components.kmelia.model.TopicSearch;
@@ -200,7 +200,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   private List<String> sessionCombination = null;
   // Specific Kmax
   private String sessionTimeCriteria = null;
-  private Sort sortValue;
+  private KmeliaPublicationSort sortValue;
   private int rang = 0;
   public static final String TAB_PREVIEW = "tabpreview";
   public static final String TAB_HEADER = "tabheader";
@@ -256,8 +256,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   private void init() {
-    sortValue = new Sort();
-    sortValue.setCurrentSort(getDefaultSortValue());
+    sortValue = new KmeliaPublicationSort(getDefaultSortValue());
 
     // Remove all data store by this SessionController
     removeSessionObjects();
@@ -1057,8 +1056,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     if (manualSortingUsed && !getSort().isExplicitSort()) {
       // publications are sorted manually and another sort is not explicitly chosen by the user
       // so publications are displayed according to manual order defined by admin
-      sort = Sort.SORT_MANUAL;
-    } else if (getSortValue() == Sort.SORT_MANUAL) {
+      sort = KmeliaPublicationSort.SORT_MANUAL;
+    } else if (getSortValue() == KmeliaPublicationSort.SORT_MANUAL) {
       // Current sort is manual but publications are not sorted manually
       // so publications are displayed according to default sort defined on application level
       // or instance level
@@ -1069,7 +1068,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     this.sortValue.setCurrentSort(sort);
     this.sortValue.setManualSortEnable(manualSortingUsed);
     this.sortValue.setExplicitSort(false);
-    this.sortValue.withLanguage(getCurrentLanguage()).sort(publicationsToSort);
+    this.sortValue.withContentLanguage(getCurrentLanguage()).sort(publicationsToSort);
     return publicationsToSort;
   }
 
@@ -1418,7 +1417,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     orderPubs();
   }
 
-  public Sort getSort() {
+  public KmeliaPublicationSort getSort() {
     return this.sortValue;
   }
 
