@@ -40,6 +40,7 @@ import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.ProfiledObjectId;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.service.RemovedSpaceAndComponentInstanceChecker;
 import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
@@ -59,6 +60,7 @@ import org.silverpeas.core.contribution.content.form.record.GenericRecordSet;
 import org.silverpeas.core.contribution.content.wysiwyg.WysiwygException;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.publication.dao.DistributionTreeCriteria;
 import org.silverpeas.core.contribution.publication.dao.PublicationCriteria;
 import org.silverpeas.core.contribution.publication.model.CompletePublication;
 import org.silverpeas.core.contribution.publication.model.Location;
@@ -130,12 +132,16 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static java.text.MessageFormat.format;
 import static java.util.Collections.singletonList;
 import static java.util.Comparator.comparing;
 import static java.util.Optional.ofNullable;
+import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toMap;
+import static org.apache.commons.lang3.time.DurationFormatUtils.formatDurationHMS;
 import static org.silverpeas.components.kmelia.model.KmeliaPublication.fromDetail;
 import static org.silverpeas.components.kmelia.notification.KmeliaDelayedVisibilityUserNotificationReminder.KMELIA_DELAYED_VISIBILITY_USER_NOTIFICATION;
+import static org.silverpeas.components.kmelia.service.KmeliaHelper.isToolbox;
 import static org.silverpeas.components.kmelia.service.KmeliaOperationContext.OperationType.*;
 import static org.silverpeas.components.kmelia.service.KmeliaServiceContext.*;
 import static org.silverpeas.core.admin.component.model.ComponentInst.getComponentLocalId;
@@ -203,7 +209,7 @@ public class DefaultKmeliaService implements KmeliaService {
     if (isDefined(parameterValue)) {
       return Integer.parseInt(parameterValue);
     } else {
-      if (KmeliaHelper.isToolbox(componentId)) {
+      if (isToolbox(componentId)) {
 
         return 0;
       }
@@ -239,7 +245,7 @@ public class DefaultKmeliaService implements KmeliaService {
     }
     // get publications
     List<KmeliaPublication> pubDetails =
-        getPublicationsOfFolder(pk, userProfile, userId, isTreeStructureUsed);
+        getAuthorizedPublicationsOfFolder(pk, userProfile, userId, isTreeStructureUsed);
 
     // get the path to this topic
     if (pk.isRoot()) {
@@ -253,10 +259,10 @@ public class DefaultKmeliaService implements KmeliaService {
   }
 
   @Override
-  public List<KmeliaPublication> getPublicationsOfFolder(NodePK pk, String userProfile,
+  public List<KmeliaPublication> getAuthorizedPublicationsOfFolder(NodePK pk, String userProfile,
       String userId, boolean isTreeStructureUsed) {
-    Collection<PublicationDetail> pubDetails;
-
+    final long start = System.currentTimeMillis();
+    final Collection<PublicationDetail> pubDetails;
     // get the publications associated to this topic
     if (pk.isTrash()) {
       // Topic = Basket
@@ -264,8 +270,7 @@ public class DefaultKmeliaService implements KmeliaService {
     } else if (pk.isRoot()) {
       try {
         int nbPublisOnRoot = getNbPublicationsOnRoot(pk.getInstanceId());
-        if (nbPublisOnRoot == 0 || !isTreeStructureUsed ||
-            KmeliaHelper.isToolbox(pk.getInstanceId())) {
+        if (nbPublisOnRoot == 0 || !isTreeStructureUsed || isToolbox(pk.getInstanceId())) {
           pubDetails = publicationService.getDetailsByFatherPK(pk, "P.pubUpdateDate desc", false);
         } else {
           return getLatestAuthorizedPublications(pk.getInstanceId(), userId, nbPublisOnRoot);
@@ -283,14 +288,21 @@ public class DefaultKmeliaService implements KmeliaService {
         throw new KmeliaRuntimeException(e);
       }
     }
-    return asLocatedKmeliaPublication(pk, pubDetails);
+    final List<KmeliaPublication> result = filterPublications(
+        asLocatedKmeliaPublication(pk, pubDetails), pk.getInstanceId(),
+        SilverpeasRole.fromString(userProfile), userId);
+    SilverLogger.getLogger(this)
+        .debug(() -> format("getting {0} publications of folder {1} in {2}",
+            result.size(), pk, formatDurationHMS(System.currentTimeMillis() - start)));
+    return result;
   }
 
   @SuppressWarnings("unchecked")
   @Override
   public List<KmeliaPublication> getLatestAuthorizedPublications(String instanceId, String userId,
       int limit) {
-    return getRequestCacheService().getCache()
+    final long start = System.currentTimeMillis();
+    final List<KmeliaPublication> result = getRequestCacheService().getCache()
         .computeIfAbsent(
             "KmeliaService:getLatestAuthorizedPublications:" + instanceId + ":" + userId + ":" +
                 limit, List.class, () -> {
@@ -305,6 +317,10 @@ public class DefaultKmeliaService implements KmeliaService {
                           .limitTo(limit));
               return asKmeliaPublication(pubDetails);
             });
+    SilverLogger.getLogger(this)
+        .debug(() -> format("getting {0} latest authorized publications of instance {1} in {2}",
+            result.size(), instanceId, formatDurationHMS(System.currentTimeMillis() - start)));
+    return result;
   }
 
   @Override
@@ -584,6 +600,7 @@ public class DefaultKmeliaService implements KmeliaService {
   public List<NodeDetail> getTreeview(NodePK nodePK, String profile, boolean coWritingEnable,
       boolean draftVisibleWithCoWriting, String userId, boolean displayNb,
       boolean isRightsOnTopicsUsed) {
+    final long start = System.currentTimeMillis();
 
     String instanceId = nodePK.getInstanceId();
     List<NodeDetail> allowedTree = nodeService.getSubTree(nodePK);
@@ -599,6 +616,10 @@ public class DefaultKmeliaService implements KmeliaService {
       buildTreeView(nodePK, profile, coWritingEnable, draftVisibleWithCoWriting, userId,
           allowedTree);
     }
+
+    SilverLogger.getLogger(this)
+        .debug(() -> format("getting {0} nodes from folder {1} in {2}",
+            allowedTree.size(), nodePK, formatDurationHMS(System.currentTimeMillis() - start)));
 
     return allowedTree;
   }
@@ -649,10 +670,11 @@ public class DefaultKmeliaService implements KmeliaService {
       }
       statusSubQuery.append("OR sb_publication_publi.pubUpdaterId = '").append(userId).append("')");
     }
-
-    Map<String, Integer> numbers =
-        publicationService.getDistributionTree(nodePK.getInstanceId(), statusSubQuery.toString(),
-            checkVisibility);
+    final DistributionTreeCriteria criteria = DistributionTreeCriteria
+        .onInstanceId(nodePK.getInstanceId())
+        .withVisibilityCheck(checkVisibility)
+        .withManualStatusFilter(statusSubQuery.toString());
+    final Map<String, Integer> numbers = publicationService.getDistributionTree(criteria);
 
     // set right number of publications in basket
     NodePK trashPk = new NodePK(NodePK.BIN_NODE_ID, nodePK.getInstanceId());
@@ -3733,7 +3755,7 @@ public class DefaultKmeliaService implements KmeliaService {
 
   @Override
   public boolean isUserCanValidate(String componentId, String userId) {
-    if (KmeliaHelper.isToolbox(componentId)) {
+    if (isToolbox(componentId)) {
       return false;
     }
     return isUserCanPublish(componentId, userId);
@@ -4272,16 +4294,18 @@ public class DefaultKmeliaService implements KmeliaService {
         toPK.getInstanceId());
   }
 
+  @Override
   public List<KmeliaPublication> filterPublications(List<KmeliaPublication> publications,
       String instanceId, SilverpeasRole profile, String userId) {
-    boolean coWriting = isCoWritingEnable(instanceId);
-    List<KmeliaPublication> filteredPublications = new ArrayList<>();
-    for (KmeliaPublication userPub : publications) {
-      if (isPublicationVisible(userPub.getDetail(), profile, userId, coWriting)) {
-        filteredPublications.add(userPub);
-      }
-    }
-    return filteredPublications;
+    final boolean coWriting = isCoWritingEnable(instanceId);
+    final RemovedSpaceAndComponentInstanceChecker checker = RemovedSpaceAndComponentInstanceChecker.create();
+    final Predicate<KmeliaPublication> removedComponentInstance =
+        k -> checker.isRemovedComponentInstanceById(k.getComponentInstanceId());
+    final Predicate<KmeliaPublication> visiblePublication =
+        k -> isPublicationVisible(k.getDetail(), profile, userId, coWriting);
+    return publications.stream()
+        .filter(not(removedComponentInstance).and(visiblePublication))
+        .collect(Collectors.toList());
   }
 
   @Override
