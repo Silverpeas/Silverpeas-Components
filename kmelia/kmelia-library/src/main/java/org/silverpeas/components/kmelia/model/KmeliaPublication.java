@@ -34,6 +34,7 @@ import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.comment.service.CommentServiceProvider;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.model.ContributionModel;
 import org.silverpeas.core.contribution.model.I18nContribution;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.contribution.model.Thumbnail;
@@ -519,5 +520,10 @@ public class KmeliaPublication
   @Override
   public ResourceTranslation getTranslation(final String language) {
     return detail.getTranslation(language);
+  }
+
+  @Override
+  public ContributionModel getModel() {
+    return detail.getModel();
   }
 }
