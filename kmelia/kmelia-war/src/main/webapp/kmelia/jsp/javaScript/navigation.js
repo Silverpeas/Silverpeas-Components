@@ -110,7 +110,25 @@ const __updateDataAndUI = function(data) {
   activateUserZoom();
   showPublicationCheckedBoxes();
   setTimeout(checkMenuItemsAboutSelection, 0);
-  $.closeProgressMessage();
+  spProgressMessage.hide();
+}
+
+const __updateDataAndUIWithError = function(data) {
+  const $container = document.querySelector('#pubList');
+  const $div = document.createElement('div');
+  $div.classList.add('inlineMessage-nok');
+  try {
+    $div.innerHTML = data;
+    sp.element.querySelectorAll('link', $div).forEach(function($link) {
+      $link.remove();
+    })
+  } catch (e) {
+    $div.innerText = sp.i18n.get('GML.error');
+  } finally {
+    $container.innerHTML = '';
+    $container.appendChild($div);
+    spProgressMessage.hide();
+  }
 }
 
 function checkMenuItemsAboutSelection() {
@@ -162,18 +180,23 @@ function displayPath(id) {
 
 function displayPublications(id) {
   //display publications of topic
-  var pubIdToHighlight = getPubIdToHighlight();
-  var ieFix = new Date().getTime();
-  var componentId = getComponentId();
-  var url = getWebContext() + "/RAjaxPublicationsListServlet";
-  return new Promise(function(resolve, reject) {
-    $.get(url, {
-      Id : id, ComponentId : componentId, PubIdToHighlight : pubIdToHighlight, IEFix : ieFix
-    }, function(data) {
-      __updateDataAndUI(data);
-      resolve();
-    }, "html");
-  });
+  const pubIdToHighlight = getPubIdToHighlight();
+  const ieFix = new Date().getTime();
+  const componentId = getComponentId();
+  const url = getWebContext() + "/RAjaxPublicationsListServlet";
+  const timer = setTimeout(spProgressMessage.show, 700);
+  return sp.ajaxRequest(url)
+      .withParams({
+        Id : id, ComponentId : componentId, PubIdToHighlight : pubIdToHighlight, IEFix : ieFix
+      })
+      .send()
+      .then(function(request) {
+        clearTimeout(timer);
+        __updateDataAndUI(request.responseText);
+      }, function(request) {
+        clearTimeout(timer);
+        __updateDataAndUIWithError(request.responseText);
+      });
 }
 function displayOperations(id) {
   var ieFix = new Date().getTime();
@@ -821,12 +844,12 @@ function submitTopic() {
 
 function emptyTrash() {
   jQuery.popup.confirm(getString('ConfirmFlushTrashBean'), function() {
-    $.progressMessage();
+    spProgressMessage.show();
     var componentId = getComponentId();
     var url = getWebContext() + '/KmeliaAJAXServlet';
     $.post(url, {ComponentId: componentId, Action: 'EmptyTrash'},
     function(data) {
-      $.closeProgressMessage();
+      spProgressMessage.hide();
       if (data === "ok") {
         displayTopicContent("1");
       } else {

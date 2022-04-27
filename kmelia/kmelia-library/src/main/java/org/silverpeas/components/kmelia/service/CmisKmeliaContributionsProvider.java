@@ -55,6 +55,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.function.Predicate.not;
+
 /**
  * Providers of the user contributions managed in a Kmelia instance and to expose in the CMIS
  * objects tree of Silverpeas.
@@ -85,7 +87,7 @@ public class CmisKmeliaContributionsProvider implements CmisContributionsProvide
       return getAllowedContributionsInFolder(rootId, user);
     } else {
       String profile = kmeliaService.getUserTopicProfile(root, user.getId());
-      return kmeliaService.getPublicationsOfFolder(root, profile, user.getId(), false)
+      return kmeliaService.getAuthorizedPublicationsOfFolder(root, profile, user.getId(), false)
           .stream()
           .map(KmeliaPublication::getDetail)
           .collect(Collectors.toList());
@@ -103,12 +105,10 @@ public class CmisKmeliaContributionsProvider implements CmisContributionsProvide
       String profile = kmeliaService.getUserTopicProfile(folderPK, user.getId());
       Stream<? extends I18nContribution> publications;
       if (!folderPK.isRoot() || KmeliaPublicationHelper.isPublicationsOnRootAllowed(kmeliaId)) {
-        var pubsInFolder = accessControl.filterAuthorizedByUser(user.getId(),
-                kmeliaService.getPublicationsOfFolder(folderPK, profile, user.getId(), treeEnabled)
-                    .stream()
-                    .filter(k -> !k.isAlias() && k.isVisible())
-                    .map(KmeliaPublication::getDetail)
-                    .collect(Collectors.toList()))
+        var pubsInFolder = kmeliaService.getAuthorizedPublicationsOfFolder(folderPK, profile, user.getId(), treeEnabled)
+            .stream()
+            .filter(not(KmeliaPublication::isAlias).and(KmeliaPublication::isVisible))
+            .map(KmeliaPublication::getDetail)
             .collect(Collectors.toList());
         var drafts = accessControl.filterAuthorizedByUser(user.getId(),
                 pubsInFolder.stream()

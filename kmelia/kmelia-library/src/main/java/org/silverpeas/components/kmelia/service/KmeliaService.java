@@ -144,8 +144,21 @@ public interface KmeliaService extends ApplicationService {
    */
   PublicationDetail getPublicationDetail(PublicationPK pubPK);
 
-  List<KmeliaPublication> getPublicationsOfFolder(NodePK pk, String userProfile, String userId,
-      boolean isTreeStructureUsed);
+  /**
+   * Gets the publications linked to the folder represented by given {@link NodePK} reference.
+   * <p>
+   *   In any case, user right access to a publication is verified so that only accessible ones
+   *   are included into returned list.
+   * </p>
+   * @param pk the reference to a folder.
+   * @param userProfile a user profile
+   * @param userId the identifier of the user for which access controls MUST be verified.
+   * @param isTreeStructureUsed true if publications are represented into tree structure, false
+   * otherwise.
+   * @return a list of {@link KmeliaPublication} instances.
+   */
+  List<KmeliaPublication> getAuthorizedPublicationsOfFolder(NodePK pk, String userProfile,
+      String userId, boolean isTreeStructureUsed);
 
   /**
    * Checks rights on publications order by descending begin visibility date of publication.

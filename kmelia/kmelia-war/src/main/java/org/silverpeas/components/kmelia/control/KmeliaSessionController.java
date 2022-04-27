@@ -2885,9 +2885,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
           getKmeliaService().getNonVisiblePublications(getComponentId(), getUserId()));
     } else {
       setSessionPublicationsList(getKmeliaService()
-          .getPublicationsOfFolder(new NodePK(currentFolderId, getComponentId()),
+          .getAuthorizedPublicationsOfFolder(new NodePK(currentFolderId, getComponentId()),
               getUserTopicProfile(currentFolderId), getUserId(), isTreeStructure()));
-      applyVisibilityFilter();
     }
   }
 
