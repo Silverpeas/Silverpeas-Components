@@ -62,11 +62,15 @@
   <script type="text/javascript">
     function sendData() {
       if (checkLuceneQuery()) {
-        var values = $('#used_pdc').pdc('selectedValues');
+        <c:if test="${isPdcActivated}">
+        const values = $('#used_pdc').pdc('selectedValues');
         if (values.length > 0) {
           document.searchForm.AxisValueCouples.value = values.flatten();
         }
-        setTimeout("document.searchForm.submit();", 500);
+        </c:if>
+        setTimeout(function() {
+          document.searchForm.submit();
+        }, 500);
       }
     }
 
