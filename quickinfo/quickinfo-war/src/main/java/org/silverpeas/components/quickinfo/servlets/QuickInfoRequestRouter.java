@@ -123,13 +123,23 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
           if (!StringUtil.isDefined(id)) {
             id = request.getParameter("Id");
           }
-          request.setAttribute("News", quickInfo.getNews(id, true));
+          news = quickInfo.getNews(id, true);
+          request.setAttribute("News", news);
         }
-        request.setAttribute("Index", quickInfo.getIndex());
-        String anchor = request.getParameter("Anchor");
-        destination = "/quickinfo/jsp/news.jsp";
-        if (StringUtil.isDefined(anchor)) {
-          destination += "#" + anchor;
+        if (!isContributor(flag) && (news.isDraft() || !news.isVisible())) {
+          if (news.isDraft() || news.isNotYetVisible()) {
+            request.setAttribute("ErrorMessage", "quickinfo.news.error.notyetvisible");
+          } else {
+            request.setAttribute("ErrorMessage", "quickinfo.news.error.nomorevisible");
+          }
+          destination = getDestination("Main", quickInfo, request);
+        } else {
+          request.setAttribute("Index", quickInfo.getIndex());
+          String anchor = request.getParameter("Anchor");
+          destination = "/quickinfo/jsp/news.jsp";
+          if (StringUtil.isDefined(anchor)) {
+            destination += "#" + anchor;
+          }
         }
       } else if ("ViewOnly".equals(function)) {
         String id = request.getParameter("Id");
@@ -168,9 +178,6 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
         } else {
           // from a comment
           news = quickInfo.getNews(id, true);
-        }
-        if (news.isDraft() && !isContributor(flag)) {
-          throwHttpForbiddenError();
         }
         request.setAttribute("News", news);
         destination = getDestination("View", quickInfo, request);

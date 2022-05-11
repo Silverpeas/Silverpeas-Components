@@ -50,6 +50,7 @@
 <c:set var="role" value="${requestScope['Role']}"/>
 <c:set var="isSubscriberUser" value="${requestScope.IsSubscriberUser}"/>
 <c:set var="contributor" value="${role == 'admin' || role == 'publisher'}"/>
+<c:set var="errorMessage" value="${requestScope['ErrorMessage']}"/>
 
 <c:set var="defaultPaginationPageSize" value="${requestScope.resources.getSetting('news.home.pagination.page.size.default', 10)}"/>
 <c:set var="defaultBatchSize" value="${requestScope.resources.getSetting('news.home.accumulation.batch.size.default', 9)}"/>
@@ -105,6 +106,10 @@ function putNewsInBasket(contributionId) {
 </view:operationPane>
 <view:window>
 	<view:componentInstanceIntro componentId="${componentId}" language="${lang}"/>
+
+  <c:if test="${not empty errorMessage}">
+    <div class="inlineMessage-nok"><fmt:message key="${errorMessage}"/></div>
+  </c:if>
 
 	<c:if test="${contributor || !appSettings.mosaicViewForUsers}">
 		<!-- Dedicated part for contributors -->
