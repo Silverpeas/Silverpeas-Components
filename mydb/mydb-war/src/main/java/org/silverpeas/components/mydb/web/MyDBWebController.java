@@ -25,7 +25,6 @@
 package org.silverpeas.components.mydb.web;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
 import org.silverpeas.components.mydb.model.DataSourceDefinition;
 import org.silverpeas.components.mydb.model.DbColumn;
 import org.silverpeas.components.mydb.model.DbTable;
@@ -48,6 +47,7 @@ import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToInternal;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToInternalJsp;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.WebComponentController;
 
+import javax.annotation.Nonnull;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -271,7 +271,7 @@ public class MyDBWebController
         .orElse(null);
   }
 
-  @NotNull
+  @Nonnull
   private Map<String, String> parseForeignKeyRow(final String row) {
     if (StringUtil.isNotDefined(row)) {
       return Collections.emptyMap();

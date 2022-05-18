@@ -23,7 +23,6 @@
  */
 package org.silverpeas.components.websites.dao;
 
-import org.jetbrains.annotations.NotNull;
 import org.silverpeas.components.websites.model.IconDetail;
 import org.silverpeas.components.websites.model.SiteDetail;
 import org.silverpeas.components.websites.model.SiteDetailBuilder;
@@ -32,6 +31,7 @@ import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.annotation.Nonnull;
 import javax.persistence.EntityNotFoundException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -262,7 +262,7 @@ public class SiteDAO {
     return sitedetail;
   }
 
-  @NotNull
+  @Nonnull
   private SiteDetail getSiteDetail(final ResultSet rs1) throws SQLException {
     SiteDetail sitedetail;
     String idSite = Integer.toString(rs1.getInt(1));

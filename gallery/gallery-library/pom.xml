@@ -66,7 +66,7 @@
       <artifactId>httpclient</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.tallison</groupId>
+      <groupId>com.drewnoakes</groupId>
       <artifactId>metadata-extractor</artifactId>
     </dependency>
     <dependency>
