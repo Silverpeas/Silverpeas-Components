@@ -24,7 +24,6 @@
 
 package org.silverpeas.components.mydb.model;
 
-import org.jetbrains.annotations.NotNull;
 import org.silverpeas.components.mydb.model.predicates.AbstractColumnValuePredicate;
 import org.silverpeas.components.mydb.service.MyDBException;
 import org.silverpeas.components.mydb.service.MyDBRuntimeException;
@@ -36,6 +35,7 @@ import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.annotation.Nonnull;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -346,7 +346,7 @@ class JdbcRequester {
    * Descriptor of a foreign key. It should be mapped to a column in a given table for which it
    * references another column of another table.
    */
-  class ForeignKeyDescriptor {
+  static class ForeignKeyDescriptor {
     private final String name;
     private final String targetTableName;
     private final String targetColumnName;
@@ -385,7 +385,7 @@ class JdbcRequester {
   }
 
   class DefaultValue {
-    private String pattern;
+    private final String pattern;
 
     public DefaultValue(final String valuePattern) {
       this.pattern = valuePattern;
@@ -411,7 +411,7 @@ class JdbcRequester {
       return value;
     }
 
-    @NotNull
+    @Nonnull
     private String parseDefaultValue(String defaultValue, final int valueLength) {
       defaultValue = defaultValue.substring(0, valueLength);
       if (defaultValue.startsWith("'") && defaultValue.endsWith("'")) {
@@ -420,7 +420,7 @@ class JdbcRequester {
       return defaultValue;
     }
 
-    @NotNull
+    @Nonnull
     private String computeSQLFunction(final Connection connection, final String function) {
       try {
         return JdbcSqlQuery.createSelect(function)

@@ -24,10 +24,10 @@
 
 package org.silverpeas.components.forums.model;
 
-import org.jetbrains.annotations.NotNull;
 import org.silverpeas.core.util.ContributionPath;
 
 import java.util.Collection;
+import javax.annotation.Nonnull;
 
 /**
  * List of {@link Forum} which represents a path.
@@ -36,7 +36,7 @@ import java.util.Collection;
 public class ForumPath  extends ContributionPath<Forum> {
   private static final long serialVersionUID = 4607155750736774073L;
 
-  public ForumPath(final @NotNull Collection<Forum> c) {
+  public ForumPath(final @Nonnull Collection<Forum> c) {
     super(c);
   }
 

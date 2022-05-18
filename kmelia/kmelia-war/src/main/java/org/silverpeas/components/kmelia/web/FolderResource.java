@@ -21,7 +21,6 @@
 package org.silverpeas.components.kmelia.web;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
 import org.owasp.encoder.Encode;
 import org.silverpeas.components.kmelia.service.KmeliaHelper;
 import org.silverpeas.components.kmelia.service.KmeliaService;
@@ -38,6 +37,7 @@ import org.silverpeas.core.webapi.node.NodeAttrEntity;
 import org.silverpeas.core.webapi.node.NodeEntity;
 import org.silverpeas.core.webapi.node.NodeType;
 
+import javax.annotation.Nonnull;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -101,7 +101,7 @@ public class FolderResource extends RESTWebService {
    * @return NodeEntity representing asking node
    */
   @GET
-  @Path("{path: [0-9]+(/[0-9]+)*}")
+  @Path("{path: \\d+(/\\d+)*}")
   @Produces(MediaType.APPLICATION_JSON)
   public NodeEntity getNode(@PathParam("path") String path, @QueryParam("lang") String language) {
     String nodeId = getNodeIdFromURI(path);
@@ -116,7 +116,7 @@ public class FolderResource extends RESTWebService {
    * @return an array of NodeEntity representing children
    */
   @GET
-  @Path("{path: [0-9]+(/[0-9]+)*/path}")
+  @Path("{path: \\d+(/\\d+)*/path}")
   @Produces(MediaType.APPLICATION_JSON)
   public NodeEntity[] getPath(@PathParam("path") String path, @QueryParam("lang") String language) {
     String[] nodeIds = path.split("/");
@@ -134,7 +134,7 @@ public class FolderResource extends RESTWebService {
     }
   }
 
-  @NotNull
+  @Nonnull
   private NodeEntity[] asNodeEntities(final Collection<NodeDetail> nodes, final String language,
       final boolean decorate) {
     String requestUri = getUri().getRequestUri().toString();
@@ -155,7 +155,7 @@ public class FolderResource extends RESTWebService {
    * @return an array of NodeEntity representing children
    */
   @GET
-  @Path("{path: [0-9]+(/[0-9]+)*/children}")
+  @Path("{path: \\d+(/\\d+)*/children}")
   @Produces(MediaType.APPLICATION_JSON)
   public NodeEntity[] getChildren(@PathParam("path") String path,
       @QueryParam("lang") String language) {
@@ -180,7 +180,7 @@ public class FolderResource extends RESTWebService {
    * @param nodeEntity The description of the node to create.
    * @return a response containing the entity describing the newly created node.
    */
-  @Path("{path: [0-9]+(/[0-9]+)*}")
+  @Path("{path: \\d+(/\\d+)*}")
   @POST
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
@@ -266,7 +266,7 @@ public class FolderResource extends RESTWebService {
    * @return an array of NodeEntity representing children
    */
   @GET
-  @Path("{path: [0-9]+/treeview}")
+  @Path("{path: \\d+/treeview}")
   @Produces(MediaType.APPLICATION_JSON)
   public NodeEntity getTreeview(@PathParam("path") String path, @QueryParam("lang") String language) {
     String[] nodeIds = path.split("/");

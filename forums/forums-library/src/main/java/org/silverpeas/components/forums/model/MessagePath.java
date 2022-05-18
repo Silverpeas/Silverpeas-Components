@@ -24,12 +24,12 @@
 
 package org.silverpeas.components.forums.model;
 
-import org.jetbrains.annotations.NotNull;
 import org.silverpeas.core.util.ContributionPath;
 import org.silverpeas.core.util.Pair;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
 
 /**
  * List of {@link Message} which represents a path.
@@ -40,7 +40,7 @@ public class MessagePath extends ContributionPath<Message> {
 
   private final ForumPath forumPath;
 
-  public MessagePath(final ForumPath forumPath, final @NotNull Collection<Message> c) {
+  public MessagePath(final ForumPath forumPath, final @Nonnull Collection<Message> c) {
     super(c);
     this.forumPath = forumPath;
   }

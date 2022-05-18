@@ -23,7 +23,6 @@
  */
 package org.silverpeas.components.blog.service;
 
-import org.jetbrains.annotations.NotNull;
 import org.silverpeas.components.blog.BlogContentManager;
 import org.silverpeas.components.blog.dao.PostDAO;
 import org.silverpeas.components.blog.model.Archive;
@@ -68,6 +67,7 @@ import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.annotation.Nonnull;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.transaction.Transactional;
@@ -274,7 +274,7 @@ public class DefaultBlogService implements BlogService, Initialization {
     return con;
   }
 
-  @NotNull
+  @Nonnull
   private PostDetail getPost(PublicationDetail publication) {
     try {
       Collection<NodePK> allCat =
