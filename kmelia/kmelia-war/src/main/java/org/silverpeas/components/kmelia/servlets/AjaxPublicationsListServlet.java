@@ -80,7 +80,6 @@ import org.silverpeas.core.web.util.viewgenerator.html.board.Board;
 import org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination;
 import org.silverpeas.core.webapi.rating.RaterRatingEntity;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -114,14 +113,16 @@ public class AjaxPublicationsListServlet extends HttpServlet {
   private static final String NEW_LINE = "<br/>";
 
   @Override
-  public void doGet(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException {
-    doPost(req, res);
+  public void doGet(HttpServletRequest req, HttpServletResponse res) {
+    try {
+      doPost(req, res);
+    } catch (IOException e) {
+      SilverLogger.getLogger(this).error(e);
+    }
   }
 
   @Override
-  public void doPost(HttpServletRequest request, HttpServletResponse res)
-      throws IOException {
+  public void doPost(HttpServletRequest request, HttpServletResponse res) throws IOException {
     final HttpRequest req = HttpRequest.decorate(request);
     final HttpSession session = req.getSession(true);
 
@@ -260,25 +261,25 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       res.setContentType("text/xml");
       res.setCharacterEncoding("UTF-8");
 
-      Writer writer = res.getWriter();
-      final boolean searchInProgress = newSearchInProgress || searchContextExists;
-      if (kmeliaSC.isRightsOnTopicsEnabled() && !kmeliaSC.isCurrentTopicAvailable()) {
-        writer.write("<div class=\"inlineMessage-nok\">");
-        writer.write(resources.getString("GML.ForbiddenAccessContent"));
-        writer.write(END_DIV);
-      } else if (NodePK.ROOT_NODE_ID.equals(kmeliaSC.getCurrentFolderId()) && kmeliaSC.
-          getNbPublicationsOnRoot() != 0 && kmeliaSC.isTreeStructure() && !searchInProgress) {
-        try {
+      try {
+        Writer writer = res.getWriter();
+        final boolean searchInProgress = newSearchInProgress || searchContextExists;
+        if (kmeliaSC.isRightsOnTopicsEnabled() && !kmeliaSC.isCurrentTopicAvailable()) {
+          writer.write("<div class=\"inlineMessage-nok\">");
+          writer.write(resources.getString("GML.ForbiddenAccessContent"));
+          writer.write(END_DIV);
+        } else if (NodePK.ROOT_NODE_ID.equals(kmeliaSC.getCurrentFolderId()) && kmeliaSC.
+            getNbPublicationsOnRoot() != 0 && kmeliaSC.isTreeStructure() && !searchInProgress) {
           displayLastPublications(kmeliaSC, resources, writer);
-        } catch (IOException e) {
-          SilverLogger.getLogger(this).error(e);
+        } else {
+          if (publications != null) {
+            displayPublications(publications, sortAllowed, linksAllowed, seeAlso, searchInProgress,
+                kmeliaSC, role, gef, resources, selectedIds, pubIdToHighlight, writer,
+                attachmentToLink);
+          }
         }
-      } else {
-        if (publications != null) {
-          displayPublications(publications, sortAllowed, linksAllowed, seeAlso, searchInProgress,
-              kmeliaSC, role, gef, resources, selectedIds, pubIdToHighlight, writer,
-              attachmentToLink);
-        }
+      } catch (IOException e) {
+        SilverLogger.getLogger(this).error(e);
       }
     }
   }
