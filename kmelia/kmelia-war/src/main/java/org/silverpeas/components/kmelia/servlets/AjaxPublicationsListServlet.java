@@ -109,6 +109,9 @@ import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginIn
 public class AjaxPublicationsListServlet extends HttpServlet {
 
   private static final long serialVersionUID = 1003665785797438465L;
+  private static final String END_DIV = "</div>";
+  private static final String END_SPAN = "</span>";
+  private static final String NEW_LINE = "<br/>";
 
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res)
@@ -262,7 +265,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       if (kmeliaSC.isRightsOnTopicsEnabled() && !kmeliaSC.isCurrentTopicAvailable()) {
         writer.write("<div class=\"inlineMessage-nok\">");
         writer.write(resources.getString("GML.ForbiddenAccessContent"));
-        writer.write("</div>");
+        writer.write(END_DIV);
       } else if (NodePK.ROOT_NODE_ID.equals(kmeliaSC.getCurrentFolderId()) && kmeliaSC.
           getNbPublicationsOnRoot() != 0 && kmeliaSC.isTreeStructure() && !searchInProgress) {
         try {
@@ -437,17 +440,17 @@ public class AjaxPublicationsListServlet extends HttpServlet {
           out.write("<input type=\"checkbox\" name=\"C1\" value=\"" + pub.getPK().getId() + "-" +
               pub.getPK().getInstanceId() + "\" " + checked +
               " onclick=\"sendPubId(this.value, this.checked);\"/>");
-          out.write("</span>");
+          out.write(END_SPAN);
         }
         if (!seeAlso) {
           Thumbnail thumbnail = pub.getThumbnail();
           if (thumbnail != null && Boolean.valueOf(resources.getSetting("isVignetteVisible"))) {
             out.write("<span class=\"thumbnail\">");
             displayThumbnail(pub, kmeliaScc, publicationSettings, out);
-            out.write("</span>");
+            out.write(END_SPAN);
           }
         }
-        out.write("</div>");
+        out.write(END_DIV);
 
         fragmentSettings.pubColor = pubColor;
         fragmentSettings.highlightClass = highlightClass;
@@ -459,7 +462,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         out.write("<div class=\"publication\"><a name=\"" + pub.getPK().getId() + "\"></a>");
         displayFragmentOfPublication(specificTemplateUsed, aPub, fragmentSettings, language,
             currentUserId, currentTopicId, kmeliaScc, resources, out);
-        out.write("</div>");
+        out.write(END_DIV);
         out.write(getPutIntoBasketSelectionHtmlSnippet(
             String.format("putPublicationInBasket('%s')", pub.getIdentifier().asString()),
             language));
@@ -469,7 +472,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 
       out.write("<div id=\"pagination\">");
       out.write(pagination.printIndex("doPagination", true));
-      out.write("</div>");
+      out.write(END_DIV);
 
       displayFilePreviewJavascript(kmeliaScc.getComponentId(), language, out);
       displayFileViewJavascript(kmeliaScc.getComponentId(), language, out);
@@ -484,7 +487,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       out.write(
           "<span>" + resources.getString("GML.publications") + "</span></div>");
       out.write("<p>" + noPublications + "</p>");
-      out.write("</div>");
+      out.write(END_DIV);
     }
     out.write("</form>");
     out.write(scriptContent("sp.selection.newCheckboxMonitor('form[name=publicationsForm] input[name=C1]')" +
@@ -631,7 +634,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       if (fragmentSettings.draggable) {
         out.write("<span class=\"jstree-draggable\" id=\"pub-" + pub.getPK().getId() + "\">");
         out.write(name);
-        out.write("</span>");
+        out.write(END_SPAN);
       } else {
         out.write(name);
       }
@@ -668,7 +671,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
               "\"></div>");
     }
 
-    out.write("</div>");
+    out.write(END_DIV);
     out.write("<div class=\"line2 ");
     out.write(fragmentSettings.pubColor);
     out.write("\">");
@@ -694,7 +697,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     if (showPubDate) {
       out.write("<span class=\"date\">");
       out.write(displayDate(pub, kmeliaScc, resources));
-      out.write("</span>");
+      out.write(END_SPAN);
     }
 
     // check if he author name must be display
@@ -715,9 +718,9 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         !fragmentSettings.linkAttachment) {
       out.write("<span class=\"permalink\">");
       out.write(displayPermalink(pub, kmeliaScc, resources));
-      out.write("</span>");
+      out.write(END_SPAN);
     }
-    out.write("</div>");
+    out.write(END_DIV);
 
     String description = pub.getDescription(language);
     // displays publication description
@@ -751,7 +754,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       sb.append("<span class=\"files\">");
       sb.append(displayAttachments(kmeliaScc, pub, resources, linkAttachment));
 
-      sb.append("</span>");
+      sb.append(END_SPAN);
     }
     return sb.toString();
   }
@@ -873,13 +876,13 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     } else {
       out.write(resources.getString("GML.publication"));
     }
-    out.write("</span>");
+    out.write(END_SPAN);
     out.write("<span id=\"pubsSort\">");
     if (sortAllowed) {
       displaySortingListBox(resources, ksc, out);
     }
-    out.write("</span>");
-    out.write("</div>");
+    out.write(END_SPAN);
+    out.write(END_DIV);
   }
 
   String getUserName(KmeliaPublication userPub, KmeliaSessionController kmeliaScc) {
@@ -1001,7 +1004,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       if (StringUtil.isDefined(fileTitle) && showTitle) {
         result.append(fileTitle);
       }
-      result.append(isUserAllowedToDownloadFile ? "</a>" : "</span>");
+      result.append(isUserAllowedToDownloadFile ? "</a>" : END_SPAN);
 
       if (StringUtil.isDefined(permalink) && isUserAllowedToDownloadFile) {
         result.append("&#160;<a href=\"").append(permalink)
@@ -1010,7 +1013,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
             .append("\"/></a>");
       }
 
-      result.append("<br/>");
+      result.append(NEW_LINE);
 
       result.append("<i>");
       if (StringUtil.isDefined(logicalName) && (!logicalName.equals(fileTitle) || !showTitle)) {
@@ -1052,7 +1055,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 
       // Add info
       if (StringUtil.isDefined(info) && resources.getSetting("showInfo", true)) {
-        result.append("<br/>").append(WebEncodeHelper.convertBlanksForHtml(info));
+        result.append(NEW_LINE).append(WebEncodeHelper.convertBlanksForHtml(info));
       }
       result.append("</td></tr>");
 
@@ -1087,7 +1090,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
             .append(resources.getString("kmelia.CopyFileLink")).append("\" title=\"")
             .append(resources.getString("kmelia.CopyFileLink")).append("\"/></a>");
       }
-      result.append("<br/>");
+      result.append(NEW_LINE);
       // displays extra information if parameter is true
       if (resources.getSetting("fileStorageShowExtraInfoAttachment", false)) {
         result.append("<i>");
@@ -1103,7 +1106,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         result.append("</i>");
         // Add info
         if (StringUtil.isDefined(info)) {
-          result.append("<br/>").append(WebEncodeHelper.javaStringToHtmlParagraphe(info));
+          result.append(NEW_LINE).append(WebEncodeHelper.javaStringToHtmlParagraphe(info));
         }
       }
 
@@ -1147,14 +1150,16 @@ public class AjaxPublicationsListServlet extends HttpServlet {
             .orElse(EMPTY);
         writer.write("<li" + liClass + ">");
         writer.write("<div class=\"publication-name line1\"><a class=\"sp-permalink\"" +
-            " href=\"" + pub.getPermalink() +"\">" + Encode.forHtml(pub.getName(language)) + "</a>" + shortcut + "</div>");
+            " href=\"" + pub.getPermalink() +"\">" + Encode.forHtml(pub.getName(language)) + "</a>" + shortcut +
+            END_DIV);
 
         if (kmeliaScc.showUserNameInList()) {
           writer.write("<span class=\"publication-user\">");
           writer.write(getUserName(kmeliaPub, kmeliaScc));
-          writer.write("</span>");
+          writer.write(END_SPAN);
         }
-        writer.write("<span class=\"publication-date\">"+ TemporalFormatter.toLocalizedDate(pub.getVisibility().getPeriod().getStartDate(), kmeliaScc.getZoneId(), kmeliaScc.getLanguage()) +"</span>");
+        writer.write("<span class=\"publication-date\">"+ TemporalFormatter.toLocalizedDate(pub.getVisibility().getPeriod().getStartDate(), kmeliaScc.getZoneId(), kmeliaScc.getLanguage()) +
+            END_SPAN);
         if (displayLinks) {
           String link = URLUtil.getSimpleURL(URLUtil.URL_PUBLI, pub.getPK().getId());
           writer.write("<a class=\"sp-permalink publication-hyperlink\" href=\"" + link + "\"><img src=\"" + linkIcon +
@@ -1171,7 +1176,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       writer.write("</ul>");
     }
 
-    writer.write("</div>");
+    writer.write(END_DIV);
   }
 
   private String displayPublicationFullPath(KmeliaSessionController kmelia, PublicationDetail pub) {
@@ -1186,7 +1191,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         .map(m -> {
           String topicPathName = spaceLabel + " > " + componentLabel + " > " + kmelia.displayPath(
               kmelia.getKmeliaService().getPath(m.getId(), m.getInstanceId()), false, 3);
-          return "<div class=\"publiPath\">" + topicPathName + "</div>";
+          return "<div class=\"publiPath\">" + topicPathName + END_DIV;
         })
         .orElse(StringUtil.EMPTY);
   }

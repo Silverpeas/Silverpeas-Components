@@ -1,7 +1,7 @@
 function exportPublications() {
-  var selectedIds = getSelectedPublicationIds();
-  var notSelectedIds = getNotSelectedPublicationIds();
-  var uri = "ExportPublications?SelectedIds=" + selectedIds + "&NotSelectedIds=" + notSelectedIds;
+  const selectedIds = getSelectedPublicationIds();
+  const notSelectedIds = getNotSelectedPublicationIds();
+  const uri = "ExportPublications?SelectedIds=" + selectedIds + "&NotSelectedIds=" + notSelectedIds;
   SP_openWindow(uri, "Export", '600', '300', 'scrollbars=yes, resizable, alwaysRaised');
   $("input:checked[name=C1]").removeAttr('checked').hide();
 }
@@ -16,7 +16,7 @@ function showPublicationOperations(item) {
 function hidePublicationOperations(item) {
   //$(item).find(".unit-operation").hide();
   $(item).find(".add-to-basket-selection").hide();
-  var input = $(item).find(".selection input");
+  const input = $(item).find(".selection input");
   if ($(input).is(':checked')) {
     // do not hide checkbox
   } else {
@@ -34,9 +34,9 @@ function showPublicationCheckedBoxes() {
 }
 
 function getSelectedPublicationIds() {
-  var selectedIds = "";
+  let selectedIds = "";
   $("input:checked[name=C1]").each(function() {
-    var id = $(this).val();
+    const id = $(this).val();
     selectedIds += id;
     selectedIds += ",";
   });
@@ -47,9 +47,9 @@ function getSelectedPublicationIds() {
 }
 
 function getNotSelectedPublicationIds() {
-  var notSelectedIds = "";
+  let notSelectedIds = "";
   $("input:not(:checked)[name=C1]").each(function() {
-    var id = $(this).val();
+    const id = $(this).val();
     notSelectedIds += id;
     notSelectedIds += ",";
   });
@@ -68,21 +68,21 @@ function startsWith(haystack, needle) {
 }
 
 function deletePublications() {
-  var confirm = getString('kmelia.publications.trash.confirm');
+  let confirm = getString('kmelia.publications.trash.confirm');
   if (getCurrentNodeId() === "1") {
     confirm = getString('kmelia.publications.delete.confirm');
   }
   jQuery.popup.confirm(confirm, function() {
-    var componentId = getComponentId();
-    var selectedPublicationIds = getSelectedPublicationIds();
-    var notSelectedPublicationIds = getNotSelectedPublicationIds();
-    var url = getWebContext() + '/KmeliaAJAXServlet';
+    const componentId = getComponentId();
+    const selectedPublicationIds = getSelectedPublicationIds();
+    const notSelectedPublicationIds = getNotSelectedPublicationIds();
+    const url = getWebContext() + '/KmeliaAJAXServlet';
     $.post(url, {SelectedIds: selectedPublicationIds, NotSelectedIds: notSelectedPublicationIds, ComponentId: componentId, Action: 'DeletePublications'},
     function(data) {
       if (startsWith(data, "ok")) {
         // fires event
         try {
-          var nb = data.substring(3);
+          const nb = data.substring(3);
           displayPublications(getCurrentNodeId());
           if (getCurrentNodeId() === "1") {
             notySuccess(nb + ' ' + getString('kmelia.publications.delete.info'));
@@ -105,10 +105,10 @@ function publicationsRemovedInError(data) {
 }
 
 function copyPublications() {
-  var componentId = getComponentId();
-  var selectedPublicationIds = getSelectedPublicationIds();
-  var notSelectedPublicationIds = getNotSelectedPublicationIds();
-  var url = getWebContext() + '/KmeliaAJAXServlet';
+  const componentId = getComponentId();
+  const selectedPublicationIds = getSelectedPublicationIds();
+  const notSelectedPublicationIds = getNotSelectedPublicationIds();
+  const url = getWebContext() + '/KmeliaAJAXServlet';
   $.post(url, {SelectedIds: selectedPublicationIds, NotSelectedIds: notSelectedPublicationIds, ComponentId: componentId, Action: 'CopyPublications'},
   function(data) {
     if (data === "ok") {
@@ -121,10 +121,10 @@ function copyPublications() {
 }
 
 function cutPublications() {
-  var componentId = getComponentId();
-  var selectedPublicationIds = getSelectedPublicationIds();
-  var notSelectedPublicationIds = getNotSelectedPublicationIds();
-  var url = getWebContext() + '/KmeliaAJAXServlet';
+  const componentId = getComponentId();
+  const selectedPublicationIds = getSelectedPublicationIds();
+  const notSelectedPublicationIds = getNotSelectedPublicationIds();
+  const url = getWebContext() + '/KmeliaAJAXServlet';
   $.post(url, {SelectedIds: selectedPublicationIds, NotSelectedIds: notSelectedPublicationIds, ComponentId: componentId, Action: 'CutPublications'},
   function(data) {
     if (data === "ok") {
@@ -153,19 +153,19 @@ function putPublicationsInBasket() {
 }
 
 function updatePublications() {
-  var componentId = getComponentId();
-  var selectedPublicationIds = getSelectedPublicationIds();
-  var notSelectedPublicationIds = getNotSelectedPublicationIds();
-  var url = getWebContext() + '/Rkmelia/' + componentId + '/ToUpdatePublications';
-  var formRequest = sp.formRequest(url).byPostMethod();
+  const componentId = getComponentId();
+  const selectedPublicationIds = getSelectedPublicationIds();
+  const notSelectedPublicationIds = getNotSelectedPublicationIds();
+  const url = getWebContext() + '/Rkmelia/' + componentId + '/ToUpdatePublications';
+  const formRequest = sp.formRequest(url).byPostMethod();
   formRequest.withParam("SelectedIds", selectedPublicationIds);
   formRequest.withParam("NotSelectedIds", notSelectedPublicationIds);
   formRequest.submit();
 }
 
 function selectAllPublications(select) {
-  var componentId = getComponentId();
-  var url = getWebContext() + '/KmeliaAJAXServlet';
+  const componentId = getComponentId();
+  const url = getWebContext() + '/KmeliaAJAXServlet';
   $.post(url, {ComponentId: componentId, Action: 'SELECTALLPUBLICATIONS', Selected: select},
       function(data) {
         if (data === "ok") {
@@ -189,16 +189,16 @@ function selectAllPublications(select) {
 
 (function($) {
   window.kmeliaWebService = new function() {
-    var __serviceUrl = webContext + '/KmeliaAJAXServlet';
-    var __computeRequestParams = function(action, params) {
-      var componentId = getComponentId();
+    const __serviceUrl = webContext + '/KmeliaAJAXServlet';
+    const __computeRequestParams = function(action, params) {
+      const componentId = getComponentId();
       if (!componentId) {
         throw new Error("component id must exist")
       }
       return extendsObject({}, params, {Action : action, ComponentId : componentId});
     };
-    var __getBySyncRequest = function(action, params) {
-      var result = "";
+    const __getBySyncRequest = function(action, params) {
+      let result = "";
       $.ajax({
         url : __serviceUrl,
         data : __computeRequestParams(action, params),
@@ -215,10 +215,10 @@ function selectAllPublications(select) {
       });
       return result;
     };
-    var __ajaxRequest = function(action, params) {
+    const __ajaxRequest = function(action, params) {
       return sp.ajaxRequest(__serviceUrl).withParams(__computeRequestParams(action, params));
     };
-    var __asText = function(request) {
+    const __asText = function(request) {
       return request.responseText;
     };
 
@@ -249,8 +249,8 @@ function selectAllPublications(select) {
      * @returns {any}
      */
     this.getPublicationUserAuthorizationsSynchronously = function(pubId, topicId) {
-      var _params = {pubId : pubId, nodeId : topicId};
-      var authorizations = __getBySyncRequest('GetPublicationAuthorizations', _params);
+      const _params = {pubId : pubId, nodeId : topicId};
+      const authorizations = __getBySyncRequest('GetPublicationAuthorizations', _params);
       return extendsObject({
         canBeCut : false,
         canBeDeleted : false
@@ -267,7 +267,7 @@ function selectAllPublications(select) {
      * @returns {*}
      */
     this.movePublication = function(pubId, sourceNodeId, targetNodeId, extraParams) {
-      var _params = extendsObject({}, extraParams, {
+      const _params = extendsObject({}, extraParams, {
         Id : pubId, SourceNodeId : sourceNodeId, TargetNodeId : targetNodeId
       });
       return __ajaxRequest('MovePublication', _params).byPostMethod().send().then(__asText);
@@ -281,7 +281,7 @@ function selectAllPublications(select) {
      * @returns {*}
      */
     this.pastePublications = function(folderId, extraParams) {
-      var _params = extendsObject({}, extraParams, {Id : folderId});
+      const _params = extendsObject({}, extraParams, {Id : folderId});
       return __ajaxRequest('Paste', _params).byPostMethod().send().then(__asText);
     };
   };

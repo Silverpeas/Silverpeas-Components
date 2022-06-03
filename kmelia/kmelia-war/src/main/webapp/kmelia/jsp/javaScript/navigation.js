@@ -1,7 +1,7 @@
-var favoriteWindow = window;
-var importFileWindow = window;
-var importFilesWindow = window;
-var exportComponentWindow = window;
+let favoriteWindow = window;
+let importFileWindow = window;
+let importFilesWindow = window;
+let exportComponentWindow = window;
 
 function addFavorite(name, description, url)
 {
@@ -10,11 +10,11 @@ function addFavorite(name, description, url)
 
 function importFile()
 {
-  var url = "importOneFile.jsp?Action=ImportFileForm&TopicId=" + getCurrentNodeId();
-  var windowName = "importFileWindow";
-  var windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars=1";
-  var larg = "610";
-  var haut = "370";
+  const url = "importOneFile.jsp?Action=ImportFileForm&TopicId=" + getCurrentNodeId();
+  const windowName = "importFileWindow";
+  const windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars=1";
+  const larg = "610";
+  const haut = "370";
   if (!importFileWindow.closed && importFileWindow.name === "importFileWindow")
     importFileWindow.close();
   importFileWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
@@ -22,20 +22,20 @@ function importFile()
 
 function importFiles()
 {
-  var url = "importMultiFiles.jsp?Action=ImportFilesForm&TopicId=" + getCurrentNodeId();
-  var windowName = "importFilesWindow";
-  var windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars=1";
-  var larg = "610";
-  var haut = "460";
+  const url = "importMultiFiles.jsp?Action=ImportFilesForm&TopicId=" + getCurrentNodeId();
+  const windowName = "importFilesWindow";
+  const windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars=1";
+  const larg = "610";
+  const haut = "460";
   if (!importFilesWindow.closed && importFilesWindow.name === "importFilesWindow")
     importFilesWindow.close();
   importFilesWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
 }
 
 function openExportPDFPopup() {
-  var chemin = "ExportAttachementsToPDF?TopicId=" + getCurrentNodeId();
-  var largeur = "700";
-  var hauteur = "500";
+  const chemin = "ExportAttachementsToPDF?TopicId=" + getCurrentNodeId();
+  const largeur = "700";
+  const hauteur = "500";
   SP_openWindow(chemin, "ExportWindow", largeur, hauteur, "scrollbars=yes, resizable=yes");
 }
 
@@ -48,7 +48,7 @@ function exportTopic() {
 }
 
 function openPredefinedPdCClassification(nodeId) {
-  var uri = getWebContext() + "/pdcPeas/jsp/predefinedClassification.jsp?componentId=" + getComponentId();
+  let uri = getWebContext() + "/pdcPeas/jsp/predefinedClassification.jsp?componentId=" + getComponentId();
   if (nodeId != 0) {
     uri += "&nodeId=" + nodeId;
   }
@@ -63,8 +63,8 @@ function openPredefinedPdCClassification(nodeId) {
 
 function displayTopicDescription(id) {
   //display rich description of topic
-  var ieFix = new Date().getTime();
-  var componentId = getComponentId();
+  const ieFix = new Date().getTime();
+  const componentId = getComponentId();
   $.get(getWebContext() + '/KmeliaAJAXServlet', {Id: id, Action: 'GetTopicWysiwyg', ComponentId: componentId, IEFix: ieFix},
   function(data) {
     if (data && data.length > 0) {
@@ -80,16 +80,16 @@ function displayTopicDescription(id) {
 
 function refreshPublications()
 {
-  var nodeId = getCurrentNodeId();
-  var ieFix = new Date().getTime();
-  var componentId = getComponentId();
+  const nodeId = getCurrentNodeId();
+  const ieFix = new Date().getTime();
+  const componentId = getComponentId();
   $.get(getWebContext() + '/RAjaxPublicationsListServlet',
       {Id : nodeId, ComponentId : componentId, IEFix : ieFix}, __updateDataAndUI, "html");
 }
 
 function validatePublicationClassification(s)
 {
-  var componentId = getComponentId();
+  const componentId = getComponentId();
   SP_openWindow(getWebContext() + '/Rkmelia/' + componentId + '/validateClassification?' + s, "Validation", '600', '400', 'scrollbars=yes, resizable, alwaysRaised');
 }
 
@@ -144,10 +144,10 @@ function checkMenuItemsAboutSelection() {
 function sortGoTo(selectedIndex) {
   closeWindows();
   if (selectedIndex !== 0 && selectedIndex !== 1) {
-    var topicQuery = getSearchQuery();
-    var sort = document.publicationsForm.sortBy[selectedIndex].value;
-    var ieFix = new Date().getTime();
-    var componentId = getComponentId();
+    const topicQuery = getSearchQuery();
+    const sort = document.publicationsForm.sortBy[selectedIndex].value;
+    const ieFix = new Date().getTime();
+    const componentId = getComponentId();
     $.get(getWebContext() + '/RAjaxPublicationsListServlet',
         {Index : 0, Sort : sort, ComponentId : componentId, Query : topicQuery, IEFix : ieFix},
         __updateDataAndUI, "html");
@@ -157,8 +157,8 @@ function sortGoTo(selectedIndex) {
 
 function resetSort() {
   jQuery.popup.confirm(getString('kmelia.sort.manual.reset.confirm'), function() {
-    var ieFix = new Date().getTime();
-    var componentId = getComponentId();
+    const ieFix = new Date().getTime();
+    const componentId = getComponentId();
     $.get(getWebContext() + '/RAjaxPublicationsListServlet',
         {Index : 0, ResetManualSort : true, ComponentId : componentId, IEFix : ieFix},
         __updateDataAndUI, "html");
@@ -166,7 +166,7 @@ function resetSort() {
 }
 
 function displayPath(id) {
-  var url = getWebContext() + "/services/folders/" + getComponentId() + "/" + id + "/path?lang=" + getTranslation();
+  const url = getWebContext() + "/services/folders/" + getComponentId() + "/" + id + "/path?lang=" + getTranslation();
   $.getJSON(url, function(data) {
     //remove topic breadcrumb
     removeBreadCrumbElements();
@@ -199,9 +199,9 @@ function displayPublications(id) {
       });
 }
 function displayOperations(id) {
-  var ieFix = new Date().getTime();
-  var componentId = getComponentId();
-  var url = getWebContext() + "/KmeliaJSONServlet";
+  const ieFix = new Date().getTime();
+  const componentId = getComponentId();
+  const url = getWebContext() + "/KmeliaJSONServlet";
   $.get(url, {Id: id, Action: 'GetOperations', ComponentId: componentId, IEFix: ieFix},
   function(operations) {
     //display dNd according rights
@@ -232,13 +232,13 @@ function initOperations(id, op) {
   oMenu.clearContent();
   $('#menubar-creation-actions').empty();
 
-  var label;
-  var url;
-  var menuItem;
-  var groupIndex = 0;
-  var groupEmpty = true;
-  var menuEmpty = true;
-  var menuBarEmpty = true;
+  let label;
+  let url;
+  let menuItem;
+  let groupIndex = 0;
+  let groupEmpty = true;
+  let menuEmpty = true;
+  let menuBarEmpty = true;
 
   if (op.emptyTrash) {
     menuItem = new YAHOO.widget.MenuItem(getString('EmptyBasket'), {url: "javascript:onClick=emptyTrash()"});
@@ -541,7 +541,7 @@ function initOperations(id, op) {
 
 function addCreationItem(url, icon, label) {
   if ($('#menubar-creation-actions').length > 0) {
-    var creationItem = "<a href=\"" + url + "\" class=\"menubar-creation-actions-item\"><span><img src=\"" + icon + "\" alt=\"\"/>" + label + "</span></a>";
+    const creationItem = "<a href=\"" + url + "\" class=\"menubar-creation-actions-item\"><span><img src=\"" + icon + "\" alt=\"\"/>" + label + "</span></a>";
     $('#menubar-creation-actions').css({'display': 'block'});
     $('#menubar-creation-actions').append(creationItem);
   }
@@ -555,11 +555,11 @@ function hideOperations() {
   }
 }
 
-var currentNodeId;
-var currentTopicName;
-var currentTopicDescription;
-var currentTopicStatus;
-var currentTopicTranslations;
+let currentNodeId;
+let currentTopicName;
+let currentTopicDescription;
+let currentTopicStatus;
+let currentTopicTranslations;
 
 function getCurrentNodeId() {
   return currentNodeId;
@@ -589,15 +589,16 @@ function setCurrentTopicTranslations(trans) {
   currentTopicTranslations = trans;
 }
 
-var translations;
+let translations;
+
 function storeTranslations(trans) {
   translations = trans;
-  var select = $('select[name="I18NLanguage"]');
+  const select = $('select[name="I18NLanguage"]');
   select.attr("onchange", "showTranslation(this.value.substring(0,2))");
   if (translations != null && translations.length > 1) {
     //display delete operation
     if ($("#deleteTranslation").length === 0) {
-      var img = '<img src="' + getWebContext() + '/util/icons/delete.gif" title="' + getString('GML.translationRemove') + '" alt="' + getString('GML.translationRemove') + '"/>';
+      const img = '<img src="' + getWebContext() + '/util/icons/delete.gif" title="' + getString('GML.translationRemove') + '" alt="' + getString('GML.translationRemove') + '"/>';
       $("<a id=\"deleteTranslation\" href=\"javascript:document.getElementById('TranslationRemoveIt').value='true';document.topicForm.submit();\">" + img + "</a>").insertAfter(select);
     }
   } else {
@@ -609,8 +610,8 @@ function storeTranslations(trans) {
 }
 
 function showTranslation(lang) {
-  var found;
-  var i = 0;
+  let found;
+  let i = 0;
   while (!found && i < translations.length) {
     if (translations[i].language === lang) {
       found = true;
@@ -636,12 +637,12 @@ function getDateFormat() {
 function displayTopicInformation(id) {
   if (id !== "0" && id !== "1" && id !== getToValidateFolderId() && id !== getNonVisiblePubsFolderId()) {
     $("#footer").css({'visibility': 'visible'});
-    var url = getWebContext() + "/services/folders/" + getComponentId() + "/" + id;
+    const url = getWebContext() + "/services/folders/" + getComponentId() + "/" + id;
     $.getJSON(url, function(topic) {
-      var name = topic.text;
-      var desc = topic.attr["description"];
-      var date = $.datepicker.formatDate(getDateFormat(), new Date(topic.attr["creationDate"]));
-      var creator = topic.attr["creator"].fullName;
+      const name = topic.text;
+      const desc = topic.attr["description"];
+      const date = $.datepicker.formatDate(getDateFormat(), new Date(topic.attr["creationDate"]));
+      const creator = topic.attr["creator"].fullName;
       $("#footer").html(getString('kmelia.topic.info') + ' ' + creator + ' - ' + date + ' - <a class="sp-permalink" id="topicPermalink" href="#"><img src="' + icons["permalink"] + '"/></a>');
       $("#footer #topicPermalink").attr("href", getWebContext() + "/Topic/" + id + "?ComponentId=" + getComponentId());
       setCurrentTopicName(name);
@@ -664,10 +665,10 @@ function writeInConsole(text) {
 }
 
 function deleteFolder(nodeId, nodeLabel) {
-  var label = getString('ConfirmDeleteTopic') + " '" + nodeLabel + "' ?";
+  const label = getString('ConfirmDeleteTopic') + " '" + nodeLabel + "' ?";
   jQuery.popup.confirm(label, function() {
-    var componentId = getComponentId();
-    var url = getWebContext() + '/KmeliaAJAXServlet';
+    const componentId = getComponentId();
+    const url = getWebContext() + '/KmeliaAJAXServlet';
     $.post(url, {Id: nodeId, ComponentId: componentId, Action: 'Delete'},
     function(data) {
       if (data !== null && data.length > 0 && !isNaN(data)) {
@@ -701,23 +702,23 @@ function addNodeToCurrentNode() {
 }
 
 function applyWithNodePath(path, operation) {
-  var url = getWebContext() + "/services/folders/" + getComponentId() + "/" + path + "/path?lang=" + getTranslation() + "&IEFix=" + new Date().getTime();
+  const url = getWebContext() + "/services/folders/" + getComponentId() + "/" + path + "/path?lang=" + getTranslation() + "&IEFix=" + new Date().getTime();
   $.getJSON(url, function(data) {
     operation(data);
   });
 }
 
 function applyWithNode(nodeId, operation) {
-  var url = getWebContext() + "/services/folders/" + getComponentId() + "/" + nodeId + "?lang=" + getTranslation() + "&IEFix=" + new Date().getTime();
+  const url = getWebContext() + "/services/folders/" + getComponentId() + "/" + nodeId + "?lang=" + getTranslation() + "&IEFix=" + new Date().getTime();
   $.getJSON(url, function(data) {
     operation(data);
   });
 }
 
 function topicAdd(topicId, isLinked) {
-  var translation = getTranslation();
-  var rightsOnTopic = params["rightsOnTopic"];
-  var url = "ToAddTopic?Id=" + topicId + "&Translation=" + translation;
+  const translation = getTranslation();
+  const rightsOnTopic = params["rightsOnTopic"];
+  let url = "ToAddTopic?Id=" + topicId + "&Translation=" + translation;
   if (isLinked) {
     url += "&IsLink=true";
   }
@@ -736,7 +737,7 @@ function topicAdd(topicId, isLinked) {
       //remove topic breadcrumb
       $("#addOrUpdateNode #path").html("");
       $(data).each(function(i, topic) {
-        var item = " > " + topic.text;
+        let item = " > " + topic.text;
         if (topic.id == 0) {
           item = getComponentLabel();
         }
@@ -772,8 +773,8 @@ function updateCurrentNode() {
 }
 
 function topicUpdate(id) {
-  var translation = getTranslation();
-  var rightsOnTopic = params["rightsOnTopic"];
+  const translation = getTranslation();
+  const rightsOnTopic = params["rightsOnTopic"];
   if (rightsOnTopic) {
     location.href = "ToUpdateTopic?Id=" + id + "&Translation=" + translation;
   } else {
@@ -781,12 +782,12 @@ function topicUpdate(id) {
     $("#addOrUpdateNode #topicId").val(id);
 
     // display path of parent
-    var url = getWebContext() + "/services/folders/" + getComponentId() + "/" + id + "/path?lang=" + getTranslation() + "&IEFix=" + new Date().getTime();
+    const url = getWebContext() + "/services/folders/" + getComponentId() + "/" + id + "/path?lang=" + getTranslation() + "&IEFix=" + new Date().getTime();
     $.getJSON(url, function(data) {
       //remove topic breadcrumb
       $("#addOrUpdateNode #path").html("");
       $(data).each(function(i, topic) {
-        var item = " > " + topic.text;
+        let item = " > " + topic.text;
         if (topic.id == 0) {
           item = getComponentLabel();
         } else {
@@ -817,14 +818,14 @@ function topicUpdate(id) {
 }
 
 function submitTopic() {
-  var errorMsg = "";
-  var errorNb = 0;
-  var title = stripInitialWhitespace(document.topicForm.Name.value);
+  let errorMsg = "";
+  let errorNb = 0;
+  const title = stripInitialWhitespace(document.topicForm.Name.value);
   if (isWhitespace(title)) {
     errorMsg += "  - '" + getString('TopicTitle') + "' " + getString('GML.MustBeFilled') + "\n";
     errorNb++;
   }
-  var result = false;
+  let result = false;
   switch (errorNb) {
     case 0 :
       result = true;
@@ -845,8 +846,8 @@ function submitTopic() {
 function emptyTrash() {
   jQuery.popup.confirm(getString('ConfirmFlushTrashBean'), function() {
     spProgressMessage.show();
-    var componentId = getComponentId();
-    var url = getWebContext() + '/KmeliaAJAXServlet';
+    const componentId = getComponentId();
+    const url = getWebContext() + '/KmeliaAJAXServlet';
     $.post(url, {ComponentId: componentId, Action: 'EmptyTrash'},
     function(data) {
       spProgressMessage.hide();
@@ -869,9 +870,9 @@ function checkDnD(id, operations) {
 }
 
 function addCurrentNodeAsFavorite() {
-  var path = $("#breadCrumb").text();
-  var description = "";
-  var url = getComponentPermalink();
+  const path = $("#breadCrumb").text();
+  let description = "";
+  let url = getComponentPermalink();
   if (getCurrentNodeId() != "0") {
     url = $("#topicPermalink").attr("href");
     description = currentTopicDescription;
@@ -884,11 +885,11 @@ function updateCurrentTopicWysiwyg() {
 }
 
 function shareCurrentTopic() {
-  var sharingObject = {
-      componentId: getComponentId(),
-      type       : "Node",
-      id         : getCurrentNodeId(),
-      name   : $("#" + getCurrentNodeId()).find('a:first').text()
+  const sharingObject = {
+    componentId : getComponentId(),
+    type : "Node",
+    id : getCurrentNodeId(),
+    name : $("#" + getCurrentNodeId()).find('a:first').text()
   };
   createSharingTicketPopup(sharingObject);
 }
@@ -938,12 +939,12 @@ function fileUpload() {
 }
 
 function doPagination(index, nbItemsPerPage) {
-  var topicQuery = getSearchQuery();
-  var ieFix = new Date().getTime();
-  var componentId = getComponentId();
-  var selectedPublicationIds = getSelectedPublicationIds();
-  var notSelectedPublicationIds = getNotSelectedPublicationIds();
-  var url = getWebContext() + '/RAjaxPublicationsListServlet';
+  const topicQuery = getSearchQuery();
+  const ieFix = new Date().getTime();
+  const componentId = getComponentId();
+  const selectedPublicationIds = getSelectedPublicationIds();
+  const notSelectedPublicationIds = getNotSelectedPublicationIds();
+  const url = getWebContext() + '/RAjaxPublicationsListServlet';
   $.get(url, {Index: index, NbItemsPerPage: nbItemsPerPage, ComponentId: componentId, Query: topicQuery, SelectedPubIds: selectedPublicationIds, NotSelectedPubIds: notSelectedPublicationIds, IEFix: ieFix},
   function(data) {
     __updateDataAndUI(data);
@@ -958,12 +959,12 @@ function showStats() {
 
 function changeStatus(nodeId, currentStatus) {
   closeWindows();
-  var newStatus = "Visible";
+  let newStatus = "Visible";
   if (currentStatus === "Visible") {
     newStatus = "Invisible";
   }
 
-  var title = getString('TopicVisible2Invisible');
+  let title = getString('TopicVisible2Invisible');
   if (newStatus === 'Invisible') {
     $("#visibleInvisible-message p").html(getString('TopicVisible2InvisibleRecursive'));
   } else {
@@ -1009,7 +1010,7 @@ function _updateTopicStatus(nodeId, status, recursive) {
 }
 
 function movePublication(id, sourceId, targetId) {
-  var params = {
+  const params = {
     "dnd" : true,
     "pubId" : id,
     "sourceId" : sourceId,
@@ -1021,9 +1022,9 @@ function movePublication(id, sourceId, targetId) {
 }
 
 function sendMovePublication(params, extraParams) {
-  var pubId = params.pubId;
-  var sourceId = params.sourceId;
-  var targetId = params.targetId;
+  const pubId = params.pubId;
+  const sourceId = params.sourceId;
+  const targetId = params.targetId;
   kmeliaWebService.movePublication(pubId, sourceId, targetId, extraParams).then(function(result) {
     if (result === "ok") {
       try {
