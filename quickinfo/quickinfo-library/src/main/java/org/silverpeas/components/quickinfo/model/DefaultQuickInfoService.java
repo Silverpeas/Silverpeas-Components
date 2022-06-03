@@ -368,7 +368,6 @@ public class DefaultQuickInfoService implements QuickInfoService {
   }
 
   @Override
-  @Transactional
   public void submitNewsOnHomepage(String id, String userId) {
     News news = getNews(id);
     news.setId(news.getPublicationId());
