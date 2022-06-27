@@ -35,6 +35,7 @@
 <%@page import="org.silverpeas.components.kmelia.SearchContext"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
+<%@ page import="org.silverpeas.core.web.selection.BasketSelectionUI" %>
 
 <c:set var='highestUserRole' value='<%=SilverpeasRole.fromString((String) request.getAttribute("Profile"))%>'/>
 
@@ -205,14 +206,16 @@ window.SUBSCRIPTION_PROMISE.then(function() {
 	        operationPane.addLine();
         }
 
-    	if (!isGuest) {
-				operationPane.addOperation("useless", resources.getString("kmelia.operation.putPublicationsInBasket"), "javascript:onclick=putPublicationsInBasket()");
-				operationPane.addLine();
-    	  operationPane.addOperation("useless", resources.getString("kmelia.operation.exportSelection"), "javascript:onclick=exportPublications()");
-    		operationPane.addOperation("useless", "<span id='subscriptionMenuLabel'></span>", "javascript:onClick=spSubManager.switchUserSubscription()");
-      	operationPane.addOperation("useless", resources.getString("FavoritesAdd1")+" "+kmeliaScc.getString("FavoritesAdd2"), "javaScript:addFavorite('"+
+      if (!isGuest) {
+        if (BasketSelectionUI.displayPutIntoBasketSelectionShortcut()) {
+          operationPane.addOperation("useless", resources.getString("kmelia.operation.putPublicationsInBasket"), "javascript:onclick=putPublicationsInBasket()");
+          operationPane.addLine();
+        }
+        operationPane.addOperation("useless", resources.getString("kmelia.operation.exportSelection"), "javascript:onclick=exportPublications()");
+        operationPane.addOperation("useless", "<span id='subscriptionMenuLabel'></span>", "javascript:onClick=spSubManager.switchUserSubscription()");
+        operationPane.addOperation("useless", resources.getString("FavoritesAdd1")+" "+kmeliaScc.getString("FavoritesAdd2"), "javaScript:addFavorite('"+
               WebEncodeHelper.javaStringToHtmlString(WebEncodeHelper.javaStringToJsString(namePath))+"','','"+urlTopic+"')");
-    	}
+      }
 
     	if (userCanCreatePublications) {
       		operationPane.addLine();

@@ -55,6 +55,7 @@
 <%@ page import="java.util.Optional" %>
 <%@ page import="org.silverpeas.core.contribution.publication.model.Location" %>
 <%@ page import="org.silverpeas.components.kmelia.model.ValidatorsList" %>
+<%@ page import="org.silverpeas.core.web.selection.BasketSelectionUI" %>
 
 <c:set var="userLanguage" value="${requestScope.resources.language}"/>
 <c:set var="contentLanguage" value="${requestScope.Language}"/>
@@ -572,7 +573,8 @@
             operationPane.addOperation(resources.getIcon("kmelia.cut"), resources.getString("GML.cut"), "javascript:clipboardCut()");
           }
         }
-        if (!currentUser.isAccessGuest() && !currentUser.isAnonymous() && !pubDetail.isDraft() && !pubDetail.isClone()) {
+        if (!currentUser.isAccessGuest() && !currentUser.isAnonymous() && !pubDetail.isDraft() && !pubDetail.isClone() &&
+            BasketSelectionUI.displayPutIntoBasketSelectionShortcut()) {
           operationPane.addLine();
           operationPane.addOperation(basketIcon, resources.getString("GML.putInBasket"), "javascript:putInBasket()");
         }

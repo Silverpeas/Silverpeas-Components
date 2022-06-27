@@ -1,4 +1,4 @@
-<%@ page import="org.silverpeas.core.admin.user.model.SilverpeasRole" %><%--
+<%--
   ~ Copyright (C) 2000 - 2022 Silverpeas
   ~
   ~ This program is free software: you can redistribute it and/or modify
@@ -21,6 +21,9 @@
   ~ You should have received a copy of the GNU Affero General Public License
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --%>
+
+<%@ page import="org.silverpeas.core.admin.user.model.SilverpeasRole" %>
+<%@ page import="org.silverpeas.core.web.selection.BasketSelectionUI" %>
 
 <%@ include file="almanachCheck.jsp" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -89,10 +92,12 @@
         action="angularjs:eventMng.removeOccurrence(ceo)"
         altText="${deleteLabel}"/>
   </c:if>
-  <view:operationSeparator/>
-  <view:operation
-      action="angularjs:putEventOccurrenceInBasket(ceo)"
-      altText="${putInBasket}"/>
+  <c:if test="<%=BasketSelectionUI.displayPutIntoBasketSelectionShortcut()%>">
+    <view:operationSeparator/>
+    <view:operation
+        action="angularjs:putEventOccurrenceInBasket(ceo)"
+        altText="${putInBasket}"/>
+  </c:if>
 </view:operationPane>
 <view:window>
   <view:frame>

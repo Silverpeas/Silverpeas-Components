@@ -40,6 +40,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Writer;
 
+import static org.silverpeas.core.web.selection.BasketSelectionUI.displayPutIntoBasketSelectionShortcut;
+
 public class JSONServlet extends HttpServlet {
 
   private static final long serialVersionUID = 1L;
@@ -138,7 +140,7 @@ public class JSONServlet extends HttpServlet {
     operations.put("cutPublications", copyCutAllowed);
     operations.put("paste", addPublicationAllowed);
 
-    operations.put("putPublicationsInBasket", publicationsInTopic);
+    operations.put("putPublicationsInBasket", publicationsInTopic && displayPutIntoBasketSelectionShortcut());
 
     operations.put("sortPublications", role.isAdmin() && publicationsInTopic && somePublicationsExist);
 

@@ -27,6 +27,7 @@
 <%@page import="org.silverpeas.core.admin.user.model.SilverpeasRole" %>
 <%@ page import="org.silverpeas.core.util.URLUtil" %>
 <%@ page import="org.silverpeas.core.notification.user.NotificationContext" %>
+<%@ page import="org.silverpeas.core.web.selection.BasketSelectionUI" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
@@ -137,10 +138,12 @@ function putNewsInBasket() {
   <fmt:message var="printMsg" key="GML.print"/>
   <view:operation altText="${printMsg}" action="javascript:window.print()"/>
 	<fmt:message var="putInSelectionBasketMsg" key="GML.putInBasket"/>
-	<c:if test="${not news.draft}">
-		<view:operationSeparator/>
-		<view:operation altText="${putInSelectionBasketMsg}" action="javascript:onclick=putNewsInBasket()"/>
-	</c:if>
+  <c:if test="${not news.draft}">
+    <c:if test="<%=BasketSelectionUI.displayPutIntoBasketSelectionShortcut()%>">
+      <view:operationSeparator/>
+      <view:operation altText="${putInSelectionBasketMsg}" action="javascript:onclick=putNewsInBasket()"/>
+    </c:if>
+  </c:if>
 </view:operationPane>
 </c:if>
 <view:window popup="${viewOnly}">
