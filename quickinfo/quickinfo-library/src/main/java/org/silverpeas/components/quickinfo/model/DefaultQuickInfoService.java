@@ -69,6 +69,7 @@ import javax.inject.Named;
 import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -83,6 +84,7 @@ import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
+import static java.util.function.Predicate.not;
 import static org.silverpeas.components.quickinfo.notification.QuickInfoDelayedVisibilityUserNotificationReminder.QUICKINFO_DELAYED_VISIBILITY_USER_NOTIFICATION;
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
@@ -310,8 +312,12 @@ public class DefaultQuickInfoService implements QuickInfoService {
         .getComponentIdsForUser(userId, QuickInfoComponentSettings.COMPONENT_NAME);
     int limit = QuickInfoComponentSettings.getSettings().getInteger("news.all.limit", 30);
     //noinspection SimplifyStreamApiCallChains
-    return newsRepository.getByComponentIds(asList(allowedComponentIds))
+    return Optional.ofNullable(allowedComponentIds)
+        .map(Arrays::asList)
+        .filter(not(List::isEmpty))
+        .map(newsRepository::getByComponentIds)
         .stream()
+        .flatMap(List::stream)
         .filter(n -> n.getPublishDate() != null)
         .map(n -> {
           decorateNews(singletonList(n), false);
