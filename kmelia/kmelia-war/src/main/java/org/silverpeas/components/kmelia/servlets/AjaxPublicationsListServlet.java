@@ -230,7 +230,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         writer.write("<div class=\"inlineMessage-nok\">");
         writer.write(resources.getString("GML.ForbiddenAccessContent"));
         writer.write("</div>");
-      } else if (NodePK.ROOT_NODE_ID.equals(kmeliaSC.getCurrentFolderId()) && kmeliaSC.
+      } else if (!toLink && NodePK.ROOT_NODE_ID.equals(kmeliaSC.getCurrentFolderId()) && kmeliaSC.
           getNbPublicationsOnRoot() != 0 && kmeliaSC.isTreeStructure() && !searchInProgress) {
         try {
           displayLastPublications(kmeliaSC, resources, writer);
