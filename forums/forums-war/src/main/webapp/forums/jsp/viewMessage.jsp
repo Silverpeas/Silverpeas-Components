@@ -420,14 +420,11 @@
                                           <c:param name="params"><%=currentMessage.getId()%></c:param>
                                           <c:param name="forumId"><%=currentMessage.getForumId()%></c:param>
                                         </c:url>
-                                        <c:import url="/attachment/jsp/displayAttachedFiles.jsp">
-                                          <c:param name="Id"><%=currentMessage.getId()%></c:param>
-                                          <c:param name="Profile" value="${profile}" />
-                                          <c:param name="ComponentId"><%=instanceId%></c:param>
-                                          <c:param name="Context" value="${'attachment'}" />
-                                          <c:param name="addFileMenu" value="${'true'}" />
-                                          <c:param name="CallbackUrl" value="${callBackUrl}" />
-                                        </c:import>
+                                        <viewTags:displayAttachments componentInstanceId="<%=instanceId%>"
+                                                                     resourceType="<%=currentMessage.RESOURCE_TYPE%>"
+                                                                     resourceId="<%=String.valueOf(currentMessage.getId())%>"
+                                                                     highestUserRole="<%=SilverpeasRole.from(profile)%>"
+                                                                     reloadCallbackUrl="${callBackUrl}"/>
                                       </div>
                                       <%=text%>
                                       <viewTags:viewAttachmentsAsContent componentInstanceId="${componentId}"
@@ -461,7 +458,8 @@
                                         </div>
                               </div>
                               <br clear="all"/>
-                    </div><%
+                    </div>
+    <%
 
         }
 
