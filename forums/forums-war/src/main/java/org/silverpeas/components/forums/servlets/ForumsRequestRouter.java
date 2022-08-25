@@ -185,6 +185,17 @@ public class ForumsRequestRouter extends ComponentRequestRouter<ForumsSessionCon
           destination = URLUtil.getURL(forumsSC.getSpaceId(), forumsSC.getComponentId()) +
               "viewForum.jsp?call=main&forumId=" + id;
         }
+      } else if (function.startsWith("GoToFilesTab")) {
+        String messageId = request.getParameter("Id");
+        Message message = null;
+        if (StringUtil.isDefined(messageId)) {
+          message = forumsSC.getMessage(Integer.parseInt(messageId));
+        }
+        if (message == null) {
+          return ROOT_DEST + "messageNotFound";
+        }
+        destination = URLUtil.getURL(forumsSC.getSpaceId(), forumsSC.getComponentId()) +
+            "viewMessage.jsp?action=1&params=" + messageId;
       } else {
         destination = ROOT_DEST + function;
       }
