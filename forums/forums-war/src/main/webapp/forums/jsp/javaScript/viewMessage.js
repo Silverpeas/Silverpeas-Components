@@ -8,14 +8,21 @@ function replyMessage(messageId) {
   $('input[name="parentId"]').val(messageId);
   $('input[name="messageTitle"]').val('Re : ' + $msgContent.find('.txtnav').html());
   var $responseTable = $('#responseTable').show();
+  let ckeditorInitPromise;
   if ($responseTable.length > 0) {
-    initCKeditor(messageId);
+    ckeditorInitPromise = initCKeditor(messageId);
   }
   $('#backButton').hide();
   scrollMessageList(messageId);
   document.location.href = "#msg" + messageId;
   callResizeFrame();
-  scrollToItem($('fieldset#message'));
+  if (ckeditorInitPromise) {
+    ckeditorInitPromise.then(function() {
+      setTimeout(function() {
+        scrollToItem($('fieldset#message'))
+      }, 0);
+    });
+  }
 }
 
 function cancelMessage() {
@@ -54,7 +61,14 @@ function scrollMessageList(messageId, noMsgDivScroll) {
 
 function scrollToItem($item, referenceItem) {
   if (!sp.element.isInView($item, true, referenceItem)) {
-    sp.element.scrollTo($item, referenceItem);
+    const $scrollAnchor = $('<a>', {'href' : '#' + $item.attr('id')});
+    $scrollAnchor.insertBefore($item);
+    setTimeout(function() {
+      $scrollAnchor[0].click();
+      setTimeout(function() {
+        $scrollAnchor[0].remove();
+      }, 0);
+    }, 0);
   }
 }
 
