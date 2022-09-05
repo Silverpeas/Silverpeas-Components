@@ -23,24 +23,23 @@
  */
 package org.silverpeas.components.kmelia.jstl;
 
-import java.io.IOException;
-import java.util.List;
-
-import javax.servlet.jsp.JspWriter;
-
+import org.silverpeas.components.kmelia.control.KmeliaSessionController;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-
-import org.silverpeas.core.util.StringUtil;
-
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.MultiSilverpeasBundle;
-import org.silverpeas.components.kmelia.control.KmeliaSessionController;
-import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.util.MultiSilverpeasBundle;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import org.silverpeas.core.web.util.viewgenerator.html.tabs.TabbedPane;
+
+import javax.servlet.jsp.JspWriter;
+import java.io.IOException;
+import java.util.List;
+
+import static org.silverpeas.core.web.util.viewgenerator.html.TagUtil.formatForDomId;
 
 /**
  * Helper class to be able to remove old JSP methods.
@@ -244,12 +243,14 @@ public class KmeliaDisplayHelper {
           }
           if (document_version.isVersioned()
               && document_version.getMajorVersion() > 1) {
+            final String domIdSuffix = formatForDomId(document.getForeignId());
+            final String afManager = "_afManager" + domIdSuffix;
             if (showIcon) {
-              out.println("<br/> >> <a href=\"javaScript:viewPublicVersions(" + document.getId()
-                  + ")\">Toutes les versions...</a>");
+              out.println("<br/> >> <a href=\"javaScript:" + afManager + ".viewPublicVersions(" +
+                  document.getId() + ")\">Toutes les versions...</a>");
             } else {
-              out.println(" (<a href=\"javaScript:viewPublicVersions(" + document.getId()
-                  + ")\">Toutes les versions...</a>)");
+              out.println(" (<a href=\"javaScript:" + afManager + ".viewPublicVersions(" +
+                  document.getId() + ")\">Toutes les versions...</a>)");
             }
           }
           out.println("</td></tr>");

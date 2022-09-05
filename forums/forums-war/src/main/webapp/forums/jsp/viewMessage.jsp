@@ -86,6 +86,9 @@
                     // changement du type d'affichage
                     fsc.changeDisplayAllMessages();
                 }
+                if ("true".equals(request.getParameter("scroll"))) {
+                    scrollToMessage = true;
+                }
                 break;
 
             case 8 :
@@ -208,7 +211,7 @@
     <script type="text/javascript" src="<c:url value='/forums/jsp/javaScript/forums.js'/>" ></script>
     <script type="text/javascript" src="<c:url value='/forums/jsp/javaScript/viewMessage.js'/>" ></script>
     <script type="text/javascript">
-      var wysiwygEditorInstance = null;
+      let wysiwygEditorInstance = null;
 
       <% if (message == null) { %>
       window.location.href = "Main";
@@ -237,12 +240,19 @@
         }
 
         function initCKeditor(messageId) {
-          if (wysiwygEditorInstance == null) {
-            wysiwygEditorInstance = <view:wysiwyg replace="messageText" language="<%=fsc.getLanguage()%>" width="600" height="300" toolbar="forum" displayFileBrowser="${false}"/>;
-          }
-          sp.editor.wysiwyg.backupManager({
-            componentInstanceId : '${componentId}',
-            resourceId : messageId
+          return new Promise(function(resolve) {
+            if (wysiwygEditorInstance == null) {
+              wysiwygEditorInstance = <view:wysiwyg replace="messageText" language="<%=fsc.getLanguage()%>" width="600" height="300" toolbar="forum" displayFileBrowser="${false}"/>;
+              wysiwygEditorInstance.on('instanceReady', function() {
+                resolve();
+              });
+            } else {
+              resolve();
+            }
+            sp.editor.wysiwyg.backupManager({
+              componentInstanceId : '${componentId}',
+              resourceId : messageId
+            });
           });
         }
 
@@ -429,6 +439,7 @@
                                           <c:param name="call" value="${'viewForum'}" />
                                           <c:param name="action" value="1" />
                                           <c:param name="addStat" value="true" />
+                                          <c:param name="scroll" value="true" />
                                           <c:param name="params"><%=currentMessage.getId()%></c:param>
                                           <c:param name="forumId"><%=currentMessage.getForumId()%></c:param>
                                         </c:url>
@@ -538,10 +549,27 @@
     }
 %>
 <script type="text/javascript">
-  jQuery(document).ready(function() {
+  whenSilverpeasReady(function() {
     init();
     <% if (displayAllMessages && scrollToMessage) {%>
-    scrollMessage(<%=messageId%>);
+    whenSilverpeasEntirelyLoaded(function() {
+      const __scroll = function() {
+        scrollMessage(<%=messageId%>);
+      };
+      if (window.AttachmentsAsContentViewer) {
+        AttachmentsAsContentViewer.whenAllCurrentAttachmentDisplayed({
+          onTimeout : function() {
+            spProgressMessage.show();
+          },
+          callback : function() {
+            __scroll();
+            spProgressMessage.hide();
+          }
+        });
+      } else {
+        __scroll();
+      }
+    });
     <% } %>
   });
   
