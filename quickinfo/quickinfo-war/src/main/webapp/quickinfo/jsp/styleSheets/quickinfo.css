@@ -341,11 +341,11 @@ fieldset#news-thumbnail legend {
   margin: 0;
 }
 
-.alert-quickInfo #attachmentList li.attachmentListItem {
+.alert-quickInfo .attachmentList li.attachmentListItem {
   padding-left: 0;
 }
 
-.alert-quickInfo #attachmentList li.attachmentListItem .fileName {
+.alert-quickInfo .attachmentList li.attachmentListItem .fileName {
   display: none;
 }
 
