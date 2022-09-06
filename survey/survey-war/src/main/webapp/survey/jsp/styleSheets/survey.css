@@ -280,7 +280,7 @@ span.priority {
   margin:10px 0;
 }
 
-ul#attachmentList li.attachmentListItem {
+ul.attachmentList li.attachmentListItem {
 	margin: 0;
 	padding: 0px 5px 0px 10px;
 }
