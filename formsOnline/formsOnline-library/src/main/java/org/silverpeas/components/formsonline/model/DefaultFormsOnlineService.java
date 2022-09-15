@@ -965,8 +965,9 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
      * @return the hierarchical validator of the user represented by the given id.
      */
     public String getHierarchicalValidatorOf(final String userId) {
-      return cache.computeIfAbsent(userId, i ->
-          UserFull.getById(i).getValue("boss"));
+      return cache.computeIfAbsent(userId, i -> ofNullable(UserFull.getById(i))
+          .map(u -> u.getValue("boss"))
+          .orElse(StringUtil.EMPTY));
     }
   }
 }
