@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!--
 
     Copyright (C) 2000 - 2022 Silverpeas
@@ -24,8 +24,10 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 -->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.silverpeas</groupId>
@@ -222,6 +224,7 @@
   </reporting>
 
   <profiles>
+
     <profile>
       <id>deployment</id>
       <build>
@@ -307,6 +310,7 @@
     <module>scheduleEvent</module>
     <module>suggestionBox</module>
     <module>spaceMembers</module>
+    <module>community</module>
   </modules>
 
 </project>

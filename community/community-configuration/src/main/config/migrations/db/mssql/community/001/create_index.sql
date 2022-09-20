@@ -1,0 +1,1 @@
+CREATE INDEX idx_Community ON SC_Community (instanceId, id);
