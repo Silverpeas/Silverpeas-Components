@@ -35,7 +35,7 @@
   <groupId>org.silverpeas.components.community</groupId>
   <artifactId>silverpeas-community</artifactId>
   <packaging>jar</packaging>
-  <name>community Business Library</name>
+  <name>Community Business Library</name>
 
   <dependencies>
     <dependency>
