@@ -24,62 +24,90 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>community</name>
   <label>
-    <message lang="fr">community</message>
-    <message lang="en">community</message>
-    <message lang="de">community</message>
+    <message lang="fr">Community</message>
+    <message lang="en">Community</message>
+    <message lang="de">Community</message>
   </label>
-    <description>
+  <description>
     <message lang="fr">community</message>
     <message lang="en">community</message>
     <message lang="de">community</message>
   </description>
-   <suite>
-    <message lang="fr">80 Nouveaux Composants</message>
-    <message lang="en">80 New Components </message>
-    <message lang="de">80 Neue Komponenten</message>
+  <suite>
+    <message lang="fr">02 Gestion Collaborative</message>
+    <message lang="en">02 Collaborative Management</message>
+    <message lang="de">02 kollaborative Verwaltung</message>
   </suite>
+  <inheritSpaceRightsByDefault>false</inheritSpaceRightsByDefault>
+  <publicByDefault>true</publicByDefault>
   <visible>true</visible>
   <portlet>false</portlet>
   <profiles>
-    <profile name="admin">
-      <label>
-        <message lang="fr">Gestionnaires</message>
-        <message lang="en">Administrators</message>
-        <message lang="de">Administrator</message>
-      </label>
-      <help>
-        <message lang="fr">Gestionnaires.</message>
-        <message lang="en">Administrators.</message>
-        <message lang="de">Administrator</message>
-      </help>
-    </profile>
-    <profile name="publisher">
-      <label>
-        <message lang="fr">Publieurs</message>
-        <message lang="en">Publishers</message>
-        <message lang="de">Herausgeber</message>
-      </label>
-      <help>
-        <message lang="fr">Publieurs.</message>
-        <message lang="en">Publishers.</message>
-        <message lang="de">Herausgeber</message>
-      </help>
-    </profile>
     <profile name="user">
-      <label>      
+      <label>
         <message lang="fr">Lecteurs</message>
         <message lang="en">Readers</message>
         <message lang="de">Leser</message>
       </label>
-      <help>      
+      <help>
         <message lang="fr">Lecteurs.</message>
         <message lang="en">Readers.</message>
         <message lang="de">Leser.</message>
       </help>
     </profile>
   </profiles>
+  <parameters>
+    <parameter>
+      <name>defaultMemberRole</name>
+      <label>
+        <message lang="fr">Rôle par défaut attribué à un nouveau membre</message>
+        <message lang="en">Default role assigned to a new member</message>
+        <message lang="de">Standardrolle, die einem neuen Mitglied zugewiesen wird</message>
+      </label>
+      <order>1</order>
+      <mandatory>true</mandatory>
+      <value>no</value>
+      <updatable>always</updatable>
+      <type>select</type>
+      <options>
+        <option>
+          <name>
+            <message lang="fr">Lecteur</message>
+            <message lang="en">Readers</message>
+            <message lang="de">Leser</message>
+          </name>
+          <value>reader</value>
+        </option>
+        <option>
+          <name>
+            <message lang="fr">Rédacteur</message>
+            <message lang="en">Writer</message>
+            <message lang="en">Redaktor</message>
+          </name>
+          <value>writer</value>
+        </option>
+        <option>
+          <name>
+            <message lang="fr">Publieur</message>
+            <message lang="en">Publisher</message>
+            <message lang="en">Herausgeber</message>
+          </name>
+          <value>publisher</value>
+        </option>
+        <option>
+          <name>
+            <message lang="fr">Gestionnaire</message>
+            <message lang="en">Manager</message>
+            <message lang="en">Verwalter</message>
+          </name>
+          <value>admin</value>
+        </option>
+      </options>
+    </parameter>
+  </parameters>
 </WAComponent>

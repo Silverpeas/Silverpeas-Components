@@ -49,9 +49,9 @@
   </description>
 
   <modules>
+    <module>community-configuration</module>
     <module>community-library</module>
     <module>community-war</module>
-    <module>community-configuration</module>
   </modules>
 
 </project>
