@@ -13,7 +13,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+    "https://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,8 +25,9 @@
 
 -->
 
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>forums</name>
   <label>
     <message lang="fr">Forum</message>
@@ -35,12 +36,16 @@
   </label>
   <description>
     <message lang="fr">Cette application couvre les fonctionnalités classiques d’un forum :
-		abonnement, indicateur de nouveautés, mise en avant des utilisateurs, date du
-		dernier message, nombre de consultations...
-	</message>
-    <message lang="en">Forums can be created on diverse themes. You can answer on every point in the thread. Forums can be classified on the classification scheme.</message>
-    <message lang="de">Foren können für verschiedene Themen erstellt werden. Sie können auf jedem Punkt in den Faden beantworten.
-	Foren können Sie auf dem KP klassifizieren.</message>
+      abonnement, indicateur de nouveautés, mise en avant des utilisateurs, date du
+      dernier message, nombre de consultations...
+    </message>
+    <message lang="en">Forums can be created on diverse themes. You can answer on every point in the
+      thread. Forums can be classified on the classification scheme.
+    </message>
+    <message lang="de">Foren können für verschiedene Themen erstellt werden. Sie können auf jedem
+      Punkt in den Faden beantworten.
+      Foren können Sie auf dem KP klassifizieren.
+    </message>
   </description>
   <suite>
     <message lang="fr">02 Gestion Collaborative</message>
@@ -57,10 +62,19 @@
         <message lang="de">Manager</message>
       </label>
       <help>
-        <message lang="fr">Les gestionnaires gèrent les thèmes de discussion, les catégories, choisissent les modérateurs et paramètrent le Plan de Classement.</message>
-        <message lang="en">Managers manage threads and categories, choose moderators and set up the Classification scheme.</message>
-        <message lang="de">Managers manage threads and categories, choose moderators and set up the Classification scheme.</message>
+        <message lang="fr">Les gestionnaires gèrent les thèmes de discussion, les catégories,
+          choisissent les modérateurs et paramètrent le Plan de Classement.
+        </message>
+        <message lang="en">Managers manage threads and categories, choose moderators and set up the
+          Classification scheme.
+        </message>
+        <message lang="de">Managers manage threads and categories, choose moderators and set up the
+          Classification scheme.
+        </message>
       </help>
+      <spaceMapping>
+        <profile>admin</profile>
+      </spaceMapping>
     </profile>
     <profile name="user">
       <label>
@@ -69,10 +83,18 @@
         <message lang="de">Teilnehmer</message>
       </label>
       <help>
-        <message lang="fr">Les participants échanges au sein des forums. Un participant peut être désigné comme modérateur par les gestionnaires.</message>
-        <message lang="en">Participants discuss whithin forums. A participant can be designate as moderator by managers.</message>
+        <message lang="fr">Les participants échanges au sein des forums. Un participant peut être
+          désigné comme modérateur par les gestionnaires.
+        </message>
+        <message lang="en">Participants discuss whithin forums. A participant can be designate as
+          moderator by managers.
+        </message>
         <message lang="de">Teilnehmer</message>
       </help>
+      <spaceMapping>
+        <profile>publisher</profile>
+        <profile>writer</profile>
+      </spaceMapping>
     </profile>
     <profile name="reader">
       <label>
@@ -85,6 +107,9 @@
         <message lang="en">Readers consult forums.</message>
         <message lang="de">Leser</message>
       </help>
+      <spaceMapping>
+        <profile>reader</profile>
+      </spaceMapping>
     </profile>
   </profiles>
   <parameters>
@@ -101,7 +126,9 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Les forums créés au sein de cette instance pourront être classés sur le Plan de Classement</message>
+        <message lang="fr">Les forums créés au sein de cette instance pourront être classés sur le
+          Plan de Classement
+        </message>
         <message lang="en">The forums will be classified on the classification scheme.</message>
         <message lang="de">Foren werden auf dem KP klassifiziert werden</message>
       </help>
@@ -155,7 +182,9 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Si ce paramètre est activé, les messages seront soumis à validation par les modérateurs.</message>
+        <message lang="fr">Si ce paramètre est activé, les messages seront soumis à validation par
+          les modérateurs.
+        </message>
         <message lang="en">Posts will be moderated.</message>
         <message lang="de">Beiträge werden moderiert.</message>
       </help>

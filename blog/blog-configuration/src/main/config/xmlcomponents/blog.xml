@@ -13,7 +13,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+    "https://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,8 +25,9 @@
 
 -->
 
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>blog</name>
   <label>
     <message lang="fr">Blog</message>
@@ -35,12 +36,13 @@
   </label>
   <description>
     <message lang="fr">Parfait pour suivre l’actualité d’un projet ou d’une équipe, le blog permet
-		de créer des billets. Chaque utilisateur peut s’abonner et participer en laissant des
-		commentaires. La gestion des catégories est possible. Les billets sont également
-		accessibles via RSS.
-	</message>
+      de créer des billets. Chaque utilisateur peut s’abonner et participer en laissant des
+      commentaires. La gestion des catégories est possible. Les billets sont également
+      accessibles via RSS.
+    </message>
     <message lang="en">A blog application, displaying posts by categories or by time.</message>
-    <message lang="de">Eine Blog-Komponente die Beiträge per Kategorien oder nach Zeit Anzeiget.</message>
+    <message lang="de">Eine Blog-Komponente die Beiträge per Kategorien oder nach Zeit Anzeiget.
+    </message>
   </description>
   <suite>
     <message lang="fr">04 Gestion de contenu</message>
@@ -57,10 +59,19 @@
         <message lang="de">Manager</message>
       </label>
       <help>
-        <message lang="fr">Les gestionnaires peuvent créer des catégories, des liens, personnaliser l'affichage, mettre à jour le pied de page et paramètrent le Plan de Classement.</message>
-        <message lang="en">Managers can create categories, links, customize, update footer and set up the Classification Scheme.</message>
-        <message lang="de">Managers can create categories, links, customize, update footer and set up the Classification Scheme.</message>
+        <message lang="fr">Les gestionnaires peuvent créer des catégories, des liens, personnaliser
+          l'affichage, mettre à jour le pied de page et paramètrent le Plan de Classement.
+        </message>
+        <message lang="en">Managers can create categories, links, customize, update footer and set
+          up the Classification Scheme.
+        </message>
+        <message lang="de">Managers can create categories, links, customize, update footer and set
+          up the Classification Scheme.
+        </message>
       </help>
+      <spaceMapping>
+        <profile>admin</profile>
+      </spaceMapping>
     </profile>
     <profile name="publisher">
       <label>
@@ -69,22 +80,37 @@
         <message lang="de">Autor</message>
       </label>
       <help>
-        <message lang="fr">Les bloggeurs peuvent gérer des billets, les positionner dans une catégorie et les classer sur le Plan de Classement .</message>
-        <message lang="en">Authors can manage posts, classify them in a category and classify them on the Classification Scheme.</message>
+        <message lang="fr">Les bloggeurs peuvent gérer des billets, les positionner dans une
+          catégorie et les classer sur le Plan de Classement .
+        </message>
+        <message lang="en">Authors can manage posts, classify them in a category and classify them
+          on the Classification Scheme.
+        </message>
         <message lang="de">Autor</message>
       </help>
+      <spaceMapping>
+        <profile>publisher</profile>
+        <profile>writer</profile>
+      </spaceMapping>
     </profile>
     <profile name="user">
       <label>
-		<message lang="fr">Lecteurs</message>
+        <message lang="fr">Lecteurs</message>
         <message lang="en">Readers</message>
         <message lang="de">Leser</message>
       </label>
       <help>
-        <message lang="fr">Les lecteurs consultent les billets et peuvent s'abonner au blog. Ils peuvent également laisser des commentaires.</message>
-        <message lang="en">Readers visualize posts and can subscribe to the blog. They can also leave comments.</message>
+        <message lang="fr">Les lecteurs consultent les billets et peuvent s'abonner au blog. Ils
+          peuvent également laisser des commentaires.
+        </message>
+        <message lang="en">Readers visualize posts and can subscribe to the blog. They can also
+          leave comments.
+        </message>
         <message lang="de">Leser</message>
       </help>
+      <spaceMapping>
+        <profile>reader</profile>
+      </spaceMapping>
     </profile>
   </profiles>
   <parameters>
@@ -119,7 +145,9 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Les billets créés au sein de cette instance pourront être classées sur le Plan de Classement</message>
+        <message lang="fr">Les billets créés au sein de cette instance pourront être classées sur le
+          Plan de Classement
+        </message>
         <message lang="en">Post will be classified on the classification scheme.</message>
         <message lang="de">Posts können auf dem KP klassifiziert werden</message>
       </help>

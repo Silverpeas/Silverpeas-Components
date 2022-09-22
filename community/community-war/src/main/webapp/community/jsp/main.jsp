@@ -45,8 +45,8 @@
       SUBSCRIPTION_PROMISE.then(function() {
         window.spSubManager = new SilverpeasSubscriptionManager({
           componentInstanceId : '${componentId}', labels : {
-            subscribe : '${silfn:escapeJs(subscribeToSuggestionBoxLabel)}',
-            unsubscribe : '${silfn:escapeJs(unsubscribeFromSuggestionBoxLabel)}'
+            subscribe : '${silfn:escapeJs(subscribeLabel)}',
+            unsubscribe : '${silfn:escapeJs(unsubscribeLabel)}'
           }
         });
       });

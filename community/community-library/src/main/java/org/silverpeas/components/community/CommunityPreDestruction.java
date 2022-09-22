@@ -23,9 +23,11 @@
  */
 package org.silverpeas.components.community;
 
+import org.silverpeas.components.community.repository.CommunityOfUsersRepository;
 import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
 
+import javax.inject.Inject;
 import javax.transaction.Transactional;
 
 /**
@@ -34,9 +36,13 @@ import javax.transaction.Transactional;
 @Bean
 public class CommunityPreDestruction implements ComponentInstancePreDestruction {
 
+  @Inject
+  private CommunityOfUsersRepository repository;
+
   @Transactional
   @Override
   public void preDestroy(final String componentInstanceId) {
-    // TODO clean up the resources allocated for this component instance being in deleted
+    repository.getByComponentInstanceId(componentInstanceId)
+        .ifPresent(c -> repository.delete(c));
   }
 }

@@ -23,20 +23,35 @@
  */
 package org.silverpeas.components.community;
 
+import org.silverpeas.components.community.model.CommunityOfUsers;
+import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.admin.component.ComponentInstancePostConstruction;
 
+import javax.inject.Inject;
 import javax.transaction.Transactional;
 
 /**
- * Create for the spawned community instance the required resources to be functional.
+ * Once the Community application instance created, constructs an empty community of users for the
+ * resource in Silverpeas specified in the instance parameter.
  */
 @Bean
 public class CommunityPostConstruction implements ComponentInstancePostConstruction {
 
+  @Inject
+  private OrganizationController controller;
+
   @Transactional
   @Override
   public void postConstruct(final String componentInstanceId) {
-    // TODO create the required resources
+    ComponentInst instance = controller.getComponentInst(componentInstanceId);
+    if (instance == null) {
+      throw new IllegalStateException("The Community application " + componentInstanceId +
+          " should be created!");
+    }
+    String resourceId = instance.getSpaceId();
+    CommunityOfUsers community = new CommunityOfUsers(componentInstanceId, resourceId);
+    community.save();
   }
 }

@@ -13,7 +13,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+    "https://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,16 +25,21 @@
 
 -->
 
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>organizationchart</name>
   <label>
     <message lang="fr">Organigramme LDAP</message>
     <message lang="en">LDAP-based organization chart</message>
   </label>
   <description>
-    <message lang="fr">Cette application permet l'affichage d'un organigramme à partir d'un annuaire LDAP.</message>
-    <message lang="en">This application display an organization chart based on the data from a LDAP server.</message>
+    <message lang="fr">Cette application permet l'affichage d'un organigramme à partir d'un annuaire
+      LDAP.
+    </message>
+    <message lang="en">This application display an organization chart based on the data from a LDAP
+      server.
+    </message>
   </description>
   <suite>
     <message lang="fr">06 Connecteurs</message>
@@ -50,9 +55,19 @@
         <message lang="en">Readers</message>
       </label>
       <help>
-        <message lang="fr">Les lecteurs consultent l'organigramme, naviguent au sein des unités et visualisent les personnes qui y sont rattachées.</message>
-        <message lang="en">Readers consult the chart, navigate within the units and visualize the people who are linked to it.</message>
+        <message lang="fr">Les lecteurs consultent l'organigramme, naviguent au sein des unités et
+          visualisent les personnes qui y sont rattachées.
+        </message>
+        <message lang="en">Readers consult the chart, navigate within the units and visualize the
+          people who are linked to it.
+        </message>
       </help>
+      <spaceMapping>
+        <profile>admin</profile>
+        <profile>publisher</profile>
+        <profile>writer</profile>
+        <profile>reader</profile>
+      </spaceMapping>
     </profile>
   </profiles>
   <groupsOfParameters>
@@ -100,8 +115,12 @@
           <size>30</size>
           <updatable>always</updatable>
           <help>
-            <message lang="fr">Nom de classe factory utilisée de lors l'initialisation du contexte.</message>
-            <message lang="en">Class name of the factory class that will create an initial context.</message>
+            <message lang="fr">Nom de classe factory utilisée de lors l'initialisation du
+              contexte.
+            </message>
+            <message lang="en">Class name of the factory class that will create an initial
+              context.
+            </message>
           </help>
         </parameter>
         <parameter>
@@ -139,8 +158,11 @@
           <type>select</type>
           <updatable>always</updatable>
           <help>
-            <message lang="fr">Mode d'authentification au serveur LDAP (none, simple ou strong).</message>
-            <message lang="en">Security level for LDAP server authentication (none, simple or strong).</message>
+            <message lang="fr">Mode d'authentification au serveur LDAP (none, simple ou strong).
+            </message>
+            <message lang="en">Security level for LDAP server authentication (none, simple or
+              strong).
+            </message>
           </help>
         </parameter>
         <parameter>
@@ -156,8 +178,12 @@
           <size>30</size>
           <updatable>always</updatable>
           <help>
-            <message lang="fr">Identité du principal pour authentification (ex : cn=Manager,dc=mondomain,dc=com).</message>
-            <message lang="en">Principal for authenticating the caller to the service (ex : cn=Manager,dc=mondomain,dc=com).</message>
+            <message lang="fr">Identité du principal pour authentification (ex :
+              cn=Manager,dc=mondomain,dc=com).
+            </message>
+            <message lang="en">Principal for authenticating the caller to the service (ex :
+              cn=Manager,dc=mondomain,dc=com).
+            </message>
           </help>
         </parameter>
         <parameter>
@@ -206,7 +232,9 @@
           <size>30</size>
           <updatable>always</updatable>
           <help>
-            <message lang="fr">Noeud racine de l'annuaire ldap (ex : o=monEntreprise,dc=mondomain,dc=com).</message>
+            <message lang="fr">Noeud racine de l'annuaire ldap (ex :
+              o=monEntreprise,dc=mondomain,dc=com).
+            </message>
             <message lang="en">Root Ldap node (ex : o=mycompany,dc=mydomain,dc=com).</message>
           </help>
         </parameter>
@@ -258,7 +286,9 @@
           <updatable>always</updatable>
           <help>
             <message lang="fr">Nom de l'attribut désignant le nom du service</message>
-            <message lang="en">Name of the attribute containing the name of the service or department.</message>
+            <message lang="en">Name of the attribute containing the name of the service or
+              department.
+            </message>
           </help>
         </parameter>
         <parameter>
@@ -325,8 +355,12 @@
           <size>30</size>
           <updatable>always</updatable>
           <help>
-            <message lang="fr">Nom de l'attribut indiquant si la personne est active (attribut booléen)</message>
-            <message lang="en">Name of the attribute indicating if the person is active (boolean attribut)</message>
+            <message lang="fr">Nom de l'attribut indiquant si la personne est active (attribut
+              booléen)
+            </message>
+            <message lang="en">Name of the attribute indicating if the person is active (boolean
+              attribut)
+            </message>
           </help>
         </parameter>
         <parameter>
@@ -376,7 +410,9 @@
           <size>30</size>
           <updatable>always</updatable>
           <help>
-            <message lang="fr">Identifiant du domaine Silverpeas où se trouvent les utilisateurs présents dans l'organigramme</message>
+            <message lang="fr">Identifiant du domaine Silverpeas où se trouvent les utilisateurs
+              présents dans l'organigramme
+            </message>
             <message lang="en">Domain Silverpeas where organization chart users is defined</message>
           </help>
         </parameter>
@@ -389,9 +425,16 @@
         <message lang="de">Units view</message>
       </label>
       <description>
-        <message lang="fr">La vue "services" est la vue principale. Elle présente la composition d'un service (en sous services). Les responsables de chaque entité sont également affichés.</message>
-        <message lang="en">The "units" view is the main view. It presents the composition of a unit (in sub units). The leaders of each unit are also displayed.</message>
-        <message lang="de">The "units" view is the main view. It presents the composition of a unit (in sub units). The leaders of each unit are also displayed.</message>
+        <message lang="fr">La vue "services" est la vue principale. Elle présente la composition
+          d'un service (en sous services). Les responsables de chaque entité sont également
+          affichés.
+        </message>
+        <message lang="en">The "units" view is the main view. It presents the composition of a unit
+          (in sub units). The leaders of each unit are also displayed.
+        </message>
+        <message lang="de">The "units" view is the main view. It presents the composition of a unit
+          (in sub units). The leaders of each unit are also displayed.
+        </message>
       </description>
       <help></help>
       <order>3</order>
@@ -409,8 +452,12 @@
           <size>30</size>
           <updatable>always</updatable>
           <help>
-            <message lang="fr">Attribut désignant le(s) rôle(s) des personnes à afficher avec le service principal</message>
-            <message lang="en">Attribute containing the role(s) of the main organization unit positions</message>
+            <message lang="fr">Attribut désignant le(s) rôle(s) des personnes à afficher avec le
+              service principal
+            </message>
+            <message lang="en">Attribute containing the role(s) of the main organization unit
+              positions
+            </message>
           </help>
         </parameter>
         <parameter>
@@ -426,8 +473,11 @@
           <size>30</size>
           <updatable>always</updatable>
           <help>
-            <message lang="fr">Attribut désignant le(s) role(s) des personnes à afficher dans la case droite</message>
-            <message lang="en">Attribute name for the function to be placed in the right cell</message>
+            <message lang="fr">Attribut désignant le(s) role(s) des personnes à afficher dans la
+              case droite
+            </message>
+            <message lang="en">Attribute name for the function to be placed in the right cell
+            </message>
           </help>
         </parameter>
         <parameter>
@@ -443,8 +493,11 @@
           <size>30</size>
           <updatable>always</updatable>
           <help>
-            <message lang="fr">Attribut désignant le(s) role(s) des personnes à afficher dans la case gauche</message>
-            <message lang="en">Attribute name for the function to be placed in the left cell</message>
+            <message lang="fr">Attribut désignant le(s) role(s) des personnes à afficher dans la
+              case gauche
+            </message>
+            <message lang="en">Attribute name for the function to be placed in the left cell
+            </message>
           </help>
         </parameter>
         <parameter>
@@ -460,7 +513,8 @@
           <size>30</size>
           <updatable>always</updatable>
           <help>
-            <message lang="fr">Attribut désignant le(s) champ(s) LDAP d'informations à afficher</message>
+            <message lang="fr">Attribut désignant le(s) champ(s) LDAP d'informations à afficher
+            </message>
             <message lang="en">LDAP fields for the person information details</message>
           </help>
         </parameter>
@@ -493,7 +547,9 @@
           <size>30</size>
           <updatable>always</updatable>
           <help>
-            <message lang="fr">Attribut(s) désignant le(s) rôle(s) des personnes à afficher avec le service principal</message>
+            <message lang="fr">Attribut(s) désignant le(s) rôle(s) des personnes à afficher avec le
+              service principal
+            </message>
             <message lang="en">Attribute name of the main unit positions</message>
           </help>
         </parameter>
@@ -527,7 +583,8 @@
           <size>30</size>
           <updatable>always</updatable>
           <help>
-            <message lang="fr">Attribut(s) désignant le(s) champ(s) LDAP d'informations à afficher</message>
+            <message lang="fr">Attribut(s) désignant le(s) champ(s) LDAP d'informations à afficher
+            </message>
             <message lang="en">LDAP fields for the person information details</message>
           </help>
         </parameter>

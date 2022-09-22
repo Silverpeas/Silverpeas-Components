@@ -13,7 +13,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+    "https://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,8 +25,9 @@
 
 -->
 
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>formsOnline</name>
   <label>
     <message lang="fr">Formulaires en ligne</message>
@@ -35,11 +36,11 @@
   </label>
   <description>
     <message lang="fr">Application très pratique basée sur des formulaires
-		entièrement personnalisables, elle permet aux utilisateurs de soumettre des
-		demandes structurées de toutes natures. Ensuite, les destinataires valident ou
-		refusent les demandes reçues. Les notifications permettent un suivi parfait des
-		demandes.
-	</message>
+      entièrement personnalisables, elle permet aux utilisateurs de soumettre des
+      demandes structurées de toutes natures. Ensuite, les destinataires valident ou
+      refusent les demandes reçues. Les notifications permettent un suivi parfait des
+      demandes.
+    </message>
     <message lang="en">Online forms</message>
     <message lang="de">Online Formulare</message>
   </description>
@@ -58,10 +59,19 @@
         <message lang="de">Manager</message>
       </label>
       <help>
-        <message lang="fr">Les gestionnaires gèrent les formulaires et déterminent les droits d'utilisation sur chaque formulaire (émetteurs / valideurs).</message>
-        <message lang="en">Managers manage forms and assign rights on each form (senders/validators).</message>
-        <message lang="de">Managers manage forms and assign rights on each form (senders/validators).</message>
+        <message lang="fr">Les gestionnaires gèrent les formulaires et déterminent les droits
+          d'utilisation sur chaque formulaire (émetteurs / valideurs).
+        </message>
+        <message lang="en">Managers manage forms and assign rights on each form
+          (senders/validators).
+        </message>
+        <message lang="de">Managers manage forms and assign rights on each form
+          (senders/validators).
+        </message>
       </help>
+      <spaceMapping>
+        <profile>admin</profile>
+      </spaceMapping>
     </profile>
     <profile name="SenderReceiver">
       <label>
@@ -74,6 +84,11 @@
         <message lang="en">Users than can send or validate a request.</message>
         <message lang="de">Sender und Empfänger</message>
       </help>
+      <spaceMapping>
+        <profile>publisher</profile>
+        <profile>writer</profile>
+        <profile>reader</profile>
+      </spaceMapping>
     </profile>
   </profiles>
   <parameters>

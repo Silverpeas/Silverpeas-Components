@@ -27,7 +27,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.stubbing.Answer;
-import org.silverpeas.components.community.repository.CommunityRepository;
+import org.silverpeas.components.community.repository.CommunityOfUsersRepository;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
@@ -45,14 +45,14 @@ import static org.mockito.Mockito.*;
  * Unit tests about the Community contributions.
  */
 @EnableSilverTestEnv
-class CommunityTest {
+class CommunityOfUsersTest {
 
   private static final String USER_ID = "0";
 
   @BeforeEach
   @SuppressWarnings("JUnitMalformedDeclaration")
   public void mockRequiredResources(
-      @TestManagedMock CommunityRepository repository,
+      @TestManagedMock CommunityOfUsersRepository repository,
       @TestManagedMock OrganizationController organizationController,
       @TestManagedMock UserProvider userProvider) {
     Answer<? extends User> userAnswer = a -> {

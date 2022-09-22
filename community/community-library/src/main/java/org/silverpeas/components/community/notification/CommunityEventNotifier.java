@@ -28,14 +28,14 @@ import org.silverpeas.core.notification.system.CDIResourceEventNotifier;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.util.ServiceProvider;
 
-import org.silverpeas.components.community.model.Community;
+import org.silverpeas.components.community.model.CommunityOfUsers;
 
 /**
  * A notifier on the changes in the state of a Community business object.
  */
 @Bean
 public final class CommunityEventNotifier
-    extends CDIResourceEventNotifier<Community, CommunityEvent> {
+    extends CDIResourceEventNotifier<CommunityOfUsers, CommunityEvent> {
 
   public static CommunityEventNotifier get() {
     return ServiceProvider.getService(CommunityEventNotifier.class);
@@ -43,7 +43,7 @@ public final class CommunityEventNotifier
 
   @Override
   protected CommunityEvent createResourceEventFrom(final ResourceEvent.Type type,
-    final Community... resource) {
+    final CommunityOfUsers... resource) {
     return new CommunityEvent(type, resource);
   }
 }

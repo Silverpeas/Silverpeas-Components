@@ -30,7 +30,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.components.community.CommunityWarBuilder;
-import org.silverpeas.components.community.model.Community;
+import org.silverpeas.components.community.model.CommunityOfUsers;
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.web.ResourceGettingTest;
 
@@ -47,10 +48,10 @@ public class CommunityResourceGettingIT extends ResourceGettingTest {
 
   private static final String DATASET_SCRIPT = "/community-dataset.sql";
 
-  private static final String EXPECTED_ID = "45d42847-2009-4ca8-86bb-1918909dc094";
+  private static final String EXPECTED_ID = "community1";
 
   private String authToken;
-  private CommunityEntity expectedEntity;
+  private CommunityOfUsersEntity expectedEntity;
 
   @Deployment
   public static Archive<?> createTestArchive() {
@@ -74,7 +75,10 @@ public class CommunityResourceGettingIT extends ResourceGettingTest {
   @Before
   public void prepareTestResources() {
     authToken = getTokenKeyOf(User.getById("1"));
-    expectedEntity = new CommunityEntity(Community.getById(EXPECTED_ID));
+    CommunityOfUsers community = CommunityOfUsers.getByComponentInstanceId(EXPECTED_ID)
+        .orElseThrow(
+            () -> new SilverpeasRuntimeException("No such community instance: " + EXPECTED_ID));
+    expectedEntity = new CommunityOfUsersEntity(community);
   }
 
   @Test
@@ -84,17 +88,17 @@ public class CommunityResourceGettingIT extends ResourceGettingTest {
 
   @Override
   public String aResourceURI() {
-    return "community/" + getExistingComponentInstances()[0] + "/" + EXPECTED_ID;
+    return "community/" + EXPECTED_ID;
   }
 
   @Override
   public String anUnexistingResourceURI() {
-    return "community/" + getExistingComponentInstances()[0] + "/100";
+    return "community/100";
   }
 
   @Override
   @SuppressWarnings("unchecked")
-  public CommunityEntity aResource() {
+  public CommunityOfUsersEntity aResource() {
     return expectedEntity;
   }
 
@@ -105,12 +109,12 @@ public class CommunityResourceGettingIT extends ResourceGettingTest {
 
   @Override
   public Class<?> getWebEntityClass() {
-    return CommunityEntity.class;
+    return CommunityOfUsersEntity.class;
   }
 
   @Override
   public String[] getExistingComponentInstances() {
-    return new String[]{"community1", "community2"};
+    return new String[]{EXPECTED_ID, "community2"};
   }
 
 }

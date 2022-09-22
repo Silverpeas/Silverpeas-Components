@@ -13,7 +13,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+    "https://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -27,7 +27,7 @@
 
 <WAComponent xmlns="http://silverpeas.org/xml/ns/component"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
+             xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>myDB</name>
   <label>
     <message lang="fr">My BD</message>
@@ -47,7 +47,8 @@
     </message>
     <message lang="de">
       Silverpeas bietet mit "MyDB" eine Möglichkeit, auf eine vorhandene relationale Datenbank in
-      Ihrer Organisation zuzugreifen, um die Geschäftsdaten zu konsultieren, zu erstellen und zu aktualisieren.
+      Ihrer Organisation zuzugreifen, um die Geschäftsdaten zu konsultieren, zu erstellen und zu
+      aktualisieren.
       Die Mitwirkenden können die Daten bearbeiten, während die Leser sie nur konsultieren können.
     </message>
   </description>
@@ -68,8 +69,12 @@
       <help>
         <message lang="fr">Les gestionnaires sélectionne la base de données à accéder.</message>
         <message lang="en">Managers select the database to access.</message>
-        <message lang="de">Manager wählen die Datenbank aus, auf die zugegriffen werden soll.</message>
+        <message lang="de">Manager wählen die Datenbank aus, auf die zugegriffen werden soll.
+        </message>
       </help>
+      <spaceMapping>
+        <profile>admin</profile>
+      </spaceMapping>
     </profile>
     <profile name="publisher">
       <label>
@@ -82,6 +87,10 @@
         <message lang="en">Publishers edit the data into the database.</message>
         <message lang="de">Publisher bearbeiten die Daten in der Datenbank.</message>
       </help>
+      <spaceMapping>
+        <profile>publisher</profile>
+        <profile>writer</profile>
+      </spaceMapping>
     </profile>
     <profile name="user">
       <label>
@@ -94,6 +103,9 @@
         <message lang="en">Readers consult data in the database.</message>
         <message lang="de">Leser konsultieren Daten in der Datenbank.</message>
       </help>
+      <spaceMapping>
+        <profile>reader</profile>
+      </spaceMapping>
     </profile>
   </profiles>
 </WAComponent>

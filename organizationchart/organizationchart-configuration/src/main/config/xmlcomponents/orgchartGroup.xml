@@ -13,7 +13,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+    "https://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,15 +25,18 @@
 
 -->
 
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>orgchartGroup</name>
   <label>
     <message lang="fr">Organigramme Groupe</message>
     <message lang="en">Group-based organization chart</message>
   </label>
   <description>
-    <message lang="fr">Cette application permet l'affichage d'un organigramme basé sur les groupes d'utilisateurs.</message>
+    <message lang="fr">Cette application permet l'affichage d'un organigramme basé sur les groupes
+      d'utilisateurs.
+    </message>
     <message lang="en">This application displays an organization chart based on a group.</message>
   </description>
   <suite>
@@ -50,9 +53,19 @@
         <message lang="en">Readers</message>
       </label>
       <help>
-        <message lang="fr">Les lecteurs consultent l'organigramme, naviguent au sein des groupes et visualisent les personnes qui y sont rattachés.</message>
-        <message lang="en">Readers consult the chart, navigate within groups and visualize the people who are linked to it.</message>
+        <message lang="fr">Les lecteurs consultent l'organigramme, naviguent au sein des groupes et
+          visualisent les personnes qui y sont rattachés.
+        </message>
+        <message lang="en">Readers consult the chart, navigate within groups and visualize the
+          people who are linked to it.
+        </message>
       </help>
+      <spaceMapping>
+        <profile>admin</profile>
+        <profile>publisher</profile>
+        <profile>writer</profile>
+        <profile>reader</profile>
+      </spaceMapping>
     </profile>
   </profiles>
   <groupsOfParameters>
@@ -63,9 +76,16 @@
         <message lang="de">Units view</message>
       </label>
       <description>
-        <message lang="fr">La vue "services" est la vue principale. Elle présente la composition d'un service (en sous services). Les responsables de chaque entité sont également affichés.</message>
-        <message lang="en">The "units" view is the main view. It presents the composition of a unit (in sub units). The leaders of each unit are also displayed.</message>
-        <message lang="de">The "units" view is the main view. It presents the composition of a unit (in sub units). The leaders of each unit are also displayed.</message>
+        <message lang="fr">La vue "services" est la vue principale. Elle présente la composition
+          d'un service (en sous services). Les responsables de chaque entité sont également
+          affichés.
+        </message>
+        <message lang="en">The "units" view is the main view. It presents the composition of a unit
+          (in sub units). The leaders of each unit are also displayed.
+        </message>
+        <message lang="de">The "units" view is the main view. It presents the composition of a unit
+          (in sub units). The leaders of each unit are also displayed.
+        </message>
       </description>
       <help></help>
       <order>3</order>
@@ -83,7 +103,9 @@
           <size>30</size>
           <updatable>always</updatable>
           <help>
-            <message lang="fr">Rôle(s) à afficher pour le service principal (basé sur le titre des personnes)</message>
+            <message lang="fr">Rôle(s) à afficher pour le service principal (basé sur le titre des
+              personnes)
+            </message>
             <message lang="en">Role(s) of the main organizational unit</message>
           </help>
         </parameter>

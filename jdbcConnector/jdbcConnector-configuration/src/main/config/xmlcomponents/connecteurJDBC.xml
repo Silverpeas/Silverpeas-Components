@@ -13,7 +13,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+    "https://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,8 +25,9 @@
 
 -->
 
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>connecteurJDBC</name>
   <label>
     <message lang="fr">Connecteur JDBC</message>
@@ -35,14 +36,17 @@
   </label>
   <description>
     <message lang="fr">L’application permet d’afficher le contenu d’une base de
-		données via une requête SQL définie par le gestionnaire. Idéal pour exposer
-		rapidement vos données existantes.
+      données via une requête SQL définie par le gestionnaire. Idéal pour exposer
+      rapidement vos données existantes.
     </message>
-    <message lang="en">Allow to connect and request a database; displaying results in tables. Managers
+    <message lang="en">Allow to connect and request a database; displaying results in tables.
+      Managers
       create SQL request and translate them in natural language request.
     </message>
-    <message lang="de">Ermöglicht verbindungen zu einer Datenbanke un Zugriffe zu den Daten, Ergebnisse werden in Tabellen Anzeiget.
-	Die Komponente erstellt SQL-Anfragen und übersetzt sie in natürlicher Sprache.</message>
+    <message lang="de">Ermöglicht verbindungen zu einer Datenbanke un Zugriffe zu den Daten,
+      Ergebnisse werden in Tabellen Anzeiget.
+      Die Komponente erstellt SQL-Anfragen und übersetzt sie in natürlicher Sprache.
+    </message>
   </description>
   <suite>
     <message lang="fr">06 Connecteurs</message>
@@ -61,8 +65,12 @@
       <help>
         <message lang="fr">Les gestionnaires sélectionne la base de données à accéder.</message>
         <message lang="en">Managers select the database to access.</message>
-        <message lang="de">Manager wählen die Datenbank aus, auf die zugegriffen werden soll.</message>
+        <message lang="de">Manager wählen die Datenbank aus, auf die zugegriffen werden soll.
+        </message>
       </help>
+      <spaceMapping>
+        <profile>admin</profile>
+      </spaceMapping>
     </profile>
     <profile name="publisher">
       <label>
@@ -75,6 +83,10 @@
         <message lang="en">Publishers write the request.</message>
         <message lang="de">Herausgeber</message>
       </help>
+      <spaceMapping>
+        <profile>publisher</profile>
+        <profile>writer</profile>
+      </spaceMapping>
     </profile>
     <profile name="user">
       <label>
@@ -83,10 +95,14 @@
         <message lang="de">Leser</message>
       </label>
       <help>
-        <message lang="fr">Les lecteurs visualisent le résultat de la requête dans un tableau.</message>
+        <message lang="fr">Les lecteurs visualisent le résultat de la requête dans un tableau.
+        </message>
         <message lang="en">Readers visualize the request's result in a table.</message>
         <message lang="de">Leser</message>
       </help>
+      <spaceMapping>
+        <profile>reader</profile>
+      </spaceMapping>
     </profile>
   </profiles>
 </WAComponent>

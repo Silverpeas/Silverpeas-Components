@@ -13,7 +13,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+    "https://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,8 +25,9 @@
 
 -->
 
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>whitePages</name>
   <label>
     <message lang="fr">Annuaire d'experts</message>
@@ -35,17 +36,20 @@
   </label>
   <description>
     <message lang="fr">
-		L’application a pour objectif de retrouver les utilisateurs
-		experts dans un domaine et de se mettre en relation avec eux. Les experts sont
-		qualifiés grâce à un formulaire personnalisable et la cartographie de connaissances
-		(Plan de classement).
+      L’application a pour objectif de retrouver les utilisateurs
+      experts dans un domaine et de se mettre en relation avec eux. Les experts sont
+      qualifiés grâce à un formulaire personnalisable et la cartographie de connaissances
+      (Plan de classement).
     </message>
     <message lang="en">
-      Create a directory of skills, whith each expert described by an xml form. The resume is classified on the classification scheme
+      Create a directory of skills, whith each expert described by an xml form. The resume is
+      classified on the classification scheme
       to search quickly for a skill.
     </message>
-    <message lang="de">Erstellt ein Verzeichnis von Fähigkeiten, jeder Experte wird dürch ein XML Formular beschrieben.
-      Der Lebenslauf ist auf dem KP für ein Schnelles Suchen eingestuft.</message>
+    <message lang="de">Erstellt ein Verzeichnis von Fähigkeiten, jeder Experte wird dürch ein XML
+      Formular beschrieben.
+      Der Lebenslauf ist auf dem KP für ein Schnelles Suchen eingestuft.
+    </message>
   </description>
   <suite>
     <message lang="fr">03 Gestion de la connaissance</message>
@@ -62,10 +66,21 @@
         <message lang="de">Manager</message>
       </label>
       <help>
-        <message lang="fr">Les gestionnaires gèrent les experts dans l'annuaire et paramètrent le Plan de Classement.</message>
-        <message lang="en">Managers manage experts of the directory and set up the Classification Scheme.</message>
-        <message lang="de">Managers manage experts of the directory and set up the Classification Scheme.</message>
+        <message lang="fr">Les gestionnaires gèrent les experts dans l'annuaire et paramètrent le
+          Plan de Classement.
+        </message>
+        <message lang="en">Managers manage experts of the directory and set up the Classification
+          Scheme.
+        </message>
+        <message lang="de">Managers manage experts of the directory and set up the Classification
+          Scheme.
+        </message>
       </help>
+      <spaceMapping>
+        <profile>admin</profile>
+        <profile>publisher</profile>
+        <profile>writer</profile>
+      </spaceMapping>
     </profile>
     <profile name="user">
       <label>
@@ -74,10 +89,14 @@
         <message lang="de">Leser</message>
       </label>
       <help>
-        <message lang="fr">Les lecteurs consultent l'annuaire et peuvent mettre à jour leur fiche.</message>
+        <message lang="fr">Les lecteurs consultent l'annuaire et peuvent mettre à jour leur fiche.
+        </message>
         <message lang="en">Readers consult the directory and can update their data sheet.</message>
         <message lang="de">Leser</message>
       </help>
+      <spaceMapping>
+        <profile>reader</profile>
+      </spaceMapping>
     </profile>
   </profiles>
   <parameters>
@@ -95,7 +114,9 @@
       <size>30</size>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Modèle xml spécifique permettant de saisir des informations sur l'expert.</message>
+        <message lang="fr">Modèle xml spécifique permettant de saisir des informations sur
+          l'expert.
+        </message>
         <message lang="en">XML form to describe the skills of an expert.</message>
         <message lang="de">XML-Formular, um die Fähigkeiten eines Experten zu beschreiben.</message>
       </help>
@@ -114,9 +135,12 @@
       <size>30</size>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Fichier html permettant de présenter les informations de l'expert.</message>
+        <message lang="fr">Fichier html permettant de présenter les informations de l'expert.
+        </message>
         <message lang="en">HTML file used for displaying the expert's skills.</message>
-        <message lang="de">HTML-Datei die Verwendet wird um die Fähigkeiten des Experten zu zeigen.</message>
+        <message lang="de">HTML-Datei die Verwendet wird um die Fähigkeiten des Experten zu
+          zeigen.
+        </message>
       </help>
     </parameter>
     <parameter>
@@ -132,9 +156,14 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Active le masquage des mails dans l'IHM. Les notifications envoyées à partir de cette application auront un expéditeur générique.</message>
-        <message lang="en">Hide the emailaddress. The sender of notifications will be generic.</message>
-        <message lang="de">Blendet die E-Mailadresse aus. Der Absender der eingegangenen Meldungen wird anonym sein.</message>
+        <message lang="fr">Active le masquage des mails dans l'IHM. Les notifications envoyées à
+          partir de cette application auront un expéditeur générique.
+        </message>
+        <message lang="en">Hide the emailaddress. The sender of notifications will be generic.
+        </message>
+        <message lang="de">Blendet die E-Mailadresse aus. Der Absender der eingegangenen Meldungen
+          wird anonym sein.
+        </message>
       </help>
     </parameter>
     <parameter>
@@ -150,14 +179,18 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Si ce paramètre est activé, l'utilisateur n'aura accès qu'à l'écran de création de sa fiche.
-        Le reste du portail lui sera innaccessible tant qu'il n'aura pas rempli sa fiche.
+        <message lang="fr">Si ce paramètre est activé, l'utilisateur n'aura accès qu'à l'écran de
+          création de sa fiche.
+          Le reste du portail lui sera innaccessible tant qu'il n'aura pas rempli sa fiche.
         </message>
         <message lang="en">
-        The user will have access only to his card until he has filled it.
+          The user will have access only to his card until he has filled it.
         </message>
-        <message lang="de">Wenn dieser Parameter aktiviert ist, wird der Benutzer nur Zugang zu seiner Karteikarte haben.
-        Der Rest des Portals wird für ihm unerreichbar sein, solange er seine Karteikarte nicht fertiggestellt hat.</message>
+        <message lang="de">Wenn dieser Parameter aktiviert ist, wird der Benutzer nur Zugang zu
+          seiner Karteikarte haben.
+          Der Rest des Portals wird für ihm unerreichbar sein, solange er seine Karteikarte nicht
+          fertiggestellt hat.
+        </message>
       </help>
     </parameter>
     <parameter>
@@ -175,7 +208,8 @@
       <help>
         <message lang="fr">Active le masquage de l'onglet fiche pour les lecteurs.</message>
         <message lang="en">Hide the tab displaying the expert card for readers.</message>
-        <message lang="de">Activiert das Ausblenden der Registerkarte Experten-Karte für den Leser</message>
+        <message lang="de">Activiert das Ausblenden der Registerkarte Experten-Karte für den Leser
+        </message>
       </help>
     </parameter>
     <parameter>
@@ -189,12 +223,14 @@
       <mandatory>true</mandatory>
       <value>0</value>
       <type>text</type>
-	  <size>5</size>
+      <size>5</size>
       <updatable>always</updatable>
       <help>
         <message lang="fr">Définit le domaine auquel on souhaite rattacher l'annuaire.</message>
         <message lang="en">Define the Silverpeas's domain attached to the directory.</message>
-        <message lang="de">Definiert die Silverpeas-Domänen auf, die das Verzeichnis angeschlossen ist</message>
+        <message lang="de">Definiert die Silverpeas-Domänen auf, die das Verzeichnis angeschlossen
+          ist
+        </message>
       </help>
     </parameter>
   </parameters>

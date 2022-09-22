@@ -13,7 +13,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+    "https://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,8 +25,9 @@
 
 -->
 
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>rssAgregator</name>
   <label>
     <message lang="fr">Agregateur RSS</message>
@@ -38,8 +39,12 @@
       plusieurs sources d’informations externes au format RSS. Parfait pour fournir du
       contenu adéquat et actualisé en permanence sur un sujet donné !
     </message>
-    <message lang="en">Aggregate inside Silverpeas data from external web sites using their RSS streams.</message>
-    <message lang="de">Aggregierte in der Plateform, Daten aus externe Websiten die über RSS Streams verfügen.</message>
+    <message lang="en">Aggregate inside Silverpeas data from external web sites using their RSS
+      streams.
+    </message>
+    <message lang="de">Aggregierte in der Plateform, Daten aus externe Websiten die über RSS Streams
+      verfügen.
+    </message>
   </description>
   <suite>
     <message lang="fr">06 Connecteurs</message>
@@ -61,6 +66,9 @@
         <message lang="en">Managers set up RSS feeds to broadcast.</message>
         <message lang="de">Managers set up RSS feeds to broadcast.</message>
       </help>
+      <spaceMapping>
+        <profile>admin</profile>
+      </spaceMapping>
     </profile>
     <profile name="user">
       <label>
@@ -73,6 +81,11 @@
         <message lang="en">Readers visualize RSS streams.</message>
         <message lang="de">Leser</message>
       </help>
+      <spaceMapping>
+        <profile>publisher</profile>
+        <profile>writer</profile>
+        <profile>reader</profile>
+      </spaceMapping>
     </profile>
   </profiles>
   <parameters>
@@ -107,9 +120,15 @@
       <type>select</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Permet de choisir la vue RSS à afficher par défaut lorsque l'utilisateur accède à l'application agregateur RSS.</message>
-        <message lang="en">Choose the view to display by default when the user accesses the RSS Aggregator.</message>
-        <message lang="de">Wählen Sie die Ansicht, die standardmäßig angezeigt wird, wenn der Benutzer auf die RSS Aggregator.</message>
+        <message lang="fr">Permet de choisir la vue RSS à afficher par défaut lorsque l'utilisateur
+          accède à l'application agregateur RSS.
+        </message>
+        <message lang="en">Choose the view to display by default when the user accesses the RSS
+          Aggregator.
+        </message>
+        <message lang="de">Wählen Sie die Ansicht, die standardmäßig angezeigt wird, wenn der
+          Benutzer auf die RSS Aggregator.
+        </message>
       </help>
       <personalSpaceValue>SEPARATED</personalSpaceValue>
     </parameter>
