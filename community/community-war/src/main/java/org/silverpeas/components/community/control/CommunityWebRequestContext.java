@@ -23,7 +23,19 @@
  */
 package org.silverpeas.components.community.control;
 
+import org.silverpeas.components.community.CommunityWebManager;
+import org.silverpeas.components.community.model.CommunityOfUsers;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.util.MemoizedSupplier;
 import org.silverpeas.core.web.mvc.webcomponent.WebComponentRequestContext;
+
+import javax.ws.rs.WebApplicationException;
+import java.util.Collection;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static java.util.function.Predicate.not;
+import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 
 /**
  * The execution context of an incoming HTTP request in regard to the application.
@@ -36,5 +48,32 @@ import org.silverpeas.core.web.mvc.webcomponent.WebComponentRequestContext;
 public class CommunityWebRequestContext extends
     WebComponentRequestContext<CommunityWebController> {
 
+  private final MemoizedSupplier<CommunityOfUsers> community = new MemoizedSupplier<>(
+      () -> CommunityOfUsers.getByComponentInstanceId(getComponentInstanceId())
+          .orElseThrow(() -> new WebApplicationException(
+              String.format("Community about instance %s does not exist", getComponentInstanceId()),
+              NOT_FOUND)));
 
+  public CommunityOfUsers getCommunity() {
+    return community.get();
+  }
+
+  public boolean isSpaceHomePage() {
+    return getRequest().getParameterAsBoolean("FromSpaceHomepage");
+  }
+
+  public boolean isMember() {
+    return CommunityWebManager.get().isMemberOf(getCommunity());
+  }
+
+  @Override
+  public Collection<SilverpeasRole> getUserRoles() {
+    final Set<SilverpeasRole> roles = CommunityWebManager.get().getUserRoleOn(getCommunity());
+    if (isSpaceHomePage()) {
+      return roles.stream()
+          .filter(not(SilverpeasRole.ADMIN::equals))
+          .collect(Collectors.toSet());
+    }
+    return roles;
+  }
 }

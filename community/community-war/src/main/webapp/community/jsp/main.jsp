@@ -27,6 +27,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 
 <c:set var="componentId" value="${requestScope.browseContext[3]}"/>
 <c:set var="currentUserLanguage" value="${requestScope.resources.language}"/>
@@ -34,42 +35,57 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 
-<fmt:message key="community.menu.item.subscribe" var="subscribeLabel"/>
-<fmt:message key="community.menu.item.unsubscribe" var="unsubscribeLabel"/>
+<view:setConstant constant="org.silverpeas.core.admin.user.model.SilverpeasRole.ADMIN" var="adminRole"/>
 
-<c:set var="isUserSubscribed" value="${requestScope.isUserSubscribed}"/>
+<fmt:message key="community.menu.item.editSpaceHomePage" var="editSpaceHomePageLabel"/>
+
+<c:url var="componentUriBase" value="${requestScope.componentUriBase}"/>
+<c:set var="currentUser" value="${requestScope.currentUser}"/>
+<c:set var="highestUserRole" value="${requestScope.highestUserRole}"/>
+<jsp:useBean id="highestUserRole" type="org.silverpeas.core.admin.user.model.SilverpeasRole"/>
+<c:set var="isAdmin" value="${highestUserRole.isGreaterThanOrEquals(adminRole)}"/>
+<c:set var="isMember" value="${requestScope.isMember}"/>
+<c:set var="spaceFacadeContent" value="${requestScope.spaceFacadeContent}"/>
 
 <view:sp-page>
   <view:sp-head-part>
     <script type="application/javascript">
-      SUBSCRIPTION_PROMISE.then(function() {
-        window.spSubManager = new SilverpeasSubscriptionManager({
-          componentInstanceId : '${componentId}', labels : {
-            subscribe : '${silfn:escapeJs(subscribeLabel)}',
-            unsubscribe : '${silfn:escapeJs(unsubscribeLabel)}'
-          }
-        });
+      whenSilverpeasReady().then(function() {
+        notyInfo('${highestUserRole}');
+        notyInfo('${isMember ? 'is a member' : 'is not a member'}');
       });
     </script>
   </view:sp-head-part>
   <view:sp-body-part>
     <view:operationPane>
-      <c:if test="${isUserSubscribed != null}">
-        <view:operationSeparator/>
-        <view:operation altText="<span id='subscriptionMenuLabel'></span>" icon="" action="javascript:spSubManager.switchUserSubscription()"/>
+      <c:if test="${isAdmin}">
+        <view:operation action="spaceHomePage/edit" altText="${editSpaceHomePageLabel}"/>
       </c:if>
     </view:operationPane>
     <view:window>
+      <c:if test="${isAdmin}">
+        <view:frame>
+          Bienvenue sur l'application community.
+        </view:frame>
+      </c:if>
       <view:frame>
-        Bienvenue sur l'application community.
-      </view:frame>
-      <view:frame>
-        <view:board>
-          Cette instance s'appelle
-          <span class="communityName"><c:out value="${requestScope.browseContext[1]}"/></span>.<br/>
-          Elle se situe dans l'espace
-          <span class="communityName"><c:out value="${requestScope.browseContext[0]}"/></span>.
-        </view:board>
+        <c:choose>
+          <c:when test="${isMember}">
+            <div class="leave-space-header"></div>
+          </c:when>
+          <c:otherwise>
+            <div class="join-space-header"></div>
+          </c:otherwise>
+        </c:choose>
+        <c:if test="${isAdmin}">
+          <view:board>
+            Cette instance s'appelle
+            <span class="communityName"><c:out value="${requestScope.browseContext[1]}"/></span>.<br/>
+            Elle se situe dans l'espace
+            <span class="communityName"><c:out value="${requestScope.browseContext[0]}"/></span>.
+          </view:board>
+        </c:if>
+        <div class="space-facade">${spaceFacadeContent}</div>
       </view:frame>
     </view:window>
   </view:sp-body-part>
