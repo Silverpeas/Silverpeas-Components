@@ -24,13 +24,9 @@
 package org.silverpeas.components.community.control;
 
 import org.silverpeas.components.community.CommunityComponentSettings;
-import org.silverpeas.core.subscription.SubscriptionService;
-import org.silverpeas.core.subscription.SubscriptionServiceProvider;
-import org.silverpeas.core.subscription.service.ComponentSubscription;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.Homepage;
-import org.silverpeas.core.web.mvc.webcomponent.annotation.Invokable;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.InvokeAfter;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToInternalJsp;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.WebComponentController;
@@ -83,22 +79,7 @@ public class CommunityWebController extends
   @Path("Main")
   @Homepage
   @RedirectToInternalJsp("main.jsp")
-  @InvokeAfter({"isUserSubscribed"})
   public void home(CommunityWebRequestContext context) {
     // Nothing to do for now...
-  }
-
-  /**
-   * Sets into request attributes the isUserSubscribed constant.
-   * @param context the context of the incoming request.
-   */
-  @Invokable("isUserSubscribed")
-  public void setIsUserSubscribed(CommunityWebRequestContext context) {
-    if (!getUserDetail().isAccessGuest()) {
-      SubscriptionService subscriptionService = SubscriptionServiceProvider.getSubscribeService();
-      boolean isUserSubscribed = subscriptionService.existsSubscription(
-          new ComponentSubscription(context.getUser().getId(), context.getComponentInstanceId()));
-      context.getRequest().setAttribute("isUserSubscribed", isUserSubscribed);
-    }
   }
 }

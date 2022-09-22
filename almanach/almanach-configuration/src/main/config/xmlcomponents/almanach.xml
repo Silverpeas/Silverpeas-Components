@@ -13,7 +13,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+    "https://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,8 +24,9 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 -->
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>almanach</name>
   <label>
     <message lang="fr">Calendrier</message>
@@ -34,14 +35,17 @@
   </label>
   <description>
     <message lang="fr">Les différentes vues proposées présentent des événements ponctuels
-		ou périodiques. L’application permet l’agrégation et l’accès rapide vers d’autres
-		calendriers. Tous les événements peuvent être exportés au format iCal.
+      ou périodiques. L’application permet l’agrégation et l’accès rapide vers d’autres
+      calendriers. Tous les événements peuvent être exportés au format iCal.
     </message>
-    <message lang="en">Enable to create and aggregate calendars from collaborative spaces or subspaces. Events can
+    <message lang="en">Enable to create and aggregate calendars from collaborative spaces or
+      subspaces. Events can
       have attachments. You can view events using different time scales.
     </message>
-    <message lang="de">Ermöglicht Ihnen das Erstellen und Anzeigen der verschiedenen Agenden von Veranstaltungen in den definierten
-      Räume und Unterräume der kollaborativen Räumen. Jedes Ereignis kann mit Dateien verknüpft werden.
+    <message lang="de">Ermöglicht Ihnen das Erstellen und Anzeigen der verschiedenen Agenden von
+      Veranstaltungen in den definierten
+      Räume und Unterräume der kollaborativen Räumen. Jedes Ereignis kann mit Dateien verknüpft
+      werden.
       Die Visualisierung wurd auf mehreren Zeitskalen durchgeführt.
     </message>
   </description>
@@ -60,10 +64,15 @@
         <message lang="de">Manager</message>
       </label>
       <help>
-        <message lang="fr">Les gestionnaires créent des événements et paramêtrent l'usage du Plan de Classement.</message>
+        <message lang="fr">Les gestionnaires créent des événements et paramêtrent l'usage du Plan de
+          Classement.
+        </message>
         <message lang="en">Managers create events and set up the classification scheme.</message>
         <message lang="de">Managers create events and set up the classification scheme.</message>
       </help>
+      <spaceMapping>
+        <profile>admin</profile>
+      </spaceMapping>
     </profile>
     <profile name="publisher">
       <label>
@@ -72,10 +81,15 @@
         <message lang="de">Herausgeber</message>
       </label>
       <help>
-        <message lang="fr">Les publieurs peuvent créer, modifier et supprimer des événements.</message>
+        <message lang="fr">Les publieurs peuvent créer, modifier et supprimer des événements.
+        </message>
         <message lang="en">Publishers can create, update and delete events.</message>
         <message lang="de">Herausgeber</message>
       </help>
+      <spaceMapping>
+        <profile>publisher</profile>
+        <profile>writer</profile>
+      </spaceMapping>
     </profile>
     <profile name="user">
       <label>
@@ -84,10 +98,16 @@
         <message lang="de">Leser</message>
       </label>
       <help>
-        <message lang="fr">Les lecteurs consultent les événements aux travers des différentes vues offertes.</message>
-        <message lang="en">Readers consult the events throughout the different views available.</message>
+        <message lang="fr">Les lecteurs consultent les événements aux travers des différentes vues
+          offertes.
+        </message>
+        <message lang="en">Readers consult the events throughout the different views available.
+        </message>
         <message lang="de">Leser</message>
       </help>
+      <spaceMapping>
+        <profile>reader</profile>
+      </spaceMapping>
     </profile>
   </profiles>
   <parameters>
@@ -104,7 +124,8 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Les événements saisis au sein de cette instance pourront être classés sur le Plan de
+        <message lang="fr">Les événements saisis au sein de cette instance pourront être classés sur
+          le Plan de
           Classement
         </message>
         <message lang="en">The events will be classified on the classification scheme.</message>
@@ -125,8 +146,12 @@
       <updatable>always</updatable>
       <help>
         <message lang="fr">Si activé, le PDC permet de filtrer les événements présentés.</message>
-        <message lang="en">If activated, the Classification engine permits to filter displayed events.</message>
-        <message lang="de">If activated, the Classification engine permits to filter displayed events.</message>
+        <message lang="en">If activated, the Classification engine permits to filter displayed
+          events.
+        </message>
+        <message lang="de">If activated, the Classification engine permits to filter displayed
+          events.
+        </message>
       </help>
     </parameter>
     <parameter>
@@ -142,15 +167,19 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Cette application pourra afficher des évènements d'autres Calendriers selon le
-          paramétrage de la plate-forme (calendriers des sous-espaces, de l'espace ou de toute la plate-forme) ou
+        <message lang="fr">Cette application pourra afficher des évènements d'autres Calendriers
+          selon le
+          paramétrage de la plate-forme (calendriers des sous-espaces, de l'espace ou de toute la
+          plate-forme) ou
           selon si le paramètre 'Agrégation sur mesure' est renseigné.
         </message>
-        <message lang="en">This application can aggregate events from other Calendars according to the
+        <message lang="en">This application can aggregate events from other Calendars according to
+          the
           platform settings (calendars in subspaces, in the space or from the whole platform) or
           according to 'Custom aggregation' parameter if it is filled.
         </message>
-        <message lang="de">This application can aggregate events from other Calendars according to the
+        <message lang="de">This application can aggregate events from other Calendars according to
+          the
           platform settings (calendars in subspaces, in the space or from the whole platform) or
           according to 'Custom aggregation' parameter if it is filled.
         </message>
@@ -177,11 +206,13 @@
         </message>
         <message lang="en">If filled and if 'Aggregation' parameter is activated, the
           platform settings (calendars in subspaces, in the space or from the whole platform) is
-          ignored and indicated calendars are taken into account (instance identifiers separated by comma).
+          ignored and indicated calendars are taken into account (instance identifiers separated by
+          comma).
         </message>
         <message lang="de">If filled and if 'Aggregation' parameter is activated, the
           platform settings (calendars in subspaces, in the space or from the whole platform) is
-          ignored and indicated calendars are taken into account (instance identifiers separated by comma).
+          ignored and indicated calendars are taken into account (instance identifiers separated by
+          comma).
         </message>
       </help>
     </parameter>
@@ -198,9 +229,13 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Permet d'alléger l'interface et d'optimiser l'affichage du reste de la semaine</message>
+        <message lang="fr">Permet d'alléger l'interface et d'optimiser l'affichage du reste de la
+          semaine
+        </message>
         <message lang="en">Hide week-ends, thus lightening the GUI.</message>
-        <message lang="de">Erlaubt es, das Interface leichter zu machen und das Anzeigen des Restes der Woche zu optimieren</message>
+        <message lang="de">Erlaubt es, das Interface leichter zu machen und das Anzeigen des Restes
+          der Woche zu optimieren
+        </message>
       </help>
     </parameter>
     <parameter>
@@ -242,9 +277,15 @@
       <type>select</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Permet de choisir la vue calendaire à afficher par défaut lorsque l'utilisateur accède au calendrier.</message>
-        <message lang="en">Choose the view to displayed by default when the user accesses the calendar.</message>
-        <message lang="de">Wählen Sie die Ansicht, die standardmäßig angezeigt wird, wenn der Benutzer auf die Kalender.</message>
+        <message lang="fr">Permet de choisir la vue calendaire à afficher par défaut lorsque
+          l'utilisateur accède au calendrier.
+        </message>
+        <message lang="en">Choose the view to displayed by default when the user accesses the
+          calendar.
+        </message>
+        <message lang="de">Wählen Sie die Ansicht, die standardmäßig angezeigt wird, wenn der
+          Benutzer auf die Kalender.
+        </message>
       </help>
     </parameter>
     <parameter>
@@ -262,7 +303,8 @@
       <help>
         <message lang="fr">Permet de générer un flux RSS des événements de ce calendrier.</message>
         <message lang="en">Produce a RSS stream for the events of this calendar.</message>
-        <message lang="de">Erzeugt einen Stream-Feed für die Veranstaltungen dieser Kalender.</message>
+        <message lang="de">Erzeugt einen Stream-Feed für die Veranstaltungen dieser Kalender.
+        </message>
       </help>
     </parameter>
     <parameter>
@@ -312,11 +354,14 @@
       <type>select</type>
       <updatable>hidden</updatable>
       <help>
-        <message lang="fr">Permet de choisir quelles autres instances de l'application Calendrier sont accessibles depuis
+        <message lang="fr">Permet de choisir quelles autres instances de l'application Calendrier
+          sont accessibles depuis
           la liste déroulante.
         </message>
         <message lang="en">Choose which calendars can be aggregated into this calendar.</message>
-        <message lang="de">Wählen Sie die Kalender, die in diesem Kalender aggregiert werden können.</message>
+        <message lang="de">Wählen Sie die Kalender, die in diesem Kalender aggregiert werden
+          können.
+        </message>
       </help>
     </parameter>
   </parameters>

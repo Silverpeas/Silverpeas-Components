@@ -13,7 +13,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+    "https://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,8 +25,9 @@
 
 -->
 
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>survey</name>
   <label>
     <message lang="fr">Enquête</message>
@@ -35,13 +36,16 @@
   </label>
   <description>
     <message lang="fr">Une enquête est constituée de plusieurs questions ouvertes ou
-		fermées. Il est possible de programmer sa mise en ligne. Les résultats sont
-		présentés selon deux restitutions différentes (anonyme ou nominative) afin de les
-		exploiter pleinement selon les besoins.
+      fermées. Il est possible de programmer sa mise en ligne. Les résultats sont
+      présentés selon deux restitutions différentes (anonyme ou nominative) afin de les
+      exploiter pleinement selon les besoins.
     </message>
-    <message lang="en">Create a survey with closed or open questions. You have feedback on the participation level or the current trend.</message>
+    <message lang="en">Create a survey with closed or open questions. You have feedback on the
+      participation level or the current trend.
+    </message>
     <message lang="de">Erstellen einer Umfrage mit geschlossenen oder offenen Fragen.
-	Sie erhalten ein Feedback über die Beteiligung oder den aktuellen Trend.</message>
+      Sie erhalten ein Feedback über die Beteiligung oder den aktuellen Trend.
+    </message>
   </description>
   <suite>
     <message lang="fr">02 Gestion Collaborative</message>
@@ -62,6 +66,9 @@
         <message lang="en">Managers set up the Classification Scheme.</message>
         <message lang="de">Managers set up the Classification Scheme.</message>
       </help>
+      <spaceMapping>
+        <profile>admin</profile>
+      </spaceMapping>
     </profile>
     <profile name="publisher">
       <label>
@@ -74,6 +81,9 @@
         <message lang="en">Publishers manage surveys.</message>
         <message lang="de">Herausgeber</message>
       </help>
+      <spaceMapping>
+        <profile>publisher</profile>
+      </spaceMapping>
     </profile>
     <profile name="userMultiple">
       <label>
@@ -82,10 +92,15 @@
         <message lang="de">Mehrere Teilnehmer</message>
       </label>
       <help>
-        <message lang="fr">Les participants multiples peuvent répondrent plusieurs fois à une enquête.</message>
+        <message lang="fr">Les participants multiples peuvent répondrent plusieurs fois à une
+          enquête.
+        </message>
         <message lang="en">Multiple participants can take part in a survey several times.</message>
         <message lang="de">Mehrere Teilnehmer</message>
       </help>
+      <spaceMapping>
+        <profile>writer</profile>
+      </spaceMapping>
     </profile>
     <profile name="user">
       <label>
@@ -98,6 +113,9 @@
         <message lang="en">Participants take part in survey.</message>
         <message lang="de">Teilnehmer</message>
       </help>
+      <spaceMapping>
+        <profile>reader</profile>
+      </spaceMapping>
     </profile>
   </profiles>
   <parameters>
@@ -114,8 +132,12 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Les enquêtes créées au sein de cette instance pourront être classées sur le Plan de Classement</message>
-        <message lang="en">The surveys created in this instance may be classified on the classification scheme.</message>
+        <message lang="fr">Les enquêtes créées au sein de cette instance pourront être classées sur
+          le Plan de Classement
+        </message>
+        <message lang="en">The surveys created in this instance may be classified on the
+          classification scheme.
+        </message>
         <message lang="de">Umfragen können auf dem KP klassifiziert werden</message>
       </help>
     </parameter>
@@ -132,8 +154,11 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Les participations à toutes les enquêtes créées au sein de cette instance seront anonymes.</message>
-        <message lang="en">Entries in all surveys created in this instance will be anonymous.</message>
+        <message lang="fr">Les participations à toutes les enquêtes créées au sein de cette instance
+          seront anonymes.
+        </message>
+        <message lang="en">Entries in all surveys created in this instance will be anonymous.
+        </message>
         <message lang="de">Einträge in allen Umfragen dieser Instanz, bleiben anonym.</message>
       </help>
     </parameter>

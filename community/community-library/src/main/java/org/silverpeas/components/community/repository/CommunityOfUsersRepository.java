@@ -23,29 +23,31 @@
  */
 package org.silverpeas.components.community.repository;
 
-import org.silverpeas.components.community.model.Community;
+import org.silverpeas.components.community.model.CommunityOfUsers;
 import org.silverpeas.core.persistence.datasource.repository.EntityRepository;
 import org.silverpeas.core.util.ServiceProvider;
 
-import java.util.List;
+import java.util.Optional;
 
 /**
- * This repository manages the persistence of Community contributions. It abstracts the
- * nature of the datasource in which are stored the Community as well as the persistence
+ * This repository manages the persistence of communities of users. It abstracts the
+ * nature of the datasource in which are stored the communities as well as the persistence
  * engine used to manage the access to such a datasource.
  */
-public interface CommunityRepository extends EntityRepository<Community> {
+public interface CommunityOfUsersRepository extends EntityRepository<CommunityOfUsers> {
 
   /**
    * Gets the single instance of this repository.
    */
-  static CommunityRepository get() {
-    return ServiceProvider.getService(CommunityRepository.class);
+  static CommunityOfUsersRepository get() {
+    return ServiceProvider.getService(CommunityOfUsersRepository.class);
   }
 
   /**
-   * Gets all Community instances belonging to the specified component instance.
+   * Gets the community of users managed by the specified component instance.
    * @param componentInstanceId the unique identifier of a component instance.
+   * @return an {@link Optional} with the {@link CommunityOfUsers} instance or an empty {@link Optional} if
+   * no such component instance exists.
    */
-  List<Community> getByComponentInstanceId(String componentInstanceId);
+  Optional<CommunityOfUsers> getByComponentInstanceId(String componentInstanceId);
 }

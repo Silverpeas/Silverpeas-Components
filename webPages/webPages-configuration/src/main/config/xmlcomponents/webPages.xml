@@ -13,7 +13,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+    "https://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,8 +25,9 @@
 
 -->
 
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>webPages</name>
   <label>
     <message lang="fr">Page web</message>
@@ -35,12 +36,13 @@
   </label>
   <description>
     <message lang="fr">Cette application permet de faciliter la gestion de
-		contenu (page d’accueil, page de présentation...).
-		Son contenu peut être totalement libre ou bien structuré. La mise en page peut
-		être personnalisée.
-	</message>
+      contenu (page d’accueil, page de présentation...).
+      Son contenu peut être totalement libre ou bien structuré. La mise en page peut
+      être personnalisée.
+    </message>
     <message lang="en">Create a web page using the WYSIWYG editor</message>
-    <message lang="de">Ermöglicht es Ihnen, eine Webseite mit einem WYSIWYG-Editor zu erstellen.</message>
+    <message lang="de">Ermöglicht es Ihnen, eine Webseite mit einem WYSIWYG-Editor zu erstellen.
+    </message>
   </description>
   <suite>
     <message lang="fr">04 Gestion de contenu</message>
@@ -61,6 +63,9 @@
         <message lang="en">Managers manage the web page and subscriptions.</message>
         <message lang="en">Managers manage the web page and subscriptions.</message>
       </help>
+      <spaceMapping>
+        <profile>admin</profile>
+      </spaceMapping>
     </profile>
     <profile name="publisher">
       <label>
@@ -73,6 +78,10 @@
         <message lang="en">Publishers manage the web page.</message>
         <message lang="de">Herausgeber</message>
       </help>
+      <spaceMapping>
+        <profile>publisher</profile>
+        <profile>writer</profile>
+      </spaceMapping>
     </profile>
     <profile name="user">
       <label>
@@ -85,6 +94,9 @@
         <message lang="en">Readers visualize the web page</message>
         <message lang="de">Leser</message>
       </help>
+      <spaceMapping>
+        <profile>reader</profile>
+      </spaceMapping>
     </profile>
   </profiles>
   <parameters>
@@ -103,9 +115,15 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Permet d'envoyer une notification aux utilisateurs abonnés à la page Web.</message>
-        <message lang="en">Allows to send a notification to the users who have subscribed to the Web page.</message>
-        <message lang="de">Ermöglicht es eine Benachrichtigung an den Benutzern zu senden, die sich an der Web-Seite abonniert haben .</message>
+        <message lang="fr">Permet d'envoyer une notification aux utilisateurs abonnés à la page
+          Web.
+        </message>
+        <message lang="en">Allows to send a notification to the users who have subscribed to the Web
+          page.
+        </message>
+        <message lang="de">Ermöglicht es eine Benachrichtigung an den Benutzern zu senden, die sich
+          an der Web-Seite abonniert haben .
+        </message>
       </help>
     </parameter>
     <parameter>

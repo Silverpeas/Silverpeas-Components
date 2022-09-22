@@ -26,12 +26,12 @@ package org.silverpeas.components.community.notification;
 import org.silverpeas.core.notification.system.AbstractResourceEvent;
 import javax.annotation.Nonnull;
 
-import org.silverpeas.components.community.model.Community;
+import org.silverpeas.components.community.model.CommunityOfUsers;
 
 /**
  * Event on a change in the state of a given Community business object.
  */
-public final class CommunityEvent extends AbstractResourceEvent<Community> {
+public final class CommunityEvent extends AbstractResourceEvent<CommunityOfUsers> {
 
   /**
    * Constructs a new event with the specified type and that implies the specified
@@ -40,7 +40,7 @@ public final class CommunityEvent extends AbstractResourceEvent<Community> {
    * @param contribution the states of a Community concerned by a state transition.
   */
   public CommunityEvent(@Nonnull final Type type,
-    @Nonnull final Community... contribution) {
+    @Nonnull final CommunityOfUsers... contribution) {
       super(type, contribution);
   }
 }

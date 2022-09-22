@@ -13,7 +13,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+    "https://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,8 +25,9 @@
 
 -->
 
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>hyperlink</name>
   <label>
     <message lang="fr">Hyperlien</message>
@@ -35,9 +36,9 @@
   </label>
   <description>
     <message lang="fr">Répondant de prime abord à un besoin très basique, l’application
-		permet de mettre en place un véritable système de SSO client vers n’importe
-		quels sites web nécessitant une authentification.
-	</message>
+      permet de mettre en place un véritable système de SSO client vers n’importe
+      quels sites web nécessitant une authentification.
+    </message>
     <message lang="en">Create a link to a document or a web site.</message>
     <message lang="de">Erstellt eine Verknüpfung zu einem Dokument oder einer Webseite.</message>
   </description>
@@ -60,6 +61,12 @@
         <message lang="en">Readers can access the URL.</message>
         <message lang="de">Leser</message>
       </help>
+      <spaceMapping>
+        <profile>admin</profile>
+        <profile>publisher</profile>
+        <profile>writer</profile>
+        <profile>reader</profile>
+      </spaceMapping>
     </profile>
   </profiles>
   <groupsOfParameters>
@@ -70,9 +77,18 @@
         <message lang="de">SSO client</message>
       </label>
       <description>
-        <message lang="fr">Ces paramètres permettent une authentification automatique sur le site cible. Les informations de connexion sont demandées une fois, stockées dans Silverpeas puis utilisées à chaque accès afin que l'utilisateur n'ait pas besoin de les resaisir.</message>
-        <message lang="en">These settings allow automatic authentication on the target site. The connection information is requested once, stored in Silverpeas and then used at each access so that the user does not need to retype them.</message>
-        <message lang="de">These settings allow automatic authentication on the target site. The connection information is requested once, stored in Silverpeas and then used at each access so that the user does not need to retype them.</message>
+        <message lang="fr">Ces paramètres permettent une authentification automatique sur le site
+          cible. Les informations de connexion sont demandées une fois, stockées dans Silverpeas
+          puis utilisées à chaque accès afin que l'utilisateur n'ait pas besoin de les resaisir.
+        </message>
+        <message lang="en">These settings allow automatic authentication on the target site. The
+          connection information is requested once, stored in Silverpeas and then used at each
+          access so that the user does not need to retype them.
+        </message>
+        <message lang="de">These settings allow automatic authentication on the target site. The
+          connection information is requested once, stored in Silverpeas and then used at each
+          access so that the user does not need to retype them.
+        </message>
       </description>
       <help></help>
       <order>2</order>
@@ -110,7 +126,8 @@
           <updatable>always</updatable>
           <help>
             <message lang="fr">Nom du champ pour passer le login au site cible</message>
-            <message lang="en">Name of the field used to pass the login to the target site.</message>
+            <message lang="en">Name of the field used to pass the login to the target site.
+            </message>
             <message lang="de">A_TRADUIRE</message>
           </help>
         </parameter>
@@ -119,7 +136,8 @@
           <label>
             <message lang="fr">Nom du champ 'Mot de passe'</message>
             <message lang="en">Password field name</message>
-            <message lang="de">Name des Feldes, um die Anmeldung an der Zielseite zu senden</message>
+            <message lang="de">Name des Feldes, um die Anmeldung an der Zielseite zu senden
+            </message>
           </label>
           <order>5</order>
           <mandatory>false</mandatory>
@@ -129,7 +147,8 @@
           <updatable>always</updatable>
           <help>
             <message lang="fr">Nom du champ pour passer le mot de passe au site cible</message>
-            <message lang="en">Name of the field used to pass the password to the target site.</message>
+            <message lang="en">Name of the field used to pass the password to the target site.
+            </message>
             <message lang="de">Name des Feldes, um das Passwort an der Zielseite zu senden</message>
           </help>
         </parameter>
@@ -138,7 +157,9 @@
           <label>
             <message lang="fr">Méthode du formulaire</message>
             <message lang="en">Form submit method</message>
-            <message lang="de">Methode die von dem Formular verwendet wird, um Daten zu übermitteln</message>
+            <message lang="de">Methode die von dem Formular verwendet wird, um Daten zu
+              übermitteln
+            </message>
           </label>
           <order>6</order>
           <mandatory>true</mandatory>
@@ -164,9 +185,13 @@
           <type>select</type>
           <updatable>always</updatable>
           <help>
-            <message lang="fr">Attribut Method à passer au formulaire de soumission de l'application SSO cliente.</message>
+            <message lang="fr">Attribut Method à passer au formulaire de soumission de l'application
+              SSO cliente.
+            </message>
             <message lang="en">Method used by the form to submit data to the target site.</message>
-            <message lang="de">Methode die von dem Formular verwendet wird, um Daten zum SSO Client zu übermitteln</message>
+            <message lang="de">Methode die von dem Formular verwendet wird, um Daten zum SSO Client
+              zu übermitteln
+            </message>
           </help>
         </parameter>
         <parameter>
@@ -183,9 +208,14 @@
           <size>25</size>
           <updatable>always</updatable>
           <help>
-            <message lang="fr">Nom du paramètre supplémentaire pour l'application SSO cliente. </message>
-            <message lang="en">Name of the first extra parameter for the target site authentication form.</message>
-            <message lang="de">Name des ersten zusätzlichen Parameter der für die Ziel-Website-Authentifizierung benützt wird</message>
+            <message lang="fr">Nom du paramètre supplémentaire pour l'application SSO cliente.
+            </message>
+            <message lang="en">Name of the first extra parameter for the target site authentication
+              form.
+            </message>
+            <message lang="de">Name des ersten zusätzlichen Parameter der für die
+              Ziel-Website-Authentifizierung benützt wird
+            </message>
           </help>
         </parameter>
         <parameter>
@@ -202,7 +232,8 @@
           <size>25</size>
           <updatable>always</updatable>
           <help>
-            <message lang="fr">Valeur du paramètre supplémentaire pour l'application SSO cliente.</message>
+            <message lang="fr">Valeur du paramètre supplémentaire pour l'application SSO cliente.
+            </message>
             <message lang="en">Value of the first extra parameter</message>
             <message lang="de">Wert des ersten zusätzlichen Parameter für den SSO Client</message>
           </help>
@@ -221,9 +252,14 @@
           <size>25</size>
           <updatable>always</updatable>
           <help>
-            <message lang="fr">Nom du paramètre supplémentaire pour l'application SSO cliente.</message>
-            <message lang="en">Name of the second extra parameter for the target site authentication form.</message>
-            <message lang="de">Name des zweiten zusätzlichen Parameter der für die Ziel-Website-Authentifizierung benützt wird</message>
+            <message lang="fr">Nom du paramètre supplémentaire pour l'application SSO cliente.
+            </message>
+            <message lang="en">Name of the second extra parameter for the target site authentication
+              form.
+            </message>
+            <message lang="de">Name des zweiten zusätzlichen Parameter der für die
+              Ziel-Website-Authentifizierung benützt wird
+            </message>
           </help>
         </parameter>
         <parameter>
@@ -240,7 +276,8 @@
           <size>25</size>
           <updatable>always</updatable>
           <help>
-            <message lang="fr">Valeur du paramètre supplémentaire pour l'application SSO cliente.</message>
+            <message lang="fr">Valeur du paramètre supplémentaire pour l'application SSO cliente.
+            </message>
             <message lang="en">Value of the second extra parameter</message>
             <message lang="de">Wert des zweiten zusätzlichen Parameter für den SSO Client</message>
           </help>
@@ -259,9 +296,14 @@
           <size>25</size>
           <updatable>always</updatable>
           <help>
-            <message lang="fr">Nom du paramètre supplémentaire pour l'application SSO cliente.</message>
-            <message lang="en">Name of the third extra parameter for the target site authentication form.</message>
-            <message lang="de">Name des dritten zusätzlichen Parameter der für die Ziel-Website-Authentifizierung benützt wird</message>
+            <message lang="fr">Nom du paramètre supplémentaire pour l'application SSO cliente.
+            </message>
+            <message lang="en">Name of the third extra parameter for the target site authentication
+              form.
+            </message>
+            <message lang="de">Name des dritten zusätzlichen Parameter der für die
+              Ziel-Website-Authentifizierung benützt wird
+            </message>
           </help>
         </parameter>
         <parameter>
@@ -278,7 +320,8 @@
           <size>25</size>
           <updatable>always</updatable>
           <help>
-            <message lang="fr">Valeur du paramètre supplémentaire pour l'application SSO cliente.</message>
+            <message lang="fr">Valeur du paramètre supplémentaire pour l'application SSO cliente.
+            </message>
             <message lang="en">Value of the third extra parameter</message>
             <message lang="de">Wert des dritten zusätzlichen Parameter für den SSO Client</message>
           </help>
@@ -297,9 +340,14 @@
           <size>25</size>
           <updatable>always</updatable>
           <help>
-            <message lang="fr">Nom du paramètre supplémentaire pour l'application SSO cliente.</message>
-            <message lang="en">Name of the fourth extra parameter for the target site authentication form.</message>
-            <message lang="de">Name des vierten zusätzlichen Parameter der für die Ziel-Website-Authentifizierung benützt wird</message>
+            <message lang="fr">Nom du paramètre supplémentaire pour l'application SSO cliente.
+            </message>
+            <message lang="en">Name of the fourth extra parameter for the target site authentication
+              form.
+            </message>
+            <message lang="de">Name des vierten zusätzlichen Parameter der für die
+              Ziel-Website-Authentifizierung benützt wird
+            </message>
           </help>
         </parameter>
         <parameter>
@@ -316,7 +364,8 @@
           <size>25</size>
           <updatable>always</updatable>
           <help>
-            <message lang="fr">Valeur du paramètre supplémentaire pour l'application SSO cliente.</message>
+            <message lang="fr">Valeur du paramètre supplémentaire pour l'application SSO cliente.
+            </message>
             <message lang="en">Value of the fourth extra parameter</message>
             <message lang="de">Wert des vierten zusätzlichen Parameter für den SSO Client</message>
           </help>
@@ -335,9 +384,14 @@
           <size>25</size>
           <updatable>always</updatable>
           <help>
-            <message lang="fr">Nom du paramètre supplémentaire pour l'application SSO cliente. </message>
-            <message lang="en">Name of the fifth extra parameter for the target site authentication form.</message>
-            <message lang="de">Name des fünften zusätzlichen Parameter der für die Ziel-Website-Authentifizierung benützt wird</message>
+            <message lang="fr">Nom du paramètre supplémentaire pour l'application SSO cliente.
+            </message>
+            <message lang="en">Name of the fifth extra parameter for the target site authentication
+              form.
+            </message>
+            <message lang="de">Name des fünften zusätzlichen Parameter der für die
+              Ziel-Website-Authentifizierung benützt wird
+            </message>
           </help>
         </parameter>
         <parameter>
@@ -354,7 +408,8 @@
           <size>25</size>
           <updatable>always</updatable>
           <help>
-            <message lang="fr">Valeur du paramètre supplémentaire pour l'application SSO cliente.</message>
+            <message lang="fr">Valeur du paramètre supplémentaire pour l'application SSO cliente.
+            </message>
             <message lang="en">Value of the fifth extra parameter</message>
             <message lang="de">Wert des fünften zusätzlichen Parameter für den SSO Client</message>
           </help>
@@ -394,9 +449,13 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Le lien peut s'ouvrir soit dans Silverpeas, soit dans une nouvelle fenêtre. </message>
+        <message lang="fr">Le lien peut s'ouvrir soit dans Silverpeas, soit dans une nouvelle
+          fenêtre.
+        </message>
         <message lang="en">Open the new page inside Silverpeas or in a new window.</message>
-        <message lang="de">Öffnen Sie die neue Seite innerhalb der Platform oder in einem neuen Fenster.</message>
+        <message lang="de">Öffnen Sie die neue Seite innerhalb der Platform oder in einem neuen
+          Fenster.
+        </message>
       </help>
     </parameter>
     <parameter>
@@ -412,9 +471,15 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Cocher cette case s'il s'agit d'un lien interne : le lien sera alors analysé pour ne garder que le partie concernant Silverpeas </message>
-        <message lang="en">Check to indicate that the link is internal, thus removing the unecessary url part.</message>
-        <message lang="de">Dieses Feld ankreuzen, wenn es sich um eine interne Verknüpfung handelt. Dies entfernt das unnötige URL Teil</message>
+        <message lang="fr">Cocher cette case s'il s'agit d'un lien interne : le lien sera alors
+          analysé pour ne garder que le partie concernant Silverpeas
+        </message>
+        <message lang="en">Check to indicate that the link is internal, thus removing the unecessary
+          url part.
+        </message>
+        <message lang="de">Dieses Feld ankreuzen, wenn es sich um eine interne Verknüpfung handelt.
+          Dies entfernt das unnötige URL Teil
+        </message>
       </help>
     </parameter>
   </parameters>

@@ -24,7 +24,7 @@
 package org.silverpeas.components.community.web;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import org.silverpeas.components.community.model.Community;
+import org.silverpeas.components.community.model.CommunityOfUsers;
 import org.silverpeas.core.web.rs.WebEntity;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -34,13 +34,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
 
 /**
- * It represents the Web entity of a Community state from which a representation (usually
- * in JSON) can be generated.
+ * It represents the Web entity of a {@link CommunityOfUsers} state from which a representation
+ * (usually in JSON) can be generated.
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CommunityEntity implements WebEntity {
+public class CommunityOfUsersEntity implements WebEntity {
 
   private static final long serialVersionUID = 1L;
 
@@ -49,15 +49,15 @@ public class CommunityEntity implements WebEntity {
   @XmlElement(required = true)
   private String id;
 
-  protected CommunityEntity() {
+  protected CommunityOfUsersEntity() {
     // required by the JSON/XML unmarshaller
   }
 
-  protected CommunityEntity(final Community resource) {
+  protected CommunityOfUsersEntity(final CommunityOfUsers resource) {
     this.id = resource.getId();
   }
 
-  CommunityEntity identifiedBy(final URI uri) {
+  CommunityOfUsersEntity identifiedBy(final URI uri) {
     this.uri = uri;
     return this;
   }
@@ -72,22 +72,10 @@ public class CommunityEntity implements WebEntity {
   }
 
   /**
-   * Gets the Community business object represented by this entity and for the specified
-   * component instance.
-   * @param componentInstanceId the unique identifier of a component instance.
-   * @return Community the business object represented by this entity.
-   */
-  public Community asCommunityFor(final String componentInstanceId) {
-    Community resource = new Community(componentInstanceId);
-    // TODO fill the resource with the required properties
-    return resource;
-  }
-
-  /**
    * Updates the specified resource with the changes in this entity.
    * @param resource the resource to update.
    */
-  public void update(final Community resource) {
+  public void update(final CommunityOfUsers resource) {
     // TODO update the properties of the specified resource if they have changed
   }
 }

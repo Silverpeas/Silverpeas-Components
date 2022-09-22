@@ -24,27 +24,27 @@
 package org.silverpeas.components.community.repository;
 
 import org.silverpeas.core.annotation.Repository;
-import org.silverpeas.components.community.model.Community;
+import org.silverpeas.components.community.model.CommunityOfUsers;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
 import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEntityRepository;
 
-import java.util.List;
+import java.util.Optional;
 
 /**
- * Implementation of the repository of Community contributions by extending the
+ * Implementation of the repository of Community of users by extending the
  * {@link org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEntityRepository}
  * base repository that provides all the basic and necessary methods to save, to update, to delete
  * and to get the business entities by using the JPA engine.
  */
 @Repository
-public class CommunityJpaRepository
-    extends SilverpeasJpaEntityRepository<Community>
-    implements CommunityRepository {
+public class CommunityOfUsersJpaRepository
+    extends SilverpeasJpaEntityRepository<CommunityOfUsers>
+    implements CommunityOfUsersRepository {
 
   @Override
-  public List<Community> getByComponentInstanceId(final String componentInstanceId) {
+  public Optional<CommunityOfUsers> getByComponentInstanceId(final String componentInstanceId) {
     NamedParameters parameters = newNamedParameters();
-    return findByNamedQuery("CommunityByComponentInstanceId",
-    parameters.add("componentInstanceId", componentInstanceId));
+    return Optional.ofNullable(findFirstByNamedQuery("CommunityByComponentInstanceId",
+        parameters.add("componentInstanceId", componentInstanceId)));
   }
 }

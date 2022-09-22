@@ -13,7 +13,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+    "https://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,8 +25,9 @@
 
 -->
 
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>resourcesManager</name>
   <label>
     <message lang="fr">Gestion de ressources</message>
@@ -35,12 +36,14 @@
   </label>
   <description>
     <message lang="fr">L’application permet de gérer des ressources (salles,
-		véhicules, matériel informatique...). Les utilisateurs créent des réservations sur
-		une ou plusieurs ressources. Seules les ressources disponibles aux dates demandées
-		sont proposées. Un système de validation est activable.
-	</message>
+      véhicules, matériel informatique...). Les utilisateurs créent des réservations sur
+      une ou plusieurs ressources. Seules les ressources disponibles aux dates demandées
+      sont proposées. Un système de validation est activable.
+    </message>
     <message lang="en">This application manages physical resources and how to book them.</message>
-    <message lang="de">Diese Komponente verwaltet physische Ressourcen und wie man diese buchen kann.</message>
+    <message lang="de">Diese Komponente verwaltet physische Ressourcen und wie man diese buchen
+      kann.
+    </message>
   </description>
   <suite>
     <message lang="fr">02 Gestion Collaborative</message>
@@ -61,6 +64,9 @@
         <message lang="en">Managers create categories and resources.</message>
         <message lang="de">Managers create categories and resources.</message>
       </help>
+      <spaceMapping>
+        <profile>admin</profile>
+      </spaceMapping>
     </profile>
     <profile name="responsable">
       <label>
@@ -73,6 +79,10 @@
         <message lang="en">Responsibles validate when a reader book some resources.</message>
         <message lang="de">Verwalter</message>
       </help>
+      <spaceMapping>
+        <profile>publisher</profile>
+        <profile>writer</profile>
+      </spaceMapping>
     </profile>
     <profile name="publisher">
       <label>
@@ -81,10 +91,15 @@
         <message lang="de">Leser</message>
       </label>
       <help>
-        <message lang="fr">Les lecteurs créent des événements et réservent les ressources nécessaires.</message>
+        <message lang="fr">Les lecteurs créent des événements et réservent les ressources
+          nécessaires.
+        </message>
         <message lang="en">Readers create events and book necessary resources.</message>
         <message lang="de">Leser</message>
       </help>
+      <spaceMapping>
+        <profile>reader</profile>
+      </spaceMapping>
     </profile>
   </profiles>
   <parameters>
@@ -119,7 +134,9 @@
       <type>select</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Permet de définir l'affichage par défaut lorsque l'utilisateur arrive sur l'application.</message>
+        <message lang="fr">Permet de définir l'affichage par défaut lorsque l'utilisateur arrive sur
+          l'application.
+        </message>
         <message lang="en">Sets the default display when the user enters the application.</message>
         <message lang="de">Sets the default display when the user enters the application.</message>
       </help>
@@ -137,7 +154,8 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Les lecteurs peuvent laisser des commentaires sur les ressources.</message>
+        <message lang="fr">Les lecteurs peuvent laisser des commentaires sur les ressources.
+        </message>
         <message lang="en">Readers are able to post comments on resource.</message>
         <message lang="de">Leser können Kommentare zu Ressourcen posten.</message>
       </help>
@@ -155,9 +173,13 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Permet d'alléger l'interface et d'optimiser l'affichage du reste de la semaine.</message>
+        <message lang="fr">Permet d'alléger l'interface et d'optimiser l'affichage du reste de la
+          semaine.
+        </message>
         <message lang="en">Optimize the GUI by not displaying week-ends.</message>
-        <message lang="de">Erlaubt es, das Interface leichter zu machen und das Anzeigen des Restes der Woche zu optimieren</message>
+        <message lang="de">Erlaubt es, das Interface leichter zu machen und das Anzeigen des Restes
+          der Woche zu optimieren
+        </message>
       </help>
     </parameter>
   </parameters>

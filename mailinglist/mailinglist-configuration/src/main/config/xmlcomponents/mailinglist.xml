@@ -13,7 +13,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+    "https://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,8 +25,9 @@
 
 -->
 
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>mailinglist</name>
   <label>
     <message lang="fr">Archivage d'e-mails</message>
@@ -35,13 +36,17 @@
   </label>
   <description>
     <message lang="fr">Cette application permet d’archiver tous les emails reçus à
-		une adresse de messagerie donnée. La modération est possible. Si l’abonnement
-		est activé, l’application se transforme en liste de diffusion.
+      une adresse de messagerie donnée. La modération est possible. Si l’abonnement
+      est activé, l’application se transforme en liste de diffusion.
     </message>
-    <message lang="en">This application archives emails received on a specific email address. The messages may be moderated. Using the 'Diffusion list' parameter,
-  this application can be transformed into a mailing-list.
+    <message lang="en">This application archives emails received on a specific email address. The
+      messages may be moderated. Using the 'Diffusion list' parameter,
+      this application can be transformed into a mailing-list.
     </message>
-    <message lang="de">Diese Komponente archiviert E-Mails, die an einer bestimmten E-Mail-Adresse gesendet werden. Die Nachrichten können moderiert werden. Mit dem 'Diffusions Liste' parameter, kann diese Komponente in eine Mailing-Liste umgewandelt werden.</message>
+    <message lang="de">Diese Komponente archiviert E-Mails, die an einer bestimmten E-Mail-Adresse
+      gesendet werden. Die Nachrichten können moderiert werden. Mit dem 'Diffusions Liste'
+      parameter, kann diese Komponente in eine Mailing-Liste umgewandelt werden.
+    </message>
   </description>
   <suite>
     <message lang="fr">02 Gestion Collaborative</message>
@@ -62,6 +67,9 @@
         <message lang="en">Managers</message>
         <message lang="de">Manager</message>
       </help>
+      <spaceMapping>
+        <profile>admin</profile>
+      </spaceMapping>
     </profile>
     <profile name="moderator">
       <label>
@@ -74,6 +82,9 @@
         <message lang="en">Moderators</message>
         <message lang="de">Moderator</message>
       </help>
+      <spaceMapping>
+        <profile>publisher</profile>
+      </spaceMapping>
     </profile>
     <profile name="reader">
       <label>
@@ -86,6 +97,10 @@
         <message lang="en">Readers</message>
         <message lang="de">Leser</message>
       </help>
+      <spaceMapping>
+        <profile>writer</profile>
+        <profile>reader</profile>
+      </spaceMapping>
     </profile>
   </profiles>
   <parameters>
@@ -157,8 +172,12 @@
       <updatable>always</updatable>
       <help>
         <message lang="fr">Indique s'il s'agit d'une liste de diffusion ou d'archivage</message>
-        <message lang="en">Indicates if the mailing list will be for storage only or with diffusion</message>
-        <message lang="de">Zeigt an, ob die Mailing-Liste für die Lagerung oder auch für die Verbreitung benützt wird</message>
+        <message lang="en">Indicates if the mailing list will be for storage only or with
+          diffusion
+        </message>
+        <message lang="de">Zeigt an, ob die Mailing-Liste für die Lagerung oder auch für die
+          Verbreitung benützt wird
+        </message>
       </help>
     </parameter>
     <parameter>

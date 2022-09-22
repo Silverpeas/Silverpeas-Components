@@ -13,7 +13,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+    "https://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -25,8 +25,9 @@
 
 -->
 
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>spaceMembers</name>
   <label>
     <message lang="fr">Membres de l'espace</message>
@@ -34,9 +35,15 @@
     <message lang="de">Raum Mitglieder</message>
   </label>
   <description>
-    <message lang="fr">Cette application permet d'afficher l'annuaire des utilisateurs ayant des droits déclarés dans l'espace.</message>
-    <message lang="en">This application allows you to view the user directory with rights declared in space.</message>
-    <message lang="de">Diese Anwendung ermöglicht es Ihnen, das Benutzerverzeichnis mit im Raum erklärt Rechte anzuzeigen.</message>
+    <message lang="fr">Cette application permet d'afficher l'annuaire des utilisateurs ayant des
+      droits déclarés dans l'espace.
+    </message>
+    <message lang="en">This application allows you to view the user directory with rights declared
+      in space.
+    </message>
+    <message lang="de">Diese Anwendung ermöglicht es Ihnen, das Benutzerverzeichnis mit im Raum
+      erklärt Rechte anzuzeigen.
+    </message>
   </description>
   <suite>
     <message lang="fr">02 Gestion Collaborative</message>
@@ -57,15 +64,21 @@
         <message lang="en">Readers visualize the directory.</message>
         <message lang="de">Leser visualisieren das Verzeichnis</message>
       </help>
+      <spaceMapping>
+        <profile>admin</profile>
+        <profile>publisher</profile>
+        <profile>writer</profile>
+        <profile>reader</profile>
+      </spaceMapping>
     </profile>
   </profiles>
   <parameters>
-	<parameter>
+    <parameter>
       <name>homePage</name>
       <label>
         <message lang="fr">Page d'accueil</message>
         <message lang="en">Homepage</message>
-		<message lang="de">Home page</message>
+        <message lang="de">Home page</message>
       </label>
       <order>1</order>
       <mandatory>true</mandatory>
