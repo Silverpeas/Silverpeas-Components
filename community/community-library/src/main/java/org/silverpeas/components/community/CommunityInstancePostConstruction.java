@@ -24,12 +24,13 @@
 package org.silverpeas.components.community;
 
 import org.silverpeas.components.community.model.CommunityOfUsers;
+import org.silverpeas.core.admin.component.ComponentInstancePostConstruction;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.core.admin.component.ComponentInstancePostConstruction;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.transaction.Transactional;
 
 /**
@@ -37,7 +38,8 @@ import javax.transaction.Transactional;
  * resource in Silverpeas specified in the instance parameter.
  */
 @Bean
-public class CommunityPostConstruction implements ComponentInstancePostConstruction {
+@Named
+public class CommunityInstancePostConstruction implements ComponentInstancePostConstruction {
 
   @Inject
   private OrganizationController controller;

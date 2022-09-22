@@ -59,6 +59,12 @@
         <message lang="en">Readers.</message>
         <message lang="de">Leser.</message>
       </help>
+      <spaceMapping>
+        <profile>admin</profile>
+        <profile>publisher</profile>
+        <profile>writer</profile>
+        <profile>reader</profile>
+      </spaceMapping>
     </profile>
   </profiles>
   <parameters>

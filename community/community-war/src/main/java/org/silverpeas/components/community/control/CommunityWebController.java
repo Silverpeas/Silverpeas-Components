@@ -24,15 +24,19 @@
 package org.silverpeas.components.community.control;
 
 import org.silverpeas.components.community.CommunityComponentSettings;
+import org.silverpeas.core.contribution.model.WysiwygContent;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.webcomponent.Navigation;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.Homepage;
-import org.silverpeas.core.web.mvc.webcomponent.annotation.InvokeAfter;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToInternalJsp;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.WebComponentController;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+
+import static org.silverpeas.core.util.URLUtil.getApplicationURL;
+import static org.silverpeas.core.web.mvc.util.WysiwygRouting.WysiwygRoutingContext.fromComponentSessionController;
 
 /**
  * <p>
@@ -47,6 +51,7 @@ import javax.ws.rs.Path;
 @WebComponentController(CommunityComponentSettings.COMPONENT_NAME)
 public class CommunityWebController extends
     org.silverpeas.core.web.mvc.webcomponent.WebComponentController<CommunityWebRequestContext> {
+  private static final long serialVersionUID = -8606482122697353961L;
 
   /**
    * Standard Web Controller Constructor.
@@ -71,6 +76,12 @@ public class CommunityWebController extends
   protected void onInstantiation(final CommunityWebRequestContext context) {
   }
 
+  @Override
+  protected void beforeRequestProcessing(final CommunityWebRequestContext context) {
+    super.beforeRequestProcessing(context);
+    context.getRequest().setAttribute("isMember", context.isMember());
+  }
+
   /**
    * Prepares the rendering of the home page.
    * @param context the context of the incoming request.
@@ -80,6 +91,18 @@ public class CommunityWebController extends
   @Homepage
   @RedirectToInternalJsp("main.jsp")
   public void home(CommunityWebRequestContext context) {
-    // Nothing to do for now...
+    final WysiwygContent content = context.getCommunity().getSpaceFacadeContent();
+    context.getRequest().setAttribute("spaceFacadeContent", content.getRenderer().renderView());
+  }
+
+  @GET
+  @Path("spaceHomePage/edit")
+  public Navigation editSpaceHomePage(CommunityWebRequestContext context) {
+    final WysiwygContent content = context.getCommunity().getSpaceFacadeContent();
+    return context.redirectToHtmlEditor(fromComponentSessionController(this)
+        .withBrowseInfo(getString("community.edition.spaceHomePage"))
+        .withContributionId(content.getContribution().getIdentifier())
+        .withIndexation(false)
+        .withComeBackUrl(getApplicationURL() + context.getComponentUriBase() + "Main"));
   }
 }
