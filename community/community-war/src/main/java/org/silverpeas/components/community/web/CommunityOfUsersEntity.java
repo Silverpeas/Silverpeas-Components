@@ -48,13 +48,16 @@ public class CommunityOfUsersEntity implements WebEntity {
   private URI uri;
   @XmlElement(required = true)
   private String id;
+  @XmlElement(required = true)
+  private String spaceId;
 
   protected CommunityOfUsersEntity() {
     // required by the JSON/XML unmarshaller
   }
 
   protected CommunityOfUsersEntity(final CommunityOfUsers resource) {
-    this.id = resource.getId();
+    this.id = resource.getComponentInstanceId();
+    this.spaceId = resource.getSpaceId();
   }
 
   CommunityOfUsersEntity identifiedBy(final URI uri) {
@@ -69,6 +72,10 @@ public class CommunityOfUsersEntity implements WebEntity {
 
   public String getId() {
     return this.id;
+  }
+
+  public String getSpaceId() {
+    return this.spaceId;
   }
 
   /**

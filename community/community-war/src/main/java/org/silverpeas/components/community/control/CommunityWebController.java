@@ -91,14 +91,14 @@ public class CommunityWebController extends
   @Homepage
   @RedirectToInternalJsp("main.jsp")
   public void home(CommunityWebRequestContext context) {
-    final WysiwygContent content = context.getCommunity().getSpaceFacadeContent();
+    final WysiwygContent content = context.getCommunity().getSpacePresentationContent();
     context.getRequest().setAttribute("spaceFacadeContent", content.getRenderer().renderView());
   }
 
   @GET
   @Path("spaceHomePage/edit")
   public Navigation editSpaceHomePage(CommunityWebRequestContext context) {
-    final WysiwygContent content = context.getCommunity().getSpaceFacadeContent();
+    final WysiwygContent content = context.getCommunity().getSpacePresentationContent();
     return context.redirectToHtmlEditor(fromComponentSessionController(this)
         .withBrowseInfo(getString("community.edition.spaceHomePage"))
         .withContributionId(content.getContribution().getIdentifier())

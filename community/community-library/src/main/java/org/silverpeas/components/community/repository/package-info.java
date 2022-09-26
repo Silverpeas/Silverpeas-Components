@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.com/legal/licensing"
+ * "https://www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,30 +19,10 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package org.silverpeas.components.community.notification;
-
-import org.silverpeas.components.community.model.CommunityOfUsers;
-import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.core.notification.system.CDIResourceEventNotifier;
-import org.silverpeas.core.notification.system.ResourceEvent;
-import org.silverpeas.core.util.ServiceProvider;
-
 /**
- * A notifier on the changes in the state of a Community business object.
+ * Persistence repository for the community of users and for the members of the communities.
+ * @author mmoquillon
  */
-@Bean
-public final class CommunityEventNotifier
-    extends CDIResourceEventNotifier<CommunityOfUsers, CommunityEvent> {
-
-  public static CommunityEventNotifier get() {
-    return ServiceProvider.getService(CommunityEventNotifier.class);
-   }
-
-  @Override
-  protected CommunityEvent createResourceEventFrom(final ResourceEvent.Type type,
-    final CommunityOfUsers... resource) {
-    return new CommunityEvent(type, resource);
-  }
-}
+package org.silverpeas.components.community.repository;

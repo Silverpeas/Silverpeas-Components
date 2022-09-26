@@ -30,9 +30,9 @@ import org.silverpeas.core.util.ServiceProvider;
 import java.util.Optional;
 
 /**
- * This repository manages the persistence of communities of users. It abstracts the
- * nature of the datasource in which are stored the communities as well as the persistence
- * engine used to manage the access to such a datasource.
+ * This repository manages the persistence of communities of users. It abstracts the nature of the
+ * datasource in which are stored the communities as well as the persistence engine used to manage
+ * the access to such a datasource.
  */
 public interface CommunityOfUsersRepository extends EntityRepository<CommunityOfUsers> {
 
@@ -40,14 +40,22 @@ public interface CommunityOfUsersRepository extends EntityRepository<CommunityOf
    * Gets the single instance of this repository.
    */
   static CommunityOfUsersRepository get() {
-    return ServiceProvider.getService(CommunityOfUsersRepository.class);
+    return ServiceProvider.getSingleton(CommunityOfUsersRepository.class);
   }
 
   /**
    * Gets the community of users managed by the specified component instance.
    * @param componentInstanceId the unique identifier of a component instance.
-   * @return an {@link Optional} with the {@link CommunityOfUsers} instance or an empty {@link Optional} if
-   * no such component instance exists.
+   * @return an {@link Optional} with the {@link CommunityOfUsers} instance or an empty
+   * {@link Optional} if no such component instance exists.
    */
   Optional<CommunityOfUsers> getByComponentInstanceId(String componentInstanceId);
+
+  /**
+   * Gets the community of users of the specified collaborative space.
+   * @param spaceId the unique identifier of a space.
+   * @return an {@link Optional} with the {@link CommunityOfUsers} instance or an empty
+   * {@link Optional} if no such space exists or if the space doesn't have any community.
+   */
+  Optional<CommunityOfUsers> getBySpaceId(String spaceId);
 }

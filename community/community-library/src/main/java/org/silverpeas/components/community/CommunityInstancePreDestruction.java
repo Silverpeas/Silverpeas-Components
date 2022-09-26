@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.community;
 
-import org.silverpeas.components.community.model.CommunityOfUsers;
+import org.silverpeas.components.community.repository.CommunityMembershipRepository;
 import org.silverpeas.components.community.repository.CommunityOfUsersRepository;
 import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
 import org.silverpeas.core.annotation.Bean;
@@ -34,8 +34,6 @@ import javax.inject.Named;
 import javax.transaction.Transactional;
 import java.util.Optional;
 
-import static org.silverpeas.components.community.model.CommunityOfUsers.getByComponentInstanceId;
-
 /**
  * Wipe out for the spawned community instance the resources that were allocated to him.
  */
@@ -44,17 +42,19 @@ import static org.silverpeas.components.community.model.CommunityOfUsers.getByCo
 public class CommunityInstancePreDestruction implements ComponentInstancePreDestruction {
 
   @Inject
-  private CommunityOfUsersRepository repository;
+  private CommunityOfUsersRepository communitiesRepository;
+  @Inject
+  private CommunityMembershipRepository membersRepository;
 
   @Transactional
   @Override
   public void preDestroy(final String componentInstanceId) {
-    final Optional<CommunityOfUsers> community = getByComponentInstanceId(componentInstanceId);
-    // Cleaning space facade
-    community.map(CommunityOfUsers::getSpaceFacadeContent)
-        .map(WysiwygContent::getContribution)
-        .ifPresent(WysiwygContent::deleteAllContents);
-    // Cleaning database
-    repository.getByComponentInstanceId(componentInstanceId).ifPresent(c -> repository.delete(c));
+    communitiesRepository.getByComponentInstanceId(componentInstanceId).ifPresent(c -> {
+      Optional.ofNullable(c.getSpacePresentationContent())
+          .map(WysiwygContent::getContribution)
+          .ifPresent(WysiwygContent::deleteAllContents);
+      membersRepository.getMembershipsTable(c).deleteAll();
+      communitiesRepository.delete(c);
+    });
   }
 }

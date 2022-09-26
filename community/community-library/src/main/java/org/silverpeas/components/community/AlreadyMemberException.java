@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.com/legal/licensing"
+ * "https://www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,30 +19,27 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package org.silverpeas.components.community.notification;
+package org.silverpeas.components.community;
 
-import org.silverpeas.components.community.model.CommunityOfUsers;
-import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.core.notification.system.CDIResourceEventNotifier;
-import org.silverpeas.core.notification.system.ResourceEvent;
-import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.SilverpeasRuntimeException;
 
 /**
- * A notifier on the changes in the state of a Community business object.
+ * Exception thrown when a user is already a member of a community.
+ * @author mmoquillon
  */
-@Bean
-public final class CommunityEventNotifier
-    extends CDIResourceEventNotifier<CommunityOfUsers, CommunityEvent> {
+public class AlreadyMemberException extends SilverpeasRuntimeException {
 
-  public static CommunityEventNotifier get() {
-    return ServiceProvider.getService(CommunityEventNotifier.class);
-   }
+  public AlreadyMemberException(final String message) {
+    super(message);
+  }
 
-  @Override
-  protected CommunityEvent createResourceEventFrom(final ResourceEvent.Type type,
-    final CommunityOfUsers... resource) {
-    return new CommunityEvent(type, resource);
+  public AlreadyMemberException(final String message, final Throwable cause) {
+    super(message, cause);
+  }
+
+  public AlreadyMemberException(final Throwable cause) {
+    super(cause);
   }
 }
