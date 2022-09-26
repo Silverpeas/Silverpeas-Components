@@ -23,13 +23,23 @@
  */
 package org.silverpeas.components.community.web;
 
+import org.silverpeas.components.community.CommunityWebManager;
 import org.silverpeas.components.community.model.CommunityOfUsers;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.WebService;
+import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.web.rs.RESTWebService;
 import org.silverpeas.core.web.rs.annotation.Authorized;
 
-import javax.ws.rs.*;
+import javax.ws.rs.GET;
+import javax.ws.rs.NotFoundException;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+import static org.silverpeas.core.util.StringUtil.EMPTY;
 
 /**
  * A REST-based Web resource representing the communities of users. A community is always related to
@@ -48,7 +58,7 @@ public class CommunityResource extends RESTWebService {
 
   @Override
   protected String getResourceBasePath() {
-    return "community";
+    return CommunityResource.RESOURCE_NAME;
   }
 
   @Override
@@ -66,12 +76,64 @@ public class CommunityResource extends RESTWebService {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public CommunityOfUsersEntity getCommunity() {
-    final CommunityOfUsers resource = process(() ->
+    final CommunityOfUsers resource = getCommunityOfUsers();
+    return asWebEntity(resource);
+  }
+
+  /**
+   * Gets the JSON representation of the members of a community of users  managed by the
+   * component instance of id
+   * <code>componentInstanceId</code>. If it doesn't exist, a 404 HTTP code is returned.
+   * @return the JSON representation of a community resource.
+   * @see WebProcess#execute()
+   */
+  @GET
+  @Path("members")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response getCommunityMembers() {
+    // todo use the dedicated member entity when ready
+    final CommunityOfUsers resource = getCommunityOfUsers();
+    final String json = JSONCodec.encodeArray(a -> {
+      CommunityWebManager.get()
+          .getMembers(resource)
+          .forEach(m -> a.addJSONObject(o -> o
+              .put("lastname", m.getUser().getLastName())
+              .put("firstname", m.getUser().getFirstName())
+              .put("status", m.getStatus().name())));
+      return a;
+    });
+    return Response.ok(json).build();
+  }
+
+  /**
+   * Gets the JSON representation of current user membership to a community of users managed by the
+   * component instance of id
+   * <code>componentInstanceId</code>. If it doesn't exist, a 404 HTTP code is returned.
+   * @return the JSON representation of a community resource.
+   * @see WebProcess#execute()
+   */
+  @GET
+  @Path("members/me")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response getCommunityMembership() {
+    // todo use the dedicated member entity when ready
+    final CommunityOfUsers resource = getCommunityOfUsers();
+    final String json = resource.getMembershipsProvider()
+        .get(User.getCurrentRequester())
+        .map(m -> JSONCodec.encodeObject(o -> o
+            .put("lastname", m.getUser().getLastName())
+            .put("firstname", m.getUser().getFirstName())
+            .put("status", m.getStatus().name())))
+        .orElse(EMPTY);
+    return Response.ok(json).build();
+  }
+
+  private CommunityOfUsers getCommunityOfUsers() {
+    return process(() ->
         CommunityOfUsers.getByComponentInstanceId(getComponentId())
             .orElseThrow(
                 () -> new NotFoundException("No such component instance: " + componentInstanceId))
     ).execute();
-    return asWebEntity(resource);
   }
 
   private CommunityOfUsersEntity asWebEntity(final CommunityOfUsers resource) {

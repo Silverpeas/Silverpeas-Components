@@ -36,6 +36,8 @@ import java.util.stream.Collectors;
 
 import static java.util.function.Predicate.not;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static org.silverpeas.core.admin.user.model.SilverpeasRole.ADMIN;
+import static org.silverpeas.core.util.StringUtil.getBooleanValue;
 
 /**
  * The execution context of an incoming HTTP request in regard to the application.
@@ -58,12 +60,29 @@ public class CommunityWebRequestContext extends
     return community.get();
   }
 
+  public boolean adminMustValidateNewMember() {
+    return getBooleanValue(getInstanceParameterValue("validateNewMember"));
+  }
+
+  public boolean canValidateNewMember() {
+    return isAdmin() && adminMustValidateNewMember();
+  }
+
   public boolean isSpaceHomePage() {
-    return getRequest().getParameterAsBoolean("FromSpaceHomepage");
+    return getRequest().getParameterAsBoolean("FromSpaceHomepage") &&
+        !getRequest().getParameterAsBoolean("FromSpaceHomepageProxy");
+  }
+
+  public boolean isAdmin() {
+    return getHighestUserRole().isGreaterThanOrEquals(ADMIN);
   }
 
   public boolean isMember() {
     return CommunityWebManager.get().isMemberOf(getCommunity());
+  }
+
+  public boolean isMembershipPending() {
+    return CommunityWebManager.get().isMembershipPendingFor(getCommunity());
   }
 
   @Override
@@ -71,7 +90,7 @@ public class CommunityWebRequestContext extends
     final Set<SilverpeasRole> roles = CommunityWebManager.get().getUserRoleOn(getCommunity());
     if (isSpaceHomePage()) {
       return roles.stream()
-          .filter(not(SilverpeasRole.ADMIN::equals))
+          .filter(not(ADMIN::equals))
           .collect(Collectors.toSet());
     }
     return roles;

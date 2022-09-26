@@ -69,6 +69,30 @@
   </profiles>
   <parameters>
     <parameter>
+      <name>validateNewMember</name>
+      <label>
+        <message lang="fr">Validation d'un nouveau membre</message>
+        <message lang="en">Validation of a new member</message>
+        <message lang="de">Validierung eines neuen Mitglieds</message>
+      </label>
+      <order>1</order>
+      <mandatory>true</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Si ce paramètre est coché, un utilisateur pourra devenir membre une fois
+          qu'un administrateur aura validé sa demande
+        </message>
+        <message lang="en">If this setting is checked, a user will be able to become a member once
+          an administrator has validated their request.
+        </message>
+        <message lang="de">Wenn diese Einstellung markiert ist, kann ein Nutzer Mitglied werden,
+          sobald ein Administrator seinen Antrag bestätigt hat.
+        </message>
+      </help>
+    </parameter>
+    <parameter>
       <name>defaultMemberRole</name>
       <label>
         <message lang="fr">Rôle par défaut attribué à un nouveau membre</message>
@@ -114,7 +138,10 @@
       </options>
       <type>select</type>
       <updatable>always</updatable>
-      <help></help>
+      <help>
+        <message lang="fr"></message>
+        <message lang="en"></message>
+      </help>
     </parameter>
   </parameters>
 </WAComponent>
