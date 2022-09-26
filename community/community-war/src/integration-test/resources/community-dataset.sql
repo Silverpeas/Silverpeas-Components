@@ -22,6 +22,6 @@ VALUES (1, 0, '1', 'Simpson', 'Lisa', 'lisa.simpson', 'U', 'VALID', '2012-01-01 
        (2, 0, '2', 'Simpson', 'Bart', 'bart.simpson', 'U', 'VALID', '2012-01-01 00:00:00.000'),
        (3, 0, '3', 'Simpson', 'Marge', 'marge.simpson', 'U', 'VALID', '2012-01-01 00:00:00.000');
 
-INSERT INTO sc_community(id, instanceId, resourceId, createDate, createdBy, lastUpdateDate, lastUpdatedBy, version)
-VALUES ('45d42847-2009-4ca8-86bb-1918909dc094', 'community1', 'WA1', '2022-09-08T15:30:00Z', '1', '2022-09-08T15:30:00Z', '1', 0),
-       ('a58d70b9-84c7-484a-9102-03eca8e54ea5', 'community2', 'WA2', '2022-09-08T15:30:00Z', '1', '2022-09-08T15:30:00Z', '1', 0);
+INSERT INTO sc_community(id, instanceId, spaceId)
+VALUES ('45d42847-2009-4ca8-86bb-1918909dc094', 'community1', 'WA1'),
+       ('a58d70b9-84c7-484a-9102-03eca8e54ea5', 'community2', 'WA2');

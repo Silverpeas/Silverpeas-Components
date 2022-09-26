@@ -23,22 +23,22 @@
  */
 package org.silverpeas.components.community.repository;
 
-import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.components.community.model.CommunityOfUsers;
+import org.silverpeas.core.annotation.Repository;
+import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
-import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEntityRepository;
 
 import java.util.Optional;
 
 /**
  * Implementation of the repository of Community of users by extending the
- * {@link org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEntityRepository}
+ * {@link org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository}
  * base repository that provides all the basic and necessary methods to save, to update, to delete
  * and to get the business entities by using the JPA engine.
  */
 @Repository
 public class CommunityOfUsersJpaRepository
-    extends SilverpeasJpaEntityRepository<CommunityOfUsers>
+    extends BasicJpaEntityRepository<CommunityOfUsers>
     implements CommunityOfUsersRepository {
 
   @Override
@@ -46,5 +46,12 @@ public class CommunityOfUsersJpaRepository
     NamedParameters parameters = newNamedParameters();
     return Optional.ofNullable(findFirstByNamedQuery("CommunityByComponentInstanceId",
         parameters.add("componentInstanceId", componentInstanceId)));
+  }
+
+  @Override
+  public Optional<CommunityOfUsers> getBySpaceId(final String spaceId) {
+    NamedParameters parameters = newNamedParameters();
+    return Optional.ofNullable(findFirstByNamedQuery("CommunityBySpaceId",
+        parameters.add("spaceId", spaceId)));
   }
 }

@@ -80,7 +80,7 @@ public class CommunityWebManager {
   @SuppressWarnings("unchecked")
   public Set<SilverpeasRole> getUserRoleOn(final CommunityOfUsers community) {
     return requestCache("userRoleOf", community.getId(), Set.class,
-        () -> community.getUserRoleOn(User.getCurrentRequester()));
+        () -> community.getUserRoles(User.getCurrentRequester()));
   }
 
   private <T> T requestCache(final String type, final String id, Class<T> classType,

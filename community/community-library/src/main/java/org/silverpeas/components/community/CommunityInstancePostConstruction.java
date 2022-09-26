@@ -24,6 +24,7 @@
 package org.silverpeas.components.community;
 
 import org.silverpeas.components.community.model.CommunityOfUsers;
+import org.silverpeas.components.community.repository.CommunityOfUsersRepository;
 import org.silverpeas.core.admin.component.ComponentInstancePostConstruction;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.service.OrganizationController;
@@ -44,6 +45,9 @@ public class CommunityInstancePostConstruction implements ComponentInstancePostC
   @Inject
   private OrganizationController controller;
 
+  @Inject
+  private CommunityOfUsersRepository repository;
+
   @Transactional
   @Override
   public void postConstruct(final String componentInstanceId) {
@@ -52,8 +56,8 @@ public class CommunityInstancePostConstruction implements ComponentInstancePostC
       throw new IllegalStateException("The Community application " + componentInstanceId +
           " should be created!");
     }
-    String resourceId = instance.getSpaceId();
-    CommunityOfUsers community = new CommunityOfUsers(componentInstanceId, resourceId);
-    community.save();
+    String spaceId = instance.getSpaceId();
+    CommunityOfUsers community = new CommunityOfUsers(componentInstanceId, spaceId);
+    repository.save(community);
   }
 }

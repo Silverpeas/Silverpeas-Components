@@ -23,10 +23,10 @@
  */
 package org.silverpeas.components.community.notification;
 
-import org.silverpeas.core.notification.system.AbstractResourceEvent;
-import javax.annotation.Nonnull;
-
 import org.silverpeas.components.community.model.CommunityOfUsers;
+import org.silverpeas.core.notification.system.AbstractResourceEvent;
+
+import javax.annotation.Nonnull;
 
 /**
  * Event on a change in the state of a given Community business object.

@@ -82,8 +82,11 @@ public class CommunityResourceGettingIT extends ResourceGettingTest {
   }
 
   @Test
-  public void emptyTest() {
-    assertThat(true, is(true));
+  public void getAnExistingCommunity() {
+    CommunityOfUsersEntity entity = getAt(aResourceURI(), CommunityOfUsersEntity.class);
+    assertThat(entity.getURI().toString().endsWith(aResourceURI()), is(true));
+    assertThat(entity.getId(), is(EXPECTED_ID));
+    assertThat(entity.getSpaceId(), is("WA1"));
   }
 
   @Override

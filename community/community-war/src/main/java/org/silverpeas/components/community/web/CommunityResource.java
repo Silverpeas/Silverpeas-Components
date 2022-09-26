@@ -33,13 +33,15 @@ import javax.ws.rs.core.MediaType;
 
 /**
  * A REST-based Web resource representing the communities of users. A community is always related to
- * a resource in Silverpeas, and it is managed by a Community application instance.
- * Only authorized users can access these resources.
+ * a resource in Silverpeas, and it is managed by a Community application instance. Only authorized
+ * users can access these resources.
  */
 @WebService
-@Path("community/{componentInstanceId}")
+@Path(CommunityResource.RESOURCE_NAME + "/{componentInstanceId}")
 @Authorized
 public class CommunityResource extends RESTWebService {
+
+  protected static final String RESOURCE_NAME = "community";
 
   @PathParam("componentInstanceId")
   private String componentInstanceId;
@@ -55,7 +57,8 @@ public class CommunityResource extends RESTWebService {
   }
 
   /**
-   * Gets the JSON representation of the community of users  managed by the component instance of id
+   * Gets the JSON representation of the community of users  managed by the component instance of
+   * id
    * <code>componentInstanceId</code>. If it doesn't exist, a 404 HTTP code is returned.
    * @return the JSON representation of a community resource.
    * @see WebProcess#execute()
@@ -72,7 +75,8 @@ public class CommunityResource extends RESTWebService {
   }
 
   private CommunityOfUsersEntity asWebEntity(final CommunityOfUsers resource) {
-    return new CommunityOfUsersEntity(resource)
-        .identifiedBy(getUri().getAbsolutePathBuilder().path(resource.getId()).build());
+    return new CommunityOfUsersEntity(resource).identifiedBy(
+        getUri().getBaseUriBuilder().path(RESOURCE_NAME).path(resource.getComponentInstanceId())
+            .build());
   }
 }
