@@ -45,6 +45,7 @@ import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.MapUtil;
 import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.csv.CSVRow;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.export.ExportCSVBuilder;
@@ -1063,7 +1064,8 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
         Workflow.getWorkflowEngine().process((TaskSavedEvent) event);
       } else {
         Workflow.getWorkflowEngine().process((TaskDoneEvent) event);
-        feedbackUser("processManager.createProcess.feedback");
+        feedbackUser("processManager.createProcess.feedback",
+            URLUtil.getSimpleURL(URLUtil.URL_COMPONENT, getComponentId()));
       }
 
       return event.getProcessInstance().getInstanceId();
@@ -1080,7 +1082,12 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   }
 
   private void feedbackUser(String key) {
-    MessageNotifier.addSuccess(getString(key)).setDisplayLiveTime(10000);
+    feedbackUser(key, null);
+  }
+
+  private void feedbackUser(String key, String param) {
+    MessageNotifier.addSuccess(getMultilang().getStringWithParams(key, param))
+        .setDisplayLiveTime(10000);
   }
 
   private void doAPause() {
