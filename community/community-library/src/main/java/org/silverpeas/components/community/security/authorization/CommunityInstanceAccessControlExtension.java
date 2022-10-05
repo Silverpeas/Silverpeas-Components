@@ -50,4 +50,9 @@ public class CommunityInstanceAccessControlExtension
     return dataManager.getManageableSpaceIds(user.getId())
         .contains(componentInstance.getSpaceId().replace(SPACE_KEY_PREFIX, EMPTY));
   }
+
+  @Override
+  protected boolean canAnonymousAccessInstance() {
+    return false;
+  }
 }

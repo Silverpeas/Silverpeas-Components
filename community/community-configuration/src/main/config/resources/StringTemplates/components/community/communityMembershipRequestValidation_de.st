@@ -1,1 +1,1 @@
-Ihr Antrag auf Mitgliedschaft bei <strong>$spaceLabel$</strong> wurde $if(accepted)$akzeptiert$else$abgelehnt$endif$.
+Ihr Antrag auf Mitgliedschaft bei <strong>$spaceName$</strong> wurde $if(accepted)$akzeptiert$else$abgelehnt$endif$.

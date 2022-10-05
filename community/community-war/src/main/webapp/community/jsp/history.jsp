@@ -44,7 +44,7 @@
 <fmt:message key="community.members.history.list" var="historyListLabel"/>
 <fmt:message key="GML.lastName" var="lastNameLabel"/>
 <fmt:message key="GML.firstName" var="firstNameLabel"/>
-<fmt:message key="GML.status" var="statusLabel"/>
+<fmt:message key="community.members.history.item.status" var="statusLabel"/>
 <fmt:message key="community.members.item.requestedMembershipOn" var="requestedMembershipOnLabel"/>
 <fmt:message key="community.members.item.memberOn" var="memberOnLabel"/>
 <fmt:message key="community.members.history.item.leftOn" var="leftOnLabel"/>

@@ -27,8 +27,13 @@ package org.silverpeas.components.community;
 import org.silverpeas.components.community.model.CommunityMembership;
 import org.silverpeas.components.community.model.CommunityOfUsers;
 import org.silverpeas.components.community.model.MembershipStatus;
+import org.silverpeas.components.community.notification.user.MembershipLeaveUserNotificationBuilder;
+import org.silverpeas.components.community.notification.user.MembershipRequestUserNotificationBuilder;
 import org.silverpeas.components.community.notification.user.MembershipRequestValidationUserNotificationBuilder;
 import org.silverpeas.core.admin.PaginationPage;
+import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
@@ -40,13 +45,13 @@ import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.ws.rs.WebApplicationException;
 import java.util.Set;
 import java.util.function.Supplier;
 
 import static org.silverpeas.components.community.CommunityComponentSettings.getMessagesIn;
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.fromString;
 import static org.silverpeas.core.util.StringUtil.getBooleanValue;
-
 
 /**
  * WEB manager which allows to centralize code to be used by REST Web Services and Web Component
@@ -75,13 +80,15 @@ public class CommunityWebManager {
    */
   public void join(final CommunityOfUsers community) {
     final SilverpeasRole defaultRole = getDefaultMemberRoleOf(community);
-    final String userLanguage = getUserLanguage();
-    final String spaceName = OrganizationController.get()
-        .getSpaceInstById(community.getSpaceId())
-        .getName(userLanguage);
+    final String spaceName = getSpaceName(community);
     final User currentRequester = User.getCurrentRequester();
     if (adminMustValidateNewMemberOf(community)) {
       community.addAsAPendingMember(currentRequester);
+      MembershipRequestUserNotificationBuilder
+          .about(community)
+          .newRequestFrom(currentRequester)
+          .build()
+          .send();
       successMessage("community.join.pendingValidation.success", spaceName);
     } else {
       community.addAsMember(currentRequester, defaultRole);
@@ -119,22 +126,48 @@ public class CommunityWebManager {
    */
   public void endMembershipOf(final CommunityOfUsers community, final User member) {
     community.removeMembership(member);
-    final String userLanguage = getUserLanguage();
     successMessage("community.endMembership.success", member.getDisplayedName(),
-        OrganizationController.get().getSpaceInstById(community.getSpaceId())
-            .getName(userLanguage));
+        getSpaceName(community));
   }
 
   /**
    * Makes the current user leaving the given community.
    * @param community {@link CommunityOfUsers} instance representing the community.
+   * @param reason the index of the reason of the leaving.
+   * @param message a message to explain more precisely the member leaving.
+   * @param contactInFuture boolean, true to indicate that the member accepts to be contacted in the future about its leaving.
    */
-  public void leave(final CommunityOfUsers community) {
-    community.removeMembership(User.getCurrentRequester());
-    final String userLanguage = getUserLanguage();
-    successMessage("community.leave.success",
-        OrganizationController.get().getSpaceInstById(community.getSpaceId())
-            .getName(userLanguage));
+  public void leave(final CommunityOfUsers community, final int reason, final String message,
+      final boolean contactInFuture) {
+    final User leavingMember = User.getCurrentRequester();
+    community.removeMembership(leavingMember);
+    MembershipLeaveUserNotificationBuilder
+        .about(community)
+        .memberLeavingIs(leavingMember)
+        .withReason(reason)
+        .andMessage(message)
+        .andContactInFuture(contactInFuture)
+        .build()
+        .send();
+    successMessage("community.leave.success", getSpaceName(community));
+  }
+
+  /**
+   * Saves into instance parameter of the given community the value of parameter
+   * 'displayCharterOnSpaceHomepage'.
+   * @param community {@link CommunityOfUsers} instance representing the community.
+   * @param value true to display the charter, false otherwise.
+   */
+  public void setDisplayCharterOnSpaceHomepage(final CommunityOfUsers community,
+      final boolean value) {
+    final ComponentInst componentInst = OrganizationController.get()
+        .getComponentInst(community.getComponentInstanceId());
+    componentInst.getParameter("displayCharterOnSpaceHomepage").setValue(value ? "yes" : "no");
+    try {
+      Administration.get().updateComponentInst(componentInst);
+    } catch (AdminException e) {
+      throw new WebApplicationException(e);
+    }
   }
 
   /**
@@ -245,6 +278,13 @@ public class CommunityWebManager {
       final String parameterName) {
     return OrganizationController.get()
         .getComponentParameterValue(community.getComponentInstanceId(), parameterName);
+  }
+
+  private String getSpaceName(final CommunityOfUsers community) {
+    final String userLanguage = getUserLanguage();
+    return OrganizationController.get()
+        .getSpaceInstById(community.getSpaceId())
+        .getName(userLanguage);
   }
 
   /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2021 Silverpeas
+ * Copyright (C) 2000 - 2022 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -22,32 +22,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-//# sourceURL=/community/jsp/javaScript/services/silverpeas-community-subscription-service.js
+//# sourceURL=/community/jsp/javaScript/services/silverpeas-community-membership-service.js
 
 (function() {
 
-  sp.i18n.load({
-    bundle : 'org.silverpeas.components.community.multilang.communityBundle',
-    async : true
-  });
-
   /**
-   * Constructor of subscription services.
+   * Constructor of community membership services.
    * @param context is an object containing :
    * context =  {
-   *   currentUser : [the current user behind the session] {
-   *     isMember : [true if current user is a member],
-   *     isMembershipPending : [true if current user has requested to be a member, but the
-   *                            request has not been yet validated],
-   *     isAdmin : [true if current user has administration role]
-   *   }
+   *   currentUser : [the current user behind the session]
    *   componentInstanceId : [the identifier of the community component instance],
+   *   spaceId : [identifier of the space],
    *   spaceLabel : [label of the space]
    * }
    * @constructor
    */
-  window.CommunitySubscriptionService = function(context) {
-    const subscriptionRepository = new CommunitySubscriptionRepository(context);
+  window.CommunityMembershipService = function(context) {
+    const repository = new CommunityMembershipRepository(context);
 
     /**
      * Gets the membership of current user.
@@ -55,14 +46,14 @@
      * @returns {*}
      */
     this.getOwnMembershipOf = function() {
-      return subscriptionRepository.getMembershipOf(currentUser.id);
+      return repository.getMembershipOf(currentUser.id);
     };
 
     /**
-     * Gets all members.
+     * Gets paginated members.
      */
     this.getMembers = function() {
-      return subscriptionRepository.getMembers();
+      return repository.getMembers();
     };
 
     /**
@@ -71,7 +62,7 @@
      * @returns {*}
      */
     this.join = function() {
-      return subscriptionRepository.join();
+      return repository.join();
     }
 
     /**
@@ -83,16 +74,24 @@
      * @returns {*}
      */
     this.validateJoinRequest = function(user, accept, message) {
-      return subscriptionRepository.validateJoinRequest(user, accept, message);
+      return repository.validateJoinRequest(user, accept, message);
     }
 
     /**
      * Makes the current user behind the session leaving the community linked to component instance
      * represented by the identifier used to initialize the service.
+     * @param reason, an object composed of:
+     * <code>
+     *   {
+     *     reason: integer that represents the index into the list of reasons,
+     *     message: string representing a message given by the user to explain more precisely its leaving,
+     *     contactInFuture: boolean to indicate that the member accepts or not to be contacted in the future about its leaving
+     *   }
+     * </code>
      * @returns {*}
      */
-    this.leave = function() {
-      return subscriptionRepository.leave();
+    this.leave = function(reason) {
+      return repository.leave(reason);
     }
   };
 
@@ -102,8 +101,8 @@
     };
   };
 
-  const CommunitySubscriptionRepository = function(context) {
-    const baseUri = webContext + "/services/community/" + context.componentInstanceId;
+  const CommunityMembershipRepository = function(context) {
+    const baseUri = webContext + "/services/community/" + context.componentInstanceId + '/memberships';
     const baseAdapter = RESTAdapter.get(baseUri, CommunityMember);
     const ctlBaseUri = webContext + "/Rcommunity/" + context.componentInstanceId;
     const ctlBaseAdapter = RESTAdapter.get(ctlBaseUri, CommunityMember);
@@ -115,22 +114,24 @@
      */
     this.getMembershipOf = function(userId) {
       let targetedUser = userId === currentUser.id ? 'me' : userId;
-      return  baseAdapter.find({url : baseAdapter.url + '/memberships/users/' + targetedUser});
+      return  baseAdapter.find({url : baseAdapter.url + '/users/' + targetedUser});
     };
 
     /**
-     * Gets all members.
+     * Gets paginated members.
      */
     this.getMembers = function() {
       // TODO handle the pagination parameter. For instance it is fixed
       let criteria = baseAdapter.criteria({
         page: {
           number: 1,
-          size: 25
+          size: 1
         }});
-      let members = baseAdapter.find({url : baseAdapter.url + '/memberships/members',
-        criteria: criteria});
-      return members.memberhips
+      return  baseAdapter.find({url : baseAdapter.url + '/members', criteria: criteria}).then(function(members) {
+        const memberships = members.memberships;
+        memberships.realSize = members.realSize;
+        return memberships;
+      });
     };
 
     /**
@@ -157,14 +158,26 @@
 
     /**
      * Performs the leave of the current user.
+     * @param reason, an object composed of:
+     * <code>
+     *   {
+     *     reason: integer that represents the index into the list of reasons,
+     *     message: string representing a message given by the user to explain more precisely its leaving,
+     *     contactInFuture: boolean to indicate that the member accepts or not to be contacted in the future about its leaving
+     *   }
+     * </code>
      * @returns {*}
      */
-    this.leave = function() {
-      return ctlBaseAdapter.post(ctlBaseAdapter.url + '/members/leave', {});
+    this.leave = function(reason) {
+      const formData = new FormData();
+      formData.set("reason", reason.reason);
+      formData.set("message", reason.message);
+      formData.set("contactInFuture", reason.contactInFuture);
+      return ctlBaseAdapter.post(ctlBaseAdapter.url + '/members/leave', formData);
     };
   };
 
-  window.CommunitySubscriptionService.prototype.Constants = {
+  window.CommunityMembershipService.prototype.Constants = {
     MembershipStatus : {
       COMMITTED : 'COMMITTED',
       PENDING : 'PENDING',

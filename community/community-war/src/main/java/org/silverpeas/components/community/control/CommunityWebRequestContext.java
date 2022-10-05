@@ -31,10 +31,7 @@ import org.silverpeas.core.web.mvc.webcomponent.WebComponentRequestContext;
 
 import javax.ws.rs.WebApplicationException;
 import java.util.Collection;
-import java.util.Set;
-import java.util.stream.Collectors;
 
-import static java.util.function.Predicate.not;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.ADMIN;
 import static org.silverpeas.core.util.StringUtil.getBooleanValue;
@@ -87,12 +84,14 @@ public class CommunityWebRequestContext extends
 
   @Override
   public Collection<SilverpeasRole> getUserRoles() {
-    final Set<SilverpeasRole> roles = CommunityWebManager.get().getUserRoleOn(getCommunity());
-    if (isSpaceHomePage()) {
-      return roles.stream()
-          .filter(not(ADMIN::equals))
-          .collect(Collectors.toSet());
-    }
-    return roles;
+    return CommunityWebManager.get().getUserRoleOn(getCommunity());
+  }
+
+  public boolean displayNbMembersForNonMembers() {
+    return getBooleanValue(getInstanceParameterValue("displayNbMembersForNonMembers"));
+  }
+
+  public boolean displayCharterOnSpaceHomepage() {
+    return getBooleanValue(getInstanceParameterValue("displayCharterOnSpaceHomepage"));
   }
 }

@@ -29,14 +29,23 @@
              xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>community</name>
   <label>
-    <message lang="fr">Community</message>
+    <message lang="fr">Communauté</message>
     <message lang="en">Community</message>
-    <message lang="de">Community</message>
+    <message lang="de">Gemeinschaft</message>
   </label>
   <description>
-    <message lang="fr">community</message>
-    <message lang="en">community</message>
-    <message lang="de">community</message>
+    <message lang="fr">Cette application permet de gérer un accès automatisé des utilisateurs à un
+      espace. En prérequis, l'instance d'une telle application doit être indiquée comme page
+      d'accueil de l'espace parent.
+    </message>
+    <message lang="en">This application allows to manage an automated access of users to a space. As
+      a prerequisite, the instance of such an application must be indicated as the home page of the
+      parent space.
+    </message>
+    <message lang="de">Mit dieser Anwendung können Sie den automatisierten Zugriff von Nutzern auf
+      einen Raum verwalten. Als Voraussetzung muss die Instanz einer solchen Anwendung als
+      Startseite des übergeordneten Spaces angegeben werden.
+    </message>
   </description>
   <suite>
     <message lang="fr">02 Gestion Collaborative</message>
@@ -69,35 +78,38 @@
   </profiles>
   <parameters>
     <parameter>
-      <name>validateNewMember</name>
+      <name>displayNbMembersForNonMembers</name>
       <label>
-        <message lang="fr">Validation d'un nouveau membre</message>
-        <message lang="en">Validation of a new member</message>
-        <message lang="de">Validierung eines neuen Mitglieds</message>
+        <message lang="fr">Afficher le nombre de membres</message>
+        <message lang="en">Display the number of members</message>
+        <message lang="de">Mitgliederzahl anzeigen</message>
       </label>
       <order>1</order>
       <mandatory>true</mandatory>
-      <value>no</value>
+      <value>yes</value>
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Si ce paramètre est coché, un utilisateur pourra devenir membre une fois
-          qu'un administrateur aura validé sa demande
+        <message lang="fr">Si coché, le nombre de membres est affiché sur la page de présentation de
+          l'espace pour les utilisateurs qui ne sont pas encore membre. Autrement, seul le bouton
+          permettant d'accéder à l'espace est affiché.
         </message>
-        <message lang="en">If this setting is checked, a user will be able to become a member once
-          an administrator has validated their request.
+        <message lang="en">If checked, the number of members is displayed on the presentation page
+          of the space for users who are not yet members. Otherwise, only the button allowing access
+          to the space is displayed.
         </message>
-        <message lang="de">Wenn diese Einstellung markiert ist, kann ein Nutzer Mitglied werden,
-          sobald ein Administrator seinen Antrag bestätigt hat.
+        <message lang="de">Wenn aktiviert, wird die Anzahl der Mitglieder auf der Übersichtsseite
+          des Raums für Nutzer angezeigt, die noch kein Mitglied sind. Ansonsten wird nur die
+          Schaltfläche angezeigt, die den Zugang zum Space ermöglicht.
         </message>
       </help>
     </parameter>
     <parameter>
       <name>defaultMemberRole</name>
       <label>
-        <message lang="fr">Rôle par défaut attribué à un nouveau membre</message>
-        <message lang="en">Default role assigned to a new member</message>
-        <message lang="de">Standardrolle, die einem neuen Mitglied zugewiesen wird</message>
+        <message lang="fr">Rôle par défaut</message>
+        <message lang="en">Default role</message>
+        <message lang="de">Standardrolle</message>
       </label>
       <order>2</order>
       <mandatory>true</mandatory>
@@ -139,8 +151,63 @@
       <type>select</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr"></message>
-        <message lang="en"></message>
+        <message lang="fr">Ce paramètre permet d'attribuer à un nouveau membre un rôle par défaut
+          autre que celui de lecteur.
+        </message>
+        <message lang="en">This setting allows a new member to be assigned a role other than the
+          default reader.
+        </message>
+        <message lang="de">Mit dieser Einstellung können Sie einem neuen Mitglied eine andere Rolle
+          als die des Standardlesers zuweisen.
+        </message>
+      </help>
+    </parameter>
+    <parameter>
+      <name>validateNewMember</name>
+      <label>
+        <message lang="fr">Validation d'un nouveau membre</message>
+        <message lang="en">Validation of a new member</message>
+        <message lang="de">Validierung eines neuen Mitglieds</message>
+      </label>
+      <order>3</order>
+      <mandatory>true</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Si ce paramètre est coché, un utilisateur pourra devenir membre une fois
+          qu'un administrateur aura validé sa demande.
+        </message>
+        <message lang="en">If this setting is checked, a user will be able to become a member once
+          an administrator has validated their request.
+        </message>
+        <message lang="de">Wenn diese Einstellung markiert ist, kann ein Nutzer Mitglied werden,
+          sobald ein Administrator seinen Antrag bestätigt hat.
+        </message>
+      </help>
+    </parameter>
+    <parameter>
+      <name>displayCharterOnSpaceHomepage</name>
+      <label>
+        <message lang="fr">Afficher la charte dans l'espace</message>
+        <message lang="en">Display the charter in the space</message>
+        <message lang="de">Anzeige Charta in dem Bereich</message>
+      </label>
+      <order>4</order>
+      <mandatory>true</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Permet d'afficher un lien vers la charte sur la page d'accueil de
+          l'application et sur la page d'accueil de l'espace.
+        </message>
+        <message lang="en">Allows to display a link to the charter on the application's home page
+          and on the space's home page.
+        </message>
+        <message lang="de">Ermöglicht die Anzeige eines Links zur Charta auf der Startseite der
+          Anwendung und auf der Startseite des Raums.
+        </message>
       </help>
     </parameter>
   </parameters>

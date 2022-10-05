@@ -1,0 +1,1 @@
+<strong>$requesterFullName$</strong> souhaite adhérer à l'espace <strong>$spaceName$</strong>.

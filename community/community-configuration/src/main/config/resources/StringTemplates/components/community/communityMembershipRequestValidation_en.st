@@ -1,1 +1,1 @@
-Your request to join <strong>$spaceLabel$</strong> has been $if(accepted)$accepted$else$refused$endif$.
+Your request to join <strong>$spaceName$</strong> has been $if(accepted)$accepted$else$refused$endif$.

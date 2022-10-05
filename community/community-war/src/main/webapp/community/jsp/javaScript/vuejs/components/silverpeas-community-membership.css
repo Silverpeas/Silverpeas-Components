@@ -1,0 +1,204 @@
+/*
+ * Copyright (C) 2000 - 2022 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+.silverpeas-community-membership {
+  display: inline-flex;
+  border: 1px solid #DDD;
+  background-color: #F0F0F0;
+  font-size: 14px;
+  line-height: 52px;
+  margin-bottom: 1em;
+}
+
+.silverpeas-community-membership .nb-members {
+  display: inline-block;
+  font-size: 14px;
+  padding: 0 0 0 24px;
+}
+
+.silverpeas-community-membership .nb-members span {
+  display: inline-block;
+  border-left: 1px solid #DDD;
+  border-right: 1px solid #DDD;
+  background-color: #FFF;
+  font-size: 18px;
+  position: relative;
+  padding: 0 24px;
+  margin-left: 24px;
+}
+
+.silverpeas-community-membership .membership {
+  display: inline-block;
+}
+
+.silverpeas-community-membership .membership a {
+  font-size: 14px;
+  display: inline-block;
+  position: relative;
+  padding: 0 24px 0 75px;
+  background: linear-gradient(180deg, #FFFFFF 0%, #EEEEEE 100%);
+  text-decoration: none;
+}
+
+.silverpeas-community-membership .membership .join-button:before {
+  content: '';
+  background: transparent url(../../../../../util/icons/join-community.png) 0 0 no-repeat;
+  width: 34px;
+  height: 18px;
+  position: absolute;
+  top: 15px;
+  left: 24px;
+  font-size: 14px;
+  display: inline-block;
+}
+
+.silverpeas-community-membership .membership .leave-button:before {
+  content: '';
+  background: transparent url(../../../../../util/icons/leave-community.png) 0 0 no-repeat;
+  width: 34px;
+  height: 19px;
+  position: absolute;
+  top: 15px;
+  left: 24px;
+  font-size: 14px;
+  display: inline-block;
+}
+
+.silverpeas-community-membership .membership .pending-join-message {
+  font-size: 14px;
+  display: inline-block;
+  position: relative;
+  padding: 0 24px 0 75px;
+  background-color: #fbf7aa;
+}
+
+.silverpeas-community-membership .membership .pending-join-message:before {
+  content: '';
+  background: transparent url(../../../../../util/icons/groups.png) 0 0 no-repeat;
+  width: 34px;
+  height: 19px;
+  position: absolute;
+  top: 15px;
+  left: 24px;
+  font-size: 14px;
+  display: inline-block;
+}
+
+#membership .silverpeas-community-charter {
+  margin-bottom: 2em;
+}
+
+#membership .silverpeas-community-charter a,
+#community-membership .silverpeas-community-charter a {
+  color: #1c94d4;
+  text-decoration: underline;
+}
+
+#membership .silverpeas-community-charter a:before,
+#community-membership .silverpeas-community-charter a:before {
+  content: '';
+  background: transparent url(../../../../../util/icons/info.gif) 0 0 no-repeat;
+  width: 16px;
+  height: 16px;
+  font-size: 14px;
+  display: inline-block;
+  vertical-align: top;
+  margin: 0 0.5em
+}
+
+/** popin **/
+.membership-request-accepted .ui-widget-header {
+  background-color: #8abb48;
+  border-color: #8abb48;
+}
+
+.membership-request-refused .ui-widget-header {
+  background-color: #ec4747;
+  border-color: #ec4747;
+}
+
+
+.validate-join-request .fields.extra-message label {
+  margin: 2em 0 1em;
+  display: block;
+}
+
+/** Widget colonne de droite **/
+.rightContent .silverpeas-community-membership {
+  display: block;
+}
+
+.rightContent .silverpeas-community-membership .nb-members {
+  display: block;
+  border-bottom: 1px solid #CCC;
+}
+
+.rightContent .silverpeas-community-membership .nb-members span {
+  margin: 0;
+  float: right;
+  border-right: 0
+}
+
+.rightContent .silverpeas-community-membership .membership {
+  display: block;
+}
+
+.rightContent .silverpeas-community-membership .membership a {
+  display: block;
+  padding: 0 0 0 25px;
+  background: linear-gradient(180deg, #FFFFFF 0%, #EEEEEE 100%);
+  text-decoration: none;
+  text-align: center;
+}
+
+.rightContent .silverpeas-community-membership .membership .leave-button::before {
+  left: calc(50% - 80px);
+}
+
+/** charter popins **/
+.silverpeas-community-charter-content {
+  background-color: #FFF;
+}
+.silverpeas-community-charter-content iframe {
+  padding-left: 5px;
+}
+
+/*** Pop in leave ***/
+.silverpeas-community-leave-form label {
+  padding: 0 0 0.5em 0;
+  display: inline-block;
+}
+
+.silverpeas-community-leave-form .field {
+  padding: 0 0 1em 0;
+}
+
+.silverpeas-community-leave-form .leave-contact-accept {
+  display: flex;
+  font-style: italic;
+}
+
+.silverpeas-community-leave-form .leave-contact-accept input {
+  margin-right: 0.5em;
+}

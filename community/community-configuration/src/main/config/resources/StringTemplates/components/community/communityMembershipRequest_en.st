@@ -1,0 +1,1 @@
+<strong>$requesterFullName$</strong> requests to join the space <strong>$spaceName$</strong>.

@@ -80,7 +80,7 @@ public abstract class CommunityWebResource extends RESTWebService {
    */
   @Override
   protected Collection<SilverpeasRole> getUserRoles() {
-    return process(community -> webManager.getUserRoleOn(community));
+    return webManager.getUserRoleOn(getCommunity());
   }
 
   /**
@@ -100,15 +100,16 @@ public abstract class CommunityWebResource extends RESTWebService {
    * @return the answer of the web function.
    */
   protected <T> T process(final WebFunction<T> function) {
-    return process(() -> {
-          if (community == null) {
-            community = CommunityOfUsers.getByComponentInstanceId(getComponentId())
-                .orElseThrow(
-                    () -> new NotFoundException("No such component instance: " + getComponentId()));
-          }
-          return function.applyWith(community);
-        }
-    ).execute();
+    return process(() -> function.applyWith(getCommunity())).execute();
+  }
+
+  private CommunityOfUsers getCommunity() {
+    if (community == null) {
+      community = CommunityOfUsers.getByComponentInstanceId(getComponentId())
+          .orElseThrow(
+              () -> new NotFoundException("No such component instance: " + getComponentId()));
+    }
+    return community;
   }
 
   /**

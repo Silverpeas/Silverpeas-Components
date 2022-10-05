@@ -26,15 +26,15 @@ package org.silverpeas.components.community.notification.user;
 import org.silverpeas.components.community.CommunityComponentSettings;
 import org.silverpeas.components.community.model.CommunityOfUsers;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.service.SpaceProfile;
 import org.silverpeas.core.admin.space.SpaceInst;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.util.MemoizedSupplier;
-
-import java.util.MissingResourceException;
 
 /**
  * @author silveryocha
@@ -87,14 +87,9 @@ public abstract class AbstractCommunityUserNotificationBuilder
   @Override
   protected void performTemplateData(final String language, final CommunityOfUsers resource,
       final SilverpeasTemplate template) {
-    String title;
-    try {
-      title = getBundle(language).getString(getBundleSubjectKey());
-    } catch (MissingResourceException ex) {
-      title = getTitle();
-    }
+    String title = getTitle();
     getNotificationMetaData().addLanguage(language, title, "");
-    template.setAttribute("spaceLabel", getSpace().getName(language));
+    template.setAttribute("spaceName", getSpace().getName(language));
   }
 
   @Override
@@ -110,5 +105,10 @@ public abstract class AbstractCommunityUserNotificationBuilder
   @Override
   protected String getContributionAccessLinkLabelBundleKey() {
     return "community.notifSpaceLinkLabel";
+  }
+
+  protected SpaceProfile getSpaceManagerProfile() {
+    return OrganizationController.get()
+        .getSpaceProfile(getResource().getSpaceId(), SilverpeasRole.MANAGER);
   }
 }

@@ -82,11 +82,7 @@ public class CommunityOfUsersEntity implements WebEntity {
     this.charterURL = community.getCharterURL();
     Pair<String, SpaceHomePageType> theHomePage = community.getHomePage();
     this.homePage = theHomePage.getFirst();
-    if (theHomePage.getSecond() != null) {
-      this.homePageType = theHomePage.getSecond().ordinal();
-    } else {
-      this.homePageType = null;
-    }
+    this.homePageType = theHomePage.getSecond().ordinal();
   }
 
   @Override
