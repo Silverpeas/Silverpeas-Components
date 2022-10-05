@@ -154,7 +154,6 @@ function sendData() {
 </head>
 <body id="creation-page" class="survey">
 <%
-if (action.equals("CreateSurvey")) {
       cancelButton = gef.getFormButton(generalMessage.getString("GML.cancel"), "Main.jsp", false);
       validateButton = gef.getFormButton(generalMessage.getString("GML.validate"), "javascript:onClick=sendData()", false);
       surveyScc.removeSessionSurveyUnderConstruction();
@@ -177,7 +176,7 @@ if (action.equals("CreateSurvey")) {
       out.println(window.printBefore());
       out.println(frame.printBefore());
 %>
-<form name="surveyForm" action="surveyCreator.jsp" method="post">
+<form name="surveyForm" action="InitSurvey" method="post" enctype="multipart/form-data">
 	<fieldset id="info" class="skinFieldset">
 		<legend><%=resources.getString("survey.header.fieldset.info") %></legend>
 		<div class="fields">
@@ -226,7 +225,6 @@ if (action.equals("CreateSurvey")) {
           </select>
         </div>
       </div>
-			<input type="hidden" name="Action" value="<%=nextAction%>"/>
 		</div>
 	</fieldset>
 	
@@ -262,26 +260,8 @@ if (action.equals("CreateSurvey")) {
     buttonPane.addButton(validateButton);
     buttonPane.addButton(cancelButton);
     buttonPane.setHorizontalPosition();
-    out.println("<center>"+buttonPane.print()+"</center>");
+    out.println(buttonPane.print());
     out.println(frame.printAfter());
     out.println(window.printAfter());
     out.println("</body></html>");
- } //End if action = ViewQuestion
-if (action.equals("SendNewSurvey")) {
 %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<script language="javascript">
-    function goToQuestionCreator() {
-        document.questionForm.submit();
-    }
-</script>
-</head>
-<body onload="goToQuestionCreator()">
-<form name="questionForm" action="questionCreator.jsp" method="post" enctype="multipart/form-data">
-<input type="hidden" name="Action" value="FirstQuestion"/>
-</form>
-</body>
-</html>
-<% } %>

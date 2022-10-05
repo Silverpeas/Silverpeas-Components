@@ -70,7 +70,7 @@ List<FileItem> items = HttpRequest.decorate(request).getFileItems();
 boolean file = false;
 int nb = 0;
 int attachmentSuffix = 0;
-String action = FileUploadUtil.getOldParameter(items, "Action", "");
+String action = FileUploadUtil.getOldParameter(items, "Action", "FirstQuestion");
 String question = FileUploadUtil.getOldParameter(items, "question", "");
 String clue =  FileUploadUtil.getOldParameter(items, "clue", "");
 String penalty = FileUploadUtil.getOldParameter(items, "penalty", "");
@@ -489,8 +489,8 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
     </div>
   </div>  
 </fieldset>
-      
-<%    
+
+<%
       Board board = gef.getBoard();
 %>
 
@@ -711,7 +711,7 @@ function goToQuizzPreview() {
 </script>
 </head>
 <body onload="goToQuizzPreview()">
-<form name="questionForm" action="quizzQuestionsNew.jsp" method="post">
+<form name="questionForm" action="quizzQuestionsNew.jsp" method="get">
 <input type="hidden" name="Action" value="PreviewQuizz"/>
 </form>
 </body>

@@ -149,14 +149,19 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
       } else if (function.startsWith("Main") || function.startsWith("surveyList")) {
         request.setAttribute("PasteEnabled", surveySC.isPasteEnabled());
         destination = rootDest + "surveyList.jsp?Profile=" + flag;
-      } else if (function.startsWith("SurveyCreation") || function.startsWith("surveyCreator")) {
+      } else if ("InitSurvey".equals(function)) {
         if (flag.equals(SilverpeasRole.ADMIN.toString()) ||
             flag.equals(SilverpeasRole.PUBLISHER.toString())) {
           surveySC.sendNewSurveyAction(request);
-          destination = rootDest + "surveyCreator.jsp";
+          destination = rootDest + "questionCreator.jsp";
         } else {
           profileError = true;
         }
+      } else if ("PreviewSurvey".equals(function)) {
+        QuestionContainerDetail surveyDetail = surveySC.getSessionSurveyUnderConstruction();
+        surveyDetail.setQuestions(surveySC.getSessionQuestions());
+        request.setAttribute(PROFILE, flag);
+        destination = rootDest + "surveyDetail.jsp?Action=PreviewSurvey";
       } else if ("UpdateSurvey".equals(function)) {
         String surveyId = request.getParameter(SURVEY_ID);
         destination = rootDest + "surveyUpdate.jsp?Action=UpdateSurveyHeader&SurveyId=" + surveyId;

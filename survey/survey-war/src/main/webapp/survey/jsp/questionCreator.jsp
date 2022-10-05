@@ -92,7 +92,7 @@ ButtonPane buttonPane = null;
 QuestionContainerDetail survey = null;
 
 List<FileItem> items = HttpRequest.decorate(request).getFileItems();
-String action = FileUploadUtil.getOldParameter(items, "Action");
+String action = FileUploadUtil.getOldParameter(items, "Action", "FirstQuestion");
 String question = FileUploadUtil.getOldParameter(items, "question");
 String nbAnswers = FileUploadUtil.getOldParameter(items, "nbAnswers");
 String style = FileUploadUtil.getOldParameter(items, "questionStyle");
@@ -308,11 +308,6 @@ function ifCorrectFormExecute(callback) {
      }
 }
 
-function goToEnd() {
-    document.surveyForm.Action.value = "End";
-    document.surveyForm.submit();
-}
-
 var galleryWindow = window;
 var currentAnswer;
 
@@ -395,14 +390,6 @@ if (action.equals("SendNewQuestion")) {
       questionsV.add(questionObject);
       action = "CreateQuestion";
 } //End if action = ViewResult
-else if (action.equals("End")) {
-      out.println("<body>");
-      QuestionContainerDetail surveyDetail = surveyScc.getSessionSurveyUnderConstruction();
-      //Vector 2 Collection
-      List<Question> questionsV = surveyScc.getSessionQuestions();
-      surveyDetail.setQuestions(questionsV);
-      out.println("</body></html>");
-}
 if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
       out.println("<body>");
       List<Question> questionsV = surveyScc.getSessionQuestions();
@@ -411,7 +398,7 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
       buttonPane = gef.getButtonPane();
       if (action.equals("CreateQuestion")) {
             validateButton = (Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendData()", false);
-            finishButton = (Button) gef.getFormButton(resources.getString("Finish"), "javascript:onClick=goToEnd()", false);
+            finishButton = (Button) gef.getFormButton(resources.getString("Finish"), "PreviewSurvey", false);
             question = "";
             nbAnswers = "";
             suggestion = "";
@@ -578,21 +565,4 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
       out.println(window.printAfter());
       out.println("</body></html>");
  } //End if action = ViewQuestion
-if (action.equals("End")) {
 %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<script language="Javascript">
-    function goToSurveyPreview() {
-        document.questionForm.submit();
-    }
-</script>
-</head>
-<body onload="goToSurveyPreview()">
-<form name="questionForm" action="surveyDetail.jsp" method="post">
-<input type="hidden" name="Action" value="PreviewSurvey">
-</form>
-</body>
-</html>
-<% } %>
