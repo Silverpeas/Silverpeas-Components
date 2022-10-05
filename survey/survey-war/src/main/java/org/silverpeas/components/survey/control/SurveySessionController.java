@@ -889,42 +889,40 @@ public class SurveySessionController extends AbstractComponentSessionController 
    * @param request the HttpServletRequest which contains all the request parameter
    */
   public void sendNewSurveyAction(HttpServletRequest request) {
-    String action = request.getParameter(ACTION_PARAM);
-    if ("SendNewSurvey".equals(action)) {
-      String title = request.getParameter("title");
-      String description = request.getParameter("description");
-      String beginDate = request.getParameter("beginDate");
-      String endDate = request.getParameter("endDate");
-      String nbQuestions = request.getParameter("nbQuestions");
-      String anonymousString = request.getParameter("anonymous");
-      String resultMode = request.getParameter("resultMode");
-      int resultModeInt = Integer.parseInt(resultMode);
-      int resultView = QuestionContainerHeader.TWICE_DISPLAY_RESULTS;
-      if (resultModeInt == QuestionContainerHeader.DELAYED_RESULTS) {
-        resultView = QuestionContainerHeader.NOTHING_DISPLAY_RESULTS;
-      }
-
-      // Anonymous mode -> force all the survey to be anonymous
-      if (this.isAnonymousModeEnabled()) {
-        anonymousString = "on";
-      }
-      boolean anonymous =
-          StringUtil.isDefined(anonymousString) && "on".equalsIgnoreCase(anonymousString);
-      beginDate = date2SQLDate(beginDate);
-      if (StringUtil.isDefined(endDate)) {
-        endDate = date2SQLDate(endDate);
-      }
-
-      QuestionContainerHeader surveyHeader =
-          new QuestionContainerHeader(null, title, description, null, null, beginDate, endDate,
-              false, 0, Integer.parseInt(nbQuestions), anonymous, resultModeInt, resultView);
-      QuestionContainerDetail surveyDetail = new QuestionContainerDetail();
-      surveyDetail.setHeader(surveyHeader);
-      // create the positions of the new survey onto the PdC
-      String positions = request.getParameter("Positions");
-      setNewSurveyPositionsFromJSON(positions);
-      this.setSessionSurveyUnderConstruction(surveyDetail);
+    List<FileItem> items = HttpRequest.decorate(request).getFileItems();
+    String title = FileUploadUtil.getParameter(items, "title");
+    String description = FileUploadUtil.getParameter(items, "description");
+    String beginDate = FileUploadUtil.getParameter(items, "beginDate");
+    String endDate = FileUploadUtil.getParameter(items, "endDate");
+    String nbQuestions = FileUploadUtil.getParameter(items, "nbQuestions");
+    String anonymousString = FileUploadUtil.getParameter(items, "anonymous");
+    String resultMode = FileUploadUtil.getParameter(items, "resultMode");
+    int resultModeInt = Integer.parseInt(resultMode);
+    int resultView = QuestionContainerHeader.TWICE_DISPLAY_RESULTS;
+    if (resultModeInt == QuestionContainerHeader.DELAYED_RESULTS) {
+      resultView = QuestionContainerHeader.NOTHING_DISPLAY_RESULTS;
     }
+
+    // Anonymous mode -> force all the survey to be anonymous
+    if (this.isAnonymousModeEnabled()) {
+      anonymousString = "on";
+    }
+    boolean anonymous =
+        StringUtil.isDefined(anonymousString) && "on".equalsIgnoreCase(anonymousString);
+    beginDate = date2SQLDate(beginDate);
+    if (StringUtil.isDefined(endDate)) {
+      endDate = date2SQLDate(endDate);
+    }
+
+    QuestionContainerHeader surveyHeader =
+        new QuestionContainerHeader(null, title, description, null, null, beginDate, endDate,
+            false, 0, Integer.parseInt(nbQuestions), anonymous, resultModeInt, resultView);
+    QuestionContainerDetail surveyDetail = new QuestionContainerDetail();
+    surveyDetail.setHeader(surveyHeader);
+    // create the positions of the new survey onto the PdC
+    String positions = FileUploadUtil.getParameter(items, "Positions");
+    setNewSurveyPositionsFromJSON(positions);
+    this.setSessionSurveyUnderConstruction(surveyDetail);
   }
 
   private String date2SQLDate(String beginDate) {

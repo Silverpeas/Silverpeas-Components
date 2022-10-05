@@ -48,7 +48,6 @@ String nbQuestions = "";
 String notice="";
 String nbAnswersNeeded = "1";
 String nbAnswersMax = "1";
-String nextAction = "";
 
 String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 String mandatoryField = m_context + "/util/icons/mandatoryField.gif";
@@ -214,7 +213,6 @@ if (action.equals("CreateQuizz")) {
   description="";
   nbAnswersNeeded = "1";
   nbAnswersMax = "1";
-  nextAction="SendNewQuizz";
 
   Window window = gef.getWindow();
   Frame frame =gef.getFrame();
@@ -228,8 +226,7 @@ if (action.equals("CreateQuizz")) {
   out.println(window.printBefore());
   out.println(frame.printBefore());
 %>
-<form name="quizzForm" action="quizzCreator.jsp" method="post">
-  <input type="hidden" name="Action" value="<%=nextAction%>" />
+<form name="quizzForm" action="InitQuiz" method="post" enctype="multipart/form-data">
   <input type="hidden" name="Positions" />
 
 <fieldset id="infoFieldset" class="skinFieldset">
@@ -311,34 +308,14 @@ if (action.equals("CreateQuizz")) {
   out.println(frame.printMiddle());
 %>
 <br/>
-<center>
 <%
   ButtonPane buttonPane = gef.getButtonPane();
   buttonPane.addButton(validateButton);
   buttonPane.addButton(cancelButton);
   buttonPane.setHorizontalPosition();
   out.println(buttonPane.print());
-%>
-</center>
-<%
   out.println(frame.printAfter());
   out.println(window.printAfter());
   out.println("</body></html>");
  } //End if action = ViewQuestion
-if (action.equals("SendNewQuizz")) {
 %>
-<html>
-<head>
-<script language="Javascript">
-function goToQuestionCreator() {
-  document.questionForm.submit();
-}
-</script>
-</head>
-<body onload="goToQuestionCreator()">
-<form name="questionForm" action="questionCreator.jsp" method="post" enctype="multipart/form-data">
-<input type="hidden" name="Action" value="FirstQuestion"/>
-</form>
-</body>
-</html>
-<% } %>

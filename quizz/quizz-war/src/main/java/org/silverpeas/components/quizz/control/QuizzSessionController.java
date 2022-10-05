@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.quizz.control;
 
+import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.quizz.QuizzException;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationController;
@@ -47,8 +48,10 @@ import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.csv.CSVRow;
 import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.export.ExportCSVBuilder;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -658,37 +661,35 @@ public final class QuizzSessionController extends AbstractComponentSessionContro
    * @throws ParseException
    */
   public void createTemporaryQuizz(HttpServletRequest request) throws ParseException {
-    String action = request.getParameter("Action");
-    if ("SendNewQuizz".equals(action)) {
-      String title = request.getParameter("title");
-      String description = request.getParameter("description");
-      String beginDate = request.getParameter("beginDate");
-      String endDate = request.getParameter("endDate");
-      String nbQuestions = request.getParameter("nbQuestions");
-      String notice = request.getParameter("notice");
-      String nbAnswersNeeded = request.getParameter("nbAnswersNeeded");
-      String nbAnswersMax = request.getParameter("nbAnswersMax");
+    List<FileItem> items = HttpRequest.decorate(request).getFileItems();
+    String title = FileUploadUtil.getParameter(items, "title");
+    String description = FileUploadUtil.getParameter(items, "description");
+    String beginDate = FileUploadUtil.getParameter(items, "beginDate");
+    String endDate = FileUploadUtil.getParameter(items, "endDate");
+    String nbQuestions = FileUploadUtil.getParameter(items, "nbQuestions");
+    String notice = FileUploadUtil.getParameter(items, "notice");
+    String nbAnswersNeeded = FileUploadUtil.getParameter(items, "nbAnswersNeeded");
+    String nbAnswersMax = FileUploadUtil.getParameter(items, "nbAnswersMax");
 
-      if (StringUtil.isDefined(beginDate)) {
-        beginDate = DateUtil.date2SQLDate(beginDate, this.getLanguage());
-      }
-      if (StringUtil.isDefined(endDate)) {
-        endDate = DateUtil.date2SQLDate(endDate, this.getLanguage());
-      }
-
-      QuestionContainerHeader questionContainerHeader =
-          new QuestionContainerHeader(null, title, description, notice, null, null, beginDate,
-              endDate, false, 0, Integer.parseInt(nbQuestions), Integer.parseInt(nbAnswersMax),
-              Integer.parseInt(nbAnswersNeeded), 0, QuestionContainerHeader.IMMEDIATE_RESULTS,
-              QuestionContainerHeader.TWICE_DISPLAY_RESULTS);
-      HttpSession session = request.getSession();
-      QuestionContainerDetail questionContainerDetail = new QuestionContainerDetail();
-      questionContainerDetail.setHeader(questionContainerHeader);
-      session.setAttribute("quizzUnderConstruction", questionContainerDetail);
-      // create the positions of the new quiz on the PdC
-      String thePositions = request.getParameter("Positions");
-      setQuizPositionsFromJSON(thePositions);
+    if (StringUtil.isDefined(beginDate)) {
+      beginDate = DateUtil.date2SQLDate(beginDate, this.getLanguage());
     }
+    if (StringUtil.isDefined(endDate)) {
+      endDate = DateUtil.date2SQLDate(endDate, this.getLanguage());
+    }
+
+    QuestionContainerHeader questionContainerHeader =
+        new QuestionContainerHeader(null, title, description, notice, null, null, beginDate,
+            endDate, false, 0, Integer.parseInt(nbQuestions), Integer.parseInt(nbAnswersMax),
+            Integer.parseInt(nbAnswersNeeded), 0, QuestionContainerHeader.IMMEDIATE_RESULTS,
+            QuestionContainerHeader.TWICE_DISPLAY_RESULTS);
+    HttpSession session = request.getSession();
+    QuestionContainerDetail questionContainerDetail = new QuestionContainerDetail();
+    questionContainerDetail.setHeader(questionContainerHeader);
+    session.setAttribute("quizzUnderConstruction", questionContainerDetail);
+    // create the positions of the new quiz on the PdC
+    String thePositions = request.getParameter("Positions");
+    setQuizPositionsFromJSON(thePositions);
   }
 
   /**

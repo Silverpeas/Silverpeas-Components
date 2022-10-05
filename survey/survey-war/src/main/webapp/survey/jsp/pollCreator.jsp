@@ -620,7 +620,7 @@ void displayAnswer(int i, String style, MultiSilverpeasBundle resources, List<Co
       </script>
     </head>
     <body onLoad="goToList()">
-      <form name="questionForm" action="surveyList.jsp" method="post">
+      <form name="questionForm" action="surveyList.jsp" method="get">
         <input type="hidden" name="Action" value="View">
       </form>
     </body>

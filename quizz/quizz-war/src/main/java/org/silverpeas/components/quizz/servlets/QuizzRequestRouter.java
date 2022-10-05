@@ -94,12 +94,12 @@ public class QuizzRequestRouter extends ComponentRequestRouter<QuizzSessionContr
         } else {
           destination = rootDest + "quizzUserPortlet.jsp";
         }
-      } else if (function.startsWith("quizzCreator")) {
+      } else if ("InitQuiz".equals(function)) {
         if ("publisher".equals(flag) || "admin".equals(flag)) {
 
           quizzSC.createTemporaryQuizz(request);
 
-          destination = rootDest + "quizzCreator.jsp";
+          destination = rootDest + "questionCreator.jsp";
         } else {
           profileError = true;
         }
