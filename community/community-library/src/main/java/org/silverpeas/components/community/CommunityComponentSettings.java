@@ -27,6 +27,10 @@ import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 /**
  * It gathers all the settings and i18n relative to the community component.
  */
@@ -68,5 +72,17 @@ public final class CommunityComponentSettings {
    */
   public static SettingBundle getSettings() {
     return ResourceLocator.getSettingBundle(SETTINGS_PATH);
+  }
+
+  /**
+   * Gets the list of reasons a member can choose to explain its leaving.
+   * @param language the language in which are written the messages.
+   * @return a list of stings.
+   */
+  public static List<String> getLeaveReasons(final String language) {
+    return Stream
+        .of(getMessagesIn(language).getString("community.membership.leaving.reasons").split(";"))
+        .map(String::trim)
+        .collect(Collectors.toList());
   }
 }

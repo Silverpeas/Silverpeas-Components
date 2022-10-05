@@ -21,7 +21,53 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
+
 .communityName {
-	font-weight: bold;
+  font-weight: bold;
+}
+
+/** Tableau **/
+#membersToValidate,
+#communityHistoryViewIdentifier {
+  margin-bottom: 3em;
+}
+
+#membersToValidate-list .ArrayColumn,
+#history-list .ArrayColumn {
+  text-align: left;
+}
+
+#membersToValidate-list tr td:last-child {
+  white-space: nowrap;
+}
+
+#membersToValidate-list .button-accept {
+  padding-right: 2em;
+  margin: 1em 0;
+  display: inline-block;
+}
+
+#membersToValidate-list .button-refuse {
+  margin: 1em 0;
+  display: inline-block;
+}
+
+#membersToValidate-list .button-accept:before {
+  content: '';
+  background: transparent url(../../../util/icons/ok.gif) 0 0 no-repeat;
+  width: 26px;
+  height: 16px;
+  font-size: 14px;
+  display: inline-block;
+  vertical-align: top;
+}
+
+#membersToValidate-list .button-refuse:before {
+  content: '';
+  background: transparent url(../../../util/icons/delete.gif) 0 0 no-repeat;
+  width: 26px;
+  height: 16px;
+  font-size: 14px;
+  display: inline-block;
+  vertical-align: top;
 }

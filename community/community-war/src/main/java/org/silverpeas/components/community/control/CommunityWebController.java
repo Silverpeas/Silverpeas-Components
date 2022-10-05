@@ -29,11 +29,14 @@ import org.silverpeas.components.community.CommunityComponentSettings;
 import org.silverpeas.components.community.CommunityWebManager;
 import org.silverpeas.components.community.model.CommunityOfUsers;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.space.SpaceHomePageType;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.WysiwygContent;
+import org.silverpeas.core.html.WebPlugin;
 import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.look.proxy.SpaceHomepageProxy;
 import org.silverpeas.core.web.look.proxy.SpaceHomepageProxyManager;
@@ -57,11 +60,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import static org.silverpeas.components.community.CommunityWebManager.NO_PAGINATION;
+import static org.silverpeas.components.community.web.html.JavascriptPluginInclusion.COMMUNITY_SUBSCRIPTION;
 import static org.silverpeas.core.util.URLUtil.getApplicationURL;
 import static org.silverpeas.core.util.WebEncodeHelper.javaStringToJsString;
 import static org.silverpeas.core.web.look.LookHelper.getLookHelper;
 import static org.silverpeas.core.web.mvc.util.WysiwygRouting.WysiwygRoutingContext.fromComponentSessionController;
-import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion.*;
+import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion.scriptContent;
 
 /**
  * <p>
@@ -143,6 +147,7 @@ public class CommunityWebController extends
   protected void beforeRequestProcessing(final CommunityWebRequestContext context) {
     super.beforeRequestProcessing(context);
     final HttpRequest request = context.getRequest();
+    request.setAttribute("communityOfUsers", context.getCommunity());
     request.setAttribute("adminMustValidateNewMember", context.adminMustValidateNewMember());
     request.setAttribute("isSpaceHomepage", context.isSpaceHomePage());
     request.setAttribute("isMember", context.isMember());
@@ -156,12 +161,14 @@ public class CommunityWebController extends
   @GET
   @Path("Main")
   @Homepage
-  @RedirectToInternal("{view}")
+  @RedirectToInternal("{view}?ComponentMainPage={isComponentMainPage}")
   public void home(CommunityWebRequestContext context) {
     if (context.isMember() && context.isSpaceHomePage()) {
       context.addRedirectVariable("view", "spaceHomepageProxy");
+      context.addRedirectVariable("isComponentMainPage", Boolean.FALSE.toString());
     } else {
       context.addRedirectVariable("view", "appHomepage");
+      context.addRedirectVariable("isComponentMainPage", Boolean.TRUE.toString());
     }
   }
 
@@ -182,6 +189,17 @@ public class CommunityWebController extends
     }
     final WysiwygContent content = context.getCommunity().getSpacePresentationContent();
     request.setAttribute("spacePresentationContent", content.getRenderer().renderView());
+    request.setAttribute("displayNbMembersForNonMembers", context.displayNbMembersForNonMembers());
+    request.setAttribute("displayCharterOnSpaceHomepage", context.displayCharterOnSpaceHomepage());
+  }
+
+  @POST
+  @Path("parameters/displayCharterOnSpaceHomepage")
+  @Produces(MediaType.APPLICATION_JSON)
+  public void setDisplayCharterOnSpaceHomepage(CommunityWebRequestContext context) {
+    CommunityWebManager.get()
+        .setDisplayCharterOnSpaceHomepage(context.getCommunity(),
+            context.getRequest().getParameterAsBoolean("value"));
   }
 
   /**
@@ -195,45 +213,45 @@ public class CommunityWebController extends
     final CommunityOfUsers community = context.getCommunity();
     final SpaceInst space = OrganizationController.get().getSpaceInstById(community.getSpaceId());
     final SpaceHomepageProxy proxy = SpaceHomepageProxyManager.get().getProxyOf(space);
-    proxy.setFirstPageType(0);
-    proxy.setFirstPageExtraParam(community.getComponentInstanceId());
+    final Pair<String, SpaceHomePageType> homePage = community.getHomePage();
+    proxy.setFirstPageType(homePage.getSecond().ordinal());
+    proxy.setFirstPageExtraParam(homePage.getFirst());
     final ElementContainer xhtml = new ElementContainer();
+    xhtml.addElement(WebPlugin.get().getHtml(COMMUNITY_SUBSCRIPTION, getLanguage()));
     final div communityHtml = new div();
-    communityHtml.setID("community-subscription");
-    communityHtml.addElement("<silverpeas-community-subscription></silverpeas-community-subscription>");
-    final String vueJsStarter = String.format("new Vue({" +
-            "        el : '#community-subscription'," +
-            "        provide : function() {" +
-            "          return {" +
-            "            context: this.context," +
-            "            subscriptionService: new CommunitySubscriptionService(this.context)" +
-            "          }" +
-            "        }," +
-            "        data : {" +
-            "          context : {" +
-            "            currentUser : extendsObject({" +
-            "              isMember : %s," +
-            "              isMembershipPending : %s," +
-            "              isAdmin :%s" +
-            "            }, currentUser)," +
-            "            componentInstanceId : '%s'," +
-            "            spaceLabel : '%s'" +
-            "          }" +
-            "        }" +
-            "      });", context.isMember(), context.isMembershipPending(), context.isAdmin(),
-        community.getComponentInstanceId(), javaStringToJsString(context.getSpaceLabel()));
-    xhtml.addElement(script(getApplicationURL() +
-        "/community/jsp/javaScript/services/silverpeas-community-subscription-service.js"));
-    xhtml.addElement(link(getApplicationURL() +
-        "/community/jsp/javaScript/vuejs/components/silverpeas-community-subscription.css"));
-    xhtml.addElement(script(getApplicationURL() +
-        "/community/jsp/javaScript/vuejs/components/silverpeas-community-subscription.js"));
+    communityHtml.setID("community-membership");
+    communityHtml.addElement(String.format("<silverpeas-community-membership \n" +
+            "        v-bind:display-nb-members-for-non-members='%s' \n" +
+            "        v-bind:display-charter-on-space-homepage='%s' \n" +
+            "        v-on:membership-join='reloadPage' \n" +
+            "        v-on:membership-leave='reloadPage'></silverpeas-community-membership>",
+        context.displayNbMembersForNonMembers(),
+        context.displayCharterOnSpaceHomepage()));
     xhtml.addElement(communityHtml);
+    final String vueJsStarter = String.format("new Vue({\n" +
+            "        el : '#community-membership',\n" +
+            "        provide : function() {\n" +
+            "          return {\n" +
+            "            context: this.context,\n" +
+            "            communityService: new CommunityService(this.context),\n" +
+            "            membershipService: new CommunityMembershipService(this.context)}},\n" +
+            "        data : {\n" +
+            "          context : {\n" +
+            "            currentUser : currentUser,\n" +
+            "            componentInstanceId : '%s',\n" +
+            "            spaceLabel : '%s'}},\n" +
+            "        methods : {\n" +
+            "          reloadPage : function() {\n" +
+            "            spWindow.loadSpace('%s');}}\n" +
+            "      });\n",
+        community.getComponentInstanceId(),
+        javaStringToJsString(context.getSpaceLabel()),
+        community.getSpaceId());
     xhtml.addElement(scriptContent(vueJsStarter));
     final var topWidget = new SpaceHomepageProxy.Widget();
     topWidget.setTitle(context.getComponentInstanceLabel());
     topWidget.setContent(xhtml.toString());
-    proxy.setTopWidget(topWidget);
+    proxy.setThinWidget(topWidget);
     final String defaultHomepage = getLookHelper(
         context.getRequest().getSession(false)).getSettings("defaultHomepage", "/dt");
     context.addRedirectVariable("path", defaultHomepage);
@@ -284,7 +302,11 @@ public class CommunityWebController extends
   @LowestRoleAccess(value = SilverpeasRole.READER)
   @Produces(MediaType.APPLICATION_JSON)
   public void leave(CommunityWebRequestContext context) {
-    CommunityWebManager.get().leave(context.getCommunity());
+    final HttpRequest request = context.getRequest();
+    final int reason = request.getParameterAsInteger("reason");
+    final String message = request.getParameter("message");
+    final boolean contactInFuture = request.getParameterAsBoolean("contactInFuture");
+    CommunityWebManager.get().leave(context.getCommunity(), reason, message, contactInFuture);
   }
 
   @GET
@@ -299,7 +321,7 @@ public class CommunityWebController extends
   }
 
   @GET
-  @Path("spaceHomePage/edit")
+  @Path("spaceHomepage/edit")
   public Navigation editSpaceHomePage(CommunityWebRequestContext context) {
     final WysiwygContent content = context.getCommunity().getSpacePresentationContent();
     return context.redirectToHtmlEditor(fromComponentSessionController(this)

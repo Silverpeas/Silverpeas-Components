@@ -1,0 +1,1 @@
+<strong>$requesterFullName$</strong> bittet darum, dem Raum <strong>$spaceName$</strong> beizutreten.

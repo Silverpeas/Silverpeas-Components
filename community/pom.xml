@@ -32,12 +32,12 @@
   <parent>
     <groupId>org.silverpeas</groupId>
     <artifactId>components</artifactId>
-    <version>6.3-SNAPSHOT</version>
+    <version>6.4-SNAPSHOT</version>
   </parent>
 
   <groupId>org.silverpeas.components</groupId>
   <artifactId>community</artifactId>
-  <version>6.3-SNAPSHOT</version>
+  <version>6.4-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Silverpeas community Component</name>

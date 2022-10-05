@@ -45,6 +45,7 @@ import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.Pair;
 
+import javax.annotation.Nonnull;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -55,11 +56,15 @@ import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
+import static org.silverpeas.core.admin.space.SpaceHomePageType.STANDARD;
+import static org.silverpeas.core.util.StringUtil.EMPTY;
 
 /**
  * The community of users for a collaborative space. Users in the community are said to be members
@@ -196,7 +201,7 @@ public class CommunityOfUsers
    * @return the home page of the community of users for the members.
    */
   public Pair<String, SpaceHomePageType> getHomePage() {
-    return Pair.of(homePage, homePageType);
+    return Pair.of(ofNullable(homePage).orElse(EMPTY), ofNullable(homePageType).orElse(STANDARD));
   }
 
   /**
@@ -212,10 +217,28 @@ public class CommunityOfUsers
    * Sets the URL at which the charter (or a community guide) is located. The charter, once set, has
    * to be validated by a user in order to join the community of users.
    * @param charterURL the URL of the charter to set.
+   */
+  public void setCharterURL(@Nonnull final URL charterURL) {
+    Objects.requireNonNull(charterURL);
+    this.charterURL = charterURL;
+  }
+
+  /**
+   * Sets the URL at which the charter (or a community guide) is located. The charter, once set, has
+   * to be validated by a user in order to join the community of users.
+   * @param charterURL the URL of the charter to set.
    * @throws MalformedURLException if the specified URL is malformed.
    */
   public void setCharterURL(final String charterURL) throws MalformedURLException {
     this.charterURL = new URL(charterURL);
+  }
+
+  /**
+   * Unsets the charter.
+   * @see #setCharterURL(String)
+   */
+  public void unsetCharterURL() {
+    this.charterURL = null;
   }
 
   /**y
@@ -269,7 +292,7 @@ public class CommunityOfUsers
       Administration administration = Administration.get();
       Optional.of(getSpaceId())
           .map(s -> handleException(administration::getSpaceInstById, s))
-          .map(s -> Optional.ofNullable(s.getSpaceProfileInst(role.getName())).orElseGet(() -> {
+          .map(s -> ofNullable(s.getSpaceProfileInst(role.getName())).orElseGet(() -> {
             SpaceProfileInst p = new SpaceProfileInst();
             p.setName(role.getName());
             p.setSpaceFatherId(getSpaceId());

@@ -35,8 +35,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.net.MalformedURLException;
 import java.net.URI;
+
+import static java.util.Optional.ofNullable;
 
 /**
  * A REST-based Web resource representing the communities of users. A community is always related to
@@ -82,16 +83,13 @@ public class CommunityOfUsersResource extends CommunityWebResource {
   @Transactional
   public CommunityOfUsersEntity updateCommunityOfUsers(final CommunityOfUsersEntity entity) {
     return process(community -> {
-      try {
-        checkValidity(entity, community);
-        community.setCharterURL(entity.getCharterURL().toString());
-        community.setHomePage(entity.getHomePage().getFirst(), entity.getHomePage().getSecond());
-        community.save();
-        return asWebEntity(community);
-      } catch (MalformedURLException e) {
-        throw new BadRequestException(
-            "The charter URL '" + entity.getCharterURL() + "' is malformed");
-      }
+      checkValidity(entity, community);
+      ofNullable(entity.getCharterURL()).ifPresentOrElse(
+          community::setCharterURL,
+          community::unsetCharterURL);
+      community.setHomePage(entity.getHomePage().getFirst(), entity.getHomePage().getSecond());
+      community.save();
+      return asWebEntity(community);
     });
   }
 
