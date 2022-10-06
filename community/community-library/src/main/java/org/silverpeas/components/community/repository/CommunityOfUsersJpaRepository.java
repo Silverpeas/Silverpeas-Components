@@ -28,13 +28,15 @@ import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
 
+import javax.persistence.Query;
+import java.util.List;
 import java.util.Optional;
 
 /**
  * Implementation of the repository of Community of users by extending the
- * {@link org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository}
- * base repository that provides all the basic and necessary methods to save, to update, to delete
- * and to get the business entities by using the JPA engine.
+ * {@link org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository} base
+ * repository that provides all the basic and necessary methods to save, to update, to delete and to
+ * get the business entities by using the JPA engine.
  */
 @Repository
 public class CommunityOfUsersJpaRepository
@@ -53,5 +55,15 @@ public class CommunityOfUsersJpaRepository
     NamedParameters parameters = newNamedParameters();
     return Optional.ofNullable(findFirstByNamedQuery("CommunityBySpaceId",
         parameters.add("spaceId", spaceId)));
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public List<CommunityOfUsers> getAllByUserId(final String userId) {
+    Query query = getEntityManager().createQuery(
+        "select c from CommunityOfUsers c inner join CommunityMembership m on m.community = c " +
+            "where m.userId = :userId and m.status = org.silverpeas.components.community.model" +
+            ".MembershipStatus.COMMITTED");
+    return newNamedParameters().add("userId", userId).applyTo(query).getResultList();
   }
 }

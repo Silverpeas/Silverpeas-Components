@@ -23,8 +23,11 @@
  */
 package org.silverpeas.components.community;
 
+import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.silverpeas.components.community.test.SessionManagementService;
 import org.silverpeas.core.test.BasicWarBuilder;
+
+import java.io.File;
 
 /**
  * This builder extends the {@link org.silverpeas.core.test.BasicCoreWarBuilder} in order to
@@ -43,15 +46,37 @@ public class CommunityWarBuilder extends BasicWarBuilder {
     addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core");
     addMavenDependenciesWithPersistence("org.silverpeas.components.community:silverpeas-community");
     addMavenDependencies("org.silverpeas.core:silverpeas-core-web-test");
-    addClasses(SessionManagementService.class);
+    addMavenDependencies("org.silverpeas.core:silverpeas-core-web");
+    addClasses(SessionManagementService.class, CommunityWebManager.class);
     addPackages(true, test.getPackageName());
 
     // dependencies required to run an integration test in a web project
     createMavenDependencies("org.silverpeas.core.services:silverpeas-core-pdc");
     createMavenDependencies("org.silverpeas.core.services:silverpeas-core-search");
+    createMavenDependencies("org.silverpeas.core.services:silverpeas-core-viewer");
+    createMavenDependencies("org.silverpeas.core.services:silverpeas-core-sharing");
+    createMavenDependencies("org.silverpeas.core.services:silverpeas-core-comment");
+    createMavenDependencies("org.silverpeas.core.services:silverpeas-core-personalorganizer");
+    createMavenDependencies("org.silverpeas.core.services:silverpeas-core-workflow");
+    createMavenDependencies("org.silverpeas.core.services:silverpeas-core-chat");
+    createMavenDependencies("org.silverpeas.core.services:silverpeas-core-mylinks");
+    createMavenDependencies("org.silverpeas.jcr:access-control:1.4");
+
+    initJcrSchema();
 
     addAsResource("org/silverpeas/index/search/searchEngineSettings.properties");
+    addAsResource("org/silverpeas/util/attachment/Attachment.properties");
+    addAsResource("org/silverpeas/index/indexing/Parser.properties");
     addAsResource("org/silverpeas/components/community/settings/communitySettings.properties");
+    addAsResource("org/silverpeas/general.properties");
+    applyManually(w -> {
+      File[] jars = Maven.resolver()
+          .loadPomFromFile("pom.xml")
+          .resolve("org.jboss.resteasy:resteasy-html")
+          .withoutTransitivity()
+          .asFile();
+      w.addAsLibraries(jars);
+    });
   }
 
   /**

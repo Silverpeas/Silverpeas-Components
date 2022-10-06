@@ -31,6 +31,7 @@ import org.silverpeas.core.admin.component.model.InheritableSpaceRoles;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.space.SpaceHomePageType;
 import org.silverpeas.core.admin.space.SpaceProfileInst;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
@@ -42,12 +43,18 @@ import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.util.Mutable;
+import org.silverpeas.core.util.Pair;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.validation.constraints.NotNull;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -77,10 +84,18 @@ public class CommunityOfUsers
   private static final long serialVersionUID = -4908726669864467915L;
 
   @Column(name = "spaceId", nullable = false)
+  @NotNull
   private String spaceId;
-
   @Column(name = "instanceId", nullable = false)
+  @NotNull
   private String componentInstanceId;
+
+  private String homePage;
+
+  @Enumerated(EnumType.ORDINAL)
+  private SpaceHomePageType homePageType;
+
+  private URL charterURL;
 
   @Transient
   private transient CommunityMembershipsProvider provider;
@@ -174,6 +189,43 @@ public class CommunityOfUsers
   public Set<SilverpeasRole> getUserRoles(final User user) {
     return Set.copyOf(ComponentAccessControl.get()
         .getUserRoles(user.getId(), getComponentInstanceId(), AccessControlContext.init()));
+  }
+
+  /**
+   * Gets the home page of this community of users for its members.
+   * @return the home page of the community of users for the members.
+   */
+  public Pair<String, SpaceHomePageType> getHomePage() {
+    return Pair.of(homePage, homePageType);
+  }
+
+  /**
+   * Gets the URL at which the charter (or a community guide) is located. The charter has to be
+   * validated by a user in order to join the community of users.
+   * @return the URL of the charter.
+   */
+  public URL getCharterURL() {
+    return charterURL;
+  }
+
+  /**
+   * Sets the URL at which the charter (or a community guide) is located. The charter, once set, has
+   * to be validated by a user in order to join the community of users.
+   * @param charterURL the URL of the charter to set.
+   * @throws MalformedURLException if the specified URL is malformed.
+   */
+  public void setCharterURL(final String charterURL) throws MalformedURLException {
+    this.charterURL = new URL(charterURL);
+  }
+
+  /**y
+   * Sets the home page of this community of users to render to the members.
+   * @param homePage the home page of the community of users.
+   * @param homePageType the type of the home page.
+   */
+  public void setHomePage(final String homePage, SpaceHomePageType homePageType) {
+    this.homePage = homePage;
+    this.homePageType = homePageType;
   }
 
   /**
@@ -306,6 +358,20 @@ public class CommunityOfUsers
       provider = CommunityMembershipsProvider.getProvider(this);
     }
     return provider;
+  }
+
+  /**
+   * Saves the modification in this community of users. If the community isn't a persisted one, then
+   * an {@link IllegalStateException} exception is thrown.
+   */
+  public void save() {
+    if (!isPersisted()) {
+      throw new IllegalStateException("This community isn't a persisted one!");
+    }
+    Transaction.performInOne(() -> {
+      CommunityOfUsersRepository.get().save(this);
+      return null;
+    });
   }
 
   @Override

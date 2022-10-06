@@ -114,15 +114,23 @@
      * @returns {*}
      */
     this.getMembershipOf = function(userId) {
-      userId = userId === currentUser.id ? 'me' : userId;
-      return baseAdapter.find({url : baseAdapter.url + '/members/' + userId});
+      let targetedUser = userId === currentUser.id ? 'me' : userId;
+      return  baseAdapter.find({url : baseAdapter.url + '/memberships/users/' + targetedUser});
     };
 
     /**
      * Gets all members.
      */
     this.getMembers = function() {
-      return baseAdapter.find({url : baseAdapter.url + '/members'});
+      // TODO handle the pagination parameter. For instance it is fixed
+      let criteria = baseAdapter.criteria({
+        page: {
+          number: 1,
+          size: 25
+        }});
+      let members = baseAdapter.find({url : baseAdapter.url + '/memberships/members',
+        criteria: criteria});
+      return members.memberhips
     };
 
     /**

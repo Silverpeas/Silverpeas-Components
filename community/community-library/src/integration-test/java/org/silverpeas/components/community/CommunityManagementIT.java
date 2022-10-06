@@ -38,6 +38,7 @@ import org.silverpeas.components.community.model.CommunityOfUsers;
 import org.silverpeas.components.community.repository.CommunityMembershipRepository;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.service.Administration;
+import org.silverpeas.core.admin.space.SpaceHomePageType;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceProfileInst;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
@@ -46,8 +47,10 @@ import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.cache.service.SessionCacheService;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.test.rule.DbSetupRule;
+import org.silverpeas.core.util.Pair;
 
 import javax.inject.Inject;
+import java.net.MalformedURLException;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
@@ -111,6 +114,9 @@ public class CommunityManagementIT {
     CommunityOfUsers actualCommunity = community.get();
     assertThat(actualCommunity.getComponentInstanceId(), is(instanceId));
     assertThat(actualCommunity.getSpaceId(), is("WA1"));
+    assertThat(actualCommunity.getHomePage(),
+        is(Pair.of("kmelia42", SpaceHomePageType.COMPONENT_INST)));
+    assertThat(actualCommunity.getCharterURL().toString(), is("https://www.silverpeas.org"));
   }
 
   @Test
@@ -129,6 +135,9 @@ public class CommunityManagementIT {
     CommunityOfUsers actualCommunity = community.get();
     assertThat(actualCommunity.getComponentInstanceId(), is("community1"));
     assertThat(actualCommunity.getSpaceId(), is(spaceId));
+    assertThat(actualCommunity.getHomePage(),
+        is(Pair.of("kmelia42", SpaceHomePageType.COMPONENT_INST)));
+    assertThat(actualCommunity.getCharterURL().toString(), is("https://www.silverpeas.org"));
   }
 
   @Test
@@ -143,6 +152,34 @@ public class CommunityManagementIT {
     String spaceId = "WA4";
     Optional<CommunityOfUsers> community = CommunityOfUsers.getBySpaceId(spaceId);
     assertThat(community.isEmpty(), is(true));
+  }
+
+  @Test
+  public void updateAnExistingCommunity() throws MalformedURLException {
+    String instanceId = "community1";
+    Optional<CommunityOfUsers> community = CommunityOfUsers.getByComponentInstanceId(instanceId);
+    assertThat(community.isPresent(), is(true));
+
+    CommunityOfUsers actualCommunity = community.get();
+    actualCommunity.setHomePage("https://www.silverpeas.org", SpaceHomePageType.HTML_PAGE);
+    actualCommunity.setCharterURL("http://localhost:8080/silverpeas/communities/1/charter.html");
+    actualCommunity.save();
+
+    community = CommunityOfUsers.getByComponentInstanceId(instanceId);
+    assertThat(community.isPresent(), is(true));
+    CommunityOfUsers updated = community.get();
+    assertThat(updated.getId(), is(actualCommunity.getId()));
+    assertThat(updated.getHomePage().getFirst(), is("https://www.silverpeas.org"));
+    assertThat(updated.getHomePage().getSecond(), is(SpaceHomePageType.HTML_PAGE));
+    assertThat(updated.getCharterURL().toString(),
+        is("http://localhost:8080/silverpeas/communities/1/charter.html"));
+  }
+
+  @Test
+  public void updateANonPersistedCommunity() {
+    CommunityOfUsers community = new CommunityOfUsers("community4", "WA3");
+    assertThat(community.isPersisted(), is(false));
+    assertThrows(IllegalStateException.class, community::save);
   }
 
   @Test

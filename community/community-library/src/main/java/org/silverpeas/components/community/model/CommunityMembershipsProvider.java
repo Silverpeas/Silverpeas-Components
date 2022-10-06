@@ -29,7 +29,9 @@ import org.silverpeas.components.community.repository.CommunityMembershipReposit
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.persistence.Transaction;
+import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.SilverpeasList;
 
 import javax.annotation.Nonnull;
@@ -58,6 +60,9 @@ public class CommunityMembershipsProvider {
   private final CommunityMembershipRepository.CommunityMembershipsTable memberships;
   private static final Map<String, OffsetDateTime> lastSynchronizations = new HashMap<>();
 
+  private static final SettingBundle settings = ResourceLocator.getSettingBundle(
+      "org.silverpeas.components.community.settings.communitySettings");
+
   /**
    * Gets the memberships provider of the specified community.
    * @param community a community of users.
@@ -82,15 +87,26 @@ public class CommunityMembershipsProvider {
   }
 
   /**
+   * Gets the membership to the community of users with the specified unique identifier.
+   * @param membershipId the unique identifier of a membership to the community of users.
+   * @return either a {@link CommunityMembership} instance representing the asked membership or
+   * nothing if no such membership to the community of users exists.
+   */
+  public Optional<CommunityMembership> get(@Nonnull final String membershipId) {
+    Objects.requireNonNull(membershipId);
+    return Optional.ofNullable(repository.getById(membershipId));
+  }
+
+  /**
    * Gets the membership of the specified user to the community of users. If the user isn't member
    * of the community, then nothing is returned. Only the user whose membership is either pending or
    * committed is returned.
-   * @param user a user in Silverpeas
+   * @param user a user in Silverpeas. If null, nothing is returned.
    * @return either a {@link CommunityMembership} instance representing the membership of the user
    * to the community or nothing if the user isn't (anymore) member of the community.
    */
-  public Optional<CommunityMembership> get(final User user) {
-    return memberships.getByUser(user);
+  public Optional<CommunityMembership> get(@Nullable final User user) {
+    return user == null ? Optional.empty() : memberships.getByUser(user);
   }
 
   /**
@@ -165,7 +181,8 @@ public class CommunityMembershipsProvider {
     synchronized (lastSynchronizations) {
       OffsetDateTime now = OffsetDateTime.now();
       OffsetDateTime lastSynchronization = lastSynchronizations.get(community.getId());
-      if (lastSynchronization != null && now.minusHours(1).isBefore(lastSynchronization)) {
+      long duration = settings.getLong("community.memberships.synchronization");
+      if (lastSynchronization != null && now.minusMinutes(duration).isBefore(lastSynchronization)) {
         return;
       }
       lastSynchronizations.put(community.getId(), now);

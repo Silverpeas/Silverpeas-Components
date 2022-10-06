@@ -1,8 +1,11 @@
 CREATE TABLE SC_Community
 (
-    id         VARCHAR(40) PRIMARY KEY,
-    instanceId VARCHAR(30) NOT NULL,
-    spaceId    VARCHAR(40) NOT NULL,
+    id           VARCHAR(40) PRIMARY KEY,
+    instanceId   VARCHAR(30)  NOT NULL,
+    spaceId      VARCHAR(40)  NOT NULL,
+    homePage     VARCHAR(400) NULL,
+    homePageType INT          NULL,
+    charterURL   VARCHAR(400) NULL,
     CONSTRAINT UN_COMMUNITY UNIQUE (instanceId, spaceId)
 );
 

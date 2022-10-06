@@ -418,9 +418,12 @@ CREATE TABLE IF NOT EXISTS ST_SpaceUserRole_Group_Rel
 
 CREATE TABLE IF NOT EXISTS SC_Community
 (
-    id         VARCHAR(40) PRIMARY KEY,
-    instanceId VARCHAR(30) NOT NULL,
-    spaceId    VARCHAR(30) NOT NULL,
+    id           VARCHAR(40) PRIMARY KEY,
+    instanceId   VARCHAR(30)  NOT NULL,
+    spaceId      VARCHAR(30)  NOT NULL,
+    homePage     VARCHAR(400) NULL,
+    homePageType INT          NULL,
+    charterURL   VARCHAR(400) NULL,
     CONSTRAINT UN_COMMUNITY UNIQUE (instanceId, spaceId)
 );
 
