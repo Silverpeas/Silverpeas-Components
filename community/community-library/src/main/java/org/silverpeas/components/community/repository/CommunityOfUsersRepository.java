@@ -27,6 +27,7 @@ import org.silverpeas.components.community.model.CommunityOfUsers;
 import org.silverpeas.core.persistence.datasource.repository.EntityRepository;
 import org.silverpeas.core.util.ServiceProvider;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -58,4 +59,11 @@ public interface CommunityOfUsersRepository extends EntityRepository<CommunityOf
    * {@link Optional} if no such space exists or if the space doesn't have any community.
    */
   Optional<CommunityOfUsers> getBySpaceId(String spaceId);
+
+  /**
+   * Gets all the community of users the specified user is currently a member.
+   * @param userId the unique identifier of a user.
+   * @return a list of communities to which the given user is a member.
+   */
+  List<CommunityOfUsers> getAllByUserId(final String userId);
 }

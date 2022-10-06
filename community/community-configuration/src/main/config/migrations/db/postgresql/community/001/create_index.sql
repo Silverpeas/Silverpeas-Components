@@ -1,3 +1,3 @@
-CREATE INDEX idx_Community ON SC_Community_Component (id, instanceId);
-CREATE INDEX idx_Community ON SC_Community_Space (id, spaceId);
-CREATE INDEX idx_Community_Member ON SC_Community_Member (id, community);
+CREATE INDEX idx_Community_Component ON SC_Community (id, instanceId);
+CREATE INDEX idx_Community_Space ON SC_Community (id, spaceId);
+CREATE INDEX idx_Community_Membership ON SC_Community_Membership (id, community);

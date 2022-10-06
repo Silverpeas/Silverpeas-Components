@@ -35,6 +35,8 @@ import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.quota.exception.QuotaException;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
+import org.silverpeas.core.admin.space.SpaceHomePageType;
+import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.cache.service.SessionCacheService;
@@ -81,9 +83,15 @@ public class CommunityAppIT {
 
   @Test
   public void createANewAppInstanceShouldCreateACommunity() throws AdminException, QuotaException {
-    User admin = User.getCurrentUser();
+    Administration admin = Administration.get();
+    User user = User.getCurrentUser();
     ComponentInst componentInst = newCommunityAppInstance();
-    String instanceId = Administration.get().addComponentInst(admin.getId(), componentInst);
+    String instanceId = admin.addComponentInst(user.getId(), componentInst);
+
+    SpaceInst spaceInst = admin.getSpaceInstById(componentInst.getSpaceId());
+    assertThat(spaceInst.getFirstPageExtraParam(), is(instanceId));
+    assertThat(spaceInst.getFirstPageType(), is(SpaceHomePageType.COMPONENT_INST.ordinal()));
+    assertThat(spaceInst.isInheritanceBlocked(), is(true));
 
     Optional<CommunityOfUsers> community = CommunityOfUsers.getByComponentInstanceId(instanceId);
     assertThat(community.isPresent(), is(true));

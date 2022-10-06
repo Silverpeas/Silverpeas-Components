@@ -35,6 +35,7 @@ import org.silverpeas.components.community.repository.CommunityOfUsersRepository
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.space.SpaceHomePageType;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceProfileInst;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
@@ -52,6 +53,7 @@ import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 import org.silverpeas.core.test.extention.TestManagedBeans;
 import org.silverpeas.core.test.extention.TestManagedMock;
 import org.silverpeas.core.test.util.EntityIdSetter;
+import org.silverpeas.core.util.Pair;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -193,12 +195,16 @@ class CommunityOfUsersTest {
     when(communityRepository.getByComponentInstanceId(anyString())).thenAnswer(i -> {
       String instanceId = i.getArgument(0);
       CommunityOfUsers community = new CommunityOfUsers(instanceId, SPACE_ID);
+      community.setHomePage("kmelia42", SpaceHomePageType.COMPONENT_INST);
+      community.setCharterURL("https://www.silverpeas.org");
       idSetter.setIdTo(community, communityId);
       return Optional.of(community);
     });
     when(communityRepository.getBySpaceId(anyString())).thenAnswer(i -> {
       String spaceId = i.getArgument(0);
       CommunityOfUsers community = new CommunityOfUsers(INSTANCE_ID, spaceId);
+      community.setHomePage("kmelia42", SpaceHomePageType.COMPONENT_INST);
+      community.setCharterURL("https://www.silverpeas.org");
       idSetter.setIdTo(community, communityId);
       return Optional.of(community);
     });
@@ -251,6 +257,8 @@ class CommunityOfUsersTest {
     CommunityOfUsers community = optCommunity.get();
     assertThat(community.getSpaceId(), is(SPACE_ID));
     assertThat(community.getComponentInstanceId(), is(instanceId));
+    assertThat(community.getHomePage(), is(Pair.of("kmelia42", SpaceHomePageType.COMPONENT_INST)));
+    assertThat(community.getCharterURL().toString(), is("https://www.silverpeas.org"));
 
     verify(communityRepository).getByComponentInstanceId(instanceId);
   }
@@ -265,6 +273,8 @@ class CommunityOfUsersTest {
     CommunityOfUsers community = optCommunity.get();
     assertThat(community.getSpaceId(), is(spaceId));
     assertThat(community.getComponentInstanceId(), is(INSTANCE_ID));
+    assertThat(community.getHomePage(), is(Pair.of("kmelia42", SpaceHomePageType.COMPONENT_INST)));
+    assertThat(community.getCharterURL().toString(), is("https://www.silverpeas.org"));
 
     verify(communityRepository).getBySpaceId(spaceId);
   }

@@ -56,6 +56,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import static org.silverpeas.components.community.CommunityWebManager.NO_PAGINATION;
 import static org.silverpeas.core.util.URLUtil.getApplicationURL;
 import static org.silverpeas.core.util.WebEncodeHelper.javaStringToJsString;
 import static org.silverpeas.core.web.look.LookHelper.getLookHelper;
@@ -175,7 +176,8 @@ public class CommunityWebController extends
     final HttpRequest request = context.getRequest();
     final CommunityWebManager manager = CommunityWebManager.get();
     if (context.canValidateNewMember()) {
-      final var membersToValidate = manager.getMembersToValidate(context.getCommunity());
+      final var membersToValidate =
+          manager.getMembersToValidate(context.getCommunity(), NO_PAGINATION);
       request.setAttribute("membersToValidate", membersToValidate);
     }
     final WysiwygContent content = context.getCommunity().getSpacePresentationContent();
@@ -245,7 +247,7 @@ public class CommunityWebController extends
   @LowestRoleAccess(value = SilverpeasRole.READER)
   public void listMembers(CommunityWebRequestContext context) {
     final HttpRequest request = context.getRequest();
-    final var members = CommunityWebManager.get().getMembers(context.getCommunity());
+    final var members = CommunityWebManager.get().getMembers(context.getCommunity(), NO_PAGINATION);
     request.setAttribute("members", members);
   }
 
@@ -292,7 +294,7 @@ public class CommunityWebController extends
   @LowestRoleAccess(value = SilverpeasRole.ADMIN)
   public void getHistory(CommunityWebRequestContext context) {
     final HttpRequest request = context.getRequest();
-    final var history = CommunityWebManager.get().getHistory(context.getCommunity());
+    final var history = CommunityWebManager.get().getHistory(context.getCommunity(), NO_PAGINATION);
     request.setAttribute("history", history);
   }
 

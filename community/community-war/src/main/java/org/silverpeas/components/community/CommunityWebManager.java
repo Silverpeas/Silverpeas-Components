@@ -38,6 +38,8 @@ import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -55,7 +57,7 @@ import static org.silverpeas.core.util.StringUtil.getBooleanValue;
 public class CommunityWebManager {
 
   private static final String CACHE_KEY_PREFIX = CommunityWebManager.class.getSimpleName() + ":";
-  private static final PaginationPage NO_PAGINATION = new PaginationPage(1, Integer.MAX_VALUE);
+  public static final PaginationPage NO_PAGINATION = new PaginationPage(1, Integer.MAX_VALUE);
 
   protected CommunityWebManager() {
   }
@@ -92,7 +94,7 @@ public class CommunityWebManager {
    * @param requester the user behind the request to join the community.
    * @param community the community the user accesses.
    * @param accept true to accept the request, false to refuse.
-   * @param message message linked to the accept or refuse.
+   * @param message message linked to the acceptation or refuse.
    */
   public void validateRequestOf(final User requester, final CommunityOfUsers community,
       final boolean accept, final String message) {
@@ -119,7 +121,8 @@ public class CommunityWebManager {
     community.removeMembership(member);
     final String userLanguage = getUserLanguage();
     successMessage("community.endMembership.success", member.getDisplayedName(),
-        OrganizationController.get().getSpaceInstById(community.getSpaceId()).getName(userLanguage));
+        OrganizationController.get().getSpaceInstById(community.getSpaceId())
+            .getName(userLanguage));
   }
 
   /**
@@ -130,48 +133,61 @@ public class CommunityWebManager {
     community.removeMembership(User.getCurrentRequester());
     final String userLanguage = getUserLanguage();
     successMessage("community.leave.success",
-        OrganizationController.get().getSpaceInstById(community.getSpaceId()).getName(userLanguage));
+        OrganizationController.get().getSpaceInstById(community.getSpaceId())
+            .getName(userLanguage));
   }
 
   /**
-   * Gets members of the given community.
+   * Gets members pending validation of the given community.
    * @param community {@link CommunityOfUsers} instance representing the community.
-   * @return list of {@link CommunityMembership} instance, representing each one a member.
+   * @param page the pending members to get are paginated. Indicates the page to return. If null,
+   * all the pending members are got.
+   * @return list of {@link CommunityMembership} instance, representing each one a pending member.
    */
   @SuppressWarnings("unchecked")
-  public SilverpeasList<CommunityMembership> getMembersToValidate(final CommunityOfUsers community) {
+  public SilverpeasList<CommunityMembership> getMembersToValidate(
+      @Nonnull final CommunityOfUsers community, @Nullable final PaginationPage page) {
+    PaginationPage paginationPage = page == null ? NO_PAGINATION : page;
     return requestCache("membersToValidate", community.getId(), SilverpeasList.class,
-        () -> community.getMembershipsProvider().getPending(NO_PAGINATION));
+        () -> community.getMembershipsProvider().getPending(paginationPage));
   }
 
   /**
    * Gets members of the given community.
    * @param community {@link CommunityOfUsers} instance representing the community.
-   * @return list of {@link CommunityMembership} instance, representing each one a member.
+   * @param page the members to get are paginated. Indicates the page to return. If null, all the
+   * members are got.
+   * @return list of {@link CommunityMembership} instance, representing each one a committed member.
    */
   @SuppressWarnings("unchecked")
-  public SilverpeasList<CommunityMembership> getMembers(final CommunityOfUsers community) {
+  public SilverpeasList<CommunityMembership> getMembers(@Nonnull final CommunityOfUsers community,
+      @Nullable final PaginationPage page) {
+    PaginationPage paginationPage = page == null ? NO_PAGINATION : page;
     return requestCache("members", community.getId(), SilverpeasList.class,
-        () -> community.getMembershipsProvider().getInRange(NO_PAGINATION));
+        () -> community.getMembershipsProvider().getInRange(paginationPage));
   }
 
   /**
    * Gets history of the given community.
    * @param community {@link CommunityOfUsers} instance representing the community.
-   * @return list of {@link CommunityMembership} instance, representing each one a member
-   * registration/unregistration.
+   * @param page the members to get are paginated. Indicates the page to return. If null, all the
+   * members are got.
+   * @return list of {@link CommunityMembership} instance, representing each one a membership
+   * whatever its status.
    */
   @SuppressWarnings("unchecked")
-  public SilverpeasList<CommunityMembership> getHistory(final CommunityOfUsers community) {
+  public SilverpeasList<CommunityMembership> getHistory(@Nonnull final CommunityOfUsers community,
+      @Nullable final PaginationPage page) {
+    PaginationPage paginationPage = page == null ? NO_PAGINATION : page;
     return requestCache("history", community.getId(), SilverpeasList.class,
-        () -> community.getMembershipsProvider().getHistory(NO_PAGINATION));
+        () -> community.getMembershipsProvider().getHistory(paginationPage));
   }
 
   /**
    * Indicates if the current requester is a member.
    * <p>
-   *   A member MUST be directly specified into ADMIN, PUBLISHER, WRITER or READER role of direct
-   *   parent space.
+   * A member MUST be directly specified into ADMIN, PUBLISHER, WRITER or READER role of direct
+   * parent space.
    * </p>
    * @param community {@link CommunityOfUsers} instance.
    * @return true if member, false otherwise.
@@ -184,8 +200,8 @@ public class CommunityWebManager {
   /**
    * Indicates if the current requester has membership pending validation.
    * <p>
-   *   A member MUST be directly specified into ADMIN, PUBLISHER, WRITER or READER role of direct
-   *   parent space.
+   * A member MUST be directly specified into ADMIN, PUBLISHER, WRITER or READER role of direct
+   * parent space.
    * </p>
    * @param community {@link CommunityOfUsers} instance.
    * @return true if member, false otherwise.

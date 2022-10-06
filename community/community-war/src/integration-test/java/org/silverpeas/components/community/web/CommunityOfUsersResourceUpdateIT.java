@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.com/legal/licensing"
+ * "https://www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,7 +19,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 package org.silverpeas.components.community.web;
 
@@ -32,17 +32,22 @@ import org.junit.runner.RunWith;
 import org.silverpeas.components.community.CommunityWarBuilder;
 import org.silverpeas.components.community.model.CommunityOfUsers;
 import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.admin.space.SpaceHomePageType;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.web.ResourceGettingTest;
+import org.silverpeas.core.util.Pair;
+import org.silverpeas.web.ResourceUpdateTest;
+
+import java.net.MalformedURLException;
+import java.net.URI;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
 
 /**
- * Integration tests about the getting of Community contributions.
+ * Integration tests about the update of some properties of a community of users.
  */
 @RunWith(Arquillian.class)
-public class CommunityResourceGettingIT extends ResourceGettingTest {
+public class CommunityOfUsersResourceUpdateIT extends ResourceUpdateTest {
 
   private static final String DATABASE_CREATION_SCRIPT = "/community-database.sql";
 
@@ -55,11 +60,11 @@ public class CommunityResourceGettingIT extends ResourceGettingTest {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return CommunityWarBuilder.onWarForTestClass(CommunityResourceGettingIT.class)
-    .addRESTWebServiceEnvironment()
-    .addAsResource(DATABASE_CREATION_SCRIPT.substring(1))
-    .addAsResource(DATASET_SCRIPT.substring(1))
-    .build();
+    return CommunityWarBuilder.onWarForTestClass(CommunityOfUsersResourceUpdateIT.class)
+        .addRESTWebServiceEnvironment()
+        .addAsResource(DATABASE_CREATION_SCRIPT.substring(1))
+        .addAsResource(DATASET_SCRIPT.substring(1))
+        .build();
   }
 
   @Override
@@ -73,20 +78,36 @@ public class CommunityResourceGettingIT extends ResourceGettingTest {
   }
 
   @Before
-  public void prepareTestResources() {
+  public void prepareTestResources() throws MalformedURLException {
     authToken = getTokenKeyOf(User.getById("1"));
     CommunityOfUsers community = CommunityOfUsers.getByComponentInstanceId(EXPECTED_ID)
         .orElseThrow(
             () -> new SilverpeasRuntimeException("No such community instance: " + EXPECTED_ID));
-    expectedEntity = new CommunityOfUsersEntity(community);
+    community.setHomePage("https://www.silverpeas.org", SpaceHomePageType.HTML_PAGE);
+    community.setCharterURL("http://localhost:8080/silverpeas/charters/community1.html");
+    expectedEntity = CommunityOfUsersEntity.builder()
+        .with(community)
+        .build();
+    expectedEntity.setUri(getWebResourceBaseURIBuilder().path(aResourceURI()).build());
+    expectedEntity.setMemberships(
+        getWebResourceBaseURIBuilder().path(aResourceURI()).path("memberships").build());
   }
 
   @Test
-  public void getAnExistingCommunity() {
-    CommunityOfUsersEntity entity = getAt(aResourceURI(), CommunityOfUsersEntity.class);
-    assertThat(entity.getURI().toString().endsWith(aResourceURI()), is(true));
+  public void updateAnExistingCommunity() {
+    URI communityURI = getWebResourceBaseURIBuilder().path(aResourceURI()).build();
+    URI membershipsURI =
+        getWebResourceBaseURIBuilder().path(aResourceURI()).path("memberships").build();
+
+    CommunityOfUsersEntity entity = putAt(aResourceURI(), aResource());
+    assertThat(entity.getURI(), is(communityURI));
     assertThat(entity.getId(), is(EXPECTED_ID));
     assertThat(entity.getSpaceId(), is("WA1"));
+    assertThat(entity.getMemberships(), is(membershipsURI));
+    assertThat(entity.getHomePage(),
+        is(Pair.of("https://www.silverpeas.org", SpaceHomePageType.HTML_PAGE)));
+    assertThat(entity.getCharterURL().toString(),
+        is("http://localhost:8080/silverpeas/charters/community1.html"));
   }
 
   @Override
@@ -120,4 +141,12 @@ public class CommunityResourceGettingIT extends ResourceGettingTest {
     return new String[]{EXPECTED_ID, "community2"};
   }
 
+  @SuppressWarnings("unchecked")
+  @Override
+  public CommunityOfUsersEntity anInvalidResource() {
+    CommunityOfUsers community = new CommunityOfUsers("community4", "WA4");
+    return CommunityOfUsersEntity.builder()
+        .with(community)
+        .build();
+  }
 }

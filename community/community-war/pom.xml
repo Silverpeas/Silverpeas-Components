@@ -84,6 +84,11 @@
       <version>${core.version}</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-html</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
 </project>

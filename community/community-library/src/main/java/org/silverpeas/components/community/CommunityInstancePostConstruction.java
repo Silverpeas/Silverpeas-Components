@@ -25,9 +25,13 @@ package org.silverpeas.components.community;
 
 import org.silverpeas.components.community.model.CommunityOfUsers;
 import org.silverpeas.components.community.repository.CommunityOfUsersRepository;
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.ComponentInstancePostConstruction;
 import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.service.Administration;
+import org.silverpeas.core.admin.space.SpaceHomePageType;
+import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.annotation.Bean;
 
 import javax.inject.Inject;
@@ -36,28 +40,58 @@ import javax.transaction.Transactional;
 
 /**
  * Once the Community application instance created, constructs an empty community of users for the
- * resource in Silverpeas specified in the instance parameter.
+ * collaborative space in which the application instance has been spawned. The community application
+ * instance becomes automatically the home page of the parent space and this parent space doesn't
+ * inherit anymore the access rights defined in its own parent spaces.
  */
 @Bean
 @Named
 public class CommunityInstancePostConstruction implements ComponentInstancePostConstruction {
 
   @Inject
-  private OrganizationController controller;
+  private Administration admin;
 
   @Inject
   private CommunityOfUsersRepository repository;
 
+
   @Transactional
   @Override
   public void postConstruct(final String componentInstanceId) {
-    ComponentInst instance = controller.getComponentInst(componentInstanceId);
-    if (instance == null) {
-      throw new IllegalStateException("The Community application " + componentInstanceId +
-          " should be created!");
-    }
-    String spaceId = instance.getSpaceId();
-    CommunityOfUsers community = new CommunityOfUsers(componentInstanceId, spaceId);
+    ComponentInst instance = getComponentInst(componentInstanceId);
+    SpaceInst spaceInst = getSpaceInst(instance.getSpaceId());
+    CommunityOfUsers community = new CommunityOfUsers(instance.getId(), spaceInst.getId());
     repository.save(community);
+
+    spaceInst.setFirstPageExtraParam(componentInstanceId);
+    spaceInst.setInheritanceBlocked(true);
+    spaceInst.setFirstPageType(SpaceHomePageType.COMPONENT_INST.ordinal());
+    updateSpaceInst(spaceInst);
+  }
+
+  private ComponentInst getComponentInst(final String instanceId) {
+    try {
+      return admin.getComponentInst(instanceId);
+    } catch (AdminException e) {
+      throw new IllegalStateException(
+          "The Community application " + instanceId + " should be created!");
+    }
+  }
+
+  private SpaceInst getSpaceInst(final String spaceId) {
+    try {
+      return admin.getSpaceInstById(spaceId);
+    } catch (AdminException e) {
+      throw new IllegalStateException(
+          "The space " + spaceId + " should exist!");
+    }
+  }
+
+  private void updateSpaceInst(final SpaceInst spaceInst) {
+    try {
+      admin.updateSpaceInst(spaceInst);
+    } catch (AdminException e) {
+      throw new SilverpeasRuntimeException(e.getMessage());
+    }
   }
 }

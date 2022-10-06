@@ -50,10 +50,10 @@ VALUES (1, 0), (2, 1), (3, 2), (5, 3),
        (6, 1),(7, 2),(9,3),(10, 1), (10, 2),
        (11, 2), (12, 3);
 
-INSERT INTO sc_community(id, instanceId, spaceId)
-VALUES ('45d42847-2009-4ca8-86bb-1918909dc094', 'community1', 'WA1'),
-       ('a58d70b9-84c7-484a-9102-03eca8e54ea5', 'community2', 'WA2'),
-       ('4aaf4587-fa14-4acf-ac04-e63fb57b87ec', 'community3', 'WA3');
+INSERT INTO sc_community(id, instanceId, spaceId, homePage, homePageType, charterURL)
+VALUES ('45d42847-2009-4ca8-86bb-1918909dc094', 'community1', 'WA1', 'kmelia42', 1, 'https://www.silverpeas.org'),
+       ('a58d70b9-84c7-484a-9102-03eca8e54ea5', 'community2', 'WA2', NULL, NULL, NULL),
+       ('4aaf4587-fa14-4acf-ac04-e63fb57b87ec', 'community3', 'WA3', NULL, NULL, NULL);
 
 INSERT INTO sc_community_membership
 (id, community, userId, status, createDate, createdBy, joiningDate, lastUpdateDate, lastUpdatedBy, version)
