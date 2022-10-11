@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.silverpeas.components</groupId>
     <artifactId>quickinfo</artifactId>
-    <version>6.3</version>
+    <version>6.3.1-SNAPSHOT</version>
   </parent>
 
   <groupId>org.silverpeas.components.quickinfo</groupId>

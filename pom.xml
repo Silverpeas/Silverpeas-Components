@@ -35,7 +35,7 @@
 
   <groupId>org.silverpeas</groupId>
   <artifactId>components</artifactId>
-  <version>6.3</version>
+  <version>6.3.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Silverpeas Components</name>
   <url>https://www.silverpeas.org/docs/components</url>
@@ -45,7 +45,7 @@
     <connection>scm:git:git@github.com:Silverpeas/Silverpeas-Components.git</connection>
     <developerConnection>scm:git:git@github.com:Silverpeas/Silverpeas-Components.git</developerConnection>
     <url>https://github.com/Silverpeas/Silverpeas-Components</url>
-    <tag>6.3</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <repositories>
@@ -65,8 +65,8 @@
 
   <properties>
     <!-- property used by the CI to both deploy a build version and release the next stable version -->
-    <next.release>6.3</next.release>
-    <core.version>6.3</core.version>
+    <next.release>6.3.1</next.release>
+    <core.version>6.3.1-SNAPSHOT</core.version>
   </properties>
 
   <dependencies>
