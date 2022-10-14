@@ -240,6 +240,7 @@
             v-on:api="selectIncumbentApi = $event"
             v-on:selection-change="incumbentChanged($event.selectedUserIds)"
             v-bind:initial-user-ids="replacement.incumbent && replacement.incumbent.id"
+            v-bind:include-removed-users="true"
             v-bind:read-only="!(context.currentUser.isSupervisor && isCreation)"
             v-bind:role-filter="incumbentRoleFilter"
             v-bind:component-id-filter="context.componentInstanceId"></silverpeas-user-group-select>
@@ -263,6 +264,7 @@
             v-on:api="selectSubstituteApi = $event"
             v-on:selection-change="substituteChanged($event.selectedUserIds)"
             v-bind:initial-user-ids="replacement.substitute && replacement.substitute.id"
+            v-bind:include-removed-users="true"
             v-bind:role-filter="selectedSubstituteFilterRoles"
             v-bind:component-id-filter="context.componentInstanceId"></silverpeas-user-group-select>
       </div>
