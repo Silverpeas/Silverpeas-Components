@@ -341,8 +341,10 @@
           <view:pdcPositions setIn="document.pubForm.KmeliaPubPositions.value"/>
         <% } %>
         document.pubForm.action = "<%=nextAction%>";
-        $.progressMessage();
-        document.pubForm.submit();
+        setTimeout(function() {
+          $.progressMessage();
+          document.pubForm.submit();
+        }, 0);
       }
 
       function closeWindows() {
