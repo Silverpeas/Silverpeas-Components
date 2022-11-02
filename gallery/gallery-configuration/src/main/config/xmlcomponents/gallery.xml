@@ -225,6 +225,51 @@
             <message lang="de">Zeit zwischen zwei Bildern (in Sekunden)</message>
           </help>
         </parameter>
+        <parameter>
+          <name>albumResolution</name>
+          <label>
+            <message lang="fr">Format d'affichage</message>
+            <message lang="en">Display format</message>
+            <message lang="de">Vorschau Format</message>
+          </label>
+          <order>14</order>
+          <mandatory>true</mandatory>
+          <value>133x100</value>
+          <options>
+            <option>
+              <name>
+                <message lang="fr">266x150</message>
+                <message lang="en">266x150</message>
+                <message lang="de">266x150</message>
+              </name>
+              <value>266x150</value>
+            </option>
+            <option>
+              <name>
+                <message lang="fr">133x100</message>
+                <message lang="en">133x100</message>
+                <message lang="de">133x100</message>
+              </name>
+              <value>133x100</value>
+            </option>
+            <option>
+              <name>
+                <message lang="fr">66x50</message>
+                <message lang="en">66x50</message>
+                <message lang="de">66x50</message>
+              </name>
+              <value>66x50</value>
+            </option>
+          </options>
+          <type>select</type>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Choix du format de prévisualisation des images pour les lecteurs
+            </message>
+            <message lang="en">Choice of the image preview format for readers</message>
+            <message lang="de">AusWahl der Bilder Vorschau Format für die Leser</message>
+          </help>
+        </parameter>
       </parameters>
     </groupOfParameters>
     <groupOfParameters>
