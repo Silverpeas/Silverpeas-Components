@@ -148,6 +148,11 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     super(mainSessionCtrl, componentContext, MULTILANG_GALLERY_BUNDLE,
         "org.silverpeas.gallery.settings.galleryIcons",
         "org.silverpeas.gallery.settings.gallerySettings");
+    String albumResolution = getComponentParameterValue("albumResolution");
+    MediaResolution mediaResolution = StringUtil.isDefined(albumResolution) ?
+        MediaResolution.fromNameOrLabel(albumResolution) :
+        MediaResolution.SMALL;
+    setDisplayedMediaResolution(mediaResolution);
   }
 
   /**
