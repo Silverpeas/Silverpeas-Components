@@ -22,5 +22,5 @@ CREATE TABLE SC_Community_Membership
     lastUpdatedBy  VARCHAR(40) NOT NULL,
     version        BIGINT      NOT NULL,
     CONSTRAINT FK_COMMUNITY FOREIGN KEY (community) REFERENCES SC_Community (id),
-    CONSTRAINT FK_USER FOREIGN KEY (community) REFERENCES st_user (id)
+    CONSTRAINT FK_USER FOREIGN KEY (userId) REFERENCES st_user (id)
 );
