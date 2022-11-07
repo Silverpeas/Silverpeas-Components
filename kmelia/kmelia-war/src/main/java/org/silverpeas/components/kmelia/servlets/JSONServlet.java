@@ -39,7 +39,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Collection;
 
+import static java.util.Optional.ofNullable;
+import static java.util.function.Predicate.not;
 import static org.silverpeas.core.web.selection.BasketSelectionUI.displayPutIntoBasketSelectionShortcut;
 
 public class JSONServlet extends HttpServlet {
@@ -128,7 +131,9 @@ public class JSONServlet extends HttpServlet {
     boolean addPublicationAllowed = !role.isUser() && publicationsInTopic;
     boolean operationsOnSelectionAllowed =
         (role.isAdmin() || role.isPublisher()) && publicationsInTopic;
-    boolean somePublicationsExist = !kmeliaSC.getSessionPublicationsList().isEmpty();
+    boolean somePublicationsExist = ofNullable(kmeliaSC.getSessionPublicationsList())
+        .filter(not(Collection::isEmpty))
+        .isPresent();
     boolean oneTemplateUsed = kmeliaSC.getXmlFormForPublications() != null;
     boolean copyCutAllowed = operationsOnSelectionAllowed && somePublicationsExist;
     boolean notRootNotAnonymous = !isRoot && !user.isAnonymous();
