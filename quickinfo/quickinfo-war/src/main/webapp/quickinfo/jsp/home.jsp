@@ -218,12 +218,15 @@ function putNewsInBasket(contributionId) {
 						</c:if>
 					</c:if>
 				</span>
-        <c:if test="${contributor}">
+        <c:set var="putIntoBasketSnippet" value='<%=BasketSelectionUI.getPutIntoBasketSelectionHtmlSnippet("@callback@", language)%>'/>
+        <c:set var="putIntoBasketSnippet">${putIntoBasketSnippet.replace('@callback@', 'putNewsInBasket("'.concat(news.identifier.asString()).concat('")'))}</c:set>
+        <c:if test="${not empty putIntoBasketSnippet or contributor}">
           <div class="operation actionShownOnMouseOver">
-            <c:set var="putIntoBasketSnippet" value='<%=BasketSelectionUI.getPutIntoBasketSelectionHtmlSnippet("@callback@", language)%>'/>
-            ${putIntoBasketSnippet.replace('@callback@', 'putNewsInBasket("'.concat(news.identifier.asString()).concat('")'))}
-            <a title="<fmt:message key="GML.modify"/>" href="Edit?Id=${news.id}"><img border="0" title="<fmt:message key="GML.modify"/>" alt="<fmt:message key="GML.modify"/>" src="/silverpeas/util/icons/update.gif" /></a>
-            <a title="<fmt:message key="GML.delete"/>" href="javascript:onclick=confirmDelete('${news.id}', '${news.componentInstanceId}', '${deleteConfirmMsg}', onDelete)"><img border="0" title="<fmt:message key="GML.delete"/>" alt="<fmt:message key="GML.delete"/>" src="/silverpeas/util/icons/delete.gif" /></a>
+            ${putIntoBasketSnippet}
+            <c:if test="${contributor}">
+              <a title="<fmt:message key="GML.modify"/>" href="Edit?Id=${news.id}"><img border="0" title="<fmt:message key="GML.modify"/>" alt="<fmt:message key="GML.modify"/>" src="/silverpeas/util/icons/update.gif" /></a>
+              <a title="<fmt:message key="GML.delete"/>" href="javascript:onclick=confirmDelete('${news.id}', '${news.componentInstanceId}', '${deleteConfirmMsg}', onDelete)"><img border="0" title="<fmt:message key="GML.delete"/>" alt="<fmt:message key="GML.delete"/>" src="/silverpeas/util/icons/delete.gif" /></a>
+            </c:if>
           </div>
         </c:if>
       </div>
