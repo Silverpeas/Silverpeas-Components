@@ -348,8 +348,10 @@
     </form>
     <c:if test="${requestScope.ShowCommentsTab}">
       <div class="principalContent">
-        <view:comments userId="${userId}" componentId="${instanceId}"
-                       resourceType="${mediaResourceType}" resourceId="${mediaId}" indexed="${callback}"/>
+        <viewTags:displayComments componentId="${instanceId}"
+                                  resourceType="${mediaResourceType}"
+                                  resourceId="${mediaId}"
+                                  callback="${callback}"/>
       </div>
     </c:if>
   </view:frame>

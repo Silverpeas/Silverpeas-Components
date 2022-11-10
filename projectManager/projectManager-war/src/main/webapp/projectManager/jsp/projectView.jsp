@@ -97,7 +97,10 @@ out.println(tabbedPane.print());
     <td><%=dateFin%></td>
 </tr>
 </table>
-  <view:comments userId="<%=User.getCurrentRequester().getId()%>" componentId="<%=componentId%>" resourceType="ProjectManager" resourceId="-1" indexed="true"/>
+  <viewTags:displayComments componentId="<%=componentId%>"
+                            resourceType="ProjectManager"
+                            resourceId="-1"
+                            indexed="true"/>
 </div>
 
 <%

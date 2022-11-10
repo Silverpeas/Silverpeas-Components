@@ -225,7 +225,10 @@ function putNewsInBasket() {
                                      highestUserRole="${highestUserRoleForAttachments}"/>
     
     <c:if test="${appSettings.commentsEnabled && not viewOnly}">
-		<view:comments userId="${userId}" componentId="${news.componentInstanceId}" resourceType="${news.contributionType}" resourceId="${news.id}" indexed="true"/>
+		<viewTags:displayComments componentId="${news.componentInstanceId}"
+															resourceType="${news.contributionType}"
+															resourceId="${news.id}"
+															indexed="true"/>
 	</c:if>
 </div>
 <!-- /INTEGRATION UNE ACTU -->

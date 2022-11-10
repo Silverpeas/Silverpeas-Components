@@ -23,14 +23,15 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 --%>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
-<%@page import="java.util.GregorianCalendar"%>
+<%@ page import="java.util.GregorianCalendar"%>
 <%@ page import="org.silverpeas.core.util.DateUtil" %>
 <%@ page import="org.silverpeas.components.blog.model.PostDetail" %>
-<%@page import="org.silverpeas.components.blog.control.StyleSheet"%>
-<%@page import="org.silverpeas.components.blog.control.WallPaper"%>
+<%@ page import="org.silverpeas.components.blog.control.StyleSheet"%>
+<%@ page import="org.silverpeas.components.blog.control.WallPaper"%>
 <%@ page import="org.silverpeas.core.notification.user.NotificationContext" %>
 <%@ include file="check.jsp" %>
 
@@ -168,8 +169,10 @@ out.println(window.printBefore());
 		    <div class="separateur"><hr /></div>
         <view:componentParam var="commentsActivated" componentId="<%=instanceId%>" parameter="comments"/>
         <c:if test="${empty commentsActivated or silfn:booleanValue(commentsActivated)}">
-          <view:comments 	userId="<%=userId %>" componentId="<%=instanceId %>"
-                  resourceType="<%=postResourceType %>" resourceId="<%=postId %>" indexed="true"/>
+          <viewTags:displayComments componentId="<%=instanceId %>"
+																		resourceType="<%=postResourceType %>"
+																		resourceId="<%=postId %>"
+																		indexed="true"/>
         </c:if>
 			</div>
 	<div id="footer">
