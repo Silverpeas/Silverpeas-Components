@@ -27,7 +27,9 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 
 <%
   response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
@@ -67,8 +69,10 @@
       </view:tabs>
 
       <view:frame>
-        <view:comments  userId="${userId}" componentId="${instanceId}"
-                        resourceType="${resourceType}" resourceId="${resourceId}" indexed="${indexation}" />
+        <viewTags:displayComments componentId="${instanceId}"
+                                  resourceType="${resourceType}"
+                                  resourceId="${resourceId}"
+                                  indexed="${silfn:booleanValue(indexation)}" />
       </view:frame>
     </view:window>
   </body>

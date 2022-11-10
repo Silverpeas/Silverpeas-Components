@@ -29,6 +29,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <%@ include file="form/dateFormat.jspf"%>
@@ -256,8 +257,9 @@
 	</c:if>
 
 	<c:if test="${requestScope.enableComment}">
-		<view:comments 	userId="${requestScope.userId}" componentId="${requestScope.toolId}"
-						resourceType="${scheduleEventDetail.resourceType}" resourceId="${scheduleEventDetail.id}" />
+		<viewTags:displayComments componentId="${requestScope.toolId}"
+															resourceType="${scheduleEventDetail.resourceType}"
+															resourceId="${scheduleEventDetail.id}" />
 	</c:if>
 </view:window>
 

@@ -1,4 +1,4 @@
-<%@ page import="org.silverpeas.core.notification.user.NotificationContext" %><%--
+<%--
   Copyright (C) 2000 - 2022 Silverpeas
 
   This program is free software: you can redistribute it and/or modify
@@ -28,6 +28,8 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
+
+<%@ page import="org.silverpeas.core.notification.user.NotificationContext" %>
 
 <view:setConstant var="writerRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.WRITER"/>
 <view:setConstant var="adminRole"  constant="org.silverpeas.core.admin.user.model.SilverpeasRole.ADMIN"/>
@@ -165,14 +167,10 @@
     </view:buttonPane>
 
     <c:if test="${suggestion.validation.validated}">
-      <c:choose>
-        <c:when test="${not currentUser.anonymous}">
-          <view:comments componentId="${componentId}" resourceId="${suggestion.id}" userId="${currentUser.id}" resourceType="${suggestion.contributionType}"/>
-        </c:when>
-        <c:otherwise>
-          <view:commentListing componentId="${componentId}" resourceId="${suggestion.id}" userId="${currentUser.id}"/>
-        </c:otherwise>
-      </c:choose>
+      <viewTags:displayComments componentId="${componentId}"
+                                resourceId="${suggestion.id}"
+                                resourceType="${suggestion.contributionType}"/>
+
     </c:if>
   </view:frame>
 </view:window>

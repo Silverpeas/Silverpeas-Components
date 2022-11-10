@@ -23,12 +23,12 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 --%>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"
   isELIgnored="false"%>
 
-<%@page import="org.silverpeas.core.contribution.content.form.Form"%>
-<%@page import="org.silverpeas.core.contribution.content.form.PagesContext"%>
-<%@page import="org.silverpeas.core.contribution.content.form.DataRecord"%>
+<%@ page import="org.silverpeas.core.contribution.content.form.Form"%>
+<%@ page import="org.silverpeas.core.contribution.content.form.PagesContext"%>
+<%@ page import="org.silverpeas.core.contribution.content.form.DataRecord"%>
 <%@ page import="org.silverpeas.core.notification.user.NotificationContext" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
@@ -378,8 +378,9 @@
           <td>
             <!--Afficher les commentaires-->
             <c:if test="${commentsEnabled}">
-              <view:comments   userId="${user.id}" componentId="${instanceId}"
-                      resourceType="${classified.contributionType}" resourceId="${classified.id}" />
+              <viewTags:displayComments componentId="${instanceId}"
+                                        resourceType="${classified.contributionType}"
+                                        resourceId="${classified.id}" />
             </c:if>
           </td>
         </tr>

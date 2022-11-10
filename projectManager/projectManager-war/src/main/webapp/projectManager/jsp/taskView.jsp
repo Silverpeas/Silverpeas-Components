@@ -208,8 +208,9 @@ out.println(window.printBefore());
                                    resourceId="<%=String.valueOf(task.getId())%>"
                                    highestUserRole="<%=SilverpeasRole.fromString(role)%>"/>
 
-  <view:comments userId="<%=User.getCurrentRequester().getId()%>" componentId="<%=componentId%>"
-                 resourceType="<%=task.getContributionType()%>" resourceId="<%=String.valueOf(task.getId())%>" />
+  <viewTags:displayComments componentId="<%=componentId%>"
+														resourceType="<%=task.getContributionType()%>"
+														resourceId="<%=String.valueOf(task.getId())%>" />
 
 </div>
 <%

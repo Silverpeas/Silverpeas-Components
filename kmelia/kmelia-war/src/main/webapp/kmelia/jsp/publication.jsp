@@ -873,8 +873,10 @@
                                          highestUserRole="<%=SilverpeasRole.fromString(attProfile)%>"/>
 
       <% if (!kmeliaScc.getInvisibleTabs().contains(KmeliaSessionController.TAB_COMMENT)) { %>
-      <view:comments	userId="<%= user_id%>" componentId="<%= componentId %>"
-      					resourceType="<%= resourceType %>" resourceId="<%= id %>" indexed="<%= indexIt %>"/>
+      <viewTags:displayComments	componentId="<%= componentId %>"
+                                 resourceType="<%= resourceType %>"
+                                 resourceId="<%= id %>"
+                                 indexed="<%=StringUtil.getBooleanValue(indexIt)%>"/>
       <% } %>
 	  </div>
 
