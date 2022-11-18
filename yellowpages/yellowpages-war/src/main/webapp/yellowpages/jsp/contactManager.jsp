@@ -90,7 +90,10 @@ if (creation) {
 Form formUpdate = contactComplete.getUpdateForm();
 PagesContext context = (PagesContext) request.getAttribute("PagesContext");
 if (context != null) {
+  context.setCreation(false);
   context.setBorderPrinted(false);
+  if (creation)
+    context.setCreation(true);
 }
 
 String readOnly = "";

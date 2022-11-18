@@ -82,9 +82,11 @@
   ClassifiedDetail classify = (ClassifiedDetail) pageContext.getAttribute("classified");
 
   PagesContext context = new PagesContext("classifiedForm", "11", language, false, instanceId, null, null);
-  context.setIgnoreDefaultValues(true);
+  context.setIgnoreDefaultValues(false);
   context.setBorderPrinted(false);
+  context.setCreation(true);
   if (classify != null) {
+    context.setCreation(false);
     context.setObjectId(classify.getId());
   }
 %>
@@ -211,13 +213,6 @@
        }
   }
 
-  function setData()
-  {
-    <c:if test="${not empty fieldName}">
-        document.classifiedForm.${fieldName}.value = '${fieldKey}';
-      </c:if>
-  }
-  
   function hideImageFile(idElement) {
     document.getElementById("imageFile"+idElement).style.visibility = "hidden";
     document.classifiedForm["RemoveImageFile"+idElement].value = "yes";
@@ -226,7 +221,7 @@
 </script>
 
 </view:sp-head-part>
-<view:sp-body-part onLoad="setData()">
+<view:sp-body-part>
   <fmt:message var="classifiedPath"
     key="${ (action eq 'CreateClassified') ? 'classifieds.addClassified' : 'classifieds.updateClassified'}" />
   <view:browseBar>
