@@ -216,8 +216,10 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
         Form formUpdate = formsOnlineSC.getCurrentEmptyForm();
 
         // call of the JSP with required parameters
+        PagesContext formContext = formsOnlineSC.getFormPageContext();
+        formContext.setCreation(true);
         request.setAttribute("Form", formUpdate);
-        request.setAttribute(FORM_CONTEXT, formsOnlineSC.getFormPageContext());
+        request.setAttribute(FORM_CONTEXT, formContext);
         request.setAttribute("FormDetail", form);
 
         destination = ROOT_DESTINATION + "newFormInstance.jsp";
@@ -229,6 +231,7 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnline
         request.setAttribute("UserRequest", userRequest);
         PagesContext formContext = formsOnlineSC.getFormPageContext();
         formContext.setObjectId(userRequest.getId());
+        formContext.setCreation(false);
         request.setAttribute(FORM_CONTEXT, formContext);
 
         destination = ROOT_DESTINATION + "editFormInstance.jsp";
