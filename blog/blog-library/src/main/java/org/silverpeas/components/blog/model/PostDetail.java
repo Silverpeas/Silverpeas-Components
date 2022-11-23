@@ -27,12 +27,13 @@ package org.silverpeas.components.blog.model;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
+import org.silverpeas.core.contribution.model.WithPermanentLink;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.util.URLUtil;
 
 import java.util.Date;
 
-public final class PostDetail implements SilverpeasContent {
+public final class PostDetail implements SilverpeasContent, WithPermanentLink {
 
   private static final long serialVersionUID = -1703768097976820443L;
   private String content;
@@ -131,6 +132,7 @@ public final class PostDetail implements SilverpeasContent {
     this.dateEvent = dateEvent;
   }
 
+  @Override
   public String getPermalink() {
     if (URLUtil.displayUniversalLinks()) {
       return URLUtil.getApplicationURL() + "/Post/" + publication.getPK().getId();

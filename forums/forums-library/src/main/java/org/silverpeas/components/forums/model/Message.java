@@ -194,7 +194,7 @@ public class Message implements Contribution, Rateable, Serializable, WithAttach
 
   /**
    * Indicates if the message is a subject (first message of a forum) or a message.
-   * @return
+   * @return true if this message is the first one, false otherwise.
    */
   public boolean isSubject() {
     return (parentId == 0);

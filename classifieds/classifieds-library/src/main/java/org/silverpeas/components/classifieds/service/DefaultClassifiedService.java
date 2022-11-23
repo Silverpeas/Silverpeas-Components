@@ -77,7 +77,7 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.*;
  * Services provided by the Classified Silverpeas component.
  */
 @Service
-@Named("classifiedService")
+@Named("classifiedsService")
 public class DefaultClassifiedService implements ClassifiedService {
 
   private static final String MESSAGES_PATH =
@@ -340,7 +340,7 @@ public class DefaultClassifiedService implements ClassifiedService {
               .ifPresent(classifieds::add);
         }
       }
-      // sort the classifieds from the more newer to the older
+      // sort the classifieds from the newer to the older
       Collections.reverse(classifieds);
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException(e.getMessage(), e);
