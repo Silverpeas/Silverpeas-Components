@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2021 Silverpeas
+ * Copyright (C) 2000 - 2022 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -22,7 +22,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.components.infoletter;
+package org.silverpeas.components.classifieds;
 
 import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.annotation.Technical;
@@ -33,22 +33,18 @@ import javax.inject.Named;
 import java.net.URI;
 
 /**
- * @author silveryocha
+ * Implementation of the routing map for the classifieds as the way to render the view page of a
+ * given classified is specific to this application.
+ * @author mmoquillon
  */
 @Technical
 @Bean
 @Named
-public class InfoLetterInstanceRoutingMap extends AbstractComponentInstanceRoutingMap {
+public class ClassifiedsInstanceRoutingMap extends AbstractComponentInstanceRoutingMap {
 
   @Override
   public URI getViewPage(final ContributionIdentifier contributionIdentifier) {
-    return newUriBuilder(getBaseForPages(), "Preview").queryParam("parution",
-        contributionIdentifier.getLocalId()).build();
-  }
-
-  @Override
-  public URI getEditionPage(final ContributionIdentifier contributionIdentifier) {
-    return newUriBuilder(getBaseForPages(), "EditContent").queryParam("parution",
+    return newUriBuilder(getBaseForPages(), "ViewClassified").queryParam("ClassifiedId",
         contributionIdentifier.getLocalId()).build();
   }
 }

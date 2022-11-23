@@ -30,6 +30,7 @@ import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionValidationContext;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Priority;
 import javax.enterprise.inject.Default;
 import javax.inject.Singleton;
@@ -37,7 +38,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -67,12 +67,13 @@ public class SessionManagementService implements SessionManagement {
   }
 
   @Override
+  @Nonnull
   public SessionInfo getSessionInfo(final String sessionId) {
     SessionInfo session = userDataSessions.get(sessionId);
     if (session == null) {
       if (UserDetail.getCurrentRequester() != null && UserDetail.getCurrentRequester()
           .isAnonymous()) {
-        session = SessionInfo.AnonymousSession;
+        session = new MySessionInfo(sessionId, UserDetail.getAnonymousUser());
       } else {
         session = SessionInfo.NoneSession;
       }
@@ -86,11 +87,6 @@ public class SessionManagementService implements SessionManagement {
   }
 
   @Override
-  public long getNextSessionTimeOut(final String s) {
-    return 0;
-  }
-
-  @Override
   public SessionInfo validateSession(final String sessionKey) {
     return validateSession(SessionValidationContext.withSessionKey(sessionKey));
   }
@@ -101,13 +97,6 @@ public class SessionManagementService implements SessionManagement {
     return getSessionInfo(sessionKey);
   }
 
-  @Override
-  public SessionInfo openSession(final User user) {
-    SessionInfo session = new SessionInfo(UUID.randomUUID()
-        .toString(), user);
-    return openSession(session);
-  }
-
   private SessionInfo openSession(final SessionInfo session) {
     userDataSessions.put(session.getSessionId(), session);
     return session;
@@ -116,13 +105,18 @@ public class SessionManagementService implements SessionManagement {
   @Override
   public SessionInfo openSession(final User user, final HttpServletRequest request) {
     HttpSession httpSession = request.getSession();
-    SessionInfo session = new SessionInfo(httpSession.getId(), user);
+    SessionInfo session = new MySessionInfo(httpSession.getId(), user);
     return openSession(session);
   }
 
   @Override
   public SessionInfo openAnonymousSession(final HttpServletRequest httpServletRequest) {
-    return SessionInfo.AnonymousSession;
+    UserDetail anonymousUser = UserDetail.getAnonymousUser();
+    if (anonymousUser != null) {
+      HttpSession httpSession = httpServletRequest.getSession();
+      return new MySessionInfo(httpSession.getId(), UserDetail.getAnonymousUser());
+    }
+    return SessionInfo.NoneSession;
   }
 
   @Override
@@ -131,6 +125,13 @@ public class SessionManagementService implements SessionManagement {
     if (si != null) {
       userDataSessions.remove(si.getSessionId());
       si.onClosed();
+    }
+  }
+
+  private static class MySessionInfo extends SessionInfo {
+
+    MySessionInfo(final String sessionId, final User user) {
+      super(sessionId, user);
     }
   }
 }

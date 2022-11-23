@@ -24,6 +24,8 @@
 
 package org.silverpeas.components.forums;
 
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Technical;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.web.mvc.route.AbstractComponentInstanceRoutingMap;
 
@@ -33,6 +35,8 @@ import java.net.URI;
 /**
  * @author silveryocha
  */
+@Technical
+@Bean
 @Named
 public class ForumsInstanceRoutingMap extends AbstractComponentInstanceRoutingMap {
 

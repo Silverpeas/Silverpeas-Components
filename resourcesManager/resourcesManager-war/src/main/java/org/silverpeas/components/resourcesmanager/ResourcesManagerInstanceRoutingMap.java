@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2021 Silverpeas
+ * Copyright (C) 2000 - 2022 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -22,8 +22,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.components.infoletter;
+package org.silverpeas.components.resourcesmanager;
 
+import org.silverpeas.components.resourcesmanager.servlets.ResourcesManagerRequestRouter;
+import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.annotation.Technical;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
@@ -33,22 +36,33 @@ import javax.inject.Named;
 import java.net.URI;
 
 /**
- * @author silveryocha
+ * Implementation of the routing map for the resources manager as the way to render the view page of
+ * a given resource or reservation is specific to this application.
+ * @author mmoquillon
  */
 @Technical
 @Bean
 @Named
-public class InfoLetterInstanceRoutingMap extends AbstractComponentInstanceRoutingMap {
+public class ResourcesManagerInstanceRoutingMap extends AbstractComponentInstanceRoutingMap {
 
   @Override
   public URI getViewPage(final ContributionIdentifier contributionIdentifier) {
-    return newUriBuilder(getBaseForPages(), "Preview").queryParam("parution",
-        contributionIdentifier.getLocalId()).build();
-  }
-
-  @Override
-  public URI getEditionPage(final ContributionIdentifier contributionIdentifier) {
-    return newUriBuilder(getBaseForPages(), "EditContent").queryParam("parution",
-        contributionIdentifier.getLocalId()).build();
+    URI viewPage;
+    ComponentInst compInst = OrganizationController.get()
+        .getComponentInst(contributionIdentifier.getComponentInstanceId());
+    String objectView = compInst.getParameter("defaultDisplay").getValue();
+    if (contributionIdentifier.getType().equals(ResourcesManagerRequestRouter.RESOURCE_TYPE)) {
+      viewPage = newUriBuilder(getBaseForPages(), "ViewResource")
+          .queryParam("resourceId", contributionIdentifier.getLocalId())
+          .queryParam("provenance", "calendar")
+          .queryParam("objectView", objectView)
+          .build();
+    } else {
+      viewPage = newUriBuilder(getBaseForPages(), "ViewReservation")
+          .queryParam("reservationId", contributionIdentifier.getLocalId())
+          .queryParam("objectView", objectView)
+          .build();
+    }
+    return viewPage;
   }
 }

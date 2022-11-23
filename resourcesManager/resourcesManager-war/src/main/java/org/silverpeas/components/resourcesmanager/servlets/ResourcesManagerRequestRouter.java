@@ -71,6 +71,8 @@ public class ResourcesManagerRequestRouter
   private static final long serialVersionUID = 1L;
   private static final String ROOT = "/resourcesManager/jsp/";
 
+  public static final String RESOURCE_TYPE = "ResourcesManager";
+
   /**
    * This method has to be implemented in the component request rooter class. returns the session
    * control bean name to be put in the request object ex : for almanach, returns "almanach"
@@ -547,7 +549,7 @@ public class ResourcesManagerRequestRouter
         request.setAttribute("Path", chemin);
         request.setAttribute("resourceId", resourceId);
         request.setAttribute("resourceName", myResource.getName());
-        request.setAttribute("resourceType", getSessionControlBeanName());
+        request.setAttribute("resourceType", RESOURCE_TYPE);
 
         destination = ROOT + "comments.jsp";
       } else if ("SelectManager".equals(function)) {
