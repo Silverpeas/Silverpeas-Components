@@ -46,6 +46,9 @@
 
       PagesContext context = new PagesContext("myForm", "2", resources.getLanguage(), false, componentId, kmeliaScc.getUserId());
       context.setObjectId(pubId);
+      if (data.isNew()) {
+        context.setCreation(true);
+      }
       if (kmeliaMode) {
         context.setNodeId(kmeliaScc.getCurrentFolderId());
       }
