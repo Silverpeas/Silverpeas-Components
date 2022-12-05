@@ -96,8 +96,8 @@
       new PagesContext("mediaForm", "0", _userLanguage, false, componentId, null);
   context.setBorderPrinted(false);
   context.setCurrentFieldIndex("11");
-  if (data.isNew()) {
-    context.setCreation(true);
+  if (data != null) {
+    context.setCreation(data.isNew());
   }
   if (media.getId() != null) {
     context.setObjectId(media.getId());
