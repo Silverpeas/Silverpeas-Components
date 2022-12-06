@@ -242,13 +242,13 @@
       </div>
     </div>
     <div class="field" id="titleArea">
-      <label for="title" class="txtlibform"><fmt:message key="GML.title"/></label>
+      <label for="SP$$MediaTitle" class="txtlibform"><fmt:message key="GML.title"/></label>
 
       <div class="champs">
         <c:if test="${media.title != (not empty internalMedia ? internalMedia.fileName : '')}">
           <c:set var="mediaTitle"><c:out value="${media.title}"/></c:set>
         </c:if>
-        <input id="title" type="text" name="SP$$MediaTitle" size="60" maxlength="150" value="${mediaTitle}"/>&nbsp;
+        <input id="SP$$MediaTitle" type="text" name="SP$$MediaTitle" size="60" maxlength="150" value="${mediaTitle}"/>&nbsp;
       </div>
     </div>
     <div class="field" id="descriptionArea">
