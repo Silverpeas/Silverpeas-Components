@@ -20,6 +20,23 @@
  */
 package org.silverpeas.components.projectmanager.servlets;
 
+import org.silverpeas.components.projectmanager.control.ProjectManagerSessionController;
+import org.silverpeas.components.projectmanager.model.Filtre;
+import org.silverpeas.components.projectmanager.model.TaskDetail;
+import org.silverpeas.components.projectmanager.model.TaskResourceDetail;
+import org.silverpeas.components.projectmanager.vo.MonthVO;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.web.export.ExportCSVBuilder;
+import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
+import org.silverpeas.core.web.selection.Selection;
+import org.silverpeas.core.web.selection.SelectionUsersGroups;
+
+import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -27,25 +44,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.silverpeas.components.projectmanager.control.ProjectManagerSessionController;
-import org.silverpeas.components.projectmanager.model.Filtre;
-import org.silverpeas.components.projectmanager.model.TaskDetail;
-import org.silverpeas.components.projectmanager.model.TaskResourceDetail;
-import org.silverpeas.components.projectmanager.vo.MonthVO;
-import org.silverpeas.core.util.StringUtil;
-
-import org.silverpeas.core.web.export.ExportCSVBuilder;
-import org.silverpeas.core.web.mvc.controller.ComponentContext;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.core.web.selection.Selection;
-import org.silverpeas.core.web.selection.SelectionUsersGroups;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.web.http.HttpRequest;
 
 public class ProjectManagerRequestRouter extends ComponentRequestRouter<ProjectManagerSessionController> {
 
@@ -112,13 +110,15 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter<ProjectM
           }
         }
       } else if ("ToProject".equals(function)) {
-        TaskDetail project = projectManagerSC.getCurrentProject();
-        project.setDateFin(projectManagerSC.getEndDateOfCurrentProjet());
-
-        projectManagerSC.enrichirTask(project);
-        request.setAttribute("Project", project);
-
-        destination = rootDestination + "projectView.jsp";
+        if (!projectManagerSC.isProjectDefined()) {
+          destination = getDestination("Main", projectManagerSC, request);
+        } else {
+          TaskDetail project = projectManagerSC.getCurrentProject();
+          project.setDateFin(projectManagerSC.getEndDateOfCurrentProjet());
+          projectManagerSC.enrichirTask(project);
+          request.setAttribute("Project", project);
+          destination = rootDestination + "projectView.jsp";
+        }
       } else if ("CreateProject".equals(function)) {
         TaskDetail project = request2Project(request, projectManagerSC);
         projectManagerSC.createProject(project, request.getUploadedFiles());

@@ -24,6 +24,7 @@
 
 package org.silverpeas.components.projectmanager;
 
+import org.silverpeas.components.projectmanager.model.TaskDetail;
 import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.annotation.Technical;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
@@ -44,7 +45,10 @@ public class ProjectManagerInstanceRoutingMap extends AbstractComponentInstanceR
 
   @Override
   public URI getViewPage(final ContributionIdentifier contributionIdentifier) {
-    return newUriBuilder(getBaseForPages(), "ViewTask").queryParam("Id",
-        contributionIdentifier.getLocalId()).build();
+    if (TaskDetail.getResourceType().equals(contributionIdentifier.getType())) {
+      return newUriBuilder(getBaseForPages(), "ViewTask").queryParam("Id",
+          contributionIdentifier.getLocalId()).build();
+    }
+    return newUriBuilder(getBaseForPages(), "ToProject").build();
   }
 }
