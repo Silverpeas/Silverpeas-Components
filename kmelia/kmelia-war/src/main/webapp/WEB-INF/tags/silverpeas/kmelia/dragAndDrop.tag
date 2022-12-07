@@ -1,25 +1,25 @@
 <%--
-  Copyright (C) 2000 - 2022 Silverpeas
-  
-  This program is free software: you can redistribute it and/or modify
-  it under the terms of the GNU Affero General Public License as
-  published by the Free Software Foundation, either version 3 of the
-  License, or (at your option) any later version.
-  
-  As a special exception to the terms and conditions of version 3.0 of
-  the GPL, you may redistribute this Program in connection with Free/Libre
-  Open Source Software ("FLOSS") applications as described in Silverpeas's
-  FLOSS exception. You should have received a copy of the text describing
-  the FLOSS exception, and it is also available here:
-  "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
-  
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU Affero General Public License for more details.
-  
-  You should have received a copy of the GNU Affero General Public License
-  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+  ~ Copyright (C) 2000 - 2022 Silverpeas
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU Affero General Public License as
+  ~ published by the Free Software Foundation, either version 3 of the
+  ~ License, or (at your option) any later version.
+  ~
+  ~ As a special exception to the terms and conditions of version 3.0 of
+  ~ the GPL, you may redistribute this Program in connection with Free/Libre
+  ~ Open Source Software ("FLOSS") applications as described in Silverpeas's
+  ~ FLOSS exception.  You should have received a copy of the text describing
+  ~ the FLOSS exception, and it is also available here:
+  ~ "https://www.silverpeas.org/legal/floss_exception.html"
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU Affero General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
   --%>
 
 <%@ tag language="java" pageEncoding="UTF-8" %>
@@ -68,6 +68,7 @@
     <fmt:message var="ValidatorLabel" key="kmelia.Valideur"/>
 
     <view:includePlugin name="dragAndDropUpload"/>
+    <view:includePlugin name="attachment"/>
 
     <view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.ADMIN"/>
     <jsp:useBean id="adminRole" type="org.silverpeas.core.admin.user.model.SilverpeasRole"/>
@@ -84,6 +85,8 @@
     <fmt:message var="publicationNameLabel" key="GML.name"/>
     <fmt:message var="publicationDescriptionLabel" key="GML.description"/>
     <fmt:message var="publicationKeywordLabel" key="PubMotsCles"/>
+    <fmt:message var="dragAndDropTitle" key="kmelia.publication.dragAndDrop.title" />
+    <fmt:message var="addFileTitle" key="kmelia.publication.addFile.title" />
 
     <c:set var="helpUrl" value="${silfn:fullApplicationURL(pageContext.request)}/upload/Kmelia_${userLanguage}.jsp?dummy"/>
     <c:choose>
@@ -108,103 +111,21 @@
     <c:if test="${onlyDraftMode}">
       <c:set var="uploadCompletedUrl" value="${uploadCompletedUrl}&Draft=1"/>
     </c:if>
-
-    <div id="validationDialog" class="form-container" style="display: none;">
-      <c:if test="${_ddIsI18n}">
-        <br/>
-
-        <div>
-          <label for="ddLangCreateId" class="label"><fmt:message key="GML.language"/></label>
-          <span class="champ-ui-dialog">
-            <view:langSelect elementName="ddLangCreate"
-                             elementId="ddLangCreateId"
-                             langCode="${contentLanguage}"
-                             includeLabel="false"/>
-          </span>
-
-          <div style="height: 2px"></div>
-        </div>
-      </c:if>
-
-      <div id="creationModeBlock">
-        <br/>
-        <span class="label"><fmt:message key="kmelia.publication.dragAndDrop.question.publication"/></span>
-
-        <div>
-          <input value="onePerFile" type="radio" name="creationMode" id="severalCreations" checked="checked"/>
-          <label for="severalCreations"><fmt:message key="kmelia.publication.dragAndDrop.question.publication.several"/></label>
-
-          <div id="oneCreationBlock">
-            <input value="oneForAll" type="radio" name="creationMode" id="oneCreation"/>
-            <label for="oneCreation"><fmt:message key="kmelia.publication.dragAndDrop.question.publication.one"/></label>
-
-            <div id="publicationBlock" style="display: none;padding-top: 7px">
-              <label for="publicationName" class="label">${publicationNameLabel}</label><br/>
-              <input type="text" name="publicationName" id="publicationName" maxlength="400" style="width: 98%"/>
-              <c:if test="${isDescription}">
-                <br/>
-                <label for="publicationDescription" class="label">${publicationDescriptionLabel}</label><br/>
-                <textarea cols="50" rows="2" name="publicationDescription" id="publicationDescription" style="width: 97%"></textarea>
-              </c:if>
-              <c:if test="${isKeywords}">
-                <br/>
-                <label for="publicationKeywords" class="label">${publicationKeywordLabel}</label><br/>
-                <input type="text" name="publicationKeywords" id="publicationKeywords" maxlength="150" style="width: 98%"/>
-              </c:if>
-            </div>
-          </div>
-        </div>
-      </div>
-      <c:if test="${publicationStateConfirmation}">
-        <br/>
-        <span class="label"><fmt:message key="kmelia.publication.dragAndDrop.question.state"/></span>
-
-        <div>
-          <input value="1" type="radio" name="publicationState" id="draftState" checked="checked"/>
-          <label for="draftState"><fmt:message key="PubStateDraft"/></label><br/>
-          <input value="0" type="radio" name="publicationState" id="publishedState"/>
-          <label for="publishedState"><fmt:message key="PubStatePublished"/></label>
-        </div>
-      </c:if>
-      <c:if test="${isVersionActive}">
-        <div>
-          <br/>
-          <span class="label"><fmt:message key="attachment.dragAndDrop.question" bundle="${attachment}"/></span>
-
-          <div>
-            <input value="0" type="radio" name="versionType" id="publicVersion" checked="checked"/>
-            <label for="publicVersion"><fmt:message key="attachment.version_public.label" bundle="${attachment}"/></label><br/>
-            <input value="1" type="radio" name="versionType" id="workVersion"/>
-            <label for="workVersion"><fmt:message key="attachment.version_wip.label" bundle="${attachment}"/></label>
-          </div>
-        </div>
-      </c:if>
-      <c:if test="${validationMandatory}">
-        <c:set var="oneValidator" value="${kmeliaCtrl.targetValidationEnable}"/>
-        <c:url var="validatorIcon" value="/util/icons/user.gif"/>
-        <div>
-          <br/>
-          <span class="label">${ValidatorLabel}</span>
-
-          <div>
-            <c:choose>
-              <c:when test="${oneValidator}">
-                <input type="text" name="DropValideur" id="DropValideur" value="" size="50" readonly="readonly"/>
-              </c:when>
-              <c:otherwise>
-                <c:url var="validatorIcon" value="/util/icons/groupe.gif"/>
-                <textarea name="DropValideur" id="DropValideur" rows="3" cols="40" readonly="readonly"></textarea>
-              </c:otherwise>
-            </c:choose>
-            <input type="hidden" name="DropValideurId" id="DropValideurId" value=""/>
-            <fmt:message var="selectLabel" key="kmelia.SelectValidator"/>
-            <a href="#" onclick="javascript:SP_openWindow('SelectValidator?FormElementName=DropValideur&FormElementId=DropValideurId','selectUser',800,600,'');">
-              <img src="${validatorIcon}" width="15" height="15" border="0" alt="${selectLabel}" title="${selectLabel}" align="absmiddle"/>
-            </a>
-          </div>
-        </div>
-      </c:if>
-    </div>
+    <view:link href="/kmelia/jsp/javaScript/vuejs/components/kmelia-contribution.css"/>
+    <view:script src="/kmelia/jsp/javaScript/vuejs/components/kmelia-contribution.js"/>
+    <kmelia-file-adding-management
+        id="kmeliaFileAddingManagement"
+        v-on:api="manager = $event"
+        v-bind:component-instance-id="'${componentInstanceId}'"
+        v-bind:is-description-visible="${isDescription}"
+        v-bind:is-description-mandatory="${isDescriptionMandatory}"
+        v-bind:is-keywords-visible="${isKeywords}"
+        v-bind:is-publication-state-confirmation="${publicationStateConfirmation}"
+        v-bind:is-version-active="${isVersionActive}"
+        v-bind:is-validation-mandatory="${validationMandatory}"
+        v-bind:is-single-target-validation="${kmeliaCtrl.targetValidationEnable}"
+        v-bind:i18n-content="${_ddIsI18n}"
+        v-bind:i18n-content-language="'${contentLanguage}'"></kmelia-file-adding-management>
 
     <script type="text/JavaScript">
       function uploadCompleted(requestResponse) {
@@ -219,26 +140,7 @@
       }
 
       (function() {
-        var $creationModeBlock = jQuery('#creationModeBlock');
-        var $publicationBlock = jQuery('#publicationBlock', $creationModeBlock);
-        var $publicationName = jQuery('input[name=publicationName]', $publicationBlock);
-        var $publicationDescription = jQuery('textarea[name=publicationDescription]',
-            $publicationBlock);
-        var $publicationKeywords = jQuery('input[name=publicationKeywords]', $publicationBlock);
-        var $creationModeRadios = jQuery('input[name=creationMode]', $creationModeBlock);
-        var $oneCreationBlock = jQuery('#oneCreationBlock', $creationModeBlock);
-        $creationModeRadios.on('change', function() {
-          if (jQuery(this).val() === 'oneForAll') {
-            $publicationBlock.show();
-            $oneCreationBlock.addClass('block');
-            $publicationName.focus();
-          } else {
-            $publicationBlock.hide();
-            $oneCreationBlock.removeClass('block');
-          }
-        });
-
-        var options = {
+        const options = {
           componentInstanceId : "${componentInstanceId}",
           onCompletedUrl : "${uploadCompletedUrl}",
           onCompletedUrlSuccess : uploadCompleted,
@@ -249,103 +151,71 @@
           helpContentUrl : "${helpUrl}",
           helpCoverClass : "droparea-cover-help-publication-list"
         };
-
         options.beforeSend = function(fileUpload) {
-          var severalFilesToUpload = fileUpload.uploadSession.severalFilesToUpload &&
+          const severalFilesToUpload = fileUpload.uploadSession.severalFilesToUpload &&
               (!fileUpload.uploadSession.existsAtLeastOneFolder || ${ignoreFolders});
-          var displayDialog = !fileUpload.uploadSession.id &&
+          const displayDialog = !fileUpload.uploadSession.id &&
               (severalFilesToUpload || ${validationMandatory} || ${isVersionActive} || ${publicationStateConfirmation} || ${_ddIsI18n});
           if (!displayDialog) {
             return Promise.resolve();
           }
-
-          if (severalFilesToUpload) {
-            $creationModeBlock.show();
-          } else {
-            $creationModeBlock.hide();
-          }
           return new Promise(function(resolve, reject) {
-            jQuery('#validationDialog').popup('validation', {
-              title : '<fmt:message key="kmelia.publication.dragAndDrop.title" />',
-              buttonDisplayed : true,
-              isMaxWidth : true,
-              callback : function() {
-                var uploadCompletedUrl = '${uploadCompletedUrl}';
-                <c:if test="${_ddIsI18n}">
-                var contentLanguage = jQuery('select[name=ddLangCreate${domIdSuffix}]', this).val();
-                uploadCompletedUrl += '&ContentLanguage=' + contentLanguage;
-                </c:if>
-                <c:if test="${publicationStateConfirmation}">
-                var state = jQuery('input[name=publicationState]:checked', this).val();
-                uploadCompletedUrl += '&Draft=' + state;
-                </c:if>
-                <c:if test="${isVersionActive}">
-                var version = jQuery('input[name=versionType]:checked', this).val();
-                uploadCompletedUrl += '&VersionType=' + version;
-                </c:if>
-                if (severalFilesToUpload) {
-                  var creationMode = jQuery(':checked', $creationModeBlock).val();
-                  if (creationMode === 'oneForAll') {
-                    var name = jQuery.trim($publicationName.val());
-                    if (StringUtil.isNotDefined(name)) {
-                      SilverpeasError.add("<b>${publicationNameLabel}</b> <fmt:message key='GML.MustBeFilled'/>");
-                    } else {
-                      uploadCompletedUrl += '&PublicationName=' + encodeURIComponent(name);
-                    }
-                    <c:if test="${isDescription}">
-                    var description = jQuery.trim($publicationDescription.val());
-                    <c:choose>
-                    <c:when test="${isDescriptionMandatory}">
-                    if (StringUtil.isNotDefined(description)) {
-                      SilverpeasError.add("<b>${publicationDescriptionLabel}</b> <fmt:message key='GML.MustBeFilled'/>");
-                    } else {
-                      uploadCompletedUrl +=
-                          '&PublicationDescription=' + encodeURIComponent(description);
-                    }
-                    </c:when>
-                    <c:otherwise>
-                    if (StringUtil.isDefined(description)) {
-                      uploadCompletedUrl +=
-                          '&PublicationDescription=' + encodeURIComponent(description);
-                    }
-                    </c:otherwise>
-                    </c:choose>
-                    </c:if>
-                    <c:if test="${isKeywords}">
-                    var keywords = jQuery.trim($publicationKeywords.val());
-                    if (StringUtil.isDefined(keywords)) {
-                      uploadCompletedUrl += '&PublicationKeywords=' + encodeURIComponent(keywords);
-                    }
-                    </c:if>
-                  }
-                }
-                <c:if test="${validationMandatory}">
-                var targetValidatorIds = jQuery('input[name=DropValideurId]', this).val();
-                if (StringUtil.isNotDefined(targetValidatorIds)) {
-                  SilverpeasError.add("<b>${ValidatorLabel}</b> <fmt:message key='GML.MustBeFilled'/>");
-                } else {
-                  uploadCompletedUrl += '&ValidatorIds=' + targetValidatorIds;
-                }
-                </c:if>
-                fileUpload.uploadSession.onCompleted.url = uploadCompletedUrl;
-
-                if (!SilverpeasError.show()) {
-                  $publicationName.val('');
-                  $publicationDescription.val('');
-                  $publicationKeywords.val('');
-                  resolve();
-                  return true;
-                }
-                return false;
+            kmeliaFileAddingVm.manager.openValidationStep({
+              title : '${silfn:escapeJs(dragAndDropTitle)}',
+              severalFilesToUpload : severalFilesToUpload,
+              callback : function(formPaneData) {
+                fileUpload.uploadSession.onCompleted.url = sp.url.format('${uploadCompletedUrl}', formPaneData);
+                resolve();
+                return true;
               },
-              callbackOnClose : function() {
-                reject();
-              }
+              callbackOnClose : reject
             });
           });
         };
-
         window.dragAndDropInstanceFromTag = initDragAndDropUploadAndReload(options);
+        window.kmeliaFileAddingVm = new Vue({
+          el : '#kmeliaFileAddingManagement',
+          data : function() {
+            return {
+              manager : undefined
+            }
+          },
+          methods : {
+            addFiles : function() {
+              this.manager.addFiles({
+                callback : function(addFormPaneData) {
+                  return new Promise(function(resolve, reject) {
+                    this.manager.openValidationStep({
+                      title : '${silfn:escapeJs(addFileTitle)}',
+                      severalFilesToUpload : false,
+                      i18nContent : false,
+                      isVersionActive : false,
+                      callback : function(formPaneData) {
+                        formPaneData.ContentLanguage = addFormPaneData.fileLang;
+                        formPaneData.VersionType = addFormPaneData.versionType;
+                        formPaneData.commentMessage = addFormPaneData.commentMessage;
+                        formPaneData.documentTemplateId = addFormPaneData.documentTemplateId;
+                        formPaneData.fileName = addFormPaneData.fileName;
+                        formPaneData.fileTitle = addFormPaneData.fileTitle;
+                        formPaneData.fileDescription = addFormPaneData.fileDescription;
+                        const postUrl = sp.url.format('${uploadCompletedUrl}', formPaneData);
+                        return sp.ajaxRequest(postUrl)
+                          .withHeader("X-UPLOAD-SESSION", addFormPaneData.uploadSessionId)
+                          .byPostMethod()
+                          .send()
+                          .then(function(request) {
+                            options.onCompletedUrlSuccess(request.response);
+                            resolve();
+                          });
+                      },
+                      callbackOnClose : reject
+                    });
+                  }.bind(this));
+                }.bind(this)
+              });
+            }
+          }
+        });
       })();
     </script>
 </c:if>
