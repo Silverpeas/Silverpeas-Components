@@ -217,21 +217,22 @@
       })}}
     </div>
     <div v-sp-disable-if="!roleManager">
-      <label class="label-ui-dialog" for="sp_wf_replacement_form_i">${incumbentLabel}</label>
+      <silverpeas-label class="label-ui-dialog" for="sp_wf_replacement_form_i"
+                        v-bind:mandatory="true">${incumbentLabel}</silverpeas-label>
       <div class="champ-ui-dialog">
         <silverpeas-user-group-select
             id="sp_wf_replacement_form_i"
             v-on:api="selectIncumbentApi = $event"
             v-on:selection-change="incumbentChanged($event.selectedUserIds)"
             v-bind:initial-user-ids="replacement.incumbent && replacement.incumbent.id"
-            v-bind:mandatory="true"
             v-bind:read-only="!(context.currentUser.isSupervisor && isCreation)"
             v-bind:role-filter="incumbentRoleFilter | mapRoleName"
             v-bind:component-id-filter="context.componentInstanceId"></silverpeas-user-group-select>
       </div>
     </div>
     <div v-sp-disable-if="!roleManager || !(replacement.incumbent && replacement.incumbent.id)">
-      <label class="label-ui-dialog" for="sp_wf_replacement_form_s">${substituteLabel}</label>
+      <silverpeas-label class="label-ui-dialog" for="sp_wf_replacement_form_s"
+             v-bind:mandatory="true">${substituteLabel}</silverpeas-label>
       <div class="champ-ui-dialog replacement-role-filter" v-if="roleManager && substituteRoleFilterItems">
         <span class="label">${filterRoleLabel} </span>
         <ul>
@@ -247,7 +248,6 @@
             v-on:api="selectSubstituteApi = $event"
             v-on:selection-change="substituteChanged($event.selectedUserIds)"
             v-bind:initial-user-ids="replacement.substitute && replacement.substitute.id"
-            v-bind:mandatory="true"
             v-bind:role-filter="selectedSubstituteFilterRoles | mapRoleName"
             v-bind:component-id-filter="context.componentInstanceId"></silverpeas-user-group-select>
       </div>
@@ -257,20 +257,20 @@
             v-bind:computed-trigger="computedRoleManagerMixinTrigger"></workflow-replacement-matching-roles>
       </div>
     </div>
-    <label class="label-ui-dialog" for="sp_wf_replacement_form_sd">${startDateLabel}</label>
+    <silverpeas-label class="label-ui-dialog" for="sp_wf_replacement_form_sd"
+           v-bind:mandatory="true">${startDateLabel}</silverpeas-label>
     <div class="champ-ui-dialog">
       <silverpeas-date-picker id="sp_wf_replacement_form_sd"
                               name="startDate"
                               v-bind:zone-id="context.currentUser.zoneId"
-                              v-bind:mandatory="true"
                               v-model="replacement.startDate"></silverpeas-date-picker>
     </div>
-    <label class="label-ui-dialog" for="sp_wf_replacement_form_ed">${endDateLabel}</label>
+    <silverpeas-label class="label-ui-dialog" for="sp_wf_replacement_form_ed"
+           v-bind:mandatory="true">${endDateLabel}</silverpeas-label>
     <div class="champ-ui-dialog">
       <silverpeas-date-picker id="sp_wf_replacement_form_ed"
                               name="endDate"
                               v-bind:zone-id="context.currentUser.zoneId"
-                              v-bind:mandatory="true"
                               v-model="replacement.endDate"></silverpeas-date-picker>
     </div>
   </div>

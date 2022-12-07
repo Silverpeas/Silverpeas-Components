@@ -19,7 +19,7 @@
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 //# sourceURL=/community/jsp/javaScript/services/silverpeas-community.js
@@ -81,7 +81,7 @@
           saveCharter : function(charterData) {
             const communityToUpdate = extendsObject({}, this.community);
             communityToUpdate.charterURL = charterData.charterURL;
-            return this.communityService.saveCharter(communityToUpdate, {
+            charterData.validationFormPromise = this.communityService.saveCharter(communityToUpdate, {
               displayCharterOnSpaceHomepage : charterData.displayCharterOnSpaceHomepage
             }).then(function(community) {
               this.community = community;

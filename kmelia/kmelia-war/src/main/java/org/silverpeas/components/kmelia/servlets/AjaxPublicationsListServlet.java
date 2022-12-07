@@ -475,8 +475,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       out.write(pagination.printIndex("doPagination", true));
       out.write(END_DIV);
 
-      displayFilePreviewJavascript(kmeliaScc.getComponentId(), language, out);
-      displayFileViewJavascript(kmeliaScc.getComponentId(), language, out);
+      displayFilePreviewJavascript(language, out);
+      displayFileViewJavascript(language, out);
       out.write(board.printAfter());
     } else if (showNoPublisMessage) {
       String noPublications = kmeliaScc.getString("PubAucune");
@@ -497,14 +497,14 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         "}, 'displayPublication');").toString());
   }
 
-  void displayFilePreviewJavascript(String componentId, final String contentLanguage, Writer out)
+  void displayFilePreviewJavascript(final String contentLanguage, Writer out)
       throws IOException {
     StringBuilder sb = new StringBuilder(50);
     sb.append("<script type=\"text/javascript\">");
     sb.append("function previewFile(target, attachmentId) {");
-    sb.append("$(target).preview(\"previewAttachment\", {");
-    sb.append("componentInstanceId: \"").append(componentId).append("\",");
-    sb.append("attachmentId: attachmentId,");
+    sb.append("$(target).preview(\"document\", {");
+    sb.append("documentType: 'attachment',");
+    sb.append("documentId: attachmentId,");
     sb.append("lang: '" + contentLanguage + "'");
     sb.append("});");
     sb.append("return false;");
@@ -513,14 +513,14 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     out.write(sb.toString());
   }
 
-  void displayFileViewJavascript(String componentId, final String contentLanguage, Writer out)
+  void displayFileViewJavascript(final String contentLanguage, Writer out)
       throws IOException {
     StringBuilder sb = new StringBuilder(50);
     sb.append("<script type=\"text/javascript\">");
     sb.append("function viewFile(target, attachmentId) {");
-    sb.append("$(target).view(\"viewAttachment\", {");
-    sb.append("componentInstanceId: \"").append(componentId).append("\",");
-    sb.append("attachmentId: attachmentId,");
+    sb.append("$(target).view(\"document\", {");
+    sb.append("documentType: 'attachment',");
+    sb.append("documentId: attachmentId,");
     sb.append("lang: '" + contentLanguage + "'");
     sb.append("});");
     sb.append("return false;");
