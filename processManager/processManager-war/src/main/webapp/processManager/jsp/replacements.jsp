@@ -78,13 +78,13 @@
 <view:operationPane>
   <fmt:message key="processManager.replacements.add" var="opIcon" bundle="${icons}"/>
   <c:url var="opIcon" value="${opIcon}"/>
-  <view:operationOfCreation altText="${addReplacementLabel}" action="javascript:vm.api.add()" icon="${opIcon}"/>
+  <view:operationOfCreation altText="${addReplacementLabel}" action="javascript:app.api.add()" icon="${opIcon}"/>
 </view:operationPane>
 <view:window>
   <view:frame>
     <div id="replacement-module">
       <workflow-replacement-module v-on:api="api = $event">
-        <template slot="header">
+        <template v-slot:header>
           <silverpeas-operation-creation-area></silverpeas-operation-creation-area>
         </template>
       </workflow-replacement-module>
@@ -92,27 +92,28 @@
   </view:frame>
 </view:window>
 <script type="text/javascript">
-  window.vm = new Vue({
-    el : '#replacement-module',
+  window.app = SpVue.createApp({
     provide : function() {
       return {
         context: this.context,
         replacementService: new ReplacementService(this.context)
       }
     },
-    data : {
-      context : {
-        currentUser : extendsObject({
-          role : '${currentRole}',
-          roleLabel : componentInstanceRoles['${currentRole}'].label,
-          isSupervisor : ${isCurrentRoleSupervisor}
-        }, currentUser),
-        componentInstanceId : '${componentId}',
-        replacementHandledRoles : replacementHandledRoles
-      },
-      api : undefined
+    data : function() {
+      return {
+        context : {
+          currentUser : extendsObject({
+            role : '${currentRole}',
+            roleLabel : componentInstanceRoles['${currentRole}'].label,
+            isSupervisor : ${isCurrentRoleSupervisor}
+          }, currentUser),
+          componentInstanceId : '${componentId}',
+          replacementHandledRoles : replacementHandledRoles
+        },
+        api : undefined
+      };
     }
-  });
+  }).mount('#replacement-module');
 </script>
 </body>
 </html>

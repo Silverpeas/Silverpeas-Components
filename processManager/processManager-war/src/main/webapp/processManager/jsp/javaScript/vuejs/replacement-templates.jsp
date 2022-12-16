@@ -30,7 +30,6 @@
 <fmt:setLocale value="${language}"/>
 <view:setBundle basename="org.silverpeas.processManager.multilang.processManagerBundle"/>
 
-<fmt:message key="processManager.replacements.none" var="noReplacementLabel"/>
 <fmt:message key="processManager.replacements.mine.asIncumbent" var="mineAsIncumbentLabel"/>
 <fmt:message key="processManager.replacements.mine.asSubstitute" var="mineAsSubstituteLabel"/>
 <fmt:message key="processManager.replacements.all" var="allAsSubstituteLabel"/>
@@ -38,11 +37,6 @@
 <!-- ########################################################################################### -->
 <silverpeas-component-template name="module">
   <div class="replacement-module">
-    <script type="text/x-template" id="workflow-no-item-replacement-list">
-      <ul>
-        <li><span class="txt-no-content">${noReplacementLabel}</span></li>
-      </ul>
-    </script>
     <workflow-replacement-management
         v-on:api="replacementApi = $event"
         v-on:replacement-create="api.reload()"
@@ -55,20 +49,24 @@
       <silverpeas-list v-if="allList"
                        class="all"
                        v-bind:items="allList">
-        <div slot="before" class="title header">
-          <h3 class="title-all">${allAsSubstituteLabel}</h3>
-        </div>
+        <template v-slot:before>
+          <div class="title header">
+            <h3 class="title-all">${allAsSubstituteLabel}</h3>
+          </div>
+        </template>
         <silverpeas-list-item v-for="replacement in allList" v-bind:key="replacement.uri">
           <workflow-replacement-list-item
               v-bind:replacement="replacement"></workflow-replacement-list-item>
-          <template slot="actions">
+          <template v-slot:actions>
             <workflow-replacement-list-item-actions
                 v-bind:replacement="replacement"
                 v-on:modify-click="replacementApi.modify(replacement)"
                 v-on:remove-click="replacementApi.remove(replacement)"></workflow-replacement-list-item-actions>
           </template>
         </silverpeas-list-item>
-        <component slot="noItem" v-bind:is="{template:'#workflow-no-item-replacement-list'}"></component>
+        <template v-slot:noItem>
+          <workflow-no-replacement-msg></workflow-no-replacement-msg>
+        </template>
       </silverpeas-list>
     </div>
     <div id="my-remplacement" v-bind:class="{'lecteur-view':!fullDisplay}">
@@ -76,42 +74,59 @@
       <silverpeas-list v-if="incumbentList"
                        class="as-incumbent"
                        v-bind:items="incumbentList">
-        <div slot="before" class="title header">
-          <h3 class="title-as-incumbent">${mineAsIncumbentLabel}</h3>
-        </div>
+        <template v-slot:before>
+          <div class="title header">
+            <h3 class="title-as-incumbent">${mineAsIncumbentLabel}</h3>
+          </div>
+        </template>
         <silverpeas-list-item v-for="replacement in incumbentList" v-bind:key="replacement.uri">
           <workflow-replacement-list-item
               v-bind:replacement="replacement"></workflow-replacement-list-item>
-          <template slot="actions">
+          <template v-slot:actions>
             <workflow-replacement-list-item-actions
                 v-bind:replacement="replacement"
                 v-on:modify-click="replacementApi.modify(replacement)"
                 v-on:remove-click="replacementApi.remove(replacement)"></workflow-replacement-list-item-actions>
           </template>
         </silverpeas-list-item>
-        <component slot="noItem" v-bind:is="{template:'#workflow-no-item-replacement-list'}"></component>
+        <template v-slot:noItem>
+          <workflow-no-replacement-msg></workflow-no-replacement-msg>
+        </template>
       </silverpeas-list>
       <!-- SUBSTITUTE LIST -->
       <silverpeas-list v-if="substituteList"
                        class="as-substitute"
                        v-bind:items="substituteList">
-        <div slot="before" class="title header">
-          <h3 class="title-as-substitute">${mineAsSubstituteLabel}</h3>
-        </div>
+        <template v-slot:before>
+          <div class="title header">
+            <h3 class="title-as-substitute">${mineAsSubstituteLabel}</h3>
+          </div>
+        </template>
         <silverpeas-list-item v-for="replacement in substituteList" v-bind:key="replacement.uri">
           <workflow-replacement-list-item
               v-bind:replacement="replacement"></workflow-replacement-list-item>
-          <template slot="actions">
+          <template v-slot:actions>
             <workflow-replacement-list-item-actions
                 v-bind:replacement="replacement"
                 v-on:modify-click="replacementApi.modify(replacement)"
                 v-on:remove-click="replacementApi.remove(replacement)"></workflow-replacement-list-item-actions>
           </template>
         </silverpeas-list-item>
-        <component slot="noItem" v-bind:is="{template:'#workflow-no-item-replacement-list'}"></component>
+        <template v-slot:noItem>
+          <workflow-no-replacement-msg></workflow-no-replacement-msg>
+        </template>
       </silverpeas-list>
     </div>
   </div>
+</silverpeas-component-template>
+
+<fmt:message key="processManager.replacements.none" var="noReplacementLabel"/>
+
+<!-- ########################################################################################### -->
+<silverpeas-component-template name="no-replacement-msg">
+  <ul>
+    <li><span class="txt-no-content">${noReplacementLabel}</span></li>
+  </ul>
 </silverpeas-component-template>
 
 <fmt:message var="addReplacementLabel" key="processManager.replacements.add"/>
@@ -167,12 +182,12 @@
         v-if="replacement.canBeModified"
         icon-url="${updateIconUrl}"
         title="${modifyLabel}"
-        v-on:click.native="$emit('modify-click')"></silverpeas-button>
+        v-on:click="$emit('modify-click')"></silverpeas-button>
     <silverpeas-button
         v-if="replacement.canBeDeleted"
         icon-url="${deleteIconUrl}"
         title="${deleteLabel}"
-        v-on:click.native="$emit('remove-click')"></silverpeas-button>
+        v-on:click="$emit('remove-click')"></silverpeas-button>
   </div>
 </silverpeas-component-template>
 
@@ -186,11 +201,11 @@
     <div class="substitute">{{replacement.substitute.fullName}}</div>
     <div class="incumbent">{{replacement.incumbent.fullName}}</div>
     <div class="period">
-      <span v-if="isOneDay" key="on-day">${theLabel} </span>
-      <span v-else key="on-day">${fromLabel} </span>
-      <span class="date">{{replacement.startDate | displayAsDate}}</span>
-      <span v-if="!isOneDay">${toLabel} </span>
-      <span v-if="!isOneDay" class="date">{{replacement.endDate | displayAsDate}}</span>
+      <span v-if="isOneDay">${theLabel} </span>
+      <span v-else>${fromLabel} </span>
+      <span class="date">{{ startDate }}</span>
+      <span v-if="!isOneDay"> ${toLabel} </span>
+      <span v-if="!isOneDay" class="date">{{ endDate }}</span>
     </div>
     <workflow-replacement-matching-roles
         v-bind:replacement="replacement"></workflow-replacement-matching-roles>
@@ -226,7 +241,7 @@
             v-on:selection-change="incumbentChanged($event.selectedUserIds)"
             v-bind:initial-user-ids="replacement.incumbent && replacement.incumbent.id"
             v-bind:read-only="!(context.currentUser.isSupervisor && isCreation)"
-            v-bind:role-filter="incumbentRoleFilter | mapRoleName"
+            v-bind:role-filter="incumbentRoleFilter"
             v-bind:component-id-filter="context.componentInstanceId"></silverpeas-user-group-select>
       </div>
     </div>
@@ -248,7 +263,7 @@
             v-on:api="selectSubstituteApi = $event"
             v-on:selection-change="substituteChanged($event.selectedUserIds)"
             v-bind:initial-user-ids="replacement.substitute && replacement.substitute.id"
-            v-bind:role-filter="selectedSubstituteFilterRoles | mapRoleName"
+            v-bind:role-filter="selectedSubstituteFilterRoles"
             v-bind:component-id-filter="context.componentInstanceId"></silverpeas-user-group-select>
       </div>
       <div class="champ-ui-dialog">
@@ -283,9 +298,14 @@
 
 <!-- ########################################################################################### -->
 <silverpeas-component-template name="matching-roles">
+  <div v-sp-init>
+    {{ addMessages({
+    andLabel : '${silfn:escapeJs(andLabel)}'
+    }) }}
+  </div>
   <div class="replacement-matching-roles" v-if="roleManager && matchingRoles">
-    <span v-if="matchingRoles.length === 1">${forRoleLabel} {{matchingRoles | mapRoleLabel | joinWith({separator:', ',lastSeparator:' ${andLabel} '})}}</span>
-    <span v-if="matchingRoles.length > 1">${forRolesLabel} {{matchingRoles | mapRoleLabel | joinWith({separator:', ',lastSeparator:' ${andLabel} '})}}</span>
+    <span v-if="matchingRoles.length === 1">${forRoleLabel} {{ matchingRoles }}</span>
+    <span v-if="matchingRoles.length > 1">${forRolesLabel} {{ matchingRoles }}</span>
     <span v-if="!matchingRoles.length" class="error">${noMatchingRoleError}</span>
   </div>
 </silverpeas-component-template>

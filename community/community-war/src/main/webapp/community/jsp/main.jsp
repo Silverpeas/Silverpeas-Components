@@ -86,8 +86,8 @@
     <view:operationPane>
       <c:if test="${isAdmin}">
         <view:operation action="spaceHomepage/edit" altText="${editSpaceHomePageLabel}"/>
-        <view:operation action="javascript:managementVm.api.modifySpaceHomepage()" altText="${selectSpaceHomepageLabel}"/>
-        <view:operation action="javascript:managementVm.api.defineCharter()" altText="${defineCharterLabel}"/>
+        <view:operation action="javascript:managementApp.api.modifySpaceHomepage()" altText="${selectSpaceHomepageLabel}"/>
+        <view:operation action="javascript:managementApp.api.defineCharter()" altText="${defineCharterLabel}"/>
         <view:operationSeparator/>
       </c:if>
       <c:if test="${isAdmin or isMember}">
@@ -134,11 +134,11 @@
                   <view:arrayCellText>
                     <a href="javascript:void(0)"
                        class="button-accept"
-                       onclick="subscriptionVm.api.validateJoinRequest('${memberToValidate.user.id}', true)"
+                       onclick="subscriptionApp.api.validateJoinRequest('${memberToValidate.user.id}', true)"
                        title="${acceptLabel}">${acceptLabel}</a>
                     <a href="javascript:void(0)"
                        class="button-refuse"
-                       onclick="subscriptionVm.api.validateJoinRequest('${memberToValidate.user.id}', false)"
+                       onclick="subscriptionApp.api.validateJoinRequest('${memberToValidate.user.id}', false)"
                        title="${refuseLabel}">${refuseLabel}</a>
                   </view:arrayCellText>
                 </view:arrayLine>
@@ -170,8 +170,7 @@
         displayCharterOnSpaceHomepage : ${displayCharterOnSpaceHomepage}
       };
       <c:if test="${isAdmin}">
-      window.managementVm = new Vue({
-        el : '#management',
+      window.managementApp = SpVue.createApp({
         provide : function() {
           return {
             context: this.context,
@@ -186,14 +185,13 @@
         },
         methods : {
           charterUpdatedWith : function(community, displayCharterOnSpaceHomepage) {
-            subscriptionVm.api.loadCommunity(community);
-            subscriptionVm.context.displayCharterOnSpaceHomepage = displayCharterOnSpaceHomepage;
+            subscriptionApp.api.loadCommunity(community);
+            subscriptionApp.context.displayCharterOnSpaceHomepage = displayCharterOnSpaceHomepage;
           }
         }
-      });
+      }).mount('#management');
       </c:if>
-      window.subscriptionVm = new Vue({
-        el : '#membership',
+      window.subscriptionApp = SpVue.createApp({
         provide : function() {
           return {
             context: this.context,
@@ -222,7 +220,7 @@
             }
           }
         }
-      });
+      }).mount('#membership');
     </script>
   </view:sp-body-part>
 </view:sp-page>

@@ -29,10 +29,11 @@
   const templateRepository = new VueJsAsyncComponentTemplateRepository(webContext +
       '/community/jsp/javaScript/vuejs/components/silverpeas-community-templates.jsp');
 
-  Vue.component('silverpeas-community-management',
+  SpVue.component('silverpeas-community-management',
       templateRepository.get('community-management', {
         mixins : [VuejsApiMixin, VuejsI18nTemplateMixin],
         inject : ['context', 'communityService'],
+        emits : ['space-homepage-saved', 'charter-saved'],
         props : {
           displayCharterOnSpaceHomepage : {
             'type' : Boolean,
@@ -106,18 +107,18 @@
         }
       }));
 
-  Vue.component('silverpeas-community-define-charter-form',
+  SpVue.component('silverpeas-community-define-charter-form',
       templateRepository.get('community-define-charter-form', {
         mixins : [VuejsFormApiMixin, VuejsI18nTemplateMixin],
         inject : ['context', 'communityService'],
         props : {
           community : {
             'type' : Object,
-            'mandatory' : true
+            'required' : true
           },
           displayCharterOnSpaceHomepage : {
             'type' : Boolean,
-            'mandatory' : true
+            'required' : true
           }
         },
         data : function() {

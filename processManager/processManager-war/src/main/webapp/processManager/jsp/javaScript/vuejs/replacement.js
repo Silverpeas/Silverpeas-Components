@@ -24,10 +24,10 @@
 
 (function() {
 
-  var replacementAsyncComponentRepository = new VueJsAsyncComponentTemplateRepository(webContext +
+  const replacementAsyncComponentRepository = new VueJsAsyncComponentTemplateRepository(webContext +
       '/processManager/jsp/javaScript/vuejs/replacement-templates.jsp');
 
-  var __activateRights = function(replacement) {
+  const __activateRights = function(replacement) {
     replacement.canBeModified = true;
     replacement.canBeDeleted = true;
   };
@@ -36,7 +36,7 @@
    * This filter permits to get label of role data.
    * It is able to perform an array of roles or a role directly.
    */
-  Vue.filter('mapRoleLabel', function(value) {
+  SpVue.filter('mapRoleLabel', function(value) {
     if (Array.isArray(value)) {
       return value.map(function(v) {
         return v.label;
@@ -49,7 +49,7 @@
    * This filter permits to get name of role data.
    * It is able to perform an array of roles or a role directly.
    */
-  Vue.filter('mapRoleName', function(value) {
+  SpVue.filter('mapRoleName', function(value) {
     if (Array.isArray(value)) {
       return value.map(function(v) {
         return v.name;
@@ -58,7 +58,8 @@
     return value ? value.name : '';
   });
 
-  var ReplacementRoleManagerMixin = {
+  const ReplacementRoleManagerMixin = {
+    mixins : [VuejsI18nTemplateMixin],
     inject : ['context', 'replacementService'],
     props : {
       computedTrigger : {
@@ -84,14 +85,14 @@
     },
     computed : {
       incumbentRoleFilter : function() {
-        var roles;
+        let roles;
         if (this.roleManager) {
           roles = this.roleManager.getRolesOfComponentInstance();
         }
-        return roles;
+        return this.$filters.mapRoleName(roles);
       },
       substituteRoleFilter : function() {
-        var roles;
+        let roles;
         if (this.computedTrigger && this.computedRoleManagerMixinTrigger && this.roleManager) {
           if (this.replacement.incumbent && this.replacement.incumbent.id) {
             roles = this.roleManager.getRolesOfUser(this.replacement.incumbent.id);
@@ -102,16 +103,19 @@
         return roles;
       },
       matchingRoles : function() {
-        var roles;
+        let roles;
         if (this.computedTrigger && this.computedRoleManagerMixinTrigger && this.roleManager) {
           roles = this.roleManager.getMatchingRoles(this.replacement);
         }
-        return roles;
+        return this.$filters.joinWith(this.$filters.mapRoleLabel(roles), {
+          separator : ', ',
+          lastSeparator : ' ' + this.messages.andLabel + ' '
+        });
       }
     }
   };
 
-  var ReplacementEntityMixin = {
+  const ReplacementEntityMixin = {
     computed : {
       isCreation : function() {
         return StringUtil.isNotDefined(this.replacement.uri);
@@ -119,7 +123,7 @@
     }
   };
 
-  Vue.component('workflow-replacement-module',
+  SpVue.component('workflow-replacement-module',
     replacementAsyncComponentRepository.get('module', {
       mixins : [VuejsApiMixin, VuejsProgressMessageMixin],
       inject : ['context', 'replacementService'],
@@ -137,7 +141,7 @@
             this.replacementApi.add();
           },
           reload : function() {
-            var __promises = [];
+            const __promises = [];
             __promises.push(
                 this.replacementService.getAllAsIncumbent(this.context.currentUser.id).then(
                     function(replacements) {
@@ -173,9 +177,10 @@
       }
     }));
 
-  Vue.component('workflow-replacement-management',
+  SpVue.component('workflow-replacement-management',
     replacementAsyncComponentRepository.get('management', {
       mixins : [VuejsApiMixin, VuejsI18nTemplateMixin, ReplacementEntityMixin, VuejsProgressMessageMixin],
+      emits : ['replacement-create', 'replacement-update', 'replacement-delete'],
       inject : ['context', 'replacementService'],
       data : function() {
         return {
@@ -258,7 +263,7 @@
       }
     }));
 
-  Vue.component('workflow-replacement-form',
+  SpVue.component('workflow-replacement-form',
     replacementAsyncComponentRepository.get('form', {
       mixins : [VuejsFormApiMixin, VuejsI18nTemplateMixin, ReplacementRoleManagerMixin, ReplacementEntityMixin],
       inject : ['context', 'rootFormMessages'],
@@ -276,7 +281,7 @@
       created : function() {
         this.extendApiWith({
           validateForm : function() {
-            var data = this.replacement;
+            const data = this.replacement;
             if (data.substitute.id === data.incumbent.id) {
               this.rootFormApi.errorMessage().add(
                   this.formatMessage(this.rootFormMessages.mustBeDifferentFrom,
@@ -301,7 +306,7 @@
       watch : {
         replacement : function() {
           Vue.nextTick(function() {
-            var __promises = [];
+            const __promises = [];
             __promises.push(this.selectIncumbentApi.refresh());
             __promises.push(this.selectSubstituteApi.refresh());
             sp.promise.whenAllResolved(__promises).then(function() {
@@ -333,7 +338,7 @@
         updateSubstituteRoleFilterItems : function() {
           if (this.roleManager) {
             this.substituteRoleFilterItems = this.substituteRoleFilter.map(function(r) {
-              var item = extendsObject({}, r);
+              const item = extendsObject({}, r);
               item.selected = true;
               return item;
             });
@@ -342,7 +347,7 @@
       },
       computed : {
         selectedSubstituteFilterRoles : function() {
-          var roles;
+          let roles;
           if (this.roleManager) {
             if (!this.substituteRoleFilterItems) {
               this.updateSubstituteRoleFilterItems();
@@ -351,12 +356,12 @@
               return i.selected;
             });
           }
-          return roles || [];
+          return this.$filters.mapRoleName(roles || []);
         }
       }
     }));
 
-  Vue.component('workflow-replacement-list-item',
+  SpVue.component('workflow-replacement-list-item',
     replacementAsyncComponentRepository.get('list-item', {
       mixins : [ReplacementRoleManagerMixin],
       props : {
@@ -365,12 +370,19 @@
       computed : {
         isOneDay : function() {
           return this.replacement.startDate === this.replacement.endDate;
+        },
+        startDate : function() {
+          return this.$filters.displayAsDate(this.replacement.startDate);
+        },
+        endDate : function() {
+          return this.$filters.displayAsDate(this.replacement.endDate);
         }
       }
     }));
 
-  Vue.component('workflow-replacement-list-item-actions',
+  SpVue.component('workflow-replacement-list-item-actions',
     replacementAsyncComponentRepository.get('list-item-actions', {
+      emits : ['modify-click', 'remove-click'],
       props : {
         replacement : {
           'type' : Object,
@@ -381,11 +393,14 @@
       }
     }));
 
-  Vue.component('workflow-replacement-matching-roles',
+  SpVue.component('workflow-replacement-matching-roles',
       replacementAsyncComponentRepository.get('matching-roles', {
         mixins : [ReplacementRoleManagerMixin],
         props : {
           replacement : Object
         }
       }));
+
+  SpVue.component('workflow-no-replacement-msg',
+      replacementAsyncComponentRepository.get('no-replacement-msg', {}));
 })();

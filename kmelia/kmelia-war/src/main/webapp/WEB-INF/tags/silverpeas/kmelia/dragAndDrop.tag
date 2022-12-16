@@ -113,19 +113,20 @@
     </c:if>
     <view:link href="/kmelia/jsp/javaScript/vuejs/components/kmelia-contribution.css"/>
     <view:script src="/kmelia/jsp/javaScript/vuejs/components/kmelia-contribution.js"/>
-    <kmelia-file-adding-management
-        id="kmeliaFileAddingManagement"
-        v-on:api="manager = $event"
-        v-bind:component-instance-id="'${componentInstanceId}'"
-        v-bind:is-description-visible="${isDescription}"
-        v-bind:is-description-mandatory="${isDescriptionMandatory}"
-        v-bind:is-keywords-visible="${isKeywords}"
-        v-bind:is-publication-state-confirmation="${publicationStateConfirmation}"
-        v-bind:is-version-active="${isVersionActive}"
-        v-bind:is-validation-mandatory="${validationMandatory}"
-        v-bind:is-single-target-validation="${kmeliaCtrl.targetValidationEnable}"
-        v-bind:i18n-content="${_ddIsI18n}"
-        v-bind:i18n-content-language="'${contentLanguage}'"></kmelia-file-adding-management>
+    <div id="kmeliaFileAddingManagement">
+      <kmelia-file-adding-management
+          v-on:api="manager = $event"
+          v-bind:component-instance-id="'${componentInstanceId}'"
+          v-bind:is-description-visible="${isDescription}"
+          v-bind:is-description-mandatory="${isDescriptionMandatory}"
+          v-bind:is-keywords-visible="${isKeywords}"
+          v-bind:is-publication-state-confirmation="${publicationStateConfirmation}"
+          v-bind:is-version-active="${isVersionActive}"
+          v-bind:is-validation-mandatory="${validationMandatory}"
+          v-bind:is-single-target-validation="${kmeliaCtrl.targetValidationEnable}"
+          v-bind:i18n-content="${_ddIsI18n}"
+          v-bind:i18n-content-language="'${contentLanguage}'"></kmelia-file-adding-management>
+    </div>
 
     <script type="text/JavaScript">
       function uploadCompleted(requestResponse) {
@@ -160,7 +161,7 @@
             return Promise.resolve();
           }
           return new Promise(function(resolve, reject) {
-            kmeliaFileAddingVm.manager.openValidationStep({
+            kmeliaFileAddingApp.manager.openValidationStep({
               title : '${silfn:escapeJs(dragAndDropTitle)}',
               severalFilesToUpload : severalFilesToUpload,
               callback : function(formPaneData) {
@@ -173,8 +174,7 @@
           });
         };
         window.dragAndDropInstanceFromTag = initDragAndDropUploadAndReload(options);
-        window.kmeliaFileAddingVm = new Vue({
-          el : '#kmeliaFileAddingManagement',
+        window.kmeliaFileAddingApp = SpVue.createApp({
           data : function() {
             return {
               manager : undefined
@@ -215,7 +215,7 @@
               });
             }
           }
-        });
+        }).mount('#kmeliaFileAddingManagement');
       })();
     </script>
 </c:if>
