@@ -36,44 +36,44 @@
       },
       isDescriptionVisible : {
         'type' : Boolean,
-        'mandatory' : true
+        'required' : true
       },
       isDescriptionMandatory : {
         'type' : Boolean,
-        'mandatory' : true
+        'required' : true
       },
       isKeywordsVisible : {
         'type' : Boolean,
-        'mandatory' : true
+        'required' : true
       },
       i18nContent : {
         'type' : Boolean,
-        'mandatory' : true
+        'required' : true
       },
       i18nContentLanguage : {
         'type' : String,
-        'mandatory' : true
+        'required' : true
       },
       isPublicationStateConfirmation : {
         'type' : Boolean,
-        'mandatory' : true
+        'required' : true
       },
       isVersionActive : {
         'type' : Boolean,
-        'mandatory' : true
+        'required' : true
       },
       isValidationMandatory : {
         'type' : Boolean,
-        'mandatory' : true
+        'required' : true
       },
       isSingleTargetValidation : {
         'type' : Boolean,
-        'mandatory' : true
+        'required' : true
       }
     }
   };
 
-  Vue.component('kmelia-file-adding-management',
+  SpVue.component('kmelia-file-adding-management',
       templateRepository.get('kmelia-file-adding-management', {
         mixins : [__kmeliaMixin],
         data : function() {
@@ -113,7 +113,7 @@
         }
       }));
 
-  Vue.component('kmelia-file-upload-validation-popin',
+  SpVue.component('kmelia-file-upload-validation-popin',
       templateRepository.get('kmelia-file-upload-validation-popin', {
         mixins : [VuejsDefaultFormPanePopinApiMixin, __kmeliaMixin],
         data : function() {
@@ -159,13 +159,13 @@
         }
       }));
 
-  Vue.component('kmelia-file-upload-validation-form',
+  SpVue.component('kmelia-file-upload-validation-form',
       templateRepository.get('kmelia-file-upload-validation-form', {
         mixins : [__kmeliaMixin, VuejsFormApiMixin, VuejsI18nTemplateMixin],
         props : {
           severalFilesToUpload : {
             'type' : Boolean,
-            'mandatory' : true
+            'required' : true
           }
         },
         data : function() {

@@ -29,10 +29,12 @@
   const templateRepository = new VueJsAsyncComponentTemplateRepository(webContext +
       '/community/jsp/javaScript/vuejs/components/silverpeas-community-membership-templates.jsp');
 
-  Vue.component('silverpeas-community-membership',
+  SpVue.component('silverpeas-community-membership',
       templateRepository.get('community-membership', {
         mixins : [VuejsApiMixin, VuejsI18nTemplateMixin],
         inject : ['context', 'communityService', 'membershipService'],
+        emits : ['membership-join', 'membership-pending', 'membership-leave',
+          'membership-request-accepted', 'membership-request-refused'],
         props : {
           displayNbMembersForNonMembers : {
             'type' : Boolean,
@@ -179,13 +181,13 @@
         }
       }));
 
-  Vue.component('silverpeas-community-charter-accept',
+  SpVue.component('silverpeas-community-charter-accept',
       templateRepository.get('charter-accept', {
         mixins : [VuejsApiMixin, VuejsI18nTemplateMixin, VuejsTopPopinMixin, VuejsProgressMessageMixin],
         props : {
           community : {
             'type' : Object,
-            'mandatory' : true
+            'required' : true
           }
         },
         data : function() {
@@ -218,13 +220,13 @@
         }
       }));
 
-  Vue.component('silverpeas-community-charter-preview',
+  SpVue.component('silverpeas-community-charter-preview',
       templateRepository.get('charter-preview', {
         mixins : [VuejsApiMixin, VuejsI18nTemplateMixin, VuejsTopPopinMixin, VuejsProgressMessageMixin],
         props : {
           community : {
             'type' : Object,
-            'mandatory' : true
+            'required' : true
           }
         },
         data : function() {
@@ -253,38 +255,36 @@
       }));
 
   const __promiseCharterContentApi = function(component) {
-    return new Promise(function(resolve) {
-      templateRepository.get('charter-content', {})(function(cfg) {
-        resolve(new function() {
-          const templateAsString = cfg.template;
-          this.renderWith = function(ctx, community) {
-            setTimeout(component.showProgressMessage, 0);
-            const charterContentCss = {
-              href: CommunityMembershipSettings.get('c.m.s.u'),
-              deferred : sp.promise.deferred()
-            };
-            ctx.popinSettings.cssHrefUrls.push(charterContentCss);
-            const $content = jQuery(templateAsString)[0];
-            const $iframe = $content.querySelector('iframe');
-            let __onceLoad = function() {
-              $iframe.removeEventListener('load', __onceLoad);
-              charterContentCss.deferred.promise.then(function() {
-                component.hideProgressMessage();
-              })
-            };
-            $iframe.addEventListener('load', __onceLoad);
-            $iframe.setAttribute('src', community.charterURL);
-            $iframe.removeAttribute('frameborder');
-            $iframe.style.width = ctx.popinSettings.minWidth + 'px';
-            $iframe.style.height = ctx.popinSettings.maxHeight + 'px';
-            ctx.$rootContainer.appendChild($content);
+    return templateRepository.getComponentConfiguration('charter-content', {}).then(function(cfg) {
+      return new function() {
+        const templateAsString = cfg.template;
+        this.renderWith = function(ctx, community) {
+          setTimeout(component.showProgressMessage, 0);
+          const charterContentCss = {
+            href: CommunityMembershipSettings.get('c.m.s.u'),
+            deferred : sp.promise.deferred()
           };
-        });
-      });
+          ctx.popinSettings.cssHrefUrls.push(charterContentCss);
+          const $content = jQuery(templateAsString)[0];
+          const $iframe = $content.querySelector('iframe');
+          let __onceLoad = function() {
+            $iframe.removeEventListener('load', __onceLoad);
+            charterContentCss.deferred.promise.then(function() {
+              component.hideProgressMessage();
+            })
+          };
+          $iframe.addEventListener('load', __onceLoad);
+          $iframe.setAttribute('src', community.charterURL);
+          $iframe.removeAttribute('frameborder');
+          $iframe.style.width = ctx.popinSettings.minWidth + 'px';
+          $iframe.style.height = ctx.popinSettings.maxHeight + 'px';
+          ctx.$rootContainer.appendChild($content);
+        };
+      };
     });
   };
 
-  Vue.component('silverpeas-community-leave-form',
+  SpVue.component('silverpeas-community-leave-form',
       templateRepository.get('leave-form', {
         mixins : [VuejsFormApiMixin],
         props : {

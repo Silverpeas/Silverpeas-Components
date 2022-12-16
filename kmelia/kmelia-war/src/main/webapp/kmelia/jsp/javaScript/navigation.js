@@ -394,7 +394,7 @@ function initOperations(id, op) {
   }
   if (op.addFiles) {
     label = getString('kmelia.AddFile');
-    url = "javascript:onclick=kmeliaFileAddingVm.addFiles()";
+    url = "javascript:onclick=kmeliaFileAddingApp.addFiles()";
     menuItem = new YAHOO.widget.MenuItem(label, {url: url});
     oMenu.addItem(menuItem, groupIndex);
     groupEmpty = false;

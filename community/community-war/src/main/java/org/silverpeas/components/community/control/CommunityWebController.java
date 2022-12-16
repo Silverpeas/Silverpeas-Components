@@ -228,22 +228,22 @@ public class CommunityWebController extends
         context.displayNbMembersForNonMembers(),
         context.displayCharterOnSpaceHomepage()));
     xhtml.addElement(communityHtml);
-    final String vueJsStarter = String.format("new Vue({\n" +
-            "        el : '#community-membership',\n" +
+    final String vueJsStarter = String.format("SpVue.createApp({\n" +
             "        provide : function() {\n" +
             "          return {\n" +
             "            context: this.context,\n" +
             "            communityService: new CommunityService(this.context),\n" +
             "            membershipService: new CommunityMembershipService(this.context)}},\n" +
-            "        data : {\n" +
-            "          context : {\n" +
-            "            currentUser : currentUser,\n" +
-            "            componentInstanceId : '%s',\n" +
-            "            spaceLabel : '%s'}},\n" +
+            "        data : function() {\n" +
+            "          return {\n" +
+            "            context : {\n" +
+            "              currentUser : currentUser,\n" +
+            "              componentInstanceId : '%s',\n" +
+            "              spaceLabel : '%s'}}},\n" +
             "        methods : {\n" +
             "          reloadPage : function() {\n" +
             "            spWindow.loadSpace('%s');}}\n" +
-            "      });\n",
+            "      }).mount('#community-membership');\n",
         community.getComponentInstanceId(),
         javaStringToJsString(context.getSpaceLabel()),
         community.getSpaceId());

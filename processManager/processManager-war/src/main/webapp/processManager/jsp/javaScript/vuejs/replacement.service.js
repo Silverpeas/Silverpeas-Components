@@ -25,13 +25,13 @@
 (function() {
 
   // the type Replacement
-  var Replacement = function() {
+  const Replacement = function() {
     this.type = 'Replacement';
   };
 
-  var __adjustEndDate = function(replacement, forSend) {
-    var offset = typeof forSend === 'boolean' && forSend ? 1 : -1;
-    var newEndMoment = sp.moment.make(replacement.endDate).add(offset, 'days');
+  const __adjustEndDate = function(replacement, forSend) {
+    const offset = typeof forSend === 'boolean' && forSend ? 1 : -1;
+    const newEndMoment = sp.moment.make(replacement.endDate).add(offset, 'days');
     replacement.endDate = sp.moment.formatAsLocalDate(newEndMoment);
   };
 
@@ -40,17 +40,17 @@
    * @param context the replacement module context.
    * @returns {*}
    */
-  var __initRoleManager = function(context) {
-    var mappingOfUserRoles = {};
-    var promises = [];
-    var __load = function(roleName) {
+  const __initRoleManager = function(context) {
+    const mappingOfUserRoles = {};
+    const promises = [];
+    const __load = function(roleName) {
       return User.get({
         component : context.componentInstanceId,
         userStatesToExclude : ['DEACTIVATED'],
         roles : roleName
       }).then(function(users) {
         users.forEach(function(user) {
-          var userRoles = mappingOfUserRoles[user.id];
+          let userRoles = mappingOfUserRoles[user.id];
           if (!userRoles) {
             userRoles = [];
             mappingOfUserRoles[user.id] = userRoles;
@@ -59,7 +59,7 @@
         });
       });
     };
-    for (var roleName in context.replacementHandledRoles) {
+    for (let roleName in context.replacementHandledRoles) {
       context.replacementHandledRoles[roleName].name = roleName;
       promises.push(__load(roleName));
     }
@@ -71,8 +71,8 @@
          * @returns {*}
          */
         this.getRolesOfComponentInstance = function() {
-          var roles = [];
-          for (var roleName in context.replacementHandledRoles) {
+          const roles = [];
+          for (let roleName in context.replacementHandledRoles) {
             roles.push(extendsObject({}, context.replacementHandledRoles[roleName]));
           }
           return roles;
@@ -84,8 +84,8 @@
          * @returns {*}
          */
         this.getRolesOfUser = function(userId) {
-          var roles = [];
-          var mappingOfUserRole = mappingOfUserRoles[userId] || [];
+          const roles = [];
+          const mappingOfUserRole = mappingOfUserRoles[userId] || [];
           mappingOfUserRole.forEach(function(roleName) {
             roles.push(extendsObject({}, context.replacementHandledRoles[roleName]));
           });
@@ -99,11 +99,11 @@
          * @returns {*}
          */
         this.getMatchingRoles = function(replacement) {
-          var roles;
-          if (replacement.incumbent && replacement.incumbent.id &&
-              replacement.substitute && replacement.substitute.id) {
+          let roles;
+          if (replacement.incumbent && replacement.incumbent.id && replacement.substitute &&
+              replacement.substitute.id) {
             roles = this.getRolesOfUser(replacement.incumbent.id);
-            var substituteRoles = this.getRolesOfUser(replacement.substitute.id);
+            const substituteRoles = this.getRolesOfUser(replacement.substitute.id);
             roles = roles.filter(function(role) {
               return substituteRoles.indexOfElement(role, 'name') >= 0;
             });
@@ -117,7 +117,7 @@
   window.ReplacementService = SilverpeasClass.extend({
     initialize : function(context) {
       this.context = context;
-      var baseUri = webContext + '/services/workflow/' + this.context.componentInstanceId + '/replacements';
+      const baseUri = webContext + '/services/workflow/' + this.context.componentInstanceId + '/replacements';
       this.baseAdapter = RESTAdapter.get(baseUri, Replacement);
       this.roleManagerPromise = __initRoleManager(this.context);
     },
@@ -139,8 +139,8 @@
          */
         extractReplacementEntityData : function(replacement) {
           replacement = replacement ? replacement : {};
-          var startDate = sp.moment.atZoneIdSimilarLocal(moment(), this.context.currentUser.zoneId);
-          var newReplacement = new Replacement();
+          const startDate = sp.moment.atZoneIdSimilarLocal(moment(), this.context.currentUser.zoneId);
+          const newReplacement = new Replacement();
           newReplacement.uri = replacement.uri;
           newReplacement.incumbent = replacement.incumbent ? replacement.incumbent : {};
           newReplacement.substitute = replacement.substitute ? replacement.substitute : {};
@@ -212,7 +212,7 @@
      * @returns {*}
      */
     saveReplacement : function(replacement) {
-      var data = this.getTools().extractReplacementEntityData(replacement);
+      const data = this.getTools().extractReplacementEntityData(replacement);
       data.startDate = sp.moment.formatAsLocalDate(data.startDate);
       data.endDate = sp.moment.formatAsLocalDate(data.endDate);
       __adjustEndDate(data, true);
