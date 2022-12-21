@@ -28,12 +28,14 @@ import org.silverpeas.components.classifieds.control.ClassifiedsSessionControlle
 import org.silverpeas.components.classifieds.model.Subscribe;
 import org.silverpeas.components.classifieds.servlets.FunctionHandler;
 import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.web.http.HttpRequest;
 
 import java.util.Collection;
+import java.util.HashMap;
 
 /**
  * Use Case : for all users, show all adds of given category
@@ -47,6 +49,7 @@ public class SubscriptionListHandler extends FunctionHandler {
 
     // Retrieves user subscriptions
     Collection<Subscribe> subscribes = classifiedsSC.getSubscribesByUser();
+    HashMap<String,String> fieldsLabel = new HashMap<>();
 
     // Get form template and data
     Form formUpdate = null;
@@ -58,10 +61,17 @@ public class SubscriptionListHandler extends FunctionHandler {
       data = recordSet.getEmptyRecord();
     }
 
+    //Store search fields label
+    for (FieldTemplate fieldTemplate : formUpdate.getFieldTemplates()) {
+      fieldsLabel.put(fieldTemplate.getFieldName(),fieldTemplate.getLabel(request.getUserLanguage()));
+    }
+
     // Stores objects in request
     request.setAttribute("Subscribes", subscribes);
     request.setAttribute("Form", formUpdate);
     request.setAttribute("Data", data);
+    request.setAttribute("FieldsLabel", fieldsLabel);
+
 
     // Returns jsp to redirect to
     return "subscriptions.jsp";
