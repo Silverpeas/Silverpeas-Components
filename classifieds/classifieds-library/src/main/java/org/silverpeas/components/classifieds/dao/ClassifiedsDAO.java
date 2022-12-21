@@ -453,13 +453,15 @@ public class ClassifiedsDAO {
       throws SQLException {
     // récupérer tous les utilisateurs abonnés à une recherche
     ArrayList<String> listUsers = new ArrayList<>();
-    String query = "select userId from SC_Classifieds_Subscribes where field1 = ? and field2 = ? ";
+    String query = "select userId from SC_Classifieds_Subscribes where (field1 = ? and field2 = ?) or (field1 = ? and field2='') or (field1='' and field2 = ?)";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
       prepStmt = con.prepareStatement(query);
       prepStmt.setString(1, field1);
       prepStmt.setString(2, field2);
+      prepStmt.setString(3, field1);
+      prepStmt.setString(4, field2);
       rs = prepStmt.executeQuery();
       while (rs.next()) {
         String userId = rs.getString("userId");
