@@ -46,63 +46,71 @@
 <c:set var="componentLabel" value="${browseContext[1]}" />
 
 <c:set var="subscribes" value="${requestScope.Subscribes}" />
+<c:set var="fieldsLabel" value="${requestScope.FieldsLabel}" />
+<c:set var="data" value="${requestScope.Data}" />
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="${language}">
 <head>
-	<title></title>
-<view:looknfeel withCheckFormScript="true"/>
+  <title></title>
+  <view:looknfeel withCheckFormScript="true"/>
 </head>
 <body>
-	<fmt:message var="classifiedPath" key="classifieds.mySubscriptions" />
-	<view:browseBar>
-		<view:browseBarElt label="${classifiedPath}" link="#" />
-	</view:browseBar>
+<fmt:message var="classifiedPath" key="classifieds.mySubscriptions" />
+<view:browseBar>
+  <view:browseBarElt label="${classifiedPath}" link="#" />
+</view:browseBar>
 
-	<view:operationPane>
-		<fmt:message var="iconAddSubscription" key="classifieds.subscriptionsAdd" bundle="${icons}" />
-		<c:url var="iconAddSubscriptionUrl" value="${iconAddSubscription}"/>
-		<fmt:message var="addSubscriptionLabel"	key="classifieds.addSubscription" />
-		<view:operation icon="${iconAddSubscriptionUrl}" action="javaScript:addSubscription()" 	altText="${addSubscriptionLabel}" />
-	</view:operationPane>
+<view:operationPane>
+  <fmt:message var="iconAddSubscription" key="classifieds.subscriptionsAdd" bundle="${icons}" />
+  <c:url var="iconAddSubscriptionUrl" value="${iconAddSubscription}"/>
+  <fmt:message var="addSubscriptionLabel"	key="classifieds.addSubscription" />
+  <view:operation icon="${iconAddSubscriptionUrl}" action="javaScript:addSubscription()" 	altText="${addSubscriptionLabel}" />
+</view:operationPane>
 
-	<view:window>
-		<view:frame>
-			<br />
-			<view:board>
+<view:window>
+  <view:frame>
+    <br />
+    <view:board>
 
-				<jsp:include page="subscriptionManager.jsp" />
+      <jsp:include page="subscriptionManager.jsp" />
 
-				<table>
-					<caption></caption>
-					<th id="subedition"></th>
-					<c:if test="${not empty subscribes}">
-						<c:forEach items="${subscribes}" var="subscribe">
-							<tr>
-								<td>
-									<p>
-										&nbsp; &#149; &nbsp;&nbsp;<strong>${subscribe.fieldName1} - ${subscribe.fieldName2}</strong>
-										<a href="DeleteSubscription?SubscribeId=${subscribe.subscribeId}">
-											<fmt:message var="iconDelete" key="classifieds.smallDelete" bundle="${icons}" />
-											<c:url var="iconDeleteUrl" value="${iconDelete}"/>
-											<fmt:message var="deleteLabel" key="GML.delete" />
-											<img src="${iconDeleteUrl}" border="0" alt="${deleteLabel}" title="${deleteLabel}" align="absmiddle" />
-										</a>
-									</p>
-								</td>
-							</tr>
-						</c:forEach>
-					</c:if>
-					<c:if test="${empty subscribes}">
-						<tr>
-							<td colspan="5" valign="middle" align="center" width="100%">
-								<br /> <fmt:message key="classifieds.SubscribeEmpty" /> <br /></td>
-						</tr>
-					</c:if>
-				</table>
-			</view:board>
-		</view:frame>
-	</view:window>
+      <table>
+        <caption></caption>
+        <th id="subedition"></th>
+        <c:if test="${not empty subscribes}">
+          <c:forEach items="${subscribes}" var="subscribe">
+            <tr>
+              <td>
+                <p>
+                  &nbsp; &#149; &nbsp;
+                  <c:if test="${not empty subscribe.fieldName1}">
+                    ${fieldsLabel[data.fields[0].name]}:&nbsp;<strong>${subscribe.fieldName1}</strong>&nbsp;
+                  </c:if>
+                  <c:if test="${not empty subscribe.fieldName2}">
+                    ${fieldsLabel[data.fields[1].name]}:&nbsp;<strong>${subscribe.fieldName2}</strong>
+                  </c:if>
+                  <a href="DeleteSubscription?SubscribeId=${subscribe.subscribeId}">
+                    <fmt:message var="iconDelete" key="classifieds.smallDelete" bundle="${icons}" />
+                    <c:url var="iconDeleteUrl" value="${iconDelete}"/>
+                    <fmt:message var="deleteLabel" key="GML.delete" />
+                    <img src="${iconDeleteUrl}" border="0" alt="${deleteLabel}" title="${deleteLabel}" align="absmiddle" />
+                  </a>
+                </p>
+              </td>
+            </tr>
+          </c:forEach>
+        </c:if>
+        <c:if test="${empty subscribes}">
+          <tr>
+            <td colspan="5" valign="middle" align="center" width="100%">
+              <br /> <fmt:message key="classifieds.SubscribeEmpty" /> <br /></td>
+          </tr>
+        </c:if>
+      </table>
+    </view:board>
+  </view:frame>
+</view:window>
 </body>
 </html>

@@ -46,7 +46,7 @@ public class SubscriptionCreateHandler extends FunctionHandler {
       String field2 = request.getParameter(classifiedsSC.getSearchFields2());
 
       // subscribes user
-      if (StringUtil.isDefined(field1) && StringUtil.isDefined(field2)) {
+      if (StringUtil.isDefined(field1) || StringUtil.isDefined(field2)) {
         Subscribe subscribe = new Subscribe(field1, field2);
         classifiedsSC.createSubscribe(subscribe);
       }

@@ -58,7 +58,7 @@
             title: "${dialogTitle}",
 			autoOpen: false,
 			height: 'auto',
-			width: 400,
+			width: 500,
 			modal: true,
 			buttons: {
 				'${validateLabel}': function() {
@@ -81,7 +81,7 @@
 	<br/>
 	<form name="SubscriptionForm" action="AddSubscription" method="post" enctype="multipart/form-data">
 	<c:if test="${not empty formSearch}">
-		<table border="0" width="100%" align="center">
+		<table>
 			<caption></caption>
 			<th id="subscriptionFormHeader"></th>
 			<!-- AFFICHAGE du formulaire -->
