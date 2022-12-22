@@ -4,7 +4,7 @@ pipeline {
   environment {
     lockFilePath = null
     version = null
-    silverpeasCore = 'Master'
+    silverpeasCore = null
   }
   agent {
     docker {
@@ -22,6 +22,14 @@ pipeline {
       steps {
         script {
           master = env.BRANCH_NAME == 'master'
+          stable = env.BRANCH_NAME == env.STABLE_BRANCH
+          if (master) {
+            silverpeasCore = 'Master'
+          } else if (stable) {
+            silverpeasCore = 'Stable'
+          } else {
+            silverpeasCore = env.BRANCH_NAME
+          }
           version = computeSnapshotVersion()
           lockFilePath = createLockFile(version, 'components')
           waitForDependencyRunningBuildIfAny(version, 'core')
