@@ -22,13 +22,10 @@ pipeline {
       steps {
         script {
           master = env.BRANCH_NAME == 'master'
-          stable = env.BRANCH_NAME == env.STABLE_BRANCH
           if (master) {
             silverpeasCore = 'Master'
-          } else if (stable) {
-            silverpeasCore = 'Stable'
           } else {
-            silverpeasCore = env.BRANCH_NAME
+            silverpeasCore = 'Stable'
           }
           version = computeSnapshotVersion()
           lockFilePath = createLockFile(version, 'components')
