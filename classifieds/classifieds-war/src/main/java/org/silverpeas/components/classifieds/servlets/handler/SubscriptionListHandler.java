@@ -59,11 +59,10 @@ public class SubscriptionListHandler extends FunctionHandler {
       formUpdate = pubTemplate.getSearchForm();
       RecordSet recordSet = pubTemplate.getRecordSet();
       data = recordSet.getEmptyRecord();
-    }
-
-    //Store search fields label
-    for (FieldTemplate fieldTemplate : formUpdate.getFieldTemplates()) {
-      fieldsLabel.put(fieldTemplate.getFieldName(),fieldTemplate.getLabel(request.getUserLanguage()));
+      //Store search fields label
+      for (FieldTemplate fieldTemplate : formUpdate.getFieldTemplates()) {
+        fieldsLabel.put(fieldTemplate.getFieldName(),fieldTemplate.getLabel(request.getUserLanguage()));
+      }
     }
 
     // Stores objects in request
@@ -71,7 +70,6 @@ public class SubscriptionListHandler extends FunctionHandler {
     request.setAttribute("Form", formUpdate);
     request.setAttribute("Data", data);
     request.setAttribute("FieldsLabel", fieldsLabel);
-
 
     // Returns jsp to redirect to
     return "subscriptions.jsp";
