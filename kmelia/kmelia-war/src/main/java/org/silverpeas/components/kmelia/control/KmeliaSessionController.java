@@ -758,15 +758,16 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     nd.setCreatorId(getUserId());
     NodePK pk = getKmeliaService().addSubTopic(getNodePK(parentId), nd, alertType);
 
-    // by default, setting father's admin rights
-    // to preventing no more access
-    if (nd.haveRights()) {
+    // by default, sets father's admin rights in the case of specific rights
+    // to prevent no access to users having some rights with the father topic
+    NodeDetail created = getNodeHeader(pk.getId());
+    if (created.haveLocalRights()) {
       ProfileInst parentProfile;
       String profileAdmin = SilverpeasRole.ADMIN.getName();
       if (NodePK.ROOT_NODE_ID.equals(parentId)) {
         parentProfile = getProfile(profileAdmin);
       } else {
-        parentProfile = getTopicProfile(profileAdmin, parentId);
+        parentProfile = getRecursiveTopicProfile(profileAdmin, parentId);
       }
       if (parentProfile != null) {
         updateTopicRole(profileAdmin, pk.getId(),
@@ -2075,6 +2076,21 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
       return newProfile;
     }
+  }
+
+  private ProfileInst getRecursiveTopicProfile(String role, String topicId) {
+    String currentId = topicId;
+    ProfileInst profile = getTopicProfile(role, currentId);
+    while (profile.isEmpty()) {
+      NodeDetail topic = getNodeHeader(currentId);
+      currentId = topic.getFatherPK().getId();
+      if (currentId.equals(NodePK.ROOT_NODE_ID)) {
+        profile = getProfile(role);
+      } else {
+        profile = getTopicProfile(role, currentId);
+      }
+    }
+    return profile;
   }
 
   public List<ProfileInst> getTopicProfiles() {
