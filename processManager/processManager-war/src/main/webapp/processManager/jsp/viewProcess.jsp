@@ -120,6 +120,9 @@ function printProcess() {
     window.print();
 }
 </script>
+<%
+  form.displayScripts(out, context);
+%>
 </head>
 <body class="yui-skin-sam currentProfile_<%=currentRole%> page_process">
 <div id="<%=componentId%>">
@@ -226,7 +229,6 @@ function printProcess() {
 <%
 	context.setBorderPrinted(false);
   form.display(out, context, data);
-  form.displayScripts(out, context);
 %>
 </td><td valign="top">
 
