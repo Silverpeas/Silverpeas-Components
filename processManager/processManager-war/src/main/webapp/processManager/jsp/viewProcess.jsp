@@ -226,6 +226,7 @@ function printProcess() {
 <%
 	context.setBorderPrinted(false);
   form.display(out, context, data);
+  form.displayScripts(out, context);
 %>
 </td><td valign="top">
 
