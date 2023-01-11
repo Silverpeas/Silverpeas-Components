@@ -1100,8 +1100,12 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     return getUserDetail().isAccessGuest();
   }
 
+  public Boolean isAnonymous() {
+    return getUserDetail().isAnonymous();
+  }
+
   public Boolean isOrder() {
-    return !isGuest() && StringUtil.getBooleanValue(getComponentParameterValue("order"));
+    return !isGuest() && !isAnonymous() && StringUtil.getBooleanValue(getComponentParameterValue("order"));
   }
 
   public boolean isViewNotVisible() {
