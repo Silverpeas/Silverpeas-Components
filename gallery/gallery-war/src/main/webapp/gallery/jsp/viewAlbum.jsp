@@ -146,6 +146,7 @@
 <c:set var="isPrivateSearch" value="${requestScope.IsPrivateSearch}"/>
 <c:set var="isBasket" value="${requestScope.IsBasket}"/>
 <c:set var="isGuest" value="${requestScope.IsGuest}"/>
+<c:set var="isAnonymous" value="${requestScope.IsAnonymous}"/>
 <c:set var="isExportEnable" value="${requestScope.IsExportEnable}"/>
 <c:set var="basketOperationsAllowed" value="${highestUserRole eq userRole and isBasket}"/>
 <c:set var="isMediaSelectable" value="${basketOperationsAllowed or isExportEnable or highestUserRole.isGreaterThanOrEquals(publisherRole)}"/>
@@ -389,7 +390,7 @@ SUBSCRIPTION_PROMISE.then(function() {
     </c:if>
   </c:if>
   <%-- Manage media by massively way --%>
-  <c:if test="${not (highestUserRole eq userRole and not isBasket)}">
+  <c:if test="${isMediaSelectable}">
     <view:operation action="AllSelected" altText="${allSelectMediaLabel}" icon="${allSelectMediaIcon}"/>
   </c:if>
   <c:if test="${highestUserRole.isGreaterThanOrEquals(publisherRole)}">
@@ -425,13 +426,15 @@ SUBSCRIPTION_PROMISE.then(function() {
     <view:operation action="javascript:startSlideshow()" altText="${diaporamaLabel}" icon="${diaporamaIcon}"/>
   </c:if>
   <%-- Favorites --%>
-  <c:if test="${not isGuest}">
+  <c:if test="${not isGuest and not isAnonymous}">
     <view:operationSeparator/>
     <c:set var="tmpDesc"><c:out value="${currentAlbum.description}"/></c:set>
     <view:operation action="javaScript:addFavorite($('#breadCrumb').text(),'${silfn:escapeJs(tmpDesc)}','${currentAlbum.link}')" altText="${addFavoriteLabel}" icon="${addFavoriteIcon}"/>
   </c:if>
-  <view:operationSeparator/>
-  <view:operation action="javascript:spSubManager.switchUserSubscription()" altText="<span id='subscriptionMenuLabel'></span>" icon=""/>
+  <c:if test="${not isGuest and not isAnonymous}">
+    <view:operationSeparator/>
+    <view:operation action="javascript:spSubManager.switchUserSubscription()" altText="<span id='subscriptionMenuLabel'></span>" icon=""/>
+  </c:if>
   <%-- Private search --%>
   <c:if test="${isPrivateSearch}">
     <view:operationSeparator/>

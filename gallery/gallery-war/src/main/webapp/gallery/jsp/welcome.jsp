@@ -49,6 +49,7 @@
 <c:set var="isBasket" value="${requestScope.IsBasket}"/>
 <c:set var="isOrder" value="${requestScope.IsOrder}"/>
 <c:set var="isGuest" value="${requestScope.IsGuest}"/>
+<c:set var="isAnonymous" value="${requestScope.IsAnonymous}"/>
 <c:set var="isExportEnable" value="${requestScope.IsExportEnable}" />
 
 <c:set var="componentId" value="${requestScope.browseContext[3]}"/>
@@ -201,7 +202,9 @@ SUBSCRIPTION_PROMISE.then(function() {
   <c:if test="${highestUserRole.isGreaterThanOrEquals(adminRole)}">
     <view:operation altText="${actionLabelManageSubscriptions}" action="ManageComponentSubscriptions"/>
   </c:if>
-  <view:operationSeparator/>
+  <c:if test="${not isGuest and not isAnonymous}">
+    <view:operationSeparator/>
+  </c:if>
   <c:if test="${highestUserRole.isGreaterThanOrEquals(publisherRole)}">
     <view:operationOfCreation action="javaScript:openGalleryEditor()" altText="${addAlbumLabel}" icon="${addAlbumIcon}"/>
     <view:operationSeparator/>
@@ -215,7 +218,7 @@ SUBSCRIPTION_PROMISE.then(function() {
   <c:if test="${(highestUserRole eq adminRole or highestUserRole eq userRole) and isOrder}">
     <view:operation action="OrderViewList" altText="${viewOrderListLabel}" icon="${viewOrderListIcon}"/>
   </c:if>
-  <c:if test="${highestUserRole != adminRole and not isGuest}">
+  <c:if test="${highestUserRole != adminRole and not isGuest and not isAnonymous}">
     <view:operationOfCreation action="javaScript:askMedia()" altText="${askMediaLabel}" icon="${askMediaIcon}"/>
     <view:operationSeparator/>
   </c:if>
@@ -223,7 +226,9 @@ SUBSCRIPTION_PROMISE.then(function() {
     <view:operation action="javascript:onClick=clipboardPaste()" altText="${pasteLabel}" icon="${pasteIcon}"/>
     <view:operationSeparator/>
   </c:if>
-  <view:operation action="javascript:spSubManager.switchUserSubscription()" altText="<span id='subscriptionMenuLabel'></span>" icon=""/>
+  <c:if test="${not isGuest and not isAnonymous}">
+    <view:operation action="javascript:spSubManager.switchUserSubscription()" altText="<span id='subscriptionMenuLabel'></span>" icon=""/>
+  </c:if>
   <c:if test="${isPrivateSearch}">
     <view:operationSeparator/>
     <view:operation action="LastResult" altText="${lastResultLabel}" icon="${lastResultIcon}"/>

@@ -160,6 +160,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
     request.setAttribute("highestUserRole", highestUserRole);
     request.setAttribute("UserId", userId);
     request.setAttribute("IsGuest", gallerySC.isGuest());
+    request.setAttribute("IsAnonymous", gallerySC.isAnonymous());
     request.setAttribute("IsExportEnable", gallerySC.isExportEnable());
     request.setAttribute("Sort", gallerySC.getSort());
 
