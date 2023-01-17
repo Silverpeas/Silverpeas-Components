@@ -40,18 +40,15 @@ import java.util.Set;
  * Enumeration for all supported media types in the gallery component.
  */
 public enum MediaMimeType {
-  BMP, GIF, PNG, JPG("jpeg", "pjpeg"), TIFF("tif"),
+  BMP, GIF, PNG, JPG("jpeg", "pjpeg"), TIFF("tif"), WEBP,
   MOV, MP4, FLV,
   MP3,
   ERROR;
 
-  @SuppressWarnings("unchecked")
   public static final Set<MediaMimeType> PHOTOS =
-      Collections.unmodifiableSet(EnumSet.of(BMP, GIF, PNG, JPG, TIFF));
-  @SuppressWarnings("unchecked")
+      Collections.unmodifiableSet(EnumSet.of(BMP, GIF, PNG, JPG, TIFF, WEBP));
   public static final Set<MediaMimeType> VIDEOS =
       Collections.unmodifiableSet(EnumSet.of(MOV, MP4, FLV));
-  @SuppressWarnings("unchecked")
   public static final Set<MediaMimeType> SOUNDS = Collections.unmodifiableSet(EnumSet.of(MP3));
 
   private static final Set<MediaMimeType> ALL_VALIDS = EnumSet.allOf(MediaMimeType.class);
@@ -174,7 +171,7 @@ public enum MediaMimeType {
    */
   @SuppressWarnings("JavadocReference")
   public boolean isReadablePhoto() {
-    return this == GIF || this == JPG || this == PNG || this == BMP;
+    return this == GIF || this == JPG || this == PNG || this == BMP || this == WEBP;
   }
 
   /**
@@ -190,7 +187,7 @@ public enum MediaMimeType {
    * @return true if IPTC can be read, false otherwise.
    */
   public boolean isIPTCCompliant() {
-    return this == GIF || this == JPG || this == TIFF;
+    return this == GIF || this == JPG || this == TIFF || this == WEBP;
   }
 
   /**
