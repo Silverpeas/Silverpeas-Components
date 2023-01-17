@@ -25,21 +25,20 @@
 package org.silverpeas.components.gallery.constant;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.silverpeas.core.test.extention.EnableSilverTestEnv;
 
 import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 @EnableSilverTestEnv
-public class MediaMimeTypeTest {
+class MediaMimeTypeTest {
 
   @Test
-  public void verifyMediaMimeTypes() {
+  void verifyMediaMimeTypes() {
     Set<MediaMimeType> validTypes = new HashSet<>();
     validTypes.addAll(MediaMimeType.PHOTOS);
     validTypes.addAll(MediaMimeType.VIDEOS);
@@ -89,6 +88,13 @@ public class MediaMimeTypeTest {
     assertThat(MediaMimeType.TIFF.isSupportedPhotoType(), is(true));
     assertThat(MediaMimeType.TIFF.isSupportedVideoType(), is(false));
     assertThat(MediaMimeType.TIFF.isSupportedSoundType(), is(false));
+    assertThat(MediaMimeType.WEBP, is(MediaMimeType.fromFile(getFile("wEBp"))));
+    assertThat(MediaMimeType.WEBP.isReadablePhoto(), is(true));
+    assertThat(MediaMimeType.WEBP.isPreviewablePhoto(), is(true));
+    assertThat(MediaMimeType.WEBP.isIPTCCompliant(), is(true));
+    assertThat(MediaMimeType.WEBP.isSupportedPhotoType(), is(true));
+    assertThat(MediaMimeType.WEBP.isSupportedVideoType(), is(false));
+    assertThat(MediaMimeType.WEBP.isSupportedSoundType(), is(false));
 
     assertThat(MediaMimeType.fromMimeType("image/bmp"), is(MediaMimeType.BMP));
     assertThat(MediaMimeType.fromMimeType("image/png"), is(MediaMimeType.PNG));
@@ -96,6 +102,7 @@ public class MediaMimeTypeTest {
     assertThat(MediaMimeType.fromMimeType("image/pjpeg"), is(MediaMimeType.JPG));
     assertThat(MediaMimeType.fromMimeType("image/gif"), is(MediaMimeType.GIF));
     assertThat(MediaMimeType.fromMimeType("image/tiff"), is(MediaMimeType.TIFF));
+    assertThat(MediaMimeType.fromMimeType("image/webp"), is(MediaMimeType.WEBP));
 
     // IMAGES
     assertThat(MediaMimeType.MP4, is(MediaMimeType.fromFile(getFile("mP4"))));
