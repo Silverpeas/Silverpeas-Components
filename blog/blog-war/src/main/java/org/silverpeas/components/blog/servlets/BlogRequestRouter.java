@@ -153,6 +153,24 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         request.setAttribute("Updater", blogSC.getUserDetail(post.getPublication().getUpdaterId()));
         // appel de la page de modification
         destination = rootDest + "postManager.jsp";
+      } else if ("EditPostContent".equals(function)) {
+        blogSC.checkWriteAccessOnBlogPost();
+        String postId = request.getParameter("PostId");
+        if (!StringUtil.isDefined(postId)) {
+          postId = (String) request.getAttribute("PostId");
+        }
+        PostDetail post = blogSC.getPost(postId);
+        String browseInfo = post.getTitle();
+        WysiwygRouting routing = new WysiwygRouting();
+        WysiwygRouting.WysiwygRoutingContext context =
+            WysiwygRouting.WysiwygRoutingContext.fromComponentSessionController(blogSC)
+                .withBrowseInfo(browseInfo)
+                .withContributionId(post.getIdentifier())
+                .withComeBackUrl(
+                    URLUtil.getApplicationURL() + blogSC.getComponentUrl() + "ViewPost?PostId=" +
+                        post.getId())
+                .withIndexation(false);
+        destination = routing.getWysiwygEditorPath(context, request);
       } else if (function.startsWith("UpdatePost")) {
         String postId = request.getParameter("PostId");
         String title = request.getParameter("Title");

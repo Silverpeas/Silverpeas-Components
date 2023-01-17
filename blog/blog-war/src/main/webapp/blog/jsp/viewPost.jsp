@@ -25,6 +25,8 @@
 --%>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ page import="java.util.GregorianCalendar"%>
@@ -34,6 +36,12 @@
 <%@ page import="org.silverpeas.components.blog.control.WallPaper"%>
 <%@ page import="org.silverpeas.core.notification.user.NotificationContext" %>
 <%@ include file="check.jsp" %>
+
+<%-- Set resource bundle --%>
+<c:set var="userLanguage" value="${requestScope.resources.language}"/>
+<fmt:setLocale value="${userLanguage}"/>
+<view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 
 <% 
 // recuperation des parametres
@@ -61,32 +69,25 @@ StyleSheet styleSheet = (StyleSheet) request.getAttribute("StyleSheet");
   java.util.Calendar cal = GregorianCalendar.getInstance();
   cal.setTime(post.getDateEvent());
   String day = resource.getString("GML.jour" + cal.get(java.util.Calendar.DAY_OF_WEEK));
-
-  if (SilverpeasRole.ADMIN.equals(SilverpeasRole.fromString(profile)) ||
-      SilverpeasRole.PUBLISHER.equals(SilverpeasRole.fromString(profile))) {
-    operationPane.addOperation("useless", resource.getString("blog.updatePost"),
-        "EditPost?PostId=" + postId);
-    if (post.getPublication().getStatus().equals(PublicationDetail.DRAFT_STATUS)) {
-      operationPane.addOperation("useless", resource.getString("blog.draftOutPost"),
-          "DraftOutPost?PostId=" + postId);
-    }
-    operationPane.addOperation("useless", resource.getString("blog.deletePost"),
-        "javascript:onClick=deletePost('" + postId + "')");
-    operationPane.addLine();
-  }
-  if (!m_MainSessionCtrl.getCurrentUserDetail().isAccessGuest()) {
-    operationPane.addOperation("useless", resource.getString("GML.notify"),
-        "javaScript:onClick=sp.messager.open('" + instanceId + "', {" + NotificationContext.CONTRIBUTION_ID + ": '" + postId + "'});");
-  }
 %>
 
-<c:set var="post" value="<%=post%>"/>
+<fmt:message key="blog.updatePost" var="updatePostLabel"/>
+<fmt:message key="blog.editPostContent" var="editPostContentLabel"/>
+<fmt:message key="blog.draftOutPost" var="draftOutPostLabel"/>
+<fmt:message key="blog.deletePost" var="deletePostLabel"/>
+<fmt:message key="GML.notify" var="notifyLabel"/>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<%=language%>">
-<head>
-<title></title>
-<view:looknfeel withCheckFormScript="true"/>
+<c:set var="isGuestAccess" value="<%=m_MainSessionCtrl.getCurrentUserDetail().isAccessGuest()%>"/>
+<c:set var="instanceId" value="<%=instanceId%>"/>
+<c:set var="contributionIdKey" value="<%=NotificationContext.CONTRIBUTION_ID%>"/>
+<c:set var="post" value="<%=post%>"/>
+<c:set var="postId" value="${post.id}"/>
+<c:set var="isDraftStatus" value="<%=post.getPublication().getStatus().equals(PublicationDetail.DRAFT_STATUS)%>"/>
+<c:set var="canModify" value="<%=SilverpeasRole.ADMIN.equals(SilverpeasRole.fromString(profile)) ||
+      SilverpeasRole.PUBLISHER.equals(SilverpeasRole.fromString(profile))%>"/>
+
+<view:sp-page>
+<view:sp-head-part withCheckFormScript="true">
 <% if(wallPaper != null) { %>
 <style type="text/css">
 #blog #blogContainer #bandeau {
@@ -111,13 +112,26 @@ StyleSheet styleSheet = (StyleSheet) request.getAttribute("StyleSheet");
     });
 	}
 </script>
-</head>
+</view:sp-head-part>
 
-<body id="blog">
-<div id="<%=instanceId %>">
-<%
-out.println(window.printBefore());
-%>
+<view:sp-body-part id="blog">
+  <view:browseBar componentId="${instanceId}" path="${post.title}"/>
+  <view:operationPane>
+    <c:if test="${canModify}">
+      <view:operation action="EditPost?PostId=${postId}" altText="${updatePostLabel}"/>
+      <c:if test="${isDraftStatus}">
+        <view:operation action="EditPostContent?PostId=${postId}" altText="${editPostContentLabel}"/>
+        <view:operation action="DraftOutPost?PostId=${postId}" altText="${draftOutPostLabel}"/>
+      </c:if>
+      <view:operation action="javascript:deletePost('${postId}')" altText="${deletePostLabel}"/>
+      <view:operationSeparator/>
+    </c:if>
+    <c:if test="${not isGuestAccess}">
+      <view:operation action="javaScript:sp.messager.open('${instanceId}', {${contributionIdKey}: '${postId}'});" altText="${notifyLabel}"/>
+    </c:if>
+  </view:operationPane>
+<div id="${instanceId}">
+  <view:window>
 	<div id="blogContainer">
 	<div id="bandeau"><h2><a class="txttitrecol" href="<%="Main"%>"><%=componentLabel%></a></h2></div>
 		     
@@ -175,21 +189,15 @@ out.println(window.printBefore());
 																		indexed="true"/>
         </c:if>
 			</div>
-	<div id="footer">
-      <%
-        out.flush();
-        getServletConfig().getServletContext().getRequestDispatcher("/wysiwyg/jsp/htmlDisplayer.jsp?ObjectId="+instanceId+"&ComponentId="+instanceId).include(request, response);
-      %>      
-    </div>	 
+	  <div id="footer">
+      <c:import url='<%="/wysiwyg/jsp/htmlDisplayer.jsp?ObjectId="+instanceId+"&ComponentId="+instanceId%>'/>
+    </div>
 	</div>
 
 <form name="postForm" action="DeletePost" method="post">
 	<input type="hidden" name="PostId"/>
 </form>
-<%
-out.println(window.printAfter());
-%> 
-
+  </view:window>
 </div>
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>

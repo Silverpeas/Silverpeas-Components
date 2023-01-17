@@ -28,20 +28,29 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ include file="check.jsp" %>
-<fmt:setLocale value="${requestScope.resources.language}" />
-<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+
+<%-- Set resource bundle --%>
+<c:set var="userLanguage" value="${requestScope.resources.language}"/>
+<fmt:setLocale value="${userLanguage}"/>
+<view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
+
+<fmt:message key="blog.viewCategory" var="viewCategoryLabel"/>
+<fmt:message key="blog.addCategory" var="addCategoryLabel"/>
+<fmt:message key="blog.addCategory" var="addCategoryIcon" bundle="${icons}"/>
+<c:url var="addCategoryIconUrl" value="${addCategoryIcon}"/>
+
+<c:set var="instanceId" value="<%=instanceId%>"/>
+
 <% 
 Collection<NodeDetail>	categories	= (Collection<NodeDetail>) request.getAttribute("Categories");
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<%=language%>">
-<head>
-<title></title>
-<view:looknfeel withCheckFormScript="true"/>
-<view:includePlugin name="popup"/>
+<view:sp-page>
+<view:sp-head-part withCheckFormScript="true">
 <script type="text/javascript">
 function addCategory() {
 	// force empty fields
@@ -138,7 +147,7 @@ $(document).ready(function() {
 function sortNode(updatedNodeJSON)
 {
 	$.ajax({
-        url:"<%=m_context%>/services/nodes/<%=instanceId%>",
+        url: webContext + "/services/nodes/${instanceId}",
         type: "PUT",
         contentType: "application/json",
         dataType: "json",
@@ -149,27 +158,28 @@ function sortNode(updatedNodeJSON)
         }
         ,
         error: function(jqXHR, textStatus, errorThrown) {
-          if (onError == null)
-           notyError(errorThrown);
-          else
-           onError({
-             status: jqXHR.status,
-             message: errorThrown
-           });
+          if (window.onError) {
+            window.onError({
+              status : jqXHR.status, message : errorThrown
+            });
+          } else {
+            notyError(errorThrown);
+          }
         }
     });
 }
  
 </script>
-</head>
-<body id="blog">
-<div id="<%=instanceId %>">
-<%
-   	operationPane.addOperation(resource.getIcon("blog.addCategory"), resource.getString("blog.addCategory") , "javascript:onClick=addCategory()");
-
-	out.println(window.printBefore());
-    out.println(frame.printBefore());
-%>
+</view:sp-head-part>
+<view:sp-body-part id="blog">
+  <view:browseBar componentId="${instanceId}" path="${viewCategoryLabel}"/>
+  <view:operationPane>
+    <view:operationOfCreation action="javascript:onClick=addCategory()" icon="${addCategoryIconUrl}" altText="${addCategoryLabel}"/>
+  </view:operationPane>
+<div id="${instanceId}">
+  <view:window>
+    <view:frame>
+      <view:areaOfOperationOfCreation/>
 <div class="inlineMessage"><fmt:message key="blog.homePageMessage"/></div>
 <br />
 <%  
@@ -210,10 +220,9 @@ function sortNode(updatedNodeJSON)
 		ligne.addArrayCellIconPane(iconPane);
 	}	
 	out.println(arrayPane.print());
-	
-  	out.println(frame.printAfter());
-	out.println(window.printAfter());
 %>
+    </view:frame>
+  </view:window>
 </div>
 
 <div id="categoryManager" style="display: none;">
@@ -236,5 +245,5 @@ function sortNode(updatedNodeJSON)
 	</form>
 </div>
 
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>
