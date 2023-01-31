@@ -135,7 +135,7 @@
           validate : function(formPaneData) {
             const result = this.popinOptions.callback(formPaneData);
             if (sp.promise.isOne(result)) {
-              formPaneData.validationFormPromise = result.then(function() {
+              return result.then(function() {
                 this.formApi.initFormData();
               }.bind(this));
             } else {
