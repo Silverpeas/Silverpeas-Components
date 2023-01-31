@@ -70,7 +70,6 @@
                       type="validation">
       <silverpeas-form-pane v-on:api="setFormPaneApi"
                             v-bind:manual-actions="true"
-                            v-on:data-update="validate"
                             v-bind:mandatory-legend="formApi && formApi.isAtLeastOnMandatoryInput()">
         <kmelia-file-upload-validation-form
             v-on:api="setFormApi"

@@ -474,7 +474,7 @@ public final class BlogSessionController extends AbstractComponentSessionControl
         this.wallPaper.setUrl(
             FileServerUtils.getOnlineURL(this.getComponentId(), file.getName(), file.getName(),
                 FileUtil.getMimeType(file.getName()), ""));
-        this.wallPaper.setSize(FileRepositoryManager.formatFileSize(file.length()));
+        this.wallPaper.setSize(file.length());
         break;
       }
     }
@@ -528,7 +528,7 @@ public final class BlogSessionController extends AbstractComponentSessionControl
       this.wallPaper.setName(nameFile);
       this.wallPaper.setUrl(FileServerUtils.getOnlineURL(this.getComponentId(), nameFile, nameFile,
           FileUtil.getMimeType(nameFile), ""));
-      this.wallPaper.setSize(FileRepositoryManager.formatFileSize(fileWallPaper.length()));
+      this.wallPaper.setSize(fileWallPaper.length());
     } catch (Exception ex) {
       throw new BlogRuntimeException(ex);
     }
@@ -588,7 +588,7 @@ public final class BlogSessionController extends AbstractComponentSessionControl
         this.styleSheet.setUrl(
             FileServerUtils.getOnlineURL(this.getComponentId(), file.getName(), file.getName(),
                 FileUtil.getMimeType(file.getName()), ""));
-        this.styleSheet.setSize(FileRepositoryManager.formatFileSize(file.length()));
+        this.styleSheet.setSize(file.length());
         try {
           this.styleSheet.setContent(FileUtils.readFileToString(file, StandardCharsets.UTF_8));
         } catch (IOException e) {
@@ -643,7 +643,7 @@ public final class BlogSessionController extends AbstractComponentSessionControl
       this.styleSheet.setName(nameFile);
       this.styleSheet.setUrl(FileServerUtils.getOnlineURL(this.getComponentId(), nameFile, nameFile,
           FileUtil.getMimeType(nameFile), ""));
-      this.styleSheet.setSize(FileRepositoryManager.formatFileSize(fileStyleSheet.length()));
+      this.styleSheet.setSize(fileStyleSheet.length());
       setStylesheetContent(fileStyleSheet);
 
     } catch (Exception ex) {

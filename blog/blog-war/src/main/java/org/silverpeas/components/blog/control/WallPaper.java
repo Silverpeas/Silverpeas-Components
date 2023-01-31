@@ -23,35 +23,6 @@
  */
 package org.silverpeas.components.blog.control;
 
-import java.io.Serializable;
-
-public class WallPaper implements Serializable {
-
-  private String name = null;
-  private String url = null;
-  private String size = null;
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public String getSize() {
-    return size;
-  }
-
-  public void setSize(String size) {
-    this.size = size;
-  }
-
-  public String getUrl() {
-    return url;
-  }
-
-  public void setUrl(String url) {
-    this.url = url;
-  }
+public class WallPaper extends CustomEntity {
+  private static final long serialVersionUID = -4353366328978513811L;
 }

@@ -23,19 +23,42 @@
  */
 package org.silverpeas.components.blog.control;
 
-import javax.xml.bind.annotation.XmlTransient;
+import org.silverpeas.core.util.JSONCodec;
 
-public class StyleSheet extends CustomEntity {
-  private static final long serialVersionUID = -9024520644328445228L;
+import java.io.Serializable;
 
-  @XmlTransient
-  private String content = null;
+public abstract class CustomEntity implements Serializable {
+  private static final long serialVersionUID = -856422323085039794L;
 
-  public String getContent() {
-    return content;
+  private String name = null;
+  private String url = null;
+  private Long size = null;
+
+  public String getName() {
+    return name;
   }
 
-  public void setContent(String content) {
-    this.content = content;
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public String getUrl() {
+    return url;
+  }
+
+  public void setUrl(String url) {
+    this.url = url;
+  }
+
+  public Long getSize() {
+    return size;
+  }
+
+  public void setSize(Long size) {
+    this.size = size;
+  }
+
+  public String asJson() {
+    return JSONCodec.encode(this);
   }
 }

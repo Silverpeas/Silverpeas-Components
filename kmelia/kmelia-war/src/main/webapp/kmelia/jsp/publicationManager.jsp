@@ -732,7 +732,7 @@
 		<div class="cell">
 			<fieldset id="pubThumb" class="skinFieldset">
 				<legend><%=resources.getString("GML.thumbnail")%></legend>
-				<viewTags:displayThumbnail thumbnail="<%=thumbnail %>" mandatory="<%=thumbnailSettings.isMandatory() %>" componentId="<%=componentId %>" objectId="<%=id %>" backURL="<%=backUrl%>" objectType="<%=ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE %>" width="<%=thumbnailSettings.getWidth() %>" height="<%=thumbnailSettings.getHeight() %>"/>
+				<viewTags:displayThumbnail thumbnail="<%=thumbnail %>" mandatory="<%=thumbnailSettings.isMandatory() %>" width="<%=thumbnailSettings.getWidth() %>" height="<%=thumbnailSettings.getHeight() %>"/>
 			</fieldset>
 		</div>
 		<% } %>

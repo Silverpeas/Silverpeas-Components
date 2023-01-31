@@ -87,146 +87,79 @@ if (!m_MainSessionCtrl.getCurrentUserDetail().isAccessGuest() && isUserSubscribe
   operationPane.addOperation("useless", "<span id='subscriptionMenuLabel'></span>", "javascript:spSubManager.switchUserSubscription()");
 }
 %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.blog" xml:lang="<%= language%>">
-<head>
-<title><%=componentLabel%></title>
-<view:looknfeel withCheckFormScript="true"/>
+<view:sp-page angularJsAppName="silverpeas.blog">
+<view:sp-head-part withCheckFormScript="true">
+<view:includePlugin name="blog"/>
 <view:includePlugin name="toggle"/>
 <view:includePlugin name="subscription"/>
+
+<c:set var="wallPaper" value="<%=wallPaper != null ? wallPaper : new WallPaper()%>"/>
+<c:set var="styleSheet" value="<%=styleSheet != null ? styleSheet : new StyleSheet()%>"/>
+
 <% if (StringUtil.isDefined(rssURL)) { %>
 <link rel="alternate" type="application/rss+xml" title="<%=componentLabel%> : <%=resource.getString("blog.rssLast")%>" href="<%=m_context+rssURL%>"/>
 <% } %>
-<script type="text/javascript">
-<!--
+  <script type="text/javascript">
 
-SUBSCRIPTION_PROMISE.then(function() {
-  window.spSubManager = new SilverpeasSubscriptionManager('<%=instanceId%>');
-});
-
-function openSPWindow(fonction, windowName) {
-  pdcUtilizationWindow = SP_openWindow(fonction, windowName, '600', '400','scrollbars=yes, resizable, alwaysRaised');
-}
-
-function sendData() {
-  window.document.searchForm.action = "Search";
-  window.document.searchForm.WordSearch.value = document.searchForm.WordSearch.value;
-  window.document.searchForm.submit();
-}
-
-function customize() {
-  $("#customizationDialog").dialog("open");
-}
-function getExtension(filename) {
-  var indexPoint = filename.lastIndexOf(".");
-  // on verifie qu il existe une extension au nom du fichier
-  if (indexPoint != -1) {
-    // le fichier contient une extension. On recupere l extension
-    var ext = filename.substring(indexPoint + 1);
-    return ext;
-  }
-  return null;
-}
-
-function ifFilesCorrectExecute(callback) {
-  var wallPaper = $("#customizationDialog #WallPaperNewFile").val();
-  var styleSheet = $("#customizationDialog #StyleSheetNewFile").val();
-  var errorMsg = "";
-  var errorNb = 0;
-
-  if (!isWhitespace(wallPaper)) {
-    var extension = getExtension(wallPaper);
-
-    if (extension == null) {
-      errorMsg += " - '<%=resource.getString("blog.wallPaper")%>' <%=resource.getString("blog.wallPaperExtension")%>\n";
-      errorNb++;
-    } else {
-      extension = extension.toLowerCase();
-      if ( (extension != "gif") && (extension != "jpeg") && (extension != "jpg") && (extension != "png") ) {
-        errorMsg += " - '<%=resource.getString("blog.wallPaper")%>' <%=resource.getString("blog.wallPaperExtension")%>\n";
-        errorNb++;
-      }
-    }
-  }
-
-  if (!isWhitespace(styleSheet)) {
-    var extension = getExtension(styleSheet);
-
-    if (extension == null) {
-      errorMsg += " - '<%=resource.getString("blog.styleSheet")%>' <%=resource.getString("blog.styleSheetExtension")%>\n";
-      errorNb++;
-    } else {
-      extension = extension.toLowerCase();
-      if (extension != "css") {
-        errorMsg += " - '<%=resource.getString("blog.styleSheet")%>' <%=resource.getString("blog.styleSheetExtension")%>\n";
-        errorNb++;
-      }
-    }
-  }
-
-  switch(errorNb) {
-    case 0 :
-      callback.call(this);
-      break;
-     case 1 :
-      errorMsg = "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" + errorMsg;
-      jQuery.popup.error(errorMsg);
-      break;
-     default :
-      errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
-      jQuery.popup.error(errorMsg);
-  }
-}
-
-$(function() {
-  $("#customizationDialog").dialog({
-  autoOpen: false,
-  resizable: false,
-  modal: true,
-  height: "auto",
-  width: 750,
-  buttons: {
-    "<%=resource.getString("GML.ok")%>": function() {
-      ifFilesCorrectExecute(function() {
-        document.customizationFiles.submit();
-      });
-    },
-    "<%=resource.getString("GML.cancel")%>": function() {
-      $(this).dialog("close");
-     }
-  }
+  SUBSCRIPTION_PROMISE.then(function() {
+    window.spSubManager = new SilverpeasSubscriptionManager('<%=instanceId%>');
   });
-});
 
-function hideWallPaperFile() {
-  $("#customizationDialog #WallPaperFile").hide();
-  document.customizationFiles.removeWallPaperFile.value = "yes";
-}
+  function openSPWindow(fonction, windowName) {
+    pdcUtilizationWindow = SP_openWindow(fonction, windowName, '600', '400','scrollbars=yes, resizable, alwaysRaised');
+  }
 
-function hideStyleSheetFile() {
-  $("#customizationDialog #StyleSheetFile").hide();
-  document.customizationFiles.removeStyleSheetFile.value = "yes";
-}
--->
-</script>
-<% if(wallPaper != null) { %>
-<style type="text/css">
-#blog #blogContainer #bandeau {
-	background:url("<%=wallPaper.getUrl()%>") center no-repeat;
-}
-</style>
-<% } %>
-<% if(styleSheet != null) { %>
-<style type="text/css">
-<%=styleSheet.getContent()%>
-</style>
-<% } %>
-</head>
-<body id="blog">
+  function sendData() {
+    window.document.searchForm.action = "Search";
+    window.document.searchForm.WordSearch.value = document.searchForm.WordSearch.value;
+    window.document.searchForm.submit();
+  }
+
+  function customize() {
+    blogApp.manager.openPersonalization();
+  }
+
+  whenSilverpeasReady(function() {
+    window.blogApp = SpVue.createApp({
+      data : function() {
+        return {
+          manager : undefined,
+          wallpaper : ${wallPaper.asJson()},
+          stylesheet : ${styleSheet.asJson()}
+        }
+      },
+      methods : {
+        customizeChange : function() {
+          sp.navRequest(location.href).go();
+        }
+      }
+    }).mount('#blog-app');
+  });
+  </script>
+  <c:if test="${not empty wallPaper.url}">
+    <style>
+      #blog #blogContainer #bandeau {
+        background: url("${wallPaper.url}") center no-repeat;
+      }
+    </style>
+  </c:if>
+  <c:if test="${not empty styleSheet.content}">
+    <style>
+      ${styleSheet.content}
+    </style>
+  </c:if>
+</view:sp-head-part>
+<view:sp-body-part id="blog">
 <div id="<%=instanceId %>">
   <%
   out.println(window.printBefore());
   %>
+  <div id="blog-app">
+    <silverpeas-blog-management v-on:api="manager = $event"
+                                v-bind:wallpaper="wallpaper"
+                                v-bind:stylesheet="stylesheet"
+                                v-on:customize-change="customizeChange"></silverpeas-blog-management>
+  </div>
   <div id="blogContainer">
     <div id="bandeau">
       <h2><a href="<%="Main"%>"><%=componentLabel%></a></h2>
@@ -319,47 +252,7 @@ function hideStyleSheetFile() {
         %>
     </div>
     <div id="footer">
-      <%
-        out.flush();
-        getServletConfig().getServletContext().getRequestDispatcher("/wysiwyg/jsp/htmlDisplayer.jsp?ObjectId="+instanceId+"&ComponentId="+instanceId).include(request, response);
-        %>
-    </div>
-    <!-- Dialog to edit files to customize -->
-    <div id="customizationDialog" title="<%=resource.getString("blog.customize")%>">
-      <form name="customizationFiles" action="Customize" method="post" enctype="multipart/form-data" accept-charset="UTF-8">
-
-	   <div id="WallPaper">
-	   <label id="WallPaperFile_label" for="WallPaperNewFile" class="label-ui-dialog"><%=resource.getString("blog.wallPaper")%></label>
-		<% if(wallPaper != null) { %>
-			<span id="WallPaperFile" class="champ-ui-dialog">
-				<a href="<%=wallPaper.getUrl()%>" target="_blank"><%=wallPaper.getName()%></a> 
-				<%=wallPaper.getSize()%> 
-				<a href="javascript:onclick=hideWallPaperFile();"><img alt="delete" src="<%=resource.getIcon("blog.smallDelete")%>"/></a> <br/>
-			</span>
-              <% } %>
-			  <span class="champ-ui-dialog">
-					<input type="file" name="wallPaper" id="WallPaperNewFile" size="40"/>
-					<em>(.gif/.jpg/.png)</em>
-					<input type="hidden" name="removeWallPaperFile" value="no"/>
-			  </span>
-	  </div>
-	  <div id="StyleSheet">
-	   <label id="fileName_label" for="StyleSheetNewFile" class="label-ui-dialog"><%=resource.getString("blog.styleSheet")%></label>
-        <span 	class="champ-ui-dialog">
-		<% if (styleSheet != null) { %>
-              <span id="StyleSheetFile"> 
-				<a href="<%=styleSheet.getUrl()%>" target="_blank"><%=styleSheet.getName()%></a> 
-				<%=styleSheet.getSize()%> 
-				<a href="javascript:onclick=hideStyleSheetFile();"><img src="<%=resource.getIcon("blog.smallDelete")%>" alt=""/></a>
-				<br/>
-              </span>
-              <% } %>
-				<input type="file" name="styleSheet" id="StyleSheetNewFile" size="40"/>
-				<em>(.css)</em>
-				<input type="hidden" name="removeStyleSheetFile" value="no"/>
-		</span>
-	  </div>
-      </form>
+      <c:import url='<%="/wysiwyg/jsp/htmlDisplayer.jsp?ObjectId="+instanceId+"&ComponentId="+instanceId%>'/>
     </div>
 </div>
 <%
@@ -367,9 +260,5 @@ out.println(window.printAfter());
 %>
 
   </div>
-<script type="text/javascript">
-  /* declare the module myapp and its dependencies (here in the silverpeas module) */
-  var myapp = angular.module('silverpeas.blog', ['silverpeas.services', 'silverpeas.directives']);
-</script>
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>

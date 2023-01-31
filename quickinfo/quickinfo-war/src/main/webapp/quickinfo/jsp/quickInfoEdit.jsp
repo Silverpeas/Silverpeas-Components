@@ -300,7 +300,7 @@ $(document).ready(function() {
 				<c:param name="Action" value="Edit"/>
 				<c:param name="Id" value="${curQuickInfo.id}"/>
 			</c:url>
-			<viewTags:displayThumbnail thumbnail="<%=thumbnail %>" mandatory="${thumbnailSettings.mandatory}" componentId="${curQuickInfo.componentInstanceId}" objectId="${curQuickInfo.publicationId}" backURL="${thumbnailBackURL}" objectType="<%=ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE %>" width="${thumbnailSettings.width}" height="${thumbnailSettings.height}"/>
+			<viewTags:displayThumbnail thumbnail="<%=thumbnail %>" mandatory="${thumbnailSettings.mandatory}" width="${thumbnailSettings.width}" height="${thumbnailSettings.height}"/>
 		</fieldset>
 	</div>
 </div>
