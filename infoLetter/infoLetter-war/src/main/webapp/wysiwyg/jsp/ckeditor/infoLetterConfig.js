@@ -48,7 +48,7 @@ CKEDITOR.editorConfig = function( config )
     { name: 'links',       items : [ 'Link','Unlink'] },
     { name: 'insert',      items : [ 'variables' ] },
     '/',
-    { name: 'basicstyles', items : [ 'Bold','Italic','Underline','Strike','-','RemoveFormat' ] },
+    { name: 'basicstyles', items : [ 'Bold','Italic','Underline','Strike','Superscript','-','RemoveFormat' ] },
     { name: 'styles',      items : [ 'Styles','Format','Font','FontSize' ] },
     { name: 'colors',      items : [ 'TextColor','BGColor','Smiley' ] }
   ];
