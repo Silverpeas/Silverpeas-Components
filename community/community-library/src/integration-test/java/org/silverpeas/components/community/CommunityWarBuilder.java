@@ -44,7 +44,7 @@ public class CommunityWarBuilder extends BasicWarBuilder {
     addMavenDependencies("org.silverpeas.core.services:silverpeas-core-comment");
     addMavenDependencies("org.silverpeas.core:silverpeas-core-test");
     addPackages(true, test.getPackageName());
-
+    addAsResource("silverpeas-oak.properties");
     addAsResource("org/silverpeas/jobStartPagePeas/settings/jobStartPagePeasSettings.properties");
     addAsResource("org/silverpeas/util/attachment/Attachment.properties");
     addAsResource("org/silverpeas/components/community/settings/communitySettings.properties");
