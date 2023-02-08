@@ -41,23 +41,24 @@ import java.util.List;
 @Repository
 public class TopicSearchDaoImpl implements TopicSearchDao {
 
-  private static SettingBundle settings =
+  private static final SettingBundle settings =
       ResourceLocator.getSettingBundle("org.silverpeas.kmelia.settings.kmeliaSettings");
+  private static final String QUERY = "query";
 
   @Override
   public List<MostInterestedQueryVO> getMostInterestedSearch(String instanceId) {
     JdbcSqlQuery jdbcSqlQuery =
         JdbcSqlQuery.select("count(*) as nb, query").from("sc_kmelia_search")
             .where("instanceid = ?", instanceId)
-            .groupBy("query", "language")
-            .orderBy("nb DESC", "query")
+            .groupBy(QUERY, "language")
+            .orderBy("nb DESC", QUERY)
             .configure(config ->
                 config.withResultLimit(
                     settings.getInteger("kmelia.stats.most.interested.query.limit", 10)));
     List<MostInterestedQueryVO> mostInterestedQueries = null;
     try {
       mostInterestedQueries = jdbcSqlQuery
-          .execute(row -> new MostInterestedQueryVO(row.getString("query"), row.getInt("nb")));
+          .execute(row -> new MostInterestedQueryVO(row.getString(QUERY), row.getInt("nb")));
     } catch (SQLException e) {
       SilverLogger.getLogger(this)
           .error("Problem to execute SQL query " + jdbcSqlQuery.getSqlQuery() +
