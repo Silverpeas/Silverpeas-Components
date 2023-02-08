@@ -22,7 +22,7 @@ CREATE TABLE SC_Almanach_Periodicity
   frequency       INT NOT NULL,
   daysWeekBinary  CHAR(7),
   numWeek         INT,
-  day             INT,
+  "day"             INT,
   untilDatePeriod VARCHAR(10)
 );
 

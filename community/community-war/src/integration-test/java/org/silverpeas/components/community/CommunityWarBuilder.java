@@ -60,7 +60,6 @@ public class CommunityWarBuilder extends BasicWarBuilder {
     createMavenDependencies("org.silverpeas.core.services:silverpeas-core-workflow");
     createMavenDependencies("org.silverpeas.core.services:silverpeas-core-chat");
     createMavenDependencies("org.silverpeas.core.services:silverpeas-core-mylinks");
-    createMavenDependencies("org.silverpeas.jcr:access-control:1.4");
 
     initJcrSchema();
 

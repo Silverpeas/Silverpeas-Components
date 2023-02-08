@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.silverpeas.components</groupId>
     <artifactId>rssaggregator</artifactId>
-    <version>6.4-feature12866</version>
+    <version>6.4-SNAPSHOT</version>
   </parent>
 
   <groupId>org.silverpeas.components.rssaggregator</groupId>
