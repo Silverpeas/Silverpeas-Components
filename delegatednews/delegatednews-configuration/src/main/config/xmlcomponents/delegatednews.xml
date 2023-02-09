@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
 
     Copyright (C) 2000 - 2022 Silverpeas
 
@@ -23,26 +22,23 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
--->
-
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
+--><WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>delegatednews</name>
   <label>
     <message lang="fr">Actualités déléguées</message>
     <message lang="en">Delegated news</message>
     <message lang="de">Delegierte Nachrichten</message>
-  </label>
+  <message lang="es">Noticias Delegadas</message></label>
   <description>
     <message lang="fr">Cette application permet la validation et la mise en ligne en page d'accueil des actualités soumises à validation depuis Actualités dont l'option Gestion des actualités est activée.</message>
     <message lang="en">This application allows to validate and display news in home page. The news have been proposed from QuickInfo which have the News manage option activated.</message>
     <message lang="de">Diese Komponente ermöglicht es Nachrichten in der Homepage zu Validieren und anzuzeigen.</message>
-  </description>
+  <message lang="es">Esta aplicación permite validar y publicar en la página de inicio las noticias enviadas para validación desde Noticias cuya opción de gestión de Noticias esté activada.</message></description>
   <suite>
     <message lang="fr">04 Gestion de contenu</message>
     <message lang="en">04 Content Management</message>
     <message lang="de">04 Inhalts Verwaltung</message>
-  </suite>
+  <message lang="es">04 Gestión de contenidos</message></suite>
   <visible>true</visible>
   <portlet>true</portlet>
   <profiles>
@@ -51,12 +47,12 @@
         <message lang="fr">Equipe éditoriale</message>
         <message lang="en">Editorial team</message>
         <message lang="de">Redaktion</message>
-      </label>
+      <message lang="es">Equipo editorial</message></label>
       <help>
         <message lang="fr">L'équipe éditoriale valide ou refuse les actualités soumises par les contributeurs des différentes Actualités utilisées pour saisir les actualités.</message>
         <message lang="en">The editorial team validates or denies the news submitted by contributors of the various QuickInfo used to capture the news.</message>
         <message lang="de">Redaktion</message>
-      </help>
+      <message lang="es">El equipo editorial valida o rechaza las noticias enviadas por los colaboradores de las diferentes Noticias utilizadas para ingresar las noticias.</message></help>
       <spaceMapping>
         <profile>admin</profile>
       </spaceMapping>
@@ -66,12 +62,12 @@
         <message lang="fr">Contributeurs</message>
         <message lang="en">Contributors</message>
         <message lang="de">Beitragende</message>
-      </label>
+      <message lang="es">Colaboradores</message></label>
       <help>
         <message lang="fr">Les contributeurs visualisent l'état de leurs différentes actualités.</message>
         <message lang="en">Contributors viewing the status of their various news.</message>
         <message lang="de">Beitragende</message>
-      </help>
+      <message lang="es">Los colaboradores ven el estado de sus diversas noticias.</message></help>
       <spaceMapping>
         <profile>publisher</profile>
         <profile>writer</profile>

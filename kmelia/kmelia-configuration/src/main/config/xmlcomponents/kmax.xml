@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
 
     Copyright (C) 2000 - 2022 Silverpeas
 
@@ -23,10 +22,7 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
--->
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
+--><WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>kmax</name>
   <behaviors>
     <behavior>topicTracker</behavior>
@@ -35,7 +31,7 @@
     <message lang="fr">Gestion de contenu multi-axes</message>
     <message lang="en">Multi-level Tracker</message>
     <message lang="de">Multi-level Tracker</message>
-  </label>
+  <message lang="es">Gestión de contenido multieje</message></label>
   <description>
     <message lang="fr">Cette application gère également des publications.
       Mais celles-ci sont classées dans une taxonomie indépendante permettant
@@ -51,12 +47,12 @@
       Der Benutzer wählt die Werte der verschiedenen Achsen, um die Dokumente, die er suchte zu
       finden.
     </message>
-  </description>
+  <message lang="es">Esta aplicación también gestiona publicaciones. Pero estos se clasifican en una taxonomía independiente que permite al usuario realizar búsquedas cruzadas con facilidad.</message></description>
   <suite>
     <message lang="fr">01 Gestion Documentaire</message>
     <message lang="en">01 Document Management</message>
     <message lang="de">01 Dokumentenverwaltung</message>
-  </suite>
+  <message lang="es">01 Gestión de Documentos</message></suite>
   <visible>true</visible>
   <portlet>true</portlet>
   <profiles>
@@ -65,7 +61,7 @@
         <message lang="fr">Gestionnaires</message>
         <message lang="en">Managers</message>
         <message lang="de">Manager</message>
-      </label>
+      <message lang="es">Gerentes</message></label>
       <help>
         <message lang="fr">Les gestionnaires définissent les axes de classement et sélectionnent les
           formulaires de métadonnées.
@@ -74,7 +70,7 @@
         </message>
         <message lang="de">Managers define classification axis and select metadata templates.
         </message>
-      </help>
+      <message lang="es">Los administradores definen los ejes de clasificación y seleccionan los formularios de metadatos.</message></help>
       <spaceMapping>
         <profile>admin</profile>
       </spaceMapping>
@@ -84,7 +80,7 @@
         <message lang="fr">Publieurs</message>
         <message lang="en">Publishers</message>
         <message lang="de">Herausgeber</message>
-      </label>
+      <message lang="es">Editores</message></label>
       <help>
         <message lang="fr">Les publieurs créent des publications et valident les publications des
           rédacteurs.
@@ -92,7 +88,7 @@
         <message lang="en">Publishers create publication and validate writer's publications.
         </message>
         <message lang="de">Herausgeber</message>
-      </help>
+      <message lang="es">Los editores crean publicaciones y aprueban las publicaciones de los editores.</message></help>
       <spaceMapping>
         <profile>publisher</profile>
       </spaceMapping>
@@ -102,12 +98,12 @@
         <message lang="fr">Rédacteurs</message>
         <message lang="en">Writers</message>
         <message lang="de">Redaktor</message>
-      </label>
+      <message lang="es">Editores</message></label>
       <help>
         <message lang="fr">Les rédacteurs créent des publications.</message>
         <message lang="en">Writers create publications.</message>
         <message lang="de">Redaktor</message>
-      </help>
+      <message lang="es">Los editores crean publicaciones.</message></help>
       <spaceMapping>
         <profile>writer</profile>
       </spaceMapping>
@@ -117,14 +113,14 @@
         <message lang="fr">Lecteurs</message>
         <message lang="en">Readers</message>
         <message lang="de">Leser</message>
-      </label>
+      <message lang="es">Lectores</message></label>
       <help>
         <message lang="fr">Les lecteurs accèdent aux publications et peuvent laisser des
           commentaires.
         </message>
         <message lang="en">Readers can access the publications and leave comments.</message>
         <message lang="de">Leser</message>
-      </help>
+      <message lang="es">Los lectores acceden a las publicaciones y pueden dejar comentarios.</message></help>
       <spaceMapping>
         <profile>reader</profile>
       </spaceMapping>
@@ -136,7 +132,7 @@
         <message lang="fr">Publications</message>
         <message lang="en">Publications</message>
         <message lang="de">Publications</message>
-      </label>
+      <message lang="es">Publicaciones</message></label>
       <description>
         <message lang="fr">Elles permettent de regrouper plusieurs fichiers et de les enrichir avec
           des données textuelles plus ou moins structurées
@@ -147,7 +143,7 @@
         <message lang="de">Sie ermöglichen es, mehrere Dateien Gruppe und bereichern sie mit mehr
           oder weniger strukturierte Textdaten
         </message>
-      </description>
+      <message lang="es">Permiten agrupar varios archivos y enriquecerlos con datos textuales más o menos estructurados</message></description>
       <order>1</order>
       <parameters>
         <parameter>
@@ -156,7 +152,7 @@
             <message lang="fr">Contenu</message>
             <message lang="en">Content</message>
             <message lang="de">Inhalt</message>
-          </label>
+          <message lang="es">Contenido</message></label>
           <order>1</order>
           <mandatory>true</mandatory>
           <value>yes</value>
@@ -166,7 +162,7 @@
             <message lang="fr">Pour pouvoir ajouter un contenu aux publications</message>
             <message lang="en">Add some content to a publication</message>
             <message lang="de">Fügen Sie Inhalt in eine Veröffentlichung ein</message>
-          </help>
+          <message lang="es">Para poder agregar contenido a las publicaciones.</message></help>
         </parameter>
         <parameter>
           <name>tabAttachments</name>
@@ -174,7 +170,7 @@
             <message lang="fr">Fichiers Joints</message>
             <message lang="en">Attachments</message>
             <message lang="de">Anhang</message>
-          </label>
+          <message lang="es">Ficheros adjuntos</message></label>
           <order>2</order>
           <mandatory>true</mandatory>
           <value>yes</value>
@@ -184,7 +180,7 @@
             <message lang="fr">Pour pouvoir joindre des fichiers à une publication</message>
             <message lang="en">Add attachments to a publication</message>
             <message lang="de">Um Dateien in einer Veröffentlichung beilegen zu können</message>
-          </help>
+          <message lang="es">Para poder adjuntar archivos a una publicación</message></help>
         </parameter>
         <parameter>
           <name>tabComments</name>
@@ -192,7 +188,7 @@
             <message lang="fr">Commentaires</message>
             <message lang="en">Comments</message>
             <message lang="de">Kommentare</message>
-          </label>
+          <message lang="es">Comentarios</message></label>
           <order>3</order>
           <mandatory>true</mandatory>
           <value>no</value>
@@ -202,7 +198,7 @@
             <message lang="fr">Pour commenter une publication</message>
             <message lang="en">Enable to comment a publication</message>
             <message lang="de">Um eine Veröffentlichung zu kommentieren</message>
-          </help>
+          <message lang="es">Para comentar una publicación</message></help>
         </parameter>
         <parameter>
           <name>tabReadersList</name>
@@ -210,7 +206,7 @@
             <message lang="fr">Contrôles de Lecture</message>
             <message lang="en">Readers list</message>
             <message lang="de">Leser-Liste</message>
-          </label>
+          <message lang="es">Controles de reproducción</message></label>
           <order>4</order>
           <mandatory>true</mandatory>
           <value>yes</value>
@@ -222,7 +218,7 @@
             <message lang="de">Zeigt eine Liste der Personen an, Die eine Veröffentlichung gelesen
               haben
             </message>
-          </help>
+          <message lang="es">Muestra la lista de personas que han leído una publicación.</message></help>
         </parameter>
         <parameter>
           <name>draft</name>
@@ -230,7 +226,7 @@
             <message lang="fr">Mode brouillon</message>
             <message lang="en">Draft</message>
             <message lang="de">Entwurf</message>
-          </label>
+          <message lang="es">Modo borrador</message></label>
           <order>5</order>
           <mandatory>true</mandatory>
           <value>no</value>
@@ -247,7 +243,7 @@
             <message lang="de">Eine Veröffentlichung im Entwurfs-Modus ist nur für den Autor
               sichtbar, so kann er daran arbeiten.
             </message>
-          </help>
+          <message lang="es">El modo borrador te permite trabajar en una publicación sin que nadie más la vea.</message></help>
         </parameter>
         <parameter>
           <name>useDescription</name>
@@ -255,7 +251,7 @@
             <message lang="fr">Champ Description</message>
             <message lang="en">Description field</message>
             <message lang="de">Beschreibung</message>
-          </label>
+          <message lang="es">campo Descripción</message></label>
           <order>6</order>
           <mandatory>true</mandatory>
           <value>2</value>
@@ -265,7 +261,7 @@
                 <message lang="fr">Non</message>
                 <message lang="en">No</message>
                 <message lang="de">Neine</message>
-              </name>
+              <message lang="es">No</message></name>
               <value>0</value>
             </option>
             <option>
@@ -273,7 +269,7 @@
                 <message lang="fr">Saisie facultative</message>
                 <message lang="en">Optionnal entry</message>
                 <message lang="de">Optionnaler Eintrag</message>
-              </name>
+              <message lang="es">Entrada opcional</message></name>
               <value>1</value>
             </option>
             <option>
@@ -281,7 +277,7 @@
                 <message lang="fr">Saisie obligatoire</message>
                 <message lang="en">Mandatory entry</message>
                 <message lang="de">Pflichteintrag</message>
-              </name>
+              <message lang="es">requerido</message></name>
               <value>2</value>
             </option>
           </options>
@@ -291,7 +287,7 @@
             <message lang="fr">Visibilité du champ Description</message>
             <message lang="en">Display a field to describe the publication.</message>
             <message lang="de">Zeigt ein Feld an, um die Veröffentlichung zu beschreiben.</message>
-          </help>
+          <message lang="es">Visibilidad del campo Descripción</message></help>
         </parameter>
         <parameter>
           <name>useKeywords</name>
@@ -299,7 +295,7 @@
             <message lang="fr">Champ Mots-clés</message>
             <message lang="en">Keywords</message>
             <message lang="de">Schlüsselwörter</message>
-          </label>
+          <message lang="es">Campo de palabras clave</message></label>
           <order>7</order>
           <mandatory>true</mandatory>
           <value>no</value>
@@ -312,7 +308,7 @@
             <message lang="en">Publications have a field to enter keywords.</message>
             <message lang="de">Veröffentlichungen haben ein Feld um Schlüsselwörter einzugeben.
             </message>
-          </help>
+          <message lang="es">Los documentos creados dentro de esta instancia pueden incluir un campo adicional de &amp;#39;Palabras clave&amp;#39;.</message></help>
         </parameter>
         <parameter>
           <name>useAuthor</name>
@@ -320,7 +316,7 @@
             <message lang="fr">Champ Auteur</message>
             <message lang="en">Author field</message>
             <message lang="de">Autor Feld</message>
-          </label>
+          <message lang="es">Campo de autor</message></label>
           <order>8</order>
           <mandatory>true</mandatory>
           <value>no</value>
@@ -334,7 +330,7 @@
             <message lang="de">Veröffentlichung verfügen über ein Feld, um den Namen des Autors
               anzugeben.
             </message>
-          </help>
+          <message lang="es">Los documentos creados dentro de esta instancia pueden incluir un campo &amp;#39;Autor&amp;#39; adicional.</message></help>
         </parameter>
         <parameter>
           <name>useImportance</name>
@@ -342,7 +338,7 @@
             <message lang="fr">Champ Importance</message>
             <message lang="en">Importance field</message>
             <message lang="de">Wichtigkeits Feld</message>
-          </label>
+          <message lang="es">campo de importancia</message></label>
           <order>9</order>
           <mandatory>true</mandatory>
           <value>no</value>
@@ -356,7 +352,7 @@
             <message lang="de">Veröffentlichung verfügen über ein Feld, um ihre Wichtigkeit
               anzugeben.
             </message>
-          </help>
+          <message lang="es">Los documentos creados dentro de esta instancia pueden incluir un campo adicional de &amp;#39;Importancia&amp;#39;.</message></help>
         </parameter>
         <parameter>
           <name>useVersion</name>
@@ -364,7 +360,7 @@
             <message lang="fr">Champ Version</message>
             <message lang="en">Version field</message>
             <message lang="de">Version Feld</message>
-          </label>
+          <message lang="es">Campo de versión</message></label>
           <order>10</order>
           <mandatory>true</mandatory>
           <value>no</value>
@@ -377,7 +373,7 @@
             <message lang="en">Publications have a field to define their version.</message>
             <message lang="de">Veröffentlichung verfügen über ein Feld, um ihre Version anzugeben.
             </message>
-          </help>
+          <message lang="es">Los documentos creados dentro de esta instancia pueden incluir un campo adicional de &amp;#39;Versión&amp;#39;.</message></help>
         </parameter>
         <parameter>
           <name>nbDayForReservation</name>
@@ -385,10 +381,10 @@
             <message lang="fr">Gestion des retards</message>
             <message lang="en">Backlog management</message>
             <message lang="de">Verwaltung der Verspätungen</message>
-          </label>
+          <message lang="es">Gestión de retrasos</message></label>
           <order>13</order>
           <mandatory>false</mandatory>
-          <value></value>
+          <value/>
           <type>text</type>
           <size>5</size>
           <updatable>always</updatable>
@@ -406,7 +402,7 @@
               wählen und die Verspätungen zu verwalten.
               Die Frist ist in den Tagen ausgedrückt und berücksichtige keine Samstage und Sonntage.
             </message>
-          </help>
+          <message lang="es">Esta opción le permite elegir una fecha límite de reserva para los archivos adjuntos y gestionar los retrasos. Este plazo se expresa en días y no tiene en cuenta los sábados y domingos.</message></help>
         </parameter>
         <parameter>
           <name>publicationSort</name>
@@ -414,7 +410,7 @@
             <message lang="fr">Ordre des publications</message>
             <message lang="en">Publications sorting</message>
             <message lang="de">Publications sorting</message>
-          </label>
+          <message lang="es">Orden de publicación</message></label>
           <order>16</order>
           <mandatory>true</mandatory>
           <value>2</value>
@@ -424,7 +420,7 @@
                 <message lang="fr">Nom du créateur croissant</message>
                 <message lang="en">Ascending creator's name</message>
                 <message lang="de">Ascending creator's name</message>
-              </name>
+              <message lang="es">Nombre del creador ascendente</message></name>
               <value>0</value>
             </option>
             <option>
@@ -432,7 +428,7 @@
                 <message lang="fr">Date de modification croissante</message>
                 <message lang="en">Ascending update date</message>
                 <message lang="de">Ascending update date</message>
-              </name>
+              <message lang="es">Fecha de modificación ascendente</message></name>
               <value>1</value>
             </option>
             <option>
@@ -440,7 +436,7 @@
                 <message lang="fr">Date de modification décroissante</message>
                 <message lang="en">Descending update date</message>
                 <message lang="de">Descending update date</message>
-              </name>
+              <message lang="es">Fecha de modificación descendente</message></name>
               <value>2</value>
             </option>
             <option>
@@ -448,7 +444,7 @@
                 <message lang="fr">Importance croissante</message>
                 <message lang="en">Ascending importance</message>
                 <message lang="de">Ascending importance</message>
-              </name>
+              <message lang="es">Importancia creciente</message></name>
               <value>3</value>
             </option>
             <option>
@@ -456,7 +452,7 @@
                 <message lang="fr">Titre croissant</message>
                 <message lang="en">Ascending title</message>
                 <message lang="de">Ascending title</message>
-              </name>
+              <message lang="es">título ascendente</message></name>
               <value>4</value>
             </option>
             <option>
@@ -464,7 +460,7 @@
                 <message lang="fr">Date de création croissante</message>
                 <message lang="en">Ascending creation date</message>
                 <message lang="de">Ascending creation date</message>
-              </name>
+              <message lang="es">Fecha de creación ascendente</message></name>
               <value>5</value>
             </option>
             <option>
@@ -472,7 +468,7 @@
                 <message lang="fr">Date de création décroissante</message>
                 <message lang="en">Descending creation date</message>
                 <message lang="de">Descending creation date</message>
-              </name>
+              <message lang="es">Fecha de creación descendente</message></name>
               <value>6</value>
             </option>
             <option>
@@ -480,7 +476,7 @@
                 <message lang="fr">Description croissante</message>
                 <message lang="en">Ascending description</message>
                 <message lang="de">Ascending description</message>
-              </name>
+              <message lang="es">Descripción ascendente</message></name>
               <value>7</value>
             </option>
           </options>
@@ -491,7 +487,7 @@
             </message>
             <message lang="en">Sets the display order of publications.</message>
             <message lang="de">Sets the display order of publications.</message>
-          </help>
+          <message lang="es">Establece el orden de visualización predeterminado para las publicaciones.</message></help>
         </parameter>
         <parameter>
           <name>XmlFormForPublis</name>
@@ -499,10 +495,10 @@
             <message lang="fr">Formulaire complémentaire</message>
             <message lang="en">Additional metadata</message>
             <message lang="de">XML-Formular für Metadaten</message>
-          </label>
+          <message lang="es">formulario complementario</message></label>
           <order>32</order>
           <mandatory>false</mandatory>
-          <value></value>
+          <value/>
           <type>xmltemplates</type>
           <updatable>always</updatable>
           <help>
@@ -516,7 +512,7 @@
             <message lang="de">Diese Funktion ermöglicht es, zusätzliche Informationen über jede
               Datei einzugeben. Eine XML-Vorlage wird verwendet, um diese Daten einzugeben.
             </message>
-          </help>
+          <message lang="es">Este parámetro habilita el ingreso de información adicional para cada publicación. Esta información se ingresa a través de un formulario personalizado.</message></help>
         </parameter>
       </parameters>
     </groupOfParameters>
@@ -525,7 +521,7 @@
         <message lang="fr">Partages</message>
         <message lang="en">Sharing</message>
         <message lang="de">Sharing</message>
-      </label>
+      <message lang="es">Comparte</message></label>
       <description>
         <message lang="fr">Partagez en toute sécurité des contenus avec des tiers non utilisateurs
           de cette plate-forme
@@ -533,7 +529,7 @@
         <message lang="en">Share content safely with third non-users of this platform</message>
         <message lang="de">Sichere gemeinsame Inhalte mit Dritt Nicht-Nutzer dieser Plattform
         </message>
-      </description>
+      <message lang="es">Compartir contenidos de forma segura con terceros que no sean usuarios de esta plataforma</message></description>
       <order>2</order>
       <parameters>
         <parameter>
@@ -542,7 +538,7 @@
             <message lang="fr">Fichiers partageables</message>
             <message lang="en">Share attachments</message>
             <message lang="de">Anhänge freigeben</message>
-          </label>
+          <message lang="es">Archivos compartibles</message></label>
           <order>15</order>
           <mandatory>true</mandatory>
           <value>0</value>
@@ -552,7 +548,7 @@
                 <message lang="fr">Désactivé</message>
                 <message lang="en">Deactivated</message>
                 <message lang="de">Untauglich</message>
-              </name>
+              <message lang="es">Desactivado</message></name>
               <value>0</value>
             </option>
             <option>
@@ -560,7 +556,7 @@
                 <message lang="fr">Pour les gestionnaires</message>
                 <message lang="en">For managers</message>
                 <message lang="de">Für Manager</message>
-              </name>
+              <message lang="es">Para Gerentes</message></name>
               <value>1</value>
             </option>
             <option>
@@ -568,7 +564,7 @@
                 <message lang="fr">Pour les contributeurs</message>
                 <message lang="en">For contributors</message>
                 <message lang="de">Für Beiträger</message>
-              </name>
+              <message lang="es">Para colaboradores</message></name>
               <value>2</value>
             </option>
             <option>
@@ -576,7 +572,7 @@
                 <message lang="fr">Pour tous les utilisateurs</message>
                 <message lang="en">For all users</message>
                 <message lang="de">für alle Benutzer</message>
-              </name>
+              <message lang="es">Para todos los usuarios</message></name>
               <value>3</value>
             </option>
           </options>
@@ -592,7 +588,7 @@
             <message lang="de">Mit dieser Funktion können Sie die Dateifreigabe mit Personen, die
               keinen Zugang zu dem Portal haben, aktivieren.
             </message>
-          </help>
+          <message lang="es">Este parámetro le permite habilitar el uso compartido de archivos con terceros que no son usuarios del portal.</message></help>
           <warning>
             <message lang="fr">Attention! En sélectionnant cette option, vous allez permettre de
               partager librement les publications avec des utilisateurs non référencés dans la
@@ -604,7 +600,7 @@
             <message lang="de">Caution! By selecting this option, you will enable to freely share
               publications with users not identified in the platform.
             </message>
-          </warning>
+          <message lang="es">¡Atención! Al seleccionar esta opción, permitirá que las publicaciones se compartan libremente con usuarios no referenciados en la plataforma.</message></warning>
         </parameter>
         <parameter>
           <name>usePublicationSharing</name>
@@ -612,7 +608,7 @@
             <message lang="fr">Publications partageables</message>
             <message lang="en">Publications sharing</message>
             <message lang="de">Publications sharing</message>
-          </label>
+          <message lang="es">Publicaciones para compartir</message></label>
           <order>15</order>
           <mandatory>true</mandatory>
           <value>0</value>
@@ -622,7 +618,7 @@
                 <message lang="fr">Désactivé</message>
                 <message lang="en">Deactivated</message>
                 <message lang="de">Untauglich</message>
-              </name>
+              <message lang="es">Desactivado</message></name>
               <value>0</value>
             </option>
             <option>
@@ -630,7 +626,7 @@
                 <message lang="fr">Pour les gestionnaires</message>
                 <message lang="en">For managers</message>
                 <message lang="de">Für Manager</message>
-              </name>
+              <message lang="es">Para Gerentes</message></name>
               <value>1</value>
             </option>
             <option>
@@ -638,7 +634,7 @@
                 <message lang="fr">Pour les contributeurs</message>
                 <message lang="en">For contributors</message>
                 <message lang="de">Für Beiträger</message>
-              </name>
+              <message lang="es">Para colaboradores</message></name>
               <value>2</value>
             </option>
             <option>
@@ -646,7 +642,7 @@
                 <message lang="fr">Pour tous les utilisateurs</message>
                 <message lang="en">For all users</message>
                 <message lang="de">für alle Benutzer</message>
-              </name>
+              <message lang="es">Para todos los usuarios</message></name>
               <value>3</value>
             </option>
           </options>
@@ -662,7 +658,7 @@
             <message lang="de">This feature allows to share publications with some persons who have
               no access to the platform.
             </message>
-          </help>
+          <message lang="es">Este parámetro permite compartir publicaciones con terceros que no son usuarios de la plataforma.</message></help>
           <warning>
             <message lang="fr">Attention! En sélectionnant cette option, vous allez permettre de
               partager librement les publications avec des utilisateurs non référencés dans la
@@ -674,7 +670,7 @@
             <message lang="de">Caution! By selecting this option, you will enable to freely share
               publications with users not identified in the platform.
             </message>
-          </warning>
+          <message lang="es">¡Atención! Al seleccionar esta opción, permitirá que las publicaciones se compartan libremente con usuarios no referenciados en la plataforma.</message></warning>
           <personalSpaceValue>no</personalSpaceValue>
         </parameter>
       </parameters>
@@ -687,7 +683,7 @@
         <message lang="fr">Axe de période de publication</message>
         <message lang="en">Publication date axis</message>
         <message lang="de">Veröffentlichungsdatum Achse</message>
-      </label>
+      <message lang="es">Eje del período de publicación</message></label>
       <order>11</order>
       <mandatory>false</mandatory>
       <value>yes</value>
@@ -702,7 +698,7 @@
         <message lang="de">Klassifizierungachse zum Einordnen der Veröffentlichungen nach ihrem
           Erstellungs / Änderungs Datum
         </message>
-      </help>
+      <message lang="es">Eje de clasificación de las publicaciones según su fecha de creación/modificación.</message></help>
     </parameter>
     <parameter>
       <name>exportComponent</name>
@@ -710,7 +706,7 @@
         <message lang="fr">Exportation de l'application</message>
         <message lang="en">Export application</message>
         <message lang="de">Komponente Export</message>
-      </label>
+      <message lang="es">Exportación de aplicaciones</message></label>
       <order>14</order>
       <mandatory>true</mandatory>
       <value>no</value>
@@ -726,7 +722,7 @@
         <message lang="de">Diese Funktion ermöglicht es dem Benutzer, alle sichtbaren
           Veröffentlichungen in der Komponente zu exportieren.
         </message>
-      </help>
+      <message lang="es">Esta función te permite exportar todas las publicaciones visibles de la aplicación.</message></help>
     </parameter>
   </parameters>
 </WAComponent>

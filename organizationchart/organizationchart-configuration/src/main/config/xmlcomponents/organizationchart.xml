@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
 
     Copyright (C) 2000 - 2022 Silverpeas
 
@@ -23,16 +22,12 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
--->
-
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
+--><WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>organizationchart</name>
   <label>
     <message lang="fr">Organigramme LDAP</message>
     <message lang="en">LDAP-based organization chart</message>
-  </label>
+  <message lang="es">Diagrama de flujo LDAP</message></label>
   <description>
     <message lang="fr">Cette application permet l'affichage d'un organigramme à partir d'un annuaire
       LDAP.
@@ -40,12 +35,12 @@
     <message lang="en">This application display an organization chart based on the data from a LDAP
       server.
     </message>
-  </description>
+  <message lang="es">Esta aplicación permite la visualización de un organigrama desde un directorio LDAP.</message></description>
   <suite>
     <message lang="fr">06 Connecteurs</message>
     <message lang="en">06 Connectors</message>
     <message lang="de">06 Verbinder</message>
-  </suite>
+  <message lang="es">06 Conectores</message></suite>
   <visible>true</visible>
   <portlet>false</portlet>
   <profiles>
@@ -53,7 +48,7 @@
       <label>
         <message lang="fr">Lecteurs</message>
         <message lang="en">Readers</message>
-      </label>
+      <message lang="es">Lectores</message></label>
       <help>
         <message lang="fr">Les lecteurs consultent l'organigramme, naviguent au sein des unités et
           visualisent les personnes qui y sont rattachées.
@@ -61,7 +56,7 @@
         <message lang="en">Readers consult the chart, navigate within the units and visualize the
           people who are linked to it.
         </message>
-      </help>
+      <message lang="es">Los lectores consultan el organigrama, navegan dentro de las unidades y ven a las personas adscritas a ellas.</message></help>
       <spaceMapping>
         <profile>admin</profile>
         <profile>publisher</profile>
@@ -76,13 +71,13 @@
         <message lang="fr">Connexion à l'annuaire LDAP</message>
         <message lang="en">LDAP Connection</message>
         <message lang="de">LDAP Connection</message>
-      </label>
+      <message lang="es">Conexión al directorio LDAP</message></label>
       <description>
         <message lang="fr">Renseignez les paramètres de connexion à l'annuaire LDAP.</message>
         <message lang="en">Fill in the connection settings to the LDAP directory.</message>
         <message lang="de">Fill in the connection settings to the LDAP directory.</message>
-      </description>
-      <help></help>
+      <message lang="es">Rellene los parámetros de conexión del directorio LDAP.</message></description>
+      <help/>
       <order>1</order>
       <parameters>
         <parameter>
@@ -90,24 +85,24 @@
           <label>
             <message lang="fr">Adresse serveur LDAP</message>
             <message lang="en">LDAP server address</message>
-          </label>
+          <message lang="es">dirección del servidor LDAP</message></label>
           <order>1</order>
           <mandatory>true</mandatory>
-          <value></value>
+          <value/>
           <type>text</type>
           <size>30</size>
           <updatable>always</updatable>
           <help>
             <message lang="fr">Adresse du serveur LDAP (ex : ldap://serveur:389/)</message>
             <message lang="en">LDAP server adress (ex : ldap://serveur:389/)</message>
-          </help>
+          <message lang="es">Dirección del servidor LDAP (p. ej., ldap://servidor:389/)</message></help>
         </parameter>
         <parameter>
           <name>initialContextFactory</name>
           <label>
             <message lang="fr">Context factory</message>
             <message lang="en">Context factory</message>
-          </label>
+          <message lang="es">fábrica de contexto</message></label>
           <order>2</order>
           <mandatory>true</mandatory>
           <value>com.sun.jndi.ldap.LdapCtxFactory</value>
@@ -121,14 +116,14 @@
             <message lang="en">Class name of the factory class that will create an initial
               context.
             </message>
-          </help>
+          <message lang="es">Nombre de clase de fábrica utilizado al inicializar el contexto.</message></help>
         </parameter>
         <parameter>
           <name>authenticationMode</name>
           <label>
             <message lang="fr">Mode d'authentification</message>
             <message lang="en">Authentication mode</message>
-          </label>
+          <message lang="es">Modo de autenticación</message></label>
           <order>3</order>
           <mandatory>true</mandatory>
           <value>simple</value>
@@ -137,21 +132,21 @@
               <name>
                 <message lang="fr">Aucune</message>
                 <message lang="en">None</message>
-              </name>
+              <message lang="es">Ninguno</message></name>
               <value>none</value>
             </option>
             <option>
               <name>
                 <message lang="fr">Simple</message>
                 <message lang="en">Simple</message>
-              </name>
+              <message lang="es">Sencillo</message></name>
               <value>simple</value>
             </option>
             <option>
               <name>
                 <message lang="fr">Forte</message>
                 <message lang="en">Strong</message>
-              </name>
+              <message lang="es">Fuerte</message></name>
               <value>strong</value>
             </option>
           </options>
@@ -163,17 +158,17 @@
             <message lang="en">Security level for LDAP server authentication (none, simple or
               strong).
             </message>
-          </help>
+          <message lang="es">Modo de autenticación del servidor LDAP (ninguno, simple o fuerte).</message></help>
         </parameter>
         <parameter>
           <name>principal</name>
           <label>
             <message lang="fr">Identifiant</message>
             <message lang="en">Principal</message>
-          </label>
+          <message lang="es">IDENTIFICACIÓN</message></label>
           <order>4</order>
           <mandatory>false</mandatory>
-          <value></value>
+          <value/>
           <type>text</type>
           <size>30</size>
           <updatable>always</updatable>
@@ -184,24 +179,24 @@
             <message lang="en">Principal for authenticating the caller to the service (ex :
               cn=Manager,dc=mondomain,dc=com).
             </message>
-          </help>
+          <message lang="es">Identidad del principal para la autenticación (por ejemplo: cn=Manager,dc=modomain,dc=com).</message></help>
         </parameter>
         <parameter>
           <name>credentials</name>
           <label>
             <message lang="fr">Mot de passe</message>
             <message lang="en">Credentials</message>
-          </label>
+          <message lang="es">Contraseña</message></label>
           <order>5</order>
           <mandatory>false</mandatory>
-          <value></value>
+          <value/>
           <type>text</type>
           <size>30</size>
           <updatable>always</updatable>
           <help>
             <message lang="fr">Mot de passe du principal pour authentification</message>
             <message lang="en">Credentials of the principal for authentication</message>
-          </help>
+          <message lang="es">Contraseña principal para autenticación</message></help>
         </parameter>
       </parameters>
     </groupOfParameters>
@@ -210,13 +205,13 @@
         <message lang="fr">Ciblage et correspondances</message>
         <message lang="en">Targeting and correspondence</message>
         <message lang="de">Targeting and correspondence</message>
-      </label>
+      <message lang="es">Orientación y coincidencias</message></label>
       <description>
         <message lang="fr">Paramétrez les informations à récupérer et à afficher.</message>
         <message lang="en">Set up the information to display.</message>
         <message lang="de">Set up the information to display.</message>
-      </description>
-      <help></help>
+      <message lang="es">Configure la información para recuperar y mostrar.</message></description>
+      <help/>
       <order>2</order>
       <parameters>
         <parameter>
@@ -224,10 +219,10 @@
           <label>
             <message lang="fr">Noeud racine</message>
             <message lang="en">Root LDAP node</message>
-          </label>
+          <message lang="es">nodo raíz</message></label>
           <order>7</order>
           <mandatory>true</mandatory>
-          <value></value>
+          <value/>
           <type>text</type>
           <size>30</size>
           <updatable>always</updatable>
@@ -236,14 +231,14 @@
               o=monEntreprise,dc=mondomain,dc=com).
             </message>
             <message lang="en">Root Ldap node (ex : o=mycompany,dc=mydomain,dc=com).</message>
-          </help>
+          <message lang="es">Nodo raíz del directorio ldap (ej: o=myCompany,dc=mydomain,dc=com).</message></help>
         </parameter>
         <parameter>
           <name>ldapClassPerson</name>
           <label>
             <message lang="fr">Classe LDAP des personnes</message>
             <message lang="en">LDAP class for person</message>
-          </label>
+          <message lang="es">Clase de personas LDAP</message></label>
           <order>8</order>
           <mandatory>true</mandatory>
           <value>organizationalPerson</value>
@@ -253,14 +248,14 @@
           <help>
             <message lang="fr">Classe LDAP des personnes</message>
             <message lang="en">Object class of person</message>
-          </help>
+          <message lang="es">Clase de personas LDAP</message></help>
         </parameter>
         <parameter>
           <name>ldapClassUnit</name>
           <label>
             <message lang="fr">Classe LDAP des services/groupes</message>
             <message lang="en">LDAP class for departments/services</message>
-          </label>
+          <message lang="es">Clase de servicios/grupos LDAP</message></label>
           <order>9</order>
           <mandatory>true</mandatory>
           <value>organizationalUnit</value>
@@ -270,14 +265,14 @@
           <help>
             <message lang="fr">Object class des services/groupes</message>
             <message lang="en">Object class of departments/services</message>
-          </help>
+          <message lang="es">Clase de objeto de servicios/grupos</message></help>
         </parameter>
         <parameter>
           <name>ldapAttUnit</name>
           <label>
             <message lang="fr">Attribut 'nom' du service</message>
             <message lang="en">Attribute containing the name of the organizational unit</message>
-          </label>
+          <message lang="es">Atributo &amp;#39;nombre&amp;#39; del servicio</message></label>
           <order>11</order>
           <mandatory>true</mandatory>
           <value>ou</value>
@@ -289,14 +284,14 @@
             <message lang="en">Name of the attribute containing the name of the service or
               department.
             </message>
-          </help>
+          <message lang="es">Nombre de atributo que designa el nombre del servicio</message></help>
         </parameter>
         <parameter>
           <name>ldapAttName</name>
           <label>
             <message lang="fr">Attribut 'nom' d'une personne</message>
             <message lang="en">Attribute for the last name of a person</message>
-          </label>
+          <message lang="es">Atributo &amp;#39;nombre&amp;#39; de una persona</message></label>
           <order>10</order>
           <mandatory>true</mandatory>
           <value>cn</value>
@@ -306,14 +301,14 @@
           <help>
             <message lang="fr">Nom de l'attribut désignant le nom de l'utilisateur</message>
             <message lang="en">Name of the attribut for a person's last name.</message>
-          </help>
+          <message lang="es">Nombre de atributo que designa el nombre del usuario</message></help>
         </parameter>
         <parameter>
           <name>ldapAttTitle</name>
           <label>
             <message lang="fr">Attribut 'titre' d'une personne</message>
             <message lang="en">Name of the attribute containing the title</message>
-          </label>
+          <message lang="es">atributo &amp;#39;título&amp;#39; de una persona</message></label>
           <order>12</order>
           <mandatory>false</mandatory>
           <value>title</value>
@@ -323,14 +318,14 @@
           <help>
             <message lang="fr">Nom de l'attribut désignant le titre de l'utilisateur</message>
             <message lang="en">Name of the attribut for a person's title.</message>
-          </help>
+          <message lang="es">Nombre del atributo que denota el título del usuario</message></help>
         </parameter>
         <parameter>
           <name>ldapAttDesc</name>
           <label>
             <message lang="fr">Attribut 'description' d'une personne</message>
             <message lang="en">Name of the attribute containing the description</message>
-          </label>
+          <message lang="es">Atributo &amp;#39;descripción&amp;#39; de una persona</message></label>
           <order>13</order>
           <mandatory>false</mandatory>
           <value>description</value>
@@ -340,17 +335,17 @@
           <help>
             <message lang="fr">Nom de l'attribut désignant la description de l'utilisateur</message>
             <message lang="en">Name of the attribut for a person's description.</message>
-          </help>
+          <message lang="es">Nombre del atributo que designa la descripción del usuario</message></help>
         </parameter>
         <parameter>
           <name>ldapAttActif</name>
           <label>
             <message lang="fr">Attribut 'personne active'</message>
             <message lang="en">Attribute 'active people'</message>
-          </label>
+          <message lang="es">Atributo de persona activa</message></label>
           <order>17</order>
           <mandatory>false</mandatory>
-          <value></value>
+          <value/>
           <type>text</type>
           <size>30</size>
           <updatable>always</updatable>
@@ -361,14 +356,14 @@
             <message lang="en">Name of the attribute indicating if the person is active (boolean
               attribut)
             </message>
-          </help>
+          <message lang="es">Nombre del atributo que indica si la persona está activa (atributo booleano)</message></help>
         </parameter>
         <parameter>
           <name>ldapAttAccount</name>
           <label>
             <message lang="fr">Attribut 'login'</message>
             <message lang="en">Attribute 'login'</message>
-          </label>
+          <message lang="es">atributo &amp;#39;iniciar sesión&amp;#39;</message></label>
           <order>23</order>
           <mandatory>false</mandatory>
           <value>sAMAccountName</value>
@@ -378,34 +373,34 @@
           <help>
             <message lang="fr">Nom de l'attribut désignant le login utilisateur</message>
             <message lang="en">Attribut name of the user login</message>
-          </help>
+          <message lang="es">Nombre del atributo que designa el inicio de sesión del usuario</message></help>
         </parameter>
         <parameter>
           <name>ldapAttCSS</name>
           <label>
             <message lang="fr">Attribut 'CSS'</message>
             <message lang="en">Attribute 'CSS'</message>
-          </label>
+          <message lang="es">Atributo &amp;#39;CSS&amp;#39;</message></label>
           <order>24</order>
           <mandatory>false</mandatory>
-          <value></value>
+          <value/>
           <type>text</type>
           <size>30</size>
           <updatable>always</updatable>
           <help>
             <message lang="fr">Attribut contenant la classe CSS à utiliser</message>
             <message lang="en">Name of the attribute for CSS class to use</message>
-          </help>
+          <message lang="es">Atributo que contiene la clase CSS a usar</message></help>
         </parameter>
         <parameter>
           <name>chartDomainSilverpeas</name>
           <label>
             <message lang="fr">Domaine Silverpeas</message>
             <message lang="en">Silverpeas domain</message>
-          </label>
+          <message lang="es">Finca de guisantes de plata</message></label>
           <order>22</order>
           <mandatory>false</mandatory>
-          <value></value>
+          <value/>
           <type>text</type>
           <size>30</size>
           <updatable>always</updatable>
@@ -414,7 +409,7 @@
               présents dans l'organigramme
             </message>
             <message lang="en">Domain Silverpeas where organization chart users is defined</message>
-          </help>
+          <message lang="es">Identificador del dominio de Silverpeas donde se encuentran los usuarios presentes en el organigrama</message></help>
         </parameter>
       </parameters>
     </groupOfParameters>
@@ -423,7 +418,7 @@
         <message lang="fr">Vue "services"</message>
         <message lang="en">Units view</message>
         <message lang="de">Units view</message>
-      </label>
+      <message lang="es">ver &amp;quot;servicios&amp;quot;</message></label>
       <description>
         <message lang="fr">La vue "services" est la vue principale. Elle présente la composition
           d'un service (en sous services). Les responsables de chaque entité sont également
@@ -435,8 +430,8 @@
         <message lang="de">The "units" view is the main view. It presents the composition of a unit
           (in sub units). The leaders of each unit are also displayed.
         </message>
-      </description>
-      <help></help>
+      <message lang="es">La vista &amp;quot;servicios&amp;quot; es la vista principal. Presenta la composición de un servicio (en subservicios). También se muestran los administradores de cada entidad.</message></description>
+      <help/>
       <order>3</order>
       <parameters>
         <parameter>
@@ -444,7 +439,7 @@
           <label>
             <message lang="fr">Rôle(s) du service principal</message>
             <message lang="en">Main organizational unit role(s)</message>
-          </label>
+          <message lang="es">Rol(es) de servicio principal</message></label>
           <order>14</order>
           <mandatory>false</mandatory>
           <value>Role(s) principal(s)</value>
@@ -458,14 +453,14 @@
             <message lang="en">Attribute containing the role(s) of the main organization unit
               positions
             </message>
-          </help>
+          <message lang="es">Atributo que designa los roles de las personas que se mostrarán con el servicio principal</message></help>
         </parameter>
         <parameter>
           <name>unitsChartRightLabel</name>
           <label>
             <message lang="fr">Rôle(s) du bloc droit</message>
             <message lang="en">Right block role(s)</message>
-          </label>
+          <message lang="es">Rol(es) del bloque derecho</message></label>
           <order>15</order>
           <mandatory>false</mandatory>
           <value>Role(s) droite</value>
@@ -478,14 +473,14 @@
             </message>
             <message lang="en">Attribute name for the function to be placed in the right cell
             </message>
-          </help>
+          <message lang="es">Atributo que designa los roles de las personas que se mostrarán en el cuadro de la derecha</message></help>
         </parameter>
         <parameter>
           <name>unitsChartLeftLabel</name>
           <label>
             <message lang="fr">Rôle(s) du bloc gauche</message>
             <message lang="en">Left block role(s)</message>
-          </label>
+          <message lang="es">Rol(es) del bloque izquierdo</message></label>
           <order>16</order>
           <mandatory>false</mandatory>
           <value>Role(s) gauche</value>
@@ -498,17 +493,17 @@
             </message>
             <message lang="en">Attribute name for the function to be placed in the left cell
             </message>
-          </help>
+          <message lang="es">Atributo que designa los roles de las personas que se mostrarán en el cuadro de la izquierda</message></help>
         </parameter>
         <parameter>
           <name>unitsChartOthersInfosKeys</name>
           <label>
             <message lang="fr">Champ(s) à afficher</message>
             <message lang="en">Fields to display</message>
-          </label>
+          <message lang="es">Campo(s) a mostrar</message></label>
           <order>20</order>
           <mandatory>false</mandatory>
-          <value></value>
+          <value/>
           <type>text</type>
           <size>30</size>
           <updatable>always</updatable>
@@ -516,7 +511,7 @@
             <message lang="fr">Attribut désignant le(s) champ(s) LDAP d'informations à afficher
             </message>
             <message lang="en">LDAP fields for the person information details</message>
-          </help>
+          <message lang="es">Atributo que designa los campos de información LDAP para mostrar</message></help>
         </parameter>
       </parameters>
     </groupOfParameters>
@@ -525,13 +520,13 @@
         <message lang="fr">Vue détaillée</message>
         <message lang="en">Detailed view</message>
         <message lang="de">Detailed view</message>
-      </label>
+      <message lang="es">Vista detallada</message></label>
       <description>
         <message lang="fr">La vue détaillée présente toutes les personnes d'un service.</message>
         <message lang="en">The detailed view shows every person of the unit.</message>
         <message lang="de">The detailed view shows every person of the unit.</message>
-      </description>
-      <help></help>
+      <message lang="es">La vista detallada muestra a todas las personas de un departamento.</message></description>
+      <help/>
       <order>4</order>
       <parameters>
         <parameter>
@@ -539,10 +534,10 @@
           <label>
             <message lang="fr">Rôle(s) du service principal</message>
             <message lang="en">Role(s) of the main organization unit</message>
-          </label>
+          <message lang="es">Rol(es) de servicio principal</message></label>
           <order>18</order>
           <mandatory>false</mandatory>
-          <value></value>
+          <value/>
           <type>text</type>
           <size>30</size>
           <updatable>always</updatable>
@@ -551,34 +546,34 @@
               service principal
             </message>
             <message lang="en">Attribute name of the main unit positions</message>
-          </help>
+          <message lang="es">Atributo(s) que designa la(s) función(es) de las personas para mostrar con el servicio principal</message></help>
         </parameter>
         <parameter>
           <name>personnsChartCategoriesLabel</name>
           <label>
             <message lang="fr">Catégorie(s) d'un service</message>
             <message lang="en">Unit categorie(s)</message>
-          </label>
+          <message lang="es">Categoría(s) de un servicio</message></label>
           <order>19</order>
           <mandatory>false</mandatory>
-          <value></value>
+          <value/>
           <type>text</type>
           <size>30</size>
           <updatable>always</updatable>
           <help>
             <message lang="fr">Attribut(s) désignant le(s) sous-rôle(s) d'un service</message>
             <message lang="en">Attribute(s) name of the main sub-functions in a unit</message>
-          </help>
+          <message lang="es">Atributo(s) que designa la(s) subfunción(es) de un servicio</message></help>
         </parameter>
         <parameter>
           <name>personnsChartOthersInfosKeys</name>
           <label>
             <message lang="fr">Champ(s) à afficher</message>
             <message lang="en">Field(s) to display</message>
-          </label>
+          <message lang="es">Campo(s) a mostrar</message></label>
           <order>21</order>
           <mandatory>false</mandatory>
-          <value></value>
+          <value/>
           <type>text</type>
           <size>30</size>
           <updatable>always</updatable>
@@ -586,7 +581,7 @@
             <message lang="fr">Attribut(s) désignant le(s) champ(s) LDAP d'informations à afficher
             </message>
             <message lang="en">LDAP fields for the person information details</message>
-          </help>
+          <message lang="es">Atributo(s) que designa el(los) campo(s) de información LDAP para mostrar</message></help>
         </parameter>
       </parameters>
     </groupOfParameters>
@@ -595,13 +590,13 @@
         <message lang="fr">Affichage</message>
         <message lang="en">Display</message>
         <message lang="de">Display</message>
-      </label>
+      <message lang="es">Mostrar</message></label>
       <description>
-        <message lang="fr"></message>
-        <message lang="en"></message>
-        <message lang="de"></message>
-      </description>
-      <help></help>
+        <message lang="fr"/>
+        <message lang="en"/>
+        <message lang="de"/>
+      <message lang="es"/></description>
+      <help/>
       <order>5</order>
       <parameters>
         <parameter>
@@ -609,7 +604,7 @@
           <label>
             <message lang="fr">Libellés</message>
             <message lang="en">Labels</message>
-          </label>
+          <message lang="es">Etiquetas</message></label>
           <order>25</order>
           <mandatory>false</mandatory>
           <value>true</value>
@@ -618,14 +613,14 @@
           <help>
             <message lang="fr">Permet d'afficher/masquer le libellé des champs</message>
             <message lang="en">Allows to display/hide label of fields</message>
-          </help>
+          <message lang="es">Le permite mostrar/ocultar el título de los controles</message></help>
         </parameter>
         <parameter>
           <name>avatars</name>
           <label>
             <message lang="fr">Avatars</message>
             <message lang="en">Avatars</message>
-          </label>
+          <message lang="es">avatares</message></label>
           <order>26</order>
           <mandatory>false</mandatory>
           <value>true</value>
@@ -634,7 +629,7 @@
           <help>
             <message lang="fr">Permet d'afficher/masquer l'avatar de chaque personne</message>
             <message lang="en">Allows to display/hide avatar of each people</message>
-          </help>
+          <message lang="es">Te permite mostrar/ocultar el avatar de cada persona</message></help>
         </parameter>
       </parameters>
     </groupOfParameters>

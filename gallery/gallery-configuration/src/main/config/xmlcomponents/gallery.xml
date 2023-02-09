@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!--
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
 
     Copyright (C) 2000 - 2022 Silverpeas
 
@@ -23,16 +22,13 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
--->
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
+--><WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>gallery</name>
   <label>
     <message lang="fr">Médiathèque</message>
     <message lang="en">Multimedia library</message>
     <message lang="de">Multimedia-Bibliothek</message>
-  </label>
+  <message lang="es">Mediateca</message></label>
   <description>
     <message lang="fr">Bibliothèque multimédia qui comprend images, vidéos, sons et streaming
       (Youtube et Vimeo).
@@ -48,12 +44,12 @@
     <message lang="de">Die Bilder werden in Alben abgelegt. Erstellen von Alben und das Hochladen
       von Bildern geht einfach durch der Drag and Drop.
     </message>
-  </description>
+  <message lang="es">Biblioteca multimedia que incluye imágenes, videos, sonidos y streaming (Youtube y Vimeo). Organizados en álbumes, las imágenes, los videos y los sonidos se pueden agregar arrastrando y soltando. Esta biblioteca de medios incluye funciones avanzadas para la gestión de medios: formulario personalizable, datos EXIF / IPTC (fotos), procesamiento por lotes...</message></description>
   <suite>
     <message lang="fr">04 Gestion de contenu</message>
     <message lang="en">04 Content Management</message>
     <message lang="de">04 Inhaltsverwaltung</message>
-  </suite>
+  <message lang="es">04 Gestión de contenidos</message></suite>
   <visible>true</visible>
   <visibleInPersonalSpace>false</visibleInPersonalSpace>
   <portlet>true</portlet>
@@ -63,14 +59,14 @@
         <message lang="fr">Gestionnaires</message>
         <message lang="en">Managers</message>
         <message lang="de">Manager</message>
-      </label>
+      <message lang="es">Gerentes</message></label>
       <help>
         <message lang="fr">Les gestionnaires créent les albums et paramètrent le Plan de
           Classement
         </message>
         <message lang="en">Managers create albums and set up the Classification Scheme</message>
         <message lang="de">Managers create albums and set up the Classification Scheme</message>
-      </help>
+      <message lang="es">Los gerentes crean álbumes y configuran el Plan de Archivo</message></help>
       <spaceMapping>
         <profile>admin</profile>
       </spaceMapping>
@@ -80,12 +76,12 @@
         <message lang="fr">Publieurs</message>
         <message lang="en">Publishers</message>
         <message lang="de">Herausgeber</message>
-      </label>
+      <message lang="es">Editores</message></label>
       <help>
         <message lang="fr">Les publieurs gèrent le contenu des albums.</message>
         <message lang="en">The publishers manage the content of the albums.</message>
         <message lang="de">Die herausgeber verwalten den Inhalt der Alben.</message>
-      </help>
+      <message lang="es">Los editores gestionan el contenido de los álbumes.</message></help>
       <spaceMapping>
         <profile>publisher</profile>
       </spaceMapping>
@@ -95,7 +91,7 @@
         <message lang="fr">Contributeurs</message>
         <message lang="en">Contributors</message>
         <message lang="de">Beiträger</message>
-      </label>
+      <message lang="es">Colaboradores</message></label>
       <help>
         <message lang="fr">Les contributeurs ajoutent des médias (photos, vidéos, sons et streaming)
           aux albums.
@@ -106,7 +102,7 @@
         <message lang="de">Beiträger Uploads Medien (Fotos, Videos, Klänge und Streaming) in
           Alben.
         </message>
-      </help>
+      <message lang="es">Los colaboradores agregan medios (fotos, videos, sonidos y transmisión) a los álbumes.</message></help>
       <spaceMapping>
         <profile>writer</profile>
       </spaceMapping>
@@ -116,7 +112,7 @@
         <message lang="fr">Lecteurs privilégiés</message>
         <message lang="en">Readers with priviledge</message>
         <message lang="de">Leser mit Privileg</message>
-      </label>
+      <message lang="es">Lectores privilegiados</message></label>
       <help>
         <message lang="fr">Les lecteurs privilégiés peuvent télécharger les images en haute
           définition.
@@ -125,19 +121,19 @@
         </message>
         <message lang="de">Readers with privilege can download pictures in High Definition format.
         </message>
-      </help>
+      <message lang="es">Los lectores privilegiados pueden descargar las imágenes en alta definición.</message></help>
     </profile>
     <profile name="user">
       <label>
         <message lang="fr">Lecteurs</message>
         <message lang="en">Readers</message>
         <message lang="de">Leser</message>
-      </label>
+      <message lang="es">Lectores</message></label>
       <help>
         <message lang="fr">Les lecteurs visualisent les médias.</message>
         <message lang="en">Readers can watch media.</message>
         <message lang="de">Leser können Medien zu beobachten.</message>
-      </help>
+      <message lang="es">Los lectores ven los medios.</message></help>
       <spaceMapping>
         <profile>reader</profile>
       </spaceMapping>
@@ -149,13 +145,13 @@
         <message lang="fr">Navigation</message>
         <message lang="en">Visuals</message>
         <message lang="de">Visuals</message>
-      </label>
+      <message lang="es">Navegación</message></label>
       <description>
         <message lang="fr">Les médias sont stockés dans une arborescence d'albums.</message>
         <message lang="en">The media are stored in an album tree.</message>
         <message lang="de">The media are stored in an album tree.</message>
-      </description>
-      <help></help>
+      <message lang="es">Los medios se almacenan en un árbol de álbumes.</message></description>
+      <help/>
       <order>1</order>
       <parameters>
         <parameter>
@@ -164,7 +160,7 @@
             <message lang="fr">Albums sous forme de liste</message>
             <message lang="en">Albums as lists</message>
             <message lang="de">Alben als Liste zeigen</message>
-          </label>
+          <message lang="es">Álbumes como una lista</message></label>
           <order>6</order>
           <mandatory>true</mandatory>
           <value>no</value>
@@ -177,7 +173,7 @@
             <message lang="en">Display detailed information of media (size 266x150 only)</message>
             <message lang="de">Zeigt eine detaillierte Liste die Medien (Größe nur 266x150)
             </message>
-          </help>
+          <message lang="es">Le permite ver información multimedia detallada en formato 266x150</message></help>
         </parameter>
         <parameter>
           <name>privateSearch</name>
@@ -185,7 +181,7 @@
             <message lang="fr">Moteur de recherche dédié</message>
             <message lang="en">Dedicated search engine</message>
             <message lang="de">Gewidmete Suchmaschinen</message>
-          </label>
+          <message lang="es">Motor de búsqueda dedicado</message></label>
           <order>12</order>
           <mandatory>false</mandatory>
           <value>no</value>
@@ -203,7 +199,7 @@
               globalen Suchmaschinen nicht auffindbaren sein, sondern nur durch die spezielle
               Suchmaschinen dieser Komponente.
             </message>
-          </help>
+          <message lang="es">Si este parámetro está activado, los medios indexados no serán encontrados por el motor de búsqueda general sino solo por el motor de búsqueda dedicado a esta aplicación.</message></help>
           <personalSpaceValue>yes</personalSpaceValue>
         </parameter>
         <parameter>
@@ -212,7 +208,7 @@
             <message lang="fr">Diaporama</message>
             <message lang="en">Slideshow</message>
             <message lang="de">Slideshow</message>
-          </label>
+          <message lang="es">Diapositivas</message></label>
           <order>1</order>
           <mandatory>true</mandatory>
           <value>5</value>
@@ -223,7 +219,7 @@
             <message lang="fr">Temps d'attente entre deux médias (en secondes)</message>
             <message lang="en">Time wait between two media (in seconds)</message>
             <message lang="de">Zeit zwischen zwei Bildern (in Sekunden)</message>
-          </help>
+          <message lang="es">Tiempo de espera entre dos medios (en segundos)</message></help>
         </parameter>
         <parameter>
           <name>albumResolution</name>
@@ -231,7 +227,7 @@
             <message lang="fr">Format d'affichage</message>
             <message lang="en">Display format</message>
             <message lang="de">Vorschau Format</message>
-          </label>
+          <message lang="es">Tamaño de la pantalla</message></label>
           <order>14</order>
           <mandatory>true</mandatory>
           <value>133x100</value>
@@ -241,7 +237,7 @@
                 <message lang="fr">266x150</message>
                 <message lang="en">266x150</message>
                 <message lang="de">266x150</message>
-              </name>
+              <message lang="es">266x150</message></name>
               <value>266x150</value>
             </option>
             <option>
@@ -249,7 +245,7 @@
                 <message lang="fr">133x100</message>
                 <message lang="en">133x100</message>
                 <message lang="de">133x100</message>
-              </name>
+              <message lang="es">133x100</message></name>
               <value>133x100</value>
             </option>
             <option>
@@ -257,7 +253,7 @@
                 <message lang="fr">66x50</message>
                 <message lang="en">66x50</message>
                 <message lang="de">66x50</message>
-              </name>
+              <message lang="es">66x50</message></name>
               <value>66x50</value>
             </option>
           </options>
@@ -268,7 +264,7 @@
             </message>
             <message lang="en">Choice of the image preview format for readers</message>
             <message lang="de">AusWahl der Bilder Vorschau Format für die Leser</message>
-          </help>
+          <message lang="es">Elección del formato de vista previa de la imagen para los lectores</message></help>
         </parameter>
       </parameters>
     </groupOfParameters>
@@ -277,7 +273,7 @@
         <message lang="fr">Médias</message>
         <message lang="en">Visuals</message>
         <message lang="de">Visuals</message>
-      </label>
+      <message lang="es">Medios de comunicación</message></label>
       <description>
         <message lang="fr">Cette application gère trois types de média : images, vidéos et sons.
         </message>
@@ -287,8 +283,8 @@
         <message lang="de">This application supports three types of media: images, videos and
           sounds.
         </message>
-      </description>
-      <help></help>
+      <message lang="es">Esta aplicación gestiona tres tipos de medios: imágenes, vídeos y sonidos.</message></description>
+      <help/>
       <order>2</order>
       <parameters>
         <parameter>
@@ -297,7 +293,7 @@
             <message lang="fr">Méta-données</message>
             <message lang="en">Metadata</message>
             <message lang="de">Metadaten</message>
-          </label>
+          <message lang="es">Metadatos</message></label>
           <order>5</order>
           <mandatory>true</mandatory>
           <value>no</value>
@@ -309,7 +305,7 @@
             </message>
             <message lang="en">Display image meta data (EXIF, IPTC, Windows)</message>
             <message lang="de">Bilder Metadaten anzeigen (EXIF, IPTC, Windows)</message>
-          </help>
+          <message lang="es">Permite mostrar metadatos (EXIF, IPTC, Windows) de cada imagen</message></help>
         </parameter>
         <parameter>
           <name>dragAndDrop</name>
@@ -317,7 +313,7 @@
             <message lang="fr">Glisser/déposer</message>
             <message lang="en">Drag and Drop</message>
             <message lang="de">Drag and Drop</message>
-          </label>
+          <message lang="es">Arrastrar y soltar</message></label>
           <order>2</order>
           <mandatory>false</mandatory>
           <value>false</value>
@@ -333,7 +329,7 @@
             <message lang="de">Damit können Sie schnell einige Bilder per Drag and Drop
               veröffentlichen . Zip-Dateien sind ebenfalls erlaubt.
             </message>
-          </help>
+          <message lang="es">Te permite publicar imágenes, videos y sonidos muy rápidamente arrastrando y soltando. Los archivos zip también son compatibles.</message></help>
         </parameter>
         <parameter>
           <name>dayBeforeEndVisible</name>
@@ -341,7 +337,7 @@
             <message lang="fr">Nb de jours avant la fin de visibilité des médias</message>
             <message lang="en">Number of days before the media are no longer visible.</message>
             <message lang="de">Anzahl der Tage, bevor die Medien nicht mehr sichtbar sind.</message>
-          </label>
+          <message lang="es">Número de días antes del final de la visibilidad de los medios</message></label>
           <order>8</order>
           <mandatory>true</mandatory>
           <value>3</value>
@@ -357,7 +353,7 @@
             <message lang="de">Anzahl der Tage bevor ein Bild abgelaufen ist und dass einer Warnung
               deswegen gesendet werden muss
             </message>
-          </help>
+          <message lang="es">Número de días antes de enviar el mensaje al administrador cuando una foto llega al final de su visibilidad</message></help>
         </parameter>
         <parameter>
           <name>XMLFormname</name>
@@ -365,7 +361,7 @@
             <message lang="fr">Formulaire XML</message>
             <message lang="en">XML Form</message>
             <message lang="de">XML Formular</message>
-          </label>
+          <message lang="es">Formulario XML</message></label>
           <order>9</order>
           <mandatory>false</mandatory>
           <value/>
@@ -375,7 +371,7 @@
             <message lang="fr">Nom du formulaire associé à la médiathèque</message>
             <message lang="en">Form name attached to this multimedia library</message>
             <message lang="de">Name des XML Formulars, der an der Fotothek gebunden ist</message>
-          </help>
+          <message lang="es">Nombre del formulario asociado a la biblioteca multimedia</message></help>
         </parameter>
         <parameter>
           <name>viewInWysiwyg</name>
@@ -383,7 +379,7 @@
             <message lang="fr">Banque d'images</message>
             <message lang="en">Image store</message>
             <message lang="de">Bildbank</message>
-          </label>
+          <message lang="es">Banco de imágenes</message></label>
           <order>10</order>
           <mandatory>true</mandatory>
           <value>no</value>
@@ -399,7 +395,7 @@
             <message lang="de">Bilder werden von WYSIWYG-Editor, Abstimmung und Umfrage Komponent
               verfügbar sein
             </message>
-          </help>
+          <message lang="es">Permite usar imágenes en esta aplicación desde el editor WYSIWYG y las aplicaciones Vote and Survey</message></help>
           <warning>
             <message lang="fr">En cochant cette case, les images gérées par cette application seront
               librement utilisables (sans tenir compte des droits) par les autres applications.
@@ -410,7 +406,7 @@
             <message lang="de">By checking this box, images managed by this application will be
               available for use (regardless of rights) by other applications.
             </message>
-          </warning>
+          <message lang="es">Marcando esta casilla, las imágenes gestionadas por esta aplicación serán libremente utilizables (sin tener en cuenta los derechos) por otras aplicaciones.</message></warning>
         </parameter>
         <parameter>
           <name>comments</name>
@@ -418,7 +414,7 @@
             <message lang="fr">Commentaires</message>
             <message lang="en">Comments</message>
             <message lang="de">Kommentare</message>
-          </label>
+          <message lang="es">Comentarios</message></label>
           <order>11</order>
           <mandatory>true</mandatory>
           <value>yes</value>
@@ -429,7 +425,7 @@
             </message>
             <message lang="en">Readers are able to post comments on a media</message>
             <message lang="de">Leser können Kommentare auf eine Medien lassen</message>
-          </help>
+          <message lang="es">Los lectores pueden dejar comentarios en cada medio.</message></help>
           <personalSpaceValue>no</personalSpaceValue>
         </parameter>
         <parameter>
@@ -438,7 +434,7 @@
             <message lang="fr">Original téléchargeable</message>
             <message lang="en">Enable download of original media</message>
             <message lang="de">Aktivieren Sie des Download der Original-Medien</message>
-          </label>
+          <message lang="es">Descargable original</message></label>
           <order>13</order>
           <mandatory>false</mandatory>
           <value>yes</value>
@@ -454,7 +450,7 @@
             <message lang="de">Wenn dieser Parameter aktiviert ist, können Original-Medien herunter
               geladen werden
             </message>
-          </help>
+          <message lang="es">Si esta configuración está habilitada, los medios se podrán descargar, de manera predeterminada, en su formato original. Este parámetro se puede cambiar en cualquier momento en cada medio.</message></help>
         </parameter>
         <parameter>
           <name>previewSize</name>
@@ -462,7 +458,7 @@
             <message lang="fr">Format de prévisualisation des images</message>
             <message lang="en">Preview format</message>
             <message lang="de">Vorschau Format</message>
-          </label>
+          <message lang="es">Formato de vista previa de imagen</message></label>
           <order>14</order>
           <mandatory>true</mandatory>
           <value>600x400</value>
@@ -472,7 +468,7 @@
                 <message lang="fr">600x400</message>
                 <message lang="en">600x400</message>
                 <message lang="de">600x400</message>
-              </name>
+              <message lang="es">600x400</message></name>
               <value>600x400</value>
             </option>
             <option>
@@ -480,7 +476,7 @@
                 <message lang="fr">266x150</message>
                 <message lang="en">266x150</message>
                 <message lang="de">266x150</message>
-              </name>
+              <message lang="es">266x150</message></name>
               <value>266x150</value>
             </option>
             <option>
@@ -488,7 +484,7 @@
                 <message lang="fr">133x100</message>
                 <message lang="en">133x100</message>
                 <message lang="de">133x100</message>
-              </name>
+              <message lang="es">133x100</message></name>
               <value>133x100</value>
             </option>
           </options>
@@ -499,7 +495,7 @@
             </message>
             <message lang="en">Choice of the image preview format for readers</message>
             <message lang="de">AusWahl der Bilder Vorschau Format für die Leser</message>
-          </help>
+          <message lang="es">Elección del formato de vista previa de la imagen para los lectores</message></help>
         </parameter>
         <parameter>
           <name>exportImages</name>
@@ -507,7 +503,7 @@
             <message lang="fr">Export des images</message>
             <message lang="en">Export images</message>
             <message lang="de">Export images</message>
-          </label>
+          <message lang="es">Exportación de imágenes</message></label>
           <order>20</order>
           <mandatory>true</mandatory>
           <value>no</value>
@@ -517,7 +513,7 @@
                 <message lang="fr">Oui, pour tout le monde</message>
                 <message lang="en">Yes, every users</message>
                 <message lang="de">Yes, every users</message>
-              </name>
+              <message lang="es">si, para todos</message></name>
               <value>yes_all</value>
             </option>
             <option>
@@ -525,7 +521,7 @@
                 <message lang="fr">Oui, pour les gestionnaires et publieurs</message>
                 <message lang="en">Yes, only for managers and publishers</message>
                 <message lang="de">Yes, only for managers and publishers</message>
-              </name>
+              <message lang="es">Sí, para administradores y editores</message></name>
               <value>yes_publisher</value>
             </option>
             <option>
@@ -533,7 +529,7 @@
                 <message lang="fr">Non</message>
                 <message lang="en">No</message>
                 <message lang="de">nein</message>
-              </name>
+              <message lang="es">No</message></name>
               <value>no</value>
             </option>
           </options>
@@ -545,7 +541,7 @@
             </message>
             <message lang="en">Users can export images from an album or from their basket</message>
             <message lang="de">Users can export images from an album or from their basket</message>
-          </help>
+          <message lang="es">Si esta configuración está habilitada, los usuarios tendrán la opción de exportar imágenes desde un álbum o carrito</message></help>
         </parameter>
       </parameters>
     </groupOfParameters>
@@ -554,7 +550,7 @@
         <message lang="fr">Filigrane</message>
         <message lang="en">Watermark</message>
         <message lang="de">Watermark</message>
-      </label>
+      <message lang="es">Filigrana</message></label>
       <description>
         <message lang="fr">La technique du "watermarking" permet d'ajouter une information de
           copyright à une image. Cette information est ajoutée automatiquement aux nouvelles images
@@ -568,8 +564,8 @@
           an image. This information is automatically added to new images according to the settings
           below.
         </message>
-      </description>
-      <help></help>
+      <message lang="es">La técnica de &amp;quot;marca de agua&amp;quot; permite agregar información de derechos de autor a una imagen. Esta información se agrega automáticamente a las nuevas imágenes de acuerdo con la configuración a continuación.</message></description>
+      <help/>
       <order>3</order>
       <parameters>
         <parameter>
@@ -578,7 +574,7 @@
             <message lang="fr">Watermark</message>
             <message lang="en">Watermark</message>
             <message lang="de">Watermark</message>
-          </label>
+          <message lang="es">Filigrana</message></label>
           <order>7</order>
           <mandatory>true</mandatory>
           <value>no</value>
@@ -589,7 +585,7 @@
             </message>
             <message lang="en">Insert text into image as watermark</message>
             <message lang="de">Text ins Bild als Wasserzeichen einfügen</message>
-          </help>
+          <message lang="es">Le permite insertar texto como marca de agua en las imágenes</message></help>
         </parameter>
         <parameter>
           <name>WatermarkHD</name>
@@ -597,10 +593,10 @@
             <message lang="fr">Donnée IPTC - images originales</message>
             <message lang="en">IPTC data - original images</message>
             <message lang="de">Setzen Sie ein Wasserzeichen auf dem Original Bild</message>
-          </label>
+          <message lang="es">Datos IPTC - imágenes originales</message></label>
           <order>15</order>
           <mandatory>false</mandatory>
-          <value></value>
+          <value/>
           <type>text</type>
           <size>25</size>
           <updatable>always</updatable>
@@ -611,7 +607,7 @@
             </message>
             <message lang="de">IPTC Nummer verwenden für Wasserzeichen auf High-Definition-Bild
             </message>
-          </help>
+          <message lang="es">Número de datos IPTC para usar en imágenes de alta definición</message></help>
         </parameter>
         <parameter>
           <name>WatermarkOther</name>
@@ -619,7 +615,7 @@
             <message lang="fr">Donnée IPTC - vignettes</message>
             <message lang="en">IPTC property - thumbnails</message>
             <message lang="de">IPTC-Eigenschaft - Thumbnails</message>
-          </label>
+          <message lang="es">Datos IPTC - miniaturas</message></label>
           <order>16</order>
           <mandatory>false</mandatory>
           <value/>
@@ -630,7 +626,7 @@
             <message lang="fr">Numéro de la donnée IPTC à utiliser sur les vignettes</message>
             <message lang="en">IPTC number to be used for watermarking on thumbnails</message>
             <message lang="de">IPTC Nummer verwenden für Wasserzeichen</message>
-          </help>
+          <message lang="es">Número de datos IPTC que se usará en las miniaturas</message></help>
         </parameter>
         <parameter>
           <name>WatermarkTextHD</name>
@@ -638,10 +634,10 @@
             <message lang="fr">Texte - images originales</message>
             <message lang="en">Text - original images</message>
             <message lang="de">Text - original Bild</message>
-          </label>
+          <message lang="es">Texto - imágenes originales</message></label>
           <order>15</order>
           <mandatory>false</mandatory>
-          <value></value>
+          <value/>
           <type>text</type>
           <size>25</size>
           <updatable>always</updatable>
@@ -649,7 +645,7 @@
             <message lang="fr">Texte à utiliser sur les images haute définition</message>
             <message lang="en">Text to be used on High definition images</message>
             <message lang="de">Text auf High-Definition-Bild</message>
-          </help>
+          <message lang="es">Texto para usar en imágenes de alta definición</message></help>
         </parameter>
         <parameter>
           <name>WatermarkTextOther</name>
@@ -657,7 +653,7 @@
             <message lang="fr">Texte - vignettes</message>
             <message lang="en">Text - thumbnails</message>
             <message lang="de">Text - wasserzeichen</message>
-          </label>
+          <message lang="es">Texto - miniaturas</message></label>
           <order>16</order>
           <mandatory>false</mandatory>
           <value/>
@@ -668,7 +664,7 @@
             <message lang="fr">Texte à utiliser sur les vignettes</message>
             <message lang="en">Text to be used on thumbnails</message>
             <message lang="de">Text verwenden für Wasserzeichen</message>
-          </help>
+          <message lang="es">Texto para usar en las miniaturas</message></help>
         </parameter>
         <parameter>
           <name>WatermarkImageUrlHD</name>
@@ -676,10 +672,10 @@
             <message lang="fr">URL image - images originales</message>
             <message lang="en">Image URL - original images</message>
             <message lang="de">Image URL - original Bild</message>
-          </label>
+          <message lang="es">URL de la imagen: imágenes originales</message></label>
           <order>15</order>
           <mandatory>false</mandatory>
-          <value></value>
+          <value/>
           <type>text</type>
           <size>25</size>
           <updatable>always</updatable>
@@ -687,7 +683,7 @@
             <message lang="fr">Image à utiliser sur les images haute définition</message>
             <message lang="en">Image to be used on High definition images</message>
             <message lang="de">Image auf High-Definition-Bild</message>
-          </help>
+          <message lang="es">Imagen para usar en imágenes de alta definición</message></help>
         </parameter>
         <parameter>
           <name>WatermarkImageUrlOther</name>
@@ -695,7 +691,7 @@
             <message lang="fr">URL image - vignettes</message>
             <message lang="en">Image URL - thumbnails</message>
             <message lang="de">Image URL - wasserzeichen</message>
-          </label>
+          <message lang="es">URL de la imagen: miniaturas</message></label>
           <order>16</order>
           <mandatory>false</mandatory>
           <value/>
@@ -706,7 +702,7 @@
             <message lang="fr">Image à utiliser sur les vignettes</message>
             <message lang="en">Image to be used on thumbnails</message>
             <message lang="de">Image verwenden für Wasserzeichen</message>
-          </help>
+          <message lang="es">Imagen para usar en miniaturas</message></help>
         </parameter>
       </parameters>
     </groupOfParameters>
@@ -715,15 +711,15 @@
         <message lang="fr">Demandes d'images</message>
         <message lang="en">Image requests</message>
         <message lang="de">Image requests</message>
-      </label>
+      <message lang="es">Solicitudes de imágenes</message></label>
       <description>
         <message lang="fr">Les lecteurs peuvent demander le téléchargement des images dans leurs
           qualités d'origine.
         </message>
         <message lang="en">Readers may ask to download images in their original quality.</message>
         <message lang="de">Readers may ask to download images in their original quality.</message>
-      </description>
-      <help></help>
+      <message lang="es">Los lectores pueden solicitar la descarga de imágenes en sus calidades originales.</message></description>
+      <help/>
       <order>4</order>
       <parameters>
         <parameter>
@@ -732,7 +728,7 @@
             <message lang="fr">Demandes activées</message>
             <message lang="en">Ask for images</message>
             <message lang="de">Fordern Sie ein Bildes</message>
-          </label>
+          <message lang="es">Solicitudes activadas</message></label>
           <order>17</order>
           <mandatory>false</mandatory>
           <value>no</value>
@@ -744,7 +740,7 @@
             </message>
             <message lang="en">Readers can ask for HD images</message>
             <message lang="de">Leser können das HD-Bildes anfordern</message>
-          </help>
+          <message lang="es">Si esta configuración está habilitada, los lectores podrán solicitar imágenes.</message></help>
         </parameter>
         <parameter>
           <name>XMLOrderFormname</name>
@@ -752,7 +748,7 @@
             <message lang="fr">Formulaire associé</message>
             <message lang="en">Associated form</message>
             <message lang="de">Formular für Bilder anforderung</message>
-          </label>
+          <message lang="es">formulario asociado</message></label>
           <order>18</order>
           <mandatory>false</mandatory>
           <value/>
@@ -763,7 +759,7 @@
             <message lang="en">Form name attached to the order</message>
             <message lang="de">Name des XML Formulars, der an den Bilderanfordeung gebunden ist
             </message>
-          </help>
+          <message lang="es">Nombre del formulario asociado a las solicitudes de fotografías</message></help>
         </parameter>
         <parameter>
           <name>UrlCharte</name>
@@ -771,7 +767,7 @@
             <message lang="fr">URL de la charte</message>
             <message lang="en">URL of the usage policy</message>
             <message lang="de">URL der Charta</message>
-          </label>
+          <message lang="es">URL de la carta</message></label>
           <order>19</order>
           <mandatory>false</mandatory>
           <value/>
@@ -782,7 +778,7 @@
             <message lang="fr">URL de la charte associée aux demandes de photos</message>
             <message lang="en">URL of the usage policy defining the images usage</message>
             <message lang="de">URL der an den Anforderung der Bilder gebundenen Charta</message>
-          </help>
+          <message lang="es">URL de la carta asociada con las solicitudes de fotos</message></help>
         </parameter>
       </parameters>
     </groupOfParameters>
@@ -794,7 +790,7 @@
         <message lang="fr">Classification PDC</message>
         <message lang="en">Taxonomy</message>
         <message lang="de">klassierungsplan</message>
-      </label>
+      <message lang="es">Clasificación PDC</message></label>
       <order>4</order>
       <mandatory>true</mandatory>
       <value>no</value>
@@ -806,7 +802,7 @@
         </message>
         <message lang="en">Media would be classified on taxonomy</message>
         <message lang="de">Bilder werden auf dem KP Klassifiziert</message>
-      </help>
+      <message lang="es">Los medios creados dentro de esta instancia se pueden clasificar en el Plan de Clasificación</message></help>
     </parameter>
   </parameters>
 </WAComponent>

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
 
     Copyright (C) 2000 - 2022 Silverpeas
 
@@ -23,16 +22,13 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
--->
-
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
+--><WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>quizz</name>
   <label>
     <message lang="fr">Quiz</message>
     <message lang="en">Quizz</message>
     <message lang="de">Quizz</message>
-  </label>
+  <message lang="es">Prueba</message></label>
   <description>
     <message lang="fr">Idéale pour contrôler les connaissances ou comme solution de e-learning,
 		cette application ludique permet de créer une suite de questions fermées.
@@ -42,12 +38,12 @@
     </message>
     <message lang="en">Evaluates the understanding or the knowledge on a subject. The user can use hints lowering his score.</message>
     <message lang="de">Wertet das Verständnis oder das Wissen über ein Thema. Der Benutzer kann Hinweise benützen die sein Ergebnis Senken.</message>
-  </description>
+  <message lang="es">Ideal para controlar el conocimiento o como solución de e-learning, esta divertida aplicación te permite crear una serie de preguntas cerradas. Se puede definir una puntuación precisa así como un índice para cada pregunta. La noción de respuesta correcta o incorrecta así como una nota final permite la constitución de un podio.</message></description>
   <suite>
     <message lang="fr">02 Gestion Collaborative</message>
     <message lang="en">02 Collaborative Management</message>
     <message lang="de">02 kollaborative Verwaltung</message>
-  </suite>
+  <message lang="es">02 Gestión colaborativa</message></suite>
   <visible>true</visible>
   <portlet>true</portlet>
   <profiles>
@@ -56,12 +52,12 @@
         <message lang="fr">Gestionnaires</message>
         <message lang="en">Managers</message>
         <message lang="de">Manager</message>
-      </label>
+      <message lang="es">Gerentes</message></label>
       <help>
         <message lang="fr">Les gestionnaires paramètrent le Plan de Classement.</message>
         <message lang="en">Managers set up the Cassification Scheme.</message>
         <message lang="de">Managers set up the Cassification Scheme.</message>
-      </help>
+      <message lang="es">Los gestores configuran el Plan de Clasificación.</message></help>
       <spaceMapping>
         <profile>admin</profile>
       </spaceMapping>
@@ -71,12 +67,12 @@
         <message lang="fr">Publieurs</message>
         <message lang="en">Publishers</message>
         <message lang="de">Herausgeber</message>
-      </label>
+      <message lang="es">Editores</message></label>
       <help>
         <message lang="fr">Les publieurs créent des quizz.</message>
         <message lang="en">Publishers create quizz</message>
         <message lang="de">Herausgeber</message>
-      </help>
+      <message lang="es">Los editores crean cuestionarios.</message></help>
       <spaceMapping>
         <profile>publisher</profile>
         <profile>writer</profile>
@@ -87,12 +83,12 @@
         <message lang="fr">Lecteurs</message>
         <message lang="en">Readers</message>
         <message lang="de">Leser</message>
-      </label>
+      <message lang="es">Lectores</message></label>
       <help>
         <message lang="fr">Les lecteurs participent aux quizz et visualisent leurs résultats.</message>
         <message lang="en">Readers take part in quizz and visualise their results.</message>
         <message lang="de">Leser</message>
-      </help>
+      <message lang="es">Los lectores participan en cuestionarios y ven sus resultados.</message></help>
       <spaceMapping>
         <profile>reader</profile>
       </spaceMapping>
@@ -105,7 +101,7 @@
         <message lang="fr">Classification PDC</message>
         <message lang="en">Classification Scheme</message>
         <message lang="de">Klassierungsplan</message>
-      </label>
+      <message lang="es">Clasificación PDC</message></label>
       <order>1</order>
       <mandatory>true</mandatory>
       <value>no</value>
@@ -115,7 +111,7 @@
         <message lang="fr">Les quizz créés au sein de cette application pourront être classés sur le Plan de Classement.</message>
         <message lang="en">The quizz will be classified on the classification scheme.</message>
         <message lang="de">Ein Quizz kann auf dem KP klassifiziert werden</message>
-      </help>
+      <message lang="es">Los cuestionarios creados dentro de esta aplicación se pueden clasificar en el Plan de Clasificación.</message></help>
     </parameter>
   </parameters>
 </WAComponent>
