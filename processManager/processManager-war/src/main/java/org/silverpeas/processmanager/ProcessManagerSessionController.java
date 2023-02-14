@@ -980,7 +980,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   /**
    * Get assign data (for the re-affectations)
    */
-  public void reAssign(DataRecord data) throws ProcessManagerException {
+  public void reAssign(ProcessInstance processInstance, DataRecord data) throws ProcessManagerException {
     Actor[] oldUsers;
     List<Actor> oldActors = new ArrayList<>();
     List<Actor> newActors = new ArrayList<>();
@@ -988,11 +988,11 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
     try {
       WorkflowEngine wfEngine = Workflow.getWorkflowEngine();
-      String[] activeStates = currentProcessInstance.getActiveStates();
+      String[] activeStates = processInstance.getActiveStates();
 
       for (String activeState : activeStates) {
         // unassign old working users
-        oldUsers = currentProcessInstance.getWorkingUsers(activeState);
+        oldUsers = processInstance.getWorkingUsers(activeState);
         oldActors.addAll(Arrays.asList(oldUsers));
         RelatedUser[] relatedUsers =
             processModel.getState(activeState).getWorkingUsers().getRelatedUsers();
@@ -1011,28 +1011,28 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
           for (RelatedUser relatedUser : relatedUsers) {
             Item item = relatedUser.getFolderItem();
             if (item != null && roleName.equals(relatedUser.getRole())) {
-              addAnyChanges(userId, item, changes);
+              addAnyChanges(processInstance, userId, item, changes);
             }
           }
         }
       }
 
-      wfEngine.reAssignActors((UpdatableProcessInstance) currentProcessInstance,
-          oldActors.toArray(new Actor[oldActors.size()]),
-          newActors.toArray(new Actor[newActors.size()]), currentUser);
+      wfEngine.reAssignActors((UpdatableProcessInstance) processInstance,
+          oldActors.toArray(new Actor[0]),
+          newActors.toArray(new Actor[0]), currentUser);
 
       // update folder
-      updateFolder(changes);
+      updateFolder(processInstance, changes);
     } catch (WorkflowException | FormException we) {
       throw new ProcessManagerException(PROCESS_MANAGER_SESSION_CONTROLLER,
           "processManager.RE_ASSIGN_FAILED", we);
     }
   }
 
-  private void addAnyChanges(final String userId, final Item item,
+  private void addAnyChanges(ProcessInstance processInstance, final String userId, final Item item,
       final Map<String, String> changes) {
     try {
-      Field folderField = currentProcessInstance.getField(item.getName());
+      Field folderField = processInstance.getField(item.getName());
       if (folderField instanceof UserField) {
         changes.put(item.getName(), userId);
       }
@@ -1993,7 +1993,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     return "";
   }
 
-  private void updateFolder(final Map<String, String> changes)
+  private void updateFolder(final ProcessInstance processInstance, final Map<String, String> changes)
       throws FormException, WorkflowException {
     if (!changes.isEmpty()) {
       GenericRecordTemplate rt = new GenericRecordTemplate();
@@ -2005,7 +2005,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       for (Map.Entry<String, String> fieldEntry : changes.entrySet()) {
         folder.getField(fieldEntry.getKey()).setStringValue(fieldEntry.getValue());
       }
-      currentProcessInstance.updateFolder(folder);
+      processInstance.updateFolder(folder);
     }
   }
 
