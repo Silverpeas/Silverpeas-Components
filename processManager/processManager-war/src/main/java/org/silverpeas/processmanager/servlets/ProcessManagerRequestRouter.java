@@ -148,7 +148,7 @@ public class ProcessManagerRequestRouter
       request.setAttribute("data", data);
       try {
         form.update(items, data, context);
-        session.reAssign(data);
+        session.reAssign(session.getCurrentProcessInstance(), data);
         return listProcessHandler.getDestination(function, session, request);
       } catch (FormException e) {
         throw new ProcessManagerException("ProcessManagerRequestRouter",
