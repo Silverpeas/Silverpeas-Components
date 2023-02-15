@@ -38,8 +38,8 @@ public interface FunctionHandler {
   /**
    * Process the request and returns the response url.
    * @param function the user request name
-   * @param request the user request params
    * @param session the user request context
+   * @param request the user request params
    */
   String getDestination(String function,
       ProcessManagerSessionController session, HttpServletRequest request)

@@ -34,16 +34,16 @@ public final class NamedValue implements Serializable {
 
   private static final long serialVersionUID = 95974461450918272L;
 
+  private final String name;
+  private final String value;
+  private final boolean creationOne;
+
   static Comparator<NamedValue> ascendingValues = (o1, o2) -> {
     if (o1.value == null) {
       return (o2.value == null) ? 0 : (-1);
     }
     return o1.value.compareTo(o2.value);
   };
-
-  public final String name;
-  public final String value;
-  public final boolean creationOne;
 
   NamedValue(String name, String value, final boolean creationOne) {
     this.name = name;

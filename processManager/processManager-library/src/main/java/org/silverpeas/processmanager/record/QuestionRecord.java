@@ -37,15 +37,13 @@ import java.util.Map;
 public class QuestionRecord implements DataRecord {
 
   private static final long serialVersionUID = 4978363746794966549L;
-  String content = null;
-  String id = null;
-  TextFieldImpl contentField = null;
+  private String id = null;
+  private final TextFieldImpl contentField;
 
   /**
    * A QuestionRecord is built from a Question
    */
   public QuestionRecord(String content) {
-    this.content = content;
     contentField = new TextFieldImpl();
     contentField.setStringValue(content);
   }
@@ -67,13 +65,14 @@ public class QuestionRecord implements DataRecord {
   /**
    * Returns all the fields
    */
+  @SuppressWarnings("unused")
   public Field[] getFields() {
     try {
       Field[] fields = new Field[1];
       fields[0] = getField("Content");
       return fields;
     } catch (FormException fe) {
-      return null;
+      return new Field[0];
     }
   }
 
@@ -112,7 +111,7 @@ public class QuestionRecord implements DataRecord {
   }
 
   public String[] getFieldNames() {
-    return null;
+    return new String[0];
   }
 
   /**
@@ -127,6 +126,7 @@ public class QuestionRecord implements DataRecord {
   }
 
   public void setLanguage(String language) {
+    // nothing to do
   }
 
   @Override

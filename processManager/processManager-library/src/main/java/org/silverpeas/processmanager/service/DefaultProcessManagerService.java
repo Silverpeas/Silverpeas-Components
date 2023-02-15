@@ -105,7 +105,7 @@ public class DefaultProcessManagerService implements ProcessManagerService {
    * @param fileContent the full content of the file being pushed during process creation (as an
    * array of bytes).
    * @return the instance ID of the newly started process
-   * @throws ProcessManagerException
+   * @throws ProcessManagerException when the creation of the process failed.
    */
   @Override
   public String createProcess(String componentId, String userId, String fileName,
@@ -122,8 +122,8 @@ public class DefaultProcessManagerService implements ProcessManagerService {
    * Some information may be specified that will fill in the creation form of the new process
    * instance. Such data should be placed into a map structure of key-value pairs where keys are
    * the
-   * name of the intended fields of the creation form and values are strins (text fields), dates
-   * (date fields), colelctions of strings, collections of dates, or a single {@link FileContent}
+   * name of the intended fields of the creation form and values are strings (text fields), dates
+   * (date fields), collections of strings, collections of dates, or a single {@link FileContent}
    * object. </p>
    * <p>
    * {@link FileContent} are used to pass in as an argument a complete file of binary data, loaded
@@ -137,9 +137,9 @@ public class DefaultProcessManagerService implements ProcessManagerService {
    * is
    * expected to be the name of a field in the process form definition (with specification of the
    * type name of the field), and the value must be the value to put into this field (it may be a
-   * collection of value if the field is multivaluated, else only the first value is considered).
+   * collection of value if the field is multivalued, else only the first value is considered).
    * @return the instance ID of the newly started process
-   * @throws ProcessManagerException
+   * @throws ProcessManagerException when the creation of the process failed.
    */
   @Override
   public String createProcess(String componentId, String userId, String userRole,
@@ -163,8 +163,8 @@ public class DefaultProcessManagerService implements ProcessManagerService {
     // 2 - Create process instance
     String instanceId = createProcessInstance(processModel, userId, userRole, data);
 
-    // 3 - Update attachment foreignkey
-    // Attachment's foreignkey must be set with the just created instanceId
+    // 3 - Update attachment foreign key
+    // Attachment's foreign key must be set with the just created instanceId
     for (String attachmentId : attachmentIds) {
       SimpleDocumentPK pk = new SimpleDocumentPK(attachmentId, componentId);
       SimpleDocument document = AttachmentServiceProvider.getAttachmentService().searchDocumentById(
@@ -257,7 +257,7 @@ public class DefaultProcessManagerService implements ProcessManagerService {
    * is
    * <code>null</code>, then search the first mandatory field of the right type.
    * @param form the form template.
-   * @param data the instanciated current form.
+   * @param data the data of the current form.
    * @param name the searched name or <code>null</code> for looking for the first mandatory field
    * of
    * the given type.
@@ -294,11 +294,11 @@ public class DefaultProcessManagerService implements ProcessManagerService {
   }
 
   /**
-   * Transform and return a gievn value into a string value suitable for a form field, depending
+   * Transform and return a given value into a string value suitable for a form field, depending
    * with the given field type name.
    * @param value the value to convert into a string.
    * @param type the field type name.
-   * @return the converetd string value.
+   * @return the converted string value.
    */
   private String getSimpleFieldValueString(Object value, String type) {
     if (value != null) {
@@ -509,6 +509,7 @@ public class DefaultProcessManagerService implements ProcessManagerService {
     return FR_LANG;
   }
 
+  @SuppressWarnings("UnusedReturnValue")
   private String doAction(String action, ProcessInstance processInstance, ProcessModel processModel,
       String userId, String currentRole, DataRecord data) throws ProcessManagerException {
     try {
@@ -567,6 +568,7 @@ public class DefaultProcessManagerService implements ProcessManagerService {
       Field field = findMatchingField(form, data, fieldName, fieldType);
 
       if (fieldValue == null) {
+        //noinspection ConstantValue
         populateSimpleField(field, fieldName, null, fieldType);
       } else if (fieldValue instanceof Collection<?>) {
         populateListField(field, fieldName, (Collection<?>) fieldValue, fieldType);

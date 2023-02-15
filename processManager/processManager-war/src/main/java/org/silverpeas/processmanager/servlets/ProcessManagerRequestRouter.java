@@ -81,7 +81,7 @@ public class ProcessManagerRequestRouter
   /**
    * The removeProcess handler for the supervisor.
    */
-  private static FunctionHandler adminRemoveProcessHandler = new SessionSafeFunctionHandler() {
+  private static final FunctionHandler adminRemoveProcessHandler = new SessionSafeFunctionHandler() {
     @Override
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
@@ -94,7 +94,7 @@ public class ProcessManagerRequestRouter
   /**
    * The viewErrors handler for the supervisor
    */
-  private static FunctionHandler adminViewErrorsHandler = new SessionSafeFunctionHandler() {
+  private static final FunctionHandler adminViewErrorsHandler = new SessionSafeFunctionHandler() {
     @Override
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
@@ -107,60 +107,60 @@ public class ProcessManagerRequestRouter
     }
   };
 
+  private static void prepareReAssignationAndDo(ProcessManagerSessionController session,
+      HttpServletRequest request, ReassignationOperation handler)
+      throws ProcessManagerException {
+    // Get the associated form
+    Form form = session.getAssignForm();
+    request.setAttribute("form", form);
+    // Set the form context
+    PagesContext context = getFormContext("assignForm", "0", session, true);
+    request.setAttribute("context", context);
+    // Get the form data
+    DataRecord data = session.getAssignRecord();
+    request.setAttribute("data", data);
+    handler.perform(form, data, context);
+  }
+
   /**
    * The reAssign handler for the supervisor
    */
-  private static FunctionHandler adminReAssignHandler = new SessionSafeFunctionHandler() {
+  private static final FunctionHandler adminReAssignHandler = new SessionSafeFunctionHandler() {
     @Override
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
       String processId = request.getParameter("processId");
       session.resetCurrentProcessInstance(processId);
-      // Get the associated form
-      Form form = session.getAssignForm();
-      request.setAttribute("form", form);
-      // Set the form context
-      PagesContext context = getFormContext("assignForm", "0", session, true);
-      request.setAttribute("context", context);
-      // Get the form data
-      DataRecord data = session.getAssignRecord();
-      request.setAttribute("data", data);
-      setSharedAttributes(session, request);
+      prepareReAssignationAndDo(session, request, (f, d, c) -> setSharedAttributes(session, request));
+
       return "/processManager/jsp/admin/reAssign.jsp";
     }
   };
 
   /**
-   * The doReAssign handler for the supervisor Get the new users affected and creates tasks
+   * The doReAssign handler for the supervisor. Gets the new users affected and creates tasks.
    */
-  private static FunctionHandler adminDoReAssignHandler = new SessionSafeFunctionHandler() {
+  private static final FunctionHandler adminDoReAssignHandler = new SessionSafeFunctionHandler() {
     @Override
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
-      // Get the associated form
-      Form form = session.getAssignForm();
-      request.setAttribute("form", form);
-      // Set the form context
-      PagesContext context = getFormContext("assignForm", "0", session, true);
-      request.setAttribute("context", context);
-      // Get the form data
-      DataRecord data = session.getAssignRecord();
-      request.setAttribute("data", data);
-      try {
-        form.update(items, data, context);
-        session.reAssign(session.getCurrentProcessInstance(), data);
-        return listProcessHandler.getDestination(function, session, request);
-      } catch (FormException e) {
-        throw new ProcessManagerException("ProcessManagerRequestRouter",
-            "processManager.ILL_CREATE_FORM", e);
-      }
+      prepareReAssignationAndDo(session, request, (f, d, c) -> {
+        try {
+          f.update(items, d, c);
+          session.reAssign(session.getCurrentProcessInstance(), d);
+        } catch (FormException e) {
+          throw new ProcessManagerException("ProcessManagerRequestRouter",
+              "processManager.ILL_CREATE_FORM", e);
+        }
+      });
+      return listProcessHandler.getDestination(function, session, request);
     }
   };
 
   /**
    * The listProcess handler. Used as the Main handler too.
    */
-  private static FunctionHandler listProcessHandler = new SessionSafeFunctionHandler() {
+  private static final FunctionHandler listProcessHandler = new SessionSafeFunctionHandler() {
     @Override
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
@@ -186,7 +186,7 @@ public class ProcessManagerRequestRouter
         processList = session.getCurrentProcessList();
       }
       request.setAttribute("processList", processList);
-      final List<Replacement> replacements = session.getCurrentAndNextUserReplacementsAsIncumbent();
+      final List<Replacement<?>> replacements = session.getCurrentAndNextUserReplacementsAsIncumbent();
       request.setAttribute("CurrentAndNextReplacementsAsIncumbent", replacements);
       setProcessFilterAttributes(session, request);
       setSharedAttributes(session, request);
@@ -197,7 +197,7 @@ public class ProcessManagerRequestRouter
   /**
    * The listProcess handler (modified in order to skip the list re-computation).
    */
-  private static FunctionHandler listSomeProcessHandler = new SessionSafeFunctionHandler() {
+  private static final FunctionHandler listSomeProcessHandler = new SessionSafeFunctionHandler() {
     @Override
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
@@ -209,7 +209,7 @@ public class ProcessManagerRequestRouter
   /**
    * The changeRole handler.
    */
-  private static FunctionHandler changeRoleHandler = new SessionSafeFunctionHandler() {
+  private static final FunctionHandler changeRoleHandler = new SessionSafeFunctionHandler() {
     @Override
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
@@ -222,7 +222,7 @@ public class ProcessManagerRequestRouter
   /**
    * The filterProcess handler.
    */
-  private static FunctionHandler filterProcessHandler = new SessionSafeFunctionHandler() {
+  private static final FunctionHandler filterProcessHandler = new SessionSafeFunctionHandler() {
     @Override
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
@@ -232,7 +232,7 @@ public class ProcessManagerRequestRouter
     }
   };
 
-  private static FunctionHandler clearFilterHandler = new SessionSafeFunctionHandler() {
+  private static final FunctionHandler clearFilterHandler = new SessionSafeFunctionHandler() {
     @Override
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
@@ -244,7 +244,7 @@ public class ProcessManagerRequestRouter
   /**
    * The attachmentManager handler
    */
-  private static FunctionHandler attachmentManagerHandler = new SessionSafeFunctionHandler() {
+  private static final FunctionHandler attachmentManagerHandler = new SessionSafeFunctionHandler() {
     @Override
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
@@ -260,7 +260,7 @@ public class ProcessManagerRequestRouter
   /**
    * The removeLock handler
    */
-  private static FunctionHandler removeLockHandler = new SessionSafeFunctionHandler() {
+  private static final FunctionHandler removeLockHandler = new SessionSafeFunctionHandler() {
     @Override
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
@@ -277,7 +277,7 @@ public class ProcessManagerRequestRouter
   /**
    * The viewProcess handler
    */
-  private static FunctionHandler viewProcessHandler = new SessionSafeFunctionHandler() {
+  private static final FunctionHandler viewProcessHandler = new SessionSafeFunctionHandler() {
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
       String processId = request.getParameter("processId");
@@ -332,7 +332,7 @@ public class ProcessManagerRequestRouter
   /**
    * The searchResult handler
    */
-  private static FunctionHandler searchResultHandler = new SessionSafeFunctionHandler() {
+  private static final FunctionHandler searchResultHandler = new SessionSafeFunctionHandler() {
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
       String type = request.getParameter("Type");
@@ -386,7 +386,7 @@ public class ProcessManagerRequestRouter
   /**
    * The viewHistory handler
    */
-  private static FunctionHandler viewHistoryHandler = new SessionSafeFunctionHandler() {
+  private static final FunctionHandler viewHistoryHandler = new SessionSafeFunctionHandler() {
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
       String processId = request.getParameter("processId");
@@ -407,7 +407,7 @@ public class ProcessManagerRequestRouter
   /**
    * The createProcess handler
    */
-  private static FunctionHandler createProcessHandler = new SessionSafeFunctionHandler() {
+  private static final FunctionHandler createProcessHandler = new SessionSafeFunctionHandler() {
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
 
@@ -436,7 +436,7 @@ public class ProcessManagerRequestRouter
   /**
    * The saveCreation handler
    */
-  private static FunctionHandler saveCreationHandler = new SessionSafeFunctionHandler() {
+  private static final FunctionHandler saveCreationHandler = new SessionSafeFunctionHandler() {
     @Override
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
@@ -462,7 +462,7 @@ public class ProcessManagerRequestRouter
         context.setObjectId(instanceId);
         form.updateWysiwyg(items, data, context);
 
-        // Attachment's foreignkey must be set with the just created instanceId
+        // Attachment's foreign key must be set with the just created instanceId
         for (String attachmentId : attachmentIds) {
 
           SimpleDocumentPK pk = new SimpleDocumentPK(attachmentId, session.getComponentId());
@@ -489,7 +489,7 @@ public class ProcessManagerRequestRouter
   /**
    * The resumeAction handler
    */
-  private static FunctionHandler resumeActionHandler = new SessionSafeFunctionHandler() {
+  private static final FunctionHandler resumeActionHandler = new SessionSafeFunctionHandler() {
     @Override
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
@@ -530,7 +530,7 @@ public class ProcessManagerRequestRouter
   /**
    * The editAction handler
    */
-  private static FunctionHandler editActionHandler = new SessionSafeFunctionHandler() {
+  private static final FunctionHandler editActionHandler = new SessionSafeFunctionHandler() {
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
 
@@ -590,7 +590,7 @@ public class ProcessManagerRequestRouter
   /**
    * The saveAction handler
    */
-  private static FunctionHandler saveActionHandler = new SessionSafeFunctionHandler() {
+  private static final FunctionHandler saveActionHandler = new SessionSafeFunctionHandler() {
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
 
@@ -627,12 +627,12 @@ public class ProcessManagerRequestRouter
   /**
    * The cancelAction handler
    */
-  private static FunctionHandler cancelActionHandler = new SessionSafeFunctionHandler() {
+  private static final FunctionHandler cancelActionHandler = new SessionSafeFunctionHandler() {
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
       String stateName = request.getParameter("state");
 
-      // special case : a cancel occured when resuming a precedent action (saved in draft)
+      // special case : a cancel occurred when resuming a precedent action (saved in draft)
       if (session.isResumingInstance()) {
         return listProcessHandler.getDestination(function, session, request);
       }
@@ -647,7 +647,7 @@ public class ProcessManagerRequestRouter
   /**
    * The cancelResponse handler
    */
-  private static FunctionHandler cancelResponseHandler = new SessionSafeFunctionHandler() {
+  private static final FunctionHandler cancelResponseHandler = new SessionSafeFunctionHandler() {
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
       String stateName = request.getParameter("state");
@@ -662,7 +662,7 @@ public class ProcessManagerRequestRouter
   /**
    * The editQuestion handler
    */
-  private static FunctionHandler editQuestionHandler = new SessionSafeFunctionHandler() {
+  private static final FunctionHandler editQuestionHandler = new SessionSafeFunctionHandler() {
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
       String stepId = request.getParameter("stepId");
@@ -700,7 +700,7 @@ public class ProcessManagerRequestRouter
   /**
    * The saveQuestion handler
    */
-  private static FunctionHandler saveQuestionHandler = new SessionSafeFunctionHandler() {
+  private static final FunctionHandler saveQuestionHandler = new SessionSafeFunctionHandler() {
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
       try {
@@ -728,7 +728,7 @@ public class ProcessManagerRequestRouter
   /**
    * The editResponse handler
    */
-  private static FunctionHandler editResponseHandler = new SessionSafeFunctionHandler() {
+  private static final FunctionHandler editResponseHandler = new SessionSafeFunctionHandler() {
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
       String questionId = request.getParameter("questionId");
@@ -770,7 +770,7 @@ public class ProcessManagerRequestRouter
   /**
    * The saveResponse handler
    */
-  private static FunctionHandler saveResponseHandler = new SessionSafeFunctionHandler() {
+  private static final FunctionHandler saveResponseHandler = new SessionSafeFunctionHandler() {
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
       try {
@@ -796,9 +796,9 @@ public class ProcessManagerRequestRouter
   /**
    * The editUserSetting handler
    */
-  private static FunctionHandler manageReplacementsHandler = new SessionSafeFunctionHandler() {
+  private static final FunctionHandler manageReplacementsHandler = new SessionSafeFunctionHandler() {
     protected String computeDestination(String function, ProcessManagerSessionController session,
-        HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
+        HttpServletRequest request, List<FileItem> items) {
       setSharedAttributes(session, request);
       return "/processManager/jsp/replacements.jsp";
     }
@@ -806,7 +806,7 @@ public class ProcessManagerRequestRouter
   /**
    * The editUserSetting handler
    */
-  private static FunctionHandler editUserSettingsHandler = new SessionSafeFunctionHandler() {
+  private static final FunctionHandler editUserSettingsHandler = new SessionSafeFunctionHandler() {
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
       // Get the user settings form
@@ -828,7 +828,7 @@ public class ProcessManagerRequestRouter
   /**
    * The saveUserSetting handler
    */
-  private static FunctionHandler saveUserSettingsHandler = new SessionSafeFunctionHandler() {
+  private static final FunctionHandler saveUserSettingsHandler = new SessionSafeFunctionHandler() {
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
       Form form = session.getUserSettingsForm();
@@ -849,7 +849,7 @@ public class ProcessManagerRequestRouter
   /**
    * The listQuestions handler
    */
-  private static FunctionHandler listQuestionsHandler = new SessionSafeFunctionHandler() {
+  private static final FunctionHandler listQuestionsHandler = new SessionSafeFunctionHandler() {
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
       String processId = request.getParameter("processId");
@@ -916,7 +916,7 @@ public class ProcessManagerRequestRouter
     request.setAttribute("data", data);
   }
 
-  private static FunctionHandler exportCSVHandler = new SessionSafeFunctionHandler() {
+  private static final FunctionHandler exportCSVHandler = new SessionSafeFunctionHandler() {
     protected String computeDestination(String function, ProcessManagerSessionController session,
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
       ExportCSVBuilder csvBuilder = session.exportListAsCSV();
@@ -976,12 +976,12 @@ public class ProcessManagerRequestRouter
   }
 
   /**
-   * Return a new ProcessManagerSessionController wich will be used for each request made in the
-   * given componentContext. Returns a ill session controler when the a fatal error occures. This
+   * Return a new ProcessManagerSessionController which will be used for each request made in the
+   * given componentContext. Returns a ill session controller when the a fatal error occurs. This
    * ill session controller can only display an error page.
-   * @param mainSessionCtrl
-   * @param componentContext
-   * @return
+   * @param mainSessionCtrl the main session controller?
+   * @param componentContext the component instance context.
+   * @return the process manager session controller.
    */
   @Override
   public ProcessManagerSessionController createComponentSessionController(
@@ -1016,9 +1016,6 @@ public class ProcessManagerRequestRouter
     if (error != null) {
       request.setAttribute("javax.servlet.jsp.jspException", error);
     }
-    if ("Main".equals(function) || "listProcess".equals(function)) {
-      return "/admin/jsp/errorpageMain.jsp";
-    }
     return "/admin/jsp/errorpageMain.jsp";
   }
 
@@ -1046,7 +1043,7 @@ public class ProcessManagerRequestRouter
    */
   private static void setSharedAttributes(ProcessManagerSessionController session,
       HttpServletRequest request) {
-    final Function<NamedValue[],String> jsRoleEncoder = a -> JSONCodec.encodeObject(o -> {
+    final Function<NamedValue[], String> jsRoleEncoder = a -> JSONCodec.encodeObject(o -> {
       Stream.of(a).forEach(l ->
           o.putJSONObject(l.getName(), r ->
               r.put("label", l.getValue()).put("creationOne", l.isCreationOne())));
@@ -1059,7 +1056,8 @@ public class ProcessManagerRequestRouter
     request.setAttribute("language", session.getLanguage());
     request.setAttribute("roles", session.getUserRoleLabels());
     request.setAttribute("jsUserRoles", jsRoleEncoder.apply(session.getUserRoleLabels()));
-    request.setAttribute("jsComponentInstanceRoles", jsRoleEncoder.apply(session.getComponentInstanceRoleLabels()));
+    request.setAttribute("jsComponentInstanceRoles",
+        jsRoleEncoder.apply(session.getComponentInstanceRoleLabels()));
     request.setAttribute("currentRole", session.getCurrentRole());
     request.setAttribute("currentRoleLabel", session.getCurrentRoleLabel());
     request.setAttribute("currentReplacement", session.getCurrentReplacement());
@@ -1092,5 +1090,11 @@ public class ProcessManagerRequestRouter
     // versioning used ?
     pagesContext.setVersioningUsed(session.isVersionControlled());
     return pagesContext;
+  }
+
+  @FunctionalInterface
+  private interface ReassignationOperation {
+
+    void perform(Form form, DataRecord data, PagesContext context) throws ProcessManagerException;
   }
 }

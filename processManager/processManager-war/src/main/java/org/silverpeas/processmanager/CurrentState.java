@@ -12,7 +12,7 @@ import java.util.List;
 
 public class CurrentState {
 
-  private State state;
+  private final State state;
   private String label;
   private String workingUsers;
   private List<Task> tasks;

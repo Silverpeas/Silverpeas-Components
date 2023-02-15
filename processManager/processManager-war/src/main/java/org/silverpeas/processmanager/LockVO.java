@@ -33,10 +33,10 @@ import org.silverpeas.core.workflow.api.user.User;
  * @author Ludovic Bertin
  */
 public class LockVO {
-  private User user = null;
-  private Date lockDate = null;
-  private boolean removableBySupervisor = false;
-  private String state = null;
+  private User user;
+  private Date lockDate;
+  private boolean removableBySupervisor;
+  private String state;
 
   public LockVO(User user, Date lockDate, String state, boolean removableBySupervisor) {
     super();
