@@ -46,6 +46,7 @@
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 
 <fmt:message var="manageReplacementLabel" key="processManager.replacements.manage"/>
+<fmt:message var="manageReassignmentLabel" key="processManager.reassignment.manage"/>
 <fmt:message var="createProcessLabel" key="processManager.createProcess"/>
 <fmt:message var="userSettingsLabel" key="processManager.userSettings"/>
 <fmt:message var="csvExportLabel" key="processManager.csvExport"/>
@@ -112,12 +113,8 @@
   DataRecord data = (DataRecord) request.getAttribute("data");
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.processManager">
-<head>
-  <title><%=resource.getString("GML.popupTitle")%>
-  </title>
-  <view:looknfeel/>
+<view:sp-page angularJsAppName="silverpeas.processManager">
+<view:sp-head-part>
   <view:includePlugin name="toggle"/>
   <% form.displayScripts(out, context); %>
   <script type="text/javascript">
@@ -126,7 +123,7 @@
       applyEventDispatchingBehaviorOn(this);
     };
 
-    var filterDisplayed = ${collapse};
+    let filterDisplayed = ${collapse};
     function toggleFilter(){
       if (filterDisplayed) {
         $("#filterForm").hide();
@@ -145,12 +142,12 @@
     function setFilter() {
       ifCorrectFormExecute(function() {
         spProgressMessage.show();
-        document.${context.formName}.submit();
+        document['${context.formName}'].submit();
       });
     }
 
     function resetFilter() {
-      document.${context.formName}.reset();
+      document['${context.formName}'].reset();
     }
 
     function refreshList() {
@@ -175,13 +172,18 @@
       }
     });
   </script>
-</head>
-<body class="yui-skin-sam processManager-main currentProfile_${currentRole} page_processes">
+</view:sp-head-part>
+<view:sp-body-part cssClass="yui-skin-sam processManager-main currentProfile_${currentRole} page_processes">
 <view:operationPane>
   <c:if test="${currentReplacement == null}">
     <fmt:message key="processManager.replacements.manage" var="opIcon" bundle="${icons}"/>
     <c:url var="opIcon" value="${opIcon}"/>
     <view:operation action="manageReplacements" altText="${manageReplacementLabel}" icon="${opIcon}"/>
+  </c:if>
+  <c:if test="${isCurrentRoleSupervisor}">
+    <fmt:message key="processManager.reassignment.manage" var="opIcon" bundle="${icons}"/>
+    <c:url var="opIcon" value="${opIcon}"/>
+    <view:operation action="javascript:app.manager.openReassignment()" altText="${manageReassignmentLabel}" icon="${opIcon}"/>
   </c:if>
   <c:if test="${canCreate}">
     <fmt:message key="processManager.add" var="opIcon" bundle="${icons}"/>
@@ -203,6 +205,45 @@
 </view:operationPane>
 <view:window>
   <view:frame>
+    <c:if test="${isCurrentRoleSupervisor}">
+      <view:includePlugin name="listOfUsersAndGroups"/>
+      <view:script src="/processManager/jsp/javaScript/services/workflow.service.js"/>
+      <view:script src="/processManager/jsp/javaScript/vuejs/workflow.common.js"/>
+      <view:script src="/processManager/jsp/javaScript/vuejs/reassignment.js"/>
+      <c:set var="jsUserRoles" value="${requestScope.jsUserRoles}"/>
+      <c:set var="jsComponentInstanceRoles" value="${requestScope.jsComponentInstanceRoles}"/>
+      <div id="reassignment-module">
+        <workflow-reassignment-management
+            v-on:api="manager = $event"></workflow-reassignment-management>
+      </div>
+      <script type="text/javascript">
+        const componentInstanceRoles = ${jsComponentInstanceRoles};
+        const userRoles = ${jsUserRoles};
+        window.handledRoles = {};
+        for (let roleName in componentInstanceRoles) {
+          if ((${isCurrentRoleSupervisor} || userRoles[roleName]) && roleName !== 'supervisor') {
+            window.handledRoles[roleName] = componentInstanceRoles[roleName];
+          }
+        }
+        window.app = SpVue.createApp({
+          provide : function() {
+            return {
+              context : this.context,
+              commonService : new WorkflowService('${componentId}', handledRoles)
+            }
+          },
+          data : function() {
+            return {
+              context : {
+                currentUser : currentUser,
+                componentInstanceId : '${componentId}'
+              },
+              manager : undefined
+            };
+          }
+        }).mount('#reassignment-module');
+      </script>
+    </c:if>
     <c:if test="${currentReplacement == null and fn:length(currentAndNextReplacementsAsIncumbent) > 0}">
       <div class="inlineMessage">
         <c:set var="incumbentMessage"><fmt:message key="processManager.replacements.incumbent.overview">
@@ -367,9 +408,5 @@
   ${confirmDeleteMessage}
 </div>
 <view:progressMessage/>
-<script type="text/javascript">
-  /* declare the module myapp and its dependencies (here in the silverpeas module) */
-  var myapp = angular.module('silverpeas.processManager', ['silverpeas.services', 'silverpeas.directives']);
-</script>
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>

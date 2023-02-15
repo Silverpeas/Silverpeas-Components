@@ -147,7 +147,7 @@
                             v-bind:manualActions="true">
         <workflow-replacement-form
             v-bind:replacement="replacement"
-            v-bind:contentReadyDeferred="popinOpenDeferred"></workflow-replacement-form>
+            v-bind:content-ready-deferred="popinOpenDeferred"></workflow-replacement-form>
       </silverpeas-form-pane>
     </silverpeas-popin>
     <!-- MODIFY POPIN -->
@@ -158,7 +158,7 @@
                             v-bind:manualActions="true">
         <workflow-replacement-form
             v-bind:replacement="replacement"
-            v-bind:contentReadyDeferred="popinOpenDeferred"></workflow-replacement-form>
+            v-bind:content-ready-deferred="popinOpenDeferred"></workflow-replacement-form>
       </silverpeas-form-pane>
     </silverpeas-popin>
     <!-- DELETE POPIN -->

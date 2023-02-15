@@ -76,6 +76,30 @@
   white-space: nowrap;
 }
 
+
+/*
+Reassignment
+*/
+
+.reassignment-form .user-roles {
+  font-style: italic;
+  color: #666;
+  margin-top: -11px;
+}
+
+.reassignment-form .inlineMessage.not-matching-roles {
+  float: left;
+  width: calc( 100% - 4em);
+  margin-left: 0;
+  padding: 1em;
+  text-align: center;
+}
+
+/*
+Replacements
+*/
+
+
 #all-remplacement {
   width: 45%;
   float: right;
