@@ -149,8 +149,7 @@ public class ProcessManagerRequestRouter
           f.update(items, d, c);
           session.reAssign(session.getCurrentProcessInstance(), d);
         } catch (FormException e) {
-          throw new ProcessManagerException("ProcessManagerRequestRouter",
-              "processManager.ILL_CREATE_FORM", e);
+          throw new ProcessManagerException(e);
         }
       });
       return listProcessHandler.getDestination(function, session, request);
@@ -480,8 +479,7 @@ public class ProcessManagerRequestRouter
 
         return listProcessHandler.getDestination(function, session, request);
       } catch (FormException e) {
-        throw new ProcessManagerException("ProcessManagerRequestRouter",
-            "processManager.ILL_CREATE_FORM", e);
+        throw new ProcessManagerException(e);
       }
     }
   };
@@ -618,8 +616,7 @@ public class ProcessManagerRequestRouter
 
         return listProcessHandler.getDestination(function, session, request);
       } catch (Exception e) {
-        throw new ProcessManagerException("ProcessManagerRequestRouter",
-            "processManager.ILL_CREATE_FORM", e);
+        throw new ProcessManagerException(e);
       }
     }
   };
@@ -719,8 +716,7 @@ public class ProcessManagerRequestRouter
 
         return listProcessHandler.getDestination(function, session, request);
       } catch (Exception e) {
-        throw new ProcessManagerException("ProcessManagerRequestRouter",
-            "processManager.ILL_CREATE_FORM", e);
+        throw new ProcessManagerException(e);
       }
     }
   };
@@ -788,8 +784,7 @@ public class ProcessManagerRequestRouter
 
         return listProcessHandler.getDestination(function, session, request);
       } catch (Exception e) {
-        throw new ProcessManagerException("ProcessManagerRequestRouter",
-            "processManager.ILL_CREATE_FORM", e);
+        throw new ProcessManagerException(e);
       }
     }
   };
@@ -841,8 +836,7 @@ public class ProcessManagerRequestRouter
 
         return listProcessHandler.getDestination(function, session, request);
       } catch (Exception e) {
-        throw new ProcessManagerException("ProcessManagerRequestRouter",
-            "processManager.ILL_USERSETTINGS_FORM", e);
+        throw new ProcessManagerException(e);
       }
     }
   };
@@ -893,8 +887,7 @@ public class ProcessManagerRequestRouter
       }
       filter.setCollapse(!isEmpty);
     } catch (Exception e) {
-      throw new ProcessManagerException("ProcessManagerRequestRouter",
-          "processManager.ILL_FILTER_FORM", e);
+      throw new ProcessManagerException("Fail to update process filter", e);
     }
   }
 

@@ -23,6 +23,7 @@
  */
 package org.silverpeas.processmanager.service;
 
+import org.silverpeas.core.SilverpeasExceptionMessages;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
@@ -74,7 +75,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnGetting;
 import static org.silverpeas.core.contribution.attachment.AttachmentService.VERSION_MODE;
+import static org.silverpeas.processmanager.ProcessManagerException.PROCESS_INSTANCE_CREATION_FAILURE;
 
 /**
  * Process manager service which manage processes
@@ -120,8 +123,7 @@ public class DefaultProcessManagerService implements ProcessManagerService {
    * of those defined in a given workflow definition.
    * <p>
    * Some information may be specified that will fill in the creation form of the new process
-   * instance. Such data should be placed into a map structure of key-value pairs where keys are
-   * the
+   * instance. Such data should be placed into a map structure of key-value pairs where keys are the
    * name of the intended fields of the creation form and values are strings (text fields), dates
    * (date fields), collections of strings, collections of dates, or a single {@link FileContent}
    * object. </p>
@@ -133,8 +135,7 @@ public class DefaultProcessManagerService implements ProcessManagerService {
    * @param userId the current user ID.
    * @param userRole the role of the user while creating the process instance (this role must have
    * been defined in the workflow process definition).
-   * @param metadata a map of all input metadata, coming with the file and describing it. The key
-   * is
+   * @param metadata a map of all input metadata, coming with the file and describing it. The key is
    * expected to be the name of a field in the process form definition (with specification of the
    * type name of the field), and the value must be the value to put into this field (it may be a
    * collection of value if the field is multivalued, else only the first value is considered).
@@ -252,14 +253,12 @@ public class DefaultProcessManagerService implements ProcessManagerService {
   }
 
   /**
-   * Find and return the matching field in the current form, knowing its name and type name. If
-   * name
+   * Find and return the matching field in the current form, knowing its name and type name. If name
    * is
    * <code>null</code>, then search the first mandatory field of the right type.
    * @param form the form template.
    * @param data the data of the current form.
-   * @param name the searched name or <code>null</code> for looking for the first mandatory field
-   * of
+   * @param name the searched name or <code>null</code> for looking for the first mandatory field of
    * the given type.
    * @param typeName the searched type name.
    * @return the found field (never return <code>null</code>).
@@ -282,14 +281,13 @@ public class DefaultProcessManagerService implements ProcessManagerService {
         try {
           return data.getField(fieldName);
         } catch (FormException e) {
-          throw new ProcessManagerException(DEFAULT_PROCESS_MANAGER_SERVICE,
-              "processManager.FORM_FIELD_BAD_TYPE",
+          throw new ProcessManagerException("Form field bad type: " +
               FIELD_NAME + name + FIELD_TYPE + typeName, e);
         }
       }
     }
 
-    throw new ProcessManagerException(DEFAULT_PROCESS_MANAGER_SERVICE, "processManager.FORM_FIELD_NOT_FOUND",
+    throw new ProcessManagerException("Form field not found: " +
         FIELD_NAME + name + FIELD_TYPE + typeName);
   }
 
@@ -317,8 +315,7 @@ public class DefaultProcessManagerService implements ProcessManagerService {
    * Fill a form field in with a given value.
    * @param field the field object to fill in.
    * @param name the name of the field.
-   * @param value the value object (to be converted into a string value during the execution of
-   * this
+   * @param value the value object (to be converted into a string value during the execution of this
    * method).
    * @param type the type name of the field.
    * @throws ProcessManagerException if an error occurs while setting the value of the field
@@ -335,7 +332,7 @@ public class DefaultProcessManagerService implements ProcessManagerService {
       }
 
     } catch (FormException e) {
-      throw new ProcessManagerException(DEFAULT_PROCESS_MANAGER_SERVICE, "processManager.FORM_FIELD_ERROR",
+      throw new ProcessManagerException("Form field error: " +
           FIELD_NAME + name + FIELD_TYPE + type, e);
     }
   }
@@ -385,7 +382,7 @@ public class DefaultProcessManagerService implements ProcessManagerService {
       field.setStringValue(valuesStr.toString());
 
     } catch (FormException e) {
-      throw new ProcessManagerException(DEFAULT_PROCESS_MANAGER_SERVICE, "processManager.FORM_FIELD_ERROR",
+      throw new ProcessManagerException("Form field error:" +
           FIELD_NAME + name + FIELD_TYPE + type, e);
     }
   }
@@ -402,8 +399,7 @@ public class DefaultProcessManagerService implements ProcessManagerService {
       Workflow.getWorkflowEngine().process(event);
       return event.getProcessInstance().getInstanceId();
     } catch (WorkflowException e) {
-      throw new ProcessManagerException("SessionController",
-          "processManager.CREATION_PROCESSING_FAILED", e);
+      throw new ProcessManagerException(PROCESS_INSTANCE_CREATION_FAILURE, e);
     }
   }
 
@@ -416,7 +412,8 @@ public class DefaultProcessManagerService implements ProcessManagerService {
       Action creation = processModel.getCreateAction(role);
       return processModel.getPublicationForm(creation.getName(), role, getLanguage());
     } catch (WorkflowException e) {
-      throw new ProcessManagerException("SessionController", "processManager.NO_CREATION_FORM", e);
+      throw new ProcessManagerException(
+          failureOnGetting("creation form", processModel.getModelId()), e);
     }
   }
 
@@ -429,7 +426,8 @@ public class DefaultProcessManagerService implements ProcessManagerService {
       Action creation = processModel.getCreateAction(currentRole);
       return processModel.getNewActionRecord(creation.getName(), currentRole, getLanguage(), null);
     } catch (WorkflowException e) {
-      throw new ProcessManagerException(DEFAULT_PROCESS_MANAGER_SERVICE, "processManager.UNKNOWN_ACTION", e);
+      throw new ProcessManagerException(
+          failureOnGetting("empty creation record of model", processModel.getModelId()), e);
     }
   }
 
@@ -443,8 +441,8 @@ public class DefaultProcessManagerService implements ProcessManagerService {
       User user = new UserImpl(UserDetail.getById(userId));
       return Workflow.getTaskManager().getCreationTask(user, currentRole, processModel);
     } catch (WorkflowException e) {
-      throw new ProcessManagerException(DEFAULT_PROCESS_MANAGER_SERVICE,
-          "processManager.CREATION_TASK_UNAVAILABLE", e);
+      throw new ProcessManagerException(
+          failureOnGetting("creation task of model", processModel.getModelId()), e);
     }
   }
 
@@ -455,8 +453,8 @@ public class DefaultProcessManagerService implements ProcessManagerService {
     try {
       return Workflow.getProcessModelManager().getProcessModel(modelId);
     } catch (WorkflowException e) {
-      throw new ProcessManagerException(DEFAULT_PROCESS_MANAGER_SERVICE,
-          "processManager.UNKNOWN_PROCESS_MODEL", modelId, e);
+      throw new ProcessManagerException(
+          failureOnGetting("process model", modelId), e);
     }
   }
 
@@ -519,8 +517,7 @@ public class DefaultProcessManagerService implements ProcessManagerService {
       Workflow.getWorkflowEngine().process(event, true);
       return event.getProcessInstance().getInstanceId();
     } catch (WorkflowException e) {
-      throw new ProcessManagerException(this.getClass().getName(),
-          "processManager.ACTION_PROCESSING_FAILED", e);
+      throw new ProcessManagerException("Fail to process action " + action, e);
     }
   }
 
@@ -534,8 +531,8 @@ public class DefaultProcessManagerService implements ProcessManagerService {
       }
       throw new ProcessManagerException(this.getClass().getName(), "processManager.NO_TASK");
     } catch (WorkflowException e) {
-      throw new ProcessManagerException(this.getClass().getName(),
-          "processManager.TASK_UNAVAILABLE", e);
+      throw new ProcessManagerException(failureOnGetting("first task of process", processInstance),
+          e);
     }
   }
 
@@ -545,7 +542,7 @@ public class DefaultProcessManagerService implements ProcessManagerService {
       Action action = processModel.getAction(actionName);
       return processModel.getPublicationForm(action.getName(), role, getLanguage());
     } catch (WorkflowException e) {
-      throw new ProcessManagerException(this.getClass().getName(), "processManager.NO_ACTION_FORM",
+      throw new ProcessManagerException(failureOnGetting("form of action", actionName),
           e);
     }
   }
