@@ -51,8 +51,6 @@ import java.util.stream.Stream;
 public class ProcessFilter {
 
   private static final String PROCESS_FILTER = "ProcessFilter";
-  private static final String FAIL_TO_CREATE_CRITERIA_FORM =
-      "processFilter.FAIL_TO_CREATE_CRITERIA_FORM";
   private final FilterManager filter;
   private boolean collapse = false;
   private DataRecord criteria;
@@ -69,7 +67,8 @@ public class ProcessFilter {
     try {
       folderTemplate = model.getDataFolder().toRecordTemplate(role, lang, false);
     } catch (WorkflowException e1) {
-      throw new ProcessManagerException(PROCESS_FILTER, FAIL_TO_CREATE_CRITERIA_FORM, e1);
+      throw new ProcessManagerException(
+          "Fail to create criteria form of model " + model.getModelId(), e1);
     }
 
     try {
@@ -99,7 +98,8 @@ public class ProcessFilter {
         }
       }
     } catch (FormException e) {
-      throw new ProcessManagerException(PROCESS_FILTER, FAIL_TO_CREATE_CRITERIA_FORM, e);
+      throw new ProcessManagerException(
+          "Fail to create criteria form of model " + model.getModelId(), e);
     }
   }
 
@@ -110,7 +110,7 @@ public class ProcessFilter {
     try {
       return filter.getCriteriaForm();
     } catch (FormException e) {
-      throw new ProcessManagerException(PROCESS_FILTER, FAIL_TO_CREATE_CRITERIA_FORM, e);
+      throw new ProcessManagerException("Fail to get criteria form", e);
     }
   }
 
@@ -122,8 +122,7 @@ public class ProcessFilter {
       try {
         criteria = filter.getEmptyCriteriaRecord();
       } catch (FormException e) {
-        throw new ProcessManagerException(PROCESS_FILTER,
-            "processFilter.FAIL_TO_CREATE_CRITERIA_RECORD", e);
+        throw new ProcessManagerException("Fail to get criteria record", e);
       }
     }
     return criteria;
@@ -192,8 +191,7 @@ public class ProcessFilter {
       }
       return stream.collect(Collectors.toList());
     } catch (SilverpeasRuntimeException | FormException e) {
-      throw new ProcessManagerException(PROCESS_FILTER,
-          "processFilter.FAIL_TO_USE_CRITERIA_RECORD", e);
+      throw new ProcessManagerException("Fail to apply filter criteria", e);
     }
   }
 
