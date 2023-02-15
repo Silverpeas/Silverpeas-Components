@@ -176,8 +176,8 @@ public class ProcessManagerRequestRouter
         final ProcessManagerSessionController session,
         final HttpServletRequest request, final List<FileItem> items)
         throws ProcessManagerException {
-      String replaced = "2005"; //request.getParameter(SOURCE_USER_ID);
-      String substitute = "2002"; //request.getParameter(DESTINATION_USER_ID);
+      String replaced = request.getParameter(SOURCE_USER_ID);
+      String substitute = request.getParameter(DESTINATION_USER_ID);
       session.substituteDefinitely(replaced, substitute);
       return listProcessHandler.getDestination(function, session, request);
     }

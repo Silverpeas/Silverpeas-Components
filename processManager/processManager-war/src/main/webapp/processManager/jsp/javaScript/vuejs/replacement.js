@@ -32,35 +32,9 @@
     replacement.canBeDeleted = true;
   };
 
-  /**
-   * This filter permits to get label of role data.
-   * It is able to perform an array of roles or a role directly.
-   */
-  SpVue.filter('mapRoleLabel', function(value) {
-    if (Array.isArray(value)) {
-      return value.map(function(v) {
-        return v.label;
-      })
-    }
-    return value ? value.label : '';
-  });
-
-  /**
-   * This filter permits to get name of role data.
-   * It is able to perform an array of roles or a role directly.
-   */
-  SpVue.filter('mapRoleName', function(value) {
-    if (Array.isArray(value)) {
-      return value.map(function(v) {
-        return v.name;
-      })
-    }
-    return value ? value.name : '';
-  });
-
   const ReplacementRoleManagerMixin = {
     mixins : [VuejsI18nTemplateMixin],
-    inject : ['context', 'replacementService'],
+    inject : ['context', 'commonService', 'replacementService'],
     props : {
       computedTrigger : {
         'type' : Number,
@@ -74,7 +48,7 @@
       }
     },
     created : function() {
-      this.replacementService.promiseRoleManager().then(function(roleManager) {
+      this.commonService.promiseRoleManager().then(function(roleManager) {
         this.roleManager = roleManager;
       }.bind(this));
     },
@@ -84,6 +58,12 @@
       }
     },
     computed : {
+      incumbentUserId : function() {
+        return this.replacement && this.replacement.incumbent && this.replacement.incumbent.id;
+      },
+      substituteUserId : function() {
+        return this.replacement && this.replacement.substitute && this.replacement.substitute.id;
+      },
       incumbentRoleFilter : function() {
         let roles;
         if (this.roleManager) {
@@ -105,7 +85,7 @@
       matchingRoles : function() {
         let roles;
         if (this.computedTrigger && this.computedRoleManagerMixinTrigger && this.roleManager) {
-          roles = this.roleManager.getMatchingRoles(this.replacement);
+          roles = this.roleManager.getMatchingRoles(this.incumbentUserId, this.substituteUserId);
         }
         return this.$filters.joinWith(this.$filters.mapRoleLabel(roles), {
           separator : ', ',

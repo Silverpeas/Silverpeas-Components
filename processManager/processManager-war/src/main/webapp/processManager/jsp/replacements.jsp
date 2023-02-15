@@ -57,6 +57,8 @@
   <view:looknfeel/>
   <view:includePlugin name="datepicker"/>
   <view:includePlugin name="listOfUsersAndGroups"/>
+  <view:script src="/processManager/jsp/javaScript/services/workflow.service.js"/>
+  <view:script src="/processManager/jsp/javaScript/vuejs/workflow.common.js"/>
   <view:script src="/processManager/jsp/javaScript/vuejs/replacement.service.js"/>
   <view:script src="/processManager/jsp/javaScript/vuejs/replacement.js"/>
   <script type="text/javascript">
@@ -96,6 +98,7 @@
     provide : function() {
       return {
         context: this.context,
+        commonService: new WorkflowService('${componentId}', replacementHandledRoles),
         replacementService: new ReplacementService(this.context)
       }
     },
@@ -107,8 +110,7 @@
             roleLabel : componentInstanceRoles['${currentRole}'].label,
             isSupervisor : ${isCurrentRoleSupervisor}
           }, currentUser),
-          componentInstanceId : '${componentId}',
-          replacementHandledRoles : replacementHandledRoles
+          componentInstanceId : '${componentId}'
         },
         api : undefined
       };
