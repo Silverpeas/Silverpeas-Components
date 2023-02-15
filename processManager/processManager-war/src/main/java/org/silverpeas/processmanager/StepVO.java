@@ -25,14 +25,14 @@
 package org.silverpeas.processmanager;
 
 public class StepVO {
-  String stepId = null;
-  String activity = null;
-  String actorFullName = null;
-  String actionName = null;
-  String stepDate = null;
-  boolean visible = false;
-  HistoryStepContent content = null;
-  String substituteFullName = null;
+  private String stepId = null;
+  private String activity = null;
+  private String actorFullName = null;
+  private String actionName = null;
+  private String stepDate = null;
+  private boolean visible = false;
+  private HistoryStepContent content = null;
+  private String substituteFullName = null;
 
   /**
    * @return the stepId

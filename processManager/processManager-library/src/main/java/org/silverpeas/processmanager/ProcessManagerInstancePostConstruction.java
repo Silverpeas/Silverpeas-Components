@@ -23,6 +23,7 @@
  */
 package org.silverpeas.processmanager;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.ComponentInstancePostConstruction;
 import org.silverpeas.core.workflow.api.Workflow;
 import org.silverpeas.core.workflow.api.WorkflowException;
@@ -34,9 +35,9 @@ import static org.silverpeas.core.admin.component.ComponentInstancePostConstruct
     .WORKFLOW_POST_CONSTRUCTION;
 
 /**
- * Find and creates for the spawned ProcessManager instance a process model, id est instantiates
- * the workflow defined into an the XML descriptor associated with the ProcessManager instance. If
- * an error occurs while creating the workflow, a RuntimeException is thrown.
+ * Find and creates for the spawned ProcessManager instance a process model, id est instantiates the
+ * workflow defined into an the XML descriptor associated with the ProcessManager instance. If an
+ * error occurs while creating the workflow, a RuntimeException is thrown.
  * @author mmoquillon
  */
 @Named(WORKFLOW_POST_CONSTRUCTION)
@@ -50,8 +51,8 @@ public class ProcessManagerInstancePostConstruction implements ComponentInstance
           .getComponentParameterValue(componentInstanceId, "XMLFileName");
       Workflow.getProcessModelManager().createProcessModel(xmlFilename, componentInstanceId);
     } catch (WorkflowException e) {
-      throw new RuntimeException("Process model creation failure from " + xmlFilename +
-      " for instance " + componentInstanceId);
+      throw new SilverpeasRuntimeException("Process model creation failure from " + xmlFilename +
+          " for instance " + componentInstanceId);
     }
   }
 }

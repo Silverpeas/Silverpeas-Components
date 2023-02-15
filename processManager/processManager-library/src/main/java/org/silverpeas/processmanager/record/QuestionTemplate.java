@@ -35,9 +35,9 @@ import org.silverpeas.core.util.ResourceLocator;
 
 public class QuestionTemplate implements RecordTemplate {
   private static final String CONTENT = "Content";
-  private LocalizationBundle label = null;
-  private String language;
-  private boolean readonly;
+  private final transient LocalizationBundle label;
+  private final String language;
+  private final boolean readonly;
 
   /**
    * A QuestionTemplate is built from a language.
@@ -81,7 +81,7 @@ public class QuestionTemplate implements RecordTemplate {
    * @throws FormException if the field name is unknown.
    */
   public FieldTemplate getFieldTemplate(String fieldName) throws FormException {
-    GenericFieldTemplate fieldTemplate = null;
+    GenericFieldTemplate fieldTemplate;
     fieldTemplate = new GenericFieldTemplate(fieldName, "text");
     fieldTemplate.addLabel(label.getString("processManager." + fieldName), language);
     if (readonly) {
@@ -89,7 +89,7 @@ public class QuestionTemplate implements RecordTemplate {
     } else {
       fieldTemplate.setDisplayerName("textarea");
       fieldTemplate.setMandatory(true);
-      fieldTemplate.setReadOnly(readonly);
+      fieldTemplate.setReadOnly(false);
       fieldTemplate.addParameter(TextField.PARAM_MAXLENGTH, "500");
     }
     return fieldTemplate;
@@ -97,9 +97,8 @@ public class QuestionTemplate implements RecordTemplate {
 
   /**
    * Returns the field index of the named field.
-   * @throws FormException if the field name is unknown.
    */
-  public int getFieldIndex(String fieldName) throws FormException {
+  public int getFieldIndex(String fieldName) {
     if (fieldName.equals(CONTENT)) {
       return 0;
     } else {
@@ -110,7 +109,7 @@ public class QuestionTemplate implements RecordTemplate {
   /**
    * Returns an empty DataRecord built on this template.
    */
-  public DataRecord getEmptyRecord() throws FormException {
+  public DataRecord getEmptyRecord() {
     return new QuestionRecord("");
   }
 

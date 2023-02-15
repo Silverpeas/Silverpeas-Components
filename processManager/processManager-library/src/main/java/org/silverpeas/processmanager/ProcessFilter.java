@@ -58,14 +58,14 @@ public class ProcessFilter {
   private DataRecord criteria;
 
   /**
-   * Builds a process filter which can be used to select process intance of a given process model.
+   * Builds a process filter which can be used to select process instance of a given process model.
    */
   public ProcessFilter(ProcessModel model, String role, String lang)
       throws ProcessManagerException {
     RecordTemplate rowTemplate = model.getRowTemplate(role, lang);
     filter = new FilterManager(rowTemplate, lang);
 
-    RecordTemplate folderTemplate = null;
+    RecordTemplate folderTemplate;
     try {
       folderTemplate = model.getDataFolder().toRecordTemplate(role, lang, false);
     } catch (WorkflowException e1) {
@@ -73,7 +73,7 @@ public class ProcessFilter {
     }
 
     try {
-      // Affichage d'une liste déroulante des états possibles
+      // Display the dropdown list with the possible states
       GenericFieldTemplate state = new GenericFieldTemplate("instance.state", "text");
       State[] states = model.getStates();
       StringBuilder values = new StringBuilder();
@@ -86,7 +86,7 @@ public class ProcessFilter {
       state.addParameter("keys", values.toString());
       filter.addFieldParameter("instance.state", state);
 
-      // Affichage d'une liste déroulante pour chaque donnée multivaluée
+      // Display the dropdown list for each multivalued data
       FieldTemplate[] fields = rowTemplate.getFieldTemplates();
       for (int f = 2; f < fields.length; f++) {
         FieldTemplate field = fields[f];
@@ -141,8 +141,8 @@ public class ProcessFilter {
    * exception, since this copy is only done to simplify the user life.
    */
   void copySharedCriteria(ProcessFilter source) {
-    DataRecord copiedCriteria = null;
-    String[] criteriaNames = null;
+    DataRecord copiedCriteria;
+    String[] criteriaNames;
     try {
       copiedCriteria = source.getCriteriaRecord();
       criteriaNames = source.filter.getCriteriaTemplate().getFieldNames();
@@ -153,11 +153,11 @@ public class ProcessFilter {
     }
 
     Field criteriumField;
-    for (int i = 0; i < criteriaNames.length; i++) {
+    for (final String criteriaName : criteriaNames) {
       try {
-        criteriumField = criteria.getField(criteriaNames[i]);
+        criteriumField = criteria.getField(criteriaName);
         if (criteriumField != null && copiedCriteria != null) {
-          criteriumField.setValue(copiedCriteria.getField(criteriaNames[i]).getValue(""), "");
+          criteriumField.setValue(copiedCriteria.getField(criteriaName).getValue(""), "");
         }
       } catch (FormException e) {
         SilverLogger.getLogger(this).silent(e);

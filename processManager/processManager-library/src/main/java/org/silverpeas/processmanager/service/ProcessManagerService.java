@@ -32,7 +32,7 @@ public interface ProcessManagerService {
 
   /**
    * Create a process instance for a specific workflow component, by a specific user using one role
-   * of thoose defined in a given workflow definition. The contents of a file is passed in as a
+   * of those defined in a given workflow definition. The contents of a file is passed in as a
    * single parameter. This file is uploaded into the process data and stored in the first field of
    * the file type.
    *
@@ -43,19 +43,20 @@ public interface ProcessManagerService {
    * @param fileContent the full content of the file being pushed during process creation (as an
    * array of bytes).
    * @return the instance ID of the newly started process
-   * @throws ProcessManagerException
+   * @throws ProcessManagerException when the creation of the process failed.
    */
+  @SuppressWarnings("unused")
   String createProcess(String componentId, String userId, String fileName, byte[] fileContent)
       throws ProcessManagerException;
 
   /**
    * Create a process instance for a specific workflow component, by a specific user using one role
-   * of thoose defined in a given workflow definition.
+   * of those defined in a given workflow definition.
    * <p>
    * Some information may be specified that will fill in the creation form of the new process
    * instance. Such data should be placed into a map structure of key-value pairs where keys are the
-   * name of the intended fields of the creation form and values are strins (text fields), dates
-   * (date fields), colelctions of strings, collections of dates, or a single {@link FileContent}
+   * name of the intended fields of the creation form and values are strings (text fields), dates
+   * (date fields), collections of strings, collections of dates, or a single {@link FileContent}
    * object.
    * </p>
    * <p> {@link FileContent} are used to pass in as an argument a complete file of binary data,
@@ -70,15 +71,17 @@ public interface ProcessManagerService {
    * @param metadata a map of all input metadata, coming with the file and describing it. The key is
    * expected to be the name of a field in the process form definition (with specification of the
    * type name of the field), and the value must be the value to put into this field (it may be a
-   * collection of value if the field is multivaluated, else only the first value is considered).
+   * collection of value if the field is multivalued, else only the first value is considered).
    * @return the instance ID of the newly started process
-   * @throws ProcessManagerException
+   * @throws ProcessManagerException when the creation of the process failed.
    */
   String createProcess(String componentId, String userId, String userRole,
       Map<String, Object> metadata) throws ProcessManagerException;
 
+  @SuppressWarnings("unused")
   void doAction(String action, String processId, String componentId, String userId,
       String userRole, Map<String, Object> metadata) throws ProcessManagerException;
 
+  @SuppressWarnings("unused")
   ProcessInstance getProcessInstance(String processId) throws ProcessManagerException;
 }

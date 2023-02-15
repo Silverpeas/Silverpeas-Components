@@ -33,22 +33,22 @@
 <c:set var="backToLabel" value='<%=resource.getString("processManager.backTo")%>'/>
 
 <%
-	ProcessInstance 			process 					= (ProcessInstance) request.getAttribute("process");
-	Form form 						= (Form) request.getAttribute("form");
-	PagesContext 				context 					= (PagesContext) request.getAttribute("context");
-	DataRecord 					data 						= (DataRecord) request.getAttribute("data");
-	String[] 					deleteAction 				= (String[]) request.getAttribute("deleteAction");
-	List<CurrentState> activeStates 				= (List<CurrentState>) request.getAttribute("activeStates");
-	boolean 					isAttachmentTabEnabled 		= (Boolean) request.getAttribute("isAttachmentTabEnabled");
-  boolean 					isHistoryTabEnable 			= (Boolean) request.getAttribute("isHistoryTabEnable");
-	boolean 					isProcessIdVisible 			= (Boolean) request.getAttribute("isProcessIdVisible");
-	boolean 					isPrintButtonEnabled 		= (Boolean) request.getAttribute("isPrintButtonEnabled");
-	List	 					locks		 				= (List) request.getAttribute("locks");
-	boolean						hasLockingUsers				= CollectionUtil.isNotEmpty(locks);
-	boolean						isCurrentUserIsLockingUser 	= (Boolean) request.getAttribute("isCurrentUserIsLockingUser");
-	boolean						isReturnEnabled 			= (Boolean) request.getAttribute("isReturnEnabled");
-	String 						versionning 				= (String) request.getAttribute("isVersionControlled");
-	boolean isVersionControlled = "1".equals(versionning);
+	ProcessInstance process = (ProcessInstance) request.getAttribute("process");
+	Form form = (Form) request.getAttribute("form");
+	PagesContext context = (PagesContext) request.getAttribute("context");
+	DataRecord data = (DataRecord) request.getAttribute("data");
+	String[] deleteAction = (String[]) request.getAttribute("deleteAction");
+	List<CurrentState> activeStates = (List<CurrentState>) request.getAttribute("activeStates");
+	boolean isAttachmentTabEnabled = (Boolean) request.getAttribute("isAttachmentTabEnabled");
+	boolean isHistoryTabEnable = (Boolean) request.getAttribute("isHistoryTabEnable");
+	boolean isProcessIdVisible = (Boolean) request.getAttribute("isProcessIdVisible");
+	boolean isPrintButtonEnabled = (Boolean) request.getAttribute("isPrintButtonEnabled");
+	List<LockVO> locks = (List<LockVO>) request.getAttribute("locks");
+	boolean hasLockingUsers = CollectionUtil.isNotEmpty(locks);
+	boolean isCurrentUserIsLockingUser = (Boolean) request.getAttribute("isCurrentUserIsLockingUser");
+	boolean isReturnEnabled = (Boolean) request.getAttribute("isReturnEnabled");
+	String versioning = (String) request.getAttribute("isVersionControlled");
+	boolean isVersionControlled = "1".equals(versioning);
 	int nbEntriesAboutQuestions = (Integer) request.getAttribute("NbEntriesAboutQuestions");
 	String currentRoleLabel = (String) request.getAttribute("currentRoleLabel");
   Replacement currentReplacement = (Replacement) request.getAttribute("currentReplacement");
@@ -107,6 +107,7 @@
 <%@ page import="org.silverpeas.core.util.StringUtil" %>
 <%@ page import="org.silverpeas.core.workflow.api.user.Replacement" %>
 <%@ page import="java.util.ArrayList" %>
+<%@ page import="org.silverpeas.processmanager.LockVO" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">

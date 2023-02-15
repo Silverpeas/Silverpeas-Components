@@ -23,6 +23,7 @@
  */
 package org.silverpeas.processmanager;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
 import org.silverpeas.core.workflow.api.UpdatableProcessInstanceManager;
 import org.silverpeas.core.workflow.api.Workflow;
@@ -58,7 +59,7 @@ public class ProcessManagerInstancePreDestruction implements ComponentInstancePr
       }
       Workflow.getProcessModelManager().deleteProcessModel(componentInstanceId);
     } catch (WorkflowException e) {
-      throw new RuntimeException(e.getMessage(), e);
+      throw new SilverpeasRuntimeException(e.getMessage(), e);
     }
   }
 }

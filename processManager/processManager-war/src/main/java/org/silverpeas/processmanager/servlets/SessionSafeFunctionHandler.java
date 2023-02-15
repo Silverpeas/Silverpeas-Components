@@ -25,7 +25,6 @@
 package org.silverpeas.processmanager.servlets;
 
 import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -66,7 +65,7 @@ public abstract class SessionSafeFunctionHandler implements FunctionHandler {
           items.addAll(request.getFileItems());
           request.setAttribute("ALREADY_PROCESSED", true);
         }
-      } catch (UtilException e) {
+      } catch (Exception e) {
         SilverLogger.getLogger(this).error(e);
       }
     }
@@ -104,7 +103,7 @@ public abstract class SessionSafeFunctionHandler implements FunctionHandler {
       givenTokenId = FileUploadUtil.getParameter(items, PROCESS_MANAGERTOKEN_ID);
     } else {
       // simple form submission
-      // in case of creation cancellation, test must be bypassed and current tolen id resetted
+      // in case of creation cancellation, test must be bypassed and current token id reset
       String cancel = request.getParameter(CANCEL_PARAMETER);
       isCancellation = StringUtil.getBooleanValue(cancel);
 
@@ -120,46 +119,56 @@ public abstract class SessionSafeFunctionHandler implements FunctionHandler {
   }
 
   /**
-   * Checks for incorrect usages :
    * <p>
-   * CASE 1 :         no conflict detection
-   * scenario :       user cancels a current action (from action's form)
-   * how to detect :  a parameter named "cancel" is present in request and equals to true
-   * <p>
-   * CASE 2 :         conflict detection
-   * scenario :       an action is being processed, user open another window and try to access same
-   * workflow
-   * how to detect :  no token ID present in request, but there's a current token ID in session
-   * controller
-   * <p>
-   * CASE 3 :         no conflict detection
-   * scenario :       user submits action form correctly
-   * how to detect :  a token ID is present in request and equal to current token ID stored in
-   * session controller
-   * <p>
-   * CASE 4 :         conflict detection
-   * scenario :       an action is being processed, user open another window and logged in =>
+   * Checks for incorrect usages:
+   * </p>
+   * <dl>
+   * <dt>CASE 1: no conflict detection</dt>
+   * <dd><ul>
+   *  <li>scenario:       user cancels a current action (from action's form)</li>
+   *  <li>how to detect:  a parameter named "cancel" is present in request and equals to true</li>
+   * </ul></dd>
+   * <dt>CASE 2: conflict detection</dt>
+   * <dd><ul>
+   *  <li>scenario: an action is being processed, user open another window and try to access same
+   * workflow</li>
+   *  <li>how to detect: no token ID present in request, but there's a current token ID in session
+   * controller</li>
+   * </ul></dd>
+   * <dt>CASE 3: no conflict detection</dt>
+   * <dd><ul>
+   *  <li>scenario: user submits action form correctly</li>
+   *  <li>how to detect :  a token ID is present in request and equal to current token ID stored in
+   * session controller</li>
+   * </ul></dd>
+   * <dt>CASE 4: conflict detection</dt>
+   * <dd><ul>
+   *   <li>scenario: an action is being processed, user open another window and logged in =>
    * previous Silverpeas session data is lost, then user open a instance procedure from same
-   * workflow and at least try submit action form from the first window
-   * how to detect :  a token ID is present in request but different from current token ID stored
-   * in
-   * session controller
-   * <p>
-   * CASE 5 :         conflict detection
-   * scenario :       an action is being processed, user open another window and logged in =>
-   * previous Silverpeas session data is lost then try submit action form from the first window
-   * how to detect :  a token ID is present in request but no current token ID stored in session
-   * controller
-   * <p>
-   * CASE 6 :         no conflict detection
-   * scenario :       user navigates in only one window, or in several windows but only in
-   * read-only
-   * uses cases
-   * how to detect :  no current token ID in session controller and no token ID present in request
+   * workflow and at least try submit action form from the first window</li>
+   *  <li>how to detect: a token ID is present in request but different from current token ID stored
+   * in session controller</li>
+   * </ul></dd>
+   * <dt>CASE 5: conflict detection</dt>
+   * <dd><ul>
+   *   <li>scenario: an action is being processed, user open another window and logged in =>
+   * previous Silverpeas session data is lost then try submit action form from the first window</li>
+   *  <li>how to detect: a token ID is present in request but no current token ID stored in session
+   * controller</li>
+   * </ul></dd>
+   * <dt>CASE 6: no conflict detection</dt>
+   * <dd><ul>
+   *   <li>scenario: user navigates in only one window, or in several windows but only in read-only
+   * uses cases</li>
+   *  <li>how to detect: no current token ID in session controller and no token ID present in
+   *  request</li>
+   * </ul></dd>
+   * </dl>
    * @param currentTokenId the current token identifier
-   * @param givenTokenId the givent token identifier
-   * @param isCancellation is cancellation
-   * @return
+   * @param givenTokenId the given token identifier
+   * @param isCancellation is a cancellation asked
+   * @return a boolean indicating the status of the verification: true if the usage is correct,
+   * false otherwise.
    */
   private boolean doVerifications(String currentTokenId, String givenTokenId,
       boolean isCancellation) {
@@ -242,7 +251,8 @@ public abstract class SessionSafeFunctionHandler implements FunctionHandler {
    * @param request the http servlet request
    * @param items eventual submitted items
    * @return the JSP servlet to be forwarded to.
-   * @throws ProcessManagerException
+   * @throws ProcessManagerException if an error occurs while computing the next destination of the
+   * user navigation in the workflow.
    */
   protected abstract String computeDestination(String function,
       ProcessManagerSessionController session, HttpServletRequest request, List<FileItem> items)
