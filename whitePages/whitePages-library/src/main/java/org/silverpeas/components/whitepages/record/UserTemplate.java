@@ -45,7 +45,9 @@ public class UserTemplate implements RecordTemplate {
   private transient HtmlForm viewForm;
 
   /**
-   * A UserTemplate is built from a fileName and a language : use addFieldTemplate for each field.
+   * A UserTemplate is built from a file name and a language.
+   * @param fileName the name of a file in which are defined the template of each fields.
+   * @param language the ISO-631 code of a language.
    */
   public UserTemplate(String fileName, String language) {
     label = ResourceLocator.getLocalizationBundle(
@@ -58,9 +60,6 @@ public class UserTemplate implements RecordTemplate {
     viewForm.setFileName(fileName);
   }
 
-  /**
-   * Returns all the field names of the UserRecord built on this template.
-   */
   @Override
   public String[] getFieldNames() {
     String[] fieldNames = new String[9];
@@ -77,9 +76,6 @@ public class UserTemplate implements RecordTemplate {
     return fieldNames;
   }
 
-  /**
-   * Returns all the field templates.
-   */
   @Override
   public FieldTemplate[] getFieldTemplates() {
     FieldTemplate[] fieldTemplates = new FieldTemplate[9];
@@ -99,10 +95,6 @@ public class UserTemplate implements RecordTemplate {
     return fieldTemplates;
   }
 
-  /**
-   * Returns the FieldTemplate of the named field.
-   * @throws FormException if the field name is unknown.
-   */
   @Override
   public FieldTemplate getFieldTemplate(String fieldName) throws FormException {
     GenericFieldTemplate fieldTemplate = null;
@@ -117,40 +109,33 @@ public class UserTemplate implements RecordTemplate {
     return fieldTemplate;
   }
 
-  /**
-   * Returns the field index of the named field.
-   * @throws FormException if the field name is unknown.
-   */
   @Override
-  public int getFieldIndex(String fieldName) throws FormException {
+  public int getFieldIndex(String fieldName) {
     return -1;
   }
 
-  /**
-   * Returns an empty DataRecord built on this template.
-   */
   @Override
-  public DataRecord getEmptyRecord() throws FormException {
+  public DataRecord getEmptyRecord() {
     return null;
   }
 
-  /**
-   * Returns true if the data record is built on this template and all the constraints are ok.
-   */
   @Override
   public boolean checkDataRecord(DataRecord record) {
     return true;
   }
 
   /**
-   * Returns the Form
+   * Gets the form dedicated to be rendered to the end users.
+   * @return a {@link Form} instance.
    */
   public Form getViewForm() {
     return viewForm;
   }
 
   /**
-   * Returns the UserRecord
+   * Gets a {@link UserRecord} of the specified user built on this template.
+   * @param idUser the unique identifier of a user in Silverpeas.
+   * @return the {@link UserRecord} instance for the given user.
    */
   public UserRecord getRecord(String idUser) {
     UserDetail userDetail = UserFull.getById(idUser);

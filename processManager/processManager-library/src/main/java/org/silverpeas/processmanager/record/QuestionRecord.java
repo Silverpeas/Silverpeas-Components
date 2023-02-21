@@ -110,6 +110,11 @@ public class QuestionRecord implements DataRecord {
     }
   }
 
+  @Override
+  public int size() {
+    return 1;
+  }
+
   public String[] getFieldNames() {
     return new String[0];
   }

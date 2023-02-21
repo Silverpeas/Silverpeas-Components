@@ -23,73 +23,62 @@
  */
 package org.silverpeas.components.whitepages.record;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.field.TextFieldImpl;
 import org.silverpeas.core.i18n.I18NHelper;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.admin.user.model.UserFull;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class UserRecord implements DataRecord {
 
   private static final long serialVersionUID = 4372981095216600600L;
-  private UserDetail user = null;
+  private final User user;
 
   public boolean isConnected() {
     return user.isConnected();
   }
 
   /**
-   * A UserRecord is built from a UserDetail
+   * A UserRecord is built from a {@link UserDetail}
+   * @param user a user in Silverpeas.
    */
-  public UserRecord(UserDetail user) {
+  public UserRecord(User user) {
     this.user = user;
   }
 
-  public UserDetail getUserDetail() {
+  public User getUserDetail() {
     return this.user;
   }
 
-  /**
-   * Returns the data record id. The record is known by its external id.
-   */
   @Override
   public String getId() {
     return user.getId();
   }
 
-  /**
-   * Gives an id to the record. Caution ! the record is known by its external id.
-   */
   @Override
   public void setId(String id) {
+    // this record has no id. Id is the one of the underlying user.
   }
 
-  /**
-   * Returns all the fields
-   */
   public Field[] getFields() {
-
-    return null;
+    return new Field[0];
   }
 
-  /**
-   * Returns the named field.
-   * @throws FormException when the fieldName is unknown.
-   */
   @Override
   public Field getField(String fieldName) throws FormException {
     TextFieldImpl text = new TextFieldImpl();
 
     if ("Id".equals(fieldName)) {
       text.setStringValue(user.getId());
-    } else if ("SpecificId".equals(fieldName)) {
-      text.setStringValue(user.getSpecificId());
+    } else if ("SpecificId".equals(fieldName) && user instanceof UserDetail) {
+      text.setStringValue(((UserDetail)user).getSpecificId());
     } else if ("DomainId".equals(fieldName)) {
       text.setStringValue(user.getDomainId());
     } else if ("Login".equals(fieldName)) {
@@ -116,39 +105,24 @@ public class UserRecord implements DataRecord {
     return null;
   }
 
-  /**
-   * Returns the field at the index position in the record.
-   * @throws FormException when the fieldIndex is unknown.
-   */
   @Override
-  public Field getField(int fieldIndex) throws FormException {
+  public Field getField(int fieldIndex) {
     return null;
+  }
+
+  @Override
+  public int size() {
+    return -1;
   }
 
   @Override
   public String[] getFieldNames() {
-    return null;
+    return new String[0];
   }
 
-  /**
-   * Return true if this record has not been inserted in a RecordSet.
-   */
   @Override
   public boolean isNew() {
     return false;
-  }
-
-  /**
-   * Gets the internal id. May be used only by a package class !
-   */
-  int getInternalId() {
-    return -1;
-  }
-
-  /**
-   * Sets the internal id. May be used only by a package class !
-   */
-  void setInternalId(int id) {
   }
 
   @Override
@@ -158,11 +132,12 @@ public class UserRecord implements DataRecord {
 
   @Override
   public void setLanguage(String language) {
+    // user has no l10n content
   }
 
   @Override
   public Map<String, String> getValues(String language) {
-    return new HashMap<String, String>();
+    return new HashMap<>();
   }
 
   @Override
