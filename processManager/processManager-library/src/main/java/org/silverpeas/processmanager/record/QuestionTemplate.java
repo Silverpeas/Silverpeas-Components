@@ -40,9 +40,9 @@ public class QuestionTemplate implements RecordTemplate {
   private final boolean readonly;
 
   /**
-   * A QuestionTemplate is built from a language.
-   * @param language the language
-   * @param readonly is read only
+   * A QuestionTemplate is built for a given language.
+   * @param language the language the ISO-631 code of a supported language.
+   * @param readonly is read only a boolean indicating if the question should be readonly
    */
   public QuestionTemplate(String language, boolean readonly) {
     label = ResourceLocator.getLocalizationBundle(
@@ -52,9 +52,7 @@ public class QuestionTemplate implements RecordTemplate {
     this.readonly = readonly;
   }
 
-  /**
-   * Returns all the field names of the UserRecord built on this template.
-   */
+  @Override
   public String[] getFieldNames() {
     String[] fieldNames = new String[1];
     fieldNames[0] = CONTENT;
@@ -62,9 +60,7 @@ public class QuestionTemplate implements RecordTemplate {
     return fieldNames;
   }
 
-  /**
-   * Returns all the field templates.
-   */
+  @Override
   public FieldTemplate[] getFieldTemplates() {
     try {
       FieldTemplate[] templates = new FieldTemplate[1];
@@ -76,10 +72,7 @@ public class QuestionTemplate implements RecordTemplate {
     }
   }
 
-  /**
-   * Returns the FieldTemplate of the named field.
-   * @throws FormException if the field name is unknown.
-   */
+  @Override
   public FieldTemplate getFieldTemplate(String fieldName) throws FormException {
     GenericFieldTemplate fieldTemplate;
     fieldTemplate = new GenericFieldTemplate(fieldName, "text");
@@ -95,9 +88,7 @@ public class QuestionTemplate implements RecordTemplate {
     return fieldTemplate;
   }
 
-  /**
-   * Returns the field index of the named field.
-   */
+  @Override
   public int getFieldIndex(String fieldName) {
     if (fieldName.equals(CONTENT)) {
       return 0;
@@ -106,16 +97,12 @@ public class QuestionTemplate implements RecordTemplate {
     }
   }
 
-  /**
-   * Returns an empty DataRecord built on this template.
-   */
+  @Override
   public DataRecord getEmptyRecord() {
     return new QuestionRecord("");
   }
 
-  /**
-   * Returns true if the data record is built on this template and all the constraints are ok.
-   */
+  @Override
   public boolean checkDataRecord(DataRecord record) {
     try {
       String value = (String) (record.getField(CONTENT).getObjectValue());

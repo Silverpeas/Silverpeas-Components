@@ -25,7 +25,10 @@ package org.silverpeas.processmanager;
 
 import org.silverpeas.core.SilverpeasExceptionMessages;
 import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.DataRecordUtil;
@@ -356,7 +359,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     }
   }
 
-  public boolean isUserAllowedOnActiveStates() {
+  public boolean isUserAllowedOnActiveStates() throws ProcessManagerException {
     String[] states = currentProcessInstance.getActiveStates();
     if (states == null) {
       return false;
@@ -383,7 +386,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
     List<CurrentState> currentStates = new ArrayList<>();
     for (String stateName : stateNames) {
-      State state = getState(stateName);
+      State state = getState(currentProcessInstance, stateName);
       filterActions(state);
       CurrentState currentState = new CurrentState(state);
       currentState.setLabel(state.getLabel(currentRole, getLanguage()));
@@ -530,9 +533,9 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
         .anyMatch(u -> getActiveUser().getUserId().equals(u.getUser().getUserId()));
   }
 
-  private List<String> getActiveUsers(String stateName) {
+  private List<String> getActiveUsers(String stateName) throws ProcessManagerException {
     List<String> activeUsers = new ArrayList<>();
-    State state = getState(stateName);
+    State state = getState(currentProcessInstance, stateName);
     if (state != null) {
       activeUsers.addAll(getUsers(state.getWorkingUsers()));
       activeUsers.addAll(getUsers(state.getInterestedUsers()));
@@ -904,14 +907,15 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   /**
    * Get assign template (for the re-affectations)
    */
-  private GenericRecordTemplate getAssignTemplate() throws ProcessManagerException {
+  private GenericRecordTemplate getAssignTemplate(ProcessInstance processInstance)
+      throws ProcessManagerException {
     try {
-      String[] activeStates = currentProcessInstance.getActiveStates();
+      String[] activeStates = processInstance.getActiveStates();
       GenericRecordTemplate rt = new GenericRecordTemplate();
 
       for (final String activeState : activeStates) {
-        State state = getState(activeState);
-        Actor[] actors = currentProcessInstance.getWorkingUsers(activeState);
+        State state = getState(processInstance, activeState);
+        Actor[] actors = processInstance.getWorkingUsers(activeState);
 
         for (int j = 0; actors != null && j < actors.length; j++) {
           GenericFieldTemplate fieldTemplate = new GenericFieldTemplate(
@@ -942,9 +946,9 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   /**
    * Get assign form (for the re-affectations)
    */
-  public Form getAssignForm() throws ProcessManagerException {
+  public Form getAssignForm(ProcessInstance processInstance) throws ProcessManagerException {
     try {
-      return new XmlForm(getAssignTemplate());
+      return new XmlForm(getAssignTemplate(processInstance));
     } catch (FormException ex) {
       throw new ProcessManagerException(failureOnGetting("assign", "form"), ex);
     }
@@ -953,14 +957,14 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   /**
    * Get assign data (for the re-affectations)
    */
-  public DataRecord getAssignRecord() {
-    String[] activeStates = currentProcessInstance.getActiveStates();
+  public DataRecord getAssignRecord(ProcessInstance processInstance) {
+    String[] activeStates = processInstance.getActiveStates();
     Actor[] actors;
 
     try {
-      DataRecord data = getAssignTemplate().getEmptyRecord();
+      DataRecord data = getAssignTemplate(processInstance).getEmptyRecord();
       for (int i = 0; activeStates != null && i < activeStates.length; i++) {
-        actors = currentProcessInstance.getWorkingUsers(activeStates[i]);
+        actors = processInstance.getWorkingUsers(activeStates[i]);
         for (int j = 0; actors != null && j < actors.length; j++) {
           Field field =
               data.getField(
@@ -1029,6 +1033,57 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     } catch (WorkflowException | FormException we) {
       throw new ProcessManagerException(
           "Fail to reassign tasks of process " + processInstance.getInstanceId(), we);
+    }
+  }
+
+  /**
+   * Replaces definitely the specified actor in the workflow by the other one. For doing:
+   * <ul>
+   *   <li>For future processes: the substitute replaces the actor in all his roles of the
+   *   workflow</li>
+   *   <li>For current processes: the substitute replaces the actor in all of his tasks.</li>
+   * </ul>
+   * At the end of the method, the actor won't be referenced anymore in the workflow and he will
+   * be replaced as actor by the substitute
+   * @param actorId the unique identifier of the actor to replace.
+   * @param substituteId the unique identifier of the user that will substitute the above user.
+   * @throws ProcessManagerException if an error occurs while performing the substitution.
+   */
+  public void substituteDefinitely(final String actorId, final String substituteId)
+      throws ProcessManagerException {
+    try {
+      // first step: for future processes, remove the replaced from any roles in the
+      // workflow instance and put in them instead the substitute
+      Administration admin = Administration.get();
+      var profiles = admin.getProfiles(actorId, getComponentId());
+      for (ProfileInst profile : profiles) {
+        profile.removeUser(actorId);
+        profile.addUser(substituteId);
+        admin.updateProfileInst(profile);
+      }
+
+      // last step: for existing processes, reassign all theirs tasks from the replaced to
+      // the substitute
+      List<DataRecord> currentProcessList = getCurrentProcessList();
+      for (final DataRecord processData : currentProcessList) {
+        ProcessInstanceRowRecord processRecord = (ProcessInstanceRowRecord) processData;
+        ProcessInstance process =
+            Workflow.getProcessInstanceManager().getProcessInstance(processRecord.getId());
+        DataRecord data = getAssignRecord(process);
+        int fieldsCount = data.size();
+        if (fieldsCount > 0) {
+          for (int i = 0; i < fieldsCount; i++) {
+            Field field = data.getField(i);
+            if (!field.isNull() && field.getStringValue().equals(actorId)) {
+              field.setStringValue(substituteId);
+            }
+          }
+          reAssign(process, data);
+        }
+      }
+
+    } catch (AdminException | FormException | WorkflowException e) {
+      throw new ProcessManagerException(e);
     }
   }
 
@@ -1378,7 +1433,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     }
   }
 
-  public List<StepVO> getSteps(String strEnlightedStep) {
+  public List<StepVO> getSteps(String strEnlightedStep) throws ProcessManagerException {
     List<StepVO> stepsVO = new ArrayList<>();
 
     // get step from last recent to older
@@ -1461,7 +1516,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     return steps;
   }
 
-  private boolean isStepVisible(HistoryStep step) {
+  private boolean isStepVisible(HistoryStep step) throws ProcessManagerException {
     boolean visible = true;
     if (isHistoryCanBeFiltered()) {
       visible = false;
@@ -1621,12 +1676,19 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   }
 
   /**
-   * Get the state with the given name
+   * Get the state with the given name in the specified process instance.
+   * @param processInstance the process in which the state is defined
    * @param stateName state name
-   * @return State object
+   * @return the {@link State} instance corresponding to the asked name.
+   * @throws ProcessManagerException if the state cannot be got.
    */
-  public State getState(String stateName) {
-    return processModel.getState(stateName);
+  public State getState(ProcessInstance processInstance, String stateName)
+      throws ProcessManagerException {
+    try {
+      return processInstance.getProcessModel().getState(stateName);
+    } catch (WorkflowException e) {
+      throw new ProcessManagerException(e);
+    }
   }
 
   /**

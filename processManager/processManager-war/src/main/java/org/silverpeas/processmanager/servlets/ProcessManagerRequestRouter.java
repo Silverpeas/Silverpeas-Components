@@ -24,11 +24,15 @@
 package org.silverpeas.processmanager.servlets;
 
 import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.service.Administration;
+import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.model.UnlockContext;
 import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
@@ -44,11 +48,13 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.core.workflow.api.error.WorkflowError;
 import org.silverpeas.core.workflow.api.instance.HistoryStep;
+import org.silverpeas.core.workflow.api.instance.ProcessInstance;
 import org.silverpeas.core.workflow.api.instance.Question;
 import org.silverpeas.core.workflow.api.model.Item;
 import org.silverpeas.core.workflow.api.model.State;
 import org.silverpeas.core.workflow.api.task.Task;
 import org.silverpeas.core.workflow.api.user.Replacement;
+import org.silverpeas.core.workflow.engine.datarecord.ProcessInstanceRowRecord;
 import org.silverpeas.core.workflow.engine.model.StateImpl;
 import org.silverpeas.processmanager.CurrentState;
 import org.silverpeas.processmanager.LockVO;
@@ -81,15 +87,17 @@ public class ProcessManagerRequestRouter
   /**
    * The removeProcess handler for the supervisor.
    */
-  private static final FunctionHandler adminRemoveProcessHandler = new SessionSafeFunctionHandler() {
-    @Override
-    protected String computeDestination(String function, ProcessManagerSessionController session,
-        HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
-      String processId = request.getParameter("processId");
-      session.removeProcess(processId);
-      return listProcessHandler.getDestination(function, session, request);
-    }
-  };
+  private static final FunctionHandler adminRemoveProcessHandler =
+      new SessionSafeFunctionHandler() {
+        @Override
+        protected String computeDestination(String function,
+            ProcessManagerSessionController session,
+            HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
+          String processId = request.getParameter("processId");
+          session.removeProcess(processId);
+          return listProcessHandler.getDestination(function, session, request);
+        }
+      };
 
   /**
    * The viewErrors handler for the supervisor
@@ -110,14 +118,15 @@ public class ProcessManagerRequestRouter
   private static void prepareReAssignationAndDo(ProcessManagerSessionController session,
       HttpServletRequest request, ReassignationOperation handler)
       throws ProcessManagerException {
+    ProcessInstance processInstance = session.getCurrentProcessInstance();
     // Get the associated form
-    Form form = session.getAssignForm();
+    Form form = session.getAssignForm(processInstance);
     request.setAttribute("form", form);
     // Set the form context
     PagesContext context = getFormContext("assignForm", "0", session, true);
     request.setAttribute("context", context);
     // Get the form data
-    DataRecord data = session.getAssignRecord();
+    DataRecord data = session.getAssignRecord(processInstance);
     request.setAttribute("data", data);
     handler.perform(form, data, context);
   }
@@ -131,7 +140,8 @@ public class ProcessManagerRequestRouter
         HttpServletRequest request, List<FileItem> items) throws ProcessManagerException {
       String processId = request.getParameter("processId");
       session.resetCurrentProcessInstance(processId);
-      prepareReAssignationAndDo(session, request, (f, d, c) -> setSharedAttributes(session, request));
+      prepareReAssignationAndDo(session, request,
+          (f, d, c) -> setSharedAttributes(session, request));
 
       return "/processManager/jsp/admin/reAssign.jsp";
     }
@@ -152,6 +162,23 @@ public class ProcessManagerRequestRouter
           throw new ProcessManagerException(e);
         }
       });
+      return listProcessHandler.getDestination(function, session, request);
+    }
+  };
+
+  private static final FunctionHandler adminReplaceInAllTasks = new SessionSafeFunctionHandler() {
+
+    public static final String SOURCE_USER_ID = "sourceUserId";
+    public static final String DESTINATION_USER_ID = "destinationUserId";
+
+    @Override
+    protected String computeDestination(final String function,
+        final ProcessManagerSessionController session,
+        final HttpServletRequest request, final List<FileItem> items)
+        throws ProcessManagerException {
+      String replaced = "2005"; //request.getParameter(SOURCE_USER_ID);
+      String substitute = "2002"; //request.getParameter(DESTINATION_USER_ID);
+      session.substituteDefinitely(replaced, substitute);
       return listProcessHandler.getDestination(function, session, request);
     }
   };
@@ -185,7 +212,8 @@ public class ProcessManagerRequestRouter
         processList = session.getCurrentProcessList();
       }
       request.setAttribute("processList", processList);
-      final List<Replacement<?>> replacements = session.getCurrentAndNextUserReplacementsAsIncumbent();
+      final List<Replacement<?>> replacements =
+          session.getCurrentAndNextUserReplacementsAsIncumbent();
       request.setAttribute("CurrentAndNextReplacementsAsIncumbent", replacements);
       setProcessFilterAttributes(session, request);
       setSharedAttributes(session, request);
@@ -494,7 +522,9 @@ public class ProcessManagerRequestRouter
       // retrieve state name and action name
       HistoryStep savedStep = session.getSavedStep();
       String stateName = savedStep.getResolvedState();
-      State state = (stateName == null) ? new StateImpl("") : session.getState(stateName);
+      State state = (stateName == null) ?
+          new StateImpl("") :
+          session.getState(session.getCurrentProcessInstance(), stateName);
       request.setAttribute("state", state);
       String actionName = savedStep.getAction();
       request.setAttribute("action", session.getAction(actionName));
@@ -556,7 +586,8 @@ public class ProcessManagerRequestRouter
         return listProcessHandler.getDestination(function, session, request);
       } else {
         // a form is associated to this action, display it to process action
-        request.setAttribute("state", session.getState(stateName));
+        request.setAttribute("state",
+            session.getState(session.getCurrentProcessInstance(), stateName));
         request.setAttribute("action", session.getAction(actionName));
         request.setAttribute("form", form);
 
@@ -789,15 +820,18 @@ public class ProcessManagerRequestRouter
     }
   };
   /**
-   * The editUserSetting handler
+   * The replacements management page handler
    */
-  private static final FunctionHandler manageReplacementsHandler = new SessionSafeFunctionHandler() {
-    protected String computeDestination(String function, ProcessManagerSessionController session,
-        HttpServletRequest request, List<FileItem> items) {
-      setSharedAttributes(session, request);
-      return "/processManager/jsp/replacements.jsp";
-    }
-  };
+  private static final FunctionHandler manageReplacementsHandler =
+      new SessionSafeFunctionHandler() {
+        protected String computeDestination(String function,
+            ProcessManagerSessionController session,
+            HttpServletRequest request, List<FileItem> items) {
+          setSharedAttributes(session, request);
+          return "/processManager/jsp/replacements.jsp";
+        }
+      };
+
   /**
    * The editUserSetting handler
    */
@@ -957,6 +991,7 @@ public class ProcessManagerRequestRouter
     handlerMap.put("adminViewErrors", adminViewErrorsHandler);
     handlerMap.put("adminReAssign", adminReAssignHandler);
     handlerMap.put("adminDoReAssign", adminDoReAssignHandler);
+    handlerMap.put("adminReplaceInAllTasks", adminReplaceInAllTasks);
   }
 
   /**
