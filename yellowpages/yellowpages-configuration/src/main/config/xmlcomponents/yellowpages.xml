@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!--
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
 
     Copyright (C) 2000 - 2022 Silverpeas
 
@@ -23,16 +22,13 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
--->
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
+--><WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>yellowpages</name>
   <label>
     <message lang="fr">Contacts</message>
     <message lang="en">Yellow pages directory</message>
     <message lang="de">Gelbe Seiten Verzeichnis</message>
-  </label>
+  <message lang="ru">контакты</message></label>
   <description>
     <message lang="fr">L’application permet de créer des contacts et des entreprises (utilisateurs
       de la plate-forme ou non). Chaque contact peut être défini grâce à un formulaire
@@ -46,12 +42,12 @@
     <message lang="de">Erstellt ein Kontakt Verzeichnis mit der Hilfe eines XML-Formulars dass alle
       Infos über jedes Mitglied des Verzeichnisses beschreibt
     </message>
-  </description>
+  <message lang="ru">Приложение позволяет создавать контакты и компании (пользователи платформы или нет). Каждый контакт может быть определен с помощью персонализированной формы. Древовидная структура категорий позволяет свободно их организовывать. Их можно импортировать и экспортировать в формате CSV. Контакты могут быть связаны с компанией.</message></description>
   <suite>
     <message lang="fr">02 Gestion Collaborative</message>
     <message lang="en">02 Collaborative Management</message>
     <message lang="de">02 kollaborative Verwaltung</message>
-  </suite>
+  <message lang="ru">02 Совместное управление</message></suite>
   <visible>true</visible>
   <visibleInPersonalSpace>false</visibleInPersonalSpace>
   <portlet>true</portlet>
@@ -61,7 +57,7 @@
         <message lang="fr">Gestionnaires</message>
         <message lang="en">Managers</message>
         <message lang="de">Manager</message>
-      </label>
+      <message lang="ru">Менеджеры</message></label>
       <help>
         <message lang="fr">Les gestionnaires créent des catégories, des contacts et importent des
           groupe du référentiel utilisateurs.
@@ -72,7 +68,7 @@
         <message lang="de">Managers create categories, contacts and import groups from the users
           referencial.
         </message>
-      </help>
+      <message lang="ru">Менеджеры создают категории, контакты и импортируют группы из репозитория пользователей.</message></help>
       <spaceMapping>
         <profile>admin</profile>
       </spaceMapping>
@@ -82,12 +78,12 @@
         <message lang="fr">Publieurs</message>
         <message lang="en">Publishers</message>
         <message lang="de">Herausgeber</message>
-      </label>
+      <message lang="ru">Издатели</message></label>
       <help>
         <message lang="fr">Les publieurs créent des contacts.</message>
         <message lang="en">Publishers create contacts.</message>
         <message lang="de">Herausgeber</message>
-      </help>
+      <message lang="ru">Издатели создают контакты.</message></help>
       <spaceMapping>
         <profile>publisher</profile>
         <profile>writer</profile>
@@ -98,12 +94,12 @@
         <message lang="fr">Lecteurs</message>
         <message lang="en">Readers</message>
         <message lang="de">Leser</message>
-      </label>
+      <message lang="ru">Читатели</message></label>
       <help>
         <message lang="fr">Les lecteurs consultent l'annuaire.</message>
         <message lang="en">Readers consult the directory.</message>
         <message lang="de">Leser</message>
-      </help>
+      <message lang="ru">Читатели обращаются к справочнику.</message></help>
       <spaceMapping>
         <profile>reader</profile>
       </spaceMapping>
@@ -115,7 +111,7 @@
       <label>
         <message lang="fr">Annuaire général</message>
         <message lang="en">Global directory</message>
-      </label>
+      <message lang="ru">Общий каталог</message></label>
       <order>1</order>
       <mandatory>false</mandatory>
       <value>false</value>
@@ -128,14 +124,14 @@
         <message lang="en">Permet d'afficher les contacts de cette application dans l'annuaire
           général de la plate-forme
         </message>
-      </help>
+      <message lang="ru">Позволяет отображать контакты этого приложения в общем каталоге платформы</message></help>
     </parameter>
     <parameter>
       <name>directAccess</name>
       <label>
         <message lang="fr">Accès transversal</message>
         <message lang="en">Transversal access</message>
-      </label>
+      <message lang="ru">Поперечный доступ</message></label>
       <order>2</order>
       <mandatory>false</mandatory>
       <value>false</value>
@@ -146,7 +142,7 @@
           plate-forme
         </message>
         <message lang="en">Allows to quickly access to others 'Contacts' applications</message>
-      </help>
+      <message lang="ru">Обеспечивает быстрый доступ к другим приложениям «Контакты» на платформе.</message></help>
     </parameter>
     <parameter>
       <name>xmlTemplate</name>
@@ -154,7 +150,7 @@
         <message lang="fr">Formulaire</message>
         <message lang="en">Custom form</message>
         <message lang="de">Benutzerdefiniertes Formular</message>
-      </label>
+      <message lang="ru">Форма</message></label>
       <order>2</order>
       <mandatory>false</mandatory>
       <value/>
@@ -167,7 +163,7 @@
         <message lang="de">Ermöglicht die Verwendung eines Formulars für Kontakte außerhalb der
           Überschriften
         </message>
-      </help>
+      <message lang="ru">Позволяет использовать форму для контактов вне рубрик</message></help>
     </parameter>
   </parameters>
 </WAComponent>

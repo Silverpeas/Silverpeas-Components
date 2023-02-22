@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
 
     Copyright (C) 2000 - 2022 Silverpeas
 
@@ -23,16 +22,12 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
--->
-
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
+--><WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>bookmark</name>
   <label>
     <message lang="fr">Annuaire de sites</message>
     <message lang="en">Bookmarks</message>
-  </label>
+  <message lang="ru">Каталог сайта</message></label>
   <description>
     <message lang="fr">La connaissance est partout... et surtout sur les sites web.
       L’objectif de cette application est simple : recenser et partager les sites web utiles
@@ -40,12 +35,12 @@
     </message>
     <message lang="en">Manage bookmarks on folders.</message>
     <message lang="de">Verwaltet Favoriten zu einem bestimmten Thema.</message>
-  </description>
+  <message lang="ru">Знания повсюду... и особенно на веб-сайтах. Цель этого приложения проста: определить и поделиться полезными веб-сайтами для проекта, службы, команды...</message></description>
   <suite>
     <message lang="fr">04 Gestion de contenu</message>
     <message lang="en">04 Content Management</message>
     <message lang="de">04 Inhaltsverwaltung</message>
-  </suite>
+  <message lang="ru">04 Управление контентом</message></suite>
   <visible>true</visible>
   <portlet>true</portlet>
   <profiles>
@@ -54,7 +49,7 @@
         <message lang="fr">Gestionnaires</message>
         <message lang="en">Administrators</message>
         <message lang="de">Administrators</message>
-      </label>
+      <message lang="ru">Менеджеры</message></label>
       <help>
         <message lang="fr">Les gestionnaires créent des liens vers des sites web, gèrent les
           dossiers et paramètrent le Plan de Classement.
@@ -63,7 +58,7 @@
           classification scheme.
         </message>
         <message lang="de">Administrator</message>
-      </help>
+      <message lang="ru">Менеджеры создают ссылки на веб-сайты, управляют файлами и настраивают план подачи документов.</message></help>
       <spaceMapping>
         <profile>admin</profile>
       </spaceMapping>
@@ -73,14 +68,14 @@
         <message lang="fr">Publieurs</message>
         <message lang="en">Publishers</message>
         <message lang="de">Herausgeber</message>
-      </label>
+      <message lang="ru">Издатели</message></label>
       <help>
         <message lang="fr">Les publieurs créent des liens vers des sites web et gèrent les
           dossiers.
         </message>
         <message lang="en">Publishers create bookmarks and manage folders.</message>
         <message lang="de">Herausgeber</message>
-      </help>
+      <message lang="ru">Издатели создают ссылки на веб-сайты и управляют записями.</message></help>
       <spaceMapping>
         <profile>publisher</profile>
         <profile>writer</profile>
@@ -91,12 +86,12 @@
         <message lang="fr">Lecteurs</message>
         <message lang="en">Readers</message>
         <message lang="de">Leser</message>
-      </label>
+      <message lang="ru">Читатели</message></label>
       <help>
         <message lang="fr">Les lecteurs accèdent aux sites web.</message>
         <message lang="en">Readers visualize referenced bookmarks.</message>
         <message lang="de">Leser</message>
-      </help>
+      <message lang="ru">Читатели получают доступ к веб-сайтам.</message></help>
       <spaceMapping>
         <profile>reader</profile>
       </spaceMapping>
@@ -109,7 +104,7 @@
         <message lang="fr">Classification PDC</message>
         <message lang="en">Classification Scheme</message>
         <message lang="de">Klassierungsplan</message>
-      </label>
+      <message lang="ru">Классификация ПДК</message></label>
       <order>1</order>
       <mandatory>true</mandatory>
       <value>no</value>
@@ -121,7 +116,7 @@
         </message>
         <message lang="en">The bookmarks will be classified on the classification scheme.</message>
         <message lang="de">Favoriten können auf dem KP klassifiziert werden</message>
-      </help>
+      <message lang="ru">Ссылки, введенные в этом экземпляре, могут быть классифицированы в Плане классификации.</message></help>
     </parameter>
     <parameter>
       <name>sortedTopics</name>
@@ -129,7 +124,7 @@
         <message lang="fr">Dossiers/liens ordonnés</message>
         <message lang="en">Folders/Links sorted</message>
         <message lang="de">Records/Favoriten sortiert</message>
-      </label>
+      <message lang="ru">Упорядоченные папки/ссылки</message></label>
       <order>2</order>
       <mandatory>true</mandatory>
       <value>no</value>
@@ -140,7 +135,7 @@
         <message lang="en">This parameter allows to order folders and links.</message>
         <message lang="de">Dieser Parameter ermöglicht es Ihnen Records und Favoriten zu sortieren
         </message>
-      </help>
+      <message lang="ru">Этот параметр используется для упорядочивания папок и ссылок.</message></help>
     </parameter>
   </parameters>
 </WAComponent>
