@@ -27,6 +27,7 @@ import org.silverpeas.components.forums.control.ForumsSessionController;
 import org.silverpeas.components.forums.model.Forum;
 import org.silverpeas.components.forums.url.ActionUrl;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.util.WebEncodeHelper;
@@ -166,10 +167,15 @@ public class ForumListHelper {
           getString("subscribeMessage") + "\"><span class=\"txtnote\">");
       out.print("<div class=\"messageFooter\">");
       out.print("<input name=\"checkbox\" type=\"checkbox\" ");
-      if (isSubscriber || isSubscriberByInheritance) {
-        out.print("checked ");
-        if (!isSubscriber) {
-          out.print("disabled ");
+      if (User.getCurrentRequester().isAccessGuest()) {
+        out.print("disabled ");
+      }
+      else {
+        if (isSubscriber || isSubscriberByInheritance) {
+          out.print("checked ");
+          if (!isSubscriber) {
+            out.print("disabled ");
+          }
         }
       }
       out.print(

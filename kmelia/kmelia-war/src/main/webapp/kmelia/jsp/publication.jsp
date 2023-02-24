@@ -516,7 +516,7 @@
         OperationPane operationPane = window.getOperationPane();
 
         operationPane.addOperation("useless", resources.getString("GML.print"), "javaScript:print();", "operation-publi-print");
-        if (notificationAllowed && !currentUser.isAnonymous()) {
+        if (notificationAllowed && !currentUser.isAnonymous() && !currentUser.isAccessGuest()) {
           operationPane.addOperation(alertSrc, resources.getString("GML.notify"), "javaScript:alertUsers()");
         }
 
@@ -529,10 +529,10 @@
         if (isOwner || isAdmin) {
           operationPane.addOperation("useless", resources.getString("GML.manageSubscriptions"), "ManageSubscriptions");
         }
-        if (!currentUser.isAccessGuest() && !currentUser.isAnonymous()) {
+        if (!currentUser.isAccessGuest() && !currentUser.isAnonymous() && !currentUser.isAccessGuest()) {
           operationPane.addOperation("useless", "<span id='subscriptionMenuLabel'></span>", "javascript:spSubManager.switchUserSubscription()");
         }
-        if (StringUtil.isDefined(pubPermalink) && !currentUser.isAnonymous()) {
+        if (StringUtil.isDefined(pubPermalink) && !currentUser.isAnonymous() && !currentUser.isAccessGuest()) {
           operationPane.addOperation(favoriteAddSrc, resources.getString("FavoritesAddPublication") + " " + resources.getString("FavoritesAdd2"), "javascript:addFavorite()");
         }
         operationPane.addLine();

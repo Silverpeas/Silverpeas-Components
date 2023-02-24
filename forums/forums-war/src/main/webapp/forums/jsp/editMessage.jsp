@@ -30,6 +30,7 @@
 <c:set var="sessionController" value="${requestScope.forumsSessionClientController}" />
 <fmt:setLocale value="${requestScope.resources.language}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<c:set var="isAccessGuest" value="${sessionController.accessGuest}" />
 
 <%@ page import="org.silverpeas.components.forums.control.helpers.ForumListHelper"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window" %>
@@ -250,10 +251,12 @@ function cancel() {
 				</div>
 			</div>
 			<div class="field" id="messageSubscriptionArea">
-				<label for="subscribeMessage" class="txtlibform"><fmt:message key='subscribeMessage'/></label>
-				<div class="champs">
-					<input type="checkbox" id="subscribeMessage" name="subscribeMessage"/>
-				</div>
+        <c:if test="${not isAccessGuest}">
+          <label for="subscribeMessage" class="txtlibform"><fmt:message key='subscribeMessage'/></label>
+          <div class="champs">
+            <input type="checkbox" id="subscribeMessage" name="subscribeMessage"/>
+          </div>
+        </c:if>
 			</div>
 		</div>
 	</fieldset>

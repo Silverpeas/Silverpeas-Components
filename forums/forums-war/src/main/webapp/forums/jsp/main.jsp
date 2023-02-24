@@ -37,6 +37,8 @@
 <c:set var="isReader" value="${sessionController.reader}" />
 <c:set var="isUser" value="${sessionController.user}" />
 <c:set var="isAdmin" value="${sessionController.admin}" />
+<c:set var="isAccessGuest" value="${sessionController.accessGuest}" />
+
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
@@ -179,16 +181,18 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
         </c:if>
       </c:if>
       <view:operationSeparator/>
-      <c:choose>
-        <c:when test="${isSubscriber}">
-          <fmt:message key="forums.unsubscribe" var="unsubscribeAltText" />
-          <view:operation altText="${unsubscribeAltText}" icon="" action="javascript:unsubscribe();" />
-        </c:when>
-        <c:otherwise>
-          <fmt:message key="forums.subscribe" var="subscribeAltText" />
-          <view:operation altText="${subscribeAltText}" icon="" action="javascript:subscribe();" />
-        </c:otherwise>
-      </c:choose>
+      <c:if test="${not isAccessGuest}">
+        <c:choose>
+          <c:when test="${isSubscriber}">
+            <fmt:message key="forums.unsubscribe" var="unsubscribeAltText" />
+            <view:operation altText="${unsubscribeAltText}" icon="" action="javascript:unsubscribe();" />
+          </c:when>
+          <c:otherwise>
+            <fmt:message key="forums.subscribe" var="subscribeAltText" />
+            <view:operation altText="${subscribeAltText}" icon="" action="javascript:subscribe();" />
+          </c:otherwise>
+        </c:choose>
+      </c:if>
       </view:operationPane>
     </c:if>
     <view:window>

@@ -130,6 +130,7 @@ public class WebPagesRequestRouter extends ComponentRequestRouter<WebPagesSessio
           }
         }
         request.setAttribute("AnonymousAccess", isAnonymousAccess(request));
+        request.setAttribute("AccessGuest", isAccessGuest(request));
         destination = rootDestination + "display.jsp";
       } else if (function.startsWith("portlet")) {
         request.setAttribute(ACTION_ATTR, "Portlet");
@@ -192,6 +193,11 @@ public class WebPagesRequestRouter extends ComponentRequestRouter<WebPagesSessio
   private boolean isAnonymousAccess(HttpServletRequest request) {
     LookHelper lookHelper = LookHelper.getLookHelper(request.getSession());
     return lookHelper != null && lookHelper.isAnonymousAccess();
+  }
+
+  private boolean isAccessGuest(HttpServletRequest request) {
+    LookHelper lookHelper = LookHelper.getLookHelper(request.getSession());
+    return lookHelper != null && lookHelper.isAccessGuest();
   }
 
 }

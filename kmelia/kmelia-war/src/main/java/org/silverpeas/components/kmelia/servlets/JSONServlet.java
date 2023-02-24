@@ -136,7 +136,7 @@ public class JSONServlet extends HttpServlet {
         .isPresent();
     boolean oneTemplateUsed = kmeliaSC.getXmlFormForPublications() != null;
     boolean copyCutAllowed = operationsOnSelectionAllowed && somePublicationsExist;
-    boolean notRootNotAnonymous = !isRoot && !user.isAnonymous();
+    boolean notRootNotAnonymousNotGuest = !isRoot && !user.isAnonymous() && !user.isAccessGuest();
 
     operations.put("addPubli", addPublicationAllowed);
     operations.put("addFiles", addPublicationAllowed && kmeliaSC.isAttachmentsEnabled() &&
@@ -156,9 +156,9 @@ public class JSONServlet extends HttpServlet {
 
     operations.put(OP_EXPORT_PUBLICATIONS, !user.isAnonymous() && somePublicationsExist);
     operations.put("manageSubscriptions", role.isAdmin());
-    operations.put("subscriptions", isRoot && !user.isAnonymous());
-    operations.put("topicSubscriptions", notRootNotAnonymous);
-    operations.put("favorites", notRootNotAnonymous);
+    operations.put("subscriptions", isRoot && !user.isAnonymous() && !user.isAccessGuest());
+    operations.put("topicSubscriptions", notRootNotAnonymousNotGuest);
+    operations.put("favorites", notRootNotAnonymousNotGuest);
 
     if (kmeliaSC.isAllPublicationsListSelected()) {
       operations.put("unselectAllPublications", operationsOnSelectionAllowed);
@@ -209,8 +209,8 @@ public class JSONServlet extends HttpServlet {
     if (isRoot && kmeliaSC.isStatisticAllowed()) {
       operations.put("statistics", true);
     }
-    operations.put("mylinks", !user.isAnonymous());
-    operations.put("notify", !user.isAnonymous() && kmeliaSC.isNotificationAllowed());
+    operations.put("mylinks", !user.isAnonymous() && !user.isAccessGuest());
+    operations.put("notify", !user.isAnonymous() && kmeliaSC.isNotificationAllowed() && !user.isAccessGuest());
     operations.put("responsibles", !user.isAnonymous());
   }
 
