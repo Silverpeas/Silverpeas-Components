@@ -57,7 +57,7 @@
 <c:set var="isEditable" value="${requestScope.isEditable}"/>
 <c:set var="isPublishable" value="${requestScope.isPublishable}"/>
 <c:set var="isModeratorView" value="${requestScope.isModeratorView}"/>
-
+<c:set var="isAccessGuest" value="${requestScope.isAccessGuest}"/>
 <jsp:useBean id="suggestionBox" type="org.silverpeas.components.suggestionbox.model.SuggestionBox"/>
 <jsp:useBean id="suggestion" type="org.silverpeas.components.suggestionbox.web.SuggestionEntity"/>
 
@@ -121,7 +121,7 @@
     <view:operation action="angularjs:approve(suggestion)" altText="${validateSuggestionMenuLabel}"/>
     <div suggestionbox-validation></div>
   </c:if>
-  <c:if test="${suggestion.validation.validated}">
+  <c:if test="${suggestion.validation.validated && !isAccessGuest}">
     <view:operation action="javascript:notify()" altText="${notifyLabel}"/>
   </c:if>
 </view:operationPane>
@@ -155,7 +155,7 @@
 
           <div id="suggestionApprobationDetail-text" class="inlineMessage">
             <c:set var="validationComment" value="${suggestion.validation.comment}"/>
-            ${silfn:escapeHtmlWhitespaces(validationComment)}
+              ${silfn:escapeHtmlWhitespaces(validationComment)}
           </div>
         </div>
       </c:if>

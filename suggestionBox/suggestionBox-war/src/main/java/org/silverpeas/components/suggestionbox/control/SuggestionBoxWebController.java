@@ -29,12 +29,14 @@ import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.components.suggestionbox.web.SuggestionEntity;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.subscription.SubscriptionService;
 import org.silverpeas.core.subscription.SubscriptionServiceProvider;
 import org.silverpeas.core.subscription.service.ComponentSubscription;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.webcomponent.AbstractNavigationContextListener;
@@ -50,6 +52,7 @@ import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToInternalJsp
 import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToPreviousNavigationStep;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.WebComponentController;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -385,6 +388,8 @@ public class SuggestionBoxWebController extends
       context.getRequest().setAttribute("isModeratorView", isModeratorView);
       context.getRequest().setAttribute("isPublishable", isPublishable);
       context.getRequest().setAttribute("isEditable", (isPublishable || isModeratorView));
+      context.getRequest().setAttribute("isAccessGuest",
+          User.getCurrentRequester().isAccessGuest());
     } else {
       throw new WebApplicationException(Status.NOT_FOUND);
     }
@@ -501,4 +506,5 @@ public class SuggestionBoxWebController extends
     getWebServiceProvider()
         .refuseSuggestion(suggestionBox, suggestion, validationComment, context.getUser());
   }
+
 }

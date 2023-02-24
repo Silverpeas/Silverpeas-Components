@@ -77,6 +77,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.*;
+import static org.silverpeas.core.admin.user.model.User.getCurrentRequester;
 import static org.silverpeas.core.admin.user.model.UserDetail.OnFirstNameAndLastName;
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
@@ -565,6 +566,10 @@ public class ForumsSessionController extends AbstractComponentSessionController 
       }
     }
     return false;
+  }
+
+  public boolean isAccessGuest() {
+    return getCurrentRequester().isAccessGuest();
   }
 
   public boolean isModerator(String userId, int forumId) {

@@ -40,6 +40,8 @@
 <c:set var="isReader" value="${sessionController.reader}" />
 <c:set var="isUser" value="${sessionController.user}" />
 <c:set var="isAdmin" value="${sessionController.admin}" />
+<c:set var="isAccessGuest" value="${sessionController.accessGuest}" />
+
 <fmt:setLocale value="${requestScope.resources.language}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
@@ -65,6 +67,8 @@
     int currentMessageId = -1;
     boolean scrollToMessage = false;
     boolean displayAllMessages = true;
+    boolean isAccessGuest = User.getCurrentRequester().isAccessGuest();
+
     try {
         Message message;
         String bundleKey;
@@ -458,8 +462,8 @@
                                                                          highestUserRole="<%=SilverpeasRole.fromString(profile)%>"/>
                                     </div>
                                   <div class="messageFooter">
-                                        <input name="checkbox" type="checkbox" <%if (isSubscriber || isMessageSubscriberByInheritance) {%>checked<%}%>
-                                               <%if (!isSubscriber && isMessageSubscriberByInheritance) {%> disabled <%}%>
+                                        <input name="checkbox" type="checkbox" <%if ((isSubscriber || isMessageSubscriberByInheritance) && !isAccessGuest) {%>checked<%}%>
+                                               <%if ((!isSubscriber && isMessageSubscriberByInheritance) || isAccessGuest) {%> disabled <%}%>
                                                 onclick="javascript:window.location.href='viewMessage.jsp?action=<%=(isSubscriber ? 13 : 14)%>&params=<%=currentId%>&forumId=<%=forumId%>'"/>
                                                 <span class="texteLabelForm"><%=resource.getString("subscribeMessage")%></span>
                                              <% if (forumActive) { %>
@@ -512,10 +516,12 @@
 									</div>
 								</div>
 								<div class="field" id="messageSubscriptionArea">
-									<label for="subscribeMessage" class="txtlibform"><fmt:message key='subscribeMessage'/></label>
-									<div class="champs">
-										<input type="checkbox" id="subscribeMessage" name="subscribeMessage"/>
-									</div>
+                  <c:if test="${not isAccessGuest}">
+                    <label for="subscribeMessage" class="txtlibform"><fmt:message key='subscribeMessage'/></label>
+                    <div class="champs">
+                      <input type="checkbox" id="subscribeMessage" name="subscribeMessage"/>
+                    </div>
+                  </c:if>
 								</div>
 							</div>
 						  </fieldset>

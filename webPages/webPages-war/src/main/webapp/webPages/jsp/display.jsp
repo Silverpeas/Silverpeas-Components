@@ -57,7 +57,9 @@
 <c:set var="highestUserRole" value="${requestScope.highestUserRole}"/>
 <c:set var="haveGotContent" value="${requestScope.haveGotContent}"/>
 <c:set var="isAnonymous" value="${requestScope.AnonymousAccess}"/>
-<c:set var="operationsVisibles" value="${not (action eq 'Portlet') and not isAnonymous}"/>
+<c:set var="isAccessGuest" value="${requestScope.AccessGuest}"/>
+
+<c:set var="operationsVisibles" value="${not (action eq 'Portlet') and not isAnonymous and not isAccessGuest}"/>
 <jsp:useBean id="operationsVisibles" type="java.lang.Boolean"/>
 
 <%
