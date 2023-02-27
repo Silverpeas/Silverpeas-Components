@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
 
     Copyright (C) 2000 - 2022 Silverpeas
 
@@ -23,17 +22,13 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
--->
-
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
+--><WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>blog</name>
   <label>
     <message lang="fr">Blog</message>
     <message lang="en">Blog</message>
     <message lang="de">Blog</message>
-  </label>
+  <message lang="uk">Блог</message></label>
   <description>
     <message lang="fr">Parfait pour suivre l’actualité d’un projet ou d’une équipe, le blog permet
       de créer des billets. Chaque utilisateur peut s’abonner et participer en laissant des
@@ -43,12 +38,12 @@
     <message lang="en">A blog application, displaying posts by categories or by time.</message>
     <message lang="de">Eine Blog-Komponente die Beiträge per Kategorien oder nach Zeit Anzeiget.
     </message>
-  </description>
+  <message lang="uk">Ідеально підходить для стеження за новинами проекту чи команди, блог дозволяє створювати квитки. Кожен користувач може підписатися та брати участь, залишаючи коментарі. Можливе управління категоріями. Повідомлення також доступні через RSS.</message></description>
   <suite>
     <message lang="fr">04 Gestion de contenu</message>
     <message lang="en">04 Content Management</message>
     <message lang="de">04 Inhaltsverwaltung</message>
-  </suite>
+  <message lang="uk">04 Управління контентом</message></suite>
   <visible>true</visible>
   <portlet>true</portlet>
   <profiles>
@@ -57,7 +52,7 @@
         <message lang="fr">Gestionnaires</message>
         <message lang="en">Managers</message>
         <message lang="de">Manager</message>
-      </label>
+      <message lang="uk">Менеджери</message></label>
       <help>
         <message lang="fr">Les gestionnaires peuvent créer des catégories, des liens, personnaliser
           l'affichage, mettre à jour le pied de page et paramètrent le Plan de Classement.
@@ -68,7 +63,7 @@
         <message lang="de">Managers can create categories, links, customize, update footer and set
           up the Classification Scheme.
         </message>
-      </help>
+      <message lang="uk">Менеджери можуть створювати категорії, посилання, налаштовувати відображення, оновлювати нижній колонтитул і налаштовувати план рейтингу.</message></help>
       <spaceMapping>
         <profile>admin</profile>
       </spaceMapping>
@@ -78,7 +73,7 @@
         <message lang="fr">Bloggeurs</message>
         <message lang="en">Authors</message>
         <message lang="de">Autor</message>
-      </label>
+      <message lang="uk">Блогери</message></label>
       <help>
         <message lang="fr">Les bloggeurs peuvent gérer des billets, les positionner dans une
           catégorie et les classer sur le Plan de Classement .
@@ -87,7 +82,7 @@
           on the Classification Scheme.
         </message>
         <message lang="de">Autor</message>
-      </help>
+      <message lang="uk">Блогери можуть керувати дописами, позиціонувати їх у категорії та ранжувати їх у рейтинговому плані.</message></help>
       <spaceMapping>
         <profile>publisher</profile>
         <profile>writer</profile>
@@ -98,7 +93,7 @@
         <message lang="fr">Lecteurs</message>
         <message lang="en">Readers</message>
         <message lang="de">Leser</message>
-      </label>
+      <message lang="uk">Читачі</message></label>
       <help>
         <message lang="fr">Les lecteurs consultent les billets et peuvent s'abonner au blog. Ils
           peuvent également laisser des commentaires.
@@ -107,7 +102,7 @@
           leave comments.
         </message>
         <message lang="de">Leser</message>
-      </help>
+      <message lang="uk">Читачі переглядають публікації та можуть підписатися на блог. Вони також можуть залишати коментарі.</message></help>
       <spaceMapping>
         <profile>reader</profile>
       </spaceMapping>
@@ -120,7 +115,7 @@
         <message lang="fr">Flux RSS</message>
         <message lang="en">RSS</message>
         <message lang="de">RSS</message>
-      </label>
+      <message lang="uk">RSS канал</message></label>
       <order>1</order>
       <mandatory>false</mandatory>
       <value>N</value>
@@ -130,7 +125,7 @@
         <message lang="fr">Permet de générer un flux RSS de ce blog.</message>
         <message lang="en">Produce a RSS stream for the events of this Blog.</message>
         <message lang="de">Erlaubt, eine RSS-Stream des Blogs zu erzeugen</message>
-      </help>
+      <message lang="uk">Дозволяє створити канал RSS для цього блогу.</message></help>
     </parameter>
     <parameter>
       <name>usePdc</name>
@@ -138,7 +133,7 @@
         <message lang="fr">Classification PDC</message>
         <message lang="en">Classification Scheme</message>
         <message lang="de">Klassierungsplan</message>
-      </label>
+      <message lang="uk">Класифікація PDC</message></label>
       <order>2</order>
       <mandatory>true</mandatory>
       <value>no</value>
@@ -150,7 +145,7 @@
         </message>
         <message lang="en">Post will be classified on the classification scheme.</message>
         <message lang="de">Posts können auf dem KP klassifiziert werden</message>
-      </help>
+      <message lang="uk">Квитки, створені в цьому екземплярі, можна класифікувати в класифікаційному плані</message></help>
     </parameter>
     <parameter>
       <name>draftVisible</name>
@@ -158,7 +153,7 @@
         <message lang="fr">Brouillon visible</message>
         <message lang="en">Display drafts</message>
         <message lang="de">Entwürfe anzeigen</message>
-      </label>
+      <message lang="uk">Видима тяга</message></label>
       <order>3</order>
       <mandatory>true</mandatory>
       <value>no</value>
@@ -168,7 +163,7 @@
         <message lang="fr">Le brouillon sera visible entre bloggeurs.</message>
         <message lang="en">Authors will be able to see draft posts.</message>
         <message lang="de">Die Autoren werden in der Lage sein Entwurf Beiträge zu sehen.</message>
-      </help>
+      <message lang="uk">Чернетку бачитимуть блогери.</message></help>
     </parameter>
     <parameter>
       <name>comments</name>
@@ -176,7 +171,7 @@
         <message lang="fr">Commentaires</message>
         <message lang="en">Comments</message>
         <message lang="de">Kommentare</message>
-      </label>
+      <message lang="uk">Коментарі</message></label>
       <order>4</order>
       <mandatory>true</mandatory>
       <value>yes</value>
@@ -186,7 +181,7 @@
         <message lang="fr">Pour commenter les billets</message>
         <message lang="en">To comment posts</message>
         <message lang="de">To comment posts</message>
-      </help>
+      <message lang="uk">Щоб коментувати дописи</message></help>
     </parameter>
   </parameters>
 </WAComponent>

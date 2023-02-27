@@ -36,6 +36,7 @@
     <message lang="fr">Gestion documentaire I</message>
     <message lang="en">Document management</message>
     <message lang="de">Dokumentenverwaltung</message>
+    <message lang="uk">Управління документами І</message>
   </label>
   <description>
     <message lang="fr">Les publications offrent la possibilité de regrouper en
@@ -62,12 +63,19 @@
       Leser-Liste, Kommentare, Abonnement zu einem Thema, einer Publikation
       oder einer Datei.
     </message>
+    <message lang="uk">Публікації пропонують можливість групувати метадані, вкладені файли
+      (з відстеженням змін) і безкоштовний (Wysiwyg) або структурований (форма) вміст на одній
+      сторінці. Вони організовані у вигляді дерева папок. Користувачі можуть коментувати публікації,
+      підписуватися на файли, сповіщати... Різні ролі та численні параметри дозволяють адаптуватися
+      до всіх ваших потреб. Флагманський додаток Silverpeas, він гідний «чистого гравця» GED. Він
+      пов’язаний із механізмом робочого процесу платформи.
+    </message>
   </description>
   <suite>
     <message lang="fr">01 Gestion Documentaire</message>
     <message lang="en">01 Document Management</message>
     <message lang="de">01 Dokumentenverwaltung</message>
-  </suite>
+    <message lang="uk">01 Управління документами</message></suite>
   <visible>true</visible>
   <visibleInPersonalSpace>true</visibleInPersonalSpace>
   <portlet>true</portlet>
@@ -77,7 +85,7 @@
         <message lang="fr">Gestionnaires</message>
         <message lang="en">Managers</message>
         <message lang="de">Manager</message>
-      </label>
+        <message lang="uk">Менеджери</message></label>
       <help>
         <message lang="fr">Les gestionnaires créent des dossiers, sélectionnent les formulaires de
           métadonnées et paramètrent le Plan de Classement.
@@ -87,6 +95,9 @@
         </message>
         <message lang="de">Managers create folders, select metadata templates and set up the
           Classification Scheme.
+        </message>
+        <message lang="uk">Менеджери створюють папки, вибирають форми метаданих і налаштовують
+          план файлів.
         </message>
       </help>
       <spaceMapping>
@@ -98,7 +109,7 @@
         <message lang="fr">Publieurs</message>
         <message lang="en">Publishers</message>
         <message lang="de">Herausgeber</message>
-      </label>
+        <message lang="uk">Видавці</message></label>
       <help>
         <message lang="fr">Les publieurs créent des publications et valident les publications des
           rédacteurs.
@@ -106,6 +117,7 @@
         <message lang="en">Publisher create publication and validate writer's publications.
         </message>
         <message lang="de">Herausgeber</message>
+        <message lang="uk">Видавці створюють дописи та затверджують дописи редакторів.</message>
       </help>
       <spaceMapping>
         <profile>publisher</profile>
@@ -116,11 +128,13 @@
         <message lang="fr">Rédacteurs</message>
         <message lang="en">Writers</message>
         <message lang="de">Redaktor</message>
+        <message lang="uk">Редактори</message>
       </label>
       <help>
         <message lang="fr">Les rédacteurs créent des publications.</message>
         <message lang="en">Writers create publications.</message>
         <message lang="de">Redaktor</message>
+        <message lang="uk">Редактори створюють публікації.</message>
       </help>
       <spaceMapping>
         <profile>writer</profile>
@@ -131,6 +145,7 @@
         <message lang="fr">Lecteurs</message>
         <message lang="en">Readers</message>
         <message lang="de">Leser</message>
+        <message lang="uk">Читачі</message>
       </label>
       <help>
         <message lang="fr">Les lecteurs accèdent aux publications, s'abonnent aux différents
@@ -140,6 +155,8 @@
           leave comments on publications.
         </message>
         <message lang="de">Leser</message>
+        <message lang="uk">Читачі отримують доступ до публікацій, підписуються на різні файли та
+          можуть залишати коментарі до публікацій.</message>
       </help>
       <spaceMapping>
         <profile>reader</profile>
@@ -152,6 +169,7 @@
         <message lang="fr">Publications</message>
         <message lang="en">Publications</message>
         <message lang="de">Publications</message>
+        <message lang="uk">Публікації</message>
       </label>
       <description>
         <message lang="fr">Elles permettent de regrouper plusieurs fichiers et de les enrichir avec
@@ -163,6 +181,9 @@
         <message lang="de">Sie ermöglichen es, mehrere Dateien Gruppe und bereichern sie mit mehr
           oder weniger strukturierte Textdaten
         </message>
+        <message lang="uk">Вони дозволяють згрупувати кілька файлів і збагатити їх більш-менш
+          структурованими текстовими даними
+        </message>
       </description>
       <order>2</order>
       <parameters>
@@ -172,6 +193,7 @@
             <message lang="fr">Nb dernières publi</message>
             <message lang="en">Number of last publications</message>
             <message lang="de">Anzahl der letzten Veröffentlichungen</message>
+            <message lang="uk">Nb останні публікації</message>
           </label>
           <order>3</order>
           <mandatory>true</mandatory>
@@ -200,6 +222,11 @@
               in das Root-Verzeichnis machen, aber die letzten Publikationen werden nicht mehr
               angezeigt angezeigt.
             </message>
+            <message lang="uk">Дозволяє визначити кількість останніх публікацій, що відображаються
+              на домашній сторінці програми. Створення допису в корені неможливо. Якщо введене
+              значення дорівнює 0, публікація в корені можлива, але останні публікації не
+              відображаються на домашній сторінці.
+            </message>
           </help>
         </parameter>
         <parameter>
@@ -208,10 +235,11 @@
             <message lang="fr">Nombre par page</message>
             <message lang="en">Number per page</message>
             <message lang="de">Anzahl der Veröffentlichungen pro Seite</message>
+            <message lang="uk">Кількість на сторінці</message>
           </label>
           <order>4</order>
           <mandatory>false</mandatory>
-          <value></value>
+          <value/>
           <type>text</type>
           <size>5</size>
           <updatable>always</updatable>
@@ -222,6 +250,9 @@
             <message lang="de">Definiert die Anzahl der Veröffentlichungen die auf einer Seite
               angezeigt werden
             </message>
+            <message lang="uk">Дозволяє встановити кількість повідомлень, що відображаються на
+              сторінці
+            </message>
           </help>
         </parameter>
         <parameter>
@@ -230,6 +261,7 @@
             <message lang="fr">Ordre d'affichage</message>
             <message lang="en">Publications sorting</message>
             <message lang="de">Publications sorting</message>
+            <message lang="uk">порядок появи</message>
           </label>
           <order>47</order>
           <mandatory>true</mandatory>
@@ -240,6 +272,7 @@
                 <message lang="fr">Nom du créateur croissant</message>
                 <message lang="en">Ascending creator's name</message>
                 <message lang="de">Ascending creator's name</message>
+                <message lang="uk">Ім&amp;#39;я творця за зростанням</message>
               </name>
               <value>0</value>
             </option>
@@ -248,6 +281,7 @@
                 <message lang="fr">Date de modification croissante</message>
                 <message lang="en">Ascending update date</message>
                 <message lang="de">Ascending update date</message>
+                <message lang="uk">Дата модифікації за зростанням</message>
               </name>
               <value>1</value>
             </option>
@@ -256,6 +290,7 @@
                 <message lang="fr">Date de modification décroissante</message>
                 <message lang="en">Descending update date</message>
                 <message lang="de">Descending update date</message>
+                <message lang="uk">Дата модифікації за спаданням</message>
               </name>
               <value>2</value>
             </option>
@@ -264,6 +299,7 @@
                 <message lang="fr">Importance croissante</message>
                 <message lang="en">Ascending importance</message>
                 <message lang="de">Ascending importance</message>
+                <message lang="uk">Зростаюче значення</message>
               </name>
               <value>3</value>
             </option>
@@ -272,6 +308,7 @@
                 <message lang="fr">Titre croissant</message>
                 <message lang="en">Ascending title</message>
                 <message lang="de">Ascending title</message>
+                <message lang="uk">Заголовок за зростанням</message>
               </name>
               <value>4</value>
             </option>
@@ -280,6 +317,7 @@
                 <message lang="fr">Date de création croissante</message>
                 <message lang="en">Ascending creation date</message>
                 <message lang="de">Ascending creation date</message>
+                <message lang="uk">Дата створення за зростанням</message>
               </name>
               <value>5</value>
             </option>
@@ -288,6 +326,7 @@
                 <message lang="fr">Date de création décroissante</message>
                 <message lang="en">Descending creation date</message>
                 <message lang="de">Descending creation date</message>
+                <message lang="uk">За спаданням дати створення</message>
               </name>
               <value>6</value>
             </option>
@@ -296,6 +335,7 @@
                 <message lang="fr">Description croissante</message>
                 <message lang="en">Ascending description</message>
                 <message lang="de">Ascending description</message>
+                <message lang="uk">Опис за зростанням</message>
               </name>
               <value>7</value>
             </option>
@@ -307,6 +347,7 @@
             </message>
             <message lang="en">Sets the display order of publications.</message>
             <message lang="de">Sets the display order of publications.</message>
+            <message lang="uk">Встановлює стандартний порядок відображення дописів.</message>
           </help>
         </parameter>
         <parameter>
@@ -315,6 +356,7 @@
             <message lang="fr">Mode brouillon</message>
             <message lang="en">Draft mode</message>
             <message lang="de">Entwurf</message>
+            <message lang="uk">Режим чернетки</message>
           </label>
           <order>15</order>
           <mandatory>true</mandatory>
@@ -332,6 +374,9 @@
             <message lang="de">Eine Veröffentlichung im Entwurfs-Modus ist nur für den Autor
               sichtbar, so kann er daran arbeiten.
             </message>
+            <message lang="uk">У режимі чернетки ви можете працювати над публікацією, не побачивши
+              її.
+            </message>
           </help>
           <personalSpaceValue>no</personalSpaceValue>
         </parameter>
@@ -341,6 +386,7 @@
             <message lang="fr">Codification unique</message>
             <message lang="en">Unique code</message>
             <message lang="de">Einzigartige Kodifizierung</message>
+            <message lang="uk">Єдине кодування</message>
           </label>
           <order>30</order>
           <mandatory>true</mandatory>
@@ -357,6 +403,9 @@
             <message lang="de">Diese Funktion zeigt die eindeutige ID jeder Veröffentlichung in der
               Kopf Registerkarte.
             </message>
+            <message lang="uk">Цей параметр дозволяє відображати унікальний ідентифікатор кожної
+              публікації в заголовку.
+            </message>
           </help>
         </parameter>
         <parameter>
@@ -365,6 +414,7 @@
             <message lang="fr">Champ Auteur</message>
             <message lang="en">Author field</message>
             <message lang="de">Autor Feld</message>
+            <message lang="uk">Поле автора</message>
           </label>
           <order>18</order>
           <mandatory>true</mandatory>
@@ -379,6 +429,9 @@
             <message lang="de">Veröffentlichung verfügen über ein Feld, um den Namen des Autors
               anzugeben.
             </message>
+            <message lang="uk">Документи, створені в цьому екземплярі, можуть містити додаткове
+              поле «Автор».
+            </message>
           </help>
         </parameter>
         <parameter>
@@ -387,6 +440,7 @@
             <message lang="fr">Rappel</message>
             <message lang="en">Reminder</message>
             <message lang="de">Reminder</message>
+            <message lang="uk">Нагадування</message>
           </label>
           <order>53</order>
           <mandatory>true</mandatory>
@@ -403,6 +457,9 @@
             <message lang="de">Addieren Sie ein Datum und eine Notiz zu erinnern (automatische
               Benachrichtigung) Mitwirkende deren Veröffentlichung zu aktualisieren.
             </message>
+            <message lang="uk">Додано дату та примітку, щоб нагадати (через автоматичне сповіщення)
+              учасникам оновити свою публікацію.
+            </message>
           </help>
         </parameter>
         <parameter>
@@ -411,6 +468,7 @@
             <message lang="fr">Contenu</message>
             <message lang="en">Content</message>
             <message lang="de">Inhalt</message>
+            <message lang="uk">Зміст</message>
           </label>
           <order>7</order>
           <mandatory>true</mandatory>
@@ -421,6 +479,7 @@
             <message lang="fr">Pour pouvoir ajouter un contenu aux publications</message>
             <message lang="en">Add some content to a publication</message>
             <message lang="de">Um einen Inhalt in Veröffentlichungen hinzufügen zu können</message>
+            <message lang="uk">Щоб мати можливість додавати вміст до публікацій</message>
           </help>
         </parameter>
         <parameter>
@@ -429,6 +488,7 @@
             <message lang="fr">Voir Aussi</message>
             <message lang="en">See also</message>
             <message lang="de">Siehe auch</message>
+            <message lang="uk">Дивіться також</message>
           </label>
           <order>9</order>
           <mandatory>true</mandatory>
@@ -445,6 +505,9 @@
             <message lang="de">Um anderen Veröffentlichungen, im Zusammenhang mit der aktuellen
               Veröffentlichung anzugeben.
             </message>
+            <message lang="uk">Для позначення інших публікацій, пов&amp;#39;язаних з поточною
+              публікацією.
+            </message>
           </help>
         </parameter>
         <parameter>
@@ -453,6 +516,7 @@
             <message lang="fr">Emplacements multiples</message>
             <message lang="en">Multiple locations</message>
             <message lang="de">Mehrere Standorte</message>
+            <message lang="uk">Кілька місць</message>
           </label>
           <order>10</order>
           <mandatory>true</mandatory>
@@ -469,6 +533,9 @@
             <message lang="de">Um eine Veröffentlichungen an mehreren Orten in der Komponente
               Hierarchie anzeigen oder in einer anderen Komponente verwenden
             </message>
+            <message lang="uk">Щоб розмістити ту саму публікацію в кількох місцях у структурі
+              дерева цього GED або інших.
+            </message>
           </help>
           <personalSpaceValue>no</personalSpaceValue>
         </parameter>
@@ -478,6 +545,7 @@
             <message lang="fr">Contrôles de lecture</message>
             <message lang="en">Readers list</message>
             <message lang="de">Leser-Liste</message>
+            <message lang="uk">Елементи керування відтворенням</message>
           </label>
           <order>11</order>
           <mandatory>true</mandatory>
@@ -490,6 +558,7 @@
             <message lang="de">Zeigt eine Liste der Personen an, Die eine Veröffentlichung gelesen
               haben
             </message>
+            <message lang="uk">Відображає список людей, які прочитали допис</message>
           </help>
           <personalSpaceValue>no</personalSpaceValue>
         </parameter>
@@ -499,6 +568,7 @@
             <message lang="fr">Commentaires</message>
             <message lang="en">Comments</message>
             <message lang="de">Kommentare</message>
+            <message lang="uk">Коментарі</message>
           </label>
           <order>12</order>
           <mandatory>true</mandatory>
@@ -509,6 +579,7 @@
             <message lang="fr">Pour commenter une publication</message>
             <message lang="en">To comment a publication</message>
             <message lang="de">Um eine Veröffentlichung zu kommentieren</message>
+            <message lang="uk">Щоб прокоментувати публікацію</message>
           </help>
         </parameter>
         <parameter>
@@ -517,6 +588,7 @@
             <message lang="fr">Derniers visiteurs</message>
             <message lang="en">Last visitors</message>
             <message lang="de">Letzte Besucher</message>
+            <message lang="uk">Останні відвідувачі</message>
           </label>
           <order>52</order>
           <mandatory>true</mandatory>
@@ -528,6 +600,7 @@
             </message>
             <message lang="en">Shows the last 4 users who viewed the publication</message>
             <message lang="de">Zeigt die letzten 4 Benutzer, die die Publikation angesehen</message>
+            <message lang="uk">Відображає 4 останніх користувачів, які переглядали публікацію</message>
           </help>
           <personalSpaceValue>no</personalSpaceValue>
         </parameter>
@@ -537,6 +610,7 @@
             <message lang="fr">Notifications</message>
             <message lang="en">Notifications</message>
             <message lang="de">Benachrichtigungen</message>
+            <message lang="uk">Сповіщення</message>
           </label>
           <order>34</order>
           <mandatory>true</mandatory>
@@ -548,6 +622,7 @@
             </message>
             <message lang="en">Enable "Notify" operation on publications.</message>
             <message lang="de">Vermeidet "Benachrichtigungen" auf Veröffentlichungen</message>
+            <message lang="uk">Вмикає операцію «Повідомити» про публікації.</message>
           </help>
           <personalSpaceValue>no</personalSpaceValue>
         </parameter>
@@ -557,6 +632,7 @@
             <message lang="fr">Notes</message>
             <message lang="en">Ratings</message>
             <message lang="de">Bewertungen</message>
+            <message lang="uk">Рейтинги</message>
           </label>
           <order>51</order>
           <mandatory>false</mandatory>
@@ -570,6 +646,8 @@
             <message lang="en">Allows readers to give a rating to each publication</message>
             <message lang="de">Ermöglicht den Leser auf eine Note auf jede Veröffentlichung geben
             </message>
+            <message lang="uk">Дозволяє читачам поставити оцінку (від 1 до 5) кожній публікації
+            </message>
           </help>
         </parameter>
         <parameter>
@@ -578,6 +656,7 @@
             <message lang="fr">Mode de validation</message>
             <message lang="en">Validation mode</message>
             <message lang="de">Veröffentlichungsbestätigung</message>
+            <message lang="uk">Режим фіксації</message>
           </label>
           <order>21</order>
           <mandatory>true</mandatory>
@@ -588,6 +667,7 @@
                 <message lang="fr">Classique</message>
                 <message lang="en">Classical</message>
                 <message lang="de">Klassisch</message>
+                <message lang="uk">класичний</message>
               </name>
               <value>0</value>
             </option>
@@ -596,6 +676,7 @@
                 <message lang="fr">Ciblée (un seul valideur)</message>
                 <message lang="en">Targeted (only one validator)</message>
                 <message lang="de">Gezielte (nur ein Prüfer)</message>
+                <message lang="uk">Цільовий (один валідатор)</message>
               </name>
               <value>1</value>
             </option>
@@ -604,6 +685,7 @@
                 <message lang="fr">Ciblée (plusieurs valideurs)</message>
                 <message lang="en">Targeted (various validators)</message>
                 <message lang="de">Gezielte (verschiedene Prüfer)</message>
+                <message lang="uk">Цільовий (кілька валідаторів)</message>
               </name>
               <value>2</value>
             </option>
@@ -612,6 +694,7 @@
                 <message lang="fr">Collégiale</message>
                 <message lang="en">Collegiate</message>
                 <message lang="de">Kollegial</message>
+                <message lang="uk">колегіальний</message>
               </name>
               <value>3</value>
             </option>
@@ -639,6 +722,11 @@
               Gezielte (verschiedene Prüfungen): Der Redaktor wählt mehrere Validator aus.
               Kollegial: Alle Validatoren müssen die Veröffentlichung validieren
             </message>
+            <message lang="uk">Класичний: валідатор повинен підтвердити публікацію, цільовий
+              (один валідатор): редактор обирає валідатора, який має перевірити публікацію. Це дає
+              змогу уникнути явища спаму з видавцями. Цільовий (кілька валідаторів): редактор
+              вибирає валідаторів. Колегіальний: усі валідатори повинні перевірити публікацію.
+            </message>
           </help>
         </parameter>
         <parameter>
@@ -647,6 +735,7 @@
             <message lang="fr">Publication toujours visible</message>
             <message lang="en">Publication always visible</message>
             <message lang="de">Veröffentlichung immer sichtbar</message>
+            <message lang="uk">Публікацію завжди видно</message>
           </label>
           <order>25</order>
           <mandatory>true</mandatory>
@@ -666,6 +755,10 @@
               auch wenn es auf einer Genehmigung wartet. Wenn aktiviert, die Parameter "Versionierte
               Anhänge" wird ignoriert, und gilt als deaktiviert.
             </message>
+            <message lang="uk">Остання підтверджена версія публікації завжди видима, навіть якщо
+              вона очікує на перевірку. Якщо ввімкнено, параметр «Відстеження версій» ігнорується
+              та вважається вимкненим.
+            </message>
           </help>
         </parameter>
         <parameter>
@@ -674,6 +767,7 @@
             <message lang="fr">Co-rédaction</message>
             <message lang="en">Co-writing</message>
             <message lang="de">Co-Schreibung</message>
+            <message lang="uk">Спільне редагування</message>
           </label>
           <order>24</order>
           <mandatory>true</mandatory>
@@ -691,6 +785,7 @@
             <message lang="de">Diese Funktion macht es einem Redaktor möglich, jede Veröffentlichung
               zu ändern.
             </message>
+            <message lang="uk">Ця функція дозволяє редактору редагувати будь-яку публікацію.</message>
           </help>
         </parameter>
         <parameter>
@@ -699,6 +794,7 @@
             <message lang="fr">Suppression restreinte</message>
             <message lang="en">Restricted suppression</message>
             <message lang="de">Eingeschränkte Löschung</message>
+            <message lang="uk">Обмежене видалення</message>
           </label>
           <order>31</order>
           <mandatory>true</mandatory>
@@ -715,6 +811,9 @@
             <message lang="de">Nur Manager dieser Komponente können Veröffentlichungen entfernen und
               am Papierkorb der Publikationen zugreifen
             </message>
+            <message lang="uk">Лише менеджери програм можуть видалити публікацію та отримати доступ
+              до кошика публікацій
+            </message>
           </help>
         </parameter>
         <parameter>
@@ -723,10 +822,11 @@
             <message lang="fr">Formulaire complémentaire</message>
             <message lang="en">Additional metadata</message>
             <message lang="de">XML-Formular für Metadaten</message>
+            <message lang="uk">Додаткова форма</message>
           </label>
           <order>32</order>
           <mandatory>false</mandatory>
-          <value></value>
+          <value/>
           <type>xmltemplates</type>
           <updatable>always</updatable>
           <help>
@@ -740,6 +840,9 @@
             <message lang="de">Diese Funktion ermöglicht es, zusätzliche Informationen über jede
               Datei einzugeben. Eine XML-Vorlage wird verwendet, um diese Daten einzugeben.
             </message>
+            <message lang="uk">Цей параметр дозволяє вводити додаткову інформацію для кожної
+              публікації. Ця інформація вводиться через персоналізовану форму.
+            </message>
           </help>
         </parameter>
       </parameters>
@@ -749,12 +852,14 @@
         <message lang="fr">Fichiers</message>
         <message lang="en">Files</message>
         <message lang="de">Files</message>
+        <message lang="uk">Файли</message>
       </label>
       <description>
         <message lang="fr">Paramétrez ici le comportement des fichiers joints aux publications
         </message>
         <message lang="en">Set up the behavior of files attached to publications</message>
         <message lang="de">Stellt das Verhalten von Dateien an Publikationen befestigt</message>
+        <message lang="uk">Тут можна налаштувати поведінку файлів, прикріплених до публікацій</message>
       </description>
       <order>3</order>
       <parameters>
@@ -764,6 +869,7 @@
             <message lang="fr">Fichiers joints</message>
             <message lang="en">Attachments</message>
             <message lang="de">Anhänge</message>
+            <message lang="uk">Додатки</message>
           </label>
           <order>8</order>
           <mandatory>true</mandatory>
@@ -774,6 +880,7 @@
             <message lang="fr">Permet de joindre des fichiers à une publication</message>
             <message lang="en">Permit to add files to a publication</message>
             <message lang="de">Um Dateien in einer Veröffentlichung beilegen zu können</message>
+            <message lang="uk">Прикріплення файлів до публікації</message>
           </help>
         </parameter>
         <parameter>
@@ -782,6 +889,7 @@
             <message lang="fr">Listing</message>
             <message lang="en">Listing</message>
             <message lang="de">Listen</message>
+            <message lang="uk">лістинг</message>
           </label>
           <order>38</order>
           <mandatory>true</mandatory>
@@ -798,6 +906,9 @@
             <message lang="de">Diese Funktion erlaubt es, die angehängten Dateien zu jeder
               Veröffentlichung direkt in der Publikation anzuzeigen.
             </message>
+            <message lang="uk">Цей параметр використовується для відображення файлів, прикріплених
+              до кожної публікації, безпосередньо в списку публікацій.
+            </message>
           </help>
           <personalSpaceValue>yes</personalSpaceValue>
         </parameter>
@@ -807,6 +918,7 @@
             <message lang="fr">Ouverture directe</message>
             <message lang="en">Direct opening</message>
             <message lang="de">Anhänge direkt öffnen</message>
+            <message lang="uk">Пряме відкриття</message>
           </label>
           <order>19</order>
           <mandatory>true</mandatory>
@@ -823,7 +935,9 @@
             <message lang="de">Öffnen einer Veröffentlichung mit nur einem Anhang wird diesen Anhang
               automatisch öffnen.
             </message>
-          </help>
+            <message lang="uk">Якщо публікація містить лише один вкладений файл, відкриття
+              публікації автоматично запускає відкриття вкладеного файлу.
+            </message></help>
         </parameter>
         <parameter>
           <name>authorizedFileExtension</name>
@@ -831,6 +945,7 @@
             <message lang="fr">Extension(s) autorisée(s)</message>
             <message lang="en">Extension(s) authorized</message>
             <message lang="de">Extension(s) authorized</message>
+            <message lang="uk">Авторизоване розширення</message>
           </label>
           <order>49</order>
           <mandatory>false</mandatory>
@@ -851,6 +966,9 @@
               parameter
               is ignored if a value is filled
             </message>
+            <message lang="uk">Список розширень файлів, розділених комами, параметр «Заборонені
+              файли» ігнорується, якщо введено значення
+            </message>
           </help>
         </parameter>
         <parameter>
@@ -859,6 +977,7 @@
             <message lang="fr">Extension(s) interdite(s)</message>
             <message lang="en">Extension(s) forbidden</message>
             <message lang="de">Extension(s) forbidden</message>
+            <message lang="uk">Заборонені розширення</message>
           </label>
           <order>50</order>
           <mandatory>false</mandatory>
@@ -879,6 +998,9 @@
               entered
               into "Authorized files" parameter
             </message>
+            <message lang="uk">Список розширень файлів, розділених комами, ігнорується, якщо існує
+              значення параметра «Дозволені файли»
+            </message>
           </help>
         </parameter>
         <parameter>
@@ -887,6 +1009,7 @@
             <message lang="fr">Glisser / Déposer</message>
             <message lang="en">Drag And Drop</message>
             <message lang="de">Drag And Drop</message>
+            <message lang="uk">Перетягування</message>
           </label>
           <order>23</order>
           <mandatory>true</mandatory>
@@ -903,6 +1026,9 @@
             <message lang="de">Diese Funktion ermöglicht es dem Manager Themen und Publikationen mit
               Hilfe von Drag and Drop zu erstellen.
             </message>
+            <message lang="uk">Ця функція дозволяє створювати папки та публікації, перетягуючи їх у
+              певну область екрана.
+            </message>
           </help>
         </parameter>
         <parameter>
@@ -911,6 +1037,7 @@
             <message lang="fr">Importation</message>
             <message lang="en">Import</message>
             <message lang="de">Importieren</message>
+            <message lang="uk">Імпорт</message>
           </label>
           <order>20</order>
           <mandatory>true</mandatory>
@@ -921,6 +1048,7 @@
                 <message lang="fr">Non</message>
                 <message lang="en">No</message>
                 <message lang="de">Nein</message>
+                <message lang="uk">Немає</message>
               </name>
               <value>0</value>
             </option>
@@ -929,6 +1057,7 @@
                 <message lang="fr">Import unitaire</message>
                 <message lang="en">Unit import</message>
                 <message lang="de">Einzelimport</message>
+                <message lang="uk">Імпорт одиниць</message>
               </name>
               <value>1</value>
             </option>
@@ -937,6 +1066,7 @@
                 <message lang="fr">Import massif</message>
                 <message lang="en">Massive import</message>
                 <message lang="de">Massiven Import</message>
+                <message lang="uk">Масовий імпорт</message>
               </name>
               <value>2</value>
             </option>
@@ -945,6 +1075,7 @@
                 <message lang="fr">Tous</message>
                 <message lang="en">All</message>
                 <message lang="de">Alle</message>
+                <message lang="uk">все</message>
               </name>
               <value>3</value>
             </option>
@@ -961,6 +1092,9 @@
             <message lang="de">Verfügbare Werte: Nein, Einzelimport, Massiven Import, Einzel und
               massiven Import
             </message>
+            <message lang="uk">Можливі значення: Ні, Унітарний імпорт, Масовий імпорт, Унітарний і
+              масовий імпорт.
+            </message>
           </help>
         </parameter>
         <parameter>
@@ -969,10 +1103,11 @@
             <message lang="fr">Gestion des retards</message>
             <message lang="en">Backlog management</message>
             <message lang="de">Verwaltung der Verspätungen</message>
+            <message lang="uk">Управління затримками</message>
           </label>
           <order>29</order>
           <mandatory>false</mandatory>
-          <value></value>
+          <value/>
           <type>text</type>
           <size>5</size>
           <updatable>always</updatable>
@@ -989,6 +1124,9 @@
               wählen und die Verspätungen zu verwalten.
               Die Frist ist in den Tagen ausgedrückt und berücksichtige keine Samstage und Sonntage.
             </message>
+            <message lang="uk">Ця опція дає змогу вибрати кінцевий термін резервування файлів і
+              керувати затримками. Цей період виражається в днях і не враховує суботу та неділю.
+            </message>
           </help>
         </parameter>
         <parameter>
@@ -997,10 +1135,11 @@
             <message lang="fr">Formulaire complémentaire</message>
             <message lang="en">Additional metadata</message>
             <message lang="de">XML-Formular für Metadaten auf Anhänge</message>
+            <message lang="uk">Додаткова форма</message>
           </label>
           <order>33</order>
           <mandatory>false</mandatory>
-          <value></value>
+          <value/>
           <type>xmltemplates</type>
           <updatable>always</updatable>
           <help>
@@ -1014,6 +1153,9 @@
             <message lang="de">Diese Funktion ermöglicht es, zusätzliche Informationen über jede
               Datei einzugeben. Eine XML-Vorlage wird verwendet, um diese Daten einzugeben.
             </message>
+            <message lang="uk">Цей параметр дозволяє вводити додаткову інформацію для кожного
+              вкладеного файлу. Ця інформація вводиться за допомогою форми XML.
+            </message>
           </help>
         </parameter>
         <parameter>
@@ -1022,6 +1164,7 @@
             <message lang="fr">Suivi de versions</message>
             <message lang="en">Version tracking</message>
             <message lang="de">Versionierte Anhänge</message>
+            <message lang="uk">Відстеження версій</message>
           </label>
           <order>13</order>
           <mandatory>true</mandatory>
@@ -1039,7 +1182,10 @@
             <message lang="de">Anhänge werden versioniert. Dieser Parameter wird ignoriert und
               deaktiviert, wenn "Veröffentlichung immer Sichtbar" aktiviert ist.
             </message>
-          </help>
+          <message lang="uk">Дозволяє зберігати історію різних версій документів. Цей параметр
+            ігнорується та вважається вимкненим, якщо ввімкнено «Публікацію завжди видно».
+          </message>
+        </help>
         <warning always="true">
               <message lang="fr">Le fait d'activer le suivi de versions entraîne la création d'une
                 version publique (v1.0) pour chaque fichier contenu dans l'application.&lt;/br&gt;A
@@ -1071,13 +1217,14 @@
                 Bearbeitungszeit vom Umfang (Dateien) des Antrags abhängt.&lt;/p&gt;
               </message>
             </warning>
-          </parameter>
+        </parameter>
         <parameter>
           <name>hideAllVersionsLink</name>
           <label>
             <message lang="fr">Dernière version publique</message>
             <message lang="en">Last public version</message>
             <message lang="de">Letzte öffentliche Version</message>
+            <message lang="uk">Остання публічна версія</message>
           </label>
           <order>45</order>
           <mandatory>false</mandatory>
@@ -1094,6 +1241,9 @@
             <message lang="de">Diese Funktion erlaubt es dem Leser nur die letzte öffentliche
               Version eines Dokuments zu sehen.
             </message>
+            <message lang="uk">Цей параметр використовується для обмеження доступу до останньої
+              публічної версії документа.
+            </message>
           </help>
         </parameter>
         <parameter>
@@ -1102,6 +1252,7 @@
             <message lang="fr">Banque de fichiers</message>
             <message lang="en">Re-usable files</message>
             <message lang="de">Wiederverwendbare Dateien</message>
+            <message lang="uk">Банк файлів</message>
           </label>
           <order>39</order>
           <mandatory>false</mandatory>
@@ -1124,6 +1275,9 @@
               Dateien zu bestimmen. Das hizufügen einer Datei im Körper einer Veröffentlichung wird
               mit der Hilfe vom Wysiwyg-Editor erfolgen.
             </message>
+            <message lang="uk">Цей параметр визначає цю програму як сховище файлів. Вкладення з
+              банку можна вставляти в тіло повідомлення за допомогою редактора Wysiwyg.
+            </message>
           </help>
           <warning>
             <message lang="fr">
@@ -1139,6 +1293,9 @@
               By checking this box, attached files to publications of this application will be
               available for use (regardless of rights) by other applications.
             </message>
+            <message lang="uk">Якщо встановити цей прапорець, файли, прикріплені до публікацій цієї
+              програми, будуть вільно використовуватися іншими програмами (без урахування прав).
+            </message>
           </warning>
         </parameter>
       </parameters>
@@ -1148,11 +1305,13 @@
         <message lang="fr">Dossiers</message>
         <message lang="en">Folders</message>
         <message lang="de">Folders</message>
+        <message lang="uk">Папки</message>
       </label>
       <description>
         <message lang="fr">Ils vous permettent d'organiser facilement votre GED</message>
         <message lang="en">It allows you to easily organize your ECM</message>
         <message lang="de">Sie ermöglichen es, einfach organisieren Sie Ihre ECM</message>
+        <message lang="uk">Вони дозволяють легко організувати свій GED</message>
       </description>
       <order>1</order>
       <parameters>
@@ -1162,6 +1321,7 @@
             <message lang="fr">Arborescence</message>
             <message lang="en">Treeview</message>
             <message lang="de">Baumansicht</message>
+            <message lang="uk">структура дерева</message>
           </label>
           <order>5</order>
           <mandatory>true</mandatory>
@@ -1172,6 +1332,7 @@
                 <message lang="fr">Oui avec explorateur de dossiers</message>
                 <message lang="en">Yes with explorer</message>
                 <message lang="de">Ja mit Explorer</message>
+                <message lang="uk">Так, із провідником папок</message>
               </name>
               <value>0</value>
             </option>
@@ -1180,6 +1341,7 @@
                 <message lang="fr">Oui sans explorateur de dossiers</message>
                 <message lang="en">Yes without explorer</message>
                 <message lang="de">Ja ohne Explorer</message>
+                <message lang="uk">Так, без провідника папок</message>
               </name>
               <value>1</value>
             </option>
@@ -1188,6 +1350,7 @@
                 <message lang="fr">Non</message>
                 <message lang="en">No</message>
                 <message lang="de">Nein</message>
+                <message lang="uk">Немає</message>
               </name>
               <value>2</value>
             </option>
@@ -1198,6 +1361,7 @@
             <message lang="fr">Active l'organisation arborescente de dossiers.</message>
             <message lang="en">Activates the tree organization of folders.</message>
             <message lang="de">Aktiviert die Baum Organisation von Themen.</message>
+            <message lang="uk">Вмикає деревовидну організацію папок.</message>
           </help>
         </parameter>
         <parameter>
@@ -1206,6 +1370,7 @@
             <message lang="fr">Gestion déléguée</message>
             <message lang="en">Delegated management</message>
             <message lang="de">Theme-Verwaltung Delegierung</message>
+            <message lang="uk">Делеговане управління</message>
           </label>
           <order>17</order>
           <mandatory>true</mandatory>
@@ -1218,6 +1383,7 @@
             <message lang="en">Publishers and writers can manage the folders.</message>
             <message lang="de">Veröffentlicher und Herausgeber können die Themen verwalten.
             </message>
+            <message lang="uk">Керування файлами делеговано видавцям і редакторам.</message>
           </help>
         </parameter>
         <parameter>
@@ -1226,6 +1392,7 @@
             <message lang="fr">Droits spécifiques</message>
             <message lang="en">Specific rights</message>
             <message lang="de">Rechte auf die Themen</message>
+            <message lang="uk">Специфічні права</message>
           </label>
           <order>28</order>
           <mandatory>true</mandatory>
@@ -1237,6 +1404,7 @@
             </message>
             <message lang="en">Allow to define rights on folders.</message>
             <message lang="de">Erlaubt es, Zugangsrechte auf die Themen zu bestimmen.</message>
+            <message lang="uk">Дозволяє встановити права доступу на рівні папки.</message>
           </help>
         </parameter>
         <parameter>
@@ -1245,6 +1413,7 @@
             <message lang="fr">Description riche</message>
             <message lang="en">Rich description</message>
             <message lang="de">Reiche Beschreibung</message>
+            <message lang="uk">Багатий опис</message>
           </label>
           <order>36</order>
           <mandatory>true</mandatory>
@@ -1259,6 +1428,9 @@
             <message lang="de">Diese Funktion ermöglicht es, einen reichen Beschreibung eines Themas
               zu machen.
             </message>
+            <message lang="uk">Цей параметр дозволяє ввести опис Wysiwyg для папки, яка буде
+              відображатися в папці.
+            </message>
           </help>
         </parameter>
         <parameter>
@@ -1267,6 +1439,7 @@
             <message lang="fr">Nombre de publications</message>
             <message lang="en">Number of publications</message>
             <message lang="de">Anzahl der Veröffentlichungen zeigen</message>
+            <message lang="uk">Кількість постів</message>
           </label>
           <order>27</order>
           <mandatory>true</mandatory>
@@ -1277,6 +1450,7 @@
             <message lang="fr">Affiche le nombre de publications par dossier</message>
             <message lang="en">Display the number of publications per folder</message>
             <message lang="de">Anzahl der Veröffentlichungen per Thema zeigen</message>
+            <message lang="uk">Відображає кількість публікацій у папці</message>
           </help>
         </parameter>
       </parameters>
@@ -1286,6 +1460,7 @@
         <message lang="fr">Partages</message>
         <message lang="en">Sharing</message>
         <message lang="de">Sharing</message>
+        <message lang="uk">акції</message>
       </label>
       <description>
         <message lang="fr">Partagez en toute sécurité des contenus avec des tiers non utilisateurs
@@ -1293,6 +1468,9 @@
         </message>
         <message lang="en">Share content safely with third non-users of this platform</message>
         <message lang="de">Sichere gemeinsame Inhalte mit Dritt Nicht-Nutzer dieser Plattform
+        </message>
+        <message lang="uk">Безпечно діліться вмістом зі сторонніми особами, які не є користувачами
+          цієї платформи
         </message>
       </description>
       <order>4</order>
@@ -1303,6 +1481,7 @@
             <message lang="fr">Dossiers</message>
             <message lang="en">Folders</message>
             <message lang="de">Folders</message>
+            <message lang="uk">Папки</message>
           </label>
           <order>48</order>
           <mandatory>true</mandatory>
@@ -1313,6 +1492,7 @@
                 <message lang="fr">Désactivé</message>
                 <message lang="en">Deactivated</message>
                 <message lang="de">Untauglich</message>
+                <message lang="uk">Вимкнено</message>
               </name>
               <value>0</value>
             </option>
@@ -1321,6 +1501,7 @@
                 <message lang="fr">Pour les gestionnaires</message>
                 <message lang="en">For managers</message>
                 <message lang="de">Für Manager</message>
+                <message lang="uk">Для менеджерів</message>
               </name>
               <value>1</value>
             </option>
@@ -1329,6 +1510,7 @@
                 <message lang="fr">Pour les contributeurs</message>
                 <message lang="en">For contributors</message>
                 <message lang="de">Für Beiträger</message>
+                <message lang="uk">Для дописувачів</message>
               </name>
               <value>2</value>
             </option>
@@ -1337,6 +1519,7 @@
                 <message lang="fr">Pour tous les utilisateurs</message>
                 <message lang="en">For all users</message>
                 <message lang="de">für alle Benutzer</message>
+                <message lang="uk">Для всіх користувачів</message>
               </name>
               <value>3</value>
             </option>
@@ -1353,6 +1536,9 @@
             <message lang="de">This feature allows to share folders with some persons who have no
               access to the platform.
             </message>
+            <message lang="uk">Цей параметр дозволяє ділитися папками зі сторонніми особами, які не
+              є користувачами платформи.
+            </message>
           </help>
           <warning>
             <message lang="fr">Attention! En sélectionnant cette option, vous allez permettre de
@@ -1365,6 +1551,9 @@
             <message lang="de">Caution! By selecting this option, you will enable to freely share
               folders with users not identified in the platform.
             </message>
+            <message lang="uk">Увага! Вибравши цей параметр, ви дозволите вільно ділитися папками з
+              користувачами, яких немає на платформі.
+            </message>
           </warning>
           <personalSpaceValue>no</personalSpaceValue>
         </parameter>
@@ -1374,6 +1563,7 @@
             <message lang="fr">Publications</message>
             <message lang="en">Publications</message>
             <message lang="de">Publications</message>
+            <message lang="uk">Публікації</message>
           </label>
           <order>48</order>
           <mandatory>true</mandatory>
@@ -1384,6 +1574,7 @@
                 <message lang="fr">Désactivé</message>
                 <message lang="en">Deactivated</message>
                 <message lang="de">Untauglich</message>
+                <message lang="uk">Вимкнено</message>
               </name>
               <value>0</value>
             </option>
@@ -1392,6 +1583,7 @@
                 <message lang="fr">Pour les gestionnaires</message>
                 <message lang="en">For managers</message>
                 <message lang="de">Für Manager</message>
+                <message lang="uk">Для менеджерів</message>
               </name>
               <value>1</value>
             </option>
@@ -1400,6 +1592,7 @@
                 <message lang="fr">Pour les contributeurs</message>
                 <message lang="en">For contributors</message>
                 <message lang="de">Für Beiträger</message>
+                <message lang="uk">Для дописувачів</message>
               </name>
               <value>2</value>
             </option>
@@ -1408,6 +1601,7 @@
                 <message lang="fr">Pour tous les utilisateurs</message>
                 <message lang="en">For all users</message>
                 <message lang="de">für alle Benutzer</message>
+                <message lang="uk">Для всіх користувачів</message>
               </name>
               <value>3</value>
             </option>
@@ -1424,6 +1618,9 @@
             <message lang="de">This feature allows to share publications with some persons who have
               no access to the platform.
             </message>
+            <message lang="uk">Цей параметр дає можливість ділитися публікаціями зі сторонніми
+              особами, які не є користувачами платформи.
+            </message>
           </help>
           <warning>
             <message lang="fr">Attention! En sélectionnant cette option, vous allez permettre de
@@ -1436,6 +1633,9 @@
             <message lang="de">Caution! By selecting this option, you will enable to freely share
               publications with users not identified in the platform.
             </message>
+            <message lang="uk">Увага! Вибравши цей параметр, ви дозволите вільно ділитися
+              публікаціями з користувачами, яких немає на платформі.
+            </message>
           </warning>
           <personalSpaceValue>no</personalSpaceValue>
         </parameter>
@@ -1445,6 +1645,7 @@
             <message lang="fr">Fichiers</message>
             <message lang="en">Files</message>
             <message lang="de">Anhänge freigeben</message>
+            <message lang="uk">Файли</message>
           </label>
           <order>37</order>
           <mandatory>true</mandatory>
@@ -1455,6 +1656,7 @@
                 <message lang="fr">Désactivé</message>
                 <message lang="en">Deactivated</message>
                 <message lang="de">Untauglich</message>
+                <message lang="uk">Вимкнено</message>
               </name>
               <value>0</value>
             </option>
@@ -1463,6 +1665,7 @@
                 <message lang="fr">Pour les gestionnaires</message>
                 <message lang="en">For managers</message>
                 <message lang="de">Für Manager</message>
+                <message lang="uk">Для менеджерів</message>
               </name>
               <value>1</value>
             </option>
@@ -1471,6 +1674,7 @@
                 <message lang="fr">Pour les contributeurs</message>
                 <message lang="en">For contributors</message>
                 <message lang="de">Für Beiträger</message>
+                <message lang="uk">Для дописувачів</message>
               </name>
               <value>2</value>
             </option>
@@ -1479,6 +1683,7 @@
                 <message lang="fr">Pour tous les utilisateurs</message>
                 <message lang="en">For all users</message>
                 <message lang="de">für alle Benutzer</message>
+                <message lang="uk">Для всіх користувачів</message>
               </name>
               <value>3</value>
             </option>
@@ -1495,6 +1700,9 @@
             <message lang="de">Mit dieser Funktion können Sie die Dateifreigabe mit Personen, die
               keinen Zugang zu dem Portal haben, aktivieren.
             </message>
+            <message lang="uk">Цей параметр дозволяє ділитися файлами зі сторонніми особами, які не
+              є користувачами платформи.
+            </message>
           </help>
           <warning>
             <message lang="fr">Attention! En sélectionnant cette option, vous allez permettre de
@@ -1507,6 +1715,9 @@
             <message lang="de">Caution! By selecting this option, you will enable to freely share
               files with users not identified in the platform.
             </message>
+            <message lang="uk">Увага! Вибравши цей параметр, ви дозволите вільно ділитися файлами з
+              користувачами, яких немає на платформі.
+            </message>
           </warning>
           <personalSpaceValue>0</personalSpaceValue>
         </parameter>
@@ -1517,6 +1728,7 @@
         <message lang="fr">Plan de classement</message>
         <message lang="en">Taxonomy</message>
         <message lang="de">Taxonomy</message>
+        <message lang="uk">План картотеки</message>
       </label>
       <description>
         <message lang="fr">Classez les publications sur le plan de classement transverse à la
@@ -1528,6 +1740,7 @@
         <message lang="de">Ordnen Sie die Veröffentlichungen über die Querklassifikationsschema zur
           Plattform
         </message>
+        <message lang="uk">Класифікуйте публікації в кросплатформному плані подання</message>
       </description>
       <order>5</order>
       <parameters>
@@ -1537,6 +1750,7 @@
             <message lang="fr">Classification PDC</message>
             <message lang="en">Classification Scheme</message>
             <message lang="de">Klassierungsplan</message>
+            <message lang="uk">Класифікація PDC</message>
           </label>
           <order>6</order>
           <mandatory>true</mandatory>
@@ -1549,6 +1763,9 @@
             </message>
             <message lang="en">Publications would be classified on PDC</message>
             <message lang="de">Veröffentlichungen würden auf dem KP klassifiziert werden</message>
+            <message lang="uk">Публікації, створені в цьому екземплярі, можна класифікувати в
+              Класифікаційному плані
+            </message>
           </help>
         </parameter>
         <parameter>
@@ -1557,10 +1774,11 @@
             <message lang="fr">Lexique</message>
             <message lang="en">Glossary</message>
             <message lang="de">Glossar</message>
+            <message lang="uk">Лексикон</message>
           </label>
           <order>40</order>
           <mandatory>false</mandatory>
-          <value></value>
+          <value/>
           <type>text</type>
           <size>5</size>
           <updatable>always</updatable>
@@ -1576,6 +1794,9 @@
             <message lang="de">Diese Funktion ermöglicht es die Identifikazion der KP-Achsen
               festzulegen, die als Glossar dür diese Kompnonte benützt werden.
             </message>
+            <message lang="uk">Цей параметр використовується для визначення ідентифікатора осі PDC,
+              яка використовуватиметься як лексикон у поточній програмі.
+            </message>
           </help>
         </parameter>
       </parameters>
@@ -1585,11 +1806,13 @@
         <message lang="fr">Vignette de publication</message>
         <message lang="en">Thumbnail of publication</message>
         <message lang="de">Thumbnail of publication</message>
+        <message lang="uk">Мініатюра публікації</message>
       </label>
       <description>
         <message lang="fr">Agrémentez la liste des publications avec une vignette</message>
         <message lang="en">Enhance the publications list with thumbnail</message>
         <message lang="de">Steigern Sie die Publikationsliste mit Miniatur</message>
+        <message lang="uk">Доповніть список публікацій ескізом</message>
       </description>
       <order>7</order>
       <parameters>
@@ -1599,6 +1822,7 @@
             <message lang="fr">Vignette obligatoire</message>
             <message lang="en">Mandatory thumbnail</message>
             <message lang="de">Obligatorisches Vorschaubild</message>
+            <message lang="uk">Обов&amp;#39;язкова наклейка</message>
           </label>
           <order>42</order>
           <mandatory>true</mandatory>
@@ -1614,6 +1838,9 @@
             <message lang="de">macht es zwingend erforderlich,eine Miniaturansicht für jede
               Publikation hinzu zu fügen.
             </message>
+            <message lang="uk">Дозволяє зробити обов’язковим додавання мініатюри до кожної
+              публікації.
+            </message>
           </help>
         </parameter>
         <parameter>
@@ -1622,10 +1849,11 @@
             <message lang="fr">Largeur de la vignette</message>
             <message lang="en">Thumbnail's width</message>
             <message lang="de">Breite des Vorschaubilds</message>
+            <message lang="uk">Ширина мініатюри</message>
           </label>
           <order>43</order>
           <mandatory>false</mandatory>
-          <value></value>
+          <value/>
           <type>text</type>
           <size>5</size>
           <updatable>always</updatable>
@@ -1638,6 +1866,9 @@
             <message lang="de">Diese Funktion erlaubt es, die Breite der angezeigten Miniaturansicht
               zu definieren
             </message>
+            <message lang="uk">Цей параметр використовується для визначення ширини мініатюри для
+              відображення.
+            </message>
           </help>
         </parameter>
         <parameter>
@@ -1646,10 +1877,11 @@
             <message lang="fr">Hauteur de la vignette</message>
             <message lang="en">Thumbnail's height</message>
             <message lang="de">Höhe des Vorschaubilds</message>
+            <message lang="uk">Висота мініатюри</message>
           </label>
           <order>44</order>
           <mandatory>false</mandatory>
-          <value></value>
+          <value/>
           <type>text</type>
           <size>5</size>
           <updatable>always</updatable>
@@ -1662,6 +1894,9 @@
             <message lang="de">Diese Funktion erlaubt es, die Höhe der angezeigten Miniaturansicht
               zu definieren
             </message>
+            <message lang="uk">Цей параметр використовується для визначення висоти мініатюри для
+              відображення.
+            </message>
           </help>
         </parameter>
       </parameters>
@@ -1671,6 +1906,7 @@
         <message lang="fr">Recherche</message>
         <message lang="en">Search</message>
         <message lang="de">Search</message>
+        <message lang="uk">дослідження</message>
       </label>
       <description>
         <message lang="fr">Activez la recherche locale et/ou exclure cette GED de la recherche
@@ -1679,6 +1915,8 @@
         <message lang="en">Enable local search and/or exclude this ECM from general search</message>
         <message lang="de">Aktivieren der lokalen Forschung und / oder löschen Sie die allgemeine
           Suche
+        </message>
+        <message lang="uk">Увімкнути локальний пошук і/або виключити цей GED із загального пошуку
         </message>
       </description>
       <order>6</order>
@@ -1689,6 +1927,7 @@
             <message lang="fr">Recherche locale</message>
             <message lang="en">Local search</message>
             <message lang="de">Lokale Suche</message>
+            <message lang="uk">Локальний пошук</message>
           </label>
           <order>41</order>
           <mandatory>true</mandatory>
@@ -1702,6 +1941,7 @@
             <message lang="en">This feature allows to display a search box in each folder.</message>
             <message lang="de">Diese Funktion erlaubt es, ein Suchfeld in jedem Thema anzuzeigen.
             </message>
+            <message lang="uk">Цей параметр відображає поле пошуку для кожної папки.</message>
           </help>
         </parameter>
         <parameter>
@@ -1710,6 +1950,7 @@
             <message lang="fr">Exclu de la recherche générale</message>
             <message lang="en">Excluded from the main search engine</message>
             <message lang="de">Ausgeschlossen von der Haupt-Suchmaschine</message>
+            <message lang="uk">Виключено із загального пошуку</message>
           </label>
           <order>35</order>
           <mandatory>true</mandatory>
@@ -1728,6 +1969,9 @@
             <message lang="de">Falls dieser Parameter aktiviert ist, werden indexiert Informationen
               nicht durch die globale Suchmaschine auffindbar sein.
             </message>
+            <message lang="uk">Якщо цей параметр активовано, проіндексовану інформацію не можна
+              знайти загальною пошуковою системою.
+            </message>
           </help>
         </parameter>
       </parameters>
@@ -1737,11 +1981,13 @@
         <message lang="fr">Divers</message>
         <message lang="en">Miscellaneous</message>
         <message lang="de">Miscellaneous</message>
+        <message lang="uk">різноманітні</message>
       </label>
       <description>
         <message lang="fr">Autres paramètres pouvant être tout aussi utiles...</message>
         <message lang="en">Other parameters that can be useful...</message>
         <message lang="de">Andere Parameter, die ebenso nützlich sein kann ...</message>
+        <message lang="uk">Інші налаштування, які можуть бути такими ж корисними...</message>
       </description>
       <order>8</order>
       <parameters>
@@ -1751,6 +1997,7 @@
             <message lang="fr">Orienté CMS</message>
             <message lang="en">Content for web</message>
             <message lang="de">Inhalt für das Web</message>
+            <message lang="uk">Орієнтований на CMS</message>
           </label>
           <order>16</order>
           <mandatory>true</mandatory>
@@ -1767,6 +2014,9 @@
             <message lang="de">Funktionalitäten für die Verwaltung von Web-Inhalten Aktivieren
               (WYSIWYG für Themen und Themen Sichtbarkeit).
             </message>
+            <message lang="uk">Вмикає функції, пов’язані з керуванням веб-вмістом (wysiwyg,
+              пов’язаний із папкою, видимість папки).
+            </message>
           </help>
         </parameter>
         <parameter>
@@ -1775,6 +2025,7 @@
             <message lang="fr">Exportation</message>
             <message lang="en">Export</message>
             <message lang="de">Export</message>
+            <message lang="uk">Експорт</message>
           </label>
           <order>22</order>
           <mandatory>true</mandatory>
@@ -1785,6 +2036,7 @@
                 <message lang="fr">Non</message>
                 <message lang="en">No</message>
                 <message lang="de">Nein</message>
+                <message lang="uk">Немає</message>
               </name>
               <value>no</value>
             </option>
@@ -1793,6 +2045,7 @@
                 <message lang="fr">Au format ZIP</message>
                 <message lang="en">In a zip file</message>
                 <message lang="de">In einer ZIP-Datei</message>
+                <message lang="uk">У форматі ZIP</message>
               </name>
               <value>yes</value>
             </option>
@@ -1801,6 +2054,7 @@
                 <message lang="fr">Des fichiers PDF</message>
                 <message lang="en">In pdf files</message>
                 <message lang="de">In einer PDF-Datei</message>
+                <message lang="uk">файли PDF</message>
               </name>
               <value>pdf</value>
             </option>
@@ -1809,6 +2063,7 @@
                 <message lang="fr">Tous</message>
                 <message lang="en">All</message>
                 <message lang="de">Alle</message>
+                <message lang="uk">все</message>
               </name>
               <value>both</value>
             </option>
@@ -1824,6 +2079,8 @@
             </message>
             <message lang="de">Diese Funktion ermöglicht es dem Benutzer, alle sichtbaren
               Veröffentlichungen in der Komponente zu exportieren.
+            </message>
+            <message lang="uk">Ця функція дозволяє експортувати всі видимі публікації програми.
             </message>
           </help>
         </parameter>

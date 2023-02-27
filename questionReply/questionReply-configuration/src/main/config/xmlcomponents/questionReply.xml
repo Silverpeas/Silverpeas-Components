@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
 
     Copyright (C) 2000 - 2022 Silverpeas
 
@@ -23,17 +22,13 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
--->
-
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
+--><WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>questionReply</name>
   <label>
     <message lang="fr">Questions/Réponses (aux experts)</message>
     <message lang="en">Questions/Answers (to experts)</message>
     <message lang="de">Fragen/Antworten (die Experten)</message>
-  </label>
+  <message lang="uk">Питання/відповіді (експертам)</message></label>
   <description>
     <message lang="fr">Reprenant le principe bien connu d’une
       FAQ, cette application permet à n’importe quel utilisateur de poser directement
@@ -48,12 +43,12 @@
       Die Benutzern können die Experten finden, die die beste Chance haben, eine Antwort zu haben.
       Die Experten verwalten die Verbreitung von Antworten.
     </message>
-  </description>
+  <message lang="uk">Використовуючи відомий принцип FAQ, цей додаток дозволяє будь-якому користувачеві задати питання безпосередньо експертам. Відповіді поступово збагачують цю базу знань.</message></description>
   <suite>
     <message lang="fr">03 Gestion de la connaissance</message>
     <message lang="en">03 Knowledge Management</message>
     <message lang="de">03 Wissens Verwaltung</message>
-  </suite>
+  <message lang="uk">03 Управління знаннями</message></suite>
   <visible>true</visible>
   <portlet>true</portlet>
   <profiles>
@@ -62,14 +57,14 @@
         <message lang="fr">Gestionnaires</message>
         <message lang="en">Managers</message>
         <message lang="de">Manager</message>
-      </label>
+      <message lang="uk">Менеджери</message></label>
       <help>
         <message lang="fr">Les gestionnaires gèrent les catégories et paramètrent le Plan de
           Classement.
         </message>
         <message lang="en">Managers manage categories and set up the Classification Scheme</message>
         <message lang="de">Managers manage categories and set up the Classification Scheme</message>
-      </help>
+      <message lang="uk">Менеджери керують категоріями та встановлюють рейтинговий план.</message></help>
       <spaceMapping>
         <profile>admin</profile>
       </spaceMapping>
@@ -79,12 +74,12 @@
         <message lang="fr">Demandeurs</message>
         <message lang="en">Applicants</message>
         <message lang="de">Antragsteller</message>
-      </label>
+      <message lang="uk">Заявники</message></label>
       <help>
         <message lang="fr">Les demandeurs posent des questions.</message>
         <message lang="en">Applicants ask questions.</message>
         <message lang="de">Antragsteller</message>
-      </help>
+      <message lang="uk">Абітурієнти задають питання.</message></help>
       <spaceMapping>
         <profile>publisher</profile>
       </spaceMapping>
@@ -94,12 +89,12 @@
         <message lang="fr">Experts</message>
         <message lang="en">Experts</message>
         <message lang="de">Experte</message>
-      </label>
+      <message lang="uk">експерти</message></label>
       <help>
         <message lang="fr">Les experts répondent aux questions.</message>
         <message lang="en">Experts answer questions.</message>
         <message lang="de">Experte</message>
-      </help>
+      <message lang="uk">Експерти відповідають на запитання.</message></help>
       <spaceMapping>
         <profile>writer</profile>
       </spaceMapping>
@@ -109,12 +104,12 @@
         <message lang="fr">Lecteurs</message>
         <message lang="en">Readers</message>
         <message lang="de">Leser</message>
-      </label>
+      <message lang="uk">Читачі</message></label>
       <help>
         <message lang="fr">Les lecteurs consultent les questions et leurs réponses.</message>
         <message lang="en">Readers consult questions and answers.</message>
         <message lang="de">Leser</message>
-      </help>
+      <message lang="uk">Читачі консультуються із запитаннями та відповідями на них.</message></help>
       <spaceMapping>
         <profile>reader</profile>
       </spaceMapping>
@@ -127,7 +122,7 @@
         <message lang="fr">Classification PDC</message>
         <message lang="en">Classification Scheme</message>
         <message lang="de">Klassierungsplan</message>
-      </label>
+      <message lang="uk">Класифікація PDC</message></label>
       <order>1</order>
       <mandatory>true</mandatory>
       <value>yes</value>
@@ -141,7 +136,7 @@
           classification scheme.
         </message>
         <message lang="de">Umfragen können auf dem KP klassifiziert werden</message>
-      </help>
+      <message lang="uk">Опитування, створені в цьому екземплярі, можна класифікувати в плані класифікації</message></help>
     </parameter>
     <parameter>
       <name>privateRepliesUsed</name>
@@ -149,7 +144,7 @@
         <message lang="fr">Réponses privées</message>
         <message lang="en">Private answers</message>
         <message lang="de">Private Antworten</message>
-      </label>
+      <message lang="uk">Приватні відповіді</message></label>
       <order>2</order>
       <mandatory>true</mandatory>
       <value>no</value>
@@ -159,7 +154,7 @@
         <message lang="fr">Possibilité de créer des réponses privées.</message>
         <message lang="en">Experts can send private answers.</message>
         <message lang="de">Experten können private Antworten senden.</message>
-      </help>
+      <message lang="uk">Можливість створювати приватні відповіді.</message></help>
     </parameter>
     <parameter>
       <name>sortable</name>
@@ -167,7 +162,7 @@
         <message lang="fr">Ordre alphabétique des questions</message>
         <message lang="en">Alphabetical order of the questions</message>
         <message lang="de">Sortieren nach Fragen</message>
-      </label>
+      <message lang="uk">Алфавітний порядок питань</message></label>
       <order>3</order>
       <mandatory>false</mandatory>
       <value>no</value>
@@ -178,7 +173,7 @@
         </message>
         <message lang="en">Questions are automatically sorted alphabetically.</message>
         <message lang="de">Fragen sind sortierbar.</message>
-      </help>
+      <message lang="uk">Питання автоматично сортуються за алфавітом.</message></help>
     </parameter>
   </parameters>
 </WAComponent>

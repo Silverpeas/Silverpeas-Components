@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
 
     Copyright (C) 2000 - 2022 Silverpeas
 
@@ -23,17 +22,13 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
--->
-
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
+--><WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>projectManager</name>
   <label>
     <message lang="fr">Gestion de projet</message>
     <message lang="en">Project Manager</message>
     <message lang="de">Projektverwaltung</message>
-  </label>
+  <message lang="uk">Управління проектами</message></label>
   <description>
     <message lang="fr">L’application permet de créer des tâches, d’affecter des
       ressources. Chaque tâche (et ses sous-taches) est gérée par un responsable.
@@ -45,12 +40,12 @@
     <message lang="de">Diese Komponente erstellt eine Aufgaben Hierarchie die an Benutzer zugewiesen
       kann.
     </message>
-  </description>
+  <message lang="uk">Додаток дозволяє створювати завдання, призначати ресурси. Кожним завданням (і його підзадачами) керує менеджер. Розподіл пов’язаних ресурсів розраховується автоматично, що дає змогу виявити перерозподіл. Діаграма Ганта дозволяє отримати оптимальну візуалізацію.</message></description>
   <suite>
     <message lang="fr">02 Gestion Collaborative</message>
     <message lang="en">02 Collaborative Management</message>
     <message lang="de">02 kollaborative Verwaltung</message>
-  </suite>
+  <message lang="uk">02 Спільне управління</message></suite>
   <visible>true</visible>
   <portlet>true</portlet>
   <profiles>
@@ -59,7 +54,7 @@
         <message lang="fr">Chefs de projet</message>
         <message lang="en">Project managers</message>
         <message lang="de">Projektleiter</message>
-      </label>
+      <message lang="uk">Керівники проектів</message></label>
       <help>
         <message lang="fr">Le(s) chef(s) de projet définissent le projet et affectent des tâches à
           des ressources.
@@ -67,7 +62,7 @@
         <message lang="en">Project managers define the project and affect task to resources.
         </message>
         <message lang="de">Projektleiter</message>
-      </help>
+      <message lang="uk">Менеджер(и) проекту визначає проект і призначає завдання ресурсам.</message></help>
       <spaceMapping>
         <profile>admin</profile>
       </spaceMapping>
@@ -77,7 +72,7 @@
         <message lang="fr">Ressources</message>
         <message lang="en">Resource</message>
         <message lang="de">Mittel</message>
-      </label>
+      <message lang="uk">Ресурси</message></label>
       <help>
         <message lang="fr">Les ressources sont les membres du projet. Le chef de projet leur affecte
           des tâches.
@@ -86,7 +81,7 @@
           tasks.
         </message>
         <message lang="de">Mittel</message>
-      </help>
+      <message lang="uk">Ресурси є учасниками проекту. Керівник проекту ставить перед ними завдання.</message></help>
       <spaceMapping>
         <profile>publisher</profile>
         <profile>writer</profile>
@@ -97,12 +92,12 @@
         <message lang="fr">Lecteurs</message>
         <message lang="en">Readers</message>
         <message lang="de">Leser</message>
-      </label>
+      <message lang="uk">Читачі</message></label>
       <help>
         <message lang="fr">Les lecteurs visualise les éléments du projet.</message>
         <message lang="en">Reader visualize project's items.</message>
         <message lang="de">Leser</message>
-      </help>
+      <message lang="uk">Читачі візуалізують елементи проекту.</message></help>
       <spaceMapping>
         <profile>reader</profile>
       </spaceMapping>
