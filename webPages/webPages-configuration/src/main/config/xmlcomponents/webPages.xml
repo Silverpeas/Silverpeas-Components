@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
 
     Copyright (C) 2000 - 2022 Silverpeas
 
@@ -23,17 +22,13 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
--->
-
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
+--><WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>webPages</name>
   <label>
     <message lang="fr">Page web</message>
     <message lang="en">Webpage</message>
     <message lang="de">Webpage</message>
-  </label>
+  <message lang="uk">веб-сторінка</message></label>
   <description>
     <message lang="fr">Cette application permet de faciliter la gestion de
       contenu (page d’accueil, page de présentation...).
@@ -43,12 +38,12 @@
     <message lang="en">Create a web page using the WYSIWYG editor</message>
     <message lang="de">Ermöglicht es Ihnen, eine Webseite mit einem WYSIWYG-Editor zu erstellen.
     </message>
-  </description>
+  <message lang="uk">Ця програма полегшує керування вмістом (домашня сторінка, сторінка презентації...). Його вміст може бути абсолютно безкоштовним або добре структурованим. Макет можна налаштувати.</message></description>
   <suite>
     <message lang="fr">04 Gestion de contenu</message>
     <message lang="en">04 Content Management</message>
     <message lang="de">04 Inhaltsverwaltung</message>
-  </suite>
+  <message lang="uk">04 Управління контентом</message></suite>
   <visible>true</visible>
   <portlet>true</portlet>
   <profiles>
@@ -57,12 +52,12 @@
         <message lang="fr">Gestionnaires</message>
         <message lang="en">Managers</message>
         <message lang="de">Manager</message>
-      </label>
+      <message lang="uk">Менеджери</message></label>
       <help>
         <message lang="fr">Les gestionnaires gèrent la page web ainsi que les abonnements.</message>
         <message lang="en">Managers manage the web page and subscriptions.</message>
         <message lang="en">Managers manage the web page and subscriptions.</message>
-      </help>
+      <message lang="uk">Менеджери керують веб-сторінкою, а також підписками.</message></help>
       <spaceMapping>
         <profile>admin</profile>
       </spaceMapping>
@@ -72,12 +67,12 @@
         <message lang="fr">Publieurs</message>
         <message lang="en">Publishers</message>
         <message lang="de">Herausgeber</message>
-      </label>
+      <message lang="uk">Видавці</message></label>
       <help>
         <message lang="fr">Les publieurs gèrent la page web.</message>
         <message lang="en">Publishers manage the web page.</message>
         <message lang="de">Herausgeber</message>
-      </help>
+      <message lang="uk">Веб-сторінкою керують видавці.</message></help>
       <spaceMapping>
         <profile>publisher</profile>
         <profile>writer</profile>
@@ -88,12 +83,12 @@
         <message lang="fr">Lecteurs</message>
         <message lang="en">Readers</message>
         <message lang="de">Leser</message>
-      </label>
+      <message lang="uk">Читачі</message></label>
       <help>
         <message lang="fr">Les lecteurs visualisent la page web.</message>
         <message lang="en">Readers visualize the web page</message>
         <message lang="de">Leser</message>
-      </help>
+      <message lang="uk">Читачі переглядають веб-сторінку.</message></help>
       <spaceMapping>
         <profile>reader</profile>
       </spaceMapping>
@@ -108,7 +103,7 @@
         <message lang="fr">Gestion de l'abonnement</message>
         <message lang="en">Manage subscription</message>
         <message lang="de">Abonnement verwalten</message>
-      </label>
+      <message lang="uk">Управління підпискою</message></label>
       <order>1</order>
       <mandatory>true</mandatory>
       <value>yes</value>
@@ -124,7 +119,7 @@
         <message lang="de">Ermöglicht es eine Benachrichtigung an den Benutzern zu senden, die sich
           an der Web-Seite abonniert haben .
         </message>
-      </help>
+      <message lang="uk">Використовується для надсилання сповіщень користувачам, підписаним на веб-сторінку.</message></help>
     </parameter>
     <parameter>
       <name>xmlTemplate</name>
@@ -132,17 +127,17 @@
         <message lang="fr">Formulaire utilisé</message>
         <message lang="en">XML form</message>
         <message lang="de">XML formular</message>
-      </label>
+      <message lang="uk">Використана форма</message></label>
       <order>2</order>
       <mandatory>false</mandatory>
-      <value></value>
+      <value/>
       <type>xmltemplates</type>
       <updatable>creation</updatable>
       <help>
         <message lang="fr">Permet d'utiliser un formulaire comme masque de saisie.</message>
         <message lang="en">Allows you to use a form as an input mask.</message>
         <message lang="de">Damit können Sie ein Formular als Eingabemaske verwenden</message>
-      </help>
+      <message lang="uk">Дозволяє використовувати форму як маску введення.</message></help>
     </parameter>
     <parameter>
       <name>xmlTemplate2</name>
@@ -150,17 +145,17 @@
         <message lang="fr">Autre formulaire utilisé</message>
         <message lang="en">Other form used</message>
         <message lang="de">Anderes Formular verwendet</message>
-      </label>
+      <message lang="uk">Використана інша форма</message></label>
       <order>3</order>
       <mandatory>false</mandatory>
-      <value></value>
+      <value/>
       <type>xmltemplates</type>
       <updatable>creation</updatable>
       <help>
         <message lang="fr">Permet d'utiliser un formulaire comme masque de saisie.</message>
         <message lang="en">Allows you to use a form as an input mask.</message>
         <message lang="de">Damit können Sie ein Formular als Eingabemaske verwenden</message>
-      </help>
+      <message lang="uk">Дозволяє використовувати форму як маску введення.</message></help>
     </parameter>
   </parameters>
 </WAComponent>

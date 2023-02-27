@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
 
     Copyright (C) 2000 - 2022 Silverpeas
 
@@ -23,16 +22,13 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
--->
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
+--><WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>suggestionBox</name>
   <label>
     <message lang="fr">Boite à Idées</message>
     <message lang="en">Suggestion Box</message>
     <message lang="de">Kummerkasten</message>
-  </label>
+  <message lang="uk">Скринька пропозицій</message></label>
   <description>
     <message lang="fr">La collaboration commence par l'obtention des avis des parties
       prenantes d'un projet. L'application Boite à Idées permet justement à chacun de participer en
@@ -49,12 +45,12 @@
       Projekts. Der Kummerkasten ermöglicht für jedermann zu, indem sie ihre Ideen zu beteiligen,
       durch Kommentare zu anderen Bewertungen und ihnen durch Abstimmung
     </message>
-  </description>
+  <message lang="uk">Співпраця починається з отримання відгуків від зацікавлених сторін проекту. Додаток Ideas Box дозволяє кожному брати участь, пропонуючи свої ідеї, коментувати та відмічати ідеї.</message></description>
   <suite>
     <message lang="fr">02 Gestion Collaborative</message>
     <message lang="en">02 Collaborative Management</message>
     <message lang="de">02 kollaborative Verwaltung</message>
-  </suite>
+  <message lang="uk">02 Спільне управління</message></suite>
   <visible>true</visible>
   <portlet>false</portlet>
   <profiles>
@@ -63,7 +59,7 @@
         <message lang="fr">Gestionnaires</message>
         <message lang="en">Managers</message>
         <message lang="de">Manager</message>
-      </label>
+      <message lang="uk">Менеджери</message></label>
       <help>
         <message lang="fr">Les gestionnaires paramètrent la boite à idées. Ils y précisent, via
           l'édito, l'objectif de la boite à idées et quelles sont les règles en vigueur dans la
@@ -76,7 +72,7 @@
         <message lang="de">Die Administratoren Parametrieren Sie den Kummerkasten. Geben Sie über
           die Redak, der Zweck der Kummerkasten und was sind die Regeln für die Beteiligung.
         </message>
-      </help>
+      <message lang="uk">Менеджери налаштовують вікно пропозицій. Через редакцію вони вказують мету скриньки пропозицій і чинні правила участі.</message></help>
       <spaceMapping>
         <profile>admin</profile>
       </spaceMapping>
@@ -86,7 +82,7 @@
         <message lang="fr">Publieurs</message>
         <message lang="en">Publishers</message>
         <message lang="de">Herausgeber</message>
-      </label>
+      <message lang="uk">Видавці</message></label>
       <help>
         <message lang="fr">Les publieurs ont pour rôle de valider les idées des participants.
           Lorsqu'une idée est validée, celle-ci est alors publiée dans la boite à idées. Toute idée,
@@ -113,7 +109,7 @@
           Vorschlag einem abgelehnt informierte die Teilnehmer Gründe für die Ablehnung. Der Verlag
           kann die Idee, vor der Veröffentlichung moderieren.
         </message>
-      </help>
+      <message lang="uk">Роль видавців полягає в перевірці ідей учасників. Коли ідея підтверджується, вона публікується у вікні пропозицій. Будь-яка ідея, підтверджена чи відхилена, коментується видавцем. Коментар підтвердженої ідеї надає додаткову інформацію, тоді як коментар відхиленої ідеї інформує учасника про причини відхилення. Видавець може модерувати ідею перед її публікацією.</message></help>
       <spaceMapping>
         <profile>publisher</profile>
       </spaceMapping>
@@ -123,12 +119,12 @@
         <message lang="fr">Rédacteurs</message>
         <message lang="en">Writers</message>
         <message lang="de">Redaktor</message>
-      </label>
+      <message lang="uk">Редактори</message></label>
       <help>
         <message lang="fr">Les rédacteurs sont les participants d'une boite à idées.</message>
         <message lang="en">The writers are the participants in a suggestion box.</message>
         <message lang="de">Die Redaktor sind die Teilnehmer in einem Kummerkasten.</message>
-      </help>
+      <message lang="uk">Письменники є учасниками скриньки пропозицій.</message></help>
       <spaceMapping>
         <profile>writer</profile>
       </spaceMapping>
@@ -138,7 +134,7 @@
         <message lang="fr">Lecteurs</message>
         <message lang="en">Readers</message>
         <message lang="de">Leser</message>
-      </label>
+      <message lang="uk">Читачі</message></label>
       <help>
         <message lang="fr">Les lecteurs ne peuvent pas proposer leurs idées. Cependant, ils peuvent
           consulter, commenter et noter celles publiées.
@@ -149,7 +145,7 @@
         <message lang="de">Die Leser können ihre Ideen vorschlagen. Allerdings können sie ansehen,
           kommentieren und bewerten Diejenigen veröffentlicht..
         </message>
-      </help>
+      <message lang="uk">Читачі не можуть надсилати свої ідеї. Однак вони можуть консультуватися, коментувати та оцінювати опубліковане.</message></help>
       <spaceMapping>
         <profile>reader</profile>
       </spaceMapping>

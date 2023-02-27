@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
 
     Copyright (C) 2000 - 2022 Silverpeas
 
@@ -23,17 +22,13 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
--->
-
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
+--><WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>webSites</name>
   <label>
     <message lang="fr">Designer de sites web</message>
     <message lang="en">WebSite Designer</message>
     <message lang="de">Website-Designer</message>
-  </label>
+  <message lang="uk">Дизайнер сайтів</message></label>
   <description>
     <message lang="fr">Créer des pages web et des répertoires, télécharger des
       images, voilà tout ce dont vous avez besoin pour mettre en ligne de petits sites
@@ -46,12 +41,12 @@
     <message lang="de">Ermöglicht es Ihnen, Webseiten mit einem WYSIWYG-Editor zu erstellen. Diese
       Seiten können heruntergeladen werden, um eine statische Website zu erstellen.
     </message>
-  </description>
+  <message lang="uk">Створюйте веб-сторінки та каталоги, завантажуйте зображення – це все, що вам потрібно для завантаження невеликих сайтів, інтегрованих у платформу.</message></description>
   <suite>
     <message lang="fr">04 Gestion de contenu</message>
     <message lang="en">04 Content Management</message>
     <message lang="de">04 Inhaltsverwaltung</message>
-  </suite>
+  <message lang="uk">04 Управління контентом</message></suite>
   <visible>true</visible>
   <portlet>true</portlet>
   <profiles>
@@ -60,14 +55,14 @@
         <message lang="fr">Gestionnaires</message>
         <message lang="en">Managers</message>
         <message lang="de">Manager</message>
-      </label>
+      <message lang="uk">Менеджери</message></label>
       <help>
         <message lang="fr">Les gestionnaires gèrent les dossiers et paramètrent le Plan de
           Classement.
         </message>
         <message lang="en">Managers manage folders and set up the Classification Scheme.</message>
         <message lang="de">Managers manage folders and set up the Classification Scheme.</message>
-      </help>
+      <message lang="uk">Менеджери керують файлами та налаштовують класифікаційний план.</message></help>
       <spaceMapping>
         <profile>admin</profile>
       </spaceMapping>
@@ -77,14 +72,14 @@
         <message lang="fr">Publieurs</message>
         <message lang="en">Publishers</message>
         <message lang="de">Herausgeber</message>
-      </label>
+      <message lang="uk">Видавці</message></label>
       <help>
         <message lang="fr">Les publieurs créent ou téléchargent des sites web, gèrent les
           dossiers.
         </message>
         <message lang="en">Publishers create or upload websites, manage folders.</message>
         <message lang="de">Herausgeber</message>
-      </help>
+      <message lang="uk">Видавці створюють або завантажують веб-сайти, керують папками.</message></help>
       <spaceMapping>
         <profile>publisher</profile>
         <profile>writer</profile>
@@ -95,12 +90,12 @@
         <message lang="fr">Lecteurs</message>
         <message lang="en">Readers</message>
         <message lang="de">Leser</message>
-      </label>
+      <message lang="uk">Читачі</message></label>
       <help>
         <message lang="fr">Les lecteurs consultent les sites web.</message>
         <message lang="en">Readers consult websites.</message>
         <message lang="de">Leser</message>
-      </help>
+      <message lang="uk">Читачі відвідують сайти.</message></help>
       <spaceMapping>
         <profile>reader</profile>
       </spaceMapping>
@@ -113,7 +108,7 @@
         <message lang="fr">Classification PDC</message>
         <message lang="en">Classification Scheme</message>
         <message lang="de">Klassierungsplan</message>
-      </label>
+      <message lang="uk">Класифікація PDC</message></label>
       <order>1</order>
       <mandatory>true</mandatory>
       <value>no</value>
@@ -128,7 +123,7 @@
         </message>
         <message lang="de">Die Bookmarks und Webseiten können auf dem KP klassifiziert werden
         </message>
-      </help>
+      <message lang="uk">Закладки та/або сайти, введені в цьому екземплярі, можуть бути класифіковані в Класифікаційному плані.</message></help>
     </parameter>
     <parameter>
       <name>sortedTopics</name>
@@ -136,7 +131,7 @@
         <message lang="fr">Dossiers/liens ordonnés</message>
         <message lang="en">Folders/Links sorted</message>
         <message lang="de">Records/Favoriten sortiert</message>
-      </label>
+      <message lang="uk">Упорядковані папки/посилання</message></label>
       <order>2</order>
       <mandatory>true</mandatory>
       <value>no</value>
@@ -147,7 +142,7 @@
         <message lang="en">This parameter allows to order folders and links.</message>
         <message lang="de">Dieser Parameter ermöglicht es Ihnen, Records und Links zu Sortieren.
         </message>
-      </help>
+      <message lang="uk">Цей параметр використовується для впорядкування папок і посилань</message></help>
     </parameter>
   </parameters>
 </WAComponent>

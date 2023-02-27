@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
 
     Copyright (C) 2000 - 2022 Silverpeas
 
@@ -23,17 +22,13 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
--->
-
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
+--><WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>formsOnline</name>
   <label>
     <message lang="fr">Formulaires en ligne</message>
     <message lang="en">Online Forms</message>
     <message lang="de">Online Formulare</message>
-  </label>
+  <message lang="uk">Онлайн форми</message></label>
   <description>
     <message lang="fr">Application très pratique basée sur des formulaires
       entièrement personnalisables, elle permet aux utilisateurs de soumettre des
@@ -43,12 +38,12 @@
     </message>
     <message lang="en">Online forms</message>
     <message lang="de">Online Formulare</message>
-  </description>
+  <message lang="uk">Дуже практична програма, заснована на формах, які повністю настроюються, і дозволяє користувачам надсилати структуровані запити всіх видів. Потім одержувачі підтверджують або відхиляють отримані запити. Сповіщення дозволяють ідеально виконувати запити.</message></description>
   <suite>
     <message lang="fr">02 Gestion Collaborative</message>
     <message lang="en">02 Collaborative Management</message>
     <message lang="de">02 Collaborative Verwaltung</message>
-  </suite>
+  <message lang="uk">02 Спільне управління</message></suite>
   <visible>true</visible>
   <portlet>false</portlet>
   <profiles>
@@ -57,7 +52,7 @@
         <message lang="fr">Gestionnaires</message>
         <message lang="en">Managers</message>
         <message lang="de">Manager</message>
-      </label>
+      <message lang="uk">Менеджери</message></label>
       <help>
         <message lang="fr">Les gestionnaires gèrent les formulaires et déterminent les droits
           d'utilisation sur chaque formulaire (émetteurs / valideurs).
@@ -68,7 +63,7 @@
         <message lang="de">Managers manage forms and assign rights on each form
           (senders/validators).
         </message>
-      </help>
+      <message lang="uk">Менеджери керують формами та визначають права використання кожної форми (емітенти/валідатори).</message></help>
       <spaceMapping>
         <profile>admin</profile>
       </spaceMapping>
@@ -78,12 +73,12 @@
         <message lang="fr">Demandeurs et Valideurs</message>
         <message lang="en">Senders and Validators</message>
         <message lang="de">Sender und Empfänger</message>
-      </label>
+      <message lang="uk">Заявники та валідатори</message></label>
       <help>
         <message lang="fr">Utilisateurs pouvant envoyer ou valider une demande.</message>
         <message lang="en">Users than can send or validate a request.</message>
         <message lang="de">Sender und Empfänger</message>
-      </help>
+      <message lang="uk">Користувачі, які можуть надіслати або підтвердити запит.</message></help>
       <spaceMapping>
         <profile>publisher</profile>
         <profile>writer</profile>
@@ -98,7 +93,7 @@
         <message lang="fr">Travail de groupe</message>
         <message lang="en">Team work</message>
         <message lang="de">Zusammenspiel</message>
-      </label>
+      <message lang="uk">Групова робота</message></label>
       <order>1</order>
       <mandatory>true</mandatory>
       <value>false</value>
@@ -118,7 +113,7 @@
           validator) on permitted forms. If this setting is not enabled, only the untreated requests
           and those treated by the connected validator are visible.
         </message>
-      </help>
+      <message lang="uk">Дозволяє мати загальну видимість усіх запитів (не оброблених і оброблених жодним валідатором) на авторизованих формах. Якщо цей параметр не активований, то видно лише необроблені запити та ті, що оброблені підключеним валідатором.</message></help>
     </parameter>
   </parameters>
 </WAComponent>
