@@ -24,15 +24,11 @@
 package org.silverpeas.processmanager.servlets;
 
 import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.admin.service.Administration;
-import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.model.UnlockContext;
 import org.silverpeas.core.contribution.content.form.DataRecord;
-import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
@@ -54,7 +50,6 @@ import org.silverpeas.core.workflow.api.model.Item;
 import org.silverpeas.core.workflow.api.model.State;
 import org.silverpeas.core.workflow.api.task.Task;
 import org.silverpeas.core.workflow.api.user.Replacement;
-import org.silverpeas.core.workflow.engine.datarecord.ProcessInstanceRowRecord;
 import org.silverpeas.core.workflow.engine.model.StateImpl;
 import org.silverpeas.processmanager.CurrentState;
 import org.silverpeas.processmanager.LockVO;
@@ -120,13 +115,13 @@ public class ProcessManagerRequestRouter
       throws ProcessManagerException {
     ProcessInstance processInstance = session.getCurrentProcessInstance();
     // Get the associated form
-    Form form = session.getAssignForm(processInstance);
+    Form form = session.getAssignFormOfActiveStates(processInstance);
     request.setAttribute("form", form);
     // Set the form context
     PagesContext context = getFormContext("assignForm", "0", session, true);
     request.setAttribute("context", context);
     // Get the form data
-    DataRecord data = session.getAssignRecord(processInstance);
+    DataRecord data = session.getAssignRecordOfActiveStates(processInstance);
     request.setAttribute("data", data);
     handler.perform(form, data, context);
   }
@@ -157,7 +152,7 @@ public class ProcessManagerRequestRouter
       prepareReAssignationAndDo(session, request, (f, d, c) -> {
         try {
           f.update(items, d, c);
-          session.reAssign(session.getCurrentProcessInstance(), d);
+          session.reassignInActiveStates(session.getCurrentProcessInstance(), d);
         } catch (FormException e) {
           throw new ProcessManagerException(e);
         }
@@ -178,7 +173,7 @@ public class ProcessManagerRequestRouter
         throws ProcessManagerException {
       String replaced = request.getParameter(SOURCE_USER_ID);
       String substitute = request.getParameter(DESTINATION_USER_ID);
-      session.substituteDefinitely(replaced, substitute);
+      session.replaceInAllAssignedStates(replaced, substitute);
       return listProcessHandler.getDestination(function, session, request);
     }
   };
