@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
 
     Copyright (C) 2000 - 2022 Silverpeas
 
@@ -23,17 +22,13 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
--->
-
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
+--><WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>quickinfo</name>
   <label>
     <message lang="fr">Actualités</message>
     <message lang="en">QuickInfo</message>
     <message lang="de">QuickInfo</message>
-  </label>
+  <message lang="ru">Новости</message></label>
   <description>
     <message lang="fr">Les actualités remontent automatiquement sur la page d’accueil. Elles sont
       constituées d’un titre et d’une description riche.
@@ -44,12 +39,12 @@
     <message lang="de">Erstellt und sendet Nachrichten. Diese Informationsstücke können auf dem KP
       klassifiziert werden.
     </message>
-  </description>
+  <message lang="ru">Новости автоматически появляются на главной странице. Они состоят из заголовка и подробного описания.</message></description>
   <suite>
     <message lang="fr">04 Gestion de contenu</message>
     <message lang="en">04 Content Management</message>
     <message lang="de">04 Inhaltsverwaltung</message>
-  </suite>
+  <message lang="ru">04 Управление контентом</message></suite>
   <visible>true</visible>
   <portlet>true</portlet>
   <profiles>
@@ -58,12 +53,12 @@
         <message lang="fr">Gestionnaires</message>
         <message lang="en">Managers</message>
         <message lang="de">Manager</message>
-      </label>
+      <message lang="ru">Менеджеры</message></label>
       <help>
         <message lang="fr">Les gestionnaires paramètrent le Plan de Classement.</message>
         <message lang="en">Managers set up the Classification Scheme.</message>
         <message lang="de">Managers set up the Classification Scheme.</message>
-      </help>
+      <message lang="ru">Менеджеры настраивают план классификации.</message></help>
       <spaceMapping>
         <profile>admin</profile>
       </spaceMapping>
@@ -73,12 +68,12 @@
         <message lang="fr">Publieurs</message>
         <message lang="en">Publishers</message>
         <message lang="de">Herausgeber</message>
-      </label>
+      <message lang="ru">Издатели</message></label>
       <help>
         <message lang="fr">Les publieurs créent des actualités.</message>
         <message lang="en">Publishers create news.</message>
         <message lang="de">Herausgeber</message>
-      </help>
+      <message lang="ru">Издатели создают новости.</message></help>
       <spaceMapping>
         <profile>publisher</profile>
         <profile>writer</profile>
@@ -89,12 +84,12 @@
         <message lang="fr">Lecteurs</message>
         <message lang="en">Readers</message>
         <message lang="de">Leser</message>
-      </label>
+      <message lang="ru">Читатели</message></label>
       <help>
         <message lang="fr">Les lecteurs consultent les actualités.</message>
         <message lang="en">Readers visualize news.</message>
         <message lang="de">Leser</message>
-      </help>
+      <message lang="ru">Читатели читают новости.</message></help>
       <spaceMapping>
         <profile>reader</profile>
       </spaceMapping>
@@ -106,7 +101,7 @@
         <message lang="fr">Visuels</message>
         <message lang="en">Visuals</message>
         <message lang="de">Visuals</message>
-      </label>
+      <message lang="ru">Визуальные эффекты</message></label>
       <description>
         <message lang="fr">Il est possible d'associer un visuel à chaque actualité et de le
           recadrer.
@@ -115,8 +110,8 @@
         </message>
         <message lang="de">It is possible to associate a visual to each news and reframe it.
         </message>
-      </description>
-      <help></help>
+      <message lang="ru">С каждой новостью можно связать изображение и обрезать его.</message></description>
+      <help/>
       <order>2</order>
       <parameters>
         <parameter>
@@ -125,7 +120,7 @@
             <message lang="fr">Visuel obligatoire</message>
             <message lang="en">Mandatory image</message>
             <message lang="de">Obligatorisches Vorschaubild</message>
-          </label>
+          <message lang="ru">Обязательный визуальный</message></label>
           <order>2</order>
           <mandatory>true</mandatory>
           <value>no</value>
@@ -139,7 +134,7 @@
             <message lang="de">macht es zwingend erforderlich,eine Miniaturansicht für jede News
               hinzu zu fügen.
             </message>
-          </help>
+          <message lang="ru">Позволяет сделать обязательным добавление изображения к каждой новости.</message></help>
         </parameter>
         <parameter>
           <name>thumbnailWidthSize</name>
@@ -147,10 +142,10 @@
             <message lang="fr">Largeur de recadrage</message>
             <message lang="en">Width crop</message>
             <message lang="de">Breite des Vorschaubilds</message>
-          </label>
+          <message lang="ru">Ширина кадрирования</message></label>
           <order>3</order>
           <mandatory>false</mandatory>
-          <value></value>
+          <value/>
           <type>text</type>
           <size>5</size>
           <updatable>always</updatable>
@@ -161,7 +156,7 @@
             <message lang="de">Diese Funktion erlaubt es, die Breite der angezeigten Miniaturansicht
               zu definieren
             </message>
-          </help>
+          <message lang="ru">Этот параметр определяет ширину обрезанного изображения.</message></help>
         </parameter>
         <parameter>
           <name>thumbnailHeightSize</name>
@@ -169,10 +164,10 @@
             <message lang="fr">Hauteur de recadrage</message>
             <message lang="en">Height crop</message>
             <message lang="de">Höhe des Vorschaubilds</message>
-          </label>
+          <message lang="ru">Высота обрезки</message></label>
           <order>4</order>
           <mandatory>false</mandatory>
-          <value></value>
+          <value/>
           <type>text</type>
           <size>5</size>
           <updatable>always</updatable>
@@ -183,7 +178,7 @@
             <message lang="de">Diese Funktion erlaubt es, die Höhe der angezeigten Miniaturansicht
               zu definieren
             </message>
-          </help>
+          <message lang="ru">Этот параметр позволяет определить высоту обрезанного изображения.</message></help>
         </parameter>
       </parameters>
     </groupOfParameters>
@@ -195,7 +190,7 @@
         <message lang="fr">Classification PDC</message>
         <message lang="en">Classficiation scheme</message>
         <message lang="de">Klassierungsplan</message>
-      </label>
+      <message lang="ru">Классификация ПДК</message></label>
       <order>1</order>
       <mandatory>true</mandatory>
       <value>no</value>
@@ -209,7 +204,7 @@
           scheme.
         </message>
         <message lang="de">Nachrichten können auf dem KP klassifiziert werden</message>
-      </help>
+      <message lang="ru">Новостные сообщения, созданные в этом экземпляре, могут быть классифицированы в плане классификации.</message></help>
     </parameter>
     <parameter>
       <name>comments</name>
@@ -217,7 +212,7 @@
         <message lang="fr">Commentaires</message>
         <message lang="en">Comments</message>
         <message lang="de">Kommentare</message>
-      </label>
+      <message lang="ru">Комментарии</message></label>
       <order>5</order>
       <mandatory>true</mandatory>
       <value>no</value>
@@ -227,7 +222,7 @@
         <message lang="fr">Pour commenter les actualités</message>
         <message lang="en">To comment news</message>
         <message lang="de">To comment news</message>
-      </help>
+      <message lang="ru">Чтобы прокомментировать новость</message></help>
     </parameter>
     <parameter>
       <name>delegatedNews</name>
@@ -235,7 +230,7 @@
         <message lang="fr">Actualités déléguées</message>
         <message lang="en">Delegated news</message>
         <message lang="de">Dezentralisierte Nachrichten</message>
-      </label>
+      <message lang="ru">Делегированные новости</message></label>
       <order>6</order>
       <mandatory>true</mandatory>
       <value>no</value>
@@ -252,7 +247,7 @@
         <message lang="de">Allows contributors to submit some news on the homepage of the platform.
           These submissions are validated or denied via the "Delegated news" app.
         </message>
-      </help>
+      <message lang="ru">Позволяет размещать определенные новости на главной странице платформы. Эти новости подтверждаются или отклоняются благодаря приложению «Делегированные новости».</message></help>
     </parameter>
     <parameter>
       <name>broadcasting</name>
@@ -260,7 +255,7 @@
         <message lang="fr">Diffusion annexe</message>
         <message lang="en">Broadcasting</message>
         <message lang="de">Broadcasting</message>
-      </label>
+      <message lang="ru">Боковая трансляция</message></label>
       <order>7</order>
       <mandatory>true</mandatory>
       <value>none</value>
@@ -270,7 +265,7 @@
             <message lang="fr">Aucune</message>
             <message lang="en">None</message>
             <message lang="de">Nein</message>
-          </name>
+          <message lang="ru">Никто</message></name>
           <value>none</value>
         </option>
         <option>
@@ -278,7 +273,7 @@
             <message lang="fr">Défilante</message>
             <message lang="en">Scrolling</message>
             <message lang="de">Ticker</message>
-          </name>
+          <message lang="ru">прокрутка</message></name>
           <value>ticker</value>
         </option>
         <option>
@@ -286,7 +281,7 @@
             <message lang="fr">Bloquante</message>
             <message lang="en">Blocking</message>
             <message lang="de">Blocking</message>
-          </name>
+          <message lang="ru">Блокировка</message></name>
           <value>blocking</value>
         </option>
         <option>
@@ -294,7 +289,7 @@
             <message lang="fr">Tous les modes</message>
             <message lang="en">All</message>
             <message lang="de">Alle</message>
-          </name>
+          <message lang="ru">Все режимы</message></name>
           <value>both</value>
         </option>
       </options>
@@ -318,7 +313,7 @@
           wird angezeigt, wenn sich Benutzer anmelden und erfordert Maßnahmen der Suche
           fortzufahren.
         </message>
-      </help>
+      <message lang="ru">Эта функция позволяет отображать новости за пределами классических домашних страниц. Выбранные здесь режимы доступны для каждой новости, но не являются обязательными. «Прокручивающаяся» новость отображается в прокручивающемся баннере (бегущей строке). «Блокирующие» новости отображаются, как только пользователи входят в систему, и требуют действия для продолжения просмотра.</message></help>
     </parameter>
     <parameter>
       <name>userview</name>
@@ -326,7 +321,7 @@
         <message lang="fr">Vue des lecteurs</message>
         <message lang="en">Users view</message>
         <message lang="de">Benutzer sehen</message>
-      </label>
+      <message lang="ru">Взгляд читателей</message></label>
       <order>8</order>
       <mandatory>true</mandatory>
       <value>mosaic</value>
@@ -336,7 +331,7 @@
             <message lang="fr">Mosaïque</message>
             <message lang="en">Mosaic</message>
             <message lang="de">Mosaik</message>
-          </name>
+          <message lang="ru">Мозаика</message></name>
           <value>mosaic</value>
         </option>
         <option>
@@ -344,7 +339,7 @@
             <message lang="fr">Liste</message>
             <message lang="en">Listing</message>
             <message lang="de">Auflistung</message>
-          </name>
+          <message lang="ru">Список</message></name>
           <value>listing</value>
         </option>
       </options>
@@ -360,7 +355,7 @@
         <message lang="de">View 'Mosaik' ist stark dargestellt. Die Ansicht 'Auflistung' ist ähnlich
           wie die der Beiträger.
         </message>
-      </help>
+      <message lang="ru">Представление «Мозаика» отводит почетное место иллюстрациям. Представление «Список» похоже на представление участников.</message></help>
     </parameter>
   </parameters>
 </WAComponent>

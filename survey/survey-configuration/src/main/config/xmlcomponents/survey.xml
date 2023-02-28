@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
 
     Copyright (C) 2000 - 2022 Silverpeas
 
@@ -23,17 +22,13 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
--->
-
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
+--><WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>survey</name>
   <label>
     <message lang="fr">Enquête</message>
     <message lang="en">QuickSurvey</message>
     <message lang="de">Umfrage</message>
-  </label>
+  <message lang="ru">Расследование</message></label>
   <description>
     <message lang="fr">Une enquête est constituée de plusieurs questions ouvertes ou
       fermées. Il est possible de programmer sa mise en ligne. Les résultats sont
@@ -46,12 +41,12 @@
     <message lang="de">Erstellen einer Umfrage mit geschlossenen oder offenen Fragen.
       Sie erhalten ein Feedback über die Beteiligung oder den aktuellen Trend.
     </message>
-  </description>
+  <message lang="ru">Опрос состоит из нескольких открытых или закрытых вопросов. Запланировать его можно онлайн. Результаты представлены в соответствии с двумя различными реституциями (анонимными или номинативными), чтобы полностью использовать их в соответствии с потребностями.</message></description>
   <suite>
     <message lang="fr">02 Gestion Collaborative</message>
     <message lang="en">02 Collaborative Management</message>
     <message lang="de">02 kollaborative Verwaltung</message>
-  </suite>
+  <message lang="ru">02 Совместное управление</message></suite>
   <visible>true</visible>
   <portlet>true</portlet>
   <profiles>
@@ -60,12 +55,12 @@
         <message lang="fr">Gestionnaires</message>
         <message lang="en">Managers</message>
         <message lang="de">Manager</message>
-      </label>
+      <message lang="ru">Менеджеры</message></label>
       <help>
         <message lang="fr">Les gestionnaires paramètrent le Plan de Classement.</message>
         <message lang="en">Managers set up the Classification Scheme.</message>
         <message lang="de">Managers set up the Classification Scheme.</message>
-      </help>
+      <message lang="ru">Менеджеры настраивают план классификации.</message></help>
       <spaceMapping>
         <profile>admin</profile>
       </spaceMapping>
@@ -75,12 +70,12 @@
         <message lang="fr">Publieurs</message>
         <message lang="en">Publishers</message>
         <message lang="de">Herausgeber</message>
-      </label>
+      <message lang="ru">Издатели</message></label>
       <help>
         <message lang="fr">Les publieurs gèrent les enquêtes.</message>
         <message lang="en">Publishers manage surveys.</message>
         <message lang="de">Herausgeber</message>
-      </help>
+      <message lang="ru">Издатели управляют опросами.</message></help>
       <spaceMapping>
         <profile>publisher</profile>
       </spaceMapping>
@@ -90,14 +85,14 @@
         <message lang="fr">Participants multiples</message>
         <message lang="en">Multiple participants</message>
         <message lang="de">Mehrere Teilnehmer</message>
-      </label>
+      <message lang="ru">Несколько участников</message></label>
       <help>
         <message lang="fr">Les participants multiples peuvent répondrent plusieurs fois à une
           enquête.
         </message>
         <message lang="en">Multiple participants can take part in a survey several times.</message>
         <message lang="de">Mehrere Teilnehmer</message>
-      </help>
+      <message lang="ru">Несколько респондентов могут отвечать на опрос несколько раз.</message></help>
       <spaceMapping>
         <profile>writer</profile>
       </spaceMapping>
@@ -107,12 +102,12 @@
         <message lang="fr">Participants</message>
         <message lang="en">Participants</message>
         <message lang="de">Teilnehmer</message>
-      </label>
+      <message lang="ru">Участники</message></label>
       <help>
         <message lang="fr">Les participants peuvent répondre à une enquête.</message>
         <message lang="en">Participants take part in survey.</message>
         <message lang="de">Teilnehmer</message>
-      </help>
+      <message lang="ru">Участники могут пройти опрос.</message></help>
       <spaceMapping>
         <profile>reader</profile>
       </spaceMapping>
@@ -125,7 +120,7 @@
         <message lang="fr">Classification PDC</message>
         <message lang="en">Classification Scheme</message>
         <message lang="de">Klassierungsplan</message>
-      </label>
+      <message lang="ru">Классификация ПДК</message></label>
       <order>1</order>
       <mandatory>true</mandatory>
       <value>no</value>
@@ -139,7 +134,7 @@
           classification scheme.
         </message>
         <message lang="de">Umfragen können auf dem KP klassifiziert werden</message>
-      </help>
+      <message lang="ru">Опросы, созданные в этом экземпляре, могут быть классифицированы в плане классификации.</message></help>
     </parameter>
     <parameter>
       <name>useAnonymousMode</name>
@@ -147,7 +142,7 @@
         <message lang="fr">Mode anonyme</message>
         <message lang="en">Anonymous mode</message>
         <message lang="de">Anonym-Modus</message>
-      </label>
+      <message lang="ru">Анонимный режим</message></label>
       <order>2</order>
       <mandatory>true</mandatory>
       <value>no</value>
@@ -160,7 +155,7 @@
         <message lang="en">Entries in all surveys created in this instance will be anonymous.
         </message>
         <message lang="de">Einträge in allen Umfragen dieser Instanz, bleiben anonym.</message>
-      </help>
+      <message lang="ru">Участие во всех опросах, созданных на этом форуме, будет анонимным.</message></help>
     </parameter>
   </parameters>
 </WAComponent>

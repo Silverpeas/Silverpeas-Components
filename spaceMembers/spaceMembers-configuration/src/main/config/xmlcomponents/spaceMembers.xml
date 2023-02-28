@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
 
     Copyright (C) 2000 - 2022 Silverpeas
 
@@ -23,17 +22,13 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
--->
-
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
+--><WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>spaceMembers</name>
   <label>
     <message lang="fr">Membres de l'espace</message>
     <message lang="en">Space members</message>
     <message lang="de">Raum Mitglieder</message>
-  </label>
+  <message lang="ru">Космические участники</message></label>
   <description>
     <message lang="fr">Cette application permet d'afficher l'annuaire des utilisateurs ayant des
       droits déclarés dans l'espace.
@@ -44,12 +39,12 @@
     <message lang="de">Diese Anwendung ermöglicht es Ihnen, das Benutzerverzeichnis mit im Raum
       erklärt Rechte anzuzeigen.
     </message>
-  </description>
+  <message lang="ru">Это приложение отображает каталог пользователей с правами, объявленными в пространстве.</message></description>
   <suite>
     <message lang="fr">02 Gestion Collaborative</message>
     <message lang="en">02 Collaborative Management</message>
     <message lang="de">02 kollaborative Verwaltung</message>
-  </suite>
+  <message lang="ru">02 Совместное управление</message></suite>
   <visible>true</visible>
   <portlet>true</portlet>
   <profiles>
@@ -58,12 +53,12 @@
         <message lang="fr">Lecteurs</message>
         <message lang="en">Readers</message>
         <message lang="de">Leser</message>
-      </label>
+      <message lang="ru">Читатели</message></label>
       <help>
         <message lang="fr">Les lecteurs visualisent l'annuaire.</message>
         <message lang="en">Readers visualize the directory.</message>
         <message lang="de">Leser visualisieren das Verzeichnis</message>
-      </help>
+      <message lang="ru">Читатели просматривают каталог.</message></help>
       <spaceMapping>
         <profile>admin</profile>
         <profile>publisher</profile>
@@ -79,7 +74,7 @@
         <message lang="fr">Page d'accueil</message>
         <message lang="en">Homepage</message>
         <message lang="de">Home page</message>
-      </label>
+      <message lang="ru">Домашняя страница</message></label>
       <order>1</order>
       <mandatory>true</mandatory>
       <value>0</value>
@@ -89,7 +84,7 @@
             <message lang="fr">Tous les membres</message>
             <message lang="en">All members</message>
             <message lang="de">Alle Mitglieder</message>
-          </name>
+          <message lang="ru">Все участники</message></name>
           <value>0</value>
         </option>
         <option>
@@ -97,7 +92,7 @@
             <message lang="fr">Seulement les membres connectés</message>
             <message lang="en">Only members online</message>
             <message lang="de">Nur Mitglieder Online</message>
-          </name>
+          <message lang="ru">Только зарегистрированные участники</message></name>
           <value>1</value>
         </option>
       </options>
@@ -107,7 +102,7 @@
         <message lang="fr">Type d'affichage de la page d'accueil des membres de l'espace</message>
         <message lang="en">Type of display of the space members home page</message>
         <message lang="de">Art der Darstellung des Raumes Mitglieder Startseite</message>
-      </help>
+      <message lang="ru">Тип отображения домашней страницы участников пространства</message></help>
     </parameter>
   </parameters>
 </WAComponent>
