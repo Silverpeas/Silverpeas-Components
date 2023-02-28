@@ -607,11 +607,10 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
         roles.clear();
       }
     }
-
-    String[] userIds = getOrganisationController().getUsersIdsByRoleNames(getComponentId(), roles);
-    for (final String userId : userIds) {
-      users.add(userId);
-    }
+    final boolean lookAlsoForRemoved = getCurrentReplacement() != null;
+    final String[] userIds = getOrganisationController().getUsersIdsByRoleNames(getComponentId(),
+        roles, lookAlsoForRemoved);
+    users.addAll(Arrays.asList(userIds));
 
     // Process related groups
     RelatedGroup[] relatedGroups = qualifiedUsers.getRelatedGroups();
