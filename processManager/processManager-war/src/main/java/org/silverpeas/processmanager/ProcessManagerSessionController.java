@@ -28,6 +28,7 @@ import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.ProfileInst;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.DataRecordUtil;
@@ -1131,6 +1132,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     try {
       Administration admin = Administration.get();
       var userProfiles = admin.getAllProfiles(userId, getComponentId()).stream()
+          .filter(p -> !p.getName().equals(SilverpeasRole.SUPERVISOR.getName()))
           .map(ProfileInst::getId)
           .collect(Collectors.toSet());
       var substituteProfiles = admin.getAllProfiles(substituteId, getComponentId()).stream()

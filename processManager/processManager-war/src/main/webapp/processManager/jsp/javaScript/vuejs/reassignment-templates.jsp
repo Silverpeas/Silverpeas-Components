@@ -59,14 +59,7 @@
 <c:set var="substituteLabel"><fmt:message key='processManager.reassignment.substitute'/></c:set>
 <c:set var="withRolesLabel"><fmt:message key='processManager.reassignment.roles.with.label'/></c:set>
 <c:set var="withRoleLabel"><fmt:message key='processManager.reassignment.role.with.label'/></c:set>
-<c:set var="rolesToAttribute"><fmt:message key='processManager.reassignment.roles.toAttribute.label'>
-  <fmt:param value="<strong>{{notMatchingFormattedRoles}}</strong>"/>
-  <fmt:param value="<strong>{{reassignmentData.substitute.fullName}}</strong>"/>
-</fmt:message></c:set>
-<c:set var="roleToAttribute"><fmt:message key='processManager.reassignment.role.toAttribute.label'>
-  <fmt:param value="<strong>{{notMatchingFormattedRoles}}</strong>"/>
-  <fmt:param value="<strong>{{reassignmentData.substitute.fullName}}</strong>"/>
-</fmt:message></c:set>
+<c:set var="mustHaveSameRoles"><fmt:message key='processManager.reassignment.substitute.roles.same.as.incumbent'/></c:set>
 
 <!-- ########################################################################################### -->
 <silverpeas-component-template name="form">
@@ -75,7 +68,8 @@
       {{addMessages({
       incumbentLabel : '${silfn:escapeJs(incumbentLabel)}',
       substituteLabel : '${silfn:escapeJs(substituteLabel)}',
-      andLabel : '${silfn:escapeJs(andLabel)}'
+      andLabel : '${silfn:escapeJs(andLabel)}',
+      mustHaveSameRoles : '${silfn:escapeJs(mustHaveSameRoles)}'
       })}}
     </div>
     <div>
@@ -103,7 +97,7 @@
             id="sp_wf_reassignment_form_s"
             v-on:api="selectSubstituteApi = $event"
             v-on:selection-change="substituteChanged($event.selectedUserIds)"
-            v-bind:role-filter="workflowRoleFilter"
+            v-bind:role-filter="substituteRoleFilter"
             v-bind:component-id-filter="context.componentInstanceId"></silverpeas-user-group-select>
       </div>
       <div class="champ-ui-dialog user-roles substitue" v-if="formattedSubstituteRoles">
@@ -112,13 +106,5 @@
         <span v-html="formattedSubstituteRoles"></span>
       </div>
     </div>
-    <silverpeas-fade-transition>
-      <div v-if="notMatchingFormattedRoles && reassignmentData.substitute.fullName">
-        <div class="inlineMessage not-matching-roles">
-          <template v-if="notMatchingRoles.length > 1">${rolesToAttribute}</template>
-          <template v-else>${roleToAttribute}</template>
-        </div>
-      </div>
-    </silverpeas-fade-transition>
   </div>
 </silverpeas-component-template>

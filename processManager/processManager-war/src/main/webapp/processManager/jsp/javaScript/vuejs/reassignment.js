@@ -71,16 +71,21 @@
         }
       },
       incumbentRoles : function() {
-        if (this.reassignmentData.incumbent && this.reassignmentData.incumbent.id) {
-          return this.roleManager.getRolesOfUser(this.reassignmentData.incumbent.id);
+        if (this.incumbentUserId) {
+          return this.roleManager.getRolesOfUser(this.incumbentUserId);
         }
       },
       formattedIncumbentRoles : function() {
         return this.formatRoles(this.incumbentRoles);
       },
+      substituteRoleFilter : function() {
+        if (this.incumbentUserId) {
+          return this.$filters.mapRoleName(this.roleManager.getRolesOfUser(this.incumbentUserId));
+        }
+      },
       substituteRoles : function() {
-        if (this.reassignmentData.substitute && this.reassignmentData.substitute.id) {
-          return this.roleManager.getRolesOfUser(this.reassignmentData.substitute.id);
+        if (this.substituteUserId) {
+          return this.roleManager.getRolesOfUser(this.substituteUserId);
         }
       },
       formattedSubstituteRoles : function() {
@@ -173,6 +178,10 @@
               this.rootFormApi.errorMessage().add(
                   this.formatMessage(this.rootFormMessages.mustBeDifferentFrom,
                       [this.messages.substituteLabel, this.messages.incumbentLabel]));
+            }
+            if (!this.notMatchingRoles && this.notMatchingRoles.length > 0) {
+              this.rootFormApi.errorMessage().add(
+                  this.formatMessage(this.messages.mustHaveSameRoles));
             }
             return this.rootFormApi.errorMessage().none();
           },
