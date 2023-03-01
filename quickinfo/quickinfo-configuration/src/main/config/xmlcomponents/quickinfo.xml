@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
 
     Copyright (C) 2000 - 2022 Silverpeas
 
@@ -23,17 +22,13 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
--->
-
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
+--><WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>quickinfo</name>
   <label>
     <message lang="fr">Actualités</message>
     <message lang="en">QuickInfo</message>
     <message lang="de">QuickInfo</message>
-  </label>
+  <message lang="es">Noticias</message></label>
   <description>
     <message lang="fr">Les actualités remontent automatiquement sur la page d’accueil. Elles sont
       constituées d’un titre et d’une description riche.
@@ -44,12 +39,12 @@
     <message lang="de">Erstellt und sendet Nachrichten. Diese Informationsstücke können auf dem KP
       klassifiziert werden.
     </message>
-  </description>
+  <message lang="es">La noticia sube automáticamente en la página de inicio. Consisten en un título y una rica descripción.</message></description>
   <suite>
     <message lang="fr">04 Gestion de contenu</message>
     <message lang="en">04 Content Management</message>
     <message lang="de">04 Inhaltsverwaltung</message>
-  </suite>
+  <message lang="es">04 Gestión de contenidos</message></suite>
   <visible>true</visible>
   <portlet>true</portlet>
   <profiles>
@@ -58,12 +53,12 @@
         <message lang="fr">Gestionnaires</message>
         <message lang="en">Managers</message>
         <message lang="de">Manager</message>
-      </label>
+      <message lang="es">Gerentes</message></label>
       <help>
         <message lang="fr">Les gestionnaires paramètrent le Plan de Classement.</message>
         <message lang="en">Managers set up the Classification Scheme.</message>
         <message lang="de">Managers set up the Classification Scheme.</message>
-      </help>
+      <message lang="es">Los gestores configuran el Plan de Clasificación.</message></help>
       <spaceMapping>
         <profile>admin</profile>
       </spaceMapping>
@@ -73,12 +68,12 @@
         <message lang="fr">Publieurs</message>
         <message lang="en">Publishers</message>
         <message lang="de">Herausgeber</message>
-      </label>
+      <message lang="es">Editores</message></label>
       <help>
         <message lang="fr">Les publieurs créent des actualités.</message>
         <message lang="en">Publishers create news.</message>
         <message lang="de">Herausgeber</message>
-      </help>
+      <message lang="es">Los editores crean noticias.</message></help>
       <spaceMapping>
         <profile>publisher</profile>
         <profile>writer</profile>
@@ -89,12 +84,12 @@
         <message lang="fr">Lecteurs</message>
         <message lang="en">Readers</message>
         <message lang="de">Leser</message>
-      </label>
+      <message lang="es">Lectores</message></label>
       <help>
         <message lang="fr">Les lecteurs consultent les actualités.</message>
         <message lang="en">Readers visualize news.</message>
         <message lang="de">Leser</message>
-      </help>
+      <message lang="es">Los lectores leen las noticias.</message></help>
       <spaceMapping>
         <profile>reader</profile>
       </spaceMapping>
@@ -106,7 +101,7 @@
         <message lang="fr">Visuels</message>
         <message lang="en">Visuals</message>
         <message lang="de">Visuals</message>
-      </label>
+      <message lang="es">Visuales</message></label>
       <description>
         <message lang="fr">Il est possible d'associer un visuel à chaque actualité et de le
           recadrer.
@@ -115,8 +110,8 @@
         </message>
         <message lang="de">It is possible to associate a visual to each news and reframe it.
         </message>
-      </description>
-      <help></help>
+      <message lang="es">Es posible asociar un visual a cada noticia y recortarlo.</message></description>
+      <help/>
       <order>2</order>
       <parameters>
         <parameter>
@@ -125,7 +120,7 @@
             <message lang="fr">Visuel obligatoire</message>
             <message lang="en">Mandatory image</message>
             <message lang="de">Obligatorisches Vorschaubild</message>
-          </label>
+          <message lang="es">Obligatorio visual</message></label>
           <order>2</order>
           <mandatory>true</mandatory>
           <value>no</value>
@@ -139,7 +134,7 @@
             <message lang="de">macht es zwingend erforderlich,eine Miniaturansicht für jede News
               hinzu zu fügen.
             </message>
-          </help>
+          <message lang="es">Permite que sea obligatorio añadir una imagen a cada noticia.</message></help>
         </parameter>
         <parameter>
           <name>thumbnailWidthSize</name>
@@ -147,10 +142,10 @@
             <message lang="fr">Largeur de recadrage</message>
             <message lang="en">Width crop</message>
             <message lang="de">Breite des Vorschaubilds</message>
-          </label>
+          <message lang="es">Ancho de cultivo</message></label>
           <order>3</order>
           <mandatory>false</mandatory>
-          <value></value>
+          <value/>
           <type>text</type>
           <size>5</size>
           <updatable>always</updatable>
@@ -161,7 +156,7 @@
             <message lang="de">Diese Funktion erlaubt es, die Breite der angezeigten Miniaturansicht
               zu definieren
             </message>
-          </help>
+          <message lang="es">Este parámetro define el ancho de la imagen recortada</message></help>
         </parameter>
         <parameter>
           <name>thumbnailHeightSize</name>
@@ -169,10 +164,10 @@
             <message lang="fr">Hauteur de recadrage</message>
             <message lang="en">Height crop</message>
             <message lang="de">Höhe des Vorschaubilds</message>
-          </label>
+          <message lang="es">Altura de cultivo</message></label>
           <order>4</order>
           <mandatory>false</mandatory>
-          <value></value>
+          <value/>
           <type>text</type>
           <size>5</size>
           <updatable>always</updatable>
@@ -183,7 +178,7 @@
             <message lang="de">Diese Funktion erlaubt es, die Höhe der angezeigten Miniaturansicht
               zu definieren
             </message>
-          </help>
+          <message lang="es">Este parámetro le permite definir la altura de la imagen recortada</message></help>
         </parameter>
       </parameters>
     </groupOfParameters>
@@ -195,7 +190,7 @@
         <message lang="fr">Classification PDC</message>
         <message lang="en">Classficiation scheme</message>
         <message lang="de">Klassierungsplan</message>
-      </label>
+      <message lang="es">Clasificación PDC</message></label>
       <order>1</order>
       <mandatory>true</mandatory>
       <value>no</value>
@@ -209,7 +204,7 @@
           scheme.
         </message>
         <message lang="de">Nachrichten können auf dem KP klassifiziert werden</message>
-      </help>
+      <message lang="es">Las noticias creadas dentro de esta instancia podrán clasificarse en el Plan de Clasificación.</message></help>
     </parameter>
     <parameter>
       <name>comments</name>
@@ -217,7 +212,7 @@
         <message lang="fr">Commentaires</message>
         <message lang="en">Comments</message>
         <message lang="de">Kommentare</message>
-      </label>
+      <message lang="es">Comentarios</message></label>
       <order>5</order>
       <mandatory>true</mandatory>
       <value>no</value>
@@ -227,7 +222,7 @@
         <message lang="fr">Pour commenter les actualités</message>
         <message lang="en">To comment news</message>
         <message lang="de">To comment news</message>
-      </help>
+      <message lang="es">Para comentar la noticia</message></help>
     </parameter>
     <parameter>
       <name>delegatedNews</name>
@@ -235,7 +230,7 @@
         <message lang="fr">Actualités déléguées</message>
         <message lang="en">Delegated news</message>
         <message lang="de">Dezentralisierte Nachrichten</message>
-      </label>
+      <message lang="es">Noticias Delegadas</message></label>
       <order>6</order>
       <mandatory>true</mandatory>
       <value>no</value>
@@ -252,7 +247,7 @@
         <message lang="de">Allows contributors to submit some news on the homepage of the platform.
           These submissions are validated or denied via the "Delegated news" app.
         </message>
-      </help>
+      <message lang="es">Le permite enviar ciertas noticias en la página de inicio de la plataforma. Estas noticias se validan o rechazan gracias a la aplicación &amp;quot;Noticias Delegadas&amp;quot;.</message></help>
     </parameter>
     <parameter>
       <name>broadcasting</name>
@@ -260,7 +255,7 @@
         <message lang="fr">Diffusion annexe</message>
         <message lang="en">Broadcasting</message>
         <message lang="de">Broadcasting</message>
-      </label>
+      <message lang="es">Transmisión lateral</message></label>
       <order>7</order>
       <mandatory>true</mandatory>
       <value>none</value>
@@ -270,7 +265,7 @@
             <message lang="fr">Aucune</message>
             <message lang="en">None</message>
             <message lang="de">Nein</message>
-          </name>
+          <message lang="es">Ninguno</message></name>
           <value>none</value>
         </option>
         <option>
@@ -278,7 +273,7 @@
             <message lang="fr">Défilante</message>
             <message lang="en">Scrolling</message>
             <message lang="de">Ticker</message>
-          </name>
+          <message lang="es">desplazamiento</message></name>
           <value>ticker</value>
         </option>
         <option>
@@ -286,7 +281,7 @@
             <message lang="fr">Bloquante</message>
             <message lang="en">Blocking</message>
             <message lang="de">Blocking</message>
-          </name>
+          <message lang="es">Bloqueo</message></name>
           <value>blocking</value>
         </option>
         <option>
@@ -294,7 +289,7 @@
             <message lang="fr">Tous les modes</message>
             <message lang="en">All</message>
             <message lang="de">Alle</message>
-          </name>
+          <message lang="es">Todos los modos</message></name>
           <value>both</value>
         </option>
       </options>
@@ -318,7 +313,7 @@
           wird angezeigt, wenn sich Benutzer anmelden und erfordert Maßnahmen der Suche
           fortzufahren.
         </message>
-      </help>
+      <message lang="es">Esta función permite mostrar noticias fuera de las clásicas páginas de inicio. Los modos seleccionados aquí están disponibles en cada noticia pero no son obligatorios. Se muestra una noticia de &amp;quot;desplazamiento&amp;quot; en el banner de desplazamiento (ticker). Las noticias de &amp;quot;bloqueo&amp;quot; se muestran tan pronto como los usuarios inician sesión y requieren una acción para continuar navegando.</message></help>
     </parameter>
     <parameter>
       <name>userview</name>
@@ -326,7 +321,7 @@
         <message lang="fr">Vue des lecteurs</message>
         <message lang="en">Users view</message>
         <message lang="de">Benutzer sehen</message>
-      </label>
+      <message lang="es">vista de los lectores</message></label>
       <order>8</order>
       <mandatory>true</mandatory>
       <value>mosaic</value>
@@ -336,7 +331,7 @@
             <message lang="fr">Mosaïque</message>
             <message lang="en">Mosaic</message>
             <message lang="de">Mosaik</message>
-          </name>
+          <message lang="es">Mosaico</message></name>
           <value>mosaic</value>
         </option>
         <option>
@@ -344,7 +339,7 @@
             <message lang="fr">Liste</message>
             <message lang="en">Listing</message>
             <message lang="de">Auflistung</message>
-          </name>
+          <message lang="es">Lista</message></name>
           <value>listing</value>
         </option>
       </options>
@@ -360,7 +355,7 @@
         <message lang="de">View 'Mosaik' ist stark dargestellt. Die Ansicht 'Auflistung' ist ähnlich
           wie die der Beiträger.
         </message>
-      </help>
+      <message lang="es">La vista &amp;#39;Mosaico&amp;#39; da un lugar privilegiado a las ilustraciones. La vista de &amp;#39;Lista&amp;#39; es similar a la de los colaboradores.</message></help>
     </parameter>
   </parameters>
 </WAComponent>

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
 
     Copyright (C) 2000 - 2022 Silverpeas
 
@@ -23,17 +22,13 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
--->
-
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
+--><WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>hyperlink</name>
   <label>
     <message lang="fr">Hyperlien</message>
     <message lang="en">Hyperlink</message>
     <message lang="de">Hyperlink</message>
-  </label>
+  <message lang="es">Hipervínculo</message></label>
   <description>
     <message lang="fr">Répondant de prime abord à un besoin très basique, l’application
       permet de mettre en place un véritable système de SSO client vers n’importe
@@ -41,12 +36,12 @@
     </message>
     <message lang="en">Create a link to a document or a web site.</message>
     <message lang="de">Erstellt eine Verknüpfung zu einem Dokument oder einer Webseite.</message>
-  </description>
+  <message lang="es">Respondiendo a primera vista a una necesidad muy básica, la aplicación permite configurar un sistema SSO de cliente real en cualquier sitio web que requiera autenticación.</message></description>
   <suite>
     <message lang="fr">04 Gestion de contenu</message>
     <message lang="en">04 Content Management</message>
     <message lang="de">04 Inhaltsverwaltung</message>
-  </suite>
+  <message lang="es">04 Gestión de contenidos</message></suite>
   <visible>true</visible>
   <portlet>true</portlet>
   <profiles>
@@ -55,12 +50,12 @@
         <message lang="fr">Lecteurs</message>
         <message lang="en">Readers</message>
         <message lang="de">Leser</message>
-      </label>
+      <message lang="es">Lectores</message></label>
       <help>
         <message lang="fr">Les lecteurs accèdent à l'URL.</message>
         <message lang="en">Readers can access the URL.</message>
         <message lang="de">Leser</message>
-      </help>
+      <message lang="es">Los lectores acceden a la URL.</message></help>
       <spaceMapping>
         <profile>admin</profile>
         <profile>publisher</profile>
@@ -75,7 +70,7 @@
         <message lang="fr">Client SSO</message>
         <message lang="en">SSO client</message>
         <message lang="de">SSO client</message>
-      </label>
+      <message lang="es">cliente de inicio de sesión único</message></label>
       <description>
         <message lang="fr">Ces paramètres permettent une authentification automatique sur le site
           cible. Les informations de connexion sont demandées une fois, stockées dans Silverpeas
@@ -89,8 +84,8 @@
           connection information is requested once, stored in Silverpeas and then used at each
           access so that the user does not need to retype them.
         </message>
-      </description>
-      <help></help>
+      <message lang="es">Esta configuración habilita la autenticación automática en el sitio de destino. Los datos de inicio de sesión se solicitan una vez, se almacenan en Silverpeas y luego se utilizan en cada acceso para que el usuario no tenga que volver a introducirlos.</message></description>
+      <help/>
       <order>2</order>
       <parameters>
         <parameter>
@@ -99,7 +94,7 @@
             <message lang="fr">Authentification automatique</message>
             <message lang="en">Automatic authentication</message>
             <message lang="de">Authentifizieren Sie sich auf der Ziel-Webseite</message>
-          </label>
+          <message lang="es">Autenticación automática</message></label>
           <order>1</order>
           <mandatory>true</mandatory>
           <value>no</value>
@@ -109,7 +104,7 @@
             <message lang="fr">Activation du client SSO</message>
             <message lang="en">Automatic authentication on the target site</message>
             <message lang="de">Aktivieren Sie den SSO Client</message>
-          </help>
+          <message lang="es">Habilitar cliente SSO</message></help>
         </parameter>
         <parameter>
           <name>login</name>
@@ -117,10 +112,10 @@
             <message lang="fr">Nom du champ 'Login'</message>
             <message lang="en">Login field name</message>
             <message lang="de">Login-Feld Namen</message>
-          </label>
+          <message lang="es">Nombre del campo &amp;#39;Iniciar sesión&amp;#39;</message></label>
           <order>4</order>
           <mandatory>false</mandatory>
-          <value></value>
+          <value/>
           <type>text</type>
           <size>25</size>
           <updatable>always</updatable>
@@ -129,7 +124,7 @@
             <message lang="en">Name of the field used to pass the login to the target site.
             </message>
             <message lang="de">A_TRADUIRE</message>
-          </help>
+          <message lang="es">Nombre de campo para pasar el inicio de sesión al sitio de destino</message></help>
         </parameter>
         <parameter>
           <name>password</name>
@@ -138,10 +133,10 @@
             <message lang="en">Password field name</message>
             <message lang="de">Name des Feldes, um die Anmeldung an der Zielseite zu senden
             </message>
-          </label>
+          <message lang="es">Nombre del campo &amp;#39;Contraseña&amp;#39;</message></label>
           <order>5</order>
           <mandatory>false</mandatory>
-          <value></value>
+          <value/>
           <type>text</type>
           <size>25</size>
           <updatable>always</updatable>
@@ -150,7 +145,7 @@
             <message lang="en">Name of the field used to pass the password to the target site.
             </message>
             <message lang="de">Name des Feldes, um das Passwort an der Zielseite zu senden</message>
-          </help>
+          <message lang="es">Nombre de campo para pasar la contraseña al sitio de destino</message></help>
         </parameter>
         <parameter>
           <name>method</name>
@@ -160,7 +155,7 @@
             <message lang="de">Methode die von dem Formular verwendet wird, um Daten zu
               übermitteln
             </message>
-          </label>
+          <message lang="es">método de formulario</message></label>
           <order>6</order>
           <mandatory>true</mandatory>
           <value>GET</value>
@@ -170,7 +165,7 @@
                 <message lang="fr">Post</message>
                 <message lang="en">Post</message>
                 <message lang="de">Post</message>
-              </name>
+              <message lang="es">Correo</message></name>
               <value>POST</value>
             </option>
             <option>
@@ -178,7 +173,7 @@
                 <message lang="fr">Get</message>
                 <message lang="en">Get</message>
                 <message lang="de">Get</message>
-              </name>
+              <message lang="es">Conseguir</message></name>
               <value>GET</value>
             </option>
           </options>
@@ -192,7 +187,7 @@
             <message lang="de">Methode die von dem Formular verwendet wird, um Daten zum SSO Client
               zu übermitteln
             </message>
-          </help>
+          <message lang="es">Atributo de método para pasar al formulario de envío de la aplicación SSO del cliente.</message></help>
         </parameter>
         <parameter>
           <name>nameParam1</name>
@@ -200,10 +195,10 @@
             <message lang="fr">Paramètre sup 1</message>
             <message lang="en">Extra parameter 1</message>
             <message lang="de">Extra Parameter 1</message>
-          </label>
+          <message lang="es">Parámetro superior 1</message></label>
           <order>7</order>
           <mandatory>false</mandatory>
-          <value></value>
+          <value/>
           <type>text</type>
           <size>25</size>
           <updatable>always</updatable>
@@ -216,7 +211,7 @@
             <message lang="de">Name des ersten zusätzlichen Parameter der für die
               Ziel-Website-Authentifizierung benützt wird
             </message>
-          </help>
+          <message lang="es">Nombre de parámetro adicional para la aplicación SSO del cliente.</message></help>
         </parameter>
         <parameter>
           <name>valueParam1</name>
@@ -224,10 +219,10 @@
             <message lang="fr">Valeur paramètre 1</message>
             <message lang="en">Value of the first extra parameter</message>
             <message lang="de">Wert des ersten zusätzlichen Parameter</message>
-          </label>
+          <message lang="es">Valor de parámetro 1</message></label>
           <order>8</order>
           <mandatory>false</mandatory>
-          <value></value>
+          <value/>
           <type>text</type>
           <size>25</size>
           <updatable>always</updatable>
@@ -236,7 +231,7 @@
             </message>
             <message lang="en">Value of the first extra parameter</message>
             <message lang="de">Wert des ersten zusätzlichen Parameter für den SSO Client</message>
-          </help>
+          <message lang="es">Valor de parámetro adicional para la aplicación SSO del cliente.</message></help>
         </parameter>
         <parameter>
           <name>nameParam2</name>
@@ -244,10 +239,10 @@
             <message lang="fr">Paramètre sup 2</message>
             <message lang="en">Extra parameter 2</message>
             <message lang="de">Extra Parameter 2</message>
-          </label>
+          <message lang="es">Parámetro superior 2</message></label>
           <order>9</order>
           <mandatory>false</mandatory>
-          <value></value>
+          <value/>
           <type>text</type>
           <size>25</size>
           <updatable>always</updatable>
@@ -260,7 +255,7 @@
             <message lang="de">Name des zweiten zusätzlichen Parameter der für die
               Ziel-Website-Authentifizierung benützt wird
             </message>
-          </help>
+          <message lang="es">Nombre de parámetro adicional para la aplicación SSO del cliente.</message></help>
         </parameter>
         <parameter>
           <name>valueParam2</name>
@@ -268,10 +263,10 @@
             <message lang="fr">Valeur paramètre 2</message>
             <message lang="en">Value of the second extra parameter</message>
             <message lang="de">Wert des zweiten zusätzlichen Parameter</message>
-          </label>
+          <message lang="es">Valor de parámetro 2</message></label>
           <order>10</order>
           <mandatory>false</mandatory>
-          <value></value>
+          <value/>
           <type>text</type>
           <size>25</size>
           <updatable>always</updatable>
@@ -280,7 +275,7 @@
             </message>
             <message lang="en">Value of the second extra parameter</message>
             <message lang="de">Wert des zweiten zusätzlichen Parameter für den SSO Client</message>
-          </help>
+          <message lang="es">Valor de parámetro adicional para la aplicación SSO del cliente.</message></help>
         </parameter>
         <parameter>
           <name>nameParam3</name>
@@ -288,10 +283,10 @@
             <message lang="fr">Paramètre sup 3</message>
             <message lang="en">Extra parameter 3</message>
             <message lang="de">Extra Parameter 3</message>
-          </label>
+          <message lang="es">Parámetro superior 3</message></label>
           <order>11</order>
           <mandatory>false</mandatory>
-          <value></value>
+          <value/>
           <type>text</type>
           <size>25</size>
           <updatable>always</updatable>
@@ -304,7 +299,7 @@
             <message lang="de">Name des dritten zusätzlichen Parameter der für die
               Ziel-Website-Authentifizierung benützt wird
             </message>
-          </help>
+          <message lang="es">Nombre de parámetro adicional para la aplicación SSO del cliente.</message></help>
         </parameter>
         <parameter>
           <name>valueParam3</name>
@@ -312,10 +307,10 @@
             <message lang="fr">Valeur paramètre 3</message>
             <message lang="en">Value of the third extra parameter</message>
             <message lang="de">Wert des dritten zusätzlichen Parameter</message>
-          </label>
+          <message lang="es">Valor de parámetro 3</message></label>
           <order>12</order>
           <mandatory>false</mandatory>
-          <value></value>
+          <value/>
           <type>text</type>
           <size>25</size>
           <updatable>always</updatable>
@@ -324,7 +319,7 @@
             </message>
             <message lang="en">Value of the third extra parameter</message>
             <message lang="de">Wert des dritten zusätzlichen Parameter für den SSO Client</message>
-          </help>
+          <message lang="es">Valor de parámetro adicional para la aplicación SSO del cliente.</message></help>
         </parameter>
         <parameter>
           <name>nameParam4</name>
@@ -332,10 +327,10 @@
             <message lang="fr">Paramètre sup 4</message>
             <message lang="en">Extra parameter 4</message>
             <message lang="de">Extra Parameter 4</message>
-          </label>
+          <message lang="es">Parámetro superior 4</message></label>
           <order>13</order>
           <mandatory>false</mandatory>
-          <value></value>
+          <value/>
           <type>text</type>
           <size>25</size>
           <updatable>always</updatable>
@@ -348,7 +343,7 @@
             <message lang="de">Name des vierten zusätzlichen Parameter der für die
               Ziel-Website-Authentifizierung benützt wird
             </message>
-          </help>
+          <message lang="es">Nombre de parámetro adicional para la aplicación SSO del cliente.</message></help>
         </parameter>
         <parameter>
           <name>valueParam4</name>
@@ -356,10 +351,10 @@
             <message lang="fr">Valeur paramètre 4</message>
             <message lang="en">Value of the fourth extra parameter</message>
             <message lang="de">Wert des vierten zusätzlichen Parameter</message>
-          </label>
+          <message lang="es">Valor de parámetro 4</message></label>
           <order>14</order>
           <mandatory>false</mandatory>
-          <value></value>
+          <value/>
           <type>text</type>
           <size>25</size>
           <updatable>always</updatable>
@@ -368,7 +363,7 @@
             </message>
             <message lang="en">Value of the fourth extra parameter</message>
             <message lang="de">Wert des vierten zusätzlichen Parameter für den SSO Client</message>
-          </help>
+          <message lang="es">Valor de parámetro adicional para la aplicación SSO del cliente.</message></help>
         </parameter>
         <parameter>
           <name>nameParam5</name>
@@ -376,10 +371,10 @@
             <message lang="fr">Paramètre sup 5</message>
             <message lang="en">Extra parameter 5</message>
             <message lang="de">Extra Parameter 5</message>
-          </label>
+          <message lang="es">Parámetro superior 5</message></label>
           <order>15</order>
           <mandatory>false</mandatory>
-          <value></value>
+          <value/>
           <type>text</type>
           <size>25</size>
           <updatable>always</updatable>
@@ -392,7 +387,7 @@
             <message lang="de">Name des fünften zusätzlichen Parameter der für die
               Ziel-Website-Authentifizierung benützt wird
             </message>
-          </help>
+          <message lang="es">Nombre de parámetro adicional para la aplicación SSO del cliente.</message></help>
         </parameter>
         <parameter>
           <name>valueParam5</name>
@@ -400,10 +395,10 @@
             <message lang="fr">Valeur paramètre 5</message>
             <message lang="en">Value of the fifth extra parameter</message>
             <message lang="de">Wert des fünften zusätzlichen Parameter</message>
-          </label>
+          <message lang="es">Valor de parámetro 5</message></label>
           <order>16</order>
           <mandatory>false</mandatory>
-          <value></value>
+          <value/>
           <type>text</type>
           <size>25</size>
           <updatable>always</updatable>
@@ -412,7 +407,7 @@
             </message>
             <message lang="en">Value of the fifth extra parameter</message>
             <message lang="de">Wert des fünften zusätzlichen Parameter für den SSO Client</message>
-          </help>
+          <message lang="es">Valor de parámetro adicional para la aplicación SSO del cliente.</message></help>
         </parameter>
       </parameters>
     </groupOfParameters>
@@ -424,17 +419,17 @@
         <message lang="fr">URL</message>
         <message lang="en">URL</message>
         <message lang="de">URL</message>
-      </label>
+      <message lang="es">URL</message></label>
       <order>0</order>
       <mandatory>true</mandatory>
-      <value></value>
+      <value/>
       <type>text</type>
       <updatable>always</updatable>
       <help>
         <message lang="fr">Saisissez ici l'adresse web du site cible</message>
         <message lang="en">Enter the web site address.</message>
         <message lang="de">Geben Sie die Adresse der Website ein.</message>
-      </help>
+      <message lang="es">Ingrese la dirección web del sitio de destino aquí</message></help>
     </parameter>
     <parameter>
       <name>openNewWindow</name>
@@ -442,7 +437,7 @@
         <message lang="fr">Ouvrir dans une nouvelle fenetre</message>
         <message lang="en">Open the link in a new window</message>
         <message lang="de">Öffnen Sie den Link in einem neuen Fenster</message>
-      </label>
+      <message lang="es">Abrir en una nueva ventana</message></label>
       <order>2</order>
       <mandatory>true</mandatory>
       <value>no</value>
@@ -456,7 +451,7 @@
         <message lang="de">Öffnen Sie die neue Seite innerhalb der Platform oder in einem neuen
           Fenster.
         </message>
-      </help>
+      <message lang="es">El enlace puede abrirse en Silverpeas o en una nueva ventana.</message></help>
     </parameter>
     <parameter>
       <name>isInternalLink</name>
@@ -464,7 +459,7 @@
         <message lang="fr">Lien interne</message>
         <message lang="en">Internal link</message>
         <message lang="de">Interne Verknüpfung</message>
-      </label>
+      <message lang="es">Enlace interno</message></label>
       <order>3</order>
       <mandatory>true</mandatory>
       <value>no</value>
@@ -480,7 +475,7 @@
         <message lang="de">Dieses Feld ankreuzen, wenn es sich um eine interne Verknüpfung handelt.
           Dies entfernt das unnötige URL Teil
         </message>
-      </help>
+      <message lang="es">Marque esta casilla si se trata de un enlace interno: el enlace se analizará para mantener solo la parte relativa a Silverpeas</message></help>
     </parameter>
   </parameters>
 </WAComponent>

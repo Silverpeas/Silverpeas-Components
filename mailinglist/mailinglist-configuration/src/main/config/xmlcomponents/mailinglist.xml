@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
 
     Copyright (C) 2000 - 2022 Silverpeas
 
@@ -23,17 +22,13 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
--->
-
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
+--><WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>mailinglist</name>
   <label>
     <message lang="fr">Archivage d'e-mails</message>
     <message lang="en">Email archiver</message>
     <message lang="de">Email Archivierer</message>
-  </label>
+  <message lang="es">Archivado de correo electrónico</message></label>
   <description>
     <message lang="fr">Cette application permet d’archiver tous les emails reçus à
       une adresse de messagerie donnée. La modération est possible. Si l’abonnement
@@ -47,12 +42,12 @@
       gesendet werden. Die Nachrichten können moderiert werden. Mit dem 'Diffusions Liste'
       parameter, kann diese Komponente in eine Mailing-Liste umgewandelt werden.
     </message>
-  </description>
+  <message lang="es">Esta aplicación le permite archivar todos los correos electrónicos recibidos en una dirección de correo electrónico determinada. La moderación es posible. Si la suscripción está activada, la aplicación se convierte en una lista de correo.</message></description>
   <suite>
     <message lang="fr">02 Gestion Collaborative</message>
     <message lang="en">02 Collaborative Management</message>
     <message lang="de">02 kollaborative Verwaltung</message>
-  </suite>
+  <message lang="es">02 Gestión colaborativa</message></suite>
   <visible>true</visible>
   <portlet>true</portlet>
   <profiles>
@@ -61,12 +56,12 @@
         <message lang="fr">Gestionnaires</message>
         <message lang="en">Managers</message>
         <message lang="de">Manager</message>
-      </label>
+      <message lang="es">Gerentes</message></label>
       <help>
         <message lang="fr">Gestionnaires</message>
         <message lang="en">Managers</message>
         <message lang="de">Manager</message>
-      </help>
+      <message lang="es">Gerentes</message></help>
       <spaceMapping>
         <profile>admin</profile>
       </spaceMapping>
@@ -76,12 +71,12 @@
         <message lang="fr">Modérateurs</message>
         <message lang="en">Moderators</message>
         <message lang="de">Moderator</message>
-      </label>
+      <message lang="es">Moderadores</message></label>
       <help>
         <message lang="fr">Modérateurs</message>
         <message lang="en">Moderators</message>
         <message lang="de">Moderator</message>
-      </help>
+      <message lang="es">Moderadores</message></help>
       <spaceMapping>
         <profile>publisher</profile>
       </spaceMapping>
@@ -91,12 +86,12 @@
         <message lang="fr">Lecteurs</message>
         <message lang="en">Readers</message>
         <message lang="de">Leser</message>
-      </label>
+      <message lang="es">Lectores</message></label>
       <help>
         <message lang="fr">Lecteurs</message>
         <message lang="en">Readers</message>
         <message lang="de">Leser</message>
-      </help>
+      <message lang="es">Lectores</message></help>
       <spaceMapping>
         <profile>writer</profile>
         <profile>reader</profile>
@@ -110,7 +105,7 @@
         <message lang="fr">Modération</message>
         <message lang="en">Moderation</message>
         <message lang="de">Moderierung</message>
-      </label>
+      <message lang="es">Moderación</message></label>
       <order>3</order>
       <mandatory>true</mandatory>
       <value>no</value>
@@ -120,7 +115,7 @@
         <message lang="fr">Active/Désactive la modération de la liste de diffusion</message>
         <message lang="en">Activate/Deactivate moderation</message>
         <message lang="de">Aktivieren / Deaktivieren der Moderierung</message>
-      </help>
+      <message lang="es">Habilitar/deshabilitar la moderación de la lista de correo</message></help>
     </parameter>
     <parameter>
       <name>open</name>
@@ -128,7 +123,7 @@
         <message lang="fr">Liste ouverte</message>
         <message lang="en">Open list</message>
         <message lang="de">Offene Liste</message>
-      </label>
+      <message lang="es">Lista abierta</message></label>
       <order>4</order>
       <mandatory>true</mandatory>
       <value>yes</value>
@@ -138,7 +133,7 @@
         <message lang="fr">Indique que tout le monde peut envoyer un message à la liste</message>
         <message lang="en">Authorizes everyone to send a message to the list</message>
         <message lang="de">Erlaubt jedermann, eine Nachricht an dieser Liste zu senden</message>
-      </help>
+      <message lang="es">Indica que cualquiera puede enviar un mensaje a la lista</message></help>
     </parameter>
     <parameter>
       <name>subscribedAddress</name>
@@ -146,17 +141,17 @@
         <message lang="fr">Adresse e-mail</message>
         <message lang="en">Email address for the list</message>
         <message lang="de">E-Mail-Adresse für die Liste</message>
-      </label>
+      <message lang="es">Dirección de correo electrónico</message></label>
       <order>1</order>
       <mandatory>true</mandatory>
-      <value></value>
+      <value/>
       <type>text</type>
       <updatable>always</updatable>
       <help>
         <message lang="fr">Adresse email dont les messages seront archivés</message>
         <message lang="en">Email address for the mailing list</message>
         <message lang="de">E-Mail-Adressen, deren Nachrichten archiviert sein werden</message>
-      </help>
+      <message lang="es">Dirección de correo electrónico cuyos mensajes se archivarán</message></help>
     </parameter>
     <parameter>
       <name>notify</name>
@@ -164,7 +159,7 @@
         <message lang="fr">Liste de diffusion</message>
         <message lang="en">Diffusion list</message>
         <message lang="de">Diffusions Liste</message>
-      </label>
+      <message lang="es">Lista de difusión</message></label>
       <order>2</order>
       <mandatory>true</mandatory>
       <value>no</value>
@@ -178,7 +173,7 @@
         <message lang="de">Zeigt an, ob die Mailing-Liste für die Lagerung oder auch für die
           Verbreitung benützt wird
         </message>
-      </help>
+      <message lang="es">Indica si se trata de una lista de correo o de archivo</message></help>
     </parameter>
     <parameter>
       <name>rss</name>
@@ -186,7 +181,7 @@
         <message lang="fr">Flux RSS</message>
         <message lang="en">RSS</message>
         <message lang="de">RSS</message>
-      </label>
+      <message lang="es">RSS Feed</message></label>
       <order>5</order>
       <mandatory>false</mandatory>
       <value>yes</value>
@@ -196,7 +191,7 @@
         <message lang="fr">Permet de générer un flux RSS des derniers messages.</message>
         <message lang="en">Produce a RSS stream for the events of this almanach.</message>
         <message lang="de">Erlaubt, eine RSS-Stream der letzten Nachrichten zu erzeugen</message>
-      </help>
+      <message lang="es">Le permite generar una fuente RSS de los últimos mensajes.</message></help>
     </parameter>
   </parameters>
 </WAComponent>

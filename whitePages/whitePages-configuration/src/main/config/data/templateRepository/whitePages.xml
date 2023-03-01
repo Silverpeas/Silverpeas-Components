@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<!--
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
 
     Copyright (C) 2000 - 2022 Silverpeas
 
@@ -13,7 +12,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+    "https://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,19 +22,211 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
--->
-
-<publicationTemplate>
-  <name>Fiche expert</name>
-  <description>Utilis� par l'application Annuaire d'experts</description>
-  <visible>false</visible>
-  <locked>true</locked>
-	<dataFileName>whitePages/data.xml</dataFileName>
-	<viewFileName>whitePages/view.xml</viewFileName>
-	<updateFileName>whitePages/update.xml</updateFileName>
-	<template>
-		<name>userForm</name>
-		<fileName>whitePages/user.xml</fileName>
-		<typeName>xml</typeName>
-	</template>
-</publicationTemplate>
+--><WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
+  <name>whitePages</name>
+  <label>
+    <message lang="fr">Annuaire d'experts</message>
+    <message lang="en">Expert directory</message>
+    <message lang="de">Experten Verzeichnis</message>
+  <message lang="es">directorio de expertos</message></label>
+  <description>
+    <message lang="fr">
+      L’application a pour objectif de retrouver les utilisateurs
+      experts dans un domaine et de se mettre en relation avec eux. Les experts sont
+      qualifiés grâce à un formulaire personnalisable et la cartographie de connaissances
+      (Plan de classement).
+    </message>
+    <message lang="en">
+      Create a directory of skills, whith each expert described by an xml form. The resume is
+      classified on the classification scheme
+      to search quickly for a skill.
+    </message>
+    <message lang="de">Erstellt ein Verzeichnis von Fähigkeiten, jeder Experte wird dürch ein XML
+      Formular beschrieben.
+      Der Lebenslauf ist auf dem KP für ein Schnelles Suchen eingestuft.
+    </message>
+  <message lang="es">La aplicación tiene como objetivo encontrar usuarios expertos en un campo y ponerse en contacto con ellos. Los expertos están calificados gracias a un formulario personalizable y al mapeo del conocimiento (plan de clasificación).</message></description>
+  <suite>
+    <message lang="fr">03 Gestion de la connaissance</message>
+    <message lang="en">03 Knowledge Management</message>
+    <message lang="de">03 Wissens Verwaltung</message>
+  <message lang="es">03 Gestión del conocimiento</message></suite>
+  <visible>true</visible>
+  <portlet>true</portlet>
+  <profiles>
+    <profile name="admin">
+      <label>
+        <message lang="fr">Gestionnaires</message>
+        <message lang="en">Managers</message>
+        <message lang="de">Manager</message>
+      <message lang="es">Gerentes</message></label>
+      <help>
+        <message lang="fr">Les gestionnaires gèrent les experts dans l'annuaire et paramètrent le
+          Plan de Classement.
+        </message>
+        <message lang="en">Managers manage experts of the directory and set up the Classification
+          Scheme.
+        </message>
+        <message lang="de">Managers manage experts of the directory and set up the Classification
+          Scheme.
+        </message>
+      <message lang="es">Los gestores gestionan los expertos en el directorio y configuran el Plan de Clasificación.</message></help>
+      <spaceMapping>
+        <profile>admin</profile>
+        <profile>publisher</profile>
+        <profile>writer</profile>
+      </spaceMapping>
+    </profile>
+    <profile name="user">
+      <label>
+        <message lang="fr">Lecteurs</message>
+        <message lang="en">Readers</message>
+        <message lang="de">Leser</message>
+      <message lang="es">Lectores</message></label>
+      <help>
+        <message lang="fr">Les lecteurs consultent l'annuaire et peuvent mettre à jour leur fiche.
+        </message>
+        <message lang="en">Readers consult the directory and can update their data sheet.</message>
+        <message lang="de">Leser</message>
+      <message lang="es">Los lectores consultan el directorio y pueden actualizar su perfil.</message></help>
+      <spaceMapping>
+        <profile>reader</profile>
+      </spaceMapping>
+    </profile>
+  </profiles>
+  <parameters>
+    <parameter>
+      <name>cardTemplate</name>
+      <label>
+        <message lang="fr">Modèle de fiche</message>
+        <message lang="en">Template card</message>
+        <message lang="de">Vorlage-Karte</message>
+      <message lang="es">plantilla de formulario</message></label>
+      <order>1</order>
+      <mandatory>true</mandatory>
+      <value>whitePages.xml</value>
+      <type>text</type>
+      <size>30</size>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Modèle xml spécifique permettant de saisir des informations sur
+          l'expert.
+        </message>
+        <message lang="en">XML form to describe the skills of an expert.</message>
+        <message lang="de">XML-Formular, um die Fähigkeiten eines Experten zu beschreiben.</message>
+      <message lang="es">Plantilla xml específica para ingresar información de expertos.</message></help>
+    </parameter>
+    <parameter>
+      <name>userTemplate</name>
+      <label>
+        <message lang="fr">Modèle d'identité</message>
+        <message lang="en">Display template</message>
+        <message lang="de">Vorlage anzeigen</message>
+      <message lang="es">modelo de identidad</message></label>
+      <order>3</order>
+      <mandatory>true</mandatory>
+      <value>whitePages/view.html</value>
+      <type>text</type>
+      <size>30</size>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Fichier html permettant de présenter les informations de l'expert.
+        </message>
+        <message lang="en">HTML file used for displaying the expert's skills.</message>
+        <message lang="de">HTML-Datei die Verwendet wird um die Fähigkeiten des Experten zu
+          zeigen.
+        </message>
+      <message lang="es">Archivo html utilizado para presentar la información del experto.</message></help>
+    </parameter>
+    <parameter>
+      <name>isEmailHidden</name>
+      <label>
+        <message lang="fr">Masquage de l'email</message>
+        <message lang="en">Hide the email address</message>
+        <message lang="de">Blenden Sie die E-Mail-Adresse aus</message>
+      <message lang="es">Enmascaramiento de correo electrónico</message></label>
+      <order>2</order>
+      <mandatory>true</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Active le masquage des mails dans l'IHM. Les notifications envoyées à
+          partir de cette application auront un expéditeur générique.
+        </message>
+        <message lang="en">Hide the emailaddress. The sender of notifications will be generic.
+        </message>
+        <message lang="de">Blendet die E-Mailadresse aus. Der Absender der eingegangenen Meldungen
+          wird anonym sein.
+        </message>
+      <message lang="es">Activa el enmascaramiento de correos en la GUI. Las notificaciones enviadas desde esta aplicación tendrán un remitente genérico.</message></help>
+    </parameter>
+    <parameter>
+      <name>isForcedCardFilling</name>
+      <label>
+        <message lang="fr">Forcer le remplissage de la fiche</message>
+        <message lang="en">Force filling of the card</message>
+        <message lang="de">Ausfüllen der Karte zwingen</message>
+      <message lang="es">Forzar el llenado del formulario</message></label>
+      <order>4</order>
+      <mandatory>true</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Si ce paramètre est activé, l'utilisateur n'aura accès qu'à l'écran de
+          création de sa fiche.
+          Le reste du portail lui sera innaccessible tant qu'il n'aura pas rempli sa fiche.
+        </message>
+        <message lang="en">
+          The user will have access only to his card until he has filled it.
+        </message>
+        <message lang="de">Wenn dieser Parameter aktiviert ist, wird der Benutzer nur Zugang zu
+          seiner Karteikarte haben.
+          Der Rest des Portals wird für ihm unerreichbar sein, solange er seine Karteikarte nicht
+          fertiggestellt hat.
+        </message>
+      <message lang="es">Si este parámetro está activado, el usuario sólo tendrá acceso a la pantalla de creación de su ficha. El resto del portal será inaccesible para él hasta que haya completado su formulario.</message></help>
+    </parameter>
+    <parameter>
+      <name>isFicheVisible</name>
+      <label>
+        <message lang="fr">Masquage de l'onglet fiche</message>
+        <message lang="en">Hide the card tab</message>
+        <message lang="de">Blenden Sie die Registerkarte aus</message>
+      <message lang="es">Ocultar la pestaña del formulario</message></label>
+      <order>5</order>
+      <mandatory>true</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Active le masquage de l'onglet fiche pour les lecteurs.</message>
+        <message lang="en">Hide the tab displaying the expert card for readers.</message>
+        <message lang="de">Activiert das Ausblenden der Registerkarte Experten-Karte für den Leser
+        </message>
+      <message lang="es">Permite ocultar la pestaña de la tarjeta para los lectores.</message></help>
+    </parameter>
+    <parameter>
+      <name>domainId</name>
+      <label>
+        <message lang="fr">Domaine auquel est rattaché l'annuaire</message>
+        <message lang="en">Silverpeas's domain to which the directory is attached</message>
+        <message lang="de">Silverpeas-Domänen auf, die das Verzeichnis angeschlossen ist</message>
+      <message lang="es">Dominio al que se adjunta el directorio</message></label>
+      <order>6</order>
+      <mandatory>true</mandatory>
+      <value>0</value>
+      <type>text</type>
+      <size>5</size>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Définit le domaine auquel on souhaite rattacher l'annuaire.</message>
+        <message lang="en">Define the Silverpeas's domain attached to the directory.</message>
+        <message lang="de">Definiert die Silverpeas-Domänen auf, die das Verzeichnis angeschlossen
+          ist
+        </message>
+      <message lang="es">Define el dominio al que desea adjuntar el directorio.</message></help>
+    </parameter>
+  </parameters>
+</WAComponent>

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
 
     Copyright (C) 2000 - 2022 Silverpeas
 
@@ -23,17 +22,13 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
--->
-
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
+--><WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>infoLetter</name>
   <label>
     <message lang="fr">Lettre d'information</message>
     <message lang="en">Newsletter</message>
     <message lang="de">Newsletter</message>
-  </label>
+  <message lang="es">Carta informativa</message></label>
   <description>
     <message lang="fr">Cette application permet l’envoi d’une newsletter à des
       utilisateurs de la plateforme ou bien à des contacts externes. La gestion des
@@ -47,12 +42,12 @@
       Veröffentlichung Vorlage. Die Abonnements für den Informations Brief werden auch hier
       verwaltet.
     </message>
-  </description>
+  <message lang="es">Esta aplicación permite el envío de newsletter a usuarios de la plataforma oa contactos externos. La gestión de contactos se facilita con la importación/exportación de CSV. La configuración de una plantilla facilita la creación de un problema nuevo.</message></description>
   <suite>
     <message lang="fr">04 Gestion de contenu</message>
     <message lang="en">04 Content Management</message>
     <message lang="de">04 Inhaltsverwaltung</message>
-  </suite>
+  <message lang="es">04 Gestión de contenidos</message></suite>
   <visible>true</visible>
   <portlet>true</portlet>
   <profiles>
@@ -61,7 +56,7 @@
         <message lang="fr">Gestionnaires</message>
         <message lang="en">Managers</message>
         <message lang="de">Manager</message>
-      </label>
+      <message lang="es">Gerentes</message></label>
       <help>
         <message lang="fr">Les gestionnaires définissent les abonnés et paramètrent le Plan de
           Classement.
@@ -70,7 +65,7 @@
         </message>
         <message lang="de">Managers define suscribers and set up the Classification Scheme.
         </message>
-      </help>
+      <message lang="es">Los gestores definen los abonados y configuran el Plan de Clasificación.</message></help>
       <spaceMapping>
         <profile>admin</profile>
       </spaceMapping>
@@ -80,12 +75,12 @@
         <message lang="fr">Publieurs</message>
         <message lang="en">Publishers</message>
         <message lang="de">Herausgeber</message>
-      </label>
+      <message lang="es">Editores</message></label>
       <help>
         <message lang="fr">Les publieurs créent des parutions.</message>
         <message lang="en">Publishers create issues</message>
         <message lang="de">Herausgeber</message>
-      </help>
+      <message lang="es">Los editores crean problemas.</message></help>
       <spaceMapping>
         <profile>publisher</profile>
         <profile>writer</profile>
@@ -96,12 +91,12 @@
         <message lang="fr">Lecteurs</message>
         <message lang="en">Readers</message>
         <message lang="de">Leser</message>
-      </label>
+      <message lang="es">Lectores</message></label>
       <help>
         <message lang="fr">Les lecteurs visualisent les parutions et peuvent s'abonner.</message>
         <message lang="en">Readers can visualize the publications and subscribe to it.</message>
         <message lang="de">Leser</message>
-      </help>
+      <message lang="es">Los lectores ven las publicaciones y pueden suscribirse.</message></help>
       <spaceMapping>
         <profile>reader</profile>
       </spaceMapping>
@@ -114,7 +109,7 @@
         <message lang="fr">Classification PDC</message>
         <message lang="en">Classification Scheme</message>
         <message lang="de">Klassierungsplan</message>
-      </label>
+      <message lang="es">Clasificación PDC</message></label>
       <order>1</order>
       <mandatory>true</mandatory>
       <value>no</value>
@@ -127,7 +122,7 @@
         <message lang="en">Newsletters created here are classified on the classification scheme.
         </message>
         <message lang="de">Informations Briefe können auf dem KP klassifiziert werden</message>
-      </help>
+      <message lang="es">Los boletines creados dentro de esta instancia se pueden clasificar en el Plan de Clasificación</message></help>
     </parameter>
     <parameter>
       <name>sendNewsletter</name>
@@ -135,7 +130,7 @@
         <message lang="fr">Abonnés internes</message>
         <message lang="en">Internal users</message>
         <message lang="de">interne Benutzer</message>
-      </label>
+      <message lang="es">Suscriptores internos</message></label>
       <order>1</order>
       <mandatory>true</mandatory>
       <value>0</value>
@@ -145,7 +140,7 @@
             <message lang="fr">Envoi par notification</message>
             <message lang="en">Shipping by notifification</message>
             <message lang="de">Das Versenden durch notifification</message>
-          </name>
+          <message lang="es">Enviar por notificación</message></name>
           <value>0</value>
         </option>
         <option>
@@ -153,7 +148,7 @@
             <message lang="fr">Envoi par mail</message>
             <message lang="en">Send by email</message>
             <message lang="de">Email schicken</message>
-          </name>
+          <message lang="es">Enviar por correo electrónico</message></name>
           <value>1</value>
         </option>
       </options>
@@ -163,7 +158,7 @@
         <message lang="fr">Mode d'envoi des newsletters aux abonnés internes</message>
         <message lang="en">How to send newsletters to internal subscribers</message>
         <message lang="de">Wie Newslettern an internen Teilnehmer senden</message>
-      </help>
+      <message lang="es">Método de envío de boletines a suscriptores internos</message></help>
     </parameter>
   </parameters>
 </WAComponent>

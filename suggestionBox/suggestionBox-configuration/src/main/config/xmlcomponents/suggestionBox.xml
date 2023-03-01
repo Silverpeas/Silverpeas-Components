@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
 
     Copyright (C) 2000 - 2022 Silverpeas
 
@@ -23,16 +22,13 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
--->
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
+--><WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>suggestionBox</name>
   <label>
     <message lang="fr">Boite à Idées</message>
     <message lang="en">Suggestion Box</message>
     <message lang="de">Kummerkasten</message>
-  </label>
+  <message lang="es">Caja de sugerencias</message></label>
   <description>
     <message lang="fr">La collaboration commence par l'obtention des avis des parties
       prenantes d'un projet. L'application Boite à Idées permet justement à chacun de participer en
@@ -49,12 +45,12 @@
       Projekts. Der Kummerkasten ermöglicht für jedermann zu, indem sie ihre Ideen zu beteiligen,
       durch Kommentare zu anderen Bewertungen und ihnen durch Abstimmung
     </message>
-  </description>
+  <message lang="es">La colaboración comienza con la obtención de comentarios de las partes interesadas de un proyecto. La aplicación Caja de Ideas permite a todos participar proponiendo sus ideas, comentar y anotar las ideas.</message></description>
   <suite>
     <message lang="fr">02 Gestion Collaborative</message>
     <message lang="en">02 Collaborative Management</message>
     <message lang="de">02 kollaborative Verwaltung</message>
-  </suite>
+  <message lang="es">02 Gestión colaborativa</message></suite>
   <visible>true</visible>
   <portlet>false</portlet>
   <profiles>
@@ -63,7 +59,7 @@
         <message lang="fr">Gestionnaires</message>
         <message lang="en">Managers</message>
         <message lang="de">Manager</message>
-      </label>
+      <message lang="es">Gerentes</message></label>
       <help>
         <message lang="fr">Les gestionnaires paramètrent la boite à idées. Ils y précisent, via
           l'édito, l'objectif de la boite à idées et quelles sont les règles en vigueur dans la
@@ -76,7 +72,7 @@
         <message lang="de">Die Administratoren Parametrieren Sie den Kummerkasten. Geben Sie über
           die Redak, der Zweck der Kummerkasten und was sind die Regeln für die Beteiligung.
         </message>
-      </help>
+      <message lang="es">Los administradores configuran el buzón de sugerencias. Especifican, a través de la editorial, el objetivo del buzón de sugerencias y cuáles son las normas vigentes para la participación.</message></help>
       <spaceMapping>
         <profile>admin</profile>
       </spaceMapping>
@@ -86,7 +82,7 @@
         <message lang="fr">Publieurs</message>
         <message lang="en">Publishers</message>
         <message lang="de">Herausgeber</message>
-      </label>
+      <message lang="es">Editores</message></label>
       <help>
         <message lang="fr">Les publieurs ont pour rôle de valider les idées des participants.
           Lorsqu'une idée est validée, celle-ci est alors publiée dans la boite à idées. Toute idée,
@@ -113,7 +109,7 @@
           Vorschlag einem abgelehnt informierte die Teilnehmer Gründe für die Ablehnung. Der Verlag
           kann die Idee, vor der Veröffentlichung moderieren.
         </message>
-      </help>
+      <message lang="es">El papel de los editores es validar las ideas de los participantes. Cuando se valida una idea, se publica en el buzón de sugerencias. Cualquier idea, ya sea validada o rechazada, es comentada por el editor. El comentario de una idea validada da información adicional mientras que el de una idea rechazada informa al participante de los motivos del rechazo. El editor puede moderar la idea antes de que se publique.</message></help>
       <spaceMapping>
         <profile>publisher</profile>
       </spaceMapping>
@@ -123,12 +119,12 @@
         <message lang="fr">Rédacteurs</message>
         <message lang="en">Writers</message>
         <message lang="de">Redaktor</message>
-      </label>
+      <message lang="es">Editores</message></label>
       <help>
         <message lang="fr">Les rédacteurs sont les participants d'une boite à idées.</message>
         <message lang="en">The writers are the participants in a suggestion box.</message>
         <message lang="de">Die Redaktor sind die Teilnehmer in einem Kummerkasten.</message>
-      </help>
+      <message lang="es">Los escritores son participantes en un buzón de sugerencias.</message></help>
       <spaceMapping>
         <profile>writer</profile>
       </spaceMapping>
@@ -138,7 +134,7 @@
         <message lang="fr">Lecteurs</message>
         <message lang="en">Readers</message>
         <message lang="de">Leser</message>
-      </label>
+      <message lang="es">Lectores</message></label>
       <help>
         <message lang="fr">Les lecteurs ne peuvent pas proposer leurs idées. Cependant, ils peuvent
           consulter, commenter et noter celles publiées.
@@ -149,7 +145,7 @@
         <message lang="de">Die Leser können ihre Ideen vorschlagen. Allerdings können sie ansehen,
           kommentieren und bewerten Diejenigen veröffentlicht..
         </message>
-      </help>
+      <message lang="es">Los lectores no pueden enviar sus ideas. No obstante, pueden consultar, comentar y puntuar las publicadas.</message></help>
       <spaceMapping>
         <profile>reader</profile>
       </spaceMapping>

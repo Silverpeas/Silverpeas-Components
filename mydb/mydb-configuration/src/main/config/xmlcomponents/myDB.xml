@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
 
     Copyright (C) 2000 - 2022 Silverpeas
 
@@ -23,17 +22,13 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
--->
-
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
+--><WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>myDB</name>
   <label>
     <message lang="fr">My BD</message>
     <message lang="en">My DB</message>
     <message lang="de">My DB</message>
-  </label>
+  <message lang="es">mis historietas</message></label>
   <description>
     <message lang="fr">
       Silverpeas permet grâce à « MyDB » d'accéder à une base de données relationnelle existante
@@ -51,12 +46,12 @@
       aktualisieren.
       Die Mitwirkenden können die Daten bearbeiten, während die Leser sie nur konsultieren können.
     </message>
-  </description>
+  <message lang="es">Silverpeas permite gracias a &amp;quot;MyDB&amp;quot; acceder a una base de datos relacional existente en su organización para consultar, crear y actualizar datos empresariales. Los colaboradores ingresan los datos, los lectores los consultan.</message></description>
   <suite>
     <message lang="fr">06 Connecteurs</message>
     <message lang="en">06 Connectors</message>
     <message lang="de">06 Verbinder</message>
-  </suite>
+  <message lang="es">06 Conectores</message></suite>
   <visible>true</visible>
   <portlet>false</portlet>
   <profiles>
@@ -65,13 +60,13 @@
         <message lang="fr">Gestionnaires</message>
         <message lang="en">Managers</message>
         <message lang="de">Manager</message>
-      </label>
+      <message lang="es">Gerentes</message></label>
       <help>
         <message lang="fr">Les gestionnaires sélectionne la base de données à accéder.</message>
         <message lang="en">Managers select the database to access.</message>
         <message lang="de">Manager wählen die Datenbank aus, auf die zugegriffen werden soll.
         </message>
-      </help>
+      <message lang="es">Los administradores seleccionan la base de datos a la que se accede.</message></help>
       <spaceMapping>
         <profile>admin</profile>
       </spaceMapping>
@@ -81,12 +76,12 @@
         <message lang="fr">Publieurs</message>
         <message lang="en">Publishers</message>
         <message lang="de">Herausgeber</message>
-      </label>
+      <message lang="es">Editores</message></label>
       <help>
         <message lang="fr">Les publieurs éditent les données dans la base de données.</message>
         <message lang="en">Publishers edit the data into the database.</message>
         <message lang="de">Publisher bearbeiten die Daten in der Datenbank.</message>
-      </help>
+      <message lang="es">Los editores editan los datos en la base de datos.</message></help>
       <spaceMapping>
         <profile>publisher</profile>
         <profile>writer</profile>
@@ -97,12 +92,12 @@
         <message lang="fr">Lecteurs</message>
         <message lang="en">Readers</message>
         <message lang="de">Leser</message>
-      </label>
+      <message lang="es">Lectores</message></label>
       <help>
         <message lang="fr">Les lecteurs consultent les données de la base de données.</message>
         <message lang="en">Readers consult data in the database.</message>
         <message lang="de">Leser konsultieren Daten in der Datenbank.</message>
-      </help>
+      <message lang="es">Los lectores consultan los datos de la base de datos.</message></help>
       <spaceMapping>
         <profile>reader</profile>
       </spaceMapping>

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
 
     Copyright (C) 2000 - 2022 Silverpeas
 
@@ -23,17 +22,13 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
--->
-
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
+--><WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>resourcesManager</name>
   <label>
     <message lang="fr">Gestion de ressources</message>
     <message lang="en">Resources manager</message>
     <message lang="de">Ressourcen-Manager</message>
-  </label>
+  <message lang="es">Administracion de recursos</message></label>
   <description>
     <message lang="fr">L’application permet de gérer des ressources (salles,
       véhicules, matériel informatique...). Les utilisateurs créent des réservations sur
@@ -44,12 +39,12 @@
     <message lang="de">Diese Komponente verwaltet physische Ressourcen und wie man diese buchen
       kann.
     </message>
-  </description>
+  <message lang="es">La aplicación permite gestionar recursos (salas, vehículos, equipos informáticos, etc.). Los usuarios crean reservas en uno o más recursos. Solo se proponen los recursos disponibles en las fechas solicitadas. Se puede activar un sistema de validación.</message></description>
   <suite>
     <message lang="fr">02 Gestion Collaborative</message>
     <message lang="en">02 Collaborative Management</message>
     <message lang="de">02 kollaborative Verwaltung</message>
-  </suite>
+  <message lang="es">02 Gestión colaborativa</message></suite>
   <visible>true</visible>
   <portlet>false</portlet>
   <profiles>
@@ -58,12 +53,12 @@
         <message lang="fr">Gestionnaires</message>
         <message lang="en">Managers</message>
         <message lang="de">Manager</message>
-      </label>
+      <message lang="es">Gerentes</message></label>
       <help>
         <message lang="fr">Les gestionnaires créent les catégories et les ressources.</message>
         <message lang="en">Managers create categories and resources.</message>
         <message lang="de">Managers create categories and resources.</message>
-      </help>
+      <message lang="es">Los administradores crean categorías y recursos.</message></help>
       <spaceMapping>
         <profile>admin</profile>
       </spaceMapping>
@@ -73,12 +68,12 @@
         <message lang="fr">Responsables</message>
         <message lang="en">Responsibles</message>
         <message lang="de">Verwalter</message>
-      </label>
+      <message lang="es">Gerentes</message></label>
       <help>
         <message lang="fr">Les responsables valident les réservations.</message>
         <message lang="en">Responsibles validate when a reader book some resources.</message>
         <message lang="de">Verwalter</message>
-      </help>
+      <message lang="es">Los gerentes validan las reservas.</message></help>
       <spaceMapping>
         <profile>publisher</profile>
         <profile>writer</profile>
@@ -89,14 +84,14 @@
         <message lang="fr">Lecteurs</message>
         <message lang="en">Readers</message>
         <message lang="de">Leser</message>
-      </label>
+      <message lang="es">Lectores</message></label>
       <help>
         <message lang="fr">Les lecteurs créent des événements et réservent les ressources
           nécessaires.
         </message>
         <message lang="en">Readers create events and book necessary resources.</message>
         <message lang="de">Leser</message>
-      </help>
+      <message lang="es">Los jugadores crean eventos y reservan los recursos necesarios.</message></help>
       <spaceMapping>
         <profile>reader</profile>
       </spaceMapping>
@@ -109,7 +104,7 @@
         <message lang="fr">Par défaut, afficher</message>
         <message lang="en">By default, display</message>
         <message lang="de">By default, display</message>
-      </label>
+      <message lang="es">Por defecto, mostrar</message></label>
       <order>1</order>
       <mandatory>true</mandatory>
       <value>allReservations</value>
@@ -119,7 +114,7 @@
             <message lang="fr">toutes les réservations</message>
             <message lang="en">all reservations</message>
             <message lang="de">all reservations</message>
-          </name>
+          <message lang="es">todas las reservas</message></name>
           <value>allReservations</value>
         </option>
         <option>
@@ -127,7 +122,7 @@
             <message lang="fr">réservations de l'utilisateur</message>
             <message lang="en">reservations of user</message>
             <message lang="de">reservations of user</message>
-          </name>
+          <message lang="es">reservas de usuario</message></name>
           <value>myReservation</value>
         </option>
       </options>
@@ -139,7 +134,7 @@
         </message>
         <message lang="en">Sets the default display when the user enters the application.</message>
         <message lang="de">Sets the default display when the user enters the application.</message>
-      </help>
+      <message lang="es">Le permite definir la visualización predeterminada cuando el usuario llega a la aplicación.</message></help>
     </parameter>
     <parameter>
       <name>comments</name>
@@ -147,7 +142,7 @@
         <message lang="fr">Commentaires</message>
         <message lang="en">Comments</message>
         <message lang="de">Kommentare</message>
-      </label>
+      <message lang="es">Comentarios</message></label>
       <order>2</order>
       <mandatory>true</mandatory>
       <value>yes</value>
@@ -158,7 +153,7 @@
         </message>
         <message lang="en">Readers are able to post comments on resource.</message>
         <message lang="de">Leser können Kommentare zu Ressourcen posten.</message>
-      </help>
+      <message lang="es">Los lectores pueden dejar comentarios sobre los recursos.</message></help>
     </parameter>
     <parameter>
       <name>weekendNotVisible</name>
@@ -166,7 +161,7 @@
         <message lang="fr">Masquer les week-ends</message>
         <message lang="en">Hide week-ends</message>
         <message lang="de">Wochenenden Verstecken</message>
-      </label>
+      <message lang="es">Ocultar fines de semana</message></label>
       <order>3</order>
       <mandatory>true</mandatory>
       <value>no</value>
@@ -180,7 +175,7 @@
         <message lang="de">Erlaubt es, das Interface leichter zu machen und das Anzeigen des Restes
           der Woche zu optimieren
         </message>
-      </help>
+      <message lang="es">Le permite simplificar la interfaz y optimizar la visualización del resto de la semana.</message></help>
     </parameter>
   </parameters>
 </WAComponent>

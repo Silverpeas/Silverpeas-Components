@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
 
     Copyright (C) 2000 - 2022 Silverpeas
 
@@ -23,16 +22,13 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
--->
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
+--><WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>community</name>
   <label>
     <message lang="fr">Communauté</message>
     <message lang="en">Community</message>
     <message lang="de">Gemeinschaft</message>
-  </label>
+  <message lang="es">Comunidad</message></label>
   <description>
     <message lang="fr">Cette application permet de gérer un accès automatisé des utilisateurs à un
       espace. En prérequis, l'instance d'une telle application doit être indiquée comme page
@@ -46,12 +42,12 @@
       einen Raum verwalten. Als Voraussetzung muss die Instanz einer solchen Anwendung als
       Startseite des übergeordneten Spaces angegeben werden.
     </message>
-  </description>
+  <message lang="es">Esta aplicación permite gestionar el acceso automatizado de los usuarios a un espacio. Como requisito previo, la instancia de dicha aplicación debe indicarse como la página de inicio del espacio principal.</message></description>
   <suite>
     <message lang="fr">02 Gestion Collaborative</message>
     <message lang="en">02 Collaborative Management</message>
     <message lang="de">02 kollaborative Verwaltung</message>
-  </suite>
+  <message lang="es">02 Gestión colaborativa</message></suite>
   <inheritSpaceRightsByDefault>false</inheritSpaceRightsByDefault>
   <publicByDefault>true</publicByDefault>
   <visible>true</visible>
@@ -62,12 +58,12 @@
         <message lang="fr">Lecteurs</message>
         <message lang="en">Readers</message>
         <message lang="de">Leser</message>
-      </label>
+      <message lang="es">Lectores</message></label>
       <help>
         <message lang="fr">Lecteurs.</message>
         <message lang="en">Readers.</message>
         <message lang="de">Leser.</message>
-      </help>
+      <message lang="es">Lectores.</message></help>
       <spaceMapping>
         <profile>admin</profile>
         <profile>publisher</profile>
@@ -83,7 +79,7 @@
         <message lang="fr">Afficher le nombre de membres</message>
         <message lang="en">Display the number of members</message>
         <message lang="de">Mitgliederzahl anzeigen</message>
-      </label>
+      <message lang="es">Mostrar número de miembros</message></label>
       <order>1</order>
       <mandatory>true</mandatory>
       <value>yes</value>
@@ -102,7 +98,7 @@
           des Raums für Nutzer angezeigt, die noch kein Mitglied sind. Ansonsten wird nur die
           Schaltfläche angezeigt, die den Zugang zum Space ermöglicht.
         </message>
-      </help>
+      <message lang="es">Si está marcado, el número de miembros se muestra en la página de presentación del espacio para los usuarios que aún no son miembros. De lo contrario, solo se muestra el botón que permite el acceso al espacio.</message></help>
     </parameter>
     <parameter>
       <name>defaultMemberRole</name>
@@ -110,7 +106,7 @@
         <message lang="fr">Rôle par défaut</message>
         <message lang="en">Default role</message>
         <message lang="de">Standardrolle</message>
-      </label>
+      <message lang="es">Rol predeterminado</message></label>
       <order>2</order>
       <mandatory>true</mandatory>
       <value>no</value>
@@ -120,7 +116,7 @@
             <message lang="fr">Lecteur</message>
             <message lang="en">Readers</message>
             <message lang="de">Leser</message>
-          </name>
+          <message lang="es">Conducir</message></name>
           <value>reader</value>
         </option>
         <option>
@@ -128,7 +124,7 @@
             <message lang="fr">Rédacteur</message>
             <message lang="en">Writer</message>
             <message lang="en">Redaktor</message>
-          </name>
+          <message lang="es">Editor</message></name>
           <value>writer</value>
         </option>
         <option>
@@ -136,7 +132,7 @@
             <message lang="fr">Publieur</message>
             <message lang="en">Publisher</message>
             <message lang="en">Herausgeber</message>
-          </name>
+          <message lang="es">Editor</message></name>
           <value>publisher</value>
         </option>
         <option>
@@ -144,7 +140,7 @@
             <message lang="fr">Gestionnaire</message>
             <message lang="en">Manager</message>
             <message lang="en">Verwalter</message>
-          </name>
+          <message lang="es">Administrador</message></name>
           <value>admin</value>
         </option>
       </options>
@@ -160,7 +156,7 @@
         <message lang="de">Mit dieser Einstellung können Sie einem neuen Mitglied eine andere Rolle
           als die des Standardlesers zuweisen.
         </message>
-      </help>
+      <message lang="es">Esta configuración le permite asignar a un nuevo miembro un rol predeterminado que no sea el de lector.</message></help>
     </parameter>
     <parameter>
       <name>validateNewMember</name>
@@ -168,7 +164,7 @@
         <message lang="fr">Validation d'un nouveau membre</message>
         <message lang="en">Validation of a new member</message>
         <message lang="de">Validierung eines neuen Mitglieds</message>
-      </label>
+      <message lang="es">Validación de un nuevo miembro</message></label>
       <order>3</order>
       <mandatory>true</mandatory>
       <value>no</value>
@@ -184,7 +180,7 @@
         <message lang="de">Wenn diese Einstellung markiert ist, kann ein Nutzer Mitglied werden,
           sobald ein Administrator seinen Antrag bestätigt hat.
         </message>
-      </help>
+      <message lang="es">Si este parámetro está marcado, un usuario puede convertirse en miembro una vez que un administrador haya validado su solicitud.</message></help>
     </parameter>
     <parameter>
       <name>displayCharterOnSpaceHomepage</name>
@@ -192,7 +188,7 @@
         <message lang="fr">Afficher la charte dans l'espace</message>
         <message lang="en">Display the charter in the space</message>
         <message lang="de">Anzeige Charta in dem Bereich</message>
-      </label>
+      <message lang="es">Mostrar el gráfico en el espacio</message></label>
       <order>4</order>
       <mandatory>true</mandatory>
       <value>no</value>
@@ -208,7 +204,7 @@
         <message lang="de">Ermöglicht die Anzeige eines Links zur Charta auf der Startseite der
           Anwendung und auf der Startseite des Raums.
         </message>
-      </help>
+      <message lang="es">Le permite mostrar un enlace a la carta en la página de inicio de la aplicación y en la página de inicio del espacio.</message></help>
     </parameter>
   </parameters>
 </WAComponent>
