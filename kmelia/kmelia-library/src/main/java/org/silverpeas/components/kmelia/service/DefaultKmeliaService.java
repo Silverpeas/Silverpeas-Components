@@ -3988,12 +3988,12 @@ public class DefaultKmeliaService implements KmeliaService {
   @SimulationActionProcess(elementLister = KmeliaNodeSimulationElementLister.class)
   @Action(ActionType.COPY)
   @Override
-  public void copyNode(@SourcePK @TargetPK KmeliaCopyDetail copyDetail) {
+  public NodeDetail copyNode(@SourcePK @TargetPK KmeliaCopyDetail copyDetail) {
     HashMap<String, String> oldAndNewIds = new HashMap<>();
-    copyNode(copyDetail, oldAndNewIds);
+    return copyNode(copyDetail, oldAndNewIds);
   }
 
-  private void copyNode(KmeliaCopyDetail copyDetail, HashMap<String, String> oldAndNewIds) {
+  private NodeDetail copyNode(KmeliaCopyDetail copyDetail, HashMap<String, String> oldAndNewIds) {
     NodePK nodePKToCopy = copyDetail.getFromNodePK();
     NodePK targetPK = copyDetail.getToNodePK();
     String userId = copyDetail.getUserId();
@@ -4045,6 +4045,8 @@ public class DefaultKmeliaService implements KmeliaService {
         copyNode(folderContentCopy, oldAndNewIds);
       }
     }
+
+    return node;
   }
 
   private void copyNodeRights(final String userId, final NodeDetail nodeToCopy,
@@ -4138,7 +4140,7 @@ public class DefaultKmeliaService implements KmeliaService {
   @Action(ActionType.COPY)
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
-  public void copyPublication(@SourcePK PublicationDetail publiToCopy,
+  public PublicationDetail copyPublication(@SourcePK PublicationDetail publiToCopy,
       @TargetPK KmeliaCopyDetail copyDetail) {
     NodePK toNodePK = copyDetail.getToNodePK();
     String userId = copyDetail.getUserId();
@@ -4150,15 +4152,17 @@ public class DefaultKmeliaService implements KmeliaService {
         Location location = new Location(copyDetail.getToNodePK().getId(), toComponentId);
         location.setAsAlias(userId);
         publicationService.addAliases(publiToCopy.getPK(), singletonList(location));
+        return publiToCopy;
       } else {
-        copyPublication(publiToCopy, toNodePK, toComponentId, copyDetail, userId);
+        return copyPublication(publiToCopy, toNodePK, toComponentId, copyDetail, userId);
       }
     } catch (Exception ex) {
       SilverLogger.getLogger(this).error("Publication copy failure", ex);
     }
+    return null;
   }
 
-  private void copyPublication(final PublicationDetail publiToCopy, final NodePK toNodePK,
+  private PublicationDetail copyPublication(final PublicationDetail publiToCopy, final NodePK toNodePK,
       final String toComponentId, final KmeliaCopyDetail copyDetail, final String userId)
       throws PdcException, PublicationTemplateException, FormException {
     ResourceReference toResourceReference = new ResourceReference(ResourceReference.UNKNOWN_ID,
@@ -4237,6 +4241,8 @@ public class DefaultKmeliaService implements KmeliaService {
 
     // Index publication to index its files and content
     publicationService.createIndex(toPubPK);
+
+    return newPubli;
   }
 
   private void setToByPassDraftMode(@TargetPK final KmeliaCopyDetail copyDetail,

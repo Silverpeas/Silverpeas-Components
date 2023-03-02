@@ -147,8 +147,8 @@ public interface KmeliaService extends ApplicationService {
   /**
    * Gets the publications linked to the folder represented by given {@link NodePK} reference.
    * <p>
-   *   In any case, user right access to a publication is verified so that only accessible ones
-   *   are included into returned list.
+   * In any case, user right access to a publication is verified so that only accessible ones are
+   * included into returned list.
    * </p>
    * @param pk the reference to a folder.
    * @param userProfile a user profile
@@ -485,6 +485,7 @@ public interface KmeliaService extends ApplicationService {
    * @param componentId the unique identifier of the component instance.
    * @return the identifier of the new added axis.
    */
+  @SuppressWarnings("UnusedReturnValue")
   NodePK addAxis(NodeDetail axis, String componentId);
 
   /**
@@ -518,6 +519,7 @@ public interface KmeliaService extends ApplicationService {
    * @param userId the unique identifier of a user.
    * @return the identifier of the new position.
    */
+  @SuppressWarnings("UnusedReturnValue")
   NodePK addPosition(String fatherId, NodeDetail position, String componentId, String userId);
 
   /**
@@ -552,8 +554,8 @@ public interface KmeliaService extends ApplicationService {
   List<KmeliaPublication> search(List<String> combination, String componentId);
 
   /**
-   * Get publications categorized in a combination of positions and that are visible or created
-   * the given number of days ago.
+   * Get publications categorized in a combination of positions and that are visible or created the
+   * given number of days ago.
    * @param combination a list of positions composing the combination.
    * @param nbDays the number of days before today.
    * @param componentId the unique identifier of the component instance in which belongs the
@@ -577,6 +579,7 @@ public interface KmeliaService extends ApplicationService {
    * @param currentUserId the unique identifier of the user for whom the publications are asked.
    * @return the publication as a {@link KmeliaPublication} instance.
    */
+  @SuppressWarnings("unused")
   KmeliaPublication getKmaxPublication(String pubId, String currentUserId);
 
   /**
@@ -630,6 +633,7 @@ public interface KmeliaService extends ApplicationService {
    */
   Collection<Location> getAliases(PublicationPK pubPK);
 
+  @SuppressWarnings("unused")
   void setAliases(PublicationPK pubPK, List<Location> locations);
 
   void addAttachmentToPublication(PublicationPK pubPK, String userId, String filename,
@@ -656,9 +660,9 @@ public interface KmeliaService extends ApplicationService {
   Collection<NodeDetail> getFolderChildren(NodePK nodePK, String userId);
 
   /**
-   * Gets the details about the specified folder. The difference with {@link
-   * KmeliaService#getNodeHeader(String, String)} is that the children are also set as well as other
-   * information like the number of publications.
+   * Gets the details about the specified folder. The difference with
+   * {@link KmeliaService#getNodeHeader(String, String)} is that the children are also set as well
+   * as other information like the number of publications.
    * @param nodePK the unique identifier of the folder.
    * @param userId the unique identifier of the user for which the folder is asked.
    * @return the {@link NodeDetail} instance corresponding to the folder.
@@ -682,11 +686,32 @@ public interface KmeliaService extends ApplicationService {
   List<HistoryObjectDetail> getLastAccess(PublicationPK pk, NodePK nodePK, String excludedUserId,
       final int maxResult);
 
-  void copyNode(KmeliaCopyDetail copyDetail);
+  /**
+   * Copies the node according to the information provided by the specified copy descriptor.
+   * @param copyDetail a descriptor giving details about the copy to perform like the node to copy
+   * and the destination.
+   * @return the copy of the node.
+   */
+  @SuppressWarnings("UnusedReturnValue")
+  NodeDetail copyNode(KmeliaCopyDetail copyDetail);
 
+  /**
+   * Copies all the publications defined in the specified copy descriptor.
+   * @param copyDetail a descriptor providing information about the publications to copy and the
+   * destination of the copy.
+   */
   void copyPublications(KmeliaCopyDetail copyDetail);
 
-  void copyPublication(PublicationDetail publi, KmeliaCopyDetail copyDetail);
+  /**
+   * Copies the specified publication according to the given copy descriptor. In the case the
+   * publication is an alias, then the copy adds a new location to the original copy. Otherwise the
+   * publication is well copied.
+   * @param publication the publication to copy.
+   * @param copyDetail a descriptor providing details about the copy like the destination.
+   * @return the copy of the publication or the publication itself in the case of a new location.
+   */
+  @SuppressWarnings("UnusedReturnValue")
+  PublicationDetail copyPublication(PublicationDetail publication, KmeliaCopyDetail copyDetail);
 
   void moveNode(NodePK nodePK, NodePK to, KmeliaPasteDetail pasteContext);
 
