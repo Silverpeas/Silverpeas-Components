@@ -179,7 +179,7 @@
                   this.formatMessage(this.rootFormMessages.mustBeDifferentFrom,
                       [this.messages.substituteLabel, this.messages.incumbentLabel]));
             }
-            if (!this.notMatchingRoles && this.notMatchingRoles.length > 0) {
+            if (this.notMatchingRoles && this.notMatchingRoles.length > 0) {
               this.rootFormApi.errorMessage().add(
                   this.formatMessage(this.messages.mustHaveSameRoles));
             }
