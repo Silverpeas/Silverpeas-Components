@@ -266,6 +266,7 @@
             v-bind:initial-user-ids="replacement.substitute && replacement.substitute.id"
             v-bind:include-removed-users="true"
             v-bind:role-filter="selectedSubstituteFilterRoles"
+            v-bind:matching-all-roles="true"
             v-bind:component-id-filter="context.componentInstanceId"></silverpeas-user-group-select>
       </div>
       <div class="champ-ui-dialog">

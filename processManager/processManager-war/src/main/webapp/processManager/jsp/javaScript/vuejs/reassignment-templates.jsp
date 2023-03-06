@@ -80,6 +80,7 @@
             id="sp_wf_reassignment_form_i"
             v-on:api="selectIncumbentApi = $event"
             v-on:selection-change="incumbentChanged($event.selectedUserIds)"
+            v-bind:include-removed-users="true"
             v-bind:role-filter="workflowRoleFilter"
             v-bind:component-id-filter="context.componentInstanceId"></silverpeas-user-group-select>
       </div>
@@ -98,6 +99,7 @@
             v-on:api="selectSubstituteApi = $event"
             v-on:selection-change="substituteChanged($event.selectedUserIds)"
             v-bind:role-filter="substituteRoleFilter"
+            v-bind:matching-all-roles="true"
             v-bind:component-id-filter="context.componentInstanceId"></silverpeas-user-group-select>
       </div>
       <div class="champ-ui-dialog user-roles substitue" v-if="formattedSubstituteRoles">
