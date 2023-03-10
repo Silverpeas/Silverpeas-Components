@@ -50,7 +50,6 @@ import java.util.stream.Stream;
  */
 public class ProcessFilter {
 
-  private static final String PROCESS_FILTER = "ProcessFilter";
   private final FilterManager filter;
   private boolean collapse = false;
   private DataRecord criteria;

@@ -119,6 +119,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   private static final String QUESTION_ACTION = "#question#";
   private static final String RESPONSE_ACTION = "#response#";
   private static final String RE_ASSIGN_ACTION = "#reAssign#";
+  private static final String USER_SETTINGS = "user settings";
 
   /**
    * Builds and init a new session controller for the process manager instance.
@@ -194,7 +195,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
         }
       }
     } catch (Exception e) {
-      creationRights = false;
+      // nothing to do
     }
   }
 
@@ -680,7 +681,8 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   /**
    * @return the current replacement if any.
    */
-  public Replacement<?> getCurrentReplacement() {
+  @SuppressWarnings("rawtypes")
+  public Replacement getCurrentReplacement() {
     return currentReplacement;
   }
 
@@ -1147,8 +1149,8 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       User user = Workflow.getUserManager().getUser(userId);
       User substitute = Workflow.getUserManager().getUser(substituteId);
 
-      List<DataRecord> currentProcessList = getCurrentProcessList();
-      for (final DataRecord processData : currentProcessList) {
+      List<DataRecord> processList = getCurrentProcessList();
+      for (final DataRecord processData : processList) {
         ProcessInstanceRowRecord processRecord = (ProcessInstanceRowRecord) processData;
         ProcessInstance process =
             processInstanceManager.getProcessInstance(processRecord.getId());
@@ -1522,13 +1524,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       stepVO.setStepId(step.getId());
 
       // Activity
-      String activity = "";
-      if (step.getResolvedState() != null) {
-        State resolvedState = processModel.getState(step.getResolvedState());
-        if (resolvedState != null) {
-          activity = resolvedState.getLabel(currentRole, getLanguage());
-        }
-      }
+      String activity = getStepActivity(step);
       stepVO.setActivity(activity);
 
       // Actor Full Name
@@ -1572,6 +1568,17 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     }
 
     return stepsVO;
+  }
+
+  private String getStepActivity(final HistoryStep step) {
+    String activity = "";
+    if (step.getResolvedState() != null) {
+      State resolvedState = processModel.getState(step.getResolvedState());
+      if (resolvedState != null) {
+        activity = resolvedState.getLabel(currentRole, getLanguage());
+      }
+    }
+    return activity;
   }
 
   public HistoryStep[] getSortedHistorySteps(final boolean ascending) {
@@ -1834,7 +1841,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
       return new XmlForm(userInfos.toRecordTemplate(currentRole, getLanguage(), false));
     } catch (FormException | WorkflowException we) {
-      throw new ProcessManagerException(failureOnGetting("user settings", "form"), we);
+      throw new ProcessManagerException(failureOnGetting(USER_SETTINGS, "form"), we);
     }
   }
 
@@ -1845,7 +1852,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     try {
       return processModel.getNewUserInfosRecord(currentRole, getLanguage());
     } catch (WorkflowException we) {
-      throw new ProcessManagerException(failureOnGetting("user settings", "form"), we);
+      throw new ProcessManagerException(failureOnGetting(USER_SETTINGS, "form"), we);
     }
   }
 
@@ -1860,7 +1867,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
       return data;
     } catch (WorkflowException we) {
-      throw new ProcessManagerException(failureOnGetting("user settings", "record"), we);
+      throw new ProcessManagerException(failureOnGetting(USER_SETTINGS, "record"), we);
     }
   }
 
@@ -2385,7 +2392,8 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    * the workflow.
    * @return a list of possible replacements.
    */
-  public List<Replacement<?>> getCurrentAndNextUserReplacementsAsIncumbent() {
+  @SuppressWarnings("rawtypes")
+  public List<Replacement> getCurrentAndNextUserReplacementsAsIncumbent() {
     return Replacement.getAllOf(currentUser, peasId)
         .stream()
         .filterCurrentAndNextAt(LocalDate.now())
