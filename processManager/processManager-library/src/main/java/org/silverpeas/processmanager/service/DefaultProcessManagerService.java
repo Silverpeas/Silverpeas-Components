@@ -23,7 +23,6 @@
  */
 package org.silverpeas.processmanager.service;
 
-import org.silverpeas.core.SilverpeasExceptionMessages;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;

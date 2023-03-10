@@ -207,7 +207,8 @@ public class ProcessManagerRequestRouter
         processList = session.getCurrentProcessList();
       }
       request.setAttribute("processList", processList);
-      final List<Replacement<?>> replacements =
+      //noinspection rawtypes
+      final List<Replacement> replacements =
           session.getCurrentAndNextUserReplacementsAsIncumbent();
       request.setAttribute("CurrentAndNextReplacementsAsIncumbent", replacements);
       setProcessFilterAttributes(session, request);
