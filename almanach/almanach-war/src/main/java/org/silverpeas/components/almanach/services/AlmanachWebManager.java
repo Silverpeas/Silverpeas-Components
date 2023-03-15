@@ -121,9 +121,11 @@ public class AlmanachWebManager extends CalendarWebManager {
     componentAccessController
         .filterAuthorizedByUser(customAggregationComponentIds, User.getCurrentRequester().getId())
         .forEach(result::add);
-    result.addAll(getAlmanachIdsByDefaultAggregation(componentsWithDefaultAggregation).stream()
-        .map(SilverpeasComponentInstance::getId)
-        .collect(Collectors.toList()));
+    if (customAggregations.isEmpty()) {
+      result.addAll(getAlmanachIdsByDefaultAggregation(componentsWithDefaultAggregation).stream()
+          .map(SilverpeasComponentInstance::getId)
+          .collect(Collectors.toList()));
+    }
     return result;
   }
 
