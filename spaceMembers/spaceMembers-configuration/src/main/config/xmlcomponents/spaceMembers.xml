@@ -109,5 +109,36 @@
         <message lang="de">Art der Darstellung des Raumes Mitglieder Startseite</message>
       </help>
     </parameter>
+    <parameter>
+      <name>componentInstanceRolesLookup</name>
+      <label>
+        <message lang="fr">Prendre en compte les rôles des applications</message>
+        <message lang="en">Take into account the roles of the applications</message>
+        <message lang="de">Berücksichtigen Sie die Rollen von Anwendungen</message>
+      </label>
+      <order>2</order>
+      <mandatory>true</mandatory>
+      <value>yes</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Si coché, les utilisateurs indiqués au niveau des rôles de l'espace et
+          ceux au niveau des rôles des applications dans l'espace et ses sous-espaces sont pris en
+          compte. Autrement, seuls les utilisateurs indiqués au niveau des rôles de l'espace de
+          l'application sont pris en compte.
+        </message>
+        <message lang="en">If this check box is selected, the users specified at the space role
+          level and those specified at the application role level in the space and its subspaces are
+          taken into account. Otherwise, only users specified at the space role level of the
+          application are considered.
+        </message>
+        <message lang="de">Wenn aktiviert, werden sowohl die auf der Ebene der Space-Rollen als auch
+          die auf der Ebene der Anwendungsrollen angegebenen Benutzer im Space und seinen
+          Unterspaces berücksichtigt. Andernfalls werden nur die Nutzer berücksichtigt, die auf der
+          Ebene der Rollen des Anwendungsraums angegeben sind.
+        </message>
+      </help>
+      <personalSpaceValue>no</personalSpaceValue>
+    </parameter>
   </parameters>
 </WAComponent>
