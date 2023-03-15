@@ -23,18 +23,20 @@
  */
 package org.silverpeas.components.spacemembers.control;
 
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.util.StringUtil;
+
+import static java.util.Optional.ofNullable;
 
 public class SpaceMembersSessionController extends AbstractComponentSessionController {
+  private static final long serialVersionUID = -8252699589828677539L;
 
   /**
    * Standard Session Controller Constructor
    * @param mainSessionCtrl The user's profile
    * @param componentContext The component's profile
-   *
    */
   public SpaceMembersSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
@@ -42,14 +44,24 @@ public class SpaceMembersSessionController extends AbstractComponentSessionContr
   }
 
   /**
-   * return true if Home page displays only connected members
-   * @return boolean
+   * Should only logged-in members been displayed on homepage?
+   * @return boolean true if it should, false otherwise.
    */
   public boolean isHomePageDisplayOnlyConnectedMembers() {
-    String parameterHomePage = getComponentParameterValue("homePage");
-    if(StringUtil.isDefined(parameterHomePage)) {
-      return "1".equalsIgnoreCase(getComponentParameterValue("homePage"));
-    }
-    return false;
+    return ofNullable(getComponentParameterValue("homePage"))
+        .filter(StringUtil::isDefined)
+        .map(StringUtil::getBooleanValue)
+        .orElse(false);
+  }
+
+  /**
+   * Should the component instances of space and its subspaces been lookup?
+   * @return boolean true if it should, false otherwise.
+   */
+  public boolean isComponentInstanceRolesLookup() {
+    return ofNullable(getComponentParameterValue("componentInstanceRolesLookup"))
+        .filter(StringUtil::isDefined)
+        .map(StringUtil::getBooleanValue)
+        .orElse(true);
   }
 }

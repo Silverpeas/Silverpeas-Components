@@ -23,17 +23,15 @@
  */
 package org.silverpeas.components.spacemembers.servlets;
 
-
+import org.silverpeas.components.spacemembers.control.SpaceMembersSessionController;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 
-import org.silverpeas.components.spacemembers.control.SpaceMembersSessionController;
-import org.silverpeas.core.web.http.HttpRequest;
-
-public class SpaceMembersRequestRouter extends ComponentRequestRouter<SpaceMembersSessionController> {
-
-  private static final long serialVersionUID = -4334545961842905383L;
+public class SpaceMembersRequestRouter
+    extends ComponentRequestRouter<SpaceMembersSessionController> {
+  private static final long serialVersionUID = -4293836461205680881L;
 
   @Override
   public SpaceMembersSessionController createComponentSessionController(
@@ -41,49 +39,26 @@ public class SpaceMembersRequestRouter extends ComponentRequestRouter<SpaceMembe
     return new SpaceMembersSessionController(mainSessionCtrl, context);
   }
 
-  /**
-   * This method has to be implemented in the component request rooter class. returns the session
-   * control bean name to be put in the request object ex : for almanach, returns "almanach"
-   * @return
-   */
   @Override
   public String getSessionControlBeanName() {
     return "spaceMembers";
   }
 
-  /**
-   * This method has to be implemented by the component request rooter it has to compute a
-   * destination page
-   *
-   * @param function The entering request function (ex : "Main.jsp")
-   * @param hyperlinkSCC The component Session Control, build and initialised.
-   * @param request
-   * @return The complete destination URL for a forward (ex :
-   * "/almanach/jsp/almanach.jsp?flag=user")
-   */
   @Override
   public String getDestination(String function, SpaceMembersSessionController spaceMembersSCC,
       HttpRequest request) {
-
-
-
     String destination = "";
-
     if (function.startsWith("Main") || function.startsWith("portlet")) {
-
-      destination = "/Rdirectory/jsp/Main?SpaceId="+spaceMembersSCC.getSpaceId();
-
-      //Affichage page d'accueil : Seulement les membres connectés
-      if(spaceMembersSCC.isHomePageDisplayOnlyConnectedMembers()) {
-
+      destination = "/Rdirectory/jsp/Main?SpaceId=" + spaceMembersSCC.getSpaceId();
+      // only logged-in members
+      if (spaceMembersSCC.isHomePageDisplayOnlyConnectedMembers()) {
         destination += "&View=connected";
-
       }
+      // should component instance of space and its sub spaces been lookup?
+      destination += "&InWholeSpaceTree=" + spaceMembersSCC.isComponentInstanceRolesLookup();
     } else {
-      destination = "/Rdirectory/jsp/"+function;
+      destination = "/Rdirectory/jsp/" + function;
     }
-
-
     return destination;
   }
 }
