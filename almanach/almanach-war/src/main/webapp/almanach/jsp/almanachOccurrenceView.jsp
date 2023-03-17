@@ -46,6 +46,8 @@
 
 <c:set var="currentUser"            value="${requestScope.currentUser}"/>
 <c:set var="currentUserId"          value="${currentUser.id}"/>
+<c:set var="isAnonymous" value="${requestScope.isAnonymous}"/>
+<c:set var="isAccessGuest" value="${requestScope.isAccessGuest}"/>
 <c:set var="componentId"            value="${requestScope.browseContext[3]}"/>
 <c:set var="timeWindowViewContext"  value="${requestScope.timeWindowViewContext}"/>
 <jsp:useBean id="timeWindowViewContext" type="org.silverpeas.components.almanach.AlmanachTimeWindowViewContext"/>
@@ -75,30 +77,32 @@
 </head>
 <body ng-controller="viewController">
 <view:browseBar componentId="${componentId}" path="${requestScope.navigationContext}"/>
-<view:operationPane>
-  <silverpeas-calendar-event-management api="eventMng"
-                                        on-occurrence-deleted="goToPage('${backUri}')"
-                                        on-event-attendee-participation-updated="reloadOccurrenceFromContext()">
-  </silverpeas-calendar-event-management>
-  <view:operation
-      action="angularjs:notifyEventOccurrence(ceo)"
-      altText="${notifyLabel}"/>
-  <c:if test="${occurrence.canBeModified()}">
-    <view:operationSeparator/>
+<c:if test="${not isAnonymous and not isAccessGuest}">
+  <view:operationPane>
+    <silverpeas-calendar-event-management api="eventMng"
+                                          on-occurrence-deleted="goToPage('${backUri}')"
+                                          on-event-attendee-participation-updated="reloadOccurrenceFromContext()">
+    </silverpeas-calendar-event-management>
     <view:operation
-        action="angularjs:editEventOccurrence(ceo)"
-        altText="${modifyLabel}"/>
-    <view:operation
-        action="angularjs:eventMng.removeOccurrence(ceo)"
-        altText="${deleteLabel}"/>
-  </c:if>
-  <c:if test="<%=BasketSelectionUI.displayPutIntoBasketSelectionShortcut()%>">
-    <view:operationSeparator/>
-    <view:operation
-        action="angularjs:putEventOccurrenceInBasket(ceo)"
-        altText="${putInBasket}"/>
-  </c:if>
-</view:operationPane>
+        action="angularjs:notifyEventOccurrence(ceo)"
+        altText="${notifyLabel}"/>
+    <c:if test="${occurrence.canBeModified()}">
+      <view:operationSeparator/>
+      <view:operation
+          action="angularjs:editEventOccurrence(ceo)"
+          altText="${modifyLabel}"/>
+      <view:operation
+          action="angularjs:eventMng.removeOccurrence(ceo)"
+          altText="${deleteLabel}"/>
+    </c:if>
+    <c:if test="<%=BasketSelectionUI.displayPutIntoBasketSelectionShortcut()%>">
+      <view:operationSeparator/>
+      <view:operation
+          action="angularjs:putEventOccurrenceInBasket(ceo)"
+          altText="${putInBasket}"/>
+    </c:if>
+  </view:operationPane>
+</c:if>
 <view:window>
   <view:frame>
     <silverpeas-calendar-event-view ng-if="ceo"

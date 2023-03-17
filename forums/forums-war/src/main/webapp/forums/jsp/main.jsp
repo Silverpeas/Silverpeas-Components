@@ -37,7 +37,7 @@
 <c:set var="isReader" value="${sessionController.reader}" />
 <c:set var="isUser" value="${sessionController.user}" />
 <c:set var="isAdmin" value="${sessionController.admin}" />
-<c:set var="isAccessGuest" value="${sessionController.accessGuest}" />
+<c:set var="isAccessGuest" value="${sessionController.userDetail.accessGuest}" />
 
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
@@ -150,7 +150,7 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
   <body id="forum" <%ForumHelper.addBodyOnload(out, fsc);%>>
   <c:set var="isSubscriber" value="${sessionController.componentSubscriber}" />
   <view:browseBar />
-    <c:if test="${isAdmin or isUser or !sessionController.external}">
+    <c:if test="${not isAccessGuest and (isAdmin or isUser or !sessionController.external)}">
       <view:operationPane>
       <c:if test="${isAdmin or isUser}">
         <c:if test="${isAdmin && sessionController.pdcUsed}">
@@ -181,7 +181,6 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
         </c:if>
       </c:if>
       <view:operationSeparator/>
-      <c:if test="${not isAccessGuest}">
         <c:choose>
           <c:when test="${isSubscriber}">
             <fmt:message key="forums.unsubscribe" var="unsubscribeAltText" />
@@ -192,7 +191,6 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
             <view:operation altText="${subscribeAltText}" icon="" action="javascript:subscribe();" />
           </c:otherwise>
         </c:choose>
-      </c:if>
       </view:operationPane>
     </c:if>
     <view:window>

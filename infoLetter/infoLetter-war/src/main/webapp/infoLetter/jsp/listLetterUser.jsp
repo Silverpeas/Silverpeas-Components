@@ -53,6 +53,8 @@
 <c:set var="lastNSent" value="${resources.getSetting('user.lastNSent', 4)}"/>
 <jsp:useBean id="lastNSent" type="java.lang.Integer"/>
 
+<c:set var="isAnonymous" value="${requestScope.isAnonymous}"/>
+<c:set var="isAccessGuest" value="${requestScope.isAccessGuest}"/>
 <c:set var="letterName" value="${requestScope.letterName}"/>
 <c:set var="letterDescription" value="${requestScope.letterDescription}"/>
 <c:set var="letterFrequence" value="${requestScope.letterFrequence}"/>
@@ -84,14 +86,16 @@
   </view:sp-head-part>
   <view:sp-body-part>
     <view:operationPane>
-      <c:choose>
-        <c:when test="${isSuscriber}">
-          <view:operation action="UnsuscribeMe" icon="${unsubscribeIcon}" altText="${unsubscribeLabel}"/>
-        </c:when>
-        <c:otherwise>
-          <view:operation action="SuscribeMe" icon="${subscribeIcon}" altText="${subscribeLabel}"/>
-        </c:otherwise>
-      </c:choose>
+      <c:if test="${not isAnonymous and not isAccessGuest}">
+        <c:choose>
+          <c:when test="${isSuscriber}">
+            <view:operation action="UnsuscribeMe" icon="${unsubscribeIcon}" altText="${unsubscribeLabel}"/>
+          </c:when>
+          <c:otherwise>
+            <view:operation action="SuscribeMe" icon="${subscribeIcon}" altText="${subscribeLabel}"/>
+          </c:otherwise>
+        </c:choose>
+      </c:if>
     </view:operationPane>
     <view:window>
       <view:frame>

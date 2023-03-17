@@ -40,7 +40,8 @@
 <c:set var="isReader" value="${sessionController.reader}" />
 <c:set var="isUser" value="${sessionController.user}" />
 <c:set var="isAdmin" value="${sessionController.admin}" />
-<c:set var="isAccessGuest" value="${sessionController.accessGuest}" />
+<c:set var="isAccessGuest" value="${sessionController.userDetail.accessGuest}" />
+<jsp:useBean id="isAccessGuest" type="java.lang.Boolean"/>
 
 <fmt:setLocale value="${requestScope.resources.language}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
@@ -67,7 +68,6 @@
     int currentMessageId = -1;
     boolean scrollToMessage = false;
     boolean displayAllMessages = true;
-    boolean isAccessGuest = User.getCurrentRequester().isAccessGuest();
 
     try {
         Message message;

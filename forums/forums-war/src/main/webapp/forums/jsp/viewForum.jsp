@@ -38,7 +38,7 @@
 <c:set var="isReader" value="${sessionController.reader}" />
 <c:set var="isUser" value="${sessionController.user}" />
 <c:set var="isAdmin" value="${sessionController.admin}" />
-<c:set var="isAccessGuest" value="${sessionController.accessGuest}" />
+<c:set var="isAccessGuest" value="${sessionController.userDetail.accessGuest}" />
 
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
@@ -68,7 +68,6 @@
   boolean isAdmin = fsc.isAdmin();
   boolean isUser = fsc.isUser();
   boolean isReader = fsc.isReader();
-
   fsc.resetDisplayAllMessages();
   int forumId = ForumHelper.getIntParameter(request, "forumId", 0);
 
@@ -139,7 +138,7 @@
   <c:url var="forumLink" value="${viewForumPage}"><c:param name="call" value="viewForum"/><c:param name="forumId" value="${param.forumId}"/></c:url>
   <view:browseBarElt id="${currentForum.id}" label="${currentForum.name}" link="${forumLink}" />
 </view:browseBar>
-<c:if test="${isAdmin || isUser}">
+<c:if test="${not isAccessGuest and (isAdmin || isUser)}">
   <view:operationPane>
     <c:if test="${isAdmin && sessionController.pdcUsed}">
       <fmt:message key="PDCUtilization" var="pdcUtilisation" />
@@ -149,9 +148,7 @@
       <view:operation altText="${pdcUtilisation}" icon="${pdcUtilisationIconUrl}" action="${pdcUtilisationOperation}" />
     </c:if>
     <fmt:message key="mailAdmin" var="mail2AdminAltText" />
-    <c:if test="${not isAccessGuest}">
-      <c:set var="mail2AdminOperation">javascript:notifyForumPopup('<c:out value="${sessionController.adminIds}" />');</c:set>
-    </c:if>
+    <c:set var="mail2AdminOperation">javascript:notifyForumPopup('<c:out value="${sessionController.adminIds}" />');</c:set>
     <c:url var="mail2AdminIconUrl" value="/util/icons/forums_mailtoAdmin.gif" />
     <view:operation altText="${mail2AdminAltText}" icon="${mail2AdminIconUrl}" action="${mail2AdminOperation}" />
     <c:if test="${isAdmin && sessionController.forumInsideForum}">

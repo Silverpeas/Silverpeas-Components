@@ -60,6 +60,8 @@
 <c:set var="lastNSent" value="${resources.getSetting('admin.lastNSent', 4)}"/>
 <jsp:useBean id="lastNSent" type="java.lang.Integer"/>
 
+<c:set var="isAnonymous" value="${requestScope.isAnonymous}"/>
+<c:set var="isAccessGuest" value="${requestScope.isAccessGuest}"/>
 <c:set var="letterName" value="${requestScope.letterName}"/>
 <c:set var="letterDescription" value="${requestScope.letterDescription}"/>
 <c:set var="letterFrequence" value="${requestScope.letterFrequence}"/>
@@ -174,14 +176,16 @@
       <view:operationSeparator/>
       <view:operation action="Suscribers" icon="${spSubscriberIcon}" altText="${spSubscriberLabel}"/>
       <view:operation action="Emails" icon="${extSubscriberIcon}" altText="${extSubscriberLabel}"/>
-      <c:choose>
-        <c:when test="${isSuscriber}">
-          <view:operation action="UnsuscribeMe" icon="${unsubscribeIcon}" altText="${unsubscribeLabel}"/>
-        </c:when>
-        <c:otherwise>
-          <view:operation action="SuscribeMe" icon="${subscribeIcon}" altText="${subscribeLabel}"/>
-        </c:otherwise>
-      </c:choose>
+      <c:if test="${not isAnonymous and not isAccessGuest}">
+        <c:choose>
+          <c:when test="${isSuscriber}">
+            <view:operation action="UnsuscribeMe" icon="${unsubscribeIcon}" altText="${unsubscribeLabel}"/>
+          </c:when>
+          <c:otherwise>
+            <view:operation action="SuscribeMe" icon="${subscribeIcon}" altText="${subscribeLabel}"/>
+          </c:otherwise>
+        </c:choose>
+      </c:if>
     </view:operationPane>
     <view:window>
       <view:frame>

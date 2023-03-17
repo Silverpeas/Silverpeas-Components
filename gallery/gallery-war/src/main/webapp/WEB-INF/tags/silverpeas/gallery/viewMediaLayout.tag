@@ -44,6 +44,8 @@
 <jsp:useBean id="componentId" type="java.lang.String"/>
 <c:set var="userId" value="${sessionScope.SilverSessionController.userId}"/>
 <jsp:useBean id="userId" type="java.lang.String"/>
+<c:set var="isGuest" value="${requestScope.IsGuest}"/>
+<c:set var="isAnonymous" value="${requestScope.IsAnonymous}"/>
 
 <view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.ADMIN"/>
 <view:setConstant var="publisherRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.PUBLISHER"/>
@@ -148,11 +150,13 @@
 <gallery:browseBar albumPath="${albumPath}" additionalElements="${silfn:truncate(mediaTitle, 50)}@#"/>
 
 <view:operationPane>
-  <fmt:message key="GML.notify" var="notifLabel"/>
-  <fmt:message key="gallery.alert" var="notifIcon" bundle="${icons}"/>
-  <c:url value="${notifIcon}" var="notifIcon"/>
-  <view:operation altText="${notifLabel}" action="javaScript:onClick=sp.messager.open('${instanceId}', {${currentAlbumIdKey}: '${albumId}',${contributionIdKey}: '${mediaId}'});" icon="${notifIcon}"/>
-  <view:operationSeparator/>
+  <c:if test="${not isAnonymous and not isGuest}">
+    <fmt:message key="GML.notify" var="notifLabel"/>
+    <fmt:message key="gallery.alert" var="notifIcon" bundle="${icons}"/>
+    <c:url value="${notifIcon}" var="notifIcon"/>
+    <view:operation altText="${notifLabel}" action="javaScript:onClick=sp.messager.open('${instanceId}', {${currentAlbumIdKey}: '${albumId}',${contributionIdKey}: '${mediaId}'});" icon="${notifIcon}"/>
+    <view:operationSeparator/>
+  </c:if>
   <c:if test="${requestScope.UpdateMediaAllowed}">
     <fmt:message key="GML.modify" var="modifyLabel"/>
     <fmt:message key="GML.modify" var="modifyIcon" bundle="${icons}"/>

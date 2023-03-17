@@ -33,7 +33,6 @@ import org.silverpeas.core.contribution.util.ContributionManagementContext;
 import org.silverpeas.core.subscription.service.ComponentSubscriptionResource;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
@@ -129,8 +128,8 @@ public class WebPagesRequestRouter extends ComponentRequestRouter<WebPagesSessio
             request.setAttribute(ACTION_ATTR, "Display");
           }
         }
-        request.setAttribute("AnonymousAccess", isAnonymousAccess(request));
-        request.setAttribute("AccessGuest", isAccessGuest(request));
+        request.setAttribute("AnonymousAccess", webPagesSC.getUserDetail().isAnonymous());
+        request.setAttribute("AccessGuest", webPagesSC.getUserDetail().isAccessGuest());
         destination = rootDestination + "display.jsp";
       } else if (function.startsWith("portlet")) {
         request.setAttribute(ACTION_ATTR, "Portlet");
@@ -189,15 +188,4 @@ public class WebPagesRequestRouter extends ComponentRequestRouter<WebPagesSessio
     request.setAttribute("haveGotContent", haveGotContent);
     return haveGotContent;
   }
-
-  private boolean isAnonymousAccess(HttpServletRequest request) {
-    LookHelper lookHelper = LookHelper.getLookHelper(request.getSession());
-    return lookHelper != null && lookHelper.isAnonymousAccess();
-  }
-
-  private boolean isAccessGuest(HttpServletRequest request) {
-    LookHelper lookHelper = LookHelper.getLookHelper(request.getSession());
-    return lookHelper != null && lookHelper.isAccessGuest();
-  }
-
 }

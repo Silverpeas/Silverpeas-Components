@@ -30,7 +30,7 @@
 <c:set var="sessionController" value="${requestScope.forumsSessionClientController}" />
 <fmt:setLocale value="${requestScope.resources.language}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
-<c:set var="isAccessGuest" value="${sessionController.accessGuest}" />
+<c:set var="isAccessGuest" value="${sessionController.userDetail.accessGuest}" />
 
 <%@ page import="org.silverpeas.components.forums.control.helpers.ForumListHelper"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window" %>
@@ -250,14 +250,14 @@ function cancel() {
 					<input type="text" id="forumKeywords" name="forumKeywords" size="50" value=""/>
 				</div>
 			</div>
-			<div class="field" id="messageSubscriptionArea">
-        <c:if test="${not isAccessGuest}">
-          <label for="subscribeMessage" class="txtlibform"><fmt:message key='subscribeMessage'/></label>
-          <div class="champs">
-            <input type="checkbox" id="subscribeMessage" name="subscribeMessage"/>
-          </div>
-        </c:if>
-			</div>
+      <c:if test="${not isAccessGuest}">
+      <div class="field" id="messageSubscriptionArea">
+        <label for="subscribeMessage" class="txtlibform"><fmt:message key='subscribeMessage'/></label>
+        <div class="champs">
+          <input type="checkbox" id="subscribeMessage" name="subscribeMessage"/>
+        </div>
+      </div>
+      </c:if>
 		</div>
 	</fieldset>
 	

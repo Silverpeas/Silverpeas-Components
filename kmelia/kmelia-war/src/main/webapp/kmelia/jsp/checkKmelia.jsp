@@ -87,7 +87,6 @@
 <%@ page import="org.silverpeas.core.silverstatistics.access.model.HistoryByUser"%>
 <%@page import="org.silverpeas.components.kmelia.KmeliaConstants"%>
 <%@ page import="org.silverpeas.core.util.SettingBundle" %>
-<%@ page import="org.silverpeas.core.web.look.LookHelper" %>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%
@@ -117,9 +116,7 @@
 	boolean toolboxMode = (componentId != null && componentId.startsWith("toolbox"));
 	boolean kmeliaMode 	= (componentId != null && componentId.startsWith("kmelia"));
 
-  LookHelper helper 	= LookHelper.getLookHelper(session);
-
-  boolean isAccessGuest 	= helper.isAccessGuest();
+  boolean isAccessGuest 	= kmeliaScc.getUserDetail().isAccessGuest();
 
 	SettingBundle settings = ResourceLocator.getSettingBundle("org.silverpeas.kmelia.settings.kmeliaSettings");
 %>

@@ -529,7 +529,7 @@
         if (isOwner || isAdmin) {
           operationPane.addOperation("useless", resources.getString("GML.manageSubscriptions"), "ManageSubscriptions");
         }
-        if (!currentUser.isAccessGuest() && !currentUser.isAnonymous() && !currentUser.isAccessGuest()) {
+        if (!currentUser.isAnonymous() && !currentUser.isAccessGuest()) {
           operationPane.addOperation("useless", "<span id='subscriptionMenuLabel'></span>", "javascript:spSubManager.switchUserSubscription()");
         }
         if (StringUtil.isDefined(pubPermalink) && !currentUser.isAnonymous() && !currentUser.isAccessGuest()) {

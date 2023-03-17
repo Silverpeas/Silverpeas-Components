@@ -38,6 +38,8 @@
 
 <c:set var="currentUser" value="${requestScope.currentUser}"/>
 <c:set var="currentUserId" value="${currentUser.id}"/>
+<c:set var="isAnonymous" value="${requestScope.isAnonymous}"/>
+<c:set var="isAccessGuest" value="${requestScope.isAccessGuest}"/>
 <c:set var="componentId" value="${requestScope.browseContext[3]}"/>
 <jsp:useBean id="componentId" type="java.lang.String"/>
 <c:set var="highestUserRole" value="${requestScope.highestUserRole}"/>
@@ -101,12 +103,14 @@
                                 altText="${createSynchronizedCalendarLabel}" icon="${opIcon}"/>
     </c:if>
   </c:if>
-  <view:operationSeparator />
-  <view:operation action="angularjs:calMng.importICalEvents(almanachCalendar.getCalendars())"
-                  altText="${importEventLabel}"/>
-  <view:operationSeparator/>
-  <view:operation action="angularjs:viewMyCalendar()"
-                  altText="${viewMyCalendarLabel}"/>
+  <c:if test="${not isAnonymous and not isAccessGuest}">
+    <view:operationSeparator/>
+    <view:operation action="angularjs:calMng.importICalEvents(almanachCalendar.getCalendars())"
+                    altText="${importEventLabel}"/>
+    <view:operationSeparator/>
+    <view:operation action="angularjs:viewMyCalendar()"
+                    altText="${viewMyCalendarLabel}"/>
+  </c:if>
 </view:operationPane>
 <input type="text" ng-disabled="true" style="display: none;" class="user-ids"
        ng-model="participationIds"

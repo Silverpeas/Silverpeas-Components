@@ -690,15 +690,16 @@ function filterAll() {
     operationPane.addOperation(resource.getIcon("questionReply.cloreQ"), resource.getString(
             "questionReply.cloreQs"), "javascript:onClick=Closes();");
   }
-  operationPane.addLine();
-  operationPane.addOperation(resource.getIcon("questionReply.export"), resource.getString(
-          "questionReply.export"), "javascript:onClick=openSPWindow('Export','export')");
+  if (!scc.getUserDetail().isAnonymous() && !scc.getUserDetail().isAccessGuest()) {
+    operationPane.addLine();
+    operationPane.addOperation(resource.getIcon("questionReply.export"), resource.getString(
+        "questionReply.export"), "javascript:onClick=openSPWindow('Export','export')");
 
-  operationPane.addLine();
-  operationPane.addOperation(resource.getIcon("GML.unsubscribe"),
-      "<span id='subscriptionMenuLabel'></span>",
-      "javascript:spSubManager.switchUserSubscription()");
-
+    operationPane.addLine();
+    operationPane.addOperation(resource.getIcon("GML.unsubscribe"),
+        "<span id='subscriptionMenuLabel'></span>",
+        "javascript:spSubManager.switchUserSubscription()");
+  }
   out.println(window.printBefore());
 %>
 <view:frame>

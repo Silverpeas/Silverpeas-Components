@@ -101,6 +101,8 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter<InfoLetterSe
     // the flag is the best user's profile
     String flag = getFlag(infoLetterSC.getUserRoles());
     request.setAttribute("userIsAdmin", ADMIN.equals(flag));
+    request.setAttribute("isAnonymous", infoLetterSC.getUserDetail().isAnonymous());
+    request.setAttribute("isAccessGuest", infoLetterSC.getUserDetail().isAccessGuest());
     request.setAttribute("isPdcUsed", infoLetterSC.isPdcUsed());
     request.setAttribute("language", language);
     request.setAttribute("browseContext",

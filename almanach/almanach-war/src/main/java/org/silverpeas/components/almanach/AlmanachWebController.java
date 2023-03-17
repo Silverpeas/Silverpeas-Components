@@ -87,6 +87,8 @@ public class AlmanachWebController
     context.getRequest().setAttribute("mainCalendar", CalendarEntity.fromCalendar(mainCalendar)
         .withURI(context.uri().ofCalendar(mainCalendar)));
     context.getRequest().setAttribute("timeWindowViewContext", timeWindowViewContext);
+    context.getRequest().setAttribute("isAnonymous", context.getUser().isAnonymous());
+    context.getRequest().setAttribute("isAccessGuest", context.getUser().isAccessGuest());
   }
 
   /**

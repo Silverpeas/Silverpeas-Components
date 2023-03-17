@@ -25,6 +25,7 @@
 --%>
 <%@page import="org.silverpeas.components.forums.control.helpers.ForumListHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%
     response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
@@ -40,6 +41,8 @@
     String title = message.getTitle();
     String backUrl = ActionUrl.getUrl("viewMessage", "viewForum", 1, messageId, forumId);
 %>
+<c:set var="sessionController" value="${requestScope.forumsSessionClientController}" />
+<c:set var="isAccessGuest" value="${sessionController.userDetail.accessGuest}" />
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -112,10 +115,12 @@
                                         <td align="left" valign="top"><span class="txtlibform"><%=resource.getString("messageText")%> :&nbsp;</span></td>
                                         <td valign="top"><font size=1><textarea name="messageText" id="messageText"><%=text%></textarea></font></td>
                                     </tr>
+                                    <c:if test="${not isAccessGuest}">
                                     <tr>
                                         <td align="left" valign="top"><span class="txtlibform"><%=resource.getString("subscribeMessage")%> :&nbsp;</span></td>
                                         <td valign="top"><input type="checkbox" name="subscribeMessage"/></td>
                                     </tr>
+                                    </c:if>
                                 </table>
                             </td>
                         </tr>
