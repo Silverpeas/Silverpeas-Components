@@ -24,39 +24,26 @@
 
 package org.silverpeas.components.community.security.authorization;
 
-import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
-import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.security.authorization.AccessControlContext;
-import org.silverpeas.core.security.authorization.ComponentAccessController;
-import org.silverpeas.core.security.authorization.DefaultInstanceAccessControlExtension;
+import org.silverpeas.core.security.authorization.DefaultInstanceSimpleDocumentAccessControlExtension;
 
 import javax.inject.Named;
 
-import static java.util.Optional.ofNullable;
-import static org.silverpeas.core.admin.space.SpaceInst.SPACE_KEY_PREFIX;
-import static org.silverpeas.core.util.StringUtil.EMPTY;
+import static org.silverpeas.core.security.authorization.AccessControlOperation.isDownloadActionFrom;
 
 /**
  * @author silveryocha
  */
 @Named
 @Service
-public class CommunityInstanceAccessControlExtension
-    extends DefaultInstanceAccessControlExtension {
-
-  static final String CAN_ANONYMOUS_ACCESS_INSTANCE = "CommunityCanAnonymousAccessInstance";
+public class CommunityInstanceSimpleDocumentAccessControlExtension
+    extends DefaultInstanceSimpleDocumentAccessControlExtension {
 
   @Override
-  protected boolean mustUserBeComponentInstanceAdminIfManagerOfParentSpace(
-      final ComponentAccessController.DataManager dataManager, final User user,
-      final SilverpeasComponentInstance componentInstance) {
-    return dataManager.getManageableSpaceIds(user.getId())
-        .contains(componentInstance.getSpaceId().replace(SPACE_KEY_PREFIX, EMPTY));
-  }
-
-  @Override
-  protected boolean canAnonymousAccessInstance(final AccessControlContext context) {
-    return ofNullable(context.get(CAN_ANONYMOUS_ACCESS_INSTANCE, Boolean.class)).orElse(false);
+  public void beforeComputingAuthorizations(final AccessControlContext context) {
+    if (isDownloadActionFrom(context.getOperations())) {
+      context.put(CommunityInstanceAccessControlExtension.CAN_ANONYMOUS_ACCESS_INSTANCE, true);
+    }
   }
 }
