@@ -37,9 +37,10 @@ public interface FormsOnlineDAO {
   /**
    * Get all forms that has been created in given instance
    * @param instanceId the instance id
+   * @param orderBy sort order method
    * @return a List of FormDetail object
    */
-  List<FormDetail> findAllForms(String instanceId) throws FormsOnlineException;
+  List<FormDetail> findAllForms(String instanceId, String orderBy) throws FormsOnlineException;
 
   /**
    * Load forms from database with given instance Id and form id
