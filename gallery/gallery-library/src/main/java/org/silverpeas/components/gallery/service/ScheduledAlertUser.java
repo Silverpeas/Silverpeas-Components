@@ -106,7 +106,7 @@ public class ScheduledAlertUser implements SchedulerEventListener {
   }
 
   private void createMessage(LocalizedContent localizedContent, String componentInstanceId) {
-    UserDetail[] admins = getOrganisationController().getUsers("-1", componentInstanceId, "admin");
+    UserDetail[] admins = getOrganisationController().getUsers(componentInstanceId, "admin");
     if (admins == null || admins.length == 0) {
       return;
     }

@@ -687,7 +687,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   }
 
   public String getAdminIds() {
-    User[] adminIds = getOrganisationController().getUsers(getSpaceId(), getComponentId(), "admin");
+    User[] adminIds = getOrganisationController().getUsers(getComponentId(), "admin");
     return Stream.of(adminIds).map(User::getId).collect(Collectors.joining(","));
   }
 
