@@ -602,7 +602,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     // demande de média
     // 1. création du message
     OrganizationController orga = getOrganisationController();
-    UserDetail[] admins = orga.getUsers("-1", getComponentId(), "admin");
+    UserDetail[] admins = orga.getUsers(getComponentId(), "admin");
     String user = getUserDetail().getDisplayedName();
     String url = URLUtil.getURL(null, getComponentId()) + "Main";
 
@@ -800,7 +800,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     // 1. création du message
 
     OrganizationController orga = getOrganisationController();
-    UserDetail[] admins = orga.getUsers("-1", getComponentId(), "admin");
+    UserDetail[] admins = orga.getUsers(getComponentId(), "admin");
     String user = getUserDetail().getDisplayedName();
     String url = URLUtil.getURL(null, getComponentId()) + "OrderView?OrderId=" + orderId;
 
