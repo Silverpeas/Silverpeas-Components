@@ -83,9 +83,8 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
   private static final String SELECT_FROM = "SELECT * FROM ";
   private static final String INSERT_INTO = "INSERT INTO ";
   private static final String DELETE_FROM = "DELETE FROM ";
+
   // Queries about Forms
-  private static final String QUERY_FIND_FORMS =
-      SELECT_FROM + FORMS_TABLENAME + " where instanceId = ?";
   private static final String QUERY_LOAD_FORM =
       SELECT_FROM + FORMS_TABLENAME + " where instanceId = ? and id = ?";
   private static final String QUERY_INSERT_FORM = INSERT_INTO + FORMS_TABLENAME +
@@ -199,21 +198,24 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
   }
 
   @Override
-  public List<FormDetail> findAllForms(String instanceId) throws FormsOnlineException {
-    List<FormDetail> forms = new ArrayList<>();
-    try (final Connection con = getConnection();
-         final PreparedStatement stmt = con.prepareStatement(QUERY_FIND_FORMS)) {
-      stmt.setString(1, instanceId);
-      try (ResultSet rs = stmt.executeQuery()) {
-        while (rs.next()) {
-          FormDetail form = fetchFormDetail(rs);
-          forms.add(form);
-        }
-      }
-    } catch (SQLException se) {
-      throw new FormsOnlineException(failureOnGetting("all forms of instance", instanceId), se);
-    }
+  public List<FormDetail> findAllForms(String instanceId, String orderBy) throws FormsOnlineException {
+    try {
+      final List<FormDetail> forms = new ArrayList<>();
+        final JdbcSqlQuery query = JdbcSqlQuery.createSelect("*")
+            .from(FORMS_TABLENAME)
+            // 1st criteria : correct instanceId
+            .where(INSTANCE_ID).in(instanceId)
+            .orderBy(orderBy);
+        query.execute(r -> {
+          forms.add(fetchFormDetail(r));
+          return null;
+        });
     return forms;
+    } catch (SQLException se) {
+      throw new FormsOnlineException(
+          failureOnGetting("Available forms of instance",
+              String.join(",", instanceId)), se);
+    }
   }
 
   @Override

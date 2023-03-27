@@ -120,5 +120,49 @@
         </message>
       </help>
     </parameter>
+    <parameter>
+      <name>displaySort</name>
+      <label>
+        <message lang="fr">Ordre d'affichage des formulaires</message>
+        <message lang="en">Order of display of forms</message>
+        <message lang="de">Reihenfolge der Anzeige von Formularen</message>
+      </label>
+      <order>2</order>
+      <mandatory>true</mandatory>
+      <value>name</value>
+      <options>
+        <option>
+          <name>
+            <message lang="fr">Par ordre alphabétique</message>
+            <message lang="en">Name ascending</message>
+            <message lang="de">In alphabetischer Reihenfolge</message>
+          </name>
+          <value>name asc</value>
+        </option>
+        <option>
+          <name>
+            <message lang="fr">Date de création croissante</message>
+            <message lang="en">Creation date ascending</message>
+            <message lang="de">Erstellungsdatum aufsteigend</message>
+          </name>
+          <value>creationDate asc</value>
+        </option>
+        <option>
+          <name>
+            <message lang="fr">Date de création décroissante</message>
+            <message lang="en">Creation date descending</message>
+            <message lang="de">Erstellungsdatum absteigend</message>
+          </name>
+          <value>creationDate desc</value>
+        </option>
+      </options>
+      <type>select</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Permet de définir l'ordre d'affichage des formulaires</message>
+        <message lang="en">Allows you to define the order in which the forms are displayed</message>
+        <message lang="de">Ermöglicht es Ihnen, die Reihenfolge festzulegen, in der die Formulare angezeigt werden.</message>
+      </help>
+    </parameter>
   </parameters>
 </WAComponent>
