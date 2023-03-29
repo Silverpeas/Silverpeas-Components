@@ -66,6 +66,7 @@ import org.silverpeas.core.contribution.attachment.model.Attachments;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.contribution.attachment.process.huge.AttachmentHugeProcessManager;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.Form;
@@ -1947,7 +1948,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   public boolean isDragAndDropEnable() {
-    return isDragAndDropEnableByUser && isMassiveDragAndDropAllowed();
+    return isDragAndDropEnableByUser && isMassiveDragAndDropAllowed() &&
+        !AttachmentHugeProcessManager.get().isOneRunningOnInstance(getComponentId());
   }
 
   public String getCurrentLanguage() {
