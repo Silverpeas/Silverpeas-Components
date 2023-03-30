@@ -183,13 +183,13 @@ public class FormsOnlineDAOJdbcIT extends AbstractFormsOnlineIT {
    */
   @Test
   public void testFindAllForms() throws Exception {
-    List<FormDetail> result = dao.findAllForms(DEFAULT_INSTANCE_ID);
+    List<FormDetail> result = dao.findAllForms(DEFAULT_INSTANCE_ID,ORDERBY_DEFAULT);
     assertThat(result.size(), is(2));
   }
 
   @Test
   public void testDeleteForm() throws Exception {
-    List<FormDetail> result = dao.findAllForms(DEFAULT_INSTANCE_ID);
+    List<FormDetail> result = dao.findAllForms(DEFAULT_INSTANCE_ID,ORDERBY_DEFAULT);
     assertThat(result.size(), is(2));
     final FormPK formPk = result.iterator().next().getPK();
     Transaction.performInOne(() -> {
@@ -200,7 +200,7 @@ public class FormsOnlineDAOJdbcIT extends AbstractFormsOnlineIT {
       }
       return dao.deleteForm(formPk);
     });
-    result = dao.findAllForms(DEFAULT_INSTANCE_ID);
+    result = dao.findAllForms(DEFAULT_INSTANCE_ID,ORDERBY_DEFAULT);
     assertThat(result.size(), is(1));
   }
 
