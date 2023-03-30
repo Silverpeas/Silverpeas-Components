@@ -64,6 +64,8 @@ public abstract class AbstractFormsOnlineIT {
   static final String DYNAMIC_DATA_INSTANCE_ID = "formsOnline26";
   static final String DEFAULT_INSTANCE_ID = "formsOnline100";
 
+  static final String ORDERBY_DEFAULT = "name";
+
   static final String VALIDATOR_ID_29 = "29";
   static final String VALIDATOR_ID_30 = "30";
   static final String VALIDATOR_ID_31 = "31";
