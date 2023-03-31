@@ -491,7 +491,7 @@ public class FormDetail {
 
   HierarchicalValidatorCacheManager getHvManager() {
     if (hvManager == null) {
-      hvManager = new HierarchicalValidatorCacheManager();
+      hvManager = HierarchicalValidatorCacheManager.get();
     }
     return hvManager;
   }
