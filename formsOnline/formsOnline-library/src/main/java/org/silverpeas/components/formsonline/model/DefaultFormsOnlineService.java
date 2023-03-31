@@ -29,9 +29,7 @@ import org.silverpeas.components.formsonline.model.RequestsByStatus.ValidationMe
 import org.silverpeas.components.formsonline.notification.FormsOnlineCanceledRequestUserNotification;
 import org.silverpeas.components.formsonline.notification.FormsOnlinePendingValidationRequestUserNotification;
 import org.silverpeas.components.formsonline.notification.FormsOnlineProcessedRequestFollowingUserNotification;
-
-import org.silverpeas.components.formsonline.notification
-    .FormsOnlineProcessedRequestOtherValidatorsUserNotification;
+import org.silverpeas.components.formsonline.notification.FormsOnlineProcessedRequestOtherValidatorsUserNotification;
 import org.silverpeas.components.formsonline.notification.FormsOnlineProcessedRequestUserNotification;
 import org.silverpeas.components.formsonline.notification.FormsOnlineValidationRequestUserNotification;
 import org.silverpeas.core.admin.PaginationPage;
@@ -39,8 +37,9 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.admin.user.model.UserFull;
+import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.contribution.ContributionStatus;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
@@ -88,15 +87,7 @@ import javax.mail.Multipart;
 import javax.mail.internet.MimeMultipart;
 import javax.transaction.Transactional;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -104,6 +95,7 @@ import java.util.stream.Stream;
 import static java.text.MessageFormat.format;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
+import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toSet;
 import static org.silverpeas.components.formsonline.model.FormDetail.*;
 import static org.silverpeas.components.formsonline.model.FormInstanceValidationType.HIERARCHICAL;
@@ -113,6 +105,7 @@ import static org.silverpeas.components.formsonline.model.RequestsByStatus.VALID
 import static org.silverpeas.core.mail.MailContent.getHtmlBodyPartFromHtmlContent;
 import static org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper.buildAndSend;
 import static org.silverpeas.core.util.CollectionUtil.isEmpty;
+import static org.silverpeas.core.util.StringUtil.EMPTY;
 import static org.silverpeas.core.util.StringUtil.isNotDefined;
 
 @Service
@@ -226,8 +219,8 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
               .map(Map.Entry::getValue)
               .anyMatch(p -> p.getFirst().isEmpty() && p.getSecond().isEmpty()))
           .isPresent()) {
-      throw new FormsOnlineException(
-          format("published form {0} must have final validators", form.getPK()));
+        throw new FormsOnlineException(
+            format("published form {0} must have final validators", form.getPK()));
       }
     }
     if (theForm.getId() == -1) {
@@ -322,11 +315,11 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
             getDAO().getSentFormInstances(form.getPK(), userId, states, paginationPage);
         //noinspection SimplifyStreamApiCallChains
         merge.accept(requests, result.stream()
-                                     .map(l -> {
-                                       l.setForm(form);
-                                       return l;
-                                     })
-                                     .collect(SilverpeasList.collector(result)));
+            .map(l -> {
+              l.setForm(form);
+              return l;
+            })
+            .collect(SilverpeasList.collector(result)));
       }
     }
     return requests;
@@ -345,7 +338,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
       final String userDomainId = User.getById(validatorId).getDomainId();
       final User[] users = OrganizationController.get().getAllUsersInDomain(userDomainId);
       final Set<String> userIds = Stream.of(users).map(User::getId).collect(toSet());
-      final HierarchicalValidatorCacheManager hvManager = new HierarchicalValidatorCacheManager();
+      final HierarchicalValidatorCacheManager hvManager = HierarchicalValidatorCacheManager.get();
       hvManager.cacheHierarchicalValidatorsOf(userIds);
       return userIds.stream()
           .map(u -> Pair.of(u, hvManager.getHierarchicalValidatorOf(u)))
@@ -380,7 +373,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
         final Optional<FormInstanceValidationType> pendingValidationTypeFilter = filter
             .getPendingValidationType();
         final SilverpeasList<FormInstance> result = getDAO().getReceivedRequests(form, states, validationCriteria,
-                ofNullable(paginationPage).filter(p -> pendingValidationTypeFilter.isEmpty()).orElse(null));
+            ofNullable(paginationPage).filter(p -> pendingValidationTypeFilter.isEmpty()).orElse(null));
         @SuppressWarnings("SimplifyStreamApiCallChains")
         Stream<FormInstance> resultStream = result.stream().map(l -> {
           l.setForm(form);
@@ -410,7 +403,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
                 .reduce((a, b) -> b);
             return previousType
                 .map(p ->r.getValidations().getValidationOfType(p).filter(FormInstanceValidation::isValidated).isPresent()
-                         && r.getValidations().getValidationOfType(type).isEmpty())
+                    && r.getValidations().getValidationOfType(type).isEmpty())
                 .orElseGet(() -> r.getValidations().isEmpty());
           });
     }
@@ -425,7 +418,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
         .getValidatorFormIdsWithValidationTypes(appId, validatorId, userGroupIds, formIds);
     // get available form as boss
     final List<FormDetail> forms = getDAO().findAllForms(appId);
-    final HierarchicalValidatorCacheManager hvManager = new HierarchicalValidatorCacheManager();
+    final HierarchicalValidatorCacheManager hvManager = HierarchicalValidatorCacheManager.get();
     for (FormDetail form : forms) {
       if (form.isHierarchicalValidation() && (isEmpty(formIds) || formIds.contains(form.getPK().getId()))) {
         final SilverpeasList<FormInstance> requests = getDAO().getAllRequests(form.getPK());
@@ -437,7 +430,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
             .findFirst()
             .ifPresent(b ->
                 result.computeIfAbsent(Integer.toString(form.getId()), s -> new TreeSet<>())
-                      .add(HIERARCHICAL));
+                    .add(HIERARCHICAL));
       }
     }
     return result;
@@ -915,7 +908,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
   }
 
   private IndexEntryKey getIndexEntryKey(FormPK pk) {
-   return new IndexEntryKey(pk.getInstanceId(), "FormOnline", pk.getId());
+    return new IndexEntryKey(pk.getInstanceId(), "FormOnline", pk.getId());
   }
 
   public void index(String componentId) {
@@ -943,17 +936,33 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
 
   /**
    * Permits to manage a cache in order to increase performances.
+   * <p>
+   *   This cache is thread scoped.
+   * </p>
    */
   public static class HierarchicalValidatorCacheManager {
 
+    private static final String CACHE_KEY = HierarchicalValidatorCacheManager.class.getName();
+    private final Set<String> userIds = new HashSet<>();
     private final Map<String, String> cache = new HashMap<>();
+
+    public static HierarchicalValidatorCacheManager get() {
+      return CacheServiceProvider.getThreadCacheService()
+          .getCache()
+          .computeIfAbsent(CACHE_KEY, HierarchicalValidatorCacheManager.class,
+              HierarchicalValidatorCacheManager::new);
+    }
+
+    private HierarchicalValidatorCacheManager() {
+      // hidden constructor
+    }
 
     /**
      * Caches the hierarchical validators of users represented by given ids.
      * @param userIds set of string user ids.
      */
     public void cacheHierarchicalValidatorsOf(final Set<String> userIds) {
-      userIds.forEach(this::getHierarchicalValidatorOf);
+      userIds.stream().filter(not(cache::containsKey)).forEach(this.userIds::add);
     }
 
     /**
@@ -965,9 +974,19 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
      * @return the hierarchical validator of the user represented by the given id.
      */
     public String getHierarchicalValidatorOf(final String userId) {
-      return cache.computeIfAbsent(userId, i -> ofNullable(UserFull.getById(i))
-          .map(u -> u.getValue("boss"))
-          .orElse(StringUtil.EMPTY));
+      if (!userIds.isEmpty()) {
+        UserFull.getByIds(userIds).forEach(u -> {
+          final String id = u.getId();
+          userIds.remove(id);
+          cache.put(id, ofNullable(u.getValue("boss")).orElse(EMPTY));
+        });
+        userIds.forEach(i -> cache.put(i, EMPTY));
+        userIds.clear();
+      }
+      return cache.computeIfAbsent(userId,
+          i -> ofNullable(UserFull.getById(i))
+              .map(u -> u.getValue("boss"))
+              .orElse(StringUtil.EMPTY));
     }
   }
 }
