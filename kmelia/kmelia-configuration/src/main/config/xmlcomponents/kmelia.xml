@@ -1746,30 +1746,6 @@
       <order>8</order>
       <parameters>
         <parameter>
-          <name>webContent</name>
-          <label>
-            <message lang="fr">Orienté CMS</message>
-            <message lang="en">Content for web</message>
-            <message lang="de">Inhalt für das Web</message>
-          </label>
-          <order>16</order>
-          <mandatory>true</mandatory>
-          <value>no</value>
-          <type>checkbox</type>
-          <updatable>always</updatable>
-          <help>
-            <message lang="fr">Permet d'activer les fonctions liées à la gestion de contenu web
-              (wysiwyg associé au dossier, visibilité des dossiers).
-            </message>
-            <message lang="en">Activate functionalities for managing web content (wysiwyg for folder
-              and folder visibility).
-            </message>
-            <message lang="de">Funktionalitäten für die Verwaltung von Web-Inhalten Aktivieren
-              (WYSIWYG für Themen und Themen Sichtbarkeit).
-            </message>
-          </help>
-        </parameter>
-        <parameter>
           <name>exportComponent</name>
           <label>
             <message lang="fr">Exportation</message>
