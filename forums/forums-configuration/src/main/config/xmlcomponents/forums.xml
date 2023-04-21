@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
 
     Copyright (C) 2000 - 2022 Silverpeas
 
@@ -23,17 +22,13 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
--->
-
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
+--><WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>forums</name>
   <label>
     <message lang="fr">Forum</message>
     <message lang="en">Forum</message>
     <message lang="de">Forum</message>
-  </label>
+  <message lang="uk">Форум</message></label>
   <description>
     <message lang="fr">Cette application couvre les fonctionnalités classiques d’un forum :
       abonnement, indicateur de nouveautés, mise en avant des utilisateurs, date du
@@ -46,12 +41,12 @@
       Punkt in den Faden beantworten.
       Foren können Sie auf dem KP klassifizieren.
     </message>
-  </description>
+  <message lang="uk">Ця програма охоплює класичні функції форуму: підписка, індикатор новин, виділення користувачів, дата останнього повідомлення, кількість консультацій...</message></description>
   <suite>
     <message lang="fr">02 Gestion Collaborative</message>
     <message lang="en">02 Collaborative Management</message>
     <message lang="de">02 kollaborative Verwaltung</message>
-  </suite>
+  <message lang="uk">02 Спільне управління</message></suite>
   <visible>true</visible>
   <portlet>true</portlet>
   <profiles>
@@ -60,7 +55,7 @@
         <message lang="fr">Gestionnaires</message>
         <message lang="en">Managers</message>
         <message lang="de">Manager</message>
-      </label>
+      <message lang="uk">Менеджери</message></label>
       <help>
         <message lang="fr">Les gestionnaires gèrent les thèmes de discussion, les catégories,
           choisissent les modérateurs et paramètrent le Plan de Classement.
@@ -71,7 +66,7 @@
         <message lang="de">Managers manage threads and categories, choose moderators and set up the
           Classification scheme.
         </message>
-      </help>
+      <message lang="uk">Менеджери керують темами обговорень, категоріями, вибирають модераторів і встановлюють план рейтингу.</message></help>
       <spaceMapping>
         <profile>admin</profile>
       </spaceMapping>
@@ -81,7 +76,7 @@
         <message lang="fr">Participants</message>
         <message lang="en">Participants</message>
         <message lang="de">Teilnehmer</message>
-      </label>
+      <message lang="uk">Присутні</message></label>
       <help>
         <message lang="fr">Les participants échanges au sein des forums. Un participant peut être
           désigné comme modérateur par les gestionnaires.
@@ -90,7 +85,7 @@
           moderator by managers.
         </message>
         <message lang="de">Teilnehmer</message>
-      </help>
+      <message lang="uk">Учасники обмінюються на форумах. Учасник може бути призначений модератором менеджерами.</message></help>
       <spaceMapping>
         <profile>publisher</profile>
         <profile>writer</profile>
@@ -101,12 +96,12 @@
         <message lang="fr">Lecteurs</message>
         <message lang="en">Readers</message>
         <message lang="de">Leser</message>
-      </label>
+      <message lang="uk">Читачі</message></label>
       <help>
         <message lang="fr">Les lecteurs consultent les forums.</message>
         <message lang="en">Readers consult forums.</message>
         <message lang="de">Leser</message>
-      </help>
+      <message lang="uk">Читачі консультуються на форумах.</message></help>
       <spaceMapping>
         <profile>reader</profile>
       </spaceMapping>
@@ -119,7 +114,7 @@
         <message lang="fr">Classification PDC</message>
         <message lang="en">Classification Scheme</message>
         <message lang="de">Klassierungsplan</message>
-      </label>
+      <message lang="uk">Класифікація PDC</message></label>
       <order>2</order>
       <mandatory>true</mandatory>
       <value>no</value>
@@ -131,7 +126,7 @@
         </message>
         <message lang="en">The forums will be classified on the classification scheme.</message>
         <message lang="de">Foren werden auf dem KP klassifiziert werden</message>
-      </help>
+      <message lang="uk">Форуми, створені в цьому екземплярі, можна класифікувати в класифікаційному плані</message></help>
     </parameter>
     <parameter>
       <name>forumInsideForum</name>
@@ -139,7 +134,7 @@
         <message lang="fr">Arborescence de forums</message>
         <message lang="en">Tree of forums</message>
         <message lang="de">Baum der Foren</message>
-      </label>
+      <message lang="uk">Дерево форуму</message></label>
       <order>3</order>
       <mandatory>true</mandatory>
       <value>no</value>
@@ -149,7 +144,7 @@
         <message lang="fr">Un forum peut contenir d'autres forums</message>
         <message lang="en">A forum can be created inside another forum.</message>
         <message lang="de">Ein Forum kann in einem anderen Forum erstellt werden.</message>
-      </help>
+      <message lang="uk">Форум може містити інші форуми</message></help>
     </parameter>
     <parameter>
       <name>rss</name>
@@ -157,7 +152,7 @@
         <message lang="fr">Flux RSS</message>
         <message lang="en">RSS</message>
         <message lang="de">RSS</message>
-      </label>
+      <message lang="uk">RSS канал</message></label>
       <order>4</order>
       <mandatory>false</mandatory>
       <value>false</value>
@@ -167,7 +162,7 @@
         <message lang="fr">Permet de générer un flux RSS de ces forums.</message>
         <message lang="en">Produce a RSS stream for the forums.</message>
         <message lang="de">Erlaubt, eine RSS-Stream des Forums zu erzeugen</message>
-      </help>
+      <message lang="uk">Дозволяє створювати канал RSS із цих форумів.</message></help>
     </parameter>
     <parameter>
       <name>isValidationActive</name>
@@ -175,7 +170,7 @@
         <message lang="fr">Validation</message>
         <message lang="en">Validation</message>
         <message lang="de">Validierung</message>
-      </label>
+      <message lang="uk">Перевірка</message></label>
       <order>5</order>
       <mandatory>true</mandatory>
       <value>false</value>
@@ -187,7 +182,7 @@
         </message>
         <message lang="en">Posts will be moderated.</message>
         <message lang="de">Beiträge werden moderiert.</message>
-      </help>
+      <message lang="uk">Якщо цей параметр увімкнено, дописи будуть перевірятися модераторами.</message></help>
     </parameter>
   </parameters>
 </WAComponent>

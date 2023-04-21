@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
 
     Copyright (C) 2000 - 2022 Silverpeas
 
@@ -23,17 +22,13 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
--->
-
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
+--><WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>rssAgregator</name>
   <label>
     <message lang="fr">Agregateur RSS</message>
     <message lang="en">RSS aggregator</message>
     <message lang="de">RSS aggregator</message>
-  </label>
+  <message lang="uk">RSS агрегатор</message></label>
   <description>
     <message lang="fr">Cette application permet d’afficher au sein de la même page
       plusieurs sources d’informations externes au format RSS. Parfait pour fournir du
@@ -45,12 +40,12 @@
     <message lang="de">Aggregierte in der Plateform, Daten aus externe Websiten die über RSS Streams
       verfügen.
     </message>
-  </description>
+  <message lang="uk">Ця програма дає змогу відображати кілька джерел зовнішньої інформації у форматі RSS на одній сторінці. Ідеально підходить для надання актуального та постійно оновлюваного контенту на певну тему!</message></description>
   <suite>
     <message lang="fr">06 Connecteurs</message>
     <message lang="en">06 Connectors</message>
     <message lang="de">06 Verbinder</message>
-  </suite>
+  <message lang="uk">06 Роз&amp;#39;єми</message></suite>
   <visible>true</visible>
   <visibleInPersonalSpace>true</visibleInPersonalSpace>
   <portlet>true</portlet>
@@ -60,12 +55,12 @@
         <message lang="fr">Gestionnaires</message>
         <message lang="en">Managers</message>
         <message lang="de">Manager</message>
-      </label>
+      <message lang="uk">Менеджери</message></label>
       <help>
         <message lang="fr">Les gestionnaires paramètrent les flux RSS à diffuser.</message>
         <message lang="en">Managers set up RSS feeds to broadcast.</message>
         <message lang="de">Managers set up RSS feeds to broadcast.</message>
-      </help>
+      <message lang="uk">Менеджери налаштовують RSS-канали для трансляції.</message></help>
       <spaceMapping>
         <profile>admin</profile>
       </spaceMapping>
@@ -75,12 +70,12 @@
         <message lang="fr">Lecteurs</message>
         <message lang="en">Readers</message>
         <message lang="de">Leser</message>
-      </label>
+      <message lang="uk">Читачі</message></label>
       <help>
         <message lang="fr">Les lecteurs visualisent le contenu des flux RSS.</message>
         <message lang="en">Readers visualize RSS streams.</message>
         <message lang="de">Leser</message>
-      </help>
+      <message lang="uk">Читачі переглядають вміст RSS-каналів.</message></help>
       <spaceMapping>
         <profile>publisher</profile>
         <profile>writer</profile>
@@ -95,7 +90,7 @@
         <message lang="fr">Vue RSS par défaut</message>
         <message lang="en">Default RSS view</message>
         <message lang="de">RSS Ansicht</message>
-      </label>
+      <message lang="uk">Перегляд RSS за замовчуванням</message></label>
       <order>1</order>
       <mandatory>true</mandatory>
       <value>SEPARATED</value>
@@ -105,7 +100,7 @@
             <message lang="fr">Agrégée</message>
             <message lang="en">Aggregated</message>
             <message lang="de">Aggregated</message>
-          </name>
+          <message lang="uk">Агрегований</message></name>
           <value>AGGREGATED</value>
         </option>
         <option>
@@ -113,7 +108,7 @@
             <message lang="fr">Séparée</message>
             <message lang="en">Separated</message>
             <message lang="de">getrennt</message>
-          </name>
+          <message lang="uk">розділені</message></name>
           <value>SEPARATED</value>
         </option>
       </options>
@@ -129,7 +124,7 @@
         <message lang="de">Wählen Sie die Ansicht, die standardmäßig angezeigt wird, wenn der
           Benutzer auf die RSS Aggregator.
         </message>
-      </help>
+      <message lang="uk">Дозволяє вибрати вигляд RSS, який буде відображатися за замовчуванням, коли користувач отримує доступ до програми-агрегатора RSS.</message></help>
       <personalSpaceValue>SEPARATED</personalSpaceValue>
     </parameter>
   </parameters>

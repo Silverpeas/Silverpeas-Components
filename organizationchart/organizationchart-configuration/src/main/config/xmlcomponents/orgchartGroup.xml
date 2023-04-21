@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
 
     Copyright (C) 2000 - 2022 Silverpeas
 
@@ -23,27 +22,23 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
--->
-
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
+--><WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>orgchartGroup</name>
   <label>
     <message lang="fr">Organigramme Groupe</message>
     <message lang="en">Group-based organization chart</message>
-  </label>
+  <message lang="uk">Організаційна схема групи</message></label>
   <description>
     <message lang="fr">Cette application permet l'affichage d'un organigramme basé sur les groupes
       d'utilisateurs.
     </message>
     <message lang="en">This application displays an organization chart based on a group.</message>
-  </description>
+  <message lang="uk">Ця програма дозволяє відображати організаційну діаграму на основі груп користувачів.</message></description>
   <suite>
     <message lang="fr">06 Connecteurs</message>
     <message lang="en">06 Connectors</message>
     <message lang="de">06 Verbinder</message>
-  </suite>
+  <message lang="uk">06 Роз&amp;#39;єми</message></suite>
   <visible>true</visible>
   <portlet>false</portlet>
   <profiles>
@@ -51,7 +46,7 @@
       <label>
         <message lang="fr">Lecteurs</message>
         <message lang="en">Readers</message>
-      </label>
+      <message lang="uk">Читачі</message></label>
       <help>
         <message lang="fr">Les lecteurs consultent l'organigramme, naviguent au sein des groupes et
           visualisent les personnes qui y sont rattachés.
@@ -59,7 +54,7 @@
         <message lang="en">Readers consult the chart, navigate within groups and visualize the
           people who are linked to it.
         </message>
-      </help>
+      <message lang="uk">Читачі переглядають організаційну схему, переміщуються в групах і переглядають людей, приєднаних до них.</message></help>
       <spaceMapping>
         <profile>admin</profile>
         <profile>publisher</profile>
@@ -74,7 +69,7 @@
         <message lang="fr">Vue "services"</message>
         <message lang="en">Units view</message>
         <message lang="de">Units view</message>
-      </label>
+      <message lang="uk">Переглянути &amp;quot;послуги&amp;quot;</message></label>
       <description>
         <message lang="fr">La vue "services" est la vue principale. Elle présente la composition
           d'un service (en sous services). Les responsables de chaque entité sont également
@@ -86,8 +81,8 @@
         <message lang="de">The "units" view is the main view. It presents the composition of a unit
           (in sub units). The leaders of each unit are also displayed.
         </message>
-      </description>
-      <help></help>
+      <message lang="uk">Перегляд «послуги» є основним. Він представляє склад послуги (у підслужбах). Також відображаються керівники кожної сутності.</message></description>
+      <help/>
       <order>3</order>
       <parameters>
         <parameter>
@@ -95,7 +90,7 @@
           <label>
             <message lang="fr">Rôle(s) du service principal</message>
             <message lang="en">Role(s) of the main organizational unit</message>
-          </label>
+          <message lang="uk">Ролі основного обслуговування</message></label>
           <order>14</order>
           <mandatory>false</mandatory>
           <value>Direction=Directrice;Direction=Directeur</value>
@@ -107,14 +102,14 @@
               personnes)
             </message>
             <message lang="en">Role(s) of the main organizational unit</message>
-          </help>
+          <message lang="uk">Ролі для відображення для основної служби (на основі посади людей)</message></help>
         </parameter>
         <parameter>
           <name>unitsChartRightLabel</name>
           <label>
             <message lang="fr">Rôle(s) du bloc droit</message>
             <message lang="en">Role(s) of the right block</message>
-          </label>
+          <message lang="uk">Роль(и) правого блоку</message></label>
           <order>15</order>
           <mandatory>false</mandatory>
           <value>Assistantes=Assistante</value>
@@ -124,14 +119,14 @@
           <help>
             <message lang="fr">Rôle(s) à afficher dans la case droite</message>
             <message lang="en">Role(s) to be placed in the right cell</message>
-          </help>
+          <message lang="uk">Ролі для відображення в правому полі</message></help>
         </parameter>
         <parameter>
           <name>unitsChartLeftLabel</name>
           <label>
             <message lang="fr">Rôle(s) du bloc gauche</message>
             <message lang="en">Role(s) of the left block</message>
-          </label>
+          <message lang="uk">Ролі лівого блоку</message></label>
           <order>16</order>
           <mandatory>false</mandatory>
           <value>Role(s) gauche</value>
@@ -141,14 +136,14 @@
           <help>
             <message lang="fr">Rôle(s) à afficher dans la case gauche</message>
             <message lang="en">Role(s) to be placed in the left cell</message>
-          </help>
+          <message lang="uk">Ролі для відображення в лівому полі</message></help>
         </parameter>
         <parameter>
           <name>unitsChartOthersInfosKeys</name>
           <label>
             <message lang="fr">Champ(s) à afficher</message>
             <message lang="en">Field(s) to display</message>
-          </label>
+          <message lang="uk">Поля для відображення</message></label>
           <order>20</order>
           <mandatory>false</mandatory>
           <value>Téléphone=phone</value>
@@ -158,7 +153,7 @@
           <help>
             <message lang="fr">Attribut(s) désignant le(s) champ(s) à afficher</message>
             <message lang="en">Attribute(s) of field to display</message>
-          </help>
+          <message lang="uk">Атрибути, що позначають поля для відображення</message></help>
         </parameter>
       </parameters>
     </groupOfParameters>
@@ -167,13 +162,13 @@
         <message lang="fr">Vue détaillée</message>
         <message lang="en">Detailed view</message>
         <message lang="de">Detailed view</message>
-      </label>
+      <message lang="uk">Детальний вигляд</message></label>
       <description>
         <message lang="fr">La vue détaillée présente toutes les personnes d'un service.</message>
         <message lang="en">The detailed view shows every person of the unit.</message>
         <message lang="de">The detailed view shows every person of the unit.</message>
-      </description>
-      <help></help>
+      <message lang="uk">Детальний перегляд показує всіх людей у відділі.</message></description>
+      <help/>
       <order>4</order>
       <parameters>
         <parameter>
@@ -181,41 +176,41 @@
           <label>
             <message lang="fr">Rôle(s) du service principal</message>
             <message lang="en">Role(s) of the main organizational unit</message>
-          </label>
+          <message lang="uk">Ролі основного обслуговування</message></label>
           <order>18</order>
           <mandatory>false</mandatory>
-          <value></value>
+          <value/>
           <type>text</type>
           <size>30</size>
           <updatable>always</updatable>
           <help>
             <message lang="fr">Rôle(s) à afficher pour le service principal</message>
             <message lang="en">Role(s) of the main organizational unit</message>
-          </help>
+          <message lang="uk">Ролі для відображення для основної служби</message></help>
         </parameter>
         <parameter>
           <name>personnsChartCategoriesLabel</name>
           <label>
             <message lang="fr">Catégorie(s) d'un service</message>
             <message lang="en">Categorie(s) of an unit</message>
-          </label>
+          <message lang="uk">Категорія (категорії) послуги</message></label>
           <order>19</order>
           <mandatory>false</mandatory>
-          <value></value>
+          <value/>
           <type>text</type>
           <size>30</size>
           <updatable>always</updatable>
           <help>
             <message lang="fr">Attribut désignant les catégories d'un service</message>
             <message lang="en">Attribute name of the main sub-functions in a unit</message>
-          </help>
+          <message lang="uk">Атрибут, що позначає категорії послуги</message></help>
         </parameter>
         <parameter>
           <name>personnsChartOthersInfosKeys</name>
           <label>
             <message lang="fr">Champ(s) à afficher</message>
             <message lang="en">Field(s) to display</message>
-          </label>
+          <message lang="uk">Поля для відображення</message></label>
           <order>21</order>
           <mandatory>false</mandatory>
           <value>Téléphone=phone</value>
@@ -225,7 +220,7 @@
           <help>
             <message lang="fr">Attribut(s) désignant le(s) champ(s) à afficher</message>
             <message lang="en">Attribute(s) of field to display</message>
-          </help>
+          <message lang="uk">Атрибути, що позначають поля для відображення</message></help>
         </parameter>
       </parameters>
     </groupOfParameters>
@@ -234,13 +229,13 @@
         <message lang="fr">Affichage</message>
         <message lang="en">Display</message>
         <message lang="de">Display</message>
-      </label>
+      <message lang="uk">Дисплей</message></label>
       <description>
-        <message lang="fr"></message>
-        <message lang="en"></message>
-        <message lang="de"></message>
-      </description>
-      <help></help>
+        <message lang="fr"/>
+        <message lang="en"/>
+        <message lang="de"/>
+      <message lang="uk"/></description>
+      <help/>
       <order>5</order>
       <parameters>
         <parameter>
@@ -248,7 +243,7 @@
           <label>
             <message lang="fr">Libellés</message>
             <message lang="en">Labels</message>
-          </label>
+          <message lang="uk">етикетки</message></label>
           <order>25</order>
           <mandatory>false</mandatory>
           <value>true</value>
@@ -257,14 +252,14 @@
           <help>
             <message lang="fr">Permet d'afficher/masquer le libellé des champs</message>
             <message lang="en">Allows to display/hide label of fields</message>
-          </help>
+          <message lang="uk">Дозволяє показувати/приховувати заголовок елементів керування</message></help>
         </parameter>
         <parameter>
           <name>avatars</name>
           <label>
             <message lang="fr">Avatars</message>
             <message lang="en">Avatars</message>
-          </label>
+          <message lang="uk">Аватари</message></label>
           <order>26</order>
           <mandatory>false</mandatory>
           <value>true</value>
@@ -273,7 +268,7 @@
           <help>
             <message lang="fr">Permet d'afficher/masquer l'avatar de chaque personne</message>
             <message lang="en">Allows to display/hide avatar of each people</message>
-          </help>
+          <message lang="uk">Дозволяє показувати/приховувати аватар кожної людини</message></help>
         </parameter>
       </parameters>
     </groupOfParameters>
@@ -284,24 +279,24 @@
       <label>
         <message lang="fr">Groupe racine</message>
         <message lang="en">Root group</message>
-      </label>
+      <message lang="uk">коренева група</message></label>
       <order>7</order>
       <mandatory>true</mandatory>
-      <value></value>
+      <value/>
       <type>text</type>
       <size>30</size>
       <updatable>always</updatable>
       <help>
         <message lang="fr">Identifiant du groupe racine</message>
         <message lang="en">Id root group</message>
-      </help>
+      <message lang="uk">Ідентифікатор кореневої групи</message></help>
     </parameter>
     <parameter>
       <name>ldapAttTitle</name>
       <label>
         <message lang="fr">Attribut "Fonction"</message>
         <message lang="en">"Title" attribute</message>
-      </label>
+      <message lang="uk">Атрибут «Функція».</message></label>
       <order>12</order>
       <mandatory>false</mandatory>
       <value>title</value>
@@ -311,7 +306,7 @@
       <help>
         <message lang="fr">Nom de l'attribut désignant la fonction de l'utilisateur</message>
         <message lang="en">Name of the attribute for the title of users</message>
-      </help>
+      <message lang="uk">Назва атрибута, що позначає функцію користувача</message></help>
     </parameter>
   </parameters>
 </WAComponent>

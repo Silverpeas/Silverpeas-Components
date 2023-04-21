@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><!--
 
     Copyright (C) 2000 - 2022 Silverpeas
 
@@ -23,16 +22,13 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
--->
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
+--><WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://silverpeas.org/xml/ns/component https://www.silverpeas.org/xsd/component.xsd">
   <name>almanach</name>
   <label>
     <message lang="fr">Calendrier</message>
     <message lang="en">Calendar</message>
     <message lang="de">Kalender</message>
-  </label>
+  <message lang="uk">Календар</message></label>
   <description>
     <message lang="fr">Les différentes vues proposées présentent des événements ponctuels
       ou périodiques. L’application permet l’agrégation et l’accès rapide vers d’autres
@@ -48,12 +44,12 @@
       werden.
       Die Visualisierung wurd auf mehreren Zeitskalen durchgeführt.
     </message>
-  </description>
+  <message lang="uk">Різні запропоновані погляди представляють конкретні або періодичні події. Програма дозволяє агрегувати та швидко отримувати доступ до інших календарів. Усі події можна експортувати у формат iCal.</message></description>
   <suite>
     <message lang="fr">02 Gestion Collaborative</message>
     <message lang="en">02 Collaborative Management</message>
     <message lang="de">02 kollaborative Verwaltung</message>
-  </suite>
+  <message lang="uk">02 Спільне управління</message></suite>
   <visible>true</visible>
   <portlet>true</portlet>
   <profiles>
@@ -62,14 +58,14 @@
         <message lang="fr">Gestionnaires</message>
         <message lang="en">Managers</message>
         <message lang="de">Manager</message>
-      </label>
+      <message lang="uk">Менеджери</message></label>
       <help>
         <message lang="fr">Les gestionnaires créent des événements et paramêtrent l'usage du Plan de
           Classement.
         </message>
         <message lang="en">Managers create events and set up the classification scheme.</message>
         <message lang="de">Managers create events and set up the classification scheme.</message>
-      </help>
+      <message lang="uk">Менеджери створюють події та налаштовують використання плану рейтингу.</message></help>
       <spaceMapping>
         <profile>admin</profile>
       </spaceMapping>
@@ -79,13 +75,13 @@
         <message lang="fr">Publieurs</message>
         <message lang="en">Publishers</message>
         <message lang="de">Herausgeber</message>
-      </label>
+      <message lang="uk">Видавці</message></label>
       <help>
         <message lang="fr">Les publieurs peuvent créer, modifier et supprimer des événements.
         </message>
         <message lang="en">Publishers can create, update and delete events.</message>
         <message lang="de">Herausgeber</message>
-      </help>
+      <message lang="uk">Видавці можуть створювати, редагувати та видаляти події.</message></help>
       <spaceMapping>
         <profile>publisher</profile>
         <profile>writer</profile>
@@ -96,7 +92,7 @@
         <message lang="fr">Lecteurs</message>
         <message lang="en">Readers</message>
         <message lang="de">Leser</message>
-      </label>
+      <message lang="uk">Читачі</message></label>
       <help>
         <message lang="fr">Les lecteurs consultent les événements aux travers des différentes vues
           offertes.
@@ -104,7 +100,7 @@
         <message lang="en">Readers consult the events throughout the different views available.
         </message>
         <message lang="de">Leser</message>
-      </help>
+      <message lang="uk">Читачі ознайомлюються з подіями через різні запропоновані погляди.</message></help>
       <spaceMapping>
         <profile>reader</profile>
       </spaceMapping>
@@ -117,7 +113,7 @@
         <message lang="fr">Classification PDC</message>
         <message lang="en">Classification Scheme</message>
         <message lang="de">Klassierungsplan</message>
-      </label>
+      <message lang="uk">Класифікація PDC</message></label>
       <order>1</order>
       <mandatory>true</mandatory>
       <value>no</value>
@@ -130,7 +126,7 @@
         </message>
         <message lang="en">The events will be classified on the classification scheme.</message>
         <message lang="de">Die Ereignisse werden auf dem KP klassifiziert werden</message>
-      </help>
+      <message lang="uk">Події, введені в цей екземпляр, можна класифікувати в класифікаційному плані</message></help>
     </parameter>
     <parameter>
       <name>filterOnPdc</name>
@@ -138,7 +134,7 @@
         <message lang="fr">Filtrage PDC</message>
         <message lang="en">Classification filter</message>
         <message lang="de">Classification filter</message>
-      </label>
+      <message lang="uk">Фільтрація PDC</message></label>
       <order>2</order>
       <mandatory>true</mandatory>
       <value>no</value>
@@ -152,7 +148,7 @@
         <message lang="de">If activated, the Classification engine permits to filter displayed
           events.
         </message>
-      </help>
+      <message lang="uk">Якщо активовано, PDC дозволяє фільтрувати представлені події.</message></help>
     </parameter>
     <parameter>
       <name>useAgregation</name>
@@ -160,7 +156,7 @@
         <message lang="fr">Agrégation</message>
         <message lang="en">Aggregation</message>
         <message lang="de">Aggregierung</message>
-      </label>
+      <message lang="uk">Агрегація</message></label>
       <order>3</order>
       <mandatory>true</mandatory>
       <value>no</value>
@@ -183,7 +179,7 @@
           platform settings (calendars in subspaces, in the space or from the whole platform) or
           according to 'Custom aggregation' parameter if it is filled.
         </message>
-      </help>
+      <message lang="uk">Ця програма зможе відображати події з інших календарів залежно від конфігурації платформи (календари підпросторів, простору чи всієї платформи) або залежно від того, чи заповнено параметр «Спеціальна агрегація».</message></help>
     </parameter>
     <parameter>
       <name>customAggregation</name>
@@ -191,7 +187,7 @@
         <message lang="fr">Agrégation sur mesure</message>
         <message lang="en">Custom aggregation</message>
         <message lang="de">Custom aggregation</message>
-      </label>
+      <message lang="uk">Індивідуальне агрегування</message></label>
       <order>4</order>
       <mandatory>false</mandatory>
       <value/>
@@ -214,7 +210,7 @@
           ignored and indicated calendars are taken into account (instance identifiers separated by
           comma).
         </message>
-      </help>
+      <message lang="uk">Якщо заповнено та активовано параметр «Агрегація», налаштування платформи (календари для підпросторів, простору або всієї платформи) ігноруються, і враховуються лише вказані календарі (ідентифікатори екземплярів, розділені комами).</message></help>
     </parameter>
     <parameter>
       <name>weekendNotVisible</name>
@@ -222,7 +218,7 @@
         <message lang="fr">Masquer les week-ends</message>
         <message lang="en">Hide week-ends</message>
         <message lang="de">Wochenenden Verstecken</message>
-      </label>
+      <message lang="uk">Приховати вихідні</message></label>
       <order>5</order>
       <mandatory>true</mandatory>
       <value>no</value>
@@ -236,7 +232,7 @@
         <message lang="de">Erlaubt es, das Interface leichter zu machen und das Anzeigen des Restes
           der Woche zu optimieren
         </message>
-      </help>
+      <message lang="uk">Дозволяє полегшити інтерфейс і оптимізувати відображення решти тижня</message></help>
     </parameter>
     <parameter>
       <name>defaultView</name>
@@ -244,7 +240,7 @@
         <message lang="fr">Vue par défaut</message>
         <message lang="en">Default view</message>
         <message lang="de">Standard-Ansicht</message>
-      </label>
+      <message lang="uk">Перегляд за замовчуванням</message></label>
       <order>6</order>
       <mandatory>true</mandatory>
       <value>MONTHLY</value>
@@ -254,7 +250,7 @@
             <message lang="fr">Hebdomadaire</message>
             <message lang="en">Weekly</message>
             <message lang="de">Wöchentlich</message>
-          </name>
+          <message lang="uk">Щотижня</message></name>
           <value>WEEKLY</value>
         </option>
         <option>
@@ -262,7 +258,7 @@
             <message lang="fr">Mensuelle</message>
             <message lang="en">Monthly</message>
             <message lang="de">Monatlich</message>
-          </name>
+          <message lang="uk">Щомісяця</message></name>
           <value>MONTHLY</value>
         </option>
         <option>
@@ -270,7 +266,7 @@
             <message lang="fr">Evénements à venir</message>
             <message lang="en">Next events</message>
             <message lang="de">Nächstes Ereigniss</message>
-          </name>
+          <message lang="uk">Майбутні події</message></name>
           <value>NEXT_EVENTS</value>
         </option>
       </options>
@@ -286,7 +282,7 @@
         <message lang="de">Wählen Sie die Ansicht, die standardmäßig angezeigt wird, wenn der
           Benutzer auf die Kalender.
         </message>
-      </help>
+      <message lang="uk">Дозволяє вибрати вид календаря, який відображатиметься за замовчуванням, коли користувач відкриває календар.</message></help>
     </parameter>
     <parameter>
       <name>rss</name>
@@ -294,7 +290,7 @@
         <message lang="fr">Flux RSS</message>
         <message lang="en">RSS</message>
         <message lang="de">RSS</message>
-      </label>
+      <message lang="uk">RSS канал</message></label>
       <order>7</order>
       <mandatory>false</mandatory>
       <value>N</value>
@@ -305,7 +301,7 @@
         <message lang="en">Produce a RSS stream for the events of this calendar.</message>
         <message lang="de">Erzeugt einen Stream-Feed für die Veranstaltungen dieser Kalender.
         </message>
-      </help>
+      <message lang="uk">Дозволяє створити RSS-канал подій цього календаря.</message></help>
     </parameter>
     <parameter>
       <name>directAccess</name>
@@ -313,7 +309,7 @@
         <message lang="fr">Accès transversal</message>
         <message lang="en">Aggregation type</message>
         <message lang="de">Aggregierung-Typ</message>
-      </label>
+      <message lang="uk">Поперечний доступ</message></label>
       <order>8</order>
       <mandatory>false</mandatory>
       <value>3</value>
@@ -323,7 +319,7 @@
             <message lang="fr">Tous</message>
             <message lang="en">All</message>
             <message lang="de">Alle</message>
-          </name>
+          <message lang="uk">все</message></name>
           <value>0</value>
         </option>
         <option>
@@ -331,7 +327,7 @@
             <message lang="fr">Ceux de l'espace</message>
             <message lang="en">Those from the same space</message>
             <message lang="de">Die aus dem gleichen Bereich</message>
-          </name>
+          <message lang="uk">простору</message></name>
           <value>1</value>
         </option>
         <option>
@@ -339,7 +335,7 @@
             <message lang="fr">Ceux de l'espace et sous espaces</message>
             <message lang="en">Those from the same space and its subspaces.</message>
             <message lang="de">Die aus dem gleichen Bereich und seine Unterräume</message>
-          </name>
+          <message lang="uk">Ті простору та підпросторів</message></name>
           <value>2</value>
         </option>
         <option>
@@ -347,7 +343,7 @@
             <message lang="fr">Aucun</message>
             <message lang="en">None</message>
             <message lang="de">Keine</message>
-          </name>
+          <message lang="uk">Жодного</message></name>
           <value>3</value>
         </option>
       </options>
@@ -362,7 +358,7 @@
         <message lang="de">Wählen Sie die Kalender, die in diesem Kalender aggregiert werden
           können.
         </message>
-      </help>
+      <message lang="uk">Дозволяє вибрати інші екземпляри програми «Календар» із розкривного списку.</message></help>
     </parameter>
   </parameters>
 </WAComponent>
