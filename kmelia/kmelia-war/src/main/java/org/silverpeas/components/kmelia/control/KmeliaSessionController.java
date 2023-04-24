@@ -365,10 +365,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     return StringUtil.getBooleanValue(getComponentParameterValue("draft"));
   }
 
-  public boolean isOrientedWebContent() {
-    return StringUtil.getBooleanValue(getComponentParameterValue("webContent"));
-  }
-
   public boolean isTopicManagementDelegated() {
     return StringUtil.getBooleanValue(getComponentParameterValue("delegatedTopicManagement"));
   }

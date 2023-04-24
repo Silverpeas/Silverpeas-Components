@@ -545,7 +545,7 @@ function customMenu(node) {
             },
         	"separator_after" : true
         }
-        <% if (kmeliaScc.isOrientedWebContent() || kmeliaScc.isWysiwygOnTopicsEnabled()) { %>
+        <% if (kmeliaScc.isWysiwygOnTopicsEnabled()) { %>
         ,
         wysiwygItem: {
             label: "<%=resources.getString("TopicWysiwyg")%>",
@@ -555,16 +555,6 @@ function customMenu(node) {
             }
         }
         <% } %>
-        <% if (kmeliaScc.isOrientedWebContent()) { %>
-        ,
-        statusItem: {
-            label: "<%=resources.getString("TopicVisible2Invisible")%>",
-            action: function (obj) {
-              var node = getTreeview().get_node(obj.reference);
-            	changeStatus(node.id, node.original.attr["status"]);
-            }
-        }
-    	<% } %>
     };
 
     if (nodeType == "root") {
@@ -661,9 +651,6 @@ function spreadNbItems(children) {
 		for(var i = 0; i < children.length; i++) {
 			var child = children[i];
 			child.a_attr = { title: child.attr['description'].unescapeHTML()};
-			<% if (kmeliaScc.isOrientedWebContent()) { %>
-      child.li_attr = { class: child.attr['status'] };
-			<% } %>
       decorateNodeName(child);
       if (child.children && child.children.length > 0) {
         spreadNbItems(child.children);
@@ -795,9 +782,6 @@ $(document).ready(function() {
                 // this is the root
                 node.text = "<%=WebEncodeHelper.javaStringToHtmlString(componentLabel)%>";
                 decorateNodeName(node);
-                <% if (kmeliaScc.isOrientedWebContent()) { %>
-                node.li_attr = {class: node.attr['status']};
-                <% } %>
                 spreadNbItems(node.children);
               }
             }
