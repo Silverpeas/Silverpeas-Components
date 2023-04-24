@@ -177,12 +177,8 @@ public class JSONServlet extends HttpServlet {
     operations.put("sortSubTopics", isAdmin);
     operations.put("copyTopic", !isRoot && isAdmin);
     operations.put("cutTopic", !isRoot && isAdmin);
-    if (!isRoot && isAdmin && kmeliaSC.isOrientedWebContent()) {
-      operations.put("showTopic", NodeDetail.STATUS_INVISIBLE.equalsIgnoreCase(node.getStatus()));
-      operations.put("hideTopic", NodeDetail.STATUS_VISIBLE.equalsIgnoreCase(node.getStatus()));
-    }
-    operations.put("wysiwygTopic", isAdmin && (kmeliaSC.isOrientedWebContent() || kmeliaSC.
-        isWysiwygOnTopicsEnabled()));
+    operations.put("wysiwygTopic", isAdmin && kmeliaSC.
+        isWysiwygOnTopicsEnabled());
     operations.put("shareTopic", node.canBeSharedBy(user));
   }
 
