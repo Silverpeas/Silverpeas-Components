@@ -34,7 +34,6 @@ import org.silverpeas.components.kmelia.KmeliaConstants;
 import org.silverpeas.components.kmelia.KmeliaPublicationHelper;
 import org.silverpeas.components.kmelia.control.KmeliaSessionController;
 import org.silverpeas.components.kmelia.model.KmeliaPublication;
-import org.silverpeas.components.kmelia.model.KmeliaPublicationComparator;
 import org.silverpeas.components.kmelia.model.TopicDetail;
 import org.silverpeas.components.kmelia.model.ValidatorsList;
 import org.silverpeas.components.kmelia.service.KmeliaHelper;
@@ -215,21 +214,14 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       String role = kmeliaSC.getProfile();
       if (toLink) {
         currentTopic = kmeliaSC.getSessionTopicToLink();
-        sortAllowed = false;
+        sortAllowed = true;
         linksAllowed = false;
         seeAlso = true;
         // get selected publication ids from session
         selectedIds = processPublicationsToLink(req);
-        String currentPubId = req.getParameter("PubId");
-        String currentPubComponentId = req.getParameter("PubComponentName");
-        PublicationPK publicationPK = null;
-        if (StringUtil.isDefined(currentPubId) && StringUtil.isDefined(currentPubComponentId)) {
-          publicationPK = new PublicationPK(currentPubId, currentPubComponentId);
-        }
-        publications = currentTopic.getValidPublications(publicationPK);
-        if (resources.getSetting("linkManagerSortByPubId", false)) {
-          publications.sort(new KmeliaPublicationComparator());
-        }
+        kmeliaSC.setCurrentFolderId(currentTopic.getNodePK().getId(), true);
+        kmeliaSC.loadPublicationsOfCurrentFolder();
+        publications = kmeliaSC.getSessionPublicationsList();
       } else if (toPortlet) {
         sortAllowed = false;
         publications = kmeliaSC.getSessionPublicationsList();
@@ -645,7 +637,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       if (fragmentSettings.seeAlso && resources.getSetting("linkManagerShowPubId", false)) {
         ref = " [ " + pub.getPK().getId() + " ] ";
       }
-       out.write("<div class=\"");
+      out.write("<div class=\"");
       out.write(fragmentSettings.pubColor);
       out.write("\"><span class=\"" + fragmentSettings.highlightClass + "\">");
       out.write(ref);
@@ -812,8 +804,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 
     out.
         write(
-            "<select name=\"sortBy\" id=\"sortingList\" onChange=\"javascript:sortGoTo(this" +
-                ".selectedIndex);\">");
+        "<select name=\"sortBy\" id=\"sortingList\" onChange=\"javascript:sortGoTo(this" +
+            ".selectedIndex);\">");
     out.write("<option>" + resources.getString("SortBy") + "</option>");
     out.write("<option>-------------------------------</option>");
     out.write(getSortingListBoxEntry(SORT_UPDATE_ASC, resources.getString("DateAsc"), ksc));
@@ -1169,11 +1161,11 @@ public class AjaxPublicationsListServlet extends HttpServlet {
               resources.getString("kmelia.CopyPublicationLink") + "\" /></a>");
         }
         writer.write("<p class=\"publication-description\">"+WebEncodeHelper.convertBlanksForHtml(Encode.forHtml(pub.
-        getDescription(language))));
+            getDescription(language))));
         writer.write("</p>");
         writer.write("</li>");
       }
-      
+
       writer.write("</ul>");
     }
 
@@ -1231,5 +1223,5 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       }
     }
   }
-  
+
 }
