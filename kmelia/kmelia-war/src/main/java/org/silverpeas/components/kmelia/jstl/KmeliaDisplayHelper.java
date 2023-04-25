@@ -90,7 +90,7 @@ public class KmeliaDisplayHelper {
     out.println("windowName = \"publicationWindow\";");
     out.println("windowParams = \"directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars\";");
     out.println("larg = \"900\";");
-    out.println("haut = \"600\";");
+    out.println("haut = \"800\";");
     out.println(
         "publicationWindow = SP_openWindow(url, windowName, larg, haut, windowParams, false);");
     out.println("}");
@@ -100,8 +100,7 @@ public class KmeliaDisplayHelper {
   }
 
   public static void displayAllOperations(String id, KmeliaSessionController kmeliaScc,
-      GraphicElementFactory gef, String action, MultiSilverpeasBundle resources, JspWriter out) throws
-      IOException {
+      GraphicElementFactory gef, String action, MultiSilverpeasBundle resources, JspWriter out) throws IOException {
     boolean kmaxMode = false;
     displayAllOperations(id, kmeliaScc, gef, action, resources, out, kmaxMode);
   }
@@ -148,15 +147,15 @@ public class KmeliaDisplayHelper {
     if (invisibleTabs.indexOf(KmeliaSessionController.TAB_CONTENT) == -1) {
       tabbedPane.addTab(resources.getString("Model") + decoration,
           "javaScript:onClick=goToOperation('" + routerUrl + "ToPubliContent', '" + sureId
-          + "', 'ModelUpdateView')", "ModelUpdateView".equals(action) || "NewModel".equals(action)
-          || "ModelChoice".equals(action), enabled);
+              + "', 'ModelUpdateView')", "ModelUpdateView".equals(action) || "NewModel".equals(action)
+              || "ModelChoice".equals(action), enabled);
     }
     if (invisibleTabs.indexOf(KmeliaSessionController.TAB_ATTACHMENTS) == -1) {
       if (kmeliaScc.getComponentId().startsWith("toolbox")) {
         decoration = "";
         tabbedPane.addTab(resources.getString("GML.attachments") + decoration,
             "javaScript:onClick=goToOperationByGet('" + routerUrl + "ViewAttachments', '" + pubId
-            + "', 'ViewAttachments')", "ViewAttachments".equals(action), enabled);
+                + "', 'ViewAttachments')", "ViewAttachments".equals(action), enabled);
       }
     }
 
