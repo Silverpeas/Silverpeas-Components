@@ -82,7 +82,7 @@ function buildTree() {
     //add child nodes for tree; our top level nodes are
    try{
    var mes = [];
-   mes =YAHOO.lang.JSON.stringify(<%=TreeHandler.ProcessMenu(request,MenuConstants.THEME_MENU_TYPE)%>);
+   mes =YAHOO.lang.JSON.stringify(<%=TreeHandler.processMenu(request,MenuConstants.THEME_MENU_TYPE)%>);
     mes = YAHOO.lang.JSON.parse(mes);
    }catch(x){
       notyError("JSON Parse failed: "+x);
