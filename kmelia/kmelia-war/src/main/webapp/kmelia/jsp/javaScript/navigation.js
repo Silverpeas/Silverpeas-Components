@@ -300,12 +300,16 @@ function initOperations(id, op) {
     groupEmpty = false;
   }
 
-  if (op.exporting) {
-    if (id == "0") {
-      menuItem = new YAHOO.widget.MenuItem(getString('kmelia.ExportComponent'), {url: "javascript:onClick=exportTopic()"});
-    } else {
-      menuItem = new YAHOO.widget.MenuItem(getString('kmelia.ExportTopic'), {url: "javascript:onClick=exportTopic()"});
-    }
+  if (op.exportApplication && id == "0") {
+    menuItem = new YAHOO.widget.MenuItem(getString('kmelia.ExportComponent'),
+          {url : "javascript:onClick=exportTopic()"});
+    oMenu.addItem(menuItem, groupIndex);
+    groupEmpty = false;
+  }
+
+  if (op.exportTopic && id != "0") {
+    menuItem = new YAHOO.widget.MenuItem(getString('kmelia.ExportTopic'),
+        {url : "javascript:onClick=exportTopic()"});
     oMenu.addItem(menuItem, groupIndex);
     groupEmpty = false;
   }
