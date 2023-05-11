@@ -174,13 +174,11 @@
           if (kmeliaScc.isWysiwygOnTopicsEnabled()) {
             operationPane.addOperation("useless", kmeliaScc.getString("TopicWysiwyg"), "javascript:onClick=topicWysiwyg('"+id+"')");
           }
-          if (SilverpeasRole.ADMIN.isInRole(profile)) {
-            operationPane.addOperation("useless", resources.getString("GML.manageSubscriptions"), "ManageSubscriptions");
-          }
-          if (kmeliaScc.isExportComponentAllowed() && kmeliaScc.isExportZipAllowed()) {
+          operationPane.addOperation("useless", resources.getString("GML.manageSubscriptions"), "ManageSubscriptions");
+          if (kmeliaScc.isExportApplicationAllowed(kmeliaScc.getHighestSilverpeasUserRole()) && kmeliaScc.isExportZipAllowed()) {
             operationPane.addOperation("useless", kmeliaScc.getString("kmelia.ExportComponent"), "javascript:onClick=exportTopic()");
           }
-          if (kmeliaScc.isExportComponentAllowed() && kmeliaScc.isExportPdfAllowed()) {
+          if (kmeliaScc.isExportApplicationAllowed(kmeliaScc.getHighestSilverpeasUserRole()) && kmeliaScc.isExportPdfAllowed()) {
             operationPane.addOperation("useless", kmeliaScc.getString("kmelia.ExportPDF"), "javascript:openExportPDFPopup()");
           }
           operationPane.addOperation(resources.getIcon("kmelia.sortPublications"), kmeliaScc.getString("kmelia.OrderPublications"), "ToOrderPublications");
@@ -210,6 +208,10 @@
           operationPane.addOperation("useless", "<span id='subscriptionMenuLabel'></span>", "javascript:onClick=spSubManager.switchUserSubscription()");
           operationPane.addOperation("useless", resources.getString("FavoritesAdd1")+" "+kmeliaScc.getString("FavoritesAdd2"), "javaScript:addFavorite('"+
               WebEncodeHelper.javaStringToHtmlString(WebEncodeHelper.javaStringToJsString(namePath))+"','','"+urlTopic+"')");
+          if (kmeliaScc.isExportPublicationAllowed(kmeliaScc.getHighestSilverpeasUserRole()) && kmeliaScc.isExportZipAllowed()) {
+            operationPane.addOperation("useless", resources.getString("kmelia.operation.exportSelection"),
+                "javascript:onclick=exportPublications()");
+          }
         }
 
         if (userCanCreatePublications) {
