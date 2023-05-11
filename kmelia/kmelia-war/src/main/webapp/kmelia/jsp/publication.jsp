@@ -168,8 +168,8 @@
   // display message according to current state of publication
   if (!StringUtil.isDefined(screenMessage)) {
     if (pubDetail.isRefused()) {
-	    screenMessage = "<div class=\"inlineMessage-nok\">" + resources.getString("PublicationRefused") + "</div>";
-	  } else if (pubDetail.isValidationRequired()) {
+      screenMessage = "<div class=\"inlineMessage-nok\">" + resources.getString("PublicationRefused") + "</div>";
+    } else if (pubDetail.isValidationRequired()) {
       screenMessage = resources.getString("kmelia.publication.tovalidate.state");
       if (validatorsOK) {
         if (validatorsList.isTargetedValidation() && validatorsList.isAtLeastOnceValidatorActive()) {
@@ -186,7 +186,7 @@
       if (StringUtil.isDefined(screenMessage)) {
         screenMessage = "<div class=\"inlineMessage\">"+screenMessage+"</div>";
       }
-  	}
+    }
   }
 
   if (action.equals("ValidateView")) {
@@ -213,7 +213,7 @@
   //  - on clone (if "publication always visible" is used)
   //  - if current user can modified publication
   boolean attachmentsUpdatable = attachmentsEnabled && isOwner && !pubDetail.haveGotClone();
-  
+
   if (isOwner && !validatorsOK) {
     if (SilverpeasRole.WRITER.isInRole(profile)) {
       String selectUserLab = resources.getString("kmelia.SelectValidator");
@@ -254,701 +254,701 @@
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.kmelia" xml:lang="${userLanguage}">
-  <head>
-    <view:looknfeel/>
-    <title></title>
-    <link type="text/css" rel="stylesheet" href='<c:url value="/kmelia/jsp/styleSheets/pubHighlight.css" />'/>
-    <link type="text/css" rel="stylesheet" href='<c:url value="/kmelia/jsp/styleSheets/kmelia-print.css" />' media="print"/>
-    <view:includePlugin name="wysiwyg"/>
-    <view:includePlugin name="popup"/>
-    <view:includePlugin name="rating" />
-    <view:includePlugin name="subscription"/>
-    <view:includePlugin name="basketSelection"/>
-    <script type="text/javascript" src="<%=m_context%>/kmelia/jsp/javaScript/glossaryHighlight.js"></script>
-    <script type="text/javascript">
+<head>
+  <view:looknfeel/>
+  <title></title>
+  <link type="text/css" rel="stylesheet" href='<c:url value="/kmelia/jsp/styleSheets/pubHighlight.css" />'/>
+  <link type="text/css" rel="stylesheet" href='<c:url value="/kmelia/jsp/styleSheets/kmelia-print.css" />' media="print"/>
+  <view:includePlugin name="wysiwyg"/>
+  <view:includePlugin name="popup"/>
+  <view:includePlugin name="rating" />
+  <view:includePlugin name="subscription"/>
+  <view:includePlugin name="basketSelection"/>
+  <script type="text/javascript" src="<%=m_context%>/kmelia/jsp/javaScript/glossaryHighlight.js"></script>
+  <script type="text/javascript">
 
-      $(function() {
-        $( "#publication-export" ).dialog({
-          autoOpen: false,
-          title: "<%=resources.getString("kmelia.chooseFormat")%>",
-          modal: true,
-          minWidth: 350,
-          buttons: {
-            '<%= resources.getString("kmelia.export") %>': function() {
-              $("#exportForm").submit();
-              $( this ).dialog( "close" );
-            },
-            '<%= resources.getString("GML.cancel") %>': function() {
-              $( this ).dialog( "close" );
-            }
+    $(function() {
+      $( "#publication-export" ).dialog({
+        autoOpen: false,
+        title: "<%=resources.getString("kmelia.chooseFormat")%>",
+        modal: true,
+        minWidth: 350,
+        buttons: {
+          '<%= resources.getString("kmelia.export") %>': function() {
+            $("#exportForm").submit();
+            $( this ).dialog( "close" );
+          },
+          '<%= resources.getString("GML.cancel") %>': function() {
+            $( this ).dialog( "close" );
           }
-        });
-
-        $("#publication-draftout").dialog({
-            autoOpen: false,
-            title: "<%=resources.getString("PubDraftOut")%>",
-            modal: true,
-            minWidth: 500,
-            resizable : false,
-            buttons: {
-              'OK': function() {
-                $(this).dialog("close");
-              }
-            }
-          });
-
-        $("#publication-refusal-form").dialog({
-            autoOpen: false,
-            title: "<%=resources.getString("PubUnvalidate?")%>",
-            modal: true,
-            minWidth: 500,
-            resizable : false,
-            buttons: {
-              'OK': function() {
-            	  if (!$.trim($("#refusal-motive").val())) {
-                  jQuery.popup.error("'<%=kmeliaScc.getString("RefusalMotive")%>' <%=resources.getString("GML.MustBeFilled")%>");
-            		  return true;
-            	  } else {
-			  		      document.refusalForm.submit();
-            	  }
-              },
-              '<%= resources.getString("GML.cancel") %>': function() {
-                  $(this).dialog("close");
-              }
-            }
-          });
-
+        }
       });
 
-      var publicVersionsWindow = window;
-      var suspendMotiveWindow = window;
-      var attachmentWindow = window;
-      var favoriteWindow = window;
+      $("#publication-draftout").dialog({
+        autoOpen: false,
+        title: "<%=resources.getString("PubDraftOut")%>",
+        modal: true,
+        minWidth: 500,
+        resizable : false,
+        buttons: {
+          'OK': function() {
+            $(this).dialog("close");
+          }
+        }
+      });
 
-      function exportPublication() {
-        $( '#publication-export' ).dialog('open');
-      }
+      $("#publication-refusal-form").dialog({
+        autoOpen: false,
+        title: "<%=resources.getString("PubUnvalidate?")%>",
+        modal: true,
+        minWidth: 500,
+        resizable : false,
+        buttons: {
+          'OK': function() {
+            if (!$.trim($("#refusal-motive").val())) {
+              jQuery.popup.error("'<%=kmeliaScc.getString("RefusalMotive")%>' <%=resources.getString("GML.MustBeFilled")%>");
+              return true;
+            } else {
+              document.refusalForm.submit();
+            }
+          },
+          '<%= resources.getString("GML.cancel") %>': function() {
+            $(this).dialog("close");
+          }
+        }
+      });
 
-      function clipboardCopy() {
-        top.IdleFrame.location.href = '../..<%=kmeliaScc.getComponentUrl()%>copy.jsp?Id=<%=id%>';
-      }
+    });
 
-      function clipboardCut() {
-        top.IdleFrame.location.href = '../..<%=kmeliaScc.getComponentUrl()%>cut.jsp?Id=<%=id%>';
-      }
+    var publicVersionsWindow = window;
+    var suspendMotiveWindow = window;
+    var attachmentWindow = window;
+    var favoriteWindow = window;
 
-      function putInBasket() {
-        const basketManager = new BasketManager();
-        basketManager.putContributionInBasket('<%= pubDetail.getIdentifier().asString() %>');
-      }
+    function exportPublication() {
+      $( '#publication-export' ).dialog('open');
+    }
 
-      function compileResult(fileName) {
-        SP_openWindow(fileName, "PdfGeneration","770", "550", "toolbar=no, directories=no, menubar=no, locationbar=no ,resizable, scrollbars");
-      }
+    function clipboardCopy() {
+      top.IdleFrame.location.href = '../..<%=kmeliaScc.getComponentUrl()%>copy.jsp?Id=<%=id%>';
+    }
 
-      function pubDeleteConfirm() {
-        closeWindows();
-        var label = "<%=resources.getString("ConfirmDeletePub")%>";
-        jQuery.popup.confirm(label, function() {
-          document.toRouterForm.action = "<%=routerUrl%>DeletePublication";
-          document.toRouterForm.PubId.value = "<%=id%>";
-          document.toRouterForm.submit();
-        });
-      }
+    function clipboardCut() {
+      top.IdleFrame.location.href = '../..<%=kmeliaScc.getComponentUrl()%>cut.jsp?Id=<%=id%>';
+    }
 
-      function pubValidate() {
-        document.toRouterForm.action = "<%=routerUrl%>ValidatePublication";
+    function putInBasket() {
+      const basketManager = new BasketManager();
+      basketManager.putContributionInBasket('<%= pubDetail.getIdentifier().asString() %>');
+    }
+
+    function compileResult(fileName) {
+      SP_openWindow(fileName, "PdfGeneration","770", "550", "toolbar=no, directories=no, menubar=no, locationbar=no ,resizable, scrollbars");
+    }
+
+    function pubDeleteConfirm() {
+      closeWindows();
+      var label = "<%=resources.getString("ConfirmDeletePub")%>";
+      jQuery.popup.confirm(label, function() {
+        document.toRouterForm.action = "<%=routerUrl%>DeletePublication";
+        document.toRouterForm.PubId.value = "<%=id%>";
         document.toRouterForm.submit();
+      });
+    }
+
+    function pubValidate() {
+      document.toRouterForm.action = "<%=routerUrl%>ValidatePublication";
+      document.toRouterForm.submit();
+    }
+
+    function pubUnvalidate() {
+      $('#publication-refusal-form').dialog('open');
+    }
+
+    function pubSuspend() {
+      document.pubForm.PubId.value = "<%=id%>";
+      url = "WantToSuspendPubli?PubId="+<%=id%>;
+      windowName = "suspendMotiveWindow";
+      larg = "550";
+      haut = "350";
+      windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
+      if (!suspendMotiveWindow.closed && suspendMotiveWindow.name== "suspendMotiveWindow")
+        suspendMotiveWindow.close();
+      suspendMotiveWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
+    }
+
+    <% if (!kmeliaPublication.isAlias()) { %>
+    function pubDraftIn() {
+      location.href = "<%=routerUrl%>DraftIn?From=ViewPublication";
+    }
+
+    function pubDraftOut() {
+      if (<%= draftOutTaxonomyOK %>) {
+        location.href = "<%=routerUrl%>DraftOut?From=ViewPublication";
+      } else {
+        $("#publication-draftout").dialog('open');
       }
+    }
+    <% } %>
 
-      function pubUnvalidate() {
-	    $('#publication-refusal-form').dialog('open');
-      }
+    function topicGoTo(id) {
+      closeWindows();
+      location.href="GoToTopic?Id="+id;
+    }
 
-      function pubSuspend() {
-        document.pubForm.PubId.value = "<%=id%>";
-        url = "WantToSuspendPubli?PubId="+<%=id%>;
-        windowName = "suspendMotiveWindow";
-        larg = "550";
-        haut = "350";
-        windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
-        if (!suspendMotiveWindow.closed && suspendMotiveWindow.name== "suspendMotiveWindow")
-          suspendMotiveWindow.close();
-        suspendMotiveWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
-      }
+    function closeWindows() {
+      if (window.publicationWindow != null && window.publicationWindow !== window)
+        window.publicationWindow.close();
+      if (window.publicVersionsWindow != null && window.publicVersionsWindow !== window)
+        window.publicVersionsWindow.close();
+    }
 
-      <% if (!kmeliaPublication.isAlias()) { %>
-	      function pubDraftIn() {
-	        location.href = "<%=routerUrl%>DraftIn?From=ViewPublication";
-	      }
-
-	      function pubDraftOut() {
-	        if (<%= draftOutTaxonomyOK %>) {
-	          location.href = "<%=routerUrl%>DraftOut?From=ViewPublication";
-	        } else {
-	        	$("#publication-draftout").dialog('open');
-	        }
-	      }
-	  <% } %>
-
-      function topicGoTo(id) {
-        closeWindows();
-        location.href="GoToTopic?Id="+id;
-      }
-
-      function closeWindows() {
-        if (window.publicationWindow != null && window.publicationWindow !== window)
-          window.publicationWindow.close();
-        if (window.publicVersionsWindow != null && window.publicVersionsWindow !== window)
-          window.publicVersionsWindow.close();
-      }
-
-      function alertUsers()
-      {
+    function alertUsers()
+    {
       <% if (!pubDetail.isValid()) {%>
-        var label = "<%=WebEncodeHelper.javaStringToJsString(resources.getString("kmelia.AlertButPubNotValid"))%>";
-        jQuery.popup.confirm(label, function() {
-          sp.messager.open('<%= contextComponentId %>', {
-            nodeId: '<%= kmeliaScc.getCurrentFolderId() %>',
-          <%= NotificationContext.PUBLICATION_ID %>: '<%= pubDetail.getId() %>'
-          });
-        });
-      <% } else {%>
+      var label = "<%=WebEncodeHelper.javaStringToJsString(resources.getString("kmelia.AlertButPubNotValid"))%>";
+      jQuery.popup.confirm(label, function() {
         sp.messager.open('<%= contextComponentId %>', {
           nodeId: '<%= kmeliaScc.getCurrentFolderId() %>',
-         <%= NotificationContext.PUBLICATION_ID %>: '<%= pubDetail.getId() %>'
-        });
-      <% }%>
-        }
-
-        function alertUsersAttachment(attachmentId)
-        {
-      <% if (!pubDetail.isValid()) {%>
-          var label = "<%=WebEncodeHelper.javaStringToJsString(resources.getString("kmelia.AlertButPubNotValid"))%>";
-          jQuery.popup.confirm(label, function() {
-            sp.messager.open('<%= contextComponentId %>', {
-              nodeId: '<%= kmeliaScc.getCurrentFolderId() %>',
-             <%= NotificationContext.PUBLICATION_ID %>: '<%= pubDetail.getId() %>',
-              docId: attachmentId
-              });
-          });
+        <%= NotificationContext.PUBLICATION_ID %>: '<%= pubDetail.getId() %>'
+      });
+      });
       <% } else {%>
-          sp.messager.open('<%= contextComponentId %>', {
-            nodeId: '<%= kmeliaScc.getCurrentFolderId() %>',
-           <%= NotificationContext.PUBLICATION_ID %>: '<%= pubDetail.getId() %>',
-            docId: attachmentId
-          });
+      sp.messager.open('<%= contextComponentId %>', {
+        nodeId: '<%= kmeliaScc.getCurrentFolderId() %>',
+      <%= NotificationContext.PUBLICATION_ID %>: '<%= pubDetail.getId() %>'
+    });
       <% }%>
-        }
+    }
 
-        function openSingleAttachment() {
+    function alertUsersAttachment(attachmentId)
+    {
+      <% if (!pubDetail.isValid()) {%>
+      var label = "<%=WebEncodeHelper.javaStringToJsString(resources.getString("kmelia.AlertButPubNotValid"))%>";
+      jQuery.popup.confirm(label, function() {
+        sp.messager.open('<%= contextComponentId %>', {
+          nodeId: '<%= kmeliaScc.getCurrentFolderId() %>',
+        <%= NotificationContext.PUBLICATION_ID %>: '<%= pubDetail.getId() %>',
+            docId: attachmentId
+      });
+      });
+      <% } else {%>
+      sp.messager.open('<%= contextComponentId %>', {
+        nodeId: '<%= kmeliaScc.getCurrentFolderId() %>',
+      <%= NotificationContext.PUBLICATION_ID %>: '<%= pubDetail.getId() %>',
+        docId: attachmentId
+    });
+      <% }%>
+    }
+
+    function openSingleAttachment() {
       <% if (StringUtil.isDefined(singleFileURL)) {
           out.print("url = \"" + WebEncodeHelper.javaStringToJsString(singleFileURL) + "\";");
       %>
-          windowName = "attachmentWindow";
-          windowParams = "directories=1,menubar=1,toolbar=1,location=1,resizable=1,scrollbars=1,status=1,alwaysRaised";
-          if (!attachmentWindow.closed && attachmentWindow.name== "attachmentWindow")
-            attachmentWindow.close();
+      windowName = "attachmentWindow";
+      windowParams = "directories=1,menubar=1,toolbar=1,location=1,resizable=1,scrollbars=1,status=1,alwaysRaised";
+      if (!attachmentWindow.closed && attachmentWindow.name== "attachmentWindow")
+        attachmentWindow.close();
 
-          attachmentWindow = SP_openWindow(url, windowName, "600", "400", windowParams);
+      attachmentWindow = SP_openWindow(url, windowName, "600", "400", windowParams);
       <% }%>
+    }
+
+    function showTranslation(lang)
+    {
+      location.href="ViewPublication?SwitchLanguage="+lang;
+    }
+
+    function reloadPage() {
+      location.href= "<%=routerUrl%>ViewPublication";
+    }
+
+    function addFavorite() {
+      var name = $("#breadCrumb").text();
+      var description = "<%=WebEncodeHelper.javaStringToJsString(pubDetail.getDescription(language))%>";
+      var url = "<%=pubPermalink%>";
+      postNewLink(name, url, description);
+    }
+
+    function pubShare() {
+      var sharingObject = {
+        componentId: "<%=contextComponentId%>",
+        type       : "Publication",
+        id         : "${publication.id}",
+        name   : "${silfn:escapeJs(publication.getName(contentLanguage))}"
+      };
+      createSharingTicketPopup(sharingObject);
+    }
+
+    SUBSCRIPTION_PROMISE.then(function() {
+      window.spSubManager = new SilverpeasSubscriptionManager({
+        componentInstanceId : '<%=contextComponentId%>',
+        subscriptionResourceType : jQuery.subscription.subscriptionType.<%=kmeliaPublication.isAlias() ? "PUBLICATION_ALIAS" : "PUBLICATION"%>,
+        resourceId : '${publication.id}'
+      });
+    });
+  </script>
+</head>
+<body class="yui-skin-sam" onunload="closeWindows()" onload="openSingleAttachment()" id="<%=componentId%>">
+
+<div id="preview">
+  <%
+    Window window = gef.getWindow();
+    Frame frame = gef.getFrame();
+
+    BrowseBar browseBar = window.getBrowseBar();
+    browseBar.setDomainName(spaceLabel);
+    if (kmaxMode) {
+      browseBar.setComponentName(componentLabel, "KmaxSearchResult");
+    } else {
+      browseBar.setComponentName(componentLabel, "Main");
+    }
+    if (searchScope == SearchContext.LOCAL) {
+      if (StringUtil.isDefined(linkedPathString)) {
+        linkedPathString += " > ";
+      }
+      linkedPathString += "<a href=\"GoBackToResults\">"+resources.getString("kmelia.publication.breadcrumb.results")+"</a>";
+    }
+    browseBar.setPath(linkedPathString);
+    browseBar.setExtraInformation(pubName);
+    browseBar.setI18N(languages, contentLanguage);
+
+    OperationPane operationPane = window.getOperationPane();
+
+    operationPane.addOperation("useless", resources.getString("GML.print"), "javaScript:print();", "operation-publi-print");
+    if (notificationAllowed && !currentUser.isAnonymous() && !currentUser.isAccessGuest()) {
+      operationPane.addOperation(alertSrc, resources.getString("GML.notify"), "javaScript:alertUsers()");
+    }
+
+    if (!exportFormats.isEmpty() && kmeliaScc.isExportPublicationAllowed(kmeliaScc.getHighestSilverpeasUserRole())) {
+      operationPane.addOperation(pdfSrc, resources.getString("kmelia.ExportPublication"), "javascript:exportPublication()", "operation-publi-export");
+    }
+    if (sharingAllowed) {
+      operationPane.addOperation("useless", resources.getString("GML.share"), "javascript:pubShare()");
+    }
+    if (isOwner || isAdmin) {
+      operationPane.addOperation("useless", resources.getString("GML.manageSubscriptions"), "ManageSubscriptions");
+    }
+    if (!currentUser.isAnonymous() && !currentUser.isAccessGuest()) {
+      operationPane.addOperation("useless", "<span id='subscriptionMenuLabel'></span>", "javascript:spSubManager.switchUserSubscription()");
+    }
+    if (StringUtil.isDefined(pubPermalink) && !currentUser.isAnonymous() && !currentUser.isAccessGuest()) {
+      operationPane.addOperation(favoriteAddSrc, resources.getString("FavoritesAddPublication") + " " + resources.getString("FavoritesAdd2"), "javascript:addFavorite()");
+    }
+    operationPane.addLine();
+
+    if (isOwner && modificationAllowed) {
+      if (!SilverpeasRole.SUPERVISOR.getName().equals(profile)) {
+        if (attachmentsUpdatable) {
+          operationPane.addOperation("#", resources.getString("kmelia.AddFile"), "javascript:addAttachment('" +pubDetail.getId() + "')");
         }
 
-        function showTranslation(lang)
-        {
-          location.href="ViewPublication?SwitchLanguage="+lang;
+        if (seeAlsoEnabled) {
+          operationPane.addOperation("#", resources.getString("AddLinkPub"),
+              "javascript:goToOperationInAnotherWindow('ToAddLinksToPublication', '" +
+                  pubDetail.getId() + "', 'Useless')");
         }
 
-        function reloadPage() {
-          location.href= "<%=routerUrl%>ViewPublication";
-        }
-
-        function addFavorite() {
-          var name = $("#breadCrumb").text();
-          var description = "<%=WebEncodeHelper.javaStringToJsString(pubDetail.getDescription(language))%>";
-          var url = "<%=pubPermalink%>";
-          postNewLink(name, url, description);
-        }
-
-        function pubShare() {
-          var sharingObject = {
-              componentId: "<%=contextComponentId%>",
-              type       : "Publication",
-              id         : "${publication.id}",
-              name   : "${silfn:escapeJs(publication.getName(contentLanguage))}"
-          };
-          createSharingTicketPopup(sharingObject);
-        }
-
-        SUBSCRIPTION_PROMISE.then(function() {
-          window.spSubManager = new SilverpeasSubscriptionManager({
-            componentInstanceId : '<%=contextComponentId%>',
-            subscriptionResourceType : jQuery.subscription.subscriptionType.<%=kmeliaPublication.isAlias() ? "PUBLICATION_ALIAS" : "PUBLICATION"%>,
-            resourceId : '${publication.id}'
-          });
-        });
-    </script>
-  </head>
-  <body class="yui-skin-sam" onunload="closeWindows()" onload="openSingleAttachment()" id="<%=componentId%>">
-
-    <div id="preview">
-      <%
-        Window window = gef.getWindow();
-        Frame frame = gef.getFrame();
-
-        BrowseBar browseBar = window.getBrowseBar();
-        browseBar.setDomainName(spaceLabel);
-        if (kmaxMode) {
-          browseBar.setComponentName(componentLabel, "KmaxSearchResult");
-        } else {
-          browseBar.setComponentName(componentLabel, "Main");
-        }
-        if (searchScope == SearchContext.LOCAL) { 
-          	if (StringUtil.isDefined(linkedPathString)) {
-          		linkedPathString += " > ";
-          	}
-          	linkedPathString += "<a href=\"GoBackToResults\">"+resources.getString("kmelia.publication.breadcrumb.results")+"</a>";
-        }
-        browseBar.setPath(linkedPathString);
-        browseBar.setExtraInformation(pubName);
-        browseBar.setI18N(languages, contentLanguage);
-
-        OperationPane operationPane = window.getOperationPane();
-
-        operationPane.addOperation("useless", resources.getString("GML.print"), "javaScript:print();", "operation-publi-print");
-        if (notificationAllowed && !currentUser.isAnonymous() && !currentUser.isAccessGuest()) {
-          operationPane.addOperation(alertSrc, resources.getString("GML.notify"), "javaScript:alertUsers()");
-        }
-
-        if (!toolboxMode && !exportFormats.isEmpty()) {
-          operationPane.addOperation(pdfSrc, resources.getString("kmelia.ExportPublication"), "javascript:exportPublication()", "operation-publi-export");
-        }
-        if (sharingAllowed) {
-          operationPane.addOperation("useless", resources.getString("GML.share"), "javascript:pubShare()");
-        }
-        if (isOwner || isAdmin) {
-          operationPane.addOperation("useless", resources.getString("GML.manageSubscriptions"), "ManageSubscriptions");
-        }
-        if (!currentUser.isAnonymous() && !currentUser.isAccessGuest()) {
-          operationPane.addOperation("useless", "<span id='subscriptionMenuLabel'></span>", "javascript:spSubManager.switchUserSubscription()");
-        }
-        if (StringUtil.isDefined(pubPermalink) && !currentUser.isAnonymous() && !currentUser.isAccessGuest()) {
-          operationPane.addOperation(favoriteAddSrc, resources.getString("FavoritesAddPublication") + " " + resources.getString("FavoritesAdd2"), "javascript:addFavorite()");
-        }
-        operationPane.addLine();
-
-        if (isOwner && modificationAllowed) {
-          if (!SilverpeasRole.SUPERVISOR.getName().equals(profile)) {
-            if (attachmentsUpdatable) {
-            	operationPane.addOperation("#", resources.getString("kmelia.AddFile"), "javascript:addAttachment('" +pubDetail.getId() + "')");
-            }
-
-            if (seeAlsoEnabled) {
-              operationPane.addOperation("#", resources.getString("AddLinkPub"),
-                  "javascript:goToOperationInAnotherWindow('ToAddLinksToPublication', '" +
-                      pubDetail.getId() + "', 'Useless')");
-            }
-
-            if (kmeliaScc.isDraftEnabled() && !pubDetail.haveGotClone()) {
-              if (pubDetail.isDraft()) {
-                operationPane.addOperation(pubDraftOutSrc, resources.getString("PubDraftOut"), "javascript:pubDraftOut()");
-              } else if (pubDetail.isRefused() || pubDetail.isValid()) {
-                operationPane.addOperation(pubDraftInSrc, resources.getString("PubDraftIn"), "javascript:pubDraftIn()");
-              }
-            }
-
-            if (suppressionAllowed) {
-              operationPane.addLine();
-              operationPane.addOperation(deletePubliSrc, resources.getString("GML.delete"), "javascript:pubDeleteConfirm()");
-            }
-            
-            operationPane.addLine();
+        if (kmeliaScc.isDraftEnabled() && !pubDetail.haveGotClone()) {
+          if (pubDetail.isDraft()) {
+            operationPane.addOperation(pubDraftOutSrc, resources.getString("PubDraftOut"), "javascript:pubDraftOut()");
+          } else if (pubDetail.isRefused() || pubDetail.isValid()) {
+            operationPane.addOperation(pubDraftInSrc, resources.getString("PubDraftIn"), "javascript:pubDraftIn()");
           }
         }
-        if (!kmaxMode) {
-          if (!currentUser.isAnonymous()) {
-            operationPane.addOperation(resources.getIcon("kmelia.copy"), resources.getString("GML.copy"), "javascript:clipboardCopy()", "operation-publi-copy");
-          }
-          if (isOwner) {
-            operationPane.addOperation(resources.getIcon("kmelia.cut"), resources.getString("GML.cut"), "javascript:clipboardCut()");
-          }
-        }
-        if (!currentUser.isAccessGuest() && !currentUser.isAnonymous() && !pubDetail.isDraft() && !pubDetail.isClone() &&
-            BasketSelectionUI.displayPutIntoBasketSelectionShortcut()) {
+
+        if (suppressionAllowed) {
           operationPane.addLine();
-          operationPane.addOperation(basketIcon, resources.getString("GML.putInBasket"), "javascript:putInBasket()");
-        }
-        if (!toolboxMode && isOwner) {
-          if (userCanValidate) {
-            // if clone exists, only the clone can be validated or refused
-            operationPane.addLine();
-            operationPane.addOperation(pubValidateSrc, resources.getString("PubValidate?"), "javaScript:pubValidate()");
-            operationPane.addOperation(pubUnvalidateSrc, resources.getString("PubUnvalidate?"), "javaScript:pubUnvalidate()");
-          }
-          if (SilverpeasRole.SUPERVISOR.getName().equals(profile)) {
-            operationPane.addLine();
-            operationPane.addOperation(pubUnvalidateSrc, resources.getString("kmelia.PubSuspend"), "javaScript:pubSuspend()");
-          }
+          operationPane.addOperation(deletePubliSrc, resources.getString("GML.delete"), "javascript:pubDeleteConfirm()");
         }
 
-        out.println(window.printBefore());
-        action = "View";
-        if (isOwner && modificationAllowed) {
-          KmeliaDisplayHelper.displayAllOperations(id, kmeliaScc, gef, action, resources, out, kmaxMode);
-        } else {
-          KmeliaDisplayHelper.displayUserOperations(kmeliaScc, out);
-        }
-        out.println(frame.printBefore());
+        operationPane.addLine();
+      }
+    }
+    if (!kmaxMode) {
+      if (!currentUser.isAnonymous()) {
+        operationPane.addOperation(resources.getIcon("kmelia.copy"), resources.getString("GML.copy"), "javascript:clipboardCopy()", "operation-publi-copy");
+      }
+      if (isOwner) {
+        operationPane.addOperation(resources.getIcon("kmelia.cut"), resources.getString("GML.cut"), "javascript:clipboardCut()");
+      }
+    }
+    if (!currentUser.isAccessGuest() && !currentUser.isAnonymous() && !pubDetail.isDraft() && !pubDetail.isClone() &&
+        BasketSelectionUI.displayPutIntoBasketSelectionShortcut()) {
+      operationPane.addLine();
+      operationPane.addOperation(basketIcon, resources.getString("GML.putInBasket"), "javascript:putInBasket()");
+    }
+    if (!toolboxMode && isOwner) {
+      if (userCanValidate) {
+        // if clone exists, only the clone can be validated or refused
+        operationPane.addLine();
+        operationPane.addOperation(pubValidateSrc, resources.getString("PubValidate?"), "javaScript:pubValidate()");
+        operationPane.addOperation(pubUnvalidateSrc, resources.getString("PubUnvalidate?"), "javaScript:pubUnvalidate()");
+      }
+      if (SilverpeasRole.SUPERVISOR.getName().equals(profile)) {
+        operationPane.addLine();
+        operationPane.addOperation(pubUnvalidateSrc, resources.getString("kmelia.PubSuspend"), "javaScript:pubSuspend()");
+      }
+    }
 
-        %>
-      <!-- AFFICHAGE des boutons de navigation -->
-      <viewTags:displayIndex nbItems="<%=nbPublis%>" index="<%=rang%>" linkSuffix="Publication"/>
+    out.println(window.printBefore());
+    action = "View";
+    if (isOwner && modificationAllowed) {
+      KmeliaDisplayHelper.displayAllOperations(id, kmeliaScc, gef, action, resources, out, kmaxMode);
+    } else {
+      KmeliaDisplayHelper.displayUserOperations(kmeliaScc, out);
+    }
+    out.println(frame.printBefore());
 
-	  <%
-	    	String backURL = "GoToCurrentTopic";
-	  		String backLabel = resources.getString("kmelia.publication.link.folder");
-	    	if (searchScope == SearchContext.GLOBAL) {
-	    	  backURL = m_context+"/RpdcSearch/jsp/LastResults";
-	    	  backLabel = resources.getString("kmelia.publication.link.results");
-	    	} else if (searchScope == SearchContext.LOCAL){
-	    	  backURL = "GoBackToResults";
-	    	  backLabel = resources.getString("kmelia.publication.link.results");
-	    	}
-	  %>
-	    <!-- button to go back to search results or current folder -->
-	  	<div id="backToSearch">
-	  	 <a href="<%=backURL%>" class="button"><span><%=backLabel%></span></a>
-	  	</div>
+  %>
+  <!-- AFFICHAGE des boutons de navigation -->
+  <viewTags:displayIndex nbItems="<%=nbPublis%>" index="<%=rang%>" linkSuffix="Publication"/>
 
-      <div class="rightContent">
-      	<div id="statPublication" class="bgDegradeGris">
-      		<p id="statInfo">
-      			<strong><%= kmeliaPublication.getNbAccess()%> <%=resources.getString("GML.stats.views") %></strong>
-      			<% if (ratingsAllowed) { %>
-            		<viewTags:displayContributionRating raterRating="${publicationRaterRatingEntity}"/>
-				    <% } %>
-			    </p>
+  <%
+    String backURL = "GoToCurrentTopic";
+    String backLabel = resources.getString("kmelia.publication.link.folder");
+    if (searchScope == SearchContext.GLOBAL) {
+      backURL = m_context+"/RpdcSearch/jsp/LastResults";
+      backLabel = resources.getString("kmelia.publication.link.results");
+    } else if (searchScope == SearchContext.LOCAL){
+      backURL = "GoBackToResults";
+      backLabel = resources.getString("kmelia.publication.link.results");
+    }
+  %>
+  <!-- button to go back to search results or current folder -->
+  <div id="backToSearch">
+    <a href="<%=backURL%>" class="button"><span><%=backLabel%></span></a>
+  </div>
 
-          <% if (!kmeliaScc.getInvisibleTabs().contains(KmeliaSessionController.TAB_COMMENT))	 { %>
-            <p id="commentInfo">
-              <fmt:message key="GML.comment.number"/><br />
-              <a href="#commentaires">${kmeliaPubli.numberOfComments}</a>
-            </p>
-          <% } %>
+  <div class="rightContent">
+    <div id="statPublication" class="bgDegradeGris">
+      <p id="statInfo">
+        <strong><%= kmeliaPublication.getNbAccess()%> <%=resources.getString("GML.stats.views") %></strong>
+        <% if (ratingsAllowed) { %>
+        <viewTags:displayContributionRating raterRating="${publicationRaterRatingEntity}"/>
+        <% } %>
+      </p>
 
-
-		    <% if (StringUtil.isDefined(pubPermalink)) {%>
-          <fmt:message var="permalinkHelp" key="kmelia.CopyPublicationLink"/>
-          <c:set var="permalinkIconUrl"><%=resources.getIcon("kmelia.link")%></c:set>
-          <viewTags:displayPermalinkInfo link="<%=pubPermalink%>" help="${permalinkHelp}" iconUrl="${permalinkIconUrl}"/>
-        <% }%>
-        </div>
-      <%
-
-        /*********************************************************************************************************************/
-        /** Colonne de droite																									**/
-        /*********************************************************************************************************************/
-			        if (attachmentsEnabled) {
-			          /*********************************************************************************************************************/
-			          /** Affichage des fichiers joints																					**/
-			          /*********************************************************************************************************************/
-			          boolean showTitle = resources.getSetting("showTitle", true);
-			          boolean showFileSize = resources.getSetting("showFileSize", true);
-			          boolean showInfo = resources.getSetting("showInfo", true);
-			          boolean showIcon = true;
-
-			          /** Qu'est-ce qu'on fait de ça ? est-ce que c'est encore utilité	**/
-			          if (!"bottom".equals(resources.getSetting("attachmentPosition"))) {
-
-			            out.println("<a name=\"attachments\"></a>");
-			          } else {
-
-			            out.println("<a name=\"attachments\"></a>");
-			          }
-                out.flush();
-                if (!attachmentsUpdatable) {
-                  attProfile = "user";
-                }
-                %>
-        <c:set var="attachmentPosition"><%=resources.getSetting("attachmentPosition")%></c:set>
-        <c:set var="callbackUrl"><%=URLUtil.getURL("useless", componentId) + "ViewPublication"%></c:set>
-        <viewTags:displayAttachments componentInstanceId="<%=componentId%>"
-                                     componentInstanceIdAlias="<%=componentInstanceIdOfAlias%>"
-                                     resourceId="<%=id%>"
-                                     resourceType="<%=resourceType%>"
-                                     contentLanguage="<%=language%>"
-                                     highestUserRole="<%=SilverpeasRole.fromString(attProfile)%>"
-                                     reloadCallbackUrl="${callbackUrl}"
-                                     hasToBeIndexed="<%=StringUtil.getBooleanValue(indexIt)%>"
-                                     attachmentPosition="${attachmentPosition}"
-                                     showIcon="<%=showIcon%>"
-                                     showTitle="<%=showTitle%>"
-                                     showDescription="<%=showInfo%>"
-                                     showFileSize="<%=showFileSize%>"
-                                     showMenuNotif="${true}"
-                                     contributionManagementContext="${requestScope.contributionManagementContext}"/>
-        <%
-
-			        }
-
-
-			           /*********************************************************************************************************************/
-			          /** Affichage des Infos de publication																		**/
-			          /*********************************************************************************************************************/
-			        %>
-
-              <kmeliaTags:seeAlso links="<%=linkedPublications%>" readOnly="<%=!isOwner%>" publicationPK="<%=pubDetail.getPK()%>" enabled="<%=seeAlsoEnabled%>"/>
-
-			         <div id="infoPublication" class="bgDegradeGris crud-container">
-
-			         			<% if (kmeliaScc.isAuthorUsed() && StringUtil.isDefined(pubDetail.getAuthor())) { %>
-									<p id="authorInfo"><%=resources.getString("GML.author")%> : <strong><%=pubDetail.getAuthor()%></strong></p>
-								<% }%>
-
-			         			<% if (updaterId != null) {%>
-								  	<div id="lastModificationInfo" class="paragraphe">
-								  		<%=resources.getString("PubDateUpdate")%>
-                                        <strong><%=resources.getOutputDate(pubDetail.getLastUpdateDate())%></strong> <%=resources.getString("GML.by")%> <view:username userId="<%=kmeliaPublication.getLastUpdater().getId()%>"/>
-								  		<div class="profilPhoto"><view:image src="<%=kmeliaPublication.getLastUpdater().getAvatar() %>" type="avatar" css="defaultAvatar"/></div>
-							  		</div>
-							  	 <% }%>
-								<c:if test="${view:isDefined(requestScope['Publication'].creator) && view:isDefined(requestScope['Publication'].creator.id)}">
-                    <div id="createdInfo" class="paragraphe">
-                     <%=resources.getString("PubDateCreation")%>
-                     <strong><%=resources.getOutputDate(pubDetail.getCreationDate())%></strong> <%=resources.getString("GML.by")%> <view:username userId="${requestScope['Publication'].creator.id}"/>
-                     <div class="profilPhoto"><view:image src="<%=kmeliaPublication.getCreator().getAvatar() %>" type="avatar" css="defaultAvatar"/></div>
-                   </div>
-                </c:if>
-							  	  <%
-						          // Displaying all validator's name and final validation date
-						          if (pubDetail.isValid() && StringUtil.isDefined(pubDetail.getValidatorId()) && pubDetail.getValidateDate() != null) { %>
-						            <p id="validationInfo"><%=resources.getString("kmelia.validation")%> <fmt:message key="GML.date.the" var="theLabel"/>${fn:toLowerCase(theLabel)}
-						            	<strong><%=resources.getOutputDate(pubDetail.getValidateDate())%></strong> <br/> <%=resources.getString("GML.by")%>
-						            <% List<ValidationStep> validationSteps = pubComplete.getValidationSteps();
-						            if (validationSteps != null && !validationSteps.isEmpty()) {
-						              Collections.reverse(validationSteps); //display steps from in order of validation
-						              for (int v = 0; v < validationSteps.size(); v++) {
-						                if (v != 0) { %>
-						                  ,
-						                <% }
-						                ValidationStep vStep = validationSteps.get(v);
-						                if (vStep != null) { %>
-						                	<view:username userId="<%=vStep.getUserId()%>"/>
-						                <% }
-						              }
-						            } else { %>
-						            	<view:username userId="<%=pubDetail.getValidatorId()%>"/>
-						            <% }
-						        %>
-   								 	</p>
-							    <%
-							      }
-							    %>
-					    </div>
-        <%
-              if (lastVisitorsEnabled) {
-                List<HistoryObjectDetail> lastAccess = (List<HistoryObjectDetail>) request.getAttribute("LastAccess");
-              /*********************************************************************************************************************/
-              /** Affichage des derniers visiteurs																					**/
-              /*********************************************************************************************************************/
-        %>
-
-                  <div id="lastReader" class="bgDegradeGris">
-                    <div class="bgDegradeGris header">
-                        <h4 class="clean"><%=resources.getString("kmelia.publication.lastvisitors") %></h4>
-                      </div>
-                      <% if (lastAccess.isEmpty()) { %>
-                        <div class="paragraphe"><%=resources.getString("kmelia.publication.lastvisitors.none") %></div>
-                      <% } else { %>
-                        <ul id="lastReaderList">
-                        <%
-                          for (int i=0; i<lastAccess.size() && i<4; i++) {
-                            HistoryObjectDetail access = lastAccess.get(i);
-                        %>
-                          <li>
-                            <div class="profilPhoto"><view:image src="<%=UserDetail.getById(access.getUserId()).getAvatar() %>" type="avatar" css="defaultAvatar"/></div>
-                              <view:username userId="<%=access.getUserId() %>" /> <span class="consultationDate"><%=resources.getString("kmelia.publication.lastvisitors.on") %> <%=resources.getOutputDate(access.getDate()) %></span>
-                          </li>
-                        <% } %>
-                        </ul>
-                      <% } %>
-                      <% if (isOwner && kmeliaScc.getInvisibleTabs().indexOf(KmeliaSessionController.TAB_READER_LIST) == -1) { %>
-                        <a id="readingControlLink" href="ReadingControl">&gt;&gt; <%=resources.getString("PubGererControlesLecture") %></a>
-                      <% } else { %>
-                        <br />
-                      <% } %>
-                  </div>
-        <%
-              }
-
-              /*********************************************************************************************************************/
-              /** Affichage de la classification de la publication sur le PdC														**/
-              /*********************************************************************************************************************/
-        if(!kmaxMode) {
-        %>
-          <view:pdcClassificationPreview componentId="<%= componentId %>" contentId="<%= id %>" />
-        <%
-        } %>
-      </div>
-      <%
-
-        /*********************************************************************************************************************/
-        /** Colonne Pricipale																							    **/
-        /*********************************************************************************************************************/
-    	 out.println("<div class=\"principalContent " + newCssClass + "\">");
-
-         if (StringUtil.isDefined(screenMessage)) {
-           out.println(screenMessage);
-         }
-
-         if (kmeliaPublication.isAlias()) {
-      	   Optional<Location> originalLocation = kmeliaPublication.getOriginalLocation(user_id);
-      	   if (originalLocation.isPresent()) {
-      	     Location original = originalLocation.get();
-        %>
-            <div class="inlineMessage">
-              <div><%=resources.getString("kmelia.publication.shortcut.source.label")%>
-                <view:componentPath componentId="<%=original.getInstanceId()%>" nodeId="<%=original.getId()%>" language="<%=language%>" link="true"/>
-              </div>
-              <a href="<%=kmeliaPublication.getDetail().getPermalink()%>" class="button sp-permalink"><span><%=resources.getString("kmelia.publication.shortcut.source.go")%></span></a>
-            </div>
-         <% }
-      	   }
-
-				        /*********************************************************************************************************************/
-				        /** Affichage du header de la publication																			**/
-				        /*********************************************************************************************************************/
-				        out.print("<h2 class=\"publiName\">");
-
-						    out.print(WebEncodeHelper.javaStringToHtmlString(pubDetail.getName(language)));
-                if (kmeliaPublication.isAlias()) {
-                  out.print(" (" + resources.getString("kmelia.Shortcut") + ")");
-                }
-
-				        out.println("</h2>");
-
-				        String description = WebEncodeHelper.convertBlanksForHtml(WebEncodeHelper.javaStringToHtmlString(pubDetail.getDescription(language)));
-				        if (StringUtil.isDefined(description)) {
-				        	out.println("<p class=\"publiDesc text2\">" + description + "</p>");
-				        }
-
-				        /*********************************************************************************************************************/
-				        /** Affichage du contenu de la publication																			**/
-				        /*********************************************************************************************************************/
-
-				        out.println("<div id=\"richContent\">");
-				        if (WysiwygController.haveGotWysiwygToDisplay(componentId, id, language)) {%>
-                  <div class="rich-content">
-                  <view:displayWysiwyg objectId="<%=id%>" componentId="<%=componentId%>" language="<%=language%>" axisId="<%=kmeliaScc.getAxisIdGlossary()%>" highlightFirst="<%=String.valueOf(highlightFirst)%>" />
-                  </div>
-                <%
-				        } else {
-				          Form xmlForm = (Form) request.getAttribute("XMLForm");
-				          DataRecord xmlData = (DataRecord) request.getAttribute("XMLData");
-				          if (xmlForm != null) {
-				            PagesContext xmlContext = new PagesContext("myForm", "0", resources.getLanguage(),
-				                false, componentId, kmeliaScc.getUserId());
-				            xmlContext.setObjectId(id);
-				            if (kmeliaMode) {
-				              xmlContext.setNodeId(kmeliaScc.getCurrentFolderId());
-				            }
-				            xmlContext.setBorderPrinted(false);
-				            xmlContext.setContentLanguage(language);
-				      %>
-              <view:highlight axisId="<%=kmeliaScc.getAxisIdGlossary()%>" className="highlight-silver" language="<%=language%>" onlyFirst="<%=highlightFirst%>">
-                <%
-				          xmlForm.display(out, xmlContext, xmlData);
-				        %>
-				      </view:highlight>
-				      <%
-				          }
-				        }
-
-				        out.println("</div>");
-              %>
-      <viewTags:viewAttachmentsAsContent componentInstanceId="<%= componentId %>"
-                                         resourceType="<%=resourceType %>"
-                                         resourceId="<%=id%>"
-                                         contentLanguage="<%=contentLanguage%>"
-                                         highestUserRole="<%=SilverpeasRole.fromString(attProfile)%>"/>
-
-      <% if (!kmeliaScc.getInvisibleTabs().contains(KmeliaSessionController.TAB_COMMENT)) { %>
-      <viewTags:displayComments	 componentId="<%= componentId %>"
-                                 resourceType="<%= resourceType %>"
-                                 resourceId="<%= id %>"
-                                 fromComponentId="<%= contextComponentId %>"
-                                 indexed="<%=StringUtil.getBooleanValue(indexIt)%>"/>
+      <% if (!kmeliaScc.getInvisibleTabs().contains(KmeliaSessionController.TAB_COMMENT))	 { %>
+      <p id="commentInfo">
+        <fmt:message key="GML.comment.number"/><br />
+        <a href="#commentaires">${kmeliaPubli.numberOfComments}</a>
+      </p>
       <% } %>
-	  </div>
 
-      <div id="publication-export" style="display: none;">
-        <form id="exportForm" action="<c:url value='/exportPublication'/>" target="_blank">
-          <input type="hidden" name="PubId" value="<%=id%>"/>
-          <input type="hidden" name="ComponentId" value="<%=componentId%>"/>
-          <fieldset>
-            <legend><%=resources.getString("kmelia.format")%></legend>
-            <%
-            boolean selectedFormat = false;
-            for(String format: availableFormats) {
-              String checked = "";
-              String disabled = "";
-              if (!exportFormats.contains(format)) {
-                disabled = "disabled=\"disabled\"";
-              }
-              if (!selectedFormat && disabled.isEmpty()) {
-                checked = "checked=\"checked\"";
-                selectedFormat = true;
-              }
-            %>
-            <input type="radio" name="Format" value="<%=format %>" <%=checked %> <%=disabled %>/><%=resources.getString("kmelia.export.format." + format)%>
-            <% } %>
-          </fieldset>
-        </form>
-      </div>
 
-      <div id="publication-draftout" style="display: none;">
-        <%=resources.getString("kmelia.publication.draftout.impossible")%>
-      	<ul>
-      	<% if(!draftOutTaxonomyOK) { %>
-      		<li><%=resources.getString("kmelia.PdcClassificationMandatory")%></li>
-      	<% } %>
-      	</ul>
-      </div>
-      <div id="publication-refusal-form" style="display: none;">
-      	<form name="refusalForm" action="Unvalidate" method="post">
-        <table>
-          <caption></caption>
-          <th id="nothing"></th>
-        	<tr>
-        		<td class="txtlibform"><%=kmeliaScc.getString("RefusalMotive")%></td>
-        		<td><textarea name="Motive" id="refusal-motive" rows="10" cols="60"></textarea>&nbsp;<img alt="" border="0" src="<%=resources.getIcon("kmelia.mandatory")%>" width="5" height="5"/></td>
-        	</tr>
-        </table>
-        </form>
-      </div>
-      <%
-        out.flush();
-        out.println(frame.printAfter());
-        out.println(window.printAfter());
-      %>
-      <form name="pubForm" action="<%=routerUrl%>publication.jsp" method="GET">
-        <input type="hidden" name="Action"/>
-        <input type="hidden" name="PubId"/>
-        <input type="hidden" name="Profile" value="<%=profile%>"/>
-      </form>
-      <form name="defermentForm" action="<%=routerUrl%>SuspendPublication" method="post">
-        <input type="hidden" name="PubId" value="<%=id%>"/>
-        <input type="hidden" name="Motive" value=""/>
-      </form>
-      <form name="toRouterForm" action="#">
-        <input type="hidden" name="PubId" value="<%=id%>"/>
-        <input type="hidden" name="ComponentId" value="<%=componentId%>"/>
-      </form>
+      <% if (StringUtil.isDefined(pubPermalink)) {%>
+      <fmt:message var="permalinkHelp" key="kmelia.CopyPublicationLink"/>
+      <c:set var="permalinkIconUrl"><%=resources.getIcon("kmelia.link")%></c:set>
+      <viewTags:displayPermalinkInfo link="<%=pubPermalink%>" help="${permalinkHelp}" iconUrl="${permalinkIconUrl}"/>
+      <% }%>
     </div>
- <%@ include file="../../sharing/jsp/createTicketPopin.jsp" %>
- <script type="text/javascript">
- /* declare the module myapp and its dependencies (here in the silverpeas module) */
- var myapp = angular.module('silverpeas.kmelia', ['silverpeas.services', 'silverpeas.directives']);
- </script>
- </body>
+    <%
+
+      /*********************************************************************************************************************/
+      /** Colonne de droite																									**/
+      /*********************************************************************************************************************/
+      if (attachmentsEnabled) {
+        /*********************************************************************************************************************/
+        /** Affichage des fichiers joints																					**/
+        /*********************************************************************************************************************/
+        boolean showTitle = resources.getSetting("showTitle", true);
+        boolean showFileSize = resources.getSetting("showFileSize", true);
+        boolean showInfo = resources.getSetting("showInfo", true);
+        boolean showIcon = true;
+
+        /** Qu'est-ce qu'on fait de ça ? est-ce que c'est encore utilité	**/
+        if (!"bottom".equals(resources.getSetting("attachmentPosition"))) {
+
+          out.println("<a name=\"attachments\"></a>");
+        } else {
+
+          out.println("<a name=\"attachments\"></a>");
+        }
+        out.flush();
+        if (!attachmentsUpdatable) {
+          attProfile = "user";
+        }
+    %>
+    <c:set var="attachmentPosition"><%=resources.getSetting("attachmentPosition")%></c:set>
+    <c:set var="callbackUrl"><%=URLUtil.getURL("useless", componentId) + "ViewPublication"%></c:set>
+    <viewTags:displayAttachments componentInstanceId="<%=componentId%>"
+                                 componentInstanceIdAlias="<%=componentInstanceIdOfAlias%>"
+                                 resourceId="<%=id%>"
+                                 resourceType="<%=resourceType%>"
+                                 contentLanguage="<%=language%>"
+                                 highestUserRole="<%=SilverpeasRole.fromString(attProfile)%>"
+                                 reloadCallbackUrl="${callbackUrl}"
+                                 hasToBeIndexed="<%=StringUtil.getBooleanValue(indexIt)%>"
+                                 attachmentPosition="${attachmentPosition}"
+                                 showIcon="<%=showIcon%>"
+                                 showTitle="<%=showTitle%>"
+                                 showDescription="<%=showInfo%>"
+                                 showFileSize="<%=showFileSize%>"
+                                 showMenuNotif="${true}"
+                                 contributionManagementContext="${requestScope.contributionManagementContext}"/>
+    <%
+
+      }
+
+
+      /*********************************************************************************************************************/
+      /** Affichage des Infos de publication																		**/
+      /*********************************************************************************************************************/
+    %>
+
+    <kmeliaTags:seeAlso links="<%=linkedPublications%>" readOnly="<%=!isOwner%>" publicationPK="<%=pubDetail.getPK()%>" enabled="<%=seeAlsoEnabled%>"/>
+
+    <div id="infoPublication" class="bgDegradeGris crud-container">
+
+      <% if (kmeliaScc.isAuthorUsed() && StringUtil.isDefined(pubDetail.getAuthor())) { %>
+      <p id="authorInfo"><%=resources.getString("GML.author")%> : <strong><%=pubDetail.getAuthor()%></strong></p>
+      <% }%>
+
+      <% if (updaterId != null) {%>
+      <div id="lastModificationInfo" class="paragraphe">
+        <%=resources.getString("PubDateUpdate")%>
+        <strong><%=resources.getOutputDate(pubDetail.getLastUpdateDate())%></strong> <%=resources.getString("GML.by")%> <view:username userId="<%=kmeliaPublication.getLastUpdater().getId()%>"/>
+        <div class="profilPhoto"><view:image src="<%=kmeliaPublication.getLastUpdater().getAvatar() %>" type="avatar" css="defaultAvatar"/></div>
+      </div>
+      <% }%>
+      <c:if test="${view:isDefined(requestScope['Publication'].creator) && view:isDefined(requestScope['Publication'].creator.id)}">
+        <div id="createdInfo" class="paragraphe">
+          <%=resources.getString("PubDateCreation")%>
+          <strong><%=resources.getOutputDate(pubDetail.getCreationDate())%></strong> <%=resources.getString("GML.by")%> <view:username userId="${requestScope['Publication'].creator.id}"/>
+          <div class="profilPhoto"><view:image src="<%=kmeliaPublication.getCreator().getAvatar() %>" type="avatar" css="defaultAvatar"/></div>
+        </div>
+      </c:if>
+      <%
+        // Displaying all validator's name and final validation date
+        if (pubDetail.isValid() && StringUtil.isDefined(pubDetail.getValidatorId()) && pubDetail.getValidateDate() != null) { %>
+      <p id="validationInfo"><%=resources.getString("kmelia.validation")%> <fmt:message key="GML.date.the" var="theLabel"/>${fn:toLowerCase(theLabel)}
+        <strong><%=resources.getOutputDate(pubDetail.getValidateDate())%></strong> <br/> <%=resources.getString("GML.by")%>
+        <% List<ValidationStep> validationSteps = pubComplete.getValidationSteps();
+          if (validationSteps != null && !validationSteps.isEmpty()) {
+            Collections.reverse(validationSteps); //display steps from in order of validation
+            for (int v = 0; v < validationSteps.size(); v++) {
+              if (v != 0) { %>
+        ,
+        <% }
+          ValidationStep vStep = validationSteps.get(v);
+          if (vStep != null) { %>
+        <view:username userId="<%=vStep.getUserId()%>"/>
+        <% }
+        }
+        } else { %>
+        <view:username userId="<%=pubDetail.getValidatorId()%>"/>
+        <% }
+        %>
+      </p>
+      <%
+        }
+      %>
+    </div>
+    <%
+      if (lastVisitorsEnabled) {
+        List<HistoryObjectDetail> lastAccess = (List<HistoryObjectDetail>) request.getAttribute("LastAccess");
+        /*********************************************************************************************************************/
+        /** Affichage des derniers visiteurs																					**/
+        /*********************************************************************************************************************/
+    %>
+
+    <div id="lastReader" class="bgDegradeGris">
+      <div class="bgDegradeGris header">
+        <h4 class="clean"><%=resources.getString("kmelia.publication.lastvisitors") %></h4>
+      </div>
+      <% if (lastAccess.isEmpty()) { %>
+      <div class="paragraphe"><%=resources.getString("kmelia.publication.lastvisitors.none") %></div>
+      <% } else { %>
+      <ul id="lastReaderList">
+        <%
+          for (int i=0; i<lastAccess.size() && i<4; i++) {
+            HistoryObjectDetail access = lastAccess.get(i);
+        %>
+        <li>
+          <div class="profilPhoto"><view:image src="<%=UserDetail.getById(access.getUserId()).getAvatar() %>" type="avatar" css="defaultAvatar"/></div>
+          <view:username userId="<%=access.getUserId() %>" /> <span class="consultationDate"><%=resources.getString("kmelia.publication.lastvisitors.on") %> <%=resources.getOutputDate(access.getDate()) %></span>
+        </li>
+        <% } %>
+      </ul>
+      <% } %>
+      <% if (isOwner && kmeliaScc.getInvisibleTabs().indexOf(KmeliaSessionController.TAB_READER_LIST) == -1) { %>
+      <a id="readingControlLink" href="ReadingControl">&gt;&gt; <%=resources.getString("PubGererControlesLecture") %></a>
+      <% } else { %>
+      <br />
+      <% } %>
+    </div>
+    <%
+      }
+
+      /*********************************************************************************************************************/
+      /** Affichage de la classification de la publication sur le PdC														**/
+      /*********************************************************************************************************************/
+      if(!kmaxMode) {
+    %>
+    <view:pdcClassificationPreview componentId="<%= componentId %>" contentId="<%= id %>" />
+    <%
+      } %>
+  </div>
+  <%
+
+    /*********************************************************************************************************************/
+    /** Colonne Pricipale																							    **/
+    /*********************************************************************************************************************/
+    out.println("<div class=\"principalContent " + newCssClass + "\">");
+
+    if (StringUtil.isDefined(screenMessage)) {
+      out.println(screenMessage);
+    }
+
+    if (kmeliaPublication.isAlias()) {
+      Optional<Location> originalLocation = kmeliaPublication.getOriginalLocation(user_id);
+      if (originalLocation.isPresent()) {
+        Location original = originalLocation.get();
+  %>
+  <div class="inlineMessage">
+    <div><%=resources.getString("kmelia.publication.shortcut.source.label")%>
+      <view:componentPath componentId="<%=original.getInstanceId()%>" nodeId="<%=original.getId()%>" language="<%=language%>" link="true"/>
+    </div>
+    <a href="<%=kmeliaPublication.getDetail().getPermalink()%>" class="button sp-permalink"><span><%=resources.getString("kmelia.publication.shortcut.source.go")%></span></a>
+  </div>
+  <% }
+  }
+
+    /*********************************************************************************************************************/
+    /** Affichage du header de la publication																			**/
+    /*********************************************************************************************************************/
+    out.print("<h2 class=\"publiName\">");
+
+    out.print(WebEncodeHelper.javaStringToHtmlString(pubDetail.getName(language)));
+    if (kmeliaPublication.isAlias()) {
+      out.print(" (" + resources.getString("kmelia.Shortcut") + ")");
+    }
+
+    out.println("</h2>");
+
+    String description = WebEncodeHelper.convertBlanksForHtml(WebEncodeHelper.javaStringToHtmlString(pubDetail.getDescription(language)));
+    if (StringUtil.isDefined(description)) {
+      out.println("<p class=\"publiDesc text2\">" + description + "</p>");
+    }
+
+    /*********************************************************************************************************************/
+    /** Affichage du contenu de la publication																			**/
+    /*********************************************************************************************************************/
+
+    out.println("<div id=\"richContent\">");
+    if (WysiwygController.haveGotWysiwygToDisplay(componentId, id, language)) {%>
+  <div class="rich-content">
+    <view:displayWysiwyg objectId="<%=id%>" componentId="<%=componentId%>" language="<%=language%>" axisId="<%=kmeliaScc.getAxisIdGlossary()%>" highlightFirst="<%=String.valueOf(highlightFirst)%>" />
+  </div>
+  <%
+  } else {
+    Form xmlForm = (Form) request.getAttribute("XMLForm");
+    DataRecord xmlData = (DataRecord) request.getAttribute("XMLData");
+    if (xmlForm != null) {
+      PagesContext xmlContext = new PagesContext("myForm", "0", resources.getLanguage(),
+          false, componentId, kmeliaScc.getUserId());
+      xmlContext.setObjectId(id);
+      if (kmeliaMode) {
+        xmlContext.setNodeId(kmeliaScc.getCurrentFolderId());
+      }
+      xmlContext.setBorderPrinted(false);
+      xmlContext.setContentLanguage(language);
+  %>
+  <view:highlight axisId="<%=kmeliaScc.getAxisIdGlossary()%>" className="highlight-silver" language="<%=language%>" onlyFirst="<%=highlightFirst%>">
+    <%
+      xmlForm.display(out, xmlContext, xmlData);
+    %>
+  </view:highlight>
+  <%
+      }
+    }
+
+    out.println("</div>");
+  %>
+  <viewTags:viewAttachmentsAsContent componentInstanceId="<%= componentId %>"
+                                     resourceType="<%=resourceType %>"
+                                     resourceId="<%=id%>"
+                                     contentLanguage="<%=contentLanguage%>"
+                                     highestUserRole="<%=SilverpeasRole.fromString(attProfile)%>"/>
+
+  <% if (!kmeliaScc.getInvisibleTabs().contains(KmeliaSessionController.TAB_COMMENT)) { %>
+  <viewTags:displayComments	 componentId="<%= componentId %>"
+                              resourceType="<%= resourceType %>"
+                              resourceId="<%= id %>"
+                              fromComponentId="<%= contextComponentId %>"
+                              indexed="<%=StringUtil.getBooleanValue(indexIt)%>"/>
+  <% } %>
+</div>
+
+<div id="publication-export" style="display: none;">
+  <form id="exportForm" action="<c:url value='/exportPublication'/>" target="_blank">
+    <input type="hidden" name="PubId" value="<%=id%>"/>
+    <input type="hidden" name="ComponentId" value="<%=componentId%>"/>
+    <fieldset>
+      <legend><%=resources.getString("kmelia.format")%></legend>
+      <%
+        boolean selectedFormat = false;
+        for(String format: availableFormats) {
+          String checked = "";
+          String disabled = "";
+          if (!exportFormats.contains(format)) {
+            disabled = "disabled=\"disabled\"";
+          }
+          if (!selectedFormat && disabled.isEmpty()) {
+            checked = "checked=\"checked\"";
+            selectedFormat = true;
+          }
+      %>
+      <input type="radio" name="Format" value="<%=format %>" <%=checked %> <%=disabled %>/><%=resources.getString("kmelia.export.format." + format)%>
+      <% } %>
+    </fieldset>
+  </form>
+</div>
+
+<div id="publication-draftout" style="display: none;">
+  <%=resources.getString("kmelia.publication.draftout.impossible")%>
+  <ul>
+    <% if(!draftOutTaxonomyOK) { %>
+    <li><%=resources.getString("kmelia.PdcClassificationMandatory")%></li>
+    <% } %>
+  </ul>
+</div>
+<div id="publication-refusal-form" style="display: none;">
+  <form name="refusalForm" action="Unvalidate" method="post">
+    <table>
+      <caption></caption>
+      <th id="nothing"></th>
+      <tr>
+        <td class="txtlibform"><%=kmeliaScc.getString("RefusalMotive")%></td>
+        <td><textarea name="Motive" id="refusal-motive" rows="10" cols="60"></textarea>&nbsp;<img alt="" border="0" src="<%=resources.getIcon("kmelia.mandatory")%>" width="5" height="5"/></td>
+      </tr>
+    </table>
+  </form>
+</div>
+<%
+  out.flush();
+  out.println(frame.printAfter());
+  out.println(window.printAfter());
+%>
+<form name="pubForm" action="<%=routerUrl%>publication.jsp" method="GET">
+  <input type="hidden" name="Action"/>
+  <input type="hidden" name="PubId"/>
+  <input type="hidden" name="Profile" value="<%=profile%>"/>
+</form>
+<form name="defermentForm" action="<%=routerUrl%>SuspendPublication" method="post">
+  <input type="hidden" name="PubId" value="<%=id%>"/>
+  <input type="hidden" name="Motive" value=""/>
+</form>
+<form name="toRouterForm" action="#">
+  <input type="hidden" name="PubId" value="<%=id%>"/>
+  <input type="hidden" name="ComponentId" value="<%=componentId%>"/>
+</form>
+</div>
+<%@ include file="../../sharing/jsp/createTicketPopin.jsp" %>
+<script type="text/javascript">
+  /* declare the module myapp and its dependencies (here in the silverpeas module) */
+  var myapp = angular.module('silverpeas.kmelia', ['silverpeas.services', 'silverpeas.directives']);
+</script>
+</body>
 </html>

@@ -37,7 +37,6 @@
 <%@ include file="kmax_axisReport.jsp" %>
 
 <% 
-//R�cup�ration des param�tres
 String 	action 		= request.getParameter("Action");
 String 	profile 	= request.getParameter("Profile");
 String 	translation = (String) request.getAttribute("Language");
@@ -191,24 +190,33 @@ if (action.equals("KmaxView")) {
     
     //Display operations by profile
     if (profile.equals("admin") || profile.equals("publisher") || profile.equals("writer")) {
-		OperationPane operationPane = window.getOperationPane();
-		operationPane.addOperationOfCreation(publicationAddSrc, kmeliaScc.getString("PubCreer"), "javascript:onClick=publicationAdd()");
-		operationPane.addLine();
-		operationPane.addOperation(unbalancedSrc, kmeliaScc.getString("PubDeclassified"), "javascript:onClick=viewUnbalanced()");
-		operationPane.addOperation(topicBasketSrc, kmeliaScc.getString("PubBasket"), "javascript:onClick=viewBasket()");
-		
-		if (profile.equals("admin") || profile.equals("publisher")) {
-	    	operationPane.addLine();
-	        operationPane.addOperation(pubToValidateSrc, kmeliaScc.getString("ToValidate"), "javascript:onClick=viewToValidate()");
-	    }
+      OperationPane operationPane = window.getOperationPane();
+      operationPane.addOperationOfCreation(publicationAddSrc, kmeliaScc.getString("PubCreer"),
+          "javascript:onClick=publicationAdd()");
+      operationPane.addLine();
+      operationPane.addOperation(unbalancedSrc, kmeliaScc.getString("PubDeclassified"),
+          "javascript:onClick=viewUnbalanced()");
+      operationPane.addOperation(topicBasketSrc, kmeliaScc.getString("PubBasket"),
+          "javascript:onClick=viewBasket()");
 
-	    if (profile.equals("admin") && "yes".equals(settings.getString("kmax.exportComponentAllowed")) && kmeliaScc.isExportComponentAllowed()) {
-			operationPane.addLine();
-			operationPane.addOperation(exportComponentSrc, kmeliaScc.getString("kmelia.ExportComponent"), "javascript:onClick=exportComponent()");
-			operationPane.addOperation(exportComponentSrc, kmeliaScc.getString("kmelia.operation.exportSelection"), "javascript:onclick=exportPublications()");
-		}
+      if (profile.equals("admin") || profile.equals("publisher")) {
+        operationPane.addLine();
+        operationPane.addOperation(pubToValidateSrc, kmeliaScc.getString("ToValidate"),
+            "javascript:onClick=viewToValidate()");
+      }
+
+      if (kmeliaScc.isExportApplicationAllowed(kmeliaScc.getHighestSilverpeasUserRole()) ||
+          kmeliaScc.isExportPublicationAllowed(kmeliaScc.getHighestSilverpeasUserRole())) {
+        operationPane.addLine();
+      }
+      if (kmeliaScc.isExportApplicationAllowed(kmeliaScc.getHighestSilverpeasUserRole())) {
+        operationPane.addOperation(exportComponentSrc, kmeliaScc.getString("kmelia.ExportComponent"), "javascript:onClick=exportComponent()");
+      }
+      if (kmeliaScc.isExportPublicationAllowed(kmeliaScc.getHighestSilverpeasUserRole())) {
+        operationPane.addOperation(exportComponentSrc, kmeliaScc.getString("kmelia.operation.exportSelection"),
+            "javascript:onclick=exportPublications()");
+      }
     }
- 
     TabbedPane tabbedPane = gef.getTabbedPane();
     if (profile.equals("admin")) {
         tabbedPane.addTab(kmeliaScc.getString("Consultation"), "#", true);
@@ -249,7 +257,7 @@ if (action.equals("KmaxView")) {
 		    	operationPane.addLine();
 		        operationPane.addOperation(pubToValidateSrc, kmeliaScc.getString("ToValidate"), "javascript:onClick=viewToValidate()");
 		    }
-			if (profile.equals("admin") && "yes".equals(settings.getString("kmax.exportComponentAllowed")) && kmeliaScc.isExportComponentAllowed())
+			if (kmeliaScc.isExportPublicationAllowed(kmeliaScc.getHighestSilverpeasUserRole()))
 			{
 				operationPane.addLine();
 				operationPane.addOperation(exportComponentSrc, kmeliaScc.getString("kmax.ExportPublicationsFound"), "javascript:onClick=exportPublications()");
