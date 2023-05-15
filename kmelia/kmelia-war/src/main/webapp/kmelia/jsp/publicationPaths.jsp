@@ -255,6 +255,7 @@
               "</div>");
         }
 
+
       %>
       <view:frame>
         <view:board>
