@@ -689,7 +689,7 @@ public class MediaDaoIT extends BaseGalleryIT {
     media = MediaDAO.findByCriteria(defaultMediaCriteria().orderedBy(AUTHOR_ASC));
     assertThat(media, hasSize(8));
     int index = 3;
-    assertThat(media.get(index++).getAuthor(), isEmptyString());
+    assertThat(media.get(index++).getAuthor(), is(emptyString()));
     assertThat(media.get(index++).getAuthor(), is("an author 1"));
     assertThat(media.get(index++).getAuthor(), is("an author s_2"));
     assertThat(media.get(index++).getAuthor(), is("an author stream_1"));
@@ -703,7 +703,7 @@ public class MediaDaoIT extends BaseGalleryIT {
     assertThat(media.get(index++).getAuthor(), is("an author stream_1"));
     assertThat(media.get(index++).getAuthor(), is("an author s_2"));
     assertThat(media.get(index++).getAuthor(), is("an author 1"));
-    assertThat(media.get(index++).getAuthor(), isEmptyString());
+    assertThat(media.get(index++).getAuthor(), is(emptyString()));
     assertThat(index, is(5));
 
     media = MediaDAO.findByCriteria(defaultMediaCriteria().orderedBy(AUTHOR_ASC_EMPTY_END));
@@ -713,7 +713,7 @@ public class MediaDaoIT extends BaseGalleryIT {
     assertThat(media.get(index++).getAuthor(), is("an author s_2"));
     assertThat(media.get(index++).getAuthor(), is("an author stream_1"));
     assertThat(media.get(index++).getAuthor(), is("an author v_2"));
-    assertThat(media.get(index++).getAuthor(), isEmptyString());
+    assertThat(media.get(index++).getAuthor(), is(emptyString()));
     assertThat(index, is(5));
 
     media = MediaDAO.findByCriteria(defaultMediaCriteria().orderedBy(AUTHOR_DESC_EMPTY_END));
@@ -723,7 +723,7 @@ public class MediaDaoIT extends BaseGalleryIT {
     assertThat(media.get(index++).getAuthor(), is("an author stream_1"));
     assertThat(media.get(index++).getAuthor(), is("an author s_2"));
     assertThat(media.get(index++).getAuthor(), is("an author 1"));
-    assertThat(media.get(index++).getAuthor(), isEmptyString());
+    assertThat(media.get(index++).getAuthor(), is(emptyString()));
     assertThat(index, is(5));
 
 
@@ -736,14 +736,14 @@ public class MediaDaoIT extends BaseGalleryIT {
     assertThat(media.get(index++).getAuthor(), is("an author s_2"));
     assertThat(media.get(index++).getAuthor(), is("an author stream_1"));
     assertThat(media.get(index++).getAuthor(), is("an author v_2"));
-    assertThat(media.get(index++).getAuthor(), isEmptyString());
+    assertThat(media.get(index++).getAuthor(), is(emptyString()));
     assertThat(index, is(5));
 
     media =
         MediaDAO.findByCriteria(defaultMediaCriteria().orderedBy(AUTHOR_ASC, AUTHOR_ASC_EMPTY_END));
     assertThat(media, hasSize(8));
     index = 3;
-    assertThat(media.get(index++).getAuthor(), isEmptyString());
+    assertThat(media.get(index++).getAuthor(), is(emptyString()));
     assertThat(media.get(index++).getAuthor(), is("an author 1"));
     assertThat(media.get(index++).getAuthor(), is("an author s_2"));
     assertThat(media.get(index++).getAuthor(), is("an author stream_1"));
@@ -825,6 +825,7 @@ public class MediaDaoIT extends BaseGalleryIT {
     assertThat(index, is(4));
   }
 
+  @SuppressWarnings("DataFlowIssue")
   @Test
   public void saveNewPhoto() throws Exception {
     Date now = DateUtil.getNow();
@@ -904,6 +905,7 @@ public class MediaDaoIT extends BaseGalleryIT {
     }
   }
 
+  @SuppressWarnings("DataFlowIssue")
   @Test
   public void saveExistingPhoto() throws Exception {
     Date now = DateUtil.getNow();
@@ -1003,8 +1005,8 @@ public class MediaDaoIT extends BaseGalleryIT {
       assertThat(mediaRow.getString("mediaType"), is(MediaType.Photo.name()));
       assertThat(mediaRow.getString("instanceId"), is(INSTANCE_A));
       assertThat(mediaRow.getString("title"), is("title 2_updated"));
-      assertThat(mediaRow.getString("description"), isEmptyString());
-      assertThat(mediaRow.getString("author"), isEmptyString());
+      assertThat(mediaRow.getString("description"), is(emptyString()));
+      assertThat(mediaRow.getString("author"), is(emptyString()));
       assertThat(mediaRow.getString("keyword"), is("keywords_updated"));
       assertThat(mediaRow.getLong("beginVisibilityDate"), is(DateUtil.MINIMUM_DATE.getTime()));
       assertThat(mediaRow.getLong("endVisibilityDate"), is(endVisibilityDate.getTime()));
@@ -1030,7 +1032,7 @@ public class MediaDaoIT extends BaseGalleryIT {
   }
 
   @Test
-  public void deleteMediaThatDoesNotExist() throws Exception {
+  public void deleteMediaThatDoesNotExist() {
     expectedException.expectCause(instanceOf(NullPointerException.class));
     Transaction.performInOne(() -> {
       MediaDAO.deleteMedia(null);
@@ -1112,6 +1114,7 @@ public class MediaDaoIT extends BaseGalleryIT {
     }
   }
 
+  @SuppressWarnings("DataFlowIssue")
   @Test
   public void saveNewVideo() throws Exception {
     Date now = DateUtil.getNow();
@@ -1163,7 +1166,7 @@ public class MediaDaoIT extends BaseGalleryIT {
       assertThat(mediaRow.getString("mediaType"), is(MediaType.Video.name()));
       assertThat(mediaRow.getString("instanceId"), is(INSTANCE_A));
       assertThat(mediaRow.getString("title"), is("A video title"));
-      assertThat(mediaRow.getString("description"), isEmptyString());
+      assertThat(mediaRow.getString("description"), is(emptyString()));
       assertThat(mediaRow.getString("author"), is("A video author"));
       assertThat(mediaRow.getString("keyword"), is("video keywords"));
       assertThat(mediaRow.getLong("beginVisibilityDate"), is(beginVisibilityDate.getTime()));
@@ -1191,6 +1194,7 @@ public class MediaDaoIT extends BaseGalleryIT {
     }
   }
 
+  @SuppressWarnings("DataFlowIssue")
   @Test
   public void saveExistingVideo() throws Exception {
     String mediaIdToUpdate = "v_2";
@@ -1213,6 +1217,7 @@ public class MediaDaoIT extends BaseGalleryIT {
       assertThat(pathTable.getRowCount(), is(MEDIA_PATH_ROW_COUNT));
 
       TableRow videoRow = getTableRowFor(videoTable, "mediaId", mediaIdToUpdate);
+      //noinspection DataFlowIssue
       assertThat(videoRow.getString("mediaId"), is(mediaIdToUpdate));
       assertThat(videoRow.getInteger("resolutionH"), is(720));
       assertThat(videoRow.getInteger("resolutionW"), is(1280));
@@ -1332,6 +1337,7 @@ public class MediaDaoIT extends BaseGalleryIT {
     }
   }
 
+  @SuppressWarnings("DataFlowIssue")
   @Test
   public void saveNewSound() throws Exception {
     Date now = DateUtil.getNow();
@@ -1380,7 +1386,7 @@ public class MediaDaoIT extends BaseGalleryIT {
       assertThat(mediaRow.getString("mediaType"), is(MediaType.Sound.name()));
       assertThat(mediaRow.getString("instanceId"), is(INSTANCE_A));
       assertThat(mediaRow.getString("title"), is("A sound title"));
-      assertThat(mediaRow.getString("description"), isEmptyString());
+      assertThat(mediaRow.getString("description"), is(emptyString()));
       assertThat(mediaRow.getString("author"), is("A sound author"));
       assertThat(mediaRow.getString("keyword"), is("sound keywords"));
       assertThat(mediaRow.getLong("beginVisibilityDate"), is(DateUtil.MINIMUM_DATE.getTime()));
@@ -1406,6 +1412,7 @@ public class MediaDaoIT extends BaseGalleryIT {
     }
   }
 
+  @SuppressWarnings("DataFlowIssue")
   @Test
   public void saveExistingSound() throws Exception {
     String mediaIdToUpdate = "s_2";
@@ -1544,6 +1551,7 @@ public class MediaDaoIT extends BaseGalleryIT {
     }
   }
 
+  @SuppressWarnings("DataFlowIssue")
   @Test
   public void saveNewStreaming() throws Exception {
     Date now = DateUtil.getNow();
@@ -1587,7 +1595,7 @@ public class MediaDaoIT extends BaseGalleryIT {
       assertThat(mediaRow.getString("mediaType"), is(MediaType.Streaming.name()));
       assertThat(mediaRow.getString("instanceId"), is(INSTANCE_A));
       assertThat(mediaRow.getString("title"), is("A streaming title"));
-      assertThat(mediaRow.getString("description"), isEmptyString());
+      assertThat(mediaRow.getString("description"), is(emptyString()));
       assertThat(mediaRow.getString("author"), is("A streaming author"));
       assertThat(mediaRow.getString("keyword"), is("streaming keywords"));
       assertThat(mediaRow.getLong("beginVisibilityDate"), is(DateUtil.MINIMUM_DATE.getTime()));
@@ -1646,6 +1654,7 @@ public class MediaDaoIT extends BaseGalleryIT {
     }
   }
 
+  @SuppressWarnings("DataFlowIssue")
   @Test
   public void saveExistingStreaming() throws Exception {
     String mediaIdToUpdate = "stream_1";
@@ -1784,6 +1793,7 @@ public class MediaDaoIT extends BaseGalleryIT {
     }
   }
 
+  @SuppressWarnings("DataFlowIssue")
   @Test
   public void saveStreamingPath() throws Exception {
 
