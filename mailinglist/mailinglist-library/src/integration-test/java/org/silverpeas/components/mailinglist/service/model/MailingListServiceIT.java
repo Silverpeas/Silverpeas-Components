@@ -33,7 +33,7 @@ import org.silverpeas.components.mailinglist.service.model.beans.InternalUser;
 import org.silverpeas.components.mailinglist.service.model.beans.InternalUserSubscriber;
 import org.silverpeas.components.mailinglist.service.model.beans.MailingList;
 import org.silverpeas.core.admin.service.Administration;
-import org.silverpeas.core.test.rule.DbSetupRule;
+import org.silverpeas.core.test.integration.rule.DbSetupRule;
 
 import java.util.HashSet;
 import java.util.List;

@@ -41,7 +41,7 @@ import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.test.BasicWarBuilder;
-import org.silverpeas.core.test.rule.DbSetupRule;
+import org.silverpeas.core.test.integration.rule.DbSetupRule;
 
 import java.time.LocalDate;
 import java.util.List;

@@ -49,10 +49,10 @@ import org.silverpeas.core.subscription.SubscriptionResource;
 import org.silverpeas.core.subscription.service.ResourceSubscriptionProvider;
 import org.silverpeas.core.subscription.service.UserSubscriptionSubscriber;
 import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
-import org.silverpeas.core.test.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.extention.LocalizationBundleStub;
-import org.silverpeas.core.test.extention.TestManagedMock;
-import org.silverpeas.core.test.extention.TestManagedMocks;
+import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.LocalizationBundleStub;
+import org.silverpeas.core.test.unit.extention.TestManagedMock;
+import org.silverpeas.core.test.unit.extention.TestManagedMocks;
 
 import java.util.HashMap;
 import java.util.Map;

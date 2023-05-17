@@ -26,7 +26,7 @@ package org.silverpeas.components.mydb.model;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
 
 import java.sql.Timestamp;
 import java.sql.Types;

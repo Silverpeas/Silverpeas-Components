@@ -38,7 +38,7 @@ import org.silverpeas.components.gallery.media.ExifProperty;
 import org.silverpeas.components.gallery.media.IptcProperty;
 import org.silverpeas.components.gallery.media.MediaMetadataExtractor;
 import org.silverpeas.components.gallery.model.MetaData;
-import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
+import org.silverpeas.core.test.integration.rule.MavenTargetDirectoryRule;
 import org.silverpeas.core.util.StringUtil;
 
 import java.io.File;

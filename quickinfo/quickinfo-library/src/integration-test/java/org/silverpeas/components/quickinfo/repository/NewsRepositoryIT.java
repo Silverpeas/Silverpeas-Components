@@ -14,7 +14,7 @@ import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.test.BasicWarBuilder;
-import org.silverpeas.core.test.rule.DbSetupRule;
+import org.silverpeas.core.test.integration.rule.DbSetupRule;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.time.LocalDate;

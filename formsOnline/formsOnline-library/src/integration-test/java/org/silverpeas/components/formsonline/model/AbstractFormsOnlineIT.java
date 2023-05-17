@@ -26,9 +26,9 @@ package org.silverpeas.components.formsonline.model;
 
 import org.junit.Rule;
 import org.silverpeas.core.SilverpeasRuntimeException;
-import org.silverpeas.core.test.rule.DbSetupRule;
-import org.silverpeas.core.test.rule.DbUnitLoadingRule;
-import org.silverpeas.core.test.rule.TestStatisticRule;
+import org.silverpeas.core.test.integration.rule.DbSetupRule;
+import org.silverpeas.core.test.integration.rule.DbUnitLoadingRule;
+import org.silverpeas.core.test.integration.rule.TestStatisticRule;
 import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.StringUtil;
 

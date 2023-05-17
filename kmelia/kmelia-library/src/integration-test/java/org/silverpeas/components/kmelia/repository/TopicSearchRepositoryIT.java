@@ -34,7 +34,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.components.kmelia.test.WarBuilder4Kmelia;
 import org.silverpeas.core.persistence.Transaction;
-import org.silverpeas.core.test.rule.DbUnitLoadingRule;
+import org.silverpeas.core.test.integration.rule.DbUnitLoadingRule;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.Date;

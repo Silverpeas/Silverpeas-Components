@@ -43,11 +43,11 @@ import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.scheduler.Scheduler;
 import org.silverpeas.core.scheduler.SchedulerException;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
-import org.silverpeas.core.test.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.extention.SettingBundleStub;
-import org.silverpeas.core.test.extention.TestManagedBean;
-import org.silverpeas.core.test.extention.TestManagedMock;
-import org.silverpeas.core.test.extention.TestedBean;
+import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.SettingBundleStub;
+import org.silverpeas.core.test.unit.extention.TestManagedBean;
+import org.silverpeas.core.test.unit.extention.TestManagedMock;
+import org.silverpeas.core.test.unit.extention.TestedBean;
 
 import java.time.OffsetDateTime;
 import java.util.Date;

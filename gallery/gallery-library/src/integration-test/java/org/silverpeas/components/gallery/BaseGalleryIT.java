@@ -39,7 +39,7 @@ import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.test.DataSetTest;
+import org.silverpeas.core.test.integration.DataSetTest;
 
 import javax.annotation.Priority;
 import javax.enterprise.inject.Alternative;
@@ -53,7 +53,7 @@ import java.util.stream.Stream;
 import static javax.interceptor.Interceptor.Priority.APPLICATION;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.silverpeas.core.test.rule.DbSetupRule.getActualDataSet;
+import static org.silverpeas.core.test.integration.rule.DbSetupRule.getActualDataSet;
 
 /**
  * Base class for tests in the gallery component.

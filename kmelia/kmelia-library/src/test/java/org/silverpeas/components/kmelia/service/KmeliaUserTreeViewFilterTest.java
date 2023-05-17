@@ -31,8 +31,8 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.test.extention.TestManagedMock;
-import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.TestManagedMock;
+import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
 import org.silverpeas.core.util.CollectionUtil;
 
 import java.util.ArrayList;

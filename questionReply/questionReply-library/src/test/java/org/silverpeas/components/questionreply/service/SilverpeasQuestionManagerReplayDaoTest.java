@@ -27,9 +27,8 @@ package org.silverpeas.components.questionreply.service;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAOImpl;
-import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
 
 import java.beans.FeatureDescriptor;
 import java.beans.PropertyDescriptor;

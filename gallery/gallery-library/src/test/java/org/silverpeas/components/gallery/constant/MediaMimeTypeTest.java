@@ -25,7 +25,7 @@
 package org.silverpeas.components.gallery.constant;
 
 import org.junit.jupiter.api.Test;
-import org.silverpeas.core.test.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
 
 import java.io.File;
 import java.util.HashSet;

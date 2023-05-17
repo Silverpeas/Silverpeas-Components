@@ -35,7 +35,7 @@ import org.junit.runner.RunWith;
 import org.silverpeas.components.resourcesmanager.model.Category;
 import org.silverpeas.components.resourcesmanager.test.WarBuilder4ResourcesManager;
 import org.silverpeas.core.persistence.Transaction;
-import org.silverpeas.core.test.rule.DbUnitLoadingRule;
+import org.silverpeas.core.test.integration.rule.DbUnitLoadingRule;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.Date;

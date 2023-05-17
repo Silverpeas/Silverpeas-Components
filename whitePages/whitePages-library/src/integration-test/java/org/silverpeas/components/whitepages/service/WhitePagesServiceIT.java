@@ -32,7 +32,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.test.BasicWarBuilder;
-import org.silverpeas.core.test.rule.DbUnitLoadingRule;
+import org.silverpeas.core.test.integration.rule.DbUnitLoadingRule;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;

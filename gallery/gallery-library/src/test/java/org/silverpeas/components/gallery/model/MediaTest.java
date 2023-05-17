@@ -39,9 +39,9 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
-import org.silverpeas.core.test.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.extention.TestManagedBeans;
-import org.silverpeas.core.test.extention.TestManagedMock;
+import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.TestManagedBeans;
+import org.silverpeas.core.test.unit.extention.TestManagedMock;
 import org.silverpeas.core.util.DateUtil;
 
 import java.sql.Timestamp;

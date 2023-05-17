@@ -35,7 +35,7 @@ import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.test.BasicWarBuilder;
-import org.silverpeas.core.test.rule.DbSetupRule;
+import org.silverpeas.core.test.integration.rule.DbSetupRule;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.Date;

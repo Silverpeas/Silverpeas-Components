@@ -34,7 +34,7 @@ import org.silverpeas.components.resourcesmanager.model.Reservation;
 import org.silverpeas.components.resourcesmanager.model.ReservedResource;
 import org.silverpeas.components.resourcesmanager.test.WarBuilder4ResourcesManager;
 import org.silverpeas.core.persistence.Transaction;
-import org.silverpeas.core.test.rule.DbSetupRule;
+import org.silverpeas.core.test.integration.rule.DbSetupRule;
 
 import javax.inject.Inject;
 import java.util.List;

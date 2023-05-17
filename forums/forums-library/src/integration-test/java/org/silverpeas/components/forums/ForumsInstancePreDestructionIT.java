@@ -45,7 +45,7 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.model.UnlockContext;
 import org.silverpeas.core.contribution.attachment.util.SimpleDocumentList;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
-import org.silverpeas.core.test.rule.DbSetupRule;
+import org.silverpeas.core.test.integration.rule.DbSetupRule;
 import org.silverpeas.core.util.Pair;
 
 import javax.annotation.Priority;

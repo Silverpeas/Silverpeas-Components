@@ -33,7 +33,7 @@ import org.silverpeas.components.mailinglist.service.model.beans.InternalUserSub
 import org.silverpeas.components.mailinglist.service.model.beans.MailingList;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
-import org.silverpeas.core.test.rule.DbSetupRule;
+import org.silverpeas.core.test.integration.rule.DbSetupRule;
 
 import java.sql.Connection;
 import java.util.List;

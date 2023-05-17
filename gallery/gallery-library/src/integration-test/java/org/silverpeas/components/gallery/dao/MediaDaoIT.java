@@ -47,7 +47,7 @@ import org.silverpeas.core.media.streaming.StreamingProvidersRegistry;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
-import org.silverpeas.core.test.rule.DbSetupRule.TableRow;
+import org.silverpeas.core.test.integration.rule.DbSetupRule.TableRow;
 import org.silverpeas.core.util.DateUtil;
 
 import java.sql.Connection;
@@ -63,8 +63,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.silverpeas.components.gallery.model.MediaCriteria.QUERY_ORDER_BY.*;
 import static org.silverpeas.components.gallery.model.MediaCriteria.VISIBILITY.*;
-import static org.silverpeas.core.test.rule.DbSetupRule.getActualDataSet;
-import static org.silverpeas.core.test.rule.DbSetupRule.getTableRowFor;
+import static org.silverpeas.core.test.integration.rule.DbSetupRule.getActualDataSet;
+import static org.silverpeas.core.test.integration.rule.DbSetupRule.getTableRowFor;
 import static org.silverpeas.core.test.util.TestRuntime.awaitUntil;
 
 /**

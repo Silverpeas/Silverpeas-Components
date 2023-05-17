@@ -35,7 +35,7 @@ import org.silverpeas.components.mailinglist.service.model.beans.MailingList;
 import org.silverpeas.components.mailinglist.service.model.beans.MailingListActivity;
 import org.silverpeas.components.mailinglist.service.model.beans.Message;
 import org.silverpeas.components.mailinglist.service.util.OrderBy;
-import org.silverpeas.core.test.rule.DbSetupRule;
+import org.silverpeas.core.test.integration.rule.DbSetupRule;
 
 import java.util.Calendar;
 import java.util.List;

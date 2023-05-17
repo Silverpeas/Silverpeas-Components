@@ -36,7 +36,7 @@ import org.silverpeas.components.resourcesmanager.model.Resource;
 import org.silverpeas.components.resourcesmanager.model.ResourceStatus;
 import org.silverpeas.components.resourcesmanager.test.WarBuilder4ResourcesManager;
 import org.silverpeas.core.persistence.Transaction;
-import org.silverpeas.core.test.rule.DbSetupRule;
+import org.silverpeas.core.test.integration.rule.DbSetupRule;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ServiceProvider;
 

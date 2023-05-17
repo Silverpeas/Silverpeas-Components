@@ -40,7 +40,7 @@ import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.cache.service.SessionCacheService;
-import org.silverpeas.core.test.rule.DbSetupRule;
+import org.silverpeas.core.test.integration.rule.DbSetupRule;
 
 import java.util.ArrayList;
 import java.util.Optional;

@@ -36,8 +36,8 @@ import org.silverpeas.components.mailinglist.service.model.beans.Message;
 import org.silverpeas.components.mailinglist.service.util.OrderBy;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
-import org.silverpeas.core.test.rule.DbSetupRule;
-import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
+import org.silverpeas.core.test.integration.rule.DbSetupRule;
+import org.silverpeas.core.test.integration.rule.MavenTargetDirectoryRule;
 import org.silverpeas.core.util.file.FileFolderManager;
 
 import java.io.File;

@@ -49,10 +49,10 @@ import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.JpaPersistOperation;
 import org.silverpeas.core.persistence.datasource.model.jpa.JpaUpdateOperation;
-import org.silverpeas.core.test.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.extention.TestManagedBeans;
-import org.silverpeas.core.test.extention.TestManagedMock;
-import org.silverpeas.core.test.util.EntityIdSetter;
+import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.TestManagedBeans;
+import org.silverpeas.core.test.unit.extention.TestManagedMock;
+import org.silverpeas.core.test.unit.EntityIdSetter;
 import org.silverpeas.core.util.Pair;
 
 import java.lang.invoke.MethodHandle;
