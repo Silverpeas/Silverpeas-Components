@@ -115,7 +115,8 @@
       var errorNb = 0;
       var title = stripInitialWhitespace(document.${_formName}.${MediaTitleInputName}.value);
       var descr = document.${_formName}.${MediaDescriptionInputName}.value;
-      var media = stripInitialWhitespace(document.${_formName}.${mediaType eq MediaTypeStreaming ? 'SP$$StreamingHomepageUrl' : 'WAIMGVAR0'}.value);
+      var $media = document.${_formName}.${mediaType eq MediaTypeStreaming ? 'SP$$StreamingHomepageUrl' : 'WAIMGVAR0'};
+      var media = stripInitialWhitespace($media.value);
 
       <c:choose>
       <c:when test="${mediaType ne MediaTypeStreaming}">
@@ -171,6 +172,7 @@
       </c:if>
 
       var dateErrors;
+      let errorPromises = [];
       <c:if test="${mediaType ne MediaTypeStreaming}">
       // Download period
       var beginDownloadDate = {dateId : 'beginDownloadDate'};
@@ -180,6 +182,7 @@
         errorMsg += "<li>" + error.message + "</li>";
         errorNb++;
       });
+      errorPromises.push(verifyFileInpyt($media));
       </c:if>
       // Visibility period
       var beginVisibilityDate = {dateId : 'beginVisibilityDate'};
@@ -193,22 +196,23 @@
       <c:if test="${isUsePdc and isNewMediaCase}">
       <view:pdcValidateClassification errorCounter="errorNb" errorMessager="errorMsg" errorWebRender="true"/>;
       </c:if>
-
-      switch (errorNb) {
-        case 0 :
-          callback.call(this);
-          break;
-        case 1 :
-          errorMsg =
-              "<b><fmt:message key="GML.ThisFormContains"/> 1 <fmt:message key="GML.error"/> : </b><ul>" +
-              errorMsg + "</ul>";
-          jQuery.popup.error(errorMsg);
-          break;
-        default :
-          errorMsg = "<b><fmt:message key="GML.ThisFormContains"/> " + errorNb +
-              " <fmt:message key="GML.errors"/> :</b><ul>" + errorMsg + "</ul>";
-          jQuery.popup.error(errorMsg);
-      }
+      sp.promise.whenAllResolved(errorPromises).then(function() {
+        switch (errorNb) {
+          case 0 :
+            callback.call(this);
+            break;
+          case 1 :
+            errorMsg =
+                    "<b><fmt:message key="GML.ThisFormContains"/> 1 <fmt:message key="GML.error"/> : </b><ul>" +
+                    errorMsg + "</ul>";
+            jQuery.popup.error(errorMsg);
+            break;
+          default :
+            errorMsg = "<b><fmt:message key="GML.ThisFormContains"/> " + errorNb +
+                    " <fmt:message key="GML.errors"/> :</b><ul>" + errorMsg + "</ul>";
+            jQuery.popup.error(errorMsg);
+        }
+      });
     }
 
 </script>

@@ -315,9 +315,9 @@
         <parameter>
           <name>download</name>
           <label>
-            <message lang="fr">Original téléchargeable</message>
-            <message lang="en">Enable download of original media</message>
-            <message lang="de">Aktivieren Sie des Download der Original-Medien</message>
+            <message lang="fr">Original téléchargeable pour les lecteurs</message>
+            <message lang="en">Enable download of original media for the readers</message>
+            <message lang="de">Ermöglichung des Downloads von Originalmedien für die Leser</message>
           </label>
           <order>13</order>
           <mandatory>false</mandatory>
@@ -325,9 +325,9 @@
           <type>checkbox</type>
           <updatable>always</updatable>
           <help>
-            <message lang="fr">Si ce paramètre est activé, les médias seront téléchargeables, par defaut, dans leur format original. Ce paramètre pourra être changé à tout moment sur chaque média.</message>
-            <message lang="en">If this parameter is enabled, original media will be downloadable.</message>
-            <message lang="de">Wenn dieser Parameter aktiviert ist, können Original-Medien herunter geladen werden</message>
+            <message lang="fr">Si ce paramètre est activé, les médias seront téléchargeables par les lecteurs, par défaut, dans leur format original. Ce paramètre pourra être changé à tout moment sur chaque média.</message>
+            <message lang="en">If this parameter is enabled, original media will be downloadable for the readers profile.</message>
+            <message lang="de">Wenn dieser Parameter aktiviert ist, können die Originalmedien für das Leserprofil heruntergeladen werden.</message>
           </help>
         </parameter>
         <parameter>
