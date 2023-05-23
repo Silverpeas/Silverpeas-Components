@@ -1,5 +1,5 @@
 <%--
-  Copyright (C) 2000 - 2022 Silverpeas
+  Copyright (C) 2000 - 2023 Silverpeas
 
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU Affero General Public License as
@@ -111,11 +111,12 @@
   }
 
     function ifCorrectLocalForm(callback) {
-      var errorMsg = "";
-      var errorNb = 0;
-      var title = stripInitialWhitespace(document.${_formName}.${MediaTitleInputName}.value);
-      var descr = document.${_formName}.${MediaDescriptionInputName}.value;
-      var media = stripInitialWhitespace(document.${_formName}.${mediaType eq MediaTypeStreaming ? 'SP$$StreamingHomepageUrl' : 'WAIMGVAR0'}.value);
+      let errorMsg = "";
+      let errorNb = 0;
+      const title = stripInitialWhitespace(document.${_formName}.${MediaTitleInputName}.value);
+      const descr = document.${_formName}.${MediaDescriptionInputName}.value;
+      const $media = document.${_formName}.${mediaType eq MediaTypeStreaming ? 'SP$$StreamingHomepageUrl' : 'WAIMGVAR0'};
+      const media = stripInitialWhitespace($media.value);
 
       <c:choose>
       <c:when test="${mediaType ne MediaTypeStreaming}">
@@ -131,7 +132,7 @@
       </c:forEach>
       </c:forEach>
       if (media && media.length > 0) {
-        var fileRegExprCheck = /[.](${supportedMediaTypeRegExpr})$/;
+        const fileRegExprCheck = /[.](${supportedMediaTypeRegExpr})$/;
         if (fileRegExprCheck.exec(media.toLowerCase()) == null) {
           <fmt:message key="gallery.${fn:toLowerCase(mediaType)}" var="mediaTypeLabel"/>
           errorMsg += "<li><fmt:message key="gallery.format"><fmt:param>${fn:toLowerCase(mediaTypeLabel)}</fmt:param></fmt:message></li>";
@@ -163,27 +164,29 @@
         errorNb++;
       }
       <c:if test="${isNewMediaCase}">
-      if (media == "") {
+      if (media === "") {
         errorMsg +=
             "<li>'<fmt:message key="gallery.${fn:toLowerCase(mediaType)}"/>'  <fmt:message key="GML.MustBeFilled"/></li>";
         errorNb++;
       }
       </c:if>
 
-      var dateErrors;
+      let dateErrors;
+      let errorPromises = [];
       <c:if test="${mediaType ne MediaTypeStreaming}">
       // Download period
-      var beginDownloadDate = {dateId : 'beginDownloadDate'};
-      var endDownloadDate = {dateId : 'endDownloadDate', defaultDateHour : '23:59'};
+      const beginDownloadDate = {dateId: 'beginDownloadDate'};
+      const endDownloadDate = {dateId: 'endDownloadDate', defaultDateHour: '23:59'};
       dateErrors = isPeriodEndingInFuture(beginDownloadDate, endDownloadDate);
       $(dateErrors).each(function(index, error) {
         errorMsg += "<li>" + error.message + "</li>";
         errorNb++;
       });
+      errorPromises.push(verifyFileUploadOfInput($media));
       </c:if>
       // Visibility period
-      var beginVisibilityDate = {dateId : 'beginVisibilityDate'};
-      var endVisibilityDate = {dateId : 'endVisibilityDate', defaultDateHour : '23:59'};
+      const beginVisibilityDate = {dateId: 'beginVisibilityDate'};
+      const endVisibilityDate = {dateId: 'endVisibilityDate', defaultDateHour: '23:59'};
       dateErrors = isPeriodEndingInFuture(beginVisibilityDate, endVisibilityDate);
       $(dateErrors).each(function(index, error) {
         errorMsg += "<li>" + error.message + "</li>";
@@ -193,22 +196,23 @@
       <c:if test="${isUsePdc and isNewMediaCase}">
       <view:pdcValidateClassification errorCounter="errorNb" errorMessager="errorMsg" errorWebRender="true"/>;
       </c:if>
-
-      switch (errorNb) {
-        case 0 :
-          callback.call(this);
-          break;
-        case 1 :
-          errorMsg =
-              "<b><fmt:message key="GML.ThisFormContains"/> 1 <fmt:message key="GML.error"/> : </b><ul>" +
-              errorMsg + "</ul>";
-          jQuery.popup.error(errorMsg);
-          break;
-        default :
-          errorMsg = "<b><fmt:message key="GML.ThisFormContains"/> " + errorNb +
-              " <fmt:message key="GML.errors"/> :</b><ul>" + errorMsg + "</ul>";
-          jQuery.popup.error(errorMsg);
-      }
+      sp.promise.whenAllResolved(errorPromises).then(function() {
+        switch (errorNb) {
+          case 0 :
+            callback.call(this);
+            break;
+          case 1 :
+            errorMsg =
+                    "<b><fmt:message key="GML.ThisFormContains"/> 1 <fmt:message key="GML.error"/> : </b><ul>" +
+                    errorMsg + "</ul>";
+            jQuery.popup.error(errorMsg);
+            break;
+          default :
+            errorMsg = "<b><fmt:message key="GML.ThisFormContains"/> " + errorNb +
+                    " <fmt:message key="GML.errors"/> :</b><ul>" + errorMsg + "</ul>";
+            jQuery.popup.error(errorMsg);
+        }
+      });
     }
 
 </script>
