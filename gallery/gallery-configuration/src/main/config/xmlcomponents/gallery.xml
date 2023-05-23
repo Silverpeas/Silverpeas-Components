@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!--
 
-    Copyright (C) 2000 - 2022 Silverpeas
+    Copyright (C) 2000 - 2023 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -34,11 +34,10 @@
     <message lang="de">Multimedia-Bibliothek</message>
   </label>
   <description>
-    <message lang="fr">Bibliothèque multimédia qui comprend images, vidéos, sons et streaming
-      (Youtube et Vimeo).
-      Organisées en albums, les images, vidéos et sons peuvent être ajoutés par glisser/déposer.
-      Cette médiathèque comprend des fonctionnalités avancées pour la gestion des médias :
-      formulaire personnalisable, données EXIF / IPTC (photos), traitement par lot...
+    <message lang="fr">Bibliothèque multimédia qui comprend images, vidéos, sons et streaming (Youtube et Vimeo).
+    Organisées en albums, les images, vidéos et sons peuvent être ajoutés par glisser/déposer.
+    Cette médiathèque comprend des fonctionnalités avancées pour la gestion des médias :
+    formulaire personnalisable, données EXIF / IPTC (photos), traitement par lot...
     </message>
     <message lang="en">Multimedia library which includes photos, videos, sounds and streaming.
       Organized into albums, pictures, videos and sounds can be easily added by drag and drop. This
@@ -65,9 +64,7 @@
         <message lang="de">Manager</message>
       </label>
       <help>
-        <message lang="fr">Les gestionnaires créent les albums et paramètrent le Plan de
-          Classement
-        </message>
+        <message lang="fr">Les gestionnaires créent les albums et paramètrent le Plan de Classement</message>
         <message lang="en">Managers create albums and set up the Classification Scheme</message>
         <message lang="de">Managers create albums and set up the Classification Scheme</message>
       </help>
@@ -97,15 +94,9 @@
         <message lang="de">Beiträger</message>
       </label>
       <help>
-        <message lang="fr">Les contributeurs ajoutent des médias (photos, vidéos, sons et streaming)
-          aux albums.
-        </message>
-        <message lang="en">Contributors upload medias (photos, videos, sounds and streaming) inside
-          album.
-        </message>
-        <message lang="de">Beiträger Uploads Medien (Fotos, Videos, Klänge und Streaming) in
-          Alben.
-        </message>
+        <message lang="fr">Les contributeurs ajoutent des médias (photos, vidéos, sons et streaming) aux albums.</message>
+        <message lang="en">Contributors upload medias (photos, videos, sounds and streaming) inside album.</message>
+        <message lang="de">Beiträger Uploads Medien (Fotos, Videos, Klänge und Streaming) in Alben.</message>
       </help>
       <spaceMapping>
         <profile>writer</profile>
@@ -118,13 +109,9 @@
         <message lang="de">Leser mit Privileg</message>
       </label>
       <help>
-        <message lang="fr">Les lecteurs privilégiés peuvent télécharger les images en haute
-          définition.
-        </message>
-        <message lang="en">Readers with privilege can download pictures in High Definition format.
-        </message>
-        <message lang="de">Readers with privilege can download pictures in High Definition format.
-        </message>
+        <message lang="fr">Les lecteurs privilégiés peuvent télécharger les images en haute définition.</message>
+        <message lang="en">Readers with privilege can download pictures in High Definition format.</message>
+        <message lang="de">Readers with privilege can download pictures in High Definition format.</message>
       </help>
     </profile>
     <profile name="user">
@@ -171,12 +158,9 @@
           <type>checkbox</type>
           <updatable>always</updatable>
           <help>
-            <message lang="fr">Permet de visualiser les informations détaillées des médias dans le
-              format 266x150
-            </message>
+            <message lang="fr">Permet de visualiser les informations détaillées des médias dans le format 266x150</message>
             <message lang="en">Display detailed information of media (size 266x150 only)</message>
-            <message lang="de">Zeigt eine detaillierte Liste die Medien (Größe nur 266x150)
-            </message>
+            <message lang="de">Zeigt eine detaillierte Liste die Medien (Größe nur 266x150)</message>
           </help>
         </parameter>
         <parameter>
@@ -279,14 +263,9 @@
         <message lang="de">Visuals</message>
       </label>
       <description>
-        <message lang="fr">Cette application gère trois types de média : images, vidéos et sons.
-        </message>
-        <message lang="en">This application supports three types of media: images, videos and
-          sounds.
-        </message>
-        <message lang="de">This application supports three types of media: images, videos and
-          sounds.
-        </message>
+        <message lang="fr">Cette application gère trois types de média : images, vidéos et sons.</message>
+        <message lang="en">This application supports three types of media: images, videos and sounds.</message>
+        <message lang="de">This application supports three types of media: images, videos and sounds.</message>
       </description>
       <help></help>
       <order>2</order>
@@ -304,9 +283,7 @@
           <type>checkbox</type>
           <updatable>always</updatable>
           <help>
-            <message lang="fr">Permet d'afficher les méta-données (EXIF, IPTC, Windows) de chaque
-              image
-            </message>
+            <message lang="fr">Permet d'afficher les méta-données (EXIF, IPTC, Windows) de chaque image</message>
             <message lang="en">Display image meta data (EXIF, IPTC, Windows)</message>
             <message lang="de">Bilder Metadaten anzeigen (EXIF, IPTC, Windows)</message>
           </help>
@@ -425,8 +402,7 @@
           <type>checkbox</type>
           <updatable>always</updatable>
           <help>
-            <message lang="fr">Les lecteurs peuvent laisser des commentaires sur chaque média
-            </message>
+            <message lang="fr">Les lecteurs peuvent laisser des commentaires sur chaque média</message>
             <message lang="en">Readers are able to post comments on a media</message>
             <message lang="de">Leser können Kommentare auf eine Medien lassen</message>
           </help>
@@ -435,9 +411,9 @@
         <parameter>
           <name>download</name>
           <label>
-            <message lang="fr">Original téléchargeable</message>
-            <message lang="en">Enable download of original media</message>
-            <message lang="de">Aktivieren Sie des Download der Original-Medien</message>
+            <message lang="fr">Original téléchargeable pour les lecteurs et les contributeurs</message>
+            <message lang="en">Enable download of original media for the readers and the contributors</message>
+            <message lang="de">Ermöglichung des Downloads von Originalmedien für die Leser und die Beiträger</message>
           </label>
           <order>13</order>
           <mandatory>false</mandatory>
@@ -445,14 +421,14 @@
           <type>checkbox</type>
           <updatable>always</updatable>
           <help>
-            <message lang="fr">Si ce paramètre est activé, les médias seront téléchargeables, par
-              defaut, dans leur format original. Ce paramètre pourra être changé à tout moment sur
-              chaque média.
+            <message lang="fr">Si ce paramètre est activé, le format original des médias sera téléchargeable aussi par
+              les lecteurs et les contributeurs. Ce paramètre pourra être changé à tout moment sur chaque média.
             </message>
-            <message lang="en">If this parameter is enabled, original media will be downloadable.
+            <message lang="en">If this parameter is enabled, original media will be also downloadable by the readers
+              and the contributors. This parameter can be changed at any time on each media.
             </message>
-            <message lang="de">Wenn dieser Parameter aktiviert ist, können Original-Medien herunter
-              geladen werden
+            <message lang="de">Wenn dieser Parameter aktiviert ist, die Originalmedien auch von den Lesern und
+              Mitwirkenden herunterladbar werden. Dieser Parameter kann jederzeit auf jedem Medium geändert werden..
             </message>
           </help>
         </parameter>
@@ -495,8 +471,7 @@
           <type>select</type>
           <updatable>always</updatable>
           <help>
-            <message lang="fr">Choix du format de prévisualisation des images pour les lecteurs
-            </message>
+            <message lang="fr">Choix du format de prévisualisation des images pour les lecteurs</message>
             <message lang="en">Choice of the image preview format for readers</message>
             <message lang="de">AusWahl der Bilder Vorschau Format für die Leser</message>
           </help>
@@ -585,8 +560,7 @@
           <type>checkbox</type>
           <updatable>always</updatable>
           <help>
-            <message lang="fr">Permet d'insérer un texte sous forme de watermark sur les images
-            </message>
+            <message lang="fr">Permet d'insérer un texte sous forme de watermark sur les images</message>
             <message lang="en">Insert text into image as watermark</message>
             <message lang="de">Text ins Bild als Wasserzeichen einfügen</message>
           </help>
@@ -605,12 +579,9 @@
           <size>25</size>
           <updatable>always</updatable>
           <help>
-            <message lang="fr">Numéro de la donnée IPTC à utiliser sur les images haute définition
-            </message>
-            <message lang="en">IPTC number to be used for watermarking on High definition image
-            </message>
-            <message lang="de">IPTC Nummer verwenden für Wasserzeichen auf High-Definition-Bild
-            </message>
+            <message lang="fr">Numéro de la donnée IPTC à utiliser sur les images haute définition</message>
+            <message lang="en">IPTC number to be used for watermarking on High definition image</message>
+            <message lang="de">IPTC Nummer verwenden für Wasserzeichen auf High-Definition-Bild</message>
           </help>
         </parameter>
         <parameter>
@@ -761,8 +732,7 @@
           <help>
             <message lang="fr">Nom du formulaire associé aux demandes de photos</message>
             <message lang="en">Form name attached to the order</message>
-            <message lang="de">Name des XML Formulars, der an den Bilderanfordeung gebunden ist
-            </message>
+            <message lang="de">Name des XML Formulars, der an den Bilderanfordeung gebunden ist</message>
           </help>
         </parameter>
         <parameter>
