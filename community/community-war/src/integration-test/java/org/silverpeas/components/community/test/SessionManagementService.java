@@ -110,6 +110,12 @@ public class SessionManagementService implements SessionManagement {
   }
 
   @Override
+  public SessionInfo openOneShotSession(User user, HttpServletRequest request) {
+    HttpSession httpSession = request.getSession();
+    return new MySessionInfo(httpSession.getId(), user);
+  }
+
+  @Override
   public SessionInfo openAnonymousSession(final HttpServletRequest httpServletRequest) {
     UserDetail anonymousUser = UserDetail.getAnonymousUser();
     if (anonymousUser != null) {
