@@ -82,16 +82,10 @@
     String profile = (String) request.getAttribute("Profile");
     String action = (String) request.getAttribute("Action");
     String id = (String) request.getAttribute("PubId");
-    String currentLang = (String) request.getAttribute("Language");
     List<NodeDetail> path = (List<NodeDetail>) request.getAttribute("Path");
     boolean draftOutTaxonomyOK = (Boolean) request.getAttribute("TaxonomyOK");
   	boolean draftOutValidatorsOK = (Boolean) request.getAttribute("ValidatorsOK");
-
-    String resultThumbnail =  request.getParameter("resultThumbnail");
-    boolean errorThumbnail = false;
-    if(resultThumbnail != null && !"ok".equals(resultThumbnail)){
-      errorThumbnail = true;
-    }
+    boolean isPublicationClassifiedOnPDC = (Boolean) request.getAttribute("isPublicationClassifiedOnPDC");
 
     PublicationDetail volatilePublication = (PublicationDetail) request.getAttribute("VolatilePublication");
     Form extraForm = (Form) request.getAttribute("ExtraForm");
@@ -244,12 +238,8 @@
 
 	String backUrl = URLUtil.getFullApplicationURL(request) + URLUtil.getURL("kmelia", null, componentId) + "ToUpdatePublicationHeader";
 %>
-
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <title></title>
-    <view:looknfeel withFieldsetStyle="true" withCheckFormScript="true"/>
+<view:sp-page>
+  <view:sp-head-part withCheckFormScript="true" withFieldsetStyle="true">
     <view:includePlugin name="datepicker"/>
     <view:includePlugin name="popup"/>
     <view:includePlugin name="wysiwyg"/>
@@ -400,7 +390,7 @@
           errorNb++;
         });
 
-        <% if(!kmaxMode && "New".equals(action)) { %>
+        <% if(!kmaxMode && ("New".equals(action) || !isPublicationClassifiedOnPDC)) { %>
         <view:pdcValidateClassification errorCounter="errorNb" errorMessager="errorMsg"/>
         <% } %>
         
@@ -487,8 +477,8 @@
 	          });
         });
     </script>
-  </head>
-  <body id="<%=componentId%>" class="publicationManager" onunload="closeWindows()">
+  </view:sp-head-part>
+  <view:sp-body-part id="<%=componentId%>" cssClass="publicationManager">
 <%
         Window window = gef.getWindow();
         OperationPane operationPane = window.getOperationPane();
@@ -595,7 +585,7 @@
 				<div class="field" id="pubNameArea">
 					<label for="pubName" class="txtlibform"><%=resources.getString("PubTitre")%></label>
 					<div class="champs">
-						<input type="text" name="KmeliaPubName" id="pubName" value="<%=name%>" size="68" maxlength="400" />&nbsp;<img src="<%=mandatorySrc%>" width="5" height="5" border="0"/>
+						<input type="text" name="KmeliaPubName" id="pubName" value="<%=name%>" size="68" maxlength="400" />&nbsp;<img src="<%=mandatorySrc%>" alt="<%=resources.getString("GML.requiredField")%>" width="5" height="5"/>
 					</div>
 				</div>
 
@@ -605,7 +595,7 @@
 					<div class="champs">
 						<textarea rows="4" cols="65" name="KmeliaPubDescription" id="pubDesc"><%=description%></textarea>
 						<% if (isFieldDescriptionMandatory) {%>
-          					<img src="<%=mandatorySrc%>" width="5" height="5" border="0"/>
+          					<img src="<%=mandatorySrc%>" alt="<%=resources.getString("GML.requiredField")%>" width="5" height="5"/>
           				<% }%>
 					</div>
 				</div>
@@ -678,7 +668,7 @@
           				<% } else {%>
           					<textarea name="Valideur" id="Valideur" rows="4" cols="40" readonly="readonly"><%=targetValidatorName%></textarea>
           				<% }%>
-          				<input type="hidden" name="KmeliaPubValideurId" id="ValideurId" value="<%=targetValidatorId%>"/><%=link%>&nbsp;<img src="<%=mandatorySrc%>" width="5" height="5" border="0"/>
+          				<input type="hidden" name="KmeliaPubValideurId" id="ValideurId" value="<%=targetValidatorId%>"/><%=link%>&nbsp;<img src="<%=mandatorySrc%>" alt="<%=resources.getString("GML.requiredField")%>" width="5" height="5"/>
 					</div>
 				</div>
 				<% } %>
@@ -776,7 +766,7 @@
       } %>
 
 	<div class="legend">
-		<img src="<%=mandatorySrc%>" width="5" height="5"/> : <%=resources.getString("GML.requiredField")%>
+		<img alt="<%=resources.getString("GML.requiredField")%>" src="<%=mandatorySrc%>" width="5" height="5"/> : <%=resources.getString("GML.requiredField")%>
 	</div>
 
   </form>
@@ -829,5 +819,5 @@
       	</ul>
       </div>
   <view:progressMessage/>
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>
