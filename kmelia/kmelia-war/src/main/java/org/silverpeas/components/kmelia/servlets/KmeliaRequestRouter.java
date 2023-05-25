@@ -63,6 +63,7 @@ import org.silverpeas.core.io.media.image.thumbnail.control.ThumbnailController;
 import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.security.authorization.PublicationAccessControl;
 import org.silverpeas.core.subscription.SubscriptionResource;
 import org.silverpeas.core.util.DateUtil;
@@ -375,8 +376,14 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
       } else if ("ToPublicationHeader".equals(function)) {
         String action = (String) request.getAttribute("Action");
         if ("UpdateView".equals(action)) {
-          request.setAttribute("AttachmentsEnabled", false);
           request.setAttribute("TaxonomyOK", kmelia.isPublicationTaxonomyOK());
+          List<ClassifyPosition> positions = kmelia.getSessionPubliOrClone().getPDCPositions();
+          boolean isPublicationClassifiedOnPDC = true;
+          if (positions.isEmpty()) {
+            isPublicationClassifiedOnPDC = false;
+          }
+          request.setAttribute("isPublicationClassifiedOnPDC", isPublicationClassifiedOnPDC);
+          request.setAttribute("AttachmentsEnabled", false);
           request.setAttribute("ValidatorsOK", kmelia.isPublicationValidatorsOK());
           request.setAttribute("Publication", kmelia.getSessionPubliOrClone());
           setupRequestForContributionManagementContext(request,
@@ -387,6 +394,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           request.setAttribute("AttachmentsEnabled", kmelia.isAttachmentsEnabled());
           request.setAttribute("TaxonomyOK", true);
           request.setAttribute("ValidatorsOK", true);
+          request.setAttribute("isPublicationClassifiedOnPDC", false);
         }
 
         request.setAttribute("Path", kmelia.getTopicPath(kmelia.getCurrentFolderId()));
