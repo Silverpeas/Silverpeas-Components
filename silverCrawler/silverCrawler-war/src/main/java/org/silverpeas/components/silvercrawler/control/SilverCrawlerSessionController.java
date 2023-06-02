@@ -69,7 +69,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -412,10 +411,8 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
       }
 
       Parameter rwAccessParam = new Parameter();
-      HashMap<String, String> labels = new HashMap<>();
-      labels.put("fr", "Accès lecture/écriture");
       rwAccessParam.setName(READ_WRITE_ACTIVATED);
-      rwAccessParam.setLabel(labels);
+      rwAccessParam.putLabel("fr", "Accès lecture/écriture");
       rwAccessParam.setValue(active ? "yes" : "no");
       params.add(rwAccessParam);
 

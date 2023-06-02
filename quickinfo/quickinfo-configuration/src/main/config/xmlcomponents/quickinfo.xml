@@ -101,7 +101,7 @@
     </profile>
   </profiles>
   <groupsOfParameters>
-    <groupOfParameters>
+    <groupOfParameters name="visuals">
       <label>
         <message lang="fr">Visuels</message>
         <message lang="en">Visuals</message>

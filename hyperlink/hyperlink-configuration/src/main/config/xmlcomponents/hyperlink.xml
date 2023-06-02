@@ -70,7 +70,7 @@
     </profile>
   </profiles>
   <groupsOfParameters>
-    <groupOfParameters>
+    <groupOfParameters name="sso">
       <label>
         <message lang="fr">Client SSO</message>
         <message lang="en">SSO client</message>
