@@ -71,7 +71,7 @@
     </profile>
   </profiles>
   <groupsOfParameters>
-    <groupOfParameters>
+    <groupOfParameters name="connection">
       <label>
         <message lang="fr">Connexion à l'annuaire LDAP</message>
         <message lang="en">LDAP Connection</message>
@@ -205,7 +205,7 @@
         </parameter>
       </parameters>
     </groupOfParameters>
-    <groupOfParameters>
+    <groupOfParameters name="target">
       <label>
         <message lang="fr">Ciblage et correspondances</message>
         <message lang="en">Targeting and correspondence</message>
@@ -418,7 +418,7 @@
         </parameter>
       </parameters>
     </groupOfParameters>
-    <groupOfParameters>
+    <groupOfParameters name="serviceView">
       <label>
         <message lang="fr">Vue "services"</message>
         <message lang="en">Units view</message>
@@ -520,7 +520,7 @@
         </parameter>
       </parameters>
     </groupOfParameters>
-    <groupOfParameters>
+    <groupOfParameters name="detailedView">
       <label>
         <message lang="fr">Vue détaillée</message>
         <message lang="en">Detailed view</message>
@@ -590,7 +590,7 @@
         </parameter>
       </parameters>
     </groupOfParameters>
-    <groupOfParameters>
+    <groupOfParameters name="display">
       <label>
         <message lang="fr">Affichage</message>
         <message lang="en">Display</message>

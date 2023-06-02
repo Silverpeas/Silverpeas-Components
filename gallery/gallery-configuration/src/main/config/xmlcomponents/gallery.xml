@@ -131,7 +131,7 @@
     </profile>
   </profiles>
   <groupsOfParameters>
-    <groupOfParameters>
+    <groupOfParameters name="navigation">
       <label>
         <message lang="fr">Navigation</message>
         <message lang="en">Visuals</message>
@@ -256,7 +256,7 @@
         </parameter>
       </parameters>
     </groupOfParameters>
-    <groupOfParameters>
+    <groupOfParameters name="media">
       <label>
         <message lang="fr">Médias</message>
         <message lang="en">Visuals</message>
@@ -524,7 +524,7 @@
         </parameter>
       </parameters>
     </groupOfParameters>
-    <groupOfParameters>
+    <groupOfParameters name="watermark">
       <label>
         <message lang="fr">Filigrane</message>
         <message lang="en">Watermark</message>
@@ -681,7 +681,7 @@
         </parameter>
       </parameters>
     </groupOfParameters>
-    <groupOfParameters>
+    <groupOfParameters name="requests">
       <label>
         <message lang="fr">Demandes d'images</message>
         <message lang="en">Image requests</message>
