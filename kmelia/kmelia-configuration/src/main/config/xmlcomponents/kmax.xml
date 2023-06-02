@@ -520,7 +520,7 @@
         </parameter>
       </parameters>
     </groupOfParameters>
-    <groupOfParameters>
+    <groupOfParameters name="sharing">
       <label>
         <message lang="fr">Partages</message>
         <message lang="en">Sharing</message>

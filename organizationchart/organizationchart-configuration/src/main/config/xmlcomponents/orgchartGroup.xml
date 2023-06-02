@@ -69,7 +69,7 @@
     </profile>
   </profiles>
   <groupsOfParameters>
-    <groupOfParameters>
+    <groupOfParameters name="serviceView">
       <label>
         <message lang="fr">Vue "services"</message>
         <message lang="en">Units view</message>
@@ -162,7 +162,7 @@
         </parameter>
       </parameters>
     </groupOfParameters>
-    <groupOfParameters>
+    <groupOfParameters name="detailedView">
       <label>
         <message lang="fr">Vue détaillée</message>
         <message lang="en">Detailed view</message>
@@ -229,7 +229,7 @@
         </parameter>
       </parameters>
     </groupOfParameters>
-    <groupOfParameters>
+    <groupOfParameters name="display">
       <label>
         <message lang="fr">Affichage</message>
         <message lang="en">Display</message>
