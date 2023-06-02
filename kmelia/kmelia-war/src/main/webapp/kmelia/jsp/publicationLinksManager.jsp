@@ -63,13 +63,13 @@
   <script type="text/javascript" src="<%=m_context %>/util/javaScript/treeMenu/menu.js"></script>
 
   <script type="text/javascript">
-    var context ='<%=m_context %>';
-    var currentNodeId;
-    var currentNodeIndex;
-    var currentComponent;
-    var pubId = '<%=pubId%>';
-    var currentSort = <%=KmeliaPublicationSort.SORT_TITLE_ASC%>;
-    var menuType='<%=MenuConstants.SEE_ALSO_MENU_TYPE%>';
+    const context ='<%=m_context %>';
+    let currentNodeId;
+    let currentNodeIndex;
+    let currentComponent;
+    const pubId = '<%=pubId%>';
+    let currentSort = <%=KmeliaPublicationSort.SORT_TITLE_ASC%>;
+    const menuType='<%=MenuConstants.SEE_ALSO_MENU_TYPE%>';
     function buildTree() {
       //create a new tree:
       tree = new YAHOO.widget.TreeView("treeDiv1");
@@ -80,15 +80,15 @@
 
       //add child nodes for tree; our top level nodes are
       try{
-        var mes = [];
+        var mes;
         mes =YAHOO.lang.JSON.stringify(<%=TreeHandler.processMenu(request,MenuConstants.SEE_ALSO_MENU_TYPE, true)%>);
         mes = YAHOO.lang.JSON.parse(mes);
       }catch(x){
         notyError("JSON Parse failed: "+x);
         return;
       }
-      for (var i=0, j=mes.length; i<j; i++) {
-        var tempNode = new YAHOO.widget.TextNode(mes[i], root, false);
+      for (let i=0, j=mes.length; i<j; i++) {
+        const tempNode = new YAHOO.widget.TextNode(mes[i], root, false);
         tempNode.multiExpand =false;
       }
       //render tree with these toplevel nodes; all descendants of these nodes
@@ -141,7 +141,7 @@
     }
 
     function doPagination(index, nbItemsPerPage){
-      var ieFix = new Date().getTime();
+      const ieFix = new Date().getTime();
       $.get(getWebContext()+'/RAjaxPublicationsListServlet', {PubId:pubId,Index:index,NbItemsPerPage:nbItemsPerPage,ComponentId:currentComponent,ToLink:1,Sort:currentSort,IEFix:ieFix},
           function(data){
             $('#pubList').html(data);
@@ -154,7 +154,7 @@
     }
 
     function displayPublications(CompoId,topicId){
-      var ieFix = new Date().getTime();
+      const ieFix = new Date().getTime();
       $.get(getWebContext()+'/RAjaxPublicationsListServlet', {PubId:pubId,ComponentId:CompoId,TopicToLinkId:topicId,ToLink:1,Sort:currentSort,IEFix:ieFix},
           function(data){
             $('#pubList').html(data);
@@ -163,14 +163,14 @@
 
     function sendPubId(pubId,checked){
 
-      var action;
+      let action;
 
       if(checked){
         action="Action=bindToPub";
       }else{
         action="Action=unbindToPub";
       }
-      var ieFix = new Date().getTime();
+      const ieFix = new Date().getTime();
       $.get(getWebContext()+'/KmeliaAJAXServlet?'+action, {TopicToLinkId:pubId,IEFix:ieFix});
     }
 
@@ -179,7 +179,7 @@
     }
 
     function displayHomeMessage(){
-      document.getElementById('pubList').innerHTML = '<p align="center" ><%= kmeliaScc.getString("kmelia.linkManager.home.title")%></p> <p align="center"> <br><br><%=kmeliaScc.getString("kmelia.linkManager.home.description") %>';
+      document.getElementById('pubList').innerHTML = '<p align="center"><%= kmeliaScc.getString("kmelia.linkManager.home.title")%></p> <p align="center"> <br><br><%=kmeliaScc.getString("kmelia.linkManager.home.description") %>';
     }
 
     function showPublicationOperations() {
