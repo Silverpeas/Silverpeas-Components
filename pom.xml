@@ -32,7 +32,7 @@
   <parent>
     <groupId>org.silverpeas</groupId>
     <artifactId>silverpeas-project</artifactId>
-    <version>1.6-build230509</version>
+    <version>1.6-build230607</version>
   </parent>
 
   <groupId>org.silverpeas</groupId>
@@ -270,6 +270,26 @@
                   <Build-Timestamp>${maven.build.timestamp}</Build-Timestamp>
                 </manifestEntries>
               </archive>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>restapi</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.qmino</groupId>
+            <artifactId>miredot-plugin</artifactId>
+            <configuration>
+              <output>
+                <title>Silverpeas Components REST API</title>
+                <location>restapi/components</location>
+                <html>
+                  <baseUrl>https://www.silverpeas.org/silverpeas/services</baseUrl>
+                </html>
+              </output>
             </configuration>
           </plugin>
         </plugins>
