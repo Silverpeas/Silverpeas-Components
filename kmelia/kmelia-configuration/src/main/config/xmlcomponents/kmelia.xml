@@ -1280,9 +1280,20 @@
 		      <type>checkbox</type>
 		      <updatable>always</updatable>
 		      <help>
-		        <message lang="fr">Les publications créées au sein de cette instance pourront être classées sur le Plan de Classement</message>
-		        <message lang="en">Publications would be classified on PDC</message>
-		        <message lang="de">Veröffentlichungen würden auf dem KP klassifiziert werden</message>
+		        <message lang="fr">Les publications créées au sein de cette instance pourront être
+              classées sur le Plan de Classement. Si une publication est classée lorsque le
+              paramètre est désactivé, elle n'est pas déclassée. Elle le sera lors de sa mise à
+              jour.
+            </message>
+		        <message lang="en">Publications created within this instance can be ranked on the
+              Classification Plan. If a publication is ranked when the parameter is deactivated, it
+              is not unclassified. It will be unclassified when it is updated.
+            </message>
+            <message lang="de">Beiträge, die in dieser Instanz erstellt werden, können auf der
+              Gliederungsebene eingestuft werden. Wenn ein Beitrag klassifiziert ist, während die
+              Einstellung deaktiviert ist, wird er nicht herabgestuft. Die Klassifizierung wird erst
+              bei der Aktualisierung vorgenommen.
+            </message>
 		      </help>
 		    </parameter>
 		    <parameter>

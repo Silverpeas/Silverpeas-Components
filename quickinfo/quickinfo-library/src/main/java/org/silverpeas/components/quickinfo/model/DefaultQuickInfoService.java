@@ -52,8 +52,12 @@ import org.silverpeas.core.index.indexing.model.IndexManager;
 import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
+import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
+import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
+import org.silverpeas.core.pdc.pdc.service.PdcManager;
+import org.silverpeas.core.pdc.subscription.service.PdcSubscriptionManager;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.reminder.Reminder;
@@ -82,7 +86,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static java.util.function.Predicate.not;
 import static org.silverpeas.components.quickinfo.notification.QuickInfoDelayedVisibilityUserNotificationReminder.QUICKINFO_DELAYED_VISIBILITY_USER_NOTIFICATION;
@@ -101,6 +104,10 @@ public class DefaultQuickInfoService implements QuickInfoService {
   private QuickInfoContentManager quickInfoContentManager;
   @Inject
   private NewsEventNotifier notifier;
+  @Inject
+  private PdcManager pdcManager;
+  @Inject
+  private PdcSubscriptionManager pdcSubscriptionManager;
 
   @Override
   public Optional<News> getContributionById(ContributionIdentifier contributionId) {
@@ -393,6 +400,22 @@ public class DefaultQuickInfoService implements QuickInfoService {
     if (!news.isDraft()) {
       if (news.isVisible()) {
         new QuickInfoSubscriptionUserNotification(news, notifAction).build().send();
+        // send notification if PDC subscription
+        try {
+          final PublicationPK pubPK = news.getPublication().getPK();
+          int silverObjectId = quickInfoContentManager.getSilverContentId(pubPK.getId(), pubPK.getInstanceId());
+          List<ClassifyPosition> positions = pdcManager.getPositions(silverObjectId, pubPK
+              .getInstanceId());
+          if (positions != null) {
+            for (ClassifyPosition position : positions) {
+              pdcSubscriptionManager.checkSubscriptions(position.getValues(), pubPK
+                  .getInstanceId(), silverObjectId);
+            }
+          }
+        } catch (PdcException e) {
+          SilverLogger.getLogger(this)
+              .error("PdC subscriber notification failure", e);
+        }
       } else {
         QuickInfoDelayedVisibilityUserNotificationReminder.get().setAbout(news);
       }
@@ -405,10 +428,10 @@ public class DefaultQuickInfoService implements QuickInfoService {
    * @param pdcPositions the string json positions
    */
   private void classifyQuickInfo(PublicationDetail publi, List<PdcPosition> pdcPositions) {
-    if (pdcPositions != null && !pdcPositions.isEmpty()) {
+    if (pdcPositions != null) {
       PdcClassification classification =
           aPdcClassificationOfContent(publi).withPositions(pdcPositions);
-      classification.classifyContent(publi);
+      classification.classifyContentOrClearClassificationIfEmpty(publi, false);
     }
   }
 

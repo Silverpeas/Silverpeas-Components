@@ -55,7 +55,7 @@ public interface BlogService extends ApplicationService {
 
   String createPost(final PostDetail post, PdcClassification classification);
 
-  void updatePost(final PostDetail post);
+  void updatePost(final PostDetail post, final PdcClassification classification);
 
   void deletePost(String postId, String instanceId);
 

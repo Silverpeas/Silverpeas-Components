@@ -964,12 +964,23 @@ public class DefaultKmeliaService implements KmeliaService {
   }
 
   @Override
+  public void updatePublication(final PublicationDetail pubDetail,
+      final PdcClassification classification) {
+    updatePublication(pubDetail, classification, KmeliaHelper.PUBLICATION_HEADER, false);
+  }
+
+  @Override
   public void updatePublication(PublicationDetail pubDetail, boolean forceUpdateDate) {
     updatePublication(pubDetail, KmeliaHelper.PUBLICATION_HEADER, forceUpdateDate);
   }
 
   private void updatePublication(PublicationDetail pubDetail, int updateScope,
       boolean forceUpdateDate) {
+    updatePublication(pubDetail, null, updateScope, forceUpdateDate);
+  }
+
+  private void updatePublication(PublicationDetail pubDetail, PdcClassification classification,
+      int updateScope, boolean forceUpdateDate) {
     KmeliaOperationContext.about(UPDATE);
     try {
       // if pubDetail is a clone
@@ -993,6 +1004,12 @@ public class DefaultKmeliaService implements KmeliaService {
         if (!isPublicationInBasket) {
           updatePublicationContent(pubDetail, updateScope, old, statusChanged);
         }
+      }
+
+      if (classification != null) {
+        // classify the publication on the PdC if any
+        // subscribers are notified later (only if publication is valid)
+        classification.classifyContentOrClearClassificationIfEmpty(pubDetail, false);
       }
 
       // Sending a subscription notification if the publication updated comes not from the
