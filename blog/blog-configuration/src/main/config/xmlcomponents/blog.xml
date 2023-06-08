@@ -146,10 +146,18 @@
       <updatable>always</updatable>
       <help>
         <message lang="fr">Les billets créés au sein de cette instance pourront être classées sur le
-          Plan de Classement
+          Plan de Classement. Si un billet est classé lorsque le paramètre est désactivé, il n'est
+          pas déclassé. Il le sera lors de sa mise à jour.
         </message>
-        <message lang="en">Post will be classified on the classification scheme.</message>
-        <message lang="de">Posts können auf dem KP klassifiziert werden</message>
+        <message lang="en">Posts created within this instance can be classified on the
+          Classification Plan. If a post is ranked when the parameter is deactivated, it is not
+          unclassified. It will be unclassified when it is updated.
+        </message>
+        <message lang="de">Beiträge, die in dieser Instanz erstellt werden, können nach dem
+          Klassifizierungsplan klassifiziert werden. Wenn ein Beitrag bei Deaktivierung des
+          Parameters eingestuft ist, ist er nicht unklassifiziert. Er wird unklassifiziert sein,
+          wenn er aktualisiert wird.
+        </message>
       </help>
     </parameter>
     <parameter>

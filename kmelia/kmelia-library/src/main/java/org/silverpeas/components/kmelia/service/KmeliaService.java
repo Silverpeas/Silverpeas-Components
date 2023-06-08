@@ -222,6 +222,15 @@ public interface KmeliaService extends ApplicationService {
    */
   void updatePublication(PublicationDetail detail);
 
+  /**
+   * Update a publication (only the header - parameters)
+   * @param detail a PublicationDetail
+   * @param classification the classification on the PdC of the publication content.
+   * @see org.silverpeas.core.contribution.publication.model.PublicationDetail
+   * @since 1.0
+   */
+  void updatePublication(PublicationDetail detail, PdcClassification classification);
+
   void updatePublication(PublicationDetail detail, boolean forceUpdateDate);
 
   /**

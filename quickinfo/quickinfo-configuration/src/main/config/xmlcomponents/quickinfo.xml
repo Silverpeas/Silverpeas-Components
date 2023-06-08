@@ -202,13 +202,19 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Les brèves créées au sein de cette instance pourront être classées sur le
-          Plan de Classement.
+        <message lang="fr">Les actualités créées au sein de cette instance pourront être classées
+          sur le Plan de Classement.Si une actualité est classée lorsque le paramètre est désactivé,
+          elle n'est pas déclassée. Elle le sera lors de sa mise à jour.
         </message>
-        <message lang="en">News created in this application will be classified on the classification
-          scheme.
+        <message lang="en">News created within this instance can be ranked on the Classification
+          Plan. If a news is ranked when the parameter is deactivated, it is not unclassified. It
+          will be unclassified when it is updated.
         </message>
-        <message lang="de">Nachrichten können auf dem KP klassifiziert werden</message>
+        <message lang="de">Die in dieser Instanz erstellten Nachrichten können im
+          Klassifizierungsplan eingestuft werden. Wenn eine Nachricht bei Deaktivierung des
+          Parameters eingestuft ist, ist sie nicht unklassifiziert. Sie wird nicht klassifiziert,
+          wenn sie aktualisiert wird.
+        </message>
       </help>
     </parameter>
     <parameter>

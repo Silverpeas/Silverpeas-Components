@@ -826,12 +826,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     if (isKmaxMode) {
       result = getKmeliaService().createKmaxPublication(pubDetail);
     } else {
-      if (classification.isUndefined()) {
+      if (classification == null || classification.isUndefined()) {
         result = getKmeliaService().createPublicationIntoTopic(pubDetail, getCurrentFolderPK());
       } else {
-        List<PdcPosition> pdcPositions = classification.getPdcPositions();
-        PdcClassification withClassification =
-            aPdcClassificationOfContent(pubDetail).withPositions(pdcPositions);
+        PdcClassification withClassification = getPdcClassification(pubDetail, classification);
         result = getKmeliaService()
             .createPublicationIntoTopic(pubDetail, getCurrentFolderPK(), withClassification);
       }
@@ -851,7 +849,12 @@ public class KmeliaSessionController extends AbstractComponentSessionController
         pubDetail.getLanguage()));
   }
 
-  public synchronized void updatePublication(PublicationDetail pubDetail) {
+  public synchronized void updatePublication(final PublicationDetail pubDetail) {
+    updatePublication(pubDetail, null);
+  }
+
+  public synchronized void updatePublication(final PublicationDetail pubDetail,
+      final PdcClassificationEntity classification) {
     pubDetail.getPK().setSpace(getSpaceId());
     pubDetail.getPK().setComponentName(getComponentId());
     pubDetail.setUpdaterId(getUserId());
@@ -873,8 +876,19 @@ public class KmeliaSessionController extends AbstractComponentSessionController
         // clone must not be indexed
         pubDetail.setIndexOperation(IndexManager.NONE);
       }
-      getKmeliaService().updatePublication(pubDetail);
+      if (classification == null) {
+        getKmeliaService().updatePublication(pubDetail);
+      } else {
+        PdcClassification withClassification = getPdcClassification(pubDetail, classification);
+        getKmeliaService().updatePublication(pubDetail, withClassification);
+      }
     }
+  }
+
+  private static PdcClassification getPdcClassification(final PublicationDetail pubDetail,
+      final PdcClassificationEntity classification) {
+    final List<PdcPosition> pdcPositions = classification.getPdcPositions();
+    return aPdcClassificationOfContent(pubDetail).withPositions(pdcPositions);
   }
 
   public boolean isCloneNeeded() {
