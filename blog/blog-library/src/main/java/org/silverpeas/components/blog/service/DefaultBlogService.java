@@ -192,11 +192,27 @@ public class DefaultBlogService implements BlogService, Initialization {
       final Comment comment, final String type, final String senderId) {
     UserNotificationHelper.buildAndSend(
         new BlogUserSubscriptionNotification(post, comment, type, senderId));
+    // send notification if PDC subscription
+    try {
+      final PublicationPK pubPK = post.getPublication().getPK();
+      int silverObjectId = getSilverObjectId(pubPK);
+      List<ClassifyPosition> positions = pdcManager.getPositions(silverObjectId, pubPK
+          .getInstanceId());
+      if (positions != null) {
+        for (ClassifyPosition position : positions) {
+          pdcSubscriptionManager.checkSubscriptions(position.getValues(), pubPK
+              .getInstanceId(), silverObjectId);
+        }
+      }
+    } catch (PdcException e) {
+      SilverLogger.getLogger(this)
+          .error("PdC subscriber notification failure", e);
+    }
   }
 
   @Transactional
   @Override
-  public void updatePost(PostDetail post) {
+  public void updatePost(PostDetail post, final PdcClassification classification) {
     try (Connection con = openConnection()) {
       PublicationPK pubPk = post.getPublication()
           .getPK();
@@ -220,6 +236,11 @@ public class DefaultBlogService implements BlogService, Initialization {
       // content)
       WysiwygController.updateFileAndAttachment(post.getContent(), pub.getInstanceId(),
           pubPk.getId(), pub.getUpdaterId(), pub.getLanguage(), false);
+
+      // classify the publication on the PdC if any
+      if (classification != null) {
+        classification.classifyContentOrClearClassificationIfEmpty(pub, false);
+      }
 
       // Send notification if subscription
       if (pub.isValid()) {
@@ -657,22 +678,6 @@ public class DefaultBlogService implements BlogService, Initialization {
       sendSubscriptionsNotification(new NodePK("0", pub.getPK()
           .getSpaceId(), pub.getPK()
           .getInstanceId()), post, null, "create", pub.getUpdaterId());
-
-      // send notification if PDC subscription
-      try {
-        int silverObjectId = getSilverObjectId(pub.getPK());
-        List<ClassifyPosition> positions = pdcManager.getPositions(silverObjectId, pub.getPK()
-            .getInstanceId());
-        if (positions != null) {
-          for (ClassifyPosition position : positions) {
-            pdcSubscriptionManager.checkSubscriptions(position.getValues(), pub.getPK()
-                .getInstanceId(), silverObjectId);
-          }
-        }
-      } catch (PdcException e) {
-        SilverLogger.getLogger(this)
-            .error("PdC subscriber notification failure", e);
-      }
     }
   }
 

@@ -44,6 +44,7 @@ import org.silverpeas.core.comment.service.CommentServiceProvider;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.exception.DecodingException;
 import org.silverpeas.core.exception.EncodingException;
 import org.silverpeas.core.index.indexing.model.IndexManager;
 import org.silverpeas.core.mylinks.model.LinkDetail;
@@ -55,6 +56,7 @@ import org.silverpeas.core.subscription.service.ComponentSubscriptionResource;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.UtilException;
 import org.silverpeas.core.util.file.FileFolderManager;
 import org.silverpeas.core.util.file.FileRepositoryManager;
@@ -80,7 +82,9 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
+import static java.util.Optional.of;
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
 public final class BlogSessionController extends AbstractComponentSessionController {
@@ -206,7 +210,7 @@ public final class BlogSessionController extends AbstractComponentSessionControl
   }
 
   public synchronized String createPost(String title, String categoryId, Date dateEvent,
-      PdcClassificationEntity classification) {
+      String pdcJsonPositions) {
     checkWriteAccessOnBlogPost();
     PublicationDetail pub = PublicationDetail.builder()
         .setPk(new PublicationPK(ResourceReference.UNKNOWN_ID, getComponentId()))
@@ -222,18 +226,17 @@ public final class BlogSessionController extends AbstractComponentSessionControl
     PostDetail newPost = new PostDetail(pub, categoryId, dateEvent);
 
     // creating post
+    final PdcClassificationEntity classification = getClassificationFromJSON(pdcJsonPositions);
     if (classification.isUndefined()) {
       return getBlogService().createPost(newPost);
     } else {
-      List<PdcPosition> pdcPositions = classification.getPdcPositions();
-      PdcClassification withClassification =
-          aPdcClassificationOfContent(newPost).withPositions(pdcPositions);
+      PdcClassification withClassification = getPdcClassification(newPost, classification);
       return getBlogService().createPost(newPost, withClassification);
     }
   }
 
   public synchronized void updatePost(String postId, String title, String content,
-      String categoryId, Date dateEvent) {
+      String categoryId, Date dateEvent, String pdcJsonPositions) {
     checkWriteAccessOnBlogPost();
     PostDetail post = getPost(postId);
 
@@ -250,7 +253,9 @@ public final class BlogSessionController extends AbstractComponentSessionControl
     post.setContent(content);
 
     // save the post
-    getBlogService().updatePost(post);
+    final PdcClassificationEntity classification = getClassificationFromJSON(pdcJsonPositions);
+    PdcClassification withClassification = getPdcClassification(post, classification);
+    getBlogService().updatePost(post, withClassification);
   }
 
   public synchronized void draftOutPost(String postId) {
@@ -261,9 +266,9 @@ public final class BlogSessionController extends AbstractComponentSessionControl
   }
 
   public synchronized void updatePostAndDraftOut(String postId, String title, String content,
-      String categoryId, Date dateEvent) {
+      String categoryId, Date dateEvent, String pdcJsonPositions) {
     //update post
-    updatePost(postId, title, content, categoryId, dateEvent);
+    updatePost(postId, title, content, categoryId, dateEvent, pdcJsonPositions);
 
     //draft out poste
     draftOutPost(postId);
@@ -278,6 +283,33 @@ public final class BlogSessionController extends AbstractComponentSessionControl
       CommentId commentID = comment.getIdentifier();
       getCommentService().deleteComment(commentID);
     }
+  }
+
+  /**
+   * Gets {@link PdcClassificationEntity} from  positions as json string
+   * @param positions the string json positions.
+   */
+  private PdcClassificationEntity getClassificationFromJSON(String positions) {
+    return of(isPdcUsed())
+        .filter(Boolean.TRUE::equals)
+        .map(p -> positions)
+        .filter(StringUtil::isDefined)
+        .map(p -> {
+          try {
+            return PdcClassificationEntity.fromJSON(positions);
+          } catch (DecodingException e) {
+            SilverLogger.getLogger(this).error(e);
+          }
+          return null;
+        })
+        .filter(Objects::nonNull)
+        .orElseGet(PdcClassificationEntity::undefinedClassification);
+  }
+
+  private static PdcClassification getPdcClassification(final PostDetail newPost,
+      final PdcClassificationEntity classification) {
+    final List<PdcPosition> pdcPositions = classification.getPdcPositions();
+    return aPdcClassificationOfContent(newPost).withPositions(pdcPositions);
   }
 
   public Collection<Comment> getAllComments(String postId) {

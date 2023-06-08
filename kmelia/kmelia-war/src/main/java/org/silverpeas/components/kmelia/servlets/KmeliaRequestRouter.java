@@ -944,12 +944,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         List<FileItem> parameters = request.getFileItems();
 
         // create publication
-        String positions = FileUploadUtil.getParameter(parameters, "KmeliaPubPositions");
-        PdcClassificationEntity withClassification =
-            PdcClassificationEntity.undefinedClassification();
-        if (StringUtil.isDefined(positions)) {
-          withClassification = PdcClassificationEntity.fromJSON(positions);
-        }
+        PdcClassificationEntity withClassification = getPdcClassification(kmelia, parameters);
         PublicationDetail pubDetail = getPublicationDetail(parameters, kmelia);
         String newPubId = kmelia.createPublication(pubDetail, withClassification);
 
@@ -986,12 +981,13 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
       } else if ("UpdatePublication".equals(function)) {
         List<FileItem> parameters = request.getFileItems();
 
+        PdcClassificationEntity withClassification = getPdcClassification(kmelia, parameters);
         PublicationDetail pubDetail = getPublicationDetail(parameters, kmelia);
         String pubId = pubDetail.getPK().getId();
         ThumbnailController.processThumbnail(new ResourceReference(pubId, kmelia.getComponentId()),
             parameters);
 
-        kmelia.updatePublication(pubDetail);
+        kmelia.updatePublication(pubDetail, withClassification);
 
         if(kmelia.isReminderUsed()) {
           kmelia.updatePublicationReminder(pubId, parameters);
@@ -1529,6 +1525,18 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
       return "/admin/jsp/errorpageMain.jsp";
     }
     return destination;
+  }
+
+  private static PdcClassificationEntity getPdcClassification(final KmeliaSessionController kmelia,
+      final List<FileItem> parameters) {
+    PdcClassificationEntity withClassification = PdcClassificationEntity.undefinedClassification();
+    if (kmelia.isPdcUsed()) {
+      final String positions = FileUploadUtil.getParameter(parameters, "KmeliaPubPositions");
+      if (StringUtil.isDefined(positions)) {
+        withClassification = PdcClassificationEntity.fromJSON(positions);
+      }
+    }
+    return withClassification;
   }
 
   private String processDocumentNotFoundException(final HttpRequest request,

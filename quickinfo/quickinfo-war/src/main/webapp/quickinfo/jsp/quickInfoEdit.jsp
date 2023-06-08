@@ -158,9 +158,7 @@ function isCorrectForm() {
 function saveNews() {
 	if (isCorrectForm()) {
     sp.editor.wysiwyg.lastBackupManager.clear();
-  		<c:if test="${empty curQuickInfo.taxonomyPositions}">
-    		<view:pdcPositions setIn="document.newsForm.Positions.value"/>;
-   		</c:if>
+      <view:pdcPositions setIn="document.newsForm.Positions.value"/>;
    		$("#newsForm").submit();
 	}
 }
@@ -168,9 +166,7 @@ function saveNews() {
 function publish() {
   if (isCorrectForm()) {
     sp.editor.wysiwyg.lastBackupManager.clear();
-	  <c:if test="${empty curQuickInfo.taxonomyPositions}">
-	  	<view:pdcPositions setIn="document.newsForm.Positions.value"/>;
-	  </c:if>
+    <view:pdcPositions setIn="document.newsForm.Positions.value"/>;
 	  $("#newsForm").attr("action", "SaveAndPublish");
 	  $("#newsForm").submit();
   }
@@ -314,7 +310,7 @@ $(document).ready(function() {
 	<view:pdcNewContentClassification componentId="<%=quickinfo.getComponentId()%>" />
 </c:when>
 <c:otherwise>
-	<view:pdcClassification componentId="<%=quickinfo.getComponentId()%>" contentId="${curQuickInfo.publicationId}" editable="true" />
+	<view:pdcClassification componentId="<%=quickinfo.getComponentId()%>" contentId="${curQuickInfo.publicationId}" editable="true" externalManagement="true" />
 </c:otherwise>
 </c:choose>
 
