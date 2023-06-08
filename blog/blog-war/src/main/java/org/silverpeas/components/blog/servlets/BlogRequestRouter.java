@@ -39,7 +39,6 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.core.web.mvc.util.WysiwygRouting;
 import org.silverpeas.core.web.util.viewgenerator.html.monthcalendar.Event;
-import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -131,10 +130,10 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
       } else if ("NewPost".equals(function)) {
         //save a new post untitled, in draft mode
         String title = blogSC.getString("blog.postUntitled");
+        String positions = request.getParameter("Positions");
         String categoryId = "";
         Date dateEvent = new Date();
-        PdcClassificationEntity classification = PdcClassificationEntity.undefinedClassification();
-        String postId = blogSC.createPost(title, categoryId, dateEvent, classification);
+        String postId = blogSC.createPost(title, categoryId, dateEvent, positions);
 
         PostDetail post = blogSC.getPost(postId);
         request.setAttribute("Post", post);
@@ -159,6 +158,7 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
         String content = request.getParameter("editor");
         String categoryId = request.getParameter("CategoryId");
         String date = request.getParameter("DateEvent");
+        String positions = request.getParameter("Positions");
         Date dateEvent;
         if (StringUtil.isDefined(date)) {
           dateEvent = DateUtil.stringToDate(date, blogSC.getLanguage());
@@ -168,10 +168,10 @@ public class BlogRequestRouter extends ComponentRequestRouter<BlogSessionControl
 
         if ("UpdatePost".equals(function)) {
           // save post
-          blogSC.updatePost(postId, title, content, categoryId, dateEvent);
+          blogSC.updatePost(postId, title, content, categoryId, dateEvent, positions);
         } else if ("UpdatePostAndDraftOut".equals(function)) {
           // save and draft out the post
-          blogSC.updatePostAndDraftOut(postId, title, content, categoryId, dateEvent);
+          blogSC.updatePostAndDraftOut(postId, title, content, categoryId, dateEvent, positions);
         }
         request.setAttribute("PostId", postId);
         destination = getDestination("ViewPost", blogSC, request);

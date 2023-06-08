@@ -47,7 +47,9 @@ import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
+import static java.util.Optional.ofNullable;
 import static org.silverpeas.core.cache.service.VolatileIdentifierProvider.newVolatileIntegerIdentifierOn;
 
 /**
@@ -231,23 +233,24 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * Classify the info letter publication on the PdC only if the positions parameter is filled
-   * @param positions the string json positions
+   * Classify the info letter publication on the PdC. If the position parameter is filled it
+   * means that the content must be unclassified.
+   * @param positions the string json positions.
    */
   private List<PdcPosition> getPositionsFromJSON(String positions) {
-    List<PdcPosition> pdcPositions = null;
-    if (StringUtil.isDefined(positions)) {
-      PdcClassificationEntity qiClassification = null;
-      try {
-        qiClassification = PdcClassificationEntity.fromJSON(positions);
-      } catch (DecodingException e) {
-        SilverLogger.getLogger(this).error(e);
-      }
-      if (qiClassification != null && !qiClassification.isUndefined()) {
-        pdcPositions = qiClassification.getPdcPositions();
-      }
-    }
-    return pdcPositions;
+    return ofNullable(positions)
+        .filter(StringUtil::isDefined)
+        .map(p -> {
+          try {
+            return PdcClassificationEntity.fromJSON(positions);
+          } catch (DecodingException e) {
+            SilverLogger.getLogger(this).error(e);
+          }
+          return null;
+        })
+        .filter(Objects::nonNull)
+        .orElseGet(PdcClassificationEntity::undefinedClassification)
+        .getPdcPositions();
   }
 
   private void addVisit(News news) {

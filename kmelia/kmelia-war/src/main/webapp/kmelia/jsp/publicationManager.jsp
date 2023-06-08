@@ -327,7 +327,7 @@
       }
 
       function reallySendData() {
-        <% if(!kmaxMode && "New".equals(action)) { %>
+        <% if(!kmaxMode) { %>
           <view:pdcPositions setIn="document.pubForm.KmeliaPubPositions.value"/>
         <% } %>
         document.pubForm.action = "<%=nextAction%>";
@@ -388,7 +388,7 @@
           errorNb++;
         });
 
-        <% if(!kmaxMode && ("New".equals(action) || !isPublicationClassifiedOnPDC)) { %>
+        <% if(!kmaxMode) { %>
         <view:pdcValidateClassification errorCounter="errorNb" errorMessager="errorMsg"/>
         <% } %>
         
@@ -758,7 +758,7 @@
     		<!-- positions are only editable on original publication -->
     		<view:pdcClassification componentId="<%= componentId %>" contentId="<%= pubDetail.getCloneId() %>" editable="false" />
     	<% } else { %>
-    		<view:pdcClassification componentId="<%= componentId %>" contentId="<%= id %>" editable="true" />
+    		<view:pdcClassification componentId="<%= componentId %>" contentId="<%= id %>" editable="true" externalManagement="true" />
     	<% } %>
     <%  }
       } %>

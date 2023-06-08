@@ -228,7 +228,7 @@
   </div>
 </fieldset>
 
-<view:pdcClassification componentId="<%=instanceId%>" contentId="<%=post.getId() %>" editable="true" />
+<view:pdcClassification componentId="<%=instanceId%>" contentId="<%=post.getId() %>" editable="true" externalManagement="true" />
 
 <div class="legend">
 	<img alt="mandatory" border="0" src="${pageContext.request.contextPath}<fmt:message key="blog.obligatoire" bundle="${icons}"/>" width="5" height="5"/> : <fmt:message key="GML.requiredField" />
