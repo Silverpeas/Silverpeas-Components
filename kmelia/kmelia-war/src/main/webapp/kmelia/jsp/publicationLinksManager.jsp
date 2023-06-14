@@ -64,6 +64,7 @@
 
   <script type="text/javascript">
     const context ='<%=m_context %>';
+    const rootTopic = "0";
     let currentNodeId;
     let currentNodeIndex;
     let currentComponent;
@@ -102,12 +103,13 @@
         setCurrentNodeId(oArgs.node.data.id);
         currentNodeIndex = oArgs.node.index;
         $("#ygtvcontentel"+currentNodeIndex).css({'font-weight':'bold'});
-        //if node is a theme display the publications
+        //if node is a topic, display the publications
         if(oArgs.node.data.componentId!='undefined' && oArgs.node.data.nodeType=='THEME'){
           displayPublications(oArgs.node.data.componentId,getCurrentNodeId());
           //displays the publication localized at the root of a theme tracker
         }else if (oArgs.node.data.nodeType=='COMPONENT' && oArgs.node.data.id.indexOf('kmelia')==0){
-          displayPublications(oArgs.node.data.id,"0");
+          displayPublications(oArgs.node.data.id,rootTopic);
+          setCurrentNodeId(rootTopic);
         }else{
           displayHomeMessage();
         }
