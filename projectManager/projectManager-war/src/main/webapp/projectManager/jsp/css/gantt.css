@@ -248,11 +248,6 @@ td.day { text-align:center; }
   float:none;
   }
 
-.ganttMois tbody tr td.lenght_oneDay div div {
-  top:  /*\**/1px\9;
-
-}
-
 .day_odd .lenght_oneDay div{
   background-color: #EBEBEB;
   border-top:1px solid #EBEBEB;
