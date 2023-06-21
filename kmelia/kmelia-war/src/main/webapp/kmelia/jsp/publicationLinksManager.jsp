@@ -108,8 +108,8 @@
           displayPublications(oArgs.node.data.componentId,getCurrentNodeId());
           //displays the publication localized at the root of a theme tracker
         }else if (oArgs.node.data.nodeType=='COMPONENT' && oArgs.node.data.id.indexOf('kmelia')==0){
-          displayPublications(oArgs.node.data.id,rootTopic);
           setCurrentNodeId(rootTopic);
+          displayPublications(oArgs.node.data.id,rootTopic);
         }else{
           displayHomeMessage();
         }
@@ -123,14 +123,18 @@
     function sortGoTo(selectedIndex) {
       if (selectedIndex !== 0 && selectedIndex !== 1) {
         const sort = document.publicationsForm.sortBy[selectedIndex].value;
-        currentSort = sort;
         const ieFix = new Date().getTime();
         const componentId = currentComponent;
-        $.get(getWebContext()+'/RAjaxPublicationsListServlet',
-            {PubId:pubId,TopicToLinkId:getCurrentNodeId(),ComponentId:componentId, ToLink:1, Sort: sort,IEFix:ieFix},
-            function(data){
-              $('#pubList').html(data);
-            },"html");
+        $.get(getWebContext() + '/RAjaxPublicationsListServlet', {
+          TopicToLinkId : getCurrentNodeId(),
+          ComponentId : componentId,
+          ToLink : 1,
+          Sort : sort,
+          IEFix : ieFix
+        }, function(data) {
+          $('#pubList').html(data);
+        }, "html");
+        return;
       }
     }
 
@@ -144,7 +148,7 @@
 
     function doPagination(index, nbItemsPerPage){
       const ieFix = new Date().getTime();
-      $.get(getWebContext()+'/RAjaxPublicationsListServlet', {PubId:pubId,Index:index,NbItemsPerPage:nbItemsPerPage,ComponentId:currentComponent,ToLink:1,Sort:currentSort,IEFix:ieFix},
+      $.get(getWebContext()+'/RAjaxPublicationsListServlet', {Index:index,NbItemsPerPage:nbItemsPerPage,ComponentId:currentComponent,ToLink:1,Sort:currentSort,IEFix:ieFix},
           function(data){
             $('#pubList').html(data);
           },"html");
@@ -157,7 +161,7 @@
 
     function displayPublications(CompoId,topicId){
       const ieFix = new Date().getTime();
-      $.get(getWebContext()+'/RAjaxPublicationsListServlet', {PubId:pubId,ComponentId:CompoId,TopicToLinkId:topicId,ToLink:1,Sort:currentSort,IEFix:ieFix},
+      $.get(getWebContext()+'/RAjaxPublicationsListServlet', {ComponentId:CompoId,TopicToLinkId:topicId,ToLink:1,Sort:currentSort,IEFix:ieFix},
           function(data){
             $('#pubList').html(data);
           },"html");
