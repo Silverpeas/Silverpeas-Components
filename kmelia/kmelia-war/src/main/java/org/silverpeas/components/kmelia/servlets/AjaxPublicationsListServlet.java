@@ -129,6 +129,9 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     String nodeId = req.getParameter("Id");
     String sToLink = req.getParameter("ToLink");
     String topicToLinkId = req.getParameter("TopicToLinkId");
+
+    boolean seeAlso = false;
+
     // check if trying to link attachment
     boolean attachmentToLink = req.getParameterAsBoolean("attachmentLink");
 
@@ -191,6 +194,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       if (nbItemsPerPage != null) {
         kmeliaSC.setNbPublicationsPerPage(nbItemsPerPage);
       }
+      int previousSort = kmeliaSC.getSort().getCurrentSort();
       if (sort != null) {
         kmeliaSC.setSortValue(sort);
         final String contentLanguage = kmeliaSC.getCurrentLanguage();
@@ -208,18 +212,20 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 
       boolean sortAllowed = true;
       boolean linksAllowed = true;
-      boolean seeAlso = false;
       List<KmeliaPublication> publications;
       TopicDetail currentTopic;
       String role = kmeliaSC.getProfile();
       if (toLink) {
         currentTopic = kmeliaSC.getSessionTopicToLink();
-        sortAllowed = true;
         linksAllowed = false;
         seeAlso = true;
         // get selected publication ids from session
         selectedIds = processPublicationsToLink(req);
         kmeliaSC.setCurrentFolderId(currentTopic.getNodePK().getId(), true);
+        if (sort != null) {
+          kmeliaSC.getSort().setCurrentSort(sort);
+          kmeliaSC.getSort().setExplicitSort(true);
+        }
         kmeliaSC.loadPublicationsOfCurrentFolder();
         publications = kmeliaSC.getSessionPublicationsList();
       } else if (toPortlet) {
@@ -269,6 +275,10 @@ public class AjaxPublicationsListServlet extends HttpServlet {
                 kmeliaSC, role, gef, resources, selectedIds, pubIdToHighlight, writer,
                 attachmentToLink);
           }
+        }
+        //We rollback with previous sort of the topic
+        if (toLink) {
+          kmeliaSC.getSort().setCurrentSort(previousSort);
         }
       } catch (IOException e) {
         SilverLogger.getLogger(this).error(e);
@@ -824,7 +834,6 @@ public class AjaxPublicationsListServlet extends HttpServlet {
           getSortingListBoxEntry(SORT_MANUAL, resources.getString("kmelia.sort.manual"), ksc));
     }
     out.write("</select>");
-
     if (manualSort && SilverpeasRole.ADMIN == ksc.getHighestSilverpeasUserRole()) {
       // Display link to reset manual sort
       Img img = new Img();
