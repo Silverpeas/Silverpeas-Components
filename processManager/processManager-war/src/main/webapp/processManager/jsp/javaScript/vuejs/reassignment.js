@@ -52,7 +52,7 @@
         }
       },
       formatRoles : function(roles) {
-        return this.$filters.joinWith(this.$filters.mapRoleName(roles), {
+        return this.$filters.joinWith(this.$filters.mapRoleLabel(roles), {
           separator : ', ',
           lastSeparator : ' ' + this.messages.andLabel + ' '
         });
