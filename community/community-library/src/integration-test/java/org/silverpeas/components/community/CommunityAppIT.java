@@ -65,7 +65,7 @@ public class CommunityAppIT {
   @Deployment
   public static Archive<?> createTestArchive() {
     return CommunityWarBuilder.onWarForTestClass(CommunityAppIT.class)
-        .initJcrSchema()
+        .initJcr()
         .addAsResource("org/silverpeas/publication/publicationSettings.properties")
         .addAsResource("org/silverpeas/publicationTemplate/settings/mapping.properties")
         .addAsResource("org/silverpeas/publicationTemplate/settings/template.properties")

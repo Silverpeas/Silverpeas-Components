@@ -73,10 +73,16 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.silverpeas.core</groupId>
+      <artifactId>silverpeas-core-jcr</artifactId>
+      <version>${core.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.silverpeas.core.services</groupId>
       <artifactId>silverpeas-core-comment</artifactId>
       <version>${core.version}</version>
-      <scope>provided</scope>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.silverpeas.core</groupId>

@@ -35,7 +35,7 @@ import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.space.SpaceHomePageType;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.util.Pair;
-import org.silverpeas.web.ResourceGettingTest;
+import org.silverpeas.web.test.ResourceGettingTest;
 
 import java.net.URI;
 

@@ -24,12 +24,13 @@
 package org.silverpeas.components.community;
 
 import org.silverpeas.core.test.BasicWarBuilder;
+import org.silverpeas.web.test.WarBuilder4Web;
 
 /**
  * This builder extends the {@link org.silverpeas.core.test.BasicCoreWarBuilder} in order to
  * centralize the definition of common archive part definitions.
  */
-public class CommunityWarBuilder extends BasicWarBuilder {
+public class CommunityWarBuilder extends WarBuilder4Web {
 
   /**
    * Constructs a war builder for the specified test class. It will load all the resources in the
@@ -38,8 +39,6 @@ public class CommunityWarBuilder extends BasicWarBuilder {
    */
   protected <T> CommunityWarBuilder(final Class<T> test) {
     super(test);
-    addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core-api");
-    addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core");
     addMavenDependencies("org.silverpeas.core.services:silverpeas-core-silverstatistics");
     addMavenDependencies("org.silverpeas.core.services:silverpeas-core-comment");
     addMavenDependencies("org.silverpeas.core:silverpeas-core-test");

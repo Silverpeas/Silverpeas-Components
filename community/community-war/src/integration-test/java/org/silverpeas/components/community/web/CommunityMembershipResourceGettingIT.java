@@ -36,7 +36,7 @@ import org.silverpeas.components.community.model.MembershipStatus;
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.webapi.profile.ProfileResourceBaseURIs;
-import org.silverpeas.web.ResourceGettingTest;
+import org.silverpeas.web.test.ResourceGettingTest;
 
 import java.net.URI;
 
