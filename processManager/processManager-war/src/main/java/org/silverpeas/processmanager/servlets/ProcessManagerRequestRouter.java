@@ -934,7 +934,6 @@ public class ProcessManagerRequestRouter
 
     PagesContext context = getFormContext("filter", "1", session);
     request.setAttribute("context", context);
-
     DataRecord data = filter.getCriteriaRecord();
     request.setAttribute("data", data);
   }

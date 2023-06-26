@@ -55,6 +55,8 @@
 <fmt:message var="labelFilter" key="processManager.filter"/>
 <fmt:message var="validateLabel" key="GML.validate"/>
 <fmt:message var="cancelLabel" key="GML.cancel"/>
+<fmt:message var="idLabel" key="processManager.id"/>
+<fmt:message var="statusLabel" key="processManager.status"/>
 
 <fmt:message var="confirmDeleteMessage" key="processManager.confirmDelete"/>
 
@@ -70,6 +72,7 @@
 <fmt:message key="processManager.small_remove" var="tmp" bundle="${icons}"/>
 <c:url var="deleteIconUrl" value="${tmp}"/>
 <fmt:message var="deleteLabel" key="processManager.delete"/>
+
 
 <c:set var="processList" value="${requestScope.processList}"/>
 <c:if test="${processList == null}">
@@ -283,7 +286,7 @@
           <div id="refresh">
             <fmt:message key="processManager.refresh" var="opIcon" bundle="${icons}"/>
             <c:url var="opIcon" value="${opIcon}"/>
-            <a href="javascript:refreshList()" title="${refreshLabel}"><img border="0" src="${opIcon}" alt="${refreshLabel}" align="absmiddle"/></a>
+            <a href="javascript:refreshList()" title="${refreshLabel}"><img border="0" src="${opIcon}" alt="${refreshLabel}"/></a>
           </div>
         </div>
         <div id="filterForm" style="display: none">
@@ -301,10 +304,7 @@
                   (p.lockedByAdmin ? 1 :
                   (p.inTimeout ? 2 : 3)))}"/>
       <view:arrayPane var="wf-process-list-${componentId}" routingAddress="listSomeProcess" numberLinesPerPage="20">
-        <c:if test="${isProcessIdVisible}">
-          <view:arrayColumn title="#" compareOn="${p -> silfn:longValue(p.id)}"/>
-        </c:if>
-        <view:arrayColumn title="<>" compareOn="${p -> processCompareOnStatus(p)}"/>
+        <view:arrayColumn title="${statusLabel}" compareOn="${p -> processCompareOnStatus(p)}"/>
         <c:forEach var="_header" items="${headers}" varStatus="headerStatus">
           <view:arrayColumn title="${_header.getLabel(userLanguage)}"
                             compareOn="${(p,i) -> (
@@ -326,9 +326,6 @@
 
               <%-- ERROR CASE --%>
               <c:when test="${process.inError}">
-                <c:if test="${isProcessIdVisible}">
-                  <view:arrayCellText text="${process.id}"/>
-                </c:if>
                 <view:arrayCellText><img class="icon" src="${inErrorIconUrl}" alt="${inErrorLabel}" title="${inErrorLabel}"/></view:arrayCellText>
                 <c:choose>
                   <c:when test="${isCurrentRoleSupervisor}">
@@ -342,9 +339,6 @@
 
               <%-- LOCKED BY ADMIN CASE --%>
               <c:when test="${process.lockedByAdmin}">
-                <c:if test="${isProcessIdVisible}">
-                  <view:arrayCellText text="${process.id}"/>
-                </c:if>
                 <view:arrayCellText><img class="icon" src="${lockedByAdminIconUrl}" alt="${lockedByAdminLabel}" title="${lockedByAdminLabel}"/></view:arrayCellText>
                 <c:choose>
                   <c:when test="${isCurrentRoleSupervisor}">
@@ -358,18 +352,12 @@
 
               <%-- TIMEOUT CASE --%>
               <c:when test="${process.inTimeout}">
-                <c:if test="${isProcessIdVisible}">
-                  <view:arrayCellText text="${process.id}"/>
-                </c:if>
                 <view:arrayCellText><img class="icon" src="${timeoutIconUrl}" alt="${timeoutLabel}" title="${timeoutLabel}"/></view:arrayCellText>
                 <view:arrayCellText text="${processTitleLink}"/>
               </c:when>
 
               <%-- DEFAULT CASE --%>
               <c:otherwise>
-                <c:if test="${isProcessIdVisible}">
-                  <view:arrayCellText><a href="${viewProcessUrl}">${process.id}</a></view:arrayCellText>
-                </c:if>
                 <view:arrayCellText/>
                 <view:arrayCellText text="${processTitleLink}"/>
               </c:otherwise>
