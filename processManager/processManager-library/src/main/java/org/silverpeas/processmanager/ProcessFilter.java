@@ -57,9 +57,9 @@ public class ProcessFilter {
   /**
    * Builds a process filter which can be used to select process instance of a given process model.
    */
-  public ProcessFilter(ProcessModel model, String role, String lang)
+  public ProcessFilter(ProcessModel model, String role, String lang, boolean isProcessIdVisible)
       throws ProcessManagerException {
-    RecordTemplate rowTemplate = model.getRowTemplate(role, lang);
+    RecordTemplate rowTemplate = model.getRowTemplate(role, lang, isProcessIdVisible);
     filter = new FilterManager(rowTemplate, lang);
 
     RecordTemplate folderTemplate;
@@ -67,7 +67,7 @@ public class ProcessFilter {
       folderTemplate = model.getDataFolder().toRecordTemplate(role, lang, false);
     } catch (WorkflowException e1) {
       throw new ProcessManagerException(
-          "Fail to create criteria form of model " + model.getModelId(), e1);
+              "Fail to create criteria form of model " + model.getModelId(), e1);
     }
 
     try {
@@ -84,21 +84,20 @@ public class ProcessFilter {
       state.addParameter("keys", values.toString());
       filter.addFieldParameter("instance.state", state);
 
-      // Display the dropdown list for each multivalued data
       FieldTemplate[] fields = rowTemplate.getFieldTemplates();
-      for (int f = 2; f < fields.length; f++) {
+      for (int f = isProcessIdVisible?3:2; f < fields.length; f++) {
         FieldTemplate field = fields[f];
         FieldTemplate folderField = folderTemplate.getFieldTemplate(field.getFieldName());
         Map<String, String> parameters = folderField.getParameters(lang);
         if (parameters != null &&
-            (parameters.containsKey("values") || parameters.containsKey("keys") ||
-                "jdbc".equals(folderField.getTypeName()))) {
+                (parameters.containsKey("values") || parameters.containsKey("keys") ||
+                        "jdbc".equals(folderField.getTypeName()))) {
           filter.addFieldParameter(field.getFieldName(), folderField);
         }
       }
     } catch (FormException e) {
       throw new ProcessManagerException(
-          "Fail to create criteria form of model " + model.getModelId(), e);
+              "Fail to create criteria form of model " + model.getModelId(), e);
     }
   }
 
@@ -126,6 +125,7 @@ public class ProcessFilter {
     }
     return criteria;
   }
+
 
   /**
    * Set the current criteria.
@@ -209,4 +209,5 @@ public class ProcessFilter {
       throw new SilverpeasRuntimeException(e);
     }
   }
+
 }

@@ -299,7 +299,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    * Reset the current instance list rows template.
    */
   public void resetCurrentProcessListHeaders() {
-    currentListHeaders = processModel.getRowTemplate(currentRole, getLanguage());
+    currentListHeaders = processModel.getRowTemplate(currentRole, getLanguage(), isProcessIdVisible());
   }
 
   /**
@@ -1892,7 +1892,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    */
   public ProcessFilter getCurrentFilter() throws ProcessManagerException {
     if (currentProcessFilter == null) {
-      currentProcessFilter = new ProcessFilter(processModel, currentRole, getLanguage());
+      currentProcessFilter = new ProcessFilter(processModel, currentRole, getLanguage(), isProcessIdVisible());
     }
     return currentProcessFilter;
   }
@@ -1902,7 +1902,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    */
   private void resetProcessFilter() throws ProcessManagerException {
     ProcessFilter oldFilter = currentProcessFilter;
-    currentProcessFilter = new ProcessFilter(processModel, currentRole, getLanguage());
+    currentProcessFilter = new ProcessFilter(processModel, currentRole, getLanguage(), isProcessIdVisible());
 
     if (oldFilter != null) {
       currentProcessFilter.setCollapse(oldFilter.isCollapse());
@@ -2072,17 +2072,19 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       boolean isProcessIdVisible, List<String> csvCols, FieldTemplate[] headers) {
     CSVRow csvHeader = new CSVRow();
 
+    //Add status (error/timeout/locked) column
+    csvHeader.addCell(getString("processManager.status"));
+    int indexFrom = 0;
     if (isProcessIdVisible) {
-      csvHeader.addCell("#");
+      // add processId column
+      csvHeader.addCell(headers[indexFrom].getLabel(getLanguage()));
+      indexFrom++;
     }
-
-    csvHeader.addCell("<>");
-
     // add title column
-    csvHeader.addCell(headers[0].getLabel(getLanguage()));
+    csvHeader.addCell(headers[indexFrom++].getLabel(getLanguage()));
 
     // add state column
-    csvHeader.addCell(headers[1].getLabel(getLanguage()));
+    csvHeader.addCell(headers[indexFrom].getLabel(getLanguage()));
 
     for (String csvCol : csvCols) {
       ItemImpl item = (ItemImpl) getItemByName(items, csvCol);
@@ -2101,18 +2103,21 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       if (instance != null) {
         try {
           CSVRow csvRow = new CSVRow();
-          if (isProcessIdVisible) {
-            csvRow.addCell(instance.getId());
-          }
 
           // add internal status
           csvRow.addCell(getLabelOfProcessInternalStatus(instance));
 
+          int indexFrom = 0;
+          if (isProcessIdVisible) {
+            // add process Id
+            csvRow.addCell(instance.getField(indexFrom++).getValue(getLanguage()));
+          }
+
           // add title
-          csvRow.addCell(instance.getField(0).getValue(getLanguage()));
+          csvRow.addCell(instance.getField(indexFrom++).getValue(getLanguage()));
 
           // add state
-          csvRow.addCell(instance.getField(1).getValue(getLanguage()));
+          csvRow.addCell(instance.getField(indexFrom).getValue(getLanguage()));
 
           for (String csvCol : csvCols) {
             csvRow.addCell(getComputedFieldValue(csvCol, instance, items));
@@ -2208,7 +2213,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
     for (final FieldTemplate header : headers) {
       String fieldName = header.getFieldName();
-      if (!fieldName.equalsIgnoreCase("title") && !fieldName.equalsIgnoreCase("instance.state")) {
+      if (!fieldName.equalsIgnoreCase("title") && !fieldName.equalsIgnoreCase("instance.state") && !fieldName.equalsIgnoreCase("instance.id")) {
         csvCols.add(fieldName);
       }
     }
