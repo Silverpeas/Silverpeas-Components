@@ -193,17 +193,23 @@ MultiSilverpeasBundle resources, SettingBundle settings, String profile, boolean
 							anonymousCommentDisabled = "disabled";
 						}
 
-	                    // affichage de la zone pour les commentaires
-	                    r += "<br>";
-	        			r += board.printBefore();
-	        			r += "<table><tr><td align=\"left\" valign=top class=\"txtlibform\">"+resources.getString("survey.Comments")+" :</td>";
-	        			r += "<td align=\"left\"><textarea name=\"Comment\" rows=\"4\" cols=\"60\"></textarea></td></tr>";
-	        			r += "<tr><td align=\"left\" class=\"txtlibform\">"+resources.getString("survey.AnonymousComment")+" :</td>";
-	        			r += "<td align=\"left\"><input type=\"checkbox\" name=\"anonymousComment\" "+anonymousCommentCheck+" "+anonymousCommentDisabled+"></td></tr>";
-	        			r += "</table>";
-	        			r += board.printAfter();
-	        			r += "<br>";
-	        		}
+            // affichage de la zone pour les commentaires
+            if (surveyScc.isDisplayCommentsEnabled(profile, surveyScc.getUserDetail().getId())) {
+              r += "<br>";
+              r += board.printBefore();
+              r += "<table><tr><td align=\"left\" valign=top class=\"txtlibform\">" +
+                  resources.getString("survey.Comments") + " :</td>";
+              r += "<td align=\"left\"><textarea name=\"Comment\" rows=\"4\" cols=\"60\"></textarea></td></tr>";
+              r += "<tr><td align=\"left\" class=\"txtlibform\">" + resources.getString("survey.AnonymousComment") +
+                  " :</td>";
+              r +=
+                  "<td align=\"left\"><input type=\"checkbox\" name=\"anonymousComment\" " + anonymousCommentCheck + " " +
+                      anonymousCommentDisabled + "></td></tr>";
+              r += "</table>";
+              r += board.printAfter();
+              r += "<br>";
+            }
+          }
 
         			r += "</form>";
 
@@ -528,11 +534,13 @@ String displaySurveyResultOfUser(String userId, Collection resultsByUser,
   // rechercher le commentaire de l'utilisateur
   Comment userCommentDetail = null;
   String userComment = "";
-  Collection<Comment> comments = survey.getComments();
-  for (Comment comment : comments) {
-    if (userId.equals(comment.getUserId())) {
-      userComment = comment.getComment();
-      userCommentDetail = comment;
+  if (surveyScc.isDisplayCommentsEnabled(profile, userId)) {
+    Collection<Comment> comments = survey.getComments();
+    for (Comment comment : comments) {
+      if (userId.equals(comment.getUserId())) {
+        userComment = comment.getComment();
+        userCommentDetail = comment;
+      }
     }
   }
 
@@ -823,14 +831,14 @@ String displaySurveyResult(String choice, QuestionContainerDetail survey, Graphi
 	            if (!anonymous && choice.equals("D")) {
 	              // display not anonymous result
 	           	  if (style.equals("open")) {
-	           	   r += displayOpenAnswersToQuestionNotAnonymous(question.getPK().getId(), surveyScc);
+	           	   r += displayOpenAnswersToQuestionNotAnonymous(question.getPK().getId(), surveyScc, profile);
 	              } else {
-	                r += displaySurveyResultChartNotAnonymous(question, answers, surveyScc, nbVoters, results);
+	                r += displaySurveyResultChartNotAnonymous(question, answers, surveyScc, nbVoters, results, profile);
 	              }
 	            } else {
 	              // traitement de l'affichage des questions ouvertes
 	              if (style.equals("open")) {
-	                r += displayOpenAnswersToQuestion(anonymous, question.getPK().getId(), surveyScc);
+	                r += displayOpenAnswersToQuestion(question.getPK().getId(), surveyScc);
 	              } else {
 	                r += displaySurveyResultChart(anonymous, answers, settings, nbVoters);
 	              }
@@ -857,7 +865,7 @@ String displaySurveyResult(String choice, QuestionContainerDetail survey, Graphi
   return r;
 }
 
-String displayOpenAnswersToQuestion(boolean anonymous, String questionId, SurveySessionController surveyScc) throws SurveyException {
+String displayOpenAnswersToQuestion(String questionId, SurveySessionController surveyScc) throws SurveyException {
         String r = "";
         try{
             //fetch the answers to this open question
@@ -878,7 +886,7 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
         return r;
   }
 
-  String displayOpenAnswersToQuestionNotAnonymous(String questionId, SurveySessionController surveyScc) throws SurveyException {
+  String displayOpenAnswersToQuestionNotAnonymous(String questionId, SurveySessionController surveyScc, String profile) throws SurveyException {
         String r = "";
         try{
             //fetch the answers to this open question
@@ -892,10 +900,11 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
                   String userId = qR.getUserId();
                   UserDetail userDetail = surveyScc.getUserDetail(userId);
                   String userName = userDetail.getDisplayedName();
-                  r +=
-                      "<tr><td class=\"displayUserName\" width=\"40%\"><a href=\"javaScript:onClick=viewResultByUser('" +
-                          userId + "');\">" + WebEncodeHelper.javaStringToHtmlString(userName) +
-                          "</a></td><td class=\"freeAnswer\">" + answer + "</td></tr>";
+                  String displayedName = WebEncodeHelper.javaStringToHtmlString(userName);
+                  if (surveyScc.isDisplayCommentsEnabled(profile, userId)) {
+                    displayedName = "<a href=\"javaScript:onClick=viewResultByUser('" + userId + "');\">" + displayedName + "</a>";
+                  }
+                  r += "<tr><td class=\"displayUserName\" width=\"40%\">" + displayedName + "</td><td class=\"freeAnswer\">" + answer + "</td></tr>";
                 }
             }
         }
@@ -989,7 +998,7 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
         return r;
   }
 
-  String displaySurveyResultChartNotAnonymous(Question question, Collection<Answer> answers, SurveySessionController surveyScc, int nbVoters, Results results) throws SurveyException
+  String displaySurveyResultChartNotAnonymous(Question question, Collection<Answer> answers, SurveySessionController surveyScc, int nbVoters, Results results, String profile) throws SurveyException
   {
         String r = "";
         try
@@ -1028,9 +1037,14 @@ String displayOpenAnswersToQuestion(boolean anonymous, String questionId, Survey
                 	int position = 1;
                 	if (!saveUser.equals(userId+"-"+participationId))
                 	{
-	                	r += "<tr><td align=\"left\" width=\"40%\" class=\"displayUserName\"><a href=\"javaScript:onClick=viewResultByUser('"+userId+"');\">"+WebEncodeHelper.javaStringToHtmlString(results.getUser(userId).getDisplayedName())+"</a></td>";
-	                	String value;
-	                	position = 1;
+                    String displayedName = WebEncodeHelper.javaStringToHtmlString(results.getUser(userId).getDisplayedName());
+                    if (surveyScc.isDisplayCommentsEnabled(profile, userId)) {
+                      displayedName = "<a href=\"javaScript:onClick=viewResultByUser('" + userId + "');\">" + displayedName + "</a>";
+                    }
+                    r += "<tr><td align=\"left\" width=\"40%\" class=\"displayUserName\">" +displayedName + "</td>";
+
+                    String value;
+                    position = 1;
 	                		List<QuestionResult> qrs = results.getQuestionResultByQuestion(question.getPK().getId(), userId, Integer.parseInt(participationId));
 	                		for (QuestionResult qr : qrs) {
                         value = qr.getAnswerPK().getId();
