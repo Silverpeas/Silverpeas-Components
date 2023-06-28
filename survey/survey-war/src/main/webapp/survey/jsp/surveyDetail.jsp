@@ -141,16 +141,17 @@
   }
 
   if (action.equals("SendVote")) {
-    int nbQuestions = new Integer((String) request.getParameter("NbQuestions")).intValue();
-    String comment = (String) request.getParameter("Comment");
-    String isAnonymousComment = (String) request.getParameter("anonymousComment");
+    int nbQuestions = new Integer(request.getParameter("NbQuestions")).intValue();
+    String comment = request.getParameter("Comment");
+    String s_isAnonymousComment = request.getParameter("anonymousComment");
     Map<String, List<String>> hash = surveyScc.getSessionResponses();
     if (hash == null)
-      hash = new HashMap<String, List<String>>();
+      hash = new HashMap<>();
 
-    boolean iAC = false;
-    if (isAnonymousComment != null && isAnonymousComment.equals("1"))
-      iAC = true;
+    boolean isAnonymousComment = false;
+    isAnonymousComment = (s_isAnonymousComment==null) ? true :  new Boolean(s_isAnonymousComment).booleanValue();
+
+    comment = (comment==null) ? "" :  comment;
 
     for (int i = 1; i <= nbQuestions; i++) {
       List<String> answers = new ArrayList(5);
@@ -168,7 +169,7 @@
         hash.put(questionId, answers);
       }
     }
-    surveyScc.recordReply(surveyId, hash, comment, iAC);
+    surveyScc.recordReply(surveyId, hash, comment, isAnonymousComment);
 
     surveyScc.removeSessionResponses();
     
