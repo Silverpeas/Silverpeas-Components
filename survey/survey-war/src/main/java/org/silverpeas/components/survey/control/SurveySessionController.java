@@ -30,6 +30,7 @@ import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.clipboard.ClipboardException;
 import org.silverpeas.core.clipboard.ClipboardSelection;
@@ -108,6 +109,11 @@ public class SurveySessionController extends AbstractComponentSessionController 
   public static final int CLOSED_SURVEYS_VIEW = 2;
   public static final int INWAIT_SURVEYS_VIEW = 3;
   private int viewType = OPENED_SURVEYS_VIEW;
+  public static final String DISPLAY_COMMENTS_FOR_NOBODY = "0";
+  public static final String DISPLAY_COMMENTS_FOR_MANAGERS = "1";
+  public static final String DISPLAY_COMMENTS_FOR_PARTICIPANTS = "2";
+  public static final String DISPLAY_COMMENTS_FOR_ALL = "3";
+  public static final String PARAM_DISPLAY_COMMENTS = "displayComments";
   private boolean pollingStationMode = false;
   private boolean participationMultipleAllowedForUser = false;
   private boolean hasAlreadyParticipated = false;
@@ -159,6 +165,18 @@ public class SurveySessionController extends AbstractComponentSessionController 
    */
   public void setParticipationMultipleAllowedForUser(boolean state) {
     this.participationMultipleAllowedForUser = state;
+  }
+
+  /**
+   * Get display comments Mode
+   * @return
+   */
+  public String getDisplayCommentsMode() {
+    String parameterValue = this.getComponentParameterValue("displayComments");
+    if (parameterValue == null || parameterValue.length() <= 0) {
+      return DISPLAY_COMMENTS_FOR_ALL;
+    }
+    return parameterValue;
   }
 
   /**
@@ -1147,6 +1165,27 @@ public class SurveySessionController extends AbstractComponentSessionController 
       questionsV.set(Integer.parseInt(parameters.getQuestionId()), questionObject);
       this.setSessionQuestions(questionsV);
     }
+  }
+
+  /**
+   * Get display comments mode status
+   * @param userProfile
+   * @param userId
+   * @return true or false
+   */
+  public boolean isDisplayCommentsEnabled(String userProfile, String userId) {
+    SilverpeasRole greatestUserRole = SilverpeasRole.getHighestFrom(SilverpeasRole.fromString(userProfile));
+    final String value = getComponentParameterValue(PARAM_DISPLAY_COMMENTS);
+    if (DISPLAY_COMMENTS_FOR_NOBODY.equals(value))
+      return false;
+    if (StringUtil.isDefined(userId) && userId.equals(getUserId()))
+      return true;
+    if (DISPLAY_COMMENTS_FOR_PARTICIPANTS.equals(value)) {
+      return greatestUserRole.isGreaterThanOrEquals(SilverpeasRole.PUBLISHER);
+    } else if (DISPLAY_COMMENTS_FOR_MANAGERS.equals(value)) {
+      return greatestUserRole.isGreaterThanOrEquals(SilverpeasRole.ADMIN);
+    }
+    return DISPLAY_COMMENTS_FOR_ALL.equals(value);
   }
 
   private static class Parameters {
