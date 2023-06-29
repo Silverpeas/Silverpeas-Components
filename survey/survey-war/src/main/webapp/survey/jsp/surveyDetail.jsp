@@ -148,8 +148,8 @@
     if (hash == null)
       hash = new HashMap<>();
 
-    boolean isAnonymousComment = false;
-    isAnonymousComment = (s_isAnonymousComment==null) ? true :  new Boolean(s_isAnonymousComment).booleanValue();
+    boolean isAnonymousComment;
+    isAnonymousComment = (s_isAnonymousComment==null || "0".equals(s_isAnonymousComment)) ? false : true;
 
     comment = (comment==null) ? "" :  comment;
 
@@ -178,7 +178,7 @@
     //Record participation in cookie
     if (surveyScc.isAnonymousModeAuthorized()) {
 %>
-<script language="javascript">
+<script type="javascript">
   location.href = "/RecordParticipation?cid=<%=surveyScc.getComponentId()%>&sid=<%=surveyId%>&duration=<%=settings.getString("cookieDuration")%>";
 </script>
 <%
@@ -332,7 +332,7 @@ function sendVote(roundId) {
 			 x = 1;
 		 else
 			 x = 0;
-		 document.survey.Comment.value = document.survey.Comment.value;
+//		 document.survey.Comment.value = document.survey.Comment.value;
 		 document.survey.anonymousComment.value = x;
 	 } catch (e)
 	 {
