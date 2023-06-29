@@ -174,6 +174,7 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
         QuestionContainerDetail survey = surveySC.getSessionSurvey();
         request.setAttribute("Users", surveySC.getUsersBySurvey(survey.getId()));
         request.setAttribute(SURVEY, survey);
+        request.setAttribute(PROFILE, flag);
         destination = rootDest + "answerResult.jsp";
       } else if ("UserResult".equals(function)) {
         String userId = request.getParameter("UserId");

@@ -11,6 +11,7 @@
 <%@ page import="java.text.ParseException" %>
 <%@ page import="java.util.stream.Collectors" %>
 <%@ page import="org.silverpeas.core.questioncontainer.result.model.Results" %>
+<%@ page import="java.io.IOException" %>
 
 <%!
 
@@ -35,8 +36,9 @@ MultiSilverpeasBundle resources, boolean pollingStationMode, boolean participate
       !participated) {
       tabbedPane.addTab(resources.getString("survey.results"), "surveyDetail.jsp?Action=ViewResult&Participated="+participated+"&SurveyId="+surveyId, action.equals("ViewResult"), true);
   }
-
-	tabbedPane.addTab(resources.getString("survey.Comments"), "surveyDetail.jsp?Action=ViewComments&Participated="+participated+"&SurveyId="+surveyId, action.equals("ViewComments"), true);
+  if (surveyScc.isDisplayCommentsEnabled(profile, null)) {
+    tabbedPane.addTab(resources.getString("survey.Comments"),"surveyDetail.jsp?Action=ViewComments&Participated=" + participated + "&SurveyId=" + surveyId, action.equals("ViewComments"), true);
+  }
 
 	return tabbedPane;
 }
@@ -526,20 +528,19 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
 
 String displaySurveyResultOfUser(String userId, Collection resultsByUser,
   QuestionContainerDetail survey, GraphicElementFactory gef, String m_context, SurveySessionController surveyScc,
-  MultiSilverpeasBundle resources, SettingBundle settings, String profile) throws SurveyException, ParseException {
+  MultiSilverpeasBundle resources, SettingBundle settings, String profile)
+    throws SurveyException {
 
   Board board = gef.getBoard();
   String r = "";
 
-  // rechercher le commentaire de l'utilisateur
-  Comment userCommentDetail = null;
-  String userComment = "";
+  // rechercher le(s) commentaire(s) de l'utilisateur
+  List<Comment> userComments = new ArrayList<>();
   if (surveyScc.isDisplayCommentsEnabled(profile, userId)) {
     Collection<Comment> comments = survey.getComments();
     for (Comment comment : comments) {
       if (userId.equals(comment.getUserId())) {
-        userComment = comment.getComment();
-        userCommentDetail = comment;
+        userComments.add(comment);
       }
     }
   }
@@ -550,10 +551,18 @@ String displaySurveyResultOfUser(String userId, Collection resultsByUser,
 
        	r += board.printBefore();
        	r += "<table border=\"0\" cellspacing=\"5\" cellpadding=\"5\" width=\"100%\">";
-       	r += " <tr><td class=\"textePetitBold\" nowrap>"+resources.getString("survey.participationOf")+" : </td><td width=\"90%\">"+WebEncodeHelper.javaStringToHtmlString(
-            User.getById(userId).getDisplayedName())+"</td></tr>";
-        if (!userComment.equals("") && userCommentDetail != null && !userCommentDetail.isAnonymous()) {
-          r += " <tr><td class=\"textePetitBold\" nowrap valign=\"top\">"+resources.getString("survey.Comment")+" : </td><td width=\"90%\">"+WebEncodeHelper.javaStringToHtmlParagraphe(userComment)+"</td></tr>";
+          r += " <tr><td class=\"surveyDesc\" nowrap>" +
+              resources.getString("survey.participationOf") + " : </td><td width=\"90%\">" +
+              WebEncodeHelper.javaStringToHtmlString(User.getById(userId).getDisplayedName()) +
+              "</td></tr>";
+        int nbParticipations = 0;
+        for (Comment userComment : userComments) {
+          if (!userComment.getComment().equals("") && userComment != null) {
+            nbParticipations++;
+            r += " <tr><td class=\"textePetitBold\" nowrap valign=\"top\">" +
+                resources.getString("survey.Comments") + "<span class=\"\">&nbsp; participation "+ nbParticipations + "</span> :</td><td width=\"90%\">" +
+                WebEncodeHelper.javaStringToHtmlParagraphe(userComment.getComment()) + "&nbsp;("+DateUtil.getOutputDate(userComment.getDate(), surveyScc.getLanguage())+")</td></tr>";
+          }
         }
         r += "</table>";
         r += board.printAfter();
@@ -722,7 +731,8 @@ String displaySurveyResult(String choice, QuestionContainerDetail survey, Graphi
         }
         if (!anonymous &&
             ((SilverpeasRole.ADMIN.toString().equals(profile) ||
-            SilverpeasRole.PUBLISHER.toString().equals(profile)) ||
+            SilverpeasRole.PUBLISHER.toString().equals(profile) ||
+                !survey.getCurrentUserVotes().isEmpty()) &&
             (resultMode == QuestionContainerHeader.IMMEDIATE_RESULTS ||
             (resultMode == QuestionContainerHeader.DELAYED_RESULTS &&
             (resultView == QuestionContainerHeader.DETAILED_DISPLAY_RESULTS ||

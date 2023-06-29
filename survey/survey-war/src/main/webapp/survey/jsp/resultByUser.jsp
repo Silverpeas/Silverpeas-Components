@@ -46,27 +46,24 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
   String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title></title>
-<view:looknfeel/>
-<script type="text/javascript">
-function viewUsers(id) {
-    url = "ViewListResult?AnswerId="+id;
-    windowName = "users";
-    larg = "550";
-    haut = "250";
-    windowParams = "directories=0,menubar=0,toolbar=0,resizable=1,scrollbars=1,alwaysRaised";
-    suggestions = SP_openWindow(url, windowName, larg , haut, windowParams);
-    suggestions.focus();
-}           
-</script>
-</head>
-<body>
+<view:sp-page>
+  <view:sp-head-part>
+    <script type="text/javascript">
+    function viewUsers(id) {
+        url = "ViewListResult?AnswerId="+id;
+        windowName = "users";
+        larg = "550";
+        haut = "250";
+        windowParams = "directories=0,menubar=0,toolbar=0,resizable=1,scrollbars=1,alwaysRaised";
+        suggestions = SP_openWindow(url, windowName, larg , haut, windowParams);
+        suggestions.focus();
+    }
+    </script>
+  </view:sp-head-part>
+  <view:sp-body-part>
 <%     
     String surveyPart = displaySurveyResultOfUser(userId, resultsByUser, survey, gef, m_context, surveyScc, resources, settings, profile);
     out.println(surveyPart);
 %>
-</body>
-</html>
+  </view:sp-body-part>
+</view:sp-page>

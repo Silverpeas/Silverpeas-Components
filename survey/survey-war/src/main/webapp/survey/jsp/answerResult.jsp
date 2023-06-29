@@ -27,7 +27,6 @@
 --%>
 
 <%@ page import="org.silverpeas.core.admin.user.model.UserDetail" %>
-<%@ page import="org.silverpeas.core.util.ResourceLocator" %>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
@@ -36,54 +35,54 @@
 <%
 Collection<String> 	users 	= (Collection<String>) request.getAttribute("Users");
 QuestionContainerDetail survey = (QuestionContainerDetail) request.getAttribute("Survey");
-
+String profile = (String) request.getAttribute("Profile");
 Button close = gef.getFormButton(resources.getString("GML.close"), "javaScript:window.close();", false);
-String iconsPath = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title></title>
-<view:looknfeel/>
-<script type="text/javascript">
-function viewResultByUser(userId) {
-	url = "UserResult?UserId="+userId;
- 	windowName = "resultByUser";
- 	larg = "700";
- 	haut = "500";
- 	windowParams = "directories=0,menubar=0,toolbar=0,resizable=1,scrollbars=1,alwaysRaised";
- 	suggestions = SP_openWindow(url, windowName, larg , haut, windowParams);
- 	suggestions.focus();
-}
-</script>
-</head>
-<body>
-<view:browseBar extraInformations='<%=survey.getHeader().getTitle()%>'/>
-<view:window popup="true">
-<view:frame>
-<% 
-	ArrayPane arrayPane = gef.getArrayPane("SurveyParticipantsList", "ViewAllUsers?SurveyId="+survey.getId(), request, session);
-	arrayPane.addArrayColumn(resources.getString("GML.name"));
-	
-	if (users != null) {	
-	  	ArrayCellText cell = null; 
-	    for (String userId : users) {
-			 UserDetail user = surveyScc.getUserDetail(userId);
-			 ArrayLine ligne = arrayPane.addArrayLine();
-			 String url = "<a href=\"javaScript:onclick=viewResultByUser('"+userId+"');\">"+WebEncodeHelper.javaStringToHtmlString(user.getLastName()+" "+user.getFirstName())+"</a>";
-			 cell = ligne.addArrayCellText(url);
-			 cell.setCompareOn(user.getLastName()+" "+user.getFirstName());
-      	}
-	}
+<view:sp-page>
+  <view:sp-head-part>
+  <script type="text/javascript">
+  function viewResultByUser(userId) {
+    let url = "UserResult?UserId="+userId;
+    const windowName = "resultByUser";
+    const larg = "700";
+    const haut = "500";
+    const windowParams = "directories=0,menubar=0,toolbar=0,resizable=1,scrollbars=1,alwaysRaised";
+    suggestions = SP_openWindow(url, windowName, larg , haut, windowParams);
+    suggestions();
+  }
+  </script>
+  </view:sp-head-part>
+  <view:sp-body-part>
+    <view:browseBar extraInformations='<%=survey.getHeader().getTitle()%>'/>
+    <view:window popup="true">
+    <view:frame>
+    <%
+      ArrayPane arrayPane = gef.getArrayPane("SurveyParticipantsList", "ViewAllUsers?SurveyId="+survey.getId(), request, session);
+      arrayPane.addArrayColumn(resources.getString("GML.name"));
 
-	out.println(arrayPane.print());
-	
-	ButtonPane buttonPane = gef.getButtonPane();
-  	buttonPane.addButton(close);
-	out.print("<br/>"+buttonPane.print());
-%>
-</view:frame>
-</view:window>
-</body>
-</html>
+      if (users != null) {
+        ArrayCellText cell = null;
+        for (String userId : users) {
+         UserDetail user = surveyScc.getUserDetail(userId);
+         if (profile.equals(SilverpeasRole.ADMIN.toString()) || profile.equals(SilverpeasRole.PUBLISHER.toString()) || surveyScc.getUserId().equals(userId)) {
+           ArrayLine ligne = arrayPane.addArrayLine();
+           String url = "<a href=\"javaScript:onclick=viewResultByUser('" + userId + "');\">" +
+               WebEncodeHelper.javaStringToHtmlString(
+                   user.getLastName() + " " + user.getFirstName()) + "</a>";
+           cell = ligne.addArrayCellText(url);
+           cell.setCompareOn(user.getLastName() + " " + user.getFirstName());
+         }
+        }
+      }
+
+      out.println(arrayPane.print());
+
+      ButtonPane buttonPane = gef.getButtonPane();
+        buttonPane.addButton(close);
+      out.print("<br/>"+buttonPane.print());
+    %>
+    </view:frame>
+    </view:window>
+  </view:sp-body-part>
+</view:sp-page>
