@@ -81,14 +81,9 @@
         <option>
           <value>2</value>
         </option>
-        <option>
-          <value>3</value>
-        </option>
       </options>
       <type>select</type>
       <updatable>always</updatable>
-      <warning>
-      </warning>
       <personalSpaceValue>no</personalSpaceValue>
     </parameter>
   </parameters>

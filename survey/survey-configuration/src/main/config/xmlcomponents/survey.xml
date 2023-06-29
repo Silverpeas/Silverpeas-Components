@@ -70,5 +70,25 @@
       <type>checkbox</type>
       <updatable>always</updatable>
     </parameter>
+    <parameter>
+      <name>displayComments</name>
+      <order>3</order>
+      <mandatory>true</mandatory>
+      <value>0</value>
+      <options>
+        <option>
+          <value>0</value>
+        </option>
+        <option>
+          <value>1</value>
+        </option>
+        <option>
+          <value>2</value>
+        </option>
+      </options>
+      <type>select</type>
+      <updatable>always</updatable>
+      <personalSpaceValue>no</personalSpaceValue>
+    </parameter>
   </parameters>
 </WAComponent>

@@ -111,8 +111,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
   private int viewType = OPENED_SURVEYS_VIEW;
   public static final String DISPLAY_COMMENTS_FOR_NOBODY = "0";
   public static final String DISPLAY_COMMENTS_FOR_MANAGERS = "1";
-  public static final String DISPLAY_COMMENTS_FOR_PARTICIPANTS = "2";
-  public static final String DISPLAY_COMMENTS_FOR_ALL = "3";
+  public static final String DISPLAY_COMMENTS_FOR_ALL = "2";
   public static final String PARAM_DISPLAY_COMMENTS = "displayComments";
   private boolean pollingStationMode = false;
   private boolean participationMultipleAllowedForUser = false;
@@ -1174,16 +1173,16 @@ public class SurveySessionController extends AbstractComponentSessionController 
    * @return true or false
    */
   public boolean isDisplayCommentsEnabled(String userProfile, String userId) {
-    SilverpeasRole greatestUserRole = SilverpeasRole.getHighestFrom(SilverpeasRole.fromString(userProfile));
+    if (userProfile.equals("userMultiple"))
+      userProfile = SilverpeasRole.USER.getName();
+    SilverpeasRole userRole = SilverpeasRole.fromString(userProfile);
     final String value = getComponentParameterValue(PARAM_DISPLAY_COMMENTS);
     if (DISPLAY_COMMENTS_FOR_NOBODY.equals(value))
       return false;
     if (StringUtil.isDefined(userId) && userId.equals(getUserId()))
       return true;
-    if (DISPLAY_COMMENTS_FOR_PARTICIPANTS.equals(value)) {
-      return greatestUserRole.isGreaterThanOrEquals(SilverpeasRole.PUBLISHER);
-    } else if (DISPLAY_COMMENTS_FOR_MANAGERS.equals(value)) {
-      return greatestUserRole.isGreaterThanOrEquals(SilverpeasRole.ADMIN);
+    if (DISPLAY_COMMENTS_FOR_MANAGERS.equals(value)) {
+      return userRole.isGreaterThanOrEquals(SilverpeasRole.PUBLISHER);
     }
     return DISPLAY_COMMENTS_FOR_ALL.equals(value);
   }
