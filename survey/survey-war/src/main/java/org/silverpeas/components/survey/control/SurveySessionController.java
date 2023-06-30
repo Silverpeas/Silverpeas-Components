@@ -171,7 +171,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
    * @return
    */
   public String getDisplayCommentsMode() {
-    String parameterValue = this.getComponentParameterValue("displayComments");
+    String parameterValue = this.getComponentParameterValue(PARAM_DISPLAY_COMMENTS);
     if (parameterValue == null || parameterValue.length() <= 0) {
       return DISPLAY_COMMENTS_FOR_ALL;
     }
