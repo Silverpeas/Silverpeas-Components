@@ -1131,7 +1131,9 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    */
   public void replaceInAllAssignedStates(final String userId, final String substituteId)
       throws ProcessManagerException {
+    final ReassignmentReport report = new ReassignmentReport(this, userId, substituteId);
     try {
+      report.start();
       Administration admin = Administration.get();
       var userProfiles = admin.getAllProfiles(userId, getComponentId()).stream()
           .filter(p -> !p.getName().equals(SilverpeasRole.SUPERVISOR.getName()))
@@ -1156,8 +1158,9 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
             processInstanceManager.getProcessInstance(processRecord.getId());
         reassignInAssignedStates(process, user, substitute);
       }
-
+      report.end();
     } catch (WorkflowException e) {
+      report.end(e);
       throw new ProcessManagerException(e);
     }
   }
