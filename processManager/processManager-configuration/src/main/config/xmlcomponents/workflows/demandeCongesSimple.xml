@@ -151,7 +151,7 @@
       <updatable>always</updatable>
       <help>
         <message lang="fr">Permet aux utilisateurs de ne plus voir l'action "Retour à..."</message>
-        <message lang="en"></message>
+        <message lang="en">Allows users to stop seeing the "Back to..." action</message>
       </help>
     </parameter>
   </parameters>
