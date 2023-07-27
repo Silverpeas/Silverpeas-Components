@@ -126,7 +126,11 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
   @Override
   public List<FormDetail> getAllForms(final String appId, final String userId,
       final boolean withSendInfo) throws FormsOnlineException {
-    List<FormDetail> forms = getDAO().findAllForms(appId);
+    String orderBy = organizationController.getComponentParameterValue(appId, "displaySort");
+    orderBy = StringUtil.isDefined(orderBy) ? orderBy: "name asc";
+
+    List<FormDetail> forms = getDAO().findAllForms(appId, orderBy);
+
     Map<Integer, Integer> numbersOfRequests = getDAO().getNumberOfRequestsByForm(appId);
     for (FormDetail form : forms) {
       Integer numberOfRequests = numbersOfRequests.get(form.getId());
@@ -416,9 +420,9 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
     final String[] userGroupIds = organizationController.getAllGroupIdsOfUser(validatorId);
     final Map<String, Set<FormInstanceValidationType>> result = getDAO()
         .getValidatorFormIdsWithValidationTypes(appId, validatorId, userGroupIds, formIds);
-    // get available form as boss
-    final List<FormDetail> forms = getDAO().findAllForms(appId);
-    final HierarchicalValidatorCacheManager hvManager = HierarchicalValidatorCacheManager.get();
+    String orderBy = organizationController.getComponentParameterValue(appId, "displaySort");
+    final List<FormDetail> forms = getDAO().findAllForms(appId, orderBy);
+    final HierarchicalValidatorCacheManager hvManager = new HierarchicalValidatorCacheManager();
     for (FormDetail form : forms) {
       if (form.isHierarchicalValidation() && (isEmpty(formIds) || formIds.contains(form.getPK().getId()))) {
         final SilverpeasList<FormInstance> requests = getDAO().getAllRequests(form.getPK());
