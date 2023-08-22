@@ -298,10 +298,10 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
   }
 
   @Override
-  public List<FormDetail> getAvailableFormsToSend(Collection<String> appIds, String userId)
+  public List<FormDetail> getAvailableFormsToSend(Collection<String> appIds, String userId, String orderBy)
       throws FormsOnlineException {
     String[] userGroupIds = organizationController.getAllGroupIdsOfUser(userId);
-    return getDAO().getUserAvailableForms(appIds, userId, userGroupIds);
+    return getDAO().getUserAvailableForms(appIds, userId, userGroupIds, orderBy);
   }
 
   @Override
