@@ -2,6 +2,7 @@ package org.silverpeas.components.formsonline;
 
 import org.silverpeas.components.formsonline.model.FormsOnlineException;
 import org.silverpeas.components.formsonline.model.FormsOnlineService;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.security.authorization.AccessControlOperation;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.security.authorization.ComponentAuthorization;
@@ -37,8 +38,9 @@ public class FormsOnlineComponentAuthorization implements ComponentAuthorization
         .filterAuthorizedByUser(componentIds, userId)
         .collect(Collectors.toSet());
     try {
+      String orderBy = "name asc";
       final Set<String> formIds = FormsOnlineService.get()
-          .getAvailableFormsToSend(componentIds, userId).stream()
+          .getAvailableFormsToSend(componentIds, userId, orderBy).stream()
           .map(f -> String.valueOf(f.getId()))
           .collect(Collectors.toSet());
       return resources.stream().filter(r -> formIds.contains(converter.apply(r).getLocalId()));

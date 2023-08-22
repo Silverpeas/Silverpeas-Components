@@ -402,7 +402,7 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
    */
   @Override
   public List<FormDetail> getUserAvailableForms(final Collection<String> instanceIds,
-      final String userId, final String[] userGroupIds) throws FormsOnlineException {
+      final String userId, final String[] userGroupIds, String orderBy) throws FormsOnlineException {
     try {
       final List<FormDetail> forms = new ArrayList<>();
       JdbcSqlQuery.executeBySplittingOn(instanceIds, (idBatch, ignore) -> {
@@ -418,6 +418,7 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
           if (isNotEmpty(userGroupIds)) {
             query.or("id in (select formId from " + GROUP_RIGHTS_TABLENAME + " where rightType='S' and groupId").in(userGroupIds).addSqlPart(")"); }
           query.addSqlPart(")");
+          query.orderBy(orderBy);
           query.execute(r -> {
             forms.add(fetchFormDetail(r));
             return null;
