@@ -262,7 +262,10 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
   }
 
   public List<FormDetail> getAvailableFormsToSend() throws FormsOnlineException {
-    return getService().getAvailableFormsToSend(singleton(getComponentId()), getUserId());
+    String orderBy = getOrganisationController().getComponentParameterValue(getComponentId(), "displaySort");
+    orderBy = StringUtil.isDefined(orderBy) ? orderBy: "name asc";
+
+    return getService().getAvailableFormsToSend(singleton(getComponentId()), getUserId(), orderBy);
   }
 
   public void saveRequest(List<FileItem> items, boolean draft) throws FormsOnlineException {
