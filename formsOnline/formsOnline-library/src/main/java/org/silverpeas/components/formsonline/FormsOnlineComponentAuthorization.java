@@ -37,8 +37,9 @@ public class FormsOnlineComponentAuthorization implements ComponentAuthorization
         .filterAuthorizedByUser(componentIds, userId)
         .collect(Collectors.toSet());
     try {
+      String orderBy = "name asc";
       final Set<String> formIds = FormsOnlineService.get()
-          .getAvailableFormsToSend(componentIds, userId).stream()
+          .getAvailableFormsToSend(componentIds, userId, orderBy).stream()
           .map(f -> String.valueOf(f.getId()))
           .collect(Collectors.toSet());
       return resources.stream().filter(r -> formIds.contains(converter.apply(r).getLocalId()));

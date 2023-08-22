@@ -137,7 +137,7 @@ public interface FormsOnlineDAO {
    * @throws FormsOnlineException
    */
   List<FormDetail> getUserAvailableForms(Collection<String> componentIds, String userId,
-      String[] userGroupIds) throws FormsOnlineException;
+      String[] userGroupIds, String orderBy) throws FormsOnlineException;
 
   /**
    * Get all form instances that have been sent by given user (excepted the ones that have been

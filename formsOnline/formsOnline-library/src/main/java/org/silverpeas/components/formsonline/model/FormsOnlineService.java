@@ -62,7 +62,7 @@ public interface FormsOnlineService extends ApplicationService {
 
   void unpublishForm(FormPK pk) throws FormsOnlineException;
 
-  List<FormDetail> getAvailableFormsToSend(Collection<String> appIds, String userId)
+  List<FormDetail> getAvailableFormsToSend(Collection<String> appIds, String userId, String orderBy)
       throws FormsOnlineException;
 
   RequestsByStatus getAllUserRequests(String appId, String userId,
