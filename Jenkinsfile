@@ -4,7 +4,7 @@ pipeline {
   environment {
     lockFilePath = null
     version = null
-    silverpeasCore = 'Master'
+    silverpeasCore = 'Master-Jackrabbit'
   }
   agent {
     docker {
@@ -21,7 +21,7 @@ pipeline {
     stage('Waiting for core running build if any') {
       steps {
         script {
-          master = env.BRANCH_NAME == 'master'
+          master = env.BRANCH_NAME == 'master-jackrabbit'
           version = computeSnapshotVersion()
           lockFilePath = createLockFile(version, 'components')
           waitForDependencyRunningBuildIfAny(version, 'core')
@@ -98,7 +98,7 @@ pipeline {
 def computeSnapshotVersion() {
   def pom = readMavenPom()
   final String version = pom.version
-  final String defaultVersion = env.BRANCH_NAME == 'master' ? version :
+  final String defaultVersion = env.BRANCH_NAME == 'master-jackrabbit' ? version :
       env.BRANCH_NAME.toLowerCase().replaceAll('[# -]', '')
   Matcher m = env.CHANGE_TITLE =~ /^(Bug #?\d+|Feature #?\d+).*$/
   String snapshot = m.matches()
