@@ -102,7 +102,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.silverpeas.core.cache.service.CacheServiceProvider.getSessionCacheService;
+import static org.silverpeas.core.cache.service.CacheAccessorProvider.getSessionCacheAccessor;
 
 public final class GallerySessionController extends AbstractComponentSessionController {
 
@@ -1343,7 +1343,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
           fileName.substring(fileName.indexOf('/') + 1, fileName.indexOf('.'));
       String registerId = getComponentId() + ":" + xmlFormShortName;
       final String sessionCacheKey = this.getClass().getName() + registerId;
-      SimpleCache sessionCache = getSessionCacheService().getCache();
+      SimpleCache sessionCache = getSessionCacheAccessor().getCache();
       if (sessionCache.get(sessionCacheKey) == null) {
         getPublicationTemplateManager().addDynamicPublicationTemplate(registerId, fileName);
         sessionCache.put(sessionCacheKey, registerId);

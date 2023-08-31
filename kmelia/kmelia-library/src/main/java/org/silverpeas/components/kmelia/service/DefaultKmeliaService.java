@@ -146,7 +146,7 @@ import static org.silverpeas.components.kmelia.service.KmeliaOperationContext.Op
 import static org.silverpeas.components.kmelia.service.KmeliaServiceContext.*;
 import static org.silverpeas.core.admin.component.model.ComponentInst.getComponentLocalId;
 import static org.silverpeas.core.admin.service.OrganizationControllerProvider.getOrganisationController;
-import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
+import static org.silverpeas.core.cache.service.CacheAccessorProvider.getThreadCacheAccessor;
 import static org.silverpeas.core.contribution.attachment.AttachmentService.VERSION_MODE;
 import static org.silverpeas.core.contribution.attachment.AttachmentServiceProvider.getAttachmentService;
 import static org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController.deleteWysiwygAttachmentsOnly;
@@ -302,7 +302,7 @@ public class DefaultKmeliaService implements KmeliaService {
   public List<KmeliaPublication> getLatestAuthorizedPublications(String instanceId, String userId,
       int limit) {
     final long start = System.currentTimeMillis();
-    final List<KmeliaPublication> result = getRequestCacheService().getCache()
+    final List<KmeliaPublication> result = getThreadCacheAccessor().getCache()
         .computeIfAbsent(
             "KmeliaService:getLatestAuthorizedPublications:" + instanceId + ":" + userId + ":" +
                 limit, List.class, () -> {
@@ -1535,7 +1535,7 @@ public class DefaultKmeliaService implements KmeliaService {
       }
 
       // Subscriptions related to aliases
-      Collection<Location> locations = (Collection<Location>) getRequestCacheService().getCache()
+      Collection<Location> locations = (Collection<Location>) getThreadCacheAccessor().getCache()
           .get(ALIASES_CACHE_KEY);
       if (locations == null) {
         locations = getAliases(pubDetail.getPK());
@@ -3367,7 +3367,7 @@ public class DefaultKmeliaService implements KmeliaService {
         locations);
 
     // Send subscriptions to aliases subscribers
-    getRequestCacheService().getCache().put(ALIASES_CACHE_KEY, result.getFirst());
+    getThreadCacheAccessor().getCache().put(ALIASES_CACHE_KEY, result.getFirst());
     PublicationDetail pubDetail = getPublicationDetail(pubPK);
     sendSubscriptionsNotification(pubDetail, NotifAction.PUBLISHED, true);
   }

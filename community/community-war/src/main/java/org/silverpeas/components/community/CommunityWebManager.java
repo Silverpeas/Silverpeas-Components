@@ -38,7 +38,7 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
@@ -269,7 +269,7 @@ public class CommunityWebManager {
 
   private <T> T requestCache(final String type, final String id, Class<T> classType,
       Supplier<T> supplier) {
-    return CacheServiceProvider.getRequestCacheService()
+    return CacheAccessorProvider.getThreadCacheAccessor()
         .getCache()
         .computeIfAbsent(CACHE_KEY_PREFIX + type + ":" + id, classType, supplier);
   }

@@ -24,7 +24,7 @@
 
 package org.silverpeas.components.mydb.web;
 
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.util.Pair;
 
 import static org.silverpeas.core.util.StringUtil.EMPTY;
@@ -43,7 +43,7 @@ public class MyDBMessageManager {
 
   public static MyDBMessageManager get() {
     final Class<MyDBMessageManager> ownClass = MyDBMessageManager.class;
-    return CacheServiceProvider.getRequestCacheService()
+    return CacheAccessorProvider.getThreadCacheAccessor()
         .getCache()
         .computeIfAbsent(ownClass.getName(), ownClass, MyDBMessageManager::new);
   }

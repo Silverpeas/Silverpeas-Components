@@ -43,8 +43,8 @@ import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceProfileInst;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.cache.service.SessionCacheService;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
+import org.silverpeas.core.cache.service.SessionCacheAccessor;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
 import org.silverpeas.core.util.Pair;
@@ -90,9 +90,9 @@ public class CommunityManagementIT {
 
   @Before
   public void initCurrentRequester() {
-    SessionCacheService sessionCacheService =
-        (SessionCacheService) CacheServiceProvider.getSessionCacheService();
-    sessionCacheService.newSessionCache(User.getById("0"));
+    SessionCacheAccessor sessionCacheAccessor =
+        (SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor();
+    sessionCacheAccessor.newSessionCache(User.getById("0"));
   }
 
   @SuppressWarnings("unchecked")

@@ -39,7 +39,7 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.contribution.ContributionStatus;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
@@ -947,7 +947,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
     private final Map<String, String> cache = new HashMap<>();
 
     public static HierarchicalValidatorCacheManager get() {
-      return CacheServiceProvider.getThreadCacheService()
+      return CacheAccessorProvider.getThreadCacheAccessor()
           .getCache()
           .computeIfAbsent(CACHE_KEY, HierarchicalValidatorCacheManager.class,
               HierarchicalValidatorCacheManager::new);

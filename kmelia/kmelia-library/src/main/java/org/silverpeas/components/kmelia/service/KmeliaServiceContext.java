@@ -25,7 +25,7 @@ package org.silverpeas.components.kmelia.service;
 
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 
-import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
+import static org.silverpeas.core.cache.service.CacheAccessorProvider.getThreadCacheAccessor;
 
 /**
  * This class permits to get the some flags about the Kmelia Service context.
@@ -39,7 +39,7 @@ class KmeliaServiceContext {
    */
   static void createdIntoRequestContext(final PublicationDetail publication) {
     String cacheKey = buildKey("publicationCreation", publication);
-    getRequestCacheService().getCache().put(cacheKey, Boolean.TRUE);
+    getThreadCacheAccessor().getCache().put(cacheKey, Boolean.TRUE);
   }
 
   /**
@@ -49,7 +49,7 @@ class KmeliaServiceContext {
    */
   static boolean hasPublicationBeenCreatedFromRequestContext(PublicationDetail publication) {
     String cacheKey = buildKey("publicationCreation", publication);
-    return Boolean.TRUE == getRequestCacheService().getCache().get(cacheKey, Boolean.class);
+    return Boolean.TRUE == getThreadCacheAccessor().getCache().get(cacheKey, Boolean.class);
   }
 
 
@@ -59,7 +59,7 @@ class KmeliaServiceContext {
    */
   static void updatedIntoRequestContext(final PublicationDetail publication) {
     String cacheKey = buildKey("publicationModification", publication);
-    getRequestCacheService().getCache().put(cacheKey, Boolean.TRUE);
+    getThreadCacheAccessor().getCache().put(cacheKey, Boolean.TRUE);
   }
 
   /**
@@ -69,7 +69,7 @@ class KmeliaServiceContext {
    */
   static boolean hasPublicationBeenUpdatedFromRequestContext(PublicationDetail publication) {
     String cacheKey = buildKey("publicationModification", publication);
-    return Boolean.TRUE == getRequestCacheService().getCache().get(cacheKey, Boolean.class);
+    return Boolean.TRUE == getThreadCacheAccessor().getCache().get(cacheKey, Boolean.class);
   }
 
   /**

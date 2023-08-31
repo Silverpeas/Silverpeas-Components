@@ -38,7 +38,7 @@ import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.test.integration.DataSetTest;
 
 import javax.annotation.Priority;
@@ -152,7 +152,7 @@ public abstract class BaseGalleryIT extends DataSetTest {
 
     @After
     public void tearDown() {
-        CacheServiceProvider.clearAllThreadCaches();
+        CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
     }
 
     /**

@@ -38,8 +38,8 @@ import org.silverpeas.components.gallery.model.Photo;
 import org.silverpeas.components.gallery.model.Sound;
 import org.silverpeas.components.gallery.model.Streaming;
 import org.silverpeas.components.gallery.model.Video;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.cache.service.SessionCacheService;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
+import org.silverpeas.core.cache.service.SessionCacheAccessor;
 import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.io.media.Definition;
 import org.silverpeas.core.media.streaming.StreamingProvider;
@@ -282,7 +282,7 @@ public class MediaDaoIT extends BaseGalleryIT {
     assertThat(media.get(0).getId(), is("stream_2"));
 
     // Simulating a connected publisher user
-    ((SessionCacheService) CacheServiceProvider.getSessionCacheService())
+    ((SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor())
         .newSessionCache(publisherUser);
 
     media = MediaDAO
@@ -291,7 +291,7 @@ public class MediaDaoIT extends BaseGalleryIT {
     assertMediaType(media, MediaType.Streaming, Streaming.class);
 
     // Simulating a connected writer user
-    ((SessionCacheService) CacheServiceProvider.getSessionCacheService())
+    ((SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor())
         .newSessionCache(writerUser);
 
     media = MediaDAO
@@ -321,7 +321,7 @@ public class MediaDaoIT extends BaseGalleryIT {
     assertThat(media.get(0).getId(), is("stream_2"));
 
     // Simulating a connected publisher user
-    ((SessionCacheService) CacheServiceProvider.getSessionCacheService())
+    ((SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor())
         .newSessionCache(publisherUser);
 
     media = MediaDAO.findByCriteria(
@@ -361,7 +361,7 @@ public class MediaDaoIT extends BaseGalleryIT {
     assertThat(nbMedia, is(1L));
 
     // Simulating a connected publisher user
-    ((SessionCacheService) CacheServiceProvider.getSessionCacheService())
+    ((SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor())
         .newSessionCache(publisherUser);
 
     nbMedia = MediaDAO
@@ -369,7 +369,7 @@ public class MediaDaoIT extends BaseGalleryIT {
     assertThat(nbMedia, is(2L));
 
     // Simulating a connected writer user
-    ((SessionCacheService) CacheServiceProvider.getSessionCacheService())
+    ((SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor())
         .newSessionCache(writerUser);
 
     nbMedia = MediaDAO
@@ -392,7 +392,7 @@ public class MediaDaoIT extends BaseGalleryIT {
     assertThat(nbMedia, is(1L));
 
     // Simulating a connected publisher user
-    ((SessionCacheService) CacheServiceProvider.getSessionCacheService())
+    ((SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor())
         .newSessionCache(publisherUser);
 
     nbMedia = MediaDAO.countByCriteria(

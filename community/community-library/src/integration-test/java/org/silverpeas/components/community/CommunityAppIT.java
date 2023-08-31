@@ -38,8 +38,8 @@ import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.space.SpaceHomePageType;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.cache.service.SessionCacheService;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
+import org.silverpeas.core.cache.service.SessionCacheAccessor;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
 
 import java.util.ArrayList;
@@ -76,9 +76,9 @@ public class CommunityAppIT {
 
   @Before
   public void initCurrentRequester() {
-    SessionCacheService sessionCacheService =
-        (SessionCacheService) CacheServiceProvider.getSessionCacheService();
-    sessionCacheService.newSessionCache(User.getById("0"));
+    SessionCacheAccessor sessionCacheAccessor =
+        (SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor();
+    sessionCacheAccessor.newSessionCache(User.getById("0"));
   }
 
   @Test
