@@ -26,7 +26,7 @@ package org.silverpeas.components.kmelia.service;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
@@ -47,7 +47,7 @@ class KmeliaServiceContextTest {
 
   @BeforeEach
   public void setup() {
-    CacheServiceProvider.clearAllThreadCaches();
+    CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
     publication = PublicationDetail.builder()
         .setPk(new PublicationPK("id", "instanceId"))
         .build();
@@ -62,7 +62,7 @@ class KmeliaServiceContextTest {
 
   @AfterEach
   public void tearDown() {
-    CacheServiceProvider.getRequestCacheService().clearAllCaches();
+    CacheAccessorProvider.getThreadCacheAccessor().getCache().clear();
     assertClearedContext();
   }
 

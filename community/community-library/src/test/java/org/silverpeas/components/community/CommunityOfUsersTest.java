@@ -42,8 +42,8 @@ import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.service.UserProvider;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.cache.service.SessionCacheService;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
+import org.silverpeas.core.cache.service.SessionCacheAccessor;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
@@ -135,9 +135,9 @@ class CommunityOfUsersTest {
     when(organizationController.getUserDetail(anyString())).thenAnswer(userAnswer);
 
     // for the current requester
-    SessionCacheService sessionCacheService =
-        (SessionCacheService) CacheServiceProvider.getSessionCacheService();
-    sessionCacheService.newSessionCache(User.getById(USER_ID));
+    SessionCacheAccessor sessionCacheAccessor =
+        (SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor();
+    sessionCacheAccessor.newSessionCache(User.getById(USER_ID));
 
     // get a mocked space instance with all the roles initialized with a set of users
     when(organizationController.getSpaceInstById(anyString())).thenAnswer(i -> {

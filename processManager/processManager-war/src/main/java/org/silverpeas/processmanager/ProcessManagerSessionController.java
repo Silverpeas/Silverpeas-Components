@@ -101,7 +101,7 @@ import java.util.stream.Stream;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnGetting;
-import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
+import static org.silverpeas.core.cache.service.CacheAccessorProvider.getThreadCacheAccessor;
 import static org.silverpeas.core.contribution.attachment.AttachmentService.VERSION_MODE;
 import static org.silverpeas.core.util.CollectionUtil.asList;
 import static org.silverpeas.core.util.StringUtil.isDefined;
@@ -728,7 +728,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    * Returns the user roles as a list of (name, label) pair.
    */
   public NamedValue[] getUserRoleLabels() {
-    return getRequestCacheService()
+    return getThreadCacheAccessor()
         .getCache()
         .computeIfAbsent("ProcessManagerSC.getUserRoleLabels" + getComponentId(),
             NamedValue[].class, () -> {

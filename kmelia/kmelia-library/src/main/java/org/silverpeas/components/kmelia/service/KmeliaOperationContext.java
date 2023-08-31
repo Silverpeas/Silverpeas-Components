@@ -25,7 +25,7 @@
 package org.silverpeas.components.kmelia.service;
 
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.persistence.datasource.OperationContext;
 
 import java.util.Optional;
@@ -46,7 +46,7 @@ public class KmeliaOperationContext {
    * @return optionally the current operation context if any.
    */
   public static Optional<KmeliaOperationContext> current() {
-    return Optional.ofNullable(CacheServiceProvider.getRequestCacheService()
+    return Optional.ofNullable(CacheAccessorProvider.getThreadCacheAccessor()
         .getCache()
         .get(cacheKey, KmeliaOperationContext.class));
   }
@@ -57,7 +57,7 @@ public class KmeliaOperationContext {
    */
   public static void about(final OperationType type) {
     KmeliaOperationContext context = new KmeliaOperationContext(type);
-    CacheServiceProvider.getRequestCacheService().getCache().put(cacheKey, context);
+    CacheAccessorProvider.getThreadCacheAccessor().getCache().put(cacheKey, context);
   }
 
   private KmeliaOperationContext(final OperationType type) {

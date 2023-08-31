@@ -75,7 +75,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.silverpeas.core.cache.service.CacheServiceProvider.getSessionCacheService;
+import static org.silverpeas.core.cache.service.CacheAccessorProvider.getSessionCacheAccessor;
 import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery.isSqlDefined;
 import static org.silverpeas.core.util.JSONCodec.encodeObject;
 import static org.silverpeas.core.web.http.FileResponse.DOWNLOAD_CONTEXT_PARAM;
@@ -1118,7 +1118,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
           // retour à la demande
           destination = getDestination(ORDER_VIEW_PAGIN_FUNC, gallerySC, request);
         } else if ("OrderDownloadMedia".equals(function)) {
-          final SimpleCache cache = getSessionCacheService().getCache();
+          final SimpleCache cache = getSessionCacheAccessor().getCache();
           destination = Optional.ofNullable(request.getParameter("downloadId"))
               .filter(StringUtil::isDefined)
               .map(d -> Optional.ofNullable(cache.remove(d, String.class))

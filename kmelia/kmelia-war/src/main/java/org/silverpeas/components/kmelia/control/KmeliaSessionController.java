@@ -163,7 +163,7 @@ import static java.util.stream.Collectors.toSet;
 import static org.silverpeas.components.kmelia.control.KmeliaSessionController.CLIPBOARD_STATE.*;
 import static org.silverpeas.components.kmelia.export.KmeliaPublicationExporter.*;
 import static org.silverpeas.core.admin.component.model.ComponentInst.getComponentLocalId;
-import static org.silverpeas.core.cache.service.CacheServiceProvider.getSessionCacheService;
+import static org.silverpeas.core.cache.service.CacheAccessorProvider.getSessionCacheAccessor;
 import static org.silverpeas.core.cache.service.VolatileIdentifierProvider.newVolatileIntegerIdentifierOn;
 import static org.silverpeas.core.contribution.attachment.AttachmentService.VERSION_MODE;
 import static org.silverpeas.core.index.search.SearchEngineProvider.getSearchEngine;
@@ -1408,7 +1408,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   private void cacheDirectlyPublicationsListInSession(final List<KmeliaPublication> publications) {
-    getSessionCacheService().getCache().put(getPublicationListSessionCacheKey(), publications);
+    getSessionCacheAccessor().getCache().put(getPublicationListSessionCacheKey(), publications);
   }
 
   public void setSessionCombination(List<String> combination) {
@@ -1494,7 +1494,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   @SuppressWarnings("unchecked")
   public List<KmeliaPublication> getSessionPublicationsList() {
-    return (List<KmeliaPublication>) getSessionCacheService().getCache().get(getPublicationListSessionCacheKey());
+    return (List<KmeliaPublication>) getSessionCacheAccessor().getCache().get(getPublicationListSessionCacheKey());
   }
 
   public List<String> getSessionCombination() {
