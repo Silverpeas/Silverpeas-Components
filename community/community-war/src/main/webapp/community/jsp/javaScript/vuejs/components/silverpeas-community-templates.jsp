@@ -41,6 +41,7 @@
 <c:set var="waCommunity" value="<%= WAComponent.getByName(CommunityComponentSettings.COMPONENT_NAME).orElse(null)%>"/>
 <c:set var="displayCharterOnSpaceHomepageParam" value="${waCommunity.getAllParameters().stream()
     .filter(p -> p.getName() eq 'displayCharterOnSpaceHomepage')
+    .map(p -> silfn:toLocalizedParameter(waCommunity, p, language))
     .findFirst()
     .orElse(null)}"/>
 
@@ -97,10 +98,10 @@
     </div>
     <div class="field">
       <label class="txtlibform" for="dcDisplayCharter"
-             title="${displayCharterOnSpaceHomepageParam.getHelp(language)}">${displayCharterOnSpaceHomepageParam.getLabel(language)}</label>
+             title="${displayCharterOnSpaceHomepageParam.help}">${displayCharterOnSpaceHomepageParam.label}</label>
       <div class="champs">
         <input id="dcDisplayCharter" type="checkbox" name="dcDisplayCharter"
-               title="${displayCharterOnSpaceHomepageParam.getHelp(language)}"
+               title="${displayCharterOnSpaceHomepageParam.help}"
                v-model="displayCharter"/>
       </div>
     </div>
