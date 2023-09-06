@@ -121,6 +121,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
 
   /**
    * Creates new sessionClientController
+   *
    * @param mainSessionCtrl
    * @param componentContext
    */
@@ -152,6 +153,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
 
   /**
    * Return if user can participate more than one time
+   *
    * @return true or false
    */
   public boolean isParticipationMultipleAllowedForUser() {
@@ -160,6 +162,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
 
   /**
    * Set user status to know if he can participate more than one time
+   *
    * @param state
    */
   public void setParticipationMultipleAllowedForUser(boolean state) {
@@ -168,6 +171,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
 
   /**
    * Get display comments Mode
+   *
    * @return
    */
   public String getDisplayCommentsMode() {
@@ -180,6 +184,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
 
   /**
    * Return if participationMultiple is used
+   *
    * @return true or false
    */
   public boolean isParticipationMultipleUsed() {
@@ -218,6 +223,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
 
   /**
    * Set status of anonymous user (if he has already participated with this ip)
+   *
    * @param state
    */
   public void hasAlreadyParticipated(boolean state) {
@@ -226,6 +232,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
 
   /**
    * Return if currentUser is anonymous
+   *
    * @return true or false
    */
   private boolean userIsAnonymous() {
@@ -326,6 +333,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
   /**
    * this method clasify content only when new survey is created Check if a position has been
    * defined in header form then persist it
+   *
    * @param surveyDetail the current QuestionContainerDetail
    * @param qcPK the QuestionContainerPK with content identifier
    */
@@ -408,7 +416,9 @@ public class SurveySessionController extends AbstractComponentSessionController 
 
   public Collection<String> getUserByQuestion(ResourceReference questionPK) {
     Collection<String> users = new ArrayList<>();
-    Collection<QuestionResult> results = getQuestionResultService().getQuestionResultToQuestion(questionPK); for (final QuestionResult result : results) {
+    Collection<QuestionResult> results =
+        getQuestionResultService().getQuestionResultToQuestion(questionPK);
+    for (final QuestionResult result : results) {
       if (result != null) {
         users.add(result.getUserId() + "/" + result.getParticipationId());
       }
@@ -422,7 +432,9 @@ public class SurveySessionController extends AbstractComponentSessionController 
     QuestionContainerDetail survey = getSessionSurvey();
     Collection<Question> questions = survey.getQuestions();
     for (final Question question : questions) {
-      Collection<QuestionResult> questionResult = getQuestionResultService().getUserQuestionResultsToQuestion(userId, new ResourceReference(question.getPK()));
+      Collection<QuestionResult> questionResult =
+          getQuestionResultService().getUserQuestionResultsToQuestion(userId,
+              new ResourceReference(question.getPK()));
       result.addAll(questionResult);
     }
     // Only retrieve response identifiers
@@ -514,7 +526,9 @@ public class SurveySessionController extends AbstractComponentSessionController 
 
   private Collection<String> getUniqueParticipantIdsByQuestion(ResourceReference questionPK) {
     Collection<String> users = new LinkedHashSet<>();
-    Collection<QuestionResult> results = getQuestionResultService().getQuestionResultToQuestion(questionPK); for (final QuestionResult result : results) {
+    Collection<QuestionResult> results =
+        getQuestionResultService().getQuestionResultToQuestion(questionPK);
+    for (final QuestionResult result : results) {
       if (result != null) {
         users.add(result.getUserId());
       }
@@ -676,6 +690,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
 
   /**
    * Paste surveys which are in the clipboard selection
+   *
    * @throws Exception
    */
   public void paste() throws SilverpeasException {
@@ -697,6 +712,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
 
   /**
    * Paste a survey
+   *
    * @param survey the QuestionContanerDetail to paste
    * @throws Exception
    */
@@ -765,6 +781,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
 
   /**
    * prepare data inside session controller before sending them to the view layer
+   *
    * @param request the current HttpServletRequest
    */
   public void questionsUpdateBusinessModel(HttpServletRequest request) {
@@ -799,7 +816,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
       } else {
         StringBuilder message = new StringBuilder();
         message.append("Trying to delete a wrong question, questionIndexToDelete=").append(qId).
-            append(", questions list size=").append(qV == null ? "null": qV.size());
+            append(", questions list size=").append(qV == null ? "null" : qV.size());
         SilverLogger.getLogger(this).warn(message.toString());
       }
 
@@ -843,6 +860,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
 
   /**
    * Change this code with an enum list of question style using for
+   *
    * @return a list of question styles
    */
   public List<String> getListQuestionStyle() {
@@ -903,6 +921,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
 
   /**
    * Refactoring : get code from view JSP and add it inside controller
+   *
    * @param request the HttpServletRequest which contains all the request parameter
    */
   public void sendNewSurveyAction(HttpServletRequest request) {
@@ -956,6 +975,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
 
   /**
    * Set new survey positions (axis classification) from JSON string
+   *
    * @param positions: the JSON string positions
    */
   public void setNewSurveyPositionsFromJSON(String positions) {
@@ -1037,7 +1057,8 @@ public class SurveySessionController extends AbstractComponentSessionController 
   public List<SimpleDocument> getAllSynthesisFile(String surveyId) {
     SimpleDocumentPK surveyForeignKey = new SimpleDocumentPK(surveyId, this.getComponentId());
     return AttachmentServiceProvider.getAttachmentService()
-        .listDocumentsByForeignKey(surveyForeignKey.toResourceReference(), I18NHelper.DEFAULT_LANGUAGE);
+        .listDocumentsByForeignKey(surveyForeignKey.toResourceReference(),
+            I18NHelper.DEFAULT_LANGUAGE);
   }
 
   public QuestionResult getSuggestion(String userId, String questionId, String answerId)
@@ -1114,7 +1135,8 @@ public class SurveySessionController extends AbstractComponentSessionController 
       parameters.setStyle(item.getString(FileUploadUtil.DEFAULT_ENCODING));
     } else if (mpName.startsWith("answer") || "suggestionLabel".equals(mpName)) {
       parameters.setAnswerInput(item.getString(FileUploadUtil.DEFAULT_ENCODING));
-      answer = new Answer(null, null, parameters.getAnswerInput(), 0, false, "", 0, false, null, null);
+      answer = new Answer(null, null, parameters.getAnswerInput(), 0, false, "", 0, false, null,
+          null);
       parameters.addAnswer(answer);
     } else if (mpName.startsWith("valueImageGallery") &&
         StringUtil.isDefined(item.getString(FileUploadUtil.DEFAULT_ENCODING)) && !file) {
@@ -1168,23 +1190,20 @@ public class SurveySessionController extends AbstractComponentSessionController 
 
   /**
    * Get display comments mode status
-   * @param userProfile
-   * @param userId
+   *
+   * @param userProfile the user role profile of a user
+   * @param userId the unique identifier of the user
    * @return true or false
    */
   public boolean isDisplayCommentsEnabled(String userProfile, String userId) {
-    if (userProfile.equals("userMultiple"))
-      userProfile = SilverpeasRole.USER.getName();
-    SilverpeasRole userRole = SilverpeasRole.fromString(userProfile);
-    final String value = getComponentParameterValue(PARAM_DISPLAY_COMMENTS);
-    if (DISPLAY_COMMENTS_FOR_NOBODY.equals(value))
-      return false;
-    if (StringUtil.isDefined(userId) && userId.equals(getUserId()))
-      return true;
-    if (DISPLAY_COMMENTS_FOR_MANAGERS.equals(value)) {
-      return userRole.isGreaterThanOrEquals(SilverpeasRole.PUBLISHER);
-    }
-    return DISPLAY_COMMENTS_FOR_ALL.equals(value);
+    SilverpeasRole userRole = userProfile.equals("userMultiple") ?
+        SilverpeasRole.USER : SilverpeasRole.fromString(userProfile);
+    String value = getComponentParameterValue(PARAM_DISPLAY_COMMENTS);
+    return !DISPLAY_COMMENTS_FOR_NOBODY.equals(value) &&
+        (StringUtil.isDefined(userId) && userId.equals(getUserId())
+            || (DISPLAY_COMMENTS_FOR_MANAGERS.equals(value)
+            && userRole.isGreaterThanOrEquals(SilverpeasRole.PUBLISHER))
+            || DISPLAY_COMMENTS_FOR_ALL.equals(value));
   }
 
   private static class Parameters {
@@ -1195,7 +1214,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
     private String suggestion;
     private String style;
     private String answerInput;
-    private List<Answer> answers = new ArrayList<>();
+    private final List<Answer> answers = new ArrayList<>();
     private String questionId;
 
     public void setAction(final String action) {
