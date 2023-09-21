@@ -958,7 +958,7 @@
           </label>
           <order>33</order>
           <mandatory>true</mandatory>
-          <value>no</value>
+          <value>0</value>
           <options>
             <option>
               <name>
@@ -1014,7 +1014,7 @@
           </label>
           <order>34</order>
           <mandatory>true</mandatory>
-          <value>no</value>
+          <value>0</value>
           <options>
             <option>
               <name>
@@ -1072,7 +1072,7 @@
           </label>
           <order>35</order>
           <mandatory>true</mandatory>
-          <value>no</value>
+          <value>0</value>
           <options>
             <option>
               <name>
@@ -1119,53 +1119,6 @@
           </help>
         </parameter>
 
-        <parameter>
-          <name>exportOptions</name>
-          <label>
-            <message lang="fr">Options d'exportation</message>
-            <message lang="en">Export options</message>
-            <message lang="de">Export optionen</message>
-          </label>
-          <order>36</order>
-          <mandatory>true</mandatory>
-          <value>no</value>
-          <options>
-            <option>
-              <name>
-                <message lang="fr">Au format ZIP</message>
-                <message lang="en">In a zip file</message>
-                <message lang="de">In einer ZIP-Datei</message>
-              </name>
-              <value>zip</value>
-            </option>
-            <option>
-              <name>
-                <message lang="fr">Au format PDF</message>
-                <message lang="en">In pdf files</message>
-                <message lang="de">In einer PDF-Datei</message>
-              </name>
-              <value>pdf</value>
-            </option>
-            <option>
-              <name>
-                <message lang="fr">Tous</message>
-                <message lang="en">All</message>
-                <message lang="de">Alle</message>
-              </name>
-              <value>both</value>
-            </option>
-          </options>
-          <type>select</type>
-          <updatable>always</updatable>
-          <help>
-            <message lang="fr">Cette fonction permet de spécifier les formats d'export disponibles.
-            </message>
-            <message lang="en">This function allows you to specify the available export formats.
-            </message>
-            <message lang="de">Mit dieser Funktion können Sie die verfügbaren Exportformate festlegen.
-            </message>
-          </help>
-        </parameter>
       </parameters>
     </groupOfParameters>
   </groupsOfParameters>
