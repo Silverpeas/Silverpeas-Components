@@ -314,8 +314,13 @@ function initOperations(id, op) {
     groupEmpty = false;
   }
 
-  if (op.exportPDF) {
-    menuItem = new YAHOO.widget.MenuItem(getString('kmelia.ExportPDF'), {url: "javascript:openExportPDFPopup()"});
+  if (op.exportPDFTopic) {
+    menuItem = new YAHOO.widget.MenuItem(getString('kmelia.ExportPDFTopic'), {url: "javascript:openExportPDFPopup()"});
+    oMenu.addItem(menuItem, groupIndex);
+    groupEmpty = false;
+  }
+  if (op.exportPDFApplication) {
+    menuItem = new YAHOO.widget.MenuItem(getString('kmelia.ExportPDFApplication'), {url: "javascript:openExportPDFPopup()"});
     oMenu.addItem(menuItem, groupIndex);
     groupEmpty = false;
   }
