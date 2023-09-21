@@ -25,7 +25,6 @@ package org.silverpeas.components.kmelia.servlets;
 
 import org.silverpeas.components.kmelia.control.KmeliaSessionController;
 import org.silverpeas.components.kmelia.service.KmeliaHelper;
-import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
@@ -183,8 +182,14 @@ public class JSONServlet extends HttpServlet {
         isWysiwygOnTopicsEnabled());
     operations.put("shareTopic", node.canBeSharedBy(user));
     boolean exportOnTopicAllowed = kmeliaSC.isExportTopicAllowed(kmeliaSC.getHighestSilverpeasUserRole());
-    operations.put("exportTopic", exportOnTopicAllowed && kmeliaSC.isExportZipAllowed());
-
+    operations.put("exportTopic", exportOnTopicAllowed);
+    if (isRoot) {
+      boolean exportOnApplicationAllowed = kmeliaSC.isExportApplicationAllowed(kmeliaSC.getHighestSilverpeasUserRole());
+      operations.put("exportPDFApplication", exportOnApplicationAllowed);
+    }
+    else {
+      operations.put("exportPDFTopic", exportOnTopicAllowed);
+    }
   }
 
   private void addGeneralOperations(final KmeliaSessionController kmeliaSC,
@@ -201,8 +206,7 @@ public class JSONServlet extends HttpServlet {
     operations.put("templates",
         kmeliaSC.isTemplatesSelectionEnabledForRole(SilverpeasRole.fromString(profile)));
     boolean exportOnApplicationAllowed = kmeliaSC.isExportApplicationAllowed(kmeliaSC.getHighestSilverpeasUserRole());
-    operations.put("exportApplication", exportOnApplicationAllowed && kmeliaSC.isExportZipAllowed());
-    operations.put("exportPDF", exportOnApplicationAllowed && kmeliaSC.isExportPdfAllowed());
+    operations.put("exportApplication", exportOnApplicationAllowed);
 
     if (isRoot && kmeliaSC.isStatisticAllowed()) {
       operations.put("statistics", true);

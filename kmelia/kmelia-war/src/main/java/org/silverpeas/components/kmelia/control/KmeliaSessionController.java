@@ -405,13 +405,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       return "2".equalsIgnoreCase(parameterValue) || "3".equalsIgnoreCase(parameterValue);
     }
   }
-
+/*
   public boolean isExportZipAllowed() {
     String parameterValue = this.getComponentParameterValue("exportOptions");
     if (parameterValue == null) {
       return false;
     } else {
-      return "zip".equalsIgnoreCase(parameterValue) || "yes".equalsIgnoreCase(parameterValue) || "both".equalsIgnoreCase(parameterValue);
+      return "zip".equalsIgnoreCase(parameterValue) || "both".equalsIgnoreCase(parameterValue);
     }
   }
 
@@ -423,7 +423,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       return "pdf".equalsIgnoreCase(parameterValue) || "both".equalsIgnoreCase(parameterValue);
     }
   }
-
+*/
   public boolean isExportApplicationAllowed(SilverpeasRole greatestUserRole) {
     String value = this.getComponentParameterValue("exportApplication");
     if ("1".equals(value)) {
