@@ -1913,7 +1913,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
   }
 
   private String checkLanguage(KmeliaSessionController kmelia, PublicationDetail pubDetail) {
-    return pubDetail.getLanguageToDisplay(kmelia.getCurrentLanguage());
+    return pubDetail.getLanguageToDisplay(pubDetail==null?kmelia.getContentLanguage():pubDetail.getLanguage());
   }
 
   /**
