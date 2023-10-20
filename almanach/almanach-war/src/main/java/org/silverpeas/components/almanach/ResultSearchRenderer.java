@@ -31,7 +31,7 @@ import org.silverpeas.core.date.TemporalConverter;
 import org.silverpeas.core.date.TemporalConverter.Conversion;
 import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
 import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.template.SilverpeasTemplateFactory;
+import org.silverpeas.core.template.SilverpeasTemplates;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.kernel.bundle.ResourceLocator;
@@ -159,6 +159,6 @@ public class ResultSearchRenderer extends AbstractResultDisplayer implements Res
    * @return a new Silverpeas Template
    */
   private SilverpeasTemplate getNewTemplate() {
-    return SilverpeasTemplateFactory.createSilverpeasTemplate(templateConfig);
+    return SilverpeasTemplates.createSilverpeasTemplate(templateConfig);
   }
 }
