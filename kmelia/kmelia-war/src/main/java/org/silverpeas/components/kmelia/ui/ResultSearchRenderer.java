@@ -37,7 +37,7 @@ import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
 import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.template.SilverpeasTemplateFactory;
+import org.silverpeas.core.template.SilverpeasTemplates;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
@@ -217,7 +217,7 @@ public class ResultSearchRenderer extends AbstractResultDisplayer {
    * @return a new Silverpeas Template
    */
   protected SilverpeasTemplate getNewTemplate() {
-    return SilverpeasTemplateFactory.createSilverpeasTemplate(templateConfig);
+    return SilverpeasTemplates.createSilverpeasTemplate(templateConfig);
   }
 
   /**

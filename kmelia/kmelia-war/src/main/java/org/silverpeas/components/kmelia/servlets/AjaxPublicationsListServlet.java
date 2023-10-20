@@ -57,7 +57,7 @@ import org.silverpeas.core.index.search.model.QueryDescription;
 import org.silverpeas.core.io.media.image.thumbnail.ThumbnailSettings;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.template.SilverpeasTemplateFactory;
+import org.silverpeas.core.template.SilverpeasTemplates;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.kernel.bundle.ResourceLocator;
@@ -556,7 +556,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       PublicationFragmentSettings fragmentSettings, String language,
       KmeliaSessionController kmeliaScc, MultiSilverpeasBundle resources, Writer out)
       throws IOException {
-    SilverpeasTemplate template = SilverpeasTemplateFactory.createSilverpeasTemplateOnComponents();
+    SilverpeasTemplate template = SilverpeasTemplates.createSilverpeasTemplateOnComponents();
     PublicationDetail pub = aPub.getDetail();
     String name = pub.getName(language);
     String description = pub.getDescription(language);
