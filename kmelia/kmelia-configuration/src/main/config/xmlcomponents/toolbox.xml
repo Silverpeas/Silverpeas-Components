@@ -110,848 +110,1016 @@
       </spaceMapping>
     </profile>
   </profiles>
-  <parameters>
-    <parameter>
-      <name>nbPubliPerPage</name>
+  <groupsOfParameters>
+    <groupOfParameters name="publications">
+    <label>
+      <message lang="fr">Publications</message>
+      <message lang="en">Publications</message>
+      <message lang="de">Publications</message>
+    </label>
+    <description>
+      <message lang="fr">Elles permettent de regrouper plusieurs fichiers et de les enrichir avec
+        des données textuelles plus ou moins structurées
+      </message>
+      <message lang="en">It allows you to group multiple files and enrich them with more or less
+        structured textual data
+      </message>
+      <message lang="de">Sie ermöglichen es, mehrere Dateien Gruppe und bereichern sie mit mehr
+        oder weniger strukturierte Textdaten
+      </message>
+    </description>
+    <order>1</order>
+    <parameters>
+      <parameter>
+        <name>nbPubliPerPage</name>
+        <label>
+          <message lang="fr">Nb Publi / Page</message>
+          <message lang="en">Number of publications per page.</message>
+          <message lang="de">Anzahl der Veröffentlichungen pro Seite.</message>
+        </label>
+        <order>2</order>
+        <mandatory>false</mandatory>
+        <value></value>
+        <type>text</type>
+        <size>5</size>
+        <updatable>always</updatable>
+        <help>
+          <message lang="fr">Permet de définir le nombre de publications affichées par page.</message>
+          <message lang="en">Defines the number of publications displyed on a page.</message>
+          <message lang="de">Definiert die Anzahl der Veröffentlichungen die auf einer Seite angezeigt
+            werden.
+          </message>
+        </help>
+      </parameter>
+      <parameter>
+        <name>isTree</name>
+        <label>
+          <message lang="fr">Gestion arborescente</message>
+          <message lang="en">Tree view</message>
+          <message lang="de">Baumansicht</message>
+        </label>
+        <order>3</order>
+        <mandatory>true</mandatory>
+        <value>0</value>
+        <options>
+          <option>
+            <name>
+              <message lang="fr">Oui avec explorateur de dossiers</message>
+              <message lang="en">Yes with explorer</message>
+              <message lang="de">Ja, mit Explorer</message>
+            </name>
+            <value>0</value>
+          </option>
+          <option>
+            <name>
+              <message lang="fr">Oui sans explorateur de dossiers</message>
+              <message lang="en">Yes without explorer</message>
+              <message lang="de">Ja, ohne Explorer</message>
+            </name>
+            <value>1</value>
+          </option>
+          <option>
+            <name>
+              <message lang="fr">Non</message>
+              <message lang="en">No</message>
+              <message lang="de">Nein</message>
+            </name>
+            <value>2</value>
+          </option>
+        </options>
+        <type>select</type>
+        <updatable>always</updatable>
+        <help>
+          <message lang="fr">Active l'organisation arborescente de dossiers.</message>
+          <message lang="en">Activates the tree organization of folders.</message>
+          <message lang="de">Aktiviert den Baum Organisation von Themen</message>
+        </help>
+      </parameter>
+      <parameter>
+        <name>usePdc</name>
+        <label>
+          <message lang="fr">Classification PDC</message>
+          <message lang="en">Classification Scheme</message>
+          <message lang="de">klassierungsplan</message>
+        </label>
+        <order>4</order>
+        <mandatory>true</mandatory>
+        <value>no</value>
+        <type>checkbox</type>
+        <updatable>always</updatable>
+        <help>
+          <message lang="fr">Les publications créées au sein de cette instance pourront être classées
+            sur le Plan de Classement
+          </message>
+          <message lang="en">Publications would be classified on PDC</message>
+          <message lang="de">Veröffentlichungen werden auf dem KP Klassifiziert</message>
+        </help>
+      </parameter>
+      <parameter>
+        <name>tabContent</name>
+        <label>
+          <message lang="fr">Contenu</message>
+          <message lang="en">Content</message>
+          <message lang="de">Inhalt</message>
+        </label>
+        <order>5</order>
+        <mandatory>true</mandatory>
+        <value>no</value>
+        <type>checkbox</type>
+        <updatable>never</updatable>
+        <help>
+          <message lang="fr">Pour pouvoir ajouter un contenu aux publication</message>
+          <message lang="en">Add some content to a publication</message>
+          <message lang="de">Um einen Inhalt in Veröffentlichungen hinzufügen zu können</message>
+        </help>
+      </parameter>
+      <parameter>
+        <name>tabAttachments</name>
+        <label>
+          <message lang="fr">Fichiers Joints</message>
+          <message lang="en">Attachments</message>
+          <message lang="de">Anhang</message>
+        </label>
+        <order>6</order>
+        <mandatory>true</mandatory>
+        <value>yes</value>
+        <type>checkbox</type>
+        <updatable>never</updatable>
+        <help>
+          <message lang="fr">Pour pouvoir joindre des fichiers à une publication</message>
+          <message lang="en">Add attachments to a publication</message>
+          <message lang="de">Hinzufügen von Anhänge zu einer Veröffentlichung</message>
+        </help>
+      </parameter>
+      <parameter>
+        <name>tabSeeAlso</name>
+        <label>
+          <message lang="fr">Voir Aussi</message>
+          <message lang="en">See also</message>
+          <message lang="de">Siehe auch</message>
+        </label>
+        <order>7</order>
+        <mandatory>true</mandatory>
+        <value>no</value>
+        <type>checkbox</type>
+        <updatable>never</updatable>
+        <help>
+          <message lang="fr">Pour indiquer d'autres publicatins en rapport avec la publication
+            courante.
+          </message>
+          <message lang="en">Indicates publications you might want to see after looking at the current
+            publication.
+          </message>
+          <message lang="de">Um anderen Veröffentlichungen in Zusammenhang mit der aktuellen
+            Veröffentlichung zu zeigen
+          </message>
+        </help>
+      </parameter>
+      <parameter>
+        <name>tabAccessPaths</name>
+        <label>
+          <message lang="fr">Emplacements Multiples</message>
+          <message lang="en">Multiple locations</message>
+          <message lang="de">Mehrere Standorte</message>
+        </label>
+        <order>8</order>
+        <mandatory>true</mandatory>
+        <value>yes</value>
+        <type>checkbox</type>
+        <updatable>always</updatable>
+        <help>
+          <message lang="fr">Pour mettre une même publication à plusieurs endroits dans la hiérachie
+            de cette application ou d'autres.
+          </message>
+          <message lang="en">Indicates that publications can be in many places in the application's
+            hierarchy or in other applications.
+          </message>
+          <message lang="de">Um eine Veröffentlichungen an mehreren Orten in der Komponente Hierarchie
+            anzeigen oder in einer anderen Komponente verwenden
+          </message>
+        </help>
+      </parameter>
+      <parameter>
+        <name>tabReadersList</name>
+        <label>
+          <message lang="fr">Contrôles de lecture</message>
+          <message lang="en">Readers list</message>
+          <message lang="de">Leser-Liste</message>
+        </label>
+        <order>9</order>
+        <mandatory>true</mandatory>
+        <value>yes</value>
+        <type>checkbox</type>
+        <updatable>always</updatable>
+        <help>
+          <message lang="fr">Affiche la liste des personnes ayant lu une publication</message>
+          <message lang="en">Display the list of people having read a publication</message>
+          <message lang="de">Zeigt eine Liste der Personen an, Die eine Veröffentlichung gelesen
+            haben
+          </message>
+        </help>
+      </parameter>
+      <parameter>
+        <name>tabComments</name>
+        <label>
+          <message lang="fr">Commentaires</message>
+          <message lang="en">Comments</message>
+          <message lang="de">Kommentare</message>
+        </label>
+        <order>10</order>
+        <mandatory>true</mandatory>
+        <value>no</value>
+        <type>checkbox</type>
+        <updatable>never</updatable>
+        <help>
+          <message lang="fr">Pour commenter une publication</message>
+          <message lang="en">To comment a publication</message>
+          <message lang="de">Um eine Veröffentlichung zu kommentieren</message>
+        </help>
+      </parameter>
+      <parameter>
+        <name>versionControl</name>
+        <label>
+          <message lang="fr">Pièces jointes versionnées</message>
+          <message lang="en">Versioned attachments</message>
+          <message lang="de">Versionierte Anhänge</message>
+        </label>
+        <order>11</order>
+        <mandatory>true</mandatory>
+        <value>no</value>
+        <type>checkbox</type>
+        <updatable>never</updatable>
+        <help>
+          <message lang="fr">Permet de gérer les versions des fichiers joints. Ce paramêtre n'est
+            modifiable qu'à la création de l'instance.
+          </message>
+          <message lang="en">Attachments are versioned. This parameter isdefined on the creation of
+            the application and can't be updated.
+          </message>
+          <message lang="de">Anhänge werden versioniert. Dieser Parameter wird bei der Erschaffung der
+            Komponente definiert und kann nicht mehr geändert werden.
+          </message>
+        </help>
+      </parameter>
+      <parameter>
+        <name>draft</name>
+        <label>
+          <message lang="fr">Mode brouillon</message>
+          <message lang="en">Draf</message>
+          <message lang="de">Entwurf</message>
+        </label>
+        <order>12</order>
+        <mandatory>true</mandatory>
+        <value>no</value>
+        <type>checkbox</type>
+        <updatable>never</updatable>
+        <help>
+          <message lang="fr">Le mode brouillon permet de travailler sur une publication sans que
+            personne d'autre
+            puisse la voir.
+          </message>
+          <message lang="en">A publication in draft mode is visible only to the author, so he can work
+            on it.
+          </message>
+          <message lang="de">Eine Veröffentlichung im Entwurfs-Modus ist nur für den Autor sichtbar,
+            so kann er daran arbeiten.
+          </message>
+        </help>
+      </parameter>
+      <parameter>
+        <name>delegatedTopicManagement</name>
+        <label>
+          <message lang="fr">Gestion déléguée des dossiers</message>
+          <message lang="en">Folder management delegation</message>
+          <message lang="de">A_TRADUIRE</message>
+        </label>
+        <order>15</order>
+        <mandatory>true</mandatory>
+        <value>no</value>
+        <type>checkbox</type>
+        <updatable>never</updatable>
+        <help>
+          <message lang="fr">La gestion des dossiers est déléguée aux publieurs et rédacteurs.
+          </message>
+          <message lang="en">Publishers and writers can manage the folders.</message>
+          <message lang="de">Veröffentlicher und Herausgeber können die Themen verwalten.</message>
+        </help>
+      </parameter>
+      <parameter>
+        <name>useAuthor</name>
+        <label>
+          <message lang="fr">Champ Auteur</message>
+          <message lang="en">Author field</message>
+          <message lang="de">Autor Feld</message>
+        </label>
+        <order>16</order>
+        <mandatory>true</mandatory>
+        <value>no</value>
+        <type>checkbox</type>
+        <updatable>always</updatable>
+        <help>
+          <message lang="fr">Les documents créés au sein de cette instance pourront comporter un champ
+            supplémentaire 'Auteur'.
+          </message>
+          <message lang="en">Publication have a field to enter the name of the author.</message>
+          <message lang="de">Veröffentlichung verfügen über ein Feld, um den Namen des Autors
+            anzugeben.
+          </message>
+        </help>
+      </parameter>
+      <parameter>
+        <name>openSingleAttachment</name>
+        <label>
+          <message lang="fr">Ouverture directe fichier joint</message>
+          <message lang="en">Directly open attachments</message>
+          <message lang="de">Anhänge direkt öffnen</message>
+        </label>
+        <order>17</order>
+        <mandatory>true</mandatory>
+        <value>no</value>
+        <type>checkbox</type>
+        <updatable>never</updatable>
+        <help>
+          <message lang="fr">Si une publication contient un seul fichier joint alors l'ouverture de la
+            publication déclenche automatiquement l'ouverture du fichier joint.
+          </message>
+          <message lang="en">Opening a publication with only one attachment will open this attachment
+            automatically.
+          </message>
+          <message lang="de">Öffnen einer Veröffentlichung mit nur einem Anhang wird diesen Anhang
+            automatisch öffnen.
+          </message>
+        </help>
+      </parameter>
+      <parameter>
+        <name>importFiles</name>
+        <label>
+          <message lang="fr">Importation de document(s)</message>
+          <message lang="en">Importing document(s)</message>
+          <message lang="de">Dokument(e) importieren</message>
+        </label>
+        <order>18</order>
+        <mandatory>true</mandatory>
+        <value>0</value>
+        <options>
+          <option>
+            <name>
+              <message lang="fr">Non</message>
+              <message lang="en">No</message>
+              <message lang="de">Nein</message>
+            </name>
+            <value>0</value>
+          </option>
+          <option>
+            <name>
+              <message lang="fr">Import unitaire</message>
+              <message lang="en">Unit import</message>
+              <message lang="de">Einzelimport</message>
+            </name>
+            <value>1</value>
+          </option>
+          <option>
+            <name>
+              <message lang="fr">Import massif</message>
+              <message lang="en">Massive import</message>
+              <message lang="de">Massiven Import</message>
+            </name>
+            <value>2</value>
+          </option>
+          <option>
+            <name>
+              <message lang="fr">Tous</message>
+              <message lang="en">All</message>
+              <message lang="de">Alle</message>
+            </name>
+            <value>3</value>
+          </option>
+        </options>
+        <type>select</type>
+        <updatable>always</updatable>
+        <help>
+          <message lang="fr">Valeurs possibles:Non, Import unitaire, Import massif, Importunitaire et
+            massif.
+          </message>
+          <message lang="en">Available values : No, Unit import, Massive import, Unit and massive
+            import.
+          </message>
+          <message lang="de">Verfügbare Werte: Nein, Einzelimport, Massiven Import, Einzel und
+            massiven Import
+          </message>
+        </help>
+      </parameter>
+      <parameter>
+        <name>targetValidation</name>
+        <label>
+          <message lang="fr">Validation de publication</message>
+          <message lang="en">Publication validation</message>
+          <message lang="de">Veröffentlichungsbestätigung</message>
+        </label>
+        <order>19</order>
+        <mandatory>true</mandatory>
+        <value>no</value>
+        <type>checkbox</type>
+        <updatable>never</updatable>
+        <help>
+          <message lang="fr">La validation ciblée permet aux rédacteurs de choisir le publieur devant
+            valider leurs publications. Ceci permet d'éviter le phénomène de spam auprès des
+            publieurs.
+          </message>
+          <message lang="en">The targeted validation option allows writers to choose which publisher
+            have to validate theirs publications. This avoid spam behaviour.
+          </message>
+          <message lang="de">Gezielte Validierung erlaubt es dem Redaktor einen Validator auszuwählen.
+            Dieses Verhalten Vermeidet Spam.
+          </message>
+        </help>
+      </parameter>
+      <parameter>
+        <name>massiveDragAndDrop</name>
+        <label>
+          <message lang="fr">Glisser / Déposer</message>
+          <message lang="en">Drag And Drop</message>
+          <message lang="de">Drag And Drop</message>
+        </label>
+        <order>21</order>
+        <mandatory>true</mandatory>
+        <value>no</value>
+        <type>checkbox</type>
+        <updatable>always</updatable>
+        <help>
+          <message lang="fr">Cette fonction permet de créer des dossiers et des publications par
+            glisser/déposer dans une zone de l'écran.
+          </message>
+          <message lang="en">This function allow to the manager to create topics and publications
+            using drag and drop.
+          </message>
+          <message lang="de">Diese Funktion ermöglicht es dem Manager Themen und Publikationen mit
+            Hilfe von Drag and Drop zu erstellen.
+          </message>
+        </help>
+      </parameter>
+      <parameter>
+        <name>coWriting</name>
+        <label>
+          <message lang="fr">Co Rédaction</message>
+          <message lang="en">Co-writing</message>
+          <message lang="de">Co-Schreibung</message>
+        </label>
+        <order>22</order>
+        <mandatory>true</mandatory>
+        <value>no</value>
+        <type>checkbox</type>
+        <updatable>never</updatable>
+        <help>
+          <message lang="fr">Cette fonction permet à un rédacteur de pouvoir modifier n'importe quelle
+            publication.
+          </message>
+          <message lang="en">This function makes it possible to a writer to modify any publications.
+          </message>
+          <message lang="de">Diese Funktion macht es einem Redaktor möglich, jede Veröffentlichung zu
+            ändern.
+          </message>
+        </help>
+      </parameter>
+      <parameter>
+        <name>publicationAlwaysVisible</name>
+        <label>
+          <message lang="fr">Publication toujours visible</message>
+          <message lang="en">Publication always visible</message>
+          <message lang="de">Veröffentlichung immer sichtbar</message>
+        </label>
+        <order>23</order>
+        <mandatory>true</mandatory>
+        <value>no</value>
+        <type>checkbox</type>
+        <updatable>never</updatable>
+        <help>
+          <message lang="fr">La dernière version validée d'une publication est toujours visible même
+            lorsqu'elle est en attente de validation.
+          </message>
+          <message lang="en">The latest valid version of a publication is always visible even if it is
+            waiting approval.
+          </message>
+          <message lang="de">Die letztgültigen Fassung einer Veröffentlichung ist immer sichtbar, auch
+            wenn es auf einer Genehmigung wartet.
+          </message>
+        </help>
+      </parameter>
+      <parameter>
+        <name>displayNB</name>
+        <label>
+          <message lang="fr">Affichage nombre de publications</message>
+          <message lang="en">Display the number of publications</message>
+          <message lang="de">Anzahl der Veröffentlichungen zeigen</message>
+        </label>
+        <order>26</order>
+        <mandatory>true</mandatory>
+        <value>no</value>
+        <type>checkbox</type>
+        <updatable>always</updatable>
+        <help>
+          <message lang="fr">Affiche le nombre de publications par dossier.</message>
+          <message lang="en">Display the number of publications per folder.</message>
+          <message lang="de">Anzahl der Veröffentlichungen per Thema zeigen</message>
+        </help>
+      </parameter>
+      <parameter>
+        <name>rightsOnTopics</name>
+        <label>
+          <message lang="fr">Droits sur les dossiers</message>
+          <message lang="en">Rights on folders</message>
+          <message lang="de">Rechte auf die Themen</message>
+        </label>
+        <order>27</order>
+        <mandatory>true</mandatory>
+        <value>no</value>
+        <type>checkbox</type>
+        <updatable>never</updatable>
+        <help>
+          <message lang="fr">Permet de définir des droits d'accès au niveau des dossiers.</message>
+          <message lang="en">Allow to define rights on folders.</message>
+          <message lang="de">A_TRADUIRE</message>
+        </help>
+      </parameter>
+      <parameter>
+        <name>nbDayForReservation</name>
+        <label>
+          <message lang="fr">Gestion des retards</message>
+          <message lang="en">Backlog management</message>
+          <message lang="de">Erlaubt es, Zugangsrechte auf die Themen zu bestimmen.</message>
+        </label>
+        <order>28</order>
+        <mandatory>false</mandatory>
+        <value></value>
+        <type>text</type>
+        <size>5</size>
+        <updatable>always</updatable>
+        <help>
+          <message lang="fr">Cette option permet de choisir un délais de réservation des fichiers
+            joints et d'en gérer les retards.
+            Ce délais est exprimé en jours et ne tiens pas compte des samedis et dimanches.
+          </message>
+          <message lang="en">This option defines a maximum duration for booking a file and managing
+            the backlog.
+            This duration is expressed in days, and week-ends are not taken into account.
+          </message>
+          <message lang="de">Diese Option erlaubt, ein Buchungsfristen der verbundenen Dateien zu
+            wählen und die Verspätungen zu verwalten.
+            Die Frist ist in den Tagen ausgedrückt und berücksichtige keine Samstage und Sonntage.
+          </message>
+        </help>
+      </parameter>
+      <parameter>
+        <name>wysiwygOnTopics</name>
+        <label>
+          <message lang="fr">Description riche</message>
+          <message lang="en">Rich description</message>
+          <message lang="de">Reiche Beschreibung</message>
+        </label>
+        <order>29</order>
+        <mandatory>true</mandatory>
+        <value>no</value>
+        <type>checkbox</type>
+        <updatable>always</updatable>
+        <help>
+          <message lang="fr">Ce paramètre permet de saisir une description Wysiwyg sur un dossier qui
+            sera affichée dans le dossier.
+          </message>
+          <message lang="en">This feature allows to make a rich description of a folder.</message>
+          <message lang="de">Diese Funktion ermöglicht es, einen reichen Beschreibung eines Themas zu
+            machen.
+          </message>
+        </help>
+      </parameter>
+      <parameter>
+        <name>publicationSort</name>
+        <label>
+          <message lang="fr">Ordre des publications</message>
+          <message lang="en">Publications sorting</message>
+          <message lang="de">Publications sorting</message>
+        </label>
+        <order>31</order>
+        <mandatory>true</mandatory>
+        <value>2</value>
+        <options>
+          <option>
+            <name>
+              <message lang="fr">Nom du créateur croissant</message>
+              <message lang="en">Ascending creator's name</message>
+              <message lang="de">Ascending creator's name</message>
+            </name>
+            <value>0</value>
+          </option>
+          <option>
+            <name>
+              <message lang="fr">Date de modification croissante</message>
+              <message lang="en">Ascending update date</message>
+              <message lang="de">Ascending update date</message>
+            </name>
+            <value>1</value>
+          </option>
+          <option>
+            <name>
+              <message lang="fr">Date de modification décroissante</message>
+              <message lang="en">Descending update date</message>
+              <message lang="de">Descending update date</message>
+            </name>
+            <value>2</value>
+          </option>
+          <option>
+            <name>
+              <message lang="fr">Importance croissante</message>
+              <message lang="en">Ascending importance</message>
+              <message lang="de">Ascending importance</message>
+            </name>
+            <value>3</value>
+          </option>
+          <option>
+            <name>
+              <message lang="fr">Titre croissant</message>
+              <message lang="en">Ascending title</message>
+              <message lang="de">Ascending title</message>
+            </name>
+            <value>4</value>
+          </option>
+          <option>
+            <name>
+              <message lang="fr">Date de création croissante</message>
+              <message lang="en">Ascending creation date</message>
+              <message lang="de">Ascending creation date</message>
+            </name>
+            <value>5</value>
+          </option>
+          <option>
+            <name>
+              <message lang="fr">Date de création décroissante</message>
+              <message lang="en">Descending creation date</message>
+              <message lang="de">Descending creation date</message>
+            </name>
+            <value>6</value>
+          </option>
+          <option>
+            <name>
+              <message lang="fr">Description croissante</message>
+              <message lang="en">Ascending description</message>
+              <message lang="de">Ascending description</message>
+            </name>
+            <value>7</value>
+          </option>
+        </options>
+        <type>select</type>
+        <updatable>always</updatable>
+        <help>
+          <message lang="fr">Permet de définir l'ordre d'affichage des publications par défaut.
+          </message>
+          <message lang="en">Sets the display order of publications.</message>
+          <message lang="de">Sets the display order of publications.</message>
+        </help>
+      </parameter>
+    </parameters>
+    </groupOfParameters>
+
+    <groupOfParameters name="sharing">
       <label>
-        <message lang="fr">Nb Publi / Page</message>
-        <message lang="en">Number of publications per page.</message>
-        <message lang="de">Anzahl der Veröffentlichungen pro Seite.</message>
+        <message lang="fr">Partages</message>
+        <message lang="en">Sharing</message>
+        <message lang="de">Sharing</message>
       </label>
+      <description>
+        <message lang="fr">Partagez en toute sécurité des contenus avec des tiers non utilisateurs
+          de cette plate-forme
+        </message>
+        <message lang="en">Share content safely with third non-users of this platform</message>
+        <message lang="de">Sichere gemeinsame Inhalte mit Dritt Nicht-Nutzer dieser Plattform
+        </message>
+      </description>
       <order>2</order>
-      <mandatory>false</mandatory>
-      <value></value>
-      <type>text</type>
-      <size>5</size>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Permet de définir le nombre de publications affichées par page.</message>
-        <message lang="en">Defines the number of publications displyed on a page.</message>
-        <message lang="de">Definiert die Anzahl der Veröffentlichungen die auf einer Seite angezeigt
-          werden.
-        </message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>isTree</name>
+      <parameters>
+        <parameter>
+          <name>useFileSharing</name>
+          <label>
+            <message lang="fr">Fichiers partageables</message>
+            <message lang="en">Share attachments</message>
+            <message lang="de">Anhänge freigeben</message>
+          </label>
+          <order>30</order>
+          <mandatory>true</mandatory>
+          <value>0</value>
+          <options>
+            <option>
+              <name>
+                <message lang="fr">Désactivé</message>
+                <message lang="en">Deactivated</message>
+                <message lang="de">Untauglich</message>
+              </name>
+              <value>0</value>
+            </option>
+            <option>
+              <name>
+                <message lang="fr">Pour les gestionnaires</message>
+                <message lang="en">For managers</message>
+                <message lang="de">Für Manager</message>
+              </name>
+              <value>1</value>
+            </option>
+            <option>
+              <name>
+                <message lang="fr">Pour les contributeurs</message>
+                <message lang="en">For contributors</message>
+                <message lang="de">Für Beiträger</message>
+              </name>
+              <value>2</value>
+            </option>
+            <option>
+              <name>
+                <message lang="fr">Pour tous les utilisateurs</message>
+                <message lang="en">For all users</message>
+                <message lang="de">für alle Benutzer</message>
+              </name>
+              <value>3</value>
+            </option>
+          </options>
+          <type>select</type>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Ce paramètre permet d'activer le partage de fichiers à des tiers non
+              utilisateurs du portail.
+            </message>
+            <message lang="en">This feature allows to activate file sharing with persons who have no
+              access to the portal.
+            </message>
+            <message lang="de">Mit dieser Funktion können Sie die Dateifreigabe mit Personen, die keinen
+              Zugang zu dem Portal haben, aktivieren.
+            </message>
+          </help>
+          <warning>
+            <message lang="fr">Attention! En sélectionnant cette option, vous allez permettre de
+              partager librement les fichiers avec des utilisateurs non référencés dans le portail.
+            </message>
+            <message lang="en">Caution! By selecting this option, you will enable to freely share files
+              with users not identified in the portal.
+            </message>
+            <message lang="de">Caution! By selecting this option, you will enable to freely share files
+              with users not identified in the portal.
+            </message>
+          </warning>
+        </parameter>
+
+        <parameter>
+          <name>useFolderSharing</name>
+          <label>
+            <message lang="fr">Dossiers partageables</message>
+            <message lang="en">Folders sharing</message>
+            <message lang="de">Folders sharing</message>
+          </label>
+          <order>32</order>
+          <mandatory>true</mandatory>
+          <value>0</value>
+          <options>
+            <option>
+              <name>
+                <message lang="fr">Désactivé</message>
+                <message lang="en">Deactivated</message>
+                <message lang="de">Untauglich</message>
+              </name>
+              <value>0</value>
+            </option>
+            <option>
+              <name>
+                <message lang="fr">Pour les gestionnaires</message>
+                <message lang="en">For managers</message>
+                <message lang="de">Für Manager</message>
+              </name>
+              <value>1</value>
+            </option>
+            <option>
+              <name>
+                <message lang="fr">Pour les contributeurs</message>
+                <message lang="en">For contributors</message>
+                <message lang="de">Für Beiträger</message>
+              </name>
+              <value>2</value>
+            </option>
+            <option>
+              <name>
+                <message lang="fr">Pour tous les utilisateurs</message>
+                <message lang="en">For all users</message>
+                <message lang="de">für alle Benutzer</message>
+              </name>
+              <value>3</value>
+            </option>
+          </options>
+          <type>select</type>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Ce paramètre permet d'activer le partage de dossiers à des tiers non
+              utilisateurs du portail.
+            </message>
+            <message lang="en">This feature allows to activate folders sharing with persons who have no
+              access to the portal.
+            </message>
+            <message lang="de">This feature allows to activate folders sharing with persons who have no
+              access to the portal.
+            </message>
+          </help>
+          <warning>
+            <message lang="fr">Attention! En sélectionnant cette option, vous allez permettre de
+              partager librement les dossiers avec des utilisateurs non référencés dans le portail.
+            </message>
+            <message lang="en">Caution! By selecting this option, you will enable to freely share
+              folders with users not identified in the portal.
+            </message>
+            <message lang="de">Caution! By selecting this option, you will enable to freely share
+              folders with users not identified in the portal.
+            </message>
+          </warning>
+        </parameter>
+      </parameters>
+    </groupOfParameters>
+    <groupOfParameters name="export">
       <label>
-        <message lang="fr">Gestion arborescente</message>
-        <message lang="en">Tree view</message>
-        <message lang="de">Baumansicht</message>
+        <message lang="fr">Export</message>
+        <message lang="en">Export</message>
+        <message lang="de">Export</message>
       </label>
+      <description>
+        <message lang="fr">Export de l'application, des dossiers ou d'une sélection de publications</message>
+        <message lang="en">Export of the application, files or a selection of publications</message>
+        <message lang="de">Export der Anwendung, von Ordnern oder einer Auswahl von Publikationen</message>
+      </description>
       <order>3</order>
-      <mandatory>true</mandatory>
-      <value>0</value>
-      <options>
-        <option>
-          <name>
-            <message lang="fr">Oui avec explorateur de dossiers</message>
-            <message lang="en">Yes with explorer</message>
-            <message lang="de">Ja, mit Explorer</message>
-          </name>
+      <parameters>
+        <parameter>
+          <name>exportApplication</name>
+          <label>
+            <message lang="fr">Exportation de l'application</message>
+            <message lang="en">Export application</message>
+            <message lang="de">Export</message>
+          </label>
+          <order>33</order>
+          <mandatory>true</mandatory>
           <value>0</value>
-        </option>
-        <option>
-          <name>
-            <message lang="fr">Oui sans explorateur de dossiers</message>
-            <message lang="en">Yes without explorer</message>
-            <message lang="de">Ja, ohne Explorer</message>
-          </name>
-          <value>1</value>
-        </option>
-        <option>
-          <name>
-            <message lang="fr">Non</message>
-            <message lang="en">No</message>
-            <message lang="de">Nein</message>
-          </name>
-          <value>2</value>
-        </option>
-      </options>
-      <type>select</type>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Active l'organisation arborescente de dossiers.</message>
-        <message lang="en">Activates the tree organization of folders.</message>
-        <message lang="de">Aktiviert den Baum Organisation von Themen</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>usePdc</name>
-      <label>
-        <message lang="fr">Classification PDC</message>
-        <message lang="en">Classification Scheme</message>
-        <message lang="de">klassierungsplan</message>
-      </label>
-      <order>4</order>
-      <mandatory>true</mandatory>
-      <value>no</value>
-      <type>checkbox</type>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Les publications créées au sein de cette instance pourront être classées
-          sur le Plan de Classement
-        </message>
-        <message lang="en">Publications would be classified on PDC</message>
-        <message lang="de">Veröffentlichungen werden auf dem KP Klassifiziert</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>tabContent</name>
-      <label>
-        <message lang="fr">Contenu</message>
-        <message lang="en">Content</message>
-        <message lang="de">Inhalt</message>
-      </label>
-      <order>5</order>
-      <mandatory>true</mandatory>
-      <value>no</value>
-      <type>checkbox</type>
-      <updatable>never</updatable>
-      <help>
-        <message lang="fr">Pour pouvoir ajouter un contenu aux publication</message>
-        <message lang="en">Add some content to a publication</message>
-        <message lang="de">Um einen Inhalt in Veröffentlichungen hinzufügen zu können</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>tabAttachments</name>
-      <label>
-        <message lang="fr">Fichiers Joints</message>
-        <message lang="en">Attachments</message>
-        <message lang="de">Anhang</message>
-      </label>
-      <order>6</order>
-      <mandatory>true</mandatory>
-      <value>yes</value>
-      <type>checkbox</type>
-      <updatable>never</updatable>
-      <help>
-        <message lang="fr">Pour pouvoir joindre des fichiers à une publication</message>
-        <message lang="en">Add attachments to a publication</message>
-        <message lang="de">Hinzufügen von Anhänge zu einer Veröffentlichung</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>tabSeeAlso</name>
-      <label>
-        <message lang="fr">Voir Aussi</message>
-        <message lang="en">See also</message>
-        <message lang="de">Siehe auch</message>
-      </label>
-      <order>7</order>
-      <mandatory>true</mandatory>
-      <value>no</value>
-      <type>checkbox</type>
-      <updatable>never</updatable>
-      <help>
-        <message lang="fr">Pour indiquer d'autres publicatins en rapport avec la publication
-          courante.
-        </message>
-        <message lang="en">Indicates publications you might want to see after looking at the current
-          publication.
-        </message>
-        <message lang="de">Um anderen Veröffentlichungen in Zusammenhang mit der aktuellen
-          Veröffentlichung zu zeigen
-        </message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>tabAccessPaths</name>
-      <label>
-        <message lang="fr">Emplacements Multiples</message>
-        <message lang="en">Multiple locations</message>
-        <message lang="de">Mehrere Standorte</message>
-      </label>
-      <order>8</order>
-      <mandatory>true</mandatory>
-      <value>yes</value>
-      <type>checkbox</type>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Pour mettre une même publication à plusieurs endroits dans la hiérachie
-          de cette application ou d'autres.
-        </message>
-        <message lang="en">Indicates that publications can be in many places in the application's
-          hierarchy or in other applications.
-        </message>
-        <message lang="de">Um eine Veröffentlichungen an mehreren Orten in der Komponente Hierarchie
-          anzeigen oder in einer anderen Komponente verwenden
-        </message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>tabReadersList</name>
-      <label>
-        <message lang="fr">Contrôles de lecture</message>
-        <message lang="en">Readers list</message>
-        <message lang="de">Leser-Liste</message>
-      </label>
-      <order>9</order>
-      <mandatory>true</mandatory>
-      <value>yes</value>
-      <type>checkbox</type>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Affiche la liste des personnes ayant lu une publication</message>
-        <message lang="en">Display the list of people having read a publication</message>
-        <message lang="de">Zeigt eine Liste der Personen an, Die eine Veröffentlichung gelesen
-          haben
-        </message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>tabComments</name>
-      <label>
-        <message lang="fr">Commentaires</message>
-        <message lang="en">Comments</message>
-        <message lang="de">Kommentare</message>
-      </label>
-      <order>10</order>
-      <mandatory>true</mandatory>
-      <value>no</value>
-      <type>checkbox</type>
-      <updatable>never</updatable>
-      <help>
-        <message lang="fr">Pour commenter une publication</message>
-        <message lang="en">To comment a publication</message>
-        <message lang="de">Um eine Veröffentlichung zu kommentieren</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>versionControl</name>
-      <label>
-        <message lang="fr">Pièces jointes versionnées</message>
-        <message lang="en">Versioned attachments</message>
-        <message lang="de">Versionierte Anhänge</message>
-      </label>
-      <order>11</order>
-      <mandatory>true</mandatory>
-      <value>no</value>
-      <type>checkbox</type>
-      <updatable>never</updatable>
-      <help>
-        <message lang="fr">Permet de gérer les versions des fichiers joints. Ce paramêtre n'est
-          modifiable qu'à la création de l'instance.
-        </message>
-        <message lang="en">Attachments are versioned. This parameter isdefined on the creation of
-          the application and can't be updated.
-        </message>
-        <message lang="de">Anhänge werden versioniert. Dieser Parameter wird bei der Erschaffung der
-          Komponente definiert und kann nicht mehr geändert werden.
-        </message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>draft</name>
-      <label>
-        <message lang="fr">Mode brouillon</message>
-        <message lang="en">Draf</message>
-        <message lang="de">Entwurf</message>
-      </label>
-      <order>12</order>
-      <mandatory>true</mandatory>
-      <value>no</value>
-      <type>checkbox</type>
-      <updatable>never</updatable>
-      <help>
-        <message lang="fr">Le mode brouillon permet de travailler sur une publication sans que
-          personne d'autre
-          puisse la voir.
-        </message>
-        <message lang="en">A publication in draft mode is visible only to the author, so he can work
-          on it.
-        </message>
-        <message lang="de">Eine Veröffentlichung im Entwurfs-Modus ist nur für den Autor sichtbar,
-          so kann er daran arbeiten.
-        </message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>delegatedTopicManagement</name>
-      <label>
-        <message lang="fr">Gestion déléguée des dossiers</message>
-        <message lang="en">Folder management delegation</message>
-        <message lang="de">A_TRADUIRE</message>
-      </label>
-      <order>15</order>
-      <mandatory>true</mandatory>
-      <value>no</value>
-      <type>checkbox</type>
-      <updatable>never</updatable>
-      <help>
-        <message lang="fr">La gestion des dossiers est déléguée aux publieurs et rédacteurs.
-        </message>
-        <message lang="en">Publishers and writers can manage the folders.</message>
-        <message lang="de">Veröffentlicher und Herausgeber können die Themen verwalten.</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>useAuthor</name>
-      <label>
-        <message lang="fr">Champ Auteur</message>
-        <message lang="en">Author field</message>
-        <message lang="de">Autor Feld</message>
-      </label>
-      <order>16</order>
-      <mandatory>true</mandatory>
-      <value>no</value>
-      <type>checkbox</type>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Les documents créés au sein de cette instance pourront comporter un champ
-          supplémentaire 'Auteur'.
-        </message>
-        <message lang="en">Publication have a field to enter the name of the author.</message>
-        <message lang="de">Veröffentlichung verfügen über ein Feld, um den Namen des Autors
-          anzugeben.
-        </message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>openSingleAttachment</name>
-      <label>
-        <message lang="fr">Ouverture directe fichier joint</message>
-        <message lang="en">Directly open attachments</message>
-        <message lang="de">Anhänge direkt öffnen</message>
-      </label>
-      <order>17</order>
-      <mandatory>true</mandatory>
-      <value>no</value>
-      <type>checkbox</type>
-      <updatable>never</updatable>
-      <help>
-        <message lang="fr">Si une publication contient un seul fichier joint alors l'ouverture de la
-          publication déclenche automatiquement l'ouverture du fichier joint.
-        </message>
-        <message lang="en">Opening a publication with only one attachment will open this attachment
-          automatically.
-        </message>
-        <message lang="de">Öffnen einer Veröffentlichung mit nur einem Anhang wird diesen Anhang
-          automatisch öffnen.
-        </message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>importFiles</name>
-      <label>
-        <message lang="fr">Importation de document(s)</message>
-        <message lang="en">Importing document(s)</message>
-        <message lang="de">Dokument(e) importieren</message>
-      </label>
-      <order>18</order>
-      <mandatory>true</mandatory>
-      <value>0</value>
-      <options>
-        <option>
-          <name>
-            <message lang="fr">Non</message>
-            <message lang="en">No</message>
-            <message lang="de">Nein</message>
-          </name>
+          <options>
+            <option>
+              <name>
+                <message lang="fr">Désactivé</message>
+                <message lang="en">Deactivated</message>
+                <message lang="de">Untauglich</message>
+              </name>
+              <value>0</value>
+            </option>
+            <option>
+              <name>
+                <message lang="fr">Pour les gestionnaires</message>
+                <message lang="en">For managers</message>
+                <message lang="de">Für Manager</message>
+              </name>
+              <value>1</value>
+            </option>
+            <option>
+              <name>
+                <message lang="fr">Pour les contributeurs</message>
+                <message lang="en">For contributors</message>
+                <message lang="de">Für Beiträger</message>
+              </name>
+              <value>2</value>
+            </option>
+            <option>
+              <name>
+                <message lang="fr">Pour tous les utilisateurs</message>
+                <message lang="en">For all users</message>
+                <message lang="de">für alle Benutzer</message>
+              </name>
+              <value>3</value>
+            </option>
+          </options>
+          <type>select</type>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Cette fonction permet d'exporter l'application.
+            </message>
+            <message lang="en">This function allow the user to export the whole application
+            </message>
+            <message lang="de">Mit dieser Funktion können Sie die Anwendung exportieren.
+            </message>
+          </help>
+        </parameter>
+
+        <parameter>
+          <name>exportTopic</name>
+          <label>
+            <message lang="fr">Exportation de dossiers</message>
+            <message lang="en">Export topics</message>
+            <message lang="de">Export</message>
+          </label>
+          <order>34</order>
+          <mandatory>true</mandatory>
           <value>0</value>
-        </option>
-        <option>
-          <name>
-            <message lang="fr">Import unitaire</message>
-            <message lang="en">Unit import</message>
-            <message lang="de">Einzelimport</message>
-          </name>
-          <value>1</value>
-        </option>
-        <option>
-          <name>
-            <message lang="fr">Import massif</message>
-            <message lang="en">Massive import</message>
-            <message lang="de">Massiven Import</message>
-          </name>
-          <value>2</value>
-        </option>
-        <option>
-          <name>
-            <message lang="fr">Tous</message>
-            <message lang="en">All</message>
-            <message lang="de">Alle</message>
-          </name>
-          <value>3</value>
-        </option>
-      </options>
-      <type>select</type>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Valeurs possibles:Non, Import unitaire, Import massif, Importunitaire et
-          massif.
-        </message>
-        <message lang="en">Available values : No, Unit import, Massive import, Unit and massive
-          import.
-        </message>
-        <message lang="de">Verfügbare Werte: Nein, Einzelimport, Massiven Import, Einzel und
-          massiven Import
-        </message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>targetValidation</name>
-      <label>
-        <message lang="fr">Validation de publication</message>
-        <message lang="en">Publication validation</message>
-        <message lang="de">Veröffentlichungsbestätigung</message>
-      </label>
-      <order>19</order>
-      <mandatory>true</mandatory>
-      <value>no</value>
-      <type>checkbox</type>
-      <updatable>never</updatable>
-      <help>
-        <message lang="fr">La validation ciblée permet aux rédacteurs de choisir le publieur devant
-          valider leurs publications. Ceci permet d'éviter le phénomène de spam auprès des
-          publieurs.
-        </message>
-        <message lang="en">The targeted validation option allows writers to choose which publisher
-          have to validate theirs publications. This avoid spam behaviour.
-        </message>
-        <message lang="de">Gezielte Validierung erlaubt es dem Redaktor einen Validator auszuwählen.
-          Dieses Verhalten Vermeidet Spam.
-        </message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>exportComponent</name>
-      <label>
-        <message lang="fr">Exportation de l'application</message>
-        <message lang="en">Export application</message>
-        <message lang="de">Komponente Export</message>
-      </label>
-      <order>20</order>
-      <mandatory>true</mandatory>
-      <value>no</value>
-      <options>
-        <option>
-          <name>
-            <message lang="fr">Non</message>
-            <message lang="en">No</message>
-            <message lang="de">Nein</message>
-          </name>
-          <value>no</value>
-        </option>
-        <option>
-          <name>
-            <message lang="fr">Au format ZIP</message>
-            <message lang="en">In a zip file</message>
-            <message lang="de">In einer ZIP-Datei</message>
-          </name>
-          <value>yes</value>
-        </option>
-        <option>
-          <name>
-            <message lang="fr">Des fichiers PDF</message>
-            <message lang="en">In pdf files</message>
-            <message lang="de">In einer PDF-Datei</message>
-          </name>
-          <value>pdf</value>
-        </option>
-        <option>
-          <name>
-            <message lang="fr">Tous</message>
-            <message lang="en">All</message>
-            <message lang="de">Alle</message>
-          </name>
-          <value>both</value>
-        </option>
-      </options>
-      <type>select</type>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Cette fonction permet d'exporter toutes les publications visibles de
-          l'application.
-        </message>
-        <message lang="en">This function allow the user to export all the visible publications of
-          the application.
-        </message>
-        <message lang="de">Diese Funktion ermöglicht es dem Benutzer, alle sichtbaren
-          Veröffentlichungen in der Komponente zu exportieren.
-        </message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>massiveDragAndDrop</name>
-      <label>
-        <message lang="fr">Glisser / Déposer</message>
-        <message lang="en">Drag And Drop</message>
-        <message lang="de">Drag And Drop</message>
-      </label>
-      <order>21</order>
-      <mandatory>true</mandatory>
-      <value>no</value>
-      <type>checkbox</type>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Cette fonction permet de créer des dossiers et des publications par
-          glisser/déposer dans une zone de l'écran.
-        </message>
-        <message lang="en">This function allow to the manager to create topics and publications
-          using drag and drop.
-        </message>
-        <message lang="de">Diese Funktion ermöglicht es dem Manager Themen und Publikationen mit
-          Hilfe von Drag and Drop zu erstellen.
-        </message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>coWriting</name>
-      <label>
-        <message lang="fr">Co Rédaction</message>
-        <message lang="en">Co-writing</message>
-        <message lang="de">Co-Schreibung</message>
-      </label>
-      <order>22</order>
-      <mandatory>true</mandatory>
-      <value>no</value>
-      <type>checkbox</type>
-      <updatable>never</updatable>
-      <help>
-        <message lang="fr">Cette fonction permet à un rédacteur de pouvoir modifier n'importe quelle
-          publication.
-        </message>
-        <message lang="en">This function makes it possible to a writer to modify any publications.
-        </message>
-        <message lang="de">Diese Funktion macht es einem Redaktor möglich, jede Veröffentlichung zu
-          ändern.
-        </message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>publicationAlwaysVisible</name>
-      <label>
-        <message lang="fr">Publication toujours visible</message>
-        <message lang="en">Publication always visible</message>
-        <message lang="de">Veröffentlichung immer sichtbar</message>
-      </label>
-      <order>23</order>
-      <mandatory>true</mandatory>
-      <value>no</value>
-      <type>checkbox</type>
-      <updatable>never</updatable>
-      <help>
-        <message lang="fr">La dernière version validée d'une publication est toujours visible même
-          lorsqu'elle est en attente de validation.
-        </message>
-        <message lang="en">The latest valid version of a publication is always visible even if it is
-          waiting approval.
-        </message>
-        <message lang="de">Die letztgültigen Fassung einer Veröffentlichung ist immer sichtbar, auch
-          wenn es auf einer Genehmigung wartet.
-        </message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>displayNB</name>
-      <label>
-        <message lang="fr">Affichage nombre de publications</message>
-        <message lang="en">Display the number of publications</message>
-        <message lang="de">Anzahl der Veröffentlichungen zeigen</message>
-      </label>
-      <order>26</order>
-      <mandatory>true</mandatory>
-      <value>no</value>
-      <type>checkbox</type>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Affiche le nombre de publications par dossier.</message>
-        <message lang="en">Display the number of publications per folder.</message>
-        <message lang="de">Anzahl der Veröffentlichungen per Thema zeigen</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>rightsOnTopics</name>
-      <label>
-        <message lang="fr">Droits sur les dossiers</message>
-        <message lang="en">Rights on folders</message>
-        <message lang="de">Rechte auf die Themen</message>
-      </label>
-      <order>27</order>
-      <mandatory>true</mandatory>
-      <value>no</value>
-      <type>checkbox</type>
-      <updatable>never</updatable>
-      <help>
-        <message lang="fr">Permet de définir des droits d'accès au niveau des dossiers.</message>
-        <message lang="en">Allow to define rights on folders.</message>
-        <message lang="de">A_TRADUIRE</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>nbDayForReservation</name>
-      <label>
-        <message lang="fr">Gestion des retards</message>
-        <message lang="en">Backlog management</message>
-        <message lang="de">Erlaubt es, Zugangsrechte auf die Themen zu bestimmen.</message>
-      </label>
-      <order>28</order>
-      <mandatory>false</mandatory>
-      <value></value>
-      <type>text</type>
-      <size>5</size>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Cette option permet de choisir un délais de réservation des fichiers
-          joints et d'en gérer les retards.
-          Ce délais est exprimé en jours et ne tiens pas compte des samedis et dimanches.
-        </message>
-        <message lang="en">This option defines a maximum duration for booking a file and managing
-          the backlog.
-          This duration is expressed in days, and week-ends are not taken into account.
-        </message>
-        <message lang="de">Diese Option erlaubt, ein Buchungsfristen der verbundenen Dateien zu
-          wählen und die Verspätungen zu verwalten.
-          Die Frist ist in den Tagen ausgedrückt und berücksichtige keine Samstage und Sonntage.
-        </message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>wysiwygOnTopics</name>
-      <label>
-        <message lang="fr">Description riche</message>
-        <message lang="en">Rich description</message>
-        <message lang="de">Reiche Beschreibung</message>
-      </label>
-      <order>29</order>
-      <mandatory>true</mandatory>
-      <value>no</value>
-      <type>checkbox</type>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Ce paramètre permet de saisir une description Wysiwyg sur un dossier qui
-          sera affichée dans le dossier.
-        </message>
-        <message lang="en">This feature allows to make a rich description of a folder.</message>
-        <message lang="de">Diese Funktion ermöglicht es, einen reichen Beschreibung eines Themas zu
-          machen.
-        </message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>useFileSharing</name>
-      <label>
-        <message lang="fr">Fichiers partageables</message>
-        <message lang="en">Share attachments</message>
-        <message lang="de">Anhänge freigeben</message>
-      </label>
-      <order>30</order>
-      <mandatory>true</mandatory>
-      <value>0</value>
-      <options>
-        <option>
-          <name>
-            <message lang="fr">Désactivé</message>
-            <message lang="en">Deactivated</message>
-            <message lang="de">Untauglich</message>
-          </name>
+          <options>
+            <option>
+              <name>
+                <message lang="fr">Désactivé</message>
+                <message lang="en">Deactivated</message>
+                <message lang="de">Untauglich</message>
+              </name>
+              <value>0</value>
+            </option>
+            <option>
+              <name>
+                <message lang="fr">Pour les gestionnaires</message>
+                <message lang="en">For managers</message>
+                <message lang="de">Für Manager</message>
+              </name>
+              <value>1</value>
+            </option>
+            <option>
+              <name>
+                <message lang="fr">Pour les contributeurs</message>
+                <message lang="en">For contributors</message>
+                <message lang="de">Für Beiträger</message>
+              </name>
+              <value>2</value>
+            </option>
+            <option>
+              <name>
+                <message lang="fr">Pour tous les utilisateurs</message>
+                <message lang="en">For all users</message>
+                <message lang="de">für alle Benutzer</message>
+              </name>
+              <value>3</value>
+            </option>
+          </options>
+          <type>select</type>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Cette fonction permet d'exporter toutes les publications d'un dossier de
+              l'application.
+            </message>
+            <message lang="en">This function allow the user to export all the visible publications
+              of a topic.
+            </message>
+            <message lang="de">Mit dieser Funktion können Sie alle Beiträge in einem Ordner exportieren.
+            </message>
+          </help>
+        </parameter>
+
+        <parameter>
+          <name>exportPublication</name>
+          <label>
+            <message lang="fr">Exportation de publications</message>
+            <message lang="en">Export publications</message>
+            <message lang="de">Export von Publikationen</message>
+          </label>
+          <order>35</order>
+          <mandatory>true</mandatory>
           <value>0</value>
-        </option>
-        <option>
-          <name>
-            <message lang="fr">Pour les gestionnaires</message>
-            <message lang="en">For managers</message>
-            <message lang="de">Für Manager</message>
-          </name>
-          <value>1</value>
-        </option>
-        <option>
-          <name>
-            <message lang="fr">Pour les contributeurs</message>
-            <message lang="en">For contributors</message>
-            <message lang="de">Für Beiträger</message>
-          </name>
-          <value>2</value>
-        </option>
-        <option>
-          <name>
-            <message lang="fr">Pour tous les utilisateurs</message>
-            <message lang="en">For all users</message>
-            <message lang="de">für alle Benutzer</message>
-          </name>
-          <value>3</value>
-        </option>
-      </options>
-      <type>select</type>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Ce paramètre permet d'activer le partage de fichiers à des tiers non
-          utilisateurs du portail.
-        </message>
-        <message lang="en">This feature allows to activate file sharing with persons who have no
-          access to the portal.
-        </message>
-        <message lang="de">Mit dieser Funktion können Sie die Dateifreigabe mit Personen, die keinen
-          Zugang zu dem Portal haben, aktivieren.
-        </message>
-      </help>
-      <warning>
-        <message lang="fr">Attention! En sélectionnant cette option, vous allez permettre de
-          partager librement les fichiers avec des utilisateurs non référencés dans le portail.
-        </message>
-        <message lang="en">Caution! By selecting this option, you will enable to freely share files
-          with users not identified in the portal.
-        </message>
-        <message lang="de">Caution! By selecting this option, you will enable to freely share files
-          with users not identified in the portal.
-        </message>
-      </warning>
-    </parameter>
-    <parameter>
-      <name>publicationSort</name>
-      <label>
-        <message lang="fr">Ordre des publications</message>
-        <message lang="en">Publications sorting</message>
-        <message lang="de">Publications sorting</message>
-      </label>
-      <order>31</order>
-      <mandatory>true</mandatory>
-      <value>2</value>
-      <options>
-        <option>
-          <name>
-            <message lang="fr">Nom du créateur croissant</message>
-            <message lang="en">Ascending creator's name</message>
-            <message lang="de">Ascending creator's name</message>
-          </name>
-          <value>0</value>
-        </option>
-        <option>
-          <name>
-            <message lang="fr">Date de modification croissante</message>
-            <message lang="en">Ascending update date</message>
-            <message lang="de">Ascending update date</message>
-          </name>
-          <value>1</value>
-        </option>
-        <option>
-          <name>
-            <message lang="fr">Date de modification décroissante</message>
-            <message lang="en">Descending update date</message>
-            <message lang="de">Descending update date</message>
-          </name>
-          <value>2</value>
-        </option>
-        <option>
-          <name>
-            <message lang="fr">Importance croissante</message>
-            <message lang="en">Ascending importance</message>
-            <message lang="de">Ascending importance</message>
-          </name>
-          <value>3</value>
-        </option>
-        <option>
-          <name>
-            <message lang="fr">Titre croissant</message>
-            <message lang="en">Ascending title</message>
-            <message lang="de">Ascending title</message>
-          </name>
-          <value>4</value>
-        </option>
-        <option>
-          <name>
-            <message lang="fr">Date de création croissante</message>
-            <message lang="en">Ascending creation date</message>
-            <message lang="de">Ascending creation date</message>
-          </name>
-          <value>5</value>
-        </option>
-        <option>
-          <name>
-            <message lang="fr">Date de création décroissante</message>
-            <message lang="en">Descending creation date</message>
-            <message lang="de">Descending creation date</message>
-          </name>
-          <value>6</value>
-        </option>
-        <option>
-          <name>
-            <message lang="fr">Description croissante</message>
-            <message lang="en">Ascending description</message>
-            <message lang="de">Ascending description</message>
-          </name>
-          <value>7</value>
-        </option>
-      </options>
-      <type>select</type>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Permet de définir l'ordre d'affichage des publications par défaut.
-        </message>
-        <message lang="en">Sets the display order of publications.</message>
-        <message lang="de">Sets the display order of publications.</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>useFolderSharing</name>
-      <label>
-        <message lang="fr">Dossiers partageables</message>
-        <message lang="en">Folders sharing</message>
-        <message lang="de">Folders sharing</message>
-      </label>
-      <order>32</order>
-      <mandatory>true</mandatory>
-      <value>0</value>
-      <options>
-        <option>
-          <name>
-            <message lang="fr">Désactivé</message>
-            <message lang="en">Deactivated</message>
-            <message lang="de">Untauglich</message>
-          </name>
-          <value>0</value>
-        </option>
-        <option>
-          <name>
-            <message lang="fr">Pour les gestionnaires</message>
-            <message lang="en">For managers</message>
-            <message lang="de">Für Manager</message>
-          </name>
-          <value>1</value>
-        </option>
-        <option>
-          <name>
-            <message lang="fr">Pour les contributeurs</message>
-            <message lang="en">For contributors</message>
-            <message lang="de">Für Beiträger</message>
-          </name>
-          <value>2</value>
-        </option>
-        <option>
-          <name>
-            <message lang="fr">Pour tous les utilisateurs</message>
-            <message lang="en">For all users</message>
-            <message lang="de">für alle Benutzer</message>
-          </name>
-          <value>3</value>
-        </option>
-      </options>
-      <type>select</type>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Ce paramètre permet d'activer le partage de dossiers à des tiers non
-          utilisateurs du portail.
-        </message>
-        <message lang="en">This feature allows to activate folders sharing with persons who have no
-          access to the portal.
-        </message>
-        <message lang="de">This feature allows to activate folders sharing with persons who have no
-          access to the portal.
-        </message>
-      </help>
-      <warning>
-        <message lang="fr">Attention! En sélectionnant cette option, vous allez permettre de
-          partager librement les dossiers avec des utilisateurs non référencés dans le portail.
-        </message>
-        <message lang="en">Caution! By selecting this option, you will enable to freely share
-          folders with users not identified in the portal.
-        </message>
-        <message lang="de">Caution! By selecting this option, you will enable to freely share
-          folders with users not identified in the portal.
-        </message>
-      </warning>
-    </parameter>
-  </parameters>
+          <options>
+            <option>
+              <name>
+                <message lang="fr">Désactivé</message>
+                <message lang="en">Deactivated</message>
+                <message lang="de">Untauglich</message>
+              </name>
+              <value>0</value>
+            </option>
+            <option>
+              <name>
+                <message lang="fr">Pour les gestionnaires</message>
+                <message lang="en">For managers</message>
+                <message lang="de">Für Manager</message>
+              </name>
+              <value>1</value>
+            </option>
+            <option>
+              <name>
+                <message lang="fr">Pour les contributeurs</message>
+                <message lang="en">For contributors</message>
+                <message lang="de">Für Beiträger</message>
+              </name>
+              <value>2</value>
+            </option>
+            <option>
+              <name>
+                <message lang="fr">Pour tous les utilisateurs</message>
+                <message lang="en">For all users</message>
+                <message lang="de">für alle Benutzer</message>
+              </name>
+              <value>3</value>
+            </option>
+          </options>
+          <type>select</type>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Cette fonction permet d'exporter une ou plusieurs publications.
+            </message>
+            <message lang="en">This function allow the user to export one or several visible publications.
+            </message>
+            <message lang="de">Mit dieser Funktion können Sie einen oder mehrere Beiträge exportieren.
+            </message>
+          </help>
+        </parameter>
+
+      </parameters>
+    </groupOfParameters>
+  </groupsOfParameters>
 </WAComponent>

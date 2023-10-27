@@ -154,7 +154,8 @@ public class JSONServlet extends HttpServlet {
     operations.put("updatePublications",operationsOnSelectionAllowed && oneTemplateUsed);
     operations.put(OP_DELETE_PUBLICATIONS, operationsOnSelectionAllowed);
 
-    operations.put(OP_EXPORT_PUBLICATIONS, !user.isAnonymous() && somePublicationsExist);
+    boolean exportOnSelectionAllowed = kmeliaSC.isExportPublicationAllowed(kmeliaSC.getHighestSilverpeasUserRole());
+    operations.put(OP_EXPORT_PUBLICATIONS, exportOnSelectionAllowed && somePublicationsExist);
     operations.put("manageSubscriptions", role.isAdmin());
     operations.put("subscriptions", isRoot && !user.isAnonymous() && !user.isAccessGuest());
     operations.put("topicSubscriptions", notRootNotAnonymousNotGuest);
@@ -180,6 +181,15 @@ public class JSONServlet extends HttpServlet {
     operations.put("wysiwygTopic", isAdmin && kmeliaSC.
         isWysiwygOnTopicsEnabled());
     operations.put("shareTopic", node.canBeSharedBy(user));
+    boolean exportOnTopicAllowed = kmeliaSC.isExportTopicAllowed(kmeliaSC.getHighestSilverpeasUserRole());
+    operations.put("exportTopic", exportOnTopicAllowed);
+    if (isRoot) {
+      boolean exportOnApplicationAllowed = kmeliaSC.isExportApplicationAllowed(kmeliaSC.getHighestSilverpeasUserRole());
+      operations.put("exportPDFApplication", exportOnApplicationAllowed);
+    }
+    else {
+      operations.put("exportPDFTopic", exportOnTopicAllowed);
+    }
   }
 
   private void addGeneralOperations(final KmeliaSessionController kmeliaSC,
@@ -195,12 +205,8 @@ public class JSONServlet extends HttpServlet {
     operations.put("predefinedPdcPositions", kmeliaSC.isPdcUsed() && role.isAdmin());
     operations.put("templates",
         kmeliaSC.isTemplatesSelectionEnabledForRole(SilverpeasRole.fromString(profile)));
-    operations.put("exporting",
-        kmeliaSC.isExportComponentAllowed() && kmeliaSC.isExportZipAllowed() &&
-            (role.isAdmin() || kmeliaSC.isExportAllowedToUsers()));
-    operations.put("exportPDF",
-        kmeliaSC.isExportComponentAllowed() && kmeliaSC.isExportPdfAllowed() &&
-            (role.isAdmin() || role.isPublisher()));
+    boolean exportOnApplicationAllowed = kmeliaSC.isExportApplicationAllowed(kmeliaSC.getHighestSilverpeasUserRole());
+    operations.put("exportApplication", exportOnApplicationAllowed);
 
     if (isRoot && kmeliaSC.isStatisticAllowed()) {
       operations.put("statistics", true);

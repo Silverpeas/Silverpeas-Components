@@ -406,31 +406,36 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     }
   }
 
-  public boolean isExportZipAllowed() {
-    String parameterValue = this.getComponentParameterValue("exportComponent");
-    if (parameterValue == null || parameterValue.length() <= 0) {
-      return false;
-    } else {
-      return StringUtil.getBooleanValue(parameterValue) || "both".equalsIgnoreCase(parameterValue);
+  public boolean isExportApplicationAllowed(SilverpeasRole greatestUserRole) {
+    String value = this.getComponentParameterValue("exportApplication");
+    if ("1".equals(value)) {
+      return greatestUserRole.isGreaterThanOrEquals(SilverpeasRole.ADMIN);
+    } else if ("2".equals(value)) {
+      return greatestUserRole.isGreaterThanOrEquals(SilverpeasRole.WRITER);
     }
+    return "3".equals(value);
   }
 
-  public boolean isExportPdfAllowed() {
-    String parameterValue = this.getComponentParameterValue("exportComponent");
-    if (parameterValue == null || parameterValue.length() <= 0) {
-      return false;
-    } else {
-      return "pdf".equalsIgnoreCase(parameterValue) || "both".equalsIgnoreCase(parameterValue);
+  public boolean isExportTopicAllowed(SilverpeasRole greatestUserRole) {
+    String value = this.getComponentParameterValue("exportTopic");
+    if ("1".equals(value)) {
+      return greatestUserRole.isGreaterThanOrEquals(SilverpeasRole.ADMIN);
+    } else if ("2".equals(value)) {
+      return greatestUserRole.isGreaterThanOrEquals(SilverpeasRole.WRITER);
     }
+    return "3".equals(value);
   }
 
-  public boolean isExportComponentAllowed() {
-    return StringUtil.getBooleanValue(getSettings().getString("exportComponentAllowed"));
+  public boolean isExportPublicationAllowed(SilverpeasRole greatestUserRole) {
+    String value = this.getComponentParameterValue("exportPublication");
+    if ("1".equals(value)) {
+      return greatestUserRole.isGreaterThanOrEquals(SilverpeasRole.ADMIN);
+    } else if ("2".equals(value)) {
+      return greatestUserRole.isGreaterThanOrEquals(SilverpeasRole.WRITER);
+    }
+    return "3".equals(value);
   }
 
-  public boolean isExportAllowedToUsers() {
-    return getSettings().getBoolean("export.allowed.users", false);
-  }
 
   public boolean isMassiveDragAndDropAllowed() {
     return StringUtil.getBooleanValue(getComponentParameterValue("massiveDragAndDrop"));

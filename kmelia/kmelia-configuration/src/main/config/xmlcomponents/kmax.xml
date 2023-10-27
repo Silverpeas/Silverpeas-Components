@@ -679,54 +679,171 @@
         </parameter>
       </parameters>
     </groupOfParameters>
+
+    <groupOfParameters name="export">
+      <label>
+        <message lang="fr">Export</message>
+        <message lang="en">Export</message>
+        <message lang="de">Export</message>
+      </label>
+      <description>
+        <message lang="fr">Export de l'application ou de publications</message>
+        <message lang="en">Export of the application or the publications</message>
+        <message lang="de">Export der Anwendung oder von Publikationen</message>
+      </description>
+      <order>3</order>
+      <parameters>
+        <parameter>
+          <name>exportApplication</name>
+          <label>
+            <message lang="fr">Exportation de l'application</message>
+            <message lang="en">Export application</message>
+            <message lang="de">Export</message>
+          </label>
+          <order>33</order>
+          <mandatory>true</mandatory>
+          <value>0</value>
+          <options>
+            <option>
+              <name>
+                <message lang="fr">Désactivé</message>
+                <message lang="en">Deactivated</message>
+                <message lang="de">Untauglich</message>
+              </name>
+              <value>0</value>
+            </option>
+            <option>
+              <name>
+                <message lang="fr">Pour les gestionnaires</message>
+                <message lang="en">For managers</message>
+                <message lang="de">Für Manager</message>
+              </name>
+              <value>1</value>
+            </option>
+            <option>
+              <name>
+                <message lang="fr">Pour les contributeurs</message>
+                <message lang="en">For contributors</message>
+                <message lang="de">Für Beiträger</message>
+              </name>
+              <value>2</value>
+            </option>
+            <option>
+              <name>
+                <message lang="fr">Pour tous les utilisateurs</message>
+                <message lang="en">For all users</message>
+                <message lang="de">für alle Benutzer</message>
+              </name>
+              <value>3</value>
+            </option>
+          </options>
+          <type>select</type>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Cette fonction permet d'exporter l'application.
+            </message>
+            <message lang="en">This function allow the user to export the whole application
+            </message>
+            <message lang="de">Mit dieser Funktion können Sie die Anwendung exportieren.
+            </message>
+          </help>
+        </parameter>
+
+        <parameter>
+          <name>exportPublication</name>
+          <label>
+            <message lang="fr">Exportation de publications</message>
+            <message lang="en">Export publications</message>
+            <message lang="de">Export von Publikationen</message>
+          </label>
+          <order>34</order>
+          <mandatory>true</mandatory>
+          <value>0</value>
+          <options>
+            <option>
+              <name>
+                <message lang="fr">Désactivé</message>
+                <message lang="en">Deactivated</message>
+                <message lang="de">Untauglich</message>
+              </name>
+              <value>0</value>
+            </option>
+            <option>
+              <name>
+                <message lang="fr">Pour les gestionnaires</message>
+                <message lang="en">For managers</message>
+                <message lang="de">Für Manager</message>
+              </name>
+              <value>1</value>
+            </option>
+            <option>
+              <name>
+                <message lang="fr">Pour les contributeurs</message>
+                <message lang="en">For contributors</message>
+                <message lang="de">Für Beiträger</message>
+              </name>
+              <value>2</value>
+            </option>
+            <option>
+              <name>
+                <message lang="fr">Pour tous les utilisateurs</message>
+                <message lang="en">For all users</message>
+                <message lang="de">für alle Benutzer</message>
+              </name>
+              <value>3</value>
+            </option>
+          </options>
+          <type>select</type>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Cette fonction permet d'exporter une ou plusieurs publications.
+            </message>
+            <message lang="en">This function allow the user to export one or several visible publications.
+            </message>
+            <message lang="de">Mit dieser Funktion können Sie einen oder mehrere Beiträge exportieren.
+            </message>
+          </help>
+        </parameter>
+      </parameters>
+    </groupOfParameters>
+
+    <groupOfParameters name="autres">
+      <label>
+        <message lang="fr">Autres paramètres</message>
+        <message lang="en">Other parameters</message>
+        <message lang="de">Andere Einstellungen</message>
+      </label>
+      <description>
+        <message lang="fr">Autres paramètres</message>
+        <message lang="en">Other parameters</message>
+        <message lang="de">Andere Einstellungen</message>
+      </description>
+      <order>4</order>
+      <parameters>
+        <parameter>
+          <name>timeAxisUsed</name>
+          <label>
+            <message lang="fr">Axe de période de publication</message>
+            <message lang="en">Publication date axis</message>
+            <message lang="de">Veröffentlichungsdatum Achse</message>
+          </label>
+          <order>11</order>
+          <mandatory>false</mandatory>
+          <value>yes</value>
+          <type>checkbox</type>
+          <updatable>always</updatable>
+          <help>
+            <message lang="fr">Axe de classements des publications selon leur date de
+              creation/modification.
+            </message>
+            <message lang="en">Classification axis on the publication creation/modification date.
+            </message>
+            <message lang="de">Klassifizierungachse zum Einordnen der Veröffentlichungen nach ihrem
+              Erstellungs / Änderungs Datum
+            </message>
+          </help>
+        </parameter>
+      </parameters>
+    </groupOfParameters>
   </groupsOfParameters>
-  <parameters>
-    <parameter>
-      <name>timeAxisUsed</name>
-      <label>
-        <message lang="fr">Axe de période de publication</message>
-        <message lang="en">Publication date axis</message>
-        <message lang="de">Veröffentlichungsdatum Achse</message>
-      </label>
-      <order>11</order>
-      <mandatory>false</mandatory>
-      <value>yes</value>
-      <type>checkbox</type>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Axe de classements des publications selon leur date de
-          creation/modification.
-        </message>
-        <message lang="en">Classification axis on the publication creation/modification date.
-        </message>
-        <message lang="de">Klassifizierungachse zum Einordnen der Veröffentlichungen nach ihrem
-          Erstellungs / Änderungs Datum
-        </message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>exportComponent</name>
-      <label>
-        <message lang="fr">Exportation de l'application</message>
-        <message lang="en">Export application</message>
-        <message lang="de">Komponente Export</message>
-      </label>
-      <order>14</order>
-      <mandatory>true</mandatory>
-      <value>no</value>
-      <type>checkbox</type>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Cette fonction permet d'exporter toutes les publications visibles de
-          l'application.
-        </message>
-        <message lang="en">This function allow the user to export all the visible publications of
-          the application.
-        </message>
-        <message lang="de">Diese Funktion ermöglicht es dem Benutzer, alle sichtbaren
-          Veröffentlichungen in der Komponente zu exportieren.
-        </message>
-      </help>
-    </parameter>
-  </parameters>
 </WAComponent>

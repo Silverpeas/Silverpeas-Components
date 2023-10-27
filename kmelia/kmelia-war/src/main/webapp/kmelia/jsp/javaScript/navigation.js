@@ -300,18 +300,27 @@ function initOperations(id, op) {
     groupEmpty = false;
   }
 
-  if (op.exporting) {
-    if (id == "0") {
-      menuItem = new YAHOO.widget.MenuItem(getString('kmelia.ExportComponent'), {url: "javascript:onClick=exportTopic()"});
-    } else {
-      menuItem = new YAHOO.widget.MenuItem(getString('kmelia.ExportTopic'), {url: "javascript:onClick=exportTopic()"});
-    }
+  if (op.exportApplication && id == "0") {
+    menuItem = new YAHOO.widget.MenuItem(getString('kmelia.ExportComponent'),
+          {url : "javascript:onClick=exportTopic()"});
     oMenu.addItem(menuItem, groupIndex);
     groupEmpty = false;
   }
 
-  if (op.exportPDF) {
-    menuItem = new YAHOO.widget.MenuItem(getString('kmelia.ExportPDF'), {url: "javascript:openExportPDFPopup()"});
+  if (op.exportTopic && id != "0") {
+    menuItem = new YAHOO.widget.MenuItem(getString('kmelia.ExportTopic'),
+        {url : "javascript:onClick=exportTopic()"});
+    oMenu.addItem(menuItem, groupIndex);
+    groupEmpty = false;
+  }
+
+  if (op.exportPDFTopic) {
+    menuItem = new YAHOO.widget.MenuItem(getString('kmelia.ExportPDFTopic'), {url: "javascript:openExportPDFPopup()"});
+    oMenu.addItem(menuItem, groupIndex);
+    groupEmpty = false;
+  }
+  if (op.exportPDFApplication) {
+    menuItem = new YAHOO.widget.MenuItem(getString('kmelia.ExportPDFApplication'), {url: "javascript:openExportPDFPopup()"});
     oMenu.addItem(menuItem, groupIndex);
     groupEmpty = false;
   }
