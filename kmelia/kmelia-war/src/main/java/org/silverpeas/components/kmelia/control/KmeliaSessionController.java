@@ -405,25 +405,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       return "2".equalsIgnoreCase(parameterValue) || "3".equalsIgnoreCase(parameterValue);
     }
   }
-/*
-  public boolean isExportZipAllowed() {
-    String parameterValue = this.getComponentParameterValue("exportOptions");
-    if (parameterValue == null) {
-      return false;
-    } else {
-      return "zip".equalsIgnoreCase(parameterValue) || "both".equalsIgnoreCase(parameterValue);
-    }
-  }
 
-  public boolean isExportPdfAllowed() {
-    String parameterValue = this.getComponentParameterValue("exportOptions");
-    if (parameterValue == null || parameterValue.length() <= 0) {
-      return false;
-    } else {
-      return "pdf".equalsIgnoreCase(parameterValue) || "both".equalsIgnoreCase(parameterValue);
-    }
-  }
-*/
   public boolean isExportApplicationAllowed(SilverpeasRole greatestUserRole) {
     String value = this.getComponentParameterValue("exportApplication");
     if ("1".equals(value)) {
