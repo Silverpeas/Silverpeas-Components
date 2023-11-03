@@ -776,7 +776,7 @@ function topicUpdate(id) {
   const translation = getTranslation();
   const rightsOnTopic = params["rightsOnTopic"];
   if (rightsOnTopic) {
-    location.href = "ToUpdateTopic?Id=" + id + "&Translation=" + translation;
+    location.href = "ToModifyTopic?Id=" + id + "&Translation=" + translation;
   } else {
     document.topicForm.action = "UpdateTopic";
     $("#addOrUpdateNode #topicId").val(id);

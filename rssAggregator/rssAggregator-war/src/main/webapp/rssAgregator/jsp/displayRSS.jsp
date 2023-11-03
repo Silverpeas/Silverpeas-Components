@@ -221,7 +221,7 @@ function displayAll() {
 }
 
 function addChannel() {
-  jQuery.popup.load('ToCreateChannel').show('validation', {
+  jQuery.popup.load('ToAddChannel').show('validation', {
     title : "${addChannelLabel}",
     callback : function() {
       validateChannelForm();
@@ -230,7 +230,7 @@ function addChannel() {
 }
 
 function updateChannel(id) {
-  jQuery.popup.load('ToUpdateChannel', {params : {'Id' : id}}).show('validation', {
+  jQuery.popup.load('ToModifyChannel', {params : {'Id' : id}}).show('validation', {
     title : "${modifyLabel}",
     callback : function() {
       validateChannelForm();
@@ -239,7 +239,7 @@ function updateChannel(id) {
 }
 
 function deleteChannel(id) {
-  jQuery.popup.load('ToDeleteChannel', {params : {'Id' : id}}).show('confirmation', {
+  jQuery.popup.load('ToRemoveChannel', {params : {'Id' : id}}).show('confirmation', {
     title : "${deleteLabel}",
     callback : function() {
       validateChannelForm();

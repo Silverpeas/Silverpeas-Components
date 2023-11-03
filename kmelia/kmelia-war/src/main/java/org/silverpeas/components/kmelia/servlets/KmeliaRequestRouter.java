@@ -431,7 +431,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
           destination = rootDestination + "addTopic.jsp";
         }
-      } else if ("ToUpdateTopic".equals(function)) {
+      } else if ("ToModifyTopic".equals(function)) {
         String id = request.getParameter("Id");
         NodeDetail node = kmelia.getSubTopicDetail(id);
         if (!SilverpeasRole.ADMIN.isInRole(kmelia.getUserTopicProfile(id)) &&
