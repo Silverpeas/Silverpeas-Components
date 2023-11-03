@@ -76,19 +76,19 @@ public class RssAgregatorRequestRouter
       } else if (function.equals("LoadChannels")) {
         rssSC.getChannelsContent();
         destination = getDestination("Main", rssSC, request);
-      } else if (function.equals("ToCreateChannel")) {
+      } else if (function.equals("ToAddChannel")) {
         destination = getChannelManagerDestination(rssSC, request);
       } else if (function.equals("CreateChannel")) {
         final SPChannel channel = buildSPChannelFromRequest(request);
         rssSC.addChannel(channel);
         destination = getDestination("Main", rssSC, request);
-      } else if (function.equals("ToUpdateChannel")) {
+      } else if (function.equals("ToModifyChannel")) {
         destination = getChannelManagerDestination(rssSC, request);
       } else if (function.equals("UpdateChannel")) {
         final SPChannel channel = buildSPChannelFromRequest(request);
         rssSC.updateChannel(channel);
         destination = getDestination("LoadChannels", rssSC, request);
-      } else if (function.equals("ToDeleteChannel")) {
+      } else if (function.equals("ToRemoveChannel")) {
         request.setAttribute("DeletionMode", true);
         destination = getChannelManagerDestination(rssSC, request);
       } else if (function.equals("DeleteChannel")) {

@@ -43,7 +43,7 @@
 <view:looknfeel />
   <script type="text/javascript">
     function addChannel() {
-      jQuery.popup.load('ToCreateChannel').show('validation', {
+      jQuery.popup.load('ToAddChannel').show('validation', {
         title : "${addChannelLabel}",
         callback : function() {
           validateChannelForm();

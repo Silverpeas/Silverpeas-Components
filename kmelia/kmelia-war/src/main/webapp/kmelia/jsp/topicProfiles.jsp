@@ -62,7 +62,7 @@ function topicGoTo(id) {
 	location.href="GoToTopic?Id="+id;
 }
 function backToFolder() {
-  location.href="ToUpdateTopic?Id=<%=nodeId%>";
+  location.href="ToModifyTopic?Id=<%=nodeId%>";
 }
 </script>
 </head>
