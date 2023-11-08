@@ -23,7 +23,6 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="org.silverpeas.components.quickinfo.model.News"%>
 <%@page import="org.silverpeas.core.admin.user.model.SilverpeasRole" %>
 <%@ page import="org.silverpeas.core.util.URLUtil" %>
 <%@ page import="org.silverpeas.core.notification.user.NotificationContext" %>
@@ -102,6 +101,10 @@ function onDelete(id) {
   location.href="Main";
 }
 
+function clipboardCopy() {
+  top.IdleFrame.location.href = '<c:url value="${componentURL}"/>copy?&Id=${news.id}';
+}
+
 function putNewsInBasket() {
   const basketManager = new BasketManager();
   basketManager.putContributionInBasket('${news.identifier.asString()}');
@@ -137,6 +140,11 @@ function putNewsInBasket() {
 	</c:if>
   <fmt:message var="printMsg" key="GML.print"/>
   <view:operation altText="${printMsg}" action="javascript:window.print()"/>
+  <c:if test="${contributor}">
+    <view:operationSeparator/>
+    <fmt:message key="GML.copy" var="copyLabel"/>
+    <view:operation action="javascript:onClick=clipboardCopy()" altText="${copyLabel}"/>
+  </c:if>
 	<fmt:message var="putInSelectionBasketMsg" key="GML.putInBasket"/>
   <c:if test="${not news.draft}">
     <c:if test="<%=BasketSelectionUI.displayPutIntoBasketSelectionShortcut()%>">

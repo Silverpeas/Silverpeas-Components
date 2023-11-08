@@ -122,19 +122,32 @@ public class News extends SilverpeasJpaEntity<News, UuidIdentifier> implements S
   @Column
   private String publishedBy;
 
-  protected News() {
-    // default constructor for the persistence engine
+  /**
+   * Gets a builder of {@link News} instances.
+   * @return a {@link Builder} instance
+   */
+  public static Builder builder() {
+    return new Builder();
   }
 
-  public News(String name, String description, Period visibilityPeriod, boolean important,
-      boolean ticker, boolean mandatory) {
-    this.publication = PublicationDetail.builder()
-        .setNameAndDescription(name, description)
-        .build();
-    this.publication.setVisibilityPeriod(visibilityPeriod);
-    setImportant(important);
-    setTicker(ticker);
-    setMandatory(mandatory);
+  /**
+   * Gets a builder of {@link News} instances from data of another one.
+   * @param news the news data to initialize with.
+   * @return a {@link Builder} instance
+   */
+  public static Builder builder(final News news) {
+    return builder()
+        .setTitleAndDescription(news.getTitle(), news.getDescription())
+        .setKeywords(news.getKeywords())
+        .setVisibilityPeriod(news.getVisibility().getPeriod())
+        .setImportant(news.isImportant())
+        .setTicker(news.isTicker())
+        .setMandatory(news.isMandatory());
+  }
+
+  protected News() {
+    // default constructor for the persistence engine
+    super();
   }
 
   public NewsPK getPK() {
@@ -166,6 +179,14 @@ public class News extends SilverpeasJpaEntity<News, UuidIdentifier> implements S
   @Override
   public String getDescription() {
     return getPublication().getDescription();
+  }
+
+  public void setKeywords(String keywords) {
+    getPublication().setKeywords(keywords);
+  }
+
+  public String getKeywords() {
+    return getPublication().getKeywords();
   }
 
   public void setDescription(String desc) {
@@ -434,5 +455,88 @@ public class News extends SilverpeasJpaEntity<News, UuidIdentifier> implements S
   @Override
   public ContributionModel getModel() {
     return new NewsModel(this);
+  }
+
+  /**
+   * A builder of a {@link News} instance by setting some of its properties.
+   */
+  public static class Builder {
+
+    private final News news = new News();
+
+    public Builder() {
+      news.publication = PublicationDetail.builder().build();
+    }
+
+    /**
+     * Builds a {@link News} instance from the properties that were previously set with this 
+     * builder.
+     * @return a {@link News} instance.
+     */
+    public News build() {
+      return news;
+    }
+
+    /**
+     * Sets mandatory flag of the {@link News} instance to build.
+     * @param mandatory the mandatory flag.
+     * @return itself.
+     */
+    public Builder setMandatory(boolean mandatory) {
+      news.setMandatory(mandatory);
+      return this;
+    }
+
+    /**
+     * Sets ticker flag of the {@link News} instance to build.
+     * @param ticker the ticker flag.
+     * @return itself.
+     */
+    public Builder setTicker(boolean ticker) {
+      news.setTicker(ticker);
+      return this;
+    }
+
+    /**
+     * Sets important flag of the {@link News} instance to build.
+     * @param important the important flag.
+     * @return itself.
+     */
+    public Builder setImportant(boolean important) {
+      news.setImportant(important);
+      return this;
+    }
+
+    /**
+     * Sets the visibility period of the {@link News} instance to build.
+     * @param period the visibility period.
+     * @return itself.
+     */
+    public Builder setVisibilityPeriod(Period period) {
+      news.setVisibilityPeriod(period);
+      return this;
+    }
+
+    /**
+     * Sets the keywords of the {@link News} instance to build.
+     * @param keywords the keywords of the news.
+     * @return itself.
+     */
+    public Builder setKeywords(final String keywords) {
+      news.setKeywords(keywords);
+      return this;
+    }
+
+    /**
+     * Sets the given title and description of the news to build.
+     * @param title the title of the news.
+     * @param description the description of the news.
+     * @return itself.
+     */
+    public Builder setTitleAndDescription(final String title, final String description) {
+      news.setTitle(title);
+      news.setDescription(description);
+      return this;
+    }
   }
 }

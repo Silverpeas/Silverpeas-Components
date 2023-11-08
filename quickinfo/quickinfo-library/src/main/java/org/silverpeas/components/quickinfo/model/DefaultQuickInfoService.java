@@ -35,11 +35,13 @@ import org.silverpeas.components.quickinfo.repository.NewsRepository;
 import org.silverpeas.components.quickinfo.service.QuickInfoContentManager;
 import org.silverpeas.components.quickinfo.service.QuickInfoDateComparatorDesc;
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.admin.component.model.PasteDetail;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.Attachments;
+import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
@@ -49,6 +51,7 @@ import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.model.IndexManager;
+import org.silverpeas.core.io.media.image.thumbnail.control.ThumbnailController;
 import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
@@ -89,6 +92,7 @@ import java.util.stream.Stream;
 import static java.util.Collections.singletonList;
 import static java.util.function.Predicate.not;
 import static org.silverpeas.components.quickinfo.notification.QuickInfoDelayedVisibilityUserNotificationReminder.QUICKINFO_DELAYED_VISIBILITY_USER_NOTIFICATION;
+import static org.silverpeas.core.contribution.attachment.AttachmentServiceProvider.getAttachmentService;
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
 @Service
@@ -175,7 +179,7 @@ public class DefaultQuickInfoService implements QuickInfoService {
   @Override
   @Transactional
   public News create(final News news) {
-    ResourceReference volatileAttachmentSourcePK =
+    ResourceReference volatileAttachmentSourceRef =
         new ResourceReference(news.getPublicationId(), news.getComponentInstanceId());
 
     // Creating publication
@@ -192,12 +196,12 @@ public class DefaultQuickInfoService implements QuickInfoService {
 
     // Attaching all documents linked to volatile news to the persisted news
     List<SimpleDocumentPK> movedDocumentPks = AttachmentServiceProvider.getAttachmentService()
-        .moveAllDocuments(volatileAttachmentSourcePK,
+        .moveAllDocuments(volatileAttachmentSourceRef,
             savedNews.getPublication().getPK().toResourceReference());
     if (!movedDocumentPks.isEmpty()) {
       // Change images path in wysiwyg
       WysiwygController.wysiwygPlaceHaveChanged(news.getComponentInstanceId(),
-          volatileAttachmentSourcePK.getId(), news.getComponentInstanceId(), savedNews.getId());
+          volatileAttachmentSourceRef.getId(), news.getComponentInstanceId(), savedNews.getId());
     }
 
     // Referring new content into taxonomy
@@ -211,6 +215,60 @@ public class DefaultQuickInfoService implements QuickInfoService {
     }
 
     return savedNews;
+  }
+
+  @Override
+  @Transactional
+  public News copyNews(final News newsToCopy, final PasteDetail pasteDetail) {
+
+    // Initializing the news instance
+    final News news = News.builder(newsToCopy).build();
+    news.setDraft();
+    news.setComponentInstanceId(pasteDetail.getToComponentId());
+    news.setCreatorId(pasteDetail.getUserId());
+
+    // Creating linked publication
+    PublicationDetail publication = news.getPublication();
+    publication.setIndexOperation(IndexManager.NONE);
+    final PublicationPK pubPK = getPublicationService().createPublication(publication);
+    publication = getPublicationService().getDetail(pubPK);
+
+    // Saving the new news instance into repository
+    news.setPublicationId(pubPK.getId());
+    news.setPublication(publication);
+    final News savedNews = newsRepository.save(news);
+
+    // Copying decorators
+    final ResourceReference pubSourceRef = newsToCopy.getPublication().getPK().toReference();
+    final ResourceReference pubDestRef = news.getPublication().getPK().toReference();
+    // - PDC
+    copyPdcPositions(newsToCopy, savedNews);
+    // - attachment files
+    getAttachmentService()
+        .listDocumentsByForeignKeyAndType(pubSourceRef, DocumentType.attachment, null)
+        .forEach(a -> getAttachmentService().copyDocument(a, pubDestRef));
+    // - WYSIWYG content
+    WysiwygController.copy(pubSourceRef.getComponentInstanceId(), pubSourceRef.getLocalId(),
+        pubDestRef.getComponentInstanceId(), pubDestRef.getLocalId(), pasteDetail.getUserId());
+    // - thumbnail
+    ThumbnailController.copyThumbnail(pubSourceRef, pubDestRef);
+
+    return savedNews;
+  }
+
+  private void copyPdcPositions(final News sourceNews, final News destNews) {
+    String sourceCmpId = sourceNews.getComponentInstanceId();
+    String destCmpId = destNews.getComponentInstanceId();
+    int sourceId = quickInfoContentManager.getOrCreateSilverContentId(sourceNews.getPublication());
+    int destId = quickInfoContentManager.getOrCreateSilverContentId(destNews.getPublication());
+    try {
+      pdcManager.copyPositions(sourceId, sourceCmpId, destId, destCmpId);
+    } catch (PdcException e) {
+      SilverLogger.getLogger(this).error(
+          "can not copy pdc positions from publication {0} of news {1} to publication {2} of news {3}",
+          new Object[]{sourceNews.getPublication().getPK(), sourceNews.getPK(),
+              destNews.getPublication().getPK(), destNews.getPK()}, e);
+    }
   }
 
   @Override

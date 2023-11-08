@@ -23,10 +23,15 @@ package org.silverpeas.components.quickinfo.control;
 import org.silverpeas.components.quickinfo.NewsByStatus;
 import org.silverpeas.components.quickinfo.QuickInfoComponentSettings;
 import org.silverpeas.components.quickinfo.model.News;
+import org.silverpeas.components.quickinfo.model.NewsSelection;
 import org.silverpeas.components.quickinfo.model.QuickInfoService;
 import org.silverpeas.components.quickinfo.model.QuickInfoServiceProvider;
+import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.component.model.PasteDetail;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.clipboard.ClipboardException;
 import org.silverpeas.core.exception.DecodingException;
 import org.silverpeas.core.io.media.image.thumbnail.ThumbnailSettings;
 import org.silverpeas.core.io.upload.UploadedFile;
@@ -56,6 +61,7 @@ import static org.silverpeas.core.cache.service.VolatileIdentifierProvider.newVo
  * @author squere
  */
 public class QuickInfoSessionController extends AbstractComponentSessionController {
+  private static final long serialVersionUID = 2978765807229854572L;
 
   private QuickInfoComponentSettings instanceSettings;
 
@@ -145,7 +151,9 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
    * @return an in memory instance of a news.
    */
   public News prepareEmptyNews() {
-    News news = new News(getString("quickinfo.news.untitled"), null, null, false, false, false);
+    News news = News.builder()
+        .setTitleAndDescription(getString("quickinfo.news.untitled"), null)
+        .build();
     news.setDraft();
     news.setComponentInstanceId(getComponentId());
     // Dummy identifiers
@@ -189,6 +197,7 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
     News news = getNews(id, false);
     news.setTitle(updatedNews.getTitle());
     news.setDescription(updatedNews.getDescription());
+    news.setKeywords(updatedNews.getKeywords());
     news.setContentToStore(updatedNews.getContentToStore());
     news.setVisibilityPeriod(updatedNews.getVisibility().getSpecificPeriod().orElse(null));
     news.setUpdaterId(getUserId());
@@ -230,6 +239,39 @@ public class QuickInfoSessionController extends AbstractComponentSessionControll
 
   public void submitNewsOnHomepage(String id) {
     getQuickInfoService().submitNewsOnHomepage(id, getUserId());
+  }
+
+  public void addNewsToBeCopied(String newsId) throws ClipboardException {
+    final News news = getNews(newsId, false);
+    NewsSelection newsSelect = new NewsSelection(news);
+    addClipboardSelection(newsSelect);
+  }
+
+  public boolean isNewsToPaste() throws SilverpeasException {
+    return getClipboardSelectedObjects().stream()
+        .filter(Objects::nonNull)
+        .anyMatch(o -> o.isDataFlavorSupported(NewsSelection.NewsFlavor));
+  }
+
+  public void paste() throws ClipboardException {
+    getClipboardSelectedObjects().stream()
+        .filter(Objects::nonNull)
+        .filter(o -> o.isDataFlavorSupported(NewsSelection.NewsFlavor))
+        .map(o -> {
+          try {
+            return o.getTransferData(NewsSelection.NewsFlavor);
+          } catch (Exception e) {
+            throw new SilverpeasRuntimeException(e);
+          }
+        })
+        .filter(News.class::isInstance)
+        .map(News.class::cast)
+        .forEach(n -> {
+          final PasteDetail pasteDetail = new PasteDetail(getUserId());
+          pasteDetail.setToComponentId(getComponentId());
+          getQuickInfoService().copyNews(n, pasteDetail);
+        });
+    clipboardPasteDone();
   }
 
   /**

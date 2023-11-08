@@ -26,6 +26,7 @@ package org.silverpeas.components.quickinfo.model;
 
 import org.silverpeas.components.quickinfo.NewsByStatus;
 import org.silverpeas.core.ApplicationService;
+import org.silverpeas.core.admin.component.model.PasteDetail;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
@@ -47,6 +48,14 @@ public interface QuickInfoService extends ApplicationService {
   Optional<News> getContributionById(ContributionIdentifier contributionId);
 
   News create(News news);
+
+  /**
+   * Creating new news from an existing one.
+   * @param newsToCopy news to copy.
+   * @param pasteDetail the details about the copy (user identifier and component destination).
+   * @return a {@link News} instance representing the created news.
+   */
+  News copyNews(News newsToCopy, PasteDetail pasteDetail);
 
   void publish(String id, String userId);
 
