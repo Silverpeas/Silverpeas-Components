@@ -39,11 +39,5 @@ public interface ColumnValuePredicate {
    */
   DbColumn getColumn();
 
-  /**
-   * Gets the value with which all the column's values will be compared when playing the predicate.
-   * @return a {@link Comparable} value.
-   */
-  Comparable getReferenceValue();
-
 }
   

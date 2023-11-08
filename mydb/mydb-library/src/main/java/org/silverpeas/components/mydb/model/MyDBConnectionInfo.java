@@ -31,7 +31,6 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.sql.DataSource;
@@ -46,10 +45,10 @@ import java.util.List;
  * @author mmoquillon
  */
 @Entity
-@NamedQueries({@NamedQuery(name = "MyDBConnectionInfo.findByInstanceId",
-    query = "select ds from MyDBConnectionInfo ds where ds.instanceId = :instanceId"),
-    @NamedQuery(name = "MyDBConnectionInfo.deleteByInstanceId",
-        query = "delete MyDBConnectionInfo where instanceId = :instanceId")})
+@NamedQuery(name = "MyDBConnectionInfo.findByInstanceId",
+    query = "select ds from MyDBConnectionInfo ds where ds.instanceId = :instanceId")
+@NamedQuery(name = "MyDBConnectionInfo.deleteByInstanceId",
+    query = "delete MyDBConnectionInfo where instanceId = :instanceId")
 @Table(name = "sc_mydb_connectinfo")
 public class MyDBConnectionInfo
     extends BasicJpaEntity<MyDBConnectionInfo, UniqueIntegerIdentifier> {
@@ -67,10 +66,6 @@ public class MyDBConnectionInfo
   @Column(length = 50, nullable = false)
   @NotNull
   private String instanceId;
-
-  public static MyDBConnectionInfo getById(String id) {
-    return MyDBConnectionInfoService.get().getConnectionInfo(id);
-  }
 
   public static List<MyDBConnectionInfo> getFromComponentInstance(String instanceId) {
     return MyDBConnectionInfoService.get().getConnectionInfoList(instanceId);
@@ -90,9 +85,9 @@ public class MyDBConnectionInfo
 
   /**
    * Is this connection information defined? Information about a connection to a data source is
-   * defined if both it is related to a ConnecteurJDBC application instance and the name of the
+   * defined if both it is related to a myDB application instance and the name of the
    * data source is defined.
-   * @return
+   * @return true if the connection is defined. False otherwise.
    */
   public boolean isDefined() {
     return StringUtil.isDefined(this.dataSource) && StringUtil.isDefined(this.instanceId);
@@ -147,14 +142,6 @@ public class MyDBConnectionInfo
    */
   public String getDataSourceName() {
     return dataSource;
-  }
-
-  /**
-   * Gets the unique identifier of the component instance this connection info belongs to.
-   * @return the unique identifier of the component instance.
-   */
-  public String getInstanceId() {
-    return instanceId;
   }
 
   /**
@@ -228,11 +215,7 @@ public class MyDBConnectionInfo
    * @param maxNumber the maximum number of data to return. 0 means all.
    */
   public void setDataMaxNumber(int maxNumber) {
-    if (maxNumber <= 0) {
-      this.rowLimit = 0;
-    } else {
-      this.rowLimit = maxNumber;
-    }
+    this.rowLimit = Math.max(maxNumber, 0);
   }
 
   /**
@@ -241,13 +224,6 @@ public class MyDBConnectionInfo
    */
   public void save() {
     MyDBConnectionInfoService.get().saveConnectionInfo(this);
-  }
-
-  /**
-   * Removes this connection information from the persistence context.
-   */
-  public void remove() {
-    MyDBConnectionInfoService.get().removeConnectionInfo(this);
   }
 
   /**

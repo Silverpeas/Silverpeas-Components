@@ -35,10 +35,6 @@ public class MyDBException extends SilverpeasException {
     super(message, parameters);
   }
 
-  public MyDBException(final String message, final Throwable cause) {
-    super(message, cause);
-  }
-
   public MyDBException(final Throwable cause) {
     super(cause);
   }

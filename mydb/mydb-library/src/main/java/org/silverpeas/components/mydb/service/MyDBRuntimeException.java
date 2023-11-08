@@ -36,10 +36,6 @@ public class MyDBRuntimeException extends SilverpeasRuntimeException {
     super(message);
   }
 
-  public MyDBRuntimeException(final String message, final Throwable cause) {
-    super(message, cause);
-  }
-
   public MyDBRuntimeException(final Throwable cause) {
     super(cause);
   }
