@@ -166,7 +166,6 @@ public class DbTable {
    * content of this table. The number of table rows is limited by the
    * {@link MyDBConnectionInfo#getDataMaxNumber()} property.
    */
-  @SuppressWarnings("unchecked")
   public SilverpeasList<TableRow> getRows(final ColumnValuePredicate filter, final String orderBy,
       final PaginationPage pagination) {
     if (!(filter instanceof AbstractColumnValuePredicate)) {
@@ -175,7 +174,7 @@ public class DbTable {
     }
     return requester.perform((r, c) -> {
       final JdbcRequester.DataConverters<TableFieldValue, TableRow> converters =
-          new JdbcRequester.DataConverters(TableFieldValue::new, TableRow::new);
+          new JdbcRequester.DataConverters<>(TableFieldValue::new, TableRow::new);
       return r.request(c, this.name, (AbstractColumnValuePredicate) filter, orderBy, converters,
           pagination);
     });

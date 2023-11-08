@@ -47,6 +47,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import static org.silverpeas.core.util.StringUtil.isDefined;
+
 /**
  * A requester of a remote enterprise data source by using the yet configured
  * {@link MyDBConnectionInfo} instance. If
@@ -225,7 +227,7 @@ class JdbcRequester {
     Objects.requireNonNull(tableName);
     Objects.requireNonNull(predicate);
     JdbcSqlQuery query = JdbcSqlQuery.createSelect("*").from(tableName);
-    query = predicate.apply(query).orderBy(orderBy);
+    query = isDefined(orderBy) ? predicate.apply(query).orderBy(orderBy) : predicate.apply(query);
     if (pagination != null) {
       query.withPagination(pagination.asCriterion());
     }

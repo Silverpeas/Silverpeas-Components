@@ -123,9 +123,9 @@ public class TableFieldValue implements Comparable<TableFieldValue> {
     } else if (SqlTypes.isBoolean(this.type)) {
       this.value = StringUtil.getBooleanValue(value);
     } else if (SqlTypes.isBigInteger(this.type)) {
-      this.value = BigInteger.valueOf(Long.valueOf(value));
+      this.value = BigInteger.valueOf(Long.parseLong(value));
     } else if (SqlTypes.isDecimal(this.type)) {
-      this.value = BigDecimal.valueOf(Double.valueOf(value));
+      this.value = BigDecimal.valueOf(Double.parseDouble(value));
     } else if (SqlTypes.isInteger(this.type)) {
       this.value = Integer.valueOf(value);
     } else if (SqlTypes.isFloat(this.type)) {
@@ -172,7 +172,8 @@ public class TableFieldValue implements Comparable<TableFieldValue> {
     final int compare;
     if (o.value == null && this.value == null) {
       compare = 0;
-    } else if (this.value instanceof Comparable) {
+    } else if (o.value != null && this.value instanceof Comparable) {
+      //noinspection unchecked,rawtypes
       compare = ((Comparable) this.value).compareTo(o.value);
     } else if (o.value == null) {
       return 1;

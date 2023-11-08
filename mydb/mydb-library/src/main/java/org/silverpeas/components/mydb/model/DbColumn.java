@@ -40,14 +40,14 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
  */
 public class DbColumn {
 
-  private JdbcRequester.ColumnDescriptor descriptor;
+  private final JdbcRequester.ColumnDescriptor descriptor;
 
   /**
    * Constructs a new {@link DbColumn} instance of the specified SQL type and with the specified
    * name.
    * @param descriptor a descriptor of the column.
    */
-  public DbColumn(final JdbcRequester.ColumnDescriptor descriptor) {
+  DbColumn(final JdbcRequester.ColumnDescriptor descriptor) {
     this.descriptor = descriptor;
   }
 
@@ -85,7 +85,7 @@ public class DbColumn {
   public int getSize() {
     int size = descriptor.getSize();
     if (getType() == Types.BIT && descriptor.getSize() == 1) {
-      size = Math.max("true".length(), "false".length());
+      size = "false".length();
     }
     return size;
   }
@@ -188,24 +188,6 @@ public class DbColumn {
    */
   public boolean isOfTypeBinary() {
     return SqlTypes.isBinary(getType());
-  }
-
-  /**
-   * Is this column of type number (INTEGER, BIGDECIMAL, ...)?
-   * @return true if the values of this column are numbers. False otherwise.
-   */
-  public boolean isOfTypeNumber() {
-    final int type = getType();
-    return SqlTypes.isBigInteger(type) || SqlTypes.isDouble(type) || SqlTypes.isFloat(type) ||
-        SqlTypes.isInteger(type) || SqlTypes.isDecimal(type);
-  }
-
-  /**
-   * Is this column of type date time (TIMESTAMP, TIMESTAMP_WITH_TIMEZONE, ...)?
-   * @return true if the values of this column are date times. False otherwise.
-   */
-  public boolean isOfTypeDateTime() {
-    return SqlTypes.isTimestamp(getType());
   }
 
   /**

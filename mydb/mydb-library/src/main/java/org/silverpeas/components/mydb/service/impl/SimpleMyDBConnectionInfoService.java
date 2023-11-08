@@ -53,24 +53,14 @@ public class SimpleMyDBConnectionInfoService implements MyDBConnectionInfoServic
   }
 
   @Override
-  public void removeConnectionInfo(final MyDBConnectionInfo connectionInfo) {
-    repository.delete(connectionInfo);
-  }
-
-  @Override
   public void removeConnectionInfoOfComponentInstance(final String componentInstanceId) {
     repository.deleteByInstanceId(componentInstanceId);
   }
 
   @Override
-  public MyDBConnectionInfo getConnectionInfo(final String id) {
-    return repository.getById(id);
-  }
-
-  @Override
-  public MyDBConnectionInfo saveConnectionInfo(
+  public void saveConnectionInfo(
       final MyDBConnectionInfo connectionInfo) {
-    return repository.save(connectionInfo);
+    repository.save(connectionInfo);
   }
 
   @Override

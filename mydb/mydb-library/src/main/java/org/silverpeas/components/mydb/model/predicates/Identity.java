@@ -28,7 +28,7 @@ import org.silverpeas.components.mydb.model.DbColumn;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 
 /**
- * Identity predicate. Similar to an empty predicate as it is always true: the columns'value is
+ * Identity predicate. Similar to an empty predicate as it is always true: the column value is
  * compared with itself (identity).
  * @author mmoquillon
  */
