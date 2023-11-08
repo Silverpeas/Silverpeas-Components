@@ -240,6 +240,14 @@ $(document).ready(function() {
         <textarea name="Description" cols="50" rows="3" id="Description"><c:out value="${curDesc}"/></textarea>
       </div>
     </div>
+
+    <div class="field" id="keywordsArea">
+      <label class="txtlibform" for="keywords"><fmt:message key="quickinfo.news.keywords" /></label>
+      <div class="champs">
+        <c:if test="${not empty curQuickInfo}"><c:set var="curKeywords" value="${curQuickInfo.keywords}"/></c:if>
+        <input type="text" name="Keywords" id="keywords" value="${curKeywords}" size="68" maxlength="1000" />
+      </div>
+    </div>
     
     <div class="field" id="broadcastArea">
       <label class="txtlibform"><fmt:message key="quickinfo.news.broadcast.mode" /> </label>

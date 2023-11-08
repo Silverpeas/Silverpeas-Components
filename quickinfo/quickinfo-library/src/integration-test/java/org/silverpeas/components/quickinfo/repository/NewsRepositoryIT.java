@@ -87,8 +87,13 @@ public class NewsRepositoryIT {
     OperationContext.fromUser(user);
     News savedNews = Transaction.performInOne(() -> {
       Period visibility = Period.between(LocalDate.now(), LocalDate.now().plusMonths(1));
-      News news =
-          new News("test", "test", visibility, true, true, false);
+      News news = News.builder()
+          .setTitleAndDescription("test", "test")
+          .setVisibilityPeriod(visibility)
+          .setImportant(true)
+          .setTicker(true)
+          .setMandatory(false)
+          .build();
       news.setComponentInstanceId("quickinfo1");
       news.setPublicationId("45789");
       news.createdBy(user);
