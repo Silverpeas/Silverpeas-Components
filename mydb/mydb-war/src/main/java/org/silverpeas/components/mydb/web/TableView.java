@@ -58,15 +58,15 @@ public class TableView {
 
   private final LocalizationBundle message;
   private final Map<Integer, Pair<String, String>> orderBies = new HashMap<>(50);
-  private Optional<DbTable> table = Optional.empty();
-  private TableRowsFilter filter = new TableRowsFilter();
+  private DbTable table = null;
+  private final TableRowsFilter filter = new TableRowsFilter();
   private String orderBy = null;
   private PaginationPage pagination = null;
   private SilverpeasList<TableRowUIEntity> lastRows = SilverpeasList.wrap(emptyList());
 
   /**
    * Constructs an empty table view. This view is on nothing.
-   * @param message
+   * @param message message
    */
   TableView(final LocalizationBundle message) {
     this.message = message;
@@ -110,7 +110,7 @@ public class TableView {
    */
   void clear() {
     orderBies.clear();
-    table = Optional.empty();
+    table = null;
     filter.clear();
     orderBy = null;
     lastRows = SilverpeasList.wrap(emptyList());
@@ -120,7 +120,7 @@ public class TableView {
    * Sets the view on the specified database table.
    * @param table the table on which this view will be defined.
    */
-  void setTable(final Optional<DbTable> table) {
+  void setTable(final DbTable table) {
     clear();
     this.table = table;
     int i = 1;
@@ -134,11 +134,7 @@ public class TableView {
    * @return the name of the table.
    */
   public String getName() {
-    String name = "";
-    if (table.isPresent()) {
-      name = table.get().getName();
-    }
-    return name;
+    return table != null ? table.getName() : "";
   }
 
   /**
@@ -147,7 +143,9 @@ public class TableView {
    */
   public List<DbColumn> getColumns() {
     final List<DbColumn> columns = new ArrayList<>();
-    table.ifPresent(t -> columns.addAll(t.getColumns()));
+    if (table != null) {
+      columns.addAll(table.getColumns());
+    }
     return columns;
   }
 
@@ -159,7 +157,7 @@ public class TableView {
    * exist or if this table view isn't defined, then nothing is returned.
    */
   Optional<DbColumn> getColumn(final String name) {
-    return table.flatMap(t -> t.getColumn(name));
+    return Optional.ofNullable(table).flatMap(t -> t.getColumn(name));
   }
 
   /**
@@ -169,7 +167,9 @@ public class TableView {
   public SilverpeasList<TableRowUIEntity> getRows() {
     final Mutable<SilverpeasList<TableRow>> rows = empty();
     try {
-      table.ifPresent(t -> rows.set(applyFilter(t)));
+      if (table != null) {
+        rows.set(applyFilter(table));
+      }
     } catch (final MyDBRuntimeException e) {
       MyDBMessageManager.get().setError(message.getString("mydb.error.filter.criteria"), e);
       SilverLogger.getLogger(this).error(e);
@@ -191,7 +191,7 @@ public class TableView {
    * @return true if the database table wrapped by this view is defined. False otherwise.
    */
   public boolean isDefined() {
-    return this.table.isPresent();
+    return this.table != null;
   }
 
   /**
@@ -205,10 +205,10 @@ public class TableView {
    */
   long deleteRow(final String uiRowId) {
     final Mutable<Long> result = empty();
-    table.ifPresent(t -> {
-      final TableRow previousRow = getTableRowFromUiId(uiRowId);
-      result.set(t.delete(previousRow));
-    });
+    if (table != null) {
+      TableRow previousRow = getTableRowFromUiId(uiRowId);
+      result.set(table.delete(previousRow));
+    }
     return result.orElse(0L);
   }
 
@@ -220,13 +220,13 @@ public class TableView {
    */
   long updateRow(final String uiRowId, final TableRow row) {
     final Mutable<Long> result = empty();
-    table.ifPresent(t -> {
+    if (table != null) {
       final TableRow previousRow = getTableRowFromUiId(uiRowId);
       if (previousRow == row) {
         throw new IllegalArgumentException("the row with new values must be a copy of previous row");
       }
-      result.set(t.update(previousRow, row));
-    });
+      result.set(table.update(previousRow, row));
+    }
     return result.orElse(0L);
   }
 
@@ -244,7 +244,9 @@ public class TableView {
    * @param row the {@link TableRow} instance to add.
    */
   void addRow(final TableRow row) {
-    table.ifPresent(t -> t.add(row));
+    if (table != null) {
+      table.add(row);
+    }
   }
 
   private SilverpeasList<TableRow> applyFilter(final DbTable table) {

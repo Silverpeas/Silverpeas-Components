@@ -24,10 +24,8 @@
 
 package org.silverpeas.components.mydb.model;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -47,14 +45,6 @@ public class TableRow {
    */
   public TableRow(final Map<String, TableFieldValue> fields) {
     this.fields = fields;
-  }
-
-  /**
-   * Gets the name of all the fields in this table row.
-   * @return a list with the name of all of the fields in this table row.
-   */
-  public List<String> getFieldNames() {
-    return new ArrayList<>(fields.keySet());
   }
 
   /**

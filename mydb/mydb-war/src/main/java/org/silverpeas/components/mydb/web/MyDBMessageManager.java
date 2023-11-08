@@ -52,10 +52,12 @@ public class MyDBMessageManager {
     // internal initialization
   }
 
+  @SuppressWarnings("unused")
   public boolean isError() {
     return error != null && isDefined(error.getFirst());
   }
 
+  @SuppressWarnings("unused")
   public Pair<String, String> getError() {
     return error;
   }

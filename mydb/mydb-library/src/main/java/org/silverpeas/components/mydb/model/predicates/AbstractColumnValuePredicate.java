@@ -36,7 +36,6 @@ public abstract class AbstractColumnValuePredicate implements ColumnValuePredica
   public static final String NULL_VALUE = "null";
   public static final String EMPTY_VALUE = "@empty@";
   private DbColumn column;
-  private String value;
   private Object normalizedValue;
 
   /**
@@ -47,7 +46,6 @@ public abstract class AbstractColumnValuePredicate implements ColumnValuePredica
    */
   public AbstractColumnValuePredicate(final DbColumn column, final String refValue) {
     this.column = column;
-    this.value = refValue;
     this.normalizedValue = normalizeValue(column, refValue);
   }
 
@@ -78,11 +76,6 @@ public abstract class AbstractColumnValuePredicate implements ColumnValuePredica
   @Override
   public DbColumn getColumn() {
     return this.column;
-  }
-
-  @Override
-  public Comparable getReferenceValue() {
-    return this.value;
   }
 
   public abstract JdbcSqlQuery apply(final JdbcSqlQuery query);

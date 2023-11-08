@@ -77,6 +77,7 @@ import static org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPa
  * Silverpeas, it is both session-scoped and spawn per application instance.
  * @author mmoquillon
  */
+@SuppressWarnings({"CdiManagedBeanInconsistencyInspection", "VoidMethodAnnotatedWithGET"})
 @WebComponentController("myDB")
 public class MyDBWebController
     extends org.silverpeas.core.web.mvc.webcomponent.WebComponentController<MyDBWebRequestContext> {
@@ -169,7 +170,7 @@ public class MyDBWebController
   public void viewTableContent(final MyDBWebRequestContext context) {
     try {
       if (!tableView.isDefined() && connectionInfo.isDefaultTableNameDefined()) {
-        tableView.setTable(DbTable.defaultTable(connectionInfo));
+        tableView.setTable(DbTable.defaultTable(connectionInfo).orElse(null));
       }
       final HttpRequest request = context.getRequest();
       if (context.getRequest().getParameterAsBoolean(AJAX_EXPORT_PARAMETER_NAME)) {
@@ -207,7 +208,7 @@ public class MyDBWebController
         final String aimedUiRowId = context.getRequest().getParameter(UI_ROW_ID);
         final Optional<TableRowUIEntity> row = tableView.getLastRows().stream()
             .filter(r -> r.getId().equals(aimedUiRowId)).findFirst();
-        if (!row.isPresent()) {
+        if (row.isEmpty()) {
           context.getMessager().addError(getMultilang().getString(ERROR_INVALID_ROW_KEY));
           context.getResponse().setStatus(Response.Status.BAD_REQUEST.getStatusCode());
         } else {
@@ -235,7 +236,7 @@ public class MyDBWebController
       final Optional<DbTable> targetTable = DbTable.table(targetTableName, connectionInfo);
       if (targetTable.isPresent()) {
         final TableView targetTableView = new TableView(getMultilang());
-        targetTableView.setTable(targetTable);
+        targetTableView.setTable(targetTable.orElse(null));
         final HttpRequest request = context.getRequest();
         final String fkArrayPaneName = "FkTable@" + targetTableName;
         targetTableView.setPagination(getPaginationPageFrom(request, fkArrayPaneName));
@@ -333,7 +334,7 @@ public class MyDBWebController
         final String aimedUiRowId = request.getParameter(UI_ROW_ID);
         final Optional<TableRowUIEntity> row = tableView.getLastRows().stream()
             .filter(r -> r.getId().equals(aimedUiRowId)).findFirst();
-        if (!row.isPresent()) {
+        if (row.isEmpty()) {
           context.getMessager().addError(getMultilang().getString(ERROR_INVALID_ROW_KEY));
           context.getResponse().setStatus(Response.Status.BAD_REQUEST.getStatusCode());
         } else {
@@ -394,7 +395,7 @@ public class MyDBWebController
         final String aimedUiRowId = request.getParameter(UI_ROW_ID);
         final Optional<TableRowUIEntity> row = tableView.getLastRows().stream()
             .filter(r -> r.getId().equals(aimedUiRowId)).findFirst();
-        if (!row.isPresent()) {
+        if (row.isEmpty()) {
           context.getMessager().addError(getMultilang().getString(ERROR_INVALID_ROW_KEY));
           context.getResponse().setStatus(Response.Status.BAD_REQUEST.getStatusCode());
         } else {
@@ -467,7 +468,7 @@ public class MyDBWebController
     if (context.getRequest().isParameterDefined("RowLimit")) {
       rowLimit = context.getRequest().getParameterAsInteger("RowLimit");
     }
-    connectionInfo.withDataSourceName(dataSource)
+    connectionInfo = connectionInfo.withDataSourceName(dataSource)
         .withLoginAndPassword(login, password)
         .withDataMaxNumber(rowLimit)
         .withoutAnyDefaultTable();
@@ -503,7 +504,7 @@ public class MyDBWebController
       final String comparator =
           defaultStringIfNotDefined(request.getParameter(COMPARING_OPERATOR), FIELD_NONE);
       final String value =
-          defaultValueIfNotDefined(request.getParameter(COMPARING_VALUE), FIELD_NONE);
+          defaultValueIfNotDefined(request.getParameter(COMPARING_VALUE));
       if (FIELD_NONE.equals(fieldName) || FIELD_NONE.equals(comparator) ||
           FIELD_NONE.equals(value)) {
         tableView.getFilter().clear();
@@ -546,11 +547,11 @@ public class MyDBWebController
         name + ": " + JDBCType.valueOf(expectedType).getName());
   }
 
-  private static String defaultValueIfNotDefined(final String value, final String defaultValue) {
+  private static String defaultValueIfNotDefined(final String value) {
     String val = value;
     if (val == null || val.isEmpty()) {
       val = null;
     }
-    return StringUtils.defaultString(val, defaultValue);
+    return StringUtils.defaultString(val, TableRowsFilter.FIELD_NONE);
   }
 }

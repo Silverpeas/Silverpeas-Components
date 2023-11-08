@@ -25,6 +25,7 @@ package org.silverpeas.components.mydb;
 
 import org.silverpeas.components.mydb.model.MyDBConnectionInfo;
 import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
+import org.silverpeas.core.annotation.Bean;
 
 import javax.inject.Named;
 import javax.transaction.Transactional;
@@ -35,6 +36,7 @@ import javax.transaction.Transactional;
  * @author mmoquillon
  */
 @Named
+@Bean
 public class MyDBInstancePreDestruction implements ComponentInstancePreDestruction {
 
   /**

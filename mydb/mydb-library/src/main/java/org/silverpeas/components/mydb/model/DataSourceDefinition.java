@@ -31,8 +31,8 @@ import java.util.List;
  */
 public class DataSourceDefinition {
 
-  private String dataSource;
-  private String description;
+  private final String dataSource;
+  private final String description;
 
   public static List<DataSourceDefinition> getAll() {
     return MyDBConnectionInfoService.get().getAllDataSourceDefinitions();

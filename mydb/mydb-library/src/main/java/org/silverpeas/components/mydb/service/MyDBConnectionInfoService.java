@@ -37,13 +37,10 @@ public interface MyDBConnectionInfoService {
 
   List<MyDBConnectionInfo> getConnectionInfoList(String instanceId);
 
-  void removeConnectionInfo(MyDBConnectionInfo connectionInfo);
-
   void removeConnectionInfoOfComponentInstance(String componentInstanceId);
 
-  MyDBConnectionInfo getConnectionInfo(String id);
 
-  MyDBConnectionInfo saveConnectionInfo(MyDBConnectionInfo connectionInfo);
+  void saveConnectionInfo(MyDBConnectionInfo connectionInfo);
 
   List<DataSourceDefinition> getAllDataSourceDefinitions();
 
