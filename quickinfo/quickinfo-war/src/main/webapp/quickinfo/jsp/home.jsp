@@ -43,14 +43,15 @@
 <fmt:message key="GML.comments" var="labelComments"/>
 <fmt:message key="quickinfo.portlet.news.more" var="moreNews"/>
 
-<c:set var="listOfNews" value="${requestScope['ListOfNews']}"/>
+<c:set var="listOfNews" value="${requestScope.ListOfNews}"/>
 <jsp:useBean id="listOfNews" type="java.util.List<org.silverpeas.components.quickinfo.model.News>"/>
-<c:set var="allOtherNews" value="${requestScope['NotVisibleNews']}"/>
-<c:set var="appSettings" value="${requestScope['AppSettings']}"/>
-<c:set var="role" value="${requestScope['Role']}"/>
+<c:set var="allOtherNews" value="${requestScope.NotVisibleNews}"/>
+<c:set var="appSettings" value="${requestScope.AppSettings}"/>
+<c:set var="role" value="${requestScope.Role}"/>
+<c:set var="isNewsToPaste" value="${requestScope.isNewsToPaste}"/>
 <c:set var="isSubscriberUser" value="${requestScope.IsSubscriberUser}"/>
 <c:set var="contributor" value="${role == 'admin' || role == 'publisher'}"/>
-<c:set var="errorMessage" value="${requestScope['ErrorMessage']}"/>
+<c:set var="errorMessage" value="${requestScope.ErrorMessage}"/>
 
 <c:set var="defaultPaginationPageSize" value="${requestScope.resources.getSetting('news.home.pagination.page.size.default', 10)}"/>
 <c:set var="defaultBatchSize" value="${requestScope.resources.getSetting('news.home.accumulation.batch.size.default', 9)}"/>
@@ -83,6 +84,11 @@ function putNewsInBasket(contributionId) {
   const basketManager = new BasketManager();
   basketManager.putContributionInBasket(contributionId);
 }
+
+function clipboardPaste() {
+  $.progressMessage();
+  sp.formRequest("paste").byPostMethod().submit();
+}
 </script>
 </view:sp-head-part>
 <view:sp-body-part cssClass="quickInfo" id="${componentId}">
@@ -102,6 +108,11 @@ function putNewsInBasket(contributionId) {
   </c:if>
   <c:if test="${isSubscriberUser != null}">
     <view:operation altText="<span id='subscriptionMenuLabel'></span>" action="javascript:spSubManager.switchUserSubscription()"/>
+  </c:if>
+  <c:if test="${isNewsToPaste}">
+    <view:operationSeparator/>
+    <fmt:message var="pasteMsg" key="GML.paste"/>
+    <view:operation altText="${pasteMsg}" action="javascript:clipboardPaste()"/>
   </c:if>
 </view:operationPane>
 <view:window>
@@ -298,6 +309,6 @@ function putNewsInBasket(contributionId) {
   /* declare the module myapp and its dependencies (here in the silverpeas module) */
   var myapp = angular.module('silverpeas.quickinfo', ['silverpeas.services', 'silverpeas.directives']);
 </script>
-
+<view:progressMessage/>
 </view:sp-body-part>
 </view:sp-page>

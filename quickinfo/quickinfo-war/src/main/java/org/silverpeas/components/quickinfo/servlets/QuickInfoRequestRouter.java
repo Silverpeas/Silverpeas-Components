@@ -31,6 +31,7 @@ import org.silverpeas.core.io.media.image.thumbnail.control.ThumbnailController;
 import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
@@ -88,6 +89,7 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
         if (isContributor(flag)) {
           NewsByStatus allNews = quickInfo.getQuickInfos();
           request.setAttribute("NotVisibleNews", allNews);
+          request.setAttribute("isNewsToPaste", quickInfo.isNewsToPaste());
           infos = allNews.getVisibles();
         } else {
           infos = quickInfo.getVisibleQuickInfos();
@@ -153,6 +155,20 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
       } else if ("Next".equals(function)) {
         request.setAttribute("News", quickInfo.getNext());
         destination = getDestination("View", quickInfo, request);
+      } else if ("copy".equals(function)) {
+        if (!isContributor(flag)) {
+          throwHttpForbiddenError();
+        }
+        final String newsId = request.getParameter("Id");
+        quickInfo.addNewsToBeCopied(newsId);
+        destination =
+            URLUtil.getURL(URLUtil.CMP_CLIPBOARD, null, null) + "Idle.jsp?message=REFRESHCLIPBOARD";
+      } else if (function.startsWith("paste")) {
+        if (!isContributor(flag)) {
+          throwHttpForbiddenError();
+        }
+        quickInfo.paste();
+        destination = getDestination("Main", quickInfo, request);
       } else if ("Add".equals(function)) {
         if (!isContributor(flag)) {
           throwHttpForbiddenError();
@@ -249,6 +265,7 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
     String id = FileUploadUtil.getParameter(items, "Id");
     String name = FileUploadUtil.getParameter(items, "Name");
     String description = FileUploadUtil.getParameter(items, "Description");
+    String keywords = FileUploadUtil.getParameter(items, "Keywords");
     String content = FileUploadUtil.getParameter(items, "editorContent");
     String pubId = FileUploadUtil.getParameter(items, "PubId");
     boolean important =
@@ -272,8 +289,14 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter<QuickInfoSess
       endDate = DateUtil.stringToDate(endString, hour, language);
     }
 
-    News news =
-        new News(name, description, getPeriod(beginDate, endDate), important, ticker, mandatory);
+    News news = News.builder()
+        .setTitleAndDescription(name, description)
+        .setKeywords(keywords)
+        .setVisibilityPeriod(getPeriod(beginDate, endDate))
+        .setImportant(important)
+        .setTicker(ticker)
+        .setMandatory(mandatory)
+        .build();
     news.setId(id);
     news.setContentToStore(content);
     if (StringUtil.isDefined(pubId)) {
