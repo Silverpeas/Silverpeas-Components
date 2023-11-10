@@ -158,7 +158,7 @@ function addGroup() {
 }
 
 function contactGoTo(id) {
-	location.href = "ContactUpdate?ContactId="+id;
+  sp.formRequest("ContactUpdate?ContactId=" + id).byPostMethod().submit();
 }
 
 function contactDeleteConfirm(id) {
