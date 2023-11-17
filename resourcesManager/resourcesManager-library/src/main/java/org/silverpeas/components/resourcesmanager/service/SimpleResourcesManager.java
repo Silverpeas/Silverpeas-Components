@@ -51,14 +51,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @author
- */
 @Service
 @Transactional
 public class SimpleResourcesManager implements ResourcesManager, Serializable {
 
   private static final long serialVersionUID = -8053955818376554252L;
+  private static final String TYPE = "Resource";
   @Inject
   private CategoryService categoryService;
   @Inject
@@ -99,16 +97,13 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
     List<Resource> resources = getResourcesByCategory(id);
     for (Resource resource : resources) {
       resourceService.deleteResource(resource.getIdAsLong());
-      deleteIndex(resource.getIdAsLong(), "Resource", componentId);
+      deleteIndex(resource.getIdAsLong(), TYPE, componentId);
     }
     // Then delete category itself
     categoryService.deleteCategory(id);
     deleteIndex(id, "Category", componentId);
   }
 
-  /**
-   * @param resource
-   */
   @Override
   public void createResource(Resource resource) {
     resourceService.createResource(resource);
@@ -128,7 +123,7 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
   @Override
   public void deleteResource(Long id, String componentId) {
     resourceService.deleteResource(id);
-    deleteIndex(id, "Resource", componentId);
+    deleteIndex(id, TYPE, componentId);
   }
 
   @Override
@@ -151,32 +146,26 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
     for (ReservedResource reservedResource : reservedResources) {
       oldReservedResources.put(reservedResource.getResourceId(), reservedResource);
     }
+    String reservationStatus = processReservationModification(reservation, resourceIds,
+        updateDate, oldReservedResources);
+    for (ReservedResource oldReservedResource : oldReservedResources.values()) {
+      reservedResourceService.delete(oldReservedResource);
+    }
+    reservation.setStatus(reservationStatus);
+    reservationService.updateReservation(reservation);
+    createReservationIndex(reservation);
+  }
+
+  private String processReservationModification(Reservation reservation, List<Long> resourceIds,
+      boolean updateDate, Map<Long, ReservedResource> oldReservedResources) {
     boolean refused = false;
     boolean forValidation = false;
     String reservationStatus = ResourceStatus.STATUS_VALIDATE;
     for (Long resourceId : resourceIds) {
       ReservedResource reservedResource = oldReservedResources.remove(resourceId);
       boolean isCreation = (reservedResource == null);
-      if (isCreation || updateDate) {
-        if (reservedResource == null) {
-          reservedResource = new ReservedResource();
-          reservedResource.setReservedResourceId(Long.toString(resourceId), reservation.getId());
-        }
-        if (resourceService.isManager(Long.parseLong(reservation.getUserId()), resourceId)) {
-          reservedResource.setStatus(ResourceStatus.STATUS_VALIDATE);
-        } else if (resourceService.getManagers(resourceId).isEmpty()) {
-          reservedResource.setStatus(ResourceStatus.STATUS_VALIDATE);
-        } else {
-          reservedResource.setStatus(ResourceStatus.STATUS_FOR_VALIDATION);
-        }
-        if (isCreation) {
-          reservedResourceService.create(reservedResource);
-        } else {
-          reservedResource.setResource(null);
-          reservedResource.setReservation(null);
-          reservedResourceService.update(reservedResource);
-        }
-      }
+      reservedResource = applyModification(reservation, updateDate, resourceId, isCreation,
+          reservedResource);
       if (reservedResource.isValidationRequired()) {
         forValidation = true;
       }
@@ -190,12 +179,32 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
     if (refused) {
       reservationStatus = ResourceStatus.STATUS_REFUSED;
     }
-    for (ReservedResource oldReservedResource : oldReservedResources.values()) {
-      reservedResourceService.delete(oldReservedResource);
+    return reservationStatus;
+  }
+
+  private ReservedResource applyModification(Reservation reservation, boolean updateDate,
+      Long resourceId, boolean isCreation, ReservedResource reservedResource) {
+    if (isCreation || updateDate) {
+      if (reservedResource == null) {
+        reservedResource = new ReservedResource();
+        reservedResource.setReservedResourceId(Long.toString(resourceId), reservation.getId());
+      }
+      if (resourceService.isManager(Long.parseLong(reservation.getUserId()), resourceId)) {
+        reservedResource.setStatus(ResourceStatus.STATUS_VALIDATE);
+      } else if (resourceService.getManagers(resourceId).isEmpty()) {
+        reservedResource.setStatus(ResourceStatus.STATUS_VALIDATE);
+      } else {
+        reservedResource.setStatus(ResourceStatus.STATUS_FOR_VALIDATION);
+      }
+      if (isCreation) {
+        reservedResourceService.create(reservedResource);
+      } else {
+        reservedResource.setResource(null);
+        reservedResource.setReservation(null);
+        reservedResourceService.update(reservedResource);
+      }
     }
-    reservation.setStatus(reservationStatus);
-    reservationService.updateReservation(reservation);
-    createReservationIndex(reservation);
+    return reservedResource;
   }
 
   /**
@@ -204,7 +213,7 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
    * @param resources the list of resource identifiers
    * @param startDate the start date
    * @param endDate the end date
-   * @return
+   * @return a list of reserved resources
    */
   @Override
   public List<Resource> getReservedResources(String instanceId, List<Long> resources,
@@ -217,11 +226,11 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
    * attached to reservationIdToSkip are excluded (but can still be returned if they are attached
    * to another reservation on the given period).
    * @param instanceId the current component instance identifier
-   * @param aimedResourceIds
+   * @param aimedResourceIds the identifiers of the resources to get.
    * @param startDate the start date
    * @param endDate the end date
-   * @param reservationIdToSkip
-   * @return
+   * @param reservationIdToSkip the unique identifier of the reservation to skip.
+   * @return a list of reserved resources.
    */
   @Override
   public List<Resource> getReservedResources(String instanceId, List<Long> aimedResourceIds,
@@ -313,8 +322,8 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
   private void createCategoryIndex(Category category) {
 
     if (category != null) {
-      FullIndexEntry indexEntry = new FullIndexEntry(category.getInstanceId(), "Category", category.
-          getIdAsString());
+      FullIndexEntry indexEntry = new FullIndexEntry(
+          new IndexEntryKey(category.getInstanceId(), "Category", category.getIdAsString()));
       indexEntry.setTitle(category.getName());
       indexEntry.setPreview(category.getDescription());
       if (category.getUpdateDate() != null) {
@@ -329,11 +338,10 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
 
   private void createResourceIndex(Resource resource) {
     if (resource != null) {
-
-
       // Index the Reservation
       FullIndexEntry indexEntry =
-          new FullIndexEntry(resource.getInstanceId(), "Resource", resource.getIdAsString());
+          new FullIndexEntry(new IndexEntryKey(resource.getInstanceId(), TYPE,
+              resource.getIdAsString()));
       indexEntry.setTitle(resource.getName());
       indexEntry.setPreview(resource.getDescription());
       if (resource.getUpdateDate() != null) {
@@ -374,8 +382,8 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
 
   private void createReservationIndex(Reservation reservation) {
     if (reservation != null) {
-      FullIndexEntry indexEntry = new FullIndexEntry(reservation.getInstanceId(), "Reservation",
-          reservation.getIdAsString());
+      FullIndexEntry indexEntry = new FullIndexEntry(new IndexEntryKey(reservation.getInstanceId(),
+          "Reservation", reservation.getIdAsString()));
       indexEntry.setTitle(reservation.getEvent());
       indexEntry.setPreview(reservation.getReason());
       indexEntry.setCreationDate(reservation.getCreationDate());
@@ -387,7 +395,8 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
 
   private void deleteIndex(Long objectId, String objectType, String componentId) {
     if (objectId != null) {
-      IndexEntryKey indexEntry = new IndexEntryKey(componentId, objectType, String.valueOf(objectId));
+      IndexEntryKey indexEntry = new IndexEntryKey(componentId, objectType,
+          String.valueOf(objectId));
       IndexEngineProxy.removeIndexEntry(indexEntry);
     }
   }

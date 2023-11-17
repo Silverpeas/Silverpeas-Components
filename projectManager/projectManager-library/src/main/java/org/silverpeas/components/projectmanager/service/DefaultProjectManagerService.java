@@ -56,10 +56,7 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * CDI bean to manage the projectManager application
@@ -151,7 +148,7 @@ public class DefaultProjectManagerService implements ProjectManagerService {
   public TaskDetail getTaskByTodoId(String todoId) {
 
     Connection con = getConnection();
-    String actionId = null;
+    String actionId;
     try {
       TodoDetail todo = getTodo(todoId);
       actionId = todo.getExternalId();
@@ -224,8 +221,8 @@ public class DefaultProjectManagerService implements ProjectManagerService {
       // Supprime toutes les sous taches (à n'importe quel niveau)
       List<TaskDetail> tree = ProjectManagerDAO.getTree(con, id);
       TaskDetail task = null;
-      for (int t = 0; t < tree.size(); t++) {
-        task = tree.get(t);
+      for (TaskDetail taskDetail : tree) {
+        task = taskDetail;
         removeTask(con, task.getId(), task.getInstanceId());
       }
       // La tâche mère a t-elle d'autres taches filles. Est-elle toujours décomposée ?
@@ -237,13 +234,14 @@ public class DefaultProjectManagerService implements ProjectManagerService {
       }
       // Cette tâche est-elle la tâche précédente d'autres tâches
       List<TaskDetail> nextTasks = ProjectManagerDAO.getNextTasks(con, id);
-      TaskDetail nextTask = null;
-      for (int n = 0; n < nextTasks.size(); n++) {
-        nextTask = nextTasks.get(n);
+      TaskDetail nextTask;
+      for (TaskDetail taskDetail : nextTasks) {
+        nextTask = taskDetail;
         nextTask.setPreviousTaskId(-1);
         ProjectManagerDAO.updateTask(con, nextTask);
       }
       // modification de sa tache mère s'il en existe une
+      Objects.requireNonNull(task);
       updateChargesMotherTask(con, task);
     } catch (Exception re) {
       throw new ProjectManagerRuntimeException(re);
@@ -330,11 +328,9 @@ public class DefaultProjectManagerService implements ProjectManagerService {
 
 
     // détecte les tâches qui doivent être décalées
-    TaskDetail subTask = null;
-    for (int t = 0; t < subTasks.size(); t++) {
+    for (TaskDetail taskDetail : subTasks) {
       boolean isModifBeginDate = false;
-      subTask = subTasks.get(t);
-      updateSubTask(userId, beginDate, holidays, calendar, subTask, isModifBeginDate);
+      updateSubTask(userId, beginDate, holidays, calendar, taskDetail, isModifBeginDate);
     }
   }
 
@@ -348,7 +344,8 @@ public class DefaultProjectManagerService implements ProjectManagerService {
     beginDateSub = goAfterHoliday(holidays, calendar, subTask, beginDateSub);
 
     if (beginDate.after(beginDateSub)) {
-      // La date de début de la tâche mêre est supérieure à la sous tâche cette tâche doit être décalée
+      // La date de début de la tâche mêre est supérieure à la sous tâche cette tâche doit être
+      // décalée
       // nouvelle date de début = date début mère
       beginDateSub = beginDate;
       subTask.setDateDebut(beginDate);
@@ -382,13 +379,9 @@ public class DefaultProjectManagerService implements ProjectManagerService {
     List<TaskDetail> nextTasks = ProjectManagerDAO.getNextTasks(con, task.getId());
 
     // détecte les tâches qui doivent être décalées
-    TaskDetail linkedTask;
-    TaskDetail motherTask;
     Calendar calendar2 = Calendar.getInstance();
 
-    for (int t = 0; t < nextTasks.size(); t++) {
-      linkedTask = nextTasks.get(t);
-
+    for (TaskDetail linkedTask : nextTasks) {
       Date beginDateLinked = linkedTask.getDateDebut();
       Date saveBeginDate = beginDateLinked;
 
@@ -412,7 +405,7 @@ public class DefaultProjectManagerService implements ProjectManagerService {
       updateTask(userId, linkedTask, beginDateLinked, saveBeginDate, endDateLinked, saveEndDate);
 
       // on traite maintenant la tâche mère de la tache liée
-      motherTask = ProjectManagerDAO.getTask(con, task.getMereId());
+      TaskDetail motherTask = ProjectManagerDAO.getTask(con, task.getMereId());
       if (motherTask.getMereId() != -1) {
         // c'est une tache, pas le projet
         updateMotherTask(con, holidays, calendar, linkedTask, motherTask, calendar2);
@@ -440,7 +433,8 @@ public class DefaultProjectManagerService implements ProjectManagerService {
     }
 
     if (endDateLinked.after(motherTask.getDateFin())) {
-      // La date de fin de la tâche fille est supérieure à celle de la mère cette tâche doit être décalée
+      // La date de fin de la tâche fille est supérieure à celle de la mère cette tâche doit être
+      // décalée
       // nouvelle date de fin de la mère = date fin fille
       motherTask.setDateFin(endDateLinked);
       updateMother = true;
@@ -451,12 +445,8 @@ public class DefaultProjectManagerService implements ProjectManagerService {
       calendar.setTime(motherTask.getDateDebut());
       calendar2.setTime(motherTask.getDateFin());
       charge = 0;
-      while (true) {
-        if (calendar.before(calendar2) || calendar.equals(calendar2)) {
-          charge++;
-        } else {
-          break;
-        }
+      while (calendar.before(calendar2) || calendar.equals(calendar2)) {
+        charge++;
         calendar.add(Calendar.DATE, 1);
       }
 
@@ -523,13 +513,19 @@ public class DefaultProjectManagerService implements ProjectManagerService {
       String taskName) {
     StringBuilder body = new StringBuilder();
     if (onCreation) {
-      body.append(message.getString("projectManager.NewTaskNamed")).append(
-          " '" + taskName + "' ").append(
-          message.getString("projectManager.NewTaskAssigned")).append("\n");
+      body.append(message.getString("projectManager.NewTaskNamed"))
+          .append(" '")
+          .append(taskName)
+          .append("' ")
+          .append(message.getString("projectManager.NewTaskAssigned"))
+          .append("\n");
     } else {
-      body.append(message.getString("projectManager.UpdateTaskNamed")).append(
-          " '" + taskName + "' ").append(
-          message.getString("projectManager.UpdateTaskAssigned")).append("\n");
+      body.append(message.getString("projectManager.UpdateTaskNamed"))
+          .append(" '")
+          .append(taskName)
+          .append("' ")
+          .append(message.getString("projectManager.UpdateTaskAssigned"))
+          .append("\n");
     }
     return body.toString();
   }
@@ -547,7 +543,8 @@ public class DefaultProjectManagerService implements ProjectManagerService {
     String subject = getNotificationSubject(message, onCreation);
     String body = getNotificationBody(message, onCreation, task.getNom());
 
-    NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.PRIORITY_NORMAL,
+    NotificationMetaData notifMetaData =
+        new NotificationMetaData(NotificationParameters.PRIORITY_NORMAL,
         subject, body);
 
     for (String language : DisplayI18NHelper.getLanguages()) {
@@ -640,19 +637,10 @@ public class DefaultProjectManagerService implements ProjectManagerService {
     List<Date> holidays = getHolidayDates(instanceId);
 
     Calendar calendar = Calendar.getInstance();
-
-    TaskDetail task = null;
-    Date beginDate = null;
-    Date endDate = null;
-    boolean isModifBeginDate = false;
-    Date saveBeginDate = null;
-    Date saveEndDate = null;
-
-    for (int t = 0; t < tasks.size(); t++) {
-      isModifBeginDate = false;
-      task = tasks.get(t);
-      beginDate = task.getDateDebut();
-      saveBeginDate = beginDate;
+    for (TaskDetail task : tasks) {
+      boolean isModifBeginDate = false;
+      Date beginDate = task.getDateDebut();
+      Date saveBeginDate = beginDate;
 
       // vérifie si la date de début n'est pas un jour travaillé
       while (holidays.contains(beginDate)) {
@@ -667,8 +655,8 @@ public class DefaultProjectManagerService implements ProjectManagerService {
       }
 
       // calcul la date de fin et mise à jour si elle est modifiée
-      saveEndDate = task.getDateFin();
-      endDate = processEndDate(task, calendar, holidays);
+      Date saveEndDate = task.getDateFin();
+      Date endDate = processEndDate(task, calendar, holidays);
       if (!endDate.equals(saveEndDate)) {
         task.setDateFin(endDate);
         isModifBeginDate = true;
@@ -691,13 +679,9 @@ public class DefaultProjectManagerService implements ProjectManagerService {
         // projet
         List<TaskDetail> subTasks = ProjectManagerDAO.getTasksByMotherId(con, motherTask
             .getInstanceId(), motherTask.getId());
-        TaskDetail subTask = null;
         float somConsomme = 0;
         float somRaf = 0;
-
-        for (int t = 0; t < subTasks.size(); t++) {
-          subTask = subTasks.get(t);
-
+        for (TaskDetail subTask : subTasks) {
           // calcul la somme des charges consommées et reste à faire
           somConsomme += subTask.getConsomme();
           somRaf += subTask.getRaf();
@@ -834,10 +818,9 @@ public class DefaultProjectManagerService implements ProjectManagerService {
   }
 
   private void createIndex(TaskDetail task) {
-
-    FullIndexEntry indexEntry = null;
-    // Index the Composed Task
-    indexEntry = new FullIndexEntry(task.getInstanceId(), "Action", Integer.toString(task.getId()));
+    FullIndexEntry indexEntry =
+        new FullIndexEntry(new IndexEntryKey(task.getInstanceId(), "Action",
+            Integer.toString(task.getId())));
     indexEntry.setTitle(task.getNom());
     indexEntry.setPreview(task.getDescription());
     IndexEngineProxy.addIndexEntry(indexEntry);

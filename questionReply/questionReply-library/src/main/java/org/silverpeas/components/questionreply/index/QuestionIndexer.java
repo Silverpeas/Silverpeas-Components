@@ -45,7 +45,8 @@ public class QuestionIndexer {
 
   public void createIndex(Question question, Collection<Reply> replies) {
     FullIndexEntry indexEntry =
-        new FullIndexEntry(question.getInstanceId(), "Question", question.getPK().getId());
+        new FullIndexEntry(new IndexEntryKey(question.getInstanceId(), "Question",
+            question.getPK().getId()));
     indexEntry.setTitle(question.getTitle());
     indexEntry.setPreview(question.getContent());
     try {
@@ -70,15 +71,13 @@ public class QuestionIndexer {
   }
 
   /**
-   * Be carefull we don't delete Replies indexes.
-   * @param question
+   * Delete index of the specified question.
+   * @implNote The index of the replies to the question isn't deleted.
+   * @param question a question
    */
   public void deleteIndex(Question question) {
     IndexEntryKey indexEntry =
         new IndexEntryKey(question.getInstanceId(), "Question", question.getPK().getId());
     IndexEngineProxy.removeIndexEntry(indexEntry);
-  }
-
-  public QuestionIndexer() {
   }
 }

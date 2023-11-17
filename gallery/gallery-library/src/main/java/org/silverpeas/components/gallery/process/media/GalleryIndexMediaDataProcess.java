@@ -34,6 +34,7 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
+import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.process.management.ProcessExecutionContext;
 import org.silverpeas.core.process.session.ProcessSession;
 import org.silverpeas.core.util.StringUtil;
@@ -155,8 +156,10 @@ public class GalleryIndexMediaDataProcess extends AbstractGalleryDataProcess {
   }
 
   private FullIndexEntry setUpIndexEntry() {
-    FullIndexEntry indexEntry = new FullIndexEntry(getMedia().getMediaPK().getComponentName(),
-        getMedia().getContributionType(), getMedia().getMediaPK().getId());
+    FullIndexEntry indexEntry = new FullIndexEntry(new IndexEntryKey(
+        getMedia().getMediaPK().getComponentName(),
+        getMedia().getContributionType(),
+        getMedia().getMediaPK().getId()));
     indexEntry.setTitle(getMedia().getTitle());
     indexEntry.setPreview(getMedia().getDescription());
     indexEntry.setCreationDate(getMedia().getCreationDate());

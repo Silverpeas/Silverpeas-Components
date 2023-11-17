@@ -63,7 +63,7 @@ public class ResultSearchRenderer extends AbstractResultDisplayer {
   private static final Properties templateConfig = new Properties();
   private static final String TEMPLATE_FILENAME = "publication_result_template";
 
-  /**
+  /*
    * Load template configuration
    */
   static {
@@ -86,7 +86,8 @@ public class ResultSearchRenderer extends AbstractResultDisplayer {
 
     // Retrieve the event detail from silverResult
     GlobalSilverResult silverResult = searchResult.getGsr();
-    PublicationPK pubPK = new PublicationPK(silverResult.getId());
+    String id = silverResult.isLinked() ? silverResult.getLinkedResourceId() : silverResult.getId();
+    PublicationPK pubPK = new PublicationPK(id);
     PublicationDetail pubDetail = null;
     try {
       pubDetail = getPublicationService().getDetail(pubPK);
@@ -133,7 +134,7 @@ public class ResultSearchRenderer extends AbstractResultDisplayer {
       template.setAttribute("pubContent", pubDetail.getContentPagePath());
     }
     String componentId = silverResult.getInstanceId();
-    String id = silverResult.getId();
+    String id = silverResult.isLinked() ? silverResult.getLinkedResourceId() : silverResult.getId();
     // get user language
     String language = getUserPreferences(searchResult.getUserId()).getLanguage();
     if (WysiwygController.haveGotWysiwyg(componentId, id, language)) {

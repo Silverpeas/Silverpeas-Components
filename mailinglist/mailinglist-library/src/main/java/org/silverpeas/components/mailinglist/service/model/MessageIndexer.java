@@ -37,7 +37,8 @@ public class MessageIndexer {
     if (message.isModerated()) {
       unindexMessage(message);
       FullIndexEntry index =
-          new FullIndexEntry(message.getComponentId(), "message", message.getId());
+          new FullIndexEntry(new IndexEntryKey(message.getComponentId(), "message",
+              message.getId()));
       index.setTitle(message.getTitle());
       index.setCreationDate(message.getSentDate());
       index.setPreview(message.getSummary());

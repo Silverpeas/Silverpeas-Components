@@ -34,6 +34,7 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
+import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.index.components.ComponentIndexation;
@@ -83,7 +84,7 @@ public class WebPagesIndexer implements ComponentIndexation {
 
   private FullIndexEntry getFullIndexEntry(ComponentInst component) {
     FullIndexEntry indexEntry =
-        new FullIndexEntry(component.getId(), "Component", component.getId());
+        new FullIndexEntry(new IndexEntryKey(component.getId(), "Component", component.getId()));
     indexEntry.setCreationDate(component.getCreationDate());
     indexEntry.setCreationUser(component.getCreatorUserId());
     indexEntry.setLastModificationDate(component.getLastUpdateDate());

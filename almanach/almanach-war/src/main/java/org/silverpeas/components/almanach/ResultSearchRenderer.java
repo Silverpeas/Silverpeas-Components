@@ -79,7 +79,9 @@ public class ResultSearchRenderer extends AbstractResultDisplayer implements Res
 
     // Retrieve the event detail from silverResult
     final GlobalSilverResult silverResult = searchResult.getGsr();
-    final CalendarEvent event = CalendarEvent.getById(silverResult.getId());
+    final String id = silverResult.isLinked() ? silverResult.getLinkedResourceId() :
+        silverResult.getId();
+    final CalendarEvent event = CalendarEvent.getById(id);
     // Create a SilverpeasTemplate
     final SilverpeasTemplate template = getNewTemplate();
     this.setCommonAttributes(searchResult, template);

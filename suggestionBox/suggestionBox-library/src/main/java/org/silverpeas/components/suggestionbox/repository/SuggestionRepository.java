@@ -34,6 +34,7 @@ import org.silverpeas.core.contribution.rating.model.ContributionRating;
 import org.silverpeas.core.contribution.rating.service.RatingService;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
+import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.persistence.datasource.repository.EntityRepository;
 import org.silverpeas.core.persistence.datasource.repository.QueryCriteria;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
@@ -180,7 +181,7 @@ public class SuggestionRepository implements EntityRepository<Suggestion> {
   private SilverpeasList<Suggestion> decorate(final List<Suggestion> suggestions,
       final SuggestionCriteria criteria) {
     Map<String, ContributionRating> suggestionRatings = RatingService.get()
-        .getRatings(suggestions.toArray(new SilverpeasContent[suggestions.size()]));
+        .getRatings(suggestions.toArray(new SilverpeasContent[0]));
     for (Suggestion suggestion : suggestions) {
       if (criteria.mustLoadWysiwygContent()) {
         withContent(suggestion);
@@ -217,8 +218,8 @@ public class SuggestionRepository implements EntityRepository<Suggestion> {
 
     if (suggestion != null && suggestion.getValidation().isValidated()) {
       FullIndexEntry indexEntry =
-          new FullIndexEntry(suggestion.getComponentInstanceId(), Suggestion.TYPE,
-              suggestion.getId());
+          new FullIndexEntry(new IndexEntryKey(suggestion.getComponentInstanceId(), Suggestion.TYPE,
+              suggestion.getId()));
       indexEntry.setTitle(suggestion.getTitle());
       indexEntry.setCreationDate(suggestion.getValidation().getDate());
       indexEntry.setCreationUser(suggestion.getCreatorId());

@@ -131,9 +131,9 @@ public class DefaultForumService implements ForumService {
   }
 
   /**
-   * Gets all forums of an instanceId that have not parent forum.
-   * @param instanceId
-   * @return
+   * Gets all the forums of the specified component instance that don't have a parent forum.
+   * @param instanceId the unique identifier of a component instance.
+   * @return a collection of forums.
    */
   @Override
   public Collection<Forum> getForumRootList(final String instanceId) {
@@ -216,10 +216,6 @@ public class DefaultForumService implements ForumService {
     }
   }
 
-  /**
-   * @param forumPK
-   * @return
-   */
   @Override
   public List<Forum> getForums(ForumPK forumPK) {
     try (Connection con = openConnection()) {
@@ -247,10 +243,6 @@ public class DefaultForumService implements ForumService {
     }
   }
 
-  /**
-   * @param forumPK
-   * @return
-   */
   @Override
   public List<String> getForumSonsIds(ForumPK forumPK) {
     try (Connection con = openConnection()) {
@@ -261,9 +253,9 @@ public class DefaultForumService implements ForumService {
   }
 
   /**
-   * Verrouille recursivement l'arborescence d'un forum en ecriture a partir de sa primary key
-   * @param forumPK la primary key du forum
-   * @param level le niveau de verrouillage
+   * Locks recursively in writing the tree of a given forum.
+   * @param forumPK the unique identifier of the forum.
+   * @param level the locking level.
    */
   @Override
   public void lockForum(ForumPK forumPK, int level) {
@@ -331,15 +323,15 @@ public class DefaultForumService implements ForumService {
   }
 
   /**
-   * Cree un nouveau forum dans la datasource
-   * @param forumPK la primary key
-   * @param forumName nom du forum
-   * @param forumDescription description du forum
-   * @param forumCreator l'id du createur du forum
-   * @param forumParent l'id du forum parent
-   * @param categoryId l'id de la categorie
-   * @param keywords
-   * @return String l'id du nouveau forum
+   * Creates a new forum.
+   * @param forumPK the global identifier of the forum to create
+   * @param forumName the name of the forum
+   * @param forumDescription a short description of the forum.
+   * @param forumCreator the unique identifier of the creator.
+   * @param forumParent the unique identifier of a parent forum (if any).
+   * @param categoryId the unique identifier of the category for which the forum will be created
+   * @param keywords keywords
+   * @return the unique identifier of the forum.
    * @author frageade
    */
   @Transactional(Transactional.TxType.REQUIRED)
@@ -389,10 +381,6 @@ public class DefaultForumService implements ForumService {
     }
   }
 
-  /**
-   * @param forumPK
-   * @return
-   */
   private List<Message> getMessagesList(ForumPK forumPK) {
     try (Connection con = openConnection()) {
       return ForumsDAO.getMessagesList(con, forumPK);
@@ -459,10 +447,10 @@ public class DefaultForumService implements ForumService {
   }
 
   /**
-   * Retourne le dernier message d'un forum
-   * @param forumPK la primary key du forum
-   * @param status
-   * @return the last message in a forum with the specified status.
+   * Gets the last message posted into the given forum.
+   * @param forumPK the unique identifier of the forum.
+   * @param status the status of the message to get.
+   * @return the last message in the forum with the specified status.
    * @author sfariello
    */
   @Override
@@ -475,10 +463,10 @@ public class DefaultForumService implements ForumService {
   }
 
   @Override
-  public Collection getLastMessageRSS(String instanceId, int nbReturned) {
+  public Collection<Object> getLastMessageRSS(String instanceId, int nbReturned) {
     int countdown = nbReturned;
     // retourne les nbReturned messages des forums de l'instance instanceId
-    Collection messages = new ArrayList();
+    Collection<Object> messages = new ArrayList<>();
     try (Connection con = openConnection()) {
       // récupère la liste des id des messages
       Collection<String> allMessagesIds = ForumsDAO.getLastMessageRSS(con, instanceId);
@@ -522,11 +510,12 @@ public class DefaultForumService implements ForumService {
   }
 
   /**
-   * Retourne vrai s'il y a des messages non lus sur ce forum depuis la dernière visite
-   * @param userId l'id de l'utilisateur
-   * @param forumPK l'id du forum
-   * @param status le status (validé, en attente, ...)
-   * @return
+   * Is there any non read messages with the given status in the specified forum?
+   * @param userId the unique identifier of a user
+   * @param forumPK the unique identifier of the forum
+   * @param status the status of the non read messages (validated, waiting, ...)
+   * @return true if there is at least one message with the given status non read by the user.
+   * False otherwise.
    */
   @Override
   public boolean isNewMessageByForum(String userId, ForumPK forumPK, String status) {
@@ -596,7 +585,7 @@ public class DefaultForumService implements ForumService {
    * @author frageade
    * @since 04 Octobre 2000
    */
-  private List getMessageInfos(MessagePK messagePK) {
+  private List<?> getMessageInfos(MessagePK messagePK) {
     try (Connection con = openConnection()) {
       return ForumsDAO.getMessageInfos(con, messagePK);
     } catch (SQLException e) {
@@ -737,11 +726,6 @@ public class DefaultForumService implements ForumService {
     }
   }
 
-  /**
-   * @param userId
-   * @param forumPK
-   * @return
-   */
   @Override
   public boolean isModerator(String userId, ForumPK forumPK) {
     if (!("0".equals(forumPK.getId()))) {
@@ -754,10 +738,6 @@ public class DefaultForumService implements ForumService {
     return false;
   }
 
-  /**
-   * @param forumPK
-   * @param userId
-   */
   @Override
   public void addModerator(ForumPK forumPK, String userId) {
     try (Connection con = openConnection()) {
@@ -767,10 +747,6 @@ public class DefaultForumService implements ForumService {
     }
   }
 
-  /**
-   * @param forumPK
-   * @param userId
-   */
   @Override
   public void removeModerator(ForumPK forumPK, String userId) {
     try (Connection con = openConnection()) {
@@ -780,9 +756,6 @@ public class DefaultForumService implements ForumService {
     }
   }
 
-  /**
-   * @param forumPK
-   */
   @Override
   public void removeAllModerators(ForumPK forumPK) {
     try (Connection con = openConnection()) {
@@ -810,10 +783,6 @@ public class DefaultForumService implements ForumService {
     }
   }
 
-  /**
-   * @param messagePK
-   * @param forumPK
-   */
   @Transactional(Transactional.TxType.REQUIRED)
   @Override
   public void moveMessage(MessagePK messagePK, ForumPK forumPK) {
@@ -831,37 +800,9 @@ public class DefaultForumService implements ForumService {
   }
 
   /**
-   * Liste tous les sous-messages d'un message
-   * @param messagePK la primary key du message pere
-   * @return Vector liste des ids fils
-   * @author frageade
-   */
-  public Collection<String> getMessageSons(MessagePK messagePK) {
-    try (Connection con = openConnection()) {
-      return ForumsDAO.getMessageSons(con, messagePK);
-    } catch (SQLException e) {
-      throw new ForumsRuntimeException(e);
-    }
-  }
-
-  /**
-   * Liste tous les sous-messages d'un message récursivement
-   * @param messagePK la primary key du message pere
-   * @return Vector liste des ids fils
-   * @author frageade
-   */
-  public Collection<String> getAllMessageSons(MessagePK messagePK) {
-    try (Connection con = openConnection()) {
-      return ForumsDAO.getAllMessageSons(con, messagePK);
-    } catch (SQLException e) {
-      throw new ForumsRuntimeException(e);
-    }
-  }
-
-  /**
    * Subscribe the given user to the given forum message.
-   * @param messagePK
-   * @param userId
+   * @param messagePK the unique identifier of the message.
+   * @param userId the unique identifier of the user to subscribe.
    */
   @Transactional(Transactional.TxType.REQUIRED)
   @Override
@@ -871,8 +812,8 @@ public class DefaultForumService implements ForumService {
 
   /**
    * Unsubscribe the given user to the given forum message.
-   * @param messagePK
-   * @param userId
+   * @param messagePK the unique identifier of the message.
+   * @param userId the unique identifier of the user to unsubscribe.
    */
   @Transactional(Transactional.TxType.REQUIRED)
   @Override
@@ -882,8 +823,8 @@ public class DefaultForumService implements ForumService {
 
   /**
    * Subscribe the given user to the given forum.
-   * @param forumPK
-   * @param userId
+   * @param forumPK the unique identifier of the forum.
+   * @param userId the unique identifier of the user to subscribe.
    */
   @Transactional(Transactional.TxType.REQUIRED)
   @Override
@@ -893,8 +834,8 @@ public class DefaultForumService implements ForumService {
 
   /**
    * Unsubscribe the given user to the given forum.
-   * @param forumPK
-   * @param userId
+   * @param forumPK the unique identifier of the forum.
+   * @param userId the unique identifier of the user to unsubscribe.
    */
   @Transactional(Transactional.TxType.REQUIRED)
   @Override
@@ -903,9 +844,9 @@ public class DefaultForumService implements ForumService {
   }
 
   /**
-   * Gets the list of subscribers related to the given forum message primary key.
-   * @param messagePK
-   * @return
+   * Gets the list of subscribers related to the given forum message.
+   * @param messagePK the unique identifier of the message.
+   * @return a list of subscribers.
    */
   @Override
   public SubscriptionSubscriberList listAllSubscribers(MessagePK messagePK) {
@@ -914,9 +855,9 @@ public class DefaultForumService implements ForumService {
   }
 
   /**
-   * Gets the list of subscribers related to the given forum primary key.
-   * @param forumPK
-   * @return
+   * Gets the list of subscribers related to the given forum.
+   * @param forumPK the unique identifier of the forum.
+   * @return a list of subscribers.
    */
   @Override
   public SubscriptionSubscriberList listAllSubscribers(final ForumPK forumPK) {
@@ -925,10 +866,10 @@ public class DefaultForumService implements ForumService {
   }
 
   /**
-   * Gets the list of subscribers to the given component instance identifier.
+   * Gets the list of subscribers to the given component instance.
    * This kind of subscribers come from WEB-Service subscriptions (/services/subscribe/{instanceId})
-   * @param instanceId
-   * @return
+   * @param instanceId the unique identifier of the component instance.
+   * @return a list of subscribers.
    */
   @Override
   public SubscriptionSubscriberList listAllSubscribers(final String instanceId) {
@@ -936,10 +877,10 @@ public class DefaultForumService implements ForumService {
   }
 
   /**
-   * Indicates if the given user has subscribed to the given forum message identifier.
-   * @param messagePK
-   * @param userId
-   * @return
+   * Indicates if the given user has subscribed to the given forum message.
+   * @param messagePK the unique identifier of a message.
+   * @param userId the unique identifier of the user.
+   * @return true if the given user has subscribed to the specified message. False otherwise.
    */
   @Override
   public boolean isSubscriber(MessagePK messagePK, String userId) {
@@ -948,11 +889,10 @@ public class DefaultForumService implements ForumService {
   }
 
   /**
-   * Indicates if the given user is subscribed by inheritance to the given forum message
-   * identifier.
-   * @param messagePK
-   * @param userId
-   * @return
+   * Indicates if the given user is subscribed by inheritance to the given forum message.
+   * @param messagePK the unique identifier of a message.
+   * @param userId the unique identifier of the user.
+   * @return true if the given user has subscribed to the specified message. False otherwise.
    */
   @Override
   public boolean isSubscriberByInheritance(final MessagePK messagePK, final String userId) {
@@ -962,10 +902,10 @@ public class DefaultForumService implements ForumService {
   }
 
   /**
-   * Indicates if the given user has subscribed to the given forum identifier.
-   * @param forumPK
-   * @param userId
-   * @return
+   * Indicates if the given user has subscribed to the given forum.
+   * @param forumPK the unique identifier of the forum.
+   * @param userId the unique identifier of the user.
+   * @return true if the given user has subscribed to the specified forum. False otherwise.
    */
   @Override
   public boolean isSubscriber(final ForumPK forumPK, final String userId) {
@@ -974,10 +914,10 @@ public class DefaultForumService implements ForumService {
   }
 
   /**
-   * Indicates if the given user is subscribed by inheritance to the given forum identifier.
-   * @param forumPK
-   * @param userId
-   * @return
+   * Indicates if the given user is subscribed by inheritance to the given forum.
+   * @param forumPK the unique identifier of the forum.
+   * @param userId the unique identifier of the user.
+   * @return true if the given user has subscribed to the specified forum. False otherwise.
    */
   @Override
   public boolean isSubscriberByInheritance(final ForumPK forumPK, final String userId) {
@@ -987,10 +927,11 @@ public class DefaultForumService implements ForumService {
   }
 
   /**
-   * Indicates if the given user has subscribed to the given component instance identifier.
-   * @param instanceId
-   * @param userId
-   * @return
+   * Indicates if the given user has subscribed to the given component instance.
+   * @param instanceId the unique identifier of the component instance.
+   * @param userId the unique identifier of the user.
+   * @return true if the given user has subscribed to the specified component instance. False
+   * otherwise.
    */
   @Override
   public boolean isSubscriber(final String instanceId, final String userId) {
@@ -998,11 +939,6 @@ public class DefaultForumService implements ForumService {
         .isUserSubscribedToResource(userId, ComponentSubscriptionResource.from(instanceId));
   }
 
-  /**
-   * Method declaration
-   * @param messagePK
-   *
-   */
   @Override
   public void createIndex(MessagePK messagePK) {
     if (messagePK != null) {
@@ -1010,7 +946,8 @@ public class DefaultForumService implements ForumService {
       String componentId = messagePK.getComponentName();
       String messageId = messagePK.getId();
 
-      FullIndexEntry indexEntry = new FullIndexEntry(componentId, "Message", messageId);
+      FullIndexEntry indexEntry = new FullIndexEntry(new IndexEntryKey(componentId, "Message",
+          messageId));
       indexEntry.setTitle(message.getTitle());
       indexEntry.setCreationDate(message.getDate());
       indexEntry.setCreationUser(message.getAuthor());
@@ -1020,33 +957,24 @@ public class DefaultForumService implements ForumService {
 
   }
 
-  /**
-   * @param messagePK
-   */
   private void deleteIndex(MessagePK messagePK) {
     IndexEngineProxy.removeIndexEntry(
         new IndexEntryKey(messagePK.getComponentName(), "Message", messagePK.getId()));
   }
 
-  /**
-   * @param forumPK
-   */
   @Override
   public void createIndex(ForumPK forumPK) {
     if (forumPK != null) {
       Forum forum = getForum(forumPK);
       FullIndexEntry indexEntry =
-          new FullIndexEntry(forumPK.getComponentName(), RESOURCE_TYPE, forumPK.
-          getId());
+          new FullIndexEntry(new IndexEntryKey(forumPK.getComponentName(), RESOURCE_TYPE,
+              forumPK.getId()));
       indexEntry.setTitle(forum.getName());
       indexEntry.setPreview(forum.getDescription());
       IndexEngineProxy.addIndexEntry(indexEntry);
     }
   }
 
-  /**
-   * @param forumPK
-   */
   private void deleteIndex(ForumPK forumPK) {
     IndexEngineProxy.removeIndexEntry(
         new IndexEntryKey(forumPK.getComponentName(), RESOURCE_TYPE, forumPK.
@@ -1067,24 +995,22 @@ public class DefaultForumService implements ForumService {
 
   @Override
   public int getSilverObjectId(ForumPK forumPK) {
-
-    int silverObjectId = -1;
     try {
       int forumId = Integer.parseInt(forumPK.getId());
       String instanceId = forumPK.getComponentName();
-      if (instanceId == null || instanceId.length() == 0) {
+      if (StringUtil.isNotDefined(instanceId)) {
         instanceId = getForumInstanceId(forumId);
         forumPK.setComponentName(instanceId);
       }
-      silverObjectId = forumsContentManager.getSilverContentId(forumPK.getId(), instanceId);
+      int silverObjectId = forumsContentManager.getSilverContentId(forumPK.getId(), instanceId);
       if (silverObjectId == -1) {
         String creatorId = getForumCreatorId(forumId);
         silverObjectId = forumsContentManager.createSilverContent(null, forumPK, creatorId);
       }
+      return silverObjectId;
     } catch (Exception e) {
       throw new ForumsRuntimeException(e);
     }
-    return silverObjectId;
   }
 
   @Transactional(Transactional.TxType.REQUIRED)
@@ -1304,10 +1230,6 @@ public class DefaultForumService implements ForumService {
     }
   }
 
-  /**
-   * Gets instance of centralized subscription services.
-   * @return
-   */
   protected SubscriptionService getSubscribeService() {
     return SubscriptionServiceProvider.getSubscribeService();
   }

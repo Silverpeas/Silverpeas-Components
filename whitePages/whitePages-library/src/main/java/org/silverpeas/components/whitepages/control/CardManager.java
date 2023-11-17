@@ -69,7 +69,7 @@ import java.util.List;
 public class CardManager {
 
   @Inject
-  private WhitePagesContentManager contentManager = null;
+  private WhitePagesContentManager contentManager;
 
   protected CardManager() {
   }
@@ -398,7 +398,8 @@ public class CardManager {
     String userName = extractUserName(card);
     String userMail = extractUserMail(card);
 
-    FullIndexEntry indexEntry = new FullIndexEntry(card.getInstanceId(), "card", pk.getId());
+    FullIndexEntry indexEntry = new FullIndexEntry(new IndexEntryKey(card.getInstanceId(), "card"
+        , pk.getId()));
     indexEntry.setTitle(userName);
     indexEntry.setKeywords(userName);
     indexEntry.setPreview(userMail);
