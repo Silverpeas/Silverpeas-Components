@@ -29,6 +29,7 @@ import org.silverpeas.components.infoletter.model.InfoLetterService;
 import org.silverpeas.components.infoletter.service.InfoLetterServiceProvider;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
+import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 
 import javax.inject.Named;
 import javax.transaction.Transactional;
@@ -46,7 +47,8 @@ public class InfoLetterInstancePostConstruction implements ComponentInstancePost
     InfoLetterService infoLetterService = InfoLetterServiceProvider.getInfoLetterData();
     InfoLetter infoLetter = infoLetterService.createDefaultLetter(componentInstanceId);
     FullIndexEntry indexEntry =
-        new FullIndexEntry(componentInstanceId, "Lettre", infoLetter.getPK().getId());
+        new FullIndexEntry(new IndexEntryKey(componentInstanceId, InfoLetter.TYPE,
+            infoLetter.getPK().getId()));
     indexEntry.setTitle(infoLetter.getName());
     IndexEngineProxy.addIndexEntry(indexEntry);
   }

@@ -368,8 +368,8 @@ public class DefaultClassifiedService implements ClassifiedService {
   private void createIndex(ClassifiedDetail classified, PublicationTemplate template) {
     FullIndexEntry indexEntry;
     if (classified != null) {
-      indexEntry = new FullIndexEntry(classified.getInstanceId(), CLASSIFIED_TYPE,
-          Integer.toString(classified.getClassifiedId()));
+      indexEntry = new FullIndexEntry(new IndexEntryKey(classified.getInstanceId(), CLASSIFIED_TYPE,
+          Integer.toString(classified.getClassifiedId())));
       indexEntry.setTitle(classified.getTitle());
       indexEntry.setPreview(classified.getDescription());
       indexEntry.setCreationDate(classified.getCreationDate());

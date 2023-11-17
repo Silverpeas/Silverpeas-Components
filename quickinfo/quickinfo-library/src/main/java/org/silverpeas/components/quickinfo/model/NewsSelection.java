@@ -27,8 +27,10 @@ import org.silverpeas.core.clipboard.ClipboardSelection;
 import org.silverpeas.core.clipboard.SKDException;
 import org.silverpeas.core.clipboard.SilverpeasKeyData;
 import org.silverpeas.core.index.indexing.model.IndexEntry;
+import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.annotation.Nonnull;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 
@@ -48,26 +50,27 @@ public class NewsSelection extends ClipboardSelection {
   }
 
   @Override
+  @Nonnull
   public synchronized Object getTransferData(DataFlavor parFlavor)
       throws UnsupportedFlavorException {
-    Object transferedData;
+    Object transferredData;
     try {
-      transferedData = super.getTransferData(parFlavor);
+      transferredData = super.getTransferData(parFlavor);
     } catch (UnsupportedFlavorException e) {
       if (NewsFlavor.equals(parFlavor)) {
-        transferedData = currentNews;
+        transferredData = currentNews;
       } else {
         throw e;
       }
     }
-    return transferedData;
+    return transferredData;
   }
 
   @Override
   public IndexEntry getIndexEntry() {
     final NewsPK newsPK = currentNews.getPK();
-    final IndexEntry indexEntry = new IndexEntry(newsPK.getComponentName(),
-        currentNews.getContributionType(), newsPK.getId());
+    final IndexEntry indexEntry = new IndexEntry(new IndexEntryKey(newsPK.getComponentName(),
+        currentNews.getContributionType(), newsPK.getId()));
     indexEntry.setTitle(currentNews.getName());
     return indexEntry;
   }

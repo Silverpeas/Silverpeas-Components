@@ -40,6 +40,7 @@ import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
+import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.subscription.ResourceSubscriptionService;
 import org.silverpeas.core.subscription.service.ComponentSubscriptionResource;
@@ -240,7 +241,7 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
 
     // index data
     FullIndexEntry indexEntry =
-            new FullIndexEntry(getComponentId(), "Component", "0");
+            new FullIndexEntry(new IndexEntryKey(getComponentId(), "Component", "0"));
     indexEntry.setCreationDate(new Date());
     indexEntry.setCreationUser(getUserId());
     indexEntry.setTitle(getComponentLabel());

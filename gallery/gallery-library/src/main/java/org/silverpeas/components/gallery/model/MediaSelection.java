@@ -27,8 +27,10 @@ import org.silverpeas.core.clipboard.ClipboardSelection;
 import org.silverpeas.core.clipboard.SKDException;
 import org.silverpeas.core.clipboard.SilverpeasKeyData;
 import org.silverpeas.core.index.indexing.model.IndexEntry;
+import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.annotation.Nonnull;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 
@@ -46,6 +48,7 @@ public class MediaSelection extends ClipboardSelection {
   }
 
   @Override
+  @Nonnull
   public synchronized Object getTransferData(DataFlavor parFlavor)
       throws UnsupportedFlavorException {
     Object transferedData;
@@ -66,8 +69,8 @@ public class MediaSelection extends ClipboardSelection {
   public IndexEntry getIndexEntry() {
     MediaPK mediaPK = currentMedia.getMediaPK();
     IndexEntry indexEntry =
-        new IndexEntry(mediaPK.getComponentName(), currentMedia.getType().name(),
-            currentMedia.getMediaPK().getId());
+        new IndexEntry(new IndexEntryKey(mediaPK.getComponentName(), currentMedia.getType().name(),
+            currentMedia.getMediaPK().getId()));
     indexEntry.setTitle(currentMedia.getName());
     return indexEntry;
   }

@@ -94,10 +94,7 @@ import static java.util.stream.Collectors.toSet;
 import static org.silverpeas.core.mail.MailAddress.eMail;
 import static org.silverpeas.core.mail.ReceiverMailAddressSet.with;
 
-/**
- * Class declaration
- * @author
- */
+@SuppressWarnings({"deprecation", "SqlNoDataSourceInspection"})
 @Service
 @Named("infoLetter" + ApplicationServiceProvider.SERVICE_NAME_SUFFIX)
 public class InfoLetterDataManager implements InfoLetterService {
@@ -111,8 +108,8 @@ public class InfoLetterDataManager implements InfoLetterService {
   private static final String TABLE_EXTERNAL_EMAILS = "SC_IL_ExtSus";
   private static final String INSTANCE_ID = "instanceId = '";
 
-  private SilverpeasBeanDAO<InfoLetter> infoLetterDAO;
-  private SilverpeasBeanDAO<InfoLetterPublication> infoLetterPublicationDAO;
+  private final SilverpeasBeanDAO<InfoLetter> infoLetterDAO;
+  private final SilverpeasBeanDAO<InfoLetterPublication> infoLetterPublicationDAO;
 
   @Inject
   private InfoLetterContentManager infoLetterContentManager;
@@ -364,11 +361,12 @@ public class InfoLetterDataManager implements InfoLetterService {
     Set<String> retour = new LinkedHashSet<>();
     try (Connection con = openConnection()) {
       InfoLetter letter = getInfoLetter(letterPK);
-      String selectQuery = "SELECT * FROM " + TABLE_EXTERNAL_EMAILS;
-      selectQuery += " where instanceId = '" + letter.getInstanceId() + "' ";
-      selectQuery += " and letter = " + letterPK.getId() + " ";
+      String selectQuery =
+          "SELECT * FROM " + TABLE_EXTERNAL_EMAILS + " where instanceId = '" +
+              letter.getInstanceId() + "' " + "and letter = " + letterPK.getId() + " ";
 
       try (Statement selectStmt = con.createStatement()) {
+        //noinspection SqlSourceToSinkFlow
         try (ResultSet rs = selectStmt.executeQuery(selectQuery)) {
           while (rs.next()) {
             retour.add(rs.getString("email"));
@@ -432,11 +430,6 @@ public class InfoLetterDataManager implements InfoLetterService {
     }
   }
 
-  /**
-   * open connection
-   * @return Connection
-   * @throws InfoLetterException
-   */
   private Connection openConnection() {
     Connection con;
     try {
@@ -530,8 +523,10 @@ public class InfoLetterDataManager implements InfoLetterService {
 
   private void createIndex(InfoLetter il) {
     if (il != null) {
-      final FullIndexEntry indexEntry = new FullIndexEntry(il.getInstanceId(), InfoLetter.TYPE,
-          il.getPK().getId());
+      final FullIndexEntry indexEntry = new FullIndexEntry(new IndexEntryKey(
+          il.getInstanceId(),
+          InfoLetter.TYPE,
+          il.getPK().getId()));
       indexEntry.setTitle(il.getName());
       indexEntry.setPreview(il.getDescription());
       IndexEngineProxy.addIndexEntry(indexEntry);
@@ -547,8 +542,10 @@ public class InfoLetterDataManager implements InfoLetterService {
   private void createIndex(InfoLetterPublication pub) {
     if (pub != null) {
       final ContributionIdentifier identifier = pub.getIdentifier();
-      final FullIndexEntry indexEntry = new FullIndexEntry(identifier.getComponentInstanceId(),
-          InfoLetterPublicationPdC.TYPE, identifier.getLocalId());
+      final FullIndexEntry indexEntry = new FullIndexEntry(new IndexEntryKey(
+          identifier.getComponentInstanceId(),
+          InfoLetterPublicationPdC.TYPE,
+          identifier.getLocalId()));
       indexEntry.setTitle(pub.getTitle());
       indexEntry.setPreview(pub.getDescription());
       try {
