@@ -166,9 +166,13 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
         String surveyId = request.getParameter(SURVEY_ID);
         destination = rootDest + "surveyUpdate.jsp?Action=UpdateSurveyHeader&SurveyId=" + surveyId;
       } else if ("ViewListResult".equals(function)) {
+        final QuestionContainerDetail sessionSurvey = surveySC.getSessionSurvey();
+        if (sessionSurvey.getHeader().isAnonymous()) {
+          throwHttpForbiddenError();
+        }
         String answerId = request.getParameter("AnswerId");
         request.setAttribute("Users", surveySC.getUsersByAnswer(answerId));
-        request.setAttribute(SURVEY, surveySC.getSessionSurvey());
+        request.setAttribute(SURVEY, sessionSurvey);
         request.setAttribute(PROFILE, flag);
         destination = rootDest + "answerResult.jsp";
       } else if ("ViewAllUsers".equals(function)) {
@@ -328,16 +332,6 @@ public class SurveyRequestRouter extends ComponentRequestRouter<SurveySessionCon
       SurveySessionController surveySC) throws SurveyException{
     if (StringUtil.isDefined(surveyId)) {
       request.setAttribute(LIST_DOCUMENT, surveySC.getAllSynthesisFile(surveyId));
-
-      String resultDisplayMode = request.getParameter("Choice");
-      if (StringUtil.isDefined(resultDisplayMode)) {
-        request.setAttribute("ResultDisplayMode", resultDisplayMode);
-      } else {
-        request.setAttribute("ResultDisplayMode", "D");
-        if (surveySC.getSurvey(surveyId).getHeader().getNbVoters() > 50) {
-          request.setAttribute("ResultDisplayMode", "C");
-        }
-      }
     }
   }
 }

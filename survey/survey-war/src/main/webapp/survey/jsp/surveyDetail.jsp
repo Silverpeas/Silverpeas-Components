@@ -55,23 +55,11 @@
   String roundId = request.getParameter("RoundId");
   String profile = (String) request.getAttribute("Profile");
   List listDocument = (List) request.getAttribute("ListDocument");
-  String choice = (String) request.getAttribute("ResultDisplayMode");
-  if (StringUtil.isNotDefined(choice)) {
-    choice = Encode.forUriComponent(request.getParameter("Choice"));
-  }
-  if (StringUtil.isNotDefined(choice)) {
-    choice = "D";
-  }
-
   boolean participated = true;
   if (StringUtil.isDefined(request.getParameter("Participated"))) {
     participated = request.getParameter("Participated").equalsIgnoreCase("true");
   }
 
-  boolean isParticipationMultipleUsed = surveyScc.isParticipationMultipleUsed();
-  boolean isParticipationMultipleAllowedForUser =
-      surveyScc.isParticipationMultipleAllowedForUser();
-  
   String destinationPath = "surveyDetail.jsp?Action=ViewCurrentQuestions&Participated="+participated+"&SurveyId="+surveyId;
   if ((SilverpeasRole.ADMIN.toString().equals(profile) ||
       SilverpeasRole.PUBLISHER.toString().equals(profile)) &&
@@ -445,7 +433,7 @@ function clipboardCopy() {
 </script>
 </head>
 
-<body>
+<body id="<%=surveyScc.getComponentId()%>">
 <view:operationPane>
   <fmt:message key="GML.notify" var="notifyUserMsg" />
   <c:set var="notifyUserAction">javaScript:onClick=sp.messager.open('<%= componentId %>', {<%=NotificationContext.CONTRIBUTION_ID%>: '<%=surveyId%>'});</c:set>
@@ -478,6 +466,7 @@ function clipboardCopy() {
 <title></title>
 <view:looknfeel withFieldsetStyle="true"/>
 <view:includePlugin name="popup"/>
+<view:includePlugin name="surveyresultchart"/>
 <script type="text/javascript">
 
  		function viewSuggestions(id) {
@@ -538,13 +527,14 @@ function clipboardCopy() {
       top.IdleFrame.location.href = '../..<%=surveyScc.getComponentUrl()%>copy?Id=<%=survey.getHeader().getId()%>';
     }
 
-    function changeScope(mode, participated, surveyId) {
+    function changeScope(resultView, participated, surveyId) {
       $.progressMessage();
-      if(mode == 'classic') {
-    		location.href="surveyDetail.jsp?Action=ViewResult&Participated="+participated+"&SurveyId="+surveyId+"&Choice=C";
-    	} else if (mode == 'detail') {
-    	  location.href="surveyDetail.jsp?Action=ViewResult&Participated="+participated+"&SurveyId="+surveyId+"&Choice=D";
-    	}
+      sp.navRequest('surveyDetail.jsp')
+          .withParam('Action', 'ViewResult')
+          .withParam('Participated', participated)
+          .withParam('SurveyId', surveyId)
+          .withParam('DisplayResultView', resultView)
+          .go();
     }
 
     function showDialog(title) {
@@ -572,7 +562,7 @@ function clipboardCopy() {
 
      	</script>
 </head>
-<body id="survey-result-<%=choice%>">
+<body id="<%=surveyScc.getComponentId()%>">
 <view:browseBar extraInformations="<%=survey.getHeader().getTitle()%>" componentId="<%=surveyScc.getComponentId()%>">
 </view:browseBar>
 <view:operationPane>
@@ -582,8 +572,7 @@ function clipboardCopy() {
 
   <%
   if (survey.getHeader().getResultMode() == QuestionContainerHeader.DELAYED_RESULTS &&
-      (SilverpeasRole.ADMIN.toString().equals(profile) ||
-      SilverpeasRole.PUBLISHER.toString().equals(profile))) {
+      isContributor(profile)) {
   %>
     <fmt:message key="survey.publishResult" var="publishMsg" />
     <c:set var="publishAction">javaScript:onClick=PublishResult('${publishMsg}');</c:set>
@@ -592,9 +581,12 @@ function clipboardCopy() {
   }
   %>
 
+  <view:operationSeparator/>
+  <fmt:message key="GML.print" var="printMsg" />
+  <view:operation altText="${printMsg}" action="javascript:window.print()" />
+
   <%
-  if (SilverpeasRole.ADMIN.toString().equals(profile) ||
-      SilverpeasRole.PUBLISHER.toString().equals(profile)) {
+  if (isContributor(profile)) {
   %>
     <fmt:message key="GML.export" var="exportMsg" />
     <c:set var="exportAction">javaScript:onClick=Export('ExportCSV?SurveyId=<%=surveyId%>');</c:set>
@@ -603,14 +595,15 @@ function clipboardCopy() {
   }
   %>
 
+  <view:operationSeparator/>
   <fmt:message key="GML.copy" var="copyMsg" />
   <view:operation altText="${copyMsg}" icon="${copySrc}" action="javaScript:onClick=clipboardCopy();" />
 </view:operationPane>
 <view:window>
 <%
 String surveyPart =
-    displaySurveyResult(choice, survey, gef, m_context, surveyScc, resources, isClosed,
-        settings, participated, profile, request);
+    displaySurveyResult(survey, gef, m_context, surveyScc, resources, isClosed,
+        participated, profile, request);
 out.println(displayTabs(surveyScc, survey.getHeader().getPK().getId(), gef, action,
     profile, resources, pollingStationMode, participated).print());
 out.println(surveyPart);
@@ -623,8 +616,8 @@ out.println(surveyPart);
   <input type="hidden" name="destination" value="<%=destinationPath%>" />
   <div id="view-publishResultDialog">
     <fmt:message key="survey.resultView" var="resultViewMsg" />
-    <fmt:message key="survey.C" var="classicMsg" />
-    <fmt:message key="survey.D" var="detailedMsg" />
+    <fmt:message key="survey.result.view.classic" var="classicMsg" />
+    <fmt:message key="survey.result.view.detail" var="detailedMsg" />
     <fmt:message key="survey.resultView.C" var="classicDescMsg" />
     <fmt:message key="survey.resultView.D" var="detailedDescMsg" />
     <fmt:message key="survey.synthesisFile" var="synthesisFileMsg" />
