@@ -86,12 +86,14 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
+import static org.silverpeas.components.survey.control.DisplayResultView.*;
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
 
 /**
  * This class contains business layer of survey component
  */
 public class SurveySessionController extends AbstractComponentSessionController {
+  private static final long serialVersionUID = -8522567628476990017L;
 
   private static final String IMAGES_SUB_DIRECTORY_KEY = "imagesSubDirectory";
   private static final String ACTION_PARAM = "Action";
@@ -118,6 +120,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
   private boolean hasAlreadyParticipated = false;
   public static final String COOKIE_NAME = "surpoll";
   private List<PdcPosition> newSurveyPositions = null;
+  private DisplayResultView displayResultView = DisplayResultView.fromString(null);
 
   /**
    * Creates new sessionClientController
@@ -1204,6 +1207,40 @@ public class SurveySessionController extends AbstractComponentSessionController 
             || (DISPLAY_COMMENTS_FOR_MANAGERS.equals(value)
             && userRole.isGreaterThanOrEquals(SilverpeasRole.PUBLISHER))
             || DISPLAY_COMMENTS_FOR_ALL.equals(value));
+  }
+
+  /**
+   * Gets the display result view.
+   * @return the {@link DisplayResultView} instance representing the result vew.
+   */
+  public DisplayResultView getDisplayResultView() {
+    return displayResultView;
+  }
+
+  /**
+   * Sets the display result view according to given identifier or main view.
+   * <p>
+   *   The result view is set into session.
+   * </p>
+   * @param survey the representation of the survey.
+   * @param identifierOrMainView the name (or full name) or the main part of name of a view.
+   * @return the {@link DisplayResultView} instance.
+   */
+  public DisplayResultView setSurveyResultViewFromIdentifierOrMainView(
+      final QuestionContainerDetail survey, final String identifierOrMainView) {
+    final List<DisplayResultView> potentialViews = fromMainViewOnly(identifierOrMainView);
+    if (!potentialViews.isEmpty()) {
+      displayResultView = potentialViews.stream()
+          .filter(displayResultView::equals)
+          .findFirst()
+          .orElseGet(() -> potentialViews.get(0));
+    } else {
+      displayResultView = fromString(identifierOrMainView);
+    }
+    if (DETAIL.equals(displayResultView) && survey.getHeader().getNbVoters() > 50) {
+      displayResultView = CLASSIC_GRAPHICAL;
+    }
+    return displayResultView;
   }
 
   private static class Parameters {

@@ -2,7 +2,6 @@
 <%@page import="org.silverpeas.core.admin.user.model.User"%>
 <%@ page import="org.silverpeas.core.questioncontainer.container.model.QuestionContainerHeader"%>
 <%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
-<%@ page import="org.silverpeas.core.util.Pair"%>
 <%@ page import="org.silverpeas.core.util.SettingBundle" %>
 <%@ page import="org.silverpeas.core.util.StringUtil" %>
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
@@ -11,7 +10,23 @@
 <%@ page import="java.text.ParseException" %>
 <%@ page import="java.util.stream.Collectors" %>
 <%@ page import="org.silverpeas.core.questioncontainer.result.model.Results" %>
-<%@ page import="java.io.IOException" %>
+<%@ page import="org.apache.ecs.ElementContainer" %>
+<%@ page import="org.apache.ecs.xhtml.a" %>
+<%@ page import="java.util.Optional" %>
+<%@ page import="org.apache.ecs.xhtml.div" %>
+<%@ page import="org.apache.ecs.xhtml.p" %>
+<%@ page import="static org.silverpeas.core.questioncontainer.container.model.QuestionContainerHeader.*" %>
+<%@ page import="static java.lang.String.format" %>
+<%@ page import="static org.silverpeas.components.survey.control.DisplayResultView.*" %>
+<%@ page import="org.silverpeas.components.survey.control.DisplayResultView" %>
+<%@ page import="java.util.Objects" %>
+<%@ page import="static org.silverpeas.components.survey.control.DisplayResultView.Constants.*" %>
+<%@ page import="org.apache.ecs.xhtml.span" %>
+<%@ page import="org.silverpeas.components.survey.web.AnswerPercentEntity" %>
+<%@ page import="org.silverpeas.core.util.JSONCodec" %>
+<%@ page import="static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion.scriptContent" %>
+<%@ page import="org.silverpeas.core.security.html.HtmlSanitizer" %>
+<%@ page import="org.silverpeas.components.survey.web.AnswerEntity" %>
 
 <%!
 
@@ -31,9 +46,7 @@ MultiSilverpeasBundle resources, boolean pollingStationMode, boolean participate
 
 	tabbedPane.addTab(label, "surveyDetail.jsp?Action=ViewCurrentQuestions&Participated="+participated+"&SurveyId="+surveyId, tabValid, true);
 
-  if ((SilverpeasRole.ADMIN.toString().equals(profile) ||
-      SilverpeasRole.PUBLISHER.toString().equals(profile)) &&
-      !participated) {
+  if (isContributor(profile) && !participated) {
       tabbedPane.addTab(resources.getString("survey.results"), "surveyDetail.jsp?Action=ViewResult&Participated="+participated+"&SurveyId="+surveyId, action.equals("ViewResult"), true);
   }
   if (surveyScc.isDisplayCommentsEnabled(profile, null)) {
@@ -99,7 +112,7 @@ MultiSilverpeasBundle resources, SettingBundle settings, String profile, boolean
                 //Display the survey header
                 r += displaySurveyHeader(surveyHeader, surveyScc, resources, gef);
 
-                if (questions != null && questions.size()>0) {
+                if (questions != null && !questions.isEmpty()) {
                     //Display the questions
                     r += "<form name=\"survey\">";
                     r += "<input type=\"hidden\" name=\"Action\">";
@@ -336,25 +349,14 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
                   }
                   else
                   {
-	                  	if (answer.getImage() == null)
-	                  	{
-	                    	r += "<tr><td width=\"40px\" align=\"center\"><input type=\""+inputType+"\" name=\"answer_"+nbQuestionInPage+"\" value=\""+inputValue+"\" "+selectedStr+"></td><td align=\"left\" width=\"100%\">"+WebEncodeHelper.javaStringToHtmlString(answer.getLabel())+"</td></tr>";
-	                    }
-	                    else
-	                    {
-	                      	String imageUrl = answer.getImage();
-	                      	String url = "";
-	                      	if (imageUrl.startsWith("/"))
-	                      	{
-	                      		url = imageUrl+"&Size=266x150";
-	                      	}
-	                      	else
-	                      	{
-	                      		url = FileServerUtils.getUrl(answer.getPK().getComponentName(), imageUrl, imageUrl, "image/gif", settings.getString("imagesSubDirectory"));
-	                      	}
-	                        r += "<tr><td width=\"40px\" align=\"center\"><input type=\""+inputType+"\" name=\"answer_"+nbQuestionInPage+"\" value=\""+inputValue+"\" "+selectedStr+"></td><td align=\"left\" width=\"100%\">"+WebEncodeHelper.javaStringToHtmlString(answer.getLabel())+"<BR>";
-	                        r += "<img src=\""+url+"\" border=\"0\"></td><td>";
-                    	}
+                    final String image = answer.getImage();
+                    if (image == null) {
+                      r += "<tr><td width=\"40px\" align=\"center\"><input type=\""+inputType+"\" name=\"answer_"+nbQuestionInPage+"\" value=\""+inputValue+"\" "+selectedStr+"></td><td align=\"left\" width=\"100%\">"+WebEncodeHelper.javaStringToHtmlString(answer.getLabel())+"</td></tr>";
+                    } else {
+                      String url = getAnswerImageUrl(answer.getPK().getComponentName(), image);
+                      r += "<tr><td width=\"40px\" align=\"center\"><input type=\""+inputType+"\" name=\"answer_"+nbQuestionInPage+"\" value=\""+inputValue+"\" "+selectedStr+"></td><td align=\"left\" width=\"100%\">"+WebEncodeHelper.javaStringToHtmlString(answer.getLabel())+"<BR>";
+                      r += "<img src=\""+url+"\" border=\"0\"></td><td>";
+                    }
                   }
                   answerNb++;
               }	// {while}
@@ -471,22 +473,14 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
 	                                    }
 	                                    else
 	                                    {
-	                                        if (answer.getImage() == null)
-	                                              r += "<tr><td width=\"40px\" align=\"center\"><input type=\""+inputType+"\" name=\"answer_"+i+"\" value=\"\"></td><td align=\"left\" width=\"100%\">"+WebEncodeHelper.javaStringToHtmlString(answer.getLabel())+"</td></tr>";
-	                                        else
-	                                        {
-	                                        	String url = "";
-						                      	if (answer.getImage().startsWith("/"))
-						                      	{
-						                      		url = answer.getImage()+"&Size=266x150";
-						                      	}
-						                      	else
-						                      	{
-	                                            	url = FileServerUtils.getUrl(surveyScc.getComponentId(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
-	                                            }
-	                                            r += "<tr><td width=\"40px\" align=\"center\"><input type=\""+inputType+"\" name=\"answer_"+i+"\" value=\"\"></td><td align=\"left\" width=\"100%\">"+WebEncodeHelper.javaStringToHtmlString(answer.getLabel())+"<BR>";
-	                                            r += "<img src=\""+url+"\" border=\"0\"></td><td>";
-	                                        }
+                                        final String image = answer.getImage();
+                                        if (image == null) {
+                                          r += "<tr><td width=\"40px\" align=\"center\"><input type=\""+inputType+"\" name=\"answer_"+i+"\" value=\"\"></td><td align=\"left\" width=\"100%\">"+WebEncodeHelper.javaStringToHtmlString(answer.getLabel())+"</td></tr>";
+                                        } else {
+                                          String url = getAnswerImageUrl(surveyScc.getComponentId(), image);
+                                            r += "<tr><td width=\"40px\" align=\"center\"><input type=\""+inputType+"\" name=\"answer_"+i+"\" value=\"\"></td><td align=\"left\" width=\"100%\">"+WebEncodeHelper.javaStringToHtmlString(answer.getLabel())+"<BR>";
+                                            r += "<img src=\""+url+"\" border=\"0\"></td><td>";
+                                        }
 	                                    }
 	                                } // {while}
                                 }
@@ -614,12 +608,16 @@ String displaySurveyResultOfUser(String userId, Collection resultsByUser,
   return r;
 }
 
-String displaySurveyResult(String choice, QuestionContainerDetail survey, GraphicElementFactory gef, String m_context,
-    SurveySessionController surveyScc, MultiSilverpeasBundle resources, boolean isClosed,
-    SettingBundle settings, boolean participated, String profile, HttpServletRequest request) throws SurveyException, ParseException {
+  String displaySurveyResult(QuestionContainerDetail survey, GraphicElementFactory gef,
+      String m_context, SurveySessionController surveyScc, MultiSilverpeasBundle resources,
+      boolean isClosed, boolean participated, String profile,
+      HttpServletRequest request) throws SurveyException {
   Board board = gef.getBoard();
   String r = "";
-
+  DisplayResultView displayResultView = Optional.ofNullable(request.getParameter("DisplayResultView"))
+      .filter(StringUtil::isDefined)
+      .map(c -> surveyScc.setSurveyResultViewFromIdentifierOrMainView(survey, c))
+      .orElseGet(surveyScc::getDisplayResultView);
   try {
     if (survey != null) {
 	    QuestionContainerHeader surveyHeader = survey.getHeader();
@@ -658,6 +656,14 @@ String displaySurveyResult(String choice, QuestionContainerDetail survey, Graphi
 
      	int resultMode = surveyHeader.getResultMode();
      	int resultView = surveyHeader.getResultView();
+
+      final div inlineMessage = new div();
+      inlineMessage.setClass("inlineMessage");
+      inlineMessage.addElement(new div().addElement(surveyScc.getString("survey.results.print.help")));
+      if (isContributor(profile)) {
+        inlineMessage.addElement(new div().addElement(surveyScc.getString("survey.results.export.help")));
+      }
+      r += inlineMessage.toString();
 
         if (resultMode == QuestionContainerHeader.DELAYED_RESULTS) {
 
@@ -784,45 +790,81 @@ String displaySurveyResult(String choice, QuestionContainerDetail survey, Graphi
         }
         r += "</div>";
 
-      if ((SilverpeasRole.ADMIN.toString().equals(profile) ||
-          SilverpeasRole.PUBLISHER.toString().equals(profile)) ||
+      if (isContributor(profile) ||
           resultMode == QuestionContainerHeader.IMMEDIATE_RESULTS ||
            (resultMode == QuestionContainerHeader.DELAYED_RESULTS &&
            resultView != QuestionContainerHeader.NOTHING_DISPLAY_RESULTS)) {
 
         r += "<div class=\"surveyResult\">";
 
-		  if (!anonymous) {
-				  // l'enquete n'est pas anonyme, proposer le choix d'affichage
-	        r += "   <div class=\"sousNavBulle\">";
-	        r += "    <p>"+resources.getString("survey.results")+" "+resources.getString("survey.choice")+" : ";
-	        if((SilverpeasRole.ADMIN.toString().equals(profile) ||
-              SilverpeasRole.PUBLISHER.toString().equals(profile)) ||
-              resultView == QuestionContainerHeader.TWICE_DISPLAY_RESULTS) {
-            String active = "";
-            if (choice.equals("C")) {
-              active = "active";
+        final div resultHeader = new div();
+        resultHeader.setClass("sousNavBulle");
+        if (!anonymous) {
+          final p mainViewChoice = new p().addElement(
+              format("%s %s ", resources.getString("survey.results"), resources.getString("survey.choice")));
+          final String currentMainView = displayResultView.getMainView();
+          displayResultView = List.of(CLASSIC_GRAPHICAL, DETAIL)
+              .stream()
+              .filter(v -> isContributor(profile) ||
+                  resultView == TWICE_DISPLAY_RESULTS ||
+                  (CLASSIC_MAIN_VIEW.equals(v.getMainView()) && resultView == CLASSIC_DISPLAY_RESULTS) ||
+                  (DETAIL_MAIN_VIEW.equals(v.getMainView()) && resultView == DETAILED_DISPLAY_RESULTS))
+              .map(v -> {
+                final a mainViewLink = new a().setHref("javascript:void(0)");
+                final String mainView = v.getMainView();
+                mainViewLink.setID("scope-" + mainView);
+                mainViewLink.setOnClick(
+                    format("changeScope('%s', '%s', '%s')", mainView, participated, surveyId));
+                final StringBuilder classes = new StringBuilder();
+                classes.append("main-view");
+                if (currentMainView.equals(mainView)) {
+                  classes.append(" active");
+                }
+                mainViewLink.setClass(classes.toString());
+                mainViewLink.addElement(resources.getString(v.getMainViewBundleKey()));
+                mainViewChoice.addElement(mainViewLink);
+                switch (resultView) {
+                  case CLASSIC_DISPLAY_RESULTS:
+                    return surveyScc.setSurveyResultViewFromIdentifierOrMainView(survey, CLASSIC_MAIN_VIEW);
+                  case DETAILED_DISPLAY_RESULTS:
+                    return surveyScc.setSurveyResultViewFromIdentifierOrMainView(survey, DETAIL_MAIN_VIEW);
+                  default:
+                    return null;
+                }
+              })
+              .filter(Objects::nonNull)
+              .findFirst()
+              .orElse(displayResultView);
+          resultHeader.addElement(mainViewChoice);
+        } else {
+          displayResultView = surveyScc.setSurveyResultViewFromIdentifierOrMainView(survey, CLASSIC_MAIN_VIEW);
+        }
+        if (CLASSIC_MAIN_VIEW.equals(displayResultView.getMainView())) {
+          final p secondaryLevelViewChoice = new p();
+          if (resultHeader.elements().hasMoreElements()) {
+            resultHeader.addElement(new span().setClass("sub-view-separator"));
+          }
+          final String currentSecondaryLevelView = displayResultView.getSecondaryLevelView();
+          DisplayResultView.fromMainViewOnly(displayResultView.getMainView()).forEach(v -> {
+            final a secondaryLevelViewLink = new a().setHref("javascript:void(0)");
+            final String secondaryLevelView = v.getSecondaryLevelView();
+            secondaryLevelViewLink.setID("scope-" + secondaryLevelView);
+            secondaryLevelViewLink.setOnClick(
+                format("changeScope('%s', '%s', '%s')", v.getIdentifier(), participated, surveyId));
+            final StringBuilder classes = new StringBuilder();
+            classes.append("sub-view");
+            if (currentSecondaryLevelView.equals(secondaryLevelView)) {
+              classes.append(" active");
             }
-            r += "    <a onClick=\"changeScope('classic', '"+participated+"', '"+surveyId+"')\" href=\"#\" class=\""+active+"\" id=\"scope-classic\">"+resources.getString("survey.C")+"</a>";
-            active = "";
-            if (choice.equals("D")) {
-             active = "active";
-            }
-            r += "    <a onClick=\"changeScope('detail', '"+participated+"', '"+surveyId+"')\" href=\"#\" class=\""+active+"\" id=\"scope-detail\">"+resources.getString("survey.D")+"</a>";
-          } else if((SilverpeasRole.ADMIN.toString().equals(profile) ||
-	            SilverpeasRole.PUBLISHER.toString().equals(profile)) ||
-	            resultView == QuestionContainerHeader.CLASSIC_DISPLAY_RESULTS) {
-	          choice = "C";
-	          r += "    <a onClick=\"changeScope('classic', '"+participated+"', '"+surveyId+"')\" href=\"#\" class=\"active\" id=\"scope-classic\">"+resources.getString("survey.C")+"</a>";
-	      } else if((SilverpeasRole.ADMIN.toString().equals(profile) ||
-	            SilverpeasRole.PUBLISHER.toString().equals(profile)) ||
-	            resultView == QuestionContainerHeader.DETAILED_DISPLAY_RESULTS) {
-	          choice = "D";
-	          r += "    <a onClick=\"changeScope('detail', '"+participated+"', '"+surveyId+"')\" href=\"#\" class=\"active\" id=\"scope-detail\">"+resources.getString("survey.D")+"</a>";
-	        }
-	        r += "    </p>";
-	        r += "   </div>";
-	      }
+            secondaryLevelViewLink.setClass(classes.toString());
+            secondaryLevelViewLink.addElement(resources.getString(v.getSecondaryViewBundleKey()));
+            secondaryLevelViewChoice.addElement(secondaryLevelViewLink);
+          });
+          resultHeader.addElement(secondaryLevelViewChoice);
+        }
+        if (resultHeader.elements().hasMoreElements()) {
+          r += resultHeader;
+        }
 
 	      if (questions != null && !questions.isEmpty()) {
           Results results = surveyScc.getResults();
@@ -838,7 +880,7 @@ String displaySurveyResult(String choice, QuestionContainerDetail survey, Graphi
 	          r += "<tr><th colspan=\"2\" align=\"left\"><img src=\""+m_context+"/util/icons/mandatoryField.gif\" width=\"5\">&nbsp;&nbsp;"+questionDecorator+WebEncodeHelper.javaStringToHtmlString(question.getLabel())+"</th></tr>";
 
 	            String style = question.getStyle();
-	            if (!anonymous && choice.equals("D")) {
+	            if (!anonymous && DETAIL_MAIN_VIEW.equals(displayResultView.getMainView())) {
 	              // display not anonymous result
 	           	  if (style.equals("open")) {
 	           	   r += displayOpenAnswersToQuestionNotAnonymous(question.getPK().getId(), surveyScc, profile);
@@ -850,7 +892,7 @@ String displaySurveyResult(String choice, QuestionContainerDetail survey, Graphi
 	              if (style.equals("open")) {
 	                r += displayOpenAnswersToQuestion(question.getPK().getId(), surveyScc);
 	              } else {
-	                r += displaySurveyResultChart(anonymous, answers, settings, nbVoters);
+	                r += displaySurveyResultChart(question, displayResultView, anonymous, answers, nbVoters);
 	              }
 	            }
 	          r += "</td></tr>";
@@ -875,7 +917,7 @@ String displaySurveyResult(String choice, QuestionContainerDetail survey, Graphi
   return r;
 }
 
-String displayOpenAnswersToQuestion(String questionId, SurveySessionController surveyScc) throws SurveyException {
+  String displayOpenAnswersToQuestion(String questionId, SurveySessionController surveyScc) throws SurveyException {
         String r = "";
         try{
             //fetch the answers to this open question
@@ -947,65 +989,25 @@ String displayOpenAnswersToQuestion(String questionId, SurveySessionController s
         return r;
   }
 
-  String displaySurveyResultChart(boolean anonymous, Collection<Answer> answers, SettingBundle settings, int nbUsers) throws SurveyException
-  {
-        String r = "";
-        try
-        {
-            if (answers != null)
-            {
-                for(final Pair<Answer, Double> current : listAnswerPercents(answers, nbUsers, nbUsers > 0))
-                {
-                  final Answer answer = current.getFirst();
-                  int nbSquareForThisAnswer = 0;
-
-                  if (nbUsers > 0) {
-                    nbSquareForThisAnswer = (answer.getNbVoters() * 100) / nbUsers;
-                  }
-                    if (answer.isOpened())
-                    {
-                        if (answer.getNbVoters() == 0) {
-                            r += "<tr><td align=\"left\" nowrap >"+WebEncodeHelper.javaStringToHtmlString(answer.getLabel())+"</td><td>";
-                        } else {
-                        	r += "<tr><td align=\"left\" nowrap >"+WebEncodeHelper.javaStringToHtmlString(answer.getLabel())+
-                        	    " <A href=\"javaScript:onClick=viewSuggestions('"+answer.getQuestionPK().getId()+"');\">"+
-                        		"<img src=\"icons/info.gif\" border=\"0\" align=\"absmiddle\" width=\"15\" height=\"15\"></a></td><td>";
-                        }
-                    }
-                    else
-                    {
-                        if (answer.getImage() == null)
-                              r += "<tr><td class=\"labelAnswer\">"+WebEncodeHelper.javaStringToHtmlString(answer.getLabel())+"</td><td>";
-                        else
-                        {
-                        	String url = "";
-	                      	if (answer.getImage().startsWith("/"))
-	                      	{
-	                      		url = answer.getImage()+"&Size=266x150";
-	                      	}
-	                      	else
-	                      	{
-                    		  	url = FileServerUtils.getUrl(answer.getPK().getComponentName(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
-                    		}
-                            r += "<tr><td class=\"labelAnswer\" >"+WebEncodeHelper.javaStringToHtmlString(answer.getLabel())+"<BR>";
-                            r += "<img src=\""+url+"\" border=\"0\"></td><td width=\"60%\">";
-                        }
-                    }
-                    r += "<img src=\"icons/square.gif\" border=\"0\" width=\""+nbSquareForThisAnswer+"\" height=\"5\">";
-                    r += "&nbsp;"+current.getSecond()+"%";
-                    if (!anonymous && nbSquareForThisAnswer != 0)
-                    {
-                    	// l'enquête n'est pas anonyme et le % de réponse n'est pas nulle : afficher l'icone pour visualiser les users
-                       	r += " <a href=\"javaScript:onClick=viewUsers('"+answer.getPK().getId()+"');\"><img src=\"icons/info.gif\" border=\"0\" align=\"absmiddle\" width=\"15\" height=\"15\"></a>";
-                    }
-                    r += "</td>";
-                } // {for}
-            }
-        }
-        catch( Exception e){
-            throw new  SurveyException(e);
-        }
-        return r;
+  String displaySurveyResultChart(final Question question, DisplayResultView displayResultView,
+      boolean anonymous, Collection<Answer> answers, int nbUsers) {
+    final ElementContainer html = new ElementContainer();
+    if (answers != null) {
+      final HtmlSanitizer htmlSanitizer = HtmlSanitizer.get();
+      final String questionId = question.getPK().getId();
+      final String jsonEntities = JSONCodec.encode(
+          AnswerPercentEntity.asWebEntities(answers, nbUsers, nbUsers > 0));
+      String options = JSONCodec.encodeObject(o -> o
+          .put("id", "question-answer-result-" + questionId)
+          .put("title", htmlSanitizer.sanitize(question.getLabel()))
+          .put("answerPercents", "jsonEntities")
+          .put("view", displayResultView.getSecondaryLevelView())
+          .put("anonymous", anonymous));
+      options = options.replace("\"jsonEntities\"", jsonEntities);
+      html.addElement(format("<tr id='question-answer-result-%s'></tr>", questionId));
+      html.addElement(scriptContent(format("SurveyResultChart.mountQuestionAnswerResult(%s)", options)));
+    }
+    return html.toString();
   }
 
   String displaySurveyResultChartNotAnonymous(Question question, Collection<Answer> answers, SurveySessionController surveyScc, int nbVoters, Results results, String profile) throws SurveyException
@@ -1084,8 +1086,8 @@ String displayOpenAnswersToQuestion(String questionId, SurveySessionController s
                 }
                 r += " </tbody>";
                 r += "<tr><td></td>";
-              r += listAnswerPercents(answers, nbVoters, !users.isEmpty()).stream()
-                      .map(Pair::getSecond)
+              r += AnswerPercentEntity.asWebEntities(answers, nbVoters, !users.isEmpty()).stream()
+                      .map(AnswerPercentEntity::getPercent)
                       .map(p -> "<td align=\"center\">"+p+"%</td>")
                       .collect(Collectors.joining());
 	            r += "</tr>";
@@ -1096,21 +1098,6 @@ String displayOpenAnswersToQuestion(String questionId, SurveySessionController s
             throw new  SurveyException(e);
         }
         return r;
-  }
-
-  List<Pair<Answer, Double>> listAnswerPercents(Collection<Answer> answers, int nbVoters, boolean isUsers) {
-    final Iterator<Answer> it = answers.iterator();
-
-    final List<Pair<Answer, Double>> result = new ArrayList<>(answers.size());
-    while (it.hasNext()) {
-      Double percent = 0.0;
-      final Answer answer = it.next();
-      if (isUsers && nbVoters > 0) {
-        percent = answer.getPercent(nbVoters);
-      }
-      result.add(Pair.of(answer, percent));
-    }
-    return result;
   }
 
   String displaySurveyResultChartByUser(Collection resultsByUser, String userId, boolean anonymous, String questionId, Collection answers, 
@@ -1149,22 +1136,14 @@ String displayOpenAnswersToQuestion(String questionId, SurveySessionController s
                     }
                     else
                     {
-                        if (answer.getImage() == null)
-                              r += "<tr><td class=\"labelAnswer\" >"+WebEncodeHelper.javaStringToHtmlString(answer.getLabel())+"</td><td>";
-                        else
-                        {
-                        	String url = "";
-	                      	if (answer.getImage().startsWith("/"))
-	                      	{
-	                      		url = answer.getImage()+"&Size=266x150";
-	                      	}
-	                      	else
-	                      	{
-                    		  	url = FileServerUtils.getUrl(answer.getPK().getComponentName(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
-                    		}
-                            r += "<tr><td class=\"labelAnswer\" >"+WebEncodeHelper.javaStringToHtmlString(answer.getLabel())+"<BR>";
-                            r += "<img src=\""+url+"\" border=\"0\" width=\"60%\"/></td><td>";
-                        }
+                      final String image = answer.getImage();
+                      if (image == null) {
+                        r += "<tr><td class=\"labelAnswer\" >"+WebEncodeHelper.javaStringToHtmlString(answer.getLabel())+"</td><td>";
+                      } else {
+                        String url = getAnswerImageUrl(answer.getPK().getComponentName(), image);
+                          r += "<tr><td class=\"labelAnswer\" >"+WebEncodeHelper.javaStringToHtmlString(answer.getLabel())+"<BR>";
+                          r += "<img src=\""+url+"\" border=\"0\" width=\"60%\"/></td><td>";
+                      }
                     }
 			// mettre en valeur cette r�ponse si c'est le choix de l'utilisateur
                     if (resultsByUser.contains(answer.getPK().getId())) {
@@ -1241,6 +1220,15 @@ String displayOpenAnswersToQuestion(String questionId, SurveySessionController s
             throw new  SurveyException(e);
         }
        return r;
+  }
+
+  private static boolean isContributor(final String profile) {
+    return SilverpeasRole.ADMIN.toString().equals(profile) ||
+        SilverpeasRole.PUBLISHER.toString().equals(profile);
+  }
+
+  String getAnswerImageUrl(final String instanceId, final String image) {
+    return AnswerEntity.normalizeImageUrl(instanceId, image).orElse(image);
   }
 
 %>

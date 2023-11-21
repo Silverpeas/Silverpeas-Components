@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2022 Silverpeas
+ * Copyright (C) 2000 - 2023 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -28,18 +28,18 @@ body {
 }
 
 /* tableau Doodle */
-.questionResults th,.questionResults td,.questionResults tr {
+.questionResults th, .questionResults td, .questionResults tr {
   padding: 5px;
   font-size: 12px;
 }
 
 .questionResults .questionResults-top th {
   background-color: #E4E4E4;
-  border:#CCC 1px solid;
+  border: #CCC 1px solid;
   width: 150px;
 }
 
-.questionResults .questionResults-top .questionResults-vide,.questionResults tbody .questionResults-vide  {
+.questionResults .questionResults-top .questionResults-vide, .questionResults tbody .questionResults-vide {
   background-color: #FFFFFF;
   border: none;
   padding: 3px;
@@ -48,16 +48,16 @@ body {
 .questionSeparator {
   border: none;
   padding: 3px;
-  border-bottom:1px solid #CCCCCC;
+  border-bottom: 1px solid #CCCCCC;
 }
 
-.questionResults .displayUserName,.questionResults .displayUserName a {
+.questionResults .displayUserName, .questionResults .displayUserName a {
   background-color: #E4E4E4;
-    font-size: 11px;
-    font-weight: 100;
-    line-height: 29px;
-    margin-right: 5px;
-    padding-left: 10px;
+  font-size: 11px;
+  font-weight: 100;
+  line-height: 29px;
+  margin-right: 5px;
+  padding-left: 10px;
 }
 
 .questionResults tbody tr td {
@@ -66,21 +66,21 @@ body {
 
 .questionResults tbody .questionResults-Oui {
   background-color: #D5FAC5;
-  border:1px solid #7CCC24;
+  border: 1px solid #7CCC24;
   text-align: center;
   font-size: 10px;
 }
 
 .questionResults tbody .questionResults-Non {
   background-color: #FECBCB;
-  border:1px solid #FF928F;
+  border: 1px solid #FF928F;
   text-align: center;
   font-size: 10px;
 }
 
 .questionResults .labelAnswer {
   text-align: left;
-  padding-right:40px;
+  padding-right: 40px;
 }
 
 .questionResults .freeAnswer {
@@ -88,29 +88,29 @@ body {
 }
 
 #surveyOperationId {
-  float:right;
+  float: right;
 }
 
 fieldset#dates legend {
-  background:transparent url(../../../util/icons/calendar_1.png) 11px 0px no-repeat;
+  background: transparent url(../../../util/icons/calendar_1.png) 11px 0px no-repeat;
 }
 
 fieldset#info legend {
-  background:transparent url(../../../util/icons/component/pollingStationSmall.gif) 11px 0px no-repeat;
+  background: transparent url(../../../util/icons/component/pollingStationSmall.gif) 11px 0px no-repeat;
 }
 
 .survey fieldset#info legend {
-  background:transparent url(../../../util/icons/component/surveySmall.gif) 11px 0px no-repeat;
+  background: transparent url(../../../util/icons/component/surveySmall.gif) 11px 0px no-repeat;
 }
 
 fieldset#answers legend {
-  background:transparent url(../../../util/icons/question.gif) 11px 0px no-repeat;
+  background: transparent url(../../../util/icons/question.gif) 11px 0px no-repeat;
 }
 
-#info .field, 
+#info .field,
 #dates .field,
 #answers .field {
-    width: 98%;
+  width: 98%;
 }
 
 #answers .fieldImage {
@@ -131,15 +131,15 @@ fieldset#answers legend {
 }
 
 #answers .answerimage {
-    clear: both;
+  clear: both;
 }
 
 .thumbnailPreviewAndActions {
-  background-color:#EEEEEE;
-  border:1px solid #DDDDDD;
-  float:left;
-  margin-left:0;
-  padding:3px;
+  background-color: #EEEEEE;
+  border: 1px solid #DDDDDD;
+  float: left;
+  margin-left: 0;
+  padding: 3px;
   margin-bottom: 3px;
   width: 98%;
 }
@@ -150,12 +150,12 @@ fieldset#answers legend {
 
 .thumbnailPreview .thumbnail {
   height: 50px;
-  border:1px solid #DDDDDD;
+  border: 1px solid #DDDDDD;
 }
 
 .thumbnailActions {
   float: left;
-  margin-left: 4px; 
+  margin-left: 4px;
 }
 
 .thumbnailActions a {
@@ -178,165 +178,195 @@ fieldset#answers legend {
 
 /** 3269 **/
 .eventInfo {
-  background-color:#EFEFEF;
-  border:1px solid #CDCDCD;
-  border-radius:15px;
-  padding:15px 0;
-  display:table;
-  width:98%;
+  background-color: #EFEFEF;
+  border: 1px solid #CDCDCD;
+  border-radius: 15px;
+  padding: 15px 0;
+  display: table;
+  width: 98%;
   behavior: url("/silverpeas/util/styleSheets/PIE.htc");
 }
 
 
 .sousNavBulle {
-  float:none;
+  float: none;
+}
+
+.surveyResult .sousNavBulle > p {
+  display: inline-block;
+}
+
+.surveyResult .sousNavBulle > p:before {
+  display: inline-block;
+  content: '| ';
+  margin-right: 1em;
+  color: #999
+}
+
+.surveyResult .sousNavBulle > p:nth-child(1):before {
+  display: none;
 }
 
 .eventName {
-    color: #333333;
-    font-size: 130%;
-    font-weight: bold;
+  color: #333333;
+  font-size: 130%;
+  font-weight: bold;
 }
 
 .eventInfo div {
-  display:table-cell;
-  border-left:2px solid #DCDCDC;
-  min-height:16px;
-  vertical-align:middle;
-  text-align:left;
-  width:33%;
+  display: table-cell;
+  border-left: 2px solid #DCDCDC;
+  min-height: 16px;
+  vertical-align: middle;
+  text-align: left;
+  width: 33%;
 }
 
 #eventInfoPublication {
-  padding-bottom:11px;
+  padding-bottom: 11px;
 }
 
- *+html .eventInfo div {
-  float:left;
-  width:32%;
+* + html .eventInfo div {
+  float: left;
+  width: 32%;
 }
-* html  .eventInfo div {
-  float:left;
-  width:32%;
-  border:0;
+
+* html .eventInfo div {
+  float: left;
+  width: 32%;
+  border: 0;
 }
 
 .eventInfo div:first-child {
-  border:0;
-}
-.eventInfo div div.bloc{
-  padding:0 10px 0 37px;
-  color:#333;
-  font-size:110%;
-  display:inline-block;
-  width:auto;
-  text-align:left;
+  border: 0;
 }
 
-* html  .eventInfo div div.bloc {
-  padding:0 10px 0 27px;
-  width:70%;
+.eventInfo div div.bloc {
+  padding: 0 10px 0 37px;
+  color: #333;
+  font-size: 110%;
+  display: inline-block;
+  width: auto;
+  text-align: left;
+}
+
+* html .eventInfo div div.bloc {
+  padding: 0 10px 0 27px;
+  width: 70%;
 }
 
 .eventInfo div span {
-  display:block;
+  display: block;
 }
+
 .eventInfo div span a {
-  color:#333;
-  font-size:110%;
-  text-decoration:underline;
+  color: #333;
+  font-size: 110%;
+  text-decoration: underline;
 }
 
-.surveyParticipation .bloc{
-   background:transparent url('/silverpeas/util/icons/groupe.gif') 17px center   no-repeat;
+.surveyParticipation .bloc {
+  background: transparent url('/silverpeas/util/icons/groupe.gif') 17px center no-repeat;
 }
 
-.surveyUserParticipation .bloc{
-   background:transparent url('/silverpeas/util/icons/ok.gif') 17px center   no-repeat;
+.surveyUserParticipation .bloc {
+  background: transparent url('/silverpeas/util/icons/ok.gif') 17px center no-repeat;
 }
 
-.surveyDate .bloc{
-   background:transparent url('/silverpeas/util/icons/calendar_2.gif') 12px  center   no-repeat;
+.surveyDate .bloc {
+  background: transparent url('/silverpeas/util/icons/calendar_2.gif') 12px center no-repeat;
 }
 
 span.priority {
-  background-color:#F6DEDE;
-  border:1px solid #FDBABA;
-  border-radius:5px;
-  color:#F02929;
-  font-size:8px;
-  line-height:9px;
-  letter-spacing:0.11em;
-  display:inline;
-  padding:1px 4px;
+  background-color: #F6DEDE;
+  border: 1px solid #FDBABA;
+  border-radius: 5px;
+  color: #F02929;
+  font-size: 8px;
+  line-height: 9px;
+  letter-spacing: 0.11em;
+  display: inline;
+  padding: 1px 4px;
   behavior: url("/silverpeas/util/styleSheets/PIE.htc");
 }
 
-.surveyDesc {    
+.surveyDesc {
   border-left: 6px solid #E4E4E4;
-    color: #666666;
-    font-weight: 100;
-    padding: 8px;
-  margin:10px 0;
+  color: #666666;
+  font-weight: 100;
+  padding: 8px;
+  margin: 10px 0;
 }
 
 ul.attachmentList li.attachmentListItem {
-	margin: 0;
-	padding: 0px 5px 0px 10px;
+  margin: 0;
+  padding: 0px 5px 0px 10px;
 }
 
 .bgDegradeGris p#permalinkInfo {
-	padding: 11px 17px 11px 17px;
+  padding: 11px 17px 11px 17px;
 }
 
 .surveyResult {
-  clear:both;
-  padding:15px 0;
+  clear: both;
+  padding: 15px 0;
 }
 
 #publishResultDialog label {
-    float:left;
-    clear:both;
-    width:120px;
+  float: left;
+  clear: both;
+  width: 120px;
 }
+
 #publishResultDialog .champs {
-  float:left;
-  margin-left:20px;
-  width:400px;
+  float: left;
+  margin-left: 20px;
+  width: 400px;
 }
 
 #view-publishResultDialog label {
-  height:100px;
+  height: 100px;
 }
 
 #view-publishResultDialog .champs-ui-dialog {
-    position:relative;
-    padding:0px 0 5px 5%;
+  position: relative;
+  padding: 0px 0 5px 5%;
 }
 
-#view-publishResultDialog .champs-ui-dialog input{
-    position:absolute;
-    top:3px;
-    left:0;
+#view-publishResultDialog .champs-ui-dialog input {
+  position: absolute;
+  top: 3px;
+  left: 0;
 }
 
 #synthesisFile-publishResultDialog label,
 #notification-publishResultDialog label {
-  height:50px;
+  height: 50px;
 }
- 
+
 #synthesisFile-publishResultDialog input,
 #notification-publishResultDialog select {
-  width:80%;
+  width: 80%;
 }
 
 .inlineMessage, .inlineMessage-ok, .inlineMessage-nok {
-  float:none;
-  font-weight:bold;
+  float: none;
+  font-weight: bold;
 }
 
-.inlineMessage .linkFile  {
-  color:#0861ad;
-  font-weight:bold;
-  text-decoration:underline;
+.inlineMessage .linkFile {
+  color: #0861ad;
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+.inlineMessage .survey-help-action::before,
+.inlineMessage .survey-help-action::after {
+  content: '"';
+}
+
+
+/* ergonomy form survey */
+form[action="surveyDetail.jsp"] .tableBoard table b u {
+  font-size: 1.2em;
 }
