@@ -496,7 +496,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
       UserDetail selectedUser = getOrganisationController().getUserDetail(selUser);
       String firstName = selectedUser.getFirstName();
       String lastName = selectedUser.getLastName();
-      String email = selectedUser.geteMail();
+      String email = selectedUser.getEmailAddress();
       String userId = selectedUser.getId();
 
       String phone = null;
@@ -590,7 +590,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     if (user != null) {
       ContactDetail cUser =
           new ContactDetail(new ContactPK("fromGroup", getComponentId()), user.getFirstName(),
-              user.getLastName(), user.geteMail(), "", "", user.getId(), null, null);
+              user.getLastName(), user.getEmailAddress(), "", "", user.getId(), null, null);
       cUser.setUserExtraDataRequired(areUserExtraDataRequired());
 
       contactFather = new ContactFatherDetail(

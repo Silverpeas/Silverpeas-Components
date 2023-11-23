@@ -88,7 +88,7 @@ public class UserRecord implements DataRecord {
     } else if ("LastName".equals(fieldName)) {
       text.setStringValue(user.getLastName());
     } else if ("Mail".equals(fieldName)) {
-      text.setStringValue(user.geteMail());
+      text.setStringValue(user.getEmailAddress());
     } else if ("AccessLevel".equals(fieldName)) {
       text.setStringValue(user.getAccessLevel().code());
     } else if (fieldName.startsWith("DC.")) {

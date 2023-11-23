@@ -149,7 +149,7 @@ public class HyperlinkRequestRouter extends ComponentRequestRouter<HyperlinkSess
     final User user = hyperlinkSCC.getUserDetail();
     String aimedUrl = originalAimedUrl;
     aimedUrl = getParsedDestination(aimedUrl, USER_LOGIN, encode(user.getLogin()));
-    aimedUrl = getParsedDestination(aimedUrl, USER_EMAIL, encode(user.geteMail()));
+    aimedUrl = getParsedDestination(aimedUrl, USER_EMAIL, encode(user.getEmailAddress()));
     aimedUrl = getParsedDestination(aimedUrl, USER_FIRST_NAME, encode(user.getFirstName()));
     aimedUrl = getParsedDestination(aimedUrl, USER_LAST_NAME, encode(user.getLastName()));
     aimedUrl = getParsedDestination(aimedUrl, USER_FULL_NAME, encode(user.getDisplayedName()));

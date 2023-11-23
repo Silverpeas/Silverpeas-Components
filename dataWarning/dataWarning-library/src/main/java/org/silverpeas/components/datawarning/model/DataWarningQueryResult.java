@@ -341,7 +341,7 @@ public class DataWarningQueryResult extends Object {
       } else if (DataWarningQuery.QUERY_PERSO_UID_SPECIFICID.equals(persoUID)) {
         return ud.getSpecificId();
       } else if (DataWarningQuery.QUERY_PERSO_UID_EMAIL.equals(persoUID)) {
-        return ud.geteMail();
+        return ud.getEmailAddress();
       } else {
         UserFull uf = oc.getUserFull(userId);
         return uf.getValue(persoUID, "");

@@ -749,7 +749,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
         // Sending to service exchange
         final User sender = User.getById(request.getCreatorId());
         MailSending
-            .from(MailAddress.eMail(sender.geteMail()).withName(sender.getDisplayedName()))
+            .from(MailAddress.eMail(sender.getEmailAddress()).withName(sender.getDisplayedName()))
             .to(MailAddress.eMail(email))
             .withSubject(form.getTitle())
             .withContent(multipart)
@@ -763,7 +763,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
               .getStringWithParams("formsOnline.request.exchange.senderCopy", form.getTitle());
           MailSending
               .from(MailAddress.eMail(null))
-              .to(MailAddress.eMail(sender.geteMail()))
+              .to(MailAddress.eMail(sender.getEmailAddress()))
               .withSubject(title)
               .withContent(multipart)
               .send();
