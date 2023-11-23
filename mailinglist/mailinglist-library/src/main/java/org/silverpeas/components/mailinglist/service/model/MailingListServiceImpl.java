@@ -151,19 +151,19 @@ public class MailingListServiceImpl implements MailingListService {
           organisationController.getUserProfiles(detail.getId(), mailingList.getComponentId());
       for (final String role : roles) {
         if (ROLE_READER.equals(role)) {
-          InternalUser user = new InternalUser(detail.getId(), detail.geteMail());
+          InternalUser user = new InternalUser(detail.getId(), detail.getEmailAddress());
           user.setDomain(organisationController.getDomain(detail.getDomainId()).
               getSilverpeasServerURL());
           user.setName(detail.getDisplayedName());
-          user.setEmail(detail.geteMail());
+          user.setEmail(detail.getEmailAddress());
           mailingList.getReaders().add(user);
         } else if (ROLE_MODERATOR.equalsIgnoreCase(role) ||
             ROLE_ADMINISTRATOR.equalsIgnoreCase(role)) {
-          InternalUser user = new InternalUser(detail.getId(), detail.geteMail());
+          InternalUser user = new InternalUser(detail.getId(), detail.getEmailAddress());
           user.setDomain(organisationController.getDomain(detail.getDomainId()).
               getSilverpeasServerURL());
           user.setName(detail.getDisplayedName());
-          user.setEmail(detail.geteMail());
+          user.setEmail(detail.getEmailAddress());
           mailingList.getModerators().add(user);
         }
       }

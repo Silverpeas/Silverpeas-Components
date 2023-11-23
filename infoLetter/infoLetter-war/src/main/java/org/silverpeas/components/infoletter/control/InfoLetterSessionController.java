@@ -308,7 +308,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
           infoLetter.getName());
 
       // Email address of the manager
-      String emailFrom = getUserDetail().geteMail();
+      String emailFrom = getUserDetail().getEmailAddress();
 
       emailErrors =
           dataInterface.sendTemplateByMail(infoLetter, mimeMultipart, emails, subject, emailFrom);
@@ -334,7 +334,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
       String subject = getString("infoLetter.emailSubject") + ilp.getName();
 
       // Email address of the manager
-      String emailFrom = getUserDetail().geteMail();
+      String emailFrom = getUserDetail().getEmailAddress();
 
       ilp.setInstanceId(getComponentId());
       emailErrors =
@@ -367,14 +367,14 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
    * Send letter to itself.
    */
   public String[] notifyMeAboutTemplate() {
-    return sendTemplateByMail(singleton(getUserDetail().geteMail()));
+    return sendTemplateByMail(singleton(getUserDetail().getEmailAddress()));
   }
 
   /**
    * Send letter to itself.
    */
   public String[] notifyMe(InfoLetterPublicationPdC ilp) {
-    return sendLetterByMail(ilp, singleton(getUserDetail().geteMail()));
+    return sendLetterByMail(ilp, singleton(getUserDetail().getEmailAddress()));
   }
 
   /**
@@ -544,7 +544,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     return Stream.of(getOrganisationController().getUsersIdsByRoleNames(getComponentId(), roles))
         .map(this::getUserDetail)
         .filter(User::isValidState)
-        .map(User::geteMail)
+        .map(User::getEmailAddress)
         .filter(StringUtil::isDefined)
         .collect(toCollection(LinkedHashSet::new));
   }
@@ -558,7 +558,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     Set<String> emails = new LinkedHashSet<>();
 
     for (String userId : subscriberIdsByTypes.getAllUserIds()) {
-      String email = getUserDetail(userId).geteMail();
+      String email = getUserDetail(userId).getEmailAddress();
       if (StringUtil.isDefined(email)) {
         emails.add(email);
       }

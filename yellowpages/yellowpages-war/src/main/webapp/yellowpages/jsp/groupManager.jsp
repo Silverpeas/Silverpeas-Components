@@ -219,18 +219,18 @@ function topicGoTo(id)
         ArrayCellText arrayCellText1 = ligne1.addArrayCellText("<A HREF=\""+link+"\">"+WebEncodeHelper.javaStringToHtmlString(user.getLastName())+"</A>");
         ArrayCellText arrayCellText2 = ligne1.addArrayCellText(WebEncodeHelper.javaStringToHtmlString(user.getFirstName()));
         ArrayCellText arrayCellText4 = null;
-        if (user.geteMail()==null || "".equals(user.geteMail()))
+        if (user.getEmailAddress()==null || "".equals(user.getEmailAddress()))
         {
             arrayCellText4 = ligne1.addArrayCellText("");
         }
         else
         {
-            arrayCellText4 = ligne1.addArrayCellText("<a href=mailto:"+user.geteMail()+">"+WebEncodeHelper.javaStringToHtmlString(user.geteMail())+"</A>");
+            arrayCellText4 = ligne1.addArrayCellText("<a href=mailto:"+user.getEmailAddress()+">"+WebEncodeHelper.javaStringToHtmlString(user.getEmailAddress())+"</A>");
         }
         arrayCellText1.setCompareOn((String) ((user.getLastName() == null)?"":user.getLastName().toLowerCase()));
         arrayCellText2.setCompareOn((String) ((user.getFirstName() == null)?"":user.getFirstName().toLowerCase()));
-        arrayCellText4.setCompareOn((String) ((user.geteMail()==null)?"":
-            WebEncodeHelper.javaStringToHtmlString(user.geteMail().toLowerCase())));
+        arrayCellText4.setCompareOn((String) ((user.getEmailAddress()==null)?"":
+            WebEncodeHelper.javaStringToHtmlString(user.getEmailAddress().toLowerCase())));
     }   
     if (arrayPane.getColumnToSort() == 0)
     {

@@ -403,7 +403,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
       boolean filterExtraInfos) {
     contactDetail.setFirstName(userDetail.getFirstName());
     contactDetail.setLastName(userDetail.getLastName());
-    contactDetail.setEmail(userDetail.geteMail());
+    contactDetail.setEmail(userDetail.getEmailAddress());
     contactDetail.setUserExtraDataRequired(!filterExtraInfos || areUserExtraDataRequired());
   }
 

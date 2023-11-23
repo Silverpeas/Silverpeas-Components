@@ -158,7 +158,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
     ClassifiedDetail classified = getClassifiedService().getContributionById(id)
         .orElseThrow(() -> new NotFoundException("No classified found with id " + id.asString()));
     classified.setCreatorName(getUserDetail(classified.getCreatorId()).getDisplayedName());
-    classified.setCreatorEmail(getUserDetail(classified.getCreatorId()).geteMail());
+    classified.setCreatorEmail(getUserDetail(classified.getCreatorId()).getEmailAddress());
     if (StringUtil.isDefined(classified.getValidatorId())) {
       classified.setValidatorName(getUserDetail(classified.getValidatorId()).getDisplayedName());
     }
@@ -354,7 +354,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
     classified.setCreatorId(getUserId());
     classified.setCreationDate(new Date());
     classified.setCreatorName(user.getDisplayedName());
-    classified.setCreatorEmail(user.geteMail());
+    classified.setCreatorEmail(user.getEmailAddress());
     classified.setInstanceId(getComponentId());
     // status
     if (isDraftEnabled() && !publish) {

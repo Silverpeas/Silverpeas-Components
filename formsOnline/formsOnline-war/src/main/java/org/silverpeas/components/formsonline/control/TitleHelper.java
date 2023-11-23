@@ -87,7 +87,7 @@ public final class TitleHelper {
         value = user.getDisplayedName();
         break;
       case "emailName":
-        value = user.geteMail();
+        value = user.getEmailAddress();
         break;
       default:
         value = "$$" + keyword + "$$";
