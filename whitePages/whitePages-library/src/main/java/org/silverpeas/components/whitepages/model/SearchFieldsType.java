@@ -28,7 +28,7 @@ public enum SearchFieldsType {
   // WARN -> Mandatory length of label type = 4
   LDAP("LDAP"), XML("XML_"), USER("USR_");
 
-  protected String labelType;
+  private final String labelType;
 
   /**
    * constructor

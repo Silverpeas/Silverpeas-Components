@@ -23,10 +23,13 @@
  */
 package org.silverpeas.components.whitepages;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.ComponentInstancePostConstruction;
+import org.silverpeas.core.admin.service.AdministrationServiceProvider;
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Technical;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 
 import javax.inject.Named;
 import javax.transaction.Transactional;
@@ -36,6 +39,8 @@ import javax.transaction.Transactional;
  * will be created.
  * @author mmoquillon
  */
+@Technical
+@Bean
 @Named
 public class WhitePagesInstancePostConstruction implements ComponentInstancePostConstruction {
 
@@ -48,7 +53,7 @@ public class WhitePagesInstancePostConstruction implements ComponentInstancePost
       PublicationTemplateManager.getInstance()
           .addDynamicPublicationTemplate(componentInstanceId, template);
     } catch (PublicationTemplateException ex) {
-      throw new RuntimeException(ex.getMessage(), ex);
+      throw new SilverpeasRuntimeException(ex.getMessage(), ex);
     }
   }
 }

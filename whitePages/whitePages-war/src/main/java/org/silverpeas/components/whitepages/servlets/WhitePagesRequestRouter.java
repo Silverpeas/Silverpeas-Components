@@ -23,7 +23,6 @@
  */
 package org.silverpeas.components.whitepages.servlets;
 
-import org.silverpeas.components.whitepages.WhitePagesException;
 import org.silverpeas.components.whitepages.control.WhitePagesSessionController;
 import org.silverpeas.components.whitepages.filters.LoginFilter;
 import org.silverpeas.components.whitepages.model.Card;
@@ -43,12 +42,7 @@ import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
+import java.util.*;
 
 /**
  * Expert Locator request rooter.
@@ -160,39 +154,14 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter<WhitePagesSe
             destination = "/whitePages/jsp/errorIdentity.jsp";
           } else {
             card = scc.setCardRecord();
-            Form updateForm = card.readCardUpdateForm();
-            PagesContext context = new PagesContext("myForm", "1", scc.getLanguage());
-            context.setComponentId(card.getInstanceId());
-            context.setObjectId(card.getPK().getId());
-            context.setUserId(scc.getUserId());
-
-            DataRecord data = card.readCardRecord();
-
-            // set dataRecord vide de CurrentCard et updateForm et viewForm
-            request.setAttribute("card", card);
-            request.setAttribute("whitePagesCards", scc.getCurrentUserCards());
-            request.setAttribute("Form", updateForm);
-            request.setAttribute("context", context);
-            request.setAttribute("data", data);
+            prepareRequest(request, scc, "1", card.readCardUpdateForm(), card);
             destination = "/whitePages/jsp/createCard.jsp";
           }
         }
       } else if ("createCard".equals(function)) {
         // Card creation form.
         Card card = scc.setCardRecord();
-        Form updateForm = card.readCardUpdateForm();
-        PagesContext context = new PagesContext("myForm", "1", scc.getLanguage());
-        context.setComponentId(card.getInstanceId());
-        context.setObjectId(card.getPK().getId());
-        context.setUserId(scc.getUserId());
-        DataRecord data = card.readCardRecord();
-
-        // set dataRecord vide de CurrentCard et updateForm et viewForm
-        request.setAttribute("card", card);
-        request.setAttribute("whitePagesCards", scc.getCurrentUserCards());
-        request.setAttribute("Form", updateForm);
-        request.setAttribute("context", context);
-        request.setAttribute("data", data);
+        prepareRequest(request, scc, "1", card.readCardUpdateForm(), card);
         destination = "/whitePages/jsp/createCard.jsp";
       } else if ("effectiveCreate".equals(function)) {
         // Persistence of new card information.
@@ -220,22 +189,12 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter<WhitePagesSe
         if (card == null) {
           destination = "/whitePages/jsp/errorIdentity.jsp";
         } else {
-          Form viewForm = card.readCardViewForm();
-          PagesContext context = new PagesContext("myForm", "0", scc.getLanguage());
-          context.setComponentId(card.getInstanceId());
-          context.setObjectId(card.getPK().getId());
-          context.setUserId(scc.getUserId());
-          DataRecord data = card.readCardRecord();
-          request.setAttribute("card", card);
-          request.setAttribute("whitePagesCards", scc.getCurrentUserCards());
-          request.setAttribute("Form", viewForm);
-          request.setAttribute("context", context);
-          request.setAttribute("data", data);
+          prepareRequest(request, scc, "0", card.readCardViewForm(), card);
           request.setAttribute("contentId", scc.getCurrentCardContentId());
           request.setAttribute("userFull", scc.getOrganisationController().getUserFull(card.
               getUserId()));
           request.setAttribute("pdcPositions",
-              scc.getPdcPositions(scc.getSilverObjectId(String.valueOf(userCardId))));
+              scc.getPdcPositions(scc.getSilverObjectId()));
 
           destination = "/whitePages/jsp/consultCard.jsp";
         }
@@ -249,18 +208,7 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter<WhitePagesSe
         } else if (("admin".equals(flag)) || (card.getUserId().equals(scc.getUserId()))) {
           // retourne un objet Card contenant les infos de la fiche y compris le form et le
           // dataRecord.
-          Form updateForm = card.readCardUpdateForm();
-          PagesContext context = new PagesContext("myForm", "0", scc.getLanguage());
-          context.setComponentId(card.getInstanceId());
-          context.setObjectId(card.getPK().getId());
-          context.setUserId(scc.getUserId());
-          DataRecord data = card.readCardRecord();
-
-          request.setAttribute("card", card);
-          request.setAttribute("whitePagesCards", scc.getCurrentUserCards());
-          request.setAttribute("Form", updateForm);
-          request.setAttribute("context", context);
-          request.setAttribute("data", data);
+          prepareRequest(request, scc, "0", card.readCardUpdateForm(), card);
           destination = "/whitePages/jsp/updateCard.jsp";
         } else {
           destination = "/admin/jsp/errorpage.jsp";
@@ -369,8 +317,6 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter<WhitePagesSe
             request.setAttribute("cards", scc.getCards());
           } else if ("user".equals(flag)) {
             request.setAttribute("cards", scc.getVisibleCards());
-          } else {
-            destination = "/admin/jsp/errorpage.jsp";
           }
         } else {
           // get form fields values
@@ -426,8 +372,23 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter<WhitePagesSe
     return destination;
   }
 
+  private static void prepareRequest(HttpRequest request, WhitePagesSessionController scc,
+      String number, Form form, Card card) {
+    PagesContext context = new PagesContext("myForm", number, scc.getLanguage());
+    context.setComponentId(card.getInstanceId());
+    context.setObjectId(card.getPK().getId());
+    context.setUserId(scc.getUserId());
+    DataRecord data = card.readCardRecord();
+
+    request.setAttribute("card", card);
+    request.setAttribute("whitePagesCards", scc.getCurrentUserCards());
+    request.setAttribute("Form", form);
+    request.setAttribute("context", context);
+    request.setAttribute("data", data);
+  }
+
   private Hashtable<String, String> getXmlFieldsQuery(WhitePagesSessionController scc,
-      HttpServletRequest request) throws WhitePagesException {
+      HttpServletRequest request) {
     Hashtable<String, String> xmlFields = new Hashtable<>();
 
     // champs personnalisables xml
@@ -436,7 +397,7 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter<WhitePagesSe
       for (SearchField field : fields) {
         String fieldId = field.getFieldId();
         String searchValue = request.getParameter(fieldId);
-        if (searchValue != null && searchValue.length() > 0) {
+        if (searchValue != null && !searchValue.isEmpty()) {
           if (fieldId.startsWith(SearchFieldsType.XML.getLabelType())) {
             request.setAttribute(fieldId, searchValue);
             // champs XML
@@ -449,7 +410,7 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter<WhitePagesSe
   }
 
   private List<FieldDescription> getOthersFieldsQuery(WhitePagesSessionController scc,
-      HttpServletRequest request) throws WhitePagesException {
+      HttpServletRequest request) {
     List<FieldDescription> othersFields = new ArrayList<>();
 
     // champs personnalisables non xml (user silverpeas ou ldap)
@@ -458,7 +419,7 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter<WhitePagesSe
       for (SearchField field : fields) {
         String fieldId = field.getFieldId();
         String searchValue = request.getParameter(fieldId);
-        if (searchValue != null && searchValue.length() > 0) {
+        if (searchValue != null && !searchValue.isEmpty()) {
           if (fieldId.startsWith(SearchFieldsType.LDAP.getLabelType())) {
             request.setAttribute(fieldId, searchValue);
             // champs XML
@@ -467,18 +428,25 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter<WhitePagesSe
             othersFields.add(fieldDescription);
           } else if (fieldId.startsWith(SearchFieldsType.USER.getLabelType())) {
             request.setAttribute(fieldId, searchValue);
-            if ("USR_name".equals(fieldId)) {
-              FieldDescription fieldDescription =
-                  new FieldDescription("LastName", searchValue, scc.getLanguage());
-              othersFields.add(fieldDescription);
-            } else if ("USR_surname".equals(fieldId)) {
-              FieldDescription fieldDescription =
-                  new FieldDescription("FirstName", searchValue, scc.getLanguage());
-              othersFields.add(fieldDescription);
-            } else if ("USR_email".equals(fieldId)) {
-              FieldDescription fieldDescription =
-                  new FieldDescription("Mail", searchValue, scc.getLanguage());
-              othersFields.add(fieldDescription);
+            switch (fieldId) {
+              case "USR_name": {
+                FieldDescription fieldDescription =
+                    new FieldDescription("LastName", searchValue, scc.getLanguage());
+                othersFields.add(fieldDescription);
+                break;
+              }
+              case "USR_surname": {
+                FieldDescription fieldDescription =
+                    new FieldDescription("FirstName", searchValue, scc.getLanguage());
+                othersFields.add(fieldDescription);
+                break;
+              }
+              case "USR_email": {
+                FieldDescription fieldDescription =
+                    new FieldDescription("Mail", searchValue, scc.getLanguage());
+                othersFields.add(fieldDescription);
+                break;
+              }
             }
           }
         }

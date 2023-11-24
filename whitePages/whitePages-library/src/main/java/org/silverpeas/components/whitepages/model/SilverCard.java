@@ -35,11 +35,11 @@ import java.util.Date;
 public class SilverCard implements SilverpeasContent {
 
   private static final long serialVersionUID = 28853110916688897L;
-  private String id;
-  private String instanceId;
-  private String creatorId;
+  private final String id;
+  private final String instanceId;
+  private final String creatorId;
   private Date creationDate;
-  private String silverpeasContentId;
+  private final String silverpeasContentId;
 
   public SilverCard(Card card, int silverContentId) {
     id = card.getPK().getId();

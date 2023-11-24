@@ -27,14 +27,11 @@ import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 
-public class WhitePagesCard implements Comparable {
+public class WhitePagesCard implements Comparable<WhitePagesCard> {
 
   private long userCardId = 0;
   private String instanceLabel;
   private String instanceId;
-
-  public WhitePagesCard() {
-  }
 
   public WhitePagesCard(String label) {
     this.instanceLabel = label;
@@ -94,7 +91,7 @@ public class WhitePagesCard implements Comparable {
   }
 
   @Override
-  public int compareTo(Object theOther) {
-    return (getInstanceLabel().compareTo(((WhitePagesCard) theOther).getInstanceLabel()));
+  public int compareTo(WhitePagesCard theOther) {
+    return (getInstanceLabel().compareTo((theOther).getInstanceLabel()));
   }
 }

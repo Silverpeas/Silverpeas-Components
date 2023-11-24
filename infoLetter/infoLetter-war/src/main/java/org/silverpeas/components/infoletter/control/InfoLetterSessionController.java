@@ -33,6 +33,8 @@ import org.silverpeas.components.infoletter.model.InfoLetterPublicationPdC;
 import org.silverpeas.components.infoletter.model.InfoLetterService;
 import org.silverpeas.components.infoletter.notification.InfoLetterSubscriptionPublicationUserNotification;
 import org.silverpeas.components.infoletter.service.InfoLetterServiceProvider;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
@@ -67,15 +69,12 @@ import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.StringTokenizer;
-import java.util.stream.Stream;
+import java.util.*;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import static java.util.Collections.singleton;
-import static java.util.stream.Collectors.toCollection;
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
 import static org.silverpeas.core.util.StringUtil.EMPTY;
 import static org.silverpeas.core.util.StringUtil.getBooleanValue;
@@ -171,7 +170,8 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
 
   public DragAndDropWbeFile getTemplateFileForEdition() {
     final InfoLetter infoLetter = getInfoLetter();
-    final DragAndDropWebEditorStore store = new DragAndDropWebEditorStore(infoLetter.getTemplateIdentifier());
+    final DragAndDropWebEditorStore store =
+        new DragAndDropWebEditorStore(infoLetter.getTemplateIdentifier());
     if (!store.getFile().exists() && infoLetter.existsTemplateContent()) {
       // If the Drag And Drop editor has not been yet used, taking the WYSIWYG content if any.
       // It permits retrieving old content of template edited before the introduction
@@ -217,6 +217,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     return new DragAndDropWbeFile(store);
   }
 
+  @SuppressWarnings("UnusedReturnValue")
   public DragAndDropWbeFile resetWithTemplateFor(final InfoLetterPublication ilp) {
     final DragAndDropWebEditorStore store = new DragAndDropWebEditorStore(ilp.getIdentifier());
     ilp.initFrom(getInfoLetter());
@@ -291,36 +292,8 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
 
   /**
    * Send letter by mail
-   * @param emails
-   * @return tab of dest emails in error
-   */
-  private String[] sendTemplateByMail(Set<String> emails) {
-    Set<String> emailErrors = new LinkedHashSet<>();
-
-    if (!emails.isEmpty()) {
-      final InfoLetter infoLetter = getInfoLetter();
-
-      // create the Multipart and its parts to it
-      String mimeMultipart = getSettings().getString("SMTPMimeMultipart", "related");
-
-      // Subject of the mail
-      String subject = getMultilang().getStringWithParams("infoLetter.emailTemplateSubject",
-          infoLetter.getName());
-
-      // Email address of the manager
-      String emailFrom = getUserDetail().getEmailAddress();
-
-      emailErrors =
-          dataInterface.sendTemplateByMail(infoLetter, mimeMultipart, emails, subject, emailFrom);
-
-    }
-    return emailErrors.toArray(new String[0]);
-  }
-
-  /**
-   * Send letter by mail
-   * @param ilp
-   * @param emails
+   * @param ilp  the classified InfoLetterPublication to send
+   * @param emails the email addresses of the receivers.
    * @return tab of dest emails in error
    */
   private String[] sendLetterByMail(InfoLetterPublicationPdC ilp, Set<String> emails) {
@@ -346,7 +319,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
 
   /**
    * Send letter by mail to external subscribers
-   * @param ilp
+   * @param ilp the classified InfoLetterPublication to send
    * @return tab of emails in error
    */
   public String[] sendByMailToExternalSubscribers(InfoLetterPublicationPdC ilp) {
@@ -361,13 +334,6 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
       extmails.removeAll(internalSubscribersEmails);
     }
     return sendLetterByMail(ilp, extmails);
-  }
-
-  /**
-   * Send letter to itself.
-   */
-  public String[] notifyMeAboutTemplate() {
-    return sendTemplateByMail(singleton(getUserDetail().getEmailAddress()));
   }
 
   /**
@@ -440,11 +406,11 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
   }
 
   /**
-   * Import Csv emails
-   * @param filePart
-   * @throws UtilTrappedException
-   * @throws InfoLetterPeasTrappedException
-   * @throws InfoLetterException
+   * Import email addresses of external subscribers to newsletters.
+   * @param filePart the uploaded CSV file.
+   * @throws UtilTrappedException if an error occurs
+   * @throws InfoLetterPeasTrappedException if an error occurs during the import.
+   * @throws InfoLetterException if an error occurs during the import
    */
   public void importCsvEmails(FileItem filePart)
       throws UtilTrappedException, InfoLetterPeasTrappedException, InfoLetterException {
@@ -469,20 +435,20 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
       throw ute;
     }
 
-    StringBuilder listErrors = new StringBuilder("");
+    StringBuilder listErrors = new StringBuilder();
     String email;
 
     for (int i = 0; i < csvValues.length; i++) {
       // email
       email = csvValues[i][0].getValueString();
-      if (email.length() == 0) {// champ obligatoire
-        listErrors.append(getString("GML.ligne")).append(" = ").append(Integer.toString(i + 1))
+      if (email.isEmpty()) {// champ obligatoire
+        listErrors.append(getString("GML.ligne")).append(" = ").append(i + 1)
             .append(", ");
         listErrors.append(getString("GML.colonne")).append(" = 1, ");
         listErrors.append(getString("GML.valeur")).append(" = ").append(email).append(", ");
         listErrors.append(getString("GML.obligatoire")).append("<BR>");
       } else if (email.length() > 100) {// verifier 100 char max
-        listErrors.append(getString("GML.ligne")).append(" = ").append(Integer.toString(i + 1))
+        listErrors.append(getString("GML.ligne")).append(" = ").append(i + 1)
             .append(", ");
         listErrors.append(getString("GML.colonne")).append(" = 1, ");
         listErrors.append(getString("GML.valeur")).append(" = ").append(email).append(", ");
@@ -499,7 +465,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
       throw ie;
     }
 
-    // pas d'erreur, on importe les emails
+    // no errors, email addresses are imported
     Set<String> emails = new LinkedHashSet<>();
     for (final Variant[] csvValue : csvValues) {
       // Email
@@ -511,10 +477,10 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
   }
 
   /**
-   * Export Csv emails
-   * @return boolean
-   * @throws IOException
-   * @throws InfoLetterException
+   * Export emails of external subscribers into a CSV file.
+   * @return true if the export succeed.
+   * @throws IOException if an error occurs while recording the emails to the CSV file.
+   * @throws InfoLetterException if an error occurs during the export.
    */
   public boolean exportCsvEmails() throws IOException, InfoLetterException {
     File fileOutput =
@@ -541,12 +507,9 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
    */
   private Set<String> getEmailsManagers() {
     final List<String> roles = List.of("admin");
-    return Stream.of(getOrganisationController().getUsersIdsByRoleNames(getComponentId(), roles))
-        .map(this::getUserDetail)
-        .filter(User::isValidState)
-        .map(User::getEmailAddress)
-        .filter(StringUtil::isDefined)
-        .collect(toCollection(LinkedHashSet::new));
+    String[] managerIds = getOrganisationController().getUsersIdsByRoleNames(getComponentId(),
+        roles);
+    return getEmailAddressOf(List.of(managerIds), User::isValidState);
   }
 
   /**
@@ -555,16 +518,8 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
    */
   private Set<String> getEmailsInternalSubscribers(
       SubscriptionSubscriberMapBySubscriberType subscriberIdsByTypes) {
-    Set<String> emails = new LinkedHashSet<>();
-
-    for (String userId : subscriberIdsByTypes.getAllUserIds()) {
-      String email = getUserDetail(userId).getEmailAddress();
-      if (StringUtil.isDefined(email)) {
-        emails.add(email);
-      }
-    }
-
-    return emails;
+    List<String> userIds = subscriberIdsByTypes.getAllUserIds();
+    return getEmailAddressOf(userIds, null);
   }
 
   /**
@@ -573,5 +528,28 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
    */
   public boolean isNewsLetterSendByMail() {
     return getBooleanValue(getComponentParameterValue("sendNewsletter"));
+  }
+
+  private Set<String> getEmailAddressOf(List<String> userIds, Predicate<UserDetail> filter) {
+    // we use Administration to get user details in order to access the email addresses even for
+    // the users with privacy data
+    Function<String, UserDetail> userById = userId -> {
+      try {
+        return Administration.get().getUserDetail(userId);
+      } catch (AdminException e) {
+        SilverLogger.getLogger(this).error(e);
+        return null;
+      }
+    };
+    Predicate<UserDetail> filterOnUser = filter == null ? u -> true : filter;
+
+    return userIds.stream()
+        .filter(StringUtil::isDefined)
+        .map(userById)
+        .filter(Objects::nonNull)
+        .filter(filterOnUser)
+        .map(UserDetail::getEmailAddress)
+        .filter(StringUtil::isDefined)
+        .collect(Collectors.toSet());
   }
 }

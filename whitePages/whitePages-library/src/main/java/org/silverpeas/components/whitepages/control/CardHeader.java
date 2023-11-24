@@ -92,19 +92,15 @@ public final class CardHeader extends AbstractBean
   }
 
   private String buildMailLink(String instanceId, String cardId) {
-    StringBuilder buffer = new StringBuilder();
-
-    buffer.append("<a href=\"");
-    buffer.append(URLUtil.getApplicationURL());
-    buffer.append(URLUtil.getURL(null, instanceId));
-    buffer.append("NotifyExpert?cardId=");
-    buffer.append(cardId);
-    buffer.append("\"><img src=\"");
-    buffer.append(URLUtil.getApplicationURL());
-    buffer.append(whitePagesIcons.getString("whitePages.notify"));
-    buffer.append("\" border=\"0\"></a>");
-
-    return buffer.toString();
+    return "<a href=\"" +
+        URLUtil.getApplicationURL() +
+        URLUtil.getURL(null, instanceId) +
+        "NotifyExpert?cardId=" +
+        cardId +
+        "\"><img src=\"" +
+        URLUtil.getApplicationURL() +
+        whitePagesIcons.getString("whitePages.notify") +
+        "\" border=\"0\"></a>";
   }
 
   public CardHeader(long id, Card card, String instanceId, String date, String creatorId) {

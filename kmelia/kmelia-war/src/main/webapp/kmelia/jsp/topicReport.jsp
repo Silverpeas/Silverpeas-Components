@@ -166,8 +166,7 @@ void displayTopicsToUsersAsArray(KmeliaSessionController kmeliaScc, NodeDetail n
 							
 							ArrayLine arrayLine = arrayPane.addArrayLine();
                             ArrayCellIconPane acip = arrayLine.addArrayCellIconPane(folderPane1);
-							acip.setAlignement("center");
-							
+
 							String universalLink = "";
 							if (displayLinks)
 							{

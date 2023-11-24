@@ -26,50 +26,47 @@ package org.silverpeas.components.whitepages.service;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.index.indexing.model.FieldDescription;
 import org.silverpeas.core.index.search.model.QueryDescription;
+import org.silverpeas.core.index.search.model.SearchEngineException;
 import org.silverpeas.core.index.search.model.SearchResult;
-import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.search.SearchService;
 import org.silverpeas.core.util.CollectionUtil;
 
-import javax.inject.Inject;
 import java.util.List;
 import java.util.Map;
 
 @Service
 public class MixedSearchServiceImpl implements MixedSearchService {
 
-  @Inject
-  private PdcManager pdcManager = null;
-
   @Override
-  public List<SearchResult> search(String componentId, String userId,
-      String queryString, String taxonomyPosition, Map<String, String> xmlFields,
-      String xmlTemplate, List<FieldDescription> fieldsQuery, String language) throws Exception {
+  public List<SearchResult> search(SearchQuery searchQuery) throws SearchEngineException {
     //build the search
-    QueryDescription query = new QueryDescription(queryString);
+    QueryDescription query = new QueryDescription(searchQuery.getQuery());
 
     //Set the identity of the user who processing the search
-    query.setSearchingUser(userId);
+    query.setSearchingUser(searchQuery.getUserId());
 
     //Set the list of all components which are available for the user
-    query.addComponent(componentId);
+    query.addComponent(searchQuery.getComponentId());
 
+    var xmlFields = searchQuery.getXmlFields();
+    var xmlTemplate = searchQuery.getXmlTemplate();
     // XML search
     if (xmlFields != null && !xmlFields.isEmpty() && xmlTemplate != null) {
       for (Map.Entry<String, String> entry : xmlFields.entrySet()) {
         String value = entry.getValue();
-        value = value.trim().replaceAll("##", " AND ");
+        value = value.trim().replace("##", " AND ");
         query.addFieldQuery(
-            new FieldDescription(xmlTemplate + "$$" + entry.getKey(), value, language));
+            new FieldDescription(xmlTemplate + "$$" + entry.getKey(), value,
+                searchQuery.getLanguage()));
       }
     }
 
-    // LDAP and classicals Silverpeas fields search
-    if (CollectionUtil.isNotEmpty(fieldsQuery)) {
-      query.setFieldQueries(fieldsQuery);
+    // LDAP and classical Silverpeas fields search
+    if (CollectionUtil.isNotEmpty(searchQuery.getFieldsQuery())) {
+      query.setFieldQueries(searchQuery.getFieldsQuery());
     }
 
-    query.setTaxonomyPosition(taxonomyPosition);
+    query.setTaxonomyPosition(searchQuery.getTaxonomyPosition());
 
     SearchService searchService = SearchService.get();
     return searchService.search(query);

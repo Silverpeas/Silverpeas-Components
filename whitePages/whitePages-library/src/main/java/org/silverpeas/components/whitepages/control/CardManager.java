@@ -29,16 +29,17 @@ import org.silverpeas.components.whitepages.model.SilverCard;
 import org.silverpeas.components.whitepages.model.WhitePagesCard;
 import org.silverpeas.components.whitepages.record.UserRecord;
 import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagementEngine;
-import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagementEngineProvider;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
@@ -59,15 +60,13 @@ import javax.inject.Inject;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
+@SuppressWarnings("deprecation")
 @Service
 public class CardManager {
 
+  private static final String INSTANCE_ID_IS = " instanceId = '";
   @Inject
   private WhitePagesContentManager contentManager;
 
@@ -88,7 +87,7 @@ public class CardManager {
 
     Connection con = null;
     try {
-      SilverpeasBeanDAO dao = getCardDAO();
+      SilverpeasBeanDAO<Card> dao = getCardDAO();
       con = DBUtil.openConnection();
       con.setAutoCommit(false);
 
@@ -127,7 +126,7 @@ public class CardManager {
         con = DBUtil.openConnection();
         con.setAutoCommit(false);
 
-        SilverpeasBeanDAO dao = getCardDAO();
+        SilverpeasBeanDAO<Card> dao = getCardDAO();
 
         IdPK pk = new IdPK();
         String peasId = null;
@@ -165,32 +164,33 @@ public class CardManager {
     Card result;
     IdPK pk = new IdPK();
     try {
-      SilverpeasBeanDAO dao = getCardDAO();
+      SilverpeasBeanDAO<Card> dao = getCardDAO();
       pk.setIdAsLong(id);
-      result = (Card) dao.findByPrimaryKey(pk);
+      result = dao.findByPrimaryKey(pk);
     } catch (PersistenceException e) {
-      throw new WhitePagesException("CardManager.getCard", SilverpeasException.ERROR,
-          "whitePages.EX_CANT_GET_CARD", "", e);
+      throw new WhitePagesException(e);
     }
     return result;
   }
 
-  @SuppressWarnings("unchecked")
   public Collection<Card> getCards(String instanceId) throws WhitePagesException {
-    String where = " instanceId = '" + instanceId + "'";
+    String where = INSTANCE_ID_IS + instanceId + "'";
+    return getCardsByCondition(where);
+  }
+
+  private Collection<Card> getCardsByCondition(String whereClause) throws WhitePagesException {
     Collection<Card> cards;
     try {
       IdPK pk = new IdPK();
-      SilverpeasBeanDAO dao = getCardDAO();
-      cards = dao.findByWhereClause(pk, where);
+      SilverpeasBeanDAO<Card> dao = getCardDAO();
+      cards = dao.findByWhereClause(pk, whereClause);
     } catch (PersistenceException e) {
-      throw new WhitePagesException("CardManager.getCards", SilverpeasException.ERROR,
-          "whitePages.EX_CANT_GET_CARDS", "", e);
+      throw new WhitePagesException(e);
     }
     return cards;
   }
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings("DuplicatedCode")
   public Collection<Card> getCardsByIds(List<String> ids) throws WhitePagesException {
     StringBuilder where = new StringBuilder();
     int sizeOfIds = ids.size();
@@ -204,31 +204,20 @@ public class CardManager {
     Collection<Card> cards;
     try {
       IdPK pk = new IdPK();
-      SilverpeasBeanDAO dao = getCardDAO();
+      SilverpeasBeanDAO<Card> dao = getCardDAO();
       cards = dao.findByWhereClause(pk, where.toString());
     } catch (PersistenceException e) {
-      throw new WhitePagesException("CardManager.getCards", SilverpeasException.ERROR,
-          "whitePages.EX_CANT_GET_CARDS", "", e);
+      throw new WhitePagesException(e);
     }
     return cards;
   }
 
-  @SuppressWarnings("unchecked")
   public Collection<Card> getVisibleCards(String instanceId) throws WhitePagesException {
-    String where = " instanceId = '" + instanceId + "' and hideStatus = 0";
-    Collection<Card> cards;
-    try {
-      IdPK pk = new IdPK();
-      SilverpeasBeanDAO dao = getCardDAO();
-      cards = dao.findByWhereClause(pk, where);
-    } catch (PersistenceException e) {
-      throw new WhitePagesException("CardManager.getVisibleCards", SilverpeasException.ERROR,
-          "whitePages.EX_CANT_GET_CARDS", "", e);
-    }
-    return cards;
+    String where = INSTANCE_ID_IS + instanceId + "' and hideStatus = 0";
+    return getCardsByCondition(where);
   }
 
-  public Collection<WhitePagesCard> getUserCards(String userId, Collection<String> instanceIds)
+  public List<WhitePagesCard> getUserCards(String userId, Collection<String> instanceIds)
       throws WhitePagesException {
     StringBuilder where = new StringBuilder(" userId = '" + userId + "' and hideStatus = 0");
     if (instanceIds != null) {
@@ -248,7 +237,7 @@ public class CardManager {
     return new ArrayList<>();
   }
 
-  public Collection<WhitePagesCard> getHomeUserCards(String userId, Collection<String> instanceIds,
+  public List<WhitePagesCard> getHomeUserCards(String userId, Collection<String> instanceIds,
       String instanceId) throws WhitePagesException {
     StringBuilder where = new StringBuilder(
         " userId = '" + userId + "' and ((instanceId = '" + instanceId + "') or (hideStatus = 0");
@@ -269,36 +258,34 @@ public class CardManager {
     return new ArrayList<>();
   }
 
-  @SuppressWarnings("unchecked")
-  private Collection<WhitePagesCard> getWhitePagesCards(String whereClause)
+  private List<WhitePagesCard> getWhitePagesCards(String whereClause)
       throws WhitePagesException {
-    Collection<WhitePagesCard> wpcards = new ArrayList<>();
+    List<WhitePagesCard> wpCards = new ArrayList<>();
     try {
       IdPK pk = new IdPK();
-      SilverpeasBeanDAO dao = getCardDAO();
+      SilverpeasBeanDAO<Card> dao = getCardDAO();
       Collection<Card> cards = dao.findByWhereClause(pk, whereClause);
       if (cards != null) {
         for (Card card : cards) {
-          wpcards
+          wpCards
               .add(new WhitePagesCard(Long.parseLong(card.getPK().getId()), card.getInstanceId()));
         }
       }
     } catch (PersistenceException e) {
-      throw new WhitePagesException("CardManager.getWhitePagesCards", SilverpeasException.ERROR,
-          "whitePages.EX_CANT_GET_USERCARDS", "", e);
+      throw new WhitePagesException(e);
     }
-    return wpcards;
+    return wpCards;
   }
 
   public void setHideStatus(Collection<String> ids, int status) throws WhitePagesException {
     if (ids != null) {
       try {
-        SilverpeasBeanDAO dao = getCardDAO();
+        SilverpeasBeanDAO<Card> dao = getCardDAO();
         for (String sId : ids) {
           long id = Long.parseLong(sId);
           IdPK pk = new IdPK();
           pk.setIdAsLong(id);
-          Card card = (Card) dao.findByPrimaryKey(pk);
+          Card card = dao.findByPrimaryKey(pk);
           card.setHideStatus(status);
           dao.update(card);
 
@@ -306,8 +293,7 @@ public class CardManager {
           getWhitePagesContentManager().updateSilverContentVisibility(card);
         }
       } catch (Exception e) {
-        throw new WhitePagesException("CardManager.setHideStatus", SilverpeasException.ERROR,
-            "whitePages.EX_UPDATE_CARDS_FAILED", "", e);
+        throw new WhitePagesException(e);
       }
     }
   }
@@ -315,12 +301,12 @@ public class CardManager {
   public void reverseHide(Collection<String> ids) throws WhitePagesException {
     if (ids != null) {
       try {
-        SilverpeasBeanDAO dao = getCardDAO();
+        SilverpeasBeanDAO<Card> dao = getCardDAO();
         for (String sId : ids) {
           long id = Long.parseLong(sId);
           IdPK pk = new IdPK();
           pk.setIdAsLong(id);
-          Card card = (Card) dao.findByPrimaryKey(pk);
+          Card card = dao.findByPrimaryKey(pk);
           int status = card.getHideStatus();
           if (status == 0) {
             status = 1;
@@ -334,26 +320,23 @@ public class CardManager {
           getWhitePagesContentManager().updateSilverContentVisibility(card);
         }
       } catch (Exception e) {
-        throw new WhitePagesException("CardManager.reverseHide", SilverpeasException.ERROR,
-            "whitePages.EX_UPDATE_CARDS_FAILED", "", e);
+        throw new WhitePagesException(e);
       }
     }
   }
 
-  @SuppressWarnings("unchecked")
   public boolean existCard(String userId, String instanceId) throws WhitePagesException {
-    String where = " instanceId = '" + instanceId + "' and userId = '" + userId + "'";
+    String where = INSTANCE_ID_IS + instanceId + "' and userId = '" + userId + "'";
     boolean exist = false;
     try {
       IdPK pk = new IdPK();
-      SilverpeasBeanDAO dao = getCardDAO();
+      SilverpeasBeanDAO<Card> dao = getCardDAO();
       Collection<Card> cards = dao.findByWhereClause(pk, where);
       if (cards != null && !cards.isEmpty()) {
         exist = true;
       }
     } catch (PersistenceException e) {
-      throw new WhitePagesException("CardManager.existCard", SilverpeasException.ERROR,
-          "whitePages.EX_CANT_GET_CARDS", "", e);
+      throw new WhitePagesException(e);
     }
     return exist;
   }
@@ -373,22 +356,20 @@ public class CardManager {
    * @param userId user id
    * @param instanceId instance id
    * @return the card, null if not found
-   * @throws WhitePagesException
+   * @throws WhitePagesException if an error occurs
    */
-  @SuppressWarnings("unchecked")
   public Card getUserCard(String userId, String instanceId) throws WhitePagesException {
-    String where = " instanceId = '" + instanceId + "' and userId = '" + userId + "'";
+    String where = INSTANCE_ID_IS + instanceId + "' and userId = '" + userId + "'";
     Card card = null;
     try {
       IdPK pk = new IdPK();
-      SilverpeasBeanDAO dao = getCardDAO();
+      SilverpeasBeanDAO<Card> dao = getCardDAO();
       Collection<Card> cards = dao.findByWhereClause(pk, where);
       if (cards != null && !cards.isEmpty()) {
         card = cards.iterator().next();
       }
     } catch (PersistenceException e) {
-      throw new WhitePagesException("CardManager.getUserCard", SilverpeasException.ERROR,
-          "whitePages.EX_CANT_GET_CARDS", "", e);
+      throw new WhitePagesException(e);
     }
     return card;
   }
@@ -431,7 +412,7 @@ public class CardManager {
   }
 
   private String extractUserName(Card card) {
-    StringBuilder text = new StringBuilder("");
+    StringBuilder text = new StringBuilder();
 
     UserRecord user = card.readUserRecord();
     Field f;
@@ -456,13 +437,15 @@ public class CardManager {
   }
 
   private String extractUserMail(Card card) {
-    StringBuilder text = new StringBuilder("");
-
-    UserRecord user = card.readUserRecord();
-    Field f;
-    if (user != null) {
+    StringBuilder text = new StringBuilder();
+    UserRecord record = card.readUserRecord();
+    if (record != null) {
+      User user = record.getUserDetail();
+      if (user instanceof UserDetail && ((UserDetail) user).hasSensitiveData()) {
+        return text.toString();
+      }
       try {
-        f = user.getField("Mail");
+        Field f = record.getField("Mail");
         text.append(f.getStringValue());
       } catch (FormException e) {
         SilverLogger.getLogger(this).warn(e);
@@ -476,12 +459,10 @@ public class CardManager {
     try {
       con.rollback();
     } catch (Exception e1) {
-      throw new WhitePagesException("CardManager.create", SilverpeasException.ERROR,
-          "whitePages.EX_CREATE_CARD_FAILED", "Error in rollback", e1);
+      throw new WhitePagesException(e1);
     }
 
-    throw new WhitePagesException("CardManager.create", SilverpeasException.ERROR,
-        "whitePages.EX_CREATE_CARD_FAILED", "", e);
+    throw new WhitePagesException(e);
   }
 
   private void closeConnection(Connection con) throws WhitePagesException {
@@ -489,13 +470,12 @@ public class CardManager {
       try {
         con.close();
       } catch (SQLException e) {
-        throw new WhitePagesException("CardManager.create", SilverpeasException.ERROR,
-            "whitePages.EX_CREATE_CARD_FAILED", "", e);
+        throw new WhitePagesException(e);
       }
     }
   }
 
-  private SilverpeasBeanDAO getCardDAO() throws PersistenceException {
+  private SilverpeasBeanDAO<Card> getCardDAO() throws PersistenceException {
     return SilverpeasBeanDAOFactory.getDAO("org.silverpeas.components.whitepages.model.Card");
   }
 }

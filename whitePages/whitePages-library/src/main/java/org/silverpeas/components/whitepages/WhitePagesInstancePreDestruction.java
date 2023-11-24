@@ -23,9 +23,12 @@
  */
 package org.silverpeas.components.whitepages;
 
-import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.components.whitepages.service.WhitePageServiceProvider;
+import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.annotation.Technical;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 
 import javax.inject.Named;
@@ -37,6 +40,8 @@ import java.sql.PreparedStatement;
  * Deletes all the resources used by the WhitePages instance that is being deleted.
  * @author mmoquillon
  */
+@Technical
+@Bean
 @Named
 public class WhitePagesInstancePreDestruction implements ComponentInstancePreDestruction {
 
@@ -58,7 +63,7 @@ public class WhitePagesInstancePreDestruction implements ComponentInstancePreDes
         WhitePageServiceProvider.getWhitePagesService().deleteFields(componentInstanceId);
       }
     } catch (Exception e) {
-      throw new RuntimeException(e.getMessage(), e);
+      throw new SilverpeasRuntimeException(e.getMessage(), e);
     }
   }
 }

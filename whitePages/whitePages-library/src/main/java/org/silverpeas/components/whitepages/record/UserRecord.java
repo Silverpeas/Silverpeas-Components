@@ -24,6 +24,7 @@
 package org.silverpeas.components.whitepages.record;
 
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.admin.domain.model.DomainProperty;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
@@ -74,7 +75,11 @@ public class UserRecord implements DataRecord {
   @Override
   public Field getField(String fieldName) throws FormException {
     TextFieldImpl text = new TextFieldImpl();
-
+    User requester = User.getCurrentRequester();
+    boolean isAdmin = requester != null && (requester.isAccessAdmin() ||
+        requester.isAccessDomainManager() && requester.getDomainId().equals(user.getDomainId()));
+    boolean sensitiveData =
+        user instanceof UserDetail && !isAdmin && ((UserDetail) user).hasSensitiveData();
     if ("Id".equals(fieldName)) {
       text.setStringValue(user.getId());
     } else if ("SpecificId".equals(fieldName) && user instanceof UserDetail) {
@@ -87,17 +92,25 @@ public class UserRecord implements DataRecord {
       text.setStringValue(user.getFirstName());
     } else if ("LastName".equals(fieldName)) {
       text.setStringValue(user.getLastName());
-    } else if ("Mail".equals(fieldName)) {
+    } else if ("Mail".equals(fieldName) && !sensitiveData) {
       text.setStringValue(user.getEmailAddress());
     } else if ("AccessLevel".equals(fieldName)) {
       text.setStringValue(user.getAccessLevel().code());
     } else if (fieldName.startsWith("DC.")) {
       String specificDetail = fieldName.substring(fieldName.indexOf(".") + 1);
-      if (user instanceof UserFull) {
+      setSpecificDetail(specificDetail, sensitiveData, text);
+    }
+    return text;
+  }
+
+  private void setSpecificDetail(String specificDetail, boolean sensitiveData, TextFieldImpl text) {
+    if (user instanceof UserFull) {
+      UserFull userFull = (UserFull) user;
+      DomainProperty prop = userFull.getProperty(specificDetail);
+      if (!prop.isSensitive() || !sensitiveData) {
         text.setStringValue(((UserFull) user).getValue(specificDetail));
       }
     }
-    return text;
   }
 
   @Override

@@ -109,5 +109,6 @@ CREATE TABLE ST_User
     expirationDate                TIMESTAMP,
     state                         VARCHAR(30)         NOT NULL,
     stateSaveDate                 TIMESTAMP           NOT NULL,
-    notifManualReceiverLimit      INT
+    notifManualReceiverLimit      INT,
+    sensitiveData                 BOOLEAN DEFAULT FALSE NOT NULL
 );

@@ -24,7 +24,6 @@
 
 --%>
 <%@ page import="org.silverpeas.components.yellowpages.control.DisplayContactsHelper" %>
-<%@ page import="java.util.Collection" %>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
@@ -35,10 +34,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
 <%@ include file="checkYellowpages.jsp" %>
-
-<%
-Collection contacts = (Collection) request.getAttribute("Contacts");
-%>
 
 <html>
 <head>
@@ -54,7 +49,7 @@ Collection contacts = (Collection) request.getAttribute("Contacts");
 <view:frame>
 <view:board>
 <%
-DisplayContactsHelper.displayContactsUser(yellowpagesScc, contacts, null, componentLabel, gef, request, session, resources, out);
+DisplayContactsHelper.displayContactsUser(yellowpagesScc, null, gef, request, session, resources, out);
 %>
 </view:board>
 </view:frame>

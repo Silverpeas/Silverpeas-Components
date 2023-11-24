@@ -156,7 +156,7 @@
     <c:if test="${viewContext != SuggestionsInValidationViewContext and highestUserRole.isGreaterThanOrEquals(writerRole)}">
       <view:areaOfOperationOfCreation/>
     </c:if>
-    <view:arrayPane var="${SUGGESTION_LIST_IDENTIFIER}" routingAddress="${routingAddress}" sortableLines="true">
+    <view:arrayPane var="${SUGGESTION_LIST_IDENTIFIER}" routingAddress="${routingAddress}" movableLines="true">
       <view:arrayColumn title="${status}" sortable="true"/>
       <view:arrayColumn title="${date}" sortable="true"/>
       <view:arrayColumn title="${title}" sortable="true"/>

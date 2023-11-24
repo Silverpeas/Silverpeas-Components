@@ -55,7 +55,11 @@
     <c:set var="columns" value="${table.columns}"/>
     <c:set var="rows" value="${table.rows}"/>
     <div id="fk-table-view">
-      <view:arrayPane var="${requestScope[paramFkArrayPaneName]}" routingAddress="ViewTargetTable?${paramTable}=${table.name}" export="false" numberLinesPerPage="${table.pagination.pageSize}">
+      <view:arrayPane
+              var="${requestScope[paramFkArrayPaneName]}"
+              routingAddress="ViewTargetTable?${paramTable}=${table.name}"
+              numberLinesPerPage="${table.pagination.pageSize}"
+              export="false">
         <c:forEach var="column" items="${columns}">
           <c:set var="columnName" value="${column.name}"/>
           <c:if test="${column.primaryKey}">

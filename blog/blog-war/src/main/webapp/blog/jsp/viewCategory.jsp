@@ -185,8 +185,7 @@ function sortNode(updatedNodeJSON)
 <%  
 	ArrayPane arrayPane = gef.getArrayPane("categoryList", "ViewCategory", request, session);
 	arrayPane.setSortable(false);
-	arrayPane.setXHTML(true);
-	arrayPane.setSortableLines(true);
+	arrayPane.setMovableLines(true);
 	arrayPane.addArrayColumn("&nbsp;");
 	arrayPane.addArrayColumn(resource.getString("GML.title"));
 	arrayPane.addArrayColumn(resource.getString("GML.description"));
