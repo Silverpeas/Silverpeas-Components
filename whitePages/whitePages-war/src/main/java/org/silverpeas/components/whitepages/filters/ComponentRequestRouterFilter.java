@@ -62,10 +62,9 @@ public class ComponentRequestRouterFilter implements Filter {
       }
       String componentId = (String) session.getAttribute(LoginFilter.ATTRIBUTE_FORCE_CARD_CREATION);
       if (isRedirectRequired(httpRequest, componentId)) {
-        StringBuilder redirectURL = new StringBuilder(512);
-        redirectURL.append(URLUtil.getURL(null, componentId));
-        redirectURL.append("ForceCardCreation");
-        RequestDispatcher dispatcher = request.getRequestDispatcher(redirectURL.toString());
+        String redirectURL = URLUtil.getURL(null, componentId) +
+            "ForceCardCreation";
+        RequestDispatcher dispatcher = request.getRequestDispatcher(redirectURL);
         dispatcher.forward(request, response);
       } else {
         chain.doFilter(request, response);
@@ -83,10 +82,12 @@ public class ComponentRequestRouterFilter implements Filter {
   }
 
   @Override
-  public void init(FilterConfig filterConfig) throws ServletException {
+  public void init(FilterConfig filterConfig) {
+    // nothing to init
   }
 
   @Override
   public void destroy() {
+    // nothing to destroy
   }
 }

@@ -2120,7 +2120,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     for (String asAvailProfileName : asAvailProfileNames) {
       ProfileInst profile = getTopicProfile(asAvailProfileName, topicId);
       profile.setLabel(
-          getAdmin().getProfileLabelfromName(KMELIA, asAvailProfileName, getLanguage()));
+          getAdmin().getProfileLabelByName(KMELIA, asAvailProfileName, getLanguage()));
       alShowProfile.add(profile);
     }
 

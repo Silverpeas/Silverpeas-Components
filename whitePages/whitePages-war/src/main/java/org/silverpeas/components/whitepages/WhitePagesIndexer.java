@@ -33,12 +33,13 @@ import org.silverpeas.components.whitepages.model.Card;
 import org.silverpeas.components.whitepages.record.UserTemplate;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.Administration;
+import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.annotation.Technical;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.web.index.components.ComponentIndexation;
@@ -46,14 +47,13 @@ import org.silverpeas.core.web.index.components.ComponentIndexation;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author neysseri
  */
+@Technical
+@Service
 @Singleton
 @Named("whitePages" + ComponentIndexation.QUALIFIER_SUFFIX)
 public class WhitePagesIndexer implements ComponentIndexation {
@@ -68,7 +68,7 @@ public class WhitePagesIndexer implements ComponentIndexation {
   @Override
   public void index(SilverpeasComponentInstance componentInst)
       throws org.silverpeas.core.SilverpeasException {
-    Collection<Card> visibleCards = null;
+    Collection<Card> visibleCards;
     try {
       visibleCards = enrichWithUserRecordsAndCardRecords(componentInst.getId(),
           cardManager.getVisibleCards(componentInst.getId()));
@@ -103,12 +103,8 @@ public class WhitePagesIndexer implements ComponentIndexation {
           }
         }
       }
-    } catch (PublicationTemplateException e) {
-      throw new WhitePagesException("WhitePagesIndexer.enrichWithUserRecordsAndCardRecords",
-          SilverpeasException.ERROR, "whitePages.EX_CANT_GET_PUBLICATIONTEMPLATE", "", e);
-    } catch (FormException e) {
-      throw new WhitePagesException("WhitePagesIndexer.enrichWithUserRecordsAndCardRecords",
-          SilverpeasException.ERROR, "whitePages.EX_CANT_GET_RECORD", "", e);
+    } catch (PublicationTemplateException | FormException e) {
+      throw new WhitePagesException(e);
     }
     return listCards;
   }
@@ -131,7 +127,7 @@ public class WhitePagesIndexer implements ComponentIndexation {
   private void deleteCard(PublicationTemplate cardTemplate, String cardId)
       throws PublicationTemplateException, FormException, WhitePagesException {
     DataRecord data = cardTemplate.getRecordSet().getRecord(cardId);
-    cardTemplate.getRecordSet().delete(data);
-    cardManager.delete(Arrays.asList(cardId));
+    cardTemplate.getRecordSet().delete(data.getId());
+    cardManager.delete(Collections.singletonList(cardId));
   }
 }

@@ -47,9 +47,8 @@ public class SearchFieldDaoImpl implements SearchFieldDao {
   }
 
   @Override
-  public String createSearchField(SearchField searchField) {
+  public void createSearchField(SearchField searchField) {
     getEntityManager().persist(searchField);
-    return searchField.getId();
   }
 
   @Override

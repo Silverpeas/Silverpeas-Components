@@ -72,7 +72,11 @@
     <view:window>
       <view:frame>
         <div id="history-list">
-          <view:arrayPane title="${historyListLabel}" var="communityHistoryViewIdentifier" routingAddress="${componentUriBase}/members/history" export="true" numberLinesPerPage="25">
+          <view:arrayPane title="${historyListLabel}"
+                          var="communityHistoryViewIdentifier"
+                          routingAddress="${componentUriBase}/members/history"
+                          numberLinesPerPage="25"
+                          export="true">
             <view:arrayColumn title="${lastNameLabel}" compareOn="${r -> fn:toLowerCase(r.user.lastName)}"/>
             <view:arrayColumn title="${firstNameLabel}" compareOn="${r -> fn:toLowerCase(r.user.firstName)}"/>
             <view:arrayColumn title="${statusLabel}" compareOn="${r -> fn:toLowerCase(r.getStatusLabel(currentUserLanguage))}"/>

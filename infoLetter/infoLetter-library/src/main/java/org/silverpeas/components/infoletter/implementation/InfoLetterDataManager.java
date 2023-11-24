@@ -252,24 +252,24 @@ public class InfoLetterDataManager implements InfoLetterService {
 
   @Override
   public InfoLetter getInfoLetter(WAPrimaryKey letterPK) {
-    InfoLetter retour;
+    InfoLetter infoLetter;
     try {
-      retour = infoLetterDAO.findByPrimaryKey(letterPK);
+      infoLetter = infoLetterDAO.findByPrimaryKey(letterPK);
     } catch (PersistenceException pe) {
       throw new InfoLetterException(pe);
     }
-    return retour;
+    return infoLetter;
   }
 
   @Override
   public InfoLetterPublicationPdC getInfoLetterPublication(WAPrimaryKey publiPK) {
-    InfoLetterPublicationPdC retour;
+    InfoLetterPublicationPdC classifiedPublic;
     try {
-      retour = new InfoLetterPublicationPdC(infoLetterPublicationDAO.findByPrimaryKey(publiPK));
+      classifiedPublic = new InfoLetterPublicationPdC(infoLetterPublicationDAO.findByPrimaryKey(publiPK));
     } catch (PersistenceException pe) {
       throw new InfoLetterException(pe);
     }
-    return retour;
+    return classifiedPublic;
   }
 
   @Override
@@ -358,7 +358,7 @@ public class InfoLetterDataManager implements InfoLetterService {
 
   @Override
   public Set<String> getEmailsExternalsSuscribers(WAPrimaryKey letterPK) {
-    Set<String> retour = new LinkedHashSet<>();
+    Set<String> emails = new LinkedHashSet<>();
     try (Connection con = openConnection()) {
       InfoLetter letter = getInfoLetter(letterPK);
       String selectQuery =
@@ -369,14 +369,14 @@ public class InfoLetterDataManager implements InfoLetterService {
         //noinspection SqlSourceToSinkFlow
         try (ResultSet rs = selectStmt.executeQuery(selectQuery)) {
           while (rs.next()) {
-            retour.add(rs.getString("email"));
+            emails.add(rs.getString("email"));
           }
         }
       }
     } catch (Exception e) {
       throw new InfoLetterException(e);
     }
-    return retour;
+    return emails;
   }
 
   @Transactional

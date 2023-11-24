@@ -40,10 +40,6 @@ public class InfoLetterPublicationPdC extends InfoLetterPublication
     implements SilverContentInterface {
   private static final long serialVersionUID = -2174573301215680444L;
   public static final String TYPE = "publication";
-  /**
-   * icone d'une publication
-   */
-  private String iconUrl = "infoLetterSmall.gif";
 
   private String silverObjectId;
   private String positions;
@@ -105,7 +101,10 @@ public class InfoLetterPublicationPdC extends InfoLetterPublication
 
   @Override
   public String getIconUrl() {
-    return iconUrl;
+    /*
+     * publication icon
+     */
+    return "infoLetterSmall.gif";
   }
 
   @Override

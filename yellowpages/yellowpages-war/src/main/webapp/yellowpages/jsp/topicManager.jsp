@@ -56,7 +56,7 @@ String id = request.getParameter("Id");
 String profile = request.getParameter("Profile");
 
 //Mise a jour de l'espace
-TopicDetail currentTopic = null;
+TopicDetail currentTopic;
 if (!StringUtil.isDefined(id)) {
     currentTopic = yellowpagesScc.getCurrentTopic();
     if (currentTopic != null) {
@@ -269,10 +269,7 @@ function toAddOrUpdateFolder(action, id) {
 
 	out.println("<br/>");
 
-    if (!id.equals(TRASHCAN_ID))
-    	DisplayContactsHelper.displayContactsAdmin(resources.getIcon("yellowpages.contact"), yellowpagesScc,profile,currentTopic.getContactDetails(), resources.getIcon("yellowpages.contactDelete"), gef, request, session, resources, out);
-    else
-      	DisplayContactsHelper.displayContactsAdmin(resources.getIcon("yellowpages.contact"), yellowpagesScc,profile,currentTopic.getContactDetails(), resources.getIcon("yellowpages.delete"), gef, request, session, resources, out);
+    DisplayContactsHelper.displayContactsAdmin(yellowpagesScc, gef, request, session, resources, out);
 %>
 </view:frame>
 <%

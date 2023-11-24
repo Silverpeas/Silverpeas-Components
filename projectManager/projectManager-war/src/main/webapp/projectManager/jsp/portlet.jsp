@@ -76,10 +76,9 @@ boolean otherActionOnLowerLevel(List tasks, TaskDetail task, int debut)
 ArrayLine fillArrayLine(ArrayLine arrayLine, TaskDetail task, String iconeLiaison, int userId, String role, MultiSilverpeasBundle resource, GraphicElementFactory gef)
 {
 	ArrayCellText cellStatut = arrayLine.addArrayCellText(getStatusIcon(task.getStatut(), resource));
-	cellStatut.setAlignement("center");
-	cellStatut.setCompareOn(new Integer(task.getStatut()));
+	cellStatut.setCompareOn(task.getStatut());
 	ArrayCellText cellChrono = arrayLine.addArrayCellText(task.getChrono());
-	cellChrono.setCompareOn(new Integer(task.getChrono()));
+	cellChrono.setCompareOn(task.getChrono());
 	String nom = "<a href=javascript:onClick=goToTask('"+task.getId()+"')>"+task.getNom()+"</a>";
 
 	if (task.getEstDecomposee() == 1) {
@@ -109,13 +108,13 @@ ArrayLine fillArrayLine(ArrayLine arrayLine, TaskDetail task, String iconeLiaiso
 	cellFin.setCompareOn(task.getDateFin());
 
 	ArrayCellText cellCharge = arrayLine.addArrayCellText(task.getCharge());
-	cellCharge.setCompareOn(Float.valueOf(task.getCharge()));
+	cellCharge.setCompareOn(task.getCharge());
 
 	ArrayCellText cellConsomme = arrayLine.addArrayCellText(task.getConsomme());
-	cellConsomme.setCompareOn(Float.valueOf(task.getConsomme()));
+	cellConsomme.setCompareOn(task.getConsomme());
 
 	ArrayCellText cellRaf = arrayLine.addArrayCellText(task.getRaf());
-	cellRaf.setCompareOn(Float.valueOf(task.getRaf()));
+	cellRaf.setCompareOn(task.getRaf());
 
 
 	return arrayLine;
@@ -177,9 +176,7 @@ out.println(frame.printBefore());
 <%
 
 ArrayPane arrayPane = gef.getArrayPane("actionsList", "Main", request, session);
-arrayPane.setCellsConfiguration(0, 0, 0);
-ArrayColumn arrayColumn1 	= arrayPane.addArrayColumn(resource.getString("projectManager.TacheStatut"));
-arrayColumn1.setAlignement("center");
+arrayPane.addArrayColumn(resource.getString("projectManager.TacheStatut"));
 arrayPane.addArrayColumn(resource.getString("projectManager.TacheNumero"));
 arrayPane.addArrayColumn(resource.getString("projectManager.TacheNom"));
 arrayPane.addArrayColumn(resource.getString("projectManager.TacheResponsable"));

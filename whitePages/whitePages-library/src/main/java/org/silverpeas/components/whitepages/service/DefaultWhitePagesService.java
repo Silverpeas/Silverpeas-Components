@@ -37,7 +37,6 @@ import java.util.TreeSet;
 @Transactional
 public class DefaultWhitePagesService implements WhitePagesService {
 
-  public static final String COMPONENT_NAME = "whitePages";
   @Inject
   private SearchFieldDao searchFieldDao;
 
@@ -61,7 +60,7 @@ public class DefaultWhitePagesService implements WhitePagesService {
   public SortedSet<SearchField> getSearchFields(String instanceId) {
     SortedSet<SearchField> fields = new TreeSet<>(new SearchFieldComparator());
     Set<SearchField> searchFields = searchFieldDao.getSearchFields(instanceId);
-    if (searchFields != null && searchFields.size() > 0) {
+    if (searchFields != null && !searchFields.isEmpty()) {
       fields.addAll(searchFields);
     }
     return fields;

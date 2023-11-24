@@ -29,6 +29,7 @@ import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 
+@SuppressWarnings("deprecation")
 public class Card extends SilverpeasBean {
 
   private static final long serialVersionUID = -3513309887697109085L;
@@ -40,9 +41,9 @@ public class Card extends SilverpeasBean {
   private boolean readOnly = true;
   private UserRecord userRecord;
   private DataRecord cardRecord;
-  private Form userForm;
-  private Form cardViewForm;
-  private Form cardUpdateForm;
+  private transient Form userForm;
+  private transient Form cardViewForm;
+  private transient Form cardUpdateForm;
 
   public Card() {
   }

@@ -110,6 +110,7 @@ public class LoginFilter implements Filter {
         for (final String activeProfile : activeProfiles) {
           if ("admin".equals(activeProfile)) {
             userIsAdmin = true;
+            break;
           }
         }
 

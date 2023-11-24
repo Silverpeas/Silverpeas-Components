@@ -433,7 +433,11 @@
       </form>
     </div>
     <div id="table-view">
-      <view:arrayPane var="${requestScope[mainArrayPaneName]}" routingAddress="ViewTable" export="true" numberLinesPerPage="${currentTable.pagination.pageSize}">
+      <view:arrayPane
+              var="${requestScope[mainArrayPaneName]}"
+              routingAddress="ViewTable"
+              numberLinesPerPage="${currentTable.pagination.pageSize}"
+              export="true">
         <c:forEach var="column" items="${columns}">
           <c:set var="columnName" value="${column.name}"/>
           <c:if test="${column.primaryKey}">

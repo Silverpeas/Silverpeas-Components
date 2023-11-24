@@ -37,7 +37,7 @@ import javax.persistence.Transient;
 @Entity
 @Table(name = "sc_whitepages_searchfields")
 @NamedQuery(name = "whitepages.findByInstanceId",
-    query = "from SearchField where instanceId = :instanceId")
+    query = "select sf from SearchField sf where sf.instanceId = :instanceId")
 public class SearchField implements Serializable {
 
   private static final long serialVersionUID = -2840717090501728479L;
@@ -101,7 +101,7 @@ public class SearchField implements Serializable {
   }
 
   public String getFieldName() {
-    return getFieldId().substring(4, getFieldId().length());
+    return getFieldId().substring(4);
   }
 
   @PrePersist

@@ -160,7 +160,10 @@
     </div>
     <div id="result-set">
       <c:set var="fieldNames" value="${queryResult.fieldNames}"/>
-      <view:arrayPane var="ResultSet${componentId}" routingAddress="ViewResultSet" export="true" numberLinesPerPage="25">
+      <view:arrayPane var="ResultSet${componentId}"
+                      routingAddress="ViewResultSet"
+                      numberLinesPerPage="25"
+                      export="true">
         <c:forEach var="fieldName" items="${fieldNames}">
           <view:arrayColumn title="${fieldName}" compareOn="${(r, i) -> r.getFieldValue(fieldNames[i])}"/>
         </c:forEach>

@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.yellowpages.model;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 import org.silverpeas.core.node.model.NodeDetail;
@@ -30,16 +31,15 @@ import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.contact.model.ContactDetail;
 
 /**
- * This object contains elements which are displayed in a yellowpages Topic
+ * This object contains elements which are displayed in a yellow page Topic
  * @author Nicolas Eysseric
  * @version 1.0
  */
-public class TopicDetail implements java.io.Serializable {
+public class TopicDetail implements Serializable {
 
-  /**
-   *
-   */
-  private static final long serialVersionUID = 1L;
+  public static final String ROOT_ID = NodePK.ROOT_NODE_ID;
+  public static final String BIN_ID = NodePK.BIN_NODE_ID;
+  private static final long serialVersionUID = 2442504458245703839L;
 
   /**
    * A NodeDetail collection representing the path from leaf to root
@@ -47,7 +47,7 @@ public class TopicDetail implements java.io.Serializable {
   private Collection<NodeDetail> path;
 
   /**
-   * the informations of the Topic are in this object
+   * the information of the Topic are in this object
    */
   private NodeDetail nodeDetail;
 
@@ -141,29 +141,5 @@ public class TopicDetail implements java.io.Serializable {
    */
   public void setPath(Collection<NodeDetail> path) {
     this.path = path;
-  }
-
-  /**
-   * Set the detail of this topic
-   * @param nd the topic NodeDetail
-   */
-  public void setNodeDetail(NodeDetail nd) {
-    this.nodeDetail = nd;
-  }
-
-  /**
-   * Set the contact details of each contact containing in this topic
-   * @param pd a ContactDetail Collection
-   */
-  public void setContactDetails(Collection<UserContact> pd) {
-    this.contactDetails = pd;
-  }
-
-  /**
-   * Set the number of contacts in each sub topics
-   * @param nbContactByTopic a int Collection
-   */
-  public void setNbContactByTopic(Collection<Integer> nbContactByTopic) {
-    this.nbContactByTopic = nbContactByTopic;
   }
 }

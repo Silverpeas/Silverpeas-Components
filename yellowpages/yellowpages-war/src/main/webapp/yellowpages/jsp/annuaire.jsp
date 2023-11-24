@@ -27,7 +27,6 @@
 <%@ page import="org.silverpeas.components.yellowpages.model.TopicDetail" %>
 <%@ page import="org.silverpeas.components.yellowpages.model.YellowPagesGroupDetail" %>
 <%@ page import="org.silverpeas.core.admin.component.model.CompoSpace" %>
-<%@ page import="org.silverpeas.core.contact.model.ContactFatherDetail" %>
 <%@ page import="org.silverpeas.core.node.model.NodeDetail" %>
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.board.Board" %>
@@ -36,7 +35,6 @@
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.tabs.TabbedPane" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window" %>
-<%@ page import="java.util.Collection" %>
 <%@ page import="java.util.List" %>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
@@ -50,8 +48,8 @@
 <%!
   private String afficheArbo(List<NodeDetail> tree, String idNodeSelected,
       YellowpagesSessionController yellowpagesScc) {
-    StringBuffer resultat = new StringBuffer();
-    StringBuffer espace;
+    StringBuilder resultat = new StringBuilder();
+    StringBuilder espace;
     for (NodeDetail nodeDetail : tree) {
       String nodeId = nodeDetail.getNodePK().getId();
       if (nodeDetail.isRoot()) {
@@ -59,10 +57,8 @@
             .append(yellowpagesScc.getComponentLabel()).append("</option>");
       } else {
         int nodeLevel = nodeDetail.getLevel();
-        espace = new StringBuffer();
-        for (int j = 0; j < nodeLevel - 1; j++) {
-          espace.append("&nbsp;&nbsp;&nbsp;");
-        }
+        espace = new StringBuilder();
+          espace.append("&nbsp;&nbsp;&nbsp;".repeat(Math.max(0, nodeLevel - 1)));
         resultat.append("<option value=\"").append(nodeId).append("\"");
         if (idNodeSelected.equals(nodeId)) {
           resultat.append("selected");
@@ -75,22 +71,22 @@
   }
 %>
 <%
-  Collection<ContactFatherDetail> contacts = (Collection) request.getAttribute("Contacts");
   TopicDetail currentTopic = (TopicDetail) request.getAttribute("CurrentTopic");
   YellowPagesGroupDetail group = (YellowPagesGroupDetail) request.getAttribute("Group");
   Boolean bPortletMode = (Boolean) request.getAttribute("PortletMode");
-  boolean portletMode = (bPortletMode != null && bPortletMode.booleanValue());
+  boolean portletMode = (bPortletMode != null && bPortletMode);
   String searchCriteria = (String) request.getAttribute("SearchCriteria");
 
   String profile = request.getParameter("Profile");
   String action = request.getParameter("Action");
+  //noinspection unchecked
   List<NodeDetail> tree = (List<NodeDetail>) request.getAttribute("Tree");
 
   if (action == null) {
     action = "GoTo";
   }
 
-  String id = null;
+  String id;
   if (currentTopic != null) {
     id = currentTopic.getNodePK().getId();
   } else {
@@ -112,8 +108,8 @@
     }
 
     function closeWindows() {
-      if (!printWindow.closed && printWindow.name == "printWindow") printWindow.close();
-      if (!contactWindow.closed && contactWindow.name == "contactWindow") contactWindow.close();
+      if (!printWindow.closed && printWindow.name === "printWindow") printWindow.close();
+      if (!contactWindow.closed && contactWindow.name === "contactWindow") contactWindow.close();
     }
 
     function topicGoToSelected() {
@@ -257,20 +253,20 @@
                                           onchange="window.open(this.options[this.selectedIndex].value,'_self')">
 					<option selected><%=resources.getString("Access")%></option>
 					<%
-            for (int i = 0; i < instances.length; i++) {
+                        for (CompoSpace instance : instances) {
 
-              if (!instances[i].getComponentId().equals(yellowpagesScc.getComponentId())) {
-                if (!portletMode) {
-                  out.println("<option value=\"" + m_context + "/Ryellowpages/" +
-                      instances[i].getComponentId() + "/Main\">" + instances[i].getSpaceLabel() +
-                      " - " + instances[i].getComponentLabel() + "</option>");
-                } else {
-                  out.println("<option value=\"" + m_context + "/Ryellowpages/" +
-                      instances[i].getComponentId() + "/portlet\">" + instances[i].getSpaceLabel() +
-                      " - " + instances[i].getComponentLabel() + "</option>");
-                }
-              }
-            }
+                            if (!instance.getComponentId().equals(yellowpagesScc.getComponentId())) {
+                                if (!portletMode) {
+                                    out.println("<option value=\"" + m_context + "/Ryellowpages/" +
+                                            instance.getComponentId() + "/Main\">" + instance.getSpaceLabel() +
+                                            " - " + instance.getComponentLabel() + "</option>");
+                                } else {
+                                    out.println("<option value=\"" + m_context + "/Ryellowpages/" +
+                                            instance.getComponentId() + "/portlet\">" + instance.getSpaceLabel() +
+                                            " - " + instance.getComponentLabel() + "</option>");
+                                }
+                            }
+                        }
           %>
 				</select> </span></td>
           </tr>
@@ -278,18 +274,18 @@
         <!--***************************--></td>
       <% } %>
       <% if (tree.size() > 1) { %>
-      <td><!--Acces aux categories-->
+      <td><!--access to the topics -->
           <span class="selectNS"> <select name="selectTopic"
                                           onchange="topicGoToSelected()">
 					<%=afficheArbo(tree, id, yellowpagesScc)%>
 				</select> </span>
         <!--***************************--></td>
       <% } %>
-      <td width="100%">&nbsp;</td>
+      <td>&nbsp;</td>
     </tr>
   </table>
 </form>
-<!--Description de la categorie-->
+<!--Description of the topic -->
 <%
   String nodeName = null;
   String nodeDesc = null;
@@ -303,9 +299,9 @@
       nodeDesc = WebEncodeHelper.javaStringToHtmlString(nodeDetail.getDescription());
     }
   }
-  if (nodeDesc != null && !nodeDesc.equals("")) {
+  if (nodeDesc != null && !nodeDesc.isEmpty()) {
 %>
-<div align="left">&nbsp;&nbsp;<strong><%=nodeName%>&nbsp;:&nbsp;</strong><%=nodeDesc%>
+<div>&nbsp;&nbsp;<strong><%=nodeName%>&nbsp;:&nbsp;</strong><%=nodeDesc%>
 </div>
 <br/>
 <%
@@ -314,8 +310,7 @@
   out.println(board.printAfter());
   out.println("<br/>");
   DisplayContactsHelper
-      .displayContactsUser(yellowpagesScc, contacts, id, componentLabel, gef, request, session,
-          resources, out);
+      .displayContactsUser(yellowpagesScc, id, gef, request, session, resources, out);
 
   out.println(frame.printAfter());
   out.println(window.printAfter());
@@ -329,7 +324,7 @@
 
 <script type="text/javascript">
   /* declare the module myapp and its dependencies (here in the silverpeas module) */
-  var myapp = angular.module('silverpeas.yellowpages',
+  let myapp = angular.module('silverpeas.yellowpages',
       ['silverpeas.services', 'silverpeas.directives']);
 </script>
 

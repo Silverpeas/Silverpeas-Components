@@ -287,7 +287,7 @@
   <%
     ArrayPane arrayPane = gef.getArrayPane("newsList", "Main", request, session);
     arrayPane.setVisibleLineNumber(1000);
-    arrayPane.setSortableLines(true);
+    arrayPane.setMovableLines(true);
     arrayPane.setTitle(resources.getString("delegatednews.listNews"));
     arrayPane.addArrayColumn(resources.getString("delegatednews.news.title"));
     ArrayColumn column = arrayPane.addArrayColumn(resources.getString("delegatednews.updateDate"));

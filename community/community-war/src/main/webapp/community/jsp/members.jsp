@@ -74,7 +74,11 @@
     <view:window>
       <view:frame>
         <div id="members-list">
-          <view:arrayPane title="${memberListLabel}" var="communityMemberListIdentifier" routingAddress="${componentUriBase}/members" export="true" numberLinesPerPage="25">
+          <view:arrayPane title="${memberListLabel}"
+                          var="communityMemberListIdentifier"
+                          routingAddress="${componentUriBase}/members"
+                          numberLinesPerPage="25"
+                          export="true">
             <view:arrayColumn title="${lastNameLabel}" compareOn="${r -> fn:toLowerCase(r.user.lastName)}"/>
             <view:arrayColumn title="${firstNameLabel}" compareOn="${r -> fn:toLowerCase(r.user.firstName)}"/>
             <c:if test="${adminMustValidateNewMember}">
