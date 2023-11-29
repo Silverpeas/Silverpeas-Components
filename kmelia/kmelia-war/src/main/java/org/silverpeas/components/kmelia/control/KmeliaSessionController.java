@@ -3235,7 +3235,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     Form form = null;
     try {
       PublicationTemplateImpl pubTemplate = (PublicationTemplateImpl) getTemplateForPublications();
-      if (pubTemplate != null) {
+      if (pubTemplate != null && pubTemplate.isSearchable()) {
         form = pubTemplate.getSearchForm();
         DataRecord emptyRecord = pubTemplate.getRecordSet().getEmptyRecord();
         form.setData(emptyRecord);
