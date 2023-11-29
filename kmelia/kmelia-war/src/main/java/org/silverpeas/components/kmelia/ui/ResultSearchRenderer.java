@@ -25,24 +25,25 @@ import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RecordSet;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.web.search.AbstractResultDisplayer;
-import org.silverpeas.core.web.search.SearchResultContentVO;
-import org.silverpeas.core.contribution.publication.service.PublicationService;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
+import org.silverpeas.core.template.SilverpeasTemplate;
+import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.util.logging.SilverLogger;
-import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.template.SilverpeasTemplateFactory;
-import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
+import org.silverpeas.core.web.search.AbstractResultDisplayer;
+import org.silverpeas.core.web.search.SearchResultContentVO;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -83,26 +84,26 @@ public class ResultSearchRenderer extends AbstractResultDisplayer {
   @Override
   public String getResultContent(SearchResultContentVO searchResult) {
     String result = "";
-
     // Retrieve the event detail from silverResult
     GlobalSilverResult silverResult = searchResult.getGsr();
-    String id = silverResult.isLinked() ? silverResult.getLinkedResourceId() : silverResult.getId();
-    PublicationPK pubPK = new PublicationPK(id);
-    PublicationDetail pubDetail = null;
-    try {
-      pubDetail = getPublicationService().getDetail(pubPK);
-    } catch (Exception e) {
-      SilverLogger.getLogger(this)
-          .warn("Unable to load publication {0}: {1}", pubPK.toString(), e.getMessage());
-    }
-    // Create a SilverpeasTemplate
-    SilverpeasTemplate template = getNewTemplate();
-    this.setCommonAttributes(searchResult, template);
-
-    if (pubDetail != null) {
-      setSpecificAttributes(searchResult, silverResult, pubDetail, template);
-      result = template.applyFileTemplate(TEMPLATE_FILENAME + '_' + DisplayI18NHelper.
-          getDefaultLanguage());
+    if (!NodeDetail.TYPE.equals(silverResult.getType())) {
+      String id = silverResult.isLinked() ? silverResult.getLinkedResourceId() : silverResult.getId();
+      PublicationPK pubPK = new PublicationPK(id);
+      PublicationDetail pubDetail = null;
+      try {
+        pubDetail = getPublicationService().getDetail(pubPK);
+      } catch (Exception e) {
+        SilverLogger.getLogger(this)
+            .warn("Unable to load publication {0}: {1}", pubPK.toString(), e.getMessage());
+      }
+      if (pubDetail != null) {
+        // Create a SilverpeasTemplate
+        SilverpeasTemplate template = getNewTemplate();
+        this.setCommonAttributes(searchResult, template);
+        setSpecificAttributes(searchResult, silverResult, pubDetail, template);
+        result = template.applyFileTemplate(TEMPLATE_FILENAME + '_' + DisplayI18NHelper.
+            getDefaultLanguage());
+      }
     }
     return result;
   }

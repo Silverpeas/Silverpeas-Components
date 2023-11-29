@@ -76,23 +76,18 @@ public class ResultSearchRenderer extends AbstractResultDisplayer implements Res
   @Override
   public String getResultContent(SearchResultContentVO searchResult) {
     String result = "";
-
     // Retrieve the event detail from silverResult
     final GlobalSilverResult silverResult = searchResult.getGsr();
-    final String id = silverResult.isLinked() ? silverResult.getLinkedResourceId() :
-        silverResult.getId();
+    final String id = silverResult.isLinked() ? silverResult.getLinkedResourceId() : silverResult.getId();
     final CalendarEvent event = CalendarEvent.getById(id);
-    // Create a SilverpeasTemplate
-    final SilverpeasTemplate template = getNewTemplate();
-    this.setCommonAttributes(searchResult, template);
-
     if (event != null) {
+      // Create a SilverpeasTemplate
+      final SilverpeasTemplate template = getNewTemplate();
+      this.setCommonAttributes(searchResult, template);
       MultiSilverpeasBundle settings = searchResult.getSettings();
       setEventAttributes(event, template, settings);
-
       final String language = DisplayI18NHelper.getDefaultLanguage();
       result = template.applyFileTemplate(TEMPLATE_FILENAME + '_' + language);
-
     } else {
       SilverLogger.getLogger(this).warn(failureOnGetting("event", silverResult.getId()));
     }
