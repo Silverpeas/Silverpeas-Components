@@ -57,7 +57,7 @@
 <script language="JavaScript">
 
 function B_SELECTUSER_ONCLICK() {
-   location.href = "<%=routerUrl%>createQuery";
+   sp.formRequest("<%=routerUrl%>createQuery").byPostMethod().submit();
 }
 
 /*****************************************************************************/

@@ -61,7 +61,7 @@ if(request.getAttribute("isAdmin") != null){
 if(isAdmin){
 %>
 function B_CREATE_ONCLICK() {
-	location.href = "<%=routerUrl%>createQuery";
+	sp.formRequest("<%=routerUrl%>createQuery").byPostMethod().submit();
 }
 
 function listCheckedCard(nbCard) {
