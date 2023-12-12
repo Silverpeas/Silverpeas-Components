@@ -296,6 +296,7 @@ $(document).ready(function() {
       actionDiv.append($('<input>').attr('name', 'status').attr('value', questionToBeDisplayed.status).attr('type', 'hidden'));
       questionDiv.append(actionDiv);
     </c:if>
+    applyTokenSecurity(li);
     return li;
   }
 
@@ -340,6 +341,7 @@ $(document).ready(function() {
     answerDateBlock = $('<span>').addClass('answerDate').text(' - ' + answer.creationDate);
     answerAuthorBlock.append(answerDateBlock);
     answerBlock.append(answerAuthorBlock);
+    applyTokenSecurity(answerBlock);
     return answerBlock;
   }
 
@@ -478,7 +480,7 @@ function deleteConfirmR(replyId, questionId) {
 function confirmDeleteCategory(categoryId) {
   var label = "<fmt:message key="questionReply.confirmDeleteCategory" />";
   jQuery.popup.confirm(label, function() {
-		window.location.href=("DeleteCategory?CategoryId=" + categoryId + "");
+		sp.formRequest("DeleteCategory?CategoryId=" + categoryId + "").byPostMethod().submit();
 	});
 }
 
