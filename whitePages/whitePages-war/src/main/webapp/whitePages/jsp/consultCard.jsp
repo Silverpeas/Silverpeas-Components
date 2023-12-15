@@ -123,14 +123,18 @@ function openSPWindow(fonction,windowName){
 	}
 
 /*****************************************************************************/
-	function B_UPDATE_ONCLICK(idCard) {
-		 theURL = "<%=routerUrl%>updateCard?userCardId="+idCard;
-         winName = "updateCard";
-         larg ="600";
-         haut = "400";
-         windowParams = "scrollbars=yes, resizable, alwaysRaised";
-         dico = SP_openWindow(theURL, winName, larg, haut, windowParams);
-	}
+function B_UPDATE_ONCLICK(idCard) {
+  const winName = "updateCard";
+  const larg = "600";
+  const haut = "400";
+  const windowParams = "scrollbars=yes, resizable, alwaysRaised";
+  SP_openWindow({
+    url : '<%=routerUrl%>updateCard',
+    params : {
+      "userCardId" : idCard
+    }
+  }, winName, larg, haut, windowParams);
+}
 
 /*****************************************************************************/
 	function B_DELETE_ONCLICK(idCard) {
