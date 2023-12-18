@@ -108,6 +108,10 @@ function URLENCODE(URL){
   return encodeURIComponent(URL);
 }
 
+function openWindow(url, name) {
+  return SP_openWindow(url, name, 700, 200, "directories=0,menubar=0,toolbar=0,alwaysRaised");
+}
+
 /**********************************************/
 
 function B_RETOUR_ONCLICK() {
@@ -143,10 +147,14 @@ function folderAdd(id, path) {
         window.pageAddWindow.close();
     }
 
-    url = "addRep.jsp?Id="+id+"&Path="+path+"&Action=View";
-    windowName = "repAddWindow";
-    windowParams = "directories=0,menubar=0,toolbar=0,height=200,width=700,alwaysRaised";
-    repAddWindow = open(url, windowName, windowParams, false);
+    repAddWindow = openWindow({
+      url : 'addRep.jsp',
+      params : {
+        'Id' : id,
+        'Path' : path,
+        'Action' : 'View'
+      }
+    }, "repAddWindow");
 }
 
 /**********************************************/
@@ -166,10 +174,15 @@ function pageAdd(path, nomsite) {
     if (window.pageAddWindow != null) {
         window.pageAddWindow.close();
     }
-    url = "addPage.jsp?Action=View&Path="+URLENCODE(path)+"&nameSite="+URLENCODE(nomsite)+"&id=<%=id%>";
-    windowName = "pageAddWindow";
-    windowParams = "directories=0,menubar=0,toolbar=0,height=200,width=700,alwaysRaised";
-    pageAddWindow = open(url, windowName, windowParams, false);
+    pageAddWindow = openWindow({
+      url : 'addPage.jsp',
+      params : {
+        'id' : '<%=id%>',
+        'Path' : path,
+        'Action' : 'View',
+        'nameSite' : nomsite
+      }
+    }, "pageAddWindow");
 }
 
 /**********************************************/
@@ -185,10 +198,12 @@ function uploadFile(path) {
     if (window.pageAddWindow != null)
         window.pageAddWindow.close();
 
-    url = "uploadFile.jsp?Path="+URLENCODE(path);
-    windowName = "uploadFileWindow";
-    windowParams = "directories=0,menubar=0,toolbar=0,height=200,width=700,alwaysRaised";
-    uploadFileWindow = open(url, windowName, windowParams, false);
+    uploadFileWindow = openWindow({
+      url : 'uploadFile.jsp',
+      params : {
+        'Path' : path
+      }
+    }, "uploadFileWindow");
 }
 
 
@@ -206,10 +221,15 @@ function renameFolder(id, path, name) {
     if (window.pageAddWindow != null)
         window.pageAddWindow.close();
 
-    url = "updateRep.jsp?Id="+id+"&Path="+path+"&Action=View&Name="+name;
-    windowName = "repUpdateWindow";
-    windowParams = "directories=0,menubar=0,toolbar=0,height=200,width=700,alwaysRaised";
-    repUpdateWindow = open(url, windowName, windowParams, false);
+    repUpdateWindow = openWindow({
+      url : 'updateRep.jsp',
+      params : {
+        'Id' : id,
+        'Path' : path,
+        'Action' : 'View',
+        'Name' : name
+      }
+    }, "repUpdateWindow");
 }
 
 /**********************************************/
@@ -266,10 +286,15 @@ function renamePage(id, path, name) {
     if (window.pageAddWindow != null)
         window.pageAddWindow.close();
 
-    url = "updatePage.jsp?Id="+id+"&Path="+path+"&Action=View&Name="+name;
-    windowName = "pageUpdateWindow";
-    windowParams = "directories=0,menubar=0,toolbar=0,height=200,width=700,alwaysRaised";
-    pageUpdateWindow = open(url, windowName, windowParams, false);
+    pageUpdateWindow = openWindow({
+      url : 'updatePage.jsp',
+      params : {
+        'Id' : id,
+        'Path' : path,
+        'Action' : 'View',
+        'Name' : name
+      }
+    }, "pageUpdateWindow");
 
 }
 
