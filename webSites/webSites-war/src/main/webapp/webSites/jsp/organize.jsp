@@ -151,12 +151,18 @@ function topicAdd(fatherId) {
         topicAddWindow.close();
 
     path = document.liste.Path.value;
-    url = "addTopic.jsp?Id="+fatherId+"&Path="+breakSpace(path)+"&Action=View";
     windowName = "topicAddWindow";
     larg = "670";
     haut = "270";
     windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
-    topicAddWindow = SP_openWindow(url, windowName, larg , haut, windowParams);
+    topicAddWindow = SP_openWindow({
+      url : 'addTopic.jsp',
+      params : {
+        'Id' : fatherId,
+        'Path' : path,
+        'Action' : 'View'
+      }
+    }, windowName, larg , haut, windowParams);
 }
 
 /***************************************************************************/
@@ -167,12 +173,17 @@ function topicUpdate(id) {
 
     document.liste.ChildId.value = id;
     path = document.liste.Path.value;
-    url = "updateTopic.jsp?ChildId="+id+"&Path="+breakSpace(path);
     windowName = "topicUpdateWindow";
     larg = "670";
     haut = "270";
     windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
-    topicUpdateWindow = SP_openWindow(url, windowName, larg , haut, windowParams);
+    topicUpdateWindow = SP_openWindow({
+      url : 'updateTopic.jsp',
+      params : {
+        'ChildId' : id,
+        'Path' : path
+      }
+    }, windowName, larg , haut, windowParams);
 }
 
 /***************************************************************************/

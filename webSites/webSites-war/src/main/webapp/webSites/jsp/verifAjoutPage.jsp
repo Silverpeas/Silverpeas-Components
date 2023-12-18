@@ -2,7 +2,8 @@
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.tabs.TabbedPane" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window" %>
-<%@ page import="org.silverpeas.core.web.http.HttpRequest" %><%--
+<%@ page import="org.silverpeas.core.web.http.HttpRequest" %>
+<%@ page import="org.silverpeas.core.web.token.SynchronizerTokenService" %><%--
 
     Copyright (C) 2000 - 2022 Silverpeas
 
@@ -67,6 +68,8 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
                     "<BODY bgcolor=\"white\" topmargin=\"15\" leftmargin=\"20\" onLoad=\"submit_form('"+rep+"')\">"+
                     "<form name=\"verification\" action=\"addPage.jsp\" method=\"POST\">"+
+                    "<input type=\"hidden\" name=\"" + SynchronizerTokenService.SESSION_TOKEN_KEY + "\" value=\""+request.getParameter(SynchronizerTokenService.SESSION_TOKEN_KEY)+"\">"+
+                    "<input type=\"hidden\" name=\"" + SynchronizerTokenService.NAVIGATION_TOKEN_KEY + "\" value=\""+request.getParameter(SynchronizerTokenService.NAVIGATION_TOKEN_KEY)+"\">"+
                     "<input type=\"hidden\" name=\"Action\" value=\""+action+"\">"+
                     "<input type=\"hidden\" name=\"Path\" value=\""+currentPath+"\">"+
                     "<input type=\"hidden\" name=\"nomPage\" value=\""+nomPage+"\">"+

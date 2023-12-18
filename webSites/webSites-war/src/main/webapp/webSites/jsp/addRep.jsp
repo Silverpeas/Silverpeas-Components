@@ -170,7 +170,15 @@ else if (action.equals("Add")) {
 <head>
 <script type="text/javascript">
 function verifServer(id, path, name) {
-  window.opener.location.replace("verif.jsp?Action=addFolder&Id="+id+"&Path="+path+"&name="+name);
+  window.opener.sp.formRequest("verif.jsp")
+      .withParams({
+        'Action' : 'addFolder',
+        'Id' : id,
+        'Path' : path,
+        'name' : name
+      })
+      .byPostMethod()
+      .submit();
   window.close();
 }
 </script>
