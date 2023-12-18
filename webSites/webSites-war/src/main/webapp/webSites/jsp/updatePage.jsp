@@ -182,7 +182,16 @@ function sendData() {
       <HEAD>
       <script language="Javascript">
           function verifServer(id, path, name, newname) {
-                window.opener.location.replace("verif.jsp?Action=renamePage&Id="+id+"&Path="+path+"&name="+name+"&newName="+newname);
+                window.opener.sp.formRequest("verif.jsp")
+                    .withParams({
+                      'Action' : 'renamePage',
+                      'Id' : id,
+                      'Path' : path,
+                      'name' : name,
+                      'newName' : newname
+                    })
+                    .byPostMethod()
+                    .submit();
               window.close();
           }
       </script>

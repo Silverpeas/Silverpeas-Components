@@ -31,6 +31,7 @@
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window" %>
 <%@ page import="org.silverpeas.core.web.http.HttpRequest" %>
+<%@ page import="org.silverpeas.core.web.token.SynchronizerTokenService" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%
@@ -74,6 +75,8 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
                     "<BODY bgcolor=\"white\" topmargin=\"15\" leftmargin=\"20\" onLoad=\"submit_form('"+rep+"')\">"+
                     "<form name=\"verification\" action=\"design.jsp\" method=\"POST\">"+
+                    "<input type=\"hidden\" name=\"" + SynchronizerTokenService.SESSION_TOKEN_KEY + "\" value=\""+request.getParameter(SynchronizerTokenService.SESSION_TOKEN_KEY)+"\">"+
+                    "<input type=\"hidden\" name=\"" + SynchronizerTokenService.NAVIGATION_TOKEN_KEY + "\" value=\""+request.getParameter(SynchronizerTokenService.NAVIGATION_TOKEN_KEY)+"\">"+
                     "<input type=\"hidden\" name=\"Action\" value=\""+action+"\">"+
                     "<input type=\"hidden\" name=\"Id\" value=\""+id+"\">"+
                     "<input type=\"hidden\" name=\"Path\" value=\""+currentPath+"\">"+

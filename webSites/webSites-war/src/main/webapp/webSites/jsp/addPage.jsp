@@ -200,7 +200,15 @@ else if (action.equals("verif")) { //vient de addPage
       <HEAD>
       <script type="text/javascript">
           function verifServer(path, name, nameSite, id) {
-              window.opener.location.replace("verifAjoutPage.jsp?Path="+URLENCODE(path)+"&nomPage="+URLENCODE(name)+"&nameSite="+URLENCODE(nameSite)+"&id="+id);
+              window.opener.sp.formRequest("verifAjoutPage.jsp")
+                  .withParams({
+                    'Path' : path,
+                    'nomPage' : name,
+                    'nameSite' : nameSite,
+                    'id' : id
+                  })
+                  .byPostMethod()
+                  .submit();
               window.close();
           }
       </script>
@@ -216,6 +224,7 @@ else if (action.equals("addPage")) { //vient de verifAjoutPage
 
     //SERVER OK, AJOUT PAGE
     String name = (String) request.getParameter("nomPage"); //vient de verifAjoutPage
+    String code = "<HTML><HEAD></HEAD><BODY></BODY></HTML>";
     /* Creer une nouvelle page sur le serveur */
     scc.createFile(path, name, code);
 %>
@@ -238,9 +247,3 @@ else if (action.equals("addPage")) { //vient de verifAjoutPage
 }
 
 %>
-
-	<script type="text/javascript">
-       function URLENCODE(URL){
-         return encodeURIComponent(URL);
-        }
-	</script>
