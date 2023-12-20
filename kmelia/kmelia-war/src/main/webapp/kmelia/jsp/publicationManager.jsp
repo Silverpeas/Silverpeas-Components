@@ -85,7 +85,7 @@
     List<NodeDetail> path = (List<NodeDetail>) request.getAttribute("Path");
     boolean draftOutTaxonomyOK = (Boolean) request.getAttribute("TaxonomyOK");
   	boolean draftOutValidatorsOK = (Boolean) request.getAttribute("ValidatorsOK");
-    boolean isPublicationClassifiedOnPDC = (Boolean) request.getAttribute("isPublicationClassifiedOnPDC");
+    boolean isPublicationClone = false;
 
     PublicationDetail volatilePublication = (PublicationDetail) request.getAttribute("VolatilePublication");
     Form extraForm = (Form) request.getAttribute("ExtraForm");
@@ -129,6 +129,7 @@
       id = kmeliaPublication.getId();
       
       pubDetail = kmeliaPublication.getDetail();
+      isPublicationClone = !"-1".equals(pubDetail.getCloneId()) && !StringUtil.isDefined(pubDetail.getCloneStatus());
       thumbnail = pubDetail.getThumbnail();
       ownerDetail = kmeliaPublication.getCreator();
 
@@ -390,7 +391,7 @@
           errorNb++;
         });
 
-        <% if(!kmaxMode) { %>
+        <% if(!kmaxMode && !isPublicationClone) { %>
         <view:pdcValidateClassification errorCounter="errorNb" errorMessager="errorMsg"/>
         <% } %>
         
@@ -756,7 +757,7 @@
         if ("New".equals(action)) { %>
           	<view:pdcNewContentClassification componentId="<%= componentId %>" nodeId="<%= kmeliaScc.getCurrentFolderId() %>"/>
     <%  } else { %>
-    	<% if (!"-1".equals(pubDetail.getCloneId()) && !StringUtil.isDefined(pubDetail.getCloneStatus())) { %>
+    	<% if (isPublicationClone) { %>
     		<!-- positions are only editable on original publication -->
     		<view:pdcClassification componentId="<%= componentId %>" contentId="<%= pubDetail.getCloneId() %>" editable="false" />
     	<% } else { %>
