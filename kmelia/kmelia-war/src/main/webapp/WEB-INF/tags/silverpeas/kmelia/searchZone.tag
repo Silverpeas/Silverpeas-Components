@@ -43,7 +43,9 @@
   SearchContext searchContext = (SearchContext) request.getAttribute("SearchContext");
   String query = "";
   PagesContext formContext = new PagesContext();
-  formContext.setLanguage(User.getCurrentRequester().getUserPreferences().getLanguage());
+  final User currentRequester = User.getCurrentRequester();
+  formContext.setUserId(currentRequester.getId());
+  formContext.setLanguage(currentRequester.getUserPreferences().getLanguage());
   if (searchContext != null) {
     query = searchContext.getQuery();
     formContext = searchContext.getFormContext();
