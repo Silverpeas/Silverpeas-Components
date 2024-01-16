@@ -54,8 +54,6 @@ String    rssURL    = (String) request.getAttribute("RSSUrl");
 List    events    = (List) request.getAttribute("Events");
 String    dateCal   = (String) request.getAttribute("DateCalendar");
 Boolean   isPdcUsed = (Boolean) request.getAttribute("IsUsePdc");
-Boolean   isDraftVisible  = (Boolean) request.getAttribute("IsDraftVisible");
-int nbPostDisplayed   = (Integer) request.getAttribute("NbPostDisplayed");
 WallPaper wallPaper = (WallPaper) request.getAttribute("WallPaper");
 StyleSheet styleSheet = (StyleSheet) request.getAttribute("StyleSheet");
 Date dateCalendar = DateUtil.parse(dateCal);
@@ -170,12 +168,12 @@ if (!m_MainSessionCtrl.getCurrentUserDetail().isAccessGuest() && isUserSubscribe
     </div>
     <div id="postsList">
       <%
-          Iterator it = (Iterator) posts.iterator();
+          Iterator<PostDetail> it = posts.iterator();
 
           java.util.Calendar cal = GregorianCalendar.getInstance();
-          while (nbPostDisplayed > 0 && it.hasNext())
+          while (it.hasNext())
           {
-          PostDetail post = (PostDetail) it.next();
+          PostDetail post = it.next();
           String categoryId = "";
           if (post.getCategory() != null) {
             categoryId = post.getCategory().getNodePK().getId();
@@ -190,18 +188,7 @@ if (!m_MainSessionCtrl.getCurrentUserDetail().isAccessGuest() && isUserSubscribe
           	blocClass = "postDraft";
           	status = resource.getString("GML.draft");
           }
-          boolean visible = true;
-          if (post.getPublication().isDraft() && !post.getPublication().getCreatorId().equals(userId)) {
-           // le billet en mode brouillon n'est pas visible si ce n'est pas le createur
-           visible = false;
-           // sauf si le mode "brouillon visible" est actif et que le user est bloggeur
-           if (isDraftVisible && (SilverpeasRole.ADMIN.equals(SilverpeasRole.fromString(profile)) || SilverpeasRole.PUBLISHER
-               .equals(SilverpeasRole.fromString(profile)))) {
-            visible = true;
-           }
-          }
 
-          if (visible) {
           %>
       <div id="post<%=postId%>" class="post <%=blocClass%>">
         <div class="titreTicket"> <a href="<%="ViewPost?PostId=" + postId%>"><%=WebEncodeHelper
@@ -246,8 +233,6 @@ if (!m_MainSessionCtrl.getCurrentUserDetail().isAccessGuest() && isUserSubscribe
       </div>
       <%
           // Fin du ticket
-          nbPostDisplayed --;
-          }
          }
         %>
     </div>
