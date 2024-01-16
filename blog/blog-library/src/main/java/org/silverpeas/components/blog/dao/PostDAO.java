@@ -25,25 +25,37 @@ package org.silverpeas.components.blog.dao;
 
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.util.Pair;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
+import java.util.Map;
+
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery.select;
+import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery.streamBySplittingOn;
 
 public class PostDAO {
 
   private static final FastDateFormat FORMATTER = FastDateFormat.getInstance("yyyy/MM/dd");
+  private static final String BLOG_POST_TABLE_NAME = "SC_Blog_Post";
+  private static final String PUB_ID = "pubId";
+  private static final String DATE_EVENT = "dateEvent";
+  private static final String EVENT_PERIOD_CLAUSE = "dateEvent >= ? and dateEvent <= ?";
+  private static final String INSTANCE_ID_CLAUSE = "instanceId = ?";
+  private static final String DESC = " DESC";
+  private static final String ORDER_BY_DATE = DATE_EVENT + DESC;
+  private static final String[] ORDER_BY_DATE_AND_PUB_ID = {DATE_EVENT + DESC, PUB_ID + DESC};
 
   private PostDAO () {
   }
 
-  public static void createDateEvent(Connection con, String pubId, Date dateEvent,
+  public static void create(Connection con, String pubId, Date dateEvent,
       String instanceId) throws SQLException {
     // Création
     PreparedStatement prepStmt = null;
@@ -62,28 +74,18 @@ public class PostDAO {
     }
   }
 
-  public static Date getDateEvent(Connection con, String pubId) throws SQLException {
-    // récupérer la date
-    String query = "select dateEvent from SC_Blog_Post where pubId = ? ";
-    Date dateEvent = new Date();
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    try {
-      prepStmt = con.prepareStatement(query);
-      prepStmt.setInt(1, Integer.parseInt(pubId));
-      rs = prepStmt.executeQuery();
-      while (rs.next()) {
-        // recuperation de la date
-        dateEvent = new Date(Long.parseLong(rs.getString("dateEvent")));
-      }
-    } finally {
-      // fermeture
-      DBUtil.close(rs, prepStmt);
-    }
-    return dateEvent;
+  public static Map<String, Date> getEventDateIndexedByPost(final Collection<String> pubIds)
+      throws SQLException {
+    return streamBySplittingOn(pubIds,
+            idBatch -> select(PUB_ID + ", dateEvent")
+                .from(BLOG_POST_TABLE_NAME)
+                .where(PUB_ID)
+                .in(idBatch.stream().map(Integer::parseInt).collect(toList()))
+                .execute(r -> Pair.of(r.getString(1), new Date(Long.parseLong(r.getString(2))))))
+        .collect(toMap(Pair::getFirst, Pair::getSecond));
   }
 
-  public static void deleteDateEvent(Connection con, String pubId) throws SQLException {
+  public static void delete(Connection con, String pubId) throws SQLException {
     PreparedStatement prepStmt = null;
     try {
       String query = "delete from SC_Blog_Post where pubId = ? ";
@@ -96,7 +98,7 @@ public class PostDAO {
     }
   }
 
-  public static void updateDateEvent(Connection con, String pubId, Date dateEvent)
+  public static void update(Connection con, String pubId, Date dateEvent)
       throws SQLException {
     PreparedStatement prepStmt = null;
     try {
@@ -113,76 +115,33 @@ public class PostDAO {
     }
   }
 
-  public static Collection<String> getAllEvents(Connection con, String instanceId)
+  public static Collection<String> getAllPostIds(Connection con, String instanceId)
       throws SQLException {
-    // récupérer les derniers posts par date d'évènement
-    List<String> listEvents = new ArrayList<>();
-    String query =
-        "select pubId from SC_Blog_Post where instanceId = ? order by dateEvent DESC, pubId DESC";
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    try {
-      prepStmt = con.prepareStatement(query);
-      prepStmt.setString(1, instanceId);
-      rs = prepStmt.executeQuery();
-      while (rs.next()) {
-        String pubId = String.valueOf(rs.getInt("pubId"));
-        listEvents.add(pubId);
-      }
-    } finally {
-      // fermeture
-      DBUtil.close(rs, prepStmt);
-    }
-    return listEvents;
+    return select(PUB_ID)
+        .from(BLOG_POST_TABLE_NAME)
+        .where(INSTANCE_ID_CLAUSE, instanceId)
+        .orderBy(ORDER_BY_DATE_AND_PUB_ID)
+        .executeWith(con, r -> String.valueOf(r.getInt(PUB_ID)));
   }
 
-  public static Collection<Date> getAllDateEvents(Connection con, String instanceId)
+  public static Collection<Date> getAllEventDates(Connection con, String instanceId)
       throws SQLException {
-    ArrayList<Date> dateEvents = null;
-    String query =
-        "select dateEvent from SC_Blog_Post where instanceId = ? order by dateEvent DESC";
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    try {
-      prepStmt = con.prepareStatement(query);
-      prepStmt.setString(1, instanceId);
-      rs = prepStmt.executeQuery();
-      dateEvents = new ArrayList<>();
-      while (rs.next()) {
-        dateEvents.add(new Date(Long.parseLong(rs.getString("dateEvent"))));
-      }
-    } finally {
-      // fermeture
-      DBUtil.close(rs, prepStmt);
-    }
-    return dateEvents;
+    return select("DISTINCT " + DATE_EVENT)
+        .from(BLOG_POST_TABLE_NAME)
+        .where(INSTANCE_ID_CLAUSE, instanceId)
+        .orderBy(ORDER_BY_DATE)
+        .executeWith(con, r -> new Date(Long.parseLong(r.getString(DATE_EVENT))));
   }
 
-  public static Collection<String> getEventsByDates(Connection con, String instanceId,
+  public static Collection<String> getPostInRange(Connection con, String instanceId,
       String beginDate, String endDate) throws SQLException, ParseException {
-    // récupérer les posts par date d'évènement entre 2 dates
-    ArrayList<String> listEvents = null;
-
-    String query =
-        "select pubId from SC_Blog_Post where instanceId = ? and dateEvent >= ? and dateEvent <= " +
-            "? order by dateEvent DESC";
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    try {
-      prepStmt = con.prepareStatement(query);
-      prepStmt.setString(1, instanceId);
-      prepStmt.setString(2, Long.toString((FORMATTER.parse(beginDate)).getTime()));
-      prepStmt.setString(3, Long.toString((FORMATTER.parse(endDate)).getTime()));
-      rs = prepStmt.executeQuery();
-      listEvents = new ArrayList<>();
-      while (rs.next()) {
-        String pubId = "" + rs.getInt("pubId");
-        listEvents.add(pubId);
-      }
-    } finally {
-      // fermeture
-      DBUtil.close(rs, prepStmt);
-    }
-    return listEvents;
+    return select(PUB_ID)
+        .from(BLOG_POST_TABLE_NAME)
+        .where(INSTANCE_ID_CLAUSE, instanceId)
+        .and(EVENT_PERIOD_CLAUSE,
+            Long.toString(FORMATTER.parse(beginDate).getTime()),
+            Long.toString(FORMATTER.parse(endDate).getTime()))
+        .orderBy(ORDER_BY_DATE_AND_PUB_ID)
+        .executeWith(con, r -> String.valueOf(r.getInt(PUB_ID)));
   }
 }

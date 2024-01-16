@@ -35,7 +35,6 @@ import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.Collection;
-import java.util.Date;
 import java.util.Optional;
 
 /**
@@ -57,26 +56,29 @@ public interface BlogService extends ApplicationService {
 
   void updatePost(final PostDetail post, final PdcClassification classification);
 
-  void deletePost(String postId, String instanceId);
+  void deletePost(String instanceId, String postId);
+
+  Collection<PostDetail> getLastPosts(String instanceId, final BlogFilters filters);
 
   Collection<PostDetail> getAllPosts(String instanceId);
 
-  Collection<PostDetail> getAllValidPosts(String instanceId, int nbReturned);
+  Collection<PostDetail> getLastValidPosts(String instanceId, BlogFilters filters);
 
-  Date getDateEvent(String pubId);
+  Collection<PostDetail> getPostsByCategory(String instanceId, String categoryId,
+      final BlogFilters filters);
 
-  Collection<PostDetail> getPostsByCategory(String categoryId, String instanceId);
+  Collection<PostDetail> getPostsByArchive(String instanceId, String beginDate, String endDate,
+      final BlogFilters filters);
 
-  Collection<PostDetail> getPostsByArchive(String beginDate, String endDate,
-          String instanceId);
+  Collection<PostDetail> getPostsByEventDate(String instanceId, String date,
+      final BlogFilters filters);
 
-  Collection<PostDetail> getPostsByDate(String date, String instanceId);
-
-  Collection<PostDetail> getResultSearch(String word, String userId, String instanceId);
+  Collection<PostDetail> getResultSearch(String instanceId, String word, String userId,
+      final BlogFilters filters);
 
   void createCategory(final Category category);
 
-  void deleteCategory(String categoryId, String instanceId);
+  void deleteCategory(String instanceId, String categoryId);
 
   void updateCategory(final Category category);
 

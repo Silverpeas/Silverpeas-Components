@@ -30,6 +30,7 @@ import org.silverpeas.components.blog.model.Archive;
 import org.silverpeas.components.blog.model.BlogRuntimeException;
 import org.silverpeas.components.blog.model.Category;
 import org.silverpeas.components.blog.model.PostDetail;
+import org.silverpeas.components.blog.service.BlogFilters;
 import org.silverpeas.components.blog.service.BlogService;
 import org.silverpeas.components.blog.service.BlogServiceFactory;
 import org.silverpeas.core.NotFoundException;
@@ -134,14 +135,30 @@ public final class BlogSessionController extends AbstractComponentSessionControl
     return accessController;
   }
 
-  public Collection<PostDetail> lastPosts() {
+  public String getFlag() {
+    String flag = SilverpeasRole.USER.toString();
+    for (String profile : getUserRoles()) {
+      if (SilverpeasRole.ADMIN.isInRole(profile)) {
+        return profile;
+      }
+      if (SilverpeasRole.PUBLISHER.isInRole(profile)) {
+        flag = profile;
+      }
+    }
+    return flag;
+  }
+
+  public Collection<PostDetail> lastPosts(final int limit) {
     // mettre à jour les variables currentBeginDate et currentEndDate
     Calendar calendar = Calendar.getInstance();
     calendar.setTime(new Date());
     setMonthFirstDay(calendar);
     setMonthLastDay(calendar);
+    return getBlogService().getLastPosts(getComponentId(), getFilters().withMaxResult(limit));
+  }
 
-    return getBlogService().getAllPosts(getComponentId());
+  private BlogFilters getFilters() {
+    return new BlogFilters(isDraftVisibleForCurrentUser()).withCreatorId(getUserId());
   }
 
   public Collection<PostDetail> lastValidPosts() {
@@ -150,8 +167,8 @@ public final class BlogSessionController extends AbstractComponentSessionControl
     calendar.setTime(new Date());
     setMonthFirstDay(calendar);
     setMonthLastDay(calendar);
-
-    return getBlogService().getAllValidPosts(getComponentId(), DEFAULT_POST_COUNT);
+    return getBlogService().getLastValidPosts(getComponentId(),
+        getFilters().withMaxResult(DEFAULT_POST_COUNT));
   }
 
   private void setMonthFirstDay(Calendar calendar) {
@@ -165,17 +182,18 @@ public final class BlogSessionController extends AbstractComponentSessionControl
     currentEndDate.setTime(calendar.getTime());
   }
 
-  public Collection<PostDetail> postsByCategory(String categoryId) {
+  public Collection<PostDetail> postsByCategory(String categoryId, int limit) {
     // rechercher les billets de la catégorie
     if ("0".equals(categoryId)) {
       // on veux arriver sur l'accueil
-      return lastPosts();
+      return lastPosts(limit);
     } else {
-      return getBlogService().getPostsByCategory(categoryId, getComponentId());
+      return getBlogService().getPostsByCategory(getComponentId(), categoryId,
+          getFilters().withMaxResult(limit));
     }
   }
 
-  public Collection<PostDetail> postsByArchive(String theBeginDate, String theEndDate) {
+  public Collection<PostDetail> postsByArchive(String theBeginDate, String theEndDate, int limit) {
     String beginDate = theBeginDate;
     String endDate = theEndDate;
     if (endDate == null || endDate.length() == 0 || "null".equals(endDate)) {
@@ -185,11 +203,13 @@ public final class BlogSessionController extends AbstractComponentSessionControl
       setCurrentBeginDate(beginDate);
       setCurrentEndDate(endDate);
     }
-    return getBlogService().getPostsByArchive(beginDate, endDate, getComponentId());
+    return getBlogService().getPostsByArchive(getComponentId(), beginDate, endDate,
+        getFilters().withMaxResult(limit));
   }
 
-  public Collection<PostDetail> postsByDate(String date) {
-    return getBlogService().getPostsByDate(date, getComponentId());
+  public Collection<PostDetail> postsByDate(String date, int limit) {
+    return getBlogService().getPostsByEventDate(getComponentId(), date,
+        getFilters().withMaxResult(limit));
   }
 
   public PostDetail getPost(String postId) {
@@ -276,7 +296,7 @@ public final class BlogSessionController extends AbstractComponentSessionControl
 
   public synchronized void deletePost(String postId) {
     checkWriteAccessOnBlogPost();
-    getBlogService().deletePost(postId, getComponentId());
+    getBlogService().deletePost(getComponentId(), postId);
     // supprimer les commentaires
     Collection<Comment> comments = getAllComments(postId);
     for (Comment comment : comments) {
@@ -337,7 +357,7 @@ public final class BlogSessionController extends AbstractComponentSessionControl
   }
 
   public synchronized void deleteCategory(String categoryId) {
-    getBlogService().deleteCategory(categoryId, getComponentId());
+    getBlogService().deleteCategory(getComponentId(), categoryId);
   }
 
   public synchronized void updateCategory(Category category) {
@@ -353,9 +373,9 @@ public final class BlogSessionController extends AbstractComponentSessionControl
         .getAllLinksOfInstance(getComponentId());
   }
 
-  public Collection<PostDetail> getResultSearch(String word) {
-
-    return getBlogService().getResultSearch(word, getUserId(), getComponentId());
+  public Collection<PostDetail> getResultSearch(String word, int limit) {
+    return getBlogService().getResultSearch(getComponentId(), word, getUserId(),
+        getFilters().withMaxResult(limit));
   }
 
   public synchronized boolean isUserSubscribed() {
@@ -386,8 +406,15 @@ public final class BlogSessionController extends AbstractComponentSessionControl
     return "yes".equalsIgnoreCase(getComponentParameterValue("usePdc"));
   }
 
-  public Boolean isDraftVisible() {
-    return "yes".equalsIgnoreCase(getComponentParameterValue("draftVisible"));
+  /**
+   * Drafts are visible for blogger is the linked instance parameter is enabled.
+   * @return true if drafts are visible for current user, false otherwise.
+   */
+  public Boolean isDraftVisibleForCurrentUser() {
+    final String profile = getFlag();
+    return "yes".equalsIgnoreCase(getComponentParameterValue("draftVisible")) &&
+        (SilverpeasRole.ADMIN.equals(SilverpeasRole.fromString(profile)) ||
+            SilverpeasRole.PUBLISHER.equals(SilverpeasRole.fromString(profile)));
   }
 
   /**
@@ -424,10 +451,6 @@ public final class BlogSessionController extends AbstractComponentSessionControl
 
   public String getCurrentEndDateAsString() {
     return DateUtil.date2SQLDate(currentEndDate.getTime());
-  }
-
-  public Date getDateEvent(String pubId) {
-    return getBlogService().getDateEvent(pubId);
   }
 
   public void nextMonth() {
