@@ -53,14 +53,14 @@ function goToCategory(id) {
 <div id="<%=instanceId %>">
 
   	      	<%
-		      	Iterator it = (Iterator) posts.iterator();
+		      	Iterator<PostDetail> it = posts.iterator();
 		      	if (!it.hasNext())
 		      	{
 		      		out.println("&nbsp;");
 		      	}
 		  		while (it.hasNext()) 
 		  		{
-		  			PostDetail post = (PostDetail) it.next();
+		  			PostDetail post = it.next();
 		  			String categoryId = "";
 	  				if (post.getCategory() != null)
 		  				categoryId = post.getCategory().getNodePK().getId();

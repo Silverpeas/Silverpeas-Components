@@ -30,7 +30,6 @@ import org.silverpeas.components.blog.model.BlogRuntimeException;
 import org.silverpeas.components.blog.model.Category;
 import org.silverpeas.components.blog.model.PostDetail;
 import org.silverpeas.components.blog.notification.BlogUserSubscriptionNotification;
-import org.silverpeas.core.NotFoundException;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.comment.model.Comment;
@@ -38,6 +37,7 @@ import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.publication.model.Location;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
@@ -73,16 +73,12 @@ import javax.inject.Named;
 import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.*;
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
+import static org.silverpeas.core.contribution.publication.dao.PublicationCriteria.onComponentInstanceIds;
 
 /**
  * Default implementation of the services provided by the Blog component. It is managed by the
@@ -121,7 +117,9 @@ public class DefaultBlogService implements BlogService, Initialization {
   public Optional<PostDetail> getContributionById(ContributionIdentifier contributionId) {
     PublicationDetail publication = publicationService.getDetail(
         new PublicationPK(contributionId.getLocalId(), contributionId.getComponentInstanceId()));
-    return publication == null ? Optional.empty() : Optional.of(getPost(publication));
+    return publication == null ?
+        Optional.empty() :
+        toPosts(contributionId.getComponentInstanceId(), List.of(publication)).stream().findFirst();
   }
 
   @Override
@@ -139,12 +137,11 @@ public class DefaultBlogService implements BlogService, Initialization {
     return instanceId.startsWith("blog");
   }
 
-  @Override
-  public Date getDateEvent(String pubId) {
-    try (Connection con = openConnection()) {
-      return PostDAO.getDateEvent(con, pubId);
+  private Map<String, Date> getEventDateIndexedByPost(Collection<String> pubIds) {
+    try {
+      return PostDAO.getEventDateIndexedByPost(pubIds);
     } catch (SQLException e) {
-      throw new BlogRuntimeException(failureOnGetting(POST, pubId), e);
+      throw new BlogRuntimeException(failureOnGetting(POST, pubIds), e);
     }
   }
 
@@ -164,7 +161,7 @@ public class DefaultBlogService implements BlogService, Initialization {
       PublicationPK pk = publicationService.createPublication(pub);
 
       // Create post
-      PostDAO.createDateEvent(con, pk.getId(), post.getDateEvent(), pk.getInstanceId());
+      PostDAO.create(con, pk.getId(), post.getDateEvent(), pk.getInstanceId());
       if (StringUtil.isDefined(post.getCategoryId())) {
         setCategory(pk, post.getCategoryId());
       }
@@ -230,7 +227,7 @@ public class DefaultBlogService implements BlogService, Initialization {
       }
 
       // Update event date
-      PostDAO.updateDateEvent(con, pubPk.getId(), post.getDateEvent());
+      PostDAO.update(con, pubPk.getId(), post.getDateEvent());
 
       // Save wysiwyg content and do not index it (cause it is already indexed as publication 
       // content)
@@ -261,14 +258,14 @@ public class DefaultBlogService implements BlogService, Initialization {
 
   @Transactional
   @Override
-  public void deletePost(String postId, String instanceId) {
+  public void deletePost(String instanceId, String postId) {
 
     try (Connection con = openConnection()) {
       PublicationPK pubPK = new PublicationPK(postId, instanceId);
       // Delete link with categorie
       publicationService.removeAllFathers(pubPK);
       // Delete date event
-      PostDAO.deleteDateEvent(con, pubPK.getId());
+      PostDAO.delete(con, pubPK.getId());
       // Delete comments
       ResourceReference resourceReference = new ResourceReference(postId, instanceId);
       getCommentService().deleteAllCommentsOnResource(PostDetail.getResourceType(),
@@ -296,86 +293,71 @@ public class DefaultBlogService implements BlogService, Initialization {
   }
 
   @Nonnull
-  private PostDetail getPost(PublicationDetail publication) {
-    try {
-      Collection<NodePK> allCat =
-          publicationService.getAllFatherPKInSamePublicationComponentInstance(
-              publication.getPK());
-      // la collection des catégories contient en fait une seule catégorie, la récupérer
-      Category cat = null;
-      if (!allCat.isEmpty()) {
-        Iterator<NodePK> it = allCat.iterator();
-        NodePK nodePK = it.next();
-        cat = getCategory(nodePK);
-      }
-      // rechercher le nombre de commentaire
-      ResourceReference ref = new ResourceReference(publication.getPK());
-      List<Comment> comments =
-          getCommentService().getAllCommentsOnResource(PostDetail.getResourceType(), ref);
-
-      // recherche de la date d'evenement
-      Date dateEvent;
-      try (Connection con = openConnection()) {
-        dateEvent = PostDAO.getDateEvent(con, publication.getPK()
-            .getId());
-      }
-
-      PostDetail post = new PostDetail(publication, cat, comments.size(), dateEvent);
-      //noinspection removal
-      post.setCreatorName(publication.getCreator()
-          .getDisplayedName());
-
-      return post;
-    } catch (Exception e) {
-      throw new BlogRuntimeException(
-          failureOnGetting(POST + " associated to publication", publication.getId()), e);
+  private List<PostDetail> toPosts(final String instanceId,
+    final Collection<PublicationDetail> publications) {
+    if (!publications.isEmpty()) {
+      final Map<Location, Category> categoryByAllNodePKs = nodeService.getAllNodes(
+              new NodePK(null, instanceId))
+          .stream()
+          .collect(toMap(n -> new Location(n.getId(), instanceId), Category::new));
+      final Collection<String> pubIds = publications.stream()
+          .map(PublicationDetail::getPK)
+          .map(PublicationPK::getId)
+          .collect(toSet());
+      final Map<String, Category> allLocationsByPublicationIds =
+          publicationService.getAllLocationsByPublicationIds(pubIds)
+          .entrySet()
+          .stream()
+          .collect(toMap(Map.Entry::getKey, e -> categoryByAllNodePKs.get(e.getValue().get(0))));
+      final Map<String, Date> eventDateByPost = getEventDateIndexedByPost(pubIds);
+      final Map<String, Integer> commentsByPubIds =
+          getCommentService().getCommentCountIndexedByResource(
+              PostDetail.getResourceType(), instanceId)
+          .entrySet()
+          .stream()
+          .collect(toMap(e -> e.getKey().getLocalId(), Map.Entry::getValue));
+      final Date defaultDate = new Date();
+      return publications.stream().map(p -> {
+        final String pubId = p.getPK().getId();
+        final Category cat = allLocationsByPublicationIds.get(pubId);
+        final Date dateEvent = eventDateByPost.getOrDefault(pubId, defaultDate);
+        final int nbComments = commentsByPubIds.getOrDefault(pubId, 0);
+        final PostDetail post = new PostDetail(p, cat, nbComments, dateEvent);
+        //noinspection removal
+        post.setCreatorName(p.getCreator().getDisplayedName());
+        return post;
+      }).collect(toList());
     }
+    return List.of();
   }
 
   @Override
-  public Collection<PostDetail> getAllPosts(String instanceId) {
-    Collection<PostDetail> posts = new ArrayList<>();
+  public Collection<PostDetail> getLastPosts(final String instanceId, final BlogFilters filters) {
     try (Connection con = openConnection()) {
-      // rechercher les publications classée par date d'évènement
-      Collection<String> lastEvents = PostDAO.getAllEvents(con, instanceId);
-      Collection<PublicationDetail> publications =
-          publicationService.getAllPublications(instanceId);
-      for (String pubId : lastEvents) {
-        for (PublicationDetail publication : publications) {
-          if (publication.getPK()
-              .getId()
-              .equals(pubId)) {
-            posts.add(getPost(publication));
-          }
-        }
-      }
-      return posts;
+      // search publications sorted by event date
+      Collection<String> allPostIds = PostDAO.getAllPostIds(con, instanceId);
+      final Stream<PublicationDetail> publications = filterPublications(
+          publicationService.getByIds(allPostIds).stream(), filters);
+      return toPosts(instanceId, publications.collect(toList()));
     } catch (Exception e) {
       throw new BlogRuntimeException(failureOnGetting("all posts of blog", instanceId), e);
     }
   }
 
   @Override
-  public Collection<PostDetail> getAllValidPosts(String instanceId, int nbReturned) {
-    Collection<PostDetail> posts = new ArrayList<>();
-    int count = nbReturned;
+  public Collection<PostDetail> getAllPosts(String instanceId) {
+    return getLastPosts(instanceId, new BlogFilters(true));
+  }
+
+  @Override
+  public Collection<PostDetail> getLastValidPosts(String instanceId, BlogFilters filters) {
     try (Connection con = openConnection()) {
       // rechercher les publications classées par date d'évènement
-      Collection<String> lastEvents = PostDAO.getAllEvents(con, instanceId);
-      Collection<PublicationDetail> publications =
-          publicationService.getAllPublications(instanceId);
-      for (String pubId : lastEvents) {
-        for (PublicationDetail publication : publications) {
-          if (publication.getPK()
-              .getId()
-              .equals(pubId) && PublicationDetail.VALID_STATUS.equals(publication.getStatus()) &&
-              count > 0) {
-            count--;
-            posts.add(getPost(publication));
-          }
-        }
-      }
-      return posts;
+      final Collection<String> allPostIds = PostDAO.getAllPostIds(con, instanceId);
+      final Stream<PublicationDetail> publications = publicationService.getByIds(allPostIds)
+          .stream()
+          .filter(p -> PublicationDetail.VALID_STATUS.equals(p.getStatus()));
+      return toPosts(instanceId, filterPublications(publications, filters).collect(toList()));
     } catch (Exception e) {
       throw new BlogRuntimeException(failureOnGetting("All validated posts for blog", instanceId),
           e);
@@ -383,62 +365,41 @@ public class DefaultBlogService implements BlogService, Initialization {
   }
 
   @Override
-  public Collection<PostDetail> getPostsByCategory(String categoryId, String instanceId) {
-
-    NodePK pk = new NodePK(categoryId, null, instanceId);
-    Collection<PostDetail> posts = new ArrayList<>();
+  public Collection<PostDetail> getPostsByCategory(String instanceId, String categoryId,
+      final BlogFilters filters) {
     try (Connection con = openConnection()) {
       // looking for classified publications
-      Collection<String> lastEvents = PostDAO.getAllEvents(con, instanceId);
-
-      Collection<PublicationPK> publications = publicationService.getPubPKsInFatherPK(pk);
-      PublicationPK[] allPubs = publications.toArray(new PublicationPK[0]);
-      for (String pubId : lastEvents) {
-        int j;
-        for (int i = 0; i < allPubs.length; i++) {
-          j = allPubs.length - i - 1;
-          PublicationPK pubPK = allPubs[j];
-          if (pubPK.getId().equals(pubId)) {
-            ContributionIdentifier postId = ContributionIdentifier.from(instanceId, pubId,
-                PostDetail.getResourceType());
-            posts.add(getContributionById(postId).orElse(null));
-          }
-        }
-      }
-
-      return posts;
+      final Collection<String> allPostIds = PostDAO.getAllPostIds(con, instanceId);
+      final Map<String, PublicationDetail> categoryPublications =
+          publicationService.getPublicationsByCriteria(
+              onComponentInstanceIds(instanceId).onNodes(categoryId))
+          .stream()
+          .collect(toMap(PublicationDetail::getId, p -> p));
+      final Stream<PublicationDetail> publications = allPostIds.stream()
+          .map(categoryPublications::get)
+          .filter(Objects::nonNull);
+      return toPosts(instanceId, filterPublications(publications, filters).collect(toList()));
     } catch (Exception e) {
       throw new BlogRuntimeException(failureOnGetting("all posts in category", categoryId), e);
     }
   }
 
   @Override
-  public Collection<PostDetail> getPostsByDate(String date, String instanceId) {
-    return getPostsByArchive(date, date, instanceId);
+  public Collection<PostDetail> getPostsByEventDate(String instanceId, String date,
+      final BlogFilters filters) {
+    return getPostsByArchive(instanceId, date, date, filters);
   }
 
   @Override
-  public Collection<PostDetail> getPostsByArchive(String beginDate, String endDate,
-      String instanceId) {
-    Collection<PostDetail> posts = new ArrayList<>();
+  public Collection<PostDetail> getPostsByArchive(String instanceId, String beginDate, String endDate,
+      final BlogFilters filters) {
     try (Connection con = openConnection()) {
-      // rechercher les publications classée par date d'évènement
-      Collection<String> lastEvents = PostDAO.getEventsByDates(con, instanceId, beginDate, endDate);
-
-      @SuppressWarnings("DuplicatedCode") Collection<PublicationDetail> publications =
-          publicationService.getAllPublications(instanceId);
-      for (String pubId : lastEvents) {
-        // pour chaque publication, créer le post correspondant
-        for (PublicationDetail publication : publications) {
-          if (publication.getPK()
-              .getId()
-              .equals(pubId)) {
-            posts.add(getPost(publication));
-          }
-        }
-      }
-
-      return posts;
+      // searching publications sorted by event date
+      final Collection<String> postIds = PostDAO.getPostInRange(con, instanceId, beginDate,
+          endDate);
+      final List<PublicationDetail> publications = publicationService.getByIds(postIds);
+      return toPosts(instanceId,
+          filterPublications(publications.stream(), filters).collect(toList()));
     } catch (Exception e) {
       throw new BlogRuntimeException(
           failureOnGetting("all posts archived between", beginDate + " and " + endDate), e);
@@ -446,41 +407,31 @@ public class DefaultBlogService implements BlogService, Initialization {
   }
 
   @Override
-  public Collection<PostDetail> getResultSearch(String word, String userId, String instanceId) {
-    Collection<PostDetail> posts = new ArrayList<>();
-    List<String> postIds = new ArrayList<>();
-
+  public Collection<PostDetail> getResultSearch(String instanceId, String word, String userId, final BlogFilters filters) {
     QueryDescription query = new QueryDescription(word);
     query.setSearchingUser(userId);
     query.addComponent(instanceId);
 
     try (Connection con = openConnection()) {
-      List<MatchingIndexEntry> result = SearchEngineProvider.getSearchEngine()
+      final Set<String> searchResult = SearchEngineProvider.getSearchEngine()
           .search(query)
-          .getEntries();
-
+          .getEntries()
+          .stream()
+          .map(MatchingIndexEntry::getObjectId)
+          .collect(toSet());
 
       // création des billets à partir des résultats
       // rechercher la liste des posts trié par date
-      Collection<String> allEvents = PostDAO.getAllEvents(con, instanceId);
-      for (final String pubId : allEvents) {
-        for (MatchingIndexEntry matchIndex : result) {
-          String objectId = matchIndex.getObjectId();
-          if (pubId.equals(objectId) && !postIds.contains(objectId)) {
-            ContributionIdentifier postId = 
-                ContributionIdentifier.from(instanceId, pubId, PostDetail.getResourceType());
-            PostDetail post = getContributionById(postId)
-                .orElseThrow(() -> new NotFoundException("No such post " + objectId));
-            postIds.add(objectId);
-            posts.add(post);
-          }
-        }
-      }
-
+      final Collection<String> searchedPostIds = PostDAO.getAllPostIds(con, instanceId)
+          .stream()
+          .filter(searchResult::contains)
+          .collect(toList());
+      final List<PublicationDetail> publications = filterPublications(
+          publicationService.getByIds(searchedPostIds).stream(), filters).collect(toList());
+      return toPosts(instanceId, publications);
     } catch (Exception e) {
       throw new BlogRuntimeException(e);
     }
-    return posts;
   }
 
   @Transactional
@@ -505,12 +456,12 @@ public class DefaultBlogService implements BlogService, Initialization {
 
   @Transactional
   @Override
-  public void deleteCategory(String id, String instanceId) {
+  public void deleteCategory(String instanceId, String id) {
     try {
       NodePK nodePk = new NodePK(id, instanceId);
 
       // recherche des billets sur cette catégorie
-      Collection<PostDetail> posts = getPostsByCategory(id, instanceId);
+      Collection<PostDetail> posts = getPostsByCategory(instanceId, id, new BlogFilters(true));
       for (PostDetail post : posts) {
         publicationService.removeFather(post.getPublication()
             .getPK(), nodePk);
@@ -538,21 +489,15 @@ public class DefaultBlogService implements BlogService, Initialization {
   @Override
   public Collection<Archive> getAllArchives(String instanceId) {
     try (Connection con = openConnection()) {
-      Archive archive;
-      Collection<Archive> archives = new ArrayList<>();
-      Calendar calendar = Calendar.getInstance(Locale.FRENCH);
-
-      // rechercher tous les posts par date d'évènements
-      Collection<Date> lastEvents = PostDAO.getAllDateEvents(con, instanceId);
-      for (final Date dateEvent : lastEvents) {
-        calendar.setTime(dateEvent);
-        // pour chaque date regarder si l'archive existe
-        archive = createArchive(calendar);
-        if (!archives.contains(archive)) {
-          archives.add(archive);
-        }
-      }
-      return archives;
+      final Calendar calendar = Calendar.getInstance(Locale.FRENCH);
+      return PostDAO.getAllEventDates(con, instanceId)
+          .stream()
+          .map(d -> {
+            calendar.setTime(d);
+            return createArchive(calendar);
+          })
+          .distinct()
+          .collect(toList());
     } catch (Exception e) {
       throw new BlogRuntimeException(failureOnGetting("All archives of blog", instanceId), e);
     }
@@ -679,6 +624,16 @@ public class DefaultBlogService implements BlogService, Initialization {
           .getSpaceId(), pub.getPK()
           .getInstanceId()), post, null, "create", pub.getUpdaterId());
     }
+  }
+
+  private Stream<PublicationDetail> filterPublications(final Stream<PublicationDetail> pubs,
+      final BlogFilters filters) {
+    Stream<PublicationDetail> stream = pubs.filter(filters.toPredicate());
+    final Optional<Integer> maxResult = filters.getMaxResult();
+    if (maxResult.isPresent()) {
+      stream = stream.limit(maxResult.get());
+    }
+    return stream;
   }
 
   private int createSilverContent(PublicationDetail pubDetail, String creatorId) {
