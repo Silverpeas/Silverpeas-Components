@@ -206,9 +206,7 @@
 
   <view:frame>
     <form name="mediaForm" method="post" accept-charset="UTF-8" action="#">
-      <div id="pagination">
-        <viewTags:displayIndex nbItems="${requestScope.NbMedia}" index="${requestScope.Rang}" linkSuffix="Media"/>
-      </div>
+      <viewTags:displayIndex nbItems="${requestScope.NbMedia}" index="${requestScope.Rang}" linkSuffix="Media"/>
 
       <!-- button to go back to search results or current folder -->
       <fmt:message key="GML.back" var="backLabel"/>
