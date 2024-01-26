@@ -166,7 +166,7 @@
         currentUser : currentUser,
         componentInstanceId : '${componentId}',
         spaceId : '${communityOfUsers.spaceId}',
-        spaceLabel : '${spaceLabel}',
+        spaceLabel : '${silfn:escapeJs(spaceLabel)}',
         displayCharterOnSpaceHomepage : ${displayCharterOnSpaceHomepage}
       };
       <c:if test="${isAdmin}">
