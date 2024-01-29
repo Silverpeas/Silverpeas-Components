@@ -30,8 +30,9 @@ import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.questioncontainer.answer.model.Answer;
 import org.silverpeas.core.questioncontainer.answer.model.AnswerPK;
 import org.silverpeas.core.security.html.HtmlSanitizer;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.unit.extention.TestManagedMock;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.annotations.TestManagedMock;
 import org.silverpeas.core.util.JSONCodec;
 
 import java.util.List;
@@ -46,7 +47,7 @@ import static org.silverpeas.components.survey.web.AnswerPercentEntity.asWebEnti
 /**
  * @author silveryocha
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 class WebEntityTest {
 
   private static final Answer AN_ANSWER = new Answer(new AnswerPK("7"),

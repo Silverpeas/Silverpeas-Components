@@ -25,7 +25,7 @@ package org.silverpeas.components.mailinglist.service.util;
 
 import org.silverpeas.components.mailinglist.service.util.neko.NekoHtmlCleaner;
 import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.core.annotation.Technical;
+import org.silverpeas.kernel.annotation.Technical;
 
 import javax.enterprise.inject.Alternative;
 import javax.swing.text.MutableAttributeSet;

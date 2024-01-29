@@ -67,11 +67,11 @@ import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.security.authorization.PublicationAccessControl;
 import org.silverpeas.core.subscription.SubscriptionResource;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.core.util.MimeTypes;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.WAAttributeValuePair;
 import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
@@ -79,7 +79,7 @@ import org.silverpeas.core.util.file.FileFolderManager;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -1557,7 +1557,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
   protected boolean checkUserAuthorization(final String function,
       final KmeliaSessionController kmelia) {
     KmeliaActionAccessController actionAccessController =
-        ServiceProvider.getSingleton(KmeliaActionAccessController.class);
+        ServiceProvider.getService(KmeliaActionAccessController.class);
     return actionAccessController.hasRightAccess(function, kmelia.getHighestSilverpeasUserRole());
   }
 

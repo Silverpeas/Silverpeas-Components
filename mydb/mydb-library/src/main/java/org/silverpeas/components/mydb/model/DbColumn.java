@@ -24,14 +24,14 @@
 
 package org.silverpeas.components.mydb.model;
 
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.sql.JDBCType;
 import java.sql.Types;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * A column in a database table. The column doesn't contain any values, it defines the column in

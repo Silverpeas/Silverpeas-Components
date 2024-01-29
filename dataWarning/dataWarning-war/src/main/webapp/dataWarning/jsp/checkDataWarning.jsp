@@ -38,7 +38,7 @@
 <%@ page import="org.silverpeas.components.datawarning.model.DataWarningResult" %>
 <%@ page import="org.silverpeas.components.datawarning.model.DataWarningQueryResult" %>
 <%@ page import="org.silverpeas.components.datawarning.model.DataWarningQuery" %>
-<%@ page import="org.silverpeas.core.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.kernel.bundle.ResourceLocator"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane"%>

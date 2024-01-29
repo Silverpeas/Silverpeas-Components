@@ -26,7 +26,7 @@
 <%@page import="org.silverpeas.core.util.URLUtil"%>
 <%@ page import="org.silverpeas.components.yellowpages.control.DisplayContactsHelper" %>
 <%@ page import="org.silverpeas.components.yellowpages.model.TopicDetail" %>
-<%@ page import="org.silverpeas.core.util.StringUtil" %>
+<%@ page import="org.silverpeas.kernel.util.StringUtil" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane" %>

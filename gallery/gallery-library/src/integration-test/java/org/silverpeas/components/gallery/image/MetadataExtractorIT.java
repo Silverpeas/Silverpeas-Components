@@ -39,7 +39,7 @@ import org.silverpeas.components.gallery.media.IptcProperty;
 import org.silverpeas.components.gallery.media.MediaMetadataExtractor;
 import org.silverpeas.components.gallery.model.MetaData;
 import org.silverpeas.core.test.integration.rule.MavenTargetDirectoryRule;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.io.File;
 import java.time.LocalDate;

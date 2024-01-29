@@ -30,7 +30,7 @@ import org.silverpeas.core.contribution.contentcontainer.content.AbstractSilverp
 import org.silverpeas.core.contribution.contentcontainer.content.AbstractGlobalSilverContentProcessor;
 import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
-import org.silverpeas.core.util.Pair;
+import org.silverpeas.kernel.util.Pair;
 
 import javax.inject.Named;
 import java.util.List;

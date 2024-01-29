@@ -34,7 +34,7 @@ import java.util.Collection;
 
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.ADMIN;
-import static org.silverpeas.core.util.StringUtil.getBooleanValue;
+import static org.silverpeas.kernel.util.StringUtil.getBooleanValue;
 
 /**
  * The execution context of an incoming HTTP request in regard to the application.

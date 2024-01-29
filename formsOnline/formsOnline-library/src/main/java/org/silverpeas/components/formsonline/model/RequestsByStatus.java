@@ -2,7 +2,7 @@ package org.silverpeas.components.formsonline.model;
 
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.util.PaginationList;
-import org.silverpeas.core.util.Pair;
+import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.core.util.SilverpeasArrayList;
 import org.silverpeas.core.util.SilverpeasList;
 

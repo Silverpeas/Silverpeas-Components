@@ -1,7 +1,7 @@
 package org.silverpeas.components.gallery;
 
 import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.ws.rs.core.MediaType;
 import java.io.File;
@@ -16,7 +16,7 @@ import static java.net.http.HttpResponse.BodyHandlers.ofInputStream;
 import static org.apache.commons.io.FilenameUtils.*;
 import static org.silverpeas.core.util.HttpUtil.httpClient;
 import static org.silverpeas.core.util.HttpUtil.toUrl;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 public class Watermark {
 

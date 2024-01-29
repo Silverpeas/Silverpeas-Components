@@ -24,10 +24,10 @@
 package org.silverpeas.components.gallery.constant;
 
 import org.silverpeas.components.gallery.model.Media;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 /**
  * @author: Yohann Chastagnier

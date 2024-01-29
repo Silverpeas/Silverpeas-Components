@@ -27,7 +27,7 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="org.silverpeas.components.survey.control.FileHelper"%>
 <%@ page import="org.silverpeas.core.web.http.HttpRequest"%>
-<%@ page import="org.silverpeas.core.util.SettingBundle"%>
+<%@ page import="org.silverpeas.kernel.bundle.SettingBundle"%>
 <%@ page import="java.io.File"%>
 <%@ include file="checkSurvey.jsp" %>
 

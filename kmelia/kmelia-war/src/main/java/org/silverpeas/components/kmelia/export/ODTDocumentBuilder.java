@@ -56,9 +56,9 @@ import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.pdc.pdc.model.ClassifyValue;
 import org.silverpeas.core.pdc.pdc.model.Value;
 import org.silverpeas.core.util.Charsets;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.core.util.UnitUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 
@@ -76,8 +76,8 @@ import static org.silverpeas.core.contribution.converter.DocumentFormat.inFormat
 import static org.silverpeas.core.contribution.converter.DocumentFormat.odt;
 import static org.silverpeas.core.util.DateUtil.formatDate;
 import static org.silverpeas.core.util.DateUtil.getOutputDate;
-import static org.silverpeas.core.util.StringUtil.isDefined;
-import static org.silverpeas.core.util.StringUtil.isInteger;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isInteger;
 
 /**
  * A builder of an ODT document based on a given template and from a specified Kmelia publication.

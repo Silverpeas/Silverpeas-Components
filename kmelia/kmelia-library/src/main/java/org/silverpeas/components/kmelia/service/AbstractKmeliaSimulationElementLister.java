@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.kmelia.service;
 
-import org.silverpeas.core.NotSupportedException;
+import org.silverpeas.kernel.exception.NotSupportedException;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.node.service.NodeService;

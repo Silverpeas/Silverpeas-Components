@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.datawarning.service;
 
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.util.Collections;
 import java.util.HashMap;

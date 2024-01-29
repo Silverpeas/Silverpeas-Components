@@ -37,7 +37,7 @@ import org.silverpeas.core.util.file.FileRepositoryManager;
 import java.util.Collection;
 import java.util.Collections;
 
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * @author Yohann Chastagnier

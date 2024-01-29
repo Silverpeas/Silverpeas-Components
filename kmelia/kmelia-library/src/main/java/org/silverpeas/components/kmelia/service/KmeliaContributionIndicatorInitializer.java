@@ -28,9 +28,9 @@ import org.silverpeas.core.contribution.indicator.ContributionIndicatorRegistry;
 import org.silverpeas.core.contribution.indicator.NewContributionIndicator;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.initialization.Initialization;
-import org.silverpeas.core.util.Pair;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.kernel.util.Pair;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
 
 import java.time.Instant;
 import java.time.LocalDate;

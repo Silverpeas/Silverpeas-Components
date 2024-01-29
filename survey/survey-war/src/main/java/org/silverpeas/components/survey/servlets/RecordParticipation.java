@@ -49,7 +49,7 @@
 package org.silverpeas.components.survey.servlets;
 
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;

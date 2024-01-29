@@ -25,7 +25,7 @@ package org.silverpeas.components.kmelia.export;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import static org.silverpeas.core.util.DateUtil.getOutputDate;
 

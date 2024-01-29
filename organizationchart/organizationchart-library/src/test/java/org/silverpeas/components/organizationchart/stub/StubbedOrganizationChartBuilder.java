@@ -32,7 +32,7 @@ import org.silverpeas.components.organizationchart.model.OrganizationalRole;
 import org.silverpeas.components.organizationchart.model.OrganizationalUnit;
 import org.silverpeas.components.organizationchart.model.PersonCategory;
 import org.silverpeas.components.organizationchart.service.LdapOrganizationChartConfiguration;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Collections;

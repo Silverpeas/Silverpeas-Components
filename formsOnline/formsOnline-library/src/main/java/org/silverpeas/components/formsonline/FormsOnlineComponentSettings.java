@@ -23,8 +23,8 @@
  */
 package org.silverpeas.components.formsonline;
 
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 
 public class FormsOnlineComponentSettings {
 

@@ -29,7 +29,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.inject.Named;
 import javax.transaction.Transactional;

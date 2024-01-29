@@ -24,7 +24,7 @@
 package org.silverpeas.components.classifieds.model;
 
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 public class ClassifiedsRuntimeException extends SilverpeasRuntimeException {
   private static final long serialVersionUID = 2413240875023557772L;

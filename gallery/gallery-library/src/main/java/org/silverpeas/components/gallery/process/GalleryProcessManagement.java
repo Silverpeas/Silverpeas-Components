@@ -47,7 +47,7 @@ import org.silverpeas.core.process.ProcessProvider;
 import org.silverpeas.core.process.management.ProcessExecutionContext;
 import org.silverpeas.core.process.util.ProcessList;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.io.File;
 import java.util.Collection;

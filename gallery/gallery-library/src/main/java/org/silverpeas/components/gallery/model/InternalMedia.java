@@ -35,9 +35,9 @@ import org.silverpeas.core.io.file.SilverpeasFileProvider;
 import org.silverpeas.core.io.media.video.ThumbnailPeriod;
 import org.silverpeas.core.notification.message.MessageManager;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.io.File;
 import java.nio.file.Paths;
@@ -48,7 +48,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * This class represents a Media that the content (the file in other words) is saved on the

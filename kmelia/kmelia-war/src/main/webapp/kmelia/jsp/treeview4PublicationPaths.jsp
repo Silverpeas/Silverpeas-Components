@@ -29,7 +29,7 @@
 <%@ page import="org.silverpeas.core.node.model.NodeDetail"%>
 <%@ page import="org.silverpeas.core.contribution.publication.model.Location" %>
 <%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
-<%@ page import="org.silverpeas.core.util.Mutable" %>
+<%@ page import="org.silverpeas.kernel.util.Mutable" %>
 <%@ page import="org.apache.ecs.xhtml.input" %>
 <%@ page import="org.owasp.encoder.Encode" %>
 

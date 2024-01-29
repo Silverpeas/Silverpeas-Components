@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.rssaggregator;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 public class RssAgregatorRuntimeException extends SilverpeasRuntimeException {
   private static final long serialVersionUID = -8258500003916960093L;

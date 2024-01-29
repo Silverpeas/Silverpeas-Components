@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.community;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 /**
  * Exception thrown when a user is already a member of a community.

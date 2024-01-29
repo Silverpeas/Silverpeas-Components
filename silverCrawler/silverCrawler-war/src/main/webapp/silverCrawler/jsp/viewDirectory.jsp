@@ -25,7 +25,7 @@
 --%>
 <%@page import="java.net.URLEncoder"%>
 <%@page import="org.silverpeas.core.util.WebEncodeHelper"%>
-<%@page import="org.silverpeas.core.util.StringUtil"%>
+<%@page import="org.silverpeas.kernel.util.StringUtil"%>
 <%@ page import="org.silverpeas.core.util.file.FileRepositoryManager" %>
 <%@ page import="org.silverpeas.core.admin.user.model.SilverpeasRole" %>
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>

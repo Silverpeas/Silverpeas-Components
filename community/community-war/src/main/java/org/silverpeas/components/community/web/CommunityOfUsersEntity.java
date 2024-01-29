@@ -26,7 +26,7 @@ package org.silverpeas.components.community.web;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.silverpeas.components.community.model.CommunityOfUsers;
 import org.silverpeas.core.admin.space.SpaceHomePageType;
-import org.silverpeas.core.util.Pair;
+import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.core.web.rs.WebEntity;
 
 import javax.xml.bind.annotation.XmlAccessType;

@@ -33,7 +33,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="org.silverpeas.core.node.coordinates.model.Coordinate"%>
 <%@ page import="org.silverpeas.core.node.coordinates.model.CoordinatePoint"%>
 <%@ page import="org.silverpeas.components.kmelia.jstl.KmeliaDisplayHelper"%>
-<%@ page import="org.silverpeas.core.util.logging.SilverLogger" %>
+<%@ page import="org.silverpeas.kernel.logging.SilverLogger" %>
 
 
 <%@ include file="checkKmelia.jsp" %>

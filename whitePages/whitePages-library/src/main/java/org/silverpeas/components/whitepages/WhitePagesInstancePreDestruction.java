@@ -24,10 +24,10 @@
 package org.silverpeas.components.whitepages;
 
 import org.silverpeas.components.whitepages.service.WhitePageServiceProvider;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
 import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.core.annotation.Technical;
+import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 

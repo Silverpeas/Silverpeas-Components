@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.almanach;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.Priority;
 import org.silverpeas.core.calendar.Recurrence;
@@ -33,15 +34,16 @@ import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.search.AbstractResultDisplayer;
 import org.silverpeas.core.web.search.ResultDisplayer;
 import org.silverpeas.core.web.search.SearchResultContentVO;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Named;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -58,13 +60,18 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnGetting;
  * POSTFIX_BEAN_NAME = ResultDisplayer
  * </pre>
  */
+@Service
 @Named("almanachResultDisplayer")
 public class ResultSearchRenderer extends AbstractResultDisplayer implements ResultDisplayer {
 
-  private static final Properties templateConfig = new Properties();
+  private final Properties templateConfig = new Properties();
   private static final String TEMPLATE_FILENAME = "event_result_template";
 
-  static {
+  /**
+   * Loads the template configuration.
+   */
+  @PostConstruct
+  protected void loadConfig() {
     SettingBundle settings =
         ResourceLocator.getSettingBundle("org.silverpeas.almanach.settings.almanachSettings");
     templateConfig.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, settings

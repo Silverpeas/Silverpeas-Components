@@ -25,7 +25,7 @@
 package org.silverpeas.components.classifieds;
 
 import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.core.annotation.Technical;
+import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.web.mvc.route.AbstractComponentInstanceRoutingMap;
 

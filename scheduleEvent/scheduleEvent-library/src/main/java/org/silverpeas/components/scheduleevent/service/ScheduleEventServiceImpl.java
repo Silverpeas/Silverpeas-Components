@@ -25,9 +25,9 @@ import org.silverpeas.components.scheduleevent.service.model.beans.ScheduleEvent
 import org.silverpeas.components.scheduleevent.service.model.dao.ScheduleEventDao;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
 
 import javax.inject.Inject;
 import javax.inject.Named;

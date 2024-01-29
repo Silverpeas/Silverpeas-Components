@@ -25,7 +25,7 @@
 package org.silverpeas.components.formsonline.model;
 
 import org.junit.jupiter.api.Test;
-import org.silverpeas.core.util.Pair;
+import org.silverpeas.kernel.util.Pair;
 
 import java.util.Set;
 import java.util.TreeSet;

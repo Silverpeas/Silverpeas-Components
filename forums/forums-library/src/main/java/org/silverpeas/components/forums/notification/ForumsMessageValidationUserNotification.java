@@ -30,7 +30,7 @@ import org.silverpeas.components.forums.model.Message;
 import java.util.Collection;
 import java.util.Collections;
 
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * User: Yohann Chastagnier

@@ -29,7 +29,7 @@ import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.portlets.FormNames;
 

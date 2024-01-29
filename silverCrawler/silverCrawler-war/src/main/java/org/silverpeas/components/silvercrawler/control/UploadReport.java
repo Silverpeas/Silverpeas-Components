@@ -24,8 +24,8 @@
 
 package org.silverpeas.components.silvercrawler.control;
 
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 
 import java.io.File;
 import java.util.ArrayList;

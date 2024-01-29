@@ -24,7 +24,7 @@
 package org.silverpeas.components.rssaggregator;
 
 import org.silverpeas.components.rssaggregator.service.RssAggregator;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
 import org.silverpeas.components.rssaggregator.model.RssAgregatorException;
 

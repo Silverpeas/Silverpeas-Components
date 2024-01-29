@@ -24,7 +24,7 @@
 
 package org.silverpeas.components.kmelia.model;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 public class KmeliaRuntimeException extends SilverpeasRuntimeException {
   private static final long serialVersionUID = 3262113459027359252L;

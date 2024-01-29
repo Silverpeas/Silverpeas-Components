@@ -5,7 +5,7 @@ import org.silverpeas.components.formsonline.model.FormsOnlineService;
 import org.silverpeas.core.security.authorization.AccessControlOperation;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.security.authorization.ComponentAuthorization;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Named;
 import java.util.Collection;

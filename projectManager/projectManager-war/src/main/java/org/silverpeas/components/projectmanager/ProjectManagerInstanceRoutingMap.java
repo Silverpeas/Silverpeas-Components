@@ -26,7 +26,7 @@ package org.silverpeas.components.projectmanager;
 
 import org.silverpeas.components.projectmanager.model.TaskDetail;
 import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.core.annotation.Technical;
+import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.web.mvc.route.AbstractComponentInstanceRoutingMap;
 

@@ -31,7 +31,7 @@ import org.silverpeas.components.mailinglist.service.util.HtmlCleaner;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.mail.MessagingException;

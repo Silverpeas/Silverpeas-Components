@@ -27,7 +27,7 @@ import org.silverpeas.components.datawarning.service.DataWarningSchedulerTable;
 import org.silverpeas.components.datawarning.model.DataWarningDataManager;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.util.List;
 

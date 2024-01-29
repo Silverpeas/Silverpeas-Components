@@ -29,9 +29,9 @@ import org.silverpeas.components.jdbcconnector.service.JdbcConnectorException;
 import org.silverpeas.components.jdbcconnector.service.JdbcConnectorRuntimeException;
 import org.silverpeas.components.jdbcconnector.service.JdbcRequester;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.util.Mutable;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.util.Mutable;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -51,7 +51,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 
 /**
  * The web controller of the ConnecteurJDBC application. Like all of the web controllers in

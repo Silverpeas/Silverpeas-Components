@@ -27,7 +27,7 @@
 
 package org.silverpeas.components.infoletter;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 /**
  * Info Letter Runtime Exception

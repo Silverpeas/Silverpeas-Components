@@ -31,7 +31,7 @@ import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import java.util.List;
 import java.util.UUID;
 
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * A default export file name producer.

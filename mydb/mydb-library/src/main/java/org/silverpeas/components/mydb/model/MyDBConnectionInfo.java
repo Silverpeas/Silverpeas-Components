@@ -25,7 +25,7 @@ import org.silverpeas.components.mydb.service.MyDBConnectionInfoService;
 import org.silverpeas.components.mydb.service.MyDBException;
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueIntegerIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;

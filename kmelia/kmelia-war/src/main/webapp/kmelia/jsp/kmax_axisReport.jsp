@@ -36,7 +36,7 @@
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane"%>
 <%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.core.i18n.I18NHelper" %>
-<%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
+<%@ page import="org.silverpeas.kernel.bundle.LocalizationBundle" %>
 <%@ page import="java.util.ArrayList" %>
 <%!
 

@@ -41,7 +41,7 @@ public interface CommunityOfUsersRepository extends EntityRepository<CommunityOf
    * Gets the single instance of this repository.
    */
   static CommunityOfUsersRepository get() {
-    return ServiceProvider.getSingleton(CommunityOfUsersRepository.class);
+    return ServiceProvider.getService(CommunityOfUsersRepository.class);
   }
 
   /**

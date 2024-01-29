@@ -27,7 +27,7 @@ import org.silverpeas.components.gallery.constant.MediaResolution;
 import org.silverpeas.components.gallery.constant.MediaType;
 import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.media.streaming.StreamingProvider;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.Objects;
 import java.util.Optional;

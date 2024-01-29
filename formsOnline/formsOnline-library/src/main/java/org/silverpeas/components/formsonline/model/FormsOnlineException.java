@@ -24,7 +24,7 @@
 package org.silverpeas.components.formsonline.model;
 
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 
 public class FormsOnlineException extends SilverpeasException {
   private static final long serialVersionUID = -170511538940110451L;

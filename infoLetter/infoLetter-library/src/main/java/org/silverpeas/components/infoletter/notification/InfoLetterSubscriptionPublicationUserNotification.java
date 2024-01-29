@@ -37,7 +37,7 @@ import org.silverpeas.core.template.SilverpeasTemplate;
 import java.util.Collection;
 
 import static org.silverpeas.core.subscription.service.ResourceSubscriptionProvider.getSubscribersOfComponent;
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 
 /**
  * @author silveryocha

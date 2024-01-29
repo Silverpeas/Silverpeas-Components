@@ -25,7 +25,7 @@ package org.silverpeas.components.questionreply;
 
 import org.silverpeas.components.questionreply.model.Question;
 import org.silverpeas.components.questionreply.service.QuestionManagerProvider;
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 import org.silverpeas.core.annotation.Provider;
 import org.silverpeas.core.silverstatistics.volume.model.UserIdCountVolumeCouple;
 import org.silverpeas.core.silverstatistics.volume.service.ComponentStatisticsProvider;

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.blog.model;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 public class BlogRuntimeException extends SilverpeasRuntimeException {
 

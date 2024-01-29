@@ -30,11 +30,11 @@ import org.silverpeas.components.mydb.model.DbTable;
 import org.silverpeas.components.mydb.model.TableRow;
 import org.silverpeas.components.mydb.service.MyDBRuntimeException;
 import org.silverpeas.core.admin.PaginationPage;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.Mutable;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.util.Mutable;
 import org.silverpeas.core.util.SilverpeasArrayList;
 import org.silverpeas.core.util.SilverpeasList;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,7 +46,7 @@ import static java.text.MessageFormat.format;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptySet;
 import static org.silverpeas.components.mydb.web.TableRowUIEntity.convertList;
-import static org.silverpeas.core.util.Mutable.empty;
+import static org.silverpeas.kernel.util.Mutable.empty;
 
 /**
  * A view on one given database table loaded from a data source. The view wraps the table and it

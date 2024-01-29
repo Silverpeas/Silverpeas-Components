@@ -29,7 +29,7 @@ import org.silverpeas.components.websites.model.SiteDetailBuilder;
 import org.silverpeas.components.websites.service.WebSitesException;
 import org.silverpeas.components.websites.servlets.WebSitesRequestRouter;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.web.http.HttpRequest;
 

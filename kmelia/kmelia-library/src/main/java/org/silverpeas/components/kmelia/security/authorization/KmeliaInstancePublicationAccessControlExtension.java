@@ -25,8 +25,8 @@
 package org.silverpeas.components.kmelia.security.authorization;
 
 import org.silverpeas.core.security.authorization.DefaultInstancePublicationAccessControlExtension;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
 
 import javax.inject.Named;
 import javax.inject.Singleton;

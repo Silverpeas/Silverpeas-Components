@@ -29,8 +29,8 @@ import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.Priority;
 import org.silverpeas.core.contribution.content.form.DataRecordUtil;
 import org.silverpeas.core.date.Period;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.model.Parameter;
 import org.silverpeas.core.workflow.external.impl.ExternalActionImpl;
@@ -46,7 +46,7 @@ import java.time.temporal.Temporal;
 
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
-import static org.silverpeas.core.util.StringUtil.getBooleanValue;
+import static org.silverpeas.kernel.util.StringUtil.getBooleanValue;
 
 /**
  * The aim of this class is to provide a new workflow extension in order to create an almanach event

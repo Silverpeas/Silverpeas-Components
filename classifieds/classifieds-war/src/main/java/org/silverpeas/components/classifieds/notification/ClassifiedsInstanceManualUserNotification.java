@@ -25,7 +25,7 @@
 package org.silverpeas.components.classifieds.notification;
 
 import org.silverpeas.components.classifieds.model.ClassifiedDetail;
-import org.silverpeas.core.NotFoundException;
+import org.silverpeas.kernel.exception.NotFoundException;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.notification.user.AbstractComponentInstanceManualUserNotification;
 import org.silverpeas.core.notification.user.NotificationContext;

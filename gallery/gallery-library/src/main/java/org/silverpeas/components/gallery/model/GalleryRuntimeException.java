@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.gallery.model;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 public class GalleryRuntimeException extends SilverpeasRuntimeException {
 

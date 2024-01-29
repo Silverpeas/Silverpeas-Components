@@ -24,7 +24,7 @@
 
 package org.silverpeas.components.yellowpages.model;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 /**
  * Class declaration

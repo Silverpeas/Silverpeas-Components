@@ -29,7 +29,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
-<%@ tag import="org.silverpeas.core.util.StringUtil" %>
+<%@ tag import="org.silverpeas.kernel.util.StringUtil" %>
 <%@ tag import="org.silverpeas.core.util.WebEncodeHelper" %>
 
 <%@ attribute name="contact" required="true" type="org.silverpeas.core.contact.model.ContactDetail"

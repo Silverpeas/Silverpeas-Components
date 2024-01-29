@@ -31,7 +31,7 @@ import org.silverpeas.core.contribution.model.LocalizedContribution;
 import org.silverpeas.core.i18n.AbstractBean;
 import org.silverpeas.core.persistence.jdbc.bean.IdPK;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.text.ParseException;
 import java.util.Date;

@@ -31,10 +31,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.components.community.CommunityWarBuilder;
 import org.silverpeas.components.community.model.CommunityOfUsers;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.space.SpaceHomePageType;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.util.Pair;
+import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.web.test.ResourceGettingTest;
 
 import java.net.URI;

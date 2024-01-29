@@ -28,7 +28,7 @@
 <%@ page import="org.silverpeas.components.whitepages.model.Card"%>
 <%@ page import="org.silverpeas.components.whitepages.model.SearchField"%>
 <%@ page import="org.silverpeas.components.whitepages.record.UserRecord"%>
-<%@ page import="org.silverpeas.core.util.StringUtil"%>
+<%@ page import="org.silverpeas.kernel.util.StringUtil"%>
 <%@ page import="java.util.List"%>
 <%@ page import="java.util.SortedSet"%>
 

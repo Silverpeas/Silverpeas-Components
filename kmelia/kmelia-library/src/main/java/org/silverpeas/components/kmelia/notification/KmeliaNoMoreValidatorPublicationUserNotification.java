@@ -26,7 +26,7 @@ package org.silverpeas.components.kmelia.notification;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.Collection;
 import java.util.Collections;

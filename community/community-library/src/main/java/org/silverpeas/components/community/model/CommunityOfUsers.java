@@ -26,7 +26,7 @@ package org.silverpeas.components.community.model;
 import org.silverpeas.components.community.AlreadyMemberException;
 import org.silverpeas.components.community.repository.CommunityMembershipRepository;
 import org.silverpeas.components.community.repository.CommunityOfUsersRepository;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.model.InheritableSpaceRoles;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
@@ -42,8 +42,8 @@ import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifie
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
-import org.silverpeas.core.util.Mutable;
-import org.silverpeas.core.util.Pair;
+import org.silverpeas.kernel.util.Mutable;
+import org.silverpeas.kernel.util.Pair;
 
 import javax.annotation.Nonnull;
 import javax.persistence.Column;
@@ -64,7 +64,7 @@ import java.util.stream.Stream;
 import static java.util.Optional.ofNullable;
 import static java.util.function.Predicate.not;
 import static org.silverpeas.core.admin.space.SpaceHomePageType.STANDARD;
-import static org.silverpeas.core.util.StringUtil.EMPTY;
+import static org.silverpeas.kernel.util.StringUtil.EMPTY;
 
 /**
  * The community of users for a collaborative space. Users in the community are said to be members

@@ -31,8 +31,8 @@ import org.silverpeas.components.formsonline.model.FormInstanceValidationType;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.PagesContext;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.export.ExportCSVBuilder;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
@@ -42,8 +42,8 @@ import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import java.util.List;
 
 import static org.silverpeas.components.formsonline.control.FormsOnlineSessionController.*;
-import static org.silverpeas.core.util.StringUtil.isInteger;
-import static org.silverpeas.core.util.StringUtil.isNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.isInteger;
+import static org.silverpeas.kernel.util.StringUtil.isNotDefined;
 
 public class FormsOnlineRequestRouter extends ComponentRequestRouter<FormsOnlineSessionController> {
 
