@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.formsonline;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 

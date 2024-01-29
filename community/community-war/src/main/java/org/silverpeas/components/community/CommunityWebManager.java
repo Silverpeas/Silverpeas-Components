@@ -46,16 +46,18 @@ import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.ws.rs.WebApplicationException;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
 
 import static org.silverpeas.components.community.CommunityComponentSettings.getMessagesIn;
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.fromString;
-import static org.silverpeas.core.util.StringUtil.getBooleanValue;
+import static org.silverpeas.kernel.util.StringUtil.getBooleanValue;
 
 /**
  * WEB manager which allows to centralize code to be used by REST Web Services and Web Component
  * Controller.
+ *
  * @author silveryocha
  */
 @Service
@@ -71,11 +73,12 @@ public class CommunityWebManager {
    * Gets the singleton instance of the provider.
    */
   public static CommunityWebManager get() {
-    return ServiceProvider.getSingleton(CommunityWebManager.class);
+    return ServiceProvider.getService(CommunityWebManager.class);
   }
 
   /**
    * Makes the current user joining the given community.
+   *
    * @param community {@link CommunityOfUsers} instance representing the community.
    */
   public void join(final CommunityOfUsers community) {
@@ -98,6 +101,7 @@ public class CommunityWebManager {
 
   /**
    * Validates the membership request of user given in parameters on specified community.
+   *
    * @param requester the user behind the request to join the community.
    * @param community the community the user accesses.
    * @param accept true to accept the request, false to refuse.
@@ -121,6 +125,7 @@ public class CommunityWebManager {
 
   /**
    * Makes the given user leaving the given community.
+   *
    * @param community {@link CommunityOfUsers} instance representing the community.
    * @param member the member to manage.
    */
@@ -132,10 +137,12 @@ public class CommunityWebManager {
 
   /**
    * Makes the current user leaving the given community.
+   *
    * @param community {@link CommunityOfUsers} instance representing the community.
    * @param reason the index of the reason of the leaving.
    * @param message a message to explain more precisely the member leaving.
-   * @param contactInFuture boolean, true to indicate that the member accepts to be contacted in the future about its leaving.
+   * @param contactInFuture boolean, true to indicate that the member accepts to be contacted in the
+   * future about its leaving.
    */
   public void leave(final CommunityOfUsers community, final int reason, final String message,
       final boolean contactInFuture) {
@@ -155,6 +162,7 @@ public class CommunityWebManager {
   /**
    * Saves into instance parameter of the given community the value of parameter
    * 'displayCharterOnSpaceHomepage'.
+   *
    * @param community {@link CommunityOfUsers} instance representing the community.
    * @param value true to display the charter, false otherwise.
    */
@@ -172,6 +180,7 @@ public class CommunityWebManager {
 
   /**
    * Gets members pending validation of the given community.
+   *
    * @param community {@link CommunityOfUsers} instance representing the community.
    * @param page the pending members to get are paginated. Indicates the page to return. If null,
    * all the pending members are got.
@@ -187,6 +196,7 @@ public class CommunityWebManager {
 
   /**
    * Gets members of the given community.
+   *
    * @param community {@link CommunityOfUsers} instance representing the community.
    * @param page the members to get are paginated. Indicates the page to return. If null, all the
    * members are got.
@@ -202,6 +212,7 @@ public class CommunityWebManager {
 
   /**
    * Gets history of the given community.
+   *
    * @param community {@link CommunityOfUsers} instance representing the community.
    * @param page the members to get are paginated. Indicates the page to return. If null, all the
    * members are got.
@@ -222,12 +233,13 @@ public class CommunityWebManager {
    * A member MUST be directly specified into ADMIN, PUBLISHER, WRITER or READER role of direct
    * parent space.
    * </p>
+   *
    * @param community {@link CommunityOfUsers} instance.
    * @return true if member, false otherwise.
    */
   public boolean isMemberOf(final CommunityOfUsers community) {
-    return requestCache("isMemberOf", community.getId(), Boolean.class,
-        () -> community.isMember(User.getCurrentRequester()));
+    return Objects.requireNonNull(requestCache("isMemberOf", community.getId(), Boolean.class,
+        () -> community.isMember(User.getCurrentRequester())));
   }
 
   /**
@@ -236,20 +248,24 @@ public class CommunityWebManager {
    * A member MUST be directly specified into ADMIN, PUBLISHER, WRITER or READER role of direct
    * parent space.
    * </p>
+   *
    * @param community {@link CommunityOfUsers} instance.
    * @return true if member, false otherwise.
    */
   public boolean isMembershipPendingFor(final CommunityOfUsers community) {
-    return requestCache("isMembershipPending", community.getId(), Boolean.class,
+    return Objects.requireNonNull(requestCache("isMembershipPending",
+        community.getId(),
+        Boolean.class,
         () -> community.getMembershipsProvider()
             .get(User.getCurrentRequester())
             .map(CommunityMembership::getStatus)
             .map(MembershipStatus::isPending)
-            .orElse(false));
+            .orElse(false)));
   }
 
   /**
    * Gets the roles the current requester has on the given community.
+   *
    * @param community {@link CommunityOfUsers} instance.
    * @return a set of {@link SilverpeasRole}.
    */
@@ -289,6 +305,7 @@ public class CommunityWebManager {
 
   /**
    * Push a success message to the current user.
+   *
    * @param messageKey the key of the message.
    * @param params the message parameters.
    */

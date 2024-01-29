@@ -35,7 +35,7 @@ import org.odftoolkit.simple.text.Footer;
 import org.odftoolkit.simple.text.Header;
 import org.odftoolkit.simple.text.Paragraph;
 import org.odftoolkit.simple.text.Section;
-import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 

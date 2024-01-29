@@ -8,7 +8,7 @@ import org.apache.commons.io.IOUtils;
 import org.silverpeas.components.kmelia.control.KmeliaSessionController;
 import org.silverpeas.core.contribution.converter.DocumentFormat;
 import org.silverpeas.core.util.MimeTypes;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.util.ClientBrowserUtil;
 
 import javax.servlet.ServletException;
@@ -22,7 +22,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import static org.silverpeas.core.contribution.converter.DocumentFormat.inFormat;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * An HTTP servlet dedicated to the export of Kmelia publications.

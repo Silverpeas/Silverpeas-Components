@@ -70,14 +70,15 @@ import org.silverpeas.core.notification.message.MessageNotifier;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.security.authorization.ForbiddenRuntimeException;
 import org.silverpeas.core.util.CollectionUtil;
-import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.kernel.annotation.NonNull;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.core.util.MemoizedSupplier;
-import org.silverpeas.core.util.Pair;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.kernel.util.Pair;
+import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.core.util.SilverpeasList;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileUploadUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -105,8 +106,8 @@ import static org.silverpeas.components.formsonline.model.RequestsByStatus.VALID
 import static org.silverpeas.core.mail.MailContent.getHtmlBodyPartFromHtmlContent;
 import static org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper.buildAndSend;
 import static org.silverpeas.core.util.CollectionUtil.isEmpty;
-import static org.silverpeas.core.util.StringUtil.EMPTY;
-import static org.silverpeas.core.util.StringUtil.isNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.EMPTY;
+import static org.silverpeas.kernel.util.StringUtil.isNotDefined;
 
 @Service
 @Singleton
@@ -946,11 +947,13 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
     private final Set<String> userIds = new HashSet<>();
     private final Map<String, String> cache = new HashMap<>();
 
+    @NonNull
     public static HierarchicalValidatorCacheManager get() {
-      return CacheAccessorProvider.getThreadCacheAccessor()
+      var manager = CacheAccessorProvider.getThreadCacheAccessor()
           .getCache()
           .computeIfAbsent(CACHE_KEY, HierarchicalValidatorCacheManager.class,
               HierarchicalValidatorCacheManager::new);
+      return Objects.requireNonNull(manager);
     }
 
     private HierarchicalValidatorCacheManager() {

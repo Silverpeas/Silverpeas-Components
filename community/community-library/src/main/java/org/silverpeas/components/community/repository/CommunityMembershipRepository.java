@@ -25,7 +25,7 @@ package org.silverpeas.components.community.repository;
 
 import org.silverpeas.components.community.model.CommunityMembership;
 import org.silverpeas.components.community.model.CommunityOfUsers;
-import org.silverpeas.core.NotSupportedException;
+import org.silverpeas.kernel.exception.NotSupportedException;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.persistence.datasource.repository.EntityRepository;
@@ -122,7 +122,7 @@ public interface CommunityMembershipRepository extends EntityRepository<Communit
    * Gets the single instance of this repository.
    */
   static CommunityMembershipRepository get() {
-    return ServiceProvider.getSingleton(CommunityMembershipRepository.class);
+    return ServiceProvider.getService(CommunityMembershipRepository.class);
   }
 
   /**

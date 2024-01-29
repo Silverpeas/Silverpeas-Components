@@ -25,7 +25,7 @@
 package org.silverpeas.components.mydb.model;
 
 import org.silverpeas.components.mydb.service.MyDBRuntimeException;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;

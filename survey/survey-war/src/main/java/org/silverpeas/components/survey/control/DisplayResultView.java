@@ -24,7 +24,7 @@
 
 package org.silverpeas.components.survey.control;
 
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.List;
 import java.util.stream.Stream;

@@ -36,7 +36,7 @@
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
-<%@ page import="org.silverpeas.core.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.kernel.bundle.ResourceLocator"%>
 <%@page import="org.silverpeas.core.web.treemenu.process.TreeHandler"%>
 <%@page import="org.silverpeas.core.web.treemenu.model.MenuConstants"%>
 
@@ -50,7 +50,7 @@ LocalizationBundle message = ResourceLocator.getLocalizationBundle("org.silverpe
 String contextName = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 %>
 
-<%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
+<%@ page import="org.silverpeas.kernel.bundle.LocalizationBundle" %>
 <%@ page import="org.owasp.encoder.Encode" %>
 <html>
 <head>

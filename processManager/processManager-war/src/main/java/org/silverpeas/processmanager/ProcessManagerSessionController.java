@@ -24,7 +24,7 @@
 package org.silverpeas.processmanager;
 
 import org.silverpeas.core.SilverpeasExceptionMessages;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.ProfileInst;
@@ -47,11 +47,11 @@ import org.silverpeas.core.contribution.content.form.record.GenericRecordTemplat
 import org.silverpeas.core.notification.message.MessageNotifier;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.MapUtil;
-import org.silverpeas.core.util.Mutable;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.Mutable;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.csv.CSVRow;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.export.ExportCSVBuilder;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
@@ -104,7 +104,7 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnGetting;
 import static org.silverpeas.core.cache.service.CacheAccessorProvider.getThreadCacheAccessor;
 import static org.silverpeas.core.contribution.attachment.AttachmentService.VERSION_MODE;
 import static org.silverpeas.core.util.CollectionUtil.asList;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 import static org.silverpeas.core.workflow.util.WorkflowUtil.getItemByName;
 import static org.silverpeas.processmanager.ProcessManagerException.PROCESS_INSTANCE_CREATION_FAILURE;
 

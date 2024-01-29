@@ -45,9 +45,9 @@
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 
 <%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
-<%@ page import="org.silverpeas.core.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.kernel.bundle.ResourceLocator"%>
 <%@ page import="org.silverpeas.components.forums.control.ForumsSessionController"%>
-<%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
+<%@ page import="org.silverpeas.kernel.bundle.LocalizationBundle" %>
 <%@ page import="org.silverpeas.components.forums.control.helpers.ForumListHelper" %>
 <%@ page import="org.silverpeas.components.forums.control.helpers.ForumActionHelper" %>
 <%@ page import="org.silverpeas.components.forums.control.helpers.ForumHelper" %>

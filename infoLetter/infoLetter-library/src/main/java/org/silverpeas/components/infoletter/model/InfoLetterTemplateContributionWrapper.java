@@ -24,13 +24,13 @@
 
 package org.silverpeas.components.infoletter.model;
 
-import org.silverpeas.core.NotSupportedException;
+import org.silverpeas.kernel.exception.NotSupportedException;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 
 import java.util.Date;
 import java.util.Optional;

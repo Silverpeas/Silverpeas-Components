@@ -43,7 +43,7 @@ import org.silverpeas.core.process.session.ProcessSession;
 
 import java.util.Collection;
 
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * Process to delete a media from Database

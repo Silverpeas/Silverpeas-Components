@@ -37,8 +37,8 @@ import org.silverpeas.core.contribution.content.wysiwyg.service.directive.ImageU
 import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.activation.FileDataSource;
 import javax.inject.Singleton;
@@ -61,7 +61,7 @@ import static java.util.Collections.singletonList;
 import static org.silverpeas.core.contribution.content.LinkUrlDataSourceScanner.extractUrlParameters;
 import static org.silverpeas.core.util.StringDataExtractor.RegexpPatternDirective.regexp;
 import static org.silverpeas.core.util.StringDataExtractor.from;
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 
 /**
  * This servlet is used in order to list image media for other components which handle WYSIWYG

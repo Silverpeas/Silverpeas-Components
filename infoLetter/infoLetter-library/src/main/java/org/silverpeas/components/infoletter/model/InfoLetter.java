@@ -37,14 +37,14 @@ import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.Optional;
 import java.util.function.Predicate;
 
 import static java.util.Optional.ofNullable;
 import static org.silverpeas.core.i18n.I18NHelper.DEFAULT_LANGUAGE;
-import static org.silverpeas.core.util.StringUtil.isNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.isNotDefined;
 
 public class InfoLetter extends SilverpeasBean implements Comparable<InfoLetter> {
 

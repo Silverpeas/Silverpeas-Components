@@ -39,7 +39,7 @@ import static java.lang.Integer.parseInt;
 import static java.util.Map.entry;
 import static java.util.Map.ofEntries;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
-import static org.silverpeas.core.util.StringUtil.likeIgnoreCase;
+import static org.silverpeas.kernel.util.StringUtil.likeIgnoreCase;
 
 /**
  * @author neysseri

@@ -41,7 +41,7 @@ import org.silverpeas.core.notification.user.UserNotification;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.reminder.Reminder;
 import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
-import org.silverpeas.core.util.Pair;
+import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.Collection;
@@ -56,7 +56,7 @@ import java.util.Optional;
 public interface KmeliaService extends ApplicationService {
 
   static KmeliaService get() {
-    return ServiceProvider.getSingleton(KmeliaService.class);
+    return ServiceProvider.getService(KmeliaService.class);
   }
 
   @Override

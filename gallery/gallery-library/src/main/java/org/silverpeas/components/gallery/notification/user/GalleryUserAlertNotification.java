@@ -34,7 +34,7 @@ import org.silverpeas.core.template.SilverpeasTemplate;
 import java.util.Collection;
 import java.util.Collections;
 
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 import static org.silverpeas.core.util.WebEncodeHelper.javaStringToHtmlString;
 
 /**

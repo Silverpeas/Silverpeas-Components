@@ -48,9 +48,9 @@
 <%@ page import="org.silverpeas.components.forums.control.helpers.ForumActionHelper"%>
 <%@ page import="org.silverpeas.components.forums.control.helpers.ForumHelper"%>
 <%@ page import="org.silverpeas.components.forums.control.helpers.ForumListHelper"%>
-<%@ page import="org.silverpeas.core.util.ResourceLocator"%>
+<%@ page import="org.silverpeas.kernel.bundle.ResourceLocator"%>
 <%@ page import="org.silverpeas.core.node.model.NodeDetail" %>
-<%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
+<%@ page import="org.silverpeas.kernel.bundle.LocalizationBundle" %>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%
 ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(

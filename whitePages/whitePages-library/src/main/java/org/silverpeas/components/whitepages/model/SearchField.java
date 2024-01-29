@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.whitepages.model;
 
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.io.Serializable;
 import java.util.UUID;

@@ -29,7 +29,7 @@ import org.silverpeas.components.mydb.model.predicates.ColumnValuePredicate;
 import org.silverpeas.components.mydb.service.MyDBRuntimeException;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.util.SilverpeasList;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;

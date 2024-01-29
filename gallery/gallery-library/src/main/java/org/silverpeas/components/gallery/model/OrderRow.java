@@ -24,7 +24,7 @@
 package org.silverpeas.components.gallery.model;
 
 import org.silverpeas.components.gallery.service.MediaServiceProvider;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.Date;
 

@@ -42,7 +42,7 @@ import org.silverpeas.core.io.file.SilverpeasFileProvider;
 import org.silverpeas.core.io.media.Definition;
 import org.silverpeas.core.io.media.video.ThumbnailPeriod;
 import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.http.FileResponse;
 import org.silverpeas.core.web.rs.RESTWebService;
 

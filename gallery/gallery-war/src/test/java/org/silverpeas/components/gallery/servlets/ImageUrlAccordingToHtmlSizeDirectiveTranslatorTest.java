@@ -25,8 +25,9 @@
 package org.silverpeas.components.gallery.servlets;
 
 import org.junit.jupiter.api.Test;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.unit.extention.TestManagedBean;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.annotations.TestManagedBean;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -34,7 +35,7 @@ import static org.hamcrest.Matchers.is;
 /**
  * @author silveryocha
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 class ImageUrlAccordingToHtmlSizeDirectiveTranslatorTest {
 
   private static final String SHORT_BAD_URL = "/silverpeas/GalleryInWysiwyg/dummy";

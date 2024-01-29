@@ -23,8 +23,8 @@
  */
 package org.silverpeas.components.yellowpages;
 
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
 
 /**
  * It gathers all the settings and i18n relative to the Yellowpages component.

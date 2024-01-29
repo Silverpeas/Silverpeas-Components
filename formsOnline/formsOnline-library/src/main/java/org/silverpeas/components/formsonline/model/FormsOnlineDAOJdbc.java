@@ -25,7 +25,7 @@
 package org.silverpeas.components.formsonline.model;
 
 import org.silverpeas.components.formsonline.model.RequestCriteria.QUERY_ORDER_BY;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.contribution.ContributionStatus;
 import org.silverpeas.core.persistence.Transaction;
@@ -34,8 +34,8 @@ import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQueries;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.persistence.jdbc.sql.SelectResultRowProcess;
 import org.silverpeas.core.util.CollectionUtil;
-import org.silverpeas.core.util.Mutable;
-import org.silverpeas.core.util.Pair;
+import org.silverpeas.kernel.util.Mutable;
+import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.core.util.SilverpeasArrayList;
 import org.silverpeas.core.util.SilverpeasList;
 

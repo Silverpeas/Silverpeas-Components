@@ -40,10 +40,10 @@ public class KmeliaSearchServiceProvider {
   }
 
   public static TopicSearchService getTopicSearchService() {
-    return ServiceProvider.getSingleton(TopicSearchService.class);
+    return ServiceProvider.getService(TopicSearchService.class);
   }
 
   public static StatisticService getStatisticService() {
-    return ServiceProvider.getSingleton(StatisticService.class);
+    return ServiceProvider.getService(StatisticService.class);
   }
 }

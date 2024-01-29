@@ -30,7 +30,7 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.util.MemoizedSupplier;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -48,7 +48,7 @@ import static java.util.Collections.singletonList;
 import static java.util.Collections.unmodifiableList;
 import static org.silverpeas.components.formsonline.model.FormInstanceValidationType.*;
 import static org.silverpeas.core.util.CollectionUtil.isNotEmpty;
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 
 public class FormDetail {
   public static final int STATE_NOT_YET_PUBLISHED = 0;

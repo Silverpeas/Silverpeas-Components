@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.jdbcconnector.service;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 
 /**
  * An Exception thrown when an error occurs while accessing a remote data source.

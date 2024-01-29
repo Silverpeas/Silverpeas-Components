@@ -47,7 +47,7 @@
  */
 package org.silverpeas.components.survey;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 
 /**
  * Non runtime exception management for this jobPeas.

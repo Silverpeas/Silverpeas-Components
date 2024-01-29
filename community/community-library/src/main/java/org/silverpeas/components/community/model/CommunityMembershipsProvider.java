@@ -29,9 +29,9 @@ import org.silverpeas.components.community.repository.CommunityMembershipReposit
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.persistence.Transaction;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.core.util.SilverpeasList;
 
 import javax.annotation.Nonnull;
@@ -74,7 +74,7 @@ public class CommunityMembershipsProvider {
 
   private CommunityMembershipsProvider(final CommunityOfUsers community) {
     this.community = community;
-    this.repository = ServiceProvider.getSingleton(CommunityMembershipRepository.class);
+    this.repository = ServiceProvider.getService(CommunityMembershipRepository.class);
     this.memberships = repository.getMembershipsTable(this.community);
   }
 

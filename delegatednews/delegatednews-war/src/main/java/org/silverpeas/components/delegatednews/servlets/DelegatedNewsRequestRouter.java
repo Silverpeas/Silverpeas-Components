@@ -25,7 +25,7 @@ package org.silverpeas.components.delegatednews.servlets;
 
 import org.silverpeas.components.delegatednews.control.DelegatedNewsSessionController;
 import org.silverpeas.components.delegatednews.model.DelegatedNews;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;

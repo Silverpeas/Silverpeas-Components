@@ -1,4 +1,4 @@
-<%@ page import="org.silverpeas.core.util.SettingBundle" %><%--
+<%@ page import="org.silverpeas.kernel.bundle.SettingBundle" %><%--
 
     Copyright (C) 2000 - 2024 Silverpeas
 

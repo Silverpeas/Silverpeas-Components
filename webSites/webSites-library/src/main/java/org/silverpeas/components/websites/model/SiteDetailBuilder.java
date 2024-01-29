@@ -1,7 +1,7 @@
 package org.silverpeas.components.websites.model;
 
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.text.ParseException;
 import java.util.Date;

@@ -24,7 +24,7 @@
 
 package org.silverpeas.components.mydb.service;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 
 /**
  * Exception thrown when an error occurs in a MyDB component instance.

@@ -24,7 +24,7 @@
 
 package org.silverpeas.components.almanach;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 /**
  * @author silveryocha

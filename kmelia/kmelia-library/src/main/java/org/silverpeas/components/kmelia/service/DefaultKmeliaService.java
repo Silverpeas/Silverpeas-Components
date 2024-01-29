@@ -114,7 +114,12 @@ import org.silverpeas.core.util.annotation.SourcePK;
 import org.silverpeas.core.util.annotation.TargetPK;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.Pair;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -155,7 +160,7 @@ import static org.silverpeas.core.node.model.NodePK.UNDEFINED_NODE_ID;
 import static org.silverpeas.core.notification.system.ResourceEvent.Type.MOVE;
 import static org.silverpeas.core.persistence.Transaction.getTransaction;
 import static org.silverpeas.core.security.authorization.AccessControlOperation.MODIFICATION;
-import static org.silverpeas.core.util.StringUtil.*;
+import static org.silverpeas.kernel.util.StringUtil.*;
 
 /**
  * This is the Kmelia Service controller of the MVC. It controls all the activities that happen in a

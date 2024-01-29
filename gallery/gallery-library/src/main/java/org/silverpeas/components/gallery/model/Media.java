@@ -41,7 +41,7 @@ import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.process.io.file.FileBasePath;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 
 import java.io.Serializable;

@@ -48,7 +48,7 @@ import org.silverpeas.components.kmelia.service.KmeliaService;
 import org.silverpeas.components.kmelia.service.KmeliaXmlFormUpdateContext;
 import org.silverpeas.core.ActionType;
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.ProfiledObjectId;
 import org.silverpeas.core.admin.ProfiledObjectType;
 import org.silverpeas.core.admin.component.model.ComponentInst;
@@ -135,7 +135,9 @@ import org.silverpeas.core.util.file.FileFolderManager;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -145,6 +147,9 @@ import org.silverpeas.core.web.selection.SelectionUsersGroups;
 import org.silverpeas.core.web.subscription.SubscriptionContext;
 import org.silverpeas.core.web.subscription.SubscriptionResourcePath;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
+import org.silverpeas.kernel.SilverpeasException;
+import org.silverpeas.kernel.util.Pair;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
@@ -589,7 +594,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
    * @return a KmeliaPublicationExporter instance.
    */
   public static KmeliaPublicationExporter aKmeliaPublicationExporter() {
-    return ServiceProvider.getSingleton(KmeliaPublicationExporter.class);
+    return ServiceProvider.getService(KmeliaPublicationExporter.class);
   }
 
   @Override
@@ -1236,7 +1241,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
    * publication, on right the optional clone.
    */
   public synchronized <T extends ResourceReference> Collection<Pair<KmeliaPublication,
-      KmeliaPublication>> getPublicationsForModification(
+        KmeliaPublication>> getPublicationsForModification(
       final List<T> references) {
     return getKmeliaService().getPublicationsForModification(references, getUserId());
   }
@@ -3295,12 +3300,12 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   public void saveXMLFormToPublication(PublicationDetail pubDetail, List<FileItem> items,
-      boolean forceUpdatePublication) throws org.silverpeas.core.SilverpeasException {
+      boolean forceUpdatePublication) throws SilverpeasException {
     saveXMLFormToPublication(pubDetail, new KmeliaXmlFormUpdateContext(items, forceUpdatePublication));
   }
 
   public boolean saveXMLFormToPublication(PublicationDetail pubDetail,
-      final KmeliaXmlFormUpdateContext updateContext) throws org.silverpeas.core.SilverpeasException {
+      final KmeliaXmlFormUpdateContext updateContext) throws SilverpeasException {
     final String xmlFormShortName;
     // Is it the creation of the content or an update ?
     final String infoId = pubDetail.getInfoId();
@@ -3350,7 +3355,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       form.update(updateContext.getItems(), data, context);
       set.save(data);
     } catch (Exception e) {
-      throw new org.silverpeas.core.SilverpeasException("Can't save XML form of publication", e);
+      throw new SilverpeasException("Can't save XML form of publication", e);
     }
     ofNullable(FileUploadUtil.getParameter(updateContext.getItems(), "VolatileId"))
         .filter(StringUtil::isDefined)
@@ -3370,7 +3375,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   public void saveXMLForm(List<FileItem> items, boolean forceUpdatePublication)
-      throws org.silverpeas.core.SilverpeasException {
+      throws SilverpeasException {
     if (isCloneNeeded()) {
       clonePublication();
     }

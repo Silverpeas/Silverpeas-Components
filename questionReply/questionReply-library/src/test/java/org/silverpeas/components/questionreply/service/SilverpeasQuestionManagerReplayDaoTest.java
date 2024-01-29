@@ -28,7 +28,8 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAOImpl;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 
 import java.beans.FeatureDescriptor;
 import java.beans.PropertyDescriptor;
@@ -41,7 +42,7 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 /**
  * @author silveryocha
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 public class SilverpeasQuestionManagerReplayDaoTest {
 
   private SilverpeasBeanDAOImpl replyDao;

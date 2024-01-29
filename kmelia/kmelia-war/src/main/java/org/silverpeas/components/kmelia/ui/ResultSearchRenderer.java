@@ -20,6 +20,7 @@
  */
 package org.silverpeas.components.kmelia.ui;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.FormException;
@@ -38,13 +39,14 @@ import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.search.AbstractResultDisplayer;
 import org.silverpeas.core.web.search.SearchResultContentVO;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.Iterator;
@@ -58,16 +60,18 @@ import java.util.Properties;
  * POSTFIX_BEAN_NAME = ResultDisplayer
  * </pre>
  */
+@Service
 @Named("kmeliaResultDisplayer")
 public class ResultSearchRenderer extends AbstractResultDisplayer {
 
-  private static final Properties templateConfig = new Properties();
+  private final Properties templateConfig = new Properties();
   private static final String TEMPLATE_FILENAME = "publication_result_template";
 
-  /*
-   * Load template configuration
+  /**
+   * Loads the template configuration.
    */
-  static {
+  @PostConstruct
+  protected void loadConfig() {
     SettingBundle settings =
         ResourceLocator.getSettingBundle("org.silverpeas.kmelia.settings.kmeliaSettings");
     templateConfig.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, settings

@@ -39,7 +39,7 @@ import org.silverpeas.core.media.streaming.StreamingProvider;
 import org.silverpeas.core.media.streaming.StreamingProvidersRegistry;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileUploadUtil;
 
 import java.text.ParseException;

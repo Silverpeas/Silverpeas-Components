@@ -31,7 +31,7 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.util.WebEncodeHelper;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.webapi.rating.RaterRatingEntity;
 
 import javax.servlet.jsp.JspWriter;

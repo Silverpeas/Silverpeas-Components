@@ -24,7 +24,7 @@
 
 package org.silverpeas.components.kmelia.model;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 public class KmaxRuntimeException extends SilverpeasRuntimeException {
   private static final long serialVersionUID = 2L;

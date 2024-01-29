@@ -29,8 +29,8 @@ import org.silverpeas.components.whitepages.model.Card;
 import org.silverpeas.core.admin.component.model.CompoSpace;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
 import javax.servlet.Filter;

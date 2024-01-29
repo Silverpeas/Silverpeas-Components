@@ -24,7 +24,7 @@
 
 package org.silverpeas.components.whitepages;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 
 public class WhitePagesException extends SilverpeasException {
 

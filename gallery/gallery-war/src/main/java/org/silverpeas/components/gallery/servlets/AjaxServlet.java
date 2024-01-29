@@ -26,7 +26,7 @@ package org.silverpeas.components.gallery.servlets;
 
 import org.silverpeas.components.gallery.control.GallerySessionController;
 import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;

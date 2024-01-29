@@ -1,6 +1,6 @@
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane" %>
-<%@ page import="org.silverpeas.core.util.SettingBundle" %>
+<%@ page import="org.silverpeas.kernel.bundle.SettingBundle" %>
 <%@ page import="org.silverpeas.core.notification.user.NotificationContext" %>
 <%@ page import="org.owasp.encoder.Encode" %>
 <%--

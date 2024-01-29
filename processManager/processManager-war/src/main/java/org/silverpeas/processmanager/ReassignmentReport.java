@@ -26,8 +26,8 @@ package org.silverpeas.processmanager;
 
 import org.silverpeas.core.admin.component.model.ComponentInstPath;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.util.logging.Level;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.Level;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.workflow.api.WorkflowException;
 
 import static java.lang.String.format;

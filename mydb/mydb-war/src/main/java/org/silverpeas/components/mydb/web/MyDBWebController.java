@@ -35,8 +35,8 @@ import org.silverpeas.components.mydb.model.predicates.AbstractColumnValuePredic
 import org.silverpeas.components.mydb.service.MyDBException;
 import org.silverpeas.components.mydb.service.MyDBRuntimeException;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -67,7 +67,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.silverpeas.components.mydb.web.TableRowsFilter.FIELD_NONE;
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 import static org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayLinesTag.AJAX_EXPORT_PARAMETER_NAME;
 import static org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane.getOrderByFrom;
 import static org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane.getPaginationPageFrom;

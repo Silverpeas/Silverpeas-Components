@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.jdbcconnector.service;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 /**
  * Runtime exception used when an error occurs while accessing the remote data source and that

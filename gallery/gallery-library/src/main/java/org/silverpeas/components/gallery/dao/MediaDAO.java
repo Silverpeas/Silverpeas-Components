@@ -46,7 +46,7 @@ import org.silverpeas.core.persistence.jdbc.sql.ResultSetWrapper;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;

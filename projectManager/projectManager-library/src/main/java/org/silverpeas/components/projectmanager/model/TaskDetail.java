@@ -24,7 +24,7 @@
 package org.silverpeas.components.projectmanager.model;
 
 import org.apache.commons.lang3.StringUtils;
-import org.silverpeas.core.NotSupportedException;
+import org.silverpeas.kernel.exception.NotSupportedException;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.model.Contribution;

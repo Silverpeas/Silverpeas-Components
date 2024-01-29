@@ -24,7 +24,7 @@
 
 package org.silverpeas.components.gallery.constant;
 
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileUtil;
 
 import javax.activation.MimeType;

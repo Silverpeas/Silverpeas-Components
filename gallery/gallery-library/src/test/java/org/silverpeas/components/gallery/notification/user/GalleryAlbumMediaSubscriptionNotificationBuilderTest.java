@@ -49,10 +49,11 @@ import org.silverpeas.core.subscription.SubscriptionResource;
 import org.silverpeas.core.subscription.service.ResourceSubscriptionProvider;
 import org.silverpeas.core.subscription.service.UserSubscriptionSubscriber;
 import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
-import org.silverpeas.core.test.unit.extention.EnableSilverTestEnv;
-import org.silverpeas.core.test.unit.extention.LocalizationBundleStub;
-import org.silverpeas.core.test.unit.extention.TestManagedMock;
-import org.silverpeas.core.test.unit.extention.TestManagedMocks;
+import org.silverpeas.core.test.unit.extention.JEETestContext;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
+import org.silverpeas.kernel.test.extension.LocalizationBundleStub;
+import org.silverpeas.kernel.test.annotations.TestManagedMock;
+import org.silverpeas.kernel.test.annotations.TestManagedMocks;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -69,13 +70,13 @@ import static org.mockito.Mockito.when;
 /**
  * @author silveryocha
  */
-@EnableSilverTestEnv
+@EnableSilverTestEnv(context = JEETestContext.class)
 @TestManagedMocks({ComponentAccessControl.class})
 class GalleryAlbumMediaSubscriptionNotificationBuilderTest {
 
-  private static final String FR = "fr";
-  private static final String EN = "en";
-  private static final String DE = "de";
+  private static final String FR = LocalizationBundleStub.LANGUAGE_FR;
+  private static final String EN = LocalizationBundleStub.LANGUAGE_EN;
+  private static final String DE = LocalizationBundleStub.LANGUAGE_DE;
   private static final ComponentInstLight componentInstance = new ComponentInstLight();
   private static final AlbumDetail albumDetail = new AlbumDetail(new NodeDetail());
   private static final AlbumDetail parentAlbumDetail = new AlbumDetail(new NodeDetail());
@@ -84,7 +85,7 @@ class GalleryAlbumMediaSubscriptionNotificationBuilderTest {
 
   @RegisterExtension
   static LocalizationBundleStub galleryBundle = new LocalizationBundleStub(
-      "org.silverpeas.gallery.multilang.galleryBundle");
+      "org.silverpeas.gallery.multilang.galleryBundle", LocalizationBundleStub.LANGUAGE_ALL);
 
   @TestManagedMock
   private NodeAccessControl nodeAccessControl;
@@ -92,7 +93,7 @@ class GalleryAlbumMediaSubscriptionNotificationBuilderTest {
   private ResourceSubscriptionService subscriptionService;
 
   private Map<String, ResourceSubscriptionService> componentImplementations;
-  private SubscriptionSubscriberList subscriptionSubscribers = new SubscriptionSubscriberList();
+  private final SubscriptionSubscriberList subscriptionSubscribers = new SubscriptionSubscriberList();
 
   @BeforeAll
   static void setupStaticData() {

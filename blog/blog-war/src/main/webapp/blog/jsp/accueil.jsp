@@ -27,7 +27,7 @@
 <%@page import="java.util.GregorianCalendar"%>
 <%@page import="org.silverpeas.components.blog.control.WallPaper"%>
 <%@page import="org.silverpeas.components.blog.control.StyleSheet"%>
-<%@ page import="org.silverpeas.core.util.StringUtil" %>
+<%@ page import="org.silverpeas.kernel.util.StringUtil" %>
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 <%@ page import="org.silverpeas.core.util.DateUtil" %>
 <%@ page import="org.silverpeas.core.admin.service.OrganizationControllerProvider" %>

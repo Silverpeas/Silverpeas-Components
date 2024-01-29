@@ -31,7 +31,7 @@ import org.silverpeas.components.kmelia.control.KmeliaSessionController;
 import org.silverpeas.components.kmelia.servlets.ajax.AjaxHandler;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.clipboard.ClipboardException;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 public class PasteHandler implements AjaxHandler {
 

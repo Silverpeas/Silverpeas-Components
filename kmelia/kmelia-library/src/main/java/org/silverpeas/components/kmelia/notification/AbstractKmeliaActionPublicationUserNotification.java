@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.kmelia.notification;
 
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.node.model.NodePK;

@@ -25,10 +25,10 @@
 package org.silverpeas.components.mydb.web;
 
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
-import org.silverpeas.core.util.Pair;
+import org.silverpeas.kernel.util.Pair;
 
-import static org.silverpeas.core.util.StringUtil.EMPTY;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.EMPTY;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
  * This class permits to handle messages into context of MyDB component.

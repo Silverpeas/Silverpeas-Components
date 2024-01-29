@@ -37,7 +37,7 @@ import org.silverpeas.core.ddwe.DragAndDropEditorContent;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 
 import java.util.Optional;
@@ -45,8 +45,8 @@ import java.util.Optional;
 import static java.util.Optional.ofNullable;
 import static org.silverpeas.components.infoletter.model.InfoLetterPublicationPdC.TYPE;
 import static org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController.copyDocumentsBetweenTwoResourcesWithSourceContent;
-import static org.silverpeas.core.util.StringUtil.EMPTY;
-import static org.silverpeas.core.util.StringUtil.isNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.EMPTY;
+import static org.silverpeas.kernel.util.StringUtil.isNotDefined;
 
 /**
  * @author frageade

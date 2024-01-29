@@ -30,7 +30,7 @@ import org.silverpeas.components.questionreply.model.Reply;
 import org.silverpeas.core.importexport.report.ExportReport;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;

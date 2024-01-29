@@ -36,7 +36,7 @@ import org.silverpeas.core.util.URLUtil;
 import java.util.MissingResourceException;
 
 import static org.silverpeas.components.gallery.model.AlbumDetail.RESOURCE_TYPE;
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
 import static org.silverpeas.core.util.WebEncodeHelper.javaStringToHtmlString;
 
 /**

@@ -32,7 +32,8 @@ import org.silverpeas.core.reminder.DateTimeReminder;
 import org.silverpeas.core.reminder.Reminder;
 import org.silverpeas.core.reminder.ReminderProcessName;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -94,7 +95,7 @@ public class KmeliaDelayedVisibilityUserNotificationReminder implements Backgrou
               .triggerFrom(DELAYED_VISIBILITY_AT_MODEL_PROPERTY)
               .schedule();
           return true;
-        } catch (IllegalStateException e) {
+        } catch (SilverpeasRuntimeException e) {
           SilverLogger.getLogger(this).error(e);
         }
       }

@@ -35,7 +35,7 @@ import javax.inject.Named;
 
 import static java.util.Optional.ofNullable;
 import static org.silverpeas.core.admin.space.SpaceInst.SPACE_KEY_PREFIX;
-import static org.silverpeas.core.util.StringUtil.EMPTY;
+import static org.silverpeas.kernel.util.StringUtil.EMPTY;
 
 /**
  * @author silveryocha

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.hyperlink.control;
 
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.external.webconnections.model.ConnectionDetail;
 import org.silverpeas.core.web.external.webconnections.model.WebConnectionsInterface;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;

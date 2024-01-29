@@ -52,9 +52,9 @@ import org.silverpeas.core.io.media.video.VideoThumbnailExtractor;
 import org.silverpeas.core.notification.message.MessageManager;
 import org.silverpeas.core.process.io.file.FileHandler;
 import org.silverpeas.core.process.io.file.HandledFile;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.io.File;
 import java.io.IOException;
@@ -75,8 +75,8 @@ import static org.silverpeas.core.io.media.image.ImageToolDirective.GEOMETRY_SHR
 import static org.silverpeas.core.io.media.image.ImageToolDirective.PREVIEW_WORK;
 import static org.silverpeas.core.io.media.video.ThumbnailPeriod.VIDEO_THUMBNAIL_FILE_EXTENSION;
 import static org.silverpeas.core.io.media.video.ThumbnailPeriod.VIDEO_THUMBNAIL_FILE_PREFIX;
-import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 public class MediaUtil {
 

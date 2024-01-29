@@ -26,7 +26,7 @@ package org.silverpeas.components.gallery.constant;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import org.silverpeas.components.gallery.GalleryComponentSettings;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.Collections;
 import java.util.EnumSet;

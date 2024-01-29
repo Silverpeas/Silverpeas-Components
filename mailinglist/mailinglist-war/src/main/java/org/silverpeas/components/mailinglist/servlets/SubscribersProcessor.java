@@ -31,8 +31,8 @@ import org.silverpeas.components.mailinglist.service.model.beans.MailingList;
 import org.silverpeas.core.web.mvc.controller.ComponentSessionController;
 import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.web.selection.SelectionUsersGroups;
-import org.silverpeas.core.util.Pair;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.kernel.util.Pair;
+import org.silverpeas.kernel.bundle.ResourceLocator;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;

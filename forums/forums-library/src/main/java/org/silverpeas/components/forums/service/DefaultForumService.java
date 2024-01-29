@@ -61,7 +61,7 @@ import org.silverpeas.core.tagcloud.dao.TagCloudPK;
 import org.silverpeas.core.tagcloud.model.TagCloud;
 import org.silverpeas.core.tagcloud.model.TagCloudUtil;
 import org.silverpeas.core.tagcloud.service.TagCloudService;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;

@@ -24,7 +24,7 @@
 
 package org.silverpeas.components.jdbcconnector.service.comparators;
 
-import static org.silverpeas.core.util.StringUtil.like;
+import static org.silverpeas.kernel.util.StringUtil.like;
 
 /**
  * The equality comparator.

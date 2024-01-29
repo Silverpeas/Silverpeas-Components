@@ -29,7 +29,7 @@ import org.silverpeas.components.community.model.CommunityOfUsers;
 import org.silverpeas.core.admin.service.SpaceProfile;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
 
 import java.util.Collection;
 

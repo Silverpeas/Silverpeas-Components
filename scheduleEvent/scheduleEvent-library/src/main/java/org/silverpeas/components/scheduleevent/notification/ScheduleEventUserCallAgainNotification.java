@@ -29,7 +29,7 @@ import org.silverpeas.components.scheduleevent.service.model.beans.ScheduleEvent
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.util.ArrayList;
 import java.util.Collection;

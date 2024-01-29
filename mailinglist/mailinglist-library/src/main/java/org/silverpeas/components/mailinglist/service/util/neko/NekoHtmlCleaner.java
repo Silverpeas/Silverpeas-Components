@@ -31,7 +31,7 @@ import org.cyberneko.html.HTMLConfiguration;
 import org.cyberneko.html.HTMLTagBalancer;
 import org.cyberneko.html.filters.ElementRemover;
 import org.silverpeas.core.annotation.Bean;
-import org.silverpeas.core.annotation.Technical;
+import org.silverpeas.kernel.annotation.Technical;
 
 import javax.enterprise.inject.Default;
 import java.io.IOException;

@@ -24,7 +24,7 @@
 
 package org.silverpeas.components.mydb.service;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 /**
  * Runtime exception when an unexpected errors occurs in MyDB and that error cannot be explicitly

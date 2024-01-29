@@ -30,7 +30,7 @@ import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.notification.PublicationEvent;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.inject.Inject;
 

@@ -25,7 +25,7 @@ package org.silverpeas.components.community;
 
 import org.silverpeas.components.community.model.CommunityOfUsers;
 import org.silverpeas.components.community.repository.CommunityOfUsersRepository;
-import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.ComponentInstancePostConstruction;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.service.AdminException;

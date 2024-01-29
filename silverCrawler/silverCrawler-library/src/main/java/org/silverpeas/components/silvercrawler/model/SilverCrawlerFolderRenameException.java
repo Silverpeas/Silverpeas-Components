@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.silvercrawler.model;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 
 public class SilverCrawlerFolderRenameException extends SilverpeasException {
 

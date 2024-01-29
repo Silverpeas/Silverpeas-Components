@@ -26,7 +26,7 @@ package org.silverpeas.components.kmelia.servlets.ajax.handlers;
 import org.silverpeas.components.kmelia.control.KmeliaSessionController;
 import org.silverpeas.components.kmelia.servlets.ajax.AjaxHandler;
 import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;

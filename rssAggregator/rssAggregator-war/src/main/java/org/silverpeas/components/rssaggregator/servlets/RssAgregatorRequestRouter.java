@@ -28,8 +28,8 @@ import org.silverpeas.components.rssaggregator.model.RSSViewType;
 import org.silverpeas.components.rssaggregator.model.RssAgregatorException;
 import org.silverpeas.components.rssaggregator.model.SPChannel;
 import org.silverpeas.components.rssaggregator.service.RSSServiceProvider;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -38,7 +38,7 @@ import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 public class RssAgregatorRequestRouter
     extends ComponentRequestRouter<RssAgregatorSessionController> {

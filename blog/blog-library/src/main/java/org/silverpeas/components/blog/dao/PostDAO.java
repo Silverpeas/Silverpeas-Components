@@ -25,7 +25,7 @@ package org.silverpeas.components.blog.dao;
 
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.util.Pair;
+import org.silverpeas.kernel.util.Pair;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

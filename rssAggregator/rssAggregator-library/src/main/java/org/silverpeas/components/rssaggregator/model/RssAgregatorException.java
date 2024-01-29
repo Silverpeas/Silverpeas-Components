@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.rssaggregator.model;
 
-import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 
 public class RssAgregatorException extends SilverpeasException {
 

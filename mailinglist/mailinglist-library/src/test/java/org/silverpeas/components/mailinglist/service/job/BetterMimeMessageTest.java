@@ -24,7 +24,7 @@
 package org.silverpeas.components.mailinglist.service.job;
 
 import org.junit.jupiter.api.Test;
-import org.silverpeas.core.test.unit.UnitTest;
+import org.silverpeas.kernel.test.UnitTest;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;

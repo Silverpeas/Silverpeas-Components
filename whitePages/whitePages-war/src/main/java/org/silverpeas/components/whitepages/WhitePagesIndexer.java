@@ -34,14 +34,15 @@ import org.silverpeas.components.whitepages.record.UserTemplate;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.annotation.Technical;
+import org.silverpeas.kernel.SilverpeasException;
+import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.core.web.index.components.ComponentIndexation;
 
 import javax.inject.Inject;
@@ -67,13 +68,13 @@ public class WhitePagesIndexer implements ComponentIndexation {
 
   @Override
   public void index(SilverpeasComponentInstance componentInst)
-      throws org.silverpeas.core.SilverpeasException {
+      throws SilverpeasException {
     Collection<Card> visibleCards;
     try {
       visibleCards = enrichWithUserRecordsAndCardRecords(componentInst.getId(),
           cardManager.getVisibleCards(componentInst.getId()));
     } catch (WhitePagesException e) {
-      throw new org.silverpeas.core.SilverpeasException(e);
+      throw new SilverpeasException(e);
     }
     for (Card card : visibleCards) {
       cardManager.indexCard(card);

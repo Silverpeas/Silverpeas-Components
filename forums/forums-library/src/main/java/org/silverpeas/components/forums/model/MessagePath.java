@@ -25,7 +25,7 @@
 package org.silverpeas.components.forums.model;
 
 import org.silverpeas.core.util.ContributionPath;
-import org.silverpeas.core.util.Pair;
+import org.silverpeas.kernel.util.Pair;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
