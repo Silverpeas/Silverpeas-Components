@@ -37,7 +37,7 @@ import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
-import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery.select;
+import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery.createSelect;
 import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery.streamBySplittingOn;
 
 public class PostDAO {
@@ -77,7 +77,7 @@ public class PostDAO {
   public static Map<String, Date> getEventDateIndexedByPost(final Collection<String> pubIds)
       throws SQLException {
     return streamBySplittingOn(pubIds,
-            idBatch -> select(PUB_ID + ", dateEvent")
+            idBatch -> createSelect(PUB_ID + ", dateEvent")
                 .from(BLOG_POST_TABLE_NAME)
                 .where(PUB_ID)
                 .in(idBatch.stream().map(Integer::parseInt).collect(toList()))
@@ -117,16 +117,16 @@ public class PostDAO {
 
   public static Collection<String> getAllPostIds(Connection con, String instanceId)
       throws SQLException {
-    return select(PUB_ID)
+    return createSelect(PUB_ID)
         .from(BLOG_POST_TABLE_NAME)
         .where(INSTANCE_ID_CLAUSE, instanceId)
-        .orderBy(ORDER_BY_DATE_AND_PUB_ID)
+        .orderBy(String.join(",", ORDER_BY_DATE_AND_PUB_ID))
         .executeWith(con, r -> String.valueOf(r.getInt(PUB_ID)));
   }
 
   public static Collection<Date> getAllEventDates(Connection con, String instanceId)
       throws SQLException {
-    return select("DISTINCT " + DATE_EVENT)
+    return createSelect("DISTINCT " + DATE_EVENT)
         .from(BLOG_POST_TABLE_NAME)
         .where(INSTANCE_ID_CLAUSE, instanceId)
         .orderBy(ORDER_BY_DATE)
@@ -135,13 +135,13 @@ public class PostDAO {
 
   public static Collection<String> getPostInRange(Connection con, String instanceId,
       String beginDate, String endDate) throws SQLException, ParseException {
-    return select(PUB_ID)
+    return createSelect(PUB_ID)
         .from(BLOG_POST_TABLE_NAME)
         .where(INSTANCE_ID_CLAUSE, instanceId)
         .and(EVENT_PERIOD_CLAUSE,
             Long.toString(FORMATTER.parse(beginDate).getTime()),
             Long.toString(FORMATTER.parse(endDate).getTime()))
-        .orderBy(ORDER_BY_DATE_AND_PUB_ID)
+        .orderBy(String.join(",", ORDER_BY_DATE_AND_PUB_ID))
         .executeWith(con, r -> String.valueOf(r.getInt(PUB_ID)));
   }
 }
