@@ -1086,7 +1086,7 @@ a.button.refuse span {
   background: transparent url(../../../util/icons/delete.gif) 0 0 no-repeat;
 }
 
-#localLocations, #browserLocation{
+#localLocations, #browserLocation {
     width: 58%;
     float: left;
     margin-left: 0;
@@ -1098,95 +1098,13 @@ a.button.refuse span {
 	max-height:250px;
     overflow: auto;
 }
-
-#browserLocation #currentPath {
-	background-color:#f5f5f5;
-	border-bottom:1px solid #DDD;
-	padding:1em;
-}
-
-#browserLocation #currentPath > a:first-child {
-	text-indent:-300em;
-	background:transparent url(../../../util/icons/Home.gif) 0 -1px no-repeat;
-	display:inline-block;
-	width:22px;
-}
-
-#browserLocation #currentPath a{
-	color: #1c94d4;
-	text-decoration:underline;
-}
-#browserLocation #currentPath a:last-child{
-	font-weight:bold;
-	color:inherit;
-	text-decoration:none;
-}
-#browserLocation #spaces ,
-#browserLocation #components,
-#browserLocation #treeview {
-	padding:0;
-	margin:1em 1em 1em 0;
-	float:left;
-	
-	border:1px solid #DDD;
-	height:300px;
-	overflow:auto;
-}
-#browserLocation #spaces,
-#browserLocation #components {
-	min-width:7em;
+#browserLocation .browser .spaces,
+#browserLocation .browser .components {
+  min-width:7em;
 }
 #browserLocation #treeview {
-	margin-right:0;
-	min-width:calc(33.3% - 2px);
-	
-}
-#browserLocation #spaces ul ,
-#browserLocation #components ul,
-#browserLocation #treeview table{
-	padding:0;
-	margin:0;
-	list-style:none;
-}
-#browserLocation #spaces ul li ,
-#browserLocation #components ul li {
-	min-width:13em;
-}
-
-#browserLocation #treeview table{
-	width:100%;
-}
-#browserLocation #treeview  table tr td:first-child{
-	padding:0.25em 1em;
-}
-#browserLocation #spaces ul li ,
-#browserLocation #components ul li{
-	padding:0.5em 1em;
-	border-bottom:1px solid #DDD;	
-}
-#browserLocation #spaces ul li a,
-#browserLocation #components ul li a{
-	display:block;	
-}
-#browserLocation #spaces li a {
-	background:transparent url(../../../util/icons/treeview/plus.gif) 0 0 no-repeat;
-	padding-left:24px;
-}
-#browserLocation #components li a {
-	background:transparent url(../../../util/icons/component/kmeliaSmall.gif) 0 -2px no-repeat;
-	padding-left:24px;
-}
-
-#browserLocation #components h4,
-#browserLocation #spaces h4,
-#browserLocation #treeview h4  {
-	display:block;
-	text-align:center;
-	border-bottom:1px solid #DDD;
-	font-weight:bold;
-	padding:1em 0;
-	margin:0;
-	
+  margin-right:0;
+  min-width:calc(33.3% - 2px);
 }
 .kmelia.path .header h3 {
     padding: 0;
@@ -1240,7 +1158,8 @@ a.button.refuse span {
     padding-right: 20px;
 }
 
-.kmelia.path #localTreeview table{
+.kmelia.path #localTreeview table,
+.kmelia.path #treeviewFolders table {
 	width:100%;
 }
 .kmelia.path .accordion table td{
