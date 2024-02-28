@@ -77,7 +77,7 @@ public class CommunityAppIT {
   @Before
   public void initCurrentRequester() {
     SessionCacheAccessor sessionCacheAccessor =
-        (SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor();
+        CacheAccessorProvider.getSessionCacheAccessor();
     sessionCacheAccessor.newSessionCache(User.getById("0"));
   }
 

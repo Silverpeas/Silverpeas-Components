@@ -34,10 +34,10 @@ import org.silverpeas.components.community.repository.CommunityMembershipReposit
 import org.silverpeas.components.community.repository.CommunityOfUsersRepository;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
-import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.space.SpaceHomePageType;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceProfileInst;
+import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
@@ -47,28 +47,24 @@ import org.silverpeas.core.cache.service.SessionCacheAccessor;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
+import org.silverpeas.core.persistence.datasource.model.jpa.EntityManagerProvider;
 import org.silverpeas.core.persistence.datasource.model.jpa.JpaPersistOperation;
 import org.silverpeas.core.persistence.datasource.model.jpa.JpaUpdateOperation;
+import org.silverpeas.core.test.unit.EntityIdSetter;
 import org.silverpeas.core.test.unit.extention.JEETestContext;
-import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 import org.silverpeas.kernel.test.annotations.TestManagedBeans;
 import org.silverpeas.kernel.test.annotations.TestManagedMock;
-import org.silverpeas.core.test.unit.EntityIdSetter;
+import org.silverpeas.kernel.test.extension.EnableSilverTestEnv;
 import org.silverpeas.kernel.util.Pair;
 
+import javax.persistence.EntityManager;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static org.exparity.hamcrest.date.OffsetDateTimeMatchers.within;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -98,10 +94,10 @@ class CommunityOfUsersTest {
   private static final String[] INHERITED_MANAGERS = new String[]{"42"};
   private static final String NO_MEMBER = "666";
 
-  @SuppressWarnings("unused")
+  @TestManagedMock
+  EntityManagerProvider entityManagerProvider;
   @TestManagedMock
   CommunityOfUsersRepository communityRepository;
-  @SuppressWarnings("unused")
   @TestManagedMock
   CommunityMembershipRepository membershipRepository;
 
@@ -120,132 +116,18 @@ class CommunityOfUsersTest {
   }
 
   @BeforeEach
-  @SuppressWarnings("JUnitMalformedDeclaration")
   public void mockRequiredResources(
-      @TestManagedMock OrganizationController organizationController,
       @TestManagedMock Administration administration,
       @TestManagedMock UserProvider userProvider) throws AdminException {
-    // get a user whatever its id
-    Answer<? extends User> userAnswer = a -> {
-      String id = a.getArgument(0);
-      UserDetail user = new UserDetail();
-      user.setId(id);
-      return user;
-    };
-    when(userProvider.getUser(anyString())).thenAnswer(userAnswer);
-    when(organizationController.getUserDetail(anyString())).thenAnswer(userAnswer);
+    mockUsersProviding(userProvider);
 
-    // for the current requester
-    SessionCacheAccessor sessionCacheAccessor =
-        (SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor();
+    // for the current requester. Requires the user providing to be mocked
+    SessionCacheAccessor sessionCacheAccessor = CacheAccessorProvider.getSessionCacheAccessor();
     sessionCacheAccessor.newSessionCache(User.getById(USER_ID));
 
-    // get a mocked space instance with all the roles initialized with a set of users
-    when(organizationController.getSpaceInstById(anyString())).thenAnswer(i -> {
-      String spaceId = i.getArgument(0);
-      List<SpaceProfileInst> profiles =
-          profilesPerSpace.computeIfAbsent(spaceId, s -> new ArrayList<>());
-      SpaceInst space = mock(SpaceInst.class);
-      when(space.getId()).thenReturn(spaceId);
-      if (profiles.isEmpty()) {
-        when(space.getAllSpaceProfilesInst()).thenAnswer(j -> {
-          initProfiles(spaceId, profiles);
-          return profiles;
-        });
-      } else {
-        when(space.getAllSpaceProfilesInst()).thenReturn(profiles);
-      }
+    mockExpectedAdministrationBehaviour(administration);
 
-      when(space.getSpaceProfileInst(anyString())).thenAnswer(j -> {
-        String role = j.getArgument(0);
-        return profiles.stream()
-            .filter(p -> !p.isInherited())
-            .filter(p -> p.getName().equals(role))
-            .findFirst()
-            .map(p -> {
-              SpaceProfileInst pp = new SpaceProfileInst(p);
-              pp.setId(p.getId());
-              return pp;
-            })
-            .orElse(null);
-      });
-
-      return space;
-    });
-    when(administration.getSpaceInstById(anyString())).thenAnswer(
-        i -> organizationController.getSpaceInstById(i.getArgument(0)));
-
-    // mock the behaviour of a space role update with a modified set of users playing this role
-    // the behaviour update the profiles cache for the space used in the test
-    when(
-        administration.updateSpaceProfileInst(any(SpaceProfileInst.class), anyString())).thenAnswer(
-        i -> {
-          SpaceProfileInst profile = i.getArgument(0);
-          List<SpaceProfileInst> profiles =
-              profilesPerSpace.computeIfAbsent(profile.getSpaceFatherId(), s -> new ArrayList<>());
-          profiles.stream()
-              .filter(p -> p.getId().equals(profile.getId()))
-              .findFirst()
-              .ifPresent(p -> p.setUsers(profile.getAllUsers()));
-          return profile.getId();
-        });
-
-    // mock the behaviour of the repositories in the community app
-    EntityIdSetter idSetter = new EntityIdSetter(UuidIdentifier.class);
-    String communityId = new UuidIdentifier().generateNewId().asString();
-    when(communityRepository.getByComponentInstanceId(anyString())).thenAnswer(i -> {
-      String instanceId = i.getArgument(0);
-      CommunityOfUsers community = new CommunityOfUsers(instanceId, SPACE_ID);
-      community.setHomePage("kmelia42", SpaceHomePageType.COMPONENT_INST);
-      community.setCharterURL("https://www.silverpeas.org");
-      idSetter.setIdTo(community, communityId);
-      return Optional.of(community);
-    });
-    when(communityRepository.getBySpaceId(anyString())).thenAnswer(i -> {
-      String spaceId = i.getArgument(0);
-      CommunityOfUsers community = new CommunityOfUsers(INSTANCE_ID, spaceId);
-      community.setHomePage("kmelia42", SpaceHomePageType.COMPONENT_INST);
-      community.setCharterURL("https://www.silverpeas.org");
-      idSetter.setIdTo(community, communityId);
-      return Optional.of(community);
-    });
-    when(membershipRepository.save(any(CommunityMembership.class))).thenAnswer(i -> {
-      CommunityMembership membership = i.getArgument(0);
-      members.add(membership.getUser().getId());
-      return membership;
-    });
-    when(membershipRepository.getMembershipsTable(any(CommunityOfUsers.class))).thenAnswer(i -> {
-      CommunityOfUsers community = i.getArgument(0);
-      CommunityMembershipRepository.CommunityMembershipsTable memberships =
-          mock(CommunityMembershipRepository.CommunityMembershipsTable.class);
-      when(memberships.getByUser(any(User.class))).thenAnswer(j -> {
-        User user = j.getArgument(0);
-        if (!members.contains(user.getId())) {
-          //noinspection ConstantConditions
-          return Optional.ofNullable(null);
-        }
-        MethodHandles.Lookup lookup = MethodHandles.lookup();
-        MethodHandles.Lookup
-            privateLookup = MethodHandles.privateLookupIn(CommunityMembership.class, lookup);
-        MethodType methodType =
-            MethodType.methodType(CommunityMembership.class, User.class, CommunityOfUsers.class);
-        MethodHandle asMember =
-            privateLookup.findStatic(CommunityMembership.class, "asMember", methodType);
-        CommunityMembership membership = (CommunityMembership) asMember.invoke(user, community);
-        if (membershipIsPending) {
-          MethodHandle statusSetter =
-              privateLookup.findSetter(CommunityMembership.class, "status",
-                  MembershipStatus.class);
-          statusSetter.invoke(membership, MembershipStatus.PENDING);
-        }
-        return Optional.of(membership);
-      });
-      return memberships;
-    });
-
-    // for persistance operations
-    OperationContext.fromUser(USER_ID);
-
+    mockRepositoriesBehaviour();
   }
 
   @Test
@@ -456,13 +338,12 @@ class CommunityOfUsersTest {
     Optional<CommunityOfUsers> optCommunity =
         CommunityOfUsers.getByComponentInstanceId(INSTANCE_ID);
     assertThat(optCommunity.isPresent(), is(true));
-    CommunityOfUsers community = optCommunity.get();
 
+    CommunityOfUsers community = optCommunity.get();
     CommunityMembership membership = community.removeMembership(user);
     assertThat(membership, nullValue());
 
     assertThat(community.isMember(user), is(false));
-    verify(membershipRepository, never()).getMembershipsTable(community);
     //noinspection ConstantConditions
     verify(membershipRepository, never()).save(membership);
   }
@@ -559,5 +440,149 @@ class CommunityOfUsersTest {
     profiles.add(inh);
   }
 
+  private void mockRepositoriesBehaviour() {
+    // mock the behaviour of the repositories in the community app
+    EntityIdSetter idSetter = new EntityIdSetter(UuidIdentifier.class);
+    String communityId = new UuidIdentifier().generateNewId().asString();
 
+    EntityManager entityManager = mock(EntityManager.class);
+    when(entityManagerProvider.getEntityManager()).thenReturn(entityManager);
+    when(entityManager.find(any(), any())).thenAnswer(i -> {
+      CommunityOfUsers community = new CommunityOfUsers(INSTANCE_ID, SPACE_ID);
+      community.setHomePage("kmelia42", SpaceHomePageType.COMPONENT_INST);
+      community.setCharterURL("https://www.silverpeas.org");
+      idSetter.setIdTo(community, communityId);
+      return community;
+    });
+
+    when(communityRepository.getByComponentInstanceId(anyString())).thenAnswer(i -> {
+      String instanceId = i.getArgument(0);
+      CommunityOfUsers community = new CommunityOfUsers(instanceId, SPACE_ID);
+      community.setHomePage("kmelia42", SpaceHomePageType.COMPONENT_INST);
+      community.setCharterURL("https://www.silverpeas.org");
+      idSetter.setIdTo(community, communityId);
+      return Optional.of(community);
+    });
+    when(communityRepository.getBySpaceId(anyString())).thenAnswer(i -> {
+      String spaceId = i.getArgument(0);
+      CommunityOfUsers community = new CommunityOfUsers(INSTANCE_ID, spaceId);
+      community.setHomePage("kmelia42", SpaceHomePageType.COMPONENT_INST);
+      community.setCharterURL("https://www.silverpeas.org");
+      idSetter.setIdTo(community, communityId);
+      return Optional.of(community);
+    });
+    when(communityRepository.save(any(CommunityOfUsers.class))).thenAnswer(i -> i.getArgument(0));
+    when(membershipRepository.save(any(CommunityMembership.class))).thenAnswer(i -> {
+      CommunityMembership membership = i.getArgument(0);
+      members.add(membership.getUser().getId());
+      return membership;
+    });
+
+    when(membershipRepository.getMembershipsTable(any(CommunityOfUsers.class))).thenAnswer(i -> {
+      CommunityOfUsers community = i.getArgument(0);
+      CommunityMembershipRepository.CommunityMembershipsTable memberships =
+          mock(CommunityMembershipRepository.CommunityMembershipsTable.class);
+      when(memberships.getByUser(any(User.class))).thenAnswer(j -> {
+        User user = j.getArgument(0);
+        if (!members.contains(user.getId())) {
+          //noinspection ConstantConditions
+          return Optional.ofNullable(null);
+        }
+        MethodHandles.Lookup lookup = MethodHandles.lookup();
+        MethodHandles.Lookup
+            privateLookup = MethodHandles.privateLookupIn(CommunityMembership.class, lookup);
+        MethodType methodType =
+            MethodType.methodType(CommunityMembership.class, User.class, CommunityOfUsers.class);
+        MethodHandle asMember =
+            privateLookup.findStatic(CommunityMembership.class, "asMember", methodType);
+        CommunityMembership membership = (CommunityMembership) asMember.invoke(user, community);
+        if (membershipIsPending) {
+          MethodHandle statusSetter =
+              privateLookup.findSetter(CommunityMembership.class, "status",
+                  MembershipStatus.class);
+          statusSetter.invoke(membership, MembershipStatus.PENDING);
+        }
+        return Optional.of(membership);
+      });
+      return memberships;
+    });
+
+    // for persistence operations
+    OperationContext.fromUser(USER_ID);
+  }
+
+  private void mockExpectedAdministrationBehaviour(Administration administration) throws AdminException {
+    // get a mocked space instance with all the roles initialized with a set of users
+    when(administration.getSpaceInstById(anyString())).thenAnswer(i -> {
+      String spaceId = i.getArgument(0);
+      List<SpaceProfileInst> profiles =
+          profilesPerSpace.computeIfAbsent(spaceId, s -> new ArrayList<>());
+      SpaceInst space = mock(SpaceInst.class);
+      when(space.getId()).thenReturn(spaceId);
+      when(space.getName()).thenReturn("My community");
+      if (profiles.isEmpty()) {
+        when(space.getAllSpaceProfilesInst()).thenAnswer(j -> {
+          initProfiles(spaceId, profiles);
+          return profiles;
+        });
+      } else {
+        when(space.getAllSpaceProfilesInst()).thenReturn(profiles);
+      }
+
+      when(space.getSpaceProfileInst(anyString())).thenAnswer(j -> {
+        String role = j.getArgument(0);
+        return profiles.stream()
+            .filter(p -> !p.isInherited())
+            .filter(p -> p.getName().equals(role))
+            .findFirst()
+            .map(p -> {
+              SpaceProfileInst pp = new SpaceProfileInst(p);
+              pp.setId(p.getId());
+              return pp;
+            })
+            .orElse(null);
+      });
+
+      return space;
+    });
+
+    // mock the behaviour of a space role update with a modified set of users playing this role
+    // the behaviour update the profiles cache for the space used in the test
+    when(
+        administration.updateSpaceProfileInst(any(SpaceProfileInst.class), anyString())).thenAnswer(
+        i -> {
+          SpaceProfileInst profile = i.getArgument(0);
+          List<SpaceProfileInst> profiles =
+              profilesPerSpace.computeIfAbsent(profile.getSpaceFatherId(), s -> new ArrayList<>());
+          profiles.stream()
+              .filter(p -> p.getId().equals(profile.getId()))
+              .findFirst()
+              .ifPresent(p -> p.setUsers(profile.getAllUsers()));
+          return profile.getId();
+        });
+
+    when(administration.getGroup(anyString())).thenAnswer(i -> {
+      GroupDetail group = new GroupDetail();
+      group.setName("foo");
+      group.setId(i.getArgument(0));
+      return group;
+    });
+
+    when(administration.addGroup(any(GroupDetail.class), any(Boolean.class))).thenAnswer(i -> {
+      GroupDetail group = i.getArgument(0);
+      group.setId("42");
+      return group.getId();
+    });
+  }
+
+  private static void mockUsersProviding(UserProvider userProvider) {
+    // get a user whatever its id
+    Answer<? extends User> userAnswer = a -> {
+      String id = a.getArgument(0);
+      UserDetail user = new UserDetail();
+      user.setId(id);
+      return user;
+    };
+    when(userProvider.getUser(anyString())).thenAnswer(userAnswer);
+  }
 }

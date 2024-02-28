@@ -49,12 +49,15 @@ public class CommunityInstancePreDestruction implements ComponentInstancePreDest
   @Transactional
   @Override
   public void preDestroy(final String componentInstanceId) {
+    // delete the content describing the community of users
     communitiesRepository.getByComponentInstanceId(componentInstanceId).ifPresent(c -> {
       Optional.ofNullable(c.getSpacePresentationContent())
           .map(WysiwygContent::getContribution)
           .ifPresent(WysiwygContent::deleteAllContents);
+      // clean up the memberships to this community if not already done
       membersRepository.getMembershipsTable(c).deleteAll();
-      communitiesRepository.delete(c);
+      // delete finally the community of users
+      c.delete();
     });
   }
 }

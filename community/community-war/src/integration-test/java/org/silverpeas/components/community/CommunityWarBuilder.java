@@ -25,7 +25,6 @@ package org.silverpeas.components.community;
 
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.silverpeas.components.community.test.SessionManagementService;
-import org.silverpeas.core.test.BasicWarBuilder;
 import org.silverpeas.web.test.WarBuilder4Web;
 
 import java.io.File;

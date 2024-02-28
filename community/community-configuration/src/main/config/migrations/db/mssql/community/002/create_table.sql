@@ -1,8 +1,8 @@
-CREATE TABLE IF NOT EXISTS SC_Community
+CREATE TABLE SC_Community
 (
     id           VARCHAR(40) PRIMARY KEY,
     instanceId   VARCHAR(30)  NOT NULL,
-    spaceId      VARCHAR(30)  NOT NULL,
+    spaceId      VARCHAR(40)  NOT NULL,
     groupId      INT          NULL,
     homePage     VARCHAR(400) NULL,
     homePageType INT          NULL,
@@ -11,18 +11,18 @@ CREATE TABLE IF NOT EXISTS SC_Community
     CONSTRAINT FK_GROUP FOREIGN KEY (groupId) REFERENCES st_group (id)
 );
 
-CREATE TABLE IF NOT EXISTS SC_Community_Membership
+CREATE TABLE SC_Community_Membership
 (
     id             VARCHAR(40) PRIMARY KEY,
     community      VARCHAR(40) NOT NULL,
     userId         INT         NOT NULL,
     status         VARCHAR(15) NOT NULL,
-    joiningDate    TIMESTAMP   NULL,
-    createDate     TIMESTAMP   NOT NULL,
+    joiningDate    DATETIME    NULL,
+    createDate     DATETIME    NOT NULL,
     createdBy      VARCHAR(40) NOT NULL,
-    lastUpdateDate TIMESTAMP   NOT NULL,
+    lastUpdateDate DATETIME    NOT NULL,
     lastUpdatedBy  VARCHAR(40) NOT NULL,
-    version        INT8        NOT NULL,
+    version        BIGINT      NOT NULL,
     CONSTRAINT FK_COMMUNITY FOREIGN KEY (community) REFERENCES SC_Community (id),
     CONSTRAINT FK_USER FOREIGN KEY (userId) REFERENCES st_user (id)
-)
+);

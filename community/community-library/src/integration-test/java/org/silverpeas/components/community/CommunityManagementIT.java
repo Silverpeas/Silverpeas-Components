@@ -23,7 +23,6 @@
  */
 package org.silverpeas.components.community;
 
-import org.apache.commons.lang3.reflect.FieldUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -33,7 +32,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.components.community.model.CommunityMembership;
-import org.silverpeas.components.community.model.CommunityMembershipsProvider;
 import org.silverpeas.components.community.model.CommunityOfUsers;
 import org.silverpeas.components.community.repository.CommunityMembershipRepository;
 import org.silverpeas.core.admin.PaginationPage;
@@ -55,7 +53,6 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.exparity.hamcrest.date.OffsetDateTimeMatchers.within;
@@ -91,18 +88,13 @@ public class CommunityManagementIT {
   @Before
   public void initCurrentRequester() {
     SessionCacheAccessor sessionCacheAccessor =
-        (SessionCacheAccessor) CacheAccessorProvider.getSessionCacheAccessor();
+        CacheAccessorProvider.getSessionCacheAccessor();
     sessionCacheAccessor.newSessionCache(User.getById("0"));
   }
 
-  @SuppressWarnings("unchecked")
   @After
-  public void clearCaches() throws IllegalAccessException {
+  public void clearCaches() {
     Administration.get().reloadCache();
-    Map<String, OffsetDateTime> cache =
-        (Map<String, OffsetDateTime>) FieldUtils.readDeclaredStaticField(
-            CommunityMembershipsProvider.class, "lastSynchronizations", true);
-    cache.clear();
   }
 
   @Test
@@ -514,7 +506,7 @@ public class CommunityManagementIT {
     assertThat(membership.getStatus().isNoMoreMember(), is(true));
 
     // user 2 plays a role in the community space, but his membership hasn't been registered
-    assertThat(actualCommunity.isMember(user1), is(true));
+    assertThat(actualCommunity.isMember(user2), is(true));
     assertThat(membershipRepository.getMembershipsTable(actualCommunity).getByUser(user2).isEmpty(),
         is(true));
 
@@ -526,7 +518,9 @@ public class CommunityManagementIT {
     assertThat(membership.getUser(), is(user3));
     assertThat(membership.getStatus().isMember(), is(true));
 
-    // synchronization should be performed while getting members of the community of users
+    // synchronization should be performed while getting members of the community of users:
+    // after synchronization user1 and user2 should be members in the community whereas the
+    // membership of user3 should be removed
     List<CommunityMembership> memberships =
         actualCommunity.getMembershipsProvider().getInRange(new PaginationPage(1, 10));
     assertThat(memberships, notNullValue());

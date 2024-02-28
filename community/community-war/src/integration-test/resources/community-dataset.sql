@@ -1,5 +1,6 @@
 INSERT INTO uniqueid (maxid, tablename)
-VALUES ('5', 'st_space'),
+VALUES ('1', 'st_domain'),
+       ('5', 'st_space'),
        ('4', 'st_componentinstance'),
        ('6', 'st_user'),
        ('13', 'st_spaceuserrole');

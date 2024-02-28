@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS SC_Community
+CREATE TABLE SC_Community
 (
     id           VARCHAR(40) PRIMARY KEY,
     instanceId   VARCHAR(30)  NOT NULL,
@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS SC_Community
     CONSTRAINT FK_GROUP FOREIGN KEY (groupId) REFERENCES st_group (id)
 );
 
-CREATE TABLE IF NOT EXISTS SC_Community_Membership
+CREATE TABLE SC_Community_Membership
 (
     id             VARCHAR(40) PRIMARY KEY,
     community      VARCHAR(40) NOT NULL,
@@ -25,4 +25,4 @@ CREATE TABLE IF NOT EXISTS SC_Community_Membership
     version        INT8        NOT NULL,
     CONSTRAINT FK_COMMUNITY FOREIGN KEY (community) REFERENCES SC_Community (id),
     CONSTRAINT FK_USER FOREIGN KEY (userId) REFERENCES st_user (id)
-)
+);

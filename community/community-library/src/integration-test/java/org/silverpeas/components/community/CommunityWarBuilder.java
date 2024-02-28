@@ -23,7 +23,6 @@
  */
 package org.silverpeas.components.community;
 
-import org.silverpeas.core.test.BasicWarBuilder;
 import org.silverpeas.web.test.WarBuilder4Web;
 
 /**
@@ -47,6 +46,8 @@ public class CommunityWarBuilder extends WarBuilder4Web {
     addAsResource("org/silverpeas/jobStartPagePeas/settings/jobStartPagePeasSettings.properties");
     addAsResource("org/silverpeas/util/attachment/Attachment.properties");
     addAsResource("org/silverpeas/components/community/settings/communitySettings.properties");
+    addAsResource("org/silverpeas/index/search/searchEngineSettings.properties");
+    addAsResource("org/silverpeas/index/indexing/Parser.properties");
   }
 
   /**

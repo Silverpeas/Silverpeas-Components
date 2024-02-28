@@ -29,27 +29,22 @@ import org.silverpeas.components.community.repository.CommunityMembershipReposit
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.persistence.Transaction;
-import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.core.util.SilverpeasList;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.time.OffsetDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * A provider of memberships to a community of users. The provider is always related to a community
- * of users for which it provides access to his table of  memberships in the database. All the
- * memberships to a community of users are accessed only through such a provider with which
- * memberships can be requested on only some of a subset of them.
+ * of users for which it provides access to his table of  memberships. All the memberships to a
+ * community of users are accessed only through such a provider with which memberships can be
+ * requested on only some subsets of them.
+ *
  * @author mmoquillon
  */
 public class CommunityMembershipsProvider {
@@ -58,13 +53,10 @@ public class CommunityMembershipsProvider {
 
   private final CommunityMembershipRepository repository;
   private final CommunityMembershipRepository.CommunityMembershipsTable memberships;
-  private static final Map<String, OffsetDateTime> lastSynchronizations = new HashMap<>();
-
-  private static final SettingBundle settings = ResourceLocator.getSettingBundle(
-      "org.silverpeas.components.community.settings.communitySettings");
 
   /**
    * Gets the memberships provider of the specified community.
+   *
    * @param community a community of users.
    * @return a provider of memberships to the given community of users.
    */
@@ -80,6 +72,7 @@ public class CommunityMembershipsProvider {
 
   /**
    * Is the underlying community of users hasn't yet any memberships?
+   *
    * @return true if no membership has been registered for the community of users. False otherwise.
    */
   public boolean isEmpty() {
@@ -88,6 +81,7 @@ public class CommunityMembershipsProvider {
 
   /**
    * Gets the membership to the community of users with the specified unique identifier.
+   *
    * @param membershipId the unique identifier of a membership to the community of users.
    * @return either a {@link CommunityMembership} instance representing the asked membership or
    * nothing if no such membership to the community of users exists.
@@ -101,6 +95,7 @@ public class CommunityMembershipsProvider {
    * Gets the membership of the specified user to the community of users. If the user isn't member
    * of the community, then nothing is returned. Only the user whose membership is either pending or
    * committed is returned.
+   *
    * @param user a user in Silverpeas. If null, nothing is returned.
    * @return either a {@link CommunityMembership} instance representing the membership of the user
    * to the community or nothing if the user isn't (anymore) member of the community.
@@ -111,6 +106,7 @@ public class CommunityMembershipsProvider {
 
   /**
    * Gets all pending memberships to the community of users.
+   *
    * @param page a page in the table of pending members defining a range of them to get. If null,
    * all is got.
    * @return a paginated list of pending members.
@@ -123,6 +119,7 @@ public class CommunityMembershipsProvider {
    * Gets all the committed memberships to the community of users that are within the specified
    * pagination page. Because the members of a community can be huge, only a range of their
    * membership is allowed to be got.
+   *
    * @param page a page in the table of memberships defining a range of them to get.
    * @return a paginated list of actual memberships to the community.
    * @implNote a synchronization between the roles of the community space and the table of
@@ -137,6 +134,7 @@ public class CommunityMembershipsProvider {
   /**
    * Gets the history of memberships to the community of users that are within the specified
    * pagination page. All memberships are taken into account, whatever the status of membership.
+   *
    * @param page a page in the table of memberships defining a range of them to get.
    * @return a paginated list of memberships to the community of users, whatever the status of
    * membership.
@@ -151,11 +149,11 @@ public class CommunityMembershipsProvider {
 
   /**
    * <p>
-   * Synchronize the table of memberships of the community of users with the users playing a role in
-   * the community space. A user is member of a community space if, and only if, he plays a role in
-   * it. So, to ensure to keep the table of memberships up-to-date, a synchronization of it with the
-   * roles played in the community space is required. The goal is to ensure the state of the table
-   * of memberships reflect the users in the different roles of the community space:
+   * Synchronizes the table of memberships of the community of users with the users playing a role
+   * in the related community space. A user is member of a community space if, and only if, he plays
+   * a role in it. So, to ensure to keep the table of memberships up-to-date, a synchronization of
+   * it with the users playing a role in the community space is required. The goal is to ensure the
+   * state of the table of memberships reflect the user profiles defined for the community space:
    * </p>
    * <ul>
    *   <li>
@@ -172,59 +170,45 @@ public class CommunityMembershipsProvider {
    *     the synchronization.
    *   </li>
    * </ul>
-   * <p>
-   *   The synchronization is only performed if the last one has been done more than one hour.
-   * </p>
+   *
+   * @implNote If a user is removed from a community space, hence if his membership in the related
+   * community is removed, he's also removed from the group of members associated with the community
+   * space. So, if a user is added in the community, he's also added into the group of members
+   * associated with the community space.
    */
   private void synchronize() {
-    // check the last datetime of the synchronization
-    synchronized (lastSynchronizations) {
-      OffsetDateTime now = OffsetDateTime.now();
-      OffsetDateTime lastSynchronization = lastSynchronizations.get(community.getId());
-      long duration = settings.getLong("community.memberships.synchronization");
-      if (lastSynchronization != null && now.minusMinutes(duration).isBefore(lastSynchronization)) {
-        return;
-      }
-      lastSynchronizations.put(community.getId(), now);
-    }
-
     // fetch all the committed and pending memberships of the community
     List<CommunityMembership> actualMemberships = this.memberships.getAllMembers();
 
-    // fetch all the users playing at least one role in the community space
-    Set<String> usersPlayingRole = community.streamOfNonInheritedSpaceProfiles()
-        .flatMap(p -> p.getAllUsers().stream())
-        .collect(Collectors.toSet());
+    // fetch all the users playing at least one role in the community space before synchronization
+    Set<String> usersPlayingRole = community.getCommunitySpace().getAllUsers();
 
     Transaction.performInOne(() -> {
       // first we are looking for users playing a role in the community space but not yet registered
-      // as member in order to register them
+      // as a (pending) member in order to register them
       usersPlayingRole.stream()
           .filter(u -> actualMemberships.stream()
-              .filter(m -> m.getStatus().isMember())
+              .filter(m -> m.getStatus().isMember() || m.getStatus().isPending())
               .noneMatch(m -> m.getUser().getId().equals(u)))
           .map(User::getById)
           .map(u -> CommunityMembership.asMember(u, community))
           .forEach(CommunityMembership::save);
 
-      // then we are looking for members not playing anymore a role in the community space in
+      // second we are looking for members not playing anymore a role in the community space in
       // order to update their membership status
       actualMemberships.stream()
           .filter(m -> m.getStatus().isMember())
           .filter(m -> !usersPlayingRole.contains(m.getUser().getId()))
-          .forEach(m -> {
-            m.setStatus(MembershipStatus.REMOVED);
-            repository.save(m);
-          });
+          .forEach(CommunityMembership::delete);
 
-      // finally we are looking for pending members who were added explicitly in a role of the
+      // then we are looking for pending members who were added explicitly in a role of the
       // community space by an administrator to update accordingly their membership status
       actualMemberships.stream()
           .filter(m -> m.getStatus().isPending())
           .filter(m -> usersPlayingRole.contains(m.getUser().getId()))
           .forEach(m -> {
             m.setStatus(MembershipStatus.COMMITTED);
-            repository.save(m);
+            m.save();
           });
 
       return null;

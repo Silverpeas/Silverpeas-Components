@@ -8,6 +8,18 @@ CREATE TABLE IF NOT EXISTS ST_AccessLevel
     CONSTRAINT UN_AccessLevel_1 UNIQUE (name)
 );
 
+CREATE TABLE ST_Domain
+(
+    id                   int                        NOT NULL,
+    name                 varchar(100)               NOT NULL,
+    description          varchar(400) NULL,
+    propFileName         varchar(100)               NOT NULL,
+    className            varchar(100)               NOT NULL,
+    authenticationServer varchar(100)               NOT NULL,
+    theTimeStamp         varchar(100) DEFAULT ('0') NOT NULL,
+    silverpeasServerURL  varchar(400) NULL
+);
+
 CREATE TABLE IF NOT EXISTS ST_User
 (
     id                            INT                 NOT NULL,
@@ -149,6 +161,26 @@ CREATE TABLE IF NOT EXISTS ST_ComponentInstanceI18N
     lang        CHAR(2)      NOT NULL,
     name        VARCHAR(100) NOT NULL,
     description VARCHAR(400)
+);
+
+CREATE TABLE SB_ContentManager_Instance
+(
+    instanceId	int		NOT NULL ,
+    componentId	varchar(100)	NOT NULL ,
+    containerType	varchar(100)	NOT NULL ,
+    contentType	varchar(100)	NOT NULL
+);
+
+CREATE TABLE SB_ContentManager_Content
+(
+    silverContentId			int		NOT NULL ,
+    internalContentId		varchar(100)	NOT NULL ,
+    contentInstanceId		int		NOT NULL,
+    authorId			int		NOT NULL,
+    creationDate			date		NOT NULL,
+    beginDate			varchar(10)	NULL,
+    endDate				varchar(10)	NULL,
+    isVisible			int		NULL
 );
 
 CREATE TABLE IF NOT EXISTS st_quota
@@ -422,10 +454,12 @@ CREATE TABLE IF NOT EXISTS SC_Community
     id           VARCHAR(40) PRIMARY KEY,
     instanceId   VARCHAR(30)  NOT NULL,
     spaceId      VARCHAR(30)  NOT NULL,
+    groupId      INT          NULL,
     homePage     VARCHAR(400) NULL,
     homePageType INT          NULL,
     charterURL   VARCHAR(400) NULL,
-    CONSTRAINT UN_COMMUNITY UNIQUE (instanceId, spaceId)
+    CONSTRAINT UN_COMMUNITY UNIQUE (instanceId, spaceId),
+    CONSTRAINT FK_GROUP FOREIGN KEY (groupId) REFERENCES st_group (id)
 );
 
 CREATE TABLE IF NOT EXISTS SC_Community_Membership
