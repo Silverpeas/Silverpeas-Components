@@ -35,7 +35,7 @@ import org.silverpeas.components.rssaggregator.service.RSSServiceProvider;
 import org.silverpeas.components.rssaggregator.service.RssAggregator;
 import org.silverpeas.components.rssaggregator.service.RssAggregatorCache;
 import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.template.SilverpeasTemplateFactory;
+import org.silverpeas.core.template.SilverpeasTemplates;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
@@ -54,7 +54,7 @@ import java.util.Properties;
  */
 public class RssAgregatorSessionController extends AbstractComponentSessionController {
   // instance of RssAggregatorCache singleton
-  private RssAggregatorCache cache = RssAggregatorCache.getInstance();
+  private final RssAggregatorCache cache = RssAggregatorCache.getInstance();
   private RssAggregator rssBm = null;
   private SPChannel currentChannel = null;
   private SimpleDateFormat dateFormatter = null;
@@ -97,18 +97,17 @@ public class RssAgregatorSessionController extends AbstractComponentSessionContr
   }
 
   /**
-   * Extract rss files information (channels and items). Return a list of Channel.
+   * loads rss files information (channels and items).
    */
-  public List<SPChannel> getChannelsContent() throws RssAgregatorException {
-    return getRssService().getAllChannels(getComponentId());
+  public void loadChannelsContent() throws RssAgregatorException {
+    getRssService().getAllChannels(getComponentId());
   }
 
-  public SPChannel addChannel(SPChannel channel) throws RssAgregatorException {
+  public void addChannel(SPChannel channel) {
     // add channel in database
     channel.setInstanceId(getComponentId());
     channel.setCreatorId(getUserId());
     channel.setCreationDate(getDateFormatter().format(new Date()));
-    return getRssAggregator().addChannel(channel);
   }
 
   public void updateChannel(SPChannel channel) throws RssAgregatorException {
@@ -194,7 +193,7 @@ public class RssAgregatorSessionController extends AbstractComponentSessionContr
         .setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, rs.getString("templatePath"));
     templateConfiguration
         .setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, rs.getString("customersTemplatePath"));
-    return SilverpeasTemplateFactory.createSilverpeasTemplate(templateConfiguration);
+    return SilverpeasTemplates.createSilverpeasTemplate(templateConfiguration);
   }
 
   /**
