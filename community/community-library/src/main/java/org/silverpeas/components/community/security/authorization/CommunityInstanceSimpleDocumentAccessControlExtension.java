@@ -25,6 +25,7 @@
 package org.silverpeas.components.community.security.authorization;
 
 import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.DefaultInstanceSimpleDocumentAccessControlExtension;
 
@@ -41,7 +42,8 @@ public class CommunityInstanceSimpleDocumentAccessControlExtension
     extends DefaultInstanceSimpleDocumentAccessControlExtension {
 
   @Override
-  public void beforeComputingAuthorizations(final AccessControlContext context) {
+  public void beforeComputingAuthorizations(final String userId,
+      final SimpleDocument simpleDocument, final AccessControlContext context) {
     if (isDownloadActionFrom(context.getOperations())) {
       context.put(CommunityInstanceAccessControlExtension.CAN_ANONYMOUS_ACCESS_INSTANCE, true);
     }
