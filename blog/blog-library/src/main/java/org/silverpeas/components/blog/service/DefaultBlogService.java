@@ -119,7 +119,7 @@ public class DefaultBlogService implements BlogService, Initialization {
         new PublicationPK(contributionId.getLocalId(), contributionId.getComponentInstanceId()));
     return publication == null ?
         Optional.empty() :
-        toPosts(contributionId.getComponentInstanceId(), List.of(publication)).stream().findFirst();
+        toPosts(publication.getInstanceId(), List.of(publication)).stream().findFirst();
   }
 
   @Override
