@@ -59,17 +59,29 @@
   <fmt:setLocale value="${sessionScope[sessionController].language}"/>
   <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
   <view:sp-head-part>
+    <view:includePlugin name="spaceandcomponentbrowser"/>
     <script type="text/javascript">
       $(document).ready(function() {
         displayLocations();
         <c:choose>
         <c:when test="${toolbox}">
-        viewComponent("<%=componentId%>");
+        loadComponentLocations("<%=componentId%>");
         </c:when>
         <c:otherwise>
-        viewLocalComponent();
-        $("#browsingArea").show();
-        displaySpaces();
+        loadLocalComponentLocations();
+        SpVue.createApp({
+          methods : {
+            componentFilter : function(component) {
+              return component.name === 'kmelia';
+            },
+            reset : function() {
+              emptyComponentLocations();
+            },
+            loadLocations : function(component) {
+              loadComponentLocations(component.instanceId);
+            }
+          }
+        }).mount('#browserLocation');
         </c:otherwise>
         </c:choose>
       });
@@ -79,140 +91,43 @@
         let uri = webContext +
             "/services/private/publications/<%=componentId%>/<%=id%>/locations/" + locationId;
         if (checkbox.checked) {
-          addAlias(uri)
+          addAlias(uri, locationId)
         } else {
           deleteAlias(uri, locationId);
         }
       }
 
-      function displaySpaces() {
-        viewSpace('0');
-      }
-
-      const currentPath = new Map();
-      currentPath.set('0', '&nbsp;');
-      const KMELIA = 'kmelia';
-
-      function processPath(spaceId) {
-        if (spaceId) {
-          // check if component is already in path
-          if (currentPath.has(KMELIA)) {
-            currentPath.delete(KMELIA);
-          }
-          // check if spaceId is already in path
-          if (currentPath.has(spaceId)) {
-            let deleteNext = false;
-            for (const key of currentPath.keys()) {
-              if (deleteNext) {
-                currentPath.delete(key);
-              } else {
-                if (key === spaceId) {
-                  deleteNext = true;
-                }
-              }
-            }
-          } else {
-            let spaceLabel = $("#space-" + spaceId).text();
-            currentPath.set(spaceId, spaceLabel);
-          }
-          displayCurrentPath();
-        }
-      }
-
-      function viewSpace(spaceId) {
-        let uri = webContext + "/services/spaces";
-        if (spaceId !== '0') {
-          uri += "/" + spaceId + "/spaces";
-        }
-
-        processPath(spaceId);
-        emptyComponentTreeview();
-        $("#components ul").empty();
-
-        $("#spaces ul").empty();
-        let ajaxRequest = sp.ajaxRequest(uri);
-        ajaxRequest.send().then(function(response) {
-          response.responseAsJson().forEach(function(space) {
-            let li = "<li id=\"space-" + space.id + "\"><a href=\"#\" onclick=\"viewSpace('" +
-                space.id + "'); return false;\">" + space.label + "</a></li>";
-            $("#spaces ul").append(li);
-          });
-        });
-        if (spaceId !== '0') {
-          displayComponents(spaceId);
-        }
-      }
-
-      function displayComponents(spaceId) {
-        let uri = webContext + "/services/spaces/" + spaceId + "/components";
-        $("#components ul").empty();
-        let ajaxRequest = sp.ajaxRequest(uri);
-        ajaxRequest.send().then(function(response) {
-          response.responseAsJson().forEach(function(component) {
-            if (component.name === KMELIA) {
-              let componentId = component.name + component.id;
-              let li = "<li id=\"" + componentId + "\"><a href=\"#\" onclick=\"viewComponent('" +
-                  componentId + "');\" return false;\">" + component.label + "</a></li>";
-              $("#components ul").append(li);
-            }
-          });
-        });
-      }
-
-      function viewComponent(componentId) {
-        let componentLabel = $("#" + componentId).text();
-        if (currentPath.has(KMELIA)) {
-          currentPath.delete(KMELIA);
-        }
-        currentPath.set(KMELIA, componentLabel);
-        displayCurrentPath();
-        emptyComponentTreeview();
-        $.post("<%=routerUrl%>ShowAliasTree?ComponentId=" + componentId, function(data) {
+      function loadComponentLocations(componentId) {
+        emptyComponentLocations();
+        $.get("<%=routerUrl%>ShowAliasTree?ComponentId=" + componentId, function(data) {
           $("#treeviewFolders").html(data);
         });
       }
 
-      function displayCurrentPath() {
-        let path = "";
-        for (const key of currentPath.keys()) {
-          if (key !== '0') {
-            path += " > ";
-          }
-          let a = "";
-          if (key === KMELIA) {
-            a = currentPath.get(KMELIA);
-          } else {
-            a = "<a href=\"#\" onclick=\"viewSpace('" + key + "'); return false;\">" +
-                currentPath.get(key) + "</a>";
-          }
-          path += a;
-        }
-        $("#currentPath").html(path);
-      }
-
-      function viewLocalComponent() {
-        $.post("<%=routerUrl%>ShowAliasTree?ComponentId=<%=componentId%>", function(data) {
+      function loadLocalComponentLocations() {
+        $.get("<%=routerUrl%>ShowAliasTree?ComponentId=<%=componentId%>", function(data) {
           $("#localTreeview").html(data);
         });
       }
 
-      function emptyComponentTreeview() {
+      function emptyComponentLocations() {
         $("#treeviewFolders").empty();
       }
 
       function deleteAlias(aliasURI, locationId) {
-        var ajaxRequest = sp.ajaxRequest(aliasURI).byDeleteMethod();
-        ajaxRequest.send().then(function() {
+        sp.ajaxRequest(aliasURI).byDeleteMethod().send().then(function() {
           $("#currentLocations #" + locationId).remove();
-          $("#localTreeview #" + locationId).prop("checked", false);
-          $("#treeviewFolders #" + locationId).prop("checked", false);
+          $("#localTreeview ." + locationId).prop("checked", false);
+          $("#treeviewFolders ." + locationId).prop("checked", false);
         });
       }
 
-      function addAlias(aliasURI) {
+      function addAlias(aliasURI, locationId) {
         let ajaxRequest = sp.ajaxRequest(aliasURI).byPutMethod();
         ajaxRequest.send().then(function() {
           displayLocations();
+          $("#localTreeview ." + locationId).prop("checked", true);
+          $("#treeviewFolders ." + locationId).prop("checked", true);
         });
       }
 
@@ -230,7 +145,7 @@
               li += "<span class=\"location-user\">" + location.user.fullName + "</span>";
               li += "<span class=\"location-date\">" + sp.moment.displayAsDateTime(location.date) +
                   "</span>";
-              li += "<a class=\"delete-button\" href=\"#\" onclick=\"deleteAlias('" + location.uri +
+              li += "<a class=\"delete-button\" href=\"javascript:void(0)\" onclick=\"deleteAlias('" + location.uri +
                   "', '" + locationId + "')\">Supprimer</a>";
             }
             li += "</li>";
@@ -273,24 +188,35 @@
           </div>
 
           <div id="browserLocation">
-            <div id="browsingArea" style="display:none;">
-              <div class="header">
-                <h3><fmt:message key="kmelia.paths.external.add"/></h3>
+            <c:set var="htmlTreeviewDock">
+              <div id="treeview" class="accordion">
+                <h4><fmt:message key="GML.folders"/></h4>
+                <div id="treeviewFolders"></div>
               </div>
-              <div id="currentPath"></div>
-              <div id="spaces">
-                <h4><fmt:message key="GML.spaces"/></h4>
-                <ul></ul>
-              </div>
-              <div id="components">
-                <h4><fmt:message key="GML.components"/></h4>
-                <ul></ul>
-              </div>
-            </div>
-            <div id="treeview" class="accordion">
-              <h4><fmt:message key="GML.folders"/></h4>
-              <div id="treeviewFolders"></div>
-            </div>
+            </c:set>
+            <c:choose>
+              <c:when test="${toolbox}">
+                <div class="space-and-component-browser">
+                  <div class="browser">
+                    ${htmlTreeviewDock}
+                  </div>
+                </div>
+              </c:when>
+              <c:otherwise>
+                <div class="header">
+                  <h3><fmt:message key="kmelia.paths.external.add"/></h3>
+                </div>
+                <silverpeas-space-and-component-browser v-bind:component-content-enabled="true"
+                                                        v-bind:component-filter="componentFilter"
+                                                        v-on:enter-root="reset"
+                                                        v-on:enter-space="reset"
+                                                        v-on:enter-component="loadLocations">
+                  <template v-slot:extend-browser>
+                    ${htmlTreeviewDock}
+                  </template>
+                </silverpeas-space-and-component-browser>
+              </c:otherwise>
+            </c:choose>
           </div>
         </view:board>
       </view:frame>

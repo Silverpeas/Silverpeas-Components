@@ -45,7 +45,7 @@ String	currentLang = (String) request.getAttribute("Language");
 
 <% if (otherTree != null) { %>
 <table>
-  <caption>Locations of the publication in Silverpeas</caption>
+  <caption><%=resources.getMultilangBundle().getString("kmelia.publication.locations")%></caption>
 	<th id="locations"></th>
 <%
   for (NodeDetail topic : otherTree) {
@@ -64,7 +64,7 @@ String	currentLang = (String) request.getAttribute("Language");
       // recherche si ce dossier est dans la liste des dossiers de la publication
       final Mutable<String> aliasDecoration = Mutable.of("");
       final input topicChoiceInput = new input().setType("checkbox").setName("topicChoice").setValue(topic.getId()+","+topic.getNodePK().getInstanceId());
-      topicChoiceInput.setID(topic.getId()+"-"+topic.getNodePK().getInstanceId());
+      topicChoiceInput.setClass(topic.getId()+"-"+topic.getNodePK().getInstanceId());
       topicChoiceInput.addAttribute("valign","absmiddle");
       topicChoiceInput.setOnClick("manageLocation('"+topic.getId()+"','"+topic.getNodePK().getInstanceId()+"', this)");
       locations.stream()
