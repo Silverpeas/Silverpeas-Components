@@ -128,7 +128,7 @@ import org.silverpeas.core.subscription.SubscriptionResource;
 import org.silverpeas.core.subscription.service.ComponentSubscriptionResource;
 import org.silverpeas.core.subscription.service.NodeSubscriptionResource;
 import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.template.SilverpeasTemplateFactory;
+import org.silverpeas.core.template.SilverpeasTemplates;
 import org.silverpeas.core.util.*;
 import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
 import org.silverpeas.core.util.file.FileFolderManager;
@@ -277,7 +277,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
           getOrganisationController().isComponentManageable(getComponentId(), getUserId());
     }
     // check if this instance use a specific template of publication
-    SilverpeasTemplate template = SilverpeasTemplateFactory.createSilverpeasTemplateOnComponents();
+    SilverpeasTemplate template = SilverpeasTemplates.createSilverpeasTemplateOnComponents();
     customPublicationTemplateName = "publication_" + getComponentId();
     customPublicationTemplateUsed =
         template.isCustomTemplateExists(KMELIA, customPublicationTemplateName);

@@ -30,7 +30,7 @@ import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.template.SilverpeasTemplateFactory;
+import org.silverpeas.core.template.SilverpeasTemplates;
 
 import javax.enterprise.inject.Default;
 import javax.inject.Singleton;
@@ -63,7 +63,7 @@ public class AdvancedNotificationFormatter extends AbstractNotificationFormatter
 
   public SilverpeasTemplate getTemplate(Message message, String mailingListName, boolean moderate) {
     Properties configuration = new Properties(templateConfiguration);
-    SilverpeasTemplate template = SilverpeasTemplateFactory.createSilverpeasTemplate(configuration);
+    SilverpeasTemplate template = SilverpeasTemplates.createSilverpeasTemplate(configuration);
     template.setAttribute("title", message.getTitle());
     template.setAttribute("mailingListName", mailingListName);
     template.setAttribute("summary", message.getSummary());
