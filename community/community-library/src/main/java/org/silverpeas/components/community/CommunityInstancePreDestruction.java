@@ -23,11 +23,13 @@
  */
 package org.silverpeas.components.community;
 
+import org.silverpeas.components.community.notification.CommunityEventNotifier;
 import org.silverpeas.components.community.repository.CommunityMembershipRepository;
 import org.silverpeas.components.community.repository.CommunityOfUsersRepository;
 import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
 import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.contribution.model.WysiwygContent;
+import org.silverpeas.core.notification.system.ResourceEvent;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -45,6 +47,8 @@ public class CommunityInstancePreDestruction implements ComponentInstancePreDest
   private CommunityOfUsersRepository communitiesRepository;
   @Inject
   private CommunityMembershipRepository membersRepository;
+  @Inject
+  private CommunityEventNotifier notifier;
 
   @Transactional
   @Override
@@ -58,6 +62,7 @@ public class CommunityInstancePreDestruction implements ComponentInstancePreDest
       membersRepository.getMembershipsTable(c).deleteAll();
       // delete finally the community of users
       c.delete();
+      notifier.notifyEventOn(ResourceEvent.Type.DELETION, c);
     });
   }
 }
