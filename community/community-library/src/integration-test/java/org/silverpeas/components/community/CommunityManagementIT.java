@@ -112,6 +112,16 @@ public class CommunityManagementIT {
   }
 
   @Test
+  public void getAllExistingCommunities() {
+    List<String> appIds = List.of("community1", "community2", "community3");
+    List<CommunityOfUsers> communities = CommunityOfUsers.getAll();
+    assertThat(communities.size(), is(3));
+    boolean matches =
+        communities.stream().allMatch(c -> appIds.contains(c.getComponentInstanceId()));
+    assertThat(matches, is(true));
+  }
+
+  @Test
   public void getANonExistingCommunity() {
     String instanceId = "community100";
     Optional<CommunityOfUsers> community = CommunityOfUsers.getByComponentInstanceId(instanceId);

@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package org.silverpeas.components.community;
 
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -31,28 +32,26 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.components.community.model.CommunityOfUsers;
+import org.silverpeas.components.community.notification.CommunityEvent;
 import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.admin.quota.exception.QuotaException;
-import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
-import org.silverpeas.core.admin.space.SpaceHomePageType;
-import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.cache.service.CacheAccessorProvider;
 import org.silverpeas.core.cache.service.SessionCacheAccessor;
+import org.silverpeas.core.notification.system.CDIResourceEventListener;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
 
-import java.util.ArrayList;
-import java.util.Optional;
-
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 /**
- * Integration tests about the creation and the deletion of a Community application instance.
+ * Integration tests on the notification about the creation and the deletion of a community of
+ * users.
+ * @author mmoquillon
  */
 @RunWith(Arquillian.class)
-public class CommunityAppIT {
+public class CommunityNotificationIT {
 
   private static final String DATABASE_CREATION_SCRIPT = "/community-database.sql";
 
@@ -82,31 +81,42 @@ public class CommunityAppIT {
   }
 
   @Test
-  public void createANewAppInstanceShouldCreateACommunity() throws AdminException, QuotaException {
+  public void toBeNotifiedAtCommunityCreation() throws Exception {
     Administration admin = Administration.get();
     User user = User.getCurrentUser();
     ComponentInst componentInst = TestScope.newCommunityAppInstance();
-    String instanceId = admin.addComponentInst(user.getId(), componentInst);
-
-    SpaceInst spaceInst = admin.getSpaceInstById(componentInst.getSpaceId());
-    assertThat(spaceInst.getFirstPageExtraParam(), is(instanceId));
-    assertThat(spaceInst.getFirstPageType(), is(SpaceHomePageType.COMPONENT_INST.ordinal()));
-    assertThat(spaceInst.isInheritanceBlocked(), is(true));
-
-    Optional<CommunityOfUsers> community = CommunityOfUsers.getByComponentInstanceId(instanceId);
-    assertThat(community.isPresent(), is(true));
-    CommunityOfUsers actualCommunity = community.get();
-    assertThat(actualCommunity.getComponentInstanceId(), is(instanceId));
-    assertThat(actualCommunity.getSpaceId(), is(componentInst.getSpaceId()));
+    admin.addComponentInst(user.getId(), componentInst);
   }
 
   @Test
-  public void deleteAnExistingAppInstanceShouldDeleteTheCommunity() throws AdminException {
+  public void toBeNotifiedAtCommunityDeletion() throws Exception {
     User admin = User.getCurrentUser();
     String instanceId = "community2";
     Administration.get().deleteComponentInst(admin.getId(), instanceId, true);
+  }
 
-    Optional<CommunityOfUsers> community = CommunityOfUsers.getByComponentInstanceId(instanceId);
-    assertThat(community.isEmpty(), is(true));
+  @Bean
+  public static class CommunityEventListener extends CDIResourceEventListener<CommunityEvent> {
+
+
+    @Override
+    public void onDeletion(CommunityEvent event) {
+      CommunityOfUsers community = event.getTransition().getBefore();
+      assertThat(community.isPersisted(), is(false));
+      var optionalCommunity =
+          CommunityOfUsers.getByComponentInstanceId(community.getComponentInstanceId());
+      assertThat(optionalCommunity.isEmpty(), is(true));
+    }
+
+    @Override
+    public void onCreation(CommunityEvent event) {
+      CommunityOfUsers community = event.getTransition().getAfter();
+      assertThat(community, is(notNullValue()));
+      assertThat(community.isPersisted(), is(true));
+      assertThat(community.getGroupOfMembers(), is(notNullValue()));
+      assertThat(community.getGroupOfMembers().getAllUsers(), is(empty()));
+      assertThat(community.getGroupOfMembers().getSubGroups(), is(empty()));
+    }
   }
 }
+  

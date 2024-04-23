@@ -24,7 +24,9 @@
 package org.silverpeas.components.community;
 
 import org.silverpeas.components.community.model.CommunityOfUsers;
+import org.silverpeas.components.community.notification.CommunityEventNotifier;
 import org.silverpeas.components.community.repository.CommunityOfUsersRepository;
+import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.ComponentInstancePostConstruction;
 import org.silverpeas.core.admin.component.model.ComponentInst;
@@ -54,6 +56,9 @@ public class CommunityInstancePostConstruction implements ComponentInstancePostC
   @Inject
   private CommunityOfUsersRepository repository;
 
+  @Inject
+  private CommunityEventNotifier notifier;
+
 
   @Transactional
   @Override
@@ -61,12 +66,14 @@ public class CommunityInstancePostConstruction implements ComponentInstancePostC
     ComponentInst instance = getComponentInst(componentInstanceId);
     SpaceInst spaceInst = getSpaceInst(instance.getSpaceId());
     CommunityOfUsers community = new CommunityOfUsers(instance.getId(), spaceInst.getId());
-    repository.save(community);
+    CommunityOfUsers savedCommunity = repository.save(community);
 
     spaceInst.setFirstPageExtraParam(componentInstanceId);
     spaceInst.setInheritanceBlocked(true);
     spaceInst.setFirstPageType(SpaceHomePageType.COMPONENT_INST.ordinal());
     updateSpaceInst(spaceInst);
+
+    notifier.notifyEventOn(ResourceEvent.Type.CREATION, savedCommunity);
   }
 
   private ComponentInst getComponentInst(final String instanceId) {

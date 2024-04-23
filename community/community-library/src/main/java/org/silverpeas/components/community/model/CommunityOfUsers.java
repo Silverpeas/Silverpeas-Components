@@ -70,9 +70,12 @@ import static org.silverpeas.kernel.util.StringUtil.EMPTY;
  * difference is the community space is visible to all users of the platform without requiring this
  * space to be public; they have just a view of it and of its presentation page.
  * <p>
- * The actual members of a community of users are all included in a specific group of users
- * that is automatically created lazily when a first member joins the community. This group of
- * members is a easy way to access all the members of the community.
+ * The actual members of a community of users are all included in a specific group of users that is
+ * automatically created when the community is spawned. This group of members is kept up-to-date
+ * with the users playing a role in the community space. The group of members allow to get in one
+ * shot all the actual members of the community. To have a glance about the memberships to the
+ * community, passed, actual and pending, please asks to the {@link CommunityMembershipsProvider}
+ * object associated with the community of users.
  * </p>
  */
 @Entity
@@ -128,6 +131,15 @@ public class CommunityOfUsers
     this.componentInstanceId = componentInstanceId;
     this.spaceId = spaceId;
     this.communitySpace = new CommunitySpace(this);
+  }
+
+  /**
+   * Gets all the communities of users existing in Silverpeas.
+   * @return a list of exiting community of users.
+   */
+  public static List<CommunityOfUsers> getAll() {
+    CommunityOfUsersRepository repository = CommunityOfUsersRepository.get();
+    return repository.getAll();
   }
 
   /**
@@ -403,6 +415,36 @@ public class CommunityOfUsers
     });
   }
 
+  /**
+   * Gets the group of all the members of this community of users. If this community isn't
+   * persisted, null is returned. Otherwise the group of members of this community of users is
+   * returned. In the case such a group isn't yet created, then this method will create it before
+   * returning it. If no users are currently members in this community, then the returned group of
+   * users will be empty.
+   *
+   * @return the group of users who are all members of this community or null if this community
+   * isn't yet persisted.
+   * @throws SilverpeasRuntimeException if an error occurs while creating or getting the group of
+   * members.
+   */
+  public GroupDetail getGroupOfMembers() {
+    if (!isPersisted()) {
+      return null;
+    }
+    GroupDetail group;
+    try {
+      if (groupId == null) {
+        SpaceInst spaceInst = getCommunitySpace().getSilverpeasSpace();
+        group = getCommunitySpace().createMembersGroup(spaceInst);
+      } else {
+        group = getCommunitySpace().getMembersGroup();
+      }
+    } catch (AdminException e) {
+      throw new SilverpeasRuntimeException(e);
+    }
+    return group;
+  }
+
   @Override
   public boolean equals(final Object obj) {
     return super.equals(obj);
@@ -626,6 +668,13 @@ public class CommunityOfUsers
       }
     }
 
+    /**
+     * Creates the group of the members for the specified community space.
+     *
+     * @param space an existing community space in Silverpeas
+     * @return the created group of members
+     * @throws AdminException if an error occurs while creating the group of members.
+     */
     private GroupDetail createMembersGroup(SpaceInst space) throws AdminException {
       GroupDetail group;
       group = new GroupDetail();
@@ -715,8 +764,9 @@ public class CommunityOfUsers
        * this space is up-to-date with the users playing a role in it. If a user playing a role in
        * the space isn't yet in the members group, then he's added in this group. If the a user in
        * the group isn't playing any role in the space, then he's removed from the members group.
-       * @param usersPlayingARole a set with the unique identifiers of the users who play a role
-       * in the community space.
+       *
+       * @param usersPlayingARole a set with the unique identifiers of the users who play a role in
+       * the community space.
        */
       void synchronizeMembersGroup(final Set<String> usersPlayingARole) {
         execute(() -> {
