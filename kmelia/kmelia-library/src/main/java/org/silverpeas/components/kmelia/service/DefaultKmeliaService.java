@@ -1511,8 +1511,10 @@ public class DefaultKmeliaService implements KmeliaService {
       } else {
         publicationService.addFather(pubPK, fatherPK);
       }
-      // index publication to index path
-      publicationService.createIndex(pubPK);
+      // index publication to index path only if the publication is indexable
+      if (pubDetail.isIndexable()) {
+        publicationService.createIndex(pubPK);
+      }
     } catch (Exception e) {
       throw new KmeliaRuntimeException(e);
     }
