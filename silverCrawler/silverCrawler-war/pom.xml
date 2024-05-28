@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.silverpeas.components</groupId>
 		<artifactId>silvercrawler</artifactId>
-		<version>6.3.5-SNAPSHOT</version>
+		<version>6.3.5</version>
 	</parent>
 
 	<groupId>org.silverpeas.components.silvercrawler</groupId>
