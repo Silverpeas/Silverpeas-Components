@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.silverpeas.components</groupId>
     <artifactId>jdbcconnector</artifactId>
-    <version>6.3.5-SNAPSHOT</version>
+    <version>6.3.6-SNAPSHOT</version>
   </parent>
 
   <groupId>org.silverpeas.components.jdbcconnector</groupId>
