@@ -86,7 +86,7 @@
         <message lang="de">Antragsteller</message>
       </help>
       <spaceMapping>
-        <profile>publisher</profile>
+        <profile>writer</profile>
       </spaceMapping>
     </profile>
     <profile name="writer">
@@ -101,7 +101,7 @@
         <message lang="de">Experte</message>
       </help>
       <spaceMapping>
-        <profile>writer</profile>
+        <profile>publisher</profile>
       </spaceMapping>
     </profile>
     <profile name="user">
