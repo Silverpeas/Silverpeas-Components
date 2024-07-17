@@ -4,11 +4,11 @@ pipeline {
   environment {
     lockFilePath = null
     version = null
-    silverpeasCore = 'Master'
+    silverpeasCore = null
   }
   agent {
     docker {
-      image 'silverpeas/silverbuild'
+      image 'silverpeas/silverbuild:6.4'
       args '''
         -v $HOME/.m2:/home/silverbuild/.m2 
         -v $HOME/.gitconfig:/home/silverbuild/.gitconfig 
@@ -21,7 +21,18 @@ pipeline {
     stage('Waiting for core running build if any') {
       steps {
         script {
-          master = env.BRANCH_NAME == 'master'
+          println "Current branch is ${env.BRANCH_NAME}"
+          switch (env.BRANCH_NAME) {
+            case 'master':
+              silverpeasCore = 'Master'
+              break
+            case env.STABLE_BRANCH:
+              silverpeasCore = 'Stable'
+              break
+            default:
+              silverpeasCore = env.BRANCH_NAME
+              break
+          }
           version = computeSnapshotVersion()
           lockFilePath = createLockFile(version, 'components')
           waitForDependencyRunningBuildIfAny(version, 'core')
