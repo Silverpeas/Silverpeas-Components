@@ -25,7 +25,7 @@ package org.silverpeas.components.rssaggregator.service;
 
 import org.silverpeas.core.util.ServiceProvider;
 
-public class RSSServiceProvider {
+public final class RSSServiceProvider {
 
   public static RSSService getRSSService() {
     return ServiceProvider.getService(RSSService.class);

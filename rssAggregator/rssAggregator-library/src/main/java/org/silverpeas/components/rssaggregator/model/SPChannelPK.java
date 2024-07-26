@@ -25,6 +25,9 @@ package org.silverpeas.components.rssaggregator.model;
 
 import org.silverpeas.core.WAPrimaryKey;
 
+import java.util.Objects;
+
+@SuppressWarnings("deprecation")
 public class SPChannelPK extends WAPrimaryKey {
 
   private static final long serialVersionUID = -3412580197458003232L;
@@ -41,23 +44,29 @@ public class SPChannelPK extends WAPrimaryKey {
     super(id, pk);
   }
 
+  @Override
   public String getRootTableName() {
     return "SC_Rss_Channels";
   }
 
+  @Override
   public String getTableName() {
     return "SC_Rss_Channels";
   }
 
+  @Override
   public boolean equals(Object other) {
     if (!(other instanceof SPChannelPK)) {
       return false;
     }
-    return (id.equals(((SPChannelPK) other).getId())) &&
-        (space.equals(((SPChannelPK) other).getSpace())) &&
-        (componentName.equals(((SPChannelPK) other).getComponentName()));
+    SPChannelPK otherPK = (SPChannelPK) other;
+    return Objects.equals(id, otherPK.getId())
+        && Objects.equals(space, otherPK.getSpace())
+        && Objects.equals(componentName, otherPK.componentName);
   }
 
+  @SuppressWarnings("RedundantMethodOverride")
+  @Override
   public int hashCode() {
     return toString().hashCode();
   }

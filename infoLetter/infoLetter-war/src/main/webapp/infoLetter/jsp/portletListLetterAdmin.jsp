@@ -112,7 +112,8 @@
             <view:arrayLines var="pub" items="${publications}">
               <jsp:useBean id="pub" type="org.silverpeas.components.infoletter.model.InfoLetterPublication"/>
               <c:set var="pubId" value="${pub.getPK().id}"/>
-              <c:set var="accessUrl" value="javascript:open${pub._isValid() ? 'View' : 'Edit'}Parution('${pubId}')"/>
+              <c:set var="accessUrl"
+                     value="javascript:open${pub.isValid() ? 'View' : 'Edit'}Parution('${pubId}')"/>
               <view:arrayLine>
                 <view:arrayCellText>
                   <a href="${accessUrl}">
@@ -121,12 +122,12 @@
                 </view:arrayCellText>
                 <view:arrayCellText>
                   <a href="${accessUrl}">${silfn:escapeHtml(pub.title)}</a>
-                  <a href="${pub._getPermalink()}" class="sp-permalink">
+                  <a href="${pub.getPermalink()}" class="sp-permalink">
                     <img src="${permlinkIcon}" alt=""/>
                   </a>
                 </view:arrayCellText>
                 <view:arrayCellText>
-                  <c:if test="${pub._isValid()}">
+                  <c:if test="${pub.isValid()}">
                     <c:set var="parutionDate" value="<%=DateUtil.parse(pub.getParutionDate())%>"/>
                     ${silfn:formatDate(parutionDate, userLanguage)}
                   </c:if>

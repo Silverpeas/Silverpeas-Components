@@ -24,6 +24,7 @@
 package org.silverpeas.components.rssaggregator;
 
 import org.silverpeas.components.rssaggregator.service.RssAggregator;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
 import org.silverpeas.components.rssaggregator.model.RssAgregatorException;
@@ -35,6 +36,7 @@ import javax.inject.Named;
  * Deletes all the RSS streams in the RssAgregrator instance that is being deleted.
  * @author mmoquillon
  */
+@Service
 @Named
 public class RssAgregatorInstancePreDestruction implements ComponentInstancePreDestruction {
 

@@ -36,10 +36,11 @@ import org.silverpeas.core.contribution.model.WysiwygContent;
 import org.silverpeas.core.ddwe.DragAndDropEditorContent;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
+import org.silverpeas.kernel.annotation.NonNull;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
@@ -51,6 +52,7 @@ import static org.silverpeas.kernel.util.StringUtil.isNotDefined;
 /**
  * @author frageade
  */
+@SuppressWarnings("deprecation")
 public class InfoLetterPublication extends SilverpeasBean implements Comparable<InfoLetter> {
   private static final long serialVersionUID = 2579802983989822400L;
   public static final int PUBLICATION_EN_REDACTION = 1;
@@ -100,15 +102,6 @@ public class InfoLetterPublication extends SilverpeasBean implements Comparable<
     letterId = 0;
   }
 
-  /**
-   * @param pk
-   * @param instanceId
-   * @param title
-   * @param description
-   * @param parutionDate
-   * @param publicationState
-   * @param letterId
-   */
   public InfoLetterPublication(WAPrimaryKey pk, String instanceId, String title, String description,
       String parutionDate, int publicationState, int letterId) {
     super();
@@ -169,6 +162,7 @@ public class InfoLetterPublication extends SilverpeasBean implements Comparable<
     return letterId;
   }
 
+  @SuppressWarnings("unused")
   public void setLetterId(int letterId) {
     this.letterId = letterId;
   }
@@ -177,22 +171,13 @@ public class InfoLetterPublication extends SilverpeasBean implements Comparable<
     this.letterId = Integer.parseInt(letterId);
   }
 
-  public String _getPermalink() {
+  public String getPermalink() {
     return URLUtil.getSimpleURL(URLUtil.URL_NEWSLETTER, getPK().getId());
   }
 
-  // Methodes
-
   @Override
-  public int _getConnectionType() {
-    return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
-  }
-
-  @Override
-  public int compareTo(InfoLetter obj) {
-    if (obj == null) {
-      return 0;
-    }
+  public int compareTo(@NonNull InfoLetter obj) {
+    Objects.requireNonNull(obj);
     return (String.valueOf(getPK().getId())).compareTo(String.valueOf(obj.getPK().getId()));
   }
 
@@ -218,11 +203,12 @@ public class InfoLetterPublication extends SilverpeasBean implements Comparable<
   }
 
   @Override
-  public String _getTableName() {
+  @NonNull
+  protected String getTableName() {
     return "SC_IL_Publication";
   }
 
-  public boolean _isValid() {
+  public boolean isValid() {
     return (publicationState == PUBLICATION_VALIDEE);
   }
 
@@ -233,9 +219,8 @@ public class InfoLetterPublication extends SilverpeasBean implements Comparable<
    *   order to handle properly document copying.
    * </p>
    * @param infoLetter the template.
-   * @return the inlined HTML content of the parution.
    */
-  public String initFrom(final InfoLetter infoLetter) {
+  public void initFrom(final InfoLetter infoLetter) {
     final String templateContent = Optional.of(new DragAndDropWebEditorStore(infoLetter.getTemplateIdentifier()))
         .map(DragAndDropWebEditorStore::getFile)
         .filter(DragAndDropWebEditorStore.File::exists)
@@ -260,7 +245,6 @@ public class InfoLetterPublication extends SilverpeasBean implements Comparable<
     store.save();
     // Saving WYSIWYG content (which represents the final content).
     saveContent(new DragAndDropEditorContent(newContent).getInlinedHtml());
-    return newContent;
   }
 
   public Optional<WysiwygContent> getWysiwygContent() {

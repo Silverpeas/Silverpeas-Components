@@ -23,26 +23,18 @@
  */
 package org.silverpeas.components.datawarning.model;
 
-import org.silverpeas.components.datawarning.DataWarningException;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
+import org.silverpeas.kernel.annotation.NonNull;
 import org.silverpeas.kernel.logging.SilverLogger;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
+import java.sql.*;
 import java.util.ArrayList;
 
+@SuppressWarnings({"deprecation", "unused"})
 public class DataWarningQuery extends SilverpeasBean {
 
   private static final long serialVersionUID = -7619202031176865356L;
   public static final int QUERY_CONDITION_FIRST = 0;
-  // Not used yet
-  public static final int QUERY_CONDITION_AND = 1;
-  // Not used yet
-  public static final int QUERY_CONDITION_OR = 2;
   public static final int QUERY_TYPE_RESULT = 0;
   public static final int QUERY_TYPE_TRIGGER = 1;
   public static final int TRIGGER_CONDITION_SUP = 0;
@@ -79,19 +71,6 @@ public class DataWarningQuery extends SilverpeasBean {
     this.instanceId = instanceId;
   }
 
-  public DataWarningQuery(String instanceId, String description, String query, int queryCondition,
-      int type, long theTrigger, int theTriggerCondition, long theTriggerPrecedent) {
-    super();
-    this.instanceId = instanceId;
-    this.description = description;
-    this.query = query;
-    this.queryCondition = queryCondition;
-    this.type = type;
-    this.theTrigger = theTrigger;
-    this.theTriggerCondition = theTriggerCondition;
-    this.theTriggerPrecedent = theTriggerPrecedent;
-  }
-
   public String getInstanceId() {
     return instanceId;
   }
@@ -101,7 +80,7 @@ public class DataWarningQuery extends SilverpeasBean {
   }
 
   public String getDescription() {
-    return getSureString(description);
+    return getNonNullString(description);
   }
 
   public void setDescription(String description) {
@@ -109,7 +88,7 @@ public class DataWarningQuery extends SilverpeasBean {
   }
 
   public String getQuery() {
-    return getSureString(query);
+    return getNonNullString(query);
   }
 
   public void setQuery(String query) {
@@ -157,63 +136,47 @@ public class DataWarningQuery extends SilverpeasBean {
   }
 
   @Override
-  public int _getConnectionType() {
-    return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
-  }
-
-  @Override
-  public String _getTableName() {
+  @NonNull
+  protected String getTableName() {
     return "SC_DataWarning_Query";
   }
 
-  /**
-   * return un tableau a deux dimensions : nom de colonne / valeur
-   * [0][...] = nom des colonnes
-   * [1][...] = valeurs associees
-   * [2][...] = valeurs associees
-   * [...][...]
-   */
   public DataWarningQueryResult executeQuery(DataWarning dataModel) {
-    Connection con = null;
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    DataWarningQueryResult valret =
+    DataWarningQueryResult result =
         new DataWarningQueryResult(this, (getPersoValid() == QUERY_PERSO_VALID), getPersoColNB(),
             getPersoUID());
-    try {
-      con = dataModel.openConnection();
-      prepStmt = con.prepareStatement(getQuery());
-      rs = prepStmt.executeQuery();
+    try (Connection con = dataModel.openConnection();
+      PreparedStatement prepStmt = con.prepareStatement(getQuery());
+      ResultSet rs = prepStmt.executeQuery()) {
       if (rs != null) {
         ResultSetMetaData rsmd = rs.getMetaData();
         if (rsmd != null) {
-          //get columns names
-          for (int i = 1; i < rsmd.getColumnCount() + 1; i++) {
-            valret.addColumn(rsmd.getColumnName(i));
-          }
-        }
-        int j = 1;
-        while (rs.next() && ((dataModel.getRowLimit() <= 0) || (j <= dataModel.getRowLimit()))) {
-          ArrayList ligne = new ArrayList();
-          for (int k = 1; k < rsmd.getColumnCount() + 1; k++) {
-            ligne.add(rs.getString(k));
-          }
-          valret.addRow(ligne);
-          j++;
+          buildDataWarningQueryResultFrom(result, dataModel, rsmd, rs);
         }
       }
     } catch (Exception e) {
-      valret.addError(e, getQuery());
+      result.addError(e, getQuery());
       SilverLogger.getLogger(this).error("Fail to execute query " + getQuery(), e);
-    } finally {
-      DBUtil.close(rs, prepStmt);
-      dataModel.closeConnection(con);
     }
-    return valret;
+    return result;
   }
 
-  public boolean checkTriggerSatisfied(DataWarning dataModel) throws DataWarningException {
-    return checkTriggerSatisfied(executeQuery(dataModel).returnTriggerValueFromResult());
+  private static void buildDataWarningQueryResultFrom(DataWarningQueryResult result,
+      DataWarning dataModel, ResultSetMetaData rsmd, ResultSet rs) throws SQLException {
+    //get columns names
+    for (int i = 1; i < rsmd.getColumnCount() + 1; i++) {
+      result.addColumn(rsmd.getColumnName(i));
+    }
+
+    int j = 1;
+    while (rs.next() && ((dataModel.getRowLimit() <= 0) || (j <= dataModel.getRowLimit()))) {
+      ArrayList<String> row = new ArrayList<>();
+      for (int k = 1; k < rsmd.getColumnCount() + 1; k++) {
+        row.add(rs.getString(k));
+      }
+      result.addRow(row);
+      j++;
+    }
   }
 
   public boolean checkTriggerSatisfied(long theValue) {

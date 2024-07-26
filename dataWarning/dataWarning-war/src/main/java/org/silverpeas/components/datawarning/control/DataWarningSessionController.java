@@ -23,7 +23,6 @@ package org.silverpeas.components.datawarning.control;
 import org.silverpeas.components.datawarning.DataWarningDBDriver;
 import org.silverpeas.components.datawarning.DataWarningDBDrivers;
 import org.silverpeas.components.datawarning.DataWarningException;
-import org.silverpeas.components.datawarning.model.DataWarning;
 import org.silverpeas.components.datawarning.model.DataWarningGroup;
 import org.silverpeas.components.datawarning.model.DataWarningQuery;
 import org.silverpeas.components.datawarning.model.DataWarningScheduler;
@@ -31,48 +30,33 @@ import org.silverpeas.components.datawarning.model.DataWarningUser;
 import org.silverpeas.components.datawarning.service.DataWarningEngine;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.kernel.bundle.LocalizationBundle;
-import org.silverpeas.kernel.util.Pair;
-import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.selection.Selection;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.Pair;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 public class DataWarningSessionController extends AbstractComponentSessionController {
 
   private static final String FREQUENCY_SCHEDULER_REQUEST_KEY = "frequenceSchedulerRequete";
   private static final String HOUR_KEY = "heure";
   private static final String MINUTE_KEY = "minute";
-  /**
-   * Interface metier du composant
-   */
+
   private DataWarningEngine dataWarningEngine = null;
   private int queryType = DataWarningQuery.QUERY_TYPE_RESULT;
   private DataWarningScheduler editedScheduler = null;
-  private DataWarning editedDataWarning = null;
   private DataWarningDBDrivers dataWarningDBDrivers = null;
   private String currentDBDriver = "";
-  private Selection sel;
+  private final transient Selection sel;
   private String[] columns;
 
-  /**
-   * Standard Session Controller Constructeur
-   * @param mainSessionCtrl The user's profile
-   * @param componentContext The component's profile
-   *
-   */
   public DataWarningSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext, "org.silverpeas.dataWarning.multilang.dataWarning",
@@ -110,19 +94,19 @@ public class DataWarningSessionController extends AbstractComponentSessionContro
     //get usersId and groupsId
     Collection<DataWarningGroup> groups = dataWarningEngine.getDataWarningGroups();
     Collection<DataWarningUser> users = dataWarningEngine.getDataWarningUsers();
-    //transforme la collection en tableau de string
+    //transform the collection into an array of strings
     String[] idGroups = null;
     String[] idUsers = null;
     if (groups != null && !groups.isEmpty()) {
       idGroups = new String[groups.size()];
-      DataWarningGroup[] dataWarningGroups = groups.toArray(new DataWarningGroup[groups.size()]);
+      DataWarningGroup[] dataWarningGroups = groups.toArray(new DataWarningGroup[0]);
       for (int i = 0; i < groups.size(); i++) {
         idGroups[i] = String.valueOf(dataWarningGroups[i].getGroupId());
       }
     }
     if (users != null && !users.isEmpty()) {
       idUsers = new String[users.size()];
-      DataWarningUser[] dataWarningUsers = users.toArray(new DataWarningUser[users.size()]);
+      DataWarningUser[] dataWarningUsers = users.toArray(new DataWarningUser[0]);
       for (int i = 0; i < users.size(); i++) {
         idUsers[i] = String.valueOf(dataWarningUsers[i].getUserId());
       }
@@ -175,15 +159,15 @@ public class DataWarningSessionController extends AbstractComponentSessionContro
     }
   }
 
-  public String buildOptions(List ar, String selectValue, String selectText, boolean bSorted) {
+  public String buildOptions(List<Properties> ar, String selectValue, String selectText, boolean bSorted) {
     StringBuilder valret = new StringBuilder();
     Properties elmt;
     String selected;
-    List arToDisplay = ar;
+    List<Properties> arToDisplay = ar;
     int i;
 
     if (selectText != null) {
-      if (selectValue == null || selectValue.length() <= 0) {
+      if (selectValue == null || selectValue.isEmpty()) {
         selected = "SELECTED";
       } else {
         selected = "";
@@ -192,22 +176,16 @@ public class DataWarningSessionController extends AbstractComponentSessionContro
           append(WebEncodeHelper.javaStringToHtmlString(selectText)).append("</option>\n");
     }
     if (bSorted) {
-      Properties[] theList = (Properties[]) ar.toArray(new Properties[0]);
-      Arrays.sort(theList, new Comparator() {
-        @Override
-        public int compare(Object o1, Object o2) {
-          return (((Properties) o1).getProperty("name")).toUpperCase().compareTo(((Properties) o2).
-              getProperty("name").toUpperCase());
-        }
-      });
-      arToDisplay = new ArrayList(theList.length);
+      Properties[] theList = ar.toArray(new Properties[0]);
+      Arrays.sort(theList, Comparator.comparing(o -> o.getProperty("name").toUpperCase()));
+      arToDisplay = new ArrayList<>(theList.length);
       for (i = 0; i < theList.length; i++) {
         arToDisplay.add(theList[i]);
       }
     }
     if (arToDisplay != null) {
       for (i = 0; i < arToDisplay.size(); i++) {
-        elmt = (Properties) arToDisplay.get(i);
+        elmt = arToDisplay.get(i);
         if (elmt.getProperty("id").equalsIgnoreCase(selectValue)) {
           selected = "SELECTED";
         } else {
@@ -220,31 +198,6 @@ public class DataWarningSessionController extends AbstractComponentSessionContro
       }
     }
     return valret.toString();
-  }
-
-  public List<Properties> getSelectedGroups(String[] selectedGroupsId) throws DataWarningException {
-    Group[] selectedGroups;
-    Properties p;
-    int i;
-    List<Properties> ar = new ArrayList<>();
-
-    if (selectedGroupsId != null && selectedGroupsId.length > 0) {
-      selectedGroups = getGroupList(selectedGroupsId);
-
-      if (selectedGroups != null && selectedGroups.length > 0) {
-        for (i = 0; i < selectedGroups.length; i++) {
-          p = new Properties();
-          p.setProperty("id", selectedGroups[i].getId());
-          p.setProperty("name", selectedGroups[i].getName());
-          ar.add(p);
-        }
-        if (ar.size() != selectedGroups.length) {
-          throw new DataWarningException("DataWarningSessionController.getSelectedGroups()",
-              SilverpeasException.WARNING, "notificationUser.EX_CANT_GET_SELECTED_GROUPS_INFOS");
-        }
-      }
-    }
-    return ar;
   }
 
   private Group[] getGroupList(String[] idGroups) {
@@ -277,8 +230,8 @@ public class DataWarningSessionController extends AbstractComponentSessionContro
           ar.add(p);
         }
         if (ar.size() != selectedUsers.length) {
-          throw new DataWarningException("DataWarningSessionController.getSelectedUsersNames()",
-              SilverpeasException.WARNING, "notificationUser.EX_CANT_GET_SELECTED_USERS_INFOS");
+          throw new DataWarningException("Cannot get selected users {0}",
+              String.join(", ", selectedUsersId));
         }
       }
     }
@@ -300,8 +253,8 @@ public class DataWarningSessionController extends AbstractComponentSessionContro
           ar.add(p);
         }
         if (ar.size() != selectedGroups.length) {
-          throw new DataWarningException("DataWarningSessionController.getSelectedGroups()",
-              SilverpeasException.WARNING, "notificationUser.EX_CANT_GET_SELECTED_GROUPS_INFOS");
+          throw new DataWarningException("Cannot get selected groups {0}",
+              String.join(", ", selectedGroupsId));
         }
       }
     }
@@ -317,7 +270,7 @@ public class DataWarningSessionController extends AbstractComponentSessionContro
           groupIds.add(Integer.toString(dataGroup.getGroupId()));
         }
         Group[] groups = getOrganisationController()
-            .getGroups(groupIds.toArray(new String[groupIds.size()]));
+            .getGroups(groupIds.toArray(new String[0]));
         for (Group group : groups) {
           String[] userIds = group.getUserIds();
           if (userIds != null && userIds.length > 0 && isUserIn(userIds)) {
@@ -458,17 +411,16 @@ public class DataWarningSessionController extends AbstractComponentSessionContro
   }
 
   public String getAnalysisTypeString() {
-    return getString("typeAnalyse" + Integer.toString(dataWarningEngine.getDataWarning().
-        getAnalysisType()));
+    return getString("typeAnalyse" + dataWarningEngine.getDataWarning().
+        getAnalysisType());
   }
 
   public DataWarningEngine getDataWarningEngine() {
     return dataWarningEngine;
   }
 
-  public DataWarningQuery setCurrentQueryType(int qt) {
+  public void setCurrentQueryType(int qt) {
     queryType = qt;
-    return getCurrentQuery();
   }
 
   public DataWarningQuery getCurrentQuery() {
@@ -480,7 +432,7 @@ public class DataWarningSessionController extends AbstractComponentSessionContro
   }
 
   public DataWarningScheduler resetEditedScheduler() {
-    editedScheduler = (DataWarningScheduler) dataWarningEngine.getDataWarningScheduler().clone();
+    editedScheduler = dataWarningEngine.getDataWarningScheduler().copy();
     return editedScheduler;
   }
 
@@ -489,19 +441,6 @@ public class DataWarningSessionController extends AbstractComponentSessionContro
       return resetEditedScheduler();
     } else {
       return editedScheduler;
-    }
-  }
-
-  public DataWarning resetEditedDataWarning() {
-    editedDataWarning = (DataWarning) dataWarningEngine.getDataWarning().clone();
-    return editedDataWarning;
-  }
-
-  public DataWarning getEditedDataWarning() {
-    if (editedDataWarning == null) {
-      return resetEditedDataWarning();
-    } else {
-      return editedDataWarning;
     }
   }
 }

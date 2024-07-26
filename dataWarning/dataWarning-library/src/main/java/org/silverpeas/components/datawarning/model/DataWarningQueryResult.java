@@ -172,8 +172,7 @@ public class DataWarningQueryResult extends Object {
         return Long.parseLong(getValue(0, 0));
       }
     } catch (Exception e) {
-      throw new DataWarningException("DataWarningQueryResult.returnTriggerValueFromResult()",
-          SilverpeasException.ERROR, "DataWarning.EX_DATA_ACCESS_FAILED", e);
+      throw new DataWarningException(e);
     }
   }
 
@@ -236,8 +235,7 @@ public class DataWarningQueryResult extends Object {
         return Long.parseLong(getValue(0, 0));
       }
     } catch (Exception e) {
-      throw new DataWarningException("DataWarningQueryResult.returnTriggerValueFromResult()",
-          SilverpeasException.ERROR, "DataWarning.EX_DATA_ACCESS_FAILED", "UserId = " + userId, e);
+      throw new DataWarningException("Cannot get trigger value for user " + userId, e);
     }
   }
 

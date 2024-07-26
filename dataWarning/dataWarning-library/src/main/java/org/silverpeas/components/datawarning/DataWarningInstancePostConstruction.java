@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.datawarning;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.ComponentInstancePostConstruction;
 import org.silverpeas.components.datawarning.model.DataWarning;
@@ -38,6 +39,7 @@ import javax.transaction.Transactional;
  * prepares a data warning scheduler and query.
  * @author mmoquillon
  */
+@Service
 @Named
 public class DataWarningInstancePostConstruction implements ComponentInstancePostConstruction {
   /**
@@ -50,11 +52,28 @@ public class DataWarningInstancePostConstruction implements ComponentInstancePos
     try {
       final int tuesday = 2;
       DataWarningDataManager dataManager = new DataWarningDataManager();
-      dataManager.createDataWarning(
-          new DataWarning("", "", "", "", 0, componentInstanceId, DataWarning.INCONDITIONAL_QUERY));
-      dataManager.createDataWarningScheduler(new DataWarningScheduler(componentInstanceId, 1,
-          DataWarningScheduler.SCHEDULER_N_TIMES_MOMENT_HOUR, 0, 0, tuesday, 0, 0,
-          DataWarningScheduler.SCHEDULER_STATE_OFF));
+
+      DataWarning dataWarning = new DataWarning();
+      dataWarning.setDescription("");
+      dataWarning.setJdbcDriverName("");
+      dataWarning.setLogin("");
+      dataWarning.setPwd("");
+      dataWarning.setInstanceId(componentInstanceId);
+      dataWarning.setAnalysisType(DataWarning.INCONDITIONAL_QUERY);
+      dataManager.createDataWarning(dataWarning);
+
+      DataWarningScheduler scheduler = new DataWarningScheduler();
+      scheduler.setInstanceId(componentInstanceId);
+      scheduler.setNumberOfTimes(1);
+      scheduler.setNumberOfTimesMoment(DataWarningScheduler.SCHEDULER_N_TIMES_MOMENT_HOUR);
+      scheduler.setMinits(0);
+      scheduler.setHours(0);
+      scheduler.setDayOfWeek(tuesday);
+      scheduler.setDayOfMonth(0);
+      scheduler.setTheMonth(0);
+      scheduler.setSchedulerState(DataWarningScheduler.SCHEDULER_STATE_OFF);
+      dataManager.createDataWarningScheduler(scheduler);
+
       dataManager.createDataWarningQuery(new DataWarningQuery(componentInstanceId));
     } catch (DataWarningException e) {
       throw new SilverpeasRuntimeException(e.getMessage(), e);

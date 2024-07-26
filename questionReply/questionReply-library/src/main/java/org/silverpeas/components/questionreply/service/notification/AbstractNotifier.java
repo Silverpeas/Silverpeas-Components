@@ -59,7 +59,7 @@ abstract class AbstractNotifier extends AbstractTemplateUserNotificationBuilder<
 
   @Override
   protected String getResourceURL(final Question question) {
-    return question._getPermalink();
+    return question.getPermalink();
   }
 
   @Override

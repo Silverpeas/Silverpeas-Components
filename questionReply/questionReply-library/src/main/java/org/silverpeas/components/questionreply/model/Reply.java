@@ -32,12 +32,13 @@ import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.WithAttachment;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.kernel.annotation.NonNull;
 
 import java.text.ParseException;
 import java.util.Date;
 
+@SuppressWarnings("deprecation")
 public class Reply extends SilverpeasBean implements Contribution, WithAttachment {
 
   private static final long serialVersionUID = 5638699228049557540L;
@@ -133,6 +134,7 @@ public class Reply extends SilverpeasBean implements Contribution, WithAttachmen
     this.creatorId = creatorId;
   }
 
+  @SuppressWarnings("unused")
   public void setCreationDate() {
     setCreationDate(new Date());
   }
@@ -189,13 +191,9 @@ public class Reply extends SilverpeasBean implements Contribution, WithAttachmen
   }
 
   @Override
-  public String _getTableName() {
+  @NonNull
+  protected String getTableName() {
     return "SC_QuestionReply_Reply";
-  }
-
-  @Override
-  public int _getConnectionType() {
-    return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
   }
 
   @Override

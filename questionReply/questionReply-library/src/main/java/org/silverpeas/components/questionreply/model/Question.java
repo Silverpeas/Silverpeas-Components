@@ -26,16 +26,17 @@ package org.silverpeas.components.questionreply.model;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.kernel.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+@SuppressWarnings("deprecation")
 public class Question extends SilverpeasBean {
 
   public static final int CLOSED = 2;
@@ -149,18 +150,18 @@ public class Question extends SilverpeasBean {
   }
 
   public void writeReplies(Collection<Reply> replies) {
-    this.replies = new ArrayList<Reply>(replies);
+    this.replies = new ArrayList<>(replies);
   }
 
   public void writeRecipients(Collection<Recipient> recipients) {
-    this.recipients = new ArrayList<Recipient>(recipients);
+    this.recipients = new ArrayList<>(recipients);
   }
 
-  public String _getPermalink() {
+  public String getPermalink() {
     return URLUtil.getSimpleURL(URLUtil.URL_QUESTION, getPK().getId(), false);
   }
 
-  public String _getURL() {
+  public String getURL() {
     return "searchResult?Type=Question&Id=" + getPK().getId();
   }
 
@@ -185,13 +186,9 @@ public class Question extends SilverpeasBean {
   }
 
   @Override
-  public String _getTableName() {
+  @NonNull
+  protected String getTableName() {
     return "SC_QuestionReply_Question";
-  }
-
-  @Override
-  public int _getConnectionType() {
-    return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
   }
 
   public String getCategoryId() {
@@ -202,6 +199,7 @@ public class Question extends SilverpeasBean {
     this.categoryId = categoryId;
   }
 
+  @SuppressWarnings("unused")
   public boolean hasWaitingStatus() {
     return this.status == WAITING;
   }

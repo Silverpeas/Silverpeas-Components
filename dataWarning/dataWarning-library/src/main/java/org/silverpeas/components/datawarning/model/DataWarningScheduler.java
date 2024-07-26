@@ -24,9 +24,10 @@
 package org.silverpeas.components.datawarning.model;
 
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
+import org.silverpeas.kernel.annotation.NonNull;
 import org.silverpeas.kernel.logging.SilverLogger;
 
+@SuppressWarnings("deprecation")
 public class DataWarningScheduler extends SilverpeasBean {
 
   private static final long serialVersionUID = -406809133902097195L;
@@ -58,23 +59,7 @@ public class DataWarningScheduler extends SilverpeasBean {
     schedulerState = SCHEDULER_STATE_OFF;
   }
 
-  public DataWarningScheduler(String instanceId, int numberOfTimes, int numberOfTimesMoment,
-      int minits, int hours, int dayOfWeek, int dayOfMonth, int month, int schedulerState) {
-    super();
-    this.instanceId = instanceId;
-    this.numberOfTimes = numberOfTimes;
-    this.numberOfTimesMoment = numberOfTimesMoment;
-    this.minits = minits;
-    this.hours = hours;
-    this.dayOfWeek = dayOfWeek;
-    this.dayOfMonth = dayOfMonth;
-    this.theMonth = month;
-    this.schedulerState = schedulerState;
-    this.wakeUp = 0;
-  }
-
-  @Override
-  public Object clone() {
+  public DataWarningScheduler copy() {
     DataWarningScheduler newOne;
     try {
       newOne = (DataWarningScheduler) super.clone();
@@ -179,7 +164,8 @@ public class DataWarningScheduler extends SilverpeasBean {
   }
 
   @Override
-  public String _getTableName() {
+  @NonNull
+  protected String getTableName() {
     return "SC_DataWarning_Scheduler";
   }
 
@@ -256,8 +242,4 @@ public class DataWarningScheduler extends SilverpeasBean {
     return temp.toString();
   }
 
-  @Override
-  public int _getConnectionType() {
-    return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
-  }
 }

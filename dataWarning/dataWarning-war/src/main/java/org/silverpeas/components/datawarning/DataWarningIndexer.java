@@ -26,11 +26,15 @@
 package org.silverpeas.components.datawarning;
 
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.web.index.components.ComponentIndexation;
+import org.silverpeas.kernel.annotation.Technical;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+@Technical
+@Service
 @Singleton
 @Named("dataWarning" + ComponentIndexation.QUALIFIER_SUFFIX)
 public class DataWarningIndexer implements ComponentIndexation {

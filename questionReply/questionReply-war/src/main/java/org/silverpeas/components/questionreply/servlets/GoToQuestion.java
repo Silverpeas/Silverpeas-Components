@@ -43,7 +43,7 @@ public class GoToQuestion extends GoTo {
         objectId));
     String componentId = question.getInstanceId();
 
-    String gotoURL = URLUtil.getURL(null, componentId) + question._getURL();
+    String gotoURL = URLUtil.getURL(null, componentId) + question.getURL();
     return "goto=" + URLEncoder.encode(gotoURL, "UTF-8");
   }
 }

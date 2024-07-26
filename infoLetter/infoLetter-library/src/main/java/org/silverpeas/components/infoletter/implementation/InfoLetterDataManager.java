@@ -25,11 +25,7 @@ package org.silverpeas.components.infoletter.implementation;
 
 import org.silverpeas.components.infoletter.InfoLetterContentManager;
 import org.silverpeas.components.infoletter.InfoLetterException;
-import org.silverpeas.components.infoletter.model.InfoLetter;
-import org.silverpeas.components.infoletter.model.InfoLetterPublication;
-import org.silverpeas.components.infoletter.model.InfoLetterPublicationPdC;
-import org.silverpeas.components.infoletter.model.InfoLetterService;
-import org.silverpeas.components.infoletter.model.InfoLetterTemplateContributionWrapper;
+import org.silverpeas.components.infoletter.model.*;
 import org.silverpeas.core.ApplicationServiceProvider;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.WAPrimaryKey;
@@ -53,18 +49,11 @@ import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.mail.MailAddress;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.persistence.jdbc.bean.IdPK;
-import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAOFactory;
+import org.silverpeas.core.persistence.jdbc.bean.*;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.subscription.Subscription;
 import org.silverpeas.core.subscription.SubscriptionServiceProvider;
-import org.silverpeas.core.subscription.service.ComponentSubscription;
-import org.silverpeas.core.subscription.service.ComponentSubscriptionResource;
-import org.silverpeas.core.subscription.service.GroupSubscriptionSubscriber;
-import org.silverpeas.core.subscription.service.ResourceSubscriptionProvider;
-import org.silverpeas.core.subscription.service.UserSubscriptionSubscriber;
+import org.silverpeas.core.subscription.service.*;
 import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
@@ -79,16 +68,9 @@ import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
 import java.text.MessageFormat;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static java.util.stream.Collectors.toSet;
 import static org.silverpeas.core.mail.MailAddress.eMail;
@@ -106,7 +88,7 @@ public class InfoLetterDataManager implements InfoLetterService {
   private static final SettingBundle settings = ResourceLocator.getSettingBundle(SETTINGS_PATH);
 
   private static final String TABLE_EXTERNAL_EMAILS = "SC_IL_ExtSus";
-  private static final String INSTANCE_ID = "instanceId = '";
+  private static final String INSTANCE_ID = "instanceId";
 
   private final SilverpeasBeanDAO<InfoLetter> infoLetterDAO;
   private final SilverpeasBeanDAO<InfoLetterPublication> infoLetterPublicationDAO;
@@ -148,10 +130,8 @@ public class InfoLetterDataManager implements InfoLetterService {
 
   public InfoLetterDataManager() {
     try {
-      infoLetterDAO =
-          SilverpeasBeanDAOFactory.getDAO("org.silverpeas.components.infoletter.model.InfoLetter");
-      infoLetterPublicationDAO = SilverpeasBeanDAOFactory
-          .getDAO("org.silverpeas.components.infoletter.model.InfoLetterPublication");
+      infoLetterDAO = SilverpeasBeanDAOFactory.getDAO(InfoLetter.class);
+      infoLetterPublicationDAO = SilverpeasBeanDAOFactory.getDAO(InfoLetterPublication.class);
     } catch (PersistenceException pe) {
       throw new InfoLetterException(pe);
     }
@@ -183,9 +163,9 @@ public class InfoLetterDataManager implements InfoLetterService {
 
   @Override
   public List<InfoLetter> getInfoLetters(String instanceId) {
-    String whereClause = INSTANCE_ID + instanceId + "'";
+    BeanCriteria criteria = BeanCriteria.addCriterion(INSTANCE_ID, instanceId);
     try {
-      return new ArrayList<>(infoLetterDAO.findByWhereClause(new IdPK(), whereClause));
+      return new ArrayList<>(infoLetterDAO.findBy(criteria));
     } catch (PersistenceException pe) {
       throw new InfoLetterException(pe);
     }
@@ -195,10 +175,10 @@ public class InfoLetterDataManager implements InfoLetterService {
   public List<InfoLetterPublication> getInfoLetterPublications(WAPrimaryKey letterPK) {
     try {
       InfoLetter letter = getInfoLetter(letterPK);
-      String whereClause =
-          INSTANCE_ID + letter.getInstanceId() + "' AND letterId = " + letterPK.getId() +
-              " ORDER BY id desc";
-      return new ArrayList<>(infoLetterPublicationDAO.findByWhereClause(letterPK, whereClause));
+      BeanCriteria criteria = BeanCriteria.addCriterion(INSTANCE_ID, letter.getInstanceId())
+          .and("letterId", Integer.parseInt(letterPK.getId()));
+      criteria.setDescOrderBy("id");
+      return new ArrayList<>(infoLetterPublicationDAO.findBy(criteria));
     } catch (PersistenceException pe) {
       throw new InfoLetterException(pe);
     }
@@ -241,7 +221,7 @@ public class InfoLetterDataManager implements InfoLetterService {
     try {
       infoLetterPublicationDAO.update(ilp);
       infoLetterContentManager.updateSilverContentVisibility(ilp);
-      if (ilp._isValid()) {
+      if (ilp.isValid()) {
         deleteIndex(ilp);
         createIndex(ilp);
       }
@@ -292,9 +272,9 @@ public class InfoLetterDataManager implements InfoLetterService {
   @Override
   public void deleteAllInfoLetters(final String componentId) {
     try (Connection connection = openConnection()) {
-      infoLetterPublicationDAO.removeWhere(connection, null, INSTANCE_ID + componentId + "'");
-      infoLetterDAO.removeWhere(connection, null,
-          INSTANCE_ID + componentId + "'");//TABLE_EXTERNAL_EMAILS
+      BeanCriteria criteria = BeanCriteria.addCriterion(INSTANCE_ID, componentId);
+      infoLetterPublicationDAO.removeBy(connection, criteria);
+      infoLetterDAO.removeBy(connection, criteria); //TABLE_EXTERNAL_EMAILS
       try (PreparedStatement statement = connection.prepareStatement(
           "delete from " + TABLE_EXTERNAL_EMAILS + " where instanceId = ?")) {
         statement.setString(1, componentId);
@@ -362,12 +342,11 @@ public class InfoLetterDataManager implements InfoLetterService {
     try (Connection con = openConnection()) {
       InfoLetter letter = getInfoLetter(letterPK);
       String selectQuery =
-          "SELECT * FROM " + TABLE_EXTERNAL_EMAILS + " where instanceId = '" +
-              letter.getInstanceId() + "' " + "and letter = " + letterPK.getId() + " ";
-
-      try (Statement selectStmt = con.createStatement()) {
-        //noinspection SqlSourceToSinkFlow
-        try (ResultSet rs = selectStmt.executeQuery(selectQuery)) {
+          "SELECT * FROM " + TABLE_EXTERNAL_EMAILS + " where instanceId = ? and letter = ?";
+      try (PreparedStatement selectStmt = con.prepareStatement(selectQuery)) {
+        selectStmt.setString(1, letter.getInstanceId());
+        selectStmt.setInt(2, Integer.parseInt(letterPK.getId()));
+        try (ResultSet rs = selectStmt.executeQuery()) {
           while (rs.next()) {
             emails.add(rs.getString("email"));
           }
@@ -393,7 +372,7 @@ public class InfoLetterDataManager implements InfoLetterService {
         JdbcSqlQuery.insertInto(TABLE_EXTERNAL_EMAILS)
             .withInsertParam("letter", letterId)
             .withInsertParam("email", email)
-            .withInsertParam("instanceId", letter.getInstanceId())
+            .withInsertParam(INSTANCE_ID, letter.getInstanceId())
             .executeWith(con);
       }
     } catch (Exception e) {
@@ -512,7 +491,7 @@ public class InfoLetterDataManager implements InfoLetterService {
 
   private void processPublicationIndexation(final InfoLetterPublication pub) {
     try {
-      if (pub._isValid()) {
+      if (pub.isValid()) {
         createIndex(pub);
       }
     } catch (Exception e) {
