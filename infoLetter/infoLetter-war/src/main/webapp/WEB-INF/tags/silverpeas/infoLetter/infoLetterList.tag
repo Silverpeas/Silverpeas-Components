@@ -54,7 +54,8 @@
   <c:forEach var="newsletter" items="${newsletters}" varStatus="status">
     <jsp:useBean id="newsletter" type="org.silverpeas.components.infoletter.model.InfoLetterPublication"/>
     <c:set var="id" value="${newsletter.getPK().id}"/>
-    <c:set var="openCallback" value="open${newsletter._isValid() ? 'View' : 'Edit'}Parution('${id}')"/>
+    <c:set var="openCallback"
+           value="open${newsletter.isValid() ? 'View' : 'Edit'}Parution('${id}')"/>
     <li onclick="${openCallback}">
       <a class="title" href="javascript:${openCallback}">
           ${newsletter.title}

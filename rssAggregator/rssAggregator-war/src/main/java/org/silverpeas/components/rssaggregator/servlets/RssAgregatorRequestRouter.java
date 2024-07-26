@@ -120,8 +120,8 @@ public class RssAgregatorRequestRouter
    * @param rssSC the rss session controller
    * @param request the Http Servlet Request
    * @param isPortletView true if for portlet view, false else if
-   * @return
-   * @throws RssAgregatorException
+   * @return the next destination page
+   * @throws RssAgregatorException if an error occurs
    */
   private String prepareAggregatedView(RssAgregatorSessionController rssSC,
       HttpServletRequest request, boolean isPortletView) throws RssAgregatorException {
@@ -146,13 +146,6 @@ public class RssAgregatorRequestRouter
     return destination;
   }
 
-  /**
-   * Prepare data for
-   * @param rssSC
-   * @param request
-   * @return
-   * @throws RssAgregatorException
-   */
   private String prepareSeparatedView(RssAgregatorSessionController rssSC,
       HttpServletRequest request) throws RssAgregatorException {
     String destination;

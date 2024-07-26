@@ -29,6 +29,7 @@ import org.silverpeas.components.rssaggregator.model.SPChannelPK;
 import org.silverpeas.core.SilverpeasExceptionMessages;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.persistence.jdbc.bean.BeanCriteria;
 import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAOFactory;
@@ -39,6 +40,7 @@ import java.util.List;
  * @author neysseri
  */
 @Service
+@SuppressWarnings("deprecation")
 public class DefaultRssAggregator implements RssAggregator {
 
   private static final String SYNDICATION_CHANNEL_WITH_ID = "syndication channel with id";
@@ -69,9 +71,9 @@ public class DefaultRssAggregator implements RssAggregator {
   public List<SPChannel> getChannels(String instanceId) throws RssAgregatorException {
     List<SPChannel> channels;
     try {
-      SPChannelPK pk = new SPChannelPK("useless", instanceId);
-      channels = (List<SPChannel>) getDAO().findByWhereClause(pk,
-          "instanceId = '" + instanceId + "' ORDER BY id");
+      BeanCriteria criteria = BeanCriteria.addCriterion("instanceId", instanceId);
+      criteria.setAscOrderBy("id");
+      channels = (List<SPChannel>) getDAO().findBy(criteria);
     } catch (PersistenceException e) {
       throw new RssAgregatorException(
           SilverpeasExceptionMessages.failureOnGetting("syndication channels of component instance",
@@ -82,8 +84,8 @@ public class DefaultRssAggregator implements RssAggregator {
 
   public void deleteChannels(String instanceId) throws RssAgregatorException {
     try {
-      SPChannelPK pk = new SPChannelPK("useless", instanceId);
-      getDAO().removeWhere(pk, "instanceId = '" + instanceId + "'");
+      BeanCriteria criteria = BeanCriteria.addCriterion("instanceId", instanceId);
+      getDAO().removeBy(criteria);
     } catch (PersistenceException e) {
       throw new RssAgregatorException(SilverpeasExceptionMessages.failureOnDeleting(
           "syndication channels of component instance", instanceId), e);
@@ -103,7 +105,7 @@ public class DefaultRssAggregator implements RssAggregator {
   private SilverpeasBeanDAO<SPChannel> getDAO() throws RssAgregatorException {
     if (rssDAO == null) {
       try {
-        rssDAO = SilverpeasBeanDAOFactory.getDAO(SPChannel.class.getName());
+        rssDAO = SilverpeasBeanDAOFactory.getDAO(SPChannel.class);
       } catch (PersistenceException e) {
         throw new RssAgregatorException(
             SilverpeasExceptionMessages.failureOnGetting("DAO for syndication channels", ""), e);

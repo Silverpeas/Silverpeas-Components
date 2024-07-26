@@ -23,32 +23,19 @@
  */
 package org.silverpeas.components.datawarning;
 
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.kernel.SilverpeasException;
 
 public class DataWarningException extends SilverpeasException {
 
-  private static final long serialVersionUID = 8310353094310503522L;
-
-  public DataWarningException(String callingClass, int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
+  public DataWarningException(String message, String... parameters) {
+    super(message, parameters);
   }
 
-  public DataWarningException(String callingClass, int errorLevel, String message,
-      String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public DataWarningException(String message, Throwable cause) {
+    super(message, cause);
   }
 
-  public DataWarningException(String callingClass, int errorLevel, String message, Exception nested) {
-    super(callingClass, errorLevel, message, nested);
-  }
-
-  public DataWarningException(String callingClass, int errorLevel, String message,
-      String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  @Override
-  public String getModule() {
-    return "DataWarning";
+  public DataWarningException(Throwable cause) {
+    super(cause);
   }
 }

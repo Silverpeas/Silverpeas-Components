@@ -30,11 +30,11 @@ import org.silverpeas.kernel.logging.SilverLogger;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class DataWarningDBDrivers extends Object {
+public final class DataWarningDBDrivers {
 
   // This one is there for optimized research
-  protected static final Map<String, DataWarningDBDriver> allDBDrivers = new HashMap<>();
-  protected static DataWarningDBDriver[] sortedDBDrivers = null;
+  private final Map<String, DataWarningDBDriver> allDBDrivers = new HashMap<>();
+  private DataWarningDBDriver[] sortedDBDrivers = null;
 
   private static final String XML_SETTING_PATH =
       "org.silverpeas.dataWarning.settings.dataWarningSettings";

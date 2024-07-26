@@ -41,8 +41,8 @@ import java.util.Map;
 
 public final class DataWarningEngine {
 
-  private String componentId = null;
-  private DataWarningDataManager dataManager = null;
+  private final String componentId;
+  private final DataWarningDataManager dataManager;
   private DataWarning dataWarning = null;
   private DataWarningScheduler dataScheduler = null;
   private Map<Integer, DataWarningQuery> dataWarningQueries = null;
@@ -92,7 +92,7 @@ public final class DataWarningEngine {
     if (valret.getTriggerEnabled()) {
       // Get the result
       theQuery = getDataWarningQuery(DataWarningQuery.QUERY_TYPE_RESULT);
-      if (theQuery.getQuery().length() > 0) {
+      if (!theQuery.getQuery().isEmpty()) {
         theResult = theQuery.executeQuery(dataWarning);
       }
     }
@@ -139,11 +139,11 @@ public final class DataWarningEngine {
   }
 
   public DataWarning getDataWarningWritable() {
-    return (DataWarning) dataWarning.clone();
+    return dataWarning.copy();
   }
 
   // --- DataWarningQuery ---
-  protected void createDataWarningQuery(int queryType) throws DataWarningException {
+  private void createDataWarningQuery(int queryType) throws DataWarningException {
     DataWarningQuery dwq = new DataWarningQuery();
     dwq.setInstanceId(componentId);
     dwq.setType(queryType);
@@ -152,7 +152,7 @@ public final class DataWarningEngine {
     restartSchedulerIfNeeded();
   }
 
-  protected void deleteDataQueries() throws DataWarningException {
+  private void deleteDataQueries() throws DataWarningException {
     dataManager.deleteDataWarningQuery(componentId);
     restartSchedulerIfNeeded();
   }
@@ -218,6 +218,7 @@ public final class DataWarningEngine {
     restartSchedulerIfNeeded();
   }
 
+  @SuppressWarnings("unused")
   public void deleteDataWarningGroup(int groupId) throws DataWarningException {
     dataManager.deleteDataWarningGroup(componentId, groupId);
     restartSchedulerIfNeeded();
@@ -228,6 +229,7 @@ public final class DataWarningEngine {
     restartSchedulerIfNeeded();
   }
 
+  @SuppressWarnings("unused")
   public void updateDataWarningGroup(DataWarningGroup dwg) throws DataWarningException {
     dataManager.updateDataWarningGroup(dwg);
     restartSchedulerIfNeeded();
@@ -237,6 +239,7 @@ public final class DataWarningEngine {
     return dataManager.getDataWarningGroups(componentId);
   }
 
+  @SuppressWarnings("unused")
   public DataWarningGroup getDataWarningGroup(int groupId) throws DataWarningException {
     return dataManager.getDataWarningGroup(componentId, groupId);
   }
@@ -257,6 +260,7 @@ public final class DataWarningEngine {
     restartSchedulerIfNeeded();
   }
 
+  @SuppressWarnings("unused")
   public void updateDataWarningUser(DataWarningUser dwu) throws DataWarningException {
     dataManager.updateDataWarningUser(dwu);
     restartSchedulerIfNeeded();

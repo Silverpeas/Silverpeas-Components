@@ -54,7 +54,7 @@ public class DefaultRSSService implements RSSService {
   @Inject
   private RssAggregator rssAggregator;
 
-  private RssAggregatorCache cache = RssAggregatorCache.getInstance();
+  private final RssAggregatorCache cache = RssAggregatorCache.getInstance();
 
   @Override
   public List<RSSItem> getApplicationItems(String applicationId, boolean aggregateContent)
@@ -68,7 +68,7 @@ public class DefaultRSSService implements RSSService {
     List<SPChannel> channelsFromDB = this.rssAggregator.getChannels(applicationId);
     List<SPChannel> channels = new ArrayList<>();
     for (SPChannel channel : channelsFromDB) {
-      SPChannelPK channelPK = (SPChannelPK) channel.getPK();
+      SPChannelPK channelPK = new SPChannelPK(channel.getPK().getId(), channel.getPK());
       if (cache.isContentNeedToRefresh(channelPK)) {
         try {
           applyFeedTo(channel);
