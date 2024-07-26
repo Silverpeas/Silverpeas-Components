@@ -38,10 +38,7 @@ import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygControlle
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.persistence.jdbc.bean.IdPK;
-import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAOFactory;
+import org.silverpeas.core.persistence.jdbc.bean.*;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 
@@ -52,14 +49,19 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper.buildAndSend;
+import static org.silverpeas.core.persistence.jdbc.bean.BeanCriteria.OPERATOR.GREATER;
+import static org.silverpeas.core.persistence.jdbc.bean.BeanCriteria.OPERATOR.NOT_EQUALS;
 
 @Service
+@SuppressWarnings("deprecation")
 public class SilverpeasQuestionManager implements QuestionManager {
 
-  private static final String QUESTION_ID = " questionId = ";
-  private static final String INSTANCE_ID = " instanceId = '";
+  private static final String STATUS = "status";
+  private static final String INSTANCE_ID = "instanceId";
+  private static final String QUESTION_ID = "questionId";
   @Inject
   private QuestionIndexer questionIndexer;
   private SilverpeasBeanDAO<Question> questionDao = null;
@@ -72,9 +74,9 @@ public class SilverpeasQuestionManager implements QuestionManager {
 
   SilverpeasQuestionManager() {
     try {
-      questionDao = SilverpeasBeanDAOFactory.getDAO(Question.class.getName());
-      replyDao = SilverpeasBeanDAOFactory.getDAO(Reply.class.getName());
-      recipientDao = SilverpeasBeanDAOFactory.getDAO(Recipient.class.getName());
+      questionDao = SilverpeasBeanDAOFactory.getDAO(Question.class);
+      replyDao = SilverpeasBeanDAOFactory.getDAO(Reply.class);
+      recipientDao = SilverpeasBeanDAOFactory.getDAO(Recipient.class);
     } catch (PersistenceException ex) {
       SilverLogger.getLogger(this).error(ex);
     }
@@ -85,7 +87,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
    * question identifier set)
    * @param question the question to create
    * @return the generated question identifier
-   * @throws QuestionReplyException
+   * @throws QuestionReplyException if an error occurs
    */
   @Override
   public long createQuestion(Question question) throws QuestionReplyException {
@@ -93,7 +95,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
       Collection<Recipient> recipients = question.readRecipients();
       IdPK pkQ = (IdPK) questionDao.add(con, question);
       question.setPK(pkQ);
-      questionIndexer.createIndex(question, Collections.<Reply>emptyList());
+      questionIndexer.createIndex(question, Collections.emptyList());
       long idQ = pkQ.getIdAsLong();
       if (recipients != null) {
         for (Recipient recipient : recipients) {
@@ -149,8 +151,8 @@ public class SilverpeasQuestionManager implements QuestionManager {
    */
   private void deleteRecipients(Connection con, long questionId) throws QuestionReplyException {
     try {
-      IdPK pk = new IdPK();
-      recipientDao.removeWhere(con, pk, QUESTION_ID + questionId);
+      BeanCriteria criteria = BeanCriteria.addCriterion(QUESTION_ID, questionId);
+      recipientDao.removeBy(con, criteria);
     } catch (PersistenceException e) {
       throw new QuestionReplyException(e);
     }
@@ -413,9 +415,6 @@ public class SilverpeasQuestionManager implements QuestionManager {
     updateWysiwygContent(reply);
   }
 
-  /*
-   * supprime une question
-   */
   private void deleteQuestion(Connection con, long questionId) throws QuestionReplyException {
     try {
       deleteRecipients(con, questionId);
@@ -432,26 +431,11 @@ public class SilverpeasQuestionManager implements QuestionManager {
     }
   }
 
-  /*
-   * supprime une question
-   */
   private void deleteQuestion(long questionId) throws QuestionReplyException {
-    Connection con = null;
-    try {
-      con = DBUtil.openConnection();
-      deleteRecipients(con, questionId);
-      IdPK pk = new IdPK();
-      pk.setIdAsLong(questionId);
-      Question question = getQuestion(questionId);
-      String peasId = question.getInstanceId();
-      questionDao.remove(con, pk);
-      questionIndexer.deleteIndex(question);
-      pk.setComponentName(peasId);
-      contentManager.deleteSilverContent(con, pk);
-    } catch (Exception e) {
+    try(Connection connection = DBUtil.openConnection()) {
+      deleteQuestion(connection, questionId);
+    } catch (SQLException e) {
       throw new QuestionReplyException(e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
@@ -561,17 +545,11 @@ public class SilverpeasQuestionManager implements QuestionManager {
 
   @Override
   public List<Question> getQuestionsByIds(List<String> ids) throws QuestionReplyException {
-    StringBuilder where = new StringBuilder();
-    int sizeOfIds = ids.size();
-    for (int i = 0; i < sizeOfIds - 1; i++) {
-      where.append(" id = ").append(ids.get(i)).append(" or ");
-    }
-    if (sizeOfIds != 0) {
-      where.append(" id = ").append(ids.get(sizeOfIds - 1));
-    }
+    BeanCriteria criteria = ids.isEmpty() ? BeanCriteria.emptyCriteria() :
+        BeanCriteria.addCriterion("id",
+            ids.stream().map(Integer::parseInt).collect(Collectors.toSet()));
     try {
-      IdPK pk = new IdPK();
-      return new ArrayList<>(questionDao.findByWhereClause(pk, where.toString()));
+      return new ArrayList<>(questionDao.findBy(criteria));
     } catch (PersistenceException e) {
       throw new QuestionReplyException(e);
     }
@@ -584,9 +562,9 @@ public class SilverpeasQuestionManager implements QuestionManager {
   public List<Reply> getQuestionReplies(long questionId, String instanceId)
       throws QuestionReplyException {
     try {
-      IdPK pk = new IdPK();
+      BeanCriteria criteria = BeanCriteria.addCriterion(QUESTION_ID, questionId);
       List<Reply> replies = new ArrayList<>(
-          replyDao.findByWhereClause(pk, QUESTION_ID + questionId));
+          replyDao.findBy(criteria));
       for (Reply reply : replies) {
         reply.getPK().setComponentName(instanceId);
         reply.loadWysiwygContent();
@@ -604,9 +582,9 @@ public class SilverpeasQuestionManager implements QuestionManager {
   public List<Reply> getQuestionPublicReplies(long questionId, String instanceId)
       throws QuestionReplyException {
     try {
-      IdPK pk = new IdPK();
-      List<Reply> replies = new ArrayList<>(replyDao.findByWhereClause(pk,
-          " publicReply = 1 and questionId = " + questionId));
+      BeanCriteria criteria = BeanCriteria.addCriterion("publicReply", 1)
+          .and(QUESTION_ID, questionId);
+      List<Reply> replies = new ArrayList<>(replyDao.findBy(criteria));
       for (Reply reply : replies) {
         reply.getPK().setComponentName(instanceId);
         reply.loadWysiwygContent();
@@ -624,9 +602,9 @@ public class SilverpeasQuestionManager implements QuestionManager {
   public List<Reply> getQuestionPrivateReplies(long questionId, String instanceId)
       throws QuestionReplyException {
     try {
-      IdPK pk = new IdPK();
-      List<Reply> replies = new ArrayList<>(replyDao.findByWhereClause(pk,
-          " privateReply = 1 and questionId = " + questionId));
+      BeanCriteria criteria = BeanCriteria.addCriterion("privateReply", 1)
+          .and(QUESTION_ID, questionId);
+      List<Reply> replies = new ArrayList<>(replyDao.findBy(criteria));
       for (Reply reply : replies) {
         reply.getPK().setComponentName(instanceId);
         reply.loadWysiwygContent();
@@ -643,8 +621,8 @@ public class SilverpeasQuestionManager implements QuestionManager {
   @Override
   public List<Recipient> getQuestionRecipients(long questionId) throws QuestionReplyException {
     try {
-      IdPK pk = new IdPK();
-      return new ArrayList<>(recipientDao.findByWhereClause(pk, QUESTION_ID + questionId));
+      BeanCriteria criteria = BeanCriteria.addCriterion(QUESTION_ID, questionId);
+      return new ArrayList<>(recipientDao.findBy(criteria));
     } catch (PersistenceException e) {
       throw new QuestionReplyException(e);
     }
@@ -676,9 +654,11 @@ public class SilverpeasQuestionManager implements QuestionManager {
   public List<Question> getSendQuestions(String userId, String instanceId)
       throws QuestionReplyException {
     try {
-      IdPK pk = new IdPK();
-      return new ArrayList<>(questionDao.findByWhereClause(pk, INSTANCE_ID + instanceId +
-          "' and (status <> 2 or privateReplyNumber > 0) and creatorId = " + userId));
+      BeanCriteria criteria = BeanCriteria.addCriterion(INSTANCE_ID, instanceId)
+          .and("creatorId", Integer.parseInt(userId))
+          .and(BeanCriteria.addCriterion(STATUS, NOT_EQUALS,  2)
+              .or("privateReplyNumber", GREATER, 0));
+      return new ArrayList<>(questionDao.findBy(criteria));
     } catch (PersistenceException e) {
       throw new QuestionReplyException(e);
     }
@@ -692,11 +672,12 @@ public class SilverpeasQuestionManager implements QuestionManager {
   public List<Question> getReceiveQuestions(String userId, String instanceId)
       throws QuestionReplyException {
     try {
-      IdPK pk = new IdPK();
-      return new ArrayList<>(questionDao.findByWhereClause(pk, INSTANCE_ID + instanceId +
-          "' and status <> 2 and id IN (select questionId from SC_QuestionReply_Recipient " +
-          "where userId = " +
-          userId + ")"));
+      BeanCriteria criteria = BeanCriteria.addCriterion(INSTANCE_ID, instanceId)
+          .and(STATUS, NOT_EQUALS, 2)
+          .andSubQuery("id", BeanCriteria.OPERATOR.IN,
+              "questionId from SC_QuestionReply_Recipient",
+              BeanCriteria.addCriterion("userId", Integer.parseInt(userId)));
+      return new ArrayList<>(questionDao.findBy(criteria));
     } catch (PersistenceException e) {
       throw new QuestionReplyException(e);
     }
@@ -708,9 +689,11 @@ public class SilverpeasQuestionManager implements QuestionManager {
   @Override
   public List<Question> getQuestions(String instanceId) throws QuestionReplyException {
     try {
-      IdPK pk = new IdPK();
-      return new ArrayList<>(questionDao.findByWhereClause(pk, INSTANCE_ID + instanceId +
-          "' and  (status <> 2 or publicReplyNumber > 0) order by creationdate desc, id desc"));
+      BeanCriteria criteria = BeanCriteria.addCriterion(INSTANCE_ID, instanceId)
+          .and(BeanCriteria.addCriterion(STATUS, NOT_EQUALS,  2)
+              .or("privateReplyNumber", GREATER, 0));
+      criteria.setDescOrderBy("creationDate", "id");
+      return new ArrayList<>(questionDao.findBy(criteria));
     } catch (PersistenceException e) {
       throw new QuestionReplyException(e);
     }
@@ -728,7 +711,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
       questions.add(fullQuestion);
     }
     if (isSortable(instanceId)) {
-      Collections.sort(questions, QuestionRegexpComparator.getInstance());
+      questions.sort(QuestionRegexpComparator.getInstance());
     }
     return questions;
   }
@@ -749,7 +732,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
       }
     }
     if (isSortable(instanceId)) {
-      Collections.sort(questions, QuestionRegexpComparator.getInstance());
+      questions.sort(QuestionRegexpComparator.getInstance());
     }
     return questions;
   }
@@ -760,9 +743,10 @@ public class SilverpeasQuestionManager implements QuestionManager {
   @Override
   public List<Question> getPublicQuestions(String instanceId) throws QuestionReplyException {
     try {
-      IdPK pk = new IdPK();
-      return new ArrayList<>(questionDao.findByWhereClause(pk,
-          INSTANCE_ID + instanceId + "' AND publicReplyNumber > 0 ORDER BY id"));
+      BeanCriteria criteria = BeanCriteria.addCriterion(INSTANCE_ID, instanceId)
+          .and("publicReplyNumber", GREATER, 0);
+      criteria.setAscOrderBy("id");
+      return new ArrayList<>(questionDao.findBy(criteria));
     } catch (PersistenceException e) {
       throw new QuestionReplyException(e);
     }
@@ -773,12 +757,12 @@ public class SilverpeasQuestionManager implements QuestionManager {
    * @param question the new question
    * @param reply the answer linked to the given question
    * @return the created question identifier
-   * @throws QuestionReplyException
+   * @throws QuestionReplyException if an error occurs
    */
   @Override
   public long createQuestionReply(Question question, Reply reply) throws QuestionReplyException {
     Connection con = null;
-    long idQ = -1;
+    long idQ;
     try {
       con = DBUtil.openConnection();
       IdPK pkQ = (IdPK) questionDao.add(con, question);
@@ -805,8 +789,8 @@ public class SilverpeasQuestionManager implements QuestionManager {
    */
   private int getQuestionRepliesNumber(long questionId) throws QuestionReplyException {
     try {
-      IdPK pk = new IdPK();
-      Collection<Reply> replies = replyDao.findByWhereClause(pk, QUESTION_ID + questionId);
+      BeanCriteria criteria = BeanCriteria.addCriterion(QUESTION_ID, questionId);
+      Collection<Reply> replies = replyDao.findBy(criteria);
       return replies.size();
     } catch (PersistenceException e) {
       throw new QuestionReplyException(e);
@@ -818,9 +802,10 @@ public class SilverpeasQuestionManager implements QuestionManager {
    */
   private int getQuestionPublicRepliesNumber(long questionId) throws QuestionReplyException {
     try {
-      IdPK pk = new IdPK();
+      BeanCriteria criteria = BeanCriteria.addCriterion("publicReply", 1)
+          .and(QUESTION_ID, questionId);
       Collection<Reply> replies =
-          replyDao.findByWhereClause(pk, " publicReply = 1 and questionId = " + questionId);
+          replyDao.findBy(criteria);
       return replies.size();
     } catch (PersistenceException e) {
       throw new QuestionReplyException(e);
@@ -832,9 +817,9 @@ public class SilverpeasQuestionManager implements QuestionManager {
    */
   private int getQuestionPrivateRepliesNumber(long questionId) throws QuestionReplyException {
     try {
-      IdPK pk = new IdPK();
-      Collection<Reply> replies = replyDao.findByWhereClause(pk,
-          " privateReply = 1 and questionId = " + questionId);
+      BeanCriteria criteria = BeanCriteria.addCriterion("privateReply", 1)
+          .and(QUESTION_ID, questionId);
+      Collection<Reply> replies = replyDao.findBy(criteria);
       return replies.size();
     } catch (PersistenceException e) {
       throw new QuestionReplyException(e);

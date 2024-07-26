@@ -42,13 +42,13 @@ public enum RSSViewType {
   RSSViewType(final String viewMode) {
     this.rssView = viewMode;
   }
-  private String rssView;
+  private final String rssView;
 
   /**
    * Converts this view type in a string representation.
    * The value of the string depends on the RSS view rendering engine. It should be a value
    * that matches the view mode supported by the underlying RSS renderer.
-   * @return
+   * @return the value of the rendering type of the RSS
    */
   @Override
   public String toString() {

@@ -25,7 +25,9 @@ package org.silverpeas.components.rssaggregator.service;
 
 import org.silverpeas.components.rssaggregator.model.SPChannel;
 import org.silverpeas.components.rssaggregator.model.SPChannelPK;
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.kernel.annotation.Technical;
 
 import javax.inject.Singleton;
 import java.util.Map;
@@ -34,12 +36,14 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * @author sv
  */
+@Technical
+@Service
 @Singleton
 public class RssAggregatorCache {
   // content of cache
-  private Map<SPChannelPK, SPChannel> cache = new ConcurrentHashMap<>();
-  // informations about cache refresh
-  private Map<SPChannelPK, Long> cacheNextRefresh = new ConcurrentHashMap<>();
+  private final Map<SPChannelPK, SPChannel> cache = new ConcurrentHashMap<>();
+  // information about cache refresh
+  private final Map<SPChannelPK, Long> cacheNextRefresh = new ConcurrentHashMap<>();
 
   /**
    * Default constructor
@@ -65,17 +69,17 @@ public class RssAggregatorCache {
    * Add or replace a content in the cache
    */
   public void addChannelToCache(SPChannel spChannel) {
-    SPChannelPK key = (SPChannelPK) spChannel.getPK();
+    SPChannelPK key = new SPChannelPK(spChannel.getPK().getId(), spChannel.getPK());
 
     // Store channel in cache
     cache.put(key, spChannel);
 
-    // Store time of content informations storage
+    // Store time of content information storage
     long currentTime = System.currentTimeMillis();
     // refresh rate in ms
-    final int secondsInminute = 60;
+    final int secondsInMinute = 60;
     final int milliInSecond = 1000;
-    int channelRefreshRate = spChannel.getRefreshRate() * milliInSecond * secondsInminute;
+    int channelRefreshRate = spChannel.getRefreshRate() * milliInSecond * secondsInMinute;
     cacheNextRefresh.put(key, currentTime + channelRefreshRate);
   }
 

@@ -60,10 +60,6 @@ public class FeedComparator implements Comparator<SyndEntry> {
 
   private final boolean reverseOrder;
 
-  public FeedComparator() {
-    this(false);
-  }
-
   public FeedComparator(boolean reverseOrder) {
     this.reverseOrder = reverseOrder;
   }

@@ -26,13 +26,14 @@ package org.silverpeas.components.rssaggregator.model;
 
 import com.rometools.rome.feed.synd.SyndFeed;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
+import org.silverpeas.kernel.annotation.NonNull;
 
 import java.io.Serializable;
 
 /**
  * @author neysseri
  */
+@SuppressWarnings({"deprecation", "unused"})
 public class SPChannel extends SilverpeasBean implements Serializable {
 
   private static final long serialVersionUID = 2610576839907057656L;
@@ -44,7 +45,7 @@ public class SPChannel extends SilverpeasBean implements Serializable {
   private boolean safeUrl = false;
   private String creatorId;
   private String creationDate;
-  private SyndFeed feed;
+  private transient SyndFeed feed;
 
   /**
    * Default constructor
@@ -89,9 +90,6 @@ public class SPChannel extends SilverpeasBean implements Serializable {
     this.url = url;
   }
 
-  /**
-   * @return
-   */
   public String getCreationDate() {
     return creationDate;
   }
@@ -124,9 +122,6 @@ public class SPChannel extends SilverpeasBean implements Serializable {
     this.creatorId = creatorId;
   }
 
-  /**
-   * @param nbDisplayedItems
-   */
   public void setNbDisplayedItems(int nbDisplayedItems) {
     this.nbDisplayedItems = nbDisplayedItems;
   }
@@ -146,12 +141,8 @@ public class SPChannel extends SilverpeasBean implements Serializable {
   }
 
   @Override
-  public int _getConnectionType() {
-    return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
-  }
-
-  @Override
-  public String _getTableName() {
+  @NonNull
+  protected String getTableName() {
     return "SC_Rss_Channels";
   }
 

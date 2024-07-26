@@ -58,7 +58,7 @@
 <c:set var="letterName" value="${requestScope.letterName}"/>
 <c:set var="letterDescription" value="${requestScope.letterDescription}"/>
 <c:set var="letterFrequence" value="${requestScope.letterFrequence}"/>
-<c:set var="sentPublications" value="<%=publications.stream().filter(InfoLetterPublication::_isValid).collect(Collectors.toList())%>"/>
+<c:set var="sentPublications" value="<%=publications.stream().filter(InfoLetterPublication::isValid).collect(Collectors.toList())%>"/>
 <jsp:useBean id="sentPublications" type="java.util.List<org.silverpeas.components.infoletter.model.InfoLetterPublication>"/>
 <c:set var="lastNSentPublications" value="<%=sentPublications.stream().limit(lastNSent).collect(Collectors.toList())%>"/>
 
@@ -149,12 +149,12 @@
                     </view:arrayCellText>
                     <view:arrayCellText>
                       <a href="${accessUrl}">${silfn:escapeHtml(pub.title)}</a>
-                      <a href="${pub._getPermalink()}" class="sp-permalink">
+                      <a href="${pub.getPermalink()}" class="sp-permalink">
                         <img src="${permlinkIcon}" alt=""/>
                       </a>
                     </view:arrayCellText>
                     <view:arrayCellText>
-                      <c:if test="${pub._isValid()}">
+                      <c:if test="${pub.isValid()}">
                         <c:set var="parutionDate" value="<%=DateUtil.parse(pub.getParutionDate())%>"/>
                         ${silfn:formatDate(parutionDate, userLanguage)}
                       </c:if>

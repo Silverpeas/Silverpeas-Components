@@ -64,10 +64,10 @@ public class RSSResource extends RESTWebService {
   /**
    * Gets the JSON representation of the specified existing channel.<br>
    * If the channel doesn't exist, a <b>404</b> HTTP code is returned. <br>
-   * If the user isn't authentified, a <b>401</b> HTTP code is returned. <br>
+   * If the user isn't authenticated, a <b>401</b> HTTP code is returned. <br>
    * If the user isn't authorized to access the channel, a <b>403</b> is returned. <br>
    * If a problem occurs when processing the request, a <b>503</b> HTTP code is returned.
-   * @param agregate String option to specify if we agregate channels items sorting them by date or
+   * @param aggregate String option to specify if we aggregate channels items sorting them by date or
    * not.<br>
    * It means URI has the following parameter : agregate=y or agregate=n
    * @return the response to the HTTP GET request with the JSON representation of the asked channel
@@ -75,12 +75,12 @@ public class RSSResource extends RESTWebService {
    */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public List<RSSItem> getRSS(@QueryParam("agregate") String agregate) {
-    boolean isAgregate = StringUtil.getBooleanValue(agregate);
-    // Retrieve rss agregate content
+  public List<RSSItem> getRSS(@QueryParam("agregate") String aggregate) {
+    boolean isAggregated = StringUtil.getBooleanValue(aggregate);
+    // Retrieve rss aggregate content
     try {
       return
-          RSSServiceProvider.getRSSService().getApplicationItems(getComponentId(), isAgregate);
+          RSSServiceProvider.getRSSService().getApplicationItems(getComponentId(), isAggregated);
     } catch (RssAgregatorException e) {
       throw encapsulateException(e);
     }

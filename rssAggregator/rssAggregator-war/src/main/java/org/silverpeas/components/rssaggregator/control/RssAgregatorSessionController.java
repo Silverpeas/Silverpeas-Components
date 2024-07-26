@@ -54,7 +54,7 @@ import java.util.Properties;
  */
 public class RssAgregatorSessionController extends AbstractComponentSessionController {
   // instance of RssAggregatorCache singleton
-  private RssAggregatorCache cache = RssAggregatorCache.getInstance();
+  private final RssAggregatorCache cache = RssAggregatorCache.getInstance();
   private RssAggregator rssBm = null;
   private SPChannel currentChannel = null;
   private SimpleDateFormat dateFormatter = null;
@@ -85,7 +85,7 @@ public class RssAgregatorSessionController extends AbstractComponentSessionContr
     List<SPChannel> channelsFromDB = getRssAggregator().getChannels(getComponentId());
     List<SPChannel> channels = new ArrayList<>();
     for (SPChannel channel : channelsFromDB) {
-      SPChannelPK channelPK = (SPChannelPK) channel.getPK();
+      SPChannelPK channelPK = new SPChannelPK(channel.getPK().getId(), channel.getPK());
       if (cache.isContentNeedToRefresh(channelPK)) {
         channel = null;
       } else {
@@ -99,16 +99,17 @@ public class RssAgregatorSessionController extends AbstractComponentSessionContr
   /**
    * Extract rss files information (channels and items). Return a list of Channel.
    */
+  @SuppressWarnings("UnusedReturnValue")
   public List<SPChannel> getChannelsContent() throws RssAgregatorException {
     return getRssService().getAllChannels(getComponentId());
   }
 
-  public SPChannel addChannel(SPChannel channel) throws RssAgregatorException {
+  public void addChannel(SPChannel channel) throws RssAgregatorException {
     // add channel in database
     channel.setInstanceId(getComponentId());
     channel.setCreatorId(getUserId());
     channel.setCreationDate(getDateFormatter().format(new Date()));
-    return getRssAggregator().addChannel(channel);
+    getRssAggregator().addChannel(channel);
   }
 
   public void updateChannel(SPChannel channel) throws RssAgregatorException {
@@ -125,12 +126,13 @@ public class RssAgregatorSessionController extends AbstractComponentSessionContr
     getRssAggregator().updateChannel(currentChannel);
 
     SyndFeed feed;
+    SPChannelPK pk = new SPChannelPK(currentChannel.getPK().getId(), currentChannel.getPK());
     if (reloadChannel) {
       // L'url a change, il faut recharger le channel
-      cache.removeChannelFromCache((SPChannelPK) currentChannel.getPK());
+      cache.removeChannelFromCache(pk);
     } else {
       // L'url n'a pas change, il n'est pas necessaire de recharger le channel
-      feed = cache.getChannelFromCache((SPChannelPK) currentChannel.getPK()).getFeed();
+      feed = cache.getChannelFromCache(pk).getFeed();
       currentChannel.setFeed(feed);
 
       // add rss channel in cache

@@ -25,11 +25,11 @@ package org.silverpeas.components.datawarning;
 
 public class DataWarningDBDriver {
 
-  private String driverUniqueID = "";
-  private String driverName = "";
-  private String className = "";
-  private String description = "";
-  private String jdbcUrl = null;
+  private final String driverUniqueID;
+  private final String driverName;
+  private final String className;
+  private final String description;
+  private final String jdbcUrl;
 
   public DataWarningDBDriver(String dui, String dn, String cn, String d, String du) {
     driverUniqueID = dui;

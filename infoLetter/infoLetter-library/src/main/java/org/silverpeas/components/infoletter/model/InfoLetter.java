@@ -36,9 +36,10 @@ import org.silverpeas.core.ddwe.DragAndDropEditorContent;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
+import org.silverpeas.kernel.annotation.NonNull;
 import org.silverpeas.kernel.util.StringUtil;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 
@@ -46,6 +47,7 @@ import static java.util.Optional.ofNullable;
 import static org.silverpeas.core.i18n.I18NHelper.DEFAULT_LANGUAGE;
 import static org.silverpeas.kernel.util.StringUtil.isNotDefined;
 
+@SuppressWarnings("deprecation")
 public class InfoLetter extends SilverpeasBean implements Comparable<InfoLetter> {
 
   private static final long serialVersionUID = -4798869204934629386L;
@@ -132,15 +134,8 @@ public class InfoLetter extends SilverpeasBean implements Comparable<InfoLetter>
   // Methodes
 
   @Override
-  public int _getConnectionType() {
-    return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
-  }
-
-  @Override
-  public int compareTo(InfoLetter obj) {
-    if (obj == null) {
-      return 0;
-    }
+  public int compareTo(@NonNull InfoLetter obj) {
+    Objects.requireNonNull(obj);
     return (String.valueOf(getPK().getId())).compareTo(String.valueOf(obj.getPK().getId()));
   }
 
@@ -166,7 +161,8 @@ public class InfoLetter extends SilverpeasBean implements Comparable<InfoLetter>
   }
 
   @Override
-  public String _getTableName() {
+  @NonNull
+  protected String getTableName() {
     return "SC_IL_Letter";
   }
 

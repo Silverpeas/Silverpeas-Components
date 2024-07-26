@@ -24,8 +24,9 @@
 package org.silverpeas.components.datawarning.model;
 
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
+import org.silverpeas.kernel.annotation.NonNull;
 
+@SuppressWarnings({"deprecation", "unused"})
 public class DataWarningGroup extends SilverpeasBean {
 
   private static final long serialVersionUID = -7331971484764201589L;
@@ -33,7 +34,7 @@ public class DataWarningGroup extends SilverpeasBean {
   private int groupId;
 
   public DataWarningGroup() {
-    super();
+    // for the persistence layer
   }
 
   public DataWarningGroup(String instanceId, int groupId) {
@@ -58,12 +59,9 @@ public class DataWarningGroup extends SilverpeasBean {
   }
 
   @Override
-  public String _getTableName() {
+  @NonNull
+  protected String getTableName() {
     return "SC_DataWarning_Rel_Group";
   }
 
-  @Override
-  public int _getConnectionType() {
-    return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
-  }
 }
