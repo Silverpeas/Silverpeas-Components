@@ -29,7 +29,6 @@ import org.silverpeas.components.datawarning.DataWarningException;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.sql.Connection;
@@ -102,7 +101,7 @@ public class DataWarning extends SilverpeasBean {
   }
 
   public String getDescription() {
-    return getSureString(description);
+    return getNonNullString(description);
   }
 
   public void setJdbcDriverName(String jdbcDriverName) {
@@ -118,7 +117,7 @@ public class DataWarning extends SilverpeasBean {
   }
 
   public String getLogin() {
-    return getSureString(login);
+    return getNonNullString(login);
   }
 
   public void setPwd(String password) {
@@ -126,7 +125,7 @@ public class DataWarning extends SilverpeasBean {
   }
 
   public String getPwd() {
-    return getSureString(pwd);
+    return getNonNullString(pwd);
   }
 
   public void setRowLimit(int rowLimit) {
@@ -151,11 +150,6 @@ public class DataWarning extends SilverpeasBean {
 
   public int getAnalysisType() {
     return analysisType;
-  }
-
-  @Override
-  public int _getConnectionType() {
-    return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
   }
 
   @Override

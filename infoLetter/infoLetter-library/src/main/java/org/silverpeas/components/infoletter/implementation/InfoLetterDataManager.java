@@ -53,10 +53,7 @@ import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.mail.MailAddress;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.persistence.jdbc.bean.IdPK;
-import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAOFactory;
+import org.silverpeas.core.persistence.jdbc.bean.*;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.subscription.Subscription;
 import org.silverpeas.core.subscription.SubscriptionServiceProvider;
@@ -292,9 +289,9 @@ public class InfoLetterDataManager implements InfoLetterService {
   @Override
   public void deleteAllInfoLetters(final String componentId) {
     try (Connection connection = openConnection()) {
-      infoLetterPublicationDAO.removeWhere(connection, null, INSTANCE_ID + componentId + "'");
-      infoLetterDAO.removeWhere(connection, null,
-          INSTANCE_ID + componentId + "'");//TABLE_EXTERNAL_EMAILS
+      BeanCriteria criteria = BeanCriteria.addCriterion("instanceId", componentId);
+      infoLetterPublicationDAO.removeWhere(connection, null, criteria);
+      infoLetterDAO.removeWhere(connection, null, criteria); //TABLE_EXTERNAL_EMAILS
       try (PreparedStatement statement = connection.prepareStatement(
           "delete from " + TABLE_EXTERNAL_EMAILS + " where instanceId = ?")) {
         statement.setString(1, componentId);

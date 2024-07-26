@@ -38,10 +38,7 @@ import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygControlle
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.persistence.jdbc.bean.IdPK;
-import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAOFactory;
+import org.silverpeas.core.persistence.jdbc.bean.*;
 import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 
@@ -150,7 +147,8 @@ public class SilverpeasQuestionManager implements QuestionManager {
   private void deleteRecipients(Connection con, long questionId) throws QuestionReplyException {
     try {
       IdPK pk = new IdPK();
-      recipientDao.removeWhere(con, pk, QUESTION_ID + questionId);
+      BeanCriteria criteria = BeanCriteria.addCriterion("questionId", questionId);
+      recipientDao.removeWhere(con, pk, criteria);
     } catch (PersistenceException e) {
       throw new QuestionReplyException(e);
     }

@@ -27,7 +27,6 @@ import org.silverpeas.components.whitepages.record.UserRecord;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 
 @SuppressWarnings("deprecation")
 public class Card extends SilverpeasBean {
@@ -128,11 +127,6 @@ public class Card extends SilverpeasBean {
   @Override
   public String _getTableName() {
     return "SC_WhitePages_Card";
-  }
-
-  @Override
-  public int _getConnectionType() {
-    return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
   }
 
   public void setCreationDate(String date) {

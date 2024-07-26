@@ -32,7 +32,6 @@ import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.WithAttachment;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 import org.silverpeas.core.util.DateUtil;
 
 import java.text.ParseException;
@@ -191,11 +190,6 @@ public class Reply extends SilverpeasBean implements Contribution, WithAttachmen
   @Override
   public String _getTableName() {
     return "SC_QuestionReply_Reply";
-  }
-
-  @Override
-  public int _getConnectionType() {
-    return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
   }
 
   @Override

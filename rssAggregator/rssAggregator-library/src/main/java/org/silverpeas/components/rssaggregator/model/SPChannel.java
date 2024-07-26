@@ -26,7 +26,6 @@ package org.silverpeas.components.rssaggregator.model;
 
 import com.rometools.rome.feed.synd.SyndFeed;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 
 import java.io.Serializable;
 
@@ -143,11 +142,6 @@ public class SPChannel extends SilverpeasBean implements Serializable {
    */
   public void setInstanceId(String instanceId) {
     this.instanceId = instanceId;
-  }
-
-  @Override
-  public int _getConnectionType() {
-    return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
   }
 
   @Override

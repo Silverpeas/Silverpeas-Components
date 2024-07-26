@@ -26,7 +26,6 @@ package org.silverpeas.components.questionreply.model;
 
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 
 public class Recipient extends SilverpeasBean {
   private static final long serialVersionUID = 909658183117075174L;
@@ -73,11 +72,6 @@ public class Recipient extends SilverpeasBean {
   @Override
   public String _getTableName() {
     return "SC_QuestionReply_Recipient";
-  }
-
-  @Override
-  public int _getConnectionType() {
-    return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
   }
 
 }

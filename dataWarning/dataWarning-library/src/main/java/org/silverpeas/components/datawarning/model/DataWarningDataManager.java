@@ -28,6 +28,7 @@ import org.silverpeas.components.datawarning.DataWarningException;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.persistence.jdbc.bean.BeanCriteria;
 import org.silverpeas.core.persistence.jdbc.bean.IdPK;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAOFactory;
@@ -84,8 +85,8 @@ public class DataWarningDataManager {
 
   public void deleteDataWarning(String instanceId) throws DataWarningException {
     try {
-      String whereClause = "instanceID = '" + instanceId + "'";
-      dataWarningDAO.removeWhere(new IdPK(), whereClause);
+      BeanCriteria criteria = BeanCriteria.addCriterion("instanceId", instanceId);
+      dataWarningDAO.removeWhere(new IdPK(), criteria);
     } catch (Exception e) {
       throw new DataWarningException("DataWarningDataManager.deleteDataWarning()",
           SilverpeasException.ERROR, DATA_WARNING_EX_DATA_ACCESS_FAILED, e);
@@ -137,8 +138,8 @@ public class DataWarningDataManager {
 
   public void deleteDataWarningQuery(String instanceId) throws DataWarningException {
     try {
-      String whereClause = INSTANCE_ID_MSG + instanceId + "'";
-      dataWarningQueryDAO.removeWhere(new IdPK(), whereClause);
+      BeanCriteria criteria = BeanCriteria.addCriterion("instanceId", instanceId);
+      dataWarningQueryDAO.removeWhere(new IdPK(), criteria);
     } catch (Exception e) {
       throw new DataWarningException("DataWarningDataManager.deleteDataWarningQuery()",
           SilverpeasException.ERROR, DATA_WARNING_EX_DATA_ACCESS_FAILED, e);
@@ -148,9 +149,9 @@ public class DataWarningDataManager {
   public void deleteDataWarningQuery(String instanceId, int queryCondition)
       throws DataWarningException {
     try {
-      String whereClause =
-          INSTANCE_ID_MSG + instanceId + "' and queryCondition = " + queryCondition;
-      dataWarningQueryDAO.removeWhere(new IdPK(), whereClause);
+      BeanCriteria criteria = BeanCriteria.addCriterion("instanceId", instanceId)
+          .and("queryCondition", queryCondition);
+      dataWarningQueryDAO.removeWhere(new IdPK(), criteria);
     } catch (Exception e) {
       throw new DataWarningException("DataWarningDataManager.deleteDataWarningQuery()",
           SilverpeasException.ERROR, DATA_WARNING_EX_DATA_ACCESS_FAILED, e);
@@ -218,8 +219,8 @@ public class DataWarningDataManager {
 
   public void deleteDataWarningScheduler(String instanceId) throws DataWarningException {
     try {
-      String whereClause = INSTANCE_ID_MSG + instanceId + "'";
-      dataWarningSchedulerDAO.removeWhere(new IdPK(), whereClause);
+      BeanCriteria criteria = BeanCriteria.addCriterion("instanceId", instanceId);
+      dataWarningSchedulerDAO.removeWhere(new IdPK(), criteria);
     } catch (Exception e) {
       throw new DataWarningException("DataWarningDataManager.deleteDataWarningScheduler()",
           SilverpeasException.ERROR, DATA_WARNING_EX_DATA_ACCESS_FAILED, e);
@@ -297,9 +298,9 @@ public class DataWarningDataManager {
 
   public void deleteDataWarningGroup(String instanceId, int groupId) throws DataWarningException {
     try {
-      String whereClause =
-          INSTANCE_ID_MSG + instanceId + "' and groupId = " + Integer.toString(groupId);
-      dataWarningGroupDAO.removeWhere(new IdPK(), whereClause);
+      BeanCriteria criteria = BeanCriteria.addCriterion("instanceId", instanceId)
+          .and("groupId", groupId);
+      dataWarningGroupDAO.removeWhere(new IdPK(), criteria);
     } catch (Exception e) {
       throw new DataWarningException("DataWarningDataManager.deleteDataWarningGroup()",
           SilverpeasException.ERROR, DATA_WARNING_EX_DATA_ACCESS_FAILED, e);
@@ -308,8 +309,8 @@ public class DataWarningDataManager {
 
   public void deleteDataWarningGroups(String instanceId) throws DataWarningException {
     try {
-      String whereClause = INSTANCE_ID_MSG + instanceId + "'";
-      dataWarningGroupDAO.removeWhere(new IdPK(), whereClause);
+      BeanCriteria criteria = BeanCriteria.addCriterion("instanceId", instanceId);
+      dataWarningGroupDAO.removeWhere(new IdPK(), criteria);
     } catch (Exception e) {
       throw new DataWarningException("DataWarningDataManager.deleteDataWarningGroups()",
           SilverpeasException.ERROR, DATA_WARNING_EX_DATA_ACCESS_FAILED, e);
@@ -372,8 +373,9 @@ public class DataWarningDataManager {
 
   public void deleteDataWarningUser(String instanceId, int userId) throws DataWarningException {
     try {
-      String whereClause = INSTANCE_ID_MSG + instanceId + "' and userId = " + userId;
-      dataWarningUserDAO.removeWhere(new IdPK(), whereClause);
+      BeanCriteria criteria = BeanCriteria.addCriterion("instanceId", instanceId)
+          .and("userId", userId);
+      dataWarningUserDAO.removeWhere(new IdPK(), criteria);
     } catch (Exception e) {
       throw new DataWarningException("DataWarningSessionController.deleteDataWarningUser()",
           SilverpeasException.ERROR, DATA_WARNING_EX_DATA_ACCESS_FAILED, e);
@@ -382,8 +384,8 @@ public class DataWarningDataManager {
 
   public void deleteDataWarningUsers(String instanceId) throws DataWarningException {
     try {
-      String whereClause = INSTANCE_ID_MSG + instanceId + "'";
-      dataWarningUserDAO.removeWhere(new IdPK(), whereClause);
+      BeanCriteria criteria = BeanCriteria.addCriterion("instanceId", instanceId);
+      dataWarningUserDAO.removeWhere(new IdPK(), criteria);
     } catch (Exception e) {
       throw new DataWarningException("DataWarningSessionController.deleteDataWarningUsers()",
           SilverpeasException.ERROR, DATA_WARNING_EX_DATA_ACCESS_FAILED, e);

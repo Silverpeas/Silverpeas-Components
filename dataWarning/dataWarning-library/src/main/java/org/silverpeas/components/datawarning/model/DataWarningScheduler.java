@@ -24,7 +24,6 @@
 package org.silverpeas.components.datawarning.model;
 
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 import org.silverpeas.kernel.logging.SilverLogger;
 
 public class DataWarningScheduler extends SilverpeasBean {
@@ -256,8 +255,4 @@ public class DataWarningScheduler extends SilverpeasBean {
     return temp.toString();
   }
 
-  @Override
-  public int _getConnectionType() {
-    return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
-  }
 }

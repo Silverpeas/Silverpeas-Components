@@ -24,7 +24,6 @@
 package org.silverpeas.components.datawarning.model;
 
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 
 public class DataWarningUser extends SilverpeasBean {
 
@@ -62,8 +61,4 @@ public class DataWarningUser extends SilverpeasBean {
     return "SC_DataWarning_Rel_User";
   }
 
-  @Override
-  public int _getConnectionType() {
-    return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
-  }
 }

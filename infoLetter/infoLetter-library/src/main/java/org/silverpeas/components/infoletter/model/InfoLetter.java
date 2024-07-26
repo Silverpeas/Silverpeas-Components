@@ -36,7 +36,6 @@ import org.silverpeas.core.ddwe.DragAndDropEditorContent;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.Optional;
@@ -130,11 +129,6 @@ public class InfoLetter extends SilverpeasBean implements Comparable<InfoLetter>
   }
 
   // Methodes
-
-  @Override
-  public int _getConnectionType() {
-    return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
-  }
 
   @Override
   public int compareTo(InfoLetter obj) {

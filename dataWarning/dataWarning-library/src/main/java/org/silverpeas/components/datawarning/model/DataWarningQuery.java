@@ -26,7 +26,6 @@ package org.silverpeas.components.datawarning.model;
 import org.silverpeas.components.datawarning.DataWarningException;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBean;
-import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.sql.Connection;
@@ -101,7 +100,7 @@ public class DataWarningQuery extends SilverpeasBean {
   }
 
   public String getDescription() {
-    return getSureString(description);
+    return getNonNullString(description);
   }
 
   public void setDescription(String description) {
@@ -109,7 +108,7 @@ public class DataWarningQuery extends SilverpeasBean {
   }
 
   public String getQuery() {
-    return getSureString(query);
+    return getNonNullString(query);
   }
 
   public void setQuery(String query) {
@@ -154,11 +153,6 @@ public class DataWarningQuery extends SilverpeasBean {
 
   public void setTheTriggerPrecedent(long theTriggerPrecedent) {
     this.theTriggerPrecedent = theTriggerPrecedent;
-  }
-
-  @Override
-  public int _getConnectionType() {
-    return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
   }
 
   @Override

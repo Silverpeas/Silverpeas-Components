@@ -29,6 +29,7 @@ import org.silverpeas.components.rssaggregator.model.SPChannelPK;
 import org.silverpeas.core.SilverpeasExceptionMessages;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.persistence.jdbc.bean.BeanCriteria;
 import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAOFactory;
@@ -83,7 +84,8 @@ public class DefaultRssAggregator implements RssAggregator {
   public void deleteChannels(String instanceId) throws RssAgregatorException {
     try {
       SPChannelPK pk = new SPChannelPK("useless", instanceId);
-      getDAO().removeWhere(pk, "instanceId = '" + instanceId + "'");
+      BeanCriteria criteria = BeanCriteria.addCriterion("instanceId", instanceId);
+      getDAO().removeWhere(pk, criteria);
     } catch (PersistenceException e) {
       throw new RssAgregatorException(SilverpeasExceptionMessages.failureOnDeleting(
           "syndication channels of component instance", instanceId), e);
