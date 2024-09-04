@@ -151,17 +151,12 @@ public class DefaultProcessManagerService implements ProcessManagerService {
     ProcessModel processModel = getProcessModel(componentId);
     XmlForm form = (XmlForm) getCreationForm(processModel, userRole);
     GenericDataRecord data = (GenericDataRecord) getEmptyCreationRecord(processModel, userRole);
-    PagesContext pagesContext = new PagesContext("creationForm", "0", getLanguage(), true,
-        componentId, userId);
-    boolean versioningUsed = StringUtil.getBooleanValue(OrganizationControllerProvider.
-        getOrganisationController().getComponentParameterValue(componentId, VERSION_MODE));
-    pagesContext.setVersioningUsed(versioningUsed);
 
-    // 1 - Populate form data (save file on disk, populate file field)
-    List<String> attachmentIds = populateFields(null, componentId, userId, metadata, data, form);
-
-    // 2 - Create process instance
+    // 1 - Create process instance
     String instanceId = createProcessInstance(processModel, userId, userRole, data);
+
+    // 2 - Populate form data (save file on disk, populate file field)
+    List<String> attachmentIds = populateFields(instanceId, componentId, userId, metadata, data, form);
 
     // 3 - Update attachment foreign key
     // Attachment's foreign key must be set with the just created instanceId
@@ -175,7 +170,6 @@ public class DefaultProcessManagerService implements ProcessManagerService {
       AttachmentServiceProvider.getAttachmentService()
           .unlock(new UnlockContext(attachmentId, userId, null));
     }
-
     return instanceId;
   }
 
@@ -550,10 +544,13 @@ public class DefaultProcessManagerService implements ProcessManagerService {
       Map<String, Object> metadata, GenericDataRecord data, XmlForm form)
       throws ProcessManagerException {
     List<String> attachmentIds = new ArrayList<>();
+    boolean versioningUsed = StringUtil.getBooleanValue(OrganizationControllerProvider.
+        getOrganisationController().getComponentParameterValue(componentId, VERSION_MODE));
 
     PagesContext pagesContext = new PagesContext("creationForm", "0", getLanguage(), true,
         componentId, userId);
     pagesContext.setObjectId(processId);
+    pagesContext.setVersioningUsed(versioningUsed);
 
     // Populate file name and file content
     for (Map.Entry<String, ?> entry : metadata.entrySet()) {
