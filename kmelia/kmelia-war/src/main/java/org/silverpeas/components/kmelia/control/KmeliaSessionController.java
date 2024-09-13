@@ -2675,8 +2675,14 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     final NodeDetail currentFolder = getCurrentFolder();
     final String nodePathSep = "/";
     final String safeCurrentFolderPath = getCurrentFolder().getFullPath().replaceFirst("[/]+$", "") + nodePathSep;
-    TopicSearch newTS = new TopicSearch(getComponentId(), currentFolder.getId(),
-        getUserId(), getLanguage(), query.toLowerCase(), new Date());
+    TopicSearch newTS = new TopicSearch();
+    newTS.setInstanceId(getComponentId());
+    newTS.setTopicId(currentFolder.getId());
+    newTS.setUserId(getUserId());
+    newTS.setLanguage(getLanguage());
+    newTS.setQuery(query.toLowerCase());
+    newTS.setSearchDate(new Date());
+
     KmeliaSearchServiceProvider.getTopicSearchService().createTopicSearch(newTS);
 
     List<KmeliaPublication> userPublications;

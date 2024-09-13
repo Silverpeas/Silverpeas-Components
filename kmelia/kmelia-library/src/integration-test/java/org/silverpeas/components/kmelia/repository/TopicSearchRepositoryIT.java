@@ -68,9 +68,6 @@ public class TopicSearchRepositoryIT {
     repo = ServiceProvider.getService(TopicSearchRepository.class);
   }
 
-  public TopicSearchRepositoryIT() {
-  }
-
   /**
    * Test put TopicSearch inside repository.
    */
@@ -78,8 +75,13 @@ public class TopicSearchRepositoryIT {
   public void testSave() {
     TopicSearch result = Transaction.performInOne(() -> {
       String instanceId = "kmelia111";
-      TopicSearch entity =
-          new TopicSearch(instanceId, "0", "0", "fr", "ma nouvelle recherche", new Date());
+      TopicSearch entity = new TopicSearch();
+      entity.setInstanceId(instanceId);
+      entity.setTopicId("0");
+      entity.setUserId("0");
+      entity.setLanguage("fr");
+      entity.setQuery("ma nouvelle recherche");
+      entity.setSearchDate(new Date());
       return repo.saveAndFlush(entity);
     });
     assertEquals(result, repo.getById(result.getId()));

@@ -36,19 +36,18 @@ import java.util.List;
 
 @Entity
 @Table(name = "sc_resources_resource")
-@NamedQueries({@NamedQuery(name = "resource.findAllResourcesByCategory",
-    query = "SELECT resource FROM Resource resource WHERE resource.category.id = :categoryId"),
-    @NamedQuery(name = "resource.findAllBookableResources",
-        query = "SELECT resource FROM Resource resource WHERE resource.instanceId = :instanceId " +
-            "AND resource.bookable = 1 AND resource.category.bookable = 1 ORDER BY resource.name"),
-    @NamedQuery(name = "resource.deleteResourcesFromCategory",
-        query = "DELETE Resource resource WHERE resource.category.id = :categoryId")
-})
+@NamedQuery(name = "resource.findAllResourcesByCategory",
+    query = "SELECT resource FROM Resource resource WHERE resource.category.id = :categoryId")
+@NamedQuery(name = "resource.findAllBookableResources",
+    query = "SELECT resource FROM Resource resource WHERE resource.instanceId = :instanceId " +
+        "AND resource.bookable = 1 AND resource.category.bookable = 1 ORDER BY resource.name")
+@NamedQuery(name = "resource.deleteResourcesFromCategory",
+    query = "DELETE FROM Resource resource WHERE resource.category.id = :categoryId")
 public class Resource extends BasicJpaEntity<Resource, UniqueLongIdentifier> {
   private static final long serialVersionUID = 3438059589840347315L;
 
-  @ManyToOne(optional = true, fetch = FetchType.EAGER)
-  @JoinColumn(name = "categoryid", nullable = true, updatable = true)
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "categoryid")
   private Category category;
   @Column
   private String name;
@@ -188,11 +187,9 @@ public class Resource extends BasicJpaEntity<Resource, UniqueLongIdentifier> {
     return managers;
   }
 
+  @SuppressWarnings("unused")
   public void setManagers(List<ResourceValidator> managers) {
     this.managers = managers;
-  }
-
-  public Resource() {
   }
 
   public void merge(Resource resource) {
@@ -205,18 +202,6 @@ public class Resource extends BasicJpaEntity<Resource, UniqueLongIdentifier> {
     this.name = resource.name;
     this.updateDate = resource.updateDate;
     this.updaterId = resource.updaterId;
-  }
-
-  public Resource(Long id, Category category, String name, String description, String createrId,
-      String updaterId, String instanceId, boolean bookable) {
-    setId(id != null ? Long.toString(id): null);
-    this.category = category;
-    this.name = name;
-    this.description = description;
-    this.createrId = createrId;
-    this.updaterId = updaterId;
-    this.instanceId = instanceId;
-    setBookable(bookable);
   }
 
   @Override
@@ -263,6 +248,7 @@ public class Resource extends BasicJpaEntity<Resource, UniqueLongIdentifier> {
         ", status=" + getStatus() + '}';
   }
 
+  @SuppressWarnings("unused")
   public boolean isValidated() {
     return ResourceStatus.STATUS_VALIDATE.equals(getStatus());
   }

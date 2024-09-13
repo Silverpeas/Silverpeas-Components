@@ -28,7 +28,6 @@ import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIde
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 
 import javax.persistence.Entity;
-import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import java.io.Serializable;
@@ -40,8 +39,8 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "sc_kmelia_search")
-@NamedQueries({@NamedQuery(name = "topicSearch.findByInstanceId",
-    query = "SELECT ts FROM TopicSearch ts WHERE ts.instanceId = :instanceId")})
+@NamedQuery(name = "topicSearch.findByInstanceId",
+    query = "SELECT ts FROM TopicSearch ts WHERE ts.instanceId = :instanceId")
 public class TopicSearch extends BasicJpaEntity<TopicSearch, UniqueLongIdentifier>
     implements Serializable {
 
@@ -53,27 +52,6 @@ public class TopicSearch extends BasicJpaEntity<TopicSearch, UniqueLongIdentifie
   private String language;
   private String query;
   private Date searchDate;
-
-  protected TopicSearch() {
-  }
-
-  /**
-   * @param instanceId the application instance identifier
-   * @param topicId the topic identifier
-   * @param userId the user identifier
-   * @param language the language
-   * @param query the query
-   * @param date the date
-   */
-  public TopicSearch(String instanceId, String topicId, String userId, String language,
-      String query, Date date) {
-    this.instanceId = instanceId;
-    this.topicId = Integer.valueOf(topicId);
-    this.userId = Integer.valueOf(userId);
-    this.language = language;
-    this.query = query;
-    this.searchDate = date;
-  }
 
   /**
    * @return the instanceId
@@ -92,6 +70,7 @@ public class TopicSearch extends BasicJpaEntity<TopicSearch, UniqueLongIdentifie
   /**
    * @return the topicId
    */
+  @SuppressWarnings("unused")
   public String getTopicId() {
     return topicId.toString();
   }
@@ -99,6 +78,7 @@ public class TopicSearch extends BasicJpaEntity<TopicSearch, UniqueLongIdentifie
   /**
    * @param topicId the topicId to set
    */
+  @SuppressWarnings("unused")
   public void setTopicId(String topicId) {
     this.topicId = Integer.valueOf(topicId);
   }
@@ -120,6 +100,7 @@ public class TopicSearch extends BasicJpaEntity<TopicSearch, UniqueLongIdentifie
   /**
    * @return the query
    */
+  @SuppressWarnings("unused")
   public String getQuery() {
     return query;
   }
@@ -127,6 +108,7 @@ public class TopicSearch extends BasicJpaEntity<TopicSearch, UniqueLongIdentifie
   /**
    * @param query the query to set
    */
+  @SuppressWarnings("unused")
   public void setQuery(String query) {
     this.query = query;
   }
@@ -134,6 +116,7 @@ public class TopicSearch extends BasicJpaEntity<TopicSearch, UniqueLongIdentifie
   /**
    * @return the date
    */
+  @SuppressWarnings("unused")
   public Date getSearchDate() {
     return searchDate;
   }
@@ -141,6 +124,7 @@ public class TopicSearch extends BasicJpaEntity<TopicSearch, UniqueLongIdentifie
   /**
    * @param searchDate the date to set
    */
+  @SuppressWarnings("unused")
   public void setSearchDate(Date searchDate) {
     this.searchDate = searchDate;
   }

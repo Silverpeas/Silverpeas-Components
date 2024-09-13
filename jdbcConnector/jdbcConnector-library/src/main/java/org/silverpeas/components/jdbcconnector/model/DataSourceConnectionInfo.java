@@ -21,8 +21,8 @@
 
 package org.silverpeas.components.jdbcconnector.model;
 
-import org.silverpeas.components.jdbcconnector.service.JdbcConnectorException;
 import org.silverpeas.components.jdbcconnector.service.DataSourceConnectionInfoService;
+import org.silverpeas.components.jdbcconnector.service.JdbcConnectorException;
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueIntegerIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 import org.silverpeas.kernel.util.StringUtil;
@@ -31,7 +31,6 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.sql.DataSource;
@@ -46,11 +45,10 @@ import java.util.List;
  * @author mmoquillon
  */
 @Entity
-@NamedQueries({
-    @NamedQuery(name = "DataSourceConnectionInfo.findByInstanceId", query = "from " +
-        "DataSourceConnectionInfo where instanceId = :instanceId"),
-    @NamedQuery(name = "DataSourceConnectionInfo.deleteByInstanceId", query =
-        "delete DataSourceConnectionInfo where instanceId = :instanceId")})
+@NamedQuery(name = "DataSourceConnectionInfo.findByInstanceId",
+    query = "select d from DataSourceConnectionInfo d where d.instanceId = :instanceId")
+@NamedQuery(name = "DataSourceConnectionInfo.deleteByInstanceId",
+    query = "delete from DataSourceConnectionInfo d where d.instanceId = :instanceId")
 @Table(name = "sc_connecteurjdbc_connectinfo")
 public class DataSourceConnectionInfo
     extends BasicJpaEntity<DataSourceConnectionInfo, UniqueIntegerIdentifier> {
@@ -69,6 +67,7 @@ public class DataSourceConnectionInfo
   @NotNull
   private String instanceId;
 
+  @SuppressWarnings("unused")
   public static DataSourceConnectionInfo getById(String id) {
     return DataSourceConnectionInfoService.get().getConnectionInfo(id);
   }
@@ -93,7 +92,7 @@ public class DataSourceConnectionInfo
    * Is this connection information defined? Information about a connection to a data source is
    * defined if both it is related to a ConnecteurJDBC application instance and the name of the
    * data source is defined.
-   * @return
+   * @return true is the data source is well defined
    */
   public boolean isDefined() {
     return StringUtil.isDefined(this.dataSource) && StringUtil.isDefined(this.instanceId);
@@ -116,6 +115,7 @@ public class DataSourceConnectionInfo
    * @param maxNumber the maximum number of data to return. 0 means all.
    * @return itself.
    */
+  @SuppressWarnings("UnusedReturnValue")
   public DataSourceConnectionInfo withDataMaxNumber(int maxNumber) {
     setDataMaxNumber(maxNumber);
     return this;
@@ -148,6 +148,7 @@ public class DataSourceConnectionInfo
    * Gets the unique identifier of the component instance this connection info belongs to.
    * @return the unique identifier of the component instance.
    */
+  @SuppressWarnings("unused")
   public String getInstanceId() {
     return instanceId;
   }
@@ -215,11 +216,7 @@ public class DataSourceConnectionInfo
    * @param maxNumber the maximum number of data to return. 0 means all.
    */
   public void setDataMaxNumber(int maxNumber) {
-    if (maxNumber <= 0) {
-      this.rowLimit = 0;
-    } else {
-      this.rowLimit = maxNumber;
-    }
+    this.rowLimit = Math.max(maxNumber, 0);
   }
 
   /**
@@ -233,6 +230,7 @@ public class DataSourceConnectionInfo
   /**
    * Removes this connection information from the persistence context.
    */
+  @SuppressWarnings("unused")
   public void remove() {
     DataSourceConnectionInfoService.get().removeConnectionInfo(this);
   }

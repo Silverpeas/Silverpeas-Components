@@ -48,7 +48,7 @@ import java.util.Set;
  */
 @Entity
 @NamedQuery(name = "suggestionBoxFromComponentInstance",
-    query = "from SuggestionBox s where s.componentInstanceId = :componentInstanceId")
+    query = "select s from SuggestionBox s where s.componentInstanceId = :componentInstanceId")
 @Table(name = "sc_suggestion_box")
 public class SuggestionBox extends SilverpeasJpaEntity<SuggestionBox, UuidIdentifier> {
 
@@ -86,7 +86,7 @@ public class SuggestionBox extends SilverpeasJpaEntity<SuggestionBox, UuidIdenti
     // application suggestion box (for instance, a suggestion box application is made up of one and
     // only one suggestion box.
     this.componentInstanceId = componentInstanceId;
-    this.suggestions = new ArrayList<Suggestion>();
+    this.suggestions = new ArrayList<>();
   }
 
   /**
@@ -102,6 +102,7 @@ public class SuggestionBox extends SilverpeasJpaEntity<SuggestionBox, UuidIdenti
    * @param language the language at which the title has to be returned.
    * @return the suggestion box title according to requested language.
    */
+  @SuppressWarnings("unused")
   public String getTitle(String language) {
     return getComponentInst().getName(language);
   }
@@ -111,6 +112,7 @@ public class SuggestionBox extends SilverpeasJpaEntity<SuggestionBox, UuidIdenti
    * @param language the language at which the title has to be returned.
    * @return the description box description according to requested language.
    */
+  @SuppressWarnings("unused")
   public String getDescription(String language) {
     return getComponentInst().getDescription(language);
   }

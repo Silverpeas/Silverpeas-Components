@@ -23,57 +23,52 @@
  */
 package org.silverpeas.components.resourcesmanager.model;
 
+import org.silverpeas.core.persistence.datasource.model.CompositeEntityIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * @author ehugonnet
  */
 @Entity
 @Table(name = "sc_resources_reservedresource")
-@NamedQueries({
-    @NamedQuery(name = "reservedResource.findAllResourcesForReservation",
-        query = "SELECT DISTINCT reservedResource.resource FROM ReservedResource reservedResource" +
-            " WHERE reservedResource.id.reservationId = :reservationId"),
-    @NamedQuery(name = "reservedResource.findAllReservedResources",
-        query =
-            "SELECT DISTINCT reservedResource.resource FROM ReservedResource reservedResource " +
-                "WHERE reservedResource.reservation.id != :reservationIdToSkip AND " +
-                "reservedResource.status != 'R'" +
-                "AND reservedResource.resource.id.id IN :aimedResourceIds " +
-                "AND reservedResource.reservation.beginDate < :endPeriod " +
-                "AND reservedResource.reservation.endDate > :startPeriod "),
-    @NamedQuery(name = "reservedResource.findAllReservedResourcesWithProblem",
+@NamedQuery(name = "reservedResource.findAllResourcesForReservation",
+    query = "SELECT DISTINCT reservedResource.resource FROM ReservedResource reservedResource" +
+        " WHERE reservedResource.id.reservationId = :reservationId")
+@NamedQuery(name = "reservedResource.findAllReservedResources",
+    query =
+        "SELECT DISTINCT reservedResource.resource FROM ReservedResource reservedResource " +
+            "WHERE reservedResource.reservation.id <> :reservationIdToSkip AND " +
+            "reservedResource.status <> 'R'" +
+            "AND reservedResource.resource.id.id IN :aimedResourceIds " +
+            "AND reservedResource.reservation.beginDate < :endPeriod " +
+            "AND reservedResource.reservation.endDate > :startPeriod ")
+@NamedQuery(name = "reservedResource.findAllReservedResourcesWithProblem",
     query = "SELECT DISTINCT reservedResource FROM ReservedResource reservedResource " +
-        "WHERE reservedResource.reservation.id != :currentReservationId " +
-        "AND reservedResource.status != 'R'" +
+        "WHERE reservedResource.reservation.id <> :currentReservationId " +
+        "AND reservedResource.status <> 'R'" +
         "AND reservedResource.resource.id.id IN :futureReservedResourceIds " +
         "AND reservedResource.reservation.beginDate < :endPeriod " +
-        "AND reservedResource.reservation.endDate > :startPeriod "),
-    @NamedQuery(name = "reservedResource.findAllReservedResourcesForReservation",
-        query = "SELECT DISTINCT reservedResource FROM ReservedResource reservedResource " +
-            "WHERE reservedResource.reservation.id = :currentReservationId"),
-    @NamedQuery(name = "reservedResource.deleteAllReservedResourcesForReservation",
-        query = "DELETE ReservedResource reservedResource " +
-            "WHERE reservedResource.id.reservationId = :currentReservationId"),
-    @NamedQuery(name = "reservedResource.deleteAllReservedResourcesForResource",
-        query = "DELETE ReservedResource reservedResource " +
-            "WHERE reservedResource.id.resourceId = :currentResourceId"),
-    @NamedQuery(name = "reservedResource.deleteAllReservedResourcesForComponentInstance",
-        query = "DELETE FROM ReservedResource reservedResource " +
-            "WHERE reservedResource.reservation IN (SELECT reservation FROM Reservation " +
-            "reservation WHERE reservation.instanceId = :instanceId)"),
-    @NamedQuery(name = "reservedResource.findAllReservedResourcesOfReservation",
-        query = "SELECT DISTINCT reservedResource FROM ReservedResource reservedResource " +
-            "WHERE reservedResource.id.reservationId = :currentReservationId")})
+        "AND reservedResource.reservation.endDate > :startPeriod ")
+@NamedQuery(name = "reservedResource.findAllReservedResourcesForReservation",
+    query = "SELECT DISTINCT reservedResource FROM ReservedResource reservedResource " +
+        "WHERE reservedResource.reservation.id = :currentReservationId")
+@NamedQuery(name = "reservedResource.deleteAllReservedResourcesForReservation",
+    query = "DELETE FROM ReservedResource reservedResource " +
+        "WHERE reservedResource.id.reservationId = :currentReservationId")
+@NamedQuery(name = "reservedResource.deleteAllReservedResourcesForResource",
+    query = "DELETE FROM ReservedResource reservedResource " +
+        "WHERE reservedResource.id.resourceId = :currentResourceId")
+@NamedQuery(name = "reservedResource.deleteAllReservedResourcesForComponentInstance",
+    query = "DELETE FROM ReservedResource reservedResource " +
+        "WHERE reservedResource.reservation IN (SELECT reservation FROM Reservation " +
+        "reservation WHERE reservation.instanceId = :instanceId)")
+@NamedQuery(name = "reservedResource.findAllReservedResourcesOfReservation",
+    query = "SELECT DISTINCT reservedResource FROM ReservedResource reservedResource " +
+        "WHERE reservedResource.id.reservationId = :currentReservationId")
 public class ReservedResource extends BasicJpaEntity<ReservedResource, ReservedResourcePk>
     implements Serializable {
 
@@ -91,7 +86,7 @@ public class ReservedResource extends BasicJpaEntity<ReservedResource, ReservedR
   private Reservation reservation;
 
   public void setReservedResourceId(String resourceId, String reservationId) {
-    setId(resourceId + ReservedResourcePk.COMPOSITE_SEPARATOR + reservationId);
+    setId(resourceId + CompositeEntityIdentifier.COMPOSITE_SEPARATOR + reservationId);
   }
 
   public Reservation getReservation() {
@@ -103,7 +98,7 @@ public class ReservedResource extends BasicJpaEntity<ReservedResource, ReservedR
   }
 
   private String[] getStringIds() {
-    return getId().split(ReservedResourcePk.COMPOSITE_SEPARATOR);
+    return getId().split(CompositeEntityIdentifier.COMPOSITE_SEPARATOR);
   }
 
   public long getReservationId() {
@@ -130,6 +125,7 @@ public class ReservedResource extends BasicJpaEntity<ReservedResource, ReservedR
     this.status = status;
   }
 
+  @SuppressWarnings("unused")
   public boolean isValidated() {
     return ResourceStatus.STATUS_VALIDATE.equals(status);
   }
@@ -151,11 +147,7 @@ public class ReservedResource extends BasicJpaEntity<ReservedResource, ReservedR
       return false;
     }
     final ReservedResource other = (ReservedResource) obj;
-    if (this.getId() != other.getId() && (this.getId() == null || !this.getId().
-        equals(other.getId()))) {
-      return false;
-    }
-    return this.status == null ? other.status == null : this.status.equals(other.status);
+    return Objects.equals(this.status, other.status);
   }
 
   @Override

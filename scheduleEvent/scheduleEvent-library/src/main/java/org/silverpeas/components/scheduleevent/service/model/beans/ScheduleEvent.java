@@ -36,9 +36,10 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "sc_scheduleevent_list")
-@NamedQuery(name = "findByAuthor", query = "from ScheduleEvent where author = :authorId")
-@NamedQuery(name = "findByContributor", query
-      = "select e from Contributor c join c.scheduleEvent e where c.userId = :contributorId")
+@NamedQuery(name = "findByAuthor", query =
+    "select e from ScheduleEvent e where e.author = :authorId")
+@NamedQuery(name = "findByContributor", query =
+    "select e from Contributor c join c.scheduleEvent e where c.userId = :contributorId")
 public class ScheduleEvent implements SilverpeasToolContent, ScheduleEventBean, Serializable {
 
   private static final long serialVersionUID = 1L;

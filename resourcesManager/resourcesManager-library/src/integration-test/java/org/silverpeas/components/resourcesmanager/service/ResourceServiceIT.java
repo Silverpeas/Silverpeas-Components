@@ -36,12 +36,12 @@ import org.silverpeas.components.resourcesmanager.model.Resource;
 import org.silverpeas.components.resourcesmanager.model.ResourceValidator;
 import org.silverpeas.components.resourcesmanager.test.WarBuilder4ResourcesManager;
 import org.silverpeas.core.persistence.Transaction;
+import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
 import org.silverpeas.core.test.integration.rule.DbUnitLoadingRule;
+import org.silverpeas.core.test.unit.EntityIdSetter;
 import org.silverpeas.core.util.ServiceProvider;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -52,6 +52,8 @@ import static org.hamcrest.Matchers.*;
 @RunWith(Arquillian.class)
 public class ResourceServiceIT {
 
+  private final EntityIdSetter idSetter = new EntityIdSetter(UniqueLongIdentifier.class);
+  private final Map<Long, Resource> expectedResources = new HashMap<>();
   private Category firstCategory;
   private Category secondCategory;
 
@@ -64,18 +66,54 @@ public class ResourceServiceIT {
     return WarBuilder4ResourcesManager.onWarForTestClass(ResourceServiceIT.class).build();
   }
 
-  public ResourceServiceIT() {
-  }
-
   private ResourceService service;
 
   @Before
-  public void generalSetUp() throws Exception {
+  public void generalSetUp() {
     service = ServiceProvider.getService(ResourceService.class);
-    firstCategory = new Category(1L, "resourcesManager42", "Salles", true, "model1.xml", "5", "5",
-        "Salles de réunion");
-    secondCategory = new Category(2L, "resourcesManager42", "Voitures", true, null, "6", "6",
-        "Véhicules utilitaires");
+    firstCategory = new Category("Salles", true, "model1.xml", "Salles de réunion");
+    idSetter.setIdTo(firstCategory, "1");
+    firstCategory.setInstanceId("resourcesManager42");
+    firstCategory.setCreaterId("5");
+    firstCategory.setUpdaterId("5");
+    secondCategory = new Category("Voitures", true, null, "Véhicules utilitaires");
+    idSetter.setIdTo(secondCategory, "2");
+    secondCategory.setInstanceId("resourcesManager42");
+    secondCategory.setCreaterId("6");
+    secondCategory.setUpdaterId("6");
+
+    Resource resource1 = new Resource();
+    idSetter.setIdTo(resource1, "1");
+    resource1.setInstanceId("resourcesManager42");
+    resource1.setCategory(firstCategory);
+    resource1.setName("Salle Chartreuse");
+    resource1.setDescription("Salle de réunion jusqu'à 4 personnes");
+    resource1.setCreaterId("5");
+    resource1.setUpdaterId("5");
+    resource1.setBookable(true);
+    expectedResources.put(1L, resource1);
+
+    Resource resource2 = new Resource();
+    idSetter.setIdTo(resource2, "2");
+    resource2.setInstanceId("resourcesManager42");
+    resource2.setCategory(firstCategory);
+    resource2.setName("Salle Belledonne");
+    resource2.setDescription("Salle de réunion jusqu'à 12 personnes");
+    resource2.setCreaterId("5");
+    resource2.setUpdaterId("5");
+    resource2.setBookable(true);
+    expectedResources.put(2L, resource2);
+
+    Resource resource3 = new Resource();
+    idSetter.setIdTo(resource3, "3");
+    resource3.setInstanceId("resourcesManager42");
+    resource3.setCategory(secondCategory);
+    resource3.setName("Twingo verte - 156 VV 38");
+    resource3.setDescription("Twingo verte 4 places 5 portes");
+    resource3.setCreaterId("5");
+    resource3.setUpdaterId("5");
+    resource3.setBookable(true);
+    expectedResources.put(3L, resource3);
   }
 
   /**
@@ -84,10 +122,16 @@ public class ResourceServiceIT {
   @Test
   public void testCreateResource() {
     Transaction.performInOne(() -> {
-      Long id = 21L;
-      Resource resource = new Resource(null, firstCategory, "Salle Vercors",
-          "Salle de réunion jusqu'à 4 personnes avec vidéoprojecteur", "5", "5",
-          "resourcesManager42", true);
+      long id = 21L;
+      Resource resource = new Resource();
+      resource.setInstanceId("resourcesManager42");
+      resource.setCategory(firstCategory);
+      resource.setName("Salle Vercors");
+      resource.setDescription("Salle de réunion jusqu'à 4 personnes avec vidéoprojecteur");
+      resource.setCreaterId("5");
+      resource.setUpdaterId("5");
+      resource.setBookable(true);
+
       assertThat(resource.getCreationDate(), nullValue());
       assertThat(resource.getUpdateDate(), nullValue());
       service.createResource(resource);
@@ -106,9 +150,9 @@ public class ResourceServiceIT {
   @Test
   public void testUpdateResource() {
     Transaction.performInOne(() -> {
-      int id = 1;
-      Resource expected = new Resource(1L, firstCategory, "Salle Chartreuse",
-          "Salle de réunion jusqu'à 4 personnes", "5", "5", "resourcesManager42", true);
+      long id = 1L;
+      Resource expected = expectedResources.get(id);
+
       Resource test = service.getResource(id);
       assertThat(test, is(expected));
       expected.setCreationDate(test.getCreationDate());
@@ -140,12 +184,10 @@ public class ResourceServiceIT {
    */
   @Test
   public void testGetResource() {
-    int id = 1;
-    Resource expResult =
-        new Resource(1L, firstCategory, "Salle Chartreuse", "Salle de réunion jusqu'à 4 personnes",
-            "5", "5", "resourcesManager42", true);
+    long id = 1L;
+    Resource expected = expectedResources.get(id);
     Resource result = service.getResource(id);
-    assertThat(result, is(expResult));
+    assertThat(result, is(expected));
   }
 
   /**
@@ -153,12 +195,11 @@ public class ResourceServiceIT {
    */
   @Test
   public void testDeleteResource() {
-    int id = 1;
-    Resource expResult =
-        new Resource(1L, firstCategory, "Salle Chartreuse", "Salle de réunion jusqu'à 4 personnes",
-            "5", "5", "resourcesManager42", true);
+    long id = 1L;
+    Resource expected = expectedResources.get(id);
+
     Resource result = service.getResource(id);
-    assertThat(result, is(expResult));
+    assertThat(result, is(expected));
     service.deleteResource(id);
     result = service.getResource(id);
     assertThat(result, is(nullValue()));
@@ -170,14 +211,13 @@ public class ResourceServiceIT {
   @Test
   public void testDeleteResourcesFromCategory() {
     long categoryId = 1L;
+    Resource resource1 = expectedResources.get(1L);
+    Resource resource2 = expectedResources.get(2L);
+
     List<Resource> result = service.getResourcesByCategory(categoryId);
     assertThat(result, is(notNullValue()));
     assertThat(result, hasSize(2));
-    assertThat(result, contains(
-        new Resource(1L, firstCategory, "Salle Chartreuse", "Salle de réunion jusqu'à 4 personnes",
-            "5", "5", "resourcesManager42", true),
-        new Resource(2L, firstCategory, "Salle Belledonne", "Salle de réunion jusqu'à 12 personnes",
-            "5", "5", "resourcesManager42", true)));
+    assertThat(result, contains(resource1, resource2));
     service.deleteResourcesFromCategory(categoryId);
     result = service.getResourcesByCategory(categoryId);
     assertThat(result, is(notNullValue()));
@@ -299,14 +339,13 @@ public class ResourceServiceIT {
   @Test
   public void testGetResourcesByCategory() {
     long categoryId = 1L;
+    Resource resource1 = expectedResources.get(1L);
+    Resource resource2 = expectedResources.get(2L);
+
     List<Resource> result = service.getResourcesByCategory(categoryId);
     assertThat(result, is(notNullValue()));
     assertThat(result, hasSize(2));
-    assertThat(result, contains(
-        new Resource(1L, firstCategory, "Salle Chartreuse", "Salle de réunion jusqu'à 4 personnes",
-            "5", "5", "resourcesManager42", true),
-        new Resource(2L, firstCategory, "Salle Belledonne", "Salle de réunion jusqu'à 12 personnes",
-            "5", "5", "resourcesManager42", true)));
+    assertThat(result, contains(resource1, resource2));
   }
 
   /**
@@ -314,37 +353,32 @@ public class ResourceServiceIT {
    */
   @Test
   public void testListAvailableResourcesWithReservationOutOfRange() {
+    Resource resource1 = expectedResources.get(1L);
+    Resource resource2 = expectedResources.get(2L);
+    Resource resource3 = expectedResources.get(3L);
     String instanceId = "resourcesManager42";
     String startDate = String.valueOf(1320134400000L - 3600000L - 3600000L);
     String endDate = String.valueOf(1320134400000L - 3600000L);
     List<Resource> result = service.listAvailableResources(instanceId, startDate, endDate);
     assertThat(result, is(notNullValue()));
     assertThat(result, hasSize(3));
-    assertThat(result, contains(
-        new Resource(2L, firstCategory, "Salle Belledonne", "Salle de réunion jusqu'à 12 personnes",
-            "5", "5", "resourcesManager42", true),
-        new Resource(1L, firstCategory, "Salle Chartreuse", "Salle de réunion jusqu'à 4 personnes",
-            "5", "5", "resourcesManager42", true),
-        new Resource(3L, secondCategory, "Twingo verte - 156 VV 38",
-            "Twingo verte 4 places 5 portes", "5", "5", "resourcesManager42", true)));
+    assertThat(result, contains(resource2, resource1, resource3));
   }
 
   @Test
   public void testListAvailableResourcesJustBeforeReservation() {
     String instanceId = "resourcesManager42";
+    Resource resource1 = expectedResources.get(1L);
+    Resource resource2 = expectedResources.get(2L);
+    Resource resource3 = expectedResources.get(3L);
+
     //Just before reservation range
     String startDate = String.valueOf(1320134400000L - 3600000L);
     String endDate = String.valueOf(1320134400000L);
     List<Resource> result = service.listAvailableResources(instanceId, startDate, endDate);
     assertThat(result, is(notNullValue()));
     assertThat(result, hasSize(3));
-    assertThat(result, contains(
-        new Resource(2L, firstCategory, "Salle Belledonne", "Salle de réunion jusqu'à 12 personnes",
-            "5", "5", "resourcesManager42", true),
-        new Resource(1L, firstCategory, "Salle Chartreuse", "Salle de réunion jusqu'à 4 personnes",
-            "5", "5", "resourcesManager42", true),
-        new Resource(3L, secondCategory, "Twingo verte - 156 VV 38",
-            "Twingo verte 4 places 5 portes", "5", "5", "resourcesManager42", true)));
+    assertThat(result, contains(resource2, resource1, resource3));
   }
 
   @Test
@@ -355,26 +389,22 @@ public class ResourceServiceIT {
     List<Resource> result = service.listAvailableResources(instanceId, startDate, endDate);
     assertThat(result, is(notNullValue()));
     assertThat(result, hasSize(1));
-    assertThat(result, contains(
-        new Resource(2L, firstCategory, "Salle Belledonne", "Salle de réunion jusqu'à 12 personnes",
-            "5", "5", "resourcesManager42", true)));
+    assertThat(result, contains(expectedResources.get(2L)));
   }
 
   @Test
   public void testListAvailableResourcesAfterReservationRange() {
+    Resource resource1 = expectedResources.get(1L);
+    Resource resource2 = expectedResources.get(2L);
+    Resource resource3 = expectedResources.get(3L);
     String instanceId = "resourcesManager42";
     String startDate = String.valueOf(1320163200000L);
     String endDate = String.valueOf(1320163200000L + 3600000L);
+
     List<Resource> result = service.listAvailableResources(instanceId, startDate, endDate);
     assertThat(result, is(notNullValue()));
     assertThat(result, hasSize(3));
-    assertThat(result, contains(
-        new Resource(2L, firstCategory, "Salle Belledonne", "Salle de réunion jusqu'à 12 personnes",
-            "5", "5", "resourcesManager42", true),
-        new Resource(1L, firstCategory, "Salle Chartreuse", "Salle de réunion jusqu'à 4 personnes",
-            "5", "5", "resourcesManager42", true),
-        new Resource(3L, secondCategory, "Twingo verte - 156 VV 38",
-            "Twingo verte 4 places 5 portes", "5", "5", "resourcesManager42", true)));
+    assertThat(result, contains(resource2, resource1, resource3));
   }
 
   /**
@@ -388,9 +418,7 @@ public class ResourceServiceIT {
     List<Resource> result = service.listAvailableResources(instanceId, startDate, endDate);
     assertThat(result, is(notNullValue()));
     assertThat(result, hasSize(1));
-    assertThat(result, contains(
-        new Resource(2L, firstCategory, "Salle Belledonne", "Salle de réunion jusqu'à 12 personnes",
-            "5", "5", "resourcesManager42", true)));
+    assertThat(result, contains(expectedResources.get(2L)));
   }
 
 
@@ -399,20 +427,19 @@ public class ResourceServiceIT {
    */
   @Test
   public void testFindAllReservedResources() {
+    Resource resource1 = expectedResources.get(1L);
+    Resource resource3 = expectedResources.get(3L);
     long reservationIdToSkip = -1;
     String startDate = String.valueOf(1320134400000L - 7200000L);
     String endDate = String.valueOf(1320163200000L + 7200000L);
     List<Long> futureReservedResourceIds = Arrays.asList(1L, 2L, 3L, 5L, 8L);
+
     List<Resource> result = service
         .findAllReservedResources(reservationIdToSkip, futureReservedResourceIds, startDate,
             endDate);
     assertThat(result, is(notNullValue()));
     assertThat(result, hasSize(2));
-    assertThat(result, contains(
-        new Resource(1L, firstCategory, "Salle Chartreuse", "Salle de réunion jusqu'à 4 personnes",
-            "5", "5", "resourcesManager42", true),
-        new Resource(3L, secondCategory, "Twingo verte - 156 VV 38",
-            "Twingo verte 4 places 5 portes", "5", "5", "resourcesManager42", true)));
+    assertThat(result, contains(resource1, resource3));
   }
 
 }

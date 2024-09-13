@@ -23,15 +23,9 @@
  */
 package org.silverpeas.components.mailinglist.service.model.beans;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import org.silverpeas.kernel.annotation.NonNull;
+
+import javax.persistence.*;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -41,10 +35,10 @@ import java.util.stream.Stream;
 
 @Entity
 @Table(name = "sc_mailinglist_list")
-@NamedQueries({
-    @NamedQuery(name = "mailinglist.findByComponentId", query = "from MailingList where componentId = " +
-        ":componentId"),
-    @NamedQuery(name = "mailinglist.findAll", query = "from MailingList")})
+@NamedQuery(name = "mailinglist.findByComponentId",
+    query = "select m from MailingList m where m.componentId = :componentId")
+@NamedQuery(name = "mailinglist.findAll",
+    query = "select m from MailingList m")
 public class MailingList extends IdentifiableObject {
   private static final long serialVersionUID = 3983404426767796807L;
 
@@ -64,9 +58,9 @@ public class MailingList extends IdentifiableObject {
   @Transient
   private boolean supportRSS;
   @Transient
-  private Set<InternalUser> moderators = new HashSet<>();
+  private transient Set<InternalUser> moderators = new HashSet<>();
   @Transient
-  private Set<InternalUser> readers = new HashSet<>();
+  private transient Set<InternalUser> readers = new HashSet<>();
   @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
   @JoinColumn(name = "listId", nullable = false)
   private Set<ExternalUser> externalSubscribers = new HashSet<>();
@@ -110,6 +104,7 @@ public class MailingList extends IdentifiableObject {
     return moderators;
   }
 
+  @SuppressWarnings("unused")
   public void setModerators(Set<InternalUser> moderators) {
     this.moderators = moderators;
   }
@@ -118,6 +113,7 @@ public class MailingList extends IdentifiableObject {
     return readers;
   }
 
+  @SuppressWarnings("unused")
   public void setReaders(Set<InternalUser> readers) {
     this.readers = readers;
   }
@@ -142,6 +138,7 @@ public class MailingList extends IdentifiableObject {
     this.notify = notify;
   }
 
+  @SuppressWarnings("unused")
   public void removeExternalSubscriber(ExternalUser user) {
     externalSubscribers.remove(user);
   }
@@ -195,12 +192,13 @@ public class MailingList extends IdentifiableObject {
 
   private class InternalSubscriberSet<T extends InternalSubscriber> implements Set<T> {
 
-    private Class<T> subscriberType;
+    private final Class<T> subscriberType;
 
     InternalSubscriberSet(Class<T> typeOfT) {
       subscriberType = typeOfT;
     }
 
+    @SuppressWarnings("unchecked")
     private Stream<T> filter() {
       return (Stream<T>) internalSubscribers.stream()
           .filter(s -> s.getClass().isAssignableFrom(subscriberType));
@@ -252,6 +250,7 @@ public class MailingList extends IdentifiableObject {
      * @return an iterator over the elements in this set
      */
     @Override
+    @NonNull
     public Iterator<T> iterator() {
       return filter().collect(Collectors.toSet()).iterator();
     }
@@ -272,8 +271,9 @@ public class MailingList extends IdentifiableObject {
      * @return an array containing all the elements in this set
      */
     @Override
+    @NonNull
     public Object[] toArray() {
-      return filter().collect(Collectors.toSet()).toArray();
+      return filter().distinct().toArray();
     }
 
     /**
@@ -318,7 +318,8 @@ public class MailingList extends IdentifiableObject {
      * @throws NullPointerException if the specified array is null
      */
     @Override
-    public <T1> T1[] toArray(final T1[] a) {
+    @NonNull
+    public <T1> T1[] toArray(@NonNull final T1[] a) {
       return filter().collect(Collectors.toSet()).toArray(a);
     }
 
@@ -400,7 +401,7 @@ public class MailingList extends IdentifiableObject {
      * @see #contains(Object)
      */
     @Override
-    public boolean containsAll(final Collection<?> c) {
+    public boolean containsAll(@NonNull final Collection<?> c) {
       return internalSubscribers.containsAll(c);
     }
 
@@ -422,10 +423,10 @@ public class MailingList extends IdentifiableObject {
      * elements, or if the specified collection is null
      * @throws IllegalArgumentException if some property of an element of the
      * specified collection prevents it from being added to this set
-     * @see #add(Object)
+     * @see #add(InternalSubscriber)
      */
     @Override
-    public boolean addAll(final Collection<? extends T> c) {
+    public boolean addAll(@NonNull final Collection<? extends T> c) {
       return internalSubscribers.addAll(c);
     }
 
@@ -450,7 +451,7 @@ public class MailingList extends IdentifiableObject {
      * @see #remove(Object)
      */
     @Override
-    public boolean retainAll(final Collection<?> c) {
+    public boolean retainAll(@NonNull final Collection<?> c) {
       return internalSubscribers.retainAll(c);
     }
 
@@ -475,7 +476,7 @@ public class MailingList extends IdentifiableObject {
      * @see #contains(Object)
      */
     @Override
-    public boolean removeAll(final Collection<?> c) {
+    public boolean removeAll(@NonNull final Collection<?> c) {
       return internalSubscribers.removeAll(c);
     }
 

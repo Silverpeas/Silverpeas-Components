@@ -32,57 +32,61 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import javax.persistence.*;
 import java.util.Date;
 
+@SuppressWarnings("unused")
 @Entity
 @Table(name = "sc_resources_reservation")
-@NamedQueries({@NamedQuery(name = "reservation.findAllReservationsInRange",
+@NamedQuery(name = "reservation.findAllReservationsInRange",
     query = "SELECT reservation FROM Reservation reservation " +
         "WHERE reservation.instanceId = :instanceId " +
-        "AND reservation.beginDate < :endPeriod  AND reservation.endDate > :startPeriod "),
-    @NamedQuery(name = "reservation.findAllReservationsForUserInRange",
-        query = "SELECT reservation FROM Reservation reservation " +
-            "WHERE reservation.instanceId = :instanceId AND reservation.userId= :userId " +
-            "AND reservation.beginDate < :endPeriod AND reservation.endDate > :startPeriod "),
-    @NamedQuery(name = "reservation.findAllReservationsForUser",
-        query = "SELECT reservation FROM Reservation reservation " +
-            "WHERE reservation.instanceId = :instanceId AND reservation.userId= :userId"),
-    @NamedQuery(name = "reservation.findAllReservationsForValidation",
-        query = "SELECT DISTINCT reservedResource.reservation FROM ReservedResource reservedResource " +
-            "JOIN reservedResource.resource.managers manager WHERE reservedResource.status = 'A' " +
-            "AND manager.id.managerId = :managerId AND reservedResource.reservation.instanceId = :instanceId " +
-            "AND reservedResource.reservation.beginDate < :endPeriod " +
-            "AND reservedResource.reservation.endDate > :startPeriod "),
-    @NamedQuery(name = "reservation.findAllReservationsNotRefusedForResourceInRange",
-        query = "SELECT DISTINCT reservedResource.reservation FROM ReservedResource reservedResource " +
-            "WHERE reservedResource.resource.id = :resourceId AND reservedResource.status != 'R' " +
-            "AND reservedResource.reservation.beginDate < :endPeriod " +
-            "AND reservedResource.reservation.endDate > :startPeriod "),
-    @NamedQuery(name = "reservation.findAllReservationsForCategoryInRange",
-        query = "SELECT DISTINCT reservedResource.reservation FROM ReservedResource reservedResource " +
-            "WHERE reservedResource.resource.category.id = :categoryId " +
-            "AND reservedResource.reservation.instanceId = :instanceId " +
-            "AND reservedResource.reservation.beginDate < :endPeriod " +
-            "AND reservedResource.reservation.endDate > :startPeriod "),
-    @NamedQuery(name = "reservation.findAllReservationsForUserAndCategoryInRange",
-        query = "SELECT DISTINCT reservedResource.reservation FROM ReservedResource reservedResource " +
-            "WHERE reservedResource.resource.category.id = :categoryId " +
-            "AND reservedResource.reservation.instanceId = :instanceId AND reservedResource.reservation.userId = :userId " +
-            "AND reservedResource.reservation.beginDate < :endPeriod " +
-            "AND reservedResource.reservation.endDate > :startPeriod "),
-    @NamedQuery(name = "reservation.findAllReservationsForResourceInRange",
-        query ="SELECT DISTINCT reservedResource.reservation FROM ReservedResource reservedResource " +
-            "WHERE reservedResource.resource.id = :resourceId " +
-            "AND reservedResource.reservation.instanceId = :instanceId " +
-            "AND reservedResource.reservation.beginDate < :endPeriod " +
-            "AND reservedResource.reservation.endDate > :startPeriod "),
-    @NamedQuery(name = "reservation.findAllReservationsForUserAndResourceInRange",
-        query = "SELECT DISTINCT reservedResource.reservation FROM ReservedResource reservedResource " +
-            "WHERE reservedResource.resource.id = :resourceId " +
-            "AND reservedResource.reservation.instanceId = :instanceId AND reservedResource.reservation.userId = :userId " +
-            "AND reservedResource.reservation.beginDate < :endPeriod " +
-            "AND reservedResource.reservation.endDate > :startPeriod "),
-    @NamedQuery(name = "reservation.findAllReservations",
-        query = "SELECT DISTINCT reservation FROM Reservation reservation WHERE reservation.instanceId = :instanceId")
-})
+        "AND reservation.beginDate < :endPeriod  AND reservation.endDate > :startPeriod ")
+@NamedQuery(name = "reservation.findAllReservationsForUserInRange",
+    query = "SELECT reservation FROM Reservation reservation " +
+        "WHERE reservation.instanceId = :instanceId AND reservation.userId= :userId " +
+        "AND reservation.beginDate < :endPeriod AND reservation.endDate > :startPeriod ")
+@NamedQuery(name = "reservation.findAllReservationsForUser",
+    query = "SELECT reservation FROM Reservation reservation " +
+        "WHERE reservation.instanceId = :instanceId AND reservation.userId= :userId")
+@NamedQuery(name = "reservation.findAllReservationsForValidation",
+    query = "SELECT DISTINCT reservedResource.reservation FROM ReservedResource reservedResource " +
+        "JOIN reservedResource.resource.managers manager WHERE reservedResource.status = 'A' " +
+        "AND manager.id.managerId = :managerId AND reservedResource.reservation.instanceId = " +
+        ":instanceId " +
+        "AND reservedResource.reservation.beginDate < :endPeriod " +
+        "AND reservedResource.reservation.endDate > :startPeriod ")
+@NamedQuery(name = "reservation.findAllReservationsNotRefusedForResourceInRange",
+    query = "SELECT DISTINCT reservedResource.reservation FROM ReservedResource reservedResource " +
+        "WHERE reservedResource.resource.id = :resourceId AND reservedResource.status <> 'R' " +
+        "AND reservedResource.reservation.beginDate < :endPeriod " +
+        "AND reservedResource.reservation.endDate > :startPeriod ")
+@NamedQuery(name = "reservation.findAllReservationsForCategoryInRange",
+    query = "SELECT DISTINCT reservedResource.reservation FROM ReservedResource reservedResource " +
+        "WHERE reservedResource.resource.category.id = :categoryId " +
+        "AND reservedResource.reservation.instanceId = :instanceId " +
+        "AND reservedResource.reservation.beginDate < :endPeriod " +
+        "AND reservedResource.reservation.endDate > :startPeriod ")
+@NamedQuery(name = "reservation.findAllReservationsForUserAndCategoryInRange",
+    query = "SELECT DISTINCT reservedResource.reservation FROM ReservedResource reservedResource " +
+        "WHERE reservedResource.resource.category.id = :categoryId " +
+        "AND reservedResource.reservation.instanceId = :instanceId AND reservedResource" +
+        ".reservation.userId = :userId " +
+        "AND reservedResource.reservation.beginDate < :endPeriod " +
+        "AND reservedResource.reservation.endDate > :startPeriod ")
+@NamedQuery(name = "reservation.findAllReservationsForResourceInRange",
+    query = "SELECT DISTINCT reservedResource.reservation FROM ReservedResource reservedResource " +
+        "WHERE reservedResource.resource.id = :resourceId " +
+        "AND reservedResource.reservation.instanceId = :instanceId " +
+        "AND reservedResource.reservation.beginDate < :endPeriod " +
+        "AND reservedResource.reservation.endDate > :startPeriod ")
+@NamedQuery(name = "reservation.findAllReservationsForUserAndResourceInRange",
+    query = "SELECT DISTINCT reservedResource.reservation FROM ReservedResource reservedResource " +
+        "WHERE reservedResource.resource.id = :resourceId " +
+        "AND reservedResource.reservation.instanceId = :instanceId AND reservedResource" +
+        ".reservation.userId = :userId " +
+        "AND reservedResource.reservation.beginDate < :endPeriod " +
+        "AND reservedResource.reservation.endDate > :startPeriod ")
+@NamedQuery(name = "reservation.findAllReservations",
+    query = "SELECT DISTINCT reservation FROM Reservation reservation WHERE " +
+        "reservation.instanceId = :instanceId")
 public class Reservation extends BasicJpaEntity<Reservation, UniqueLongIdentifier>
     implements ResourceStatus {
   private static final long serialVersionUID = 4901854718854856161L;
@@ -93,9 +97,9 @@ public class Reservation extends BasicJpaEntity<Reservation, UniqueLongIdentifie
   private String beginDate;
   @Column(length = 20, nullable = false)
   private String endDate;
-  @Column(length = 2000, nullable = true)
+  @Column(length = 2000)
   private String reason;
-  @Column(length = 128, nullable = true)
+  @Column(length = 128)
   private String place;
   @Column
   private int userId;
@@ -257,36 +261,6 @@ public class Reservation extends BasicJpaEntity<Reservation, UniqueLongIdentifie
     setEndDate(endDate);
     this.reason = reason;
     this.place = place;
-  }
-
-  public Reservation(Long id, String event, Date beginDate, Date endDate, String reason,
-      String place, String userId, Date creationDate, Date updateDate, String instanceId) {
-    setId(Long.toString(id));
-    this.event = event;
-    setBeginDate(beginDate);
-    setEndDate(endDate);
-    this.reason = reason;
-    this.place = place;
-    setUserId(userId);
-    setCreationDate(creationDate);
-    setUpdateDate(updateDate);
-    this.instanceId = instanceId;
-  }
-
-  public Reservation(Long id, String event, Date beginDate, Date endDate, String reason,
-      String place, String userId, Date creationDate, Date updateDate, String instanceId,
-      String status) {
-    setId(Long.toString(id));
-    this.event = event;
-    setBeginDate(beginDate);
-    setEndDate(endDate);
-    this.reason = reason;
-    this.place = place;
-    setUserId(userId);
-    setCreationDate(creationDate);
-    setUpdateDate(updateDate);
-    this.instanceId = instanceId;
-    this.status = status;
   }
 
   @Override

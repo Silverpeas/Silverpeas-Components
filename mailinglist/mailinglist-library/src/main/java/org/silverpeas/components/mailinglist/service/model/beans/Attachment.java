@@ -25,17 +25,17 @@ package org.silverpeas.components.mailinglist.service.model.beans;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "sc_mailinglist_attachment")
-@NamedQueries({
-    @NamedQuery(name = "findSomeAttachments", query = "from Attachment where md5Signature = :md5 " +
-        "and size = :size and fileName = :fileName"),
-    @NamedQuery(name = "findSomeAttachmentsExcludingOne", query = "from Attachment where " +
-        "md5Signature = :md5 and size = :size and fileName = :fileName and id <> :id")})
+@NamedQuery(name = "findSomeAttachments", query =
+    "select a from Attachment a where a.md5Signature = :md5 and a.size = :size and a.fileName = " +
+        ":fileName")
+@NamedQuery(name = "findSomeAttachmentsExcludingOne", query =
+    "select a from Attachment a where a.md5Signature = :md5 and a.size = :size and a.fileName = " +
+        ":fileName and a.id <> :id")
 public class Attachment extends IdentifiableObject {
 
   @Column(name = "attachmentPath")
@@ -92,7 +92,7 @@ public class Attachment extends IdentifiableObject {
     int result = super.hashCode();
     result = prime * result + ((fileName == null) ? 0 : fileName.hashCode());
     result = prime * result + ((path == null) ? 0 : path.hashCode());
-    result = prime * result + (int) (size ^ (size >>> 32));
+    result = prime * result + Long.hashCode(size);
     return result;
   }
 

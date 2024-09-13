@@ -32,11 +32,12 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+@SuppressWarnings("unused")
 @Entity
 @Table(name = "sc_mailinglist_message", uniqueConstraints = @UniqueConstraint(columnNames = {
     "mailId", "componentId"}))
 @NamedQuery(name = "findMessage", query =
-    "from Message where componentId = :componentId and messageId = :messageId")
+    "select m from Message m where m.componentId = :componentId and m.messageId = :messageId")
 @NamedQuery(name = "countOfMessages", query =
     "select count(m) from Message m where m.componentId = :componentId")
 @NamedQuery(name = "countOfMessagesByModeration", query =
@@ -199,19 +200,12 @@ public class Message extends IdentifiableObject {
         (!this.id.equals(other.id) || version != other.version)) {
       return false;
     } else if (messageId == null) {
-      if (other.messageId != null) {
-        return false;
-      }
+      return other.messageId == null;
     } else if (!messageId.equals(other.messageId)) {
       return false;
     } else if (componentId == null) {
-      if (other.componentId != null) {
-        return false;
-      }
-    } else if (!componentId.equals(other.componentId)) {
-      return false;
-    }
-    return true;
+      return other.componentId == null;
+    } else return componentId.equals(other.componentId);
   }
 
   public String getContentType() {

@@ -29,20 +29,15 @@ import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIde
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 @Entity
 @Table(name = "sc_resources_category")
-@NamedQueries({@NamedQuery(name = "category.findByInstanceId",
-    query = "SELECT category FROM Category category WHERE category.instanceId = :instanceId ORDER BY category.name")})
+@NamedQuery(name = "category.findByInstanceId", query =
+    "SELECT c FROM Category c WHERE c.instanceId = :instanceId ORDER BY c.name")
 public class Category extends BasicJpaEntity<Category, UniqueLongIdentifier> {
   private static final long serialVersionUID = 4947144625712662946L;
 
@@ -64,15 +59,17 @@ public class Category extends BasicJpaEntity<Category, UniqueLongIdentifier> {
   private String updaterId;
   @Column
   private String description;
-  @OneToMany(mappedBy = "category", orphanRemoval = false)
+  @OneToMany(mappedBy = "category")
   private List<Resource> resources = new ArrayList<>();
 
+  @Override
   public void performBeforePersist() {
     Date now = new Date();
     setCreationDate(now);
     setUpdateDate(now);
   }
 
+  @Override
   public void performBeforeUpdate() {
     setUpdateDate(new Date());
   }
@@ -152,29 +149,6 @@ public class Category extends BasicJpaEntity<Category, UniqueLongIdentifier> {
     this.name = name;
     setBookable(bookable);
     this.form = form;
-    this.description = description;
-  }
-
-  /**
-   * For tests purpose only. TODO remove this constructor in V6
-   * @param id
-   * @param instanceId
-   * @param name
-   * @param bookable
-   * @param form
-   * @param createrId
-   * @param updaterId
-   * @param description
-   */
-  public Category(Long id, String instanceId, String name, boolean bookable, String form,
-      String createrId, String updaterId, String description) {
-    setId(Long.toString(id));
-    this.instanceId = instanceId;
-    this.name = name;
-    setBookable(bookable);
-    this.form = form;
-    this.createrId = createrId;
-    this.updaterId = updaterId;
     this.description = description;
   }
 

@@ -48,7 +48,7 @@ import java.util.List;
 @NamedQuery(name = "MyDBConnectionInfo.findByInstanceId",
     query = "select ds from MyDBConnectionInfo ds where ds.instanceId = :instanceId")
 @NamedQuery(name = "MyDBConnectionInfo.deleteByInstanceId",
-    query = "delete MyDBConnectionInfo where instanceId = :instanceId")
+    query = "delete from MyDBConnectionInfo d where d.instanceId = :instanceId")
 @Table(name = "sc_mydb_connectinfo")
 public class MyDBConnectionInfo
     extends BasicJpaEntity<MyDBConnectionInfo, UniqueIntegerIdentifier> {

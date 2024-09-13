@@ -113,7 +113,7 @@ public class MessageDaoImpl implements MessageDao {
   public List<Message> listAllMessagesOfMailingList(final String componentId,
       final int page, final int elementsPerPage, final OrderBy orderBy) {
     TypedQuery<Message> query = getEntityManager().createQuery(
-        "from Message where componentId = :componentId " + orderBy.getOrderExpression(),
+        "select m from Message m where m.componentId = :componentId " + orderBy.getOrderExpression(),
         Message.class);
     query.setParameter(COMPONENT_ID, componentId);
     query.setFirstResult(page * elementsPerPage);
@@ -125,7 +125,8 @@ public class MessageDaoImpl implements MessageDao {
   public List<Message> listDisplayableMessagesOfMailingList(String componentId,
       final int month, final int year, final int page,
       final int elementsPerPage, final OrderBy orderBy) {
-    String queryText = "from Message where componentId = :componentId and moderated = :moderated";
+    String queryText = "select m from Message m where m.componentId = :componentId " +
+        "and m.moderated = :moderated";
     if (month >= 0) {
       queryText += " and month = " + month;
     }
@@ -146,8 +147,8 @@ public class MessageDaoImpl implements MessageDao {
   public List<Message> listUnmoderatedMessagesOfMailingList(String componentId,
       int page, int elementsPerPage, OrderBy orderBy) {
     TypedQuery<Message> query = getEntityManager().createQuery(
-        "from Message where componentId = :componentId and moderated = :moderated " + orderBy.
-        getOrderExpression(), Message.class);
+        "select m from Message m where m.componentId = :componentId and m.moderated = :moderated "
+            + orderBy.getOrderExpression(), Message.class);
     query.setParameter(COMPONENT_ID, componentId);
     query.setParameter(MODERATED, false);
     query.setFirstResult(page * elementsPerPage);
@@ -158,8 +159,8 @@ public class MessageDaoImpl implements MessageDao {
   @Override
   public List<Message> listActivityMessages(String componentId, int size, OrderBy orderBy) {
     TypedQuery<Message> query = getEntityManager().createQuery(
-        "from Message where componentId = :componentId and moderated = :moderated " + orderBy.
-        getOrderExpression(), Message.class);
+        "select m from Message m where m.componentId = :componentId and m.moderated = :moderated "
+            + orderBy.getOrderExpression(), Message.class);
     query.setParameter(COMPONENT_ID, componentId);
     query.setParameter(MODERATED, true);
     query.setMaxResults(size);

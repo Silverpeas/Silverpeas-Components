@@ -36,15 +36,13 @@ import org.silverpeas.components.resourcesmanager.model.Resource;
 import org.silverpeas.components.resourcesmanager.model.ResourceStatus;
 import org.silverpeas.components.resourcesmanager.test.WarBuilder4ResourcesManager;
 import org.silverpeas.core.persistence.Transaction;
+import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
 import org.silverpeas.core.test.integration.rule.DbSetupRule;
+import org.silverpeas.core.test.unit.EntityIdSetter;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ServiceProvider;
 
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -55,8 +53,9 @@ import static org.hamcrest.Matchers.*;
 @RunWith(Arquillian.class)
 public class ReservationServiceIT {
 
-  public ReservationServiceIT() {
-  }
+  private final EntityIdSetter idSetter = new EntityIdSetter(UniqueLongIdentifier.class);
+
+  private final Map<String, Reservation> expectedReservations = new HashMap<>();
 
   @Rule
   public DbSetupRule dbSetupRule = DbSetupRule.createTablesFrom("create-database.sql")
@@ -76,6 +75,49 @@ public class ReservationServiceIT {
     service = ServiceProvider.getService(ReservationService.class);
     resourceService = ServiceProvider.getService(ResourceService.class);
     reservedResourceService = ServiceProvider.getService(ReservedResourceService.class);
+  }
+
+  @Before
+  public void prepareExpectedReservations() {
+    String instanceId = "resourcesManager42";
+
+    Reservation expected1 = new Reservation("Test de la Toussaint", new Date(1320134400000L),
+        new Date(1320163200000L), "To test", "at work");
+    idSetter.setIdTo(expected1, "3");
+    expected1.setInstanceId(instanceId);
+    expected1.setUserId("2");
+    expected1.setCreationDate(new Date(1319811924467L));
+    expected1.setUpdateDate(new Date(1319811924467L));
+    expectedReservations.put(expected1.getId(), expected1);
+
+    Reservation expected2 = new Reservation("Test réservation 20/12/2011", new Date(1324368000000L),
+        new Date(1324375200000L), "To test a reservzation", "at work");
+    idSetter.setIdTo(expected2, "4");
+    expected2.setInstanceId(instanceId);
+    expected2.setUserId("9");
+    expected2.setCreationDate(new Date(1320225012008L));
+    expected2.setUpdateDate(new Date(1320225012008L));
+    expectedReservations.put(expected2.getId(), expected2);
+
+    Reservation expected3 = new Reservation("Test réservation validée 20/12/2011",
+        new Date(1324368000000L),
+        new Date(1324375200000L), "To test a reservzation validated", "at work");
+    idSetter.setIdTo(expected3, "5");
+    expected3.setInstanceId(instanceId);
+    expected3.setUserId("2");
+    expected3.setCreationDate(new Date(1319811924467L));
+    expected3.setUpdateDate(new Date(1319811924467L));
+    expectedReservations.put(expected3.getId(), expected3);
+
+    Reservation expected4 = new Reservation("Test réservation refusée 20/12/2011",
+        new Date(1324375200000L),
+        new Date(1324382400000L), "To test a reservzation refused", "at work");
+    idSetter.setIdTo(expected4, "6");
+    expected4.setInstanceId(instanceId);
+    expected4.setUserId("2");
+    expected4.setCreationDate(new Date(1319811924467L));
+    expected4.setUpdateDate(new Date(1319811924467L));
+    expectedReservations.put(expected4.getId(), expected4);
   }
 
   /**
@@ -197,12 +239,8 @@ public class ReservationServiceIT {
   @Test
   public void testGetReservation() {
     long reservationId = 3L;
-    String instanceId = "resourcesManager42";
     Reservation reservation = service.getReservation(reservationId);
-    Reservation expectedResult =
-        new Reservation(3L, "Test de la Toussaint", new Date(1320134400000L),
-            new Date(1320163200000L), "To test", "at work", "2", new Date(1319811924467L),
-            new Date(1319811924467L), instanceId, "test");
+    Reservation expectedResult = expectedReservations.get(String.valueOf(reservationId));
     assertThat(reservation, is(expectedResult));
     List<Resource> resources = resourceService.listResourcesOfReservation(reservationId);
     assertThat(resources, is(notNullValue()));
@@ -216,10 +254,7 @@ public class ReservationServiceIT {
   public void testDeleteReservation() {
     long reservationId = 3L;
     Reservation reservation = service.getReservation(reservationId);
-    Reservation expectedResult =
-        new Reservation(3L, "Test de la Toussaint", new Date(1320134400000L),
-            new Date(1320163200000L), "To test", "at work", "2", new Date(1319811924467L),
-            new Date(1319811924467L), "resourcesManager42", "test");
+    Reservation expectedResult = expectedReservations.get(String.valueOf(reservationId));
     assertThat(reservation, is(expectedResult));
     List<Resource> resources = resourceService.listResourcesOfReservation(reservationId);
     assertThat(resources, is(notNullValue()));
@@ -237,22 +272,16 @@ public class ReservationServiceIT {
    */
   @Test
   public void testFindAllReservations() {
+    Reservation reservation3 = expectedReservations.get("3");
+    Reservation reservation4 = expectedReservations.get("4");
+    Reservation reservation5 = expectedReservations.get("5");
+    Reservation reservation6 = expectedReservations.get("6");
+
     List<Reservation> reservations = service.findAllReservations("resourcesManager42");
     assertThat(reservations, is(notNullValue()));
     assertThat(reservations, hasSize(4));
-    assertThat(reservations, containsInAnyOrder(
-        new Reservation(3L, "Test de la Toussaint", new Date(1320134400000L),
-            new Date(1320163200000L), "To test", "at work", "2", new Date(1319811924467L),
-            new Date(1319811924467L), "resourcesManager42"),
-        new Reservation(4L, "Test réservation 20/12/2011", new Date(1324368000000L),
-            new Date(1324375200000L), "To test a reservzation", "at work", "9",
-            new Date(1320225012008L), new Date(1320225012008L), "resourcesManager42"),
-        new Reservation(5L, "Test réservation validée 20/12/2011", new Date(1324368000000L),
-            new Date(1324375200000L), "To test a reservzation validated", "at work", "2",
-            new Date(1319811924467L), new Date(1319811924467L), "resourcesManager42"),
-        new Reservation(6L, "Test réservation refusée 20/12/2011", new Date(1324375200000L),
-            new Date(1324382400000L), "To test a reservzation refused", "at work", "2",
-            new Date(1319811924467L), new Date(1319811924467L), "resourcesManager42")));
+    assertThat(reservations,
+        containsInAnyOrder(reservation3, reservation4, reservation5, reservation6));
   }
 
   /**
@@ -260,19 +289,14 @@ public class ReservationServiceIT {
    */
   @Test
   public void testFindAllReservationsForUser() {
+    Reservation reservation3 = expectedReservations.get("3");
+    Reservation reservation5 = expectedReservations.get("5");
+    Reservation reservation6 = expectedReservations.get("6");
+
     List<Reservation> reservations = service.findAllReservationsForUser("resourcesManager42", 2);
     assertThat(reservations, is(notNullValue()));
     assertThat(reservations, hasSize(3));
-    assertThat(reservations, containsInAnyOrder(
-        new Reservation(3L, "Test de la Toussaint", new Date(1320134400000L),
-            new Date(1320163200000L), "To test", "at work", "2", new Date(1319811924467L),
-            new Date(1319811924467L), "resourcesManager42"),
-        new Reservation(5L, "Test réservation validée 20/12/2011", new Date(1324368000000L),
-            new Date(1324375200000L), "To test a reservzation validated", "at work", "2",
-            new Date(1319811924467L), new Date(1319811924467L), "resourcesManager42"),
-        new Reservation(6L, "Test réservation refusée 20/12/2011", new Date(1324375200000L),
-            new Date(1324382400000L), "To test a reservzation refused", "at work", "2",
-            new Date(1319811924467L), new Date(1319811924467L), "resourcesManager42")));
+    assertThat(reservations, containsInAnyOrder(reservation3, reservation5, reservation6));
   }
 
   /**
@@ -303,10 +327,7 @@ public class ReservationServiceIT {
     assertThat(reservations, is(notNullValue()));
     assertThat(reservations, hasSize(1));
 
-    assertThat(reservations, containsInAnyOrder(
-        new Reservation(4L, "Test réservation 20/12/2011", new Date(1324368000000L),
-            new Date(1324375200000L), "To test a reservzation", "at work", "9",
-            new Date(1320225012008L), new Date(1320225012008L), "resourcesManager42")));
+    assertThat(reservations, containsInAnyOrder(expectedReservations.get("4")));
     userId = 2L;
     reservations =
         service.findAllReservationsForValidation(instanceId, userId, startPeriod, endPeriod);
@@ -319,7 +340,12 @@ public class ReservationServiceIT {
    */
   @Test
   public void testFindAllReservationsForAllUsersInRange() {
+    Reservation reservation3 = expectedReservations.get("3");
+    Reservation reservation4 = expectedReservations.get("4");
+    Reservation reservation5 = expectedReservations.get("5");
+    Reservation reservation6 = expectedReservations.get("6");
     String instanceId = "resourcesManager42";
+
     Calendar calend = Calendar.getInstance();
     calend.set(Calendar.MONTH, Calendar.NOVEMBER);
     calend.set(Calendar.YEAR, 2011);
@@ -330,10 +356,7 @@ public class ReservationServiceIT {
         service.findAllReservationsInRange(instanceId, null, startPeriod, endPeriod);
     assertThat(reservations, is(notNullValue()));
     assertThat(reservations, hasSize(1));
-    assertThat(reservations, containsInAnyOrder(
-        new Reservation(3L, "Test de la Toussaint", new Date(1320134400000L),
-            new Date(1320163200000L), "To test", "at work", "2", new Date(1319811924467L),
-            new Date(1319811924467L), "resourcesManager42")));
+    assertThat(reservations, containsInAnyOrder(reservation3));
 
     calend = Calendar.getInstance();
     calend.set(Calendar.MONTH, Calendar.DECEMBER);
@@ -345,16 +368,7 @@ public class ReservationServiceIT {
     assertThat(reservations, is(notNullValue()));
     assertThat(reservations, hasSize(3));
 
-    assertThat(reservations, containsInAnyOrder(
-        new Reservation(4L, "Test réservation 20/12/2011", new Date(1324368000000L),
-            new Date(1324375200000L), "To test a reservzation", "at work", "9",
-            new Date(1320225012008L), new Date(1320225012008L), "resourcesManager42"),
-        new Reservation(5L, "Test réservation validée 20/12/2011", new Date(1324368000000L),
-            new Date(1324375200000L), "To test a reservzation validated", "at work", "2",
-            new Date(1319811924467L), new Date(1319811924467L), "resourcesManager42"),
-        new Reservation(6L, "Test réservation refusée 20/12/2011", new Date(1324375200000L),
-            new Date(1324382400000L), "To test a reservzation refused", "at work", "2",
-            new Date(1319811924467L), new Date(1319811924467L), "resourcesManager42")));
+    assertThat(reservations, containsInAnyOrder(reservation4, reservation5, reservation6));
   }
 
   /**
@@ -363,6 +377,10 @@ public class ReservationServiceIT {
   @Test
   public void testFindAllReservationsForUser2InRange() {
     String instanceId = "resourcesManager42";
+    Reservation reservation3 = expectedReservations.get("3");
+    Reservation reservation5 = expectedReservations.get("5");
+    Reservation reservation6 = expectedReservations.get("6");
+
     int userId = 2;
     Calendar calend = Calendar.getInstance();
     calend.set(Calendar.MONTH, Calendar.NOVEMBER);
@@ -374,10 +392,7 @@ public class ReservationServiceIT {
         service.findAllReservationsInRange(instanceId, userId, startPeriod, endPeriod);
     assertThat(reservations, is(notNullValue()));
     assertThat(reservations, hasSize(1));
-    assertThat(reservations, containsInAnyOrder(
-        new Reservation(3L, "Test de la Toussaint", new Date(1320134400000L),
-            new Date(1320163200000L), "To test", "at work", "2", new Date(1319811924467L),
-            new Date(1319811924467L), "resourcesManager42")));
+    assertThat(reservations, containsInAnyOrder(reservation3));
 
     calend = Calendar.getInstance();
     calend.set(Calendar.MONTH, Calendar.DECEMBER);
@@ -389,13 +404,7 @@ public class ReservationServiceIT {
     assertThat(reservations, is(notNullValue()));
     assertThat(reservations, hasSize(2));
 
-    assertThat(reservations, containsInAnyOrder(
-        new Reservation(5L, "Test réservation validée 20/12/2011", new Date(1324368000000L),
-            new Date(1324375200000L), "To test a reservzation validated", "at work", "2",
-            new Date(1319811924467L), new Date(1319811924467L), "resourcesManager42"),
-        new Reservation(6L, "Test réservation refusée 20/12/2011", new Date(1324375200000L),
-            new Date(1324382400000L), "To test a reservzation refused", "at work", "2",
-            new Date(1319811924467L), new Date(1319811924467L), "resourcesManager42")));
+    assertThat(reservations, containsInAnyOrder(reservation5, reservation6));
   }
 
   /**
@@ -433,6 +442,9 @@ public class ReservationServiceIT {
   @Test
   public void testFindAllReservationsForAllUsersAndCategoryInRange() {
     String instanceId = "resourcesManager42";
+    Reservation reservation5 = expectedReservations.get("5");
+    Reservation reservation6 = expectedReservations.get("6");
+
     Calendar calend = Calendar.getInstance();
     calend.set(Calendar.MONTH, Calendar.DECEMBER);
     calend.set(Calendar.YEAR, 2011);
@@ -442,13 +454,7 @@ public class ReservationServiceIT {
         service.findAllReservationsForCategoryInRange(instanceId, null, 1L, startPeriod, endPeriod);
     assertThat(reservations, is(notNullValue()));
     assertThat(reservations, hasSize(2));
-    assertThat(reservations, containsInAnyOrder(
-        new Reservation(5L, "Test réservation validée 20/12/2011", new Date(1324368000000L),
-            new Date(1324375200000L), "To test a reservzation validated", "at work", "2",
-            new Date(1319811924467L), new Date(1319811924467L), "resourcesManager42"),
-        new Reservation(6L, "Test réservation refusée 20/12/2011", new Date(1324375200000L),
-            new Date(1324382400000L), "To test a reservzation refused", "at work", "2",
-            new Date(1319811924467L), new Date(1319811924467L), "resourcesManager42")));
+    assertThat(reservations, containsInAnyOrder(reservation5, reservation6));
   }
 
 
@@ -458,6 +464,9 @@ public class ReservationServiceIT {
   @Test
   public void testFindAllReservationsForUser2AndCategoryInRange() {
     String instanceId = "resourcesManager42";
+    Reservation reservation5 = expectedReservations.get("5");
+    Reservation reservation6 = expectedReservations.get("6");
+
     Calendar calend = Calendar.getInstance();
     calend.set(Calendar.MONTH, Calendar.DECEMBER);
     calend.set(Calendar.YEAR, 2011);
@@ -467,13 +476,7 @@ public class ReservationServiceIT {
         service.findAllReservationsForCategoryInRange(instanceId, 2, 1L, startPeriod, endPeriod);
     assertThat(reservations, is(notNullValue()));
     assertThat(reservations, hasSize(2));
-    assertThat(reservations, containsInAnyOrder(
-        new Reservation(5L, "Test réservation validée 20/12/2011", new Date(1324368000000L),
-            new Date(1324375200000L), "To test a reservzation validated", "at work", "2",
-            new Date(1319811924467L), new Date(1319811924467L), "resourcesManager42"),
-        new Reservation(6L, "Test réservation refusée 20/12/2011", new Date(1324375200000L),
-            new Date(1324382400000L), "To test a reservzation refused", "at work", "2",
-            new Date(1319811924467L), new Date(1319811924467L), "resourcesManager42")));
+    assertThat(reservations, containsInAnyOrder(reservation5, reservation6));
   }
 
 
@@ -509,10 +512,7 @@ public class ReservationServiceIT {
         service.findAllReservationsForResourceInRange(instanceId, null, 1L, startPeriod, endPeriod);
     assertThat(reservations, is(notNullValue()));
     assertThat(reservations, hasSize(1));
-    assertThat(reservations, containsInAnyOrder(
-        new Reservation(5L, "Test réservation validée 20/12/2011", new Date(1324368000000L),
-            new Date(1324375200000L), "To test a reservzation validated", "at work", "2",
-            new Date(1319811924467L), new Date(1319811924467L), "resourcesManager42")));
+    assertThat(reservations, containsInAnyOrder(expectedReservations.get("5")));
   }
 
   /**
@@ -530,10 +530,7 @@ public class ReservationServiceIT {
         service.findAllReservationsForResourceInRange(instanceId, 2, 1L, startPeriod, endPeriod);
     assertThat(reservations, is(notNullValue()));
     assertThat(reservations, hasSize(1));
-    assertThat(reservations, containsInAnyOrder(
-        new Reservation(5L, "Test réservation validée 20/12/2011", new Date(1324368000000L),
-            new Date(1324375200000L), "To test a reservzation validated", "at work", "2",
-            new Date(1319811924467L), new Date(1319811924467L), "resourcesManager42")));
+    assertThat(reservations, containsInAnyOrder(expectedReservations.get("5")));
   }
 
   /**
@@ -552,4 +549,6 @@ public class ReservationServiceIT {
     assertThat(reservations, is(notNullValue()));
     assertThat(reservations, hasSize(0));
   }
+
+
 }

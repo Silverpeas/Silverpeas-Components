@@ -35,7 +35,9 @@ import org.junit.runner.RunWith;
 import org.silverpeas.components.resourcesmanager.model.Category;
 import org.silverpeas.components.resourcesmanager.test.WarBuilder4ResourcesManager;
 import org.silverpeas.core.persistence.Transaction;
+import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
 import org.silverpeas.core.test.integration.rule.DbUnitLoadingRule;
+import org.silverpeas.core.test.unit.EntityIdSetter;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.Date;
@@ -51,8 +53,7 @@ import static org.hamcrest.Matchers.*;
 @RunWith(Arquillian.class)
 public class CategoryServiceIT {
 
-  public CategoryServiceIT() {
-  }
+  private final EntityIdSetter idSetter = new EntityIdSetter(UniqueLongIdentifier.class);
 
   @Rule
   public DbUnitLoadingRule dbUnitLoadingRule =
@@ -82,7 +83,7 @@ public class CategoryServiceIT {
    * Test of createCategory method, of class ResourcesManagerDAO.
    */
   @Test
-  public void testCreateCategory() throws Exception {
+  public void testCreateCategory() {
 
     Transaction.performInOne(() -> {
       Category category = new Category("Vidéoprojecteurs ", true, "my_form.xml",
@@ -106,12 +107,15 @@ public class CategoryServiceIT {
    * Test of updateCategory method, of class ResourcesManagerDAO.
    */
   @Test
-  public void testUpdateCategory() throws Exception {
+  public void testUpdateCategory() {
     Transaction.performInOne(() -> {
       Long id = 1L;
-      Category expResult =
-          new Category(id, "resourcesManager42", "Salles", true, "model1.xml", "5", "5",
-              "Salles de réunion");
+      Category expResult = new Category("Salles", true, "model1.xml", "Salles de réunion");
+      idSetter.setIdTo(expResult, String.valueOf(id));
+      expResult.setInstanceId("resourcesManager42");
+      expResult.setCreaterId("5");
+      expResult.setUpdaterId("5");
+
       Category result = service.getCategory(id);
       assertThat(result, is(expResult));
       result.setName("Véhicules");
@@ -122,9 +126,12 @@ public class CategoryServiceIT {
       Date oldUpdateDate = result.getUpdateDate();
       service.updateCategory(result);
       assertThat(result.getUpdateDate(), greaterThan(oldUpdateDate));
-      expResult =
-          new Category(id, "resourcesManager42", "Véhicules", false, "car_form.xml", "5", "1",
-              "This is a test");
+
+      expResult = new Category("Véhicules", false, "car_form.xml", "This is a test");
+      idSetter.setIdTo(expResult, String.valueOf(id));
+      expResult.setInstanceId("resourcesManager42");
+      expResult.setCreaterId("5");
+      expResult.setUpdaterId("1");
       result = service.getCategory(id);
       assertThat(result, Matchers.is(new CategoryMatcher(expResult)));
       return null;
@@ -135,25 +142,36 @@ public class CategoryServiceIT {
    * Test of getCategories method, of class ResourcesManagerDAO.
    */
   @Test
-  public void testGetCategories() throws Exception {
+  public void testGetCategories() {
     String instanceId = "resourcesManager42";
+    Category expCategory1 = new Category("Salles", true, "model1.xml", "Salles de réunion");
+    idSetter.setIdTo(expCategory1, "1");
+    expCategory1.setInstanceId(instanceId);
+    expCategory1.setCreaterId("5");
+    expCategory1.setUpdaterId("5");
+    Category expCategory2 = new Category("Voitures", true, null, "Véhicules utilitaires");
+    idSetter.setIdTo(expCategory2, "2");
+    expCategory2.setInstanceId(instanceId);
+    expCategory2.setCreaterId("6");
+    expCategory2.setUpdaterId("6");
+
     List<Category> result = service.getCategories(instanceId);
     assertThat(result, is(notNullValue()));
     assertThat(result, hasSize(2));
-    assertThat(result, contains(new Category(1L, "resourcesManager42", "Salles", true, "model1.xml", "5", "5",
-            "Salles de réunion"), new Category(2L, "resourcesManager42", "Voitures", true, null,
-        "6", "6",
-            "Véhicules utilitaires")));
+    assertThat(result, contains(expCategory1, expCategory2));
   }
 
   /**
    * Test of getCategory method, of class ResourcesManagerDAO.
    */
   @Test
-  public void testGetCategory() throws Exception {
+  public void testGetCategory() {
     Long id = 1L;
-    Category expResult = new Category(1L, "resourcesManager42", "Salles", true, "model1.xml", "5", "5",
-            "Salles de réunion");
+    Category expResult = new Category("Salles", true, "model1.xml", "Salles de réunion");
+    idSetter.setIdTo(expResult, "1");
+    expResult.setInstanceId("resourcesManager42");
+    expResult.setCreaterId("5");
+    expResult.setUpdaterId("5");
     Category result = service.getCategory(id);
     assertThat(result, is(expResult));
   }
@@ -162,7 +180,7 @@ public class CategoryServiceIT {
    * Test of deleteCategory method, of class ResourcesManagerDAO.
    */
   @Test
-  public void testDeleteCategory() throws Exception {
+  public void testDeleteCategory() {
     Long id = 1L;
     service.deleteCategory(id);
     Category result = service.getCategory(id);

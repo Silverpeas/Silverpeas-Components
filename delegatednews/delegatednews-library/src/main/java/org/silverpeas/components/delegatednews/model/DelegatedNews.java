@@ -33,12 +33,7 @@ import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.datasource.model.identifier.ExternalIntegerIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.time.ZoneId;
 import java.util.Date;
@@ -51,20 +46,19 @@ import static org.silverpeas.core.date.TemporalConverter.asOffsetDateTime;
 @Entity
 @Table(name = "sc_delegatednews_news")
 @AttributeOverride(name = "id", column = @Column(name = "pubId", columnDefinition = "int"))
-@NamedQueries({
-    @NamedQuery(name = "delegatednews.findByStatus", query = "SELECT dn FROM DelegatedNews dn " +
-        "WHERE dn.status = :status " +
-        "AND (" + "(dn.beginDate is null AND dn.endDate is null) " +
-        "OR " +
-        "(dn.beginDate is null AND dn.endDate is not null AND CURRENT_TIMESTAMP <= dn.endDate) " +
-        "OR " +
-        "(dn.beginDate is not null AND dn.endDate is null AND CURRENT_TIMESTAMP >= dn.beginDate) " +
-        "OR " +
-        "(dn.beginDate is not null AND dn.endDate is not null AND CURRENT_TIMESTAMP >= dn" +
-        ".beginDate AND CURRENT_TIMESTAMP <= dn.endDate) " + ")" + "ORDER BY dn.newsOrder ASC"),
-    @NamedQuery(name = "delegatednews.findAllOrderedNews", query =
-        "SELECT dn FROM DelegatedNews dn " +
-            "ORDER BY dn.newsOrder ASC, dn.beginDate ASC, dn.id.id ASC")})
+@NamedQuery(name = "delegatednews.findByStatus", query = "SELECT dn FROM DelegatedNews dn " +
+    "WHERE dn.status = :status " +
+    "AND (" + "(dn.beginDate is null AND dn.endDate is null) " +
+    "OR " +
+    "(dn.beginDate is null AND dn.endDate is not null AND CURRENT_TIMESTAMP <= dn.endDate) " +
+    "OR " +
+    "(dn.beginDate is not null AND dn.endDate is null AND CURRENT_TIMESTAMP >= dn.beginDate) " +
+    "OR " +
+    "(dn.beginDate is not null AND dn.endDate is not null AND CURRENT_TIMESTAMP >= dn" +
+    ".beginDate AND CURRENT_TIMESTAMP <= dn.endDate) " + ")" + "ORDER BY dn.newsOrder ASC")
+@NamedQuery(name = "delegatednews.findAllOrderedNews", query =
+    "SELECT dn FROM DelegatedNews dn " +
+        "ORDER BY dn.newsOrder ASC, dn.beginDate ASC, dn.id.id ASC")
 public class DelegatedNews extends BasicJpaEntity<DelegatedNews, ExternalIntegerIdentifier>
     implements Serializable {
 

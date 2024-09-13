@@ -23,29 +23,26 @@
  */
 package org.silverpeas.components.resourcesmanager.model;
 
+import org.silverpeas.core.persistence.datasource.model.CompositeEntityIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * @author ehugonnet
  */
 @Entity
 @Table(name = "sc_resources_managers")
-@NamedQueries({@NamedQuery(name = "resourceValidator.getResourceValidator",
+@NamedQuery(name = "resourceValidator.getResourceValidator",
     query = "SELECT DISTINCT resourceValidator FROM ResourceValidator resourceValidator " +
         "WHERE resourceValidator.id.managerId = :currentUserId AND " +
-        "resourceValidator.id.resourceId = :resourceId"),
-    @NamedQuery(name = "resourceValidator.deleteAllResourceValidatorsForComponentInstance",
-        query = "DELETE FROM ResourceValidator resourceValidator " +
-            "WHERE resourceValidator.resource IN (SELECT resource FROM Resource resource " +
-            "WHERE resource.instanceId = :instanceId)")})
+        "resourceValidator.id.resourceId = :resourceId")
+@NamedQuery(name = "resourceValidator.deleteAllResourceValidatorsForComponentInstance",
+    query = "DELETE FROM ResourceValidator resourceValidator " +
+        "WHERE resourceValidator.resource IN (SELECT resource FROM Resource resource " +
+        "WHERE resource.instanceId = :instanceId)")
 public class ResourceValidator
     extends BasicJpaEntity<ResourceValidator, ResourceValidatorPk>
     implements Serializable {
@@ -60,11 +57,11 @@ public class ResourceValidator
   }
 
   public ResourceValidator(long resourceId, long managerId) {
-    setId(resourceId + ResourceValidatorPk.COMPOSITE_SEPARATOR + managerId);
+    setId(resourceId + CompositeEntityIdentifier.COMPOSITE_SEPARATOR + managerId);
   }
 
   private String[] getStringIds() {
-    return getId().split(ResourceValidatorPk.COMPOSITE_SEPARATOR);
+    return getId().split(CompositeEntityIdentifier.COMPOSITE_SEPARATOR);
   }
 
   public long getManagerId() {
@@ -84,8 +81,7 @@ public class ResourceValidator
       return false;
     }
     final ResourceValidator other = (ResourceValidator) obj;
-    return this.getId() == other.getId() ||
-        (this.getId() != null && this.getId().equals(other.getId()));
+    return Objects.equals(this.getId(), other.getId());
   }
 
   @Override
