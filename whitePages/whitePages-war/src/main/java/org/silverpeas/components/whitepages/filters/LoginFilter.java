@@ -43,6 +43,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
+import static org.silverpeas.core.web.util.WebRedirection.REDIRECT_TO_COMPONENT;
+
 /**
  * Ce filtre a pour effet de contrôler que l'utilisateur courant n'a pas une fiche à remplir dans
  * une instance de whitePages. Si c'est le cas, 2 attributs sont mis en sessions :
@@ -57,7 +59,7 @@ import java.io.IOException;
 public class LoginFilter implements Filter {
 
   public static final String ATTRIBUTE_FORCE_CARD_CREATION = "forceCardCreation";
-  public static final String ATTRIBUTE_COMPONENT_ID = "RedirectToComponentId";
+  public static final String ATTRIBUTE_COMPONENT_ID = REDIRECT_TO_COMPONENT;
 
 
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
