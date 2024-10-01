@@ -2828,7 +2828,10 @@ public class DefaultKmeliaService implements KmeliaService {
         Iterator<NodeDetail> iter = parents.iterator();
         while (iter.hasNext() && result.isEmpty()) {
           NodeDetail parent = iter.next();
-          result = ModelDAO.getModelUsed(con, instanceId, parent.getNodePK().getId());
+          //Bin, unclassifieds, unvisibles and to_validate nodes can't have models
+          if (!parent.isBin() && !parent.isUnclassified() && !NodePK.UNDEFINED_NODE_ID.equals(parent.getId()) && !KmeliaHelper.SPECIALFOLDER_NONVISIBLEPUBS.equals(parent.getId()) && !KmeliaHelper.SPECIALFOLDER_TOVALIDATE.equals(parent.getId())) {
+            result = ModelDAO.getModelUsed(con, instanceId, parent.getNodePK().getId());
+          }
         }
       }
       return result;
@@ -3584,9 +3587,8 @@ public class DefaultKmeliaService implements KmeliaService {
         children.add(temp);
       }
 
-      // adding special folders "non visible publications" and "trash"
+      // adding special folders "non visible publications"
       if (isUserCanWrite(instanceId, userId)) {
-
         NodeDetail temp = new NodeDetail();
         temp.getNodePK().setId(KmeliaHelper.SPECIALFOLDER_NONVISIBLEPUBS);
         temp.setName(getMultilang().getString("kmelia.folder.nonvisiblepubs"));
