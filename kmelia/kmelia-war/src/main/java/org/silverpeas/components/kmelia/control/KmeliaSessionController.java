@@ -250,7 +250,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     List<String> languages = new ArrayList<>();
     for (String availableLanguage : I18NHelper.getAllSupportedLanguages()) {
       List<SimpleDocument> attachments = AttachmentServiceProvider.getAttachmentService()
-          .listDocumentsByForeignKeyAndType(resourceReference, DocumentType.attachment, availableLanguage);
+          .listDocumentsByForeignKeyAndType(resourceReference, DocumentType.attachment,
+              availableLanguage);
       for (SimpleDocument attachment : attachments) {
         if (availableLanguage.equalsIgnoreCase(attachment.getLanguage())) {
           languages.add(availableLanguage);
@@ -316,10 +317,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   /**
-  * Gets a business service of dateReminder.
-  *
-  * @return a DefaultDateReminderService instance.
-  */
+   * Gets a business service of dateReminder.
+   *
+   * @return a DefaultDateReminderService instance.
+   */
   protected PersistentDateReminderService getDateReminderService() {
     return DateReminderServiceProvider.getDateReminderService();
   }
@@ -386,7 +387,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     boolean statisticEnabled = getSettings().getBoolean("kmelia.stats.enable", false);
     return statisticEnabled && !isToolbox() &&
         (getHighestSilverpeasUserRole().isGreaterThanOrEquals(SilverpeasRole.PUBLISHER) ||
-        getSilverpeasUserRoles().contains(SilverpeasRole.SUPERVISOR));
+            getSilverpeasUserRoles().contains(SilverpeasRole.SUPERVISOR));
   }
 
   public boolean openSingleAttachmentAutomatically() {
@@ -404,7 +405,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   public boolean isImportFilesAllowed() {
     String parameterValue = this.getComponentParameterValue("importFiles");
-    if (parameterValue == null || parameterValue.length() <= 0) {
+    if (parameterValue == null || parameterValue.isEmpty()) {
       return false;
     } else {
       return "2".equalsIgnoreCase(parameterValue) || "3".equalsIgnoreCase(parameterValue);
@@ -553,6 +554,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   /**
    * Generates a document in the specified format from the specified publication.
+   *
    * @param inFormat the format of the document to generate.
    * @param fromPubId the unique identifier of the publication from which the document will be
    * generated.
@@ -591,6 +593,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   /**
    * Gets a new exporter of Kmelia publications.
+   *
    * @return a KmeliaPublicationExporter instance.
    */
   public static KmeliaPublicationExporter aKmeliaPublicationExporter() {
@@ -713,14 +716,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   public synchronized TopicDetail getBestTopicDetailsOfPublication(String pubId) {
     final TopicDetail currentTopic = getKmeliaService()
-        .getBestTopicDetailOfPublicationForUser(getPublicationPK(pubId), isTreeStructure(), getUserId());
+        .getBestTopicDetailOfPublicationForUser(getPublicationPK(pubId), isTreeStructure(),
+            getUserId());
     setSessionTopic(currentTopic);
     applyVisibilityFilter();
     return currentTopic;
-  }
-
-  public synchronized List<NodeDetail> getAllTopics() {
-    return getNodeService().getSubTree(getNodePK(NodePK.ROOT_NODE_ID));
   }
 
   public synchronized void flushTrashCan() {
@@ -822,7 +822,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   public NodePK getBestAllowedPublicationFather(String pubId) {
-    return getKmeliaService().getBestLocationOfPublicationForUser(getPublicationPK(pubId), getUserId());
+    return getKmeliaService().getBestLocationOfPublicationForUser(getPublicationPK(pubId),
+        getUserId());
   }
 
   public synchronized String createPublication(PublicationDetail pubDetail,
@@ -930,6 +931,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
    * Clone current publication. Create new publication based on pubDetail object if not null or
    * sessionPublication otherwise. Original publication must not be modified (except references to
    * clone : cloneId and cloneStatus).
+   *
    * @param pubDetail If not null, attribute values are set to the clone
    * @param nextStatus Draft or ToValidate
    */
@@ -995,6 +997,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   /**
    * adds links between specified publication and other publications contained in links parameter
+   *
    * @param pubId publication which you want removes the external link
    * @param links list of links to remove
    */
@@ -1123,6 +1126,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   /**
    * Get all publications sorted
+   *
    * @param sortedBy (example: pubName asc)
    * @return Collection of Publications
    */
@@ -1144,6 +1148,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   /**
    * Get all visible publications
+   *
    * @return List of WAAtributeValuePair (Id and InstanceId)
    */
   public List<WAAttributeValuePair> getAllVisiblePublications() {
@@ -1199,6 +1204,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   /**
    * Si le mode brouillon est activé et que le classement PDC est possible alors une publication ne
    * peut sortir du mode brouillon que si elle est classée sur le PDC
+   *
    * @return true si le PDC n'est pas utilisé ou si aucun axe n'est utilisé par le composant ou si
    * la publication est classée sur le PDC
    */
@@ -1223,6 +1229,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   /**
    * Gets the authorized publications from given references into a context of read.
+   *
    * @param references the list of {@link ResourceReference} instance.
    * @return a collection of {@link KmeliaPublication} instance.
    */
@@ -1234,14 +1241,15 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   /**
    * Gets the authorized publications from given references into context of modification.
    * <p>
-   *   Clones are handled.
+   * Clones are handled.
    * </p>
+   *
    * @param references the list of {@link ResourceReference} instance.
-   * @return a collection of pair of {@link KmeliaPublication} instances. On left the
-   * publication, on right the optional clone.
+   * @return a collection of pair of {@link KmeliaPublication} instances. On left the publication,
+   * on right the optional clone.
    */
   public synchronized <T extends ResourceReference> Collection<Pair<KmeliaPublication,
-        KmeliaPublication>> getPublicationsForModification(
+      KmeliaPublication>> getPublicationsForModification(
       final List<T> references) {
     return getKmeliaService().getPublicationsForModification(references, getUserId());
   }
@@ -1333,6 +1341,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   /**
    * Change publication status from any state to draft
+   *
    * @since 3.0
    */
   public synchronized void draftInPublication() {
@@ -1351,6 +1360,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   /**
    * adds links between specified publication and other publications contained in links parameter
+   *
    * @param pubId publication which you want removes the external link
    * @param links list of links to remove
    * @return the number of links created
@@ -1527,7 +1537,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   @SuppressWarnings("unchecked")
-  public String initUPToSelectValidator(String formElementName, String formElementId, String folderId) {
+  public String initUPToSelectValidator(String formElementName, String formElementId,
+      String folderId) {
     String mContext = URLUtil.getApplicationURL();
     Pair<String, String> hostComponentName = new Pair<>(getComponentLabel(), "");
     Pair<String, String>[] hostPath = new Pair[1];
@@ -1641,7 +1652,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   private boolean isPublicationClassifiedOnPDC(String pubId) {
-    if (pubId != null && pubId.length() > 0) {
+    if (pubId != null && !pubId.isEmpty()) {
       try {
         int silverObjectId = getKmeliaService().getSilverObjectId(getPublicationPK(pubId));
         List<ClassifyPosition> positions =
@@ -1741,12 +1752,20 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     getKmeliaService().setModelUsed(models, getComponentId(), objectId);
   }
 
-  public List<String> getModelUsed() {
+  /**
+   * Gets a list of models used as publication content for the current topic. First a global model
+   * for the whole Kmelia instance is looked for. If no such model exists, and if the specified
+   * flag is set at true, then the models defined for the current topic are looked for.
+   * @param specificToTopic a flag indicating if the models specifics to the current topic have to
+   * be taken into account.
+   * @return a list of the available models as publication content.
+   */
+  public List<String> getModelUsed(boolean specificToTopic) {
     List<String> models = new ArrayList<>();
     String formNameAppLevel = getXMLFormNameForPublications();
     if (StringUtil.isDefined(formNameAppLevel)) {
       models.add(formNameAppLevel);
-    } else {
+    } else if (specificToTopic) {
       String objectId = getCurrentFolderId();
       models.addAll(getKmeliaService().getModelUsed(getComponentId(), objectId));
     }
@@ -1876,6 +1895,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   /**
    * Get session publications
+   *
    * @return List of WAAtributeValuePair (Id and InstanceId)
    */
   public List<WAAttributeValuePair> getCurrentPublicationsList() {
@@ -1907,6 +1927,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   /**
    * Transform combination axis from String /0/1037,/0/1038 in ArrayList /0/1037 then /0/1038
    * etc...
+   *
    * @param axisValuesStr textual representation of axis values
    * @return Collection of combination
    */
@@ -1922,6 +1943,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   /**
    * Get combination Axis (ie: /0/1037)
+   *
    * @param axisValuesStr textual representation of axis values
    * @return Collection of combination
    */
@@ -1945,6 +1967,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   /**
    * getPrevious
+   *
    * @return previous publication id
    */
   public String getPrevious() {
@@ -1953,6 +1976,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   /**
    * getNext
+   *
    * @return next publication id
    */
   public String getNext() {
@@ -2065,7 +2089,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   public ProfileInst getTopicProfile(String role, String topicId) {
     List<ProfileInst> profiles =
         getAdmin().getProfilesByObject(ProfiledObjectId.fromNode(topicId), getComponentId());
-    for (ProfileInst profile: profiles) {
+    for (ProfileInst profile : profiles) {
       if (profile.getName().equals(role)) {
         return profile;
       }
@@ -2267,15 +2291,17 @@ public class KmeliaSessionController extends AbstractComponentSessionController
           continue;
         }
         if (selection.isDataFlavorSupported(PublicationSelection.PublicationDetailFlavor)) {
-          PublicationSelection.TransferData data = (PublicationSelection.TransferData) selection.getTransferData(
-              PublicationSelection.PublicationDetailFlavor);
+          PublicationSelection.TransferData data =
+              (PublicationSelection.TransferData) selection.getTransferData(
+                  PublicationSelection.PublicationDetailFlavor);
           final PublicationDetail pub = data.getPublicationDetail();
           Optional.of(pub)
               .filter(p -> selection.isCutted())
               .ifPresentOrElse(p -> pubPkMoved.add(pub.getPK()),
                   () -> publicationPkCopied.add(pub.getPK()));
         } else if (selection.isDataFlavorSupported(NodeSelection.NodeDetailFlavor)) {
-          final NodeDetail node = (NodeDetail) selection.getTransferData(NodeSelection.NodeDetailFlavor);
+          final NodeDetail node =
+              (NodeDetail) selection.getTransferData(NodeSelection.NodeDetailFlavor);
           // check if current topic is a subTopic of node
           Optional.of(node)
               .filter(n -> !n.equals(targetNode) && !n.isFatherOf(targetNode))
@@ -2287,17 +2313,17 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       }
       SimulationActionProcessProcessor.get()
           .withContext(s -> s.getSourcePKs().addAll(pubPkMoved))
-            .listElementsWith(KmeliaPublicationSimulationElementLister::new)
-            .byAction(() -> ActionType.MOVE)
+          .listElementsWith(KmeliaPublicationSimulationElementLister::new)
+          .byAction(() -> ActionType.MOVE)
           .andWithContext(s -> s.getSourcePKs().addAll(publicationPkCopied))
-            .listElementsWith(KmeliaPublicationSimulationElementLister::new)
-            .byAction(() -> ActionType.COPY)
+          .listElementsWith(KmeliaPublicationSimulationElementLister::new)
+          .byAction(() -> ActionType.COPY)
           .andWithContext(s -> s.getSourcePKs().addAll(nodePkMoved))
-            .listElementsWith(KmeliaNodeSimulationElementLister::new)
-            .byAction(() -> ActionType.MOVE)
+          .listElementsWith(KmeliaNodeSimulationElementLister::new)
+          .byAction(() -> ActionType.MOVE)
           .andWithContext(s -> s.getSourcePKs().addAll(nodePkCopied))
-            .listElementsWith(KmeliaNodeSimulationElementLister::new)
-            .byAction(() -> ActionType.COPY)
+          .listElementsWith(KmeliaNodeSimulationElementLister::new)
+          .byAction(() -> ActionType.COPY)
           .toTargets(t -> t.getTargetPKs().add(targetNode.getNodePK()))
           .setLanguage(() -> currentLanguage)
           .execute(() -> {
@@ -2322,8 +2348,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   private void pasteClipboardSelection(ClipboardSelection selection,
       KmeliaPasteDetail pasteDetail, final NodeDetail targetNode) throws UnsupportedFlavorException {
     if (selection.isDataFlavorSupported(PublicationSelection.PublicationDetailFlavor)) {
-      PublicationSelection.TransferData data = (PublicationSelection.TransferData) selection.getTransferData(
-          PublicationSelection.PublicationDetailFlavor);
+      PublicationSelection.TransferData data =
+          (PublicationSelection.TransferData) selection.getTransferData(
+              PublicationSelection.PublicationDetailFlavor);
       PublicationDetail pub = data.getPublicationDetail();
       if (selection.isCutted()) {
         pasteDetail.setFromPK(data.getFatherPK());
@@ -2356,7 +2383,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       final Set<CLIPBOARD_STATE> states = getClipboardSelectedObjects().stream()
           .filter(Objects::nonNull)
           .filter(c -> c.isDataFlavorSupported(PublicationSelection.PublicationDetailFlavor)
-                    || c.isDataFlavorSupported(NodeSelection.NodeDetailFlavor))
+              || c.isDataFlavorSupported(NodeSelection.NodeDetailFlavor))
           .map(c -> c.isCutted() ? HAS_CUTS : HAS_COPIES)
           .collect(toSet());
       final CLIPBOARD_STATE state;
@@ -2389,6 +2416,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   /**
    * get languages of publication header and attachments
+   *
    * @return a List of String (language codes)
    */
   public List<String> getPublicationLanguages() {
@@ -2417,8 +2445,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     PublicationPK pubPK = getSessionPubliOrClone().getDetail().getPK();
     // get attachments languages
     List<String> languages = new ArrayList<>();
-    List<String> attLanguages = getLanguagesOfAttachments(new ResourceReference(pubPK.getId(), pubPK.
-        getInstanceId()));
+    List<String> attLanguages = getLanguagesOfAttachments(new ResourceReference(pubPK.getId(),
+        pubPK.
+            getInstanceId()));
     for (String language : attLanguages) {
       if (!languages.contains(language)) {
         languages.add(language);
@@ -2446,11 +2475,12 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   /**
-   * Returns URL of single attached file for the current publication.
-   * If publication contains more than one file, null is returned
+   * Returns URL of single attached file for the current publication. If publication contains more
+   * than one file, null is returned
+   *
    * @param fromAlias true if getting document version from an alias.
-   * @return URL of single attached file for the current publication. Null if publication
-   * contains more than one file.
+   * @return URL of single attached file for the current publication. Null if publication contains
+   * more than one file.
    */
   public String getSingleAttachmentURLOfCurrentPublication(final boolean fromAlias) {
     PublicationPK pubPK = getSessionPublication().getDetail().getPK();
@@ -2465,6 +2495,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   /**
    * Return the url to access the file
+   *
    * @param fileId the id of the file (attachment or document id).
    * @param fromAlias true if getting document version from an alias.
    * @return the url to the file.
@@ -2476,9 +2507,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   /**
-   * Returns URL of the right version of the given document according to current folder rights
-   * if user is a reader, returns last public version (null if it does not exist)
-   * if user is not a reader, returns last version (public or working one)
+   * Returns URL of the right version of the given document according to current folder rights if
+   * user is a reader, returns last public version (null if it does not exist) if user is not a
+   * reader, returns last version (public or working one)
+   *
    * @param document a loaded {@link SimpleDocument} instance.
    * @param fromAlias true if getting document version from an alias.
    * @return the URL of right version or null
@@ -2569,7 +2601,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   public List<NodeDetail> getTopicPath(String topicId) {
     try {
-      List<NodeDetail> pathInReverse = getNodeService().getPath(new NodePK(topicId, getComponentId()));
+      List<NodeDetail> pathInReverse = getNodeService().getPath(new NodePK(topicId,
+          getComponentId()));
       Collections.reverse(pathInReverse);
       return pathInReverse;
     } catch (Exception e) {
@@ -2586,6 +2619,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   /**
    * return the value of component parameter "axisIdGlossary". This paramater indicate the axis of
    * pdc to use to highlight word in publication content
+   *
    * @return an indentifier of Pdc axis
    */
   public String getAxisIdGlossary() {
@@ -2651,6 +2685,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   /**
    * Is search in topics enabled
+   *
    * @return boolean
    */
   public boolean isSearchOnTopicsEnabled() {
@@ -2663,6 +2698,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   /**
    * Get publications and aliases of this topic and its subtopics answering to the query
+   *
    * @param queryDescription the query
    * @return List of Kmelia publications
    */
@@ -2674,7 +2710,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     // Insert this new search inside persistence layer in order to compute statistics
     final NodeDetail currentFolder = getCurrentFolder();
     final String nodePathSep = "/";
-    final String safeCurrentFolderPath = getCurrentFolder().getFullPath().replaceFirst("[/]+$", "") + nodePathSep;
+    final String safeCurrentFolderPath = getCurrentFolder().getFullPath().replaceFirst("/+$",
+        "") + nodePathSep;
     TopicSearch newTS = new TopicSearch(getComponentId(), currentFolder.getId(),
         getUserId(), getLanguage(), query.toLowerCase(), new Date());
     KmeliaSearchServiceProvider.getTopicSearchService().createTopicSearch(newTS);
@@ -2693,8 +2730,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       final Map<PublicationPK, PublicationDetail> indexedUserPubs = new HashMap<>(results.size());
       final AtomicInteger rank = new AtomicInteger(0);
       getKmeliaService().getPublicationDetails(results.stream()
-                .map(i -> new ResourceReference(i.getObjectId(), i.getComponent()))
-                .collect(Collectors.toList()))
+              .map(i -> new ResourceReference(i.getObjectId(), i.getComponent()))
+              .collect(Collectors.toList()))
           .forEach(p -> indexedUserPubs.put(p.getPK(), p));
       userPublications = results.stream()
           .map(i -> {
@@ -2706,8 +2743,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
             final KmeliaPublication kPub = KmeliaPublication.fromDetail(pub);
             if (i.isAlias()
                 || (i.getPaths() != null
-                    && !i.getPaths().isEmpty()
-                    && !(i.getPaths().get(0) + nodePathSep).startsWith(safeCurrentFolderPath))) {
+                && !i.getPaths().isEmpty()
+                && !(i.getPaths().get(0) + nodePathSep).startsWith(safeCurrentFolderPath))) {
               kPub.getDetail().setAlias(true);
             }
             kPub.getDetail().setExplicitRank(rank.getAndIncrement());
@@ -2742,6 +2779,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   /**
    * Gets an instance of PublicationTemplateManager.
+   *
    * @return an instance of PublicationTemplateManager.
    */
   private PublicationTemplateManager getPublicationTemplateManager() {
@@ -2802,6 +2840,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   /**
    * Gets all available export formats.
+   *
    * @return a list of export formats Silverpeas supports for export.
    */
   public List<String> getAvailableFormats() {
@@ -2809,10 +2848,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   /**
-   * Gets the export formats that are supported by the current Kmelia component instance. As some
-   * of
+   * Gets the export formats that are supported by the current Kmelia component instance. As some of
    * the export formats can be deactivated in the Kmelia settings file, this method returns all the
    * formats that are currently active.
+   *
    * @return a list of export formats.
    */
   public List<String> getSupportedFormats() {
@@ -2832,6 +2871,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   /**
    * Is the specified export format is supported by the Kmelia component instance?
+   *
    * @param format a recognized export format.
    * @return true if the specified format is currently supported for the publication export, false
    * otherwise.
@@ -2845,6 +2885,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
    * specified topic of the specified component instance can be modified during the
    * multi-publications import process? If no default classification is defined for the specified
    * topic (and for any of its parent topics), then false is returned.
+   *
    * @param topicId the unique identifier of the topic.
    * @param componentId the unique identifier of the component instance.
    * @return true if the default classification can be modified during the automatical
@@ -2873,7 +2914,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
         if (!this.selectedPublicationPKs.contains(pk) &&
             publicationAccessController.isUserAuthorized(getUserId(), pk,
                 AccessControlContext.init())) {
-            this.selectedPublicationPKs.add(pk);
+          this.selectedPublicationPKs.add(pk);
         }
       }
     }
@@ -2915,7 +2956,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   public void loadPublicationsOfCurrentFolder() {
-    if (KmeliaHelper.isToValidateFolder(currentFolderId)){
+    if (KmeliaHelper.isToValidateFolder(currentFolderId)) {
       setSessionPublicationsList(
           getKmeliaService().getPublicationsToValidate(getComponentId(), getUserId()));
     } else if (KmeliaHelper.isNonVisiblePubsFolder(currentFolderId)) {
@@ -2958,15 +2999,19 @@ public class KmeliaSessionController extends AbstractComponentSessionController
         final Location location = new Location(getCurrentFolderId(), getComponentId());
         location.setAsAlias(getUserId());
         publication.setAuthorizedLocation(location);
-        resource = PublicationAliasSubscriptionResource.from(new PublicationPK(publication.getId(), getComponentId()));
+        resource =
+            PublicationAliasSubscriptionResource.from(new PublicationPK(publication.getId(),
+                getComponentId()));
       } else {
         resource = PublicationSubscriptionResource.from(publication);
       }
       subscriptionContext.initialize(resource)
           .atLocation(new Location(getCurrentFolderId(), getComponentId()))
           .withPath(Stream.concat(nodePath.stream()
-                                    .map(p -> new SubscriptionResourcePath(p.getName(getLanguage()), p.getLink())),
-                    Stream.of(new SubscriptionResourcePath(publication.getName(getLanguage()), publication.getPermalink())))
+                      .map(p -> new SubscriptionResourcePath(p.getName(getLanguage()),
+                          p.getLink())),
+                  Stream.of(new SubscriptionResourcePath(publication.getName(getLanguage()),
+                      publication.getPermalink())))
               .collect(Collectors.toList()));
     } else if (getCurrentFolder().getNodePK().isRoot()) {
       subscriptionContext.initialize(ComponentSubscriptionResource.from(getComponentId()));
@@ -3095,6 +3140,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   /**
    * Check user access right on folder
+   *
    * @param nodeId the topic/folder identifier to check
    * @return true if current user has admin access on topic given in parameter
    */
@@ -3117,17 +3163,20 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   private void createResourceDateReminder(final PublicationDetail pubDetail,
       final Date dateReminderDate, final String messageReminder) throws DateReminderException {
 
-    if(dateReminderDate != null) {
+    if (dateReminderDate != null) {
       DateReminderDetail dateReminderDetail =
           new DateReminderDetail(dateReminderDate, messageReminder,
-              DateReminderDetail.REMINDER_NOT_PROCESSED, pubDetail.getUpdaterId(), pubDetail.getUpdaterId());
-      PublicationNoteReference publicationNoteReference = PublicationNoteReference.fromPublicationDetail(pubDetail);
+              DateReminderDetail.REMINDER_NOT_PROCESSED, pubDetail.getUpdaterId(),
+              pubDetail.getUpdaterId());
+      PublicationNoteReference publicationNoteReference =
+          PublicationNoteReference.fromPublicationDetail(pubDetail);
       getDateReminderService().create(publicationNoteReference, dateReminderDetail);
     }
   }
 
   /**
    * Create the date reminder for the given publication
+   *
    * @param pubDetail the publication
    * @param parameters date reminder parameters
    * @throws DateReminderException on error
@@ -3153,6 +3202,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   /**
    * Save Or remove the date reminder for the given publication
+   *
    * @param pubId the publication
    * @param parameters the new date reminder parameters
    * @throws DateReminderException on error
@@ -3173,20 +3223,22 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     }
 
     PublicationDetail pubDetail = getPublicationDetail(pubId);
-    PublicationNoteReference publicationNoteReference = PublicationNoteReference.fromPublicationDetail(pubDetail);
-    PersistentResourceDateReminder actualResourceDateReminder = getDateReminderService().get(publicationNoteReference);
+    PublicationNoteReference publicationNoteReference =
+        PublicationNoteReference.fromPublicationDetail(pubDetail);
+    PersistentResourceDateReminder actualResourceDateReminder =
+        getDateReminderService().get(publicationNoteReference);
 
-    if(actualResourceDateReminder.isDefined()) {
+    if (actualResourceDateReminder.isDefined()) {
 
-      if(dateReminderDate != null) {//Update reminder
+      if (dateReminderDate != null) {//Update reminder
 
         DateReminderDetail actualDateReminderDetail = actualResourceDateReminder.getDateReminder();
         String actualDateReminder = DateUtil.dateToString(
             actualDateReminderDetail.getDateReminder(), this.getLanguage());
         int processStatus;
-        if(! actualDateReminder.equals(dateReminder)) {// the date reminder has been updated
+        if (!actualDateReminder.equals(dateReminder)) {// the date reminder has been updated
           // the date reminder must be processed by the scheduler
-          processStatus =  DateReminderDetail.REMINDER_NOT_PROCESSED;
+          processStatus = DateReminderDetail.REMINDER_NOT_PROCESSED;
         } else {// the date reminder has not been updated
           // keep the same process status
           processStatus = actualDateReminderDetail.getProcessStatus();
@@ -3221,7 +3273,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   public Form getXmlFormForPublications() {
     Form formUpdate = null;
     try {
-      PublicationTemplateImpl pubTemplate = (PublicationTemplateImpl) getTemplateForPublications();
+      PublicationTemplateImpl pubTemplate =
+          (PublicationTemplateImpl) getTemplateForPublications(true);
       if (pubTemplate != null) {
         formUpdate = pubTemplate.getUpdateForm();
         RecordSet recordSet = pubTemplate.getRecordSet();
@@ -3236,10 +3289,28 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     return formUpdate;
   }
 
+  /**
+   * Gets the XML form to use in a local search. This form is also the default template for the
+   * publication contents in the Kmelia instance. Such form can only be set at the Kmelia instance
+   * level and it is applied for all the topics.
+   * <p>
+   * Setting an XML form for the whole Kmelia instance is in opposition with the feature to set one
+   * or more XML forms as publication contents for a given folder. Latter is enabled only if there
+   * is no global XML form as publication content for the whole Kmelia instance.
+   * </p>
+   * <p>
+   * Because more than one XML form can be set as publication content for a given topic, such XML
+   * forms, even if there is only one, cannot be candidates for a local search in the concerned
+   * topic.
+   * </p>
+   *
+   * @return the form to use a local search or null if there is no such form.
+   */
   public Form getXmlFormSearchForPublications() {
     Form form = null;
     try {
-      PublicationTemplateImpl pubTemplate = (PublicationTemplateImpl) getTemplateForPublications();
+      PublicationTemplateImpl pubTemplate =
+          (PublicationTemplateImpl) getTemplateForPublications(false);
       if (pubTemplate != null && pubTemplate.isSearchable()) {
         form = pubTemplate.getSearchForm();
         DataRecord emptyRecord = pubTemplate.getRecordSet().getEmptyRecord();
@@ -3273,15 +3344,15 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   private String extractFieldName(String completeFieldName) {
     String[] fieldNameParts = StringUtil.split(completeFieldName, "$$");
-    if (fieldNameParts.length ==  2) {
+    if (fieldNameParts.length == 2) {
       return fieldNameParts[1];
     }
     return "";
   }
 
-  private PublicationTemplate getTemplateForPublications() {
+  private PublicationTemplate getTemplateForPublications(boolean specificToTopic) {
     PublicationTemplate template = null;
-    List<String> forms = getModelUsed();
+    List<String> forms = getModelUsed(specificToTopic);
     if (forms.size() == 1 && !"WYSIWYG".equals(forms.get(0))) {
       String form = forms.get(0);
       String formShort = form.substring(0, form.indexOf('.'));
@@ -3301,7 +3372,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   public void saveXMLFormToPublication(PublicationDetail pubDetail, List<FileItem> items,
       boolean forceUpdatePublication) throws SilverpeasException {
-    saveXMLFormToPublication(pubDetail, new KmeliaXmlFormUpdateContext(items, forceUpdatePublication));
+    saveXMLFormToPublication(pubDetail, new KmeliaXmlFormUpdateContext(items,
+        forceUpdatePublication));
   }
 
   public boolean saveXMLFormToPublication(PublicationDetail pubDetail,
@@ -3325,38 +3397,21 @@ public class KmeliaSessionController extends AbstractComponentSessionController
         return false;
       }
     }
-    final String pubId = pubDetail.getPK().getId();
+
     try {
       final Pair<PublicationTemplate, DataRecord> pubData =
           updateContext.getOrInitializePublicationDataRecordOf(
-          pubDetail, getCurrentLanguage());
+              pubDetail, getCurrentLanguage());
       final Form form = pubData.getFirst().getUpdateForm();
       final RecordSet set = pubData.getFirst().getRecordSet();
       final DataRecord data = pubData.getSecond();
-      final PagesContext context = new PagesContext();
-      context.setLanguage(getLanguage());
-      context.setComponentId(getComponentId());
-      context.setUserId(getUserId());
-      context.setEncoding(Charsets.UTF_8.name());
-      if (!isKmaxMode) {
-        context.setNodeId(getCurrentFolderId());
-      }
-      context.setObjectId(pubId);
-      if (updateContext.isForceUpdatePublication()) {
-        // case of a modification of the publication
-        context.setContentLanguage(getContentLanguage());
-      } else {
-        // the publication is just created
-        context.setContentLanguage(pubDetail.getLanguage());
-      }
-      if (updateContext.isBatchProcessing()) {
-        context.setUpdatePolicy(PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES);
-      }
+      final PagesContext context = getPagesContext(pubDetail, updateContext);
       form.update(updateContext.getItems(), data, context);
       set.save(data);
     } catch (Exception e) {
       throw new SilverpeasException("Can't save XML form of publication", e);
     }
+    String pubId = pubDetail.getPK().getId();
     ofNullable(FileUploadUtil.getParameter(updateContext.getItems(), "VolatileId"))
         .filter(StringUtil::isDefined)
         // Attaching all documents linked to volatile publication to the persisted one
@@ -3372,6 +3427,30 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       updatePublication(pubDetail);
     }
     return true;
+  }
+
+  private PagesContext getPagesContext(PublicationDetail pubDetail,
+      KmeliaXmlFormUpdateContext updateContext) {
+    final PagesContext context = new PagesContext();
+    context.setLanguage(getLanguage());
+    context.setComponentId(getComponentId());
+    context.setUserId(getUserId());
+    context.setEncoding(Charsets.UTF_8.name());
+    if (!isKmaxMode) {
+      context.setNodeId(getCurrentFolderId());
+    }
+    context.setObjectId(pubDetail.getPK().getId());
+    if (updateContext.isForceUpdatePublication()) {
+      // case of a modification of the publication
+      context.setContentLanguage(getContentLanguage());
+    } else {
+      // the publication is just created
+      context.setContentLanguage(pubDetail.getLanguage());
+    }
+    if (updateContext.isBatchProcessing()) {
+      context.setUpdatePolicy(PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES);
+    }
+    return context;
   }
 
   public void saveXMLForm(List<FileItem> items, boolean forceUpdatePublication)
@@ -3416,20 +3495,23 @@ public class KmeliaSessionController extends AbstractComponentSessionController
         getPublicationsForModification(selectedPublicationPKs)
             .stream()
             .filter(p -> Objects.equals(p.getFirst().getComponentInstanceId(), getComponentId()))
-            .collect(toMap(p -> p.getSecond() != null ? p.getSecond().getPk() : p.getFirst().getPk(), p -> p));
+            .collect(toMap(p -> p.getSecond() != null ? p.getSecond().getPk() :
+                p.getFirst().getPk(), p -> p));
     if (authorizedPublicationsOrClonesByPubOrClonePks.isEmpty()) {
       messager.addSuccess(getMultilang().getString("kmelia.publications.batch.update.none"));
       return;
     }
-    final Map<PublicationPK, PublicationDetail> publicationOrCloneCache = authorizedPublicationsOrClonesByPubOrClonePks
-        .values()
-        .stream()
-        .map(p ->
-            p.getSecond() != null ?
-                p.getSecond() :
-                p.getFirst())
-        .collect(toMap(KmeliaPublication::getPk, KmeliaPublication::getDetail));
-    final KmeliaXmlFormUpdateContext updateContext = new KmeliaXmlFormUpdateContext(items, true).batchProcessing();
+    final Map<PublicationPK, PublicationDetail> publicationOrCloneCache =
+        authorizedPublicationsOrClonesByPubOrClonePks
+            .values()
+            .stream()
+            .map(p ->
+                p.getSecond() != null ?
+                    p.getSecond() :
+                    p.getFirst())
+            .collect(toMap(KmeliaPublication::getPk, KmeliaPublication::getDetail));
+    final KmeliaXmlFormUpdateContext updateContext =
+        new KmeliaXmlFormUpdateContext(items, true).batchProcessing();
     try {
       SimulationActionProcessProcessor.get()
           .withContext(s -> s.getSourcePKs().addAll(publicationOrCloneCache.keySet()))
@@ -3442,7 +3524,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
             final List<PublicationPK> success = new ArrayList<>();
             final List<PublicationPK> fail = new ArrayList<>();
             publicationOrCloneCache.forEach((k, p) -> {
-              final PublicationPK selectedPk = authorizedPublicationsOrClonesByPubOrClonePks.get(k).getFirst().getPk();
+              final PublicationPK selectedPk =
+                  authorizedPublicationsOrClonesByPubOrClonePks.get(k).getFirst().getPk();
               try {
                 Optional.of(saveXMLFormToPublication(p, updateContext))
                     .filter(Boolean.TRUE::equals)
@@ -3453,11 +3536,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController
               }
             });
             if (fail.isEmpty()) {
-              messager.addSuccess(getMultilang().getStringWithParams("kmelia.publications.batch.update.success",
+              messager.addSuccess(getMultilang().getStringWithParams("kmelia.publications.batch" +
+                      ".update.success",
                   success.size()));
             } else {
               messager.addError(
-                  getMultilang().getStringWithParams("kmelia.publications.batch.update.fail", fail.size()));
+                  getMultilang().getStringWithParams("kmelia.publications.batch.update.fail",
+                      fail.size()));
             }
             selectedPublicationPKs.removeAll(success);
             return null;

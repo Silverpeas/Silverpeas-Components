@@ -37,11 +37,7 @@ import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.contribution.ContributionStatus;
-import org.silverpeas.core.contribution.content.form.DataRecord;
-import org.silverpeas.core.contribution.content.form.Form;
-import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.contribution.content.form.PagesContext;
-import org.silverpeas.core.contribution.content.form.RecordSet;
+import org.silverpeas.core.contribution.content.form.*;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.publication.model.Location;
@@ -67,11 +63,7 @@ import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.security.authorization.PublicationAccessControl;
 import org.silverpeas.core.subscription.SubscriptionResource;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.kernel.bundle.LocalizationBundle;
-import org.silverpeas.core.util.MimeTypes;
-import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.WAAttributeValuePair;
 import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
@@ -79,25 +71,21 @@ import org.silverpeas.core.util.file.FileFolderManager;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.core.web.mvc.util.WysiwygRouting;
 import org.silverpeas.core.web.selection.Selection;
-import org.silverpeas.core.web.util.ClientBrowserUtil;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.bundle.ResourceLocator;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.silverpeas.core.contribution.model.CoreContributionType.NODE;
@@ -141,18 +129,14 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
   @Override
   public String getDestination(String function, KmeliaSessionController kmelia,
       HttpRequest request) {
-    String destination = "";
+    String destination;
     String rootDestination = "/kmelia/jsp/";
-    boolean profileError = false;
     boolean kmaxMode = false;
     boolean toolboxMode;
     SilverpeasRole userRoleOnCurrentTopic =
         SilverpeasRole.fromString(kmelia.getUserTopicProfile(kmelia.getCurrentFolderId()));
-    SilverpeasRole highestSilverpeasUserRoleOnCurrentTopic = null;
-    if (userRoleOnCurrentTopic != null) {
-      highestSilverpeasUserRoleOnCurrentTopic =
+    SilverpeasRole highestSilverpeasUserRoleOnCurrentTopic =
           SilverpeasRole.getHighestFrom(userRoleOnCurrentTopic);
-    }
     try {
       if ("kmax".equals(kmelia.getComponentRootName())) {
         kmaxMode = true;
@@ -345,7 +329,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           }
         } else if ("Wysiwyg".equals(type)) {
           if (id.startsWith("Node")) {
-            id = id.substring("Node_".length(), id.length());
+            id = id.substring("Node_".length());
             request.setAttribute("Id", id);
             destination = getDestination("GoToTopic", kmelia, request);
           } else {
@@ -378,10 +362,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         if ("UpdateView".equals(action)) {
           request.setAttribute("TaxonomyOK", kmelia.isPublicationTaxonomyOK());
           List<ClassifyPosition> positions = kmelia.getSessionPubliOrClone().getPDCPositions();
-          boolean isPublicationClassifiedOnPDC = true;
-          if (positions.isEmpty()) {
-            isPublicationClassifiedOnPDC = false;
-          }
+          boolean isPublicationClassifiedOnPDC = !positions.isEmpty();
           request.setAttribute("isPublicationClassifiedOnPDC", isPublicationClassifiedOnPDC);
           request.setAttribute("AttachmentsEnabled", false);
           request.setAttribute("ValidatorsOK", kmelia.isPublicationValidatorsOK());
@@ -415,11 +396,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
             request.setAttribute("IsLink", Boolean.TRUE);
           }
 
-          List<NodeDetail> path = kmelia.getTopicPath(topicId);
-          request.setAttribute("Path", kmelia.displayPath(path, false, 3));
-          request.setAttribute("PathLinked", kmelia.displayPath(path, true, 3));
-          request.setAttribute("Translation", kmelia.getCurrentLanguage());
-          request.setAttribute("NotificationAllowed", kmelia.isNotificationAllowed());
+          setNodeDataIntoRequest(kmelia, topicId, request);
           request.setAttribute("Parent", kmelia.getNodeHeader(topicId));
 
           if (kmelia.isRightsOnTopicsEnabled()) {
@@ -442,11 +419,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         } else {
           request.setAttribute("NodeDetail", node);
 
-          List<NodeDetail> path = kmelia.getTopicPath(id);
-          request.setAttribute("Path", kmelia.displayPath(path, false, 3));
-          request.setAttribute("PathLinked", kmelia.displayPath(path, true, 3));
-          request.setAttribute("Translation", kmelia.getCurrentLanguage());
-          request.setAttribute("NotificationAllowed", kmelia.isNotificationAllowed());
+          setNodeDataIntoRequest(kmelia, id, request);
 
           if (kmelia.isRightsOnTopicsEnabled()) {
             request.setAttribute("Profiles", kmelia.getTopicProfiles(id));
@@ -564,7 +537,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         request.setAttribute("TaxonomyOK", true);
         request.setAttribute("ValidatorsOK", kmelia.isPublicationValidatorsOK());
 
-        putXMLDisplayerIntoRequest(kmeliaPublication.getDetail(), kmelia, request);
+        putXMLDisplayerIntoRequest(kmeliaPublication.getDetail(), request);
 
         // Attachments area must be displayed or not ?
         request.setAttribute("AttachmentsEnabled", kmelia.isAttachmentsEnabled());
@@ -633,8 +606,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           if (publicationLanguages.contains(kmelia.getCurrentLanguage())) {
             request.setAttribute("ContentLanguage", kmelia.getCurrentLanguage());
           } else {
-            request.setAttribute("ContentLanguage", checkLanguage(kmelia, kmeliaPublication.
-                getDetail()));
+            request.setAttribute("ContentLanguage", checkLanguage(kmeliaPublication.getDetail()));
           }
           request.setAttribute("Languages", publicationLanguages);
 
@@ -668,7 +640,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           } else {
             request.setAttribute("NbPublis", 1);
           }
-          putXMLDisplayerIntoRequest(kmeliaPublication.getDetail(), kmelia, request);
+          putXMLDisplayerIntoRequest(kmeliaPublication.getDetail(), request);
           String fileAlreadyOpened = (String) request.getAttribute("FileAlreadyOpened");
           boolean alreadyOpened = "1".equals(fileAlreadyOpened);
           String attachmentId = (String) request.getAttribute("AttachmentId");
@@ -826,10 +798,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         }
       } else if (function.equals("WantToSuspendPubli")) {
         String pubId = request.getParameter("PubId");
-
-        PublicationDetail pubDetail = kmelia.getPublicationDetail(pubId);
-
-
+        kmelia.getPublicationDetail(pubId);
         destination = rootDestination + "defermentMotive.jsp";
       } else if (function.equals("SuspendPublication")) {
         String motive = request.getParameter("Motive");
@@ -898,11 +867,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         String newStatus = request.getParameter("Status");
         String recursive = request.getParameter("Recursive");
 
-        if (recursive != null && recursive.equals("1")) {
-          kmelia.changeTopicStatus(newStatus, subTopicId, true);
-        } else {
-          kmelia.changeTopicStatus(newStatus, subTopicId, false);
-        }
+        kmelia.changeTopicStatus(newStatus, subTopicId, recursive != null && recursive.equals("1"));
 
         destination = getDestination("GoToCurrentTopic", kmelia, request);
       } else if (function.equals("ViewOnly")) {
@@ -1038,8 +1003,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         String id = request.getParameter("PubId");
 
         //noinspection unchecked
-        HashSet<String> list =
-            (HashSet) request.getSession().getAttribute(KmeliaConstants.PUB_TO_LINK_SESSION_KEY);
+        HashSet<String> list = (HashSet<String>)
+            request.getSession().getAttribute(KmeliaConstants.PUB_TO_LINK_SESSION_KEY);
 
         int nb = kmelia.addPublicationsToLink(id, list);
 
@@ -1095,7 +1060,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         } else {
           String infoId = publicationDetail.getInfoId();
           if (infoId == null || "0".equals(infoId)) {
-            List<String> usedModels = kmelia.getModelUsed();
+            List<String> usedModels = kmelia.getModelUsed(true);
             if (usedModels.size() == 1) {
               String modelId = usedModels.get(0);
               if ("WYSIWYG".equals(modelId)) {
@@ -1124,7 +1089,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
       } else if (function.equals("ModelUsed")) {
         request.setAttribute("XMLForms", kmelia.getForms());
 
-        Collection<String> modelUsed = kmelia.getModelUsed();
+        Collection<String> modelUsed = kmelia.getModelUsed(true);
         request.setAttribute("ModelUsed", modelUsed);
 
         destination = rootDestination + "modelUsedList.jsp";
@@ -1162,7 +1127,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
                 .withBrowseInfo(browseInfo)
                 .withContributionId(
                     ContributionIdentifier.from(kmelia.getComponentId(), publication.getId(), publication.getContributionType()))
-                .withContentLanguage(checkLanguage(kmelia, publication))
+                .withContentLanguage(checkLanguage(publication))
                 .withComeBackUrl(
                     URLUtil.getApplicationURL() + kmelia.getComponentUrl() + "FromWysiwyg?PubId=" +
                         publication.getId())
@@ -1308,7 +1273,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
       } else if (function.equals("CloseWindow")) {
         destination = rootDestination + "closeWindow.jsp";
       }
-      /**
+      /*
        * *************************
        * Kmax mode ***********************
        */
@@ -1443,7 +1408,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         while (st.hasMoreTokens()) {
           axisValue = st.nextToken();
           // axisValue is xx/xx/xx where xx are nodeId
-          axisValue = axisValue.substring(axisValue.lastIndexOf('/') + 1, axisValue.length());
+          axisValue = axisValue.substring(axisValue.lastIndexOf('/') + 1);
           combination.add(axisValue);
         }
         kmelia.addPublicationToCombination(pubId, combination);
@@ -1471,11 +1436,9 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         if (kmelia.isTimeAxisUsed() && StringUtil.isDefined(kmelia.getSessionTimeCriteria())) {
           LocalizationBundle timeSettings = ResourceLocator.getLocalizationBundle(
               "org.silverpeas.kmelia.multilang.timeAxisBundle");
-          if (kmelia.getSessionTimeCriteria().equals("X")) {
-            timeCriteria = null;
-          } else {
+          if (! kmelia.getSessionTimeCriteria().equals("X")) {
             String localizedCriteria = timeSettings.getString(kmelia.getSessionTimeCriteria());
-            if (localizedCriteria == null || localizedCriteria.trim().isEmpty()) {
+            if (localizedCriteria.trim().isEmpty()) {
               localizedCriteria = "";
             }
             timeCriteria = "<b>" + kmelia.getString("TimeAxis") + "</b> > " + localizedCriteria;
@@ -1516,15 +1479,19 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
       } else {
         destination = rootDestination + function;
       }
-
-      if (profileError) {
-        destination = ResourceLocator.getGeneralSettingBundle().getString("sessionTimeout");
-      }
     } catch (Exception exceAll) {
       request.setAttribute("javax.servlet.jsp.jspException", exceAll);
       return "/admin/jsp/errorpageMain.jsp";
     }
     return destination;
+  }
+
+  private void setNodeDataIntoRequest(KmeliaSessionController kmelia, String topicId, HttpRequest request) {
+    List<NodeDetail> path = kmelia.getTopicPath(topicId);
+    request.setAttribute("Path", kmelia.displayPath(path, false, 3));
+    request.setAttribute("PathLinked", kmelia.displayPath(path, true, 3));
+    request.setAttribute("Translation", kmelia.getCurrentLanguage());
+    request.setAttribute("NotificationAllowed", kmelia.isNotificationAllowed());
   }
 
   private static PdcClassificationEntity getPdcClassification(final KmeliaSessionController kmelia,
@@ -1628,13 +1595,6 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
     return pubDetail;
   }
 
-  /**
-   * Process Form Upload for publications import
-   * @param kmeliaScc
-   * @param request
-   * @param routeDestination
-   * @return destination
-   */
   private String processFormUpload(KmeliaSessionController kmeliaScc, HttpRequest request,
       String routeDestination, boolean isMassiveMode) {
     String destination = "";
@@ -1648,7 +1608,6 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
     String tempFolderName;
     String tempFolderPath = null;
 
-    String fileType;
     long fileSize;
     long processStart = new Date().getTime();
     LocalizationBundle attachmentResourceLocator =
@@ -1683,19 +1642,10 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
           }
 
           logicalName = logicalName
-              .substring(logicalName.lastIndexOf(File.separator) + 1, logicalName.length());
+              .substring(logicalName.lastIndexOf(File.separator) + 1);
 
           // Name of temp folder: timestamp and userId
-          tempFolderName = Long.toString(System.currentTimeMillis()) + "_" + kmeliaScc.getUserId();
-
-          // Mime type of the file
-          fileType = fileItem.getContentType();
-
-          // Zip contentType not detected under Firefox !
-          if (!ClientBrowserUtil.isInternetExplorer(request)) {
-            fileType = MimeTypes.ARCHIVE_MIME_TYPE;
-          }
-
+          tempFolderName = System.currentTimeMillis() + "_" + kmeliaScc.getUserId();
           fileSize = fileItem.getSize();
 
           // Directory Temp for the uploaded file
@@ -1761,7 +1711,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
             if (kmeliaScc.isDefaultClassificationModifiable(topicId, componentId)) {
               List<PublicationDetail> publicationDetails =
                   kmeliaScc.getListPublicationImported(importReport, importMode);
-              if (publicationDetails.size() > 0) {
+              if (!publicationDetails.isEmpty()) {
                 request.setAttribute("PublicationsDetails", publicationDetails);
                 destination = routeDestination + "validateImportedFilesClassification.jsp";
               }
@@ -1829,9 +1779,6 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
       }
 
       String nodeId = pk.getId();
-      /*if (kmeliaSC.getSearchContext() != null) {
-          nodeId = kmeliaSC.getSearchContext().getNode().getId();
-      }*/
       Collection<NodeDetail> pathColl = kmeliaSC.getTopicPath(nodeId);
       String linkedPathString = kmeliaSC.displayPath(pathColl, true, 3);
       String pathString = kmeliaSC.displayPath(pathColl, false, 3);
@@ -1840,8 +1787,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
     }
   }
 
-  private void putXMLDisplayerIntoRequest(PublicationDetail pubDetail,
-      KmeliaSessionController kmelia, HttpServletRequest request)
+  private void putXMLDisplayerIntoRequest(PublicationDetail pubDetail, HttpServletRequest request)
       throws PublicationTemplateException, FormException {
     String infoId = pubDetail.getInfoId();
     String pubId = pubDetail.getPK().getId();
@@ -1851,7 +1797,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
               .getPublicationTemplate(pubDetail.getPK().getInstanceId() + ":" + infoId);
       Form formView = pubTemplate.getViewForm();
       // get displayed language
-      String language = checkLanguage(kmelia, pubDetail);
+      String language = checkLanguage(pubDetail);
       RecordSet recordSet = pubTemplate.getRecordSet();
       DataRecord data = recordSet.getRecord(pubId, language);
       if (data == null) {
@@ -1886,7 +1832,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
     RecordSet recordSet = pubTemplate.getRecordSet();
 
     // get displayed language
-    String language = checkLanguage(kmelia, pubDetail);
+    String language = checkLanguage(pubDetail);
 
     DataRecord data = recordSet.getRecord(pubId, language);
     if (data == null || (language != null && !language.equals(data.getLanguage()))) {
@@ -1909,11 +1855,11 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
   }
 
   private String checkLanguage(KmeliaSessionController kmelia) {
-    return checkLanguage(kmelia, kmelia.getSessionPublication().getDetail());
+    return checkLanguage(kmelia.getSessionPublication().getDetail());
   }
 
-  private String checkLanguage(KmeliaSessionController kmelia, PublicationDetail pubDetail) {
-    return pubDetail.getLanguageToDisplay(pubDetail==null?kmelia.getContentLanguage():pubDetail.getLanguage());
+  private String checkLanguage(PublicationDetail pubDetail) {
+    return pubDetail.getLanguageToDisplay(pubDetail.getLanguage());
   }
 
   /**
@@ -1926,7 +1872,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
   private void setTemplatesUsedIntoRequest(KmeliaSessionController kmelia,
       HttpServletRequest request) {
-    Collection<String> modelUsed = kmelia.getModelUsed();
+    Collection<String> modelUsed = kmelia.getModelUsed(true);
     Collection<PublicationTemplate> listModelXml = new ArrayList<>();
     List<PublicationTemplate> templates = kmelia.getForms();
     // recherche de la liste des modèles utilisables
@@ -1940,10 +1886,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
     request.setAttribute("XMLForms", listModelXml);
 
     // recherche si modele Wysiwyg utilisable
-    boolean wysiwygValid = false;
-    if (modelUsed.contains("WYSIWYG")) {
-      wysiwygValid = true;
-    }
+    boolean wysiwygValid = modelUsed.contains("WYSIWYG");
     request.setAttribute("WysiwygValid", wysiwygValid);
 
     // s'il n'y a pas de modèles selectionnés, les présenter tous
@@ -1993,7 +1936,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         .initialize()
         .forPersistenceAction(ActionType.UPDATE);
     final String componentInstanceId = kmeliaSC.getComponentId();
-    publications.stream().forEach(k -> {
+    publications.forEach(k -> {
       final PublicationDetail publication = k.getDetail();
       final PublicationPK publicationPK = new PublicationPK(publication.getId(), componentInstanceId);
       final SubscriptionResource resource = publication.isAlias() ?
