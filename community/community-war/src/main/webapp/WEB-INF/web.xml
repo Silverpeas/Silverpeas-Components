@@ -25,7 +25,7 @@
 
 -->
 <web-app>
-  <display-name>suggestion-box War</display-name>
+  <display-name>Community War</display-name>
   <description>no description</description>
   <servlet>
     <description>
