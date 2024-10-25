@@ -264,7 +264,7 @@
         <type>checkbox</type>
         <updatable>never</updatable>
         <help>
-          <message lang="fr">Pour indiquer d'autres publicatins en rapport avec la publication
+          <message lang="fr">Pour indiquer d'autres publications en rapport avec la publication
             courante.
           </message>
           <message lang="en">Indicates publications you might want to see after looking at the current
