@@ -44,13 +44,13 @@ String getUserName(KmeliaPublication kmeliaPub, KmeliaSessionController kmeliaSc
 	PublicationDetail	pub			= kmeliaPub.getDetail();
 	String 				updaterId	= pub.getUpdaterId();
 	User			updater		= null;
-	if (updaterId != null && updaterId.length()>0)
+	if (updaterId != null && !updaterId.isEmpty())
 		updater = kmeliaScc.getUserDetail(updaterId);
 	if (updater == null)
 		updater = user;
 
 	String userName = "";
-	if (updater != null && (updater.getFirstName().length() > 0 || updater.getLastName().length() > 0))
+	if (updater != null && (!updater.getFirstName().isEmpty() || !updater.getLastName().isEmpty()))
 		userName = updater.getFirstName() + " " + updater.getLastName();
 	else
 		userName = kmeliaScc.getString("kmelia.UnknownUser");
@@ -161,7 +161,7 @@ void displaySearchResults(List<MatchingIndexEntry> pubs, String publicationLabel
                             out.println("<td valign=\"top\" colspan=\"2\">");
                              out.println("<p>&#149; <a href=\"javascript:onClick=publicationGoTo('"+pub.getObjectId()+"')\"><b>"+pub.getTitle()+"</b></a><br> "+userName+" - "+resources.getOutputDate(
                                  DateUtil.parseFromLucene(pub.getLastModificationDate()))+"<br/>");
-                             out.println(""+Encode.javaStringToHtmlString(pub.getPreview())+"</p>");
+                             out.println(""+Encode.forHtml(pub.getPreview())+"</p>");
                             out.println("</td>");
                           out.println("</tr>");
                       }

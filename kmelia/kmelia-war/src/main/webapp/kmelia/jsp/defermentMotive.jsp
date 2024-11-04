@@ -1,4 +1,4 @@
-<%--
+<%@ page import="org.owasp.encoder.Encode" %><%--
 
     Copyright (C) 2000 - 2024 Silverpeas
 
@@ -80,7 +80,7 @@ function sendData() {
 		<td>
 		<TABLE ALIGN=CENTER CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH="100%" CLASS=intfdcolor4>
   <TR><TD class="txtlibform"><%=resources.getString("GML.publication")%> :</TD>
-      <TD valign="top"><%=Encode.javaStringToHtmlString(pubDetail.getName(currentLang))%></TD>
+      <TD valign="top"><%=Encode.forHtml(pubDetail.getName(currentLang))%></TD>
   <TR><TD class="txtlibform" valign=top><%=kmeliaScc.getString("RefusalMotive")%> :</TD>
       <TD><textarea name="Motive" rows="5" cols="60"></textarea>&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"> </TD></TR>
   <TR><TD colspan="2">( <img border="0" src="<%=mandatoryField%>" width="5" height="5"> : <%=resources.getString("GML.requiredField")%> )</TD></TR>

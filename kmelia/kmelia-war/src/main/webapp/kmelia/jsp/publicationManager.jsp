@@ -152,12 +152,8 @@
           suppressionAllowed = false;
         }
 
-        if (isOwner) {
-          kmeliaScc.setSessionOwner(true);
-        } else {
           //modification pour acceder a l'onglet voir aussi
-          kmeliaScc.setSessionOwner(false);
-        }
+          kmeliaScc.setSessionOwner(isOwner);
       }
 
       name = WebEncodeHelper.javaStringToHtmlString(pubDetail.getName(language));
@@ -191,12 +187,12 @@
       importance = Integer.toString(pubDetail.getImportance());
       keywords = StringUtil.defaultIfBlank(pubDetail.getKeywords(language), "");
       status = pubDetail.getStatus();
-      if (beginDate == null || beginDate.length() == 0) {
+      if (beginDate == null || beginDate.isEmpty()) {
         beginHour = "";
       } else {
         beginHour = pubDetail.getBeginHour();
       }
-      if (endDate == null || endDate.length() == 0) {
+      if (endDate == null || endDate.isEmpty()) {
         endHour = "";
       } else {
         endHour = pubDetail.getEndHour();
@@ -266,7 +262,7 @@
       }
 
       function pubDeleteConfirm(id) {
-        var label = "<%=resources.getString("ConfirmDeletePub")%>";
+        const label = "<%=resources.getString("ConfirmDeletePub")%>";
         jQuery.popup.confirm(label, function() {
           document.toRouterForm.action = "<%=routerUrl%>DeletePublication";
           document.toRouterForm.PubId.value = id;
@@ -275,7 +271,7 @@
       }
 
       function deleteCloneConfirm() {
-        var label = "<%=WebEncodeHelper.javaStringToJsString(resources.getString("kmelia.ConfirmDeleteClone"))%>";
+        const label = "<%=WebEncodeHelper.javaStringToJsString(resources.getString("kmelia.ConfirmDeleteClone"))%>";
         jQuery.popup.confirm(label, function() {
           document.toRouterForm.action = "<%=routerUrl%>DeleteClone";
           document.toRouterForm.submit();
@@ -296,7 +292,7 @@
 
       function alertUsers() {
       <% if (!"Valid".equals(pubDetail.getStatus())) { %>
-          var label = "<%=WebEncodeHelper.javaStringToJsString(resources.getString("kmelia.AlertButPubNotValid"))%>";
+          let label = "<%=WebEncodeHelper.javaStringToJsString(resources.getString("kmelia.AlertButPubNotValid"))%>";
           jQuery.popup.confirm(label, function() {
             sp.messager.open('<%= componentId %>', {
               nodeId: '<%= kmeliaScc.getCurrentFolderId()%>',
@@ -346,9 +342,9 @@
       }
 
       function isCorrectHeaderForm() {
-        var errorMsg = "";
-        var errorNb = 0;
-        var title = stripInitialWhitespace(document.pubForm.KmeliaPubName.value);
+        let errorMsg = "";
+        let errorNb = 0;
+        const title = stripInitialWhitespace(document.pubForm.KmeliaPubName.value);
 
         if (isWhitespace(title)) {
           errorMsg+=" - '<%=resources.getString("PubTitre")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
@@ -356,8 +352,8 @@
         }
 
       <% if (isFieldDescriptionVisible) {%>
-        var description = document.pubForm.KmeliaPubDescription;
-      <% if (isFieldDescriptionMandatory) {%>
+        const description = document.pubForm.KmeliaPubDescription;
+        <% if (isFieldDescriptionMandatory) {%>
             if (isWhitespace(description.value)) {
               errorMsg+=" - '<%=resources.getString("PubDescription")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
               errorNb++;
@@ -370,16 +366,16 @@
       <% }%>
 
       <% if ("writer".equals(profile) && (kmeliaScc.isTargetValidationEnable() || kmeliaScc.isTargetMultiValidationEnable())) {%>
-          var validatorId = stripInitialWhitespace(document.pubForm.KmeliaPubValideurId.value);
-          if (isWhitespace(validatorId)) {
+        const validatorId = stripInitialWhitespace(document.pubForm.KmeliaPubValideurId.value);
+        if (isWhitespace(validatorId)) {
             errorMsg+=" - '<%=resources.getString("kmelia.Valideur")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
             errorNb++;
           }
       <% }%>
 
-        var beginDate = {dateId : 'beginDate', hourId : 'beginHour'};
-        var endDate = {dateId : 'endDate', hourId : 'endHour', defaultDateHour : '23:59'};
-        var dateErrors = isPeriodEndingInFuture(beginDate, endDate);
+        const beginDate = {dateId: 'beginDate', hourId: 'beginHour'};
+        const endDate = {dateId: 'endDate', hourId: 'endHour', defaultDateHour: '23:59'};
+        let dateErrors = isPeriodEndingInFuture(beginDate, endDate);
         $(dateErrors).each(function(index, error) {
           errorMsg += " - " + error.message + "\n";
           errorNb++;
@@ -394,12 +390,12 @@
         <% if(!kmaxMode && !isPublicationClone) { %>
         <view:pdcValidateClassification errorCounter="errorNb" errorMessager="errorMsg"/>
         <% } %>
-        
-        var error = {
-          msg: errorMsg, 
+
+        const error = {
+          msg: errorMsg,
           nb: errorNb
         };
-        
+
         <% if (kmeliaMode && settings.getBoolean("isVignetteVisible", true)) {%>
         checkThumbnail(error);
         <% } %>
@@ -416,7 +412,7 @@
             jQuery.popup.error(error.msg);
         }
 
-        return (error.nb == 0);
+        return (error.nb === 0);
       }
 
       <%
@@ -496,10 +492,11 @@
           String urlPublication = URLUtil.getSimpleURL(URLUtil.URL_PUBLI, pubDetail.getPK().getId());
 	      pathString = WebEncodeHelper.javaStringToHtmlString(pubDetail.getName(language));
 	      String namePath = spaceLabel + " > " + componentLabel;
-	      if (!pathString.equals("")) {
+	      if (!pathString.isEmpty()) {
 	      	namePath = namePath + " > " + pathString;
 	      }
-		  operationPane.addOperation(favoriteAddSrc, resources.getString("FavoritesAddPublication")+" "+kmeliaScc.getString("FavoritesAdd2"), "javaScript:addFavorite('"+WebEncodeHelper.javaStringToJsString(namePath)+"','"+pubDetail.getDescription(language)+"','"+urlPublication+"')");
+		  operationPane.addOperation(favoriteAddSrc,
+                  resources.getString("FavoritesAddPublication")+" "+kmeliaScc.getString("FavoritesAdd2"), "javaScript:addFavorite('"+WebEncodeHelper.javaStringToJsString(namePath)+"','"+WebEncodeHelper.javaStringToHtmlString(pubDetail.getDescription(language))+"','"+urlPublication+"')");
           operationPane.addLine();
 
           if (!"supervisor".equals(profile)) {
