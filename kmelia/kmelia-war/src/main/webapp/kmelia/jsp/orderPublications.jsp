@@ -30,6 +30,7 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%@ page import="org.silverpeas.components.kmelia.model.KmeliaPublication" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
@@ -111,7 +112,7 @@ while(publis.hasNext())
 %>
 	<li id="publi_<%=pub.getPK().getId()%>">&#8226;&#160;<b><%=pub.getName(currentLang)%></b><br/>
 		<% if (StringUtil.isDefined(pub.getDescription(currentLang))) { %>
-			<%=Encode.javaStringToHtmlParagraphe(pub.getDescription(currentLang))%><br/>
+			<%=Encode.forHtml(pub.getDescription(currentLang))%><br/>
 		<% } %>
 		<br/>
 	</li>
