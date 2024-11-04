@@ -25,6 +25,7 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="org.silverpeas.core.importexport.versioning.DocumentVersion"%>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache"); //HTTP 1.0
@@ -35,7 +36,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ include file="checkKmelia.jsp" %>
 
 <%
-	String topicId = org.owasp.encoder.Encode.forUriComponent(request.getParameter("TopicId"));
+	String topicId = Encode.forUriComponent(request.getParameter("TopicId"));
 	String message = "";
 	if (request.getAttribute("Message") != null) {
 		message = (String) request.getAttribute("Message");

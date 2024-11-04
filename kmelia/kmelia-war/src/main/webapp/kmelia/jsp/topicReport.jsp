@@ -5,7 +5,6 @@
 <%@ page import="org.silverpeas.components.kmelia.model.TopicDetail, org.silverpeas.core.node.model.NodeDetail, java.util.Collection, java.util.Iterator, org.silverpeas.components.kmelia.control.KmeliaSessionController"%>
 <%@ page import="org.silverpeas.kernel.bundle.ResourceLocator"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.Encode"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayLine"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayColumn"%>
@@ -14,6 +13,7 @@
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.icons.Icon"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.navigationlist.NavigationList"%>
 <%@ page import="org.silverpeas.core.util.URLUtil" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 
 <%!
 String displayPath(Collection path, boolean linked, int beforeAfter, String translation) {
@@ -28,8 +28,8 @@ String displayPath(Collection path, boolean linked, int beforeAfter, String tran
             nodeInPath = (NodeDetail) iterator.next();
             if ((i <= beforeAfter) || (i + beforeAfter >= nbItemInPath - 1)){
 				if (!nodeInPath.getNodePK().getId().equals("0")) {
-					linkedPathString.append("<a href=\"javascript:onClick=topicGoTo('").append(nodeInPath.getNodePK().getId()).append("')\">").append(Encode.javaStringToHtmlString(nodeInPath.getName(translation))).append("</a>");
-					pathString.append(Encode.javaStringToHtmlString(nodeInPath.getName(translation)));
+					linkedPathString.append("<a href=\"javascript:onClick=topicGoTo('").append(nodeInPath.getNodePK().getId()).append("')\">").append(Encode.forHtml(nodeInPath.getName(translation))).append("</a>");
+					pathString.append(Encode.forHtml(nodeInPath.getName(translation)));
 					if (iterator.hasNext()) {
 						  linkedPathString.append(" > ");
 						  pathString.append(" > ");
@@ -110,7 +110,7 @@ void displayTopicsToUsersAsNavlist(KmeliaSessionController kmeliaScc, NodeDetail
 								String link = URLUtil.getSimpleURL(URLUtil.URL_TOPIC, childId, node.getNodePK().getInstanceId());
 								universalLink = "<a class=\"sp-permalink\" href=\""+link+"\"><img src=\""+linkIcon+"\" border=\"0\" align=\"absmiddle\" alt=\""+resources.getString("kmelia.CopyTopicLink")+"\" title=\""+resources.getString("kmelia.CopyTopicLink")+"\"></a>";
 							}
-                            navList.addItem(Encode.javaStringToHtmlString(childName+nbPublis),"javascript:onClick=topicGoTo('"+childId+"')",-1,childDescription, universalLink);
+                            navList.addItem(Encode.forHtml(childName+nbPublis),"javascript:onClick=topicGoTo('"+childId+"')",-1,childDescription, universalLink);
                             break;
                 } //fin du switch
           } //fin du while   
@@ -175,7 +175,7 @@ void displayTopicsToUsersAsArray(KmeliaSessionController kmeliaScc, NodeDetail n
 							}
                             arrayLine.addArrayCellText("<a href=\"javascript:onClick=topicGoTo('"+childId+"')\">"+childName+"</a>"+universalLink);
 							
-                            arrayLine.addArrayCellText(Encode.javaStringToHtmlString(childDescription));
+                            arrayLine.addArrayCellText(Encode.forHtml(childDescription));
 							nbChild++;
                             break;
                 } //fin du switch
