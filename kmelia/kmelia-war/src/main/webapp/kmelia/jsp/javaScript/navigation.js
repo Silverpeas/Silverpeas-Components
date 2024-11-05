@@ -664,6 +664,7 @@ function showTranslation(lang) {
   }
   if (!found) {
     setDataInFolderDialog("", "");
+    $('select[name="I18NLanguage"] option:selected').val(lang + "_-1");
   }
 }
 
