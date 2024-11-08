@@ -97,7 +97,7 @@
   CompletePublication pubComplete = kmeliaPublication.getCompleteDetail();
   PublicationDetail pubDetail = kmeliaPublication.getDetail();
   User ownerDetail = kmeliaPublication.getCreator();
-  String pubName = pubDetail.getName(language);
+  String pubName = Encode.forHtml(pubDetail.getName(language));
   String resourceType = pubDetail.getContributionType();
   String id = pubDetail.getPK().getId();
   String newCssClass = pubDetail.isNew() ? "new-contribution" : "";
@@ -465,7 +465,7 @@
 
     function addFavorite() {
       var name = $("#breadCrumb").text();
-      var description = "<%=WebEncodeHelper.javaStringToJsString(pubDetail.getDescription(language))%>";
+      var description = "<%=org.owasp.encoder.Encode.forHtml(pubDetail.getDescription(language))%>";
       var url = "<%=pubPermalink%>";
       postNewLink(name, url, description);
     }
@@ -820,7 +820,7 @@
     /*********************************************************************************************************************/
     out.print("<h2 class=\"publiName\">");
 
-    out.print(WebEncodeHelper.javaStringToHtmlString(pubDetail.getName(language)));
+    out.print(Encode.forHtml(pubDetail.getName(language)));
     if (kmeliaPublication.isAlias()) {
       out.print(" (" + resources.getString("kmelia.Shortcut") + ")");
     }

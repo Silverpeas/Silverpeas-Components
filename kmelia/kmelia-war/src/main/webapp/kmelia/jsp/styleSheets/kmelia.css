@@ -1194,3 +1194,7 @@ a.button.refuse span {
 		margin:0 0 2em 0;
 	}
  }
+
+.pub-link * {
+  pointer-events: none;
+}

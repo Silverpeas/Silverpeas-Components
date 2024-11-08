@@ -9,35 +9,35 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception. You should have received a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package org.silverpeas.components.kmelia.servlets;
 
-public class PublicationFragmentSettings {
-  String pubColor;
-  String highlightClass;
-  String pubState;
-  boolean linksAllowed;
-  boolean seeAlso;
-  boolean showImportance;
-  boolean linkAttachment;
-  boolean toSearch;
-  boolean showTopicPathNameinSearchResult;
-  boolean fileStorageShowExtraInfoPub;
-  boolean displayLinks;
-  boolean draggable;
-  boolean rateable;
+package org.silverpeas.components.kmelia.servlets.renderers;
 
-  public PublicationFragmentSettings() {
+import java.io.IOException;
+import java.io.Writer;
+
+/**
+ * A renderer of a forbidden access message
+ *
+ * @author mmoquillon
+ */
+public class ForbiddenAccessRenderer implements Renderer {
+  @Override
+  public void render(Writer writer, RenderingContext ctx) throws IOException {
+    writer.write("<div class=\"inlineMessage-nok\">");
+    writer.write(ctx.getResources().getString("GML.ForbiddenAccessContent"));
+    writer.write("</div>");
   }
 }
+  

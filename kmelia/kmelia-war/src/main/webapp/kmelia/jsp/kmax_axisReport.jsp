@@ -30,7 +30,6 @@
 <%@ page import="org.silverpeas.core.node.model.NodeDetail, java.util.Collection, java.util.Iterator"%>
 <%@ page import="org.silverpeas.components.kmelia.control.KmeliaSessionController"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.Encode"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.board.Board"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane"%>
@@ -38,6 +37,7 @@
 <%@ page import="org.silverpeas.core.i18n.I18NHelper" %>
 <%@ page import="org.silverpeas.kernel.bundle.LocalizationBundle" %>
 <%@ page import="java.util.ArrayList" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 <%!
 
 String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
@@ -115,9 +115,10 @@ List getAxis(KmeliaSessionController kmeliaScc, boolean axisLinked, List combina
                       }
                       axis.append("<div  class=\"oneAxis\" id=\"axis"+node.getNodePK().getId()+"\">");
                               if (axisLinked)
-                                  axis.append("<label onclick=\"axisManage('"+node.getNodePK().getId()+"')\" for=\"axe"+node.getNodePK().getId()+"\">"+Encode.javaStringToHtmlString(node.getName(translation))+"</label><a  title=\""+kmeliaScc.getString("Update")+" \"  href=\"javaScript:axisManage('"+node.getNodePK().getId()+"')\" class=\"action\"><img alt=\""+kmeliaScc.getString("Update")+" \" src=\""+axisUpdate+"\"/></a>");
+                                  axis.append("<label onclick=\"axisManage('"+node.getNodePK().getId()+"')\" for=\"axe"+node.getNodePK().getId()+"\">"+ Encode.forHtml(node.getName(translation))+"</label><a  title=\""+kmeliaScc.getString("Update")+" \"  href=\"javaScript:axisManage('"+node.getNodePK().getId()+"')\" class=\"action\"><img alt=\""+kmeliaScc.getString("Update")+" \" src=\""+axisUpdate+"\"/></a>");
                               else
-                                  axis.append("<label for=\"axe"+node.getNodePK().getId()+"\">"+Encode.javaStringToHtmlString(node.getName(translation))+"</label>");
+                                  axis.append("<label for=\"axe"+node.getNodePK().getId()+"\">"+
+										  Encode.forHtml(node.getName(translation))+"</label>");
                               
                                         if (axisLinked)
                                           axis.append("<select class=\"axis\" id=\"axe"+node.getNodePK().getId()+"\" name=\""+node.getNodePK().getId()+"\" size=\"1\" onchange=\"positionManage(this)\">");
@@ -128,7 +129,7 @@ List getAxis(KmeliaSessionController kmeliaScc, boolean axisLinked, List combina
                       selectValue = "";
 										  if (combination.contains(node.getPath()+node.getId()))
                            selectValue = "selected";
-						 				  axis.append("<option value=\""+node.getPath()+node.getNodePK().getId()+"|"+Encode.javaStringToHtmlString(axisName)+"\" class=\"intfdcolor51\" "+selectValue+">"+Encode.javaStringToHtmlString(node.getName(translation))+"</option>");
+						 				  axis.append("<option value=\""+node.getPath()+node.getNodePK().getId()+"|"+Encode.forHtml(axisName)+"\" class=\"intfdcolor51\" "+selectValue+">"+Encode.forHtml(node.getName(translation))+"</option>");
 	                  } else {
 	                      String spaces = "";
 	                      for (int i=0; i<node.getLevel()-3; i++)
@@ -136,7 +137,7 @@ List getAxis(KmeliaSessionController kmeliaScc, boolean axisLinked, List combina
 		                    selectValue = "";
 											  if (combination.contains(node.getPath()+node.getId()))
 	                            selectValue = "selected";
-											  axis.append("<option value=\""+node.getPath()+node.getNodePK().getId()+"|"+Encode.javaStringToHtmlString(axisName)+"\" class=\"intfdcolor5\" "+selectValue+">"+spaces+Encode.javaStringToHtmlString(node.getName(translation))+"</option>");
+											  axis.append("<option value=\""+node.getPath()+node.getNodePK().getId()+"|"+Encode.forHtml(axisName)+"\" class=\"intfdcolor5\" "+selectValue+">"+spaces+Encode.forHtml(node.getName(translation))+"</option>");
 	                  }
  			           }
 						axis.append("</select>");
@@ -244,7 +245,7 @@ String displayAxisManageView(KmeliaSessionController kmeliaScc, GraphicElementFa
 	            result.append("<tr>");
 					result.append("<td width=\"20%\" class=\"txtlibform\">"+kmeliaScc.getString("AxisTitle")+" : </td>");
 					result.append("<td>"); 
-						result.append("<input type=\"text\" id=\"nodeNameValue\" name=\"Name\" value=\""+Encode.javaStringToHtmlString(axis.getName(translation))+"\" size=\"61\" maxlength=\"50\">&nbsp;<img alt=\"\" src=\""+mandatoryFieldSrc+"\" border=\"0\"  width=\"5px\"  height=\"5px\" />");
+						result.append("<input type=\"text\" id=\"nodeNameValue\" name=\"Name\" value=\""+Encode.forHtml(axis.getName(translation))+"\" size=\"61\" maxlength=\"50\">&nbsp;<img alt=\"\" src=\""+mandatoryFieldSrc+"\" border=\"0\"  width=\"5px\"  height=\"5px\" />");
 					result.append("</td>");
 					result.append("<td>&nbsp;</td>");
 					result.append("<td>&nbsp;</td>");
@@ -318,7 +319,7 @@ String displayComponentManageView(KmeliaSessionController kmelia, GraphicElement
             result.append("<tr>"); 
 				result.append("<td width=\"20%\" class=\"txtlibform\">"+kmelia.getString("ComponentTitle")+" : </td>");
 				result.append("<td>"); 
-					result.append("<input type=\"text\" id=\"nodeNameValue\" name=\"Name\" value=\""+Encode.javaStringToHtmlString(nodeDetail.getName(translation))+"\" size=\"61\" maxlength=\"50\">&nbsp;<img alt=\"  \" src=\""+mandatoryFieldSrc+"\" border=\"0\"  width=\"5px\" height=\"5px\" />");
+					result.append("<input type=\"text\" id=\"nodeNameValue\" name=\"Name\" value=\""+Encode.forHtml(nodeDetail.getName(translation))+"\" size=\"61\" maxlength=\"50\">&nbsp;<img alt=\"  \" src=\""+mandatoryFieldSrc+"\" border=\"0\"  width=\"5px\" height=\"5px\" />");
 				result.append("</td>");
 				result.append("<td>&nbsp;</td>");
 				result.append("<td>&nbsp;</td>");
@@ -376,8 +377,9 @@ String displayPath(Collection path, boolean linked, int beforeAfter, String tran
             NodeDetail nodeInPath = (NodeDetail) iterator.next();
             if (nodeInPath.getLevel() != 1) {
               if ((i <= beforeAfter) || (i + beforeAfter >= nbItemInPath - 1)){
-                  linkedPathString += "<a href=\"javascript:onClick=topicGoTo('"+nodeInPath.getNodePK().getId()+"')\">"+Encode.javaStringToHtmlString(nodeInPath.getName(translation))+"</a>";
-                  pathString += Encode.javaStringToHtmlString(nodeInPath.getName(translation));
+                  linkedPathString +=
+						  "<a href=\"javascript:onClick=topicGoTo('"+nodeInPath.getNodePK().getId()+"')\">"+Encode.forHtml(nodeInPath.getName(translation))+"</a>";
+                  pathString += Encode.forHtml(nodeInPath.getName(translation));
                   if (iterator.hasNext()) {
                         linkedPathString += " > ";
                         pathString += " > ";
