@@ -201,7 +201,7 @@ public class FormsOnlineDAOJdbc implements FormsOnlineDAO {
   public List<FormDetail> findAllForms(String instanceId, String orderBy) throws FormsOnlineException {
     try {
       final List<FormDetail> forms = new ArrayList<>();
-        final JdbcSqlQuery query = JdbcSqlQuery.createSelect("*")
+        final JdbcSqlQuery query = JdbcSqlQuery.select("*")
             .from(FORMS_TABLENAME)
             // 1st criteria : correct instanceId
             .where(INSTANCE_ID).in(instanceId)
