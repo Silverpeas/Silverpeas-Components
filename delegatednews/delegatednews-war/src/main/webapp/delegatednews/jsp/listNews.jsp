@@ -286,7 +286,7 @@
       <form name="tabForm" method="post">
   <%
     ArrayPane arrayPane = gef.getArrayPane("newsList", "Main", request, session);
-    arrayPane.setVisibleLineNumber(1000);
+    arrayPane.setVisibleLineNumber(GraphicElementFactory.getSettings().getInteger("Pagination.NumberPerPageThreshold",20));
     arrayPane.setMovableLines(true);
     arrayPane.setTitle(resources.getString("delegatednews.listNews"));
     arrayPane.addArrayColumn(resources.getString("delegatednews.news.title"));
