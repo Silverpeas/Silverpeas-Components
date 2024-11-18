@@ -422,6 +422,7 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
     final Map<String, Set<FormInstanceValidationType>> result = getDAO()
         .getValidatorFormIdsWithValidationTypes(appId, validatorId, userGroupIds, formIds);
     String orderBy = organizationController.getComponentParameterValue(appId, "displaySort");
+    orderBy = StringUtil.isDefined(orderBy) ? orderBy: "name asc";
     final List<FormDetail> forms = getDAO().findAllForms(appId, orderBy);
     final HierarchicalValidatorCacheManager hvManager = new HierarchicalValidatorCacheManager();
     for (FormDetail form : forms) {
