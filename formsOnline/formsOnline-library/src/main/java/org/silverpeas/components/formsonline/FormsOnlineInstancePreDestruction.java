@@ -50,6 +50,8 @@ public class FormsOnlineInstancePreDestruction implements ComponentInstancePreDe
       "delete from SC_FormsOnline_FormInstances where instanceId = ?";
   private static final String FORMS_DELETION =
       "delete from SC_FormsOnline_Forms where instanceId = ?";
+  private static final String FORMS_VALIDATION_DELETION =
+      "delete from SC_FormsOnline_FormInstVali where formInstId in (select id from SC_FormsOnline_FormInstances where instanceId = ?)";
 
 
   /**
@@ -68,7 +70,7 @@ public class FormsOnlineInstancePreDestruction implements ComponentInstancePreDe
 
   private void deleteForms(Connection con, String componentId) {
     for (String deletion : Arrays.asList(USER_RIGHTS_DELETION, GROUP_RIGHTS_DELETION,
-        FORM_INSTANCES_DELETION, FORMS_DELETION)) {
+        FORMS_VALIDATION_DELETION, FORM_INSTANCES_DELETION, FORMS_DELETION)) {
       try (PreparedStatement stmt = con.prepareStatement(deletion)) {
         stmt.setString(1, componentId);
         stmt.executeUpdate();
