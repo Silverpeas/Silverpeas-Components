@@ -59,7 +59,7 @@ function importFiles()
 function openExportPDFPopup() {
   const chemin = "ExportAttachementsToPDF?TopicId=" + getCurrentNodeId();
   const largeur = "720";
-  const hauteur = "500";
+  const hauteur = "300";
   SP_openWindow(chemin, "ExportWindow", largeur, hauteur, "scrollbars=yes, resizable=yes");
 }
 
