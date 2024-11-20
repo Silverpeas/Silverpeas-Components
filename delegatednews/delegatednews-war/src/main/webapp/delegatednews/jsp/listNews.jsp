@@ -24,25 +24,22 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@page import="org.silverpeas.components.delegatednews.model.DelegatedNews"%>
-<%@page import="org.silverpeas.core.web.util.viewgenerator.html.UserNameGenerator"%>
-<%@page import="java.text.SimpleDateFormat"%>
-<%@page import="java.util.List"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 
 <%@ include file="check.jsp"%>
 <fmt:setLocale value="${requestScope.resources.language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
-
+<c:set var="currentUserLanguage" value="${requestScope.resources.language}"/>
+<c:set var="sessionController" value="${requestScope.DelegatedNews}" />
 <c:set var="listNewsJSON" value="${requestScope.ListNewsJSON}"/>
-
-<%
-  List<DelegatedNews> listNews = (List<DelegatedNews>) request.getAttribute("ListNews");
-  boolean isAdmin = newsScc.isAdmin();
-
-%>
-
-<c:set var="isAdmin" value="<%=isAdmin%>"/>
+<c:set var="listNews" value="${requestScope.ListNews}"/>
+<c:set var="isAdmin" value="${sessionController.admin}" />
+<c:set var="componentId" value="${requestScope.browseContext[3]}"/>
+<c:set var="context" value="${requestScope.context}"/>
 
 <view:sp-page angularJsAppName="silverpeas.delegatedNews">
   <view:sp-head-part withCheckFormScript="true">
@@ -169,7 +166,7 @@
       });
       
       function sortDelegatedNews(updatedDelegatedNewsJSON){
-        var url = "<%=m_context%>/services/delegatednews/<%=newsScc.getComponentId()%>";
+        var url = "${context}/services/delegatednews/${componentId}";
         var ajaxRequest = window.sp.ajaxRequest(url).byPutMethod();
         ajaxRequest.sendAndPromiseJsonResponse(updatedDelegatedNewsJSON).then(function(data) {
           listDelegatedNewsJSON = data;
@@ -194,7 +191,8 @@
       }
       
       function deleteSelectedDelegatedNews() {
-    	  var nbNews = listDelegatedNewsJSON.length;
+
+        var nbNews = listDelegatedNewsJSON.length;
     	  if(nbNews > 0) {
     		  var updatedDelegatedNews = new Array(); //tableau de DelegatedNewsEntity sans les éléments supprimés sérialisés en JSON
     		  var listDNToDelete = $("input:checked");
@@ -207,7 +205,6 @@
               k++;  
             }
           }
-          
           if (nbNews > updatedDelegatedNews.length) { //on a coché au - une news à supprimer
             jQuery.popup.confirm('<fmt:message key="delegatednews.delete.confirm"/>', function() {
               deleteDelegagedNews(updatedDelegatedNews);
@@ -217,7 +214,8 @@
       }
       
       function deleteDelegagedNews(updatedDelegatedNews) {
-        var url = "<%=m_context%>/services/delegatednews/<%=newsScc.getComponentId()%>";
+
+        var url = "${context}/services/delegatednews/${componentId}";
         var ajaxRequest = window.sp.ajaxRequest(url).byPutMethod();
         ajaxRequest.sendAndPromiseJsonResponse(updatedDelegatedNews).then(function(data) {
           var listPubIdToDelete = getAllPubIdToDelete(data);
@@ -268,104 +266,104 @@
     //-->
     </script>
   </view:sp-head-part>
+
+  <fmt:message var="listNewsTitle" key="delegatednews.listNews"/>
+  <fmt:message var="columnTitle" key="delegatednews.news.title"/>
+  <fmt:message var="columnUpdateDate" key="delegatednews.updateDate"/>
+  <fmt:message var="columnContributor" key="delegatednews.contributor"/>
+  <fmt:message var="columnState" key="delegatednews.news.state"/>
+  <fmt:message var="columnVisibilityBeginDate" key="delegatednews.visibilityBeginDate"/>
+  <fmt:message var="columnVisibilityEndDate" key="delegatednews.visibilityEndDate"/>
+
+  <fmt:message var="labelModify" key="GML.modify"/>
+  <fmt:message var="labelValidate" key="delegatednews.action.validate"/>
+  <fmt:message var="labelRefuse" key="delegatednews.action.refuse"/>
+  <fmt:message var="labelDelete" key="GML.delete"/>
+  <fmt:message var="labelOperations"  key="GML.operations"/>
+
+  <c:url var="updateIcon" value="/util/icons/update.gif"/>
+  <c:url var="validateIcon" value="/util/icons/ok.gif"/>
+  <c:url var="refuseIcon" value="/util/icons/wrong.gif"/>
+  <c:url var="deleteIcon" value="/util/icons/delete.gif"/>
+
   <view:sp-body-part>
     <c:if test="${isAdmin}">
-      <fmt:message key="delegatednews.icons.delete" var="deleteIcon" bundle="${icons}" />
-      <fmt:message key="delegatednews.action.delete" var="deleteAction" />
+      <fmt:message key="delegatednews.action.delete" var="deleteAllAction" />
       <view:operationPane>
-        <view:operation altText="${deleteAction}" icon="${deleteIcon}" action="javascript:onClick=deleteSelectedDelegatedNews();" />
+        <view:operation altText="${deleteAllAction}" icon="${deleteIcon}" action="javascript:onClick=deleteSelectedDelegatedNews();" />
       </view:operationPane>
     </c:if>
     <view:window>
       <view:frame>
-        <view:componentInstanceIntro componentId="<%=newsScc.getComponentId()%>" language="<%=resources.getLanguage()%>"/>
+        <view:componentInstanceIntro componentId="${componentId}" language="${currentUserLanguage}"/>
         <c:if test="${isAdmin}">
           <div class="inlineMessage"><fmt:message key="delegatednews.homePageMessage"/></div>
-          <br clear="all"/>
+          <br/>
         </c:if>
       <form name="tabForm" method="post">
-  <%
-    ArrayPane arrayPane = gef.getArrayPane("newsList", "Main", request, session);
-    arrayPane.setVisibleLineNumber(GraphicElementFactory.getSettings().getInteger("Pagination.NumberPerPageThreshold",20));
-    arrayPane.setMovableLines(true);
-    arrayPane.setTitle(resources.getString("delegatednews.listNews"));
-    arrayPane.addArrayColumn(resources.getString("delegatednews.news.title"));
-    ArrayColumn column = arrayPane.addArrayColumn(resources.getString("delegatednews.updateDate"));
-    column.setWidth("70px");
-    arrayPane.addArrayColumn(resources.getString("delegatednews.contributor"));
-    arrayPane.addArrayColumn(resources.getString("delegatednews.news.state"));
-    arrayPane.addArrayColumn(resources.getString("delegatednews.visibilityBeginDate"));
-    arrayPane.addArrayColumn(resources.getString("delegatednews.visibilityEndDate"));
+        <view:arrayPane title="${listNewsTitle}" var="newsList" routingAddress="Main" movableLines="true" summary="true">
+          <view:arrayColumn title="${columnTitle}" compareOn="${r -> r.publicationDetail.name}"/>
+          <view:arrayColumn title="${columnUpdateDate}" width="70px" compareOn="${r -> r.news.publicationDetail.lastUpdateDate}"/>
+          <view:arrayColumn title="${columnContributor}"/>
+          <view:arrayColumn title="${columnState}"/>
+          <view:arrayColumn title="${columnVisibilityBeginDate}"  compareOn="${r -> r.news.beginDate}"/>
+          <view:arrayColumn title="${columnVisibilityEndDate}" compareOn="${r -> r.news.endDate}"/>
+          <c:if test="${isAdmin}">
+            <view:arrayColumn title="${labelOperations}" sortable="true"/>
+            <view:arrayColumn title=""/>
+          </c:if>
+          <c:forEach items="${ListNews}" var="news" varStatus="status">
+            <c:set var="pubId" value="${news.pubId}"/>
+            <c:set var="instanceId" value="${news.instanceId}"/>
+            <view:arrayLine id="delegatedNews_${pubId}">
+              <view:arrayCellText>
+                <a href="javascript:onClick=openPublication('${pubId}','${instanceId}');">${news.publicationDetail.name}</a>
+              </view:arrayCellText>
+              <view:arrayCellText>
+                ${silfn:formatDateAndHour(news.publicationDetail.lastUpdateDate, currentUserLanguage)}
+              </view:arrayCellText>
+              <view:arrayCellText>
+                <view:username userId="${news.contributorId}"/>
+              </view:arrayCellText>
 
-    if(isAdmin) {
-      ArrayColumn arrayColumnOp = arrayPane.addArrayColumn(resources.getString("GML.operations"));
-      arrayColumnOp.setSortable(false);
-      arrayPane.addArrayColumn("");
-    }
-    
-    SimpleDateFormat hourFormat = new SimpleDateFormat(resources.getString("GML.hourFormat"));
-    for (int i=0; i<listNews.size(); i++) {
-      DelegatedNews delegatedNews = (DelegatedNews) listNews.get(i);
-      
-      String pubId = delegatedNews.getPubId();
-      String instanceId = delegatedNews.getInstanceId();
-      ArrayLine arrayLine = arrayPane.addArrayLine();
-      arrayLine.setId("delegatedNews_"+pubId);
-      arrayLine.addArrayCellLink(delegatedNews.getPublicationDetail().getName(resources.getLanguage()), "javascript:onClick=openPublication('"+pubId+"', '"+instanceId+"');");
-      
-      String updateDate = resources.getOutputDate(delegatedNews.getPublicationDetail().getLastUpdateDate());
-      ArrayCellText cellUpdateDate = arrayLine.addArrayCellText(updateDate);
-      cellUpdateDate.setCompareOn(delegatedNews.getPublicationDetail().getLastUpdateDate());
-      
-      arrayLine.addArrayCellText(UserNameGenerator.toString(delegatedNews.getContributorId(), userId));
-      
-      String status = delegatedNews.getStatus();
-      arrayLine.addArrayCellText(resources.getString("delegatednews.status."+status));
-      
-      String beginDate = "";
-      String beginHour = "";
-      if(delegatedNews.getBeginDate() != null) {
-        beginDate = resources.getInputDate(delegatedNews.getBeginDate());
-        beginHour = hourFormat.format(delegatedNews.getBeginDate());
-        ArrayCellText cellBeginDate = arrayLine.addArrayCellText(resources.getOutputDateAndHour(delegatedNews.getBeginDate()));
-        cellBeginDate.setCompareOn(delegatedNews.getBeginDate());
-      } else {
-        arrayLine.addArrayCellText("");
-      }
-      
-      String endDate = "";
-      String endHour = "";
-      if(delegatedNews.getEndDate() != null) {
-        endDate = resources.getInputDate(delegatedNews.getEndDate());
-        endHour = hourFormat.format(delegatedNews.getEndDate());
-        ArrayCellText cellEndDate = arrayLine.addArrayCellText(resources.getOutputDateAndHour(delegatedNews.getEndDate()));
-        cellEndDate.setCompareOn(delegatedNews.getEndDate());
-      } else {
-        arrayLine.addArrayCellText("");
-      }
-  
-      if(isAdmin) {
-        IconPane iconPane = gef.getIconPane();
-        Icon iconUpdate = iconPane.addIcon();
-        iconUpdate.setProperties(m_context+"/util/icons/update.gif", resources.getString("GML.modify"), "javascript:onClick=updateDateDelegatedNews('"+pubId+"', '"+beginDate+"', '"+beginHour+"', '"+endDate+"', '"+endHour+"');");
-        
-        Icon iconValidate = iconPane.addIcon();
-        iconValidate.setProperties(m_context+"/util/icons/ok.gif", resources.getString("delegatednews.action.validate"), "javascript:onClick=validateDelegatedNews('"+pubId+"');");
-        
-        Icon iconRefused = iconPane.addIcon();
-        iconRefused.setProperties(m_context+"/util/icons/wrong.gif", resources.getString("delegatednews.action.refuse"), "javascript:onClick=refuseDelegatedNews('"+pubId+"');");
-        
-        Icon iconDelete = iconPane.addIcon();
-        iconDelete.setProperties(m_context+"/util/icons/delete.gif", resources.getString("GML.delete"), "javascript:onClick=deleteDelegatedNews('"+pubId+"');");
-        
-        arrayLine.addArrayCellIconPane(iconPane); 
-        
-        arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"checkedDelegatedNews\" value=\""+pubId+"\"/>");
-      }
-  }
+              <fmt:message var="status" key="delegatednews.status.${news.status}"/>
+              <view:arrayCellText text="${status}"/>
 
-  out.print(arrayPane.print());
-  %>
+              <c:set var="beginDate" value="${silfn:formatDate(news.beginDate, currentUserLanguage)}"/>
+              <c:set var="endDate" value="${silfn:formatDate(news.endDate, currentUserLanguage)}"/>
+              <c:set var="beginHour" value="${silfn:formatDateHour(news.beginDate, currentUserLanguage)}"/>
+              <c:set var="endHour" value="${silfn:formatDateHour(news.endDate, currentUserLanguage)}"/>
+              <view:arrayCellText>
+                <c:if test="${not empty news.beginDate}">
+                  ${silfn:formatDateAndHour(news.beginDate, currentUserLanguage)}
+                </c:if>
+              </view:arrayCellText>
+              <view:arrayCellText>
+                <c:if test="${not empty news.endDate}">
+                  ${silfn:formatDateAndHour(news.endDate, currentUserLanguage)}
+                </c:if>
+              </view:arrayCellText>
+              <view:arrayCellText>
+                <c:if test="${isAdmin}">
+                  <view:icons>
+                    <c:set var="updateAction" value="javascript:onClick=updateDateDelegatedNews('${pubId}','${beginDate}','${beginHour}','${endDate}','${endHour}');"/>
+                    <view:icon iconName="${updateIcon}" altText="${labelModify}" action="${updateAction}"/>
+
+                    <c:set var="validateAction" value="javascript:onClick=validateDelegatedNews('${pubId}');"/>
+                    <view:icon iconName="${validateIcon}" altText="${labelValidate}" action="${validateAction}"/>
+
+                    <c:set var="refuseAction" value="javascript:onClick=refuseDelegatedNews('${pubId}');"/>
+                    <view:icon iconName="${refuseIcon}" altText="${labelRefuse}" action="${refuseAction}"/>
+
+                    <c:set var="deleteAction" value="javascript:onClick=deleteDelegatedNews('${pubId}');"/>
+                    <view:icon iconName="${deleteIcon}" altText="${labelDelete}" action="${deleteAction}"/>
+                  </view:icons>
+                </c:if>
+              </view:arrayCellText>
+              <view:arrayCellCheckbox checked="false" name="checkedDelegatedNews" value="${pubId}"/>
+            </view:arrayLine>
+          </c:forEach>
+      </view:arrayPane>
       </form>
       </view:frame>
     </view:window>
@@ -385,7 +383,7 @@
 <!-- Dialog to edit dates --> 
 <div id="datesDialog" title="<fmt:message key="GML.modify"/>">
   <form>
-    <table cellspacing="0" cellpadding="5">
+    <table>
       <tr id="beginArea">
         <td class="txtlibform"><label for="BeginDate"><fmt:message key="delegatednews.visibilityBeginDate"/></label></td>
         <td><input type="text" class="dateToPick" id="BeginDate" value="" size="12" maxlength="10"/>
