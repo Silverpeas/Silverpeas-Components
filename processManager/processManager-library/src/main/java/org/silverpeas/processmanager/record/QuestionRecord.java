@@ -84,7 +84,7 @@ public class QuestionRecord implements DataRecord {
     if (fieldName.equals("Content")) {
       return getField(0);
     } else {
-      throw new FormException("QuestionRecord", "workflowEngine.ERR_FIELD_NOT_FOUND");
+      throw new FormException("Unknown field " + fieldName);
     }
   }
 
@@ -106,7 +106,7 @@ public class QuestionRecord implements DataRecord {
     if (fieldIndex == 0) {
       return contentField;
     } else {
-      throw new FormException("QuestionRecord", "workflowEngine.ERR_FIELD_NOT_FOUND");
+      throw new FormException("Unknown field at index " + fieldIndex);
     }
   }
 
