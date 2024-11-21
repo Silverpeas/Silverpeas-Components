@@ -185,7 +185,8 @@
       }
       version = pubDetail.getVersion();
       importance = Integer.toString(pubDetail.getImportance());
-      keywords = StringUtil.defaultIfBlank(pubDetail.getKeywords(language), "");
+      keywords =
+              WebEncodeHelper.javaStringToHtmlString(StringUtil.defaultIfBlank(pubDetail.getKeywords(language), ""));
       status = pubDetail.getStatus();
       if (beginDate == null || beginDate.isEmpty()) {
         beginHour = "";
@@ -205,17 +206,20 @@
         endHour = "";
       }
 
-      author = StringUtil.defaultIfBlank(pubDetail.getAuthor(), "");
+      author =
+              WebEncodeHelper.javaStringToHtmlString(StringUtil.defaultIfBlank(pubDetail.getAuthor(), ""));
       targetValidatorId = pubDetail.getTargetValidatorId();
 
       if (StringUtil.isDefined(targetValidatorId)) {
         StringTokenizer tokenizer = new StringTokenizer(targetValidatorId, ",");
+        StringBuilder validatorBuilder = new StringBuilder();
         while (tokenizer.hasMoreTokens()) {
-          targetValidatorName += kmeliaScc.getUserDetail(tokenizer.nextToken()).getDisplayedName();
+            validatorBuilder.append(kmeliaScc.getUserDetail(tokenizer.nextToken()).getDisplayedName());
           if (tokenizer.hasMoreTokens()) {
-            targetValidatorName += "\n";
+              validatorBuilder.append("\n");
           }
         }
+        targetValidatorName = validatorBuilder.toString();
       } else {
         targetValidatorId = "";
       }
@@ -630,7 +634,7 @@
 					<label for="importance" class="txtlibform"><%=resources.getString("PubImportance")%></label>
 					<div class="champs">
 						<select id="importance" name="KmeliaPubImportance">
-							<% 	if (importance.equals("")) {
+							<% 	if (importance.isEmpty()) {
                  					importance = "1";
                					}
                					int importanceInt = Integer.parseInt(importance);
