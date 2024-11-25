@@ -369,30 +369,56 @@
 <!-- Dialog to refuse --> 
 <div id="refuseDialog" title="<fmt:message key="delegatednews.action.refuse"/>">
   <form>
-    <table>
-        <tr>
-            <td class="txtlibform"><fmt:message key="GML.notification.message" /> :</td>
-          <td><textarea name="txtMessage" id="txtMessage" cols="60" rows="8"></textarea></td>
-        </tr>
-      </table>
+    <div class="skinFieldset">
+      <div class="fields">
+        <div  class="field entireWidth">
+          <label class="txtlibform" for="txtMessage">
+            <fmt:message key="GML.notification.message"/>
+          </label>
+          <div class="champs">
+            <textarea name="txtMessage" id="txtMessage" cols="60" rows="8"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
   </form>
 </div>
 
-<!-- Dialog to edit dates --> 
+<!-- Dialog to edit dates -->
 <div id="datesDialog" title="<fmt:message key="GML.modify"/>">
   <form>
-    <table>
-      <tr id="beginArea">
-        <td class="txtlibform"><label for="BeginDate"><fmt:message key="delegatednews.visibilityBeginDate"/></label></td>
-        <td><input type="text" class="dateToPick" id="BeginDate" value="" size="12" maxlength="10"/>
-          <span class="txtsublibform">&nbsp;<fmt:message key="delegatednews.hour"/>&nbsp;</span><input type="text" id="BeginHour" value="" size="5" maxlength="5"/> <i>(hh:mm)</i></td>
-      </tr>
-      <tr id="endArea">
-        <td class="txtlibform"><label for="EndDate"><fmt:message key="delegatednews.visibilityEndDate"/></label></td>
-        <td><input type="text" class="dateToPick" id="EndDate" value="" size="12" maxlength="10"/>
-          <span class="txtsublibform">&nbsp;<fmt:message key="delegatednews.hour"/>&nbsp;</span><input type="text" id="EndHour" value="" size="5" maxlength="5"/> <i>(hh:mm)</i></td>
-      </tr>
-    </table>
+    <div class="skinFieldset">
+      <div id="beginArea" class="fields">
+        <div class="field entireWidth">
+          <label class="txtlibform" for="BeginDate">
+            <fmt:message key="delegatednews.visibilityBeginDate"/>
+          </label>
+          <div class="champs">
+            <input type="text" class="dateToPick" id="BeginDate" value="" size="12" maxlength="10"/>
+            <span class="txtsublibform" for="BeginHour">&nbsp;
+              <fmt:message key="delegatednews.hour"/>&nbsp;
+            </span>
+            <input type="text" name="BeginHour" id="BeginHour" value="" size="5" maxlength="5"/>
+            &nbsp;<i>(hh:mm)</i>
+          </div>
+        </div>
+      </div>
+      <div id="endArea" class="fields">
+        <div class="field entireWidth">
+          <label class="txtlibform" for="EndDate">
+            <fmt:message key="delegatednews.visibilityEndDate"/>
+          </label>
+          <div class="champs">
+            <input type="text" class="dateToPick" id="EndDate" value="" size="12" maxlength="10"/>
+            <span class="txtsublibform" for="EndHour">&nbsp;
+              <fmt:message key="delegatednews.hour"/>&nbsp;
+            </span>
+            <input type="text" name="EndHour" id="EndHour" value="" size="5" maxlength="5"/>
+            &nbsp;<i>(hh:mm)</i>
+          </div>
+        </div>
+      </div>
+    </div>
   </form>
 </div>
 
