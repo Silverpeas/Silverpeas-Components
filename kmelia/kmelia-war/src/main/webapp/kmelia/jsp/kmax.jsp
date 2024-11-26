@@ -62,14 +62,15 @@ if (action == null) {
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/i18n.js"></script>
 <script type="text/javascript" src="javaScript/publications.js"></script>
 <script type="text/javascript">
+
 var favoriteWindow = window;
 var topicUpdateWindow = window;
 var topicAddWindow = window;
 var exportComponentWindow = window;
 
 function search() {
-    var criterias = "";
-    var timeCriteria = "X";
+    let criterias = "";
+    let timeCriteria = "X";
 	<% if (kmeliaScc.isTimeAxisUsed()) { %>
 	    timeCriteria = $("#timeAxis").val();
 	<% } %>
@@ -167,11 +168,11 @@ function init()
 }
 
 function exportComponent() {
-	exportComponentWindow = SP_openWindow("ExportTopic","exportComponentWindow",700,250,"scrollbars=yes, resizable=yes");
+	exportComponentWindow = SP_openWindow("ExportTopic","exportComponentWindow",720,420,"scrollbars=yes, resizable=yes");
 }
 
 function exportPublications() {
-	exportComponentWindow = SP_openWindow("ExportTopic?TopicId=dummy","exportComponentWindow",700,250,"scrollbars=yes, resizable=yes");
+	exportComponentWindow = SP_openWindow("ExportTopic?TopicId=dummy","exportComponentWindow",720,420,"scrollbars=yes, resizable=yes");
 }
 </script>
 </head>
