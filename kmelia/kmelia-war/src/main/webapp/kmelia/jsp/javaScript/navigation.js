@@ -58,8 +58,8 @@ function importFiles()
 
 function openExportPDFPopup() {
   const chemin = "ExportAttachementsToPDF?TopicId=" + getCurrentNodeId();
-  const largeur = "700";
-  const hauteur = "500";
+  const largeur = "720";
+  const hauteur = "300";
   SP_openWindow(chemin, "ExportWindow", largeur, hauteur, "scrollbars=yes, resizable=yes");
 }
 
@@ -68,7 +68,7 @@ function openSPWindow(fonction, windowName) {
 }
 
 function exportTopic() {
-  window.exportComponentWindow = SP_openWindow("ExportTopic?TopicId=" + getCurrentNodeId(), "exportComponentWindow", 700, 350, "scrollbars=yes, resizable=yes");
+  window.exportComponentWindow = SP_openWindow("ExportTopic?TopicId=" + getCurrentNodeId(), "exportComponentWindow", 720, 420, "scrollbars=yes, resizable=yes");
 }
 
 function openPredefinedPdCClassification(nodeId) {
