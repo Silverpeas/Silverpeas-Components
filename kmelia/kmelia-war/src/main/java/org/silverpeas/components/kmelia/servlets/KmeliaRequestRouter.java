@@ -78,6 +78,7 @@ import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.core.web.mvc.util.WysiwygRouting;
 import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
+import org.silverpeas.kernel.annotation.NonNull;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.logging.SilverLogger;
@@ -133,10 +134,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
     String rootDestination = "/kmelia/jsp/";
     boolean kmaxMode = false;
     boolean toolboxMode;
-    SilverpeasRole userRoleOnCurrentTopic =
-        SilverpeasRole.fromString(kmelia.getUserTopicProfile(kmelia.getCurrentFolderId()));
     SilverpeasRole highestSilverpeasUserRoleOnCurrentTopic =
-          SilverpeasRole.getHighestFrom(userRoleOnCurrentTopic);
+        getHighestSilverpeasUserRoleOnCurrentTopic(kmelia, function);
     try {
       if ("kmax".equals(kmelia.getComponentRootName())) {
         kmaxMode = true;
@@ -1486,6 +1485,12 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
     return destination;
   }
 
+  @NonNull
+  private static SilverpeasRole getHighestSilverpeasUserRoleOnCurrentTopic(
+      KmeliaSessionController kmelia, String function) {
+    return SilverpeasRole.fromString(kmelia.getUserTopicProfile(kmelia.getCurrentFolderId()));
+  }
+
   private void setNodeDataIntoRequest(KmeliaSessionController kmelia, String topicId, HttpRequest request) {
     List<NodeDetail> path = kmelia.getTopicPath(topicId);
     request.setAttribute("Path", kmelia.displayPath(path, false, 3));
@@ -1523,6 +1528,9 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
   @Override
   protected boolean checkUserAuthorization(final String function,
       final KmeliaSessionController kmelia) {
+    if (function.startsWith("Main")) {
+      kmelia.setSessionTopic(null);
+    }
     KmeliaActionAccessController actionAccessController =
         ServiceProvider.getService(KmeliaActionAccessController.class);
     return actionAccessController.hasRightAccess(function, kmelia.getHighestSilverpeasUserRole());
