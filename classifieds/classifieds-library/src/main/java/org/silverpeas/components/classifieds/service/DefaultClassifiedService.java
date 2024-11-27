@@ -207,7 +207,11 @@ public class DefaultClassifiedService implements ClassifiedService {
   public void updateClassified(ClassifiedDetail classified, boolean notify) {
     try (Connection con = openConnection()) {
       ClassifiedsDAO.updateClassified(con, classified);
-      createIndex(classified);
+      if (classified.isIndexable()) {
+        createIndex(classified);
+      } else {
+        deleteIndex(classified);
+      }
       if (notify) {
         sendAlertToSupervisors(classified);
       }
@@ -367,7 +371,7 @@ public class DefaultClassifiedService implements ClassifiedService {
 
   private void createIndex(ClassifiedDetail classified, PublicationTemplate template) {
     FullIndexEntry indexEntry;
-    if (classified != null) {
+    if (classified != null && classified.isIndexable()) {
       indexEntry = new FullIndexEntry(new IndexEntryKey(classified.getInstanceId(), CLASSIFIED_TYPE,
           Integer.toString(classified.getClassifiedId())));
       indexEntry.setTitle(classified.getTitle());

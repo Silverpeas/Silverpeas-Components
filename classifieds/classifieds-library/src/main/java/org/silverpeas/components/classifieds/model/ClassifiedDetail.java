@@ -279,6 +279,16 @@ public class ClassifiedDetail implements SilverpeasContent {
     return VALID.equals(getStatus());
   }
 
+  /**
+   * A classified is indexable only and only it has been validated. So, a classified in draft, or
+   * a classified in validation, or a removed classified isn't indexable.
+   * @return true if the classified is indexable, that is to say it is validated. False otherwise.
+   */
+  @Override
+  public boolean isIndexable() {
+    return isValid();
+  }
+
   @Override
   public boolean equals(final Object o) {
     if (this == o) {
