@@ -1016,20 +1016,6 @@ a.button.refuse span {
 .dimensionTable td.secondTd {
   padding-right:1em;
 }
-.yui-skin-sam .dimensionTable #pubList ul li .firstColumn {
-  padding-left: 26px;
-}
-.yui-skin-sam .dimensionTable #pubList .publication .line1 ,
-.yui-skin-sam .dimensionTable #pubList .publication .line2,
-.yui-skin-sam .dimensionTable #pubList .publication .line3,
-.yui-skin-sam .dimensionTable #pubList .publication .files,
-.yui-skin-sam .dimensionTable #pubList .publication .publication-name{
-  padding-left: 0px;
-}
-.yui-skin-sam .dimensionTable  #pubList .publication {
-  padding-top:3px;
-}
-
 .publistDisplay {
   min-width: 480px;
 }
