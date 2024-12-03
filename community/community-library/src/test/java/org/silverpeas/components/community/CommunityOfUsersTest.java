@@ -529,7 +529,7 @@ class CommunityOfUsersTest {
         when(space.getAllSpaceProfilesInst()).thenReturn(profiles);
       }
 
-      when(space.getSpaceProfileInst(anyString())).thenAnswer(j -> {
+      when(space.getDirectSpaceProfileInst(anyString())).thenAnswer(j -> {
         String role = j.getArgument(0);
         return profiles.stream()
             .filter(p -> !p.isInherited())

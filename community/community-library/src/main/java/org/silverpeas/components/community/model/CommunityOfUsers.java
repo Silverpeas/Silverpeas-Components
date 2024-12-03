@@ -638,7 +638,7 @@ public class CommunityOfUsers
 
     private SpaceProfileInst getSpaceProfile(SilverpeasRole role, SpaceInst space)
         throws AdminException {
-      var profile = space.getSpaceProfileInst(role.getName());
+      var profile = space.getDirectSpaceProfileInst(role.getName());
       if (profile == null) {
         profile = new SpaceProfileInst();
         profile.setName(role.getName());
