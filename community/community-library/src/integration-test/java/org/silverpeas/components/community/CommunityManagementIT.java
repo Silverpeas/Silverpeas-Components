@@ -634,7 +634,7 @@ public class CommunityManagementIT {
       Administration admin = Administration.get();
       SpaceInst spaceInst = admin.getSpaceInstById("WA2");
       SpaceProfileInst profileInst =
-          spaceInst.getSpaceProfileInst(SilverpeasRole.PUBLISHER.getName());
+          spaceInst.getDirectSpaceProfileInst(SilverpeasRole.PUBLISHER.getName());
       profileInst.getAllUsers().add(user.getId());
       admin.updateSpaceProfileInst(profileInst, "0");
       return null;
