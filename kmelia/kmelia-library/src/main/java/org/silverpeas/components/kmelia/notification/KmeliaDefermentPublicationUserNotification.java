@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.owasp.encoder.Encode;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
@@ -66,7 +67,7 @@ public class KmeliaDefermentPublicationUserNotification extends AbstractKmeliaAc
   protected void performTemplateData(final String language, final PublicationDetail resource,
       final SilverpeasTemplate template) {
     super.performTemplateData(language, resource, template);
-    template.setAttribute("refusalMotive", refusalMotive);
+    template.setAttribute("refusalMotive", Encode.forHtml(refusalMotive));
   }
 
   @Override
@@ -76,7 +77,7 @@ public class KmeliaDefermentPublicationUserNotification extends AbstractKmeliaAc
 
   @Override
   protected Collection<String> getUserIdsToNotify() {
-    final Set<String> userIds = new HashSet<String>();
+    final Set<String> userIds = new HashSet<>();
     for (String userId : new String[] { getResource().getCreatorId(), getResource().getUpdaterId() }) {
       if (isDefined(userId)) {
         userIds.add(userId);

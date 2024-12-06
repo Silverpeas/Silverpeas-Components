@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.forums.notification;
 
+import org.owasp.encoder.Encode;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.components.forums.model.Message;
@@ -33,7 +34,7 @@ import java.util.Collections;
 import static org.silverpeas.kernel.util.StringUtil.isDefined;
 
 /**
- * User: Yohann Chastagnier
+ * @author Yohann Chastagnier
  * Date: 10/06/13
  */
 public class ForumsMessageValidationUserNotification extends AbstractForumsMessageUserNotification {
@@ -41,21 +42,10 @@ public class ForumsMessageValidationUserNotification extends AbstractForumsMessa
   private final String moderatorId;
   private final String refusalMotive;
 
-  /**
-   * Default constructor.
-   * @param resource
-   * @param moderatorId
-   */
   public ForumsMessageValidationUserNotification(final Message resource, final String moderatorId) {
     this(resource, moderatorId, null);
   }
 
-  /**
-   * Default constructor.
-   * @param resource
-   * @param moderatorId
-   * @param refusalMotive
-   */
   public ForumsMessageValidationUserNotification(final Message resource, final String moderatorId,
       final String refusalMotive) {
     super(resource);
@@ -92,7 +82,7 @@ public class ForumsMessageValidationUserNotification extends AbstractForumsMessa
   protected void performTemplateData(final String language, final Message resource,
       final SilverpeasTemplate template) {
     super.performTemplateData(language, resource, template);
-    template.setAttribute("refusalMotive", refusalMotive);
+    template.setAttribute("refusalMotive", Encode.forHtml(refusalMotive));
   }
 
   @Override

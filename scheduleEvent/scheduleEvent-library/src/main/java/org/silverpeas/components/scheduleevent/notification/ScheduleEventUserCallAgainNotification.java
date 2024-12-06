@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.scheduleevent.notification;
 
+import org.owasp.encoder.Encode;
 import org.silverpeas.components.scheduleevent.service.model.beans.Contributor;
 import org.silverpeas.components.scheduleevent.service.model.beans.Response;
 import org.silverpeas.components.scheduleevent.service.model.beans.ScheduleEvent;
@@ -44,7 +45,7 @@ import static java.lang.String.valueOf;
  */
 public class ScheduleEventUserCallAgainNotification extends AbstractScheduleEventUserNotification {
 
-  private String message;
+  private final String message;
 
   public ScheduleEventUserCallAgainNotification(final ScheduleEvent resource, String message,
       final UserDetail senderUserDetail) {
@@ -60,7 +61,7 @@ public class ScheduleEventUserCallAgainNotification extends AbstractScheduleEven
   @Override
   protected Collection<String> getUserIdsToNotify() {
     final Set<Contributor> contributors = getResource().getContributors();
-    final List<String> userIdsToNotify = new ArrayList<String>(contributors.size());
+    final List<String> userIdsToNotify = new ArrayList<>(contributors.size());
 
     // First getting potential users to notify
     for (final Contributor contributor : contributors) {
@@ -86,10 +87,10 @@ public class ScheduleEventUserCallAgainNotification extends AbstractScheduleEven
       title = getTitle();
     }
     getNotificationMetaData().addLanguage(language, title, "");
-    template.setAttribute("eventName", resource.getTitle());
+    template.setAttribute("eventName", Encode.forHtml(resource.getTitle()));
     template.setAttribute("senderName", getSenderUserDetail().getDisplayedName());
     template.setAttribute("silverpeasURL", getResourceURL(resource));
-    template.setAttribute("message", message);
+    template.setAttribute("message", Encode.forHtml(message));
   }
 
   @Override

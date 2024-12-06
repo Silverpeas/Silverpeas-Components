@@ -1,5 +1,6 @@
 package org.silverpeas.components.webpages.notification;
 
+import org.owasp.encoder.Encode;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.space.SpaceInstLight;
@@ -31,7 +32,7 @@ abstract class AbstractWebPagesNotification extends AbstractTemplateUserNotifica
     getNotificationMetaData().addLanguage(language, getTitle(language), "");
     template.setAttribute("path", "");
     template.setAttribute("senderName", user.getDisplayedName());
-    template.setAttribute("pageName", pageName);
+    template.setAttribute("pageName", Encode.forHtml(pageName));
   }
 
   @Override
@@ -41,8 +42,8 @@ abstract class AbstractWebPagesNotification extends AbstractTemplateUserNotifica
     notificationResourceData.setResourceName(pageName);
     notificationResourceData.setResourceId(resource.getId());
     notificationResourceData.setResourceType(getTemplatePath());
-    // Exceptionally the resource location is builded at this level
-    // Normally, the location is builded by the delayed notification mechanism
+    // Exceptionally the resource location is built at this level
+    // Normally, the location is built by the delayed notification mechanism
     notificationResourceData.setResourceLocation(buildResourceLocation());
   }
 

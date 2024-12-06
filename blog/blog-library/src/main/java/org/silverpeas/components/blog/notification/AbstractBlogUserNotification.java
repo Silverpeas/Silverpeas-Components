@@ -24,6 +24,7 @@
 
 package org.silverpeas.components.blog.notification;
 
+import org.owasp.encoder.Encode;
 import org.silverpeas.components.blog.model.Category;
 import org.silverpeas.components.blog.model.PostDetail;
 import org.silverpeas.core.admin.user.model.User;
@@ -54,7 +55,7 @@ abstract class AbstractBlogUserNotification
         defaultStringIfNotDefined(getTitle(language), getTitle()),
         "");
     template.setAttribute("blog", resource);
-    template.setAttribute("blogName", resource.getPublication().getName(language));
+    template.setAttribute("blogName", Encode.forHtml(resource.getPublication().getName(language)));
     template.setAttribute("blogDate", DateUtil.getOutputDate(resource.getDateEvent(), language));
     final Category categorie = resource.getCategory();
     String categorieName = null;
