@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.formsonline.notification;
 
+import org.owasp.encoder.Encode;
 import org.silverpeas.components.formsonline.model.FormInstance;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.template.SilverpeasTemplate;
@@ -79,7 +80,7 @@ public class FormsOnlineValidationRequestUserNotification
       final SilverpeasTemplate template) {
     super.performTemplateData(language, resource, template);
     getResource().getValidations().getLatestValidation()
-        .ifPresent(v -> template.setAttribute("comment", v.getComment()));
+        .ifPresent(v -> template.setAttribute("comment", Encode.forHtml(v.getComment())));
   }
 
   @Override

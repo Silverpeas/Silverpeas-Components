@@ -151,7 +151,7 @@
                 bundleKey = message.isSubject() ? "forums.subject.unsubscribe.success" :
                     "forums.message.unsubscribe.success";
                 MessageNotifier
-                  .addSuccess(resource.getStringWithParams(bundleKey, message.getTitle()));
+                  .addSuccess(resource.getString(bundleKey), message.getTitle());
                 break;
 
             case 14 :
@@ -159,7 +159,7 @@
                 messageId = params;
                 bundleKey = message.isSubject() ? "forums.subject.subscribe.success" :
                     "forums.message.subscribe.success";
-                MessageNotifier.addSuccess(resource.getStringWithParams(bundleKey, message.getTitle()));
+                MessageNotifier.addSuccess(resource.getString(bundleKey), message.getTitle());
                 break;
         }
     }

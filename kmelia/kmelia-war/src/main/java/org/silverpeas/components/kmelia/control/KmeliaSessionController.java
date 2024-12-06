@@ -3536,13 +3536,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController
               }
             });
             if (fail.isEmpty()) {
-              messager.addSuccess(getMultilang().getStringWithParams("kmelia.publications.batch" +
-                      ".update.success",
-                  success.size()));
+              messager.addSuccess(
+                  getMultilang().getString("kmelia.publications.batch.update.success"),
+                  success.size());
             } else {
               messager.addError(
-                  getMultilang().getStringWithParams("kmelia.publications.batch.update.fail",
-                      fail.size()));
+                  getMultilang().getString("kmelia.publications.batch.update.fail"),
+                      fail.size());
             }
             selectedPublicationPKs.removeAll(success);
             return null;
