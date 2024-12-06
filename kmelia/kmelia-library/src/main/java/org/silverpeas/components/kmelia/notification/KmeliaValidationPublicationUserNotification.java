@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.owasp.encoder.Encode;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.node.model.NodePK;
@@ -76,7 +77,7 @@ public class KmeliaValidationPublicationUserNotification extends AbstractKmeliaA
   protected void performTemplateData(final String language, final PublicationDetail resource,
       final SilverpeasTemplate template) {
     super.performTemplateData(language, resource, template);
-    template.setAttribute("refusalMotive", refusalMotive);
+    template.setAttribute("refusalMotive", Encode.forHtml(refusalMotive));
   }
 
   @Override

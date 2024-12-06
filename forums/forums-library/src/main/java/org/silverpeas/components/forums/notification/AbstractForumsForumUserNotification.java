@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.forums.notification;
 
+import org.owasp.encoder.Encode;
 import org.silverpeas.components.forums.model.ForumDetail;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
@@ -32,18 +33,14 @@ import org.silverpeas.kernel.logging.SilverLogger;
 import java.util.MissingResourceException;
 
 /**
- * User: Yohann Chastagnier
+ * @author Yohann Chastagnier
  * Date: 10/06/13
  */
 public abstract class AbstractForumsForumUserNotification
     extends AbstractForumsUserNotification<ForumDetail> {
 
-  private NotifAction action = null;
+  private final NotifAction action;
 
-  /**
-   * Default constructor.
-   * @param resource
-   */
   public AbstractForumsForumUserNotification(final ForumDetail resource, final NotifAction action) {
     super(resource);
     this.action = action;
@@ -66,7 +63,7 @@ public abstract class AbstractForumsForumUserNotification
       title = getTitle();
     }
     getNotificationMetaData().addLanguage(language, title, "");
-    template.setAttribute("title", resource.getName());
+    template.setAttribute("title", Encode.forHtml(resource.getName()));
   }
 
   @Override

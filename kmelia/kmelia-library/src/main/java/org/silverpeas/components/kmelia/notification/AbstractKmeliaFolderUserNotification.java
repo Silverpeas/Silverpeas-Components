@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.kmelia.notification;
 
+import org.owasp.encoder.Encode;
 import org.silverpeas.components.kmelia.service.KmeliaHelper;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
@@ -47,8 +48,8 @@ public abstract class AbstractKmeliaFolderUserNotification
     getNotificationMetaData().addLanguage(language, getTitle(language), "");
     template.setAttribute("path", getHTMLNodePath(resource.getFatherPK(), language));
     template.setAttribute("topic", resource);
-    template.setAttribute("topicName", resource.getName(language));
-    template.setAttribute("topicDescription", resource.getDescription(language));
+    template.setAttribute("topicName", Encode.forHtml(resource.getName(language)));
+    template.setAttribute("topicDescription", Encode.forHtml(resource.getDescription(language)));
   }
 
   @Override
