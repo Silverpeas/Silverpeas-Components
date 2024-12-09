@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.suggestionbox.notification;
 
+import org.owasp.encoder.Encode;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
@@ -47,8 +48,8 @@ public abstract class AbstractSuggestionUserNotification
   protected void performTemplateData(final String language, final Suggestion resource,
       final SilverpeasTemplate template) {
     getNotificationMetaData().addLanguage(language, getTitle(language), "");
-    template.setAttribute("title", resource.getTitle());
-    template.setAttribute("content", resource.getContent());
+    template.setAttribute("title", Encode.forHtml(resource.getTitle()));
+    template.setAttribute("content", Encode.forHtml(resource.getContent()));
     template.setAttribute("authorName", resource.getCreator().getDisplayedName());
     template.setAttribute("senderName", getSenderName());
   }

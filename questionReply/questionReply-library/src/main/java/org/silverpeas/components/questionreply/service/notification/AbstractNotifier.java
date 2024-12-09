@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.questionreply.service.notification;
 
+import org.owasp.encoder.Encode;
 import org.silverpeas.components.questionreply.model.Question;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.user.model.User;
@@ -52,8 +53,8 @@ abstract class AbstractNotifier extends AbstractTemplateUserNotificationBuilder<
     template.setAttribute("UserDetail", sender);
     template.setAttribute("userName", sender.getDisplayedName());
     template.setAttribute("QuestionDetail", question);
-    template.setAttribute("questionTitle", question.getTitle());
-    template.setAttribute("questionContent", question.getContent());
+    template.setAttribute("questionTitle", Encode.forHtml(question.getTitle()));
+    template.setAttribute("questionContent", Encode.forHtml(question.getContent()));
     template.setAttribute("silverpeasURL", getResourceURL(question));
   }
 

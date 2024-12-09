@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.forums.notification;
 
+import org.owasp.encoder.Encode;
 import org.silverpeas.components.forums.model.Message;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
@@ -35,7 +36,7 @@ import java.util.Map;
 import java.util.MissingResourceException;
 
 /**
- * User: Yohann Chastagnier
+ * @author Yohann Chastagnier
  * Date: 10/06/13
  */
 public abstract class AbstractForumsMessageUserNotification
@@ -43,17 +44,10 @@ public abstract class AbstractForumsMessageUserNotification
 
   private NotifAction action = null;
 
-  /**
-   * @param resource
-   */
   public AbstractForumsMessageUserNotification(final Message resource) {
     super(resource);
   }
 
-  /**
-   * @param resource
-   * @param action
-   */
   public AbstractForumsMessageUserNotification(final Message resource, final NotifAction action) {
     super(resource);
     this.action = action;
@@ -71,8 +65,8 @@ public abstract class AbstractForumsMessageUserNotification
     }
     getNotificationMetaData().addLanguage(language, title, "");
     template.setAttribute("isSubject", resource.isSubject());
-    template.setAttribute("title", resource.getTitle());
-    template.setAttribute("text", resource.getText());
+    template.setAttribute("title", Encode.forHtml(resource.getTitle()));
+    template.setAttribute("text", Encode.forHtml(resource.getText()));
     template.setAttribute("originTitle", getForumsService()
         .getMessageTitle(getForumsService().getMessageParentId(getResource().getId())));
   }
@@ -82,7 +76,7 @@ public abstract class AbstractForumsMessageUserNotification
       final NotificationResourceData notificationResourceData) {
     notificationResourceData.setFeminineGender(false);
     notificationResourceData.setResourceId(resource.getId());
-    notificationResourceData.setResourceType(resource.getResourceType());
+    notificationResourceData.setResourceType(Message.getResourceType());
     notificationResourceData.setResourceName(resource.getTitle());
   }
 
@@ -107,7 +101,7 @@ public abstract class AbstractForumsMessageUserNotification
 
   /**
    * Gets the bundle key prefix according to the resource if it is a subject or a message.
-   * @return
+   * @return the bundle key prefix
    */
   protected String getNotificationBundleKeyPrefix() {
     StringBuilder bundleKeyPrefix = new StringBuilder("forums.");

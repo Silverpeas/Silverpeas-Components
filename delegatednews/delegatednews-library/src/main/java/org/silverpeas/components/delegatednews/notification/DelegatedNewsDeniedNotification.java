@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.delegatednews.notification;
 
+import org.owasp.encoder.Encode;
 import org.silverpeas.components.delegatednews.model.DelegatedNews;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
@@ -30,7 +31,7 @@ import org.silverpeas.core.template.SilverpeasTemplate;
 
 public class DelegatedNewsDeniedNotification extends AbstractDelegatedNewsUserNotification {
 
-  private String reasonForRefusal;
+  private final String reasonForRefusal;
 
   public DelegatedNewsDeniedNotification(final DelegatedNews delegatedNews, final User user,
       String reasonForRefusal) {
@@ -63,6 +64,6 @@ public class DelegatedNewsDeniedNotification extends AbstractDelegatedNewsUserNo
   protected void performTemplateData(final String language, final DelegatedNews resource,
       final SilverpeasTemplate template) {
     super.performTemplateData(language, resource, template);
-    template.setAttribute("refusalMotive", reasonForRefusal);
+    template.setAttribute("refusalMotive", Encode.forHtml(reasonForRefusal));
   }
 }

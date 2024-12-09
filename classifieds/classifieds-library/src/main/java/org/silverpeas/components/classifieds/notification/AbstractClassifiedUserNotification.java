@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.classifieds.notification;
 
+import org.owasp.encoder.Encode;
 import org.silverpeas.components.classifieds.ClassifiedUtil;
 import org.silverpeas.components.classifieds.model.ClassifiedDetail;
 import org.silverpeas.core.admin.user.model.User;
@@ -55,7 +56,7 @@ public abstract class AbstractClassifiedUserNotification extends
       final SilverpeasTemplate template) {
     getNotificationMetaData().addLanguage(language, getTitle(), "");
     template.setAttribute("classified", resource);
-    template.setAttribute("classifiedName", resource.getTitle());
+    template.setAttribute("classifiedName", Encode.forHtml(resource.getTitle()));
     template.setAttribute("senderName", User.getById(getSender()).getDisplayedName());
   }
 

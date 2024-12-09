@@ -694,8 +694,8 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     replacement.ifPresent(r -> finalRole.set(getRoleNameForSubstitute(r, role)));
     if (replacement.isEmpty()) {
       WebMessager.getInstance().addWarning(getMultilang()
-          .getStringWithParams("processManager.replacements.errors.noMoreValid",
-              getUser(incumbentId).getFullName()));
+          .getString("processManager.replacements.errors.noMoreValid"),
+              getUser(incumbentId).getFullName());
     }
     resetCurrentRole(finalRole.get());
   }
@@ -706,7 +706,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    * @throws ProcessManagerException if an error occurs.
    */
   public void resetCurrentRole(String role) throws ProcessManagerException {
-    if (role != null && role.length() > 0) {
+    if (role != null && !role.isEmpty()) {
       final String[] roleCtx = role.split(":");
       if (roleCtx.length == 2) {
         Replacement.get(roleCtx[0]).ifPresent(r -> {
@@ -1221,8 +1221,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   }
 
   private void feedbackUser(String key, String param) {
-    MessageNotifier.addSuccess(getMultilang().getStringWithParams(key, param))
-        .setDisplayLiveTime(10000);
+    MessageNotifier.addSuccess(getMultilang().getString(key), param).setDisplayLiveTime(10000);
   }
 
   private void doAPause() {
@@ -2175,7 +2174,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
         ItemImpl item = (ItemImpl) getItemByName(items, fieldName);
         if (item != null) {
           Map<String, String> keyValuePairs = item.getKeyValuePairs();
-          if (keyValuePairs != null && keyValuePairs.size() > 0) {
+          if (keyValuePairs != null && !keyValuePairs.isEmpty()) {
             StringBuilder newValue = new StringBuilder();
             if (isDefined(fieldString)) {
               final String delimiter = "##";

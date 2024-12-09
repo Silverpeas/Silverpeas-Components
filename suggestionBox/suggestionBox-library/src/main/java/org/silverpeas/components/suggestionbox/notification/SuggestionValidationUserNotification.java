@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.suggestionbox.notification;
 
+import org.owasp.encoder.Encode;
 import org.silverpeas.components.suggestionbox.model.Suggestion;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
@@ -63,7 +64,8 @@ public class SuggestionValidationUserNotification extends AbstractSuggestionActi
   protected void performTemplateData(final String language, final Suggestion resource,
       final SilverpeasTemplate template) {
     super.performTemplateData(language, resource, template);
-    template.setAttribute("validationComment", resource.getValidation().getComment());
+    template.setAttribute("validationComment",
+        Encode.forHtml(resource.getValidation().getComment()));
   }
 
   @Override

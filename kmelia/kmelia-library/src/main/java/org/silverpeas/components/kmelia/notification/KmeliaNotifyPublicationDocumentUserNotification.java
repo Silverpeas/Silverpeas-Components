@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.kmelia.notification;
 
+import org.owasp.encoder.Encode;
 import org.silverpeas.components.kmelia.service.KmeliaHelper;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
@@ -80,12 +81,12 @@ public class KmeliaNotifyPublicationDocumentUserNotification extends
       final SilverpeasTemplate template) {
     super.performTemplateData(language, resource, template);
 
-    template.setAttribute("attachmentFileName", document.getFilename());
+    template.setAttribute("attachmentFileName", Encode.forHtml(document.getFilename()));
     if (isDefined(document.getTitle())) {
-      template.setAttribute("attachmentTitle", document.getTitle());
+      template.setAttribute("attachmentTitle", Encode.forHtml(document.getTitle()));
     }
     if (isDefined(document.getDescription())) {
-      template.setAttribute("attachmentDesc", document.getDescription());
+      template.setAttribute("attachmentDesc", Encode.forHtml(document.getDescription()));
     }
     template
         .setAttribute("attachmentCreationDate", DateUtil.getOutputDate(document.getCreationDate(), language));

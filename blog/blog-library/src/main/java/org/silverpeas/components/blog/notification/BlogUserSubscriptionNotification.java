@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.blog.notification;
 
+import org.owasp.encoder.Encode;
 import org.silverpeas.components.blog.model.PostDetail;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.comment.model.Comment;
@@ -89,14 +90,9 @@ public class BlogUserSubscriptionNotification extends AbstractBlogUserNotificati
     template.setAttribute("comment", comment);
     String commentMessage = null;
     if (comment != null) {
-      commentMessage = comment.getMessage();
+      commentMessage = Encode.forHtml(comment.getMessage());
     }
     template.setAttribute("commentMessage", commentMessage);
-  }
-
-  @Override
-  protected boolean stopWhenNoUserToNotify() {
-    return true;
   }
 
   @Override

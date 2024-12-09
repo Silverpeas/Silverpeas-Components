@@ -24,6 +24,7 @@
 
 package org.silverpeas.components.delegatednews.notification;
 
+import org.owasp.encoder.Encode;
 import org.silverpeas.components.delegatednews.model.DelegatedNews;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
@@ -55,7 +56,7 @@ abstract class AbstractDelegatedNewsUserNotification
     final String title = defaultStringIfNotDefined(getTitle(language), getTitle());
     getNotificationMetaData().addLanguage(language, title, "");
     template.setAttribute("publicationId", publication.getId());
-    template.setAttribute("publicationName", publication.getName(language));
+    template.setAttribute("publicationName", Encode.forHtml(publication.getName(language)));
     template.setAttribute("senderName", (user != null ? user.getDisplayedName() : ""));
   }
 

@@ -26,12 +26,11 @@ package org.silverpeas.components.forums.control.helpers;
 import org.silverpeas.components.forums.control.ForumsSessionController;
 import org.silverpeas.components.forums.model.Forum;
 import org.silverpeas.components.forums.model.Message;
-import org.silverpeas.components.forums.service.ForumsException;
 import org.silverpeas.core.notification.message.MessageNotifier;
-import org.silverpeas.kernel.bundle.LocalizationBundle;
-import org.silverpeas.kernel.util.StringUtil;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.kernel.bundle.LocalizationBundle;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspWriter;
@@ -68,40 +67,18 @@ public class ForumActionHelper {
   private ForumActionHelper() {
   }
 
-  /**
-   * Handles the invocation of the create or update forum action
-   * @param request
-   * @param fsc
-   * @throws ForumsException
-   */
   public static void createForumAction(HttpServletRequest request, ForumsSessionController fsc) {
     Invoker invoker = new Invoker(fsc.getUserId(), fsc.isAdmin(), true);
     actionManagement(CREATE_FORUM, -1, (HttpRequest) request, invoker, fsc.getMultilang(), null,
         fsc);
   }
 
-  /**
-   * Handles the invocation of the create or update forum action
-   * @param request
-   * @param fsc
-   * @throws ForumsException
-   */
   public static void updateForumAction(HttpServletRequest request, ForumsSessionController fsc) {
     Invoker invoker = new Invoker(fsc.getUserId(), fsc.isAdmin(), true);
     actionManagement(UPDATE_FORUM, -1, (HttpRequest) request, invoker, fsc.getMultilang(), null,
         fsc);
   }
 
-  /**
-   * Method invoked from JSP (yes, this is bad ... this has to change)
-   * @param request
-   * @param isAdmin
-   * @param isModerator
-   * @param userId
-   * @param resource
-   * @param out
-   * @param fsc
-   */
   public static void actionManagement(HttpServletRequest request, boolean isAdmin,
       boolean isModerator, String userId, LocalizationBundle resource, JspWriter out,
       ForumsSessionController fsc) {
@@ -224,7 +201,7 @@ public class ForumActionHelper {
     Message message = fsc.subscribeMessage(params);
     String bundleKey = message.isSubject() ? "forums.subject.subscribe.success" :
         "forums.message.subscribe.success";
-    MessageNotifier.addSuccess(resource.getStringWithParams(bundleKey, message.getTitle()));
+    MessageNotifier.addSuccess(resource.getString(bundleKey), message.getTitle());
   }
 
   private static void unsubscribeThread(final int params, final LocalizationBundle resource,
@@ -232,21 +209,21 @@ public class ForumActionHelper {
     Message message = fsc.unsubscribeMessage(params);
     String bundleKey = message.isSubject() ? "forums.subject.unsubscribe.success" :
         "forums.message.unsubscribe.success";
-    MessageNotifier.addSuccess(resource.getStringWithParams(bundleKey, message.getTitle()));
+    MessageNotifier.addSuccess(resource.getString(bundleKey), message.getTitle());
   }
 
   private static void subscribeForum(final int params, final LocalizationBundle resource,
       final ForumsSessionController fsc) {
     Forum forum = fsc.subscribeForum(params);
     MessageNotifier.addSuccess(
-        resource.getStringWithParams("forums.forum.subscribe.success", forum.getName()));
+        resource.getString("forums.forum.subscribe.success"), forum.getName());
   }
 
   private static void unsubscribeForum(final int params, final LocalizationBundle resource,
       final ForumsSessionController fsc) {
     Forum forum = fsc.unsubscribeForum(params);
     MessageNotifier.addSuccess(
-        resource.getStringWithParams("forums.forum.unsubscribe.success", forum.getName()));
+        resource.getString("forums.forum.unsubscribe.success"), forum.getName());
   }
 
   private static void printOutScript(final LocalizationBundle resource, final JspWriter out)

@@ -24,6 +24,7 @@
 
 package org.silverpeas.components.questionreply.service.notification;
 
+import org.owasp.encoder.Encode;
 import org.silverpeas.components.questionreply.model.Question;
 import org.silverpeas.components.questionreply.model.Reply;
 import org.silverpeas.core.admin.user.model.User;
@@ -46,7 +47,7 @@ abstract class AbstractReplyNotifier extends AbstractNotifier {
       final SilverpeasTemplate template) {
     super.performTemplateData(language, question, template);
     template.setAttribute("ReplyDetail", reply);
-    template.setAttribute("replyTitle", reply.getTitle());
+    template.setAttribute("replyTitle", Encode.forHtml(reply.getTitle()));
     template.setAttribute("replyContent", reply.loadWysiwygContent());
   }
 }

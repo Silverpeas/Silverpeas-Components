@@ -311,7 +311,7 @@ public class CommunityWebManager {
    */
   private void successMessage(String messageKey, Object... params) {
     final String userLanguage = getUserLanguage();
-    getMessager().addSuccess(getMessagesIn(userLanguage).getStringWithParams(messageKey, params));
+    getMessager().addSuccess(getMessagesIn(userLanguage).getString(messageKey), params);
   }
 
   private String getUserLanguage() {

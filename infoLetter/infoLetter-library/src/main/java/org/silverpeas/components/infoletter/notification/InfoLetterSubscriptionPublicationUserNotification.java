@@ -24,6 +24,7 @@
 
 package org.silverpeas.components.infoletter.notification;
 
+import org.owasp.encoder.Encode;
 import org.silverpeas.components.infoletter.model.InfoLetterPublicationPdC;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.notification.user.UserSubscriptionNotificationBehavior;
@@ -76,9 +77,9 @@ public class InfoLetterSubscriptionPublicationUserNotification extends
       final SilverpeasTemplate template) {
     getNotificationMetaData().addLanguage(language, getTitle(language), "");
     template.setAttribute("infoLetter", getResource());
-    template.setAttribute("infoLetterTitle", getResource().getName(language));
+    template.setAttribute("infoLetterTitle", Encode.forHtml(getResource().getName(language)));
     final String desc = defaultStringIfNotDefined(getResource().getDescription(language), null);
-    template.setAttribute("infoLetterDesc", desc);
+    template.setAttribute("infoLetterDesc", Encode.forHtml(desc));
     template.setAttribute("senderName", sender.getDisplayedName());
   }
 

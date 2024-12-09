@@ -24,6 +24,7 @@
 
 package org.silverpeas.components.quickinfo.notification;
 
+import org.owasp.encoder.Encode;
 import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
@@ -42,8 +43,8 @@ public abstract class AbstractNewsUserNotification extends AbstractQuickInfoUser
   @Override
   protected void performTemplateData(String language, News resource, SilverpeasTemplate template) {
     getNotificationMetaData().addLanguage(language, getTitle(language), "");
-    template.setAttribute("title", resource.getTitle());
-    template.setAttribute("description", resource.getDescription());
+    template.setAttribute("title", Encode.forHtml(resource.getTitle()));
+    template.setAttribute("description", Encode.forHtml(resource.getDescription()));
     template.setAttribute("authorName", resource.getCreator().getDisplayedName());
     template.setAttribute("senderName", getSenderName());
   }

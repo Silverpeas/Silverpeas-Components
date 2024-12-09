@@ -24,6 +24,7 @@
 
 package org.silverpeas.components.survey.notification;
 
+import org.owasp.encoder.Encode;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
@@ -55,10 +56,10 @@ public abstract class AbstractSurveyUserNotification
     template.setAttribute("userName",
         this.sender != null ? this.sender.getDisplayedName() : "");
     template.setAttribute("SurveyDetail", resource);
-    template.setAttribute("surveyName", resource.getHeader().getName());
+    template.setAttribute("surveyName", Encode.forHtml(resource.getHeader().getName()));
     String surveyDesc = resource.getHeader().getDescription();
     if (StringUtil.isDefined(surveyDesc)) {
-      template.setAttribute("surveyDesc", surveyDesc);
+      template.setAttribute("surveyDesc", Encode.forHtml(surveyDesc));
     }
     final String pathToSurvey = QuestionContainerService.get().getHTMLQuestionPath(resource);
     template.setAttribute("htmlPath", pathToSurvey);

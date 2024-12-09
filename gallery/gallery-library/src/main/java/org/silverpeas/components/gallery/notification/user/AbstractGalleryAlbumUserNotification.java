@@ -24,6 +24,7 @@
 
 package org.silverpeas.components.gallery.notification.user;
 
+import org.owasp.encoder.Encode;
 import org.silverpeas.components.gallery.model.AlbumDetail;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.node.model.NodePK;
@@ -60,11 +61,6 @@ public abstract class AbstractGalleryAlbumUserNotification
   }
 
   @Override
-  protected String getTemplatePath() {
-    return "gallery";
-  }
-
-  @Override
   protected String getComponentInstanceId() {
     return getResource().getNodePK().getInstanceId();
   }
@@ -72,11 +68,6 @@ public abstract class AbstractGalleryAlbumUserNotification
   @Override
   protected String getSender() {
     return sender.getId();
-  }
-
-  @Override
-  protected String getLocalizationBundlePath() {
-    return "org.silverpeas.gallery.multilang.galleryBundle";
   }
 
   @Override
@@ -98,8 +89,8 @@ public abstract class AbstractGalleryAlbumUserNotification
     getNotificationMetaData().addLanguage(language, title, "");
     template.setAttribute("path", getPath(language));
     template.setAttribute("album", resource);
-    template.setAttribute("albumName", resource.getName(language));
-    template.setAttribute("albumDesc", resource.getDescription(language));
+    template.setAttribute("albumName", Encode.forHtml(resource.getName(language)));
+    template.setAttribute("albumDesc", Encode.forHtml(resource.getDescription(language)));
   }
 
   @Override

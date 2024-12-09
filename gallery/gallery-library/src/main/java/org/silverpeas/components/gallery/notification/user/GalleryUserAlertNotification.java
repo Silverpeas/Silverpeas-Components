@@ -24,6 +24,7 @@
 
 package org.silverpeas.components.gallery.notification.user;
 
+import org.owasp.encoder.Encode;
 import org.silverpeas.components.gallery.model.Media;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.node.model.NodePK;
@@ -73,7 +74,7 @@ public class GalleryUserAlertNotification extends AbstractGalleryUserNotificatio
     getNotificationMetaData()
         .addLanguage(language, defaultStringIfNotDefined(getTitle(language), getTitle()), "");
     template.setAttribute("senderName", sender.getDisplayedName());
-    template.setAttribute("mediaTitle", resource.getTitle());
+    template.setAttribute("mediaTitle", Encode.forHtml(resource.getTitle()));
     template.setAttribute("path", getPath(language));
   }
 
@@ -85,7 +86,7 @@ public class GalleryUserAlertNotification extends AbstractGalleryUserNotificatio
 
   @Override
   protected String getComponentInstanceId() {
-    return getResource().getComponentInstanceId();
+    return getResource().getInstanceId();
   }
 
   @Override

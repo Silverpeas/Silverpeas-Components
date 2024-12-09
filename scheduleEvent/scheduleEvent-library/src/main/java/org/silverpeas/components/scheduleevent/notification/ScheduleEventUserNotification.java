@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.scheduleevent.notification;
 
+import org.owasp.encoder.Encode;
 import org.silverpeas.components.scheduleevent.service.model.beans.Contributor;
 import org.silverpeas.components.scheduleevent.service.model.beans.ScheduleEvent;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
@@ -54,7 +55,7 @@ public class ScheduleEventUserNotification extends AbstractScheduleEventUserNoti
   @Override
   protected Collection<String> getUserIdsToNotify() {
     final Set<Contributor> contributors = getResource().getContributors();
-    final List<String> userIds = new ArrayList<String>(contributors.size());
+    final List<String> userIds = new ArrayList<>(contributors.size());
     for (final Contributor contributor : contributors) {
       userIds.add(Integer.toString(contributor.getUserId()));
     }
@@ -71,8 +72,8 @@ public class ScheduleEventUserNotification extends AbstractScheduleEventUserNoti
       title = getTitle();
     }
     getNotificationMetaData().addLanguage(language, title, "");
-    template.setAttribute("eventName", resource.getTitle());
-    template.setAttribute("eventDescription", resource.getDescription());
+    template.setAttribute("eventName", Encode.forHtml(resource.getTitle()));
+    template.setAttribute("eventDescription", Encode.forHtml(resource.getDescription()));
     template.setAttribute("eventCreationDate",
         DateUtil.getOutputDate(resource.getCreationDate(), language));
     template.setAttribute("event", resource);

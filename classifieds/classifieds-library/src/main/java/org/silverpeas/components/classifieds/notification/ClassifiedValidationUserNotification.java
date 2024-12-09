@@ -26,6 +26,7 @@ package org.silverpeas.components.classifieds.notification;
 import java.util.Collection;
 import java.util.Collections;
 
+import org.owasp.encoder.Encode;
 import org.silverpeas.components.classifieds.model.ClassifiedDetail;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
@@ -78,7 +79,7 @@ public class ClassifiedValidationUserNotification extends AbstractClassifiedUser
   protected void performTemplateData(final String language, final ClassifiedDetail resource,
       final SilverpeasTemplate template) {
     super.performTemplateData(language, resource, template);
-    template.setAttribute("refusalMotive", refusalMotive);
+    template.setAttribute("refusalMotive", Encode.forHtml(refusalMotive));
   }
 
   @Override

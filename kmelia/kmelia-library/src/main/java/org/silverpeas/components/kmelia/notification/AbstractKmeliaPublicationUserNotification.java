@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.kmelia.notification;
 
+import org.owasp.encoder.Encode;
 import org.silverpeas.components.kmelia.service.KmeliaHelper;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
@@ -83,9 +84,9 @@ public abstract class AbstractKmeliaPublicationUserNotification
     getNotificationMetaData().addLanguage(language, title, "");
     template.setAttribute("path", getPath(language));
     template.setAttribute("publication", resource);
-    template.setAttribute("publicationName", resource.getName(language));
-    template.setAttribute("publicationDesc", resource.getDescription(language));
-    template.setAttribute("publicationKeywords", resource.getKeywords(language));
+    template.setAttribute("publicationName", Encode.forHtml(resource.getName(language)));
+    template.setAttribute("publicationDesc", Encode.forHtml(resource.getDescription(language)));
+    template.setAttribute("publicationKeywords", Encode.forHtml(resource.getKeywords(language)));
     String senderId = getSender();
     if (StringUtil.isDefined(senderId)) {
       User sender = User.getById(senderId);
