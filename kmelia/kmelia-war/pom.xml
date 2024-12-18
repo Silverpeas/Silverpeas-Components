@@ -51,6 +51,10 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.itextpdf</groupId>
       <artifactId>itextpdf</artifactId>
     </dependency>
