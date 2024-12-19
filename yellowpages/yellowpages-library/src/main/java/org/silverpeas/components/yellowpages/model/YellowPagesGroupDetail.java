@@ -29,13 +29,14 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class YellowPagesGroupDetail extends GroupDetail implements java.io.Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  private List<UserDetail> users = new ArrayList<>();
-  private List<Group> subGroups = new ArrayList<>();
+  private final List<UserDetail> users = new ArrayList<>();
+  private final List<GroupDetail> subGroups = new ArrayList<>();
 
   public YellowPagesGroupDetail(Group group) {
     super((GroupDetail) group);
@@ -50,35 +51,32 @@ public class YellowPagesGroupDetail extends GroupDetail implements java.io.Seria
   }
 
   @Override
-  public List<Group> getSubGroups() {
+  public List<GroupDetail> getSubGroups() {
     return subGroups;
   }
 
+  @Override
   public List<UserDetail> getUsers() {
     return users;
   }
 
   @Override
   public boolean equals(Object o) {
+    if (this == o) return true;
     if (o instanceof YellowPagesGroupDetail) {
       YellowPagesGroupDetail anotherGroup = (YellowPagesGroupDetail) o;
-      if (this.getId() != null) {
-        return this.getId().equals(anotherGroup.getId());
-      }
+      return getId() != null ? Objects.equals(getId(), anotherGroup.getId()) : super.equals(o);
     }
     return false;
   }
 
   @Override
   public int hashCode() {
-    int hash = super.hashCode();
-    hash = 47 * hash + (this.users != null ? this.users.hashCode() : 0);
-    hash = 47 * hash + (this.subGroups != null ? this.subGroups.hashCode() : 0);
-    return hash;
+    return getId() != null ? Objects.hash(getId()) : super.hashCode();
   }
 
   public int getTotalUsers() {
-    return super.getTotalNbUsers();
+    return super.getTotalUsersCount();
   }
 
 }
