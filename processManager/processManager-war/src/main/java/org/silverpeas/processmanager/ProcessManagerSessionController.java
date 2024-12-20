@@ -1216,9 +1216,6 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     }
   }
 
-  private void feedbackUser() {
-    feedbackUser("processManager.action.feedback", null);
-  }
 
   private void feedbackUser(String key, String param) {
     MessageNotifier.addSuccess(getMultilang().getString(key), param).setDisplayLiveTime(10000);
@@ -1382,7 +1379,8 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
         event.setResumingAction(this.isResumingInstance);
         setSubstituteToEvent(event);
         Workflow.getWorkflowEngine().process(event);
-        feedbackUser();
+        feedbackUser("processManager.action.feedback",
+            URLUtil.getSimpleURL(URLUtil.URL_COMPONENT, getComponentId()));
       }
     } catch (WorkflowException e) {
       throw new ProcessManagerException("Fail to process action " + actionName, e);
