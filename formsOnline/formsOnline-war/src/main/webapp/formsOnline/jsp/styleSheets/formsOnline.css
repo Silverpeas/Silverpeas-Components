@@ -21,33 +21,19 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-fieldset {
-  margin-top: 10px;
-  margin-bottom: 10px;
-  width: 98%;
-  text-align: left;
-  padding: 10px;
-}
-
-.txtPersoSpace {
-  font-size: 10pt;
-  font-weight: bold;
-  color: #607090;
-}
 
 #all-formsOnline {
   clear: left;
 }
 
 .txt-no-content {
-  color: #575757;
+  color:var(--couleur-text-second-niveau);
   font-style: italic;
-  font-size: 90%;
+  font-size:1em;
 }
 
 #all-formsOnline .secteur-container .header {
-  height: 30px;
-  padding-top: 8px;
+  padding-top:0.5em;
   position: relative;
 }
 
@@ -62,7 +48,8 @@ fieldset {
 }
 
 #all-formsOnline .secteur-container .date {
-  font-size: 100%;
+  font-size:1em;
+  color:var(--color-text-date);
 }
 
 #all-formsOnline .secteur-container li > a {
@@ -84,13 +71,13 @@ fieldset {
 .my-formsOnline-title {
   padding: 0;
   margin: 2em 0 0.5em;
-  font-size: 130%;
+  font-size:1.3em;
   font-weight:normal;
   line-height: 90%;
 }
 
 #my-formsOnline .secteur-container:first-child .header h3{
-  margin-top:8px;
+  margin-top:0.5em;
 }
 
 #all-formsOnline .secteur-container .header h3 {
@@ -98,57 +85,55 @@ fieldset {
 }
 
 .formsOnline-waitMyAction-title {
-  margin:8px 0 1em;
+  margin:0.5em 0 1em;
 }
 .formsOnline-waitMyAction-title strong {
-  color: #1c94d4;
+  color:var(--color-lien-action);
 }
 
 .my-formsOnline-title strong{
   display: block;
-  font-size: 90%;
+  font-size: 1em;
   font-weight:normal;
-  color: #1c94d4;
+  color:var(--color-lien-action);
 }
 
 #my-formsOnline-refused .my-formsOnline-title ,
 #my-formsOnline-validate .my-formsOnline-title {
-  font-size:130%
+  font-size:1.3em
 }
 
 #my-formsOnline-refused .my-formsOnline-title{
-  color:#CE6F6F;
+  color:var(--color-action);
 }
 
 #my-formsOnline-validate .my-formsOnline-title{
-  color:#7eb73b;
+  color:var(--color-flashy-principale);
 }
 
 #my-formsOnline-validate .my-formsOnline-title strong {
-  color:#7eb73b;
+  color:var(--color-flashy-principale);
   display:inline;
-  font-size:100%;
+  font-size:1em;
 }
 
 #my-formsOnline-refused .my-formsOnline-title strong {
-  color:#CE6F6F;
+  color:var(--color-action);
   display:inline;
-  font-size:100%;
+  font-size:1em;
 }
 
 #all-formsOnline .secteur-container li a:hover,
 #my-formsOnline a:hover{
-  color: #1c94d4;
+  color:var(--color-lien-action);;
 }
 
 
 #all-formsOnline .secteur-container li {
-  background-color: #f0f0f0;
-  border: 1px solid #cccccc;
-  border-radius: 8px;
-  -webkit-border-radius: 8px;
-  -moz-border-radius: 8px;
-  padding: 1%;
+  background-color:var(--couleur-de-fond-clair);
+  border: 1px solid var(--bord-couleur-de-fond-clair);
+  border-radius:var(--radius-bloc);
+  padding:1em;
   margin: 0 0 1em 0;
   position: relative;
 }
@@ -160,12 +145,12 @@ fieldset {
 }
 
 .my-formsOnline-title {
-  font-size: 117%;
-  line-height: 100%;
+  font-size:1.17em;
+  line-height: 1em;
 }
 
 .my-formsOnline-title strong {
-  font-size: 111%;
+  font-size:1.11em;
 }
 
 .formsOnline .principalContent .inlineMessage {
@@ -193,7 +178,7 @@ fieldset {
   padding-left: 3%;
   margin-right: 2%;
   padding-top: 0;
-  border-left: 1px solid #ccc;
+  border-left: 1px solid var(--couleur-trait-separateur);
 }
 
 @media screen and (max-width: 800px) {
@@ -206,7 +191,7 @@ fieldset {
     padding-right:0;
     float:none;
 
-    border-left: 0px solid #ccc;
+    border-left: 0px solid var(--couleur-trait-separateur);
   }
 }
 @media screen and (min-width: 1300px) {
@@ -217,7 +202,7 @@ fieldset {
     padding-left: 3%;
     margin-right: 2%;
     padding-top: 0;
-    border-left: 1px solid #ccc;
+    border-left: 1px solid var(--couleur-trait-separateur);
   }
 
   /*** lecteur view *****/
@@ -251,7 +236,7 @@ fieldset {
     float: left;
     clear: left;
     padding-right: 4%;
-    border-right: 1px solid #ccc;
+    border-right: 1px solid var(--couleur-trait-separateur);
   }
 
 
@@ -280,8 +265,8 @@ fieldset {
 
 #all-formsOnline .form-description,
 #all-formsOnline .form-nbRequests {
-  color:#87888a;
-  font-size:90%;
+  color:var(--color-text-description);
+  font-size:1em;
 }
 
 #my-formsOnline ul{
@@ -291,7 +276,7 @@ fieldset {
 }
 
 .formsOnline-waitMyAction ul li:first-child{
-  border-top:1px solid #ccc;
+  border-top:1px solid var(--couleur-trait-separateur);
 }
 
 #my-formsOnline ul li{
@@ -300,12 +285,12 @@ fieldset {
 }
 
 .formsOnline-waitMyAction ul li {
-  border-bottom:1px solid #ccc;
+  border-bottom:1px solid var(--couleur-trait-separateur);
 }
 
 .formsOnline-waitMyAction ul li.read a,
 .formsOnline-waitMyAction ul li a:visited{
-  color:#888;
+  color:var(--couleur-text-second-niveau);
 }
 
 #my-formsOnline ul li > a > span {
@@ -356,49 +341,6 @@ fieldset {
   margin:0;
 }
 
-/*#ask-by {
-	width:30%;
-	max-width:400px;
-	float:right;
-	border:1px solid #CCC;
-	width:300px;
-	padding:0.5em;
-	line-height:175%;
-}
-
-#ask-by .profilPhoto {
-	float:right;
-	position:relative;
-	height:auto;
-	right:auto;
-	top:auto;
-	width:auto;
-}
-
-#ask-by .oneFieldPerLine .field {
-  display:none;
-}
-
-#header-OnlineForm .commentaires,
-#header-OnlineForm #ask-statut.inlineMessage,
-#header-OnlineForm #ask-statut.inlineMessage-ok,
-#header-OnlineForm #ask-statut.inlineMessage-nok {
-	margin:1em 340px 1em 0;
-}
-
-#header-OnlineForm .commentaires .oneComment .author {
-	white-space:nowrap;
-}
-
-#header-OnlineForm .commentaires .oneComment {
-  margin:45px 0 0 10px;
-	padding-left:50px;
-	padding-right:25px;
-	width:auto;
-	display:inline-block;
-	text-align:left;
-}*/
-
 .steps-OnlineForm {
   display:flex;
   list-style-type:none;
@@ -416,16 +358,19 @@ fieldset {
   top: 1em;
   right:-1.75em;
 }
+
 .steps-OnlineForm li:last-child:after {
   display:none;
 }
 
 .step-OnlineForm {
   position:relative;
-  border:1px solid #ccc;
+  background-color:var(--couleur-de-fond-clair);
+  border:1px solid var(--bord-couleur-de-fond-clair);
   margin-right:2em;
   flex-basis:300px;
 }
+
 .step-OnlineForm.next-step > div {
   opacity:0.5;
 }
@@ -435,7 +380,7 @@ fieldset {
 
 .step-OnlineForm div.avatar {
   border-radius:20px;
-  border:1px solid #ccc;
+  border:1px solid var(--bord-couleur-de-fond-clair);
   width:36px;
   height:36px;
   padding:1px;
@@ -470,7 +415,7 @@ fieldset {
 .step-OnlineForm .statut-step-OnlineForm {
   margin:0;
   position: relative;
-  font-size: 11px;
+  font-size: 1em;
   border-left:0;
   border-right:0;
   border-bottom:0;
@@ -493,22 +438,23 @@ fieldset {
   top:-5px;
   right:calc( 1em + 18px );
 }
+
 .step-OnlineForm .comment-step-OnlineForm.inlineMessage-ok:before {
-  border-bottom: 5px solid #9BD94A;
+  border-bottom: 5px solid var(--border-color-im-ok);
 }
 .step-OnlineForm .comment-step-OnlineForm.inlineMessage-nok:before {
-  border-bottom: 5px solid #CE6F6F;
+  border-bottom: 5px solid  var(--border-color-im-nok);
 }
 .step-OnlineForm .comment-step-OnlineForm.inlineMessage:before {
-  border-bottom: 5px solid #F9E98E;
+  border-bottom: 5px solid  var(--border-color-im-info);
 }
 .step-OnlineForm.next-step .comment-step-OnlineForm.inlineMessage:before {
-  border-bottom: 5px solid #d8d7d7;
+  border-bottom: 5px solid  var(--border-color-im-neutre);
 }
 
 .step-OnlineForm.next-step .inlineMessage {
-  background-color: #ebebeb;
-  border-color: #d8d7d7;
+  background-color:var(--bgColor-im-neutre);
+  border-color: var(--border-color-im-neutre);
 }
 
 .step-OnlineForm .inlineMessage,
@@ -544,31 +490,25 @@ fieldset {
 #list-senders .field,
 #list-receivers .field,
 #bossValidationForm.field{
-  width:98%;
+  width:100%;
 }
 fieldset#listSenders {
   margin: 2% 0 2.5%;
 }
 
-.field textarea {
-  width:90%;
-}
-
-#templateForm select {
-  width:45%
-}
-
 #view-form {
-  background-color: #f4f4f4;
-  background-image: url("/silverpeas/util/icons/gradientSVG.jsp?from=fff&to=e5e5e5&vertical=0&horizontal=100");
-  border: 1px solid #cccccc;
-  border-radius: 5px;
-  color: #4c4c4c;
-  font-size: 100%;
-  padding: 5px 10px;
+  background:var(--bgColor-btn-secondaire);
+  border: 1px solid var(--border-color-btn-secondaire);
+  border-radius:var(--radius-btn-secondaire);
+  color:--color-text-btn-secondaire;
+  font-size:1em;
+  padding:0.5em;
   width: auto;
   display:inline-block;
-  margin-top:5px;
+  margin-top:0.5em;
+}
+#view-form:hover{
+  background:var(--bgColor-btn-secondaire-hover);
 }
 
 #view-form  span {
@@ -584,25 +524,34 @@ fieldset#listSenders {
 
 #informationForm img[class$=help-button] {
   position: absolute;
-  top: 6px;
+  top:calc( 50% - 8px );
   margin-left: 5px;
 }
 
-#informationForm .directDeletion-help-button {
-  top: 3px !important;
-}
-
 #all-requests .sp_button {
-  padding: 1px 10px;
-  font-size: 9pt !important;
+  padding:0.25em 0.5em;
+  font-size:0.9em;
   height: 17px;
   line-height: 17px;
 }
 
 #all-requests #filter {
-  background: #eaeaea url(/silverpeas/util/icons/arrow/bg_tri.png) bottom left no-repeat;
-  padding: 5px 5px 14px;
+  background:var(--bgColor-zone-filtre);
+  padding:1em;
   margin-bottom:1em;
+  position:relative;
+}
+#all-requests #filter:after {
+  display:block;
+  position:absolute;
+  bottom:-10px;
+  left:1em;
+  content:'';
+  width: 0;
+  height: 0;
+  border-right: 8px solid transparent;
+  border-left: 8px solid transparent;
+  border-top:10px solid var(--bgColor-zone-filtre);
 }
 
 #all-requests #filter #stateFilter label,

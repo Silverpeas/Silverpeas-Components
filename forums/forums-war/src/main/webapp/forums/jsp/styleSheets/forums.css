@@ -22,47 +22,44 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-
-.selectNS            { 
-  font-size: 10px; font-weight: normal; color: #000000 
+.componentName {
+  font-weight: bold;
 }
 
-.componentName { 
-  font-size: 13pt; font-weight: bold; color: #000000 
+.txtnote {}
+
+a.txtnote:hover {
+  color: var(--color-lien-action);
 }
 
-.txtnote {
-  font-size: 10px; color: #000000 ;
-}
-
-a.txtnote:hover { 
-  font-size: 10px; color: #666699 ; 
-}
-
-.txttitrecol  { 
-  font-size: 10px; color: #000000 ; font-weight: bold 
+.txttitrecol {
+  font-weight: bold
 }
 
 .texteLabelForm {
-  font-size: 10px; color: #666666; font-weight: bold 
+  color: var(--couleur-text-second-niveau);
+  font-weight: bold
 }
 
 .txtnav {
-  font-size: 10pt; font-weight: bold; color: #000000 
+  font-weight: bold;
 }
 
-
-
 .titreCateg {
-  font-size: 11px;
-  font-weight: bold;
+  font-size: 1.15em;
   background-color: #EAEAEA;
-  text-align:left !important;
-  border-bottom:1px solid #CFCFCF;
+  text-align: left;
+  border-bottom: 1px solid #CFCFCF;
+}
+
+.titreCateg i, 
+.descriptionForum{
+  color: var(--color-text-description);
 }
 
 .titreForum {
-  font-size: 11px;
+  font-size: 1.15em;
+  font-weight:600;
 }
 
 .fondClair {
@@ -78,14 +75,16 @@ a.txtnote:hover {
 }
 
 .testTableau {
+  background-color:#FFF;
   border: 1px solid #CCCCCC;
   width: 100%;
   text-align: center;
   border-spacing: 1px;
 }
 
-.testTableau tr td:first-child.ArrayCell img:first-child { 
-  margin-left:20px;
+
+.testTableau tr td:first-child.ArrayCell img:first-child {
+  margin-left: 20px;
 }
 
 #msgDiv {
@@ -94,25 +93,25 @@ a.txtnote:hover {
   width: 100%;
   overflow-x: hidden;
   overflow-y: auto;
-  margin-bottom:15px;
+  margin-bottom: 15px;
 }
 
 .msgLine {
-  background-color : #eaeaea
+  background-color: #eaeaea
 }
 
 .msgText {
-  background-color : #ffffff
+  background-color: #ffffff
 }
 
 #responseTable {
   display: none;
-  margin-top:1em;
+  margin-top: 1em;
 }
 
 .ArrayCell .txtnote {
-  min-width:108px;
-  display:block;
+  min-width: 108px;
+  display: block;
 }
 
 .message_A {
@@ -124,53 +123,48 @@ a.txtnote:hover {
 }
 
 .sousNavBulle {
-  margin:0 0 50px;
-  float:none;
-  width:auto;
+  margin: 0 0 50px;
+  float: none;
+  width: auto;
 }
 
 .sousNavBulle span.grise {
-  background-color: #EAEAEA;
-  border: 1px solid #CECECE;
-  color: #AFAFAF;
-  font-size: 11px;
+  background:var(--bgColor-zone-filtre);
+  border: 1px solid var(--border-color-zone-filtre);
   line-height: 220%;
   margin-right: 3px;
-  padding: 2px 4px;
+  padding:0.5em;
   text-decoration: none;
 }
 
 table.contourintfdcolor,
 div.contourintfdcolor#msgDiv {
   background-color: #FFF;
-  position:relative;
-  height:auto;
-  margin:0 2% 1em;
-  width:96%
+  position: relative;
+  height: auto;
 }
 
 div.contourintfdcolor#msgDiv {
-  width:94%
+  width: 94%
 }
 
 .notationLine {
   padding: 0 10px;
-  text-align:right;
+  text-align: right;
 }
 
-div.contourintfdcolor{
-  background-color: #F0F0F0;
-  border: 1px solid #CECECE;
-  border-radius: 10px 10px 10px 10px;
-  margin: 70px 2% 0;
-  padding: 10px 10px 5px 10px;
+div.contourintfdcolor {
+  background:var(--bgColor-zone-filtre);
+  border: 1px solid var(--border-color-zone-filtre);
+  border-radius:var(--radius-zone-filtre);
+  margin: 70px 1em 0;
+  padding:1em;
   position: relative;
 }
 
-.contourintfdcolor .info .userName{
-  background: url("../../../util/icons/commentStartBubble.gif") no-repeat scroll 50px bottom transparent;
+.contourintfdcolor .info .userName {
   color: #111111;
-  font-size: 8pt;
+  font-size:0.9em;
   height: 44px;
   left: 80px;
   margin: 0;
@@ -178,12 +172,24 @@ div.contourintfdcolor{
   position: absolute;
   top: -44px;
 }
+.contourintfdcolor .info .userName:after {
+  content:'';
+  display: block;
+  position: absolute;
+  bottom:0;
+  left:80px ;
+  width: 0;
+  height: 0;
+  border-right: 6px solid transparent;
+  border-left: 6px solid transparent;
+  border-bottom: 10px solid var(--bgColor-zone-filtre);
+}
 
-.contourintfdcolor .info .nbMessage{
-  background: url("../icons/shape.png") no-repeat scroll 0 0 transparent;  
+.contourintfdcolor .info .nbMessage {
+  background: url("../icons/shape.png") no-repeat scroll 0 0 transparent;
   color: #FFF;
   font-size: 16px;
-  font-weight:normal;
+  font-weight: normal;
   height: 38px;
   left: 33px;
   line-height: 37px;
@@ -196,10 +202,10 @@ div.contourintfdcolor{
   width: 43px;
 }
 
-.contourintfdcolor .info ul{
-  list-style-type:none;
-  padding:0;
-  margin:0;
+.contourintfdcolor .info ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
 }
 
 div.profilPhoto img {
@@ -216,45 +222,47 @@ div.profilPhoto {
   top: -50px;
 }
 
-.messageHeader .txtnav{
-  color:#333;
-  position:absolute;
-  top:11px;
-  left:60px
+.messageHeader .txtnav {
+  color: #333;
+  position: absolute;
+  top: 11px;
+  left: 60px
 }
 
 .messageHeader .txtnote {
-  left:80px;
+  left: 80px;
   margin: 0;
   padding: 0;
   position: absolute;
-  top: -30px;
+  top: -27px;
+  font-size: 0.9em;
 }
 
-.messageHeader img{
-  position:absolute;
-  top:-30px;
-  right:11px;
+.messageHeader img {
+  position: absolute;
+  top: -30px;
+  right: 11px;
 }
 
 .messageActions {
-  position:absolute;
-  top:11px;
-  right:20px;
+  position: absolute;
+  top: 11px;
+  right: 20px;
 }
 
 .messageFooter {
   display: inline-block;
-  background: url("../icons/notification-icon.png") no-repeat scroll 0 0 transparent;  
-  padding:2px 0 0 4px;
+  background: url("../icons/notification-icon.png") no-repeat scroll 0 0 transparent;
+  padding:5px 0 0 9px;
 }
 
 .messageFooter .texteLabelForm {
-  color:#5785c7
+  color:var(--color-lien-action);
 }
 
-input[type="radio"], input[type="checkbox"] {
-  background-color:transparent
+input[type="radio"],
+input[type="checkbox"] {
+  background-color: transparent
 }
 
 .messageAttachment .attachments {
@@ -265,26 +273,20 @@ input[type="radio"], input[type="checkbox"] {
 }
 
 #creation-page .classification .legende {
-	display: none;
+  display: none;
 }
 
 .forum fieldset#infoFieldset legend {
-  background:transparent url(../../../util/icons/component/forumsSmall.gif) 11px 0px no-repeat;
+  background: transparent url(../../../util/icons/component/forumsSmall.gif) 11px 0px no-repeat;
 }
 
 .forum fieldset#moderatorsFieldset legend {
-  background:transparent url(../../../util/icons/groupe.gif) 11px 0px no-repeat;
+  background: transparent url(../../../util/icons/groupe.gif) 11px 0px no-repeat;
 }
 
-#infoFieldset .field, 
+#infoFieldset .field,
 #moderatorsFieldset .field {
-  width: 98%;
-}
-
-#infoFieldset #nameArea input,
-#infoFieldset #categoryArea select,
-#infoFieldset #keywordsArea input  {
-  width: 46%;
+  width:100%;
 }
 
 div.msgContent {
@@ -294,11 +296,11 @@ div.msgContent {
 
 #new-message #message legend,
 #responseTable #message legend {
-  background:transparent url(../../../util/icons/talk2user.gif) 11px 0px no-repeat;
+  background: transparent url(../../../util/icons/talk2user.gif) 11px 0px no-repeat;
 }
 
 #new-message #message .field,
 #responseTable #message .field {
-  width:98%;
-  clear:both;
+  width: 100%;
+  clear: both;
 }

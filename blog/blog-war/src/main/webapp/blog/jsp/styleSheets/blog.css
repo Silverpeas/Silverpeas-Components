@@ -1,191 +1,182 @@
 .cellBrowseBar {
-    height: 3em;
-	margin-bottom:1em;
+	height: 3em;
+	margin-bottom: 1em;
 }
+
 #blog #blogContainer #bandeau {
-	height:50px;
-	background-color:#F0F0F0;
-	border-top: 1px solid #D6D6D6;
-	border-bottom: 1px solid #D6D6D6;
-	margin-bottom:10px;
+	background-color: var(--couleur-de-fond-clair);
+	border-top: var(--bord-couleur-de-fond-clair);
+	border-bottom: var(--bord-couleur-de-fond-clair);
+	margin-bottom: 1em;
 }
 
 #blog #blogContainer #bandeau h2 {
-	font-size:170%;
-	line-height:50px;
-	padding:0;
-	margin:0;
+	padding: 0 0 0 0.5em;
+	margin: 0;
 }
-#blog #blogContainer #bandeau h2 a{
-	font-size:100%;
-	font-weight:normal;
-	color:#333;
-	padding-left:7px;
-	line-height: 50px;
+
+#blog #blogContainer #bandeau h2 a,
+#blogContainer #bandeau h2 a.txttitrecol {
+	font-weight: normal;
+	color: inherit;
+	font-size: 1.3em;
+	line-height: 2em;
 }
 
 #blog #blogContainer #postsList,
 #blog #blogContainer #viewPost,
 #blog #blogContainer #viewPostDraft {
-	margin-right:330px;
+	margin-right: calc(var(--right-side-width) + 1em);
 }
 
 #blog #blogContainer #postsList div.post {
-	margin-bottom: 15px;
+	margin-bottom: 1em;
 }
 
 #blog #blogContainer #navBlog {
-	width: 310px;
+	width: var(--right-side-width);
 	float: right;
 }
 
 #blog #blogContainer #navBlog .yuimenu {
-	margin:0;
-	margin-bottom:10px;
+	margin: 0;
+	margin-bottom: 1em;
 }
- #navBlog .bgDegradeGris ul{
-	list-style-type:none;
-	margin:0;
-	padding:0;
- } 
 
- #navBlog .bgDegradeGris ul li{
-	margin:3px 0 3px 0;
-	padding:0
- }
+#navBlog .bgDegradeGris ul {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+}
+
+#navBlog .bgDegradeGris ul li {
+	margin: 0.25em 0;
+	padding: 0
+}
 
 #navBlog .bgDegradeGris ul.list_pdc_position li {
-  margin: 0;
-  padding: 0;
+	margin: 0;
+	padding: 0;
 }
 
 #navBlog .bgDegradeGris ul.list_pdc_position ul li {
-  margin: 0 0 0 1px;
-  padding: 2px 0;
+	margin: 0 0 0 1px;
+	padding: 0.25em 0
 }
 
- #navBlog .bgDegradeGris ul li a{
-	padding:0 0 0 5px;
-	display:block;
-	color:#4D4D4D;
-	line-height:1.5em;
- }
+#navBlog .bgDegradeGris ul li a {
+	padding: 0 0 0 1em;
+	display: block;
+	line-height: 1.5em;
+}
+
 #navBlog .bgDegradeGris ul li a:hover {
-	background-color:#fafafa;
+	background-color: var(--roll-hover-background);
 }
 
 #navBlog #menubar-creation-actions {
-    margin: 1em 0;
+	margin: 1em 0;
 }
 
 #blog .versCommentaires,
 #blog .categoryTicket,
-#blog .creatorTicket  {
-	color:#999;
+#blog .creatorTicket {
+	color: var(--couleur-text-second-niveau);
 }
+
 #blog .versCommentaires img {
-	vertical-align:text-bottom
-}
-#blog .comment {
-	color:#000;
+	vertical-align: text-bottom
 }
 
 #blog #operationBlog a {
-	display:block;
-	line-height:2em;
-	padding-left:1em;
+	display: block;
+	line-height: 2em;
+	padding-left: 1em;
 }
 
 #blog .separateur {
-	height: 10px;
-	color:#FFF;
-	border-bottom:1px solid #ccc; 
-}
-#blog .separateur hr {
-	display:none;
+	height: 1em;
+	border-bottom: 1px solid var(--couleur-trait-separateur);
 }
 
-#blog #zoneRecherche {
-	font-size:100%;
-	color: #999999;
+#blog .separateur hr {
+	display: none;
 }
 
 #blog #zoneRecherche form {
-   margin:0;
-   padding:10px 10px 5px 10px;
-   height:25px;
-}
-
-#blog #zoneRecherche table {
-	width:15%;
-	float:right
+	margin: 0;
+	padding: 0.5em;
+	height: auto;
 }
 
 #blog .inputRecherche {
-	height:15px;
-	width:80%;
-	margin-bottom:5px;
-	float:left;
+	height: 1em;
+	width: 80%;
+	margin-bottom: 0.25em;
+	float: left;
 }
 
 #blog .titreRecherche {
 	font-size: 100%;
 	font-weight: bold;
-	color: #999999;
 }
-.header h4  {
-	margin:0;
-	padding:0;
-	font-size:100%;
+
+.header h4 {
+	margin: 0;
+	padding: 0;
+	font-size: 100%;
 }
 
 .header h4 a {
-   color:#333;
+	color: var(--couleur-titre-bloc-header);
+	font-weight: bold;
 }
+
 #titreRecherche h4 {
-    background:transparent url("/silverpeas/util/icons/Mot.gif") right top  no-repeat ;
-    height: 16px;
+	background: transparent url("/silverpeas/util/icons/Mot.gif") right top no-repeat;
+	height: 16px;
 }
+
 #titreLiens h4 {
-    background:transparent url("/silverpeas/util/icons/webLink.gif") right top  no-repeat ;
-    height: 16px;
+	background: transparent url("/silverpeas/util/icons/webLink.gif") right top no-repeat;
+	height: 16px;
 }
 
 #topics h4 {
-    background:transparent url("/silverpeas/util/icons/component/kmeliaSmall.gif") right top  no-repeat ;
-    height: 16px;
+	background: transparent url("/silverpeas/util/icons/component/kmeliaSmall.gif") right top no-repeat;
+	height: 16px;
 }
 
-#calendar td.txtnav3 , 
+#calendar td.txtnav3,
 #calendar th.txtnav,
-#calendar td.intfdcolor3
-{
-	padding:6px 0;
-}
-#calendar table table td.intfdcolor3 {
-	background-color:#4D4D4D;
-}
-#archives ul {
-	max-height:185px;
-	height:185px;
-	overflow:auto;
-	overflow-x:hidden;
+#calendar td.intfdcolor3 {
+	padding: 0.5em 0.25em;
 }
 
-.titreTicket > a {
-	font-size:180%;
-	font-weight:normal;
-	color:#4d4d4d;
+#calendar table table td.intfdcolor3 {
+	background-color: #4D4D4D;
+	line-height: 180%;
+}
+
+#archives ul {
+	max-height: 15em;
+	overflow: auto;
+	overflow-x: hidden;
+}
+
+.titreTicket>a {
+	font-size: 180%;
+	font-weight: normal;
 }
 
 .infoTicket {
 	font-size: 100%;
-	font-weight:normal;
-	color: #999999;
+	font-weight: normal;
+	color: var(--couleur-text-second-niveau);
 }
 
-.postDraft .titreTicket > a {
-	color: #FF6F6F;
+.postDraft .titreTicket>a {
+	color: var(--couleur-draft);
 }
 
 .post .status {
@@ -193,80 +184,67 @@
 }
 
 .post.postDraft .status {
-	display:inline;
+	display: inline-block;
 }
 
 #viewPostDraft .status {
-	font-size:9pt;
-	color:#082E4A;
+	font-size: 0.9em;
+	color: var(--couleur-text-second-niveau);
 }
+
 #list-categoryTicket {
-	padding-top:0.5em
+	padding-top: 0.5em
 }
 
 .versTopic {
-    background-color: #ACACAC;
-    border: 1px solid #ACACAC;
-    border-radius: 3px;
-    color: #FFFFFF;
-    display: inline-block;
-    font-size: 0.9em;
-    line-height: 1em;
-    margin: 0 0.25em 0.15em 0;
-    padding: 0.35em 0.5em;
-    position: relative;
-    z-index: 10;
+	background-color: var(--bgColor-etiquette);
+	border-radius: var(--radius-etiquette);
+	color: var(--color-text-etiquette);
+	display: inline-block;
+	font-size: 0.9em;
+	line-height: 1em;
+	margin: 0 0.25em 0.15em 0;
+	padding: 0.35em 0.5em;
+	position: relative;
+	z-index: 10;
 }
+
 .versTopic:hover {
-    background-color: #5c5c5c;
-    border: 1px solid #5c5c5c;
-    color: #FFFFFF;   
+	background-color: var(--bgColor-hover-etiquette);
+	color: var(--color-text-hover-etiquette);
+}
+
+.titreTicket * {
+	display: inline-block;
+	vertical-align: middle;
 }
 
 #viewPost .status {
-	display: none;
+	display: none !important;
 }
 
 #viewPost .titreTicket {
-	font-size:180%;
-	font-weight:normal;
-	color:#4d4d4d;
+	font-size: 180%;
+	font-weight: normal;
 }
 
 #viewPostDraft .titreTicket {
-	font-size:180%;
-	font-weight:normal;
-	color: #FF6F6F;
+	font-size: 180%;
+	font-weight: normal;
+	color: var(--couleur-draft);
 }
 
 #blog #blogContainer #footer {
 	clear: both;
-	margin-top:10px;
+	margin-top: 10px;
 }
 
-#calendar .txtnav {
-	font-size:11px;
-}
-#calendar  {
-	width:162px;
-	float:left;
-	height:210px;
-}
-
-#archives {
-	width:138px;
-	float:left;
-	margin-right:6px;
-}
-#archives .header h4{
-	min-width:122px;
-}
 #liens {
-	clear:both;
+	clear: both;
 }
 
 fieldset#infoFieldset legend {
-  background:transparent url(../../../util/icons/component/blogSmall.gif) 11px 0px no-repeat;
+	background: transparent url(../../../util/icons/component/blogSmall.gif) 11px 0px no-repeat;
 }
 
 fieldset#infoFieldset .field {
@@ -275,8 +253,8 @@ fieldset#infoFieldset .field {
 
 fieldset#infoFieldset #creationArea .champs,
 fieldset#infoFieldset #updateArea .champs {
-	position:relative;
-	padding-left:40px;
+	position: relative;
+	padding-left: 40px;
 }
 
 fieldset#infoFieldset #creationArea .champs {
@@ -290,29 +268,56 @@ fieldset#infoFieldset #creationArea.field {
 
 #infoFieldset #creationArea .profilPhoto,
 #infoFieldset #updateArea .profilPhoto {
-	position:absolute;
-	top:0;
-	left:0;
-	width:30px;
-	height:30px;
-	text-align:center;
-}
-* html #creationArea .profilPhoto,
-* html #updateArea .profilPhoto { 
-	left:-40px; 
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 30px;
+	height: 30px;
+	text-align: center;
 }
 
-#infoFieldset #creationArea .profilPhoto img, 
+#infoFieldset #creationArea .profilPhoto img,
 #infoFieldset #updateArea .profilPhoto img {
-	height:30px;
-	position:relative;
+	height: 30px;
+	position: relative;
 }
 
 #header .legend {
-    clear: both;
-    padding-left: 15px;
+	clear: both;
+	padding-left: 15px;
 }
 
 #header .classification .legende {
 	display: none;
+}
+
+
+/* RESPONSIVITY*/
+@media only screen and (min-width:1600px) {
+
+	#calendar {
+		width: 49%;
+		float: left;
+	}
+
+	#archives {
+		width: 45%;
+		float: left;
+		margin-right: 5%;
+	}
+
+	#archives ul {
+		height: 15em;
+	}
+}
+
+
+@media only screen and (max-width:880px) {
+
+	#blog #blogContainer #navBlog,
+	#blog #blogContainer #postsList {
+		width: auto;
+		float: none;
+		margin-right: 0;
+	}
 }
