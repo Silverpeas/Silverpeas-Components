@@ -22,586 +22,519 @@
 * along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-#classifieds #search .forms.mode-search .fields {
-  border-top: 1px solid rgb(204, 204, 204);
-  border-left: 1px solid rgb(204, 204, 204);
-  border-right: 1px solid rgb(204, 204, 204);
-}
-
-#classifieds #search .forms.mode-search .fields > li:nth-child(2n+1) {
-  background-color: #FAFAFA;
-  border-bottom: 1px solid rgb(204, 204, 204);
+#classifieds #categories {
+	padding-top: 1em;
 }
 
 #classifieds #categories {
-	padding-top: 20px;
+	display: flex;
+	flex-flow: row wrap;
+	justify-content: center;
 }
 
-#classifieds #categories .categoryleft {
-	width: 49%;
-	float: left;
-    clear: left;
-	margin-bottom: 10px;
-	position: relative;
-	background-color: #FFFFFF;
-	background-image:
-		url(/silverpeas/admin/jsp/icons/silverpeasV5/fondBoard.jpg);
-	background-position: right top;
-	background-repeat: no-repeat;
-	border: 1px solid #CCCCCC;
-}
-
-#classifieds #categories .categoryright {
-	width: 49%;
-	float: right;
-    clear: right;
-	margin-bottom: 10px;
-	position: relative;
-	background-color: #FFFFFF;
-	background-image:
-		url(/silverpeas/admin/jsp/icons/silverpeasV5/fondBoard.jpg);
-	background-position: right top;
-	background-repeat: no-repeat;
-	border: 1px solid #CCCCCC;
+#classifieds #categories>div {
+	margin-bottom: 1em;
+	background-color: var(--couleur-de-fond-clair);
+	border: 1px solid var(--bord-couleur-de-fond-clair);
+	margin-right: 1em;
+	flex-basis: 24em;
 }
 
 #classifieds #categories .categoryTitle {
-	background-image:
-		url(/silverpeas/admin/jsp/icons/silverpeasV5/milieuBouton.gif);
-	background-repeat: repeat-x;
-	color: #FFFFFF;
-	height: 20px;
+	background: var(--bgColor-header-bloc);
+	color: var(--couleur-titre-bloc-header);
+	height: auto;
 	text-align: center;
-	font-weight: bold;
 	text-transform: uppercase;
-	padding-top: 3px;
-	position: relative;
+	line-height: 1.2em;
+	padding: 0.25em;
 }
 
-#classifieds #categories .categoryContent {
-	min-height: 70px;
-	/*pour ie7 et ie8*/
-	height: 70px !ie;
-	position: relative;
+#classifieds #categories .categoryTitle a {
+	color: var(--couleur-titre-bloc-header);
+	font-weight: bold;
 }
 
+#classifieds #categories .newClassified,
 #classifieds #categories .ViewAllClassifiedsByCategory {
-	float: left;
-	padding: 5px;
-	border-right:1px solid #CCC;
-	border-top:1px solid #DDD;
-	background-image: url(../../../util/icons/gradientSVG.jsp?from=ffffff&to=DDD&vertical=0&horizontal=100);
-		-moz-background-size: 100%;
-	border-radius:0 9px 0 0;
-		-moz-border-radius:0 9px 0 0;
-		-webkit-border-radius:0 9px 0 0;
+	padding: 0.25em;
+	text-align: center;
 }
-#classifieds #categories .ViewAllClassifiedsByCategory a{
-	background:transparent url(../../../util/icons/component/classifiedsSmall.gif) top left no-repeat;
-	line-height:16px;
-	padding-left:21px;
-	display:block;
+
+#classifieds #categories .ViewAllClassifiedsByCategory a:before {
+	content: '';
+	display: inline-block;
+	background: transparent url(../../../util/icons/component/classifiedsSmall.gif) center 0 no-repeat;
+	width: 16px;
+	min-height: 16px;
+	height: 1em;
 }
-#classifieds #categories .newClassified {
-	float: right;
-	padding: 5px;	
-	border-left:1px solid #CCC;
-	border-top:1px solid #DDD;
-	background-image: url(../../../util/icons/gradientSVG.jsp?from=ffffff&to=DDD&vertical=0&horizontal=100);
-		-moz-background-size: 100%;
-	border-radius:9px 0 0 0;
-		-moz-border-radius:9px 0 0 0;
-		-webkit-border-radius:9px 0 0 0;
+
+#classifieds #categories .ViewAllClassifiedsByCategory a,
+#classifieds #categories .newClassified a {
+	text-decoration: underline;
+	color: var(--color-lien-action);
 }
-#classifieds #categories .newClassified a{
-	background:transparent url(../../../util/icons/newsFeed_publication.gif) top left no-repeat;
-	line-height:16px;
-	padding-left:21px;
-	display:block;
+
+#classifieds #categories .newClassified a:before {
+	content: '';
+	display: inline-block;
+	background: transparent url(../../../util/icons/newsFeed_publication.gif) center 0 no-repeat;
+	width: 16px;
+	min-height: 16px;
+	height: 1em;
 }
+
 #classifieds #categories .categoryContent ul,
 .list_result_classifieds {
-	min-height: 70px;
-	list-style-type:none;
-	margin: 5px 2px;
-	padding:2px;
+	list-style-type: none;
+	margin: 0.5em 0 0;
+	padding: 0;
 }
 
 #classifieds #categories .categoryContent ul li {
-	margin: 0 0 2px 4px;
-	padding:0;
+	margin: 0 0 1em 0.5em;
+	padding: 0;
 }
-#classifieds #categories .categoryContent ul li a, 
-.list_result_classifieds li{
-	padding:2px 0 0 12px;
-	background:transparent url("../../../util/icons/percent_off.gif") 0px 7px no-repeat;
+
+#classifieds #categories .categoryContent ul li a:before,
+.list_result_classifieds li:before {
+	width: 0.5em;
+	height: 0.5em;
+	content: '';
+	background-color: rgb(161, 161, 161);
+	display: inline-block;
+	margin-right: 0.5em;
 }
 
 .list_result_classifieds li {
-	margin-bottom:4px;}
+	margin-bottom: 0.5em;
+}
 
 .title_result_classifieds {
-	display:block;
-	font-weight:bold;
+	display: block;
+	font-weight: bold;
 }
 
 #classifieds #categories .categoryContent .emptyCategory {
-	float: left;
-	padding: 5px;
-}
-
-#classifieds #infos {
-	width: 98%;
-	margin-left: 0px;
-	text-align: center;
-	float: left;
-	padding: 10px;
+	padding: 0.25em 0.25em 0.5em 0.25em;
+	display: block;
+	font-style: italic;
+	color: var(--couleur-text-second-niveau);
 }
 
 .categoryContent .date {
-	color: #AAA;
-	font-size:100%
-}
-
-#classified-view-header * {
-    margin:0;
-    padding:0;
-    line-height:100%;
-}
-   
-#classified-view-header h1 {
-    padding:5px;
-    margin-bottom:5px;   
-}
-
-#classified-view-header div {
-	height:100%;
-}
-
-#classified-view-header .txtlibform { 
-	display:inline-block;
-	float:left;
-	clear:left;
-	width:20%;
-	max-width:150px;
-	padding:5px;
-}
-
-#classified-view-header .txtvalform { 
-	float:left;
-	padding:5px;
-	display:inline-block;
-	width:70%;
+	color:var(--color-text-date);
 }
 
 hr.clear {
-    border: 0 none;
-    clear: both;
-    display: block;
-    height: 0;
-    margin:0;
-    padding: 0;
-    line-height:0;
-    visibility: hidden;
+	border: 0 none;
+	clear: both;
+	display: block;
+	height: 0;
+	margin: 0;
+	padding: 0;
+	line-height: 0;
+	visibility: hidden;
 }
 
 div.tableBoard {
-	padding:10px;
+	padding: 0.25em;
 }
 
 .emptyCategory {
-	color:#444;
+	color: #444;
 }
 
 #classifieds_rich_list {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: initial;
-  align-content: flex-start;
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: initial;
+	align-content: flex-start;
+	list-style-type: none;
+	padding: 0;
+	margin: 0;
 }
 
-#classifieds_rich_list li{
-  float: left;
-  flex-grow: 1;
-  flex-basis: 320px;
-	border:1px solid #eaeaea;
-  margin: 0 2em 2em 0;
-  padding:0.5em;
-  height: auto;
-	position:relative;
-	z-index:1;
-	cursor:pointer;
-	overflow:hidden;
-  max-width: 50%;
-}
-#classifieds_rich_list li:hover{
-	background-color:#EFEFEF;
+#classifieds_rich_list li {
+	float: left;
+	flex-grow: 1;
+	flex-basis: 320px;
+	background-color: var(--couleur-de-fond-clair);
+	border: 1px solid var(--bord-couleur-de-fond-clair);
+	margin: 0 2em 2em 0;
+	padding: 0.5em;
+	height: auto;
+	position: relative;
+	z-index: 1;
+	cursor: pointer;
+	overflow: hidden;
+	max-width: 50%;
 }
 
-#classifieds_rich_list li .classified_thumb{
-	width:92px;
-	border:3px solid #e4e4e4;
-	overflow:hidden;
-	height:68px;
-	position:relative;
-	margin:0.5em;
-  float:left;
+#classifieds_rich_list li:hover {
+	background-color: #FFF;
+	border-color:var(--bord-couleur-de-fond-clair-hover);
 }
 
-#classifieds_rich_list li .classified_thumb img{
-	width:92px;
-	position:absolute;
-	top:0;
-	left:0;
-	border:0px;
+#classifieds_rich_list li .classified_thumb {
+	width: 92px;
+	border: 3px solid var(--bord-couleur-de-fond-clair);
+	overflow: hidden;
+	height: 68px;
+	position: relative;
+	margin: 0.5em;
+	float: left;
 }
 
-#classifieds_rich_list .classified_info{
-  margin-left:100px;
-  margin-right:4em;
-}
-#classifieds_rich_list .add-without-image .classified_info{
-  margin-left:0;
-}
-
-#classifieds_rich_list h4{
-	margin:0 0 0.5em 0;
-	padding:0;
-	font-size:1.25em;
-	font-weight:normal;
+#classifieds_rich_list li .classified_thumb img {
+	width: 92px;
+	position: absolute;
+	top: 0;
+	left: 0;
+	border: 0px;
 }
 
-#classifieds_rich_list h4 a{
-	font-size:1em;
+#classifieds_rich_list .classified_info {
+	margin-left: 100px;
+	margin-right: 4em;
 }
 
-#classifieds_rich_list .classified_type a{
-	margin:0 0.25em 0.15em 0; 
-	background-color:#acacac;
-	color:#FFF;
-	padding:0.35em 0.5em;
-	line-height:1em;
-	font-size:0.9em;
-	display:block;
-	float:left;
-	border:1px solid #acacac;
-	border-radius:3px;
-	position:relative;
-	z-index:10;
+#classifieds_rich_list .add-without-image .classified_info {
+	margin-left: 0;
 }
 
-#classifieds_rich_list .classified_type a:hover{
-	background-color:#5c5c5c;
-	border:1px solid #5c5c5c;
+#classifieds_rich_list h4 {
+	margin: 0 0 0.5em 0;
+	padding: 0;
+	font-size: 1.25em;
+	font-weight: normal;
+}
+
+#classifieds_rich_list h4 a {
+	font-size: 1em;
+}
+
+#classifieds_rich_list .classified_type a {
+	background-color: var(--bgColor-etiquette);
+	border-radius: var(--radius-etiquette);
+	color: var(--color-text-etiquette);
+	display: inline-block;
+	font-size: 0.9em;
+	line-height: 1em;
+	margin: 0 0.25em 0.15em 0;
+	padding: 0.35em 0.5em;
+	position: relative;
+	z-index: 10;
+}
+
+#classifieds_rich_list .classified_type a:hover {
+	background-color: var(--bgColor-hover-etiquette);
+	color: var(--color-text-hover-etiquette);
 }
 
 #classifieds_rich_list .classified_creationInfo {
-	position:absolute;
-	bottom:0.5em;
-	right:0.5em;
-	color:#777;
+	position: absolute;
+	bottom: 0.5em;
+	right: 0.5em;
+	color:var(--color-text-date);
 }
 
 #classifieds_rich_list .classified_price {
-	position:absolute;
-	top:0.5em;
-	right:0.5em;
-	color:#FFF;
-	font-size:1.15em;
-	font-weight:bold;
-	padding:0.15em 0.5em;
-	background-color:#56a3d9;
-	float:left;
-	border:1px solid #56a3d9;
-	border-radius:3px;
+	position: absolute;
+	top: 0.5em;
+	right: 0.5em;
+	color: #FFF;
+	font-size: 1.15em;
+	font-weight: bold;
+	padding: 0.15em 0.5em;
+	background-color:var(--color-lien-action) ;
+	float: left;
+	border-radius:var(--radius-etiquette);
 }
 
 #pagination {
-	clear:left
+	clear: left
 }
 
-/*** fiche nouvelle presentation ***/
+/*** fiche presentation ***/
 .classified_fiche {
-	position:relative;    
-	}
-  
-.classified_fiche #classified_content_form {
+	position: relative;
 }
-
 
 .principalContent .classified_photos {
-	width:30%;
-  float:left;
+	width: 30%;
+	float: left;
 }
 
 .principalContent .classified_title {
-  color: #333;
-  font-size: 130%;
-  font-weight: bold;
-  padding:0;
-  margin:0 0 1em;
+	color:var(--couleur-titre);
+	font-size:1.3em;
+	font-weight: bold;
+	padding: 0;
+	margin: 0 0 1em;
 }
 
 .principalContent .classified_description {
-	border-left:6px solid #e4e4e4;
-	padding-left:1%;
-	color:#666;	
-	font-size:1.15em;
-	line-height:1.5em;
-	text-align:justify;
-  float:left;
-  width:66%;
+	border-left: var(--border-left-size-description) solid var(--border-left-color-description);
+	padding-left:var(--padding-left-description);
+	color:var(--color-text-description);
+	text-align: justify;
+	float: left;
+	width: 66%;
 }
 
 .principalContent .classified_price {
-	position:absolute;
-	top:0.5em;
-	right:0.5em;
-	color:#FFF;
-	font-size:1.25em;
-	font-weight:bold;
+	position: absolute;
+	top: 0.5em;
+	right: 0.5em;
+	color: #FFF;
+	font-size: 1.25em;
+	font-weight: bold;
 	padding: 0.5em;
-	background-color:#56a3d9;
-	float:left;
-	border:1px solid #56a3d9;
-	border-radius:3px;
+	float: left;
+	background-color:var(--color-lien-action) ;
+	border-radius:var(--radius-etiquette);
 }
 
-.principalContent .classified_thumbs{
-	height:38px;
+.principalContent .classified_thumbs {
+	height: 38px;
 }
 
-.principalContent .classified_thumbs a.selected{
-	border:1px solid #f1790f;
+.principalContent .classified_thumbs a.selected {
+	border: 1px solid var(--color-action);
 }
 
-.principalContent .classified_thumbs a{
-	width:52px;
-	height:36px;
-	background-color:#e4e4e4;
-	float:left;
-	display:block;
-	overflow:hidden;
-	border:1px solid #56a3d9;
-	text-align:center;
-	margin-right:11px;
+.principalContent .classified_thumbs a {
+	width: 52px;
+	height: 36px;
+	background-color:var(--couleur-de-fond-clair);
+	float: left;
+	display: block;
+	overflow: hidden;
+	border: 1px solid var(--color-lien-action);
+	text-align: center;
+	margin-right: 11px;
 }
 
 .principalContent .classified_selected_photo {
-	width:90%;
-	border:3px solid #e4e4e4;
-	margin-top:1em;
-	text-align:center;
-	height:auto;
-	clear:left;
-}
-.principalContent .classified_selected_photo img{
-	width:100%;
-	height:auto;
-	border:0;
+	width: 90%;
+	border: 3px solid var(--bord-couleur-de-fond-clair);
+	margin-top: 1em;
+	text-align: center;
+	height: auto;
+	clear: left;
 }
 
-.principalContent .classified_thumbs a img{
-	height:36px;
-	width:auto;
-	border:0;
+.principalContent .classified_selected_photo img {
+	width: 100%;
+	height: auto;
+	border: 0;
+}
+
+.principalContent .classified_thumbs a img {
+	height: 36px;
+	width: auto;
+	border: 0;
 }
 
 
-.principalContent #classified_content_form td{
-	font-size:1.15em;
-	line-height:1.5em;
-	color:#333
+.principalContent #classified_content_form td {
+	font-size: 1.15em;
+	line-height: 1.5em;
 }
-.principalContent #classified_content_form .txtlibform{
-	font-size:1.05em;
-	line-height:1.5em;
-	color:#666
+
+.principalContent #classified_content_form .txtlibform {
+	font-size: 1.05em;
+	line-height: 1.5em;
 }
 
 .principalContent #classified_content_form .forms .fields {
-	width:auto;
-  float: left;
+	width: auto;
+	float: left;
 }
 
 #classified_contact_link {
-	border-radius:8px;
-	padding:0.5em;
-	display:inline-block;
-	width:140px;
-	margin:11px 17px 0;
+	border-radius:var(--radius-btn);
+	padding: 0.5em;
+	display: inline-block;
+	margin: 1em 1em 0;
 }
 
-#classified_contact_link a{
-	background:transparent url("/silverpeas/util/icons/email.gif") 2px -2px no-repeat;
-	padding:0 10px 0 22px;
-	display:inline-block;
-	color:#333;
+#classified_contact_link a {
+	background: transparent url("/silverpeas/util/icons/email.gif") 2px -2px no-repeat;
+	padding: 0 10px 0 22px;
+	display: inline-block;
 }
 
 #classified_info #permalinkInfo {
-	margin-bottom:1em;
+	margin-bottom: 1em;
 }
 
-#classified_info #permalinkInfo img{
-	border:0;
+#classified_info #permalinkInfo img {
+	border: 0;
 }
 
 
 #classified_info #permalinkInfo input {
-	width:100%;
+	width: 100%;
 }
 
 
 .rightContent .other_classified h4 {
-    background: url("/silverpeas/util/icons/component/classifiedsSmall.gif") no-repeat scroll right top transparent;
-    height: 16px;
+	background: url("/silverpeas/util/icons/component/classifiedsSmall.gif") no-repeat scroll right top transparent;
+	height: 16px;
 }
 
-.rightContent .other_classified .classifieds_other_list h4{
-	background:url();
-	padding:0 56px 0;
-	margin:0;
+.rightContent .other_classified .classifieds_other_list h4 {
+	background: url();
+	padding: 0 56px 0;
+	margin: 0;
 }
 
-.rightContent .classifieds_other_list h4 a{
-	color:#333;
+.rightContent .classifieds_other_list h4 a {
+	color: #333;
 }
 
 .rightContent .classifieds_other_list {
-	list-style-type:none;
-	padding:0;
-	margin:11px 0 5px;
+	list-style-type: none;
+	padding: 0;
+	margin: 11px 0 5px;
 }
 
-.rightContent .classifieds_other_list li{
-	padding:0px 17px 6px;
-	margin:0;
-	min-height:40px;
-	position:relative;
-	cursor:pointer;
+.rightContent .classifieds_other_list li {
+	padding: 0px 17px 6px;
+	margin: 0;
+	min-height: 40px;
+	position: relative;
+	cursor: pointer;
 }
 
-.rightContent .classifieds_other_list .classified_price{
-	position:absolute;
-	top:0;
-	right:17px;
-	color:#FFF;
-	font-size:1.15em;
-	font-weight:bold;
-	padding:0.15em 0.5em;
-	background-color:#56a3d9;
-	float:left;
-	border:1px solid #56a3d9;
-	border-radius:3px;
-}
-.rightContent .classifieds_other_list .classified_thumb{
-	width:48px;
-	height:36px;
-	overflow:hidden;
-	border:1px solid #e4e4e4;
-	position:absolute;
-	top:0;
-	left:17px;
-}
-.rightContent .classifieds_other_list .classified_thumb img{
-	width:48px;
+.rightContent .classifieds_other_list .classified_price {
+	font-size: 1.25em;
+	font-weight: bold;
+	padding: 0.5em;
+	float: left;
+	position: absolute;
+	top: 0;
+	right: 17px;
+	color: #FFF;
+	font-weight: bold;
+	background-color:var(--color-lien-action) ;
+	border-radius:var(--radius-etiquette);
 }
 
+.rightContent .classifieds_other_list .classified_thumb {
+	width: 48px;
+	height: 36px;
+	overflow: hidden;
+	border: 1px solid var(--color-lien-action);
+	position: absolute;
+	top: 0;
+	left: 17px;
+}
 
+.rightContent .classifieds_other_list .classified_thumb img {
+	width: 48px;
+}
 
 .rightContent .other_classified {
-	padding-bottom:11px;
+	padding-bottom: 11px;
 }
 
 /**  formulaire de creation **/
-#classifiedInfo legend{
-    background:transparent url(../../../kmelia/jsp/icons/mini_publi.gif) 11px 0px no-repeat; /*icone pr�sente dans kmelia */
+#classifiedInfo legend {
+	background: transparent url(../../../kmelia/jsp/icons/mini_publi.gif) 11px 0px no-repeat;
 }
 
 #pubThumb legend {
-    background: url("../../../util/icons/images.png") no-repeat scroll 11px 0 transparent;
+	background: url("../../../util/icons/images.png") no-repeat scroll 11px 0 transparent;
 }
 
 #specifiedInfo legend {
-    background: url("../../../util/icons/component/formsOnlineSmall.gif") no-repeat scroll 11px 0 transparent;
+	background: url("../../../util/icons/component/formsOnlineSmall.gif") no-repeat scroll 11px 0 transparent;
 }
-#classifiedNumberArea, #classifiedNameArea, #descriptionArea, #creationDateArea, #updateDateArea, #validationDateArea, #mandatoryArea, .field.thumb {
-    clear: both;
-    display: block;
-    float: none;
-    width: 98%;
-}
-#descriptionArea textarea, #classifiedNameArea input{
-    width:94%;
+
+#classifiedNumberArea,
+#classifiedNameArea,
+#descriptionArea,
+#creationDateArea,
+#updateDateArea,
+#validationDateArea,
+#mandatoryArea,
+.field.thumb {
+	clear: both;
+	display: block;
+	float: none;
+	width:100%;
 }
 
 .thumbnailInputs {
-    clear: both;
+	clear: both;
 }
 
-.thumbnailInputs img, .thumbnailInputs input, .thumbnailInputs select {
-    vertical-align: middle;
+.thumbnailInputs img,
+.thumbnailInputs input,
+.thumbnailInputs select {
+	vertical-align: middle;
 }
+
 .thumbnailPreviewAndActions {
-    background-color:#EEEEEE;
-    border:1px solid #DDDDDD;
-    float:left;
-    margin-left:0;
-    padding:3px;
-    margin-bottom: 3px;
+	background-color: var(--couleur-de-fond-thumb);
+	border: 1px solid var(--bord-couleur-de-fond-thumb);
+	float: left;
+	margin-left: 0;
+	padding: 3px;
+	margin-bottom: 3px;
 }
 
 .thumbnailPreview {
-    float: left;
+	float: left;
 }
 
 
 #thumbnailActions {
-    float: left;
-    margin-left: 4px;
+	float: left;
+	margin-left: 4px;
 }
 
 #thumbnailActions a {
-    display: block;
-    margin-bottom: 5px;
+	display: block;
+	margin-bottom: 5px;
 }
 
 #thumbnailActions img {
-    vertical-align: middle;
+	vertical-align: middle;
 }
 
 .thumbnailPreview .thumbnail {
-    height: 50px;
-    border:1px solid #DDDDDD;
+	height: 50px;
+	border: 1px solid var(--bord-couleur-de-fond-thumb);
 }
 
 .classifiedForm .table {
-	margin-bottom:15px
+	margin-bottom: 15px
 }
 
 .rightContent #pagination {
-  padding: 0.83em 0;
-  line-height: 1.2em;
-  text-align: right;
+	padding: 0.83em 0;
+	line-height: 1.2em;
+	text-align: right;
 }
 
 /** portlet view **/
 .classifieds-portletView .cellOperation,
 .classifieds-portletView #menubar-creation-actions,
 .classifieds-portletView #info {
-  display: none !important;
+	display: none !important;
 }
 
 .classifieds-portletView .hautFrame {
-  padding: 0;
+	padding: 0;
 }
 
 .classifieds-portletView #classifieds_rich_list li {
-  max-width: 42%;
+	max-width: 42%;
 }
