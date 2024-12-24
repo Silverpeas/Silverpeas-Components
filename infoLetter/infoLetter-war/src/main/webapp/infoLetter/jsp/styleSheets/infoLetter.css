@@ -27,11 +27,7 @@
 }
 
 #infoFieldset .field {
-  width: 98%;
-}
-
-#infoFieldset #titleArea input {
-  width: 46%;
+  width: 100%;
 }
 
 #infoletter-draft,
@@ -64,9 +60,9 @@
 }
 
 .list-infoletter li {
-  background-color: #f0f0f0;
-  border: 1px solid #cccccc;
-  border-radius: 8px;
+  background-color:var(--bgColor-bloc-fond-clair);
+  border: 1px solid var(--border-color-bloc-fond-clair);
+  border-radius:var(--radius-bloc);
   padding: 10px;
   margin: 0;
   position: relative;
@@ -92,8 +88,8 @@
 #infoletter-home-app .header h3 {
   padding: 0;
   margin: 0 0 1em;
-  font-size: 130%;
-  font-weight: 100;
+  font-size:var(--taille-titre);
+  font-weight:300;
   line-height: 90%;
 }
 
@@ -101,8 +97,8 @@
 #infoletter-home-app .header h3 strong {
   display: block;
   font-size: 90%;
-  font-weight: 100;
-  color: #1c94d4;
+  font-weight:300;
+  color:var(--color-titre-avec-deux-couleurs);
 }
 
 .newsletter-thumb iframe {
@@ -121,8 +117,8 @@
   position: absolute;
   bottom: -1em;
   left: 10px;
-  background-color: #1c94d4;
-  color: #FFF;
+  background-color:var(--bgColor-bloc-date);
+  color:var(--color-bloc-date);
   padding: 5px;
   z-index: 10;
 }
@@ -150,9 +146,9 @@
 
 .publiDesc {
   font-weight: bold;
-  color: #666666;
-  padding: 8px;
-  border-left: 6px solid #e4e4e4;
+  color:var(--color-text-description);
+  padding:0.5em 0.5em 0.5em var(--padding-left-description);
+  border-left: var(--border-left-size-description) solid var(--border-left-color-description);
 }
 
 .headerInfoLetter .frequence {

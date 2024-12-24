@@ -4,9 +4,9 @@
 }
 
 #blog #blogContainer #bandeau {
-	background-color: var(--couleur-de-fond-clair);
-	border-top: var(--bord-couleur-de-fond-clair);
-	border-bottom: var(--bord-couleur-de-fond-clair);
+	background-color: var(--bgColor-bloc-fond-clair);
+	border-top: var(--border-color-bloc-fond-clair);
+	border-bottom: var(--border-color-bloc-fond-clair);
 	margin-bottom: 1em;
 }
 
@@ -81,7 +81,7 @@
 #blog .versCommentaires,
 #blog .categoryTicket,
 #blog .creatorTicket {
-	color: var(--couleur-text-second-niveau);
+	color: var(--color-text-second-niveau);
 }
 
 #blog .versCommentaires img {
@@ -96,7 +96,7 @@
 
 #blog .separateur {
 	height: 1em;
-	border-bottom: 1px solid var(--couleur-trait-separateur);
+	border-bottom: 1px solid var(--color-trait-separateur);
 }
 
 #blog .separateur hr {
@@ -128,7 +128,7 @@
 }
 
 .header h4 a {
-	color: var(--couleur-titre-bloc-header);
+	color: var(--color-titre-bloc-header);
 	font-weight: bold;
 }
 
@@ -172,11 +172,11 @@
 .infoTicket {
 	font-size: 100%;
 	font-weight: normal;
-	color: var(--couleur-text-second-niveau);
+	color: var(--color-text-second-niveau);
 }
 
 .postDraft .titreTicket>a {
-	color: var(--couleur-draft);
+	color: var(--color-draft);
 }
 
 .post .status {
@@ -189,7 +189,7 @@
 
 #viewPostDraft .status {
 	font-size: 0.9em;
-	color: var(--couleur-text-second-niveau);
+	color: var(--color-text-second-niveau);
 }
 
 #list-categoryTicket {
@@ -231,7 +231,7 @@
 #viewPostDraft .titreTicket {
 	font-size: 180%;
 	font-weight: normal;
-	color: var(--couleur-draft);
+	color: var(--color-draft);
 }
 
 #blog #blogContainer #footer {

@@ -37,7 +37,7 @@ a.txtnote:hover {
 }
 
 .texteLabelForm {
-  color: var(--couleur-text-second-niveau);
+  color: var(--color-text-second-niveau);
   font-weight: bold
 }
 
