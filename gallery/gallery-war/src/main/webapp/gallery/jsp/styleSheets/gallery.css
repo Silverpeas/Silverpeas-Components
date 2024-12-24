@@ -23,97 +23,72 @@
  */
 #subTopics {
   width: 100%;
-  padding-bottom: 5px;
+  padding-bottom: 0.5em;
 }
 
 #subTopics ul {
   list-style-type: none;
   padding: 0;
-  margin: 5px 1em;
+  margin: 0.5em 1em;
+  display: flex;
+  flex-wrap: wrap;
 }
 
 #subTopics ul li {
-  margin: 2px 0 0 0;
-  height: 63px;
+  margin:0 0.5em 0.5em 0;
+  max-width: 25%; 
+  flex-grow: 1;
   position: relative;
-  background-color: #EAEAEAEA;
+  background-color: var(--bgColor-dossier);
+  border-radius:var(--radius-dossier);
 }
-
-/*** presentation sur 4 colonnes***/
-#subTopics ul li {
-  display: inline;
-  float: left;
-  height: 63px;
-  margin-right: 1%;
-  width: 24%;
-  position: relative;
-  border: 0;
-  padding: 0;
-}
-
-#subTopics ul li:nth-child(4n+4) {
-  margin-right: 0;
-  width: 25%;
-}
-
-#subTopics ul li:first-child {
-  margin-right: 1%;
-  width: 24%;
+#subTopics ul li:hover {
+  background-color: var(--bgColor-dossier-hover);
 }
 
 #subTopics ul li a {
   background: url("../icons/pack_big_icons.gif") 3px 5px no-repeat;
   display: block;
-  overflow: hidden;
-  height: 32px;
-  padding: 8px 3px 16px 50px;
+  height:calc(100% - 1em);
+  min-height: 42px;
+  padding: 0.5em 0.5em 0.5em 50px;
   line-height: 100%;
-  border: 1px solid #EAEAEA;
-  border-radius: 10px;
-  background-color: #EAEAEA;
+  border-radius:var(--radius-dossier);
 }
 
 #subTopics ul li a strong {
   display: block;
-  padding: 0 30px 2px 0;
+  padding:0 3em 0.25em 0;
 }
 
 #subTopics ul li a strong span {
-  background: url("../icons/mini_publi.gif") top right no-repeat;
+  background: url("../icons/icon-photo.gif") top right no-repeat;
   display: block;
   height: 20px;
   width: 25px;
   position: absolute;
   right: 10px;
   top: 8px;
-  padding: 1px 17px 0 0;
-  color: #000000;
+  padding: 1px 19px 0 0;
   text-align: right;
 }
 
 #subTopics ul li a:hover {
-  background: url("../icons/pack_big_icons.gif") 3px -95px no-repeat;
-  border: 1px solid #FFFBBB;
-  background-color: #FFFFDC;
-  color: #000;
+  background: var(--bgColor-dossier-hover) url("../icons/pack_big_icons.gif") 3px -95px no-repeat;
 }
 
 #subTopics ul li a span {
-  color: #666666;
   display: block;
-  font-size: 11px;
-  height: 33px;
-  line-height: 11px;
-  overflow: hidden;
+  font-size: 0.9em;
   font-weight: normal;
 }
 
-/*** pour masquer les descriptions des topics
-#subTopics ul li a span {
-  display:none;}
-    **/
+
+#subTopics ul li a > span {
+  color:var(--color-text-description);
+}
 #topicDescription {
-  color: #666;
+  color:var(--color-text-description);
 }
 
 #albumList {
@@ -122,30 +97,19 @@
   padding: 0;
 }
 
-#albumList li {
-  margin: 3px 3px 3px 0;
-  padding: 1px;
-  float: left;
-  width: 100px;
-  height: 90px;
-}
-
 .ui-state-default a, .ui-state-default a:link, .ui-state-default a:visited {
-  color: #000000;
+  color:var(--color-text);
   text-decoration: none;
 }
 
 ul#albumList li.ui-state-highlight {
-  border: 1px dashed #BFBFBF;
-  border-width: 1px;
-  padding: 10px;
   background-image: none;
-  background-color: #EAEAEA;
+  background-color:var(--bgColor-dossier);
 }
 
 #footer {
   text-align: center;
-  margin-top: 5px;
+  margin-top: 0.5em;
 }
 
 /* Slider */
@@ -168,15 +132,15 @@ ul#albumList li.ui-state-highlight {
 /** FICHE **/
 .gallery-fiche-media .fileName {
   text-align: center;
-  font-size: 120%;
+  font-size:1.3em;
   padding: 0 0 0.25em 0;
-  color: #333;
+  color:var(--color-text);
   font-weight: bold;
 }
 
 .gallery-fiche-media .fileName a {
-  font-size: 100%;
-  color: #333;
+  font-size:1em;
+  color:var(--color-text);
 }
 
 .gallery-fiche-media .rightContent .fileCharacteristic {
@@ -370,10 +334,9 @@ br.clear {
 }
 
 .motsClefs a {
-  background-color: #acacac;
-  border: 1px solid #acacac;
-  border-radius: 3px;
-  color: #fff;
+  background-color:var(--bgColor-etiquette);
+  border-radius:var(--radius-etiquette);
+  color:var(--color-text-etiquette);
   font-size: 0.9em;
   line-height: 1em;
   margin: 0 0.25em 0.15em 0;
@@ -383,19 +346,17 @@ br.clear {
 }
 
 .motsClefs a:hover {
-  background-color: #5c5c5c;
-  color: #fff;
+  background-color:var(--bgColor-hover-etiquette);
+  color:var(--color-text-hover-etiquette);
 }
 
 .validateNotAvailable {
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
-  filter: alpha(opacity=50);
   opacity: 0.5;
 }
 
 /******** pour fieldset *************/
 #urlArea, #titleArea, #descriptionArea, #downloadArea,  #fileArea, #authorArea, #keywordArea, #generalArea, #fileNameArea {
-  width: 98%;
+  width: 100%;
 }
 
 #downloadArea {
@@ -503,16 +464,13 @@ br.clear {
 
 /************ inline message folder empty **********/
 #folder-empty ul {
-  width: 300px;
+  width: 50%;
   text-align: left;
   margin: 1em auto;
+  min-width: 300px;
 }
 
 /************ listing des media dans un album **********/
-table.listing-media {
-  width: 95%;
-}
-
 .a-media.aff-list.vignette {
   width: 300px;
 }

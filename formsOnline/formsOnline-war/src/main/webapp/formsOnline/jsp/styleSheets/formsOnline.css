@@ -27,7 +27,7 @@
 }
 
 .txt-no-content {
-  color:var(--couleur-text-second-niveau);
+  color:var(--color-text-second-niveau);
   font-style: italic;
   font-size:1em;
 }
@@ -88,19 +88,19 @@
   margin:0.5em 0 1em;
 }
 .formsOnline-waitMyAction-title strong {
-  color:var(--color-lien-action);
+  color:var(--color-titre-avec-deux-couleurs);
 }
 
 .my-formsOnline-title strong{
   display: block;
   font-size: 1em;
   font-weight:normal;
-  color:var(--color-lien-action);
+  color:var(--color-titre-avec-deux-couleurs);
 }
 
 #my-formsOnline-refused .my-formsOnline-title ,
 #my-formsOnline-validate .my-formsOnline-title {
-  font-size:1.3em
+  font-size:var(--taille-titre);
 }
 
 #my-formsOnline-refused .my-formsOnline-title{
@@ -118,20 +118,20 @@
 }
 
 #my-formsOnline-refused .my-formsOnline-title strong {
-  color:var(--color-action);
+  color:var(--color-titre-avec-deux-couleurs);
   display:inline;
   font-size:1em;
 }
 
 #all-formsOnline .secteur-container li a:hover,
 #my-formsOnline a:hover{
-  color:var(--color-lien-action);;
+  color:var(--color-lien-action);
 }
 
 
 #all-formsOnline .secteur-container li {
-  background-color:var(--couleur-de-fond-clair);
-  border: 1px solid var(--bord-couleur-de-fond-clair);
+  background-color:var(--bgColor-bloc-fond-clair);
+  border: 1px solid var(--border-color-bloc-fond-clair);
   border-radius:var(--radius-bloc);
   padding:1em;
   margin: 0 0 1em 0;
@@ -178,7 +178,7 @@
   padding-left: 3%;
   margin-right: 2%;
   padding-top: 0;
-  border-left: 1px solid var(--couleur-trait-separateur);
+  border-left: 1px solid var(--color-trait-separateur);
 }
 
 @media screen and (max-width: 800px) {
@@ -191,7 +191,7 @@
     padding-right:0;
     float:none;
 
-    border-left: 0px solid var(--couleur-trait-separateur);
+    border-left: 0px solid var(--color-trait-separateur);
   }
 }
 @media screen and (min-width: 1300px) {
@@ -202,7 +202,7 @@
     padding-left: 3%;
     margin-right: 2%;
     padding-top: 0;
-    border-left: 1px solid var(--couleur-trait-separateur);
+    border-left: 1px solid var(--color-trait-separateur);
   }
 
   /*** lecteur view *****/
@@ -236,7 +236,7 @@
     float: left;
     clear: left;
     padding-right: 4%;
-    border-right: 1px solid var(--couleur-trait-separateur);
+    border-right: 1px solid var(--color-trait-separateur);
   }
 
 
@@ -260,7 +260,7 @@
 }
 
 #all-formsOnline .form-title {
-  font-size:130%;
+  font-size:1.3em;
 }
 
 #all-formsOnline .form-description,
@@ -276,7 +276,7 @@
 }
 
 .formsOnline-waitMyAction ul li:first-child{
-  border-top:1px solid var(--couleur-trait-separateur);
+  border-top:1px solid var(--color-trait-separateur);
 }
 
 #my-formsOnline ul li{
@@ -285,12 +285,12 @@
 }
 
 .formsOnline-waitMyAction ul li {
-  border-bottom:1px solid var(--couleur-trait-separateur);
+  border-bottom:1px solid var(--color-trait-separateur);
 }
 
 .formsOnline-waitMyAction ul li.read a,
 .formsOnline-waitMyAction ul li a:visited{
-  color:var(--couleur-text-second-niveau);
+  color:var(--color-text-second-niveau);
 }
 
 #my-formsOnline ul li > a > span {
@@ -365,8 +365,8 @@
 
 .step-OnlineForm {
   position:relative;
-  background-color:var(--couleur-de-fond-clair);
-  border:1px solid var(--bord-couleur-de-fond-clair);
+  background-color:var(--bgColor-bloc-fond-clair);
+  border:1px solid var(--border-color-bloc-fond-clair);
   margin-right:2em;
   flex-basis:300px;
 }
@@ -380,7 +380,7 @@
 
 .step-OnlineForm div.avatar {
   border-radius:20px;
-  border:1px solid var(--bord-couleur-de-fond-clair);
+  border:1px solid var(--border-color-bloc-fond-clair);
   width:36px;
   height:36px;
   padding:1px;

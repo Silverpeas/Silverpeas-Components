@@ -34,15 +34,15 @@
 
 #classifieds #categories>div {
 	margin-bottom: 1em;
-	background-color: var(--couleur-de-fond-clair);
-	border: 1px solid var(--bord-couleur-de-fond-clair);
+	background-color: var(--bgColor-bloc-fond-clair);
+	border: 1px solid var(--border-color-bloc-fond-clair);
 	margin-right: 1em;
 	flex-basis: 24em;
 }
 
 #classifieds #categories .categoryTitle {
 	background: var(--bgColor-header-bloc);
-	color: var(--couleur-titre-bloc-header);
+	color: var(--color-titre-bloc-header);
 	height: auto;
 	text-align: center;
 	text-transform: uppercase;
@@ -51,7 +51,7 @@
 }
 
 #classifieds #categories .categoryTitle a {
-	color: var(--couleur-titre-bloc-header);
+	color: var(--color-titre-bloc-header);
 	font-weight: bold;
 }
 
@@ -120,7 +120,7 @@
 	padding: 0.25em 0.25em 0.5em 0.25em;
 	display: block;
 	font-style: italic;
-	color: var(--couleur-text-second-niveau);
+	color: var(--color-text-second-niveau);
 }
 
 .categoryContent .date {
@@ -162,8 +162,8 @@ div.tableBoard {
 	float: left;
 	flex-grow: 1;
 	flex-basis: 320px;
-	background-color: var(--couleur-de-fond-clair);
-	border: 1px solid var(--bord-couleur-de-fond-clair);
+	background-color: var(--bgColor-bloc-fond-clair);
+	border: 1px solid var(--border-color-bloc-fond-clair);
 	margin: 0 2em 2em 0;
 	padding: 0.5em;
 	height: auto;
@@ -176,12 +176,12 @@ div.tableBoard {
 
 #classifieds_rich_list li:hover {
 	background-color: #FFF;
-	border-color:var(--bord-couleur-de-fond-clair-hover);
+	border-color:var(--border-color-bloc-fond-clair-hover);
 }
 
 #classifieds_rich_list li .classified_thumb {
 	width: 92px;
-	border: 3px solid var(--bord-couleur-de-fond-clair);
+	border: 3px solid var(--border-color-bloc-fond-clair);
 	overflow: hidden;
 	height: 68px;
 	position: relative;
@@ -270,7 +270,7 @@ div.tableBoard {
 }
 
 .principalContent .classified_title {
-	color:var(--couleur-titre);
+	color:var(--color-titre);
 	font-size:1.3em;
 	font-weight: bold;
 	padding: 0;
@@ -310,7 +310,7 @@ div.tableBoard {
 .principalContent .classified_thumbs a {
 	width: 52px;
 	height: 36px;
-	background-color:var(--couleur-de-fond-clair);
+	background-color:var(--bgColor-bloc-fond-clair);
 	float: left;
 	display: block;
 	overflow: hidden;
@@ -321,7 +321,7 @@ div.tableBoard {
 
 .principalContent .classified_selected_photo {
 	width: 90%;
-	border: 3px solid var(--bord-couleur-de-fond-clair);
+	border: 3px solid var(--border-color-bloc-fond-clair);
 	margin-top: 1em;
 	text-align: center;
 	height: auto;
@@ -482,8 +482,8 @@ div.tableBoard {
 }
 
 .thumbnailPreviewAndActions {
-	background-color: var(--couleur-de-fond-thumb);
-	border: 1px solid var(--bord-couleur-de-fond-thumb);
+	background-color: var(--bgColor-thumb);
+	border: 1px solid var(--border-color-thumb);
 	float: left;
 	margin-left: 0;
 	padding: 3px;
@@ -511,7 +511,7 @@ div.tableBoard {
 
 .thumbnailPreview .thumbnail {
 	height: 50px;
-	border: 1px solid var(--bord-couleur-de-fond-thumb);
+	border: 1px solid var(--border-color-thumb);
 }
 
 .classifiedForm .table {
