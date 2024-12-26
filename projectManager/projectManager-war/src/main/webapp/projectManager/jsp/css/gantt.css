@@ -1,30 +1,30 @@
 /*- [ Gantt BEGIN ] --------------------------- */
 
 #gantt .sousNavBulle {
-  margin-top:10px;
+  margin-top:1em;
   width:98%
 }
 
 #navTemporelle {
-  margin-bottom: 5px;
-  padding-bottom: 11px;
+  margin-bottom: 0.5em;
+  padding-bottom: 1em;
 }
 
 .sousNavBulle .sousNavCheck a {
   border:0;
-  color:#727272;
-  background:#EAEAEA url(../../../util/icons/check_off.png) 0px 0px no-repeat;
-  padding:0 12px;
-  margin:0 6px;
+  color:var(--color-text-filtre);
+  background:var(--bgColor-filtre-hover) url(../../../util/icons/check_off.png) 0px 0px no-repeat;
+  padding:0 1em;
+  margin:0 0.5em;
 }
 
 .sousNavBulle .sousNavCheck a:hover{
-  color:#5D5D5D;
+  color:var(--color-text-filtre-hover);
   background-image:url(../../../util/icons/check_on.png);
-  background-color:#EAEAEA;
+  background-color:var(--bgColor-filtre-hover);
 }
  .sousNavBulle .sousNavCheck a:focus{
-   color:#5D5D5D;
+   color:var(--color-text-filtre-hover);
 }
 
 .sousNavBulle .sousNavCheck a.active{
@@ -45,7 +45,7 @@
   text-align:center;
   font-weight:bold;
   text-transform:uppercase;
-  font-size:11px;
+  font-size:0.9em;
   background-color:#EAEAEA;
   border-top:1px solid #CCCCCC;
   border-left:1px solid #CCCCCC;
@@ -86,8 +86,8 @@
   border-top:0px solid #CCCCCC;
 }
 
-.ganttMois thead td{
-  font-size:10px;
+.ganttMois thead td{  
+  font-size: 0.9em;
   color:#333;
   border-bottom:1px solid #CCCCCC;
 }
@@ -102,7 +102,7 @@
 
 #day_number td {
   color:#666;
-  padding:3px;
+  padding:0.25em;
   text-align:center;
 }
 
@@ -130,18 +130,18 @@
   padding:0;
   }
 .ganttMois thead td.state, .ganttMois thead td.task_wording{
-  padding-left:8px;
+  padding-left:0.5em;
   color:#666;
-  font-size:11px;
+  font-size:0.9em;
   border-left:0;
 }
 
 .numerotation{
   color:#666;
-  font-size:11px;
+  font-size:0.9em;
   border:0;
-  padding-right:4px;
-  width:10px;
+  padding-right:0.5em;
+  width:1em;
 }
 
 .ganttMois tbody tr td.numerotation {
@@ -150,9 +150,8 @@
 
 .percentage {
   border-left:1px solid #CCCCCC;
-  padding:0 8px;
+  padding:0 0.5em;
   text-align:right;
-  width:30px;
 }
 
 td.day { text-align:center; }
@@ -160,7 +159,7 @@ td.day { text-align:center; }
 
 .task_wording div {
 	position:relative;
-	padding:0 0 0 15px;
+	padding:0 0 0 1em;
 }
 
 .task_wording div a.linkSee {
@@ -168,8 +167,6 @@ td.day { text-align:center; }
 	top:-2px; left:0px;
 	display:block;
 	}
-
-* html .task_wording div a.linkSee { left:-15px; }
 
 .task_wording div a.linkSee img{
 	vertical-align:top;
@@ -203,8 +200,6 @@ td.day { text-align:center; }
 	margin-left:175px;
 }
 
-
-
 #legendLabelId {
 	cursor:pointer;
 	float:right;
@@ -216,6 +211,7 @@ td.day { text-align:center; }
   margin:10px 0 0 0;
   display:none;
 }
+
 #legende li {
   display: block;
   float: left;
@@ -227,243 +223,151 @@ td.day { text-align:center; }
   width: 100%;
   }
 #legende ul {
-  margin:10px;
+  margin:1em;
 }
 
 
 /* affichage des bandes qui symbolise les taches */
 
-/* Cas dur�e 1seul jour... */
-.ganttMois tbody tr td.lenght_oneDay div div{
-    background-color: #FFFFFF;
-    background-image: url("../icons/pack-gantt.png");
-    background-position: right 2px;
-  border-top:1px solid #FFF;
-    background-repeat: repeat-x;
-    height: 14px;
-    position: absolute;
-    right: 0;
-    top: 0;
-    width: 20%;
-  float:none;
-  }
-
-.day_odd .lenght_oneDay div{
-  background-color: #EBEBEB;
-  border-top:1px solid #EBEBEB;
-  }
 
 /* Not started (normal task)*/
-.task, .task_start , .task_end  {
-  background-image:url(../icons/pack-gantt.png);
-  background-position:-5px 5px;
-  background-repeat:repeat-x;
+.task div, .task_start div , .task_end div  {
+ margin:0.25em 0;
+ height:1em;
 }
 
-.task_start {
-  background-position:0px 5px;
-  background-repeat:no-repeat;
+.task_start > div{
+  border-radius:1em 0 0 1em;
 }
 
-.task_end  {
-  background-position: right 5px;
-  background-repeat:no-repeat;
+.task_end > div  {
+  border-radius:0 1em 1em 0 ;
+}
+
+.lenght_oneDay > div {
+  border-radius:1em ;
 }
 
 .task span, .task_start span , .task_end span{ display:none;}
 
 
-.task_start.day_unworked {
-  background-position:0px -395px;
-}
-
-.task_end.day_unworked {
-  background-position:right -395px;
-}
-
-.task.day_unworked {
-  background-position:-5px -395px;
+.task_start.day_unworked> div,
+.task_end.day_unworked> div,
+.task.day_unworked> div {
+  background-color:transparent !important;
 }
 
 #legende .task {
   width:90px;
-  background-position:0px 2px;
   float:left;}
 
 #legende  .task.day_unworked {
   width:30px;
-  background-position:-5px -397px;
   float:left;
 }
 
 /* IN_PROGRESS */
-.in_progress .task {
-}
-.in_progress .task_start {
-}
-.in_progress .task_end {
+.in_progress .task > div,
+.in_progress .task_start > div,
+.in_progress .task_end > div {
+ background-color:#7CBF23;
+ border:1px solid #7CBF23;
 }
 
-.in_progress .task_start.day_unworked {
-}
-.in_progress .task_end.day_unworked {
-}
-.in_progress .task.day_unworked {
-}
 .in_progress .state { color:#7CBF23}
 
-
-/* DONE */
-.done .task {
-	 background-position:-5px -795px;
-}
-.done .task_start {
-	 background-position:0px -795px;
-}
-.done .task_end {
-	background-position:right -795px;
+#legende .in_progress {
+  border-radius:0.5em;
+  height:1em;
+ background-color:#7CBF23;
+ border:1px solid #7CBF23;
 }
 
-.done .task_start.day_unworked {
-	 background-position:0px -995px;
+/* DONE #217b63 */
+.done .task > div,
+.done .task_start > div,
+.done .task_end > div {
+ background-color:#217b63;
+ border:1px solid #217b63;
 }
-.done .task_end.day_unworked {
-	 background-position:right -995px;
-}
-.done .task.day_unworked {
-	background-position:-5px -995px;
-}
+
 .done .state { color:#217b63}
-.ganttMois tbody tr.done td.lenght_oneDay div div{
-  background-position: right -798px;
-}
+
 #legende .done {
-  background-position:0px -797px;
-  float:left;
+  border-radius:0.5em;
+  height:1em;
+ background-color:#217b63;
+ border:1px solid #217b63;
 }
 
-/* NOT_STARTED */
-.not_started .task {
-	 background-position:-5px -895px;
-}
-.not_started .task_start {
-	 background-position:0px -895px;
-}
-.not_started .task_end {
-	 background-position:right -895px;
+/* NOT_STARTED #b2b9aa */
+.not_started .task > div,
+.not_started .task_start > div,
+.not_started .task_end > div {
+ background-color:#b2b9aa;
+ border:1px solid #b2b9aa;
 }
 
-.not_started .task_start.day_unworked {
-	 background-position:0px -1095px;
-}
-.not_started .task_end.day_unworked {
-	 background-position:right -1095px;
-}
-.not_started .task.day_unworked {
-	 background-position:-5px -1095px;
-}
-.not_started .state {
-  color:#9ba293;}
+.not_started .state { color:#b2b9aa}
 
-.ganttMois tbody tr.not_started td.lenght_oneDay div div{
-  background-position: right -898px;
-}
 #legende .not_started {
-  background-position:0px -897px;
-  float:left;
+  border-radius:0.5em;
+  height:1em;
+ background-color:#b2b9aa;
+ border:1px solid #b2b9aa;
 }
 
 
 /* LOST */
-.lost .task {
-  background-position:-5px -195px;
-}
-.lost .task_start {
-  background-position:0px -195px;
-}
-.lost .task_end {
-  background-position:right -195px;
+.lost .task > div,
+.lost .task_start > div,
+.lost .task_end > div {
+ background-color:#e54722;
+ border:1px solid #e54722;
 }
 
-.lost .task_start.day_unworked {
-  background-position:0px -595px;
-}
-.lost .task_end.day_unworked {
-  background-position:right -595px;
-}
-.lost .task.day_unworked {
-  background-position:-5px -595px;
-}
 .lost .state { color:#e54722}
 
-.ganttMois tbody tr.lost td.lenght_oneDay div div{
-  background-position: right -198px;
-}
 #legende .lost {
-  background-position:0px -197px;
-  float:left;
+  border-radius:0.5em;
+  height:1em;
+ background-color:#e54722;
+ border:1px solid #e54722;
 }
-
 
 /* WARNING */
-.warning .task {
-  background-position:-5px -95px;
-}
-.warning .task_start {
-  background-position:0px -95px;
-}
-.warning .task_end {
-  background-position:right -95px;
+.warning .task > div,
+.warning .task_start > div,
+.warning .task_end > div {
+ background-color:#e99510;
+ border:1px solid #e99510;
 }
 
-.warning .task_start.day_unworked {
-  background-position:0px -495px;
-}
-.warning .task_end.day_unworked {
-  background-position:right -495px;
-}
-.warning .task.day_unworked {
-  background-position:-5px -495px;
-}
 .warning .state { color:#e99510}
 
-.ganttMois tbody tr.warning td.lenght_oneDay div div{
-  background-position: right -98px;
-}
 #legende .warning {
-  background-position:0px -97px;
-  float:left;
+  border-radius:0.5em;
+  height:1em;
+ background-color:#e99510;
+ border:1px solid #e99510;
 }
 
 
 /* FROZEN */
-.frost .task {
-  background-position:-5px -295px;
-}
-.frost .task_start {
-  background-position:0px -295px;
-}
-.frost .task_end {
-  background-position:right -295px;
+.frost .task > div,
+.frost .task_start > div,
+.frost .task_end > div {
+ background-color:#47B8D8;
+ border:1px solid #47B8D8;
 }
 
-.frost .task_start.day_unworked {
-  background-position:1px -695px;
-}
-.frost .task_end.day_unworked {
-  background-position:right -695px;
-}
-.frost .task.day_unworked {
-  background-position:-5px -695px;
-}
 .frost .state { color:#47B8D8}
 
-.ganttMois tbody tr.frost td.lenght_oneDay div div{
-  background-position: right -298px;
-}
 #legende .frost {
-  background-position:0px -297px;
-  float:left;
+  border-radius:0.5em;
+  height:1em;
+ background-color:#47B8D8;
+ border:1px solid #47B8D8;
 }
 
 

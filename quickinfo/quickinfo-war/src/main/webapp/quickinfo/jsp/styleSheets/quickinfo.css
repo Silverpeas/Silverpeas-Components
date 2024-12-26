@@ -22,12 +22,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/*** home***/
+/*** home  ***/
 .quickInfo-description {
-  border-left: 6px solid #E4E4E4;
-  color: #666666;
-  padding: 8px;
-  max-height: 90px;
+  border-left:var(--border-left-size-description) solid var(--border-left-color-description);
+  color:var(--color-text-description);
+  padding: 0.5em 0.5em 0.5em var(--padding-left-description);
+  max-height:var(--max-height-intro);
   overflow: hidden;
 }
 
@@ -66,7 +66,7 @@
 }
 
 #list-news .news-title {
-  font-size: 125%;
+  font-size:var(--taille-titre);
   line-height: 110%;
   margin: 0 0 0.25em 0;
   padding: 0;
@@ -74,30 +74,30 @@
 
 #list-news .news-title a {
   font-size: 100%;
-  color: #2d2d2d;
+  color:var(--color-text);
 }
 
 #list-news .news-title a:hover {
-  color: #1c94d4;
+  color:var(--color-lien-action);
 }
 
 #list-news .news-teasing {
   line-height: 100%;
-  color: #8f8f8f;
+  color:var(--color-text-second-niveau);
   margin: 0 0 0.5em 0;
   padding: 0;
 }
 
 #list-news .news-info-fonctionality {
-  background-color: #f3f3f3;
-  border-top: 1px solid #e8e8e8;
-  border-bottom: 1px solid #e8e8e8;
+  background-color:var(--bgColor-filtre-hover);
+  border-top: 1px solid var(--border-color-filtre-hover);
+  border-bottom: 1px solid var(--border-color-filtre-hover);
   clear: left;
-  padding: 3px 5px 1px;
-  color: #8f8f8f;
+  padding:0.25em;
+  color:var(--color-text-filtre-hover);
   font-size: 0.9em;
   position: relative;
-  height: 19px;
+  height: auto;
 }
 
 #list-news .news-info-fonctionality .operation a {
@@ -141,7 +141,7 @@
 
 #list-news .news-info-fonctionality .operation {
   position: absolute;
-  top: 0.3em;
+  top:calc( 50% - 11px);
   right: 0.5em;
 }
 
@@ -150,8 +150,7 @@
 }
 
 #list-news .news-nb-attached-files {
-  color: #000;
-  font-size: 9pt;
+  color:var(--color-text);
 }
 
 #illustration img {
@@ -189,13 +188,8 @@ fieldset#news-thumbnail legend {
 #BeginDateArea,
 #EndDateArea,
 #thumb {
-  width: 98%;
+  width:100%;
 }
-
-#descriptionArea textarea {
-  width: 90%;
-}
-
 
 #my-quickInfo {
   float: right;
@@ -206,18 +200,18 @@ fieldset#news-thumbnail legend {
 }
 
 #my-quickInfo .header h3 {
-  font-size: 130%;
-  font-weight: 100;
+  font-size:var(--taille-titre);
+  font-weight: 400;
   line-height: 90%;
   margin: 2em 0 1em;
   padding: 0;
 }
 
 #my-quickInfo .header h3 strong {
-  color: #1c94d4;
+  color:var(--color-titre-avec-deux-couleurs);
   display: block;
   font-size: 90%;
-  font-weight: 100;
+  font-weight: 400;
 }
 
 #my-quickInfo ul {
@@ -237,8 +231,8 @@ fieldset#news-thumbnail legend {
 }
 
 #my-quickInfo ul li .date {
-  font-size: 100%;
-  color: #8f8f8f;
+  font-size:1em;
+  color:var(--color-text-date);
   display: block;
 }
 
@@ -247,15 +241,15 @@ fieldset#news-thumbnail legend {
 }
 
 .quickInfo .publiDesc {
-  border-left: 6px solid #e4e4e4;
-  color: #666666;
-  padding: 8px;
+  border-left: var(--border-left-size-description) solid var(--border-left-color-description);
+  color:var(--color-text-description);
+  padding: 0.5em 0.5em 0.5em var(--padding-left-description);
 }
 
 .txt-no-content {
-  color: #575757;
+  color:var(--color-text-second-niveau);
   font-style: italic;
-  font-size: 90%;
+  font-size:1em;
 }
 
 .rightContent #pagination {
@@ -359,10 +353,7 @@ fieldset#news-thumbnail legend {
   float: right;
   display: inline-block;
   border: 1px solid #ec8001;
-  background-image: url("../../../util/icons/gradientSVG.jsp?from=ec9c01&to=db7700&vertical=0&horizontal=100");
-  -moz-background-size: 100%;
-  -pie-background: linear-gradient(#ec9c01, #db7700);
-  behavior: url("/silverpeas/util/styleSheets/PIE.htc");
+  background:linear-gradient(180deg, #ec9c01 0%, #db7700 100%);
 }
 
 .alert-quickInfo .validate-actuality span {
@@ -404,7 +395,7 @@ fieldset#news-thumbnail legend {
   flex-grow: 1;
   flex-basis: 320px;
   max-width: 400px;
-  background: #efefef;
+  background:var(--bgColor-bloc-fond-clair);
   margin: 0 2em 2em 0;
   padding: 2em 2em 0 2em;
   height: auto;
@@ -424,14 +415,13 @@ fieldset#news-thumbnail legend {
 }
 
 #list-news-lecteur-view li h3 {
-  color: #444444;
   text-align: center;
   padding: 0;
   margin: 1em 0 0.5em 0;
 }
 
 #list-news-lecteur-view li .news-teasing {
-  color: #777;
+  color:var(--color-text-second-niveau);
   text-align: justify;
   padding: 0 0 1em 0;
   margin: 0.5em 0;
