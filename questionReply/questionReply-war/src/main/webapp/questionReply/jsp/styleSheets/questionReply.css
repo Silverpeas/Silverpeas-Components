@@ -37,47 +37,46 @@ h5.answerTitle{
 }
 
 li.category {
-  margin-top:10px;
+  margin-top:1em;
 }
 
 .categoryTitle{
   position:relative;
-  padding:10px 5px 5px 30px;
+  padding:0.5em 60px 0.5em 30px;
   min-height:19px;
   cursor:pointer;
-  background:#EAEAEA url("../../../util/icons/arrow/open.gif") 5px center no-repeat;
-  border:1px solid #EAEAEA;
-  border-radius:10px;
-  padding-right:60px;
+  background:var(--bgColor-dossier) url("../../../util/icons/arrow/open.gif") 5px center no-repeat;
+  border:1px solid var(--bgColor-dossier);
+  border-radius:var(--radius-dossier);
 }
 
 .categoryTitle.category-open {
-  background:#EAEAEA url("../../../util/icons/arrow/closed.gif") 5px center no-repeat;
+  background-image:url("../../../util/icons/arrow/closed.gif");
 }
 
 .select .categoryTitle {
-  background:#DDDDDD url() 5px  center no-repeat;
-  border:1px solid #DDDDDD;
-  border-radius:10px;
+  background:var(--bgColor-dossier-hover) url() 5px  center no-repeat;
+  border:1px solid var(--bgColor-dossier-hover);
+  border-radius:var(--radius-dossier);
   padding-left:10px;
   cursor:default;
 }
 
 .hover .categoryTitle {
-  background-color:#DDDDDD;
-  border:1px solid #DDDDDD;
-  border-radius:10px;
+  background-color:var(--bgColor-dossier-hover);
+  border:1px solid var(--bgColor-dossier-hover);
+  border-radius:var(--radius-dossier);
 }
 
 .categoryTitle h3 {
-  font-size: 9pt;
-  font-weight: bold;
+  font-size: 1.1em;
+  font-weight: 700;
   display: inline;
 }
 
 .categoryTitle p {
   display: inline;
-  color:#333;
+  color:var(--color-text-description);
 }
 
 .question .action,
@@ -135,7 +134,7 @@ div.question{
 .questionTitle {
   line-height: 140%;
   margin: 6px 142px 5px 25px;
-  cursor:pointer;	/* Cursor is like a hand when someone rolls the mouse over the question */
+  cursor:pointer;
 }
 
 .questionTitle h4 {
@@ -147,11 +146,7 @@ li.answer {
   color: #333333;
   padding: 4px 0 10px 2px;
   border-radius: 5px;
-  -moz-border-radius: 5px;
-  -webkit-border-radius: 5px;
   box-shadow:5px 5px 10px #cccccc;
-  -moz-box-shadow:5px 5px 10px #cccccc;
-  -webkit-box-shadow:5px 5px 10px #cccccc;
   background-color:#FFF;
   margin-left: auto;
   margin-right: auto;
@@ -197,7 +192,7 @@ h5.answerTitle {
   padding:5px 15px 10px 24px;
   text-align:right;
   font-style:italic;
-  font-size:11px;
+  font-size:1em;
 }
 
 .attachments {
@@ -253,14 +248,7 @@ fieldset#answerFieldset legend {
 
 #questionFieldset .field,
 #answerFieldset .field {
-  width: 98%;
-}
-
-#questionFieldset #categoryArea select,
-#questionFieldset #questionArea input,
-#questionFieldset #contentArea input,
-#answerFieldset #answerArea input {
-  width: 46%;
+  width: 100%;
 }
 
 #answerFieldset #privateArea input,
