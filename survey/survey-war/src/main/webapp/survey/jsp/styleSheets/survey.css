@@ -29,20 +29,19 @@ body {
 
 /* tableau Doodle */
 .questionResults th, .questionResults td, .questionResults tr {
-  padding: 5px;
-  font-size: 12px;
+  padding: 0.5em;
 }
 
 .questionResults .questionResults-top th {
   background-color: #E4E4E4;
-  border: #CCC 1px solid;
+  border: 1px solid  #CCC;
   width: 150px;
 }
 
 .questionResults .questionResults-top .questionResults-vide, .questionResults tbody .questionResults-vide {
   background-color: #FFFFFF;
   border: none;
-  padding: 3px;
+  padding: 0.25em;
 }
 
 .questionSeparator {
@@ -53,29 +52,31 @@ body {
 
 .questionResults .displayUserName, .questionResults .displayUserName a {
   background-color: #E4E4E4;
-  font-size: 11px;
-  font-weight: 100;
-  line-height: 29px;
+  font-weight: 500;
+  line-height: 2em;
   margin-right: 5px;
   padding-left: 10px;
 }
 
-.questionResults tbody tr td {
-  /*min-height: 33px;*/
+.questionResults .displayUserName a{
+  text-decoration: underline;
+}
+.questionResults .displayUserName a:hover{
+  color: var(--color-lien-action);
 }
 
-.questionResults tbody .questionResults-Oui {
-  background-color: #D5FAC5;
-  border: 1px solid #7CCC24;
-  text-align: center;
-  font-size: 10px;
+.questionResults .questionResults-Oui {
+	background-color:var(--bgColor-color-im-ok);
+	border:1px solid var(--border-color-im-ok);
+	text-align:center;
+	line-height: 2em;
 }
 
-.questionResults tbody .questionResults-Non {
-  background-color: #FECBCB;
-  border: 1px solid #FF928F;
-  text-align: center;
-  font-size: 10px;
+.questionResults .questionResults-Non {
+	background-color:var(--bgColor-color-im-nok);
+	border:1px solid var(--border-color-im-nok);
+	text-align:center;
+	line-height: 2em;
 }
 
 .questionResults .labelAnswer {
@@ -175,18 +176,14 @@ fieldset#answers legend {
   display: none;
 }
 
-
-/** 3269 **/
 .eventInfo {
-  background-color: #EFEFEF;
-  border: 1px solid #CDCDCD;
-  border-radius: 15px;
-  padding: 15px 0;
+  background-color:var(--bgColor-bloc-fond-clair);
+  border: 1px solid var(--border-color-bloc-fond-clair);
+  border-radius:var(--radius-bloc);
+  padding: 1em;
   display: table;
-  width: 98%;
-  behavior: url("/silverpeas/util/styleSheets/PIE.htc");
+  width: 100%;
 }
-
 
 .sousNavBulle {
   float: none;
@@ -200,7 +197,7 @@ fieldset#answers legend {
   display: inline-block;
   content: '| ';
   margin-right: 1em;
-  color: #999
+  color:var(--border-color-filtre);
 }
 
 .surveyResult .sousNavBulle > p:nth-child(1):before {
@@ -208,9 +205,9 @@ fieldset#answers legend {
 }
 
 .eventName {
-  color: #333333;
-  font-size: 130%;
-  font-weight: bold;
+  color:var(--color-titre);
+  font-size:var( --font-size-titre);
+  font-weight:var( --font-weight-titre);
 }
 
 .eventInfo div {
@@ -226,33 +223,15 @@ fieldset#answers legend {
   padding-bottom: 11px;
 }
 
-* + html .eventInfo div {
-  float: left;
-  width: 32%;
-}
-
-* html .eventInfo div {
-  float: left;
-  width: 32%;
-  border: 0;
-}
-
 .eventInfo div:first-child {
   border: 0;
 }
 
 .eventInfo div div.bloc {
   padding: 0 10px 0 37px;
-  color: #333;
-  font-size: 110%;
   display: inline-block;
   width: auto;
   text-align: left;
-}
-
-* html .eventInfo div div.bloc {
-  padding: 0 10px 0 27px;
-  width: 70%;
 }
 
 .eventInfo div span {
@@ -260,8 +239,6 @@ fieldset#answers legend {
 }
 
 .eventInfo div span a {
-  color: #333;
-  font-size: 110%;
   text-decoration: underline;
 }
 
@@ -278,8 +255,8 @@ fieldset#answers legend {
 }
 
 span.priority {
-  background-color: #F6DEDE;
-  border: 1px solid #FDBABA;
+  background-color: var(--bgColor-color-im-nok);
+  border: 1px solid var(--border-color-im-nok);
   border-radius: 5px;
   color: #F02929;
   font-size: 8px;
@@ -287,29 +264,29 @@ span.priority {
   letter-spacing: 0.11em;
   display: inline;
   padding: 1px 4px;
-  behavior: url("/silverpeas/util/styleSheets/PIE.htc");
 }
 
+
 .surveyDesc {
-  border-left: 6px solid #E4E4E4;
-  color: #666666;
-  font-weight: 100;
-  padding: 8px;
-  margin: 10px 0;
+  border-left: var(--border-left-size-description) solid var(--border-left-color-description);
+  color:var(--color-text-description);
+  font-weight: 500;
+  padding: 0.5em;
+  margin: 1em 0;
 }
 
 ul.attachmentList li.attachmentListItem {
   margin: 0;
-  padding: 0px 5px 0px 10px;
+  padding: 0px 0.5em 0px 1em;
 }
 
 .bgDegradeGris p#permalinkInfo {
-  padding: 11px 17px 11px 17px;
+  padding:1em;
 }
 
 .surveyResult {
   clear: both;
-  padding: 15px 0;
+  padding: 1em 0;
 }
 
 #publishResultDialog label {
@@ -355,8 +332,8 @@ ul.attachmentList li.attachmentListItem {
 }
 
 .inlineMessage .linkFile {
-  color: #0861ad;
-  font-weight: bold;
+  color:var(--color-lien-action);
+  font-weight: 700;
   text-decoration: underline;
 }
 

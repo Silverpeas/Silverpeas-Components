@@ -23,9 +23,9 @@
  */
 
 .suggestion-title {
-  color: #333333;
-  font-size: 130%;
-  font-weight: 100;
+  color: var(--color-titre);
+  font-size: var(--font-size-titre);
+  font-weight:var(--font-weight-titre);
   margin: 0 0 1em;
   padding: 0;
 }
@@ -35,15 +35,14 @@
 }
 
 .txt-no-content {
-  color: #575757;
+  color:var(--color-text-second-niveau);
   font-style: italic;
-  font-size: 90%;
 }
 
-.lastSuggestion h3 {
+div.lastSuggestion h3.lastSuggestion-title {
   background: transparent url(../icons/suggestion-pellet.png) top right no-repeat;
   height: 28px;
-  padding-top: 8px !important;
+  padding-top: 8px ;
   position: absolute;
   top: 0;
   width: 100%;
@@ -97,9 +96,9 @@
 .my-suggestionBox-inProgress .header h3,
 .my-suggestionBox-draft .header h3 {
   padding: 0;
-  margin: 2em 0 1em;
-  font-size: 130%;
-  font-weight: 100;
+  margin:1em 0 0.5em;
+  font-size:var(--font-size-titre);
+  font-weight:var(--font-weight-titre);
   line-height: 90%;
 }
 
@@ -111,8 +110,8 @@
 .my-suggestionBox-draft .header h3 strong {
   display: block;
   font-size: 90%;
-  font-weight: 100;
-  color: #1c94d4;
+  font-weight: 500;
+  color:var(--color-titre-avec-deux-couleurs);
 }
 
 .buzzSuggestion a:hover,
@@ -121,24 +120,22 @@
 .my-suggestionBox-draft li a:hover,
 .my-suggestionBox-inProgress li a:hover,
 .my-suggestionBox-inProgress li a:hover {
-  color: #1c94d4;
+  color:var(--color-lien-action);
 }
 
 .buzzSuggestion li,
 .lastSuggestion li,
 .lastCommentSuggestion li {
-  background-color: #f0f0f0;
-  border: 1px solid #cccccc;
-  border-radius: 8px;
-  -webkit-border-radius: 8px;
-  -moz-border-radius: 8px;
-  padding: 13px 82px 13px 13px;
+  background-color:var(--bgColor-bloc-fond-clair);
+  border: 1px solid var(--border-color-bloc-fond-clair);
+  border-radius:var(--radius-bloc);
+  padding:1em;
   margin: 0 0 1em 0;
   position: relative;
 }
 
 .buzzSuggestion .header h3 {
-  color: #ec9c01
+  color:var(--color-flashy-principale);
 }
 
 .buzzSuggestion li > a {
@@ -176,7 +173,7 @@
 }
 
 .lastCommentSuggestion .commentaires pre.text {
-  color: #575757;
+  color:var(--color-text-second-niveau);
   font-style: italic;
   font-family: inherit;
   white-space: pre-wrap;
@@ -218,12 +215,12 @@
 }
 
 .my-suggestionBox-inProgress .header h3 {
-  font-size: 117%;
+  font-size:var(--font-size-titre);
   line-height: 100%;
 }
 
 .my-suggestionBox-inProgress .header h3 strong {
-  font-size: 111%;
+  font-size:90%;
 }
 
 .my-suggestionBox-inProgress a.VALIDATED {
@@ -279,8 +276,8 @@
 
 #suggestion .fields {
   margin: 0px;
-  padding: 15px 0px 0px 1%;
-  width: 99%;
+  padding: 15px 0px 0px 1em;
+  width:calc(100% - 1em);
 }
 
 #suggestion .legend {
@@ -322,8 +319,8 @@
 
 #suggestionDescriptionArea {
   clear: both;
-  padding: 5px 1% 5px 0;
-  width: 99%;
+  padding: 5px 1em 5px 0;
+  width:calc(100% - 1em);
 }
 
 
@@ -373,7 +370,7 @@
   float: left;
   clear: left;
   padding-right: 3%;
-  border-right: 1px solid #ccc;
+  border-right: 1px solid var(--color-trait-separateur);
 }
 
 .lecteur-view .lastCommentSuggestion {
