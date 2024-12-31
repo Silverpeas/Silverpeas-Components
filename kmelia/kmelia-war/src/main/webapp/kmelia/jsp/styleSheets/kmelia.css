@@ -69,8 +69,8 @@ body.treeView>div[id*="kmelia"]>div.kmelia #topPage .cellBodyWindows {
 #preview .publiName,
 #preview-clone .publiName {
   color: var(--color-titre);
-  font-size: var(--taille-titre);
-  font-weight: bold;
+  font-size: var(--font-size-titre);
+  font-weight:var(--font-weight-titre);
   margin: 0 0 0.5em;
   padding: 0;
 }
@@ -1102,8 +1102,8 @@ a.button.refuse span {
 .kmelia.path .header h3 {
   padding: 0;
   margin: 0 0 1em;
-  font-size: var(--taille-titre);
-  font-weight: 400;
+  font-size: var(--font-size-titre);
+  font-weight:var(--font-weight-titre);
   line-height: 90%;
 }
 

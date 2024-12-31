@@ -88,8 +88,8 @@
 #infoletter-home-app .header h3 {
   padding: 0;
   margin: 0 0 1em;
-  font-size:var(--taille-titre);
-  font-weight:300;
+  font-size:var(--font-size-titre);
+  font-weight:var(--font-weight-titre);
   line-height: 90%;
 }
 

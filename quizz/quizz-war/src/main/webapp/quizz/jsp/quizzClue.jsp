@@ -40,7 +40,7 @@ String m_context = ResourceLocator.getGeneralSettingBundle().getString("Applicat
 <title>___/ Silverpeas - Corporate Portal Organizer \_______________________________</title>
 <view:looknfeel/>
 </head>
-<body bgcolor="#FFFFFF" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
+<body>
 <script language="javascript">
 <!--
 //  InitBulle("txtnote","000000","intfdcolor2",2,90);

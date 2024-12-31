@@ -66,7 +66,8 @@
 }
 
 #list-news .news-title {
-  font-size:var(--taille-titre);
+  font-size:var(--font-size-titre);
+  font-weight:var(--font-weight-titre);
   line-height: 110%;
   margin: 0 0 0.25em 0;
   padding: 0;
@@ -200,8 +201,8 @@ fieldset#news-thumbnail legend {
 }
 
 #my-quickInfo .header h3 {
-  font-size:var(--taille-titre);
-  font-weight: 400;
+  font-size:var(--font-size-titre);
+  font-weight:var(--font-weight-titre);
   line-height: 90%;
   margin: 2em 0 1em;
   padding: 0;

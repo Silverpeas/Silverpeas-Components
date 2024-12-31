@@ -100,7 +100,8 @@
 
 #my-formsOnline-refused .my-formsOnline-title ,
 #my-formsOnline-validate .my-formsOnline-title {
-  font-size:var(--taille-titre);
+  font-size:var(--font-size-titre);
+  font-weight:var(--font-weight-titre);
 }
 
 #my-formsOnline-refused .my-formsOnline-title{
