@@ -22,10 +22,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-img {
-	border: 0px:
-}
-
 #datepicker {
 	float:left;
 	margin:0 1em 1em 0;
@@ -67,7 +63,7 @@ td.txtlibform {
 }
 
 #selected_hour table td{
-	padding:3px;
+	padding:0.25em;
 	border-bottom:1px solid #FFF;
 	border-right:1px solid #FFF;
 	text-align:center;
@@ -75,13 +71,13 @@ td.txtlibform {
 
 #selected_hour thead td{
 	font-weight:bold;
-	padding:3px 10px;
+	padding:0.25em 0.5em;
 }
 
 .selected_date li a {
-	position:absolute;
-	top:6px;
-	right:3px;
+	position: absolute;
+	top: calc( 50% - 8px );
+	right: 0.5em;
 }
 
 .selected_date h3 {
@@ -93,8 +89,6 @@ td.txtlibform {
 
 .buttonBar {
 	clear:both;
-	text-align:center;
-	width:400px;
 }
 
 .scheduleEvent p.txtnav {
@@ -109,17 +103,17 @@ td.txtlibform {
 
 .questionResults td.hideDay,.questionResults td.hideTime {
 	background-color:inherit;
-	border:1px solid #FFFFFF;
+	border:1px solid transparent;
 }
 
 #dateTable, #contributorsInfos {
-	margin:10px;
-	width:98%;
+	margin:1em 0;
+	width:100%;
 }
 
 #contributorsInfos h3 {
 	padding:0;
-	margin:10px 0 0 7px;
+	margin:1em 0 0 0;
 }
 
 #contributorsInfos ul {
@@ -132,65 +126,54 @@ td.txtlibform {
 	padding-left:100px;
 	line-height:20px;
 }
-
+  
 .btnAction {
-	background-image: none;
-	background-color:#FFD5AF;
-	border:1px solid #F1790F;
-	border-radius:8px;
-	-moz-border-radius: 8px;
-	-webkit-border-radius: 8px;
-	padding:8px 10px;
-	color:#444444;
-	font-weight:bold;
-	line-height:120%;
+	background:var(--bgColor-btn-secondaire);
+	border:1px solid var(--border-color-btn-secondaire);
+	border-radius:var(--radius-btn-secondaire);
+	padding:0.25em 0.5em;
+	color:var(--color-text-btn-secondaire);
 	margin-top:4px;
 	display:inline-block;
 }
-
+.btnAction[href*='setUsers']:before {
+	content:'';
+	display: inline-block;
+	width: 1.5em;
+	height: 1.5em;
+	vertical-align: top;
+	margin-right:0.5em;
+	background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M9 14c1.381 0 2.631-.56 3.536-1.465C13.44 11.631 14 10.381 14 9s-.56-2.631-1.464-3.535C11.631 4.56 10.381 4 9 4s-2.631.56-3.536 1.465C4.56 6.369 4 7.619 4 9s.56 2.631 1.464 3.535A5 5 0 0 0 9 14m0 7c3.518 0 6-1 6-2c0-2-2.354-4-6-4c-3.75 0-6 2-6 4c0 1 2.25 2 6 2m12-9h-2v-2a1 1 0 1 0-2 0v2h-2a1 1 0 1 0 0 2h2v2a1 1 0 1 0 2 0v-2h2a1 1 0 1 0 0-2'/%3E%3C/svg%3E");
+}
 .btnAction:hover {
-	background-color:#F1790F;
-	color:#FFF;
+	background:var(--bgColor-btn-secondaire-hover);
 }
 
 .inactif {
 	color:#999999;
 }
 
-.buttonBar {
-	margin-top:30px;
-	text-align:center;
-	width:100%;
+#dateTable {
+	background-color:var(--bgColor-bloc-fond-clair);
+	padding:0.5em;
 }
-
-.buttonBar table {
-	margin:0 auto;
-}
-
-.buttonBar table table{
-	margin:inherit;
-}
-
-/* copie css survey */
 
 .questionResults th, .questionResults td, .questionResults tr {
-	padding:5px 0;
-	font-size:12px;
+	padding:0.5em 0;
 }
 .questionResults thead td.day, .questionResults thead td.titreCouleur {
 	text-align:center;
 }
 
 .questionResults td.titreLigne, #contributorsInfos h3{
-	color:#444;
-	font-size:11px;
-	font-weight:bold;
+	font-size:1em;
+	font-weight:700;
 	width:128px;
 }
 
 .questionResults .questionResults-top th {
 	background-color:#E4E4E4;
-	border:#CCC 1px solid;
+	border:1px solid #CCC ;
 	width:150px;
 }
 
@@ -201,19 +184,17 @@ td.txtlibform {
 }
 
 .questionResults .questionResults-Oui {
-	background-color:#D5FAC5;
-	border:1px solid #7CCC24;
+	background-color:var(--bgColor-color-im-ok);
+	border:1px solid var(--border-color-im-ok);
 	text-align:center;
-	font-size:12px;
-	line-height: 27px;
+	line-height: 2em;
 }
 
 .questionResults .questionResults-Non {
-	background-color:#FECBCB;
-	border:1px solid #FF928F;
+	background-color:var(--bgColor-color-im-nok);
+	border:1px solid var(--border-color-im-nok);
 	text-align:center;
-	font-size:12px;
-	line-height: 27px;
+	line-height: 2em;
 }
 
 .questionResults .displayUserName,
@@ -221,9 +202,7 @@ td.txtlibform {
 .questionResults .questionResults-NC,
 .questionResults .questionResults-NC a {
 	background-color: #E4E4E4;
-    font-size: 11px;
-    font-weight: 100;
-    line-height: 29px;
+    line-height: 2em;
     margin-right: 5px;
     padding-left: 10px;
 	white-space:nowrap;
@@ -244,5 +223,5 @@ td.txtlibform {
 }
 
 tr.resultVote td.participation {
-	text-align:center;;
+	text-align:center;
 }

@@ -71,8 +71,9 @@
 .my-formsOnline-title {
   padding: 0;
   margin: 2em 0 0.5em;
-  font-size:1.3em;
-  font-weight:normal;
+  font-size:var(--font-size-titre);
+  font-weight:var(--font-weight-titre);
+  color: var(--color-titre);
   line-height: 90%;
 }
 
@@ -89,11 +90,13 @@
 }
 .formsOnline-waitMyAction-title strong {
   color:var(--color-titre-avec-deux-couleurs);
+  font-size: 90%;
+  font-weight:normal;
 }
 
 .my-formsOnline-title strong{
   display: block;
-  font-size: 1em;
+  font-size: 90%;
   font-weight:normal;
   color:var(--color-titre-avec-deux-couleurs);
 }
@@ -115,13 +118,13 @@
 #my-formsOnline-validate .my-formsOnline-title strong {
   color:var(--color-flashy-principale);
   display:inline;
-  font-size:1em;
+  font-size:90%;
 }
 
 #my-formsOnline-refused .my-formsOnline-title strong {
   color:var(--color-titre-avec-deux-couleurs);
   display:inline;
-  font-size:1em;
+  font-size:90%;
 }
 
 #all-formsOnline .secteur-container li a:hover,
@@ -146,12 +149,12 @@
 }
 
 .my-formsOnline-title {
-  font-size:1.17em;
+  font-size:var(--font-size-titre);
   line-height: 1em;
 }
 
 .my-formsOnline-title strong {
-  font-size:1.11em;
+  font-size:90%;
 }
 
 .formsOnline .principalContent .inlineMessage {
@@ -261,7 +264,8 @@
 }
 
 #all-formsOnline .form-title {
-  font-size:1.3em;
+  font-size:var(--font-size-titre);
+  font-weight:var(--font-weight-titre);
 }
 
 #all-formsOnline .form-description,
