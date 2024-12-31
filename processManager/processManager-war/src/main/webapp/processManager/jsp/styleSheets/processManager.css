@@ -160,8 +160,8 @@ Replacements
 .header.title h3 {
   margin: 0em 0 1em;
   padding: 0;
-  font-size:var(--taille-titre);
-  font-weight:normal;
+  font-size:var(--font-size-titre);
+  font-weight:var(--font-weight-titre);
   line-height: 90%;
 }
 

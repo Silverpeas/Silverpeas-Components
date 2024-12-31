@@ -894,7 +894,7 @@ if (action.equals("RecordQuestionsResponses")) {
 } //End if action = ViewResult
 
 if (action.equals("PreviewQuizz")) {
-    out.println("<body marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor=\"#FFFFFF\">");
+    out.println("<body>");
 
     Window window = gef.getWindow();
     BrowseBar browseBar = window.getBrowseBar();
@@ -917,7 +917,7 @@ if (action.equals("PreviewQuizz")) {
     out.println(window.printAfter());
 }
 if (action.equals("ViewQuizz")) {
-  out.println("<body bgcolor=\"#FFFFFF\">");
+  out.println("<body>");
   Window window = gef.getWindow();
   BrowseBar browseBar = window.getBrowseBar();
   browseBar.setDomainName(quizzScc.getSpaceLabel());
@@ -956,7 +956,7 @@ if (action.equals("ViewQuizz")) {
   out.println(window.printAfter());
 } //End if action = ViewQuizz
 else if (action.equals("ViewCurrentQuestions")) {
-  out.println("<body marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor=\"#FFFFFF\">");
+  out.println("<body>");
 
   Window window = gef.getWindow();
   BrowseBar browseBar = window.getBrowseBar();

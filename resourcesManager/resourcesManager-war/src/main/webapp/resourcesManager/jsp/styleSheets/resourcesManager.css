@@ -22,19 +22,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 #navigation {
-  background-color:#EAEAEA;
-  padding: 5px;
-  width:99%;
-  min-height:24px;
   position:relative;
 }
 
 .titrePanier {
-  margin: 3px;
-  font-size: 13px;
-  font-weight: bold;
+  margin: 0.25em;
+  font-size:var(--font-size-titre);
+  font-weight:var(--font-weight-titre);
   text-align: center;
 }
+
 div.hover {
   color: #666666;
   cursor: pointer;
@@ -71,44 +68,37 @@ div.selected {
 
 .sousNavBulle #others {
   position: absolute;
-  right: 2px;
-  top: 3px;
-  float:right;
-  margin-top: 7px;
-  padding: 0 30px;
+  right: 0;
+  top: 0;
   text-align:right;
 }
 
 .sousNavBulle #planning-context {
-  background:#FFF url(../../../util/icons/user.png) 3px 3px no-repeat;
-  font-size:11px;
-  font-weight:normal;
-  padding:4px 6px 4px 22px;
-  color:#3a3a3a;
-  display:inline-block;
-  margin:8px 0 6px;
+  background: #FFF url(../../../util/icons/user.png) 3px center no-repeat;
+  padding: 0.5em 0.5em 0.5em calc( 18px + 0.5em);
+  color: #3a3a3a;
+  display: inline-block;
+  margin: 0.5em 0 0.5em;
+  font-weight: 500;
+  font-size: 0.9em;
 }
 .sousNavBulle #currentScope {
-  margin:4px 4px 12px;
+  margin:0 0 0.5em 0;
 }
 .sousNavBulle #currentScope a {
-  background-color: transparent;
-  border:0;
   color: #AFAFAF;
-  font-size: 11px;
-  line-height: 100%;
-  margin-right: 3px;
-  padding: 0;
-  text-decoration: none;
+  margin-right:0.5em;
+  padding:0.5em;
 }
 .sousNavBulle #today a {
   background-color: #FAD163;
   color: #000000;
-  font-size: 11px;
-  font-weight:normal;
-  padding: 3px 11px;
-  border:0;
+  padding:0.5em 1em;
 }
+.sousNavBulle #currentScope a[href*="previousPeriod"] {
+  margin-right:0;
+}
+
 .sousNavBulle #today a:hover, .sousNavBulle #today a:focus {
   background-color: #FFFFCC;
 }
@@ -177,7 +167,7 @@ div.selected {
 }
 #reservationList  ul li:hover {
   cursor:pointer;
-  background-color:#E8E8E8;
+  background-color:var(--bgColor-dossier-hover);
 }
 
 #reservationList  ul li:hover hr.clear {
@@ -185,10 +175,8 @@ div.selected {
 }
 
 #reservationList .reservationPeriode {
-  color:#666666;
   border-bottom:1px solid #eaeaea;
-  font-size:14px;
-  padding:12px 0;
+  padding:0.5em;
   margin:0;
 }
 
@@ -203,8 +191,9 @@ hr.clear {
 }
 
 .reservationList h5 {
-  color:#747474;
-  font-size:13px;
+  color:var(--color-text-date);
+  font-size:var(--font-size-titre);
+  font-weight:var(--font-weight-titre);
   margin:8px 0 0;
   padding:0;
 }
@@ -215,14 +204,14 @@ hr.clear {
 }
 .reservationList h4 a,
 .event-qtip  h4 a {
-  color:#56a3d9;
-  font-size:13px;
+  color:var(--color-titre-avec-deux-couleurs);
+  font-size:var(--font-size-titre);
 }
 
 .reservationDesc  {
-  color:#747474;
-  font-size:11px;
+  color:var(--color-text-description);
   border-left:3px solid #ececec;
+  font-size:0.9em;
   padding-left:4px;
 }
 
@@ -279,12 +268,10 @@ hr.clear {
 .reservationRessources li a,
 .resource {
   display: inline-block;
-  margin-bottom: 3px;
+  margin-bottom:0.5em;
   color:#FFF;
-  border-radius:5px;
-  -webkit-border-radius:5px;
-  -moz-border-radius:5px;
-  padding:3px 5px;
+  border-radius:var(--radius-etiquette);
+  padding:0.25em 0.5em;
   z-index:100;
   position:relative;
 }
@@ -301,7 +288,7 @@ hr.clear {
   margin:0 0 2px;
 }
 .event-qtip  h4 a {
-  font-size:11px;
+  font-size:1em;
 }
 
 .event-qtip p.reservationPlace {
@@ -317,10 +304,16 @@ hr.clear {
 .event-qtip .reservation-link {
   display:block;
   text-align:right;
-  padding-right:6px;
-  color:#56A3D9;
-  text-decoration:underline;
-  font-weight:bold;
+  padding:0.25em 0.5em;
+  border-radius: var(--radius-btn-secondaire);
+  color:var(--color-text-btn-secondaire);
+  background:var(--bgColor-btn-secondaire);
+  border: 1px solid var(--border-color-btn-secondaire);
+}
+
+.event-qtip .reservation-link:hover,
+.event-qtip .reservation-link:focus  {
+  background:var(--bgColor-btn-secondaire-hover);
 }
 
 #legende {
@@ -334,7 +327,6 @@ hr.clear {
   margin: 0;
   padding: 0;
   display: inline-block;
-  float: left;
   margin-right: 18px;
   line-height: 20px;
 }
@@ -358,4 +350,8 @@ hr.clear {
   max-width: 750px;
   max-height: 600px;
   overflow: auto;
+}
+
+div.attachments {
+  margin-left: 1em;
 }

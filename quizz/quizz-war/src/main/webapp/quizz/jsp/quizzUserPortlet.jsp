@@ -74,7 +74,7 @@ function goto_jsp(jsp) {
 }
 </script>
 </head>
-<body bgcolor="#FFFFFF" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
+<body>
   <%
   session.removeAttribute("currentQuizz");
   session.removeAttribute("questionsResponses");

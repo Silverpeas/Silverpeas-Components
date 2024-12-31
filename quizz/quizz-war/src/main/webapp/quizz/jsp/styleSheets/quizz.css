@@ -91,7 +91,7 @@ fieldset#answersFieldset legend {
 }
 
 #answersFieldset .answerimage {
-    clear: both;
+  clear: both;
 }
 
 #answersFieldset .fieldImage {
@@ -143,21 +143,26 @@ fieldset#answersFieldset legend {
 }
 
 .titreFenetre {
-  font-size: 13pt;
-  font-weight: bold;
-  color: #666
+  font-size:var(--font-size-titre);
+  font-weight:var(--font-weight-titre);
+  font-weight:700;
 }
 
 .titreFenetre2 {
-  font-size: 13pt;
   font-weight: bold;
   color: #FFF
 }
 
 .quizzscore {
-  background-color: #CCC;
-  font-size: 11pt;
-  font-weight: bold;
-  color: #607090;
-  text-decoration: none
+  background-color: #252525;
+  font-weight: 700;
+  color: #FFF;
+}
+
+.tableBoard img {
+  max-width:100%
+}
+
+b.textePetitBoldVert {
+  color: #098f41;
 }

@@ -63,7 +63,7 @@ String m_context = ResourceLocator.getGeneralSettingBundle().getString("Applicat
 <title></title>
 <view:looknfeel/>
 </head>
-<body bgcolor=#FFFFFF leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
+<body>
   <%
   SettingBundle settings = quizzScc.getSettings();
   String space = quizzScc.getSpaceLabel();
