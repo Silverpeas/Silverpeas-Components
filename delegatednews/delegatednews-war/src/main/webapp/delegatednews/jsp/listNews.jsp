@@ -39,139 +39,139 @@
 <c:set var="listNews" value="${requestScope.ListNews}"/>
 <c:set var="isAdmin" value="${sessionController.admin}" />
 <c:set var="componentId" value="${requestScope.browseContext[3]}"/>
-<c:set var="context" value="${requestScope.context}"/>
 
 <view:sp-page angularJsAppName="silverpeas.delegatedNews">
   <view:sp-head-part withCheckFormScript="true">
     <view:includePlugin name="datepicker"/>
     <view:includePlugin name="toggle"/>
     <script type="text/javascript">
-    function openPublication(pubId, instanceId) {
-      let url = "OpenPublication?PubId="+pubId+"&InstanceId="+instanceId;
-      SP_openWindow(url,'publication','850','600','scrollbars=yes, noresize, alwaysRaised');
-    }
-    
-    function validateDelegatedNews(pubId) {
-      document.listDelegatedNews.action = "ValidateDelegatedNews";
-      document.listDelegatedNews.PubId.value = pubId;
-      document.listDelegatedNews.submit();
-    }
+      function openPublication(pubId, instanceId) {
+        let url = "OpenPublication?PubId="+pubId+"&InstanceId="+instanceId;
+        SP_openWindow(url,'publication','850','600','scrollbars=yes, noresize, alwaysRaised');
+      }
 
-    function refuseDelegatedNews(pubId) {
-      document.listDelegatedNews.PubId.value = pubId;
-      $("#refuseDialog").dialog("open");
-    }
-    
-    function updateDateDelegatedNews(pubId, BeginDate, BeginHour, EndDate, EndHour) {
-      document.listDelegatedNews.PubId.value = pubId;
-      $("#datesDialog #BeginDate").val(BeginDate);
-      $("#datesDialog #BeginHour").val(BeginHour);
-      $("#datesDialog #EndDate").val(EndDate);
-      $("#datesDialog #EndHour").val(EndHour);
-      $("#datesDialog").dialog("open");
-    }
-    
-    function ifDatesCorrectExecute(callback) {
-      let errorMsg = "";
-      let errorNb = 0;
+      function validateDelegatedNews(pubId) {
+        document.listDelegatedNews.action = "ValidateDelegatedNews";
+        document.listDelegatedNews.PubId.value = pubId;
+        document.listDelegatedNews.submit();
+      }
 
-      let beginDate = {dateId : 'BeginDate', hourId : 'BeginHour'};
-      let endDate = {dateId : 'EndDate', hourId : 'EndHour', defaultDateHour : '23:59'};
-      let dateErrors = isPeriodEndingInFuture(beginDate, endDate);
-      $(dateErrors).each(function(index, error) {
-        errorMsg += " - " + error.message + "\n";
-        errorNb++;
-      });
-         
-      switch(errorNb) {
-      	case 0 :
-          callback.call(this);
-          break;
-		case 1 :
-          errorMsg = '<fmt:message key="GML.ThisFormContains"/> 1 <fmt:message key="GML.error"/> : \n' + errorMsg;
-          jQuery.popup.error(errorMsg);
-          break;
-		default :
-          errorMsg = '<fmt:message key="GML.ThisFormContains" /> ' + errorNb + ' <fmt:message key="GML.errors"/> :\n' + errorMsg;
-          jQuery.popup.error(errorMsg);
-	    }
-    }
-    
-    $(function() {
+      function refuseDelegatedNews(pubId) {
+        document.listDelegatedNews.PubId.value = pubId;
+        $("#refuseDialog").dialog("open");
+      }
+
+      function updateDateDelegatedNews(pubId, BeginDate, BeginHour, EndDate, EndHour) {
+        document.listDelegatedNews.PubId.value = pubId;
+        $("#datesDialog #BeginDate").val(BeginDate);
+        $("#datesDialog #BeginHour").val(BeginHour);
+        $("#datesDialog #EndDate").val(EndDate);
+        $("#datesDialog #EndHour").val(EndHour);
+        $("#datesDialog").dialog("open");
+      }
+
+      function ifDatesCorrectExecute(callback) {
+        let errorMsg = "";
+        let errorNb = 0;
+
+        let beginDate = {dateId : 'BeginDate', hourId : 'BeginHour'};
+        let endDate = {dateId : 'EndDate', hourId : 'EndHour', defaultDateHour : '23:59'};
+        let dateErrors = isPeriodEndingInFuture(beginDate, endDate);
+        $(dateErrors).each(function(index, error) {
+          errorMsg += " - " + error.message + "\n";
+          errorNb++;
+        });
+
+        switch(errorNb) {
+          case 0 :
+            callback.call(this);
+            break;
+          case 1 :
+            errorMsg = '<fmt:message key="GML.ThisFormContains"/> 1 <fmt:message key="GML.error"/> : \n' + errorMsg;
+            jQuery.popup.error(errorMsg);
+            break;
+          default :
+            errorMsg = '<fmt:message key="GML.ThisFormContains" /> ' + errorNb + ' <fmt:message key="GML.errors"/> :\n' + errorMsg;
+            jQuery.popup.error(errorMsg);
+        }
+      }
+
+      $(function() {
         $("#refuseDialog").dialog({
-        autoOpen: false,
-        resizable: false,
-        modal: true,
-        height: "auto",
-        width: 600,
-        buttons: {
-          "<fmt:message key="GML.ok"/>": function() {
-            var message = $("#txtMessage").val();
-            document.listDelegatedNews.action = "RefuseDelegatedNews";
+          autoOpen: false,
+          resizable: false,
+          modal: true,
+          height: "auto",
+          width: 600,
+          buttons: {
+            "<fmt:message key="GML.ok"/>": function() {
+              var message = $("#txtMessage").val();
+              document.listDelegatedNews.action = "RefuseDelegatedNews";
               document.listDelegatedNews.RefuseReasonText.value = message;
               document.listDelegatedNews.submit();
-          },
-          "<fmt:message key="GML.cancel" />": function() {
-            $(this).dialog("close");
+            },
+            "<fmt:message key="GML.cancel" />": function() {
+              $(this).dialog("close");
+            }
           }
-        }
-      });
-        
-        $("#datesDialog").dialog({
-        autoOpen: false,
-        resizable: false,
-        modal: true,
-        height: "auto",
-        width: 500,
-        buttons: {
-          "<fmt:message key="GML.ok"/>": function() {
-            ifDatesCorrectExecute(function() {
-              document.listDelegatedNews.action = "UpdateDateDelegatedNews";
-              document.listDelegatedNews.BeginDate.value = $("#datesDialog #BeginDate").val();
-              document.listDelegatedNews.BeginHour.value = $("#datesDialog #BeginHour").val();
-              document.listDelegatedNews.EndDate.value = $("#datesDialog #EndDate").val();
-              document.listDelegatedNews.EndHour.value = $("#datesDialog #EndHour").val();
-              document.listDelegatedNews.submit();
-            });
-          },
-          "<fmt:message key="GML.cancel" />": function() {
-            $(this).dialog("close");
-          }
-        }
-      });
-    });
+        });
 
-    let listDelegatedNewsJSON = ${listNewsJSON};
-    
-    $(document).ready(function() {
+        $("#datesDialog").dialog({
+          autoOpen: false,
+          resizable: false,
+          modal: true,
+          height: "auto",
+          width: 500,
+          buttons: {
+            "<fmt:message key="GML.ok"/>": function() {
+              ifDatesCorrectExecute(function() {
+                document.listDelegatedNews.action = "UpdateDateDelegatedNews";
+                document.listDelegatedNews.BeginDate.value = $("#datesDialog #BeginDate").val();
+                document.listDelegatedNews.BeginHour.value = $("#datesDialog #BeginHour").val();
+                document.listDelegatedNews.EndDate.value = $("#datesDialog #EndDate").val();
+                document.listDelegatedNews.EndHour.value = $("#datesDialog #EndHour").val();
+                document.listDelegatedNews.submit();
+              });
+            },
+            "<fmt:message key="GML.cancel" />": function() {
+              $(this).dialog("close");
+            }
+          }
+        });
+      });
+
+      let listDelegatedNewsJSON = ${listNewsJSON};
+
+      $(document).ready(function() {
         $('#newsList tbody').bind('sortupdate', function(event, ui) {
-            var updatedDelegatedNews = new Array(); //tableau de DelegatedNewsEntity réordonnés sérialisés en JSON
-            var data = $('#newsList tbody').sortable('toArray'); //tableau de valeurs delegatedNews_{pubId} réordonnés
-            for (let i=0; i<data.length; i++)
+          var updatedDelegatedNews = new Array(); //tableau de DelegatedNewsEntity réordonnés sérialisés en JSON
+          var data = $('#newsList tbody').sortable('toArray'); //tableau de valeurs delegatedNews_{pubId} réordonnés
+          for (let i=0; i<data.length; i++)
+          {
+            let pubId = data[i]; //delegatedNews_{pubId}
+            pubId = pubId.substring(14); //{pubId}
+
+            for (let j=0; j<listDelegatedNewsJSON.length; j++)
             {
-              let pubId = data[i]; //delegatedNews_{pubId}
-              pubId = pubId.substring(14); //{pubId}
-              
-              for (let j=0; j<listDelegatedNewsJSON.length; j++)
-              {
-                let delegatedNewsJSON = listDelegatedNewsJSON[j];
-                if(pubId === delegatedNewsJSON.pubId) {
-                  updatedDelegatedNews[i] = delegatedNewsJSON;
-                }
+              let delegatedNewsJSON = listDelegatedNewsJSON[j];
+              if(pubId === delegatedNewsJSON.pubId) {
+                updatedDelegatedNews[i] = delegatedNewsJSON;
               }
             }
-            sortDelegatedNews(updatedDelegatedNews);
-          });
+          }
+          sortDelegatedNews(updatedDelegatedNews);
+        });
       });
-      
+
       function sortDelegatedNews(updatedDelegatedNewsJSON){
-        let url = "${context}/services/delegatednews/${componentId}";
+
+        let url = webContext + "/services/delegatednews/${componentId}";
         let ajaxRequest = window.sp.ajaxRequest(url).byPutMethod();
         ajaxRequest.sendAndPromiseJsonResponse(updatedDelegatedNewsJSON).then(function(data) {
           listDelegatedNewsJSON = data;
         });
       }
-      
+
       function deleteDelegatedNews(pubId) {
         let listDNToDelete = new Array(pubId);
         let updatedDelegatedNews = new Array(); //tableau de DelegatedNewsEntity sans l'élément supprimé sérialisés en JSON
@@ -181,14 +181,14 @@
           let pubIdJSON = delegatedNewsJSON.pubId;
           if(! isAppartient(pubIdJSON, listDNToDelete)) {
             updatedDelegatedNews[k] = delegatedNewsJSON;
-            k++;  
+            k++;
           }
         }
         jQuery.popup.confirm('<fmt:message key="delegatednews.deleteOne.confirm"/>', function() {
           deleteDelegagedNews(updatedDelegatedNews);
         });
       }
-      
+
       function deleteSelectedDelegatedNews() {
 
         let nbNews = listDelegatedNewsJSON.length;
@@ -212,9 +212,9 @@
           }
         }
       }
-      
+
       function deleteDelegagedNews(updatedDelegatedNews) {
-        let url = "${context}/services/delegatednews/${componentId}";
+        let url = webContext + "/services/delegatednews/${componentId}";
         let ajaxRequest = window.sp.ajaxRequest(url).byPutMethod();
         ajaxRequest.sendAndPromiseJsonResponse(updatedDelegatedNews).then(function(data) {
           let listPubIdToDelete = getAllPubIdToDelete(data);
@@ -225,7 +225,7 @@
           listDelegatedNewsJSON = data;
         });
       }
-      
+
       function isAppartient(id, list) {
         for (let i = 0; i < list.length; i++) {
           let value = list[i].value;
@@ -238,7 +238,7 @@
         }
         return false;
       }
-      
+
       function getAllPubIdToDelete(listDelegatedNewsAfterDelete) {
         let result = [];
         let k = 0;
@@ -260,7 +260,7 @@
         }
         return result;
       }
-      
+
     </script>
   </view:sp-head-part>
 
@@ -297,139 +297,139 @@
           <div class="inlineMessage"><fmt:message key="delegatednews.homePageMessage"/></div>
           <br/>
         </c:if>
-      <form name="tabForm" method="post">
-        <view:arrayPane title="${listNewsTitle}" var="newsList" routingAddress="Main" movableLines="true" summary="true">
-          <view:arrayColumn title="${columnTitle}"
-                            compareOn="${r -> r.news.publicationDetail.name}"/>
-          <view:arrayColumn title="${columnUpdateDate}" width="70px" compareOn="${r -> r.news.publicationDetail.lastUpdateDate}"/>
-          <view:arrayColumn title="${columnContributor}"/>
-          <view:arrayColumn title="${columnState}"/>
-          <view:arrayColumn title="${columnVisibilityBeginDate}"  compareOn="${r -> r.news.beginDate}"/>
-          <view:arrayColumn title="${columnVisibilityEndDate}" compareOn="${r -> r.news.endDate}"/>
-          <c:if test="${isAdmin}">
-            <view:arrayColumn title="${labelOperations}" sortable="true"/>
-            <view:arrayColumn title=""/>
-          </c:if>
-          <c:forEach items="${listNews}" var="news" varStatus="status">
-            <c:set var="pubId" value="${news.pubId}"/>
-            <c:set var="instanceId" value="${news.instanceId}"/>
-            <view:arrayLine id="delegatedNews_${pubId}">
-              <view:arrayCellText>
-                <a href="javascript:onClick=openPublication('${pubId}','${instanceId}');">${news.publicationDetail.name}</a>
-              </view:arrayCellText>
-              <view:arrayCellText>
-                ${silfn:formatDateAndHour(news.publicationDetail.lastUpdateDate, currentUserLanguage)}
-              </view:arrayCellText>
-              <view:arrayCellText>
-                <view:username userId="${news.contributorId}"/>
-              </view:arrayCellText>
+        <form name="tabForm" method="post">
+          <view:arrayPane title="${listNewsTitle}" var="newsList" routingAddress="Main" movableLines="true" summary="true">
+            <view:arrayColumn title="${columnTitle}"
+                              compareOn="${r -> r.news.publicationDetail.name}"/>
+            <view:arrayColumn title="${columnUpdateDate}" width="70px" compareOn="${r -> r.news.publicationDetail.lastUpdateDate}"/>
+            <view:arrayColumn title="${columnContributor}"/>
+            <view:arrayColumn title="${columnState}"/>
+            <view:arrayColumn title="${columnVisibilityBeginDate}"  compareOn="${r -> r.news.beginDate}"/>
+            <view:arrayColumn title="${columnVisibilityEndDate}" compareOn="${r -> r.news.endDate}"/>
+            <c:if test="${isAdmin}">
+              <view:arrayColumn title="${labelOperations}" sortable="true"/>
+              <view:arrayColumn title=""/>
+            </c:if>
+            <c:forEach items="${listNews}" var="news" varStatus="status">
+              <c:set var="pubId" value="${news.pubId}"/>
+              <c:set var="instanceId" value="${news.instanceId}"/>
+              <view:arrayLine id="delegatedNews_${pubId}">
+                <view:arrayCellText>
+                  <a href="javascript:onClick=openPublication('${pubId}','${instanceId}');">${news.publicationDetail.name}</a>
+                </view:arrayCellText>
+                <view:arrayCellText>
+                  ${silfn:formatDateAndHour(news.publicationDetail.lastUpdateDate, currentUserLanguage)}
+                </view:arrayCellText>
+                <view:arrayCellText>
+                  <view:username userId="${news.contributorId}"/>
+                </view:arrayCellText>
 
-              <fmt:message var="status" key="delegatednews.status.${news.status}"/>
-              <view:arrayCellText text="${status}"/>
+                <fmt:message var="status" key="delegatednews.status.${news.status}"/>
+                <view:arrayCellText text="${status}"/>
 
-              <c:set var="beginDate" value="${silfn:formatDate(news.beginDate, currentUserLanguage)}"/>
-              <c:set var="endDate" value="${silfn:formatDate(news.endDate, currentUserLanguage)}"/>
-              <c:set var="beginHour" value="${silfn:formatDateHour(news.beginDate, currentUserLanguage)}"/>
-              <c:set var="endHour" value="${silfn:formatDateHour(news.endDate, currentUserLanguage)}"/>
-              <view:arrayCellText>
-                <c:if test="${not empty news.beginDate}">
-                  ${silfn:formatDateAndHour(news.beginDate, currentUserLanguage)}
-                </c:if>
-              </view:arrayCellText>
-              <view:arrayCellText>
-                <c:if test="${not empty news.endDate}">
-                  ${silfn:formatDateAndHour(news.endDate, currentUserLanguage)}
-                </c:if>
-              </view:arrayCellText>
-              <view:arrayCellText>
-                <c:if test="${isAdmin}">
-                  <view:icons>
-                    <c:set var="updateAction" value="javascript:onClick=updateDateDelegatedNews('${pubId}','${beginDate}','${beginHour}','${endDate}','${endHour}');"/>
-                    <view:icon iconName="${updateIcon}" altText="${labelModify}" action="${updateAction}"/>
+                <c:set var="beginDate" value="${silfn:formatDate(news.beginDate, currentUserLanguage)}"/>
+                <c:set var="endDate" value="${silfn:formatDate(news.endDate, currentUserLanguage)}"/>
+                <c:set var="beginHour" value="${silfn:formatDateHour(news.beginDate, currentUserLanguage)}"/>
+                <c:set var="endHour" value="${silfn:formatDateHour(news.endDate, currentUserLanguage)}"/>
+                <view:arrayCellText>
+                  <c:if test="${not empty news.beginDate}">
+                    ${silfn:formatDateAndHour(news.beginDate, currentUserLanguage)}
+                  </c:if>
+                </view:arrayCellText>
+                <view:arrayCellText>
+                  <c:if test="${not empty news.endDate}">
+                    ${silfn:formatDateAndHour(news.endDate, currentUserLanguage)}
+                  </c:if>
+                </view:arrayCellText>
+                <view:arrayCellText>
+                  <c:if test="${isAdmin}">
+                    <view:icons>
+                      <c:set var="updateAction" value="javascript:onClick=updateDateDelegatedNews('${pubId}','${beginDate}','${beginHour}','${endDate}','${endHour}');"/>
+                      <view:icon iconName="${updateIcon}" altText="${labelModify}" action="${updateAction}"/>
 
-                    <c:set var="validateAction" value="javascript:onClick=validateDelegatedNews('${pubId}');"/>
-                    <view:icon iconName="${validateIcon}" altText="${labelValidate}" action="${validateAction}"/>
+                      <c:set var="validateAction" value="javascript:onClick=validateDelegatedNews('${pubId}');"/>
+                      <view:icon iconName="${validateIcon}" altText="${labelValidate}" action="${validateAction}"/>
 
-                    <c:set var="refuseAction" value="javascript:onClick=refuseDelegatedNews('${pubId}');"/>
-                    <view:icon iconName="${refuseIcon}" altText="${labelRefuse}" action="${refuseAction}"/>
+                      <c:set var="refuseAction" value="javascript:onClick=refuseDelegatedNews('${pubId}');"/>
+                      <view:icon iconName="${refuseIcon}" altText="${labelRefuse}" action="${refuseAction}"/>
 
-                    <c:set var="deleteAction" value="javascript:onClick=deleteDelegatedNews('${pubId}');"/>
-                    <view:icon iconName="${deleteIcon}" altText="${labelDelete}" action="${deleteAction}"/>
-                  </view:icons>
-                </c:if>
-              </view:arrayCellText>
-              <view:arrayCellCheckbox checked="false" name="checkedDelegatedNews" value="${pubId}"/>
-            </view:arrayLine>
-          </c:forEach>
-      </view:arrayPane>
-      </form>
+                      <c:set var="deleteAction" value="javascript:onClick=deleteDelegatedNews('${pubId}');"/>
+                      <view:icon iconName="${deleteIcon}" altText="${labelDelete}" action="${deleteAction}"/>
+                    </view:icons>
+                  </c:if>
+                </view:arrayCellText>
+                <view:arrayCellCheckbox checked="false" name="checkedDelegatedNews" value="${pubId}"/>
+              </view:arrayLine>
+            </c:forEach>
+          </view:arrayPane>
+        </form>
       </view:frame>
     </view:window>
 
-<!-- Dialog to refuse --> 
-<div id="refuseDialog" title="<fmt:message key="delegatednews.action.refuse"/>">
-  <form>
-    <div class="skinFieldset">
-      <div class="fields">
-        <div  class="field entireWidth">
-          <label class="txtlibform" for="txtMessage">
-            <fmt:message key="GML.notification.message"/>
-          </label>
-          <div class="champs">
-            <textarea name="txtMessage" id="txtMessage" cols="60" rows="8"></textarea>
+    <!-- Dialog to refuse -->
+    <div id="refuseDialog" title="<fmt:message key="delegatednews.action.refuse"/>">
+      <form>
+        <div class="skinFieldset">
+          <div class="fields">
+            <div  class="field entireWidth">
+              <label class="txtlibform" for="txtMessage">
+                <fmt:message key="GML.notification.message"/>
+              </label>
+              <div class="champs">
+                <textarea name="txtMessage" id="txtMessage" cols="60" rows="8"></textarea>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      </form>
     </div>
-  </form>
-</div>
 
-<!-- Dialog to edit dates -->
-<div id="datesDialog" title="<fmt:message key="GML.modify"/>">
-  <form>
-    <div class="skinFieldset">
-      <div id="beginArea" class="fields">
-        <div class="field entireWidth">
-          <label class="txtlibform" for="BeginDate">
-            <fmt:message key="delegatednews.visibilityBeginDate"/>
-          </label>
-          <div class="champs">
-            <input type="text" class="dateToPick" id="BeginDate" value="" size="12" maxlength="10"/>
-            <span class="txtsublibform" for="BeginHour">&nbsp;
+    <!-- Dialog to edit dates -->
+    <div id="datesDialog" title="<fmt:message key="GML.modify"/>">
+      <form>
+        <div class="skinFieldset">
+          <div id="beginArea" class="fields">
+            <div class="field entireWidth">
+              <label class="txtlibform" for="BeginDate">
+                <fmt:message key="delegatednews.visibilityBeginDate"/>
+              </label>
+              <div class="champs">
+                <input type="text" class="dateToPick" id="BeginDate" value="" size="12" maxlength="10"/>
+                <span class="txtsublibform" for="BeginHour">&nbsp;
               <fmt:message key="delegatednews.hour"/>&nbsp;
             </span>
-            <input type="text" name="BeginHour" id="BeginHour" value="" size="5" maxlength="5"/>
-            &nbsp;<i>(hh:mm)</i>
+                <input type="text" name="BeginHour" id="BeginHour" value="" size="5" maxlength="5"/>
+                &nbsp;<i>(hh:mm)</i>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-      <div id="endArea" class="fields">
-        <div class="field entireWidth">
-          <label class="txtlibform" for="EndDate">
-            <fmt:message key="delegatednews.visibilityEndDate"/>
-          </label>
-          <div class="champs">
-            <input type="text" class="dateToPick" id="EndDate" value="" size="12" maxlength="10"/>
-            <span class="txtsublibform" for="EndHour">&nbsp;
+          <div id="endArea" class="fields">
+            <div class="field entireWidth">
+              <label class="txtlibform" for="EndDate">
+                <fmt:message key="delegatednews.visibilityEndDate"/>
+              </label>
+              <div class="champs">
+                <input type="text" class="dateToPick" id="EndDate" value="" size="12" maxlength="10"/>
+                <span class="txtsublibform" for="EndHour">&nbsp;
               <fmt:message key="delegatednews.hour"/>&nbsp;
             </span>
-            <input type="text" name="EndHour" id="EndHour" value="" size="5" maxlength="5"/>
-            &nbsp;<i>(hh:mm)</i>
+                <input type="text" name="EndHour" id="EndHour" value="" size="5" maxlength="5"/>
+                &nbsp;<i>(hh:mm)</i>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      </form>
     </div>
-  </form>
-</div>
 
-<form name="listDelegatedNews" action="" method="post">
-  <input type="hidden" name="PubId"/>
-    <input type="hidden" name="RefuseReasonText"/>
-    <input type="hidden" name="BeginDate"/>
-    <input type="hidden" name="BeginHour"/>
-    <input type="hidden" name="EndDate"/>
-    <input type="hidden" name="EndHour"/>
-</form>
+    <form name="listDelegatedNews" action="" method="post">
+      <input type="hidden" name="PubId"/>
+      <input type="hidden" name="RefuseReasonText"/>
+      <input type="hidden" name="BeginDate"/>
+      <input type="hidden" name="BeginHour"/>
+      <input type="hidden" name="EndDate"/>
+      <input type="hidden" name="EndHour"/>
+    </form>
 
-</view:sp-body-part>
+  </view:sp-body-part>
 </view:sp-page>
