@@ -212,7 +212,7 @@ fieldset#answers legend {
 
 .eventInfo div {
   display: table-cell;
-  border-left: 2px solid #DCDCDC;
+  border-left: 2px solid  var(--color-trait-separateur);
   min-height: 16px;
   vertical-align: middle;
   text-align: left;
@@ -220,7 +220,7 @@ fieldset#answers legend {
 }
 
 #eventInfoPublication {
-  padding-bottom: 11px;
+  padding-bottom: 1em;
 }
 
 .eventInfo div:first-child {
