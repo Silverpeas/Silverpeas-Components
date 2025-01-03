@@ -114,6 +114,7 @@ import org.silverpeas.core.util.annotation.SourcePK;
 import org.silverpeas.core.util.annotation.TargetPK;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.kernel.annotation.NonNull;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
@@ -532,7 +533,7 @@ public class DefaultKmeliaService implements KmeliaService {
         for (PublicationDetail onePubToCheck : pubsToCheck) {
           final KmeliaPublication kmeliaPub = fromDetail(onePubToCheck, oneNodeToDelete);
           if (!kmeliaPub.isAlias()) {
-            sendPublicationToBasket(kmeliaPub.getPk());
+            sendPublicationInBasket(kmeliaPub.getPk());
           } else {
             // remove only the alias
             final Collection<Location> aliases = singletonList(kmeliaPub.getLocation());
@@ -1153,7 +1154,7 @@ public class DefaultKmeliaService implements KmeliaService {
   private void movePublicationInSameApplication(PublicationDetail pub, NodePK to,
       KmeliaPasteDetail pasteContext) {
     if (to.isTrash()) {
-      sendPublicationToBasket(pub.getPK());
+      sendPublicationInBasket(pub.getPK());
     } else {
       // update parent
       publicationService.movePublication(pub.getPK(), to, false);
@@ -1381,12 +1382,6 @@ public class DefaultKmeliaService implements KmeliaService {
         !isDefined(publication.getCloneStatus());
   }
 
-  /**
-   * HEAD Delete a publication If this publication is in the basket or in the DZ, it's deleted from
-   * the database Else it only send to the basket.
-   * @param pubPK the id of the publication to delete
-   * @see TopicDetail
-   */
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
   public void deletePublication(PublicationPK pubPK) {
@@ -1410,18 +1405,7 @@ public class DefaultKmeliaService implements KmeliaService {
 
   }
 
-  /**
-   * Send the publication in the basket topic.
-   * <p>
-   * All aliases of the publication are deleted if exist.
-   * </p>
-   * @param pubPK the id of the publication
-   * @param kmaxMode true to indicate a use from kmax application
-   * @see TopicDetail
-   * @since 1.0
-   */
-  @Override
-  public void sendPublicationToBasket(PublicationPK pubPK, boolean kmaxMode) {
+  private void sendPublicationInBasket(PublicationPK pubPK, boolean kmaxMode) {
     KmeliaOperationContext.about(REMOVING);
     try {
       // remove coordinates for Kmax
@@ -1446,23 +1430,54 @@ public class DefaultKmeliaService implements KmeliaService {
       // remove all links between this publication and topics
       publicationService.removeAllFathers(pubPK);
       // add link between this publication and the basket topic
-      publicationService.addFather(pubPK, new NodePK("1", pubPK));
+      publicationService.addFather(pubPK, new NodePK(NodePK.BIN_NODE_ID, pubPK));
 
-      // remove all the todos attached to the publication
-      removeAllTodosForPublication(pubPK);
-
-      // publication is no more accessible
-      updateSilverContentVisibility(pubPK);
-
-      unIndexExternalElementsOfPublication(pubPK);
+      cleanUpPublicationsInBasket(pubPK);
     } catch (Exception e) {
       throw new KmeliaRuntimeException(e);
     }
   }
 
-  @Override
-  public void sendPublicationToBasket(PublicationPK pubPK) {
-    sendPublicationToBasket(pubPK, KmeliaHelper.isKmax(pubPK.getInstanceId()));
+  private void cleanUpPublicationsInBasket(PublicationPK pubPK) {
+    // remove all the todos attached to the publication
+    removeAllTodosForPublication(pubPK);
+
+    // publication is no more accessible
+    updateSilverContentVisibility(pubPK);
+
+    unIndexExternalElementsOfPublication(pubPK);
+  }
+
+  private void sendPublicationInBasket(PublicationPK pubPK) {
+    sendPublicationInBasket(pubPK, KmeliaHelper.isKmax(pubPK.getInstanceId()));
+  }
+
+  private void sendTopicInBasket(NodeDetail topic) {
+    NodePK trash = new NodePK(NodePK.BIN_NODE_ID,
+        topic.getIdentifier().getComponentInstanceId());
+    topic.setFatherPK(trash);
+
+    // get all the tree of folders, rooted to the topic, to be sent in the basket with the topic
+    final Collection<NodeDetail> children = nodeService.getDescendantDetails(topic.getNodePK());
+    for (final NodeDetail childTopic : children) {
+      // get all the direct publications in the topic child (including aliases)
+      final Collection<PublicationDetail> publications =
+          publicationService.getDetailsByFatherPK(childTopic.getNodePK());
+      // check each publication: if it is an alias, remove it, otherwise it is moved into the trash
+      // with its topic
+      for (PublicationDetail publication : publications) {
+        final KmeliaPublication kmeliaPublication = fromDetail(publication, childTopic.getNodePK());
+        if (kmeliaPublication.isAlias()) {
+          // remove only the alias
+          final Collection<Location> aliases = singletonList(kmeliaPublication.getLocation());
+          publicationService.removeAliases(kmeliaPublication.getPk(), aliases);
+        } else {
+          cleanUpPublicationsInBasket(publication.getPK());
+        }
+      }
+    }
+
+    nodeService.setDetail(topic);
   }
 
   @Override
@@ -3879,28 +3894,28 @@ public class DefaultKmeliaService implements KmeliaService {
   }
 
   /**
-   * Removes publications according to given ids. Before a publication is removed, user priviledges
+   * Removes publications according to given ids. Before a publication is removed, user privileges
    * are controlled. If node defines the trash, publications are definitively deleted. Otherwise,
    * publications move into trash.
-   * @param ids the ids of publications to delete
-   * @param nodePK the node where the publications are
+   * @param publiIds the ids of publications to delete
+   * @param topicId the node where the publications are
    * @param userId the user who wants to perform deletion
    * @return the list of publication ids which has been really deleted
    * @
    */
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
-  public List<String> deletePublications(List<String> ids, NodePK nodePK, String userId) {
+  public List<String> deletePublications(List<String> publiIds, NodePK topicId, String userId) {
     List<String> removedIds = new ArrayList<>();
-    String profile = getProfile(userId, nodePK);
-    for (String id : ids) {
-      PublicationPK pk = new PublicationPK(id, nodePK);
-      if (isUserCanDeletePublication(new PublicationPK(id, nodePK), profile, userId)) {
+    String profile = getProfile(userId, topicId);
+    for (String id : publiIds) {
+      PublicationPK pk = new PublicationPK(id, topicId);
+      if (isUserCanDeletePublication(new PublicationPK(id, topicId), profile, userId)) {
         try {
-          if (nodePK.isTrash() && isPublicationInBasket(pk)) {
+          if (topicId.isTrash() && isPublicationInBasket(pk)) {
             deletePublication(pk);
           } else {
-            sendPublicationToBasket(pk);
+            sendPublicationInBasket(pk);
           }
           removedIds.add(id);
         } catch (Exception e) {
@@ -3910,6 +3925,28 @@ public class DefaultKmeliaService implements KmeliaService {
       }
     }
     return removedIds;
+  }
+
+  @Transactional(Transactional.TxType.REQUIRED)
+  @Override
+  public void deleteTopic(@NonNull NodePK topic, @NonNull NodePK parent, String userId) {
+    Objects.requireNonNull(topic);
+    Objects.requireNonNull(parent);
+    if (topic.isTrash() || topic.isRoot()) {
+      return;
+    }
+    NodeDetail folder = getNodeHeader(topic);
+    // check if user is allowed to delete this topic
+    NodePK root = new NodePK(NodePK.ROOT_NODE_ID, topic.getInstanceId());
+    if (SilverpeasRole.ADMIN.isInRole(getUserTopicProfile(topic, userId)) ||
+        SilverpeasRole.ADMIN.isInRole(getUserTopicProfile(root, userId)) ||
+        SilverpeasRole.ADMIN.isInRole(getUserTopicProfile(folder.getFatherPK(), userId))) {
+      if (parent.isTrash() && folder.getFatherPK().isTrash()) {
+        deleteTopic(topic);
+      } else {
+        sendTopicInBasket(folder);
+      }
+    }
   }
 
   private boolean isUserCanDeletePublication(PublicationPK pubPK, String profile, String userId) {
