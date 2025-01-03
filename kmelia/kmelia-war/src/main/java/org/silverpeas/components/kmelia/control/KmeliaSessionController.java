@@ -800,8 +800,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       for (NodeDetail nodeToDelete : treeview) {
         deleteTopicRoles(nodeToDelete);
       }
-      // Then, remove the topic itself
-      getKmeliaService().deleteTopic(getNodePK(topicId));
+      // Then, remove the topic itself: it is moved into the bin or, if already in the bin, it is
+      // deleted
+      getKmeliaService().deleteTopic(getNodePK(topicId), getCurrentFolderPK(), getUserId());
 
       return node.getFatherPK().getId();
     }

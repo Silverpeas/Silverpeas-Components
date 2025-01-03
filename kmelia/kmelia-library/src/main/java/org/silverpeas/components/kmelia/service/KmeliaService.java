@@ -41,6 +41,7 @@ import org.silverpeas.core.notification.user.UserNotification;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.reminder.Reminder;
 import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
+import org.silverpeas.kernel.annotation.NonNull;
 import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.core.util.ServiceProvider;
 
@@ -234,17 +235,10 @@ public interface KmeliaService extends ApplicationService {
   void updatePublication(PublicationDetail detail, boolean forceUpdateDate);
 
   /**
-   * Delete a publication If this publication is in the basket or in the DZ, it's deleted from the
-   * database Else it only send to the basket
-   * @param pubPK the id of the publication to delete
-   * @see TopicDetail
-   * @since 1.0
+   * Deletes definitively the specified publication.
+   * @param pubPK the unique identifier of the publication to delete.
    */
   void deletePublication(PublicationPK pubPK);
-
-  void sendPublicationToBasket(PublicationPK pubPK);
-
-  void sendPublicationToBasket(PublicationPK pubPK, boolean kmaxMode);
 
   /**
    * Add a publication to a topic and send email alerts to topic subscribers
@@ -688,7 +682,28 @@ public interface KmeliaService extends ApplicationService {
 
   String getUserTopicProfile(NodePK pk, String userId);
 
-  List<String> deletePublications(List<String> ids, NodePK nodePK, String userId);
+  /**
+   * Deletes the specified publications located into the given topic. Before a publication is
+   * removed, the privileges of the specified user is checked. If the topic is the trash folder,
+   * then the publications are definitively deleted. Otherwise, they are just moved into the bin.
+   * @param publiIds a list of local identifier of the publications to delete.
+   * @param topicId the node PK of the topic in which the publications are located.
+   * @param userId the unique identifier of the user asking the deletion.
+   * @return the list of the unique identifiers of the actually deleted publications.
+   */
+  List<String> deletePublications(List<String> publiIds, NodePK topicId, String userId);
+
+  /**
+   * Deletes the specified topic located into the given parent topic. Before the topic is
+   * deleted, the privileges of the specified user is checked. If the parent topic is the trash
+   * folder, then the topic is definitively deleted. Otherwise it is just moved into the bin.
+   * @param topic the unique identifier of the topic
+   * @param parent the unique identifier of the parent topic in which the topic to delete is
+   * located. For first-level topics, the identifier of their parent is
+   * {@link NodePK#ROOT_NODE_ID}.
+   * @param userId the unique identifier of the user asking the deletion.
+   */
+  void deleteTopic(@NonNull NodePK topic, @NonNull NodePK parent, String userId);
 
   List<String> getUserIdsOfFolder(NodePK pk);
 
