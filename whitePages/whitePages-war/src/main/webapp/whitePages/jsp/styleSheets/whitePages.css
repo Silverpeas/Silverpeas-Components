@@ -7,49 +7,51 @@
 .linkMore {
 	display: block;
 	clear: both;
-	background: #EFF9E3 url(../icons/open.gif) right center no-repeat;
-	border-bottom: 1px solid #CCCCCC;
-	border-top: 1px solid #CCCCCC;
+	background:var(--bgColor-btn-secondaire);
+	border-bottom: 1px solid var(--border-color-btn-secondaire);
+	border-top: 1px solid var(--border-color-btn-secondaire);
 	line-height: 30px;
-	padding: 0 15px;
-	margin: 10px 0;
-	color: #4C4C4C;
+	padding:0.5em 1em;
+	margin: 1em 0;
+	color:var(--color-text-btn-secondaire);
+}
+
+.linkMore::after{
+	content: '';
+	display:block;
+	float:right;
+	margin-right: 1em;
+	width: 2em;
+	height: 2em;
+	background-repeat: no-repeat;
+	background-size: 100% 100%;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='%234c4c4c' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m7 10l5 5l5-5'/%3E%3C/svg%3E");
 }
 
 .linkMore:hover,
 .linkMore:focus {
-	background-color: #E9F7D7;
+	background:var(--bgColor-btn-secondaire-hover);
 }
 
 .zoneNavAndSearch {
-	background: #EAEAEA url(../icons/arrow/bg_tri.png) bottom left no-repeat;
-	padding: 14px;
-	margin: 10px;
-	width: 96%;
+	background:var(--bg-zone-filtre) ;
+	padding: 1em;
+	border-radius: var(--radius-zone-filtre);
+	margin: 1em;
+	position:relative;
 }
-
-/* util pour A B C D , pour Afficher : Categorie1 Catégorie2 */
-
-.abcdAndNavCategory a {
-	border: 1px solid #CECECE;
-	padding: 2px 4px;
-	margin-right: 3px;
-	background-color: #FFF;
-	color: #AFAFAF;
-	text-decoration: none;
-	line-height: 220%;
-}
-
-.abcdAndNavCategory a.active {
-	background-color: #B5B5B5;
-	color: #FFF;
-}
-
-.abcdAndNavCategory a:hover,
-.abcdAndNavCategory a:focus {
-	background-color: #BFBFBF;
-	color: #FFF;
-}
+.zoneNavAndSearch:after {
+	content: '';
+	display: inline-block;
+	height: 0;
+	width: 0;
+	border-top: 11px solid var(--bg-zone-filtre);
+	border-right: 9px solid transparent;
+	border-left: 6px solid transparent;
+	position: absolute;
+	bottom:-11px;
+	left:2em;
+  }
 
 /* util pour listing fiche utilisateur, presentation like annuaire */
 
@@ -312,12 +314,6 @@ li.userType {
 	clear: both;
 }
 
-
-#whitePages #search .linkMore {
-	background-position: 492px center;
-	width: 488px;
-}
-
 #whitePages #search label {
 	clear: left;
 	display: block;
@@ -391,10 +387,10 @@ li.userType {
 }
 
 #whitePages #search .arbre label {
-	padding-left: 13px;
-	margin-left: 9px;
-	width: 159px;
-	background: transparent url(../icons/minusTreeT.gif) -8px 9px no-repeat;
+	padding-left: 0.75em;
+	margin-left:8px;
+	width:calc( 10.25em - 0.75em - 8px );
+	background: transparent url(../icons/minusTreeT.gif) -8px 0.5em no-repeat;
 	display: inline;
 }
 
@@ -404,6 +400,9 @@ li.userType {
 	background-image: none;
 }
 
+#whitePages #search .sp_buttonPane {
+	text-align: left;
+}
 
 #whitePages #search #secondaryAxe,
 #whitePages #search #additionalElements {
