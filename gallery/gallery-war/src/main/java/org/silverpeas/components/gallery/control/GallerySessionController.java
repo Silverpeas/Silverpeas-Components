@@ -730,7 +730,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   public void cutMedia(String mediaId) throws ClipboardException {
     Media media = getMedia(mediaId);
     MediaSelection mediaSelect = new MediaSelection(media);
-    mediaSelect.setCutted(true);
+    mediaSelect.setCut(true);
 
 
     addClipboardSelection(mediaSelect);
@@ -746,7 +746,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
 
   public void cutAlbum(String albumId) throws ClipboardException {
     NodeSelection nodeSelect = new NodeSelection(getAlbum(albumId));
-    nodeSelect.setCutted(true);
+    nodeSelect.setCut(true);
 
 
     addClipboardSelection(nodeSelect);
@@ -763,7 +763,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
         if (clipObject.isDataFlavorSupported(MediaSelection.MediaFlavor)) {
           Media media = (Media) clipObject.getTransferData(MediaSelection.MediaFlavor);
 
-          delegate.addMedia(media, clipObject.isCutted());
+          delegate.addMedia(media, clipObject.isCut());
           clipObjectPerformed.put(media.getMediaPK(), clipObject);
         }
         if (clipObject.isDataFlavorSupported(NodeSelection.NodeDetailFlavor)) {
@@ -771,7 +771,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
               (AlbumDetail) clipObject.getTransferData(NodeSelection.NodeDetailFlavor);
 
 
-          delegate.addAlbum(album, clipObject.isCutted());
+          delegate.addAlbum(album, clipObject.isCut());
           clipObjectPerformed.put(album.getNodePK(), clipObject);
         }
       }

@@ -28,6 +28,7 @@ import org.silverpeas.core.clipboard.SKDException;
 import org.silverpeas.core.clipboard.SilverpeasKeyData;
 import org.silverpeas.core.index.indexing.model.IndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.annotation.Nonnull;
@@ -77,11 +78,15 @@ public class MediaSelection extends ClipboardSelection {
 
   @Override
   public SilverpeasKeyData getKeyData() {
-    SilverpeasKeyData keyData = new SilverpeasKeyData();
+    SilverpeasKeyData keyData = new SilverpeasKeyData(currentMedia.getMediaPK().getId(),
+        currentMedia.getInstanceId());
     keyData.setTitle(currentMedia.getName());
     keyData.setAuthor(currentMedia.getCreatorId());
     keyData.setCreationDate(currentMedia.getCreationDate());
     keyData.setDesc(currentMedia.getDescription());
+    keyData.setType(currentMedia.getType().name());
+    keyData.setLink(URLUtil.getSimpleURL(URLUtil.URL_MEDIA, currentMedia.getId(),
+        currentMedia.getInstanceId()));
     try {
       if (currentMedia.getVisibilityPeriod().getBeginDatable().isDefined()) {
         keyData

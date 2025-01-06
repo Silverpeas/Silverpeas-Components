@@ -2227,7 +2227,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     PublicationAccessControl publicationAccessController = PublicationAccessControl.get();
     if (publicationAccessController.isUserAuthorized(getUserId(), pub.getPK())) {
       PublicationSelection pubSelect = new PublicationSelection(pub, getCurrentFolderPK());
-      pubSelect.setCutted(true);
+      pubSelect.setCut(true);
 
       addClipboardSelection(pubSelect);
     } else {
@@ -2266,7 +2266,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     NodeDetail nodeDetail = getNodeHeader(id);
     if (nodeDetail.canBeModifiedBy(getUserDetail())) {
       NodeSelection nodeSelect = new NodeSelection(getNodeHeader(id));
-      nodeSelect.setCutted(true);
+      nodeSelect.setCut(true);
 
       addClipboardSelection(nodeSelect);
     } else {
@@ -2296,7 +2296,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
                   PublicationSelection.PublicationDetailFlavor);
           final PublicationDetail pub = data.getPublicationDetail();
           Optional.of(pub)
-              .filter(p -> selection.isCutted())
+              .filter(p -> selection.isCut())
               .ifPresentOrElse(p -> pubPkMoved.add(pub.getPK()),
                   () -> publicationPkCopied.add(pub.getPK()));
         } else if (selection.isDataFlavorSupported(NodeSelection.NodeDetailFlavor)) {
@@ -2306,7 +2306,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
           Optional.of(node)
               .filter(n -> !n.equals(targetNode) && !n.isFatherOf(targetNode))
               .ifPresent(n -> Optional.of(n)
-                  .filter(nd -> selection.isCutted())
+                  .filter(nd -> selection.isCut())
                   .ifPresentOrElse(nd -> nodePkMoved.add(node.getNodePK()),
                       () -> nodePkCopied.add(node.getNodePK())));
         }
@@ -2352,7 +2352,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
           (PublicationSelection.TransferData) selection.getTransferData(
               PublicationSelection.PublicationDetailFlavor);
       PublicationDetail pub = data.getPublicationDetail();
-      if (selection.isCutted()) {
+      if (selection.isCut()) {
         pasteDetail.setFromPK(data.getFatherPK());
         movePublication(pub.getPK(), targetNode.getNodePK(), pasteDetail);
       } else {
@@ -2365,7 +2365,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       // check if current topic is a subTopic of node
       boolean pasteAllowed = !node.equals(targetNode) && !node.isFatherOf(targetNode);
       if (pasteAllowed) {
-        if (selection.isCutted()) {
+        if (selection.isCut()) {
           // move node
           getKmeliaService().moveNode(node.getNodePK(), targetNode.getNodePK(), pasteDetail);
         } else {
@@ -2384,7 +2384,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
           .filter(Objects::nonNull)
           .filter(c -> c.isDataFlavorSupported(PublicationSelection.PublicationDetailFlavor)
               || c.isDataFlavorSupported(NodeSelection.NodeDetailFlavor))
-          .map(c -> c.isCutted() ? HAS_CUTS : HAS_COPIES)
+          .map(c -> c.isCut() ? HAS_CUTS : HAS_COPIES)
           .collect(toSet());
       final CLIPBOARD_STATE state;
       if (states.size() == 1) {
