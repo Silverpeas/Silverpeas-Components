@@ -28,6 +28,7 @@ import org.silverpeas.core.clipboard.SKDException;
 import org.silverpeas.core.clipboard.SilverpeasKeyData;
 import org.silverpeas.core.index.indexing.model.IndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.annotation.Nonnull;
@@ -41,7 +42,7 @@ public class NewsSelection extends ClipboardSelection {
   private static final long serialVersionUID = 2873891019350833299L;
 
   private final News currentNews;
-  public static final DataFlavor NewsFlavor = new DataFlavor(News.class, "News");
+  public static final DataFlavor NewsFlavor = new DataFlavor(News.class, News.getResourceType());
 
   public NewsSelection(News news) {
     super();
@@ -77,11 +78,15 @@ public class NewsSelection extends ClipboardSelection {
 
   @Override
   public SilverpeasKeyData getKeyData() {
-    final SilverpeasKeyData keyData = new SilverpeasKeyData();
+    final SilverpeasKeyData keyData = new SilverpeasKeyData(currentNews.getId(),
+        currentNews.getComponentInstanceId());
     keyData.setTitle(currentNews.getName());
     keyData.setAuthor(currentNews.getCreatorId());
     keyData.setCreationDate(currentNews.getCreationDate());
     keyData.setDesc(currentNews.getDescription());
+    keyData.setType(currentNews.getContributionType());
+    keyData.setLink(URLUtil.getSimpleURL(URLUtil.URL_PUBLI, currentNews.getPublicationId(),
+        currentNews.getComponentInstanceId()));
     currentNews.getVisibility().getSpecificPeriod().ifPresent(v -> {
       try {
         if (!v.startsAtMinDate()) {
