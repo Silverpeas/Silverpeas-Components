@@ -656,7 +656,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
     try {
       BeanCriteria criteria = BeanCriteria.addCriterion(INSTANCE_ID, instanceId)
           .and("creatorId", Integer.parseInt(userId))
-          .and(BeanCriteria.addCriterion(STATUS, NOT_EQUALS,  2)
+          .and(BeanCriteria.addCriterion(STATUS, NOT_EQUALS,  Question.CLOSED)
               .or("privateReplyNumber", GREATER, 0));
       return new ArrayList<>(questionDao.findBy(criteria));
     } catch (PersistenceException e) {
@@ -673,7 +673,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
       throws QuestionReplyException {
     try {
       BeanCriteria criteria = BeanCriteria.addCriterion(INSTANCE_ID, instanceId)
-          .and(STATUS, NOT_EQUALS, 2)
+          .and(STATUS, NOT_EQUALS, Question.CLOSED)
           .andSubQuery("id", BeanCriteria.OPERATOR.IN,
               "questionId from SC_QuestionReply_Recipient",
               BeanCriteria.addCriterion("userId", Integer.parseInt(userId)));
@@ -690,8 +690,8 @@ public class SilverpeasQuestionManager implements QuestionManager {
   public List<Question> getQuestions(String instanceId) throws QuestionReplyException {
     try {
       BeanCriteria criteria = BeanCriteria.addCriterion(INSTANCE_ID, instanceId)
-          .and(BeanCriteria.addCriterion(STATUS, NOT_EQUALS,  2)
-              .or("privateReplyNumber", GREATER, 0));
+          .and(BeanCriteria.addCriterion(STATUS, NOT_EQUALS,  Question.CLOSED)
+              .or("publicReplyNumber", GREATER, 0));
       criteria.setDescOrderBy("creationDate", "id");
       return new ArrayList<>(questionDao.findBy(criteria));
     } catch (PersistenceException e) {
