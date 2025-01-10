@@ -31,14 +31,16 @@
 String translation = (String) request.getAttribute("Language");
 %>
 
-<HTML>
-<HEAD>
+<!DOCTYPE>
+<html lang="<%= translation %>">
+<head>
+	<title></title>
 <view:looknfeel/>
 <script type="text/javascript">
 function displayPublications(id)
 {
 	//display publications of topic
-	var ieFix = new Date().getTime();
+	const ieFix = new Date().getTime();
 	$.get('<%=m_context%>/RAjaxPublicationsListServlet', {Id:id,ComponentId:'<%=componentId%>',IEFix:ieFix},
 			function(data){
 				$('#pubList').html(data);
@@ -47,7 +49,7 @@ function displayPublications(id)
 
 function doPagination(index, nbItemsPerPage)
 {
-	var ieFix = new Date().getTime();
+	const ieFix = new Date().getTime();
 	$.get('<%=m_context%>/RAjaxPublicationsListServlet', {Index:index,NbItemsPerPage:nbItemsPerPage,ComponentId:'<%=componentId%>',IEFix:ieFix},
 							function(data){
 								$('#pubList').html(data);
@@ -56,13 +58,13 @@ function doPagination(index, nbItemsPerPage)
 
 function emptyTrash()
 {
-  var label = "<%=kmeliaScc.getString("ConfirmFlushTrashBean")%>";
-  jQuery.popup.confirm(label, function() {
+	const label = "<%=kmeliaScc.getString("ConfirmFlushTrashBean")%>";
+	jQuery.popup.confirm(label, function() {
 		$.progressMessage();
 		$.get('<%=m_context%>/KmeliaAJAXServlet', {ComponentId:'<%=componentId%>',Action:'EmptyTrash'},
 				function(data){
 					$.closeProgressMessage();
-					if (data == "ok")
+					if (data === "ok")
 					{
 						displayPublications("1");
 					}
@@ -78,8 +80,8 @@ $(document).ready(function() {
 	displayPublications("1");
 });
 </script>
-</HEAD>
-<BODY id="kmelia" onUnload="closeWindows()" class="yui-skin-sam">
+</head>
+<body id="kmelia" onUnload="closeWindows()" class="yui-skin-sam">
 <div id="<%=componentId %>">
 <%
         Window window = gef.getWindow();
@@ -118,5 +120,5 @@ $(document).ready(function() {
 </form>
 </div>
 <view:progressMessage/>
-</BODY>
-</HTML>
+</body>
+</html>

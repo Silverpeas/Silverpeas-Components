@@ -323,9 +323,10 @@ public class DefaultKmeliaService implements KmeliaService {
                           .limitTo(limit));
               return asKmeliaPublication(pubDetails);
             });
+    String count = result == null ? "" : String.valueOf(result.size());
     SilverLogger.getLogger(this)
         .debug(() -> format("getting {0} latest authorized publications of instance {1} in {2}",
-            result.size(), instanceId, formatDurationHMS(System.currentTimeMillis() - start)));
+            count, instanceId, formatDurationHMS(System.currentTimeMillis() - start)));
     return result;
   }
 
@@ -511,13 +512,6 @@ public class DefaultKmeliaService implements KmeliaService {
     return subTopic;
   }
 
-  /**
-   * Delete a topic and all descendants. Delete all links between descendants and publications. This
-   * publications will be visible in the Declassified zone. Delete All subscriptions and favorites
-   * on this topics and all descendants
-   * @param pkToDelete the id of the topic to delete
-   * @since 1.0
-   */
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
   public void deleteTopic(NodePK pkToDelete) {
@@ -533,7 +527,8 @@ public class DefaultKmeliaService implements KmeliaService {
         for (PublicationDetail onePubToCheck : pubsToCheck) {
           final KmeliaPublication kmeliaPub = fromDetail(onePubToCheck, oneNodeToDelete);
           if (!kmeliaPub.isAlias()) {
-            sendPublicationInBasket(kmeliaPub.getPk());
+            // delete definitively the publication
+            deletePublication(kmeliaPub.getPk());
           } else {
             // remove only the alias
             final Collection<Location> aliases = singletonList(kmeliaPub.getLocation());
@@ -1455,7 +1450,6 @@ public class DefaultKmeliaService implements KmeliaService {
   private void sendTopicInBasket(NodeDetail topic) {
     NodePK trash = new NodePK(NodePK.BIN_NODE_ID,
         topic.getIdentifier().getComponentInstanceId());
-    topic.setFatherPK(trash);
 
     // get all the tree of folders, rooted to the topic, to be sent in the basket with the topic
     final Collection<NodeDetail> children = nodeService.getDescendantDetails(topic.getNodePK());
@@ -1477,7 +1471,7 @@ public class DefaultKmeliaService implements KmeliaService {
       }
     }
 
-    nodeService.setDetail(topic);
+    nodeService.moveNode(topic.getNodePK(), trash);
   }
 
   @Override
@@ -3929,19 +3923,19 @@ public class DefaultKmeliaService implements KmeliaService {
 
   @Transactional(Transactional.TxType.REQUIRED)
   @Override
-  public void deleteTopic(@NonNull NodePK topic, @NonNull NodePK parent, String userId) {
+  public void deleteTopic(@NonNull NodePK topic, String userId) {
     Objects.requireNonNull(topic);
-    Objects.requireNonNull(parent);
     if (topic.isTrash() || topic.isRoot()) {
       return;
     }
     NodeDetail folder = getNodeHeader(topic);
+    boolean isInTrash = nodeService.getPath(topic).get(1).getId().equals(NodePK.BIN_NODE_ID);
     // check if user is allowed to delete this topic
     NodePK root = new NodePK(NodePK.ROOT_NODE_ID, topic.getInstanceId());
     if (SilverpeasRole.ADMIN.isInRole(getUserTopicProfile(topic, userId)) ||
         SilverpeasRole.ADMIN.isInRole(getUserTopicProfile(root, userId)) ||
         SilverpeasRole.ADMIN.isInRole(getUserTopicProfile(folder.getFatherPK(), userId))) {
-      if (parent.isTrash() && folder.getFatherPK().isTrash()) {
+      if (isInTrash) {
         deleteTopic(topic);
       } else {
         sendTopicInBasket(folder);

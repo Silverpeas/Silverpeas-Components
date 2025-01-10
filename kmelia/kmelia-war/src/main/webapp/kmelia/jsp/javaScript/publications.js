@@ -89,7 +89,7 @@ function deletePublications() {
           } else {
             notySuccess(nb + ' ' + getString('kmelia.publications.trash.info'));
           }
-          publicationsRemovedSuccessfully(nb);
+          publicationsRemovedSuccessfully(parseInt(nb));
         } catch (e) {
           writeInConsole(e);
         }
