@@ -52,6 +52,7 @@ import java.util.Optional;
 /**
  * This is the Service interface controller of the MVC. It controls all the activities that happen
  * in a client session. It also provides mechanisms to access other services.
+ *
  * @author Nicolas Eysseric
  */
 public interface KmeliaService extends ApplicationService {
@@ -72,6 +73,7 @@ public interface KmeliaService extends ApplicationService {
   /**
    * Add a subtopic to a topic - If a subtopic of same name already exists a NodePK with id=-1 is
    * returned else the new topic NodePK
+   *
    * @param fatherPK the topic Id of the future father
    * @param subtopic the NodeDetail of the new sub topic
    * @return If a subtopic of same name already exists a NodePK with id=-1 is returned else the new
@@ -85,6 +87,7 @@ public interface KmeliaService extends ApplicationService {
   /**
    * Add a subtopic to currentTopic and alert users - If a subtopic of same name already exists a
    * NodePK with id=-1 is returned else the new topic NodePK
+   *
    * @param subtopic the NodeDetail of the new sub topic
    * @param alertType Alert all users, only publishers or nobody of the topic creation alertType =
    * "All"|"Publisher"|"None"
@@ -99,6 +102,7 @@ public interface KmeliaService extends ApplicationService {
   /**
    * Update a subtopic to currentTopic and alert users - If a subtopic of same name already exists a
    * NodePK with id=-1 is returned else the new topic NodePK
+   *
    * @param topic the NodeDetail of the updated sub topic
    * @param alertType Alert all users, only publishers or nobody of the topic creation alertType =
    * "All"|"Publisher"|"None"
@@ -112,6 +116,7 @@ public interface KmeliaService extends ApplicationService {
 
   /**
    * Return a subtopic to currentTopic
+   *
    * @param nodePK the id of the researched topic
    * @return the detail of the specified topic
    * @see NodeDetail
@@ -121,8 +126,9 @@ public interface KmeliaService extends ApplicationService {
 
   /**
    * Delete a topic and all descendants. Delete all links between descendants and publications. Its
-   * publications will be visible in the Declassified zone. Delete All subscriptions and favorites
-   * on its topics and all descendants
+   * publications will deleted. Delete All subscriptions and favorites on its topics and all
+   * descendants
+   *
    * @param nodePK the id of the topic to delete
    * @since 1.0
    */
@@ -138,6 +144,7 @@ public interface KmeliaService extends ApplicationService {
 
   /**
    * Return the detail of a publication (only the Header)
+   *
    * @param pubPK the id of the publication
    * @return a PublicationDetail
    * @see org.silverpeas.core.contribution.publication.model.PublicationDetail
@@ -151,6 +158,7 @@ public interface KmeliaService extends ApplicationService {
    * In any case, user right access to a publication is verified so that only accessible ones are
    * included into returned list.
    * </p>
+   *
    * @param pk the reference to a folder.
    * @param userProfile a user profile
    * @param userId the identifier of the user for which access controls MUST be verified.
@@ -168,6 +176,7 @@ public interface KmeliaService extends ApplicationService {
    * result is so cached at request scope in order to avoid to perform several times the same
    * request.
    * </p>
+   *
    * @param instanceId the identifier of the instance.
    * @param userId the identifier of the user for which access controls MUST be verified.
    * @param limit the maximum number of publications to return (0 = no limit).
@@ -178,6 +187,7 @@ public interface KmeliaService extends ApplicationService {
 
   /**
    * Return list of all path to this publication - it's a Collection of NodeDetail collection
+   *
    * @param pubPK the id of the publication
    * @return a Collection of NodeDetail collection
    * @see NodeDetail
@@ -189,6 +199,7 @@ public interface KmeliaService extends ApplicationService {
    * Gets the father of the specified publication. If the publication is a clone of a main one, then
    * gets the father of the cloned publication. The father returned should be the main location of
    * the publication. It the publication is an orphaned one, null is returned.
+   *
    * @param pubPK the identifying key of the publication.
    * @return the father of the publication or null if the publication is an orphaned one.
    */
@@ -196,6 +207,7 @@ public interface KmeliaService extends ApplicationService {
 
   /**
    * Create a new Publication (only the header - parameters) to the current Topic
+   *
    * @param pubDetail a PublicationDetail
    * @return the id of the new publication
    * @see org.silverpeas.core.contribution.publication.model.PublicationDetail
@@ -206,6 +218,7 @@ public interface KmeliaService extends ApplicationService {
   /**
    * Creates a new publication into the specified topic and with the specified classification on the
    * PdC.
+   *
    * @param pubDetail the detail about the publication to create.
    * @param fatherPK the unique identifier of the topic into which the publication is published.
    * @param classification the classification on the PdC of the publication content.
@@ -217,6 +230,7 @@ public interface KmeliaService extends ApplicationService {
 
   /**
    * Update a publication (only the header - parameters)
+   *
    * @param detail a PublicationDetail
    * @see org.silverpeas.core.contribution.publication.model.PublicationDetail
    * @since 1.0
@@ -225,6 +239,7 @@ public interface KmeliaService extends ApplicationService {
 
   /**
    * Update a publication (only the header - parameters)
+   *
    * @param detail a PublicationDetail
    * @param classification the classification on the PdC of the publication content.
    * @see org.silverpeas.core.contribution.publication.model.PublicationDetail
@@ -236,12 +251,14 @@ public interface KmeliaService extends ApplicationService {
 
   /**
    * Deletes definitively the specified publication.
+   *
    * @param pubPK the unique identifier of the publication to delete.
    */
   void deletePublication(PublicationPK pubPK);
 
   /**
    * Add a publication to a topic and send email alerts to topic subscribers
+   *
    * @param pubPK the id of the publication
    * @param fatherPK the id of the topic
    * @since 1.0
@@ -253,6 +270,7 @@ public interface KmeliaService extends ApplicationService {
 
   /**
    * Updates the publication links
+   *
    * @param pubPK publication identifier which you want to update links
    * @param links list of publication to link with current.
    */
@@ -260,6 +278,7 @@ public interface KmeliaService extends ApplicationService {
 
   /**
    * Gets the complete details about the publication referred by the specified unique identifier.
+   *
    * @param pubPK the unique identifier of a Kmelia publication.
    * @return a {@link CompletePublication} object.
    */
@@ -271,6 +290,7 @@ public interface KmeliaService extends ApplicationService {
    * publications other than the original father of the publication are considered as an alias of
    * that original publication. This is why it is required to know the father of the asked
    * publication.
+   *
    * @param pubPK identifier of the publication to get.
    * @param topicPK identifier of the topic in which the publication is located.
    * @return the asked {@link KmeliaPublication} instance.
@@ -289,6 +309,7 @@ public interface KmeliaService extends ApplicationService {
    * {@link TopicDetail} result is about the best father PK (the best location) on instance B (so an
    * alias in that case).
    * </p>
+   *
    * @param pubPK the unique identifier of the publication.
    * @param isTreeStructureUsed is the tree view of the topics enabled?
    * @param userId the unique identifier of a user.
@@ -308,6 +329,7 @@ public interface KmeliaService extends ApplicationService {
    * instance B, if component instance id set to given {@link PublicationPK} is the B one, then the
    * best father PK (the best location) on instance B is returned (so an alias in that case).
    * </p>
+   *
    * @param pubPK the unique identifier of the publication
    * @param userId the unique identifier of a user.
    * @return a topic in which the publication is accessible by the given user.
@@ -316,6 +338,7 @@ public interface KmeliaService extends ApplicationService {
 
   /**
    * gets a list of PublicationDetail corresponding to the links parameter
+   *
    * @param references list of publication (componentID + publicationId)
    * @return a list of PublicationDetail
    */
@@ -326,6 +349,7 @@ public interface KmeliaService extends ApplicationService {
    * <p>
    * When a folder is given as context, then the ALIAS information is computed on each publication.
    * </p>
+   *
    * @param references list of publication represented as {@link ResourceReference} instances.
    * @param userId identifier User. allow to check if the publication is accessible for current
    * user
@@ -350,6 +374,7 @@ public interface KmeliaService extends ApplicationService {
    * This service guarantees that the returned {@link KmeliaPublication} instances each aims the
    * main location.
    * </p>
+   *
    * @param references list of publication represented as {@link ResourceReference} instances.
    * @param userId identifier User. allow to check if the publication is accessible for current
    * user
@@ -362,6 +387,7 @@ public interface KmeliaService extends ApplicationService {
   /**
    * Gets the publications linked with the specified one and for which the specified user is
    * authorized to access.
+   *
    * @param publication the publication from which linked publications are get.
    * @param userId the unique identifier of a user. It allows to check if a linked publication is
    * accessible for the specified user.
@@ -398,6 +424,7 @@ public interface KmeliaService extends ApplicationService {
 
   /**
    * Change publication status from draft to valid (for publisher) or toValidate (for redactor)
+   *
    * @param pubPK the id of the publication
    */
   void draftOutPublication(PublicationPK pubPK, NodePK topicPK, String userProfile);
@@ -410,6 +437,7 @@ public interface KmeliaService extends ApplicationService {
 
   /**
    * Change publication status from any state to draft
+   *
    * @param pubPK the id of the publication
    */
   void draftInPublication(PublicationPK pubPK);
@@ -424,6 +452,7 @@ public interface KmeliaService extends ApplicationService {
   /**
    * alert that an external elements of publication (wysiwyg, attachment, versioning) has been
    * created, updated or removed
+   *
    * @param pubPK - id of the publication which contains this external elements
    * @
    */
@@ -433,12 +462,14 @@ public interface KmeliaService extends ApplicationService {
 
   /**
    * Send an email to alert users of a publication creation
+   *
    * @param pubPK the publication Id
    */
   UserNotification getUserNotification(PublicationPK pubPK, NodePK topicPK);
 
   /**
    * Send an email to alert users of a attachment
+   *
    * @param pubPK the publication Id
    */
   UserNotification getUserNotification(PublicationPK pubPK, SimpleDocumentPK documentPk,
@@ -446,12 +477,14 @@ public interface KmeliaService extends ApplicationService {
 
   /**
    * Send a notification to alert users about a folder
+   *
    * @param pk the folder id
    */
   UserNotification getUserNotification(NodePK pk);
 
   /**
    * delete reading controls to a publication
+   *
    * @param pubPK the id of a publication
    * @since 1.0
    */
@@ -469,6 +502,7 @@ public interface KmeliaService extends ApplicationService {
 
   /**
    * Get the axis on which publications are categorized in the specified component instance.
+   *
    * @param componentId the unique identifier of a component instance.
    * @return a list of axis as {@link NodeDetail} instances.
    */
@@ -477,6 +511,7 @@ public interface KmeliaService extends ApplicationService {
   /**
    * Get the header of the axis on which publications are categorized in the specified component
    * instance.
+   *
    * @param componentId the unique identifier of a component instance.
    * @return a list of axis headers as {@link NodeDetail} instances.
    */
@@ -484,6 +519,7 @@ public interface KmeliaService extends ApplicationService {
 
   /**
    * Add the given axis into the specified component instance.
+   *
    * @param axis the axis to add.
    * @param componentId the unique identifier of the component instance.
    * @return the identifier of the new added axis.
@@ -493,6 +529,7 @@ public interface KmeliaService extends ApplicationService {
 
   /**
    * Update the given axis in the specified component instance.
+   *
    * @param axis the axis from which its counterpart in the data source will be updated.
    * @param componentId the unique identifier of a component instance.
    */
@@ -500,6 +537,7 @@ public interface KmeliaService extends ApplicationService {
 
   /**
    * Delete the given axis in the specified component instance.
+   *
    * @param axisId the unique identifier of the axis to delete.
    * @param componentId the unique identifier of a component instance.
    */
@@ -507,6 +545,7 @@ public interface KmeliaService extends ApplicationService {
 
   /**
    * Get the header of the specified node.
+   *
    * @param id the unique identifier of a node
    * @param componentId the unique identifier of the component instance in which the node is.
    * @return a {@link NodeDetail} instance.
@@ -516,6 +555,7 @@ public interface KmeliaService extends ApplicationService {
 
   /**
    * Add position to an axis in the given component instance and for the specified user.
+   *
    * @param fatherId the identifier of the position that will be the father of the new one.
    * @param position the position to add.
    * @param componentId the unique identifier of the component instance.
@@ -527,6 +567,7 @@ public interface KmeliaService extends ApplicationService {
 
   /**
    * Update a position in an axis
+   *
    * @param position the position from which its counterpart in the data source will be updated.
    * @param componentId the unique identifier of the component instance in which belongs the axis.
    */
@@ -534,6 +575,7 @@ public interface KmeliaService extends ApplicationService {
 
   /**
    * Delete a position in an axis
+   *
    * @param positionId the unique identifier of the position to delete.
    * @param componentId the unique identifier of the component instance in which belongs the axis.
    */
@@ -541,6 +583,7 @@ public interface KmeliaService extends ApplicationService {
 
   /**
    * Get path of a position in an axis.
+   *
    * @param positionId the unique identifier of a position.
    * @param componentId the unique identifier of the component instance in which belongs the axis.
    * @return the path of the position with a {@link NodeDetail} instance for each path's node.
@@ -549,6 +592,7 @@ public interface KmeliaService extends ApplicationService {
 
   /**
    * Get publications categorized in a combination of positions.
+   *
    * @param combination a list of positions composing the combination.
    * @param componentId the unique identifier of the component instance in which belongs the
    * combination.
@@ -559,6 +603,7 @@ public interface KmeliaService extends ApplicationService {
   /**
    * Get publications categorized in a combination of positions and that are visible or created the
    * given number of days ago.
+   *
    * @param combination a list of positions composing the combination.
    * @param nbDays the number of days before today.
    * @param componentId the unique identifier of the component instance in which belongs the
@@ -569,6 +614,7 @@ public interface KmeliaService extends ApplicationService {
 
   /**
    * Get publications that aren't categorized on any axis.
+   *
    * @param componentId the unique identifier of a component instance.
    * @return the uncategorized publications.
    */
@@ -578,6 +624,7 @@ public interface KmeliaService extends ApplicationService {
 
   /**
    * Get the given publication for the given user.
+   *
    * @param pubId the unique identifier of a publication.
    * @param currentUserId the unique identifier of the user for whom the publications are asked.
    * @return the publication as a {@link KmeliaPublication} instance.
@@ -587,6 +634,7 @@ public interface KmeliaService extends ApplicationService {
 
   /**
    * Get the coordinates for the given publication on the axis of the specified component instance.
+   *
    * @param pubId the unique identifier of a publication.
    * @param componentId the unique identifier of the component instance.
    * @return a collection of coordinates
@@ -595,6 +643,7 @@ public interface KmeliaService extends ApplicationService {
 
   /**
    * Add for the given publication a combination of position on the axis of the component instance.
+   *
    * @param pubId the unique identifier of a publication.
    * @param combination a list of coordinate identifiers.
    * @param componentId the unique identifier of the component instance.
@@ -604,6 +653,7 @@ public interface KmeliaService extends ApplicationService {
   /**
    * Remove for the given publication the specified combination of positions on the axis of the
    * component instance.
+   *
    * @param pubId the unique identifier of a publication.
    * @param combinationId the unique identifier of a combination of positions.
    * @param componentId the unique identifier of the component instance.
@@ -612,6 +662,7 @@ public interface KmeliaService extends ApplicationService {
 
   /**
    * Create a new publication (only the header, no content) in a Kmax instance.
+   *
    * @param pubDetail the publication to create.
    * @return the id of the new publication
    * @see org.silverpeas.core.contribution.publication.model.PublicationDetail
@@ -622,6 +673,7 @@ public interface KmeliaService extends ApplicationService {
   /**
    * Gets all the locations of the specified publication; whatever the component instance. If the
    * given publication is a clone, then gets all the locations of the main publication.
+   *
    * @param pubPK the unique identifier of the publication.
    * @return a collection of the locations of the given publication.
    */
@@ -631,6 +683,7 @@ public interface KmeliaService extends ApplicationService {
    * Gets all the aliases of the specified publication, whatever the component instance and without
    * taking into account the publication is a clone or not. If the publication is a clone, then
    * nothing will be returned.
+   *
    * @param pubPK the unique identifier of the publication.
    * @return a collection of locations that are all the aliases for the given publication.
    */
@@ -649,6 +702,7 @@ public interface KmeliaService extends ApplicationService {
    * Clone the given publication. Create new publication based on pubDetail object if not null or
    * CompletePublication otherwise. Original publication will not be modified (except references to
    * clone: cloneId and cloneStatus).
+   *
    * @param pubDetail If not null, attribute values are set to the clone
    * @param nextStatus Draft or Clone
    * @return the identifier of the cloned publication.
@@ -666,6 +720,7 @@ public interface KmeliaService extends ApplicationService {
    * Gets the details about the specified folder. The difference with
    * {@link KmeliaService#getNodeHeader(String, String)} is that the children are also set as well
    * as other information like the number of publications.
+   *
    * @param nodePK the unique identifier of the folder.
    * @param userId the unique identifier of the user for which the folder is asked.
    * @return the {@link NodeDetail} instance corresponding to the folder.
@@ -686,6 +741,7 @@ public interface KmeliaService extends ApplicationService {
    * Deletes the specified publications located into the given topic. Before a publication is
    * removed, the privileges of the specified user is checked. If the topic is the trash folder,
    * then the publications are definitively deleted. Otherwise, they are just moved into the bin.
+   *
    * @param publiIds a list of local identifier of the publications to delete.
    * @param topicId the node PK of the topic in which the publications are located.
    * @param userId the unique identifier of the user asking the deletion.
@@ -694,16 +750,14 @@ public interface KmeliaService extends ApplicationService {
   List<String> deletePublications(List<String> publiIds, NodePK topicId, String userId);
 
   /**
-   * Deletes the specified topic located into the given parent topic. Before the topic is
-   * deleted, the privileges of the specified user is checked. If the parent topic is the trash
-   * folder, then the topic is definitively deleted. Otherwise it is just moved into the bin.
+   * Deletes the specified topic located into the given parent topic. Before the topic is deleted,
+   * the privileges of the specified user is checked. If topic is in the trash folder, then
+   * the topic is definitively deleted. Otherwise it is just moved into the bin.
+   *
    * @param topic the unique identifier of the topic
-   * @param parent the unique identifier of the parent topic in which the topic to delete is
-   * located. For first-level topics, the identifier of their parent is
-   * {@link NodePK#ROOT_NODE_ID}.
    * @param userId the unique identifier of the user asking the deletion.
    */
-  void deleteTopic(@NonNull NodePK topic, @NonNull NodePK parent, String userId);
+  void deleteTopic(@NonNull NodePK topic, String userId);
 
   List<String> getUserIdsOfFolder(NodePK pk);
 
@@ -712,6 +766,7 @@ public interface KmeliaService extends ApplicationService {
 
   /**
    * Copies the node according to the information provided by the specified copy descriptor.
+   *
    * @param copyDetail a descriptor giving details about the copy to perform like the node to copy
    * and the destination.
    * @return the copy of the node.
@@ -721,6 +776,7 @@ public interface KmeliaService extends ApplicationService {
 
   /**
    * Copies all the publications defined in the specified copy descriptor.
+   *
    * @param copyDetail a descriptor providing information about the publications to copy and the
    * destination of the copy.
    */
@@ -730,6 +786,7 @@ public interface KmeliaService extends ApplicationService {
    * Copies the specified publication according to the given copy descriptor. In the case the
    * publication is an alias, then the copy adds a new location to the original copy. Otherwise the
    * publication is well copied.
+   *
    * @param publication the publication to copy.
    * @param copyDetail a descriptor providing details about the copy like the destination.
    * @return the copy of the publication or the publication itself in the case of a new location.
@@ -749,6 +806,7 @@ public interface KmeliaService extends ApplicationService {
   /**
    * Performs processes about kmelia linked to given reminder.<br/> If kmelia is not concerned,
    * nothing is performed.
+   *
    * @param reminder a {@link Reminder} instance.
    */
   void performReminder(final Reminder reminder);
