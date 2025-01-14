@@ -24,122 +24,110 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 --%>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
+<%@ taglib prefix="slifn" uri="http://www.silverpeas.com/tld/silverFunctions" %>
 <%@ include file="checkKmelia.jsp" %>
+<fmt:setLocale value="${sessionScope[sessionController].language}"/>
+<view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 
-<%
-List 				xmlForms	= (List) request.getAttribute("XMLForms");
-Collection modelUsed	= (Collection) request.getAttribute("ModelUsed");
+<c:set var="spaceId" value="${requestScope.browse[2]}"/>
+<c:set var="componentId" value="${requestScope.browse[3]}"/>
+<c:set var="kmelia" value="${requestScope.kmelia}"/>
+<jsp:useBean id="kmelia" type="org.silverpeas.components.kmelia.control.KmeliaSessionController"/>
+<c:set var="templates" value="${requestScope.XMLForms}"/>
+<c:set var="usedTemplates" value="${requestScope.ModelUsed}"/>
 
-String linkedPathString = kmeliaScc.getSessionPath();
+<fmt:message var="validateLabel" key="GML.validate"/>
+<fmt:message var="cancelLabel" key="GML.cancel"/>
 
-// declaration des boutons
-Button validateButton = gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendData();", false);
-Button cancelButton = gef.getFormButton(resources.getString("GML.cancel"), "GoToCurrentTopic", false);
+<view:sp-page>
+    <view:sp-head-part withFieldsetStyle="true">
+        <title><fmt:message key="kmelia.ModelUsed"/></title>
+        <script language="javaScript">
 
-%>
-<html>
-<head>
-<view:looknfeel/>
-<script language="javaScript">
+          function topicGoTo(id) {
+            location.href = "GoToTopic?Id=" + id;
+          }
 
-function sendData() {
-	document.model.mode.value = 'delete';
-	document.model.submit();
-}
+          function sendData() {
+            document.model.mode.value = 'delete';
+            document.model.submit();
+          }
 
-function closeWindows() {
-    if (window.publicationWindow != null)
-        window.publicationWindow.close();
-}
-</script>
-</head>
-<body onunload="closeWindows()" id="<%=componentId%>">
-<%
-    Window window = gef.getWindow();
-    Frame frame = gef.getFrame();
-    Board board = gef.getBoard();
+          function closeWindows() {
+            if (window.publicationWindow != null)
+              window.publicationWindow.close();
+          }
+        </script>
+    </view:sp-head-part>
+    <view:sp-body-part onUnload="closeWindows()"
+                       id="${componentId}">
 
-    BrowseBar browseBar = window.getBrowseBar();
-    browseBar.setDomainName(spaceLabel);
-    browseBar.setComponentName(componentLabel, "Main");
-    browseBar.setPath(linkedPathString);
+        <view:browseBar spaceId="${spaceId}"
+                        componentId="${componentId}"
+                        path="${kmelia.sessionPath}">
+        </view:browseBar>
+        <view:window>
+            <view:frame>
+                <view:board>
+                    <form name="model" action="SelectModel" method="post">
+                        <input type="hidden" name="mode"/>
+                        <table cellpadding="5" width="100%" id="templates">
+                            <tr>
+                                <td colspan="3" class="txtnav">
+                                    <fmt:message key="kmelia.ModelList"/>
+                                </td>
+                            </tr>
+                            <tr>
+                            <c:set var="idx" value="0"/>
+                            <c:forEach var="template" items="${templates}">
+                                <jsp:useBean id="template"
+                                             type="org.silverpeas.core.contribution.template.publication.PublicationTemplate"/>
+                                <c:if test="${idx != 0 && idx % 3 == 0}">
+                            </tr><tr>
+                                </c:if>
+                                <c:set var="idx" value="${idx+1}"/>
+                                <c:set var="checked" value=""/>
+                                <c:if test="${usedTemplates.contains(template.fileName)}">
+                                    <c:set var="checked" value="checked"/>
+                                </c:if>
+                                <c:set var="thumbnail" value="${template.thumbnail}"/>
+                                <c:if test="${slifn:isNotDefined(thumbnail)}">
+                                    <c:set var="thumbnail"><%= PublicationTemplate.DEFAULT_THUMBNAIL %></c:set>
+                                </c:if>
+                                <td class="template">
+                                    <img src="${thumbnail}" alt="${template.description}"/><br/>
+                                    ${silfn:escapeHtml(template.name)}<br/>
+                                    <input type="checkbox" name="modelChoice"
+                                           value="${template.fileName}" ${checked} />
+                                </td>
+                            </c:forEach>
+                            <c:if test="${idx != 0 && idx % 3 == 0}">
+                            </tr><tr>
+                            </c:if>
+                            <c:set var="checked" value=""/>
+                            <c:if test="${usedTemplates.contains('WYSIWYG')}">
+                                <c:set var="checked" value="checked"/>
+                            </c:if>
+                                <td class="template">
+                                    <img src="../../util/icons/model/wysiwyg.gif" alt="Wysiwyg"/><br/>
+                                    WYSIWYG<br/>
+                                    <input type="checkbox" name="modelChoice" value="WYSIWYG" ${checked}/>
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
 
-    out.println(window.printBefore());
-
-    out.println(frame.printBefore());
-    out.println(board.printBefore());
-%>
-<form name="model" action="SelectModel" method="post">
-<input type="hidden" name="mode"/>
-
-<table cellpadding="5" width="100%" id="templates">
-  <tr><td colspan="3" class="txtnav"><%=resources.getString("kmelia.ModelList")%></td></tr>
-<%
-    int nb = 0;
-    out.println("<tr>");
-    if (xmlForms != null) {
-	    PublicationTemplate xmlForm;
-	    String thumbnail = "";
-	    Iterator iterator = xmlForms.iterator();
-	    while (iterator.hasNext()) {
-	        xmlForm = (PublicationTemplate) iterator.next();
-	        
-	        if (nb != 0 && nb%3==0)
-		        out.println("</tr><tr>");
-		        
-	        nb++;
-			// recherche si le mod�le est dans la liste
-	        boolean used = false;
-	        if (modelUsed.contains(xmlForm.getFileName()))
-	        {
-	        	used = true;
-	        }
-	    	String usedCheck = "";
-			if (used)
-				usedCheck = "checked";
-			
-			thumbnail = xmlForm.getThumbnail();
-	        if (!StringUtil.isDefined(thumbnail))
-	        {
-	        	thumbnail = PublicationTemplate.DEFAULT_THUMBNAIL;
-	      	}
-			
-	        out.println("<td class=\"template\"><img src=\""+thumbnail+"\" border=\"0\" alt=\""+xmlForm.getDescription()+"\"/><br/>"+xmlForm.getName()+"<br/><input type=\"checkbox\" name=\"modelChoice\" value=\""+xmlForm.getFileName()+"\" "+usedCheck+"/></td>");
-	    }
-	}
-    
-	if (nb != 0 && nb%3 == 0)
-		out.println("</tr><tr>");
-	// recherche si le mod�le est dans la liste
-    boolean used = false;
-    Iterator it = modelUsed.iterator();
-    if (modelUsed.contains("WYSIWYG"))
-    {
-    	used = true;
-    }
-	String usedCheck = "";
-	if (used)
-		usedCheck = "checked";	
-	
-    out.println("<td class=\"template\"><img src=\"../../util/icons/model/wysiwyg.gif\" border=\"0\" alt=\"Wysiwyg\"/><br/>WYSIWYG<br/><input type=\"checkbox\" name=\"modelChoice\" value=\"WYSIWYG\" "+usedCheck+"/></a></td>");
-    out.println("</tr>");
-    
-%>
-</form>
-
-</table>
-
-<%
-	out.println(board.printAfter());
-	ButtonPane buttonPane = gef.getButtonPane();
-	buttonPane.addButton(validateButton);
-	buttonPane.addButton(cancelButton);
-	out.println("<br/><center>"+buttonPane.print()+"</center><br/>");
-    out.println(frame.printAfter());
-%>
-
-<% out.println(window.printAfter()); %>
-</body>
-</html>
+                </view:board>
+                <view:buttonPane cssClass="center">
+                    <view:button label="${validateLabel}" action="javascript:onClick=sendData();"/>
+                    <view:button label="${cancelLabel}" action="GoToCurrentTopic"/>
+                </view:buttonPane>
+            </view:frame>
+        </view:window>
+    </view:sp-body-part>>
+</view:sp-page>
