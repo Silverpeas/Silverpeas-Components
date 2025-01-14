@@ -41,6 +41,8 @@
   position: relative;
   background-color: var(--bgColor-dossier);
   border-radius:var(--radius-dossier);
+  max-height: 102px;
+  overflow: hidden;
 }
 #subTopics ul li:hover {
   background-color: var(--bgColor-dossier-hover);
