@@ -89,6 +89,15 @@ div.lastSuggestion h3.lastSuggestion-title {
 .my-suggestionBox-draft ul li {
   margin-left: 1em;
 }
+.my-suggestionBox-inProgress ul li:after,
+.my-suggestionBox-draft ul li:after,
+.lastCommentSuggestion li:after {
+  clear: left;
+  content: '';
+  width: 100%;
+  height: 1px;
+  display: block;
+}
 
 .buzzSuggestion .header h3,
 .lastSuggestion .header h3,
@@ -162,14 +171,25 @@ div.lastSuggestion h3.lastSuggestion-title {
 }
 
 .lastCommentSuggestion .commentaires div.avatar {
-  background-color: #FFFFFF;
-  border: 1px solid #CECECE;
+  background-color:var(--bg-color-avatar-card);
+  border: var(--border-width-avatar-card) solid var(--border-color-avatar-card);
   left: auto;
   padding: 0;
   position: relative;
   top: auto;
   float: left;
   margin-right: 1em;
+  width: var(--width-avatar-comment);
+  height: var(--height-avatar-comment);
+  border-radius:var(--radius-avatar-comment);
+  box-shadow:var(--shadow-avatar-comment);
+  overflow: hidden;
+}
+
+.lastCommentSuggestion .commentaires div.avatar img {
+  min-width: var(--width-avatar-comment);
+  height: auto;
+  min-height: var(--height-avatar-comment);
 }
 
 .lastCommentSuggestion .commentaires pre.text {
@@ -210,8 +230,8 @@ div.lastSuggestion h3.lastSuggestion-title {
 
 .my-suggestionBox-inProgress .vote {
   margin-right: 1em;
-  line-height: 33px;
-  height: 50px;
+  line-height: 2em;
+  height: 2em;
 }
 
 .my-suggestionBox-inProgress .header h3 {
@@ -246,8 +266,8 @@ div.lastSuggestion h3.lastSuggestion-title {
 
 .my-suggestionBox-inProgress .counter-comments {
   width: 169px;
-  line-height: 33px;
-  height: 50px;
+  line-height: 2em;
+  height: 2em;
   background: transparent url(../icons/sep.png) left -3px no-repeat;
   text-align: center;
 }

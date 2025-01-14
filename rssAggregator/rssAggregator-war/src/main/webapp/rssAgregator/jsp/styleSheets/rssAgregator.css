@@ -69,7 +69,7 @@
 
 .title-item-rssNews {
 	margin: 0;
-	padding: 0.25em 0 0 calc(0.5em + 16px);
+	padding: 0.25em 10em 0 calc(0.5em + 16px);
 	font-size: 1em;
 }
 
@@ -182,9 +182,8 @@
 
 .sousNavBulle .filter .operation-chanel {
 	position: absolute;
-	top: 0;
-	right: 11px;
-
+	top: 1em;
+	right: 1em;
 }
 
 .sousNavBulle .filter .operation-chanel a {

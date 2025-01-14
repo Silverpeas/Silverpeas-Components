@@ -22,13 +22,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 #navigation {
-  position:relative;
+  position: relative;
 }
 
 .titrePanier {
   margin: 0.25em;
-  font-size:var(--font-size-titre);
-  font-weight:var(--font-weight-titre);
+  font-size: var(--font-size-titre);
+  font-weight: var(--font-weight-titre);
   text-align: center;
 }
 
@@ -38,17 +38,18 @@ div.hover {
 }
 
 div.selected {
-  font-weight: bold; /* En gras */
+  font-weight: bold;
+  /* En gras */
 }
 
-.noRessource{
+.noRessource {
   font-style: italic;
   color: #666666;
 }
 
 #listeReservation {
   height: 200px;
-  overflow:auto;
+  overflow: auto;
   padding: 10px;
   background-color: #FFFFFF;
   border: 1px solid #CCCCCC;
@@ -58,11 +59,11 @@ div.selected {
   font-weight: bold;
 }
 
-.qtip  {
+.qtip {
   max-width: 400px;
 }
 
-.qtip-no-max-width .qtip  {
+.qtip-no-max-width .qtip {
   max-width: none;
 }
 
@@ -70,149 +71,169 @@ div.selected {
   position: absolute;
   right: 0;
   top: 0;
-  text-align:right;
+  text-align: right;
 }
 
 .sousNavBulle #planning-context {
   background: #FFF url(../../../util/icons/user.png) 3px center no-repeat;
-  padding: 0.5em 0.5em 0.5em calc( 18px + 0.5em);
+  padding: 0.5em 0.5em 0.5em calc(18px + 0.5em);
   color: #3a3a3a;
   display: inline-block;
   margin: 0.5em 0 0.5em;
   font-weight: 500;
   font-size: 0.9em;
 }
+
 .sousNavBulle #currentScope {
-  margin:0 0 0.5em 0;
+  margin: 0 0 0.5em 0;
 }
+
 .sousNavBulle #currentScope a {
   color: #AFAFAF;
-  margin-right:0.5em;
-  padding:0.5em;
+  margin-right: 0.5em;
+  padding: 0.5em;
 }
+
 .sousNavBulle #today a {
   background-color: #FAD163;
   color: #000000;
-  padding:0.5em 1em;
-}
-.sousNavBulle #currentScope a[href*="previousPeriod"] {
-  margin-right:0;
+  padding: 0.5em 1em;
 }
 
-.sousNavBulle #today a:hover, .sousNavBulle #today a:focus {
+.sousNavBulle #currentScope a[href*="previousPeriod"] {
+  margin-right: 0;
+}
+
+.sousNavBulle #currentScope a[href*="Period"] img{
+  vertical-align: middle !important;
+}
+
+.sousNavBulle #today a:hover,
+.sousNavBulle #today a:focus {
   background-color: #FFFFCC;
 }
 
 .sousNavBulle #others p {
-  padding:0;
+  padding: 0;
 }
 
-.sousNavBulle .list-mode ,
-.sousNavBulle .calendar-mode  {
-  display:inline-block;
-  width:19px;
-  height:17px;
-  vertical-align:middle;
+.sousNavBulle .list-mode,
+.sousNavBulle .calendar-mode {
+  display: inline-block;
+  width: 19px;
+  height: 17px;
+  vertical-align: middle;
 }
+
 .sousNavBulle .list-mode span,
 .sousNavBulle .calendar-mode span {
-  display:none;
+  display: none;
 }
-.sousNavBulle .list-mode  {
-  background-image: url(../icons/list-mode.png) ;
-  background-position:center center;
-  background-repeat:	no-repeat;
+
+.sousNavBulle .list-mode {
+  background-image: url(../icons/list-mode.png);
+  background-position: center center;
+  background-repeat: no-repeat;
 }
-.sousNavBulle .calendar-mode  {
-  background-image: url(../icons/calendar-mode.png)  ;
-  background-position:center center;
-  background-repeat:	no-repeat;
+
+.sousNavBulle .calendar-mode {
+  background-image: url(../icons/calendar-mode.png);
+  background-position: center center;
+  background-repeat: no-repeat;
 }
-.sousNavBulle .list-mode.active, 
+
+.sousNavBulle .list-mode.active,
 .sousNavBulle .list-mode:hover {
-  background-image: url(../icons/list-mode-active.png) ;
-  background-position:center center;
-  background-repeat:	no-repeat;
+  background-image: url(../icons/list-mode-active.png);
+  background-position: center center;
+  background-repeat: no-repeat;
 }
+
 .sousNavBulle .calendar-mode.active,
-.sousNavBulle .calendar-mode:hover   {
-  background-image: url(../icons/calendar-mode-active.png)  ;
-  background-position:center center;
-  background-repeat:	no-repeat;
+.sousNavBulle .calendar-mode:hover {
+  background-image: url(../icons/calendar-mode-active.png);
+  background-position: center center;
+  background-repeat: no-repeat;
 }
 
 #reservationList {
-  clear:both;
-}
-#reservationList,
-#reservationList  ul,
-#reservationList  ul li {
-  list-style-type:none;
-  padding:0;
-  margin:0;
-  position:relative;
-}
-#reservationList   ul  li {
-  border-bottom: 1px solid #EAEAEA;
-  padding:8px;
-  z-index:10;
-  background-color:#FFF;
-  display:block;
-}
-#reservationList   ul ul li {
-  border-bottom:0;
-  padding:0;
-  z-index:auto;
-  background-color:transparent;
-}
-#reservationList  ul li:hover {
-  cursor:pointer;
-  background-color:var(--bgColor-dossier-hover);
+  clear: both;
 }
 
-#reservationList  ul li:hover hr.clear {
-  color:#E8E8E8;
+#reservationList,
+#reservationList ul,
+#reservationList ul li {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  position: relative;
+}
+
+#reservationList ul li {
+  border-bottom: 1px solid #EAEAEA;
+  padding: 8px;
+  z-index: 10;
+  background-color: #FFF;
+  display: block;
+}
+
+#reservationList ul ul li {
+  border-bottom: 0;
+  padding: 0;
+  z-index: auto;
+  background-color: transparent;
+}
+
+#reservationList ul li:hover {
+  cursor: pointer;
+  background-color: var(--bgColor-dossier-hover);
+}
+
+#reservationList ul li:hover hr.clear {
+  color: #E8E8E8;
 }
 
 #reservationList .reservationPeriode {
-  border-bottom:1px solid #eaeaea;
-  padding:0.5em;
-  margin:0;
+  border-bottom: 1px solid #eaeaea;
+  padding: 0.5em;
+  margin: 0;
 }
 
 hr.clear {
-  clear:both;
-  height:12px;
-  margin:0;
-  padding:0;
-  border:0;
-  background-color:transparent;
-  color:#FFF;
+  clear: both;
+  height: 12px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background-color: transparent;
+  color: #FFF;
 }
 
 .reservationList h5 {
-  color:var(--color-text-date);
-  font-size:var(--font-size-titre);
-  font-weight:var(--font-weight-titre);
-  margin:8px 0 0;
-  padding:0;
-}
-.reservationList h4,
-.event-qtip h4	{
-  margin:0 0 8px;
-  padding:0;
-}
-.reservationList h4 a,
-.event-qtip  h4 a {
-  color:var(--color-titre-avec-deux-couleurs);
-  font-size:var(--font-size-titre);
+  color: var(--color-text-date);
+  font-size: var(--font-size-titre);
+  font-weight: var(--font-weight-titre);
+  margin: 8px 0 0;
+  padding: 0;
 }
 
-.reservationDesc  {
-  color:var(--color-text-description);
-  border-left:3px solid #ececec;
-  font-size:0.9em;
-  padding-left:4px;
+.reservationList h4,
+.event-qtip h4 {
+  margin: 0 0 8px;
+  padding: 0;
+}
+
+.reservationList h4 a,
+.event-qtip h4 a {
+  color: var(--color-titre-avec-deux-couleurs);
+  font-size: var(--font-size-titre);
+}
+
+.reservationDesc {
+  color: var(--color-text-description);
+  border-left: 3px solid #ececec;
+  font-size: 0.9em;
+  padding-left: 4px;
 }
 
 .reservationInfo {
@@ -222,13 +243,13 @@ hr.clear {
   display: table;
   padding: 8px 0;
   width: auto;
-  position:absolute;
-  top:8px;
-  right:8px;
+  position: absolute;
+  top: 8px;
+  right: 8px;
 }
 
 .reservationPlace .bloc {
-  background:transparent url("../../../util/icons/marker.gif") 17px center no-repeat   ;
+  background: transparent url("../../../util/icons/marker.gif") 17px center no-repeat;
 }
 
 .reservationInfo div div.bloc {
@@ -239,81 +260,90 @@ hr.clear {
   text-align: left;
   width: auto;
 }
-#reservationList   .reservationRessources,
-#reservationList   .reservationRessources li ,
-.event-qtip  .reservationRessources li   ,
-.event-qtip  .reservationRessources  {
-  padding:0;
-  margin:0;
+
+#reservationList .reservationRessources,
+#reservationList .reservationRessources li,
+.event-qtip .reservationRessources li,
+.event-qtip .reservationRessources {
+  padding: 0;
+  margin: 0;
 }
-#reservationList   .reservationRessources li,
+
+#reservationList .reservationRessources li,
 .event-qtip .reservationRessources li {
-  display:inline;
-  margin-right:5px;
+  display: inline;
+  margin-right: 5px;
 }
+
 .reservationRessources li.validated a,
-.resource.validated{
+.resource.validated {
   background-color: #87bd41;
 }
+
 .reservationRessources li.refused a,
-.resource.refused{
+.resource.refused {
   background-color: #f15858;
-  color:#FFF;
+  color: #FFF;
 }
+
 .reservationRessources li.waitingForValidation a,
 .resource.waitingForValidation {
   background-color: #a7a7a7;
-  color:#FFF;
+  color: #FFF;
 }
+
 .reservationRessources li a,
 .resource {
   display: inline-block;
-  margin-bottom:0.5em;
-  color:#FFF;
-  border-radius:var(--radius-etiquette);
-  padding:0.25em 0.5em;
-  z-index:100;
-  position:relative;
+  margin-bottom: 0.5em;
+  color: #FFF;
+  border-radius: var(--radius-etiquette);
+  padding: 0.25em 0.5em;
+  z-index: 100;
+  position: relative;
 }
-.reservationRessources li a:hover{
-  color:#FFF;
-  text-decoration:underline;
+
+.reservationRessources li a:hover {
+  color: #FFF;
+  text-decoration: underline;
 }
 
 .event-qtip {
-  padding:0 3px 0 6px;
+  padding: 0 3px 0 6px;
 }
 
-.event-qtip  h4 {
-  margin:0 0 2px;
+.event-qtip h4 {
+  margin: 0 0 2px;
 }
-.event-qtip  h4 a {
-  font-size:1em;
+
+.event-qtip h4 a {
+  font-size: 1em;
 }
 
 .event-qtip p.reservationPlace {
-  background: url("../../../util/icons/marker.gif") left  center no-repeat scroll  transparent;
-  padding:1px 0 3px 20px;
-  margin:0;
+  background: url("../../../util/icons/marker.gif") left center no-repeat scroll transparent;
+  padding: 1px 0 3px 20px;
+  margin: 0;
 }
+
 .event-qtip .reservationDesc {
-  margin:2px 0 8px 0 ;
-  padding:0 0 0 4px;
+  margin: 2px 0 8px 0;
+  padding: 0 0 0 4px;
 }
 
 .event-qtip .reservation-link {
-  display:block;
-  text-align:right;
-  padding:0.25em 0.5em;
+  display: block;
+  text-align: right;
+  padding: 0.25em 0.5em;
   border-radius: var(--radius-btn-secondaire);
-  color:var(--color-text-btn-secondaire);
-  background:var(--bgColor-btn-secondaire);
+  color: var(--color-text-btn-secondaire);
+  background: var(--bgColor-btn-secondaire);
   border: 1px solid var(--border-color-btn-secondaire);
 }
 
 .event-qtip .reservation-link:hover,
-.event-qtip .reservation-link:focus  {
-  background:var(--bgColor-btn-secondaire-hover);
+.event-qtip .reservation-link:focus {
+  background: var(--bgColor-btn-secondaire-hover);
 }
 
 #legende {
