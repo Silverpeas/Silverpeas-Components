@@ -1,15 +1,5 @@
 /*- [ Gantt BEGIN ] --------------------------- */
 
-#gantt .sousNavBulle {
-  margin-top:1em;
-  width:98%
-}
-
-#navTemporelle {
-  margin-bottom: 0.5em;
-  padding-bottom: 1em;
-}
-
 .sousNavBulle .sousNavCheck a {
   border:0;
   color:var(--color-text-filtre);

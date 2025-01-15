@@ -61,13 +61,15 @@
 	text-align: center;
 }
 
-#classifieds #categories .ViewAllClassifiedsByCategory a:before {
+#classifieds #categories .ViewAllClassifiedsByCategory a:before,
+#classifieds #categories .newClassified a:before {
 	content: '';
 	display: inline-block;
 	background: transparent url(../../../util/icons/component/classifiedsSmall.gif) center 0 no-repeat;
 	width: 16px;
 	min-height: 16px;
 	height: 1em;
+	vertical-align: middle;
 }
 
 #classifieds #categories .ViewAllClassifiedsByCategory a,
@@ -76,13 +78,16 @@
 	color: var(--color-lien-action);
 }
 
+#classifieds #categories .ViewAllClassifiedsByCategory a:hover,
+#classifieds #categories .newClassified a:hover,
+#classifieds #categories .ViewAllClassifiedsByCategory a:focus,
+#classifieds #categories .newClassified a:focus {
+	color: var(--color-action);
+}
+
+
 #classifieds #categories .newClassified a:before {
-	content: '';
-	display: inline-block;
 	background: transparent url(../../../util/icons/newsFeed_publication.gif) center 0 no-repeat;
-	width: 16px;
-	min-height: 16px;
-	height: 1em;
 }
 
 #classifieds #categories .categoryContent ul,

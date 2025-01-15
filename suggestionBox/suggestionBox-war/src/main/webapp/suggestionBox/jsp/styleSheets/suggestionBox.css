@@ -234,6 +234,10 @@ div.lastSuggestion h3.lastSuggestion-title {
   height: 2em;
 }
 
+.my-suggestionBox-inProgress .vote .rateit {
+  vertical-align: middle;
+}
+
 .my-suggestionBox-inProgress .header h3 {
   font-size:var(--font-size-titre);
   line-height: 100%;
@@ -392,6 +396,7 @@ div.lastSuggestion h3.lastSuggestion-title {
   padding-right: 3%;
   border-right: 1px solid var(--color-trait-separateur);
 }
+
 
 .lecteur-view .lastCommentSuggestion {
   width: 45%;

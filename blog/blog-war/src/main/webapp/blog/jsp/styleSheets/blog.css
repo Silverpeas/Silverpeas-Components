@@ -43,6 +43,11 @@
 	margin-bottom: 1em;
 }
 
+#navBlog #zoneRecherche form .sp_button {
+	height:calc( var(--height-input) - 0.25em - 2px );
+	padding:0.25em 0.5em;
+	border-width: 1px;
+}
 #navBlog .bgDegradeGris ul {
 	list-style-type: none;
 	margin: 0;
@@ -110,7 +115,6 @@
 }
 
 #blog .inputRecherche {
-	height: 1em;
 	width: 80%;
 	margin-bottom: 0.25em;
 	float: left;

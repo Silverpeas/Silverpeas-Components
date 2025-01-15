@@ -355,7 +355,7 @@ body.treeView>div[id*="kmelia"]>div.kmelia #topPage .cellBodyWindows {
 
 #subTopics ul li {
   margin: 0 0.5em 0.5em 0;
-  max-width: 25%;
+  max-width:calc( 25% - 0.5em - 2px ); 
   flex-grow: 1;
   position: relative;
   background-color: var(--bgColor-dossier);
@@ -508,11 +508,6 @@ a.button.refuse span {
 .kmax .sousNavBulle,
 .kmaxManager .sousNavBull {
   position: relative;
-}
-
-.kmax .sousNavBulle #btnForm .sp_button {
-  background-color: transparent;
-  border: 0;
 }
 
 .oneAxis label {

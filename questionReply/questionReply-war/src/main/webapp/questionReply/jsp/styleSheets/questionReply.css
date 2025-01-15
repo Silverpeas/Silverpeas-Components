@@ -231,6 +231,9 @@ h5.answerTitle {
   margin-right:224px;
 }
 
+.container-filter #search {
+  margin-bottom: 0.5em;
+}
 /*
 Workaround to avoid files modification by publishers (requesters)
  */
