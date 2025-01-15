@@ -83,19 +83,17 @@
 
 .listinUsers .profilPhoto a {
 	border: var(--shadow-border-card);
-	width: var(--width-avatar-card);
-	height: var(--height-avatar-card);
+	width: 60px; 
+	height:auto;
 	overflow: hidden;
-	border-radius: var(--radius-avatar-card);
+	border-radius:0;
 	box-shadow: var(--shadow-avatar-card);
 	display: block;
 }
 
 .listinUsers .profilPhoto img {
-	min-height: var(--height-avatar-card);
-	min-width: var(--width-avatar-card);
 	height: auto;
-	width: auto;
+	width: 60px;
 }
 
 .listinUsers .action {

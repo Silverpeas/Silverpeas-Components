@@ -90,12 +90,12 @@
 }
 
 #list-news .news-info-fonctionality {
-  background-color:var(--bgColor-filtre-hover);
-  border-top: 1px solid var(--border-color-filtre-hover);
-  border-bottom: 1px solid var(--border-color-filtre-hover);
+  background-color:var(--bgColor-zone-filtre);
+  border-top: 1px solid var(--border-color-zone-filtre);
+  border-bottom: 1px solid var(--border-color-zone-filtre);
   clear: left;
   padding:0.25em;
-  color:var(--color-text-filtre-hover);
+  color:var(--color-text);
   font-size: 0.9em;
   position: relative;
   height: auto;
