@@ -23,70 +23,70 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 --%>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <%@ include file="checkKmelia.jsp" %>
 
 <%
-String translation = (String) request.getAttribute("Language");
+    String translation = (String) request.getAttribute("Language");
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="<%=resources.getLanguage()%>">
-<head>
-  <title><%=resources.getString("kmelia.folder.nonvisiblepubs")%></title>
-<view:looknfeel/>
-<view:script src="javaScript/navigation.js"/>
-<script type="text/javascript">
-function getWebContext() {
-	return "<%=m_context%>";
-}
+<view:sp-page>
+    <view:sp-head-part>
+        <title><%=resources.getString("kmelia.folder.nonvisiblepubs")%></title>
+        <view:script src="javaScript/navigation.js"/>
+        <view:script src="javaScript/publications.js"/>
+        <script type="text/javascript">
+          function getWebContext() {
+            return "<%=m_context%>";
+          }
 
-function getComponentId() {
-	return "<%=componentId%>";
-}
+          function getComponentId() {
+            return "<%=componentId%>";
+          }
 
-function getNonVisiblePubsFolderId() {
-	return "<%=KmeliaHelper.SPECIALFOLDER_NONVISIBLEPUBS%>";
-}
+          function getNonVisiblePubsFolderId() {
+            return "<%=KmeliaHelper.SPECIALFOLDER_NONVISIBLEPUBS%>";
+          }
 
-function getPubIdToHighlight() {
-	return "";
-}
+          function getPubIdToHighlight() {
+            return "";
+          }
 
-$(document).ready(function() {
-	setCurrentNodeId(getNonVisiblePubsFolderId());
-	displayPublications(getNonVisiblePubsFolderId());
-});
-</script>
-</head>
-<body id="kmelia" class="yui-skin-sam">
-<%
-	Window window = gef.getWindow();
-    BrowseBar browseBar = window.getBrowseBar();
-    browseBar.setI18N("GoToCurrentTopic", translation);
-    browseBar.setExtraInformation(resources.getString("kmelia.folder.nonvisiblepubs"));
+          $(document).ready(function () {
+            setCurrentNodeId(getNonVisiblePubsFolderId());
+            displayPublications(getNonVisiblePubsFolderId());
+          });
+        </script>
+    </view:sp-head-part>
+    <view:sp-body-part id="kmelia" cssClass="yui-skin-sam">
+        <%
+            Window window = gef.getWindow();
+            BrowseBar browseBar = window.getBrowseBar();
+            browseBar.setI18N("GoToCurrentTopic", translation);
+            browseBar.setExtraInformation(resources.getString("kmelia.folder.nonvisiblepubs"));
 
-	Frame frame = gef.getFrame();
+            Frame frame = gef.getFrame();
 
-    out.println(window.printBefore());
-    out.println(frame.printBefore());
-%>
+            out.println(window.printBefore());
+            out.println(frame.printBefore());
+        %>
 
-	<div id="pubList">
-    <view:board>
-      <%=resources.getString("kmelia.inProgressPublications")%><br/><br/><img alt="" src="<%=resources.getIcon("kmelia.progress") %>"/>
-    </view:board>
-	</div>
-<%
-	out.println(frame.printAfter());
-	out.println(window.printAfter());
-%>
+        <div id="pubList">
+            <view:board>
+                <%=resources.getString("kmelia.inProgressPublications")%><br/><br/>
+                <img alt="progression" src="<%=resources.getIcon("kmelia.progress") %>"/>
+            </view:board>
+        </div>
+        <%
+            out.println(frame.printAfter());
+            out.println(window.printAfter());
+        %>
 
-<form name="pubForm" action="ViewPublication" method="post">
-	<input type="hidden" name="PubId"/>
-	<input type="hidden" name="CheckPath" value="1"/>
-</form>
-
-</body>
-</html>
+        <form name="pubForm" action="ViewPublication" method="post">
+            <input type="hidden" name="PubId"/>
+            <input type="hidden" name="CheckPath" value="1"/>
+        </form>
+        <view:progressMessage/>
+    </view:sp-body-part>
+</view:sp-page>
