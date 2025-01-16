@@ -92,6 +92,7 @@ public class JSONServlet extends HttpServlet {
       } else {
         // getting profile
         String profile = kmeliaSC.getUserTopicProfile(id);
+        NodeDetail folder = kmeliaSC.getNodeHeader(id);
 
         // getting operations of topic according to profile and current
         boolean isAdmin = SilverpeasRole.ADMIN.isInRole(profile);
@@ -99,20 +100,19 @@ public class JSONServlet extends HttpServlet {
         boolean isWriter = SilverpeasRole.WRITER.isInRole(profile);
         boolean isUser = SilverpeasRole.USER.isInRole(profile);
         boolean isRoot = NodePK.ROOT_NODE_ID.equals(id);
-        boolean isBasket = NodePK.BIN_NODE_ID.equals(id);
+        boolean isInBasket = folder.getFullPath().contains("/" + NodePK.BIN_NODE_ID + "/");
         Role role = new Role().setAdmin(isAdmin).setPublisher(isPublisher).setWriter(isWriter)
             .setUser(isUser);
 
-        if (isBasket) {
-          addBasketOperations(operations, role);
+        if (isInBasket) {
+          addBasketOperations(operations, role, folder);
         } else if (StringUtil.isDefined(profile)) {
-          NodeDetail node = kmeliaSC.getNodeHeader(id);
           UserDetail user = kmeliaSC.getUserDetail();
           // general operations
-          addGeneralOperations(kmeliaSC, operations, role, profile, isRoot, node);
+          addGeneralOperations(kmeliaSC, operations, role, profile, isRoot, folder);
 
           // topic operations
-          addTopicOperations(kmeliaSC, operations, role, isRoot, node, user);
+          addTopicOperations(kmeliaSC, operations, role, isRoot, folder, user);
 
           // publication operations
           addPublicationOperations(kmeliaSC, operations, role, isRoot, user);
@@ -216,13 +216,20 @@ public class JSONServlet extends HttpServlet {
     operations.put("responsibles", !user.isAnonymous());
   }
 
-  private void addBasketOperations(final JSONCodec.JSONObject operations, final Role role) {
+  private void addBasketOperations(final JSONCodec.JSONObject operations, final Role role,
+      NodeDetail node) {
     boolean binOperationsAllowed = role.isAdmin() || role.isPublisher() || role.isWriter();
+    boolean isAdmin = role.isAdmin();
     operations.put("emptyTrash", binOperationsAllowed);
     operations.put(OP_EXPORT_PUBLICATIONS, binOperationsAllowed);
     operations.put("copyPublications", binOperationsAllowed);
     operations.put("cutPublications", binOperationsAllowed);
     operations.put(OP_DELETE_PUBLICATIONS, binOperationsAllowed);
+    if (!node.isBin()) {
+      operations.put("deleteTopic", isAdmin);
+      operations.put("copyTopic", isAdmin);
+      operations.put("cutTopic", isAdmin);
+    }
   }
 
   private static class Role {

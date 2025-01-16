@@ -234,6 +234,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
         destination = rootDestination + "basket.jsp";
       } else if (function.equals("ViewPublicationsToValidate")) {
         destination = rootDestination + "publicationsToValidate.jsp";
+      } else if (function.equals("ViewPublicationsNonVisibles")) {
+        destination = rootDestination + "publicationsNonVisibles.jsp";
       } else if ("GoBackToResults".equals(function)) {
         SearchContext searchContext = kmelia.getSearchContext();
         request.setAttribute("SearchContext", searchContext);

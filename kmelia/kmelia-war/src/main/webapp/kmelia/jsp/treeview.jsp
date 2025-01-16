@@ -48,10 +48,12 @@
 
 <fmt:message key="GML.ForbiddenAccessContent" var="labelForbiddenAccess"/>
 
-<%
-  String		rootId				= "0";
+<c:set var="folderId" value="${request.CurrentFolderId}"/>
+<c:if test="${silfn:isNotDefined(folderId)}">
+  <c:set var="folderId" value="0"/>
+</c:if>
 
-//R?cup?ration des param?tres
+<%
   String 	profile			= (String) request.getAttribute("Profile");
   String  translation 	= (String) request.getAttribute("Language");
   boolean displayNBPublis = (Boolean) request.getAttribute("DisplayNBPublis");
@@ -61,12 +63,7 @@
 
   String pubIdToHighlight	= (String) request.getAttribute("PubIdToHighlight"); //used when we have found publication from search (only toolbox)
 
-  String id = (String) request.getAttribute("CurrentFolderId");
   String language = kmeliaScc.getLanguage();
-
-  if (id == null) {
-    id = rootId;
-  }
 
   String userId = kmeliaScc.getUserId();
 
@@ -104,7 +101,7 @@
     }
 
     function getWebContext() {
-      return "<%=m_context%>";
+      return webContext;
     }
 
     function getComponentId() {
@@ -141,7 +138,7 @@
     }
 
     function getCurrentFolderId() {
-      return "<%=id%>";
+      return "${folderId}";
     }
 
     function arePublicationsOnRootAllowed() {
@@ -163,7 +160,7 @@
     params["nbPublisDisplayed"] = <%=displayNBPublis%>;
 
     let searchInProgress = <%=searchContext != null%>;
-    let searchFolderId = "<%=id%>";
+    let searchFolderId = "${folderId}";
   </script>
 </view:sp-head-part>
 <view:sp-body-part cssClass="yui-skin-sam treeView" id="${componentId}">
@@ -209,7 +206,7 @@
   %>
 
   <form name="topicDetailForm" method="post">
-    <input type="hidden" name="Id" value="<%=id%>"/>
+    <input type="hidden" name="Id" value="${folderId}"/>
     <input type="hidden" name="ChildId"/>
     <input type="hidden" name="Status"/>
     <input type="hidden" name="Recursive"/>
@@ -268,20 +265,22 @@
     getTreeview().rename_node("#"+nodeId, nodeTitle+" ("+nbPublis+")");
   }
 
-  function nodeDeleted(nodeId) {
-    const treeview = getTreeview();
+  function _isInBin(nodeId) {
     let isInBin = false;
-    const path = treeview.get_path("#" + nodeId, false, true);
+    const path = getTreeview().get_path("#" + nodeId, false, true);
     path.forEach(function (parentId) {
       if (parentId !== nodeId && parentId !== rootNodeId) {
         isInBin = isInBin || parentId === binNodeId;
       }
     });
+    return isInBin;
+  }
 
+  function nodeDeleted(nodeId, isInBin) {
     if (isInBin) {
       _deleteNodeInBin(nodeId);
     } else {
-      const parentId = treeview.get_parent("#" + nodeId);
+      const parentId = getTreeview().get_parent("#" + nodeId);
       reloadPage(parentId);
     }
   }
@@ -699,7 +698,7 @@
     if (id) {
       let idx = id.indexOf('_');
       if (idx > 0) {
-        id = id.substr(0, idx);
+        id = id.substring(0, idx);
       }
     }
     return id;
