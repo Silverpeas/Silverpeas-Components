@@ -506,7 +506,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
             goToProfilesDefinition = true;
           }
         }
-        kmelia.updateTopicHeader(topic, alertType);
+        kmelia.updateTopic(topic, alertType);
 
         if (goToProfilesDefinition) {
           request.setAttribute("NodeId", id);

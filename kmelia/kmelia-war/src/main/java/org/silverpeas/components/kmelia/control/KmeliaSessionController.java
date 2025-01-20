@@ -738,6 +738,27 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     indexOfFirstPubToDisplay = 0;
   }
 
+  /**
+   * Update the specified topic. If the local rights of the topic are enabled, then from the
+   * inherited rights, only the admin ones are kept.
+   * @param topic the topic to update with the updated data
+   * @param alertType the type of notification: notify all the users ("All"), only the publishers
+   * ("publisher"), or nobody ("None").
+   */
+  public synchronized void updateTopic(NodeDetail topic, String alertType) {
+    NodeDetail previousTopic = getNodeHeader(topic.getId());
+    updateTopicHeader(topic, alertType);
+    if (!previousTopic.haveLocalRights() && topic.haveLocalRights()) {
+      initTopicSpecificAdminProfiles(topic.getNodePK(), topic.getFatherPK());
+    }
+  }
+
+  /**
+   * Update only header information about the specified topic.
+   * @param nd the topic to update with the updated data
+   * @param alertType the type of notification: notify all the users ("All"), only the publishers
+   * ("publisher"), or nobody ("None").
+   */
   public synchronized void updateTopicHeader(NodeDetail nd, String alertType) {
     nd.getNodePK().setSpace(getSpaceId());
     nd.getNodePK().setComponentName(getComponentId());
@@ -760,12 +781,19 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     nd.getNodePK().setSpace(getSpaceId());
     nd.getNodePK().setComponentName(getComponentId());
     nd.setCreatorId(getUserId());
-    NodePK pk = getKmeliaService().addSubTopic(getNodePK(parentId), nd, alertType);
+    NodePK parentPk = getNodePK(parentId);
+    NodePK pk = getKmeliaService().addSubTopic(parentPk, nd, alertType);
+    initTopicSpecificAdminProfiles(pk, parentPk);
 
+    return pk;
+  }
+
+  private void initTopicSpecificAdminProfiles(NodePK pk, NodePK parentPk) {
     // by default, sets father's admin rights in the case of specific rights
     // to prevent no access to users having some rights with the father topic
-    NodeDetail created = getNodeHeader(pk.getId());
-    if (created.haveLocalRights()) {
+    NodeDetail node = getNodeHeader(pk.getId());
+    String parentId = parentPk.getId();
+    if (node.haveLocalRights()) {
       ProfileInst parentProfile;
       String profileAdmin = SilverpeasRole.ADMIN.getName();
       if (NodePK.ROOT_NODE_ID.equals(parentId)) {
@@ -779,8 +807,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
             parentProfile.getAllUsers().toArray(new String[0]));
       }
     }
-
-    return pk;
   }
 
   public synchronized String deleteTopic(String topicId) {
