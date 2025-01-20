@@ -238,7 +238,7 @@ fieldset#news-thumbnail legend {
 }
 
 #my-quickInfo #menubar-creation-actions {
-  margin: 0;
+  margin-top: 0;
 }
 
 .quickInfo .publiDesc {
