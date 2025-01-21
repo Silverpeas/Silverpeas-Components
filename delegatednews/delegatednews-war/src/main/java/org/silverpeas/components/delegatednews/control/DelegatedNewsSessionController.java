@@ -145,9 +145,7 @@ public class DelegatedNewsSessionController extends AbstractComponentSessionCont
         beginDate != null ? beginDate.toInstant().atOffset(ZoneOffset.UTC) : null;
     final OffsetDateTime periodEnd =
         endDate != null ? endDate.toInstant().atOffset(ZoneOffset.UTC) : null;
-    final Period visibilityPeriod =
-        beginDate != null && endDate != null ? Period.betweenNullable(periodStart, periodEnd) :
-            null;
+    final Period visibilityPeriod = Period.betweenNullable(periodStart, periodEnd);
     getService().updateDateDelegatedNews(pubId, visibilityPeriod);
   }
 
