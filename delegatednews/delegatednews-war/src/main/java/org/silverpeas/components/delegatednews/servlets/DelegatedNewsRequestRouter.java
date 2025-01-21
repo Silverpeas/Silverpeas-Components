@@ -109,18 +109,6 @@ public class DelegatedNewsRequestRouter
         String listJSON = newsSC.getListDelegatedNewsJSON(list);
         request.setAttribute("ListNewsJSON", listJSON);
         destination = "/delegatednews/jsp/listNews.jsp";
-      } else if ("EditUpdateDate".equals(function)) {
-        String pubId = request.getParameter("PubId");
-        String beginDate = request.getParameter("BeginDate");
-        String beginHour = request.getParameter("BeginHour");
-        String endDate = request.getParameter("EndDate");
-        String endHour = request.getParameter("EndHour");
-        request.setAttribute("PubId", pubId);
-        request.setAttribute("BeginDate", beginDate);
-        request.setAttribute("BeginHour", beginHour);
-        request.setAttribute("EndDate", endDate);
-        request.setAttribute("EndHour", endHour);
-        destination = "/delegatednews/jsp/editUpdateDate.jsp";
       } else if ("UpdateDateDelegatedNews".equals(function)) {
         String pubId = request.getParameter("PubId");
         String beginDate = request.getParameter("BeginDate");
