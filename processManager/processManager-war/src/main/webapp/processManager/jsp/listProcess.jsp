@@ -186,6 +186,12 @@
         <fmt:message key="processManager.reassignment.manage" var="opIcon" bundle="${icons}"/>
         <c:url var="opIcon" value="${opIcon}"/>
         <view:operation action="javascript:app.manager.openReassignment()" altText="${manageReassignmentLabel}" icon="${opIcon}"/>
+        <c:if test="${isCSVExportEnabled}">
+          <fmt:message key="processManager.csvExport" var="opIcon" bundle="${icons}"/>
+          <c:url var="opIcon" value="${opIcon}"/>
+          <view:operation action="javascript:sp.preparedDownloadRequest('exportCSV').download()" altText="${csvExportLabel}" icon="${opIcon}"/>
+        </c:if>
+        <view:operationSeparator/>
       </c:if>
       <c:if test="${canCreate}">
         <fmt:message key="processManager.add" var="opIcon" bundle="${icons}"/>
@@ -197,12 +203,6 @@
         <fmt:message key="processManager.userSettings" var="opIcon" bundle="${icons}"/>
         <c:url var="opIcon" value="${opIcon}"/>
         <view:operation action="editUserSettings" altText="${userSettingsLabel}" icon="${opIcon}"/>
-      </c:if>
-      <c:if test="${isCSVExportEnabled}">
-        <fmt:message key="processManager.csvExport" var="opIcon" bundle="${icons}"/>
-        <c:url var="opIcon" value="${opIcon}"/>
-        <view:operationSeparator/>
-        <view:operation action="javascript:sp.preparedDownloadRequest('exportCSV').download()" altText="${csvExportLabel}" icon="${opIcon}"/>
       </c:if>
     </view:operationPane>
     <view:window>
