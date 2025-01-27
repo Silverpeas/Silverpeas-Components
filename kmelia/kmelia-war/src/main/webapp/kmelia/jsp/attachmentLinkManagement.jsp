@@ -31,67 +31,65 @@
 			response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
 <%-- Import area --%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
-<%@ page import="org.silverpeas.kernel.bundle.ResourceLocator"%>
 <%@page import="org.silverpeas.core.web.treemenu.process.TreeHandler"%>
 <%@page import="org.silverpeas.core.web.treemenu.model.MenuConstants"%>
 
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/menuTree" prefix="menuTree"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib prefix="fmr" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-<%
-GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
-String language = (String) session.getAttribute("WYSIWYG_Language");
-LocalizationBundle message = ResourceLocator.getLocalizationBundle("org.silverpeas.wysiwyg.multilang.wysiwygBundle", language);
-String contextName = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
-%>
+<fmt:setLocale value="${sessionScope.WYSIWYG_Language}"/>
+<view:setBundle basename="org.silverpeas.wysiwyg.multilang.wysiwygBundle"/>
+<c:set value="${silfn:applicationURL()}" var="webContext"/>
+<fmt:message key="Close" var="closeLabel"/>
 
 <%@ page import="org.silverpeas.kernel.bundle.LocalizationBundle" %>
 <%@ page import="org.owasp.encoder.Encode" %>
-<html>
-<head>
-<title></title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<link rel="stylesheet" type="text/css" href="<%=contextName %>/kmelia/jsp/styleSheets/kmelia.css">
-<view:looknfeel/>
+<view:sp-page>
+<view:sp-head-part>
+<link rel="stylesheet" type="text/css" href="${webContext}/kmelia/jsp/styleSheets/kmelia.css">
 <%-- load the css and js file used by tree menu --%>
-<menuTree:head displayCssFile="true" displayJavascriptFile="true" displayIconsStyles="false" contextName="<%=contextName%>"></menuTree:head>
+<menuTree:head displayCssFile="true"
+			   displayJavascriptFile="true"
+			   displayIconsStyles="false"
+			   contextName="${webContext}"/>
 
-<script language="JavaScript" type="text/javascript">
+<script>
 function returnHtmlEditor() {
   window.close();
 }
 
-var context ='<%=contextName %>';
-var currentNodeId;
-var currentNodeIndex;
-var currentComponent;
-var menuType='<%=MenuConstants.THEME_MENU_TYPE%>';
+const context = '${webContext}';
+let currentNodeId;
+let currentNodeIndex;
+let currentComponent;
+const menuType = '<%=MenuConstants.THEME_MENU_TYPE%>';
+
 function buildTree() {
-    //create a new tree:
+    let mes;
+//create a new tree:
     tree = new YAHOO.widget.TreeView("treeDiv1");
     //turn dynamic loading on for entire tree:
     tree.setDynamicLoad(loadNodeData, 0);
     //get root node for tree:
-    var root = tree.getRoot();
+	const root = tree.getRoot();
 
-    //add child nodes for tree; our top level nodes are
-   try{
-   var mes = [];
-   mes =YAHOO.lang.JSON.stringify(<%=TreeHandler.processMenu(request,MenuConstants.THEME_MENU_TYPE)%>);
-    mes = YAHOO.lang.JSON.parse(mes);
-   }catch(x){
+	//add child nodes for tree; our top level nodes are
+   try {
+	mes = [];
+	mes = YAHOO.lang.JSON.stringify(<%=TreeHandler.processMenu(request,MenuConstants.THEME_MENU_TYPE, false)%>);
+	mes = YAHOO.lang.JSON.parse(mes);
+   } catch(x){
       notyError("JSON Parse failed: "+x);
 	  return;
-	}
-   for (var i=0, j=mes.length; i<j; i++) {
-         var tempNode = new YAHOO.widget.TextNode(mes[i], root, false);
-			tempNode.multiExpand =false;
-    }
+   }
+   for (let i=0, j=mes.length; i<j; i++) {
+	   const tempNode = new YAHOO.widget.TextNode(mes[i], root, false);
+	   tempNode.multiExpand =false;
+   }
     //render tree with these toplevel nodes; all descendants of these nodes
     //will be generated as needed by the dynamic loader.
     tree.draw();
@@ -99,14 +97,15 @@ function buildTree() {
     tree.subscribe('clickEvent',function(oArgs) {
 		currentComponent = oArgs.node.data.componentId;
 		// highlight selected node
-		$("#ygtvcontentel"+currentNodeIndex).css({'font-weight':'normal'});
+		const $currentNode = $("#ygtvcontentel"+currentNodeIndex);
+		$currentNode.css({'font-weight':'normal'});
 		setCurrentNodeId(oArgs.node.data.id);
 		currentNodeIndex = oArgs.node.index;
-		$("#ygtvcontentel"+currentNodeIndex).css({'font-weight':'bold'});
+		$currentNode.css({'font-weight':'bold'});
         //if node is a theme display the publications
-        if(oArgs.node.data.componentId!='undefined' && oArgs.node.data.nodeType=='THEME'){
+        if (oArgs.node.data.componentId !== undefined && oArgs.node.data.nodeType === 'THEME') {
             displayPublications(oArgs.node.data.componentId,getCurrentNodeId());
-        }else{
+        } else {
         	displayHomeMessage();
         }
 	});
@@ -130,25 +129,34 @@ function hidePublicationOperations () {
 }
 
 function doPagination(index, nbItemsPerPage){
-	var ieFix = new Date().getTime();
-	$.get('<%=contextName%>/RAjaxPublicationsListServlet', {Index:index,NbItemsPerPage:nbItemsPerPage,ComponentId:currentComponent,attachmentLink:1,IEFix:ieFix},
-			function(data){
-				$('#pubList').html(data);
-			},"html");
+	const ieFix = new Date().getTime();
+	$.get('${webContext}/RAjaxPublicationsListServlet', {
+		Index: index,
+		NbItemsPerPage: nbItemsPerPage,
+		ComponentId: currentComponent,
+		attachmentLink: 1,
+		IEFix: ieFix
+	}, function(data) {
+		$('#pubList').html(data);
+	}, "html");
 }
 
 function displayPublications(CompoId,topicId){
-	var ieFix = new Date().getTime();
-	$.get('<%=contextName%>/RAjaxPublicationsListServlet', {ComponentId:CompoId,Id:topicId,attachmentLink:1,IEFix:ieFix},
-			function(data){
-				$('#pubList').html(data);
-			},"html");
+	const ieFix = new Date().getTime();
+	$.get('${webContext}/RAjaxPublicationsListServlet', {
+		ComponentId: CompoId,
+		Id: topicId,
+		attachmentLink: 1,
+		IEFix: ieFix
+	}, function(data) {
+		$('#pubList').html(data);
+	}, "html");
 }
 
-
-
 function displayHomeMessage(){
-	document.getElementById('pubList').innerHTML = '<p align="center" ><%=message.getString("storageFile.home.title")%></p> <p align="center"> <br><br><%=message.getString("storageFile.home.description")%> ';
+	document.getElementById('pubList').innerHTML =
+			'<p align="center" ><fmt:message key="storageFile.home.title"/></p>' +
+			'<p	align="center"><br><br><fmt:message key="storageFile.home.description"/> ';
 }
 
 function selectAttachment(url,img,label){
@@ -162,33 +170,31 @@ function selectAttachment(url,img,label){
 
 </script>
 
-</head>
-<body class="yui-skin-sam">
+</view:sp-head-part>
+<view:sp-body-part cssClass="yui-skin-sam">
 
-<table class="dimensionTable">
-	<tr valign="top">
-		<td class="firstTd">
-		<div id="treeDiv1" class="treeDivDisplay"></div>
-		</td>
-		<td class="secondTd">
-		<div id="pubList" class="publistDisplay">
-		<p align="center"><%=message.getString("storageFile.home.title")%></p>
-		<p align="center"><br>
-		<br><%=message.getString("storageFile.home.description")%></p>
-		</div>
-		<div align="center">
-		<%
-		  Window window = gef.getWindow();
-					Frame frame = gef.getFrame();
-					ButtonPane buttonPane = gef.getButtonPane();
-					Button button = gef.getFormButton(message.getString("Close"),
-							"javascript:onClick=returnHtmlEditor()", false);
-					buttonPane.addButton(button);
-					out.println("<center><br>" + buttonPane.print() + "</center>");
-		%>
-		</div>
-		</td>
-	</tr>
-</table>
-</body>
-</html>
+	<table class="dimensionTable">
+		<th></th>
+		<tr style="vertical-align: top">
+			<td class="firstTd">
+				<div id="treeDiv1" class="treeDivDisplay"></div>
+			</td>
+			<td class="secondTd">
+				<div id="pubList" class="publistDisplay">
+					<p style="text-align: center"><fmt:message key="storageFile.home.title"/></p>
+					<p style="text-align: center"><br><br>
+						<fmt:message key="storageFile.home.description"/>
+					</p>
+				</div>
+				<div style="text-align: center">
+					<view:buttonPane>
+						<view:button label="${closeLabel}"
+									 action="javascript:onClick=returnHtmlEditor()"/>
+					</view:buttonPane>
+				</div>
+			</td>
+		</tr>
+	</table>
+
+</view:sp-body-part>
+</view:sp-page>
