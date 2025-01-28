@@ -48,7 +48,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <% 
 String rootId = Integer.toString(ROOT_TOPIC);
 
-Collection path = null;
+Collection<NodeDetail> path;
 String linkedPathString = "";
 
 //Recuperation des parametres
@@ -68,16 +68,16 @@ if (!StringUtil.isDefined(id)) {
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="<%=resources.getLanguage()%>">
 <head>
+<title></title>
 <view:looknfeel withCheckFormScript="true"/>
-<script type="text/javascript" src="javaScript/spacesInURL.js"></script>
 <view:includePlugin name="popup"/>
 <script type="text/javascript">
-var userAddWindow = window;
-var importCSVWindow = window;
+ let userAddWindow = window;
+ let importCSVWindow = window;
 
-function topicGoTo(id) {
+ function topicGoTo(id) {
 	closeWindows();	
     document.topicDetailForm.Id.value = id;
     document.topicDetailForm.submit();
@@ -89,15 +89,15 @@ function importCSV(id)
 }
 
 function simpleTopicGoToSelected() {
-    var id = document.topicDetailForm.selectSimpleTopic.options[document.topicDetailForm.selectSimpleTopic.selectedIndex].value;
+    const id = document.topicDetailForm.selectSimpleTopic.options[document.topicDetailForm.selectSimpleTopic.selectedIndex].value;
     topicGoTo(id);
 }
 
 <% if (profile.equals("admin")) { %>
 function ifCorrectFormExecute(callback) {
-   var errorMsg = "";
-   var errorNb = 0;
-   var title = stripInitialWhitespace(window.document.AddAndUpdateFolderForm.Name.value);
+  let errorMsg = "";
+  let errorNb = 0;
+  let title = stripInitialWhitespace(window.document.AddAndUpdateFolderForm.Name.value);
    if (isWhitespace(title)) {
      errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=yellowpagesScc.getString("TopicTitle")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
      errorNb++; 
@@ -117,7 +117,7 @@ function ifCorrectFormExecute(callback) {
 }
 
 function topicDeleteConfirm(childId, name) {
-  var label = "<%=yellowpagesScc.getString("ConfirmDeleteTopic")%> '" + name + "' ?";
+  const label = "<%=yellowpagesScc.getString("ConfirmDeleteTopic")%> '" + name + "' ?";
   jQuery.popup.confirm(label, function() {
     document.topicDetailForm.action = "DeleteFolder";
     document.topicDetailForm.ToDeleteId.value = childId;
@@ -131,7 +131,7 @@ function deleteBasketContent()
 }
 
 function groupDeleteConfirm(childId, name) {
-  var label = "<%=yellowpagesScc.getString("ConfirmDeleteTopic")%> '" + name + "' ?";
+  const label = "<%=yellowpagesScc.getString("ConfirmDeleteTopic")%> '" + name + "' ?";
   jQuery.popup.confirm(label, function() {
     document.topicDetailForm.action = "RemoveGroup";
     document.topicDetailForm.ToDeleteId.value = childId;
@@ -151,9 +151,9 @@ function contactAdd() {
 
 function addGroup() {
     closeWindows();
-    url = "ToChooseGroup";
-    windowName = "userAddWindow";
-    windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars=yes";
+    const url = "ToChooseGroup";
+    const windowName = "userAddWindow";
+    const windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars=yes";
     userAddWindow = SP_openWindow(url, windowName, '750' , '600' , windowParams);
 }
 
@@ -162,7 +162,7 @@ function contactGoTo(id) {
 }
 
 function contactDeleteConfirm(id) {
-  var label = "<%=yellowpagesScc.getString("ConfirmDeleteContact")%> ?";
+  const label = "<%=yellowpagesScc.getString("ConfirmDeleteContact")%> ?";
   jQuery.popup.confirm(label, function() {
     document.contactDeleteForm.action = "DeleteContact";
     document.contactDeleteForm.ContactId.value = id;
@@ -176,7 +176,7 @@ function consult() {
 }
 
 function toAddOrUpdateFolder(action, id) {
-  var dialogTitle = '<%=WebEncodeHelper.javaStringToJsString(resources.getString("TopicCreationTitle"))%>';
+  let dialogTitle = '<%=WebEncodeHelper.javaStringToJsString(resources.getString("TopicCreationTitle"))%>';
   if (action === 'ToUpdateFolder') {
     dialogTitle = '<%=WebEncodeHelper.javaStringToJsString(resources.getString("TopicUpdateTitle"))%>';
   }

@@ -47,19 +47,18 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="org.silverpeas.core.admin.user.model.UserDetail"%>
 <%@ page import="java.util.List" %>
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
+<%@ page import="org.silverpeas.core.admin.user.model.Group" %>
 
 <%@ include file="checkYellowpages.jsp" %>
 <%@ include file="topicReport.jsp" %>
 
 <% 
 YellowPagesGroupDetail group 		= (YellowPagesGroupDetail) request.getAttribute("Group");
-List groupPath 	= (List) request.getAttribute("GroupPath");
+//noinspection unchecked
+List<YellowPagesGroupDetail> groupPath 	= (List<YellowPagesGroupDetail>) request.getAttribute("GroupPath");
 
-String name = "";
-String description = "";
-Collection path = null;
-String linkedPathString = "";
-String pathString = "";
+Collection<NodeDetail> path;
+StringBuilder linkedPathString;
 
 //Mise a jour de l'espace
 String id = "0";
@@ -69,25 +68,26 @@ if (currentTopic != null) {
 }
 %>
 
-<HTML>
+<!DOCTYPE html>
+<HTML lang="<%=resources.getLanguage()%>">
 <HEAD>
+<title></title>
 <view:looknfeel/>
-<script type="text/javascript" src="javaScript/spacesInURL.js"></script>
-<script language="JavaScript1.2">
-var contactWindow = window;
+<script>
+let contactWindow = window;
 
 function closeWindows()
 {
-    if (!contactWindow.closed && contactWindow.name == "contactWindow")
+    if (!contactWindow.closed && contactWindow.name === "contactWindow")
         contactWindow.close();
 }
 
 function goToUser(id){
     closeWindows();
-    windowName = "contactWindow";
-    width = <%=( resources.getSetting("popupWidth") == null ) ? "600" : resources.getSetting("popupWidth")%>;
-    height = <%=( resources.getSetting("popupHeight") == null ) ? "480" : resources.getSetting("popupHeight")%>;
-    windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars=yes";
+    const windowName = "contactWindow";
+    const width = <%=( resources.getSetting("popupWidth") == null ) ? "600" : resources.getSetting("popupWidth")%>;
+    const height = <%=( resources.getSetting("popupHeight") == null ) ? "480" : resources.getSetting("popupHeight")%>;
+    const windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars=yes";
     contactWindow = SP_openWindow("ViewUserFull?Id="+id, windowName, width, height, windowParams);
 }
 
@@ -105,25 +105,27 @@ function topicGoTo(id)
 }
 </script>
 </HEAD>
-    <BODY marginwidth=5 marginheight=5 leftmargin=5 topmargin=5>
+    <BODY style="margin: 5px">
     
 <%
     currentTopic = yellowpagesScc.getTopic(id);
     yellowpagesScc.setCurrentTopic(currentTopic);
-    name = currentTopic.getNodeDetail().getName();
     path = currentTopic.getPath();
-    linkedPathString = displayPath(yellowpagesScc, path, true, 3);
+    linkedPathString = new StringBuilder(displayPath(yellowpagesScc, path, true, 3));
     
-    YellowPagesGroupDetail groupInPath = null;
-    for (int g=0; g<groupPath.size(); g++)
-    {
-    	groupInPath = (YellowPagesGroupDetail) groupPath.get(g);
-    	
-    	linkedPathString += " > ";
-    	linkedPathString += "<a href=\"GoToGroup?Id="+groupInPath.getId()+"\">"+groupInPath.getName()+"</a>";
+    YellowPagesGroupDetail groupInPath;
+    for (YellowPagesGroupDetail yellowPagesGroupDetail : groupPath) {
+        groupInPath = yellowPagesGroupDetail;
+
+        linkedPathString.append(" > ");
+        linkedPathString.append("<a href=\"GoToGroup?Id=")
+                .append(groupInPath.getId())
+                .append("\">")
+                .append(groupInPath.getName())
+                .append("</a>");
     }
     
-    yellowpagesScc.setPath(linkedPathString);
+    yellowpagesScc.setPath(linkedPathString.toString());
 
     Window window = gef.getWindow();
     BrowseBar browseBar=window.getBrowseBar();
@@ -143,9 +145,9 @@ function topicGoTo(id)
     out.println(tabbedPane.print());
     out.println(frame.printBefore());
 %>
-<CENTER>
+<div class="center">
 <%      
-    if (group.getSubGroups().size() > 0 ) {
+    if (!group.getSubGroups().isEmpty()) {
         ArrayPane arrayPane = gef.getArrayPane("topicsList", "GoToGroup?Id="+group.getId(), request, session);
         ArrayColumn arrayColumn1 = arrayPane.addArrayColumn("&nbsp;");
         arrayColumn1.setSortable(false);
@@ -153,32 +155,31 @@ function topicGoTo(id)
         arrayPane.addArrayColumn(resources.getString("Nb"));
         arrayPane.addArrayColumn(resources.getString("GML.description"));
 
-        YellowPagesGroupDetail subGroup = null;
+        YellowPagesGroupDetail subGroup;
         String childId;
         String childName;
         String childDescription;
         int nbContact;
-        List subGroups = group.getSubGroups();
-        Iterator iteratorN = subGroups.iterator();
-        while (iteratorN.hasNext()) {
-        	subGroup = (YellowPagesGroupDetail) iteratorN.next();
-        	
+        List<Group> subGroups = group.getSubGroups();
+        for (Group value : subGroups) {
+            subGroup = (YellowPagesGroupDetail) value;
+
             nbContact = subGroup.getTotalUsers();
             childId = subGroup.getId();
             childName = subGroup.getName();
             childDescription = subGroup.getDescription();
-            
-			IconPane folderPane = gef.getIconPane();
-			Icon folder = folderPane.addIcon();
-			folder.setProperties(resources.getIcon("yellowpages.group"), "" , "GoToGroup?Id="+childId);
-            
+
+            IconPane folderPane = gef.getIconPane();
+            Icon folder = folderPane.addIcon();
+            folder.setProperties(resources.getIcon("yellowpages.group"), "", "GoToGroup?Id=" + childId);
+
             ArrayLine arrayLine = arrayPane.addArrayLine();
-			arrayLine.addArrayCellIconPane(folderPane);
-            arrayLine.addArrayCellLink(WebEncodeHelper.javaStringToHtmlString(childName), "GoToGroup?Id="+childId);
+            arrayLine.addArrayCellIconPane(folderPane);
+            arrayLine.addArrayCellLink(WebEncodeHelper.javaStringToHtmlString(childName), "GoToGroup?Id=" + childId);
             ArrayCellText arrayCellText1 = arrayLine.addArrayCellText(nbContact);
-            arrayCellText1.setCompareOn(new Integer(nbContact));
-        	arrayLine.addArrayCellText(WebEncodeHelper.javaStringToHtmlString(childDescription));
-            
+            arrayCellText1.setCompareOn(nbContact);
+            arrayLine.addArrayCellText(WebEncodeHelper.javaStringToHtmlString(childDescription));
+
         } //fin du while
         out.println(arrayPane.print());
     } else {
@@ -187,7 +188,7 @@ function topicGoTo(id)
     
 	out.println("<br>");
 	
-	Iterator iterator = group.getUsers().iterator();
+	Iterator<UserDetail> iterator = group.getUsers().iterator();
     int indexLastNameColumn = 1;
 
     ArrayPane arrayPane = gef.getArrayPane("tableau1", "GoToGroup?Id="+group.getId(), request, session);
@@ -201,10 +202,10 @@ function topicGoTo(id)
     arrayPane.addArrayColumn(resources.getString("GML.surname"));
     arrayPane.addArrayColumn(resources.getString("GML.eMail"));
     
-	String link = null;
+	String link;
     while (iterator.hasNext()) 
     {
-        UserDetail user =  (UserDetail) iterator.next();
+        UserDetail user = iterator.next();
 	
 		link = "javaScript:goToUser('"+user.getId()+"');";
 				
@@ -218,7 +219,7 @@ function topicGoTo(id)
 	    }
         ArrayCellText arrayCellText1 = ligne1.addArrayCellText("<A HREF=\""+link+"\">"+WebEncodeHelper.javaStringToHtmlString(user.getLastName())+"</A>");
         ArrayCellText arrayCellText2 = ligne1.addArrayCellText(WebEncodeHelper.javaStringToHtmlString(user.getFirstName()));
-        ArrayCellText arrayCellText4 = null;
+        ArrayCellText arrayCellText4;
         if (user.getEmailAddress()==null || "".equals(user.getEmailAddress()))
         {
             arrayCellText4 = ligne1.addArrayCellText("");
@@ -227,10 +228,10 @@ function topicGoTo(id)
         {
             arrayCellText4 = ligne1.addArrayCellText("<a href=mailto:"+user.getEmailAddress()+">"+WebEncodeHelper.javaStringToHtmlString(user.getEmailAddress())+"</A>");
         }
-        arrayCellText1.setCompareOn((String) ((user.getLastName() == null)?"":user.getLastName().toLowerCase()));
-        arrayCellText2.setCompareOn((String) ((user.getFirstName() == null)?"":user.getFirstName().toLowerCase()));
-        arrayCellText4.setCompareOn((String) ((user.getEmailAddress()==null)?"":
-            WebEncodeHelper.javaStringToHtmlString(user.getEmailAddress().toLowerCase())));
+        arrayCellText1.setCompareOn((user.getLastName() == null)?"":user.getLastName().toLowerCase());
+        arrayCellText2.setCompareOn((user.getFirstName() == null)?"":user.getFirstName().toLowerCase());
+        arrayCellText4.setCompareOn((user.getEmailAddress()==null)?"":
+            WebEncodeHelper.javaStringToHtmlString(user.getEmailAddress().toLowerCase()));
     }   
     if (arrayPane.getColumnToSort() == 0)
     {
@@ -242,7 +243,7 @@ function topicGoTo(id)
     out.println(frame.printAfter());
     out.println(window.printAfter());
 %>
-</CENTER>
+</div>
 <FORM NAME="topicDetailForm" ACTION="topicManager.jsp" METHOD=POST >
 <input type="hidden" name="Action"><input type="hidden" name="Id" value="<%=id%>">
 </FORM>
