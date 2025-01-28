@@ -724,20 +724,17 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   public synchronized void flushTrashCan() {
-
     TopicDetail td = getKmeliaService()
         .goTo(getNodePK(NodePK.BIN_NODE_ID), getUserId(), false, getUserTopicProfile("1"),
             isRightsOnTopicsEnabled());
     setSessionTopic(td);
+    Collection<NodeDetail> topics = td.getNodeDetail().getChildrenDetails();
     Collection<KmeliaPublication> pds = td.getKmeliaPublications();
 
-    for (final KmeliaPublication pd : pds) {
-      String theId = pd.getDetail()
-          .getPK()
-          .getId();
+    topics.forEach(topic -> deleteTopic(topic.getId()));
 
-      deletePublication(theId);
-    }
+    pds.forEach(publication -> deletePublication(publication.getId()));
+
     indexOfFirstPubToDisplay = 0;
   }
 
@@ -800,8 +797,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       for (NodeDetail nodeToDelete : treeview) {
         deleteTopicRoles(nodeToDelete);
       }
-      // Then, remove the topic itself
-      getKmeliaService().deleteTopic(getNodePK(topicId));
+      // Then, remove the topic itself: it is moved into the bin or, if already in the bin, it is
+      // deleted
+      getKmeliaService().deleteTopic(getNodePK(topicId), getUserId());
 
       return node.getFatherPK().getId();
     }
@@ -3284,9 +3282,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController
         formUpdate = pubTemplate.getUpdateForm();
         RecordSet recordSet = pubTemplate.getRecordSet();
 
-        DataRecord record = recordSet.getEmptyRecord();
+        DataRecord dataRecord = recordSet.getEmptyRecord();
 
-        formUpdate.setData(record);
+        formUpdate.setData(dataRecord);
       }
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e);
@@ -3328,13 +3326,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     return form;
   }
 
-  private void setSearchCriteria(DataRecord record) {
+  private void setSearchCriteria(DataRecord dataRecord) {
     if (getSearchContext() != null) {
       QueryDescription queryDescription = getSearchContext().getQueryDescription();
       if (queryDescription != null && queryDescription.getMultiFieldQuery() != null) {
         for (FieldDescription fieldDescription : queryDescription.getMultiFieldQuery()) {
           try {
-            Field field = record.getField(extractFieldName(fieldDescription.getFieldName()));
+            Field field = dataRecord.getField(extractFieldName(fieldDescription.getFieldName()));
             if (field != null) {
               field.setValue(
                   fieldDescription.getContent().replace(" OR ", "##").replace(" AND ", "##"));

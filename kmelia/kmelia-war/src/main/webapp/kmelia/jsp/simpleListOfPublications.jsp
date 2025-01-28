@@ -75,7 +75,7 @@
     <view:script src="javaScript/searchInTopic.js"/>
     <view:script src="javaScript/publications.js"/>
     <script type="text/javascript">
-      var isSearchTopicEnabled = <%=displaySearch.booleanValue()%>;
+      let isSearchTopicEnabled = <%=displaySearch.booleanValue()%>;
       sp.i18n.load({
         bundle : 'org.silverpeas.kmelia.multilang.kmeliaBundle',
         language : '<%=language%>'
@@ -133,7 +133,7 @@
         $("#topicQuery").focus();
       }
 
-      var searchInProgress = <%=searchContext != null%>;
+      let searchInProgress = <%=searchContext != null%>;
 
       $(document).ready(function() {
         if (searchInProgress) {

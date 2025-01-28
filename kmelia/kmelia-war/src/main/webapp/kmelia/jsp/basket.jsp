@@ -24,21 +24,29 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%@ include file="checkKmelia.jsp" %>
-<%
-String translation = (String) request.getAttribute("Language");
-%>
 
-<HTML>
-<HEAD>
+<fmt:setLocale value="${sessionScope[sessionController].language}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<fmt:message var="emptyBasket" key="EmptyBasket"/>
+<fmt:message var="basketLabel" key="kmelia.basket"/>
+<c:set var="translation" value="${requestScope.Language}"/>
+<c:set var="componentId" value="${request.browseContext[3]}"/>
+
+<!DOCTYPE>
+<html lang="${translation}">
+<head>
+	<title></title>
 <view:looknfeel/>
 <script type="text/javascript">
 function displayPublications(id)
 {
 	//display publications of topic
-	var ieFix = new Date().getTime();
+	const ieFix = new Date().getTime();
 	$.get('<%=m_context%>/RAjaxPublicationsListServlet', {Id:id,ComponentId:'<%=componentId%>',IEFix:ieFix},
 			function(data){
 				$('#pubList').html(data);
@@ -47,7 +55,7 @@ function displayPublications(id)
 
 function doPagination(index, nbItemsPerPage)
 {
-	var ieFix = new Date().getTime();
+	const ieFix = new Date().getTime();
 	$.get('<%=m_context%>/RAjaxPublicationsListServlet', {Index:index,NbItemsPerPage:nbItemsPerPage,ComponentId:'<%=componentId%>',IEFix:ieFix},
 							function(data){
 								$('#pubList').html(data);
@@ -56,13 +64,13 @@ function doPagination(index, nbItemsPerPage)
 
 function emptyTrash()
 {
-  var label = "<%=kmeliaScc.getString("ConfirmFlushTrashBean")%>";
-  jQuery.popup.confirm(label, function() {
+	const label = "<%=kmeliaScc.getString("ConfirmFlushTrashBean")%>";
+	jQuery.popup.confirm(label, function() {
 		$.progressMessage();
 		$.get('<%=m_context%>/KmeliaAJAXServlet', {ComponentId:'<%=componentId%>',Action:'EmptyTrash'},
 				function(data){
 					$.closeProgressMessage();
-					if (data == "ok")
+					if (data === "ok")
 					{
 						displayPublications("1");
 					}
@@ -78,37 +86,34 @@ $(document).ready(function() {
 	displayPublications("1");
 });
 </script>
-</HEAD>
-<BODY id="kmelia" onUnload="closeWindows()" class="yui-skin-sam">
+</head>
+<body id="kmelia" onUnload="closeWindows()" class="yui-skin-sam">
 <div id="<%=componentId %>">
 <%
-        Window window = gef.getWindow();
-        BrowseBar browseBar = window.getBrowseBar();
-        browseBar.setI18N("GoToCurrentTopic", translation);
-        browseBar.setExtraInformation(resources.getString("kmelia.basket"));
+	Window window = gef.getWindow();
+	BrowseBar browseBar = window.getBrowseBar();
+	browseBar.setI18N("GoToCurrentTopic", (String) request.getAttribute("Language"));
+	browseBar.setExtraInformation(resources.getString("kmelia.basket"));
 
-        //Display operations
-        OperationPane operationPane = window.getOperationPane();
-        operationPane.addOperation("useless", resources.getString("EmptyBasket"), "javascript:onClick=emptyTrash()");
-
-    //Instanciation du cadre avec le view generator
-	Frame frame = gef.getFrame();
+	//Display operations
+	OperationPane operationPane = window.getOperationPane();
+	operationPane.addOperation("useless", resources.getString("EmptyBasket"), "javascript:onClick=emptyTrash()");
 
     out.println(window.printBefore());
-    out.println(frame.printBefore());
 %>
-
+	<view:frame>
 		<div id="pubList">
-		<%
-			 Board board = gef.getBoard();
-			 out.println("<br/>");
-			 out.println(board.printBefore());
-			 out.println("<br/><center>"+resources.getString("kmelia.inProgressPublications")+"<br/><br/><img src=\""+resources.getIcon("kmelia.progress")+"\"/></center><br/>");
-			 out.println(board.printAfter());
-		 %>
+			<br/>
+			<view:board>
+				<div class="center"><fmt:message key="kmelia.inProgressPublications"/></div>
+				<br/><br/>
+				<img alt=progression" src="${requestScope.resources.getIcon('kmelia.progress')}"/>
+			</view:board>
+			<br/>
 		</div>
+
+	</view:frame>
 	<%
-		out.println(frame.printAfter());
 		out.println(window.printAfter());
 	%>
 
@@ -118,5 +123,5 @@ $(document).ready(function() {
 </form>
 </div>
 <view:progressMessage/>
-</BODY>
-</HTML>
+</body>
+</html>

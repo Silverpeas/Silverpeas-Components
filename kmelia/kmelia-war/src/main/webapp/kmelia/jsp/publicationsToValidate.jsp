@@ -23,79 +23,82 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 --%>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <%@ include file="checkKmelia.jsp" %>
 
 <%
-String translation = (String) request.getAttribute("Language");
+    String translation = (String) request.getAttribute("Language");
 %>
 
-<HTML>
-<HEAD>
-<view:looknfeel/>
-<view:script src="javaScript/navigation.js"/>
-<script type="text/javascript">
+<view:sp-page>
+    <view:sp-head-part>
+        <view:script src="javaScript/navigation.js"/>
+        <view:script src="javaScript/publications.js"/>
+        <script type="text/javascript">
 
-function getCurrentUserId() {
-  return "<%=gef.getMainSessionController().getUserId()%>";
-}
+          function getCurrentUserId() {
+            return "<%=gef.getMainSessionController().getUserId()%>";
+          }
 
-function getWebContext() {
-	return "<%=m_context%>";
-}
+          function getWebContext() {
+            return "<%=m_context%>";
+          }
 
-function getComponentId() {
-	return "<%=componentId%>";
-}
+          function getComponentId() {
+            return "<%=componentId%>";
+          }
 
-function getToValidateFolderId() {
-	return "<%=KmeliaHelper.SPECIALFOLDER_TOVALIDATE%>";
-}
+          function getToValidateFolderId() {
+            return "<%=KmeliaHelper.SPECIALFOLDER_TOVALIDATE%>";
+          }
 
-function getPubIdToHighlight() {
-	return "";
-}
+          function getPubIdToHighlight() {
+            return "";
+          }
 
-$(document).ready(function() {
-	setCurrentNodeId(getToValidateFolderId());
-	displayPublications(getToValidateFolderId());
-});
-</script>
-</HEAD>
-<BODY id="kmelia" class="yui-skin-sam">
-<div id="<%=componentId %>">
-<%
-	Window window = gef.getWindow();
-    BrowseBar browseBar = window.getBrowseBar();
-    browseBar.setI18N("GoToCurrentTopic", translation);
-    browseBar.setExtraInformation(resources.getString("ToValidate"));
+          $(document).ready(function () {
+            setCurrentNodeId(getToValidateFolderId());
+            displayPublications(getToValidateFolderId());
+          });
+        </script>
+    </view:sp-head-part>
+    <view:sp-body-part id="kmelia" cssClass="yui-skin-sam">
+        <div id="<%=componentId %>">
+            <%
+                Window window = gef.getWindow();
+                BrowseBar browseBar = window.getBrowseBar();
+                browseBar.setI18N("GoToCurrentTopic", translation);
+                browseBar.setExtraInformation(resources.getString("ToValidate"));
 
-	Frame frame = gef.getFrame();
+                out.println(window.printBefore());
+            %>
+            <view:frame>
 
-    out.println(window.printBefore());
-    out.println(frame.printBefore());
-%>
+            <div id="pubList">
+                <br/>
+                <view:board>
+                    <br/>
+                    <div class="center">
+                        <%= resources.getString("kmelia.inProgressPublications") %>
+                        <br/>
+                        <br/>
+                        <img src='<%= resources.getIcon("kmelia.progress") %>' alt="progression"/>
+                    </div>
+                    <br/>
+                </view:board>
+            </div>
+            </view:frame>
+            <%
+                out.println(window.printAfter());
+            %>
 
-	<div id="pubList">
-	<%
-		 Board board = gef.getBoard();
-		 out.println("<br/>");
-		 out.println(board.printBefore());
-		 out.println("<br/><center>"+resources.getString("kmelia.inProgressPublications")+"<br/><br/><img src=\""+resources.getIcon("kmelia.progress")+"\"/></center><br/>");
-		 out.println(board.printAfter());
-	 %>
-	</div>
-<%
-	out.println(frame.printAfter());
-	out.println(window.printAfter());
-%>
+            <form name="pubForm" action="ViewPublication" method="post">
+                <input type="hidden" name="PubId"/>
+                <input type="hidden" name="CheckPath" value="1"/>
+            </form>
 
-<form name="pubForm" action="ViewPublication" method="post">
-	<input type="hidden" name="PubId"/>
-	<input type="hidden" name="CheckPath" value="1"/>
-</form>
-
-</div>
-</BODY>
-</HTML>
+        </div>
+        <view:progressMessage/>
+    </view:sp-body-part>
+</view:sp-page>

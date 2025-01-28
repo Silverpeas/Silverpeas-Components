@@ -27,6 +27,17 @@ let importFileWindow = window;
 let importFilesWindow = window;
 let exportComponentWindow = window;
 
+const nodePath = [];
+
+function __addNodeParent(nodeId) {
+  nodePath.push(nodeId);
+}
+
+function isParentNode(parentId, nodeId) {
+  const idx = nodePath.indexOf(parentId);
+  return idx > -1 && nodePath.indexOf(nodeId) > idx;
+}
+
 function addFavorite(name, description, url)
 {
   postNewLink(name, url, description);
@@ -197,6 +208,7 @@ function displayPath(id) {
     $(data).each(function(i, topic) {
       if (topic.id !== '0') {
         addBreadCrumbElement("javascript:topicGoTo(" + topic.id + ")", topic.text);
+        __addNodeParent(topic.id);
       }
     });
   });
@@ -708,7 +720,10 @@ function writeInConsole(text) {
 }
 
 function deleteFolder(nodeId, nodeLabel) {
-  const label = getString('ConfirmDeleteTopic') + " '" + nodeLabel + "' ?";
+  const isInBin = _isInBin(nodeId);
+  const deletionLabel = getString('ConfirmDeleteTopic') + " '" + nodeLabel + "' ?";
+  const removalLabel = getString('kmelia.folder.trash.confirm');
+  const label = isInBin ? deletionLabel : removalLabel;
   jQuery.popup.confirm(label, function() {
     const componentId = getComponentId();
     const url = getWebContext() + '/KmeliaAJAXServlet';
@@ -717,7 +732,7 @@ function deleteFolder(nodeId, nodeLabel) {
       if (data !== null && data.length > 0 && !isNaN(data)) {
         // fires event
         try {
-          nodeDeleted(nodeId);
+          nodeDeleted(nodeId, isInBin);
         } catch (e) {
           writeInConsole(e);
         }
@@ -895,7 +910,7 @@ function emptyTrash() {
     function(data) {
       spProgressMessage.hide();
       if (data === "ok") {
-        displayTopicContent("1");
+        displayTopicContent(binNodeId);
       } else {
         notyError(data);
       }
@@ -905,7 +920,7 @@ function emptyTrash() {
 }
 
 function checkDnD(id, operations) {
-  if (operations.addPubli == true) {
+  if (operations.addPubli) {
     activateDragAndDrop();
   } else {
     muteDragAndDrop();

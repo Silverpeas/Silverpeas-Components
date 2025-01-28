@@ -34,9 +34,6 @@
 <%@page import="org.silverpeas.components.kmelia.SearchContext"%>
 <%@page import="org.silverpeas.core.admin.user.model.SilverpeasRole"%>
 <%@ page import="org.silverpeas.core.i18n.I18NHelper" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window" %>
 <%@ page import="org.silverpeas.core.webapi.node.NodeType" %>
 
 <c:url var="mandatoryFieldUrl" value="/util/icons/mandatoryField.gif"/>
@@ -46,9 +43,11 @@
 <c:set var='highestUserRole' value='<%=SilverpeasRole.fromString((String) request.getAttribute("Profile"))%>'/>
 <c:set var="displaySearch" value="${silfn:booleanValue(requestScope.DisplaySearch)}"/>
 <c:set var="componentId" value="<%=componentId%>"/>
+<c:set var="currentFolderId" value="${requestScope.CurrentFolderId}"/>
+<c:if test="${silfn:isNotDefined(currentFolderId)}">
+  <c:set var="currentFolderId" value="0"/>
+</c:if>
 <%
-  String    rootId        = "0";
-
   String   profile      = (String) request.getAttribute("Profile");
   String  translation   = (String) request.getAttribute("Language");
   boolean displayNBPublis = ((Boolean) request.getAttribute("DisplayNBPublis")).booleanValue();
@@ -57,13 +56,8 @@
 
   SearchContext searchContext = (SearchContext) request.getAttribute("SearchContext");
 
-  String id     = (String) request.getAttribute("CurrentFolderId");
   String    pubIdToHighlight  = (String) request.getAttribute("PubIdToHighlight"); //used when we have found publication from search (only toolbox)
   String language = kmeliaScc.getLanguage();
-
-  if (id == null) {
-    id = rootId;
-  }
 
   String userId = kmeliaScc.getUserId();
 %>
@@ -82,7 +76,9 @@
     <view:script src="javaScript/publications.js"/>
 
     <script type="text/javascript">
-      var isSearchTopicEnabled = ${displaySearch};
+      const rootNodeId = '0';
+      const binNodeId = '1';
+      let isSearchTopicEnabled = ${displaySearch};
 
       <%--The below triggered function has to be defined as soon as possible in HTML code in order to
       increase chances to perform the treatment when "menuRender" event is fired --%>
@@ -93,14 +89,13 @@
             bundle : 'org.silverpeas.kmelia.multilang.kmeliaBundle',
             language : '<%=language%>'
           });
-          displayTopicContent('<%=id%>');
+          displayTopicContent('${currentFolderId}');
         });
       });
 
       function topicGoTo(id) {
         closeWindows();
         displayTopicContent(id);
-
       }
 
       function getCurrentUserId() {
@@ -147,6 +142,14 @@
       {
         $("#topicQuery").focus();
       }
+
+      function _isInBin(nodeId) {
+        return isParentNode(binNodeId, nodeId);
+      }
+
+      function nodeDeleted(nodeId, isInBin) {
+
+      }
     </script>
   </view:sp-head-part>
 
@@ -176,8 +179,8 @@
             <br/>
             <view:board>
               <br/>
-              <center><%=resources.getString("kmelia.inProgressPublications") %>
-                <br/><br/><img src="<%=resources.getIcon("kmelia.progress") %>"/></center>
+              <div class="center"><%=resources.getString("kmelia.inProgressPublications") %>
+                <br/><br/><img alt='progress' src="<%=resources.getIcon("kmelia.progress") %>"/></div>
               <br/>
             </view:board>
           </div>
@@ -189,7 +192,7 @@
       %>
 
       <form name="topicDetailForm" method="post">
-        <input type="hidden" name="Id" value="<%=id%>"/>
+        <input type="hidden" name="Id" value="${currentFolderId}"/>
         <input type="hidden" name="ChildId"/>
         <input type="hidden" name="Status"/>
         <input type="hidden" name="Recursive"/>
@@ -205,7 +208,7 @@
       </form>
 
       <script type="text/javascript">
-        var icons = new Object();
+        const icons = new Object();
         icons["permalink"] = "<%=resources.getIcon("kmelia.link")%>";
         icons["operation.addTopic"] = "<%=resources.getIcon("kmelia.operation.addTopic")%>";
         icons["operation.addPubli"] = "<%=resources.getIcon("kmelia.operation.addPubli")%>";
@@ -214,13 +217,13 @@
         icons["operation.subscribe"] = "<%=resources.getIcon("kmelia.operation.subscribe")%>";
         icons["operation.favorites"] = "<%=resources.getIcon("kmelia.operation.favorites")%>";
 
-        var params = new Object();
+        const params = new Object();
         params["rightsOnTopic"] = <%=rightsOnTopics.booleanValue()%>;
         params["i18n"] = <%=I18NHelper.isI18nContentActivated%>;
         params["nbPublisDisplayed"] = <%=displayNBPublis%>;
 
-        var searchInProgress = <%=searchContext != null%>;
-        var searchFolderId = "<%=id%>";
+        let searchInProgress = <%=searchContext != null%>;
+        let searchFolderId = "${currentFolderId}";
 
         function getComponentPermalink() {
           return "<%=URLUtil.getSimpleURL(URLUtil.URL_COMPONENT, componentId)%>";
@@ -255,7 +258,7 @@
 
           setCurrentNodeId(id);
 
-          if (isSpecialFolder(id) || id === "1") {
+          if (isSpecialFolder(id) || id === binNodeId) {
             muteDragAndDrop(); //mute dropzone
             $("#footer").css({'visibility':'hidden'}); //hide footer
             $("#searchZone").css({'display':'none'}); //hide search
@@ -276,7 +279,12 @@
               displayPath(id);
               displayOperations(id);
             }
+
             displayPublications(id);
+
+            if (id === binNodeId) {
+              displaySubTopics(id);
+            }
 
           } else {
             if (searchInProgress) {
@@ -304,7 +312,7 @@
 
 
         function displaySubTopics(id) {
-          var sUrl = "<%=m_context%>/services/folders/<%=componentId%>/"+id+"/children?lang="+getTranslation();
+          const sUrl = "<%=m_context%>/services/folders/<%=componentId%>/"+id+"/children?lang="+getTranslation();
           $.ajax(sUrl, {
             type: 'GET',
             dataType : 'json',
@@ -313,29 +321,29 @@
             success : function(data){
               $("#subTopics").empty();
               $("#subTopics").append("<ul>");
-              var basket = "";
-              var tovalidate = "";
-              var nonVisiblePubs = "";
+              let basket = "";
+              let tovalidate = "";
+              let nonVisiblePubs = "";
               $.each(data, function(i, folder) {
-                var folderId = folder.attr["id"];
-                if (folderId === "1") {
+                const folderId = folder.attr["id"];
+                if (folderId === binNodeId) {
                   basket = getSubFolder(folder);
                 } else if (folderId === getToValidateFolderId()) {
                   tovalidate = getSubFolder(folder);
                 } else if (folderId === getNonVisiblePubsFolderId()) {
                   nonVisiblePubs = getSubFolder(folder);
-                } else if (folderId !== "2") {
+                } else {
                   $("#subTopics ul").append(getSubFolder(folder));
                 }
               });
-              if (id === "0") {
+              if (id === rootNodeId) {
                 $("#subTopics ul").append(tovalidate);
                 $("#subTopics ul").append(nonVisiblePubs);
                 $("#subTopics ul").append(basket);
               }
               $("#subTopics").append("</ul>");
               if ($("#subTopics ul li").length > 0) {
-                $("#subTopics").append("<br clear=\"all\">");
+                $("#subTopics").append("<br clear='all'>");
               } else {
                 $("#subTopics").empty();
               }
@@ -347,19 +355,19 @@
         }
 
         function getSubFolder(folder) {
-          var id = folder.attr["id"];
-          var nbItems = folder.attr["nbItems"];
-          var name = folder.text;
-          var desc = folder.attr["description"];
-          var folderType = folder["type"];
+          const id = folder.attr["id"];
+          const nbItems = folder.attr["nbItems"];
+          const name = folder.text;
+          const desc = folder.attr["description"];
+          const folderType = folder["type"];
 
-          var str = '<li id="topic_'+id+'">';
+          let str = '<li id="topic_' + id + '">';
           str += '<a href="#" onclick="topicGoTo(\''+id+'\')" ';
           if (id === getToValidateFolderId()) {
             str += 'class="toValidate"';
           } else if (id === getNonVisiblePubsFolderId()) {
             str += 'class="nonVisiblePubs"';
-          } else if (id === "1") {
+          } else if (id === binNodeId) {
             str += 'class="trash"';
           } else if (folderType === '<%=NodeType.FOLDER_WITH_RIGHTS%>') {
             str += 'class="folder-with-rights"';
@@ -390,16 +398,16 @@
     <div id="addOrUpdateNode" style="display: none;">
       <form name="topicForm" action="AddTopic" method="post">
         <input type="hidden" id="<%=I18NHelper.HTMLHiddenRemovedTranslationMode %>" name="<%=I18NHelper.HTMLHiddenRemovedTranslationMode %>" value="false"/>
-        <table cellpadding="5" width="100%">
+        <table>
           <tr><td class="txtlibform"><fmt:message key="TopicPath"/> :</td>
-            <td valign="top" id="path"></td>
+            <td id="path"></td>
           </tr>
           <%=I18NHelper.getFormLine(resources, null, kmeliaScc.getLanguage())%>
           <tr>
             <td class="txtlibform"><fmt:message key="TopicTitle"/> :</td>
             <td><input type="text" name="Name" id="folderName" size="60" maxlength="60"/>
               <input type="hidden" name="ParentId" id="parentId"/>
-              <input type="hidden" name="ChildId" id="topicId"/>&nbsp;<img border="0" src="<c:out value="${mandatoryFieldUrl}" />" width="5" height="5"/></td>
+              <input type="hidden" name="ChildId" id="topicId"/>&nbsp;<img alt="mandatory" src="<c:out value='${mandatoryFieldUrl}' />" width="5" height="5"/></td>
           </tr>
 
           <tr>
@@ -409,8 +417,8 @@
 
           <% if (kmeliaScc.isNotificationAllowed()) { %>
           <tr>
-            <td class="txtlibform" valign="top"><fmt:message key="TopicAlert" /> :</td>
-            <td valign="top">
+            <td class="txtlibform"><fmt:message key="TopicAlert" /> :</td>
+            <td>
               <select name="AlertType">
                 <option value="NoAlert" selected="selected"><fmt:message key="NoAlert" /></option>
                 <option value="Publisher"><fmt:message key="OnlyPubsAlert" /></option>
@@ -420,7 +428,7 @@
           </tr>
           <% } %>
           <tr>
-            <td colspan="2"><img border="0" alt="mandatory" src="<c:out value="${mandatoryFieldUrl}" />" width="5" height="5"/> : <fmt:message key="GML.requiredField"/></td>
+            <td colspan="2"><img alt="mandatory" src="<c:out value='${mandatoryFieldUrl}' />" width="5" height="5"/> : <fmt:message key="GML.requiredField"/></td>
           </tr>
         </table>
       </form>
@@ -432,7 +440,7 @@
     <kmelia:dragAndDrop highestUserRole="${highestUserRole}" componentInstanceId="<%=componentId%>" contentLanguage="<%=translation%>" />
     <script type="text/javascript">
       /* declare the module myapp and its dependencies (here in the silverpeas module) */
-      var myapp = angular.module('silverpeas.kmelia', ['silverpeas.services', 'silverpeas.directives']);
+      window.myapp = angular.module('silverpeas.kmelia', ['silverpeas.services', 'silverpeas.directives']);
     </script>
   </view:sp-body-part>
 </view:sp-page>
