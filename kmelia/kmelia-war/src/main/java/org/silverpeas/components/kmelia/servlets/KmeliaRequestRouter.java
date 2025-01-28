@@ -135,7 +135,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
     boolean kmaxMode = false;
     boolean toolboxMode;
     SilverpeasRole highestSilverpeasUserRoleOnCurrentTopic =
-        getHighestSilverpeasUserRoleOnCurrentTopic(kmelia, function);
+        getHighestSilverpeasUserRoleOnCurrentTopic(kmelia);
     try {
       if ("kmax".equals(kmelia.getComponentRootName())) {
         kmaxMode = true;
@@ -503,7 +503,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
             goToProfilesDefinition = true;
           }
         }
-        kmelia.updateTopicHeader(topic, alertType);
+        kmelia.updateTopic(topic, alertType);
 
         if (goToProfilesDefinition) {
           request.setAttribute("NodeId", id);
@@ -1487,7 +1487,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
 
   @NonNull
   private static SilverpeasRole getHighestSilverpeasUserRoleOnCurrentTopic(
-      KmeliaSessionController kmelia, String function) {
+      KmeliaSessionController kmelia) {
     return SilverpeasRole.fromString(kmelia.getUserTopicProfile(kmelia.getCurrentFolderId()));
   }
 
