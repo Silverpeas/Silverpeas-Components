@@ -68,31 +68,30 @@ if (action == null) {
 
 <view:sp-page>
 <view:sp-head-part>
-<view:script src="javaScript/spacesInURL.js"/>
 <view:script src="javaScript/commons.js"/>
 <script type="text/javascript">
 
-var topicAddWindow = window;
-var topicUpdateWindow = window;
+let topicAddWindow = window;
+let topicUpdateWindow = window;
 
-/***************************************************************************/
+	/***************************************************************************/
 
 function declassify(nbTopic, nbSite) {
     closeWindows();
 
-    okTopic = "false";
-    okSites = "false";
+    let okTopic = false;
+    let okSites = false;
 
     if (nbTopic > 0) {
-        if (nbTopic == 1) {
+        if (nbTopic === 1) {
             if (document.liste.checkbox.checked)
-                okTopic = "true";
+                okTopic = true;
         }
         else {
-            for (i=0; i<nbTopic; i++) {
+            for (let i=0; i<nbTopic; i++) {
                 if (document.liste.checkbox[i] != null) {
                     if (document.liste.checkbox[i].checked)
-                        okTopic = "true";
+                        okTopic = true;
                 }
                 else break;
             }
@@ -100,15 +99,15 @@ function declassify(nbTopic, nbSite) {
     }
 
     if (nbSite > 0) {
-        if (nbSite == 1) {
+        if (nbSite === 1) {
             if (document.liste.supSite.checked)
-                    okSites = "true";
+                    okSites = true;
         }
         else {
-            for (i=0; i<nbSite; i++) {
+            for (let i=0; i<nbSite; i++) {
                 if (document.liste.supSite[i] != null) {
                     if (document.liste.supSite[i].checked)
-                        okSites = "true";
+                        okSites = true;
                 }
                 else break;
             }
@@ -116,18 +115,18 @@ function declassify(nbTopic, nbSite) {
      }
 
 
-    if (okTopic != "false"  || okSites != "false") { //au moins un theme ou un site est selectionne
+    if (okTopic !== false  || okSites !== false) { //au moins un theme ou un site est selectionne
 
-    var label = "<%=resources.getString("FolderSiteDeleteConfirmation")%>";
-    jQuery.popup.confirm(label, function() {
-      listeSite = "";
+	  const label = "<%=resources.getString("FolderSiteDeleteConfirmation")%>";
+	  jQuery.popup.confirm(label, function() {
+      let listeSite = "";
 
       if (nbSite > 0) {
-        if (nbSite == 1) {
+        if (nbSite === 1) {
           if (document.liste.supSite.checked)
             listeSite += document.liste.supSite.value + ",";
         } else {
-          for (i=0; i<nbSite; i++) {
+          for (let i=0; i<nbSite; i++) {
               if (document.liste.supSite[i] != null) {
                 if (document.liste.supSite[i].checked)
                   listeSite += document.liste.supSite[i].value + ",";
@@ -147,15 +146,15 @@ function declassify(nbTopic, nbSite) {
 /***************************************************************************/
 
 function topicAdd(fatherId) {
-	if (!topicAddWindow.closed && topicAddWindow.name == "topicAddWindow")
-        topicAddWindow.close();
+	if (!topicAddWindow.closed && topicAddWindow.name === "topicAddWindow")
+		topicAddWindow.close();
 
-    path = document.liste.Path.value;
-    windowName = "topicAddWindow";
-    larg = "670";
-    haut = "270";
-    windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
-    topicAddWindow = SP_openWindow({
+	const path = document.liste.Path.value;
+	const windowName = "topicAddWindow";
+    const larg = "670";
+	const haut = "270";
+	const windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
+	topicAddWindow = SP_openWindow({
       url : 'addTopic.jsp',
       params : {
         'Id' : fatherId,
@@ -168,16 +167,16 @@ function topicAdd(fatherId) {
 /***************************************************************************/
 
 function topicUpdate(id) {
-	if (!topicUpdateWindow.closed && topicUpdateWindow.name== "topicUpdateWindow")
+	if (!topicUpdateWindow.closed && topicUpdateWindow.name === "topicUpdateWindow")
         topicUpdateWindow.close();
 
     document.liste.ChildId.value = id;
-    path = document.liste.Path.value;
-    windowName = "topicUpdateWindow";
-    larg = "670";
-    haut = "270";
-    windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
-    topicUpdateWindow = SP_openWindow({
+	const path = document.liste.Path.value;
+	const windowName = "topicUpdateWindow";
+	const larg = "670";
+	const haut = "270";
+	const windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
+	topicUpdateWindow = SP_openWindow({
       url : 'updateTopic.jsp',
       params : {
         'ChildId' : id,
@@ -200,10 +199,10 @@ function publicationAdd(topicId){
 /***************************************************************************/
 
 function closeWindows() {
-	if (!topicAddWindow.closed && topicAddWindow.name=="topicAddWindow")
+	if (!topicAddWindow.closed && topicAddWindow.name === "topicAddWindow")
 		topicAddWindow.close();
 
-	if (!topicUpdateWindow.closed && topicUpdateWindow.name=="topicUpdateWindow")
+	if (!topicUpdateWindow.closed && topicUpdateWindow.name === "topicUpdateWindow")
 		topicUpdateWindow.close();
 }
 
@@ -361,10 +360,10 @@ window.wsm = new WebSiteManager({
 		out.println(arrayPane.print());
 
 		//Liste des sites du th�me courant
-		String liste = "";
+		StringBuilder liste = new StringBuilder();
 
-		if (listeSites.size() > 0) {
-			liste += "<table border=\"0\">\n";
+		if (!listeSites.isEmpty()) {
+			liste.append("<table border=\"0\">\n");
 
 			nbChild = 0;
 
@@ -373,8 +372,8 @@ window.wsm = new WebSiteManager({
         String siteId = site.getVersion();
 				String siteName = site.getName();
 				String siteDescription = WebEncodeHelper.javaStringToHtmlParagraphe(site.getDescription());
-				liste += "<tr>\n";
-				liste += "<td valign=\"top\" width=\"5%\"><input type=\"checkbox\" name=\"supSite\" value=\""+pubId+"\"/></td>\n";
+				liste.append("<tr>\n");
+				liste.append("<td valign=\"top\" width=\"5%\"><input type=\"checkbox\" name=\"supSite\" value=\"").append(pubId).append("\"/></td>\n");
 				if (scc.isSortedTopicsEnabled()) {
 					IconPane sortPane = gef.getIconPane();
 					if (nbChild != 0) {
@@ -387,27 +386,27 @@ window.wsm = new WebSiteManager({
 						downIcon.setProperties(downIconSrc, resources.getString("PubDown")+" '"+siteName+"'", "javascript:onClick=pubDown('"+pubId+"')");
 					}
 
-					liste += "<td width=\"10px\">&nbsp;</td>\n";
+					liste.append("<td width=\"10px\">&nbsp;</td>\n");
 
-					liste += "<td width=\"20px\" valign=\"top\">\n";
-					liste += sortPane.print();
-					liste += "</td>\n";
+					liste.append("<td width=\"20px\" valign=\"top\">\n");
+					liste.append(sortPane.print());
+					liste.append("</td>\n");
 
-					liste += "<td width=\"10px\">&nbsp;</td>\n";
+					liste.append("<td width=\"10px\">&nbsp;</td>\n");
 				}
-				liste += "<td valign=\"top\">&#149;&nbsp;<a class=\"textePetitBold\" href=\"javascript:onClick=wsm.goToSite('"+siteId+"')\">"+siteName+"</a><br/>\n";
+				liste.append("<td valign=\"top\">&#149;&nbsp;<a class=\"textePetitBold\" href=\"javascript:onClick=wsm.goToSite('").append(siteId).append("')\">").append(siteName).append("</a><br/>\n");
 
-				liste += "<span class=\"txtnote\">&nbsp;&nbsp;"+siteDescription+"</span><br/><br/></td>\n";
-				liste += "</tr>\n";
+				liste.append("<span class=\"txtnote\">&nbsp;&nbsp;").append(siteDescription).append("</span><br/><br/></td>\n");
+				liste.append("</tr>\n");
 
 				nbChild++;
 			}
 
-			liste += "</table>\n";
+			liste.append("</table>\n");
 %>
 			<br/>
 			<view:board>
-			<%=liste %>
+			<%=liste.toString() %>
 			</view:board>
 <%
 	}

@@ -38,7 +38,6 @@
 <view:sp-page angularJsAppName="silverpeas.bookmark">
 <view:sp-head-part>
   <view:includePlugin name="toggle"/>
-  <view:script src="javaScript/spacesInURL.js"/>
   <view:script src="javaScript/commons.js"/>
   <script type="text/javascript">
     window.wsm = new WebSiteManager('listSite.jsp');
