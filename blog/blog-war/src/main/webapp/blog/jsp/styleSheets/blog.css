@@ -47,6 +47,8 @@
 	height:calc( var(--height-input) - 0.25em - 2px );
 	padding:0.25em 0.5em;
 	border-width: 1px;
+	line-height: calc( var(--height-input) - 0.25em - 2px );
+
 }
 #navBlog .bgDegradeGris ul {
 	list-style-type: none;

@@ -203,6 +203,7 @@ li.userType {
 .userProfil .info {
 	padding: 8px;
 	height: 100%;
+	position:relative;
 }
 
 .userProfil .infoConnection img {

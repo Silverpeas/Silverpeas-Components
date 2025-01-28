@@ -296,24 +296,19 @@ br.clear {
 }
 
 .gallery-fiche-media #backToSearch {
-  float: right;
-  height: 30px;
-  width: 213px;
-  position:relative;
+  height: auto;
+  left: calc(100% - var(--right-side-width));
+  position: absolute;
 }
 
 .gallery-fiche-media #backToSearch a.button {
-  background-color: #f4f4f4;
-  background-image: url("../../../util/icons/gradientSVG.jsp?from=fff&to=e5e5e5&vertical=0&horizontal=100");
-  border: 1px solid #cccccc;
-  border-radius: 5px;
-  color: #4c4c4c;
-  font-size: 100%;
-  padding: 7px 10px;
-  position: absolute;
-  right: 0;
-  top:0;
-  width: 187px;
+  background: var(--bgColor-btn-secondaire);
+  border-radius: var(--radius-btn);
+  border: 1px solid var(--border-color-btn-secondaire);
+  color: var(--color-text-btn-secondaire);
+  font-size: 1em;
+  padding: 0.5em 1em;
+  display: inline-block;
 }
 
 .gallery-fiche-media #backToSearch a.button span {
