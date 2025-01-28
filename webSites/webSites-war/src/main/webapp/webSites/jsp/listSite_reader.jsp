@@ -39,22 +39,19 @@
   String singleSiteId = (siteList != null && siteList.size() == 1) ? siteList.iterator().next().getVersion() : null;
   String suggestionName = (String) request.getAttribute("SuggestionName");
   String suggestionUrl = (String) request.getAttribute("SuggestionUrl");
-  boolean suggestionSent = false;
-  if (suggestionName != null) {
-    suggestionSent = true;
-  }
+  boolean suggestionSent = suggestionName != null;
   String suggestLabel = resources.getString("Suggerer");
 %>
 
 <!-- listSite_reader -->
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.bookmark">
+<html xmlns="http://www.w3.org/1999/xhtml" id="ng-app" ng-app="silverpeas.bookmark"
+      lang="<%=resources.getLanguage()%>">
 <head>
   <view:looknfeel/>
   <view:includePlugin name="toggle"/>
   <title><%=resources.getString("GML.popupTitle")%></title>
-  <view:script src="javaScript/spacesInURL.js"/>
   <view:script src="javaScript/commons.js"/>
   <script type="text/javascript">
     window.wsm = new WebSiteManager('listSite_reader.jsp');
@@ -68,11 +65,11 @@
     }
 
     function openSuggestionConfirmation() {
-      var theURL = "suggestionConfirmation.jsp?nomSite=<%=suggestionName%>&nomPage=<%=suggestionUrl%>";
-      var winName = "suggestionConfirmation";
-      var larg = "480";
-      var haut = "300";
-      var windowParams = "scrollbars=yes, resizable, alwaysRaised";
+      const theURL = "suggestionConfirmation.jsp?nomSite=<%=suggestionName%>&nomPage=<%=suggestionUrl%>";
+      const winName = "suggestionConfirmation";
+      const larg = "480";
+      const haut = "300";
+      const windowParams = "scrollbars=yes, resizable, alwaysRaised";
       SP_openWindow(theURL, winName, larg, haut, windowParams);
     }
   </script>
@@ -91,7 +88,8 @@
 </view:window>
 <script type="text/javascript">
   /* declare the module myapp and its dependencies (here in the silverpeas module) */
-  var myapp = angular.module('silverpeas.bookmark', ['silverpeas.services', 'silverpeas.directives']);
+  window.myapp = angular.module('silverpeas.bookmark', ['silverpeas.services',
+    'silverpeas.directives']);
 </script>
 </body>
 </html>

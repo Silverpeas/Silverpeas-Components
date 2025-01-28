@@ -46,7 +46,6 @@
 <c:set value="${silfn:applicationURL()}" var="webContext"/>
 <fmt:message key="Close" var="closeLabel"/>
 
-<%@ page import="org.silverpeas.kernel.bundle.LocalizationBundle" %>
 <%@ page import="org.owasp.encoder.Encode" %>
 <view:sp-page>
 <view:sp-head-part>

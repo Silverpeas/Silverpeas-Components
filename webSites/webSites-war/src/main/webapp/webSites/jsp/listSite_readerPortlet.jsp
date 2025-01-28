@@ -41,7 +41,6 @@ FolderDetail webSitesCurrentFolder = (FolderDetail) request.getAttribute("Curren
 
 <view:sp-page>
 <view:sp-head-part>
-<view:script src="javaScript/spacesInURL.js"/>
 <view:script src="javaScript/commons.js"/>
 <script type="text/javascript">
   window.wsm = new WebSiteManager({
