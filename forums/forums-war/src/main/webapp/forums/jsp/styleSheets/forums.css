@@ -26,8 +26,6 @@
   font-weight: bold;
 }
 
-.txtnote {}
-
 a.txtnote:hover {
   color: var(--color-lien-action);
 }
