@@ -920,7 +920,7 @@
           'nodes' : [{id : $(this).attr('id'), text : $(this).text()}]
         },
         '<div id="jstree-dnd" class="jstree-default"><i class="jstree-icon jstree-er"></i>' +
-        $(this).text() + '</div>');
+        $(this).text().escapeHTML() + '</div>');
   });
 
   window.__spTreeviewDndContext = {
