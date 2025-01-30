@@ -24,9 +24,6 @@
 
 #classifieds #categories {
 	padding-top: 1em;
-}
-
-#classifieds #categories {
 	display: flex;
 	flex-flow: row wrap;
 	justify-content: center;
@@ -426,7 +423,6 @@ div.tableBoard {
 	top: 0;
 	right: 17px;
 	color: #FFF;
-	font-weight: bold;
 	background-color:var(--color-lien-action) ;
 	border-radius:var(--radius-etiquette);
 }
