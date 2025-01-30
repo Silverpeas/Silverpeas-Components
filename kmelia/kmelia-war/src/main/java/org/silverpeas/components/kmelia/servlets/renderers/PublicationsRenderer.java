@@ -557,11 +557,11 @@ public class PublicationsRenderer implements Renderer {
 
     writer.write(SCRIPT_START);
     writer.write("whenSilverpeasReady(function() {" +
-        "  document.querySelectorAll('a.pub-link').forEach(function(a) {\n" +
+        "  document.querySelectorAll('.publication-name a').forEach(function(a) {\n" +
         "    a.addEventListener('click', function(e) {\n" +
         "      e.preventDefault();\n" +
         "      e.stopPropagation();\n" +
-        "      const pubId = this.getAttribute('id').trim().slice(4);\n" +
+        "      const pubId = this.querySelector('span.jstree-draggable').getAttribute('id').trim().slice(4);\n" +
         "      publicationGoTo(pubId);\n" +
         "    });" +
         "  });" +
@@ -666,10 +666,9 @@ public class PublicationsRenderer implements Renderer {
       PublicationFragmentSettings fragmentSettings) throws IOException {
     writer.write("<div class=\"");
     writer.write(fragmentSettings.getPubColor());
-    writer.write("\"><a href=\"#\" class=\"pub-link\" id=\"pub-" + pub.getPK().getId());
-    writer.write("\"><span class=\"" + fragmentSettings.getHighlightClass() + "\">");
+    writer.write("\"><a href=\"#\"><span class=\"" + fragmentSettings.getHighlightClass() + "\">");
     if (fragmentSettings.isDraggable()) {
-      writer.write("<span class=\"jstree-draggable\">");
+      writer.write("<span class=\"jstree-draggable\" id=\"pub-" + pub.getPK().getId() + "\">");
       writer.write(name);
       writer.write(END_SPAN);
     } else {
