@@ -1548,6 +1548,9 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
     String status = FileUploadUtil.getParameter(parameters, "KmeliaPubStatus");
     String name = FileUploadUtil.getParameter(parameters, "KmeliaPubName");
     String description = FileUploadUtil.getParameter(parameters, "KmeliaPubDescription");
+    if (StringUtil.isDefined(description)) {
+      description = description.trim();
+    }
     String keywords = FileUploadUtil.getParameter(parameters, "KmeliaPubKeywords");
     String beginDate = FileUploadUtil.getParameter(parameters, "KmeliaPubBeginDate");
     String endDate = FileUploadUtil.getParameter(parameters, "KmeliaPubEndDate");

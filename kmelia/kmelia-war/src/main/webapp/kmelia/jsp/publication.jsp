@@ -56,6 +56,7 @@
 <%@ page import="org.silverpeas.core.contribution.publication.model.Location" %>
 <%@ page import="org.silverpeas.components.kmelia.model.ValidatorsList" %>
 <%@ page import="org.silverpeas.core.web.selection.BasketSelectionUI" %>
+<%@ page import="org.owasp.encoder.Encode" %>
 
 <c:set var="userLanguage" value="${requestScope.resources.language}"/>
 <c:set var="contentLanguage" value="${requestScope.Language}"/>
@@ -465,7 +466,8 @@
 
     function addFavorite() {
       var name = $("#breadCrumb").text();
-      var description = "<%=org.owasp.encoder.Encode.forHtml(pubDetail.getDescription(language))%>";
+      var description =
+              "<%=WebEncodeHelper.convertBlanksForHtml(Encode.forHtml(pubDetail.getDescription(language)))%>";
       var url = "<%=pubPermalink%>";
       postNewLink(name, url, description);
     }
@@ -827,7 +829,7 @@
 
     out.println("</h2>");
 
-    String description = WebEncodeHelper.convertBlanksForHtml(WebEncodeHelper.javaStringToHtmlString(pubDetail.getDescription(language)));
+    String description = WebEncodeHelper.javaStringToHtmlParagraphe(pubDetail.getDescription(language));
     if (StringUtil.isDefined(description)) {
       out.println("<p class=\"publiDesc text2\">" + description + "</p>");
     }

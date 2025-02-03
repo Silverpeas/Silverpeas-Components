@@ -106,7 +106,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 		<tr>
 			<td align="left"<%=newCssClass%>><span class="txtnav publication-name"><strong><%=WebEncodeHelper.javaStringToHtmlString(detail.getName(kmeliaScc.getCurrentLanguage()))%></strong></span><BR>
 
-        <strong><%=WebEncodeHelper.javaStringToHtmlString(detail.getDescription(kmeliaScc.getCurrentLanguage()))%></strong>
+        <strong><%=WebEncodeHelper.javaStringToHtmlParagraphe(detail.getDescription(kmeliaScc.getCurrentLanguage()))%></strong>
 				<br />
 				<br /> 
 <%
