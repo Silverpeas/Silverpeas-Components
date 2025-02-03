@@ -157,7 +157,7 @@
       }
 
       name = WebEncodeHelper.javaStringToHtmlString(pubDetail.getName(language));
-      description = WebEncodeHelper.javaStringToHtmlString(StringUtil.defaultIfBlank(pubDetail.getDescription(language), ""));
+      description = Encode.forHtml(StringUtil.defaultIfBlank(pubDetail.getDescription(language), ""));
       creationDate = resources.getOutputDate(pubDetail.getCreationDate());
       if (pubDetail.getBeginDate() != null) {
         beginDate = resources.getInputDate(pubDetail.getBeginDate());
@@ -500,7 +500,7 @@
 	      	namePath = namePath + " > " + pathString;
 	      }
 		  operationPane.addOperation(favoriteAddSrc,
-                  resources.getString("FavoritesAddPublication")+" "+kmeliaScc.getString("FavoritesAdd2"), "javaScript:addFavorite('"+WebEncodeHelper.javaStringToJsString(namePath)+"','"+WebEncodeHelper.javaStringToHtmlString(pubDetail.getDescription(language))+"','"+urlPublication+"')");
+                  resources.getString("FavoritesAddPublication")+" "+kmeliaScc.getString("FavoritesAdd2"), "javaScript:addFavorite('"+WebEncodeHelper.javaStringToJsString(namePath)+"','"+WebEncodeHelper.javaStringToHtmlParagraphe(pubDetail.getDescription(language))+"','"+urlPublication+"')");
           operationPane.addLine();
 
           if (!"supervisor".equals(profile)) {

@@ -105,7 +105,7 @@ void displaySameSubjectPublications(Collection pubs, String publicationLabel, Km
 							out.println("<td width=\"1\">&nbsp;</td>");
 						out.println("<td width=\"1\">&nbsp;</td>");
 						out.println("<td colspan=\"3\">"+getUserName(kmeliaPub, kmeliaScc)+" - "+resources.getOutputDate(pub.getLastUpdateDate())+"<br/>");
-						out.println(WebEncodeHelper.javaStringToHtmlString(pub.getDescription(language))+"<br/><br/></td>");
+						out.println(WebEncodeHelper.javaStringToHtmlParagraphe(pub.getDescription(language))+"<br/><br/></td>");
 						out.println("</td></tr></table>");
 						out.println("</td>");
                       out.println("</tr>");

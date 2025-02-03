@@ -26,6 +26,9 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="checkKmelia.jsp" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
@@ -35,36 +38,33 @@
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 
-<%
-List 	publications 		= (List) request.getAttribute("Publications");
-String	currentLang 		= (String) request.getAttribute("Language");
-%>
+<c:set var="publications" value="${requestScope.Publications}"/>
+<c:set var="currentLang" value="${requestScope.Language}"/>
+<c:set var="infoIcon" value="${requestScope.resources.getIcon('kmelia.info')}"/>
+<c:set var="pubIcon" value="${requestScope.resources.getIcon('kmelia.publication')}"/>
+<c:set var="buttonLabel" value="${requestScope.resources.getString('kmelia.SortItemsSave')}"/>
 
-<html>
-<head>
-<view:looknfeel />
+<view:sp-page>
+<view:sp-head-part>
 <style>
 li {
 	list-style: none;
 }
 </style>
 <script type="text/javascript">
-	$(document).ready(function(){
+	$(document).ready(function() {
 		$("#publis").sortable({opacity: 0.4}); 
 	});
 
-function sendData() 
-{
-	var reg=new RegExp("publi", "g");
-	
-	var data = $('#publis').sortable('serialize');
+function sendData() {
+	const reg = new RegExp("publi", "g");
+
+	let data = $('#publis').sortable('serialize');
 	data += "#";
-	var tableau=data.split(reg);
-	var param = "";
-	for (var i=0; i<tableau.length; i++)
-	{
-		//alert(tableau[i].substring(3, tableau[i].length-1));
-		if (i != 0)
+	const tableau = data.split(reg);
+	let param = "";
+	for (let i=0; i<tableau.length; i++) {
+		if (i !== 0)
 			param += ","
 				
 		param += tableau[i].substring(3, tableau[i].length-1);
@@ -73,52 +73,64 @@ function sendData()
 	document.sortForm.submit();
 }
 
-function topicGoTo(id) 
-{
+function topicGoTo(id) {
 	location.href="GoToTopic?Id="+id;
 }
 
 </script>
-</head>
-<body>
+</view:sp-head-part>
+<view:sp-body-part>
 <fmt:message key="kmelia.OrderPublications" var="browseBarXtra"/>
 <view:browseBar extraInformations="${browseBarXtra}" path="${requestScope['Path']}"/>
 <view:window>
 <view:frame>
 <div class="inlineMessage">
-<img src="<%=resources.getIcon("kmelia.info")%>" align="absmiddle"/> <%=resources.getString("kmelia.OrderPublicationsHelp")%><br/><br/>
-<center><%=gef.getFormButton(resources.getString("kmelia.SortItemsSave"), "javascript:sendData()", false).print() %></center> 
+<img src="${infoIcon}" style="vertical-align: middle"
+	 alt="${requestScope.resources.getString("kmelia.OrderPublicationsHelp")}"/>
+	${requestScope.resources.getString("kmelia.OrderPublicationsHelp")}<br/><br/>
+<view:buttonPane>
+	<view:button label="${buttonLabel}" action="javascript:sendData()"/>
+</view:buttonPane>
 </div>
 <br/>
 <view:board>
-<table width="100%" cellspacing="0">
-<tr valign="middle" class="intfdcolor">
-	<td width="20px"><img src="<%=resources.getIcon("kmelia.publication")%>" border="0"/></td>
-	<td align="left" class="ArrayNavigation"><%=publications.size() %> <%=resources.getString("GML.publication")%></td>
+<table>
+	<th></th>
+<tr class="intfdcolor">
+	<td style="width: 20px">
+		<img src="${pubIcon}" alt="publication"/>
+	</td>
+	<td style="text-align: left" class="ArrayNavigation">
+		<c:choose>
+			<c:when test="${fn:length(publications) > 1}">
+				${fn:length(publications)} ${requestScope.resources.getString("GML.publications")}
+			</c:when>
+			<c:otherwise>
+				${fn:length(publications)} ${requestScope.resources.getString("GML.publication")}
+			</c:otherwise>
+		</c:choose>
+	</td>
 </tr>
 </table>
 <br/>
-<table width="100%" cellspacing="0">
-<tr><td>
+<table>
+	<th></th>
+	<tr>
+		<td>
 <ul id="publis" style="cursor: hand; cursor: pointer;">
-<%
-Iterator publis = publications.iterator();
-KmeliaPublication userPub = null;
-PublicationDetail pub = null;
-while(publis.hasNext())
-{
-	userPub 	= (KmeliaPublication) publis.next();
-	pub 		= userPub.getDetail();
-%>
-	<li id="publi_<%=pub.getPK().getId()%>">&#8226;&#160;<b><%=pub.getName(currentLang)%></b><br/>
-		<% if (StringUtil.isDefined(pub.getDescription(currentLang))) { %>
-			<%=Encode.forHtml(pub.getDescription(currentLang))%><br/>
-		<% } %>
-		<br/>
+	<c:forEach var="kmeliaPub" items="${publications}">
+		<c:set var="pub" value="${kmeliaPub.detail}"/>
+		<jsp:useBean id="pub"
+					 type="org.silverpeas.core.contribution.publication.model.PublicationDetail"/>
+	<li id="publi_${pub.id}">&#8226;&#160;
+		<b>${silfn:escapeHtml(pub.getName(currentLang))}</b><br/>
+		<c:if test="${silfn:isDefined(pub.getDescription(currentLang))}">
+			${silfn:escapeHtmlWhitespaces(pub.getDescription(currentLang))}
+		</c:if>
 	</li>
-<%
-}
-%>
+	<br/>
+
+	</c:forEach>
 </ul>
 </td></tr>
 </table>
@@ -128,5 +140,5 @@ while(publis.hasNext())
 <form name="sortForm" method="post" action="OrderPublications">
 <input type="hidden" name="sortedIds"/>
 </form>
-</body>
-</html>
+</view:sp-body-part>
+</view:sp-page>
