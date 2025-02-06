@@ -172,8 +172,8 @@ function refuseResource(resourceId, resourceName, objectView) {
             String resourceName = maResource.getName();
             // afficher les icones de validation et refus si la ressource est en etat a valider
             // et si l'utilisateur est le responsable de cette ressource
-            String currentUser = resourcesManagerSC.getUserId() ;
-            List<String> managers = resourcesManagerSC.getManagerIds(resourceId);
+            Long currentUser = Long.parseLong(resourcesManagerSC.getUserId());
+            List<Long> managers = resourcesManagerSC.getManagerIds(resourceId);
             if (maResource.isValidationRequired()) { %>
              <a class="resource waitingForValidation" href="javascript:getResource(<%=resourceId%>, '<%=objectView%>')"><%=resourceName%></a>
             <% } else if (maResource.isRefused()) { %>

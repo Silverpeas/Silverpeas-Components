@@ -360,12 +360,18 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
     return notifSender;
   }
 
-  public List<String> getManagerIds(Long resourceId) {
+  public List<Long> getManagerIds(Long resourceId) {
     List<ResourceValidator> validators = listValidators(resourceId);
-    List<String> managerIds = new ArrayList<>(validators.size());
+    List<Long> managerIds = new ArrayList<>(validators.size());
     for (ResourceValidator validator : validators) {
-      managerIds.add(String.valueOf(validator.getManagerId()));
+      //Check if currentUser is validator of the resource and has been removed from the Role "Responsibles"
+      boolean keepUserAsResponsible = (validator.getManagerId()==Long.parseLong(getUserId()) && !isResponsible())?false:true;
+      if (keepUserAsResponsible) {
+        managerIds.add(validator.getManagerId());
+      }
     }
+    //Update list of the managers of the resource
+    ResourcesManagerProvider.getResourcesManager().updateResource(getResource(resourceId), managerIds);
     return managerIds;
   }
 
@@ -574,8 +580,6 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
   public void sendNotificationValidateReservation(Reservation reservation)
       throws NotificationException {
     // envoyer une notification au créateur de la réservation
-    OrganizationController orga = OrganizationControllerProvider.getOrganisationController();
-    String user = orga.getUserDetail(getUserId()).getDisplayedName();
     String url = URLUtil.getURL(null, getComponentId()) +
         "ViewReservation?reservationId=" + reservation.getId();
 
@@ -622,7 +626,6 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
       String motive) throws NotificationException {
     // envoyer une notification au créateur de la réservation
     OrganizationController orga = OrganizationControllerProvider.getOrganisationController();
-    String user = orga.getUserDetail(getUserId()).getDisplayedName();
     String url = URLUtil.getURL(null, getComponentId()) +
         "ViewReservation?reservationId=" + reservation.getId();
 
