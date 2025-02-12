@@ -35,7 +35,6 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
@@ -75,6 +74,9 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
   private Long currentResource;
   private NotificationSender notifSender;
   private MultiSilverpeasBundle resources;
+
+  private static final String RESOURCES_MANAGER_BUNDLE = "org.silverpeas.resourcesmanager.multilang.resourcesManagerBundle";
+  private static final String RESOURCES_MANAGER_ICONS = "org.silverpeas.resourcesmanager.settings.resourcesManagerIcons";
 
   public ReservationTimeWindowViewContext getViewContext() {
     if (viewContext == null) {
@@ -135,8 +137,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
   public ResourcesManagerSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
-        "org.silverpeas.resourcesmanager.multilang.resourcesManagerBundle",
-        "org.silverpeas.resourcesmanager.settings.resourcesManagerIcons");
+        RESOURCES_MANAGER_BUNDLE,RESOURCES_MANAGER_ICONS);
   }
 
   public boolean isResponsible() {
@@ -239,8 +240,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
       }
     } catch (Exception e) {
       throw new ResourcesManagerRuntimeException(
-          "ResourcesManagerSessionController.saveReservation()", SilverpeasRuntimeException.ERROR,
-          "root.EX_CANT_GET_REMOTE_OBJECT", e);
+          "ResourcesManagerSessionController.saveReservation()",e);
     }
   }
 
@@ -286,8 +286,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
       }
     } catch (Exception e) {
       throw new ResourcesManagerRuntimeException(
-          "ResourcesManagerSessionController.updateReservation()", SilverpeasRuntimeException.ERROR,
-          "root.EX_CANT_GET_REMOTE_OBJECT", e);
+          "ResourcesManagerSessionController.updateReservation()", e);
     }
   }
 
@@ -306,7 +305,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
       String user = orga.getUserDetail(getUserId()).getDisplayedName();
 
       LocalizationBundle message = ResourceLocator.getLocalizationBundle(
-          "org.silverpeas.resourcesmanager.multilang.resourcesManagerBundle",
+         RESOURCES_MANAGER_BUNDLE,
           DisplayI18NHelper.getDefaultLanguage());
 
       StringBuilder messageBody = new StringBuilder();
@@ -314,7 +313,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
       // liste des responsables (de la ressource) à notifier
       List<ResourceValidator> validators = ResourcesManagerProvider.getResourcesManager().
           getManagers(resource.getIdAsLong());
-      List<UserRecipient> managers = new ArrayList<UserRecipient>(validators.size());
+      List<UserRecipient> managers = new ArrayList<>(validators.size());
       if (!ResourcesManagerProvider.getResourcesManager()
           .isManager(Long.parseLong(getUserId()), resourceId)) {
         // envoie de la notification seulement si le user courant n'est pas aussi responsable
@@ -334,7 +333,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
 
         for (String language : DisplayI18NHelper.getLanguages()) {
           message = ResourceLocator.getLocalizationBundle(
-              "org.silverpeas.resourcesmanager.multilang.resourcesManagerBundle", language);
+             RESOURCES_MANAGER_BUNDLE, language);
           subject = message.getString("resourcesManager.notifSubject");
           messageBody = new StringBuilder();
           messageBody = messageBody.append(user).append(" ").append(message.getString(
@@ -365,8 +364,8 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
     List<Long> managerIds = new ArrayList<>(validators.size());
     for (ResourceValidator validator : validators) {
       //Check if currentUser is validator of the resource and has been removed from the Role "Responsibles"
-      boolean keepUserAsResponsible = (validator.getManagerId()==Long.parseLong(getUserId()) && !isResponsible())?false:true;
-      if (keepUserAsResponsible) {
+      boolean removeUserAsResponsible = (validator.getManagerId()==Long.parseLong(getUserId()) && !isResponsible());
+      if (!removeUserAsResponsible) {
         managerIds.add(validator.getManagerId());
       }
     }
@@ -456,7 +455,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
   // AJOUT : pour traiter l'affichage des semaines sur 5 ou 7 jours
   public boolean isWeekendNotVisible() {
     String parameterValue = getComponentParameterValue("weekendNotVisible");
-    return "yes".equals(parameterValue.toLowerCase());
+    return "yes".equalsIgnoreCase(parameterValue);
   }
 
   public String getDefaultView() {
@@ -584,7 +583,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
         "ViewReservation?reservationId=" + reservation.getId();
 
     LocalizationBundle message = ResourceLocator.getLocalizationBundle(
-        "org.silverpeas.resourcesmanager.multilang.resourcesManagerBundle",
+       RESOURCES_MANAGER_BUNDLE,
         DisplayI18NHelper.getDefaultLanguage());
 
     String subject = message.getString("resourcesManager.notifSubjectValide");
@@ -594,7 +593,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
 
     for (String language : DisplayI18NHelper.getLanguages()) {
       message = ResourceLocator.getLocalizationBundle(
-          "org.silverpeas.resourcesmanager.multilang.resourcesManagerBundle", language);
+         RESOURCES_MANAGER_BUNDLE, language);
       subject = message.getString("resourcesManager.notifSubjectValide");
       notifMetaData.addLanguage(language, subject, getMessageBodyValidReservation(message, reservation));
 
@@ -625,12 +624,11 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
   public void sendNotificationRefuseReservation(Reservation reservation, Long resourceId,
       String motive) throws NotificationException {
     // envoyer une notification au créateur de la réservation
-    OrganizationController orga = OrganizationControllerProvider.getOrganisationController();
     String url = URLUtil.getURL(null, getComponentId()) +
         "ViewReservation?reservationId=" + reservation.getId();
 
     LocalizationBundle message = ResourceLocator.getLocalizationBundle(
-        "org.silverpeas.resourcesmanager.multilang.resourcesManagerBundle",
+       RESOURCES_MANAGER_BUNDLE,
             DisplayI18NHelper.getDefaultLanguage());
 
     Resource resource = getResource(resourceId);
@@ -642,7 +640,7 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
 
     for (String language : DisplayI18NHelper.getLanguages()) {
       message = ResourceLocator.getLocalizationBundle(
-          "org.silverpeas.resourcesmanager.multilang.resourcesManagerBundle",
+         RESOURCES_MANAGER_BUNDLE,
               language);
       subject = message.getString("resourcesManager.notifSubjectRefuse");
 

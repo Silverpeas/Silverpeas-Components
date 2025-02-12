@@ -23,7 +23,7 @@
  */
 package org.silverpeas.components.resourcesmanager.service;
 
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 public class ResourcesManagerRuntimeException extends SilverpeasRuntimeException {
 
@@ -33,28 +33,16 @@ public class ResourcesManagerRuntimeException extends SilverpeasRuntimeException
    * --------------------------------------------------------------------------
    * constructors
    */
-  public ResourcesManagerRuntimeException(String callingClass, int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
+  public ResourcesManagerRuntimeException(final String message) {
+    super(message);
   }
 
-  public ResourcesManagerRuntimeException(String callingClass, int errorLevel, String message,
-      String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public ResourcesManagerRuntimeException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  public ResourcesManagerRuntimeException(String callingClass, int errorLevel, String message,
-      Exception nested) {
-    super(callingClass, errorLevel, message, nested);
-  }
-
-  public ResourcesManagerRuntimeException(String callingClass, int errorLevel, String message,
-      String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  @Override
-  public String getModule() {
-    return "ResourcesManager";
+  public ResourcesManagerRuntimeException(final Throwable cause) {
+    super(cause);
   }
 
 }
