@@ -36,6 +36,7 @@ import org.silverpeas.core.web.rs.annotation.Authorized;
 import org.silverpeas.core.webapi.node.NodeAttrEntity;
 import org.silverpeas.core.webapi.node.NodeEntity;
 import org.silverpeas.core.webapi.node.NodeType;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.annotation.Nonnull;
 import javax.ws.rs.Consumes;
@@ -289,6 +290,7 @@ public class FolderResource extends RESTWebService {
 
       return rootEntity;
     } catch (Exception e) {
+      SilverLogger.getLogger(this).error("Error in getTreeview()",e);
       throw new WebApplicationException(e, Status.INTERNAL_SERVER_ERROR);
     }
   }
