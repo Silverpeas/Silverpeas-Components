@@ -37,7 +37,6 @@ import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.date.period.Period;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
@@ -375,8 +374,7 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
       RecordSet set = pubTemplate.getRecordSet();
       set.indexRecord(String.valueOf(resource.getIdAsLong()), xmlFormName, indexEntry);
     } catch (Exception e) {
-      throw new ResourcesManagerRuntimeException("ResourceManagerBmEJB.createIndex_Resource()",
-          SilverpeasRuntimeException.ERROR, "resourcesManager.EX_CREATE_INDEX_FAILED", e);
+      throw new ResourcesManagerRuntimeException("SimpleResourcesManager.indexResourceForm()",e);
     }
   }
 
@@ -409,8 +407,7 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
         try {
           createReservationIndex(reservation);
         } catch (Exception e) {
-          throw new ResourcesManagerRuntimeException("ResourcesManagerBmEJB.indexResourceManager()",
-              SilverpeasRuntimeException.ERROR, "resourcesManager.MSG_INDEXRESERVATIONS", e);
+          throw new ResourcesManagerRuntimeException("SimpleResourcesManager.indexResourceManager()",e);
         }
       }
     }
