@@ -301,7 +301,7 @@
           <view:arrayPane title="${listNewsTitle}" var="newsList" routingAddress="Main" movableLines="true" summary="true">
             <view:arrayColumn title="${columnTitle}"
                               compareOn="${r -> r.news.publicationDetail.name}"/>
-            <view:arrayColumn title="${columnUpdateDate}" width="70px" compareOn="${r -> r.news.publicationDetail.lastUpdateDate}"/>
+            <view:arrayColumn title="${columnUpdateDate}" compareOn="${r -> r.news.publicationDetail.lastUpdateDate}"/>
             <view:arrayColumn title="${columnContributor}"/>
             <view:arrayColumn title="${columnState}"/>
             <view:arrayColumn title="${columnVisibilityBeginDate}"  compareOn="${r -> r.news.beginDate}"/>
