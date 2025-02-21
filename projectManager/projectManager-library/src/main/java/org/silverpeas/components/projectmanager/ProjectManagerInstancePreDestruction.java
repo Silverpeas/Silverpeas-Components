@@ -23,10 +23,12 @@
  */
 package org.silverpeas.components.projectmanager;
 
-import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
 import org.silverpeas.components.projectmanager.model.ProjectManagerCalendarDAO;
 import org.silverpeas.components.projectmanager.model.ProjectManagerDAO;
+import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.kernel.annotation.Technical;
 
 import javax.inject.Named;
 import javax.transaction.Transactional;
@@ -38,6 +40,8 @@ import java.sql.SQLException;
  * the ProjectManager that is being deleted.
  * @author mmoquillon
  */
+@Technical
+@Bean
 @Named
 public class ProjectManagerInstancePreDestruction implements ComponentInstancePreDestruction {
   /**

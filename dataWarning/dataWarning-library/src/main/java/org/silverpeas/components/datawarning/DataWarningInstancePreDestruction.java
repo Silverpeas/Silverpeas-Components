@@ -23,10 +23,11 @@
  */
 package org.silverpeas.components.datawarning;
 
-import org.silverpeas.core.annotation.Service;
-import org.silverpeas.kernel.SilverpeasRuntimeException;
-import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
 import org.silverpeas.components.datawarning.model.DataWarningDataManager;
+import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
+import org.silverpeas.kernel.annotation.Technical;
 
 import javax.inject.Named;
 import javax.transaction.Transactional;
@@ -36,7 +37,8 @@ import javax.transaction.Transactional;
  * used by the instance.
  * @author mmoquillon
  */
-@Service
+@Technical
+@Bean
 @Named
 public class DataWarningInstancePreDestruction implements ComponentInstancePreDestruction {
   /**

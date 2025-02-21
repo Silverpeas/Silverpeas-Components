@@ -24,10 +24,13 @@
 package org.silverpeas.components.webpages;
 
 import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
+import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.kernel.util.StringUtil;
 
 import javax.inject.Named;
@@ -36,6 +39,8 @@ import javax.inject.Named;
  * Deletes all the web pages managed by the WebPages instance that is being deleted.
  * @author mmoquillon
  */
+@Technical
+@Bean
 @Named
 public class WebPagesInstancePreDestruction implements ComponentInstancePreDestruction {
   /**
@@ -55,7 +60,7 @@ public class WebPagesInstancePreDestruction implements ComponentInstancePreDestr
         PublicationTemplateManager.getInstance()
             .removePublicationTemplate(componentInstanceId + ":" + xmlShortName);
       } catch (PublicationTemplateException e) {
-        throw new RuntimeException(e.getMessage(), e);
+        throw new SilverpeasRuntimeException(e.getMessage(), e);
       }
     }
   }

@@ -23,12 +23,14 @@
  */
 package org.silverpeas.processmanager;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
 import org.silverpeas.core.workflow.api.UpdatableProcessInstanceManager;
 import org.silverpeas.core.workflow.api.Workflow;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.instance.ProcessInstance;
+import org.silverpeas.kernel.annotation.Technical;
 
 import javax.inject.Named;
 import java.util.List;
@@ -41,6 +43,8 @@ import static org.silverpeas.core.admin.component.ComponentInstancePreDestructio
  * deleted.
  * @author mmoquillon
  */
+@Technical
+@Bean
 @Named(WORKFLOW_PRE_DESTRUCTION)
 public class ProcessManagerInstancePreDestruction implements ComponentInstancePreDestruction {
 

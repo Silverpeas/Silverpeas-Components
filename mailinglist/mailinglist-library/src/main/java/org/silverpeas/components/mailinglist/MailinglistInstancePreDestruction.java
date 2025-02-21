@@ -25,6 +25,8 @@ package org.silverpeas.components.mailinglist;
 
 import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
 import org.silverpeas.components.mailinglist.service.MailingListServicesProvider;
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.kernel.annotation.Technical;
 
 import javax.inject.Named;
 import javax.transaction.Transactional;
@@ -34,6 +36,8 @@ import javax.transaction.Transactional;
  * MailingList instance that is being deleted.
  * @author mmoquillon
  */
+@Technical
+@Bean
 @Named
 public class MailinglistInstancePreDestruction implements ComponentInstancePreDestruction {
 
