@@ -23,10 +23,12 @@
  */
 package org.silverpeas.components.classifieds;
 
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
 import org.silverpeas.components.classifieds.service.ClassifiedService;
 import org.silverpeas.components.classifieds.service.ClassifiedServiceProvider;
+import org.silverpeas.kernel.annotation.Technical;
 
 import javax.inject.Named;
 import javax.transaction.Transactional;
@@ -35,6 +37,8 @@ import javax.transaction.Transactional;
  * Deletes all the subscriptions and classifieds of the Classifieds instance that is being deleted.
  * @author mmoquillon
  */
+@Technical
+@Bean
 @Named
 public class ClassifiedsInstancePreDestruction implements ComponentInstancePreDestruction {
   /**

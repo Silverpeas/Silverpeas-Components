@@ -62,6 +62,14 @@ public class ResourceService {
     return repository.getAll();
   }
 
+  public List<Resource> getBookableResources(String componentId) {
+    return repository.findAllBookableResources(componentId);
+  }
+
+  public List<Resource> getResources(String componentId) {
+    return repository.findAllResources(componentId);
+  }
+
   public Resource getResource(long id) {
     return repository.getById(Long.toString(id));
   }

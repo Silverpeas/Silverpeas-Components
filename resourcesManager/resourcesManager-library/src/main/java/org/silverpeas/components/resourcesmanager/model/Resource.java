@@ -41,6 +41,9 @@ import java.util.List;
 @NamedQuery(name = "resource.findAllBookableResources",
     query = "SELECT resource FROM Resource resource WHERE resource.instanceId = :instanceId " +
         "AND resource.bookable = 1 AND resource.category.bookable = 1 ORDER BY resource.name")
+@NamedQuery(name = "resource.findAllResources",
+    query = "SELECT resource FROM Resource resource WHERE resource.instanceId = :instanceId " +
+        "ORDER BY resource.name")
 @NamedQuery(name = "resource.deleteResourcesFromCategory",
     query = "DELETE FROM Resource resource WHERE resource.category.id = :categoryId")
 public class Resource extends BasicJpaEntity<Resource, UniqueLongIdentifier> {
@@ -65,7 +68,8 @@ public class Resource extends BasicJpaEntity<Resource, UniqueLongIdentifier> {
   private String updaterId;
   @Column
   private String instanceId;
-  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "resource")
+  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "resource",
+      fetch = FetchType.EAGER)
   private List<ResourceValidator> managers = new ArrayList<>();
   @Transient
   private String status;
@@ -187,9 +191,9 @@ public class Resource extends BasicJpaEntity<Resource, UniqueLongIdentifier> {
     return managers;
   }
 
-  @SuppressWarnings("unused")
   public void setManagers(List<ResourceValidator> managers) {
-    this.managers = managers;
+    this.managers.clear();
+    this.managers.addAll(managers);
   }
 
   public void merge(Resource resource) {

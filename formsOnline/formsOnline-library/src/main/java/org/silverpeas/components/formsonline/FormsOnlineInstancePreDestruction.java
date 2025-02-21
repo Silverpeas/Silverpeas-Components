@@ -23,9 +23,11 @@
  */
 package org.silverpeas.components.formsonline;
 
-import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
+import org.silverpeas.kernel.annotation.Technical;
 
 import javax.inject.Named;
 import javax.transaction.Transactional;
@@ -39,6 +41,8 @@ import java.util.Arrays;
  * were managed by this instance.
  * @author mmoquillon
  */
+@Technical
+@Bean
 @Named
 public class FormsOnlineInstancePreDestruction implements ComponentInstancePreDestruction {
 

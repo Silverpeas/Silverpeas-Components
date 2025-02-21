@@ -50,6 +50,12 @@ public class ResourceJpaRepository extends BasicJpaEntityRepository<Resource>
   }
 
   @Override
+  public List<Resource> findAllResources(String instanceId) {
+    return listFromNamedQuery("resource.findAllResources",
+        newNamedParameters().add("instanceId", instanceId));
+  }
+
+  @Override
   public List<Resource> findAllResourcesForReservation(final Long reservationId) {
     return listFromNamedQuery("reservedResource.findAllResourcesForReservation",
         newNamedParameters().add("reservationId", reservationId));

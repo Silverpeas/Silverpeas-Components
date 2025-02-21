@@ -24,7 +24,9 @@
 package org.silverpeas.components.almanach;
 
 import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
+import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.calendar.Calendar;
+import org.silverpeas.kernel.annotation.Technical;
 
 import javax.inject.Named;
 import javax.transaction.Transactional;
@@ -34,6 +36,8 @@ import java.util.List;
  * Before being deleted, remove all events in an almanach instance.
  * @author mmoquillon
  */
+@Technical
+@Bean
 @Named
 public class AlmanachInstancePreDestruction implements ComponentInstancePreDestruction {
 

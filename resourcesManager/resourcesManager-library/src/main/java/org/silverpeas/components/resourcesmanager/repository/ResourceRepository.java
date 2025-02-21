@@ -35,6 +35,8 @@ public interface ResourceRepository extends EntityRepository<Resource>, WithSave
 
   List<Resource> findAllBookableResources(String instanceId);
 
+  List<Resource> findAllResources(String instanceId);
+
   List<Resource> findAllResourcesForReservation(Long reservationId);
 
   List<Resource> findAllReservedResources(Long reservationIdToSkip, List<Long> aimedResourceIds,

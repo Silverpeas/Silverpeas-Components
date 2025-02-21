@@ -25,6 +25,8 @@ package org.silverpeas.components.infoletter;
 
 import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
 import org.silverpeas.components.infoletter.model.InfoLetterService;
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.kernel.annotation.Technical;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -35,6 +37,8 @@ import javax.transaction.Transactional;
  * being deleted.
  * @author mmoquillon
  */
+@Technical
+@Bean
 @Named
 public class InfoLetterInstancePreDestruction implements ComponentInstancePreDestruction {
 
