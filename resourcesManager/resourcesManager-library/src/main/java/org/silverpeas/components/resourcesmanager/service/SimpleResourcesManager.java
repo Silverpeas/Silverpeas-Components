@@ -121,6 +121,11 @@ public class SimpleResourcesManager implements ResourcesManager, Serializable {
   }
 
   @Override
+  public List<Resource> getBookableResources(String componentId) {
+    return resourceService.getBookableResources(componentId);
+  }
+
+  @Override
   public void deleteResource(Long id, String componentId) {
     resourceService.deleteResource(id);
     deleteIndex(id, TYPE, componentId);

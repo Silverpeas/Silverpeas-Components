@@ -1,6 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <dataset>
+
+  <st_group id="1" domainId="-1" specificId="1" supergroupId="[NULL]" name="Tartempion"
+            description="a Tartempion group"
+            synchrorule="[NULL]" creationDate="2023-12-12 17:12:30.031"
+            saveDate="2023-12-12 17:12:30.031" state="VALID"
+            stateSaveDate="2023-12-12 17:12:30.031"/>
+  <st_group id="2" domainId="-1" specificId="2" supergroupId="[NULL]" name="Bowling"
+            description="a bowling group"
+            synchrorule="[NULL]" creationDate="2023-12-12 17:12:30.031"
+            saveDate="2023-12-12 17:12:30.031" state="VALID"
+            stateSaveDate="2023-12-12 17:12:30.031"/>
+  <st_group id="3" domainId="-1" specificId="3" supergroupId="[NULL]" name="Coders"
+            description="a coders group"
+            synchrorule="[NULL]" creationDate="2023-12-12 17:12:30.031"
+            saveDate="2023-12-12 17:12:30.031" state="VALID"
+            stateSaveDate="2023-12-12 17:12:30.031"/>
+  <st_group id="4" domainId="-1" specificId="4" supergroupId="3" name="Coders"
+            description="a coders group"
+            synchrorule="[NULL]" creationDate="2023-12-12 17:12:30.031"
+            saveDate="2023-12-12 17:12:30.031" state="VALID"
+            stateSaveDate="2023-12-12 17:12:30.031"/>
+
+  <st_user id="0" domainId="0" specificId="0" firstName="Administrator" lastName="Administrator"
+           email="admin@silverpeas.org" login="SilverAdmin" loginMail="admin@silverpeas.org"
+           accessLevel="A" state="VALID"
+           loginQuestion="[NULL]" loginAnswer="[NULL]" creationDate="2023-12-12 17:12:30.031"
+           saveDate="2023-12-12 17:12:30.031" version="1" nbSuccessfulLoginAttempts="5"
+           stateSaveDate="2023-12-12 17:12:30.031"/>
+
+  <st_user id="1" domainId="0" specificId="1" firstName="John" lastName="Doo"
+           email="john.doo@silverpeas.org" login="jdoo" loginMail="john.doo@silverpeas.org"
+           accessLevel="U" state="VALID"
+           loginQuestion="[NULL]" loginAnswer="[NULL]" creationDate="2023-12-12 17:12:30.031"
+           saveDate="2023-12-12 17:12:30.031" version="1" nbSuccessfulLoginAttempts="5"
+           stateSaveDate="2023-12-12 17:12:30.031"/>
+
+  <st_user id="10" domainId="0" specificId="1" firstName="François" lastName="Dupond"
+           email="francois.dupond@silverpeas.org" login="fdupond"
+           loginMail="francois.dupond@silverpeas.org"
+           accessLevel="U" state="VALID"
+           loginQuestion="[NULL]" loginAnswer="[NULL]" creationDate="2023-12-12 17:12:30.031"
+           saveDate="2023-12-12 17:12:30.031" version="1" nbSuccessfulLoginAttempts="5"
+           stateSaveDate="2023-12-12 17:12:30.031"/>
+
+  <st_user id="11" domainId="0" specificId="1" firstName="Gustave" lastName="Eiffel"
+           email="gustave.eiffel@silverpeas.org" login="geijfel"
+           loginMail="gustave.eiffel@silverpeas.org" accessLevel="U" state="VALID"
+           loginQuestion="[NULL]" loginAnswer="[NULL]" creationDate="2023-12-12 17:12:30.031"
+           saveDate="2023-12-12 17:12:30.031" version="1" nbSuccessfulLoginAttempts="5"
+           stateSaveDate="2023-12-12 17:12:30.031"/>
+
+  <st_group_user_rel groupId="1" userId="1"/>
+  <st_group_user_rel groupId="1" userId="10"/>
+  <st_group_user_rel groupId="1" userId="11"/>
+  <st_group_user_rel groupId="2" userId="0"/>
+  <st_group_user_rel groupId="2" userId="11"/>
+  <st_group_user_rel groupId="3" userId="1"/>
+  <st_group_user_rel groupId="3" userId="2"/>
+
   <sc_resources_category id="1" instanceId="resourcesManager42" name="Salles"
                          creationdate="1315232752398" updatedate="1315232752398" bookable="1"
                          form="model1.xml"
@@ -27,18 +86,18 @@
                          creationdate="1315232852398" updatedate="1315232852398" bookable="1"
                          createrid="5" updaterid="5" description="Twingo verte 4 places 5 portes"/>
 
-  <sc_resources_reservedresource reservationid="3" resourceid="1" status="V" />
-  <sc_resources_reservedresource reservationid="3" resourceid="2" status="R" />
-  <sc_resources_reservedresource reservationid="3" resourceid="3" status="test" />
+  <sc_resources_reservedresource reservationid="3" resourceid="1" status="V"/>
+  <sc_resources_reservedresource reservationid="3" resourceid="2" status="R"/>
+  <sc_resources_reservedresource reservationid="3" resourceid="3" status="test"/>
   <sc_resources_reservation id="3" instanceId="resourcesManager42" evenement="Test de la Toussaint"
                             userId="2" creationdate="1319811924467" updatedate="1319811924467"
-                            begindate="1320134400000"  enddate="1320163200000"
-                            reason="To test" place="at work" status="test" />
-  <sc_resources_managers resourceid="1" managerid="0" />
-  <sc_resources_managers resourceid="1" managerid="1" />
-  <sc_resources_managers resourceid="1" managerid="2" />
-  <sc_resources_managers resourceid="2" managerid="0" />
-  <sc_resources_managers resourceid="3" managerid="0" />
+                            begindate="1320134400000" enddate="1320163200000"
+                            reason="To test" place="at work" status="test"/>
+  <sc_resources_managers resourceid="1" managerid="0"/>
+  <sc_resources_managers resourceid="1" managerid="1"/>
+  <sc_resources_managers resourceid="1" managerid="2"/>
+  <sc_resources_managers resourceid="2" managerid="0"/>
+  <sc_resources_managers resourceid="3" managerid="0"/>
 
   <uniqueId maxId="20" tablename="sc_resources_resource"/>
 
