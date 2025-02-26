@@ -561,7 +561,8 @@ public class PublicationsRenderer implements Renderer {
         "    a.addEventListener('click', function(e) {\n" +
         "      e.preventDefault();\n" +
         "      e.stopPropagation();\n" +
-        "      const pubId = this.querySelector('span.jstree-draggable').getAttribute('id').trim().slice(4);\n" +
+        "      const pubId = this.querySelector('span.pub-link').getAttribute('id').trim().slice" +
+        "(4);\n" +
         "      publicationGoTo(pubId);\n" +
         "    });" +
         "  });" +
@@ -664,14 +665,19 @@ public class PublicationsRenderer implements Renderer {
 
   private static void renderPublicationLink(PublicationDetail pub, String name, Writer writer,
       PublicationFragmentSettings fragmentSettings) throws IOException {
-    writer.write("<div class=\"");
-    writer.write(fragmentSettings.getPubColor());
-    writer.write("\"><a href=\"#\"><span class=\"" + fragmentSettings.getHighlightClass() + "\">");
-    if (fragmentSettings.isDraggable()) {
-      writer.write("<span class=\"jstree-draggable\" id=\"pub-" + pub.getPK().getId() + "\">");
-      writer.write(name);
-      writer.write(END_SPAN);
+    if (StringUtil.isDefined(fragmentSettings.getPubColor())) {
+      writer.write("<div class=\"");
+      writer.write(fragmentSettings.getPubColor());
+      writer.write("\"><a href=\"#\">");
     } else {
+      writer.write("<div><a href=\"#\">");
+    }
+    writer.write("<span id=\"pub-" + pub.getPK().getId() + "\" class=\"pub-link");
+    if (fragmentSettings.isDraggable()) {
+      writer.write(" jstree-draggable\">");
+      writer.write(name);
+    } else {
+      writer.write("\">");
       writer.write(name);
     }
     writer.write("</span></a></div>");
