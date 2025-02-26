@@ -65,7 +65,12 @@
             <c:set var="seeAlsoClassName" value="seeAlsoReverse"/>
           </c:if>
           <li id="link-${seeAlso.id}" class="showActionsOnMouseOver ${seeAlsoClassName}">
-            <a href="${seeAlso.pub.permalink}" class="sp-permalink" title="${seeAlso.pub.description}">${seeAlso.pub.name} <span>- <view:formatDate value="${seeAlso.pub.lastUpdateDate}"/></span></a>
+            <a href="${seeAlso.pub.permalink}" class="sp-permalink"
+               title="${silfn:escapeHtmlWhitespaces(seeAlso.pub.description)}">
+                ${silfn:escapeHtml(seeAlso.pub.name)}
+              <span>-
+              <view:formatDate
+                    value="${seeAlso.pub.lastUpdateDate}"/></span></a>
             <c:if test="${not readOnly && not seeAlso.reverse}">
               <div class="actionShownOnMouseOver"><a class="delete" href="#" onclick="deleteLink('${seeAlso.id}');return false;" title="${labelDelete}">${labelDelete}</a></div>
             </c:if>
@@ -76,7 +81,8 @@
 
     <script type="text/javascript">
       function deleteLink(id) {
-        var ajaxRequest = sp.ajaxRequest(webContext+"/services/private/publications/${publicationPK.instanceId}/${publicationPK.id}/links/"+id).byDeleteMethod();
+        let ajaxRequest =
+                sp.ajaxRequest(webContext+"/services/private/publications/${publicationPK.instanceId}/${publicationPK.id}/links/"+id).byDeleteMethod();
         ajaxRequest.send().then(function() {
           $("#link-"+id).remove();
           if ($("#block-seeAlso ul li").size() === 0) {
