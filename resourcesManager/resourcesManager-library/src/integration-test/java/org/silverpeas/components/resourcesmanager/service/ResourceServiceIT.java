@@ -179,6 +179,13 @@ public class ResourceServiceIT {
     assertThat(result, hasSize(3));
   }
 
+  @Test
+  public void testGetResourcesOfGiveResourcesManager() {
+    List<Resource> result = service.getResources("resourcesManager42");
+    assertThat(result, is(notNullValue()));
+    assertThat(result, hasSize(3));
+  }
+
   /**
    * Test of getResource method, of class ResourceService.
    */

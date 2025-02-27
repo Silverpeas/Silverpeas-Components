@@ -30,6 +30,7 @@ import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
 import org.silverpeas.core.annotation.Bean;
 import org.silverpeas.core.contribution.model.WysiwygContent;
 import org.silverpeas.core.notification.system.ResourceEvent;
+import org.silverpeas.kernel.annotation.Technical;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -39,6 +40,7 @@ import java.util.Optional;
 /**
  * Wipe out for the spawned community instance the resources that were allocated to him.
  */
+@Technical
 @Bean
 @Named
 public class CommunityInstancePreDestruction implements ComponentInstancePreDestruction {

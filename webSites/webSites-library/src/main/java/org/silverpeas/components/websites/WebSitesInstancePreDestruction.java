@@ -25,6 +25,9 @@ package org.silverpeas.components.websites;
 
 import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
 import org.silverpeas.components.websites.dao.SiteDAO;
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
+import org.silverpeas.kernel.annotation.Technical;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.core.util.file.FileFolderManager;
@@ -37,6 +40,8 @@ import java.io.File;
  * Deletes all the web site managed by the WebSites instance that is being deleted.
  * @author mmoquillon
  */
+@Technical
+@Bean
 @Named
 public class WebSitesInstancePreDestruction implements ComponentInstancePreDestruction {
   /**
@@ -51,12 +56,11 @@ public class WebSitesInstancePreDestruction implements ComponentInstancePreDestr
       siteDAO.deleteAllWebSites();
       deleteAttachmentsAndImagesDirectory(componentInstanceId);
     } catch (Exception e) {
-      throw new RuntimeException(e.getMessage(), e);
+      throw new SilverpeasRuntimeException(e.getMessage(), e);
     }
   }
 
-  private void deleteAttachmentsAndImagesDirectory(String componentId)
-      throws java.lang.Exception {
+  private void deleteAttachmentsAndImagesDirectory(String componentId) {
     final SettingBundle uploadSettings =
         ResourceLocator.getSettingBundle("org.silverpeas.webSites.settings.webSiteSettings");
     FileFolderManager.deleteFolder(uploadSettings.getString("uploadsPath") + File.separator +

@@ -36,10 +36,13 @@ import java.util.StringTokenizer;
  */
 public class ResourceUtil {
 
+  private ResourceUtil() {
+  }
+
   /**
    * Get a list of resource identifiers from a list of resource.
-   * @param resources
-   * @return
+   * @param resources a list of resources.
+   * @return a list of the resources' identifiers.
    */
   public static List<Long> toIdList(List<Resource> resources) {
     List<Long> result = new ArrayList<>();
@@ -54,8 +57,8 @@ public class ResourceUtil {
   /**
    * Get a list of resource identifiers from a string containing resource identifiers separated by
    * comma.
-   * @param stringOfIds
-   * @return
+   * @param stringOfIds a string encoding a comma-separator list of resources' identifiers.
+   * @return the list of the resources' identifiers.
    */
   public static List<Long> toIdList(String stringOfIds) {
     List<Long> result = new ArrayList<>();

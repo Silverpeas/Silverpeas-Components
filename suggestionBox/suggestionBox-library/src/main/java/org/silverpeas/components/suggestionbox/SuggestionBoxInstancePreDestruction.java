@@ -26,6 +26,8 @@ package org.silverpeas.components.suggestionbox;
 import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
 import org.silverpeas.components.suggestionbox.model.SuggestionBox;
 import org.silverpeas.components.suggestionbox.model.SuggestionBoxService;
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.kernel.annotation.Technical;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -35,6 +37,8 @@ import javax.transaction.Transactional;
  * Deletes the suggestion box associated with the SuggestionBox instance that is being deleted.
  * @author mmoquillon
  */
+@Technical
+@Bean
 @Named
 public class SuggestionBoxInstancePreDestruction implements ComponentInstancePreDestruction {
 

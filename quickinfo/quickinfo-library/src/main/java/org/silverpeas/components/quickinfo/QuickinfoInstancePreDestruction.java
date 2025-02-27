@@ -25,6 +25,8 @@ package org.silverpeas.components.quickinfo;
 
 import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
 import org.silverpeas.components.quickinfo.repository.NewsRepository;
+import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.kernel.annotation.Technical;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -34,6 +36,8 @@ import javax.transaction.Transactional;
  * Deletes the data associated with the Quickinfo instance that is being deleted.
  * @author Yohann Chastagnier
  */
+@Technical
+@Bean
 @Named
 public class QuickinfoInstancePreDestruction implements ComponentInstancePreDestruction {
 

@@ -33,72 +33,76 @@ import java.util.Date;
 import java.util.List;
 
 /**
+ * Manager of the resources in a given Resource Manager application
+ *
  * @author ehugonnet
  */
 public interface ResourcesManager {
 
-  public List<Category> getCategories(String instanceId);
+  List<Category> getCategories(String instanceId);
 
-  public void createCategory(Category category);
+  void createCategory(Category category);
 
-  public void deleteCategory(Long id, String componentId);
+  void deleteCategory(Long id, String componentId);
 
-  public Category getCategory(Long id);
+  Category getCategory(Long id);
 
-  public void updateCategory(Category category);
+  void updateCategory(Category category);
 
-  public void createResource(Resource resource);
+  void createResource(Resource resource);
 
-  public List<Resource> getResourcesByCategory(Long categoryId);
+  List<Resource> getResourcesByCategory(Long categoryId);
 
-  public void deleteResource(Long id, String componentId);
+  List<Resource> getBookableResources(String componentId);
 
-  public Resource getResource(Long id);
+  void deleteResource(Long id, String componentId);
 
-  public void updateResource(Resource resource, List<Long> managerIds);
+  Resource getResource(Long id);
 
-  public List<Resource> getResourcesReservable(String instanceId, Date startDate, Date endDate);
+  void updateResource(Resource resource, List<Long> managerIds);
 
-  public List<Resource> getReservedResources(String instanceId, List<Long> resources,
+  List<Resource> getResourcesReservable(String instanceId, Date startDate, Date endDate);
+
+  List<Resource> getReservedResources(String instanceId, List<Long> resources,
       Date startDate, Date endDate);
 
-  public void saveReservation(Reservation reservation, List<Long> resourceIds);
+  void saveReservation(Reservation reservation, List<Long> resourceIds);
 
-  public List<Reservation> getReservations(String instanceId);
+  List<Reservation> getReservations(String instanceId);
 
-  public List<Resource> getResourcesOfReservation(String instanceId, Long reservationId);
+  List<Resource> getResourcesOfReservation(String instanceId, Long reservationId);
 
-  public void deleteReservation(Long id, String componentId);
+  void deleteReservation(Long id, String componentId);
 
-  public Reservation getReservation(String instanceId, Long reservationId);
+  Reservation getReservation(String instanceId, Long reservationId);
 
-  public void updateReservation(Reservation reservation, List<Long> resourceIds,
+  void updateReservation(Reservation reservation, List<Long> resourceIds,
       boolean updateDate);
 
-  public List<Resource> getReservedResources(String instanceId, List<Long> aimedResourceIds,
+  List<Resource> getReservedResources(String instanceId, List<Long> aimedResourceIds,
       Date startDate, Date endDate, Long reservationIdToSkip);
 
-  public List<Reservation> getUserReservations(String instanceId, String userId);
+  List<Reservation> getUserReservations(String instanceId, String userId);
 
-  public List<Reservation> getReservationOfUser(String instanceId, Integer userId,
+  List<Reservation> getReservationOfUser(String instanceId, Integer userId,
       final Period period);
 
-  public List<Reservation> getReservationForValidation(String instanceId, String userId,
+  List<Reservation> getReservationForValidation(String instanceId, String userId,
       final Period period);
 
-  public List<Reservation> getReservationWithResourcesOfCategory(final String instanceId,
+  List<Reservation> getReservationWithResourcesOfCategory(final String instanceId,
       Integer userId, final Period period, Long categoryId);
 
-  public List<Reservation> getReservationWithResource(final String instanceId, Integer userId,
+  List<Reservation> getReservationWithResource(final String instanceId, Integer userId,
       Period period, Long resourceId);
 
-  public void indexResourceManager(String instanceId);
+  void indexResourceManager(String instanceId);
 
-  public List<ResourceValidator> getManagers(long resourceId);
+  List<ResourceValidator> getManagers(long resourceId);
 
-  public String getResourceOfReservationStatus(Long resourceId, Long reservationId);
+  String getResourceOfReservationStatus(Long resourceId, Long reservationId);
 
-  public void updateReservedResourceStatus(long reservationId, long resourceId, String status);
+  void updateReservedResourceStatus(long reservationId, long resourceId, String status);
 
-  public boolean isManager(long userId, long resourceId);
+  boolean isManager(long userId, long resourceId);
 }
