@@ -41,7 +41,7 @@ public class KmeliaUserEventListener extends CDIResourceEventListener<UserEvent>
   private KmeliaService kmeliaService;
 
   @Override
-  public void onDeletion(final UserEvent event) throws Exception {
+  public void onDeletion(final UserEvent event) {
     UserDetail user = event.getTransition().getBefore();
     kmeliaService.userHaveBeenDeleted(user.getId());
   }
