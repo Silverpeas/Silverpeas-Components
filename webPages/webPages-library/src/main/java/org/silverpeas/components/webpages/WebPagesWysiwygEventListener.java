@@ -45,12 +45,12 @@ public class WebPagesWysiwygEventListener extends CDIResourceEventListener<Wysiw
   private OrganizationController organisationController;
 
   @Override
-  public void onUpdate(final WysiwygEvent event) throws Exception {
+  public void onUpdate(final WysiwygEvent event) {
     notifyUsersAboutChange(event.getTransition().getAfter());
   }
 
   @Override
-  public void onCreation(final WysiwygEvent event) throws Exception {
+  public void onCreation(final WysiwygEvent event) {
     notifyUsersAboutChange(event.getTransition().getAfter());
   }
 

@@ -46,10 +46,9 @@ public class GroupEventListener extends CDIResourceEventListener<GroupEvent> {
    * In that case, as a group can be referred by a yellowpages instance (as a group
    * of inner contacts), take caution to remove also this group from the yellowpages instance.
    * @param event the event on the deletion of a group.
-   * @throws Exception if an error occurs while treating the event.
    */
   @Override
-  public void onDeletion(final GroupEvent event) throws Exception {
+  public void onDeletion(final GroupEvent event) {
     yellowpagesService.removeGroup(event.getTransition().getBefore().getId());
   }
 }

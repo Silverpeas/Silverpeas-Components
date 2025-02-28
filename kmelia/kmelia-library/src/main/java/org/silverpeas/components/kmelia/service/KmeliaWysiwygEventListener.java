@@ -41,7 +41,7 @@ public class KmeliaWysiwygEventListener extends CDIResourceEventListener<Wysiwyg
   private KmeliaService kmeliaService;
 
   @Override
-  public void onUpdate(final WysiwygEvent event) throws Exception {
+  public void onUpdate(final WysiwygEvent event) {
     WysiwygContent content = event.getTransition().getAfter();
     if (content != null) {
       anExternalPublicationElementHaveChanged(content);
@@ -49,11 +49,8 @@ public class KmeliaWysiwygEventListener extends CDIResourceEventListener<Wysiwyg
   }
 
   @Override
-  public void onCreation(final WysiwygEvent event) throws Exception {
-    WysiwygContent content = event.getTransition().getAfter();
-    if (content != null) {
-      anExternalPublicationElementHaveChanged(content);
-    }
+  public void onCreation(final WysiwygEvent event) {
+    onUpdate(event);
   }
 
   private void anExternalPublicationElementHaveChanged(WysiwygContent content) {
