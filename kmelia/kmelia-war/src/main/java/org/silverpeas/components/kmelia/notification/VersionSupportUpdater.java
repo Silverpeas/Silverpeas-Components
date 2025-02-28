@@ -47,7 +47,7 @@ public class VersionSupportUpdater extends CDIResourceEventListener<ComponentIns
   private Administration administration;
 
   @Override
-  public void onUpdate(final ComponentInstanceEvent event) throws Exception {
+  public void onUpdate(final ComponentInstanceEvent event) {
     StateTransition<ComponentInst> transition = event.getTransition();
     String instanceType = event.getTransition().getBefore().getName();
     if ("kmelia".equalsIgnoreCase(instanceType)) {
