@@ -92,7 +92,7 @@ public class ResourcesManagerInstancePreDestructionIT {
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
           ResultSet rs = stmt.executeQuery();
           assertThat(rs.next(), is(true));
-          assertThat(rs.getLong(1), is(0l));
+          assertThat(rs.getLong(1), is(0L));
         }
       }
     }
