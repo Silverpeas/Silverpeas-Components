@@ -24,6 +24,7 @@
 package org.silverpeas.components.almanach.workflowextensions;
 
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.Priority;
@@ -38,7 +39,8 @@ import org.silverpeas.core.workflow.external.impl.ExternalActionImpl;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
@@ -65,8 +67,7 @@ import static org.silverpeas.kernel.util.StringUtil.getBooleanValue;
 public class SendInAlmanach extends ExternalActionImpl {
 
   private String role = "unknown";
-  private static final String ADMIN_ID = "0";
-  private static final DateTimeFormatter DATE_TIME_FORMATTER = ofPattern("dd/MM/yyyy hh:mm");
+  private static final DateTimeFormatter DATE_TIME_FORMATTER = ofPattern("dd/MM/yyyy HH:mm");
   private static final DateTimeFormatter DATE_FORMATTER = ofPattern("dd/MM/yyyy");
 
   @Inject
@@ -131,36 +132,48 @@ public class SendInAlmanach extends ExternalActionImpl {
   }
 
   private Period getEventPeriod() {
+    //Get user Timezone
+    User requester = User.getById(getEvent().getUser().getUserId());
+    ZoneId zoneId;
+    if (requester != null) {
+      zoneId = requester.getUserPreferences().getZoneId();
+    } else {
+      zoneId = ZoneId.systemDefault();
+    }
+
     final String startDayValue = getFolderValueFromTriggerParam(AlmanachTriggerParam.START_DATE);
     final String endDayValue = getFolderValueFromTriggerParam(AlmanachTriggerParam.END_DATE);
-    if (startDayValue != null) {
-      final String startHourValue = getFolderValueFromTriggerParam(AlmanachTriggerParam.START_HOUR);
-      final String endHourValue = getFolderValueFromTriggerParam(AlmanachTriggerParam.END_HOUR);
-      try {
-        final Temporal start;
-        if (StringUtil.isValidHour(startHourValue)) {
-          start = OffsetDateTime.parse(startDayValue + " " + startHourValue, DATE_TIME_FORMATTER);
-        } else {
-          start = LocalDate.parse(startDayValue, DATE_FORMATTER);
-        }
-        final Temporal end;
-        if (endDayValue != null) {
-          if (StringUtil.isValidHour(endHourValue)) {
-            end = OffsetDateTime.parse(endDayValue + " " + endHourValue, DATE_TIME_FORMATTER);
-          } else {
-            end = LocalDate.parse(endDayValue, DATE_FORMATTER).plusDays(1);
-          }
-        } else {
-          if (StringUtil.isValidHour(endHourValue)) {
-            end = OffsetDateTime.parse(startDayValue + " " + endHourValue, DATE_TIME_FORMATTER);
-          } else {
-            end = start.plus(1, ChronoUnit.DAYS);
-          }
-        }
-        return Period.between(start, end);
-      } catch (DateTimeParseException e) {
-        SilverLogger.getLogger(this).warn(e);
+    if (StringUtil.isNotDefined(startDayValue)) {
+      return null;
+    }
+
+    final String startHourValue = getFolderValueFromTriggerParam(AlmanachTriggerParam.START_HOUR);
+    final String endHourValue = getFolderValueFromTriggerParam(AlmanachTriggerParam.END_HOUR);
+    try {
+      final Temporal start;
+      if (StringUtil.isValidHour(startHourValue)) {
+        start = getTemporalWithOffset(startDayValue, startHourValue, zoneId);
+      } else {
+        start = LocalDate.parse(startDayValue, DATE_FORMATTER);
       }
+
+      final Temporal end;
+      if (endDayValue != null) {
+        if (StringUtil.isValidHour(endHourValue)) {
+          end = getTemporalWithOffset(endDayValue, endHourValue, zoneId);
+        } else {
+          end = LocalDate.parse(endDayValue, DATE_FORMATTER).plusDays(1);
+        }
+      } else {
+        if (StringUtil.isValidHour(endHourValue)) {
+          end = getTemporalWithOffset(startDayValue, endHourValue, zoneId);
+        } else {
+          end = start.plus(1, ChronoUnit.DAYS);
+        }
+      }
+      return Period.between(start, end);
+    } catch (DateTimeParseException e) {
+      SilverLogger.getLogger(this).warn(e);
     }
     return null;
   }
@@ -207,5 +220,16 @@ public class SendInAlmanach extends ExternalActionImpl {
 
   private OrganizationController getOrganizationController() {
     return organizationController;
+  }
+
+  /** Get date with offset due to Timezone
+   * @param day day of the event
+   * @param hour of the event
+   * @param zoneId Timezone of the user who has created the event
+  **/
+  private Temporal getTemporalWithOffset(String day, String hour, ZoneId zoneId) {
+    var localDateTime = LocalDateTime.parse(day + " " + hour, DATE_TIME_FORMATTER);
+    var zoneOffset = ZoneId.of(zoneId.getId()).getRules().getOffset(localDateTime.atZone(zoneId).toInstant());
+    return localDateTime.atOffset(zoneOffset);
   }
 }
