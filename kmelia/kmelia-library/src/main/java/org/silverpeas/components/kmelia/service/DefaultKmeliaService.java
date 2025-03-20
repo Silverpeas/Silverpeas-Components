@@ -1377,11 +1377,12 @@ public class DefaultKmeliaService implements KmeliaService {
         !isDefined(publication.getCloneStatus());
   }
 
-  @Override
-  @Transactional(Transactional.TxType.REQUIRED)
-  public void deletePublication(PublicationPK pubPK) {
-    // if the publication is in the basket or in the DZ
-    // this publication is deleted from the database
+  /**
+   * Deletes definitively the specified publication.
+   *
+   * @param pubPK the unique identifier of the publication to delete.
+   */
+  private void deletePublication(PublicationPK pubPK) {
     KmeliaOperationContext.about(DELETION);
     try {
       // remove form content
@@ -3919,6 +3920,26 @@ public class DefaultKmeliaService implements KmeliaService {
       }
     }
     return removedIds;
+  }
+
+  @Override
+  @Transactional(Transactional.TxType.REQUIRED)
+  public void deletePublication(PublicationPK pubPK, String userId) {
+    NodePK topicId = publicationService.getMainLocation(pubPK)
+        .orElse(null);
+    String profile = topicId != null ? getProfile(userId, topicId) : null;
+    if (profile != null && isUserCanDeletePublication(pubPK, profile, userId)) {
+      try {
+        if (topicId.isTrash()) {
+          deletePublication(pubPK);
+        } else {
+          sendPublicationInBasket(pubPK);
+        }
+      } catch (Exception e) {
+        SilverLogger.getLogger(this)
+            .error("Deletion of publication {0} failed", new String[]{pubPK.getId()}, e);
+      }
+    }
   }
 
   @Transactional(Transactional.TxType.REQUIRED)

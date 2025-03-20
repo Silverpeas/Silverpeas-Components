@@ -250,13 +250,6 @@ public interface KmeliaService extends ApplicationService {
   void updatePublication(PublicationDetail detail, boolean forceUpdateDate);
 
   /**
-   * Deletes definitively the specified publication.
-   *
-   * @param pubPK the unique identifier of the publication to delete.
-   */
-  void deletePublication(PublicationPK pubPK);
-
-  /**
    * Add a publication to a topic and send email alerts to topic subscribers
    *
    * @param pubPK the id of the publication
@@ -739,20 +732,33 @@ public interface KmeliaService extends ApplicationService {
 
   /**
    * Deletes the specified publications located into the given topic. Before a publication is
-   * removed, the privileges of the specified user is checked. If the topic is the trash folder,
-   * then the publications are definitively deleted. Otherwise, they are just moved into the bin.
+   * removed, the privileges of the specified user is checked. This user can be the requester or
+   * another user endorsing the deletion for the requester. If the topic is the trash folder, then
+   * the publications are definitively deleted. Otherwise, they are just moved into the bin.
    *
    * @param publiIds a list of local identifier of the publications to delete.
    * @param topicId the node PK of the topic in which the publications are located.
-   * @param userId the unique identifier of the user asking the deletion.
+   * @param userId the unique identifier of the user for which the deletion is performed.
    * @return the list of the unique identifiers of the actually deleted publications.
    */
   List<String> deletePublications(List<String> publiIds, NodePK topicId, String userId);
 
   /**
+   * Deletes the specified publication. Before the publication is removed, the privileges of the
+   * given user is checked. This user can be the requester or another user endorsing the deletion
+   * for the requester. For doing, the profile of the user is checked against the topic in which the
+   * publication is originally located. If the topic is the trash folder, then the publication is
+   * definitively deleted. Otherwise, it is just moved into the bin.
+   *
+   * @param pubPK the unique identifier of the publication.
+   * @param userId the unique identifier of the user for which the deletion is performed.
+   */
+  void deletePublication(PublicationPK pubPK, String userId);
+
+  /**
    * Deletes the specified topic located into the given parent topic. Before the topic is deleted,
-   * the privileges of the specified user is checked. If topic is in the trash folder, then
-   * the topic is definitively deleted. Otherwise it is just moved into the bin.
+   * the privileges of the specified user is checked. If topic is in the trash folder, then the
+   * topic is definitively deleted. Otherwise it is just moved into the bin.
    *
    * @param topic the unique identifier of the topic
    * @param userId the unique identifier of the user asking the deletion.
