@@ -55,9 +55,7 @@
     <c:if test="${isWatermark}">
       <c:set var="watermarlUrl" value="${media.getApplicationThumbnailUrl(WATERMARK_RESOLUTION)}"/>
       <c:if test="${not empty watermarlUrl}">
-        <c:url var="watermarlUrl" value="${fn:replace(watermarlUrl, silfn:applicationURL(), '')}">
-          <c:param name="downloadContext" value="true"/>
-        </c:url>
+        <c:url var="watermarlUrl" value="${fn:replace(watermarlUrl, silfn:applicationURL(), '')}"/>
         <a href="${watermarlUrl}" class="download-link">
           <img src="${downloadWatermarkIconUrl}" alt="<fmt:message key='gallery.originalWatermark'/>" title="<fmt:message key='gallery.originalWatermark'/>"/>
           <fmt:message key='gallery.download.media.watermark'/>

@@ -231,9 +231,8 @@
             <br class="clear"/>
           </p>
           <c:if test="${not empty internalMedia and (requestScope.ViewLinkDownload or media.downloadable)}">
-            <c:url var="downloadUrl" value="${fn:replace(mediaUrl, silfn:applicationURL(), '')}" scope="request">
-              <c:param name="downloadContext" value="true"/>
-            </c:url>
+            <c:url var="downloadUrl" value="${fn:replace(mediaUrl, silfn:applicationURL(), '')}"
+                   scope="request"/>
             <a href="${downloadUrl}" class="download-link">
               <img src="${downloadIconUrl}" alt="<fmt:message key='gallery.download.media'/>" title="<fmt:message key='gallery.original'/>"/>
               <fmt:message key='gallery.download.media'/>
