@@ -42,7 +42,6 @@ public final class GalleryResourceURIs {
   public static final String GALLERY_ALBUMS_URI_PART = "albums";
   public static final String GALLERY_PHOTOS_PART = "photos";
   public static final String GALLERY_PHOTO_RESOLUTION_PARAM = "resolution";
-  public static final String GALLERY_DOWNLOAD_CONTEXT_PARAM = "downloadContext";
   public static final String GALLERY_VIDEOS_PART = "videos";
   public static final String GALLERY_SOUNDS_PART = "sounds";
   public static final String GALLERY_MEDIA_CONTENT_PART = "content";
@@ -101,7 +100,7 @@ public final class GalleryResourceURIs {
       return null;
     }
     UriBuilder uriBuilder = SilverpeasWebResource.getBasePathBuilder().path(GALLERY_BASE_URI)
-        .path(media.getComponentInstanceId()).path(media.getType().getMediaWebUriPart())
+        .path(media.getInstanceId()).path(media.getType().getMediaWebUriPart())
         .path(media.getId()).path(GALLERY_MEDIA_CONTENT_PART)
         .queryParam("_t", media.getLastUpdateDate().getTime());
     if (mediaResolution != null && mediaResolution != MediaResolution.ORIGINAL) {
@@ -121,7 +120,7 @@ public final class GalleryResourceURIs {
       return null;
     }
     UriBuilder uriBuilder = SilverpeasWebResource.getBasePathBuilder().path(GALLERY_BASE_URI)
-        .path(media.getComponentInstanceId()).path(media.getType().getMediaWebUriPart())
+        .path(media.getInstanceId()).path(media.getType().getMediaWebUriPart())
         .path(media.getId()).path(GALLERY_MEDIA_EMBED_PART);
     if (mediaResolution != null && mediaResolution != MediaResolution.ORIGINAL) {
       uriBuilder.queryParam(GALLERY_PHOTO_RESOLUTION_PARAM, mediaResolution);
@@ -141,7 +140,7 @@ public final class GalleryResourceURIs {
     }
     UriBuilder uriBuilder =
         SilverpeasWebResource.getBasePathBuilder().path(GALLERY_BASE_URI)
-            .path(media.getComponentInstanceId()).path(media.getType().getMediaWebUriPart())
+            .path(media.getInstanceId()).path(media.getType().getMediaWebUriPart())
             .path(media.getId()).path(GALLERY_MEDIA_THUMBNAIL_PART)
             .path(Integer.toString(thumbnail.getIndex()))
             .queryParam("_t", media.getLastUpdateDate().getTime());
