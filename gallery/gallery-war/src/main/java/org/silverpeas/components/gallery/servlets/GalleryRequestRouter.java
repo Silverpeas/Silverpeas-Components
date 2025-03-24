@@ -28,6 +28,7 @@ import org.silverpeas.components.gallery.ParameterNames;
 import org.silverpeas.components.gallery.constant.MediaResolution;
 import org.silverpeas.components.gallery.constant.MediaType;
 import org.silverpeas.components.gallery.control.GallerySessionController;
+import org.silverpeas.components.gallery.delegate.AbstractMediaDataDelegate;
 import org.silverpeas.components.gallery.delegate.MediaDataCreateDelegate;
 import org.silverpeas.components.gallery.delegate.MediaDataUpdateDelegate;
 import org.silverpeas.components.gallery.model.AlbumDetail;
@@ -78,7 +79,6 @@ import java.util.UUID;
 import static org.silverpeas.core.cache.service.CacheAccessorProvider.getSessionCacheAccessor;
 import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery.isSqlDefined;
 import static org.silverpeas.core.util.JSONCodec.encodeObject;
-import static org.silverpeas.core.web.http.FileResponse.DOWNLOAD_CONTEXT_PARAM;
 
 public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionController> {
   private static final long serialVersionUID = 1L;
@@ -122,28 +122,12 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
     return "Gallery";
   }
 
-  /**
-   * Method declaration
-   * @param mainSessionCtrl
-   * @param componentContext
-   * @return
-   *
-   */
   @Override
   public GallerySessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new GallerySessionController(mainSessionCtrl, componentContext);
   }
 
-  /**
-   * This method has to be implemented by the component request rooter it has to compute a
-   * destination page
-   * @param function The entering request function (ex : "Main.jsp")
-   * @param gallerySC The component Session Control, build and initialised.
-   * @param request
-   * @return The complete destination URL for a forward (ex :
-   * "/almanach/jsp/almanach.jsp?flag=user")
-   */
   @Override
   public String getDestination(String function, GallerySessionController gallerySC,
       HttpRequest request) {
@@ -202,7 +186,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
         // traitement de la pagination : passage des paramètres
         String index = request.getParameter("Index");
-        if (index != null && index.length() > 0) {
+        if (index != null && !index.isEmpty()) {
           gallerySC.setIndexOfCurrentPage(index);
         }
         String nbItemsPerPage = request.getParameter("NbItemsPerPage");
@@ -407,7 +391,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         deselectAll(gallerySC);
         // récupération des paramètres
         String mediaId = request.getParameter(MEDIA_ID);
-        if (mediaId == null || mediaId.length() == 0 || "null".equals(mediaId)) {
+        if (mediaId == null || mediaId.isEmpty() || "null".equals(mediaId)) {
           mediaId = (String) request.getAttribute(MEDIA_ID);
         }
         request.setAttribute(IS_PRIVATE_SEARCH, gallerySC.isPrivateSearch());
@@ -770,22 +754,15 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
         // traitement de la pagination : passage des paramètres
         String index = request.getParameter("Index");
-        if (index != null && index.length() > 0) {
+        if (index != null && !index.isEmpty()) {
           gallerySC.setIndexOfCurrentPage(index);
         }
 
         destination = getDestination(VIEW_SEARCH_RESULTS_FUNC, gallerySC, request);
       } else if (VIEW_SEARCH_RESULTS_FUNC.equals(function)) {
+        Collection<Media> media = gallerySC.getSearchResultListMedia();
         // passage des paramètres
-        request.setAttribute(SEARCH_KEY_WORD, gallerySC.getSearchKeyWord());
-        request.setAttribute(MEDIA_LIST, gallerySC.getSearchResultListMedia());
-        request.setAttribute(NB_MEDIA_PER_PAGE, gallerySC.getNbMediaPerPage());
-        request.setAttribute(CURRENT_PAGE_INDEX, gallerySC.getIndexOfCurrentPage());
-        request.setAttribute(MEDIA_RESOLUTION, gallerySC.getDisplayedMediaResolution());
-        request.setAttribute(IS_VIEW_METADATA, gallerySC.isViewMetadata());
-        request.setAttribute(IS_VIEW_LIST, gallerySC.isViewList());
-        request.setAttribute(SELECTED_IDS, gallerySC.getListSelected());
-        request.setAttribute(IS_BASKET, gallerySC.isBasket());
+        setDefaultRequestAttributes(gallerySC, media, gallerySC.getSearchKeyWord(), request);
 
         // mise à jour du tag pour les retours
         gallerySC.setSearchResult(true);
@@ -828,7 +805,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
             for (final String fieldName : searchTemplate.getFieldNames()) {
               Field field = data.getField(fieldName);
               String fieldValue = field.getStringValue();
-              if (fieldValue != null && fieldValue.trim().length() > 0) {
+              if (fieldValue != null && !fieldValue.trim().isEmpty()) {
                 String fieldQuery = fieldValue.trim().replaceAll("##", " AND "); // case à cocher multiple
                 query.addFieldQuery(
                     new FieldDescription(templateName + "$$" + fieldName, fieldQuery, null));
@@ -901,15 +878,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         request.setAttribute(VIEW_NOT_VISIBLE_FUNC, gallerySC.isViewNotVisible());
 
         // passage des paramètres
-        request.setAttribute(MEDIA_LIST, media);
-        request.setAttribute(NB_MEDIA_PER_PAGE, gallerySC.getNbMediaPerPage());
-        request.setAttribute(CURRENT_PAGE_INDEX, gallerySC.getIndexOfCurrentPage());
-        request.setAttribute(MEDIA_RESOLUTION, gallerySC.getDisplayedMediaResolution());
-        request.setAttribute(IS_VIEW_METADATA, gallerySC.isViewMetadata());
-        request.setAttribute(IS_VIEW_LIST, gallerySC.isViewList());
-        request.setAttribute(SELECTED_IDS, gallerySC.getListSelected());
-        request.setAttribute(SEARCH_KEY_WORD, "");
-        request.setAttribute(IS_BASKET, gallerySC.isBasket());
+        setDefaultRequestAttributes(gallerySC, media, "", request);
 
         destination = rootDest + "viewRestrictedMediaList.jsp";
       } else if (function.startsWith("portlet")) {
@@ -970,179 +939,200 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
         destination = getDestination(GO_TO_CURRENT_ALBUM_FUNC, gallerySC, request);
       } else if (function.startsWith("Basket")) {
         // Manage basket functions
-        if (BASKET_VIEW_FUNC.equals(function)) {
-          // Basket view
-          request.setAttribute(MEDIA_LIST, gallerySC.getBasketMedias());
-          request.setAttribute(NB_MEDIA_PER_PAGE, gallerySC.getNbMediaPerPage());
-          request.setAttribute(SELECTED_IDS, gallerySC.getListSelected());
-          request.setAttribute(IS_ORDER, gallerySC.isOrder());
-          request.setAttribute(MEDIA_TYPE_ALERT_ATTR, request.getAttribute(MEDIA_TYPE_ALERT_ATTR));
+        switch (function) {
+          case BASKET_VIEW_FUNC:
+            // Basket view
+            request.setAttribute(MEDIA_LIST, gallerySC.getBasketMedias());
+            request.setAttribute(NB_MEDIA_PER_PAGE, gallerySC.getNbMediaPerPage());
+            request.setAttribute(SELECTED_IDS, gallerySC.getListSelected());
+            request.setAttribute(IS_ORDER, gallerySC.isOrder());
+            request.setAttribute(MEDIA_TYPE_ALERT_ATTR, request.getAttribute(MEDIA_TYPE_ALERT_ATTR));
 
-          destination = rootDest + "basket.jsp";
-        } else if ("BasketDelete".equals(function)) {
-          gallerySC.clearBasket();
-          destination = getDestination(BASKET_VIEW_FUNC, gallerySC, request);
-        } else if ("BasketDeleteMedia".equals(function)) {
-          // Delete media from basket
-          String mediaId = request.getParameter(MEDIA_ID);
-          gallerySC.deletePhotoFromBasket(mediaId);
+            destination = rootDest + "basket.jsp";
+            break;
+          case "BasketDelete":
+            gallerySC.clearBasket();
+            destination = getDestination(BASKET_VIEW_FUNC, gallerySC, request);
+            break;
+          case "BasketDeleteMedia": {
+            // Delete media from basket
+            String mediaId = request.getParameter(MEDIA_ID);
+            gallerySC.deletePhotoFromBasket(mediaId);
 
-          destination = getDestination(BASKET_VIEW_FUNC, gallerySC, request);
-        } else if ("BasketDeleteSelectedMedia".equals(function)) {
-          // delete selected medias from basket
-          processSelection(request, gallerySC);
-          if (!gallerySC.getListSelected().isEmpty()) {
-            gallerySC.deleteSelectedPhotosFromBasket();
+            destination = getDestination(BASKET_VIEW_FUNC, gallerySC, request);
+            break;
           }
-          destination = getDestination(BASKET_VIEW_FUNC, gallerySC, request);
-        } else if ("BasketAddMediaList".equals(function)) {
-          // Add selected photo media inside basket
-          processSelection(request, gallerySC);
-          if (!gallerySC.getListSelected().isEmpty()) {
-            if (!gallerySC.addToBasket()) {
-              request.setAttribute(MEDIA_TYPE_ALERT_ATTR, true);
+          case "BasketDeleteSelectedMedia":
+            // delete selected medias from basket
+            processSelection(request, gallerySC);
+            if (!gallerySC.getListSelected().isEmpty()) {
+              gallerySC.deleteSelectedPhotosFromBasket();
             }
             destination = getDestination(BASKET_VIEW_FUNC, gallerySC, request);
-          } else {
-            destination = getDestination(GO_TO_CURRENT_ALBUM_FUNC, gallerySC, request);
+            break;
+          case "BasketAddMediaList":
+            // Add selected photo media inside basket
+            processSelection(request, gallerySC);
+            if (!gallerySC.getListSelected().isEmpty()) {
+              if (!gallerySC.addToBasket()) {
+                request.setAttribute(MEDIA_TYPE_ALERT_ATTR, true);
+              }
+              destination = getDestination(BASKET_VIEW_FUNC, gallerySC, request);
+            } else {
+              destination = getDestination(GO_TO_CURRENT_ALBUM_FUNC, gallerySC, request);
+            }
+            break;
+          case "BasketAddMedia": {
+            // Add this media inside basket
+            String mediaId = request.getParameter(MEDIA_ID);
+            gallerySC.addMediaToBasket(mediaId);
+            destination = getDestination(BASKET_VIEW_FUNC, gallerySC, request);
+            break;
           }
-        } else if ("BasketAddMedia".equals(function)) {
-          // Add this media inside basket
-          String mediaId = request.getParameter(MEDIA_ID);
-          gallerySC.addMediaToBasket(mediaId);
-          destination = getDestination(BASKET_VIEW_FUNC, gallerySC, request);
-        } else if ("BasketPagination".equals(function)) {
-          processSelection(request, gallerySC);
+          case "BasketPagination":
+            processSelection(request, gallerySC);
 
-          // retour au panier
-          destination = getDestination(BASKET_VIEW_FUNC, gallerySC, request);
+            // retour au panier
+            destination = getDestination(BASKET_VIEW_FUNC, gallerySC, request);
+            break;
         }
       } else if (function.startsWith("Order")) {
-        if ("OrderAdd".equals(function)) {
-          // Retrieve order form
-          PublicationTemplate template = gallerySC.getOrderTemplate();
-          if (template != null) {
-            RecordSet recordSet = template.getRecordSet();
-            request.setAttribute("Form", template.getUpdateForm());
-            request.setAttribute("Data", recordSet.getEmptyRecord());
-          }
-
-          // retrieve convention
-          String charteUrl = gallerySC.getCharteUrl();
-          request.setAttribute("CharteUrl", charteUrl);
-
-          destination = rootDest + "basketForm.jsp";
-        } else if ("OrderCreate".equals(function)) {
-          // create order from basket
-          String orderId = gallerySC.addOrder();
-
-          // mise à jour des données du formulaire
-          if (!StringUtil.isDefined(request.getCharacterEncoding())) {
-            request.setCharacterEncoding(UTF_8);
-          }
-          List<FileItem> items = request.getFileItems();
-
-          PublicationTemplate template = gallerySC.getOrderTemplate();
-          if (template != null) {
-            RecordSet set = template.getRecordSet();
-            Form form = template.getUpdateForm();
-            DataRecord data = set.getRecord(orderId);
-            if (data == null) {
-              data = set.getEmptyRecord();
-              data.setId(orderId);
+        switch (function) {
+          case "OrderAdd": {
+            // Retrieve order form
+            PublicationTemplate template = gallerySC.getOrderTemplate();
+            if (template != null) {
+              RecordSet recordSet = template.getRecordSet();
+              request.setAttribute("Form", template.getUpdateForm());
+              request.setAttribute("Data", recordSet.getEmptyRecord());
             }
 
-            PagesContext context = new PagesContext("myForm", "0", gallerySC.getLanguage(), false,
-                gallerySC.getComponentId(), gallerySC.getUserId());
-            context.setEncoding(UTF_8);
-            context.setObjectId(orderId);
+            // retrieve convention
+            String charteUrl = gallerySC.getCharteUrl();
+            request.setAttribute("CharteUrl", charteUrl);
 
-            // mise à jour des données saisies
-            form.update(items, data, context);
-            set.save(data);
+            destination = rootDest + "basketForm.jsp";
+            break;
           }
+          case "OrderCreate": {
+            // create order from basket
+            String orderId = gallerySC.addOrder();
 
-          // notify gallery manager
-          gallerySC.sendAskOrder(orderId);
+            // mise à jour des données du formulaire
+            if (!StringUtil.isDefined(request.getCharacterEncoding())) {
+              request.setCharacterEncoding(UTF_8);
+            }
+            List<FileItem> items = request.getFileItems();
 
-          // view order list destination
-          destination = getDestination(ORDER_VIEW_LIST_FUNC, gallerySC, request);
-        } else if ("OrderUpdate".equals(function)) {
-          String orderId = request.getParameter(ORDER_ID);
-          // update order
-          updateOrder(request, gallerySC, orderId, userId);
-          // notify reader user
-          gallerySC.sendAskOrderUser(orderId);
-          destination = getDestination(ORDER_VIEW_LIST_FUNC, gallerySC, request);
-        } else if (ORDER_VIEW_LIST_FUNC.equals(function)) {
-          Collection<Order> orders;
-          if (highestUserRole == SilverpeasRole.ADMIN) {
-            // if manager retrieve all orders
-            orders = gallerySC.getAllOrders();
-          } else {
-            // else if retrieve only user orders
-            orders = gallerySC.getOrdersByUser();
+            PublicationTemplate template = gallerySC.getOrderTemplate();
+            if (template != null) {
+              RecordSet set = template.getRecordSet();
+              Form form = template.getUpdateForm();
+              DataRecord data = set.getRecord(orderId);
+              if (data == null) {
+                data = set.getEmptyRecord();
+                data.setId(orderId);
+              }
+
+              PagesContext context = new PagesContext("myForm", "0", gallerySC.getLanguage(), false,
+                  gallerySC.getComponentId(), gallerySC.getUserId());
+              context.setEncoding(UTF_8);
+              context.setObjectId(orderId);
+
+              // mise à jour des données saisies
+              form.update(items, data, context);
+              set.save(data);
+            }
+
+            // notify gallery manager
+            gallerySC.sendAskOrder(orderId);
+
+            // view order list destination
+            destination = getDestination(ORDER_VIEW_LIST_FUNC, gallerySC, request);
+            break;
           }
-          request.setAttribute("NbOrdersProcess", getNbOrdersProcess(orders));
-          request.setAttribute("Orders", orders);
-          destination = rootDest + "orders.jsp";
-        } else if ("OrderView".equals(function)) {
-          String orderId = request.getParameter(ORDER_ID);
-          if (orderId == null || orderId.length() == 0 || "null".equals(orderId)) {
-            orderId = (String) request.getAttribute(ORDER_ID);
+          case "OrderUpdate": {
+            String orderId = request.getParameter(ORDER_ID);
+            // update order
+            updateOrder(request, gallerySC, orderId, userId);
+            // notify reader user
+            gallerySC.sendAskOrderUser(orderId);
+            destination = getDestination(ORDER_VIEW_LIST_FUNC, gallerySC, request);
+            break;
           }
+          case ORDER_VIEW_LIST_FUNC:
+            Collection<Order> orders;
+            if (highestUserRole == SilverpeasRole.ADMIN) {
+              // if manager retrieve all orders
+              orders = gallerySC.getAllOrders();
+            } else {
+              // else if retrieve only user orders
+              orders = gallerySC.getOrdersByUser();
+            }
+            request.setAttribute("NbOrdersProcess", getNbOrdersProcess(orders));
+            request.setAttribute("Orders", orders);
+            destination = rootDest + "orders.jsp";
+            break;
+          case "OrderView": {
+            String orderId = request.getParameter(ORDER_ID);
+            if (orderId == null || orderId.isEmpty() || "null".equals(orderId)) {
+              orderId = (String) request.getAttribute(ORDER_ID);
+            }
 
-          if (highestUserRole == SilverpeasRole.ADMIN || gallerySC.isAccessAuthorized(orderId)) {
-            gallerySC.setCurrentOrderId(orderId);
+            if (highestUserRole == SilverpeasRole.ADMIN || gallerySC.isAccessAuthorized(orderId)) {
+              gallerySC.setCurrentOrderId(orderId);
 
+              destination = getDestination(ORDER_VIEW_PAGIN_FUNC, gallerySC, request);
+            } else {
+              destination = "/admin/jsp/accessForbidden.jsp";
+            }
+            break;
+          }
+          case ORDER_VIEW_PAGIN_FUNC: {
+            String orderId = gallerySC.getCurrentOrderId();
+            request.setAttribute("Order", gallerySC.getOrder(orderId));
+            request.setAttribute(NB_MEDIA_PER_PAGE, gallerySC.getNbMediaPerPage());
+
+            PublicationTemplate template = gallerySC.getOrderTemplate();
+            if (template != null) {
+              RecordSet recordSet = template.getRecordSet();
+              DataRecord data = recordSet.getRecord(orderId);
+              if (data != null) {
+                request.setAttribute("XMLForm", template.getViewForm());
+                request.setAttribute("XMLData", data);
+              }
+            }
+            destination = rootDest + "order.jsp";
+            break;
+          }
+          case "OrderPagination":
+            // retour à la demande
             destination = getDestination(ORDER_VIEW_PAGIN_FUNC, gallerySC, request);
-          } else {
-            destination = "/admin/jsp/accessForbidden.jsp";
-          }
-        } else if (ORDER_VIEW_PAGIN_FUNC.equals(function)) {
-          String orderId = gallerySC.getCurrentOrderId();
-          request.setAttribute("Order", gallerySC.getOrder(orderId));
-          request.setAttribute(NB_MEDIA_PER_PAGE, gallerySC.getNbMediaPerPage());
-
-          PublicationTemplate template = gallerySC.getOrderTemplate();
-          if (template != null) {
-            RecordSet recordSet = template.getRecordSet();
-            DataRecord data = recordSet.getRecord(orderId);
-            if (data != null) {
-              request.setAttribute("XMLForm", template.getViewForm());
-              request.setAttribute("XMLData", data);
-            }
-          }
-          destination = rootDest + "order.jsp";
-        } else if ("OrderPagination".equals(function)) {
-          // retour à la demande
-          destination = getDestination(ORDER_VIEW_PAGIN_FUNC, gallerySC, request);
-        } else if ("OrderDownloadMedia".equals(function)) {
-          final SimpleCache cache = getSessionCacheAccessor().getCache();
-          destination = Optional.ofNullable(request.getParameter("downloadId"))
-              .filter(StringUtil::isDefined)
-              .map(d -> Optional.ofNullable(cache.remove(d, String.class))
+            break;
+          case "OrderDownloadMedia":
+            final SimpleCache cache = getSessionCacheAccessor().getCache();
+            destination = Optional.ofNullable(request.getParameter("downloadId"))
+                .filter(StringUtil::isDefined)
+                .map(d -> Optional.ofNullable(cache.remove(d, String.class))
                     .filter(StringUtil::isDefined)
-                    .map(u -> {
-                      request.setAttribute(DOWNLOAD_CONTEXT_PARAM, true);
-                      return u.replace(URLUtil.getApplicationURL(), StringUtil.EMPTY);
-                    })
+                    .map(u -> u.replace(URLUtil.getApplicationURL(), StringUtil.EMPTY))
                     .orElseGet(() -> getDestination(ORDER_VIEW_PAGIN_FUNC, gallerySC, request)))
-              .orElseGet(() -> {
-                final String mediaId = request.getParameter(MEDIA_ID);
-                final String orderId = request.getParameter(ORDER_ID);
-                return Optional.of(gallerySC.getUrl(orderId, mediaId))
-                    .filter(StringUtil::isDefined)
-                    .map(u -> {
-                      gallerySC.updateOrderRow(orderId, mediaId);
-                      final String downloadUrlKey = UUID.randomUUID().toString();
-                      cache.put(downloadUrlKey, u);
-                      return sendJson(encodeObject(o -> o.put("downloadId", downloadUrlKey)));
-                    }).orElseGet(() -> {
-                      final String errorMessage = gallerySC.getString("gallery.alreadyDownloaded");
-                      return sendJson(encodeObject(o -> o.put("errorMessage", errorMessage)));
-                    });
-              });
+                .orElseGet(() -> {
+                  final String mediaId = request.getParameter(MEDIA_ID);
+                  final String orderId = request.getParameter(ORDER_ID);
+                  return Optional.of(gallerySC.getUrl(orderId, mediaId))
+                      .filter(StringUtil::isDefined)
+                      .map(u -> {
+                        gallerySC.updateOrderRow(orderId, mediaId);
+                        final String downloadUrlKey = UUID.randomUUID().toString();
+                        cache.put(downloadUrlKey, u);
+                        return sendJson(encodeObject(o -> o.put("downloadId", downloadUrlKey)));
+                      }).orElseGet(() -> {
+                        final String errorMessage = gallerySC.getString("gallery.alreadyDownloaded");
+                        return sendJson(encodeObject(o -> o.put("errorMessage", errorMessage)));
+                      });
+                });
+            break;
         }
       } else if (function.startsWith("Export")) {
         if ("ExportAlbum".equals(function)) {
@@ -1172,6 +1162,19 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
     }
 
     return destination;
+  }
+
+  private void setDefaultRequestAttributes(GallerySessionController gallerySC,
+      Collection<Media> media, String searchKeyWords, HttpRequest request) {
+    request.setAttribute(MEDIA_LIST, media);
+    request.setAttribute(NB_MEDIA_PER_PAGE, gallerySC.getNbMediaPerPage());
+    request.setAttribute(CURRENT_PAGE_INDEX, gallerySC.getIndexOfCurrentPage());
+    request.setAttribute(MEDIA_RESOLUTION, gallerySC.getDisplayedMediaResolution());
+    request.setAttribute(IS_VIEW_METADATA, gallerySC.isViewMetadata());
+    request.setAttribute(IS_VIEW_LIST, gallerySC.isViewList());
+    request.setAttribute(SELECTED_IDS, gallerySC.getListSelected());
+    request.setAttribute(IS_BASKET, gallerySC.isBasket());
+    request.setAttribute(SEARCH_KEY_WORD, searchKeyWords);
   }
 
   private String processMediaType(final GallerySessionController gallerySC,
@@ -1261,22 +1264,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
             gallerySC.getCurrentAlbumId(), parameters);
 
     // 1. Getting the header data
-    delegate.getHeaderData()
-        .setHomepageUrl(request.getParameter(ParameterNames.StreamingHomepageUrl));
-    delegate.getHeaderData().setTitle(request.getParameter(ParameterNames.MediaTitle));
-    delegate.getHeaderData().setDescription(request.getParameter(ParameterNames.MediaDescription));
-    delegate.getHeaderData().setAuthor(request.getParameter(ParameterNames.MediaAuthor));
-    delegate.getHeaderData().setKeyWord(request.getParameter(ParameterNames.MediaKeyWord));
-    delegate.getHeaderData()
-        .setBeginVisibilityDate(request.getParameter(ParameterNames.MediaBeginVisibilityDate));
-    delegate.getHeaderData()
-        .setEndVisibilityDate(request.getParameter(ParameterNames.MediaEndVisibilityDate));
-    delegate.getHeaderData()
-        .setDownloadAuthorized(request.getParameter(ParameterNames.MediaDownloadAuthorized));
-    delegate.getHeaderData()
-        .setBeginDownloadDate(request.getParameter(ParameterNames.MediaBeginDownloadDate));
-    delegate.getHeaderData()
-        .setEndDownloadDate(request.getParameter(ParameterNames.MediaEndDownloadDate));
+    setHeaderData(delegate.getHeaderData(), request);
 
     String positions = request.getParameter("Positions");
     if (StringUtil.isDefined(positions)) {
@@ -1292,6 +1280,26 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
     // Persisting the media in database & on file system
     return gallerySC.createMedia(delegate);
+  }
+
+  private void setHeaderData(AbstractMediaDataDelegate.HeaderData headerData,
+      HttpRequest request) throws ParseException {
+    headerData
+        .setHomepageUrl(request.getParameter(ParameterNames.StreamingHomepageUrl));
+    headerData.setTitle(request.getParameter(ParameterNames.MediaTitle));
+    headerData.setDescription(request.getParameter(ParameterNames.MediaDescription));
+    headerData.setAuthor(request.getParameter(ParameterNames.MediaAuthor));
+    headerData.setKeyWord(request.getParameter(ParameterNames.MediaKeyWord));
+    headerData
+        .setBeginVisibilityDate(request.getParameter(ParameterNames.MediaBeginVisibilityDate));
+    headerData
+        .setEndVisibilityDate(request.getParameter(ParameterNames.MediaEndVisibilityDate));
+    headerData
+        .setDownloadAuthorized(request.getParameter(ParameterNames.MediaDownloadAuthorized));
+    headerData
+        .setBeginDownloadDate(request.getParameter(ParameterNames.MediaBeginDownloadDate));
+    headerData
+        .setEndDownloadDate(request.getParameter(ParameterNames.MediaEndDownloadDate));
   }
 
   private void updateOrder(HttpServletRequest request, GallerySessionController gallerySC,
@@ -1314,23 +1322,12 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
   }
 
-  /**
-   * Updates a list of media.
-   * @param request
-   * @param gallerySC
-   * @param mediaIds
-   * @param encoding
-   * @throws Exception
-   */
   private void updateSelectedMedia(HttpRequest request, GallerySessionController gallerySC,
       Collection<String> mediaIds, String encoding)
       throws ParseException, PublicationTemplateException {
 
     // Getting all HTTP parameters
-    final List<FileItem> parameters = new ArrayList<>();
-    for (FileItem param : request.getFileItems()) {
-      parameters.add(param);
-    }
+    final List<FileItem> parameters = new ArrayList<>(request.getFileItems());
 
     final MediaDataUpdateDelegate delegate =
         new MediaDataUpdateDelegate(MediaType.Photo, gallerySC.getLanguage(),
@@ -1376,7 +1373,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
   }
 
   private boolean isDefined(String param) {
-    return (param != null && param.length() > 0 && !"".equals(param));
+    return (param != null && !param.trim().isEmpty());
   }
 
   private void putXMLDisplayerIntoRequest(Media media, HttpServletRequest request,
@@ -1401,22 +1398,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
             gallerySC.getCurrentAlbumId(), request.getFileItems(), false);
 
     // 1. Récupération des données de l'entête
-    delegate.getHeaderData()
-        .setHomepageUrl(request.getParameter(ParameterNames.StreamingHomepageUrl));
-    delegate.getHeaderData().setTitle(request.getParameter(ParameterNames.MediaTitle));
-    delegate.getHeaderData().setDescription(request.getParameter(ParameterNames.MediaDescription));
-    delegate.getHeaderData().setAuthor(request.getParameter(ParameterNames.MediaAuthor));
-    delegate.getHeaderData().setKeyWord(request.getParameter(ParameterNames.MediaKeyWord));
-    delegate.getHeaderData()
-        .setBeginVisibilityDate(request.getParameter(ParameterNames.MediaBeginVisibilityDate));
-    delegate.getHeaderData()
-        .setEndVisibilityDate(request.getParameter(ParameterNames.MediaEndVisibilityDate));
-    delegate.getHeaderData()
-        .setDownloadAuthorized(request.getParameter(ParameterNames.MediaDownloadAuthorized));
-    delegate.getHeaderData()
-        .setBeginDownloadDate(request.getParameter(ParameterNames.MediaBeginDownloadDate));
-    delegate.getHeaderData()
-        .setEndDownloadDate(request.getParameter(ParameterNames.MediaEndDownloadDate));
+    setHeaderData(delegate.getHeaderData(), request);
 
     // 2. Récupération des données du formulaire
     PublicationTemplate template = gallerySC.getTemplate();
@@ -1450,7 +1432,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
   private void putMediaCommonParameters(HttpServletRequest request,
       GallerySessionController gallerySC, Media media, SilverpeasRole userRole) {
     request.setAttribute("Media", media);
-    Integer nbComments = 0;
+    int nbComments = 0;
     try {
       nbComments = gallerySC.getAllComments(media).size();
     } catch (Exception e) {
@@ -1472,8 +1454,8 @@ public class GalleryRequestRouter extends ComponentRequestRouter<GallerySessionC
 
   /**
    * update gallery session controller list of selected elements
-   * @param request
-   * @param gallerySC
+   * @param request the incoming request
+   * @param gallerySC the session controller of the Gallery application
    */
   private void processSelection(HttpServletRequest request, GallerySessionController gallerySC) {
     String selectedIds = request.getParameter(SELECTED_IDS);
