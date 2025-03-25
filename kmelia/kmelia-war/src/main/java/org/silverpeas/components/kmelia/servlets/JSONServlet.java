@@ -87,24 +87,22 @@ public class JSONServlet extends HttpServlet {
     return JSONCodec.encodeObject(operations -> {
 
       if (KmeliaHelper.isNonVisiblePubsFolder(id)) {
-        operations.put(OP_DELETE_PUBLICATIONS, true);
+        String profile = kmeliaSC.getUserTopicProfile(id);
+        if (kmeliaSC.isSuppressionAllowed(profile)) {
+          operations.put(OP_DELETE_PUBLICATIONS, true);
+        }
         operations.put(OP_EXPORT_PUBLICATIONS, true);
       } else {
         // getting profile
         String profile = kmeliaSC.getUserTopicProfile(id);
 
         // getting operations of topic according to profile and current
-        boolean isAdmin = SilverpeasRole.ADMIN.isInRole(profile);
-        boolean isPublisher = SilverpeasRole.PUBLISHER.isInRole(profile);
-        boolean isWriter = SilverpeasRole.WRITER.isInRole(profile);
-        boolean isUser = SilverpeasRole.USER.isInRole(profile);
+        Role role = new Role(profile);
         boolean isRoot = NodePK.ROOT_NODE_ID.equals(id);
         boolean isBasket = NodePK.BIN_NODE_ID.equals(id);
-        Role role = new Role().setAdmin(isAdmin).setPublisher(isPublisher).setWriter(isWriter)
-            .setUser(isUser);
 
         if (isBasket) {
-          addBasketOperations(operations, role);
+          addBasketOperations(kmeliaSC, operations, role);
         } else if (StringUtil.isDefined(profile)) {
           NodeDetail node = kmeliaSC.getNodeHeader(id);
           UserDetail user = kmeliaSC.getUserDetail();
@@ -130,7 +128,8 @@ public class JSONServlet extends HttpServlet {
         !isRoot || (kmeliaSC.getNbPublicationsOnRoot() == 0 || !kmeliaSC.isTreeStructure());
     boolean addPublicationAllowed = !role.isUser() && publicationsInTopic;
     boolean operationsOnSelectionAllowed =
-        (role.isAdmin() || role.isPublisher()) && publicationsInTopic;
+        (role.isAdmin() || role.isPublisher()) && publicationsInTopic
+            && kmeliaSC.isSuppressionAllowed(role.toString());
     boolean somePublicationsExist = ofNullable(kmeliaSC.getSessionPublicationsList())
         .filter(not(Collection::isEmpty))
         .isPresent();
@@ -161,6 +160,11 @@ public class JSONServlet extends HttpServlet {
     operations.put("topicSubscriptions", notRootNotAnonymousNotGuest);
     operations.put("favorites", notRootNotAnonymousNotGuest);
 
+    addPublicationSelectionOperation(kmeliaSC, operations, operationsOnSelectionAllowed);
+  }
+
+  private static void addPublicationSelectionOperation(KmeliaSessionController kmeliaSC,
+      JSONCodec.JSONObject operations, boolean operationsOnSelectionAllowed) {
     if (kmeliaSC.isAllPublicationsListSelected()) {
       operations.put("unselectAllPublications", operationsOnSelectionAllowed);
     } else {
@@ -216,56 +220,47 @@ public class JSONServlet extends HttpServlet {
     operations.put("responsibles", !user.isAnonymous());
   }
 
-  private void addBasketOperations(final JSONCodec.JSONObject operations, final Role role) {
+  private void addBasketOperations(final KmeliaSessionController kmeliaSC,
+      final JSONCodec.JSONObject operations, final Role role) {
     boolean binOperationsAllowed = role.isAdmin() || role.isPublisher() || role.isWriter();
-    operations.put("emptyTrash", binOperationsAllowed);
+    boolean suppressionAllowed = kmeliaSC.isSuppressionAllowed(role.toString());
+    operations.put("emptyTrash", binOperationsAllowed && suppressionAllowed);
     operations.put(OP_EXPORT_PUBLICATIONS, binOperationsAllowed);
     operations.put("copyPublications", binOperationsAllowed);
     operations.put("cutPublications", binOperationsAllowed);
-    operations.put(OP_DELETE_PUBLICATIONS, binOperationsAllowed);
+    operations.put(OP_DELETE_PUBLICATIONS, binOperationsAllowed && suppressionAllowed);
   }
 
   private static class Role {
 
-    private boolean admin;
-    private boolean publisher;
-    private boolean writer;
-    private boolean user;
+    private final SilverpeasRole silverRole;
 
-    public boolean isAdmin() {
-      return admin;
+    public Role(final String profile) {
+      this.silverRole = SilverpeasRole.fromString(profile);
     }
 
-    public Role setAdmin(final boolean admin) {
-      this.admin = admin;
-      return this;
+    public boolean isAdmin() {
+      return silverRole == SilverpeasRole.ADMIN;
     }
 
     public boolean isPublisher() {
-      return publisher;
+      return this.silverRole == SilverpeasRole.PUBLISHER;
     }
 
-    public Role setPublisher(final boolean publisher) {
-      this.publisher = publisher;
-      return this;
-    }
 
     public boolean isWriter() {
-      return writer;
-    }
-
-    public Role setWriter(final boolean writer) {
-      this.writer = writer;
-      return this;
+      return this.silverRole == SilverpeasRole.WRITER;
     }
 
     public boolean isUser() {
-      return user;
+      return this.silverRole == SilverpeasRole.USER;
     }
 
-    public Role setUser(final boolean user) {
-      this.user = user;
-      return this;
+    @Override
+    public String toString() {
+      return silverRole.getName();
     }
   }
+
+
 }

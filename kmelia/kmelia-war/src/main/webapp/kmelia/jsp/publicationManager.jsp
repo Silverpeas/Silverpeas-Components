@@ -141,7 +141,7 @@
         if (profile.equals("admin") || profile.equals("publisher") || profile.equals("supervisor") || (ownerDetail != null && kmeliaScc.getUserDetail().getId().equals(ownerDetail.getId()) && profile.equals("writer"))) {
           isOwner = true;
 
-          if (!kmeliaScc.isSuppressionOnlyForAdmin() || (profile.equals("admin") && kmeliaScc.isSuppressionOnlyForAdmin())) {
+          if (kmeliaScc.isSuppressionAllowed(profile)) {
             // suppressionAllowed = true car si c'est un redacteur, c'est le proprietaire de la publication
             suppressionAllowed = true;
           }

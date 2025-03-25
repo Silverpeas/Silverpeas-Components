@@ -89,7 +89,9 @@ $(document).ready(function() {
 
         //Display operations
         OperationPane operationPane = window.getOperationPane();
-        operationPane.addOperation("useless", resources.getString("EmptyBasket"), "javascript:onClick=emptyTrash()");
+		if (kmeliaScc.isSuppressionAllowed(kmeliaScc.getProfile())) {
+			operationPane.addOperation("useless", resources.getString("EmptyBasket"), "javascript:onClick=emptyTrash()");
+		}
 
     //Instanciation du cadre avec le view generator
 	Frame frame = gef.getFrame();
