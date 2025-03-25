@@ -50,8 +50,6 @@
 
 <%
   String		rootId				= "0";
-
-//R?cup?ration des param?tres
   String 	profile			= (String) request.getAttribute("Profile");
   String  translation 	= (String) request.getAttribute("Language");
   boolean displayNBPublis = (Boolean) request.getAttribute("DisplayNBPublis");
@@ -72,6 +70,7 @@
 
   boolean userCanManageRoot = "admin".equalsIgnoreCase(profile);
   boolean userCanManageTopics = rightsOnTopics || "admin".equalsIgnoreCase(profile) || kmeliaScc.isTopicManagementDelegated();
+  boolean userCanEmptyTrash = kmeliaScc.isSuppressionAllowed(profile);
 %>
 <view:sp-page>
 <view:sp-head-part withCheckFormScript="true">
@@ -89,13 +88,13 @@
   <view:script src="javaScript/searchInTopic.js"/>
   <view:script src="javaScript/publications.js"/>
   <script type="text/javascript">
-    var isSearchTopicEnabled = ${displaySearch};
+    const isSearchTopicEnabled = ${displaySearch};
 
     function topicGoTo(id) {
       closeWindows();
       displayTopicContent(id);
       getTreeview().deselect_all();
-      var node = getTreeview().get_node('#'+id);
+      const node = getTreeview().get_node('#' + id);
       getTreeview().select_node(node);
     }
 
@@ -148,7 +147,7 @@
       return <%=KmeliaPublicationHelper.isPublicationsOnRootAllowed(componentId)%>;
     }
 
-    var icons = new Object();
+    const icons = {};
     icons["permalink"] = "<%=resources.getIcon("kmelia.link")%>";
     icons["operation.addTopic"] = "<%=resources.getIcon("kmelia.operation.addTopic")%>";
     icons["operation.addPubli"] = "<%=resources.getIcon("kmelia.operation.addPubli")%>";
@@ -157,13 +156,13 @@
     icons["operation.subscribe"] = "<%=resources.getIcon("kmelia.operation.subscribe")%>";
     icons["operation.favorites"] = "<%=resources.getIcon("kmelia.operation.favorites")%>";
 
-    var params = new Object();
+    const params = {};
     params["rightsOnTopic"] = <%=rightsOnTopics.booleanValue()%>;
     params["i18n"] = <%=I18NHelper.isI18nContentActivated%>;
     params["nbPublisDisplayed"] = <%=displayNBPublis%>;
 
-    var searchInProgress = <%=searchContext != null%>;
-    var searchFolderId = "<%=id%>";
+    let searchInProgress = <%=searchContext != null%>;
+    const searchFolderId = "<%=id%>";
   </script>
 </view:sp-head-part>
 <view:sp-body-part cssClass="yui-skin-sam treeView" id="${componentId}">
@@ -192,8 +191,8 @@
             <br/>
             <view:board>
               <br/>
-              <center><%=resources.getString("kmelia.inProgressPublications") %>
-                <br/><br/><img src="<%=resources.getIcon("kmelia.progress") %>"/></center>
+              <div class="center"><%=resources.getString("kmelia.inProgressPublications") %>
+                <br/><br/><img alt="progress" src="<%=resources.getIcon("kmelia.progress") %>"/></div>
               <br/>
             </view:board>
           </div>
@@ -229,10 +228,10 @@
 
   function deleteNode(nodeId) {
     // removing nb items displayed in nodeLabel
-    var node = getTreeview().get_node('#' + nodeId);
-    var nodeLabel = node.text;
+    const node = getTreeview().get_node('#' + nodeId);
+    let nodeLabel = node.text;
     if (params["nbPublisDisplayed"]) {
-      var idx = nodeLabel.lastIndexOf('(');
+      const idx = nodeLabel.lastIndexOf('(');
       if (idx > 1) {
         nodeLabel = nodeLabel.substring(0, idx-1);
       }
@@ -241,8 +240,8 @@
   }
 
   function getNodeTitle(nodeId) {
-    var nodeTitle = getTreeview().get_text("#"+nodeId);
-    var idx = nodeTitle.lastIndexOf('(');
+    let nodeTitle = getTreeview().get_text("#" + nodeId);
+    const idx = nodeTitle.lastIndexOf('(');
     if (idx > 1) {
       nodeTitle = nodeTitle.substring(0, idx-1);
     }
@@ -250,37 +249,35 @@
   }
 
   function getNbPublis(nodeId) {
-    var nodeLabel = getTreeview().get_text("#"+nodeId);
-    var idx = nodeLabel.lastIndexOf('(');
-    var nbPublis = nodeLabel.substring(idx+1, nodeLabel.length-1);
-    return eval(nbPublis);
+    const nodeLabel = getTreeview().get_text("#" + nodeId);
+    const idx = nodeLabel.lastIndexOf('(');
+    const nbPublis = nodeLabel.substring(idx + 1, nodeLabel.length - 1);
+    return parseInt(nbPublis);
   }
 
   function addNbPublis(nodeId, nb) {
-    var previousNbPublis = getNbPublis(nodeId);
-    var nodeTitle = getNodeTitle(nodeId);
-    var nbPublis = eval(previousNbPublis+nb);
+    const previousNbPublis = getNbPublis(nodeId);
+    const nodeTitle = getNodeTitle(nodeId);
+    const nbPublis = previousNbPublis+ nb;
     getTreeview().rename_node("#"+nodeId, nodeTitle+" ("+nbPublis+")");
   }
 
   function nodeDeleted(nodeId) {
     if (params["nbPublisDisplayed"]) {
       // change nb publications on each parent of deleted node (except root)
-      var nbPublisRemoved = getNbPublis(nodeId);
-      var path = getTreeview().get_path("#"+nodeId, false, true);
+      const nbPublisRemoved = getNbPublis(nodeId);
+      const path = getTreeview().get_path("#" + nodeId, false, true);
       path.forEach(function(elementId, index) {
         if (elementId !== nodeId) {
-          applyWithNode(elementId, function(data) {
-            var nodeTitle = getNodeTitle(elementId);
-            var nbPublis = data.attr.nbItems;
-            getTreeview().rename_node("#"+elementId, nodeTitle+" ("+nbPublis+")");
-          });
+          const nodeTitle = getNodeTitle(elementId);
+          const nbPublis = getNbPublis(elementId) - nbPublisRemoved;
+          getTreeview().rename_node("#"+elementId, nodeTitle+" ("+nbPublis+")");
         }
       });
-      var binId = '1';
+      const binId = '1';
       applyWithNode(binId, function(data) {
-        var nodeTitle = getNodeTitle(binId);
-        var nbPublis = data.attr.nbItems;
+        const nodeTitle = getNodeTitle(binId);
+        const nbPublis = data.attr.nbItems;
         getTreeview().rename_node("#"+binId, nodeTitle+" ("+nbPublis+")");
       });
     }
@@ -288,22 +285,22 @@
   }
 
   function resetNbPublis(nodeId) {
-    var nodeTitle = getNodeTitle(nodeId);
+    const nodeTitle = getNodeTitle(nodeId);
     getTreeview().rename_node("#"+nodeId, nodeTitle+" (0)");
   }
 
   function emptyTrash() {
-    var label = "<%=kmeliaScc.getString("ConfirmFlushTrashBean")%>";
+    const label = "<%=kmeliaScc.getString("ConfirmFlushTrashBean")%>";
     jQuery.popup.confirm(label, function() {
       $.progressMessage();
       $.post('<%=m_context%>/KmeliaAJAXServlet', {ComponentId:'<%=componentId%>',Action:'EmptyTrash'},
           function(data){
             $.closeProgressMessage();
-            if (data == "ok") {
+            if (data === "ok") {
               if (params["nbPublisDisplayed"]) {
                 // remove nb publis to root
-                var nbPublisDeleted = getNbPublis("1");
-                addNbPublis("0", 0-nbPublisDeleted);
+                const nbPublisDeleted = getNbPublis("1");
+                addNbPublis("0", -nbPublisDeleted);
                 // set nb publis on bin to 0
                 resetNbPublis("1");
               }
@@ -332,22 +329,22 @@
   }
 
   function changeCurrentTopicStatus() {
-    var node = getTreeview()._get_node("#"+getCurrentNodeId());
+    const node = getTreeview()._get_node("#" + getCurrentNodeId());
     changeStatus(getCurrentNodeId(), node.original.attr["status"]);
   }
 
   function updateUIStatus(nodeId, newStatus, recursive) {
     // updating data stored in treeview
-    var node = getTreeview().get_node("#"+nodeId);
+    const node = getTreeview().get_node("#" + nodeId);
     node.original.attr["status"] = newStatus;
 
     //changing label style according to topic's new status
     $('#' + nodeId).removeClass("Visible Invisible").addClass(newStatus);
 
     //
-    if (recursive == "1") {
-      var children = node.children;
-      for (var i=0; i<children.length; i++) {
+    if (recursive === "1") {
+      const children = node.children;
+      for (let i=0; i<children.length; i++) {
         try {
           updateUIStatus(children[i].id, newStatus, recursive);
         } catch (e) {
@@ -355,7 +352,7 @@
       }
     }
 
-    if (nodeId == getCurrentNodeId()) {
+    if (nodeId === getCurrentNodeId()) {
       // refreshing operations of current folder
       displayOperations(nodeId);
     }
@@ -363,7 +360,7 @@
 
   function displayTopicContent(id) {
 
-    if (id != searchFolderId) {
+    if (id !== searchFolderId) {
       // search session is over
       searchInProgress = false;
     }
@@ -374,7 +371,7 @@
       clearSearchQuery();
     }
 
-    var displayPublicationPromise;
+    let displayPublicationPromise;
     if (isSpecialFolder(id) || id === "1") {
       muteDragAndDrop(); //mute dropzone
       $("#footer").css({'visibility':'hidden'}); //hide footer
@@ -396,7 +393,7 @@
         displayOperations(id);
         displayPath(id);
       }
-      displayPublicationPromise = displayPublications(id);
+     displayPublications(id);
     } else {
       displayPath(id);
       displayOperations(id);
@@ -404,7 +401,7 @@
       if (searchInProgress) {
         doPagination(<%=currentPageIndex%>);
       } else {
-        displayPublicationPromise = displayPublications(id);
+       displayPublications(id);
       }
     }
 
@@ -419,11 +416,12 @@
 
   }
 
-  var rightClickHelpAlreadyShown = false;
+  let rightClickHelpAlreadyShown = false;
+
   function showRightClickHelp() {
-    var rightClickCookieName = "Silverpeas_GED_RightClickHelp";
-    var rightClickCookieValue = $.cookie(rightClickCookieName);
-    if (!rightClickHelpAlreadyShown && "IKnowIt" != rightClickCookieValue) {
+    const rightClickCookieName = "Silverpeas_GED_RightClickHelp";
+    const rightClickCookieValue = $.cookie(rightClickCookieName);
+    if (!rightClickHelpAlreadyShown && "IKnowIt" !== rightClickCookieValue) {
       rightClickHelpAlreadyShown = true;
       $( "#rightClick-message" ).dialog({
         modal: true,
@@ -453,15 +451,17 @@
     return false;
     <% } %>
 
-    var nodeType = node.type;
-    var userRole = '<%=profile%>';
+    const nodeType = node.type;
+    let userRole = '<%=profile%>';
     if (params["rightsOnTopic"]) {
       userRole = node.original.attr["role"];
     }
     if (isSpecialFolder(nodeType)) {
       return false;
-    } else if (nodeType === "bin") {
-      var binItems = {
+    }
+    <% if (userCanEmptyTrash) { %>
+    if (nodeType === "bin") {
+      return {
         emptyItem: {
           label: "<%=resources.getString("EmptyBasket")%>",
           action: function () {
@@ -469,26 +469,26 @@
           }
         }
       };
-      return binItems;
     }
+    <% } %>
 
     // The default set of all items
-    var items = {
+    const items = {
       addItem: {
         label: "<%=resources.getString("CreerSousTheme")%>",
         action: function (obj) {
-          var node = getTreeview().get_node(obj.reference);
+          const node = getTreeview().get_node(obj.reference);
           topicAdd(node.id, false);
         }
       },
       editItem: {
         label: "<%=resources.getString("ModifierSousTheme")%>",
         action: function (obj) {
-          var node = getTreeview().get_node(obj.reference);
-          var url = getWebContext()+"/services/folders/"+getComponentId()+"/"+node.id;
-          $.getJSON(url, function(topic){
-            var name = topic.text;
-            var desc = topic.attr["description"];
+          const node = getTreeview().get_node(obj.reference);
+          const url = getWebContext() + "/services/folders/" + getComponentId() + "/" + node.id;
+          $.getJSON(url, function (topic) {
+            const name = topic.text;
+            const desc = topic.attr["description"];
             if (params["i18n"]) {
               storeTranslations(topic.translations);
             } else {
@@ -501,57 +501,57 @@
       deleteItem: {
         label: "<%=resources.getString("SupprimerSousTheme")%>",
         action: function (obj) {
-          var node = getTreeview().get_node(obj.reference);
+          const node = getTreeview().get_node(obj.reference);
           deleteNode(node.id);
         }
       },
       sortItem: {
         label: "<%=resources.getString("kmelia.SortTopics")%>",
         action: function (obj) {
-          var node = getTreeview().get_node(obj.reference);
+          const node = getTreeview().get_node(obj.reference);
           closeWindows();
-          SP_openWindow("ToOrderTopics?Id="+node.id, "topicAddWindow", "600", "500", "directories=0,menubar=0,toolbar=0,scrollbars=1,alwaysRaised,resizable");
+          SP_openWindow("ToOrderTopics?Id=" + node.id, "topicAddWindow", "600", "500", "directories=0,menubar=0,toolbar=0,scrollbars=1,alwaysRaised,resizable");
         },
-        "separator_after" : true
+        "separator_after": true
       },
       <% if (kmeliaScc.isPdcUsed()) { %>
       pdcItem: {
         label: "<%=resources.getString("GML.PDCPredefinePositions")%>",
         action: function (obj) {
-          var node = getTreeview().get_node(obj.reference);
+          const node = getTreeview().get_node(obj.reference);
           openPredefinedPdCClassification(node.id);
         },
-        "separator_after" : true
+        "separator_after": true
       },
       <% } %>
       copyItem: {
         label: "<%=resources.getString("kmelia.operation.folder.copy")%>",
         action: function (obj) {
-          var node = getTreeview().get_node(obj.reference);
+          const node = getTreeview().get_node(obj.reference);
           copyNode(node.id);
         }
       },
       cutItem: {
         label: "<%=resources.getString("kmelia.operation.folder.cut")%>",
         action: function (obj) {
-          var node = getTreeview().get_node(obj.reference);
+          const node = getTreeview().get_node(obj.reference);
           cutNode(node.id);
         }
       },
       pasteItem: {
         label: "<%=resources.getString("GML.paste")%>",
         action: function (obj) {
-          var node = getTreeview().get_node(obj.reference);
+          const node = getTreeview().get_node(obj.reference);
           pasteNode(node.id);
         },
-        "separator_after" : true
+        "separator_after": true
       }
       <% if (kmeliaScc.isWysiwygOnTopicsEnabled()) { %>
       ,
       wysiwygItem: {
         label: "<%=resources.getString("TopicWysiwyg")%>",
         action: function (obj) {
-          var node = getTreeview().get_node(obj.reference);
+          const node = getTreeview().get_node(obj.reference);
           updateTopicWysiwyg(node.id);
         }
       }
@@ -578,11 +578,11 @@
 
     if (userRole === "admin") {
       // all actions are allowed
-    } else if (kmeliaWebService.getUserProfileSynchronously("0") == "admin") {
+    } else if (kmeliaWebService.getUserProfileSynchronously("0") === "admin") {
       // a minimal contextual menu is always available for app admins
       getMinimalContextualMenuForAdmins(items);
     } else if (userRole === "user") {
-      var parentProfile =  getTreeview()._get_parent(node).attr("role");
+      const parentProfile = getTreeview()._get_parent(node).attr("role");
       if (parentProfile !== "admin") {
         //do not show the menu
         return;
@@ -591,14 +591,14 @@
         getMinimalContextualMenuForAdmins(items);
       }
     } else {
-      var isTopicManagementDelegated = <%=kmeliaScc.isTopicManagementDelegated()%>;
-      var userId = "<%=kmeliaScc.getUserId()%>";
-      var creatorId = node.original.attr["creatorId"];
+      let isTopicManagementDelegated =<%=kmeliaScc.isTopicManagementDelegated()%>;
+      const userId = "<%=kmeliaScc.getUserId()%>";
+      const creatorId = node.original.attr["creatorId"];
       if (isTopicManagementDelegated && userRole !== "admin") {
-        if (creatorId != userId) {
+        if (creatorId !== userId) {
           //do not show the menu
           return;
-        } else if (creatorId == userId) {
+        } else if (creatorId === userId) {
           if (items.pdcItem) {
             items.pdcItem._disabled = true;
           }
@@ -613,7 +613,7 @@
           }
         }
       } else {
-        if (userRole != "admin") {
+        if (userRole !== "admin") {
           //do not show the menu
           return;
         }
@@ -641,7 +641,7 @@
 
   function decorateNodeName(node) {
     <%-- This data is filled only if the application parameter 'displayNB' is activated --%>
-    var nbPublicationsTheNodeContains = node.attr['nbItems'];
+    const nbPublicationsTheNodeContains = node.attr['nbItems'];
     if (nbPublicationsTheNodeContains) {
       node.text = node.text + " (" + nbPublicationsTheNodeContains + ")";
     }
@@ -679,7 +679,7 @@
     if (id) {
       let idx = id.indexOf('_');
       if (idx > 0) {
-        id = id.substr(0, idx);
+        id = id.substring(0, idx);
       }
     }
     return id;
@@ -694,7 +694,7 @@
       let path = getTreeview().get_path("#"+targetId, false, true);
       for (let i=0; i<path.length; i++) {
         let elementId = path[i];
-        if (elementId != "0") {
+        if (elementId !== "0") {
           addNbPublis(elementId, 1);
         }
       }
@@ -703,7 +703,7 @@
       path = getTreeview().get_path("#"+getCurrentNodeId(), false, true);
       for (let i=0; i<path.length; i++) {
         let elementId = path[i];
-        if (elementId != "0") {
+        if (elementId !== "0") {
           addNbPublis(elementId, -1);
         }
       }
@@ -712,12 +712,12 @@
     try {
       // remove one publi to publications header
       let previousNb = $("#pubsHeader #pubsCounter span").html();
-      if (previousNb == 1) {
+      if (previousNb === '1') {
         $("#pubsHeader #pubsCounter").html("<%=resources.getString("GML.publications")%>");
         $("#pubsHeader #pubsSort").hide();
         $("#pubList ul").html("<%=resources.getString("PubAucune")%>")
       } else {
-        $("#pubsHeader #pubsCounter span").html(eval(previousNb-1));
+        $("#pubsHeader #pubsCounter span").html((parseInt(previousNb) - 1).toString());
       }
     } catch (e) {
 
@@ -730,25 +730,26 @@
   }
 
   function publicationsRemovedSuccessfully(nb) {
+    const pubCount = parseInt(nb);
     if (params["nbPublisDisplayed"]) {
-      if (getCurrentNodeId() == "1") {
+      if (getCurrentNodeId() === "1") {
         // publications are definitively removed
         // remove nb publis from trash and root folders
-        addNbPublis("1", 0-eval(nb));
-        addNbPublis("0", 0-eval(nb));
+        addNbPublis("1", -pubCount);
+        addNbPublis("0", -pubCount);
       } else {
         // publications goes to trash
         // remove nb publi to current node and its parents except root
-        var path = getTreeview().get_path("#"+getCurrentNodeId(), false, true);
+        const path = getTreeview().get_path("#" + getCurrentNodeId(), false, true);
         for (let i=0; i<path.length; i++) {
-          var elementId = path[i];
-          if (elementId != "0") {
-            addNbPublis(elementId, 0-eval(nb));
+          const elementId = path[i];
+          if (elementId !== "0") {
+            addNbPublis(elementId, -pubCount);
           }
         }
 
         // add nb publi to trash
-        addNbPublis("1", eval(nb));
+        addNbPublis("1", pubCount);
       }
     }
   }
@@ -764,9 +765,9 @@
             force_text : false,
             "data" : {
               "url" : function (node) {
-                var url = getWebContext() + "/services/folders/" + getComponentId() + "/" +
-                    getCurrentFolderId() + "/treeview?lang=" + getTranslation() + "&IEFix=" +
-                    new Date().getTime();
+                let url = getWebContext() + "/services/folders/" + getComponentId() + "/" +
+                        getCurrentFolderId() + "/treeview?lang=" + getTranslation() + "&IEFix=" +
+                        new Date().getTime();
                 if (node && node.id !== '#') {
                   url = getWebContext() + "/services/folders/" + getComponentId() + "/" + node.id +
                       "/children?lang=" + getTranslation() + "&IEFix=" + new Date().getTime();
@@ -854,7 +855,7 @@
         }).on("loaded.jstree", function(event, data) {
           sp.log.debug('jstree loaded');
         }).on("ready.jstree", function(event, data) {
-          var node = data.instance.get_node('#' + getCurrentFolderId());
+          const node = data.instance.get_node('#' + getCurrentFolderId());
           if (node) {
             data.instance.select_node(node);
           } else {
@@ -863,7 +864,7 @@
           }
         }).on("select_node.jstree", function(e, data) {
           // data.inst is the instance which triggered this event
-          var nodeId = data.node.id;
+          const nodeId = data.node.id;
 
           // open topic in treeview
           if (nodeId >= 0) {
@@ -873,8 +874,8 @@
           // display topic content in right panel
           displayTopicContent(nodeId);
         }).on("move_node.jstree", function(e, data) {
-          var pubId = extractPublicationId(data.node.id);
-          var targetId = data.parent;
+          const pubId = extractPublicationId(data.node.id);
+          const targetId = data.parent;
 
           // store new parent of publication
           movePublication(pubId, getCurrentNodeId(), targetId);
@@ -886,14 +887,14 @@
           handles: 'e',
           maxWidth: 500,
           resize: function (e, ui) {
-            var parent = ui.element.parent();
-            var remainingSpace = parent.width() - ui.element.outerWidth();
-            var divTwo = ui.element.next();
-            var divTwoWidth = (remainingSpace - (divTwo.outerWidth() - divTwo.width())) / parent.width() * 100 + "%";
+            const parent = ui.element.parent();
+            const remainingSpace = parent.width() - ui.element.outerWidth();
+            const divTwo = ui.element.next();
+            const divTwoWidth = (remainingSpace - (divTwo.outerWidth() - divTwo.width())) / parent.width() * 100 + "%";
             divTwo.width(divTwoWidth);
           },
           stop: function (e, ui) {
-            var parent = ui.element.parent();
+            const parent = ui.element.parent();
             ui.element.css({
               width: ui.element.width() / parent.width() * 100 + "%"
             });
@@ -932,31 +933,31 @@
 
   $(document).on("dnd_stop.vakata", function(event, data) {
     window.__spTreeviewDndContext.lastTarget = {};
-    var treeview = getTreeview();
+    const treeview = getTreeview();
     if (!treeview.settings.dnd.check_while_dragging) {
-      var target = $(data.event.target);
-      var targetId = extractFolderId(target.attr('id'));
-      var pubId = extractPublicationId(data.data.nodes[0].id);
+      const target = $(data.event.target);
+      const targetId = extractFolderId(target.attr('id'));
+      const pubId = extractPublicationId(data.data.nodes[0].id);
       // store new parent of publication
       movePublication(pubId, getCurrentNodeId(), targetId);
     }
   }).on("dnd_move.vakata", function(event, data) {
-    var target = $(data.event.target);
-    var canBeDropped = false;
-    var treeview = getTreeview();
+    let target = $(data.event.target);
+    let canBeDropped = false;
+    const treeview = getTreeview();
     if (target.closest('#treeDiv1').length && target.hasClass('jstree-anchor')) {
-      var targetId = extractFolderId(target.attr('id'));
+      const targetId = extractFolderId(target.attr('id'));
       if (targetId && targetId !== window.__spTreeviewDndContext.lastTarget.id) {
         target = treeview.get_node('#' + targetId);
         if (isSpecialFolder(targetId) || targetId === getCurrentNodeId()) {
           canBeDropped = false;
         } else if (target.type !== 'root' || arePublicationsOnRootAllowed()) {
-          var pubId = extractPublicationId(data.data.nodes[0].id);
-          var sourceFolderAuthorizations = kmeliaWebService.getPublicationUserAuthorizationsSynchronously(pubId);
+          const pubId = extractPublicationId(data.data.nodes[0].id);
+          const sourceFolderAuthorizations = kmeliaWebService.getPublicationUserAuthorizationsSynchronously(pubId);
           if (targetId === '1') {
             canBeDropped = sourceFolderAuthorizations.canBeDeleted;
           } else {
-            var targetFolderAuthorizations = kmeliaWebService.getPublicationUserAuthorizationsSynchronously(pubId, targetId);
+            const targetFolderAuthorizations = kmeliaWebService.getPublicationUserAuthorizationsSynchronously(pubId, targetId);
             canBeDropped = sourceFolderAuthorizations.canBeCut && targetFolderAuthorizations.canBeCut;
           }
         }
@@ -993,7 +994,7 @@
           <td class="txtlibform"><fmt:message key="TopicTitle"/> :</td>
           <td><input type="text" name="Name" id="folderName" size="60" maxlength="60"/>
             <input type="hidden" name="ParentId" id="parentId"/>
-            <input type="hidden" name="ChildId" id="topicId"/>&nbsp;<img border="0" src="<c:out value="${mandatoryFieldUrl}" />" width="5" height="5" alt=""/></td>
+            <input type="hidden" name="ChildId" id="topicId"/>&nbsp;<img src="<c:out value="${mandatoryFieldUrl}" />" width="5" height="5" alt=""/></td>
         </tr>
 
         <tr>
@@ -1014,7 +1015,7 @@
         </tr>
         <% } %>
         <tr>
-          <td colspan="2">( <img border="0" alt="mandatory" src="<c:out value="${mandatoryFieldUrl}" />" width="5" height="5"/> : <fmt:message key="GML.requiredField"/> )</td>
+          <td colspan="2">( <img alt="mandatory" src="<c:out value="${mandatoryFieldUrl}" />" width="5" height="5"/> : <fmt:message key="GML.requiredField"/> )</td>
         </tr>
       </table>
     </form>
@@ -1026,7 +1027,7 @@
   <kmelia:dragAndDrop highestUserRole="${highestUserRole}" componentInstanceId="<%=componentId%>" contentLanguage="<%=translation%>" />
   <script type="text/javascript">
     /* declare the module myapp and its dependencies (here in the silverpeas module) */
-    var myapp = angular.module('silverpeas.kmelia', ['silverpeas.services', 'silverpeas.directives']);
+    const myapp = angular.module('silverpeas.kmelia', ['silverpeas.services', 'silverpeas.directives']);
   </script>
   </view:sp-body-part>
 </view:sp-page>
