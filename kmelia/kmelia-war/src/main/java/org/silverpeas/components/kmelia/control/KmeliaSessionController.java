@@ -478,6 +478,14 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     return StringUtil.getBooleanValue(getComponentParameterValue("suppressionOnlyForAdmin"));
   }
 
+  public boolean isSuppressionAllowed(String profile) {
+    SilverpeasRole role = SilverpeasRole.fromString(profile);
+    boolean modifPrivilege = role == SilverpeasRole.ADMIN || role == SilverpeasRole.PUBLISHER ||
+        role == SilverpeasRole.SUPERVISOR;
+    return (!isSuppressionOnlyForAdmin() && modifPrivilege)
+        || (isSuppressionOnlyForAdmin() && role == SilverpeasRole.ADMIN);
+  }
+
   public boolean isContentEnabled() {
     String parameterValue = getComponentParameterValue("tabContent");
     if (!StringUtil.isDefined(parameterValue)) {

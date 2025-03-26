@@ -48,18 +48,18 @@
 
 <fmt:message key="GML.ForbiddenAccessContent" var="labelForbiddenAccess"/>
 
-<c:set var="folderId" value="${request.CurrentFolderId}"/>
+<c:set var="folderId" value="${requestScope.CurrentFolderId}"/>
 <c:if test="${silfn:isNotDefined(folderId)}">
   <c:set var="folderId" value="0"/>
 </c:if>
 
 <%
-  String 	profile			= (String) request.getAttribute("Profile");
-  String  translation 	= (String) request.getAttribute("Language");
+  String profile			= (String) request.getAttribute("Profile");
+  String translation 	= (String) request.getAttribute("Language");
   boolean displayNBPublis = (Boolean) request.getAttribute("DisplayNBPublis");
   Boolean rightsOnTopics  = (Boolean) request.getAttribute("RightsOnTopicsEnabled");
   SearchContext searchContext = (SearchContext) request.getAttribute("SearchContext");
-  int		currentPageIndex = (Integer) request.getAttribute("PageIndex");
+  int currentPageIndex = (Integer) request.getAttribute("PageIndex");
 
   String pubIdToHighlight	= (String) request.getAttribute("PubIdToHighlight"); //used when we have found publication from search (only toolbox)
 
@@ -69,6 +69,7 @@
 
   boolean userCanManageRoot = "admin".equalsIgnoreCase(profile);
   boolean userCanManageTopics = rightsOnTopics || "admin".equalsIgnoreCase(profile) || kmeliaScc.isTopicManagementDelegated();
+  boolean userCanEmptyTrash = kmeliaScc.isSuppressionAllowed(profile);
 %>
 <view:sp-page>
 <view:sp-head-part withCheckFormScript="true">
@@ -87,6 +88,11 @@
   <view:script src="javaScript/publications.js"/>
   <script type="text/javascript">
     let isSearchTopicEnabled = ${displaySearch};
+
+    function canEmptyTrash(nodeType) {
+      const isUserCanEmptyTrash = <%= userCanEmptyTrash %>;
+      return nodeType === "bin" && isUserCanEmptyTrash;
+    }
 
     function topicGoTo(id) {
       closeWindows();
@@ -145,7 +151,7 @@
       return <%=KmeliaPublicationHelper.isPublicationsOnRootAllowed(componentId)%>;
     }
 
-    const icons = new Object();
+    const icons = {};
     icons["permalink"] = "<%=resources.getIcon("kmelia.link")%>";
     icons["operation.addTopic"] = "<%=resources.getIcon("kmelia.operation.addTopic")%>";
     icons["operation.addPubli"] = "<%=resources.getIcon("kmelia.operation.addPubli")%>";
@@ -154,7 +160,7 @@
     icons["operation.subscribe"] = "<%=resources.getIcon("kmelia.operation.subscribe")%>";
     icons["operation.favorites"] = "<%=resources.getIcon("kmelia.operation.favorites")%>";
 
-    const params = new Object();
+    const params = {};
     params["rightsOnTopic"] = <%=rightsOnTopics.booleanValue()%>;
     params["i18n"] = <%=I18NHelper.isI18nContentActivated%>;
     params["nbPublisDisplayed"] = <%=displayNBPublis%>;
@@ -479,8 +485,8 @@
     }
     if (isSpecialFolder(nodeType)) {
       return false;
-    } else if (nodeType === "bin") {
-      const binItems = {
+    } else if (canEmptyTrash(nodeType)) {
+      return {
         emptyItem: {
           label: "<%=resources.getString("EmptyBasket")%>",
           action: function () {
@@ -488,7 +494,6 @@
           }
         }
       };
-      return binItems;
     }
 
     // The default set of all items

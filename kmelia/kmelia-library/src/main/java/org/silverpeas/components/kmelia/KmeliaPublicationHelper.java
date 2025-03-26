@@ -52,7 +52,7 @@ public class KmeliaPublicationHelper {
     if (hasWritePrivilege(currentUserId, profile, ownerDetail)) {
       boolean removeOnlyForAdmin = StringUtil.getBooleanValue(
           getParameterValue(instanceId, InstanceParameters.suppressionOnlyForAdmin));
-      return !removeOnlyForAdmin || "admin".equals(profile);
+      return !removeOnlyForAdmin || SilverpeasRole.ADMIN.getName().equals(profile);
     }
     return false;
   }

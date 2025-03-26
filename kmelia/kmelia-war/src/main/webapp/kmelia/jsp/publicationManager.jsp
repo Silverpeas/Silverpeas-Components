@@ -41,6 +41,7 @@
 <%@ page import="java.util.Date" %>
 <%@ page import="java.util.StringTokenizer" %>
 <%@ page import="org.silverpeas.core.contribution.model.Thumbnail" %>
+<%@ page import="org.silverpeas.components.kmelia.KmeliaPublicationHelper" %>
 
 <c:set var="userLanguage" value="${requestScope.resources.language}"/>
 <fmt:setLocale value="${userLanguage}"/>
@@ -138,19 +139,11 @@
         action = "UpdateView";
         isOwner = true;
       } else {
-        if (profile.equals("admin") || profile.equals("publisher") || profile.equals("supervisor") || (ownerDetail != null && kmeliaScc.getUserDetail().getId().equals(ownerDetail.getId()) && profile.equals("writer"))) {
-          isOwner = true;
-
-          if (!kmeliaScc.isSuppressionOnlyForAdmin() || (profile.equals("admin") && kmeliaScc.isSuppressionOnlyForAdmin())) {
-            // suppressionAllowed = true car si c'est un redacteur, c'est le proprietaire de la publication
-            suppressionAllowed = true;
-          }
-        } else if (!profile.equals("user") && kmeliaScc.isCoWritingEnable()) {
-          // si publication en co-redaction, considerer qu'elle appartient aux co-redacteur au meme titre qu'au proprietaire
-          // mais suppressionAllowed = false pour que le co-redacteur ne puisse pas supprimer la publication
-          isOwner = true;
-          suppressionAllowed = false;
-        }
+          isOwner = (ownerDetail != null &&
+                  kmeliaScc.getUserDetail().getId().equals(ownerDetail.getId()))
+                  || (!profile.equals("user") && kmeliaScc.isCoWritingEnable());
+          suppressionAllowed = KmeliaPublicationHelper.isRemovable(kmeliaScc.getComponentId(),
+                  kmeliaScc.getUserId(), profile, ownerDetail);
 
           //modification pour acceder a l'onglet voir aussi
           kmeliaScc.setSessionOwner(isOwner);
