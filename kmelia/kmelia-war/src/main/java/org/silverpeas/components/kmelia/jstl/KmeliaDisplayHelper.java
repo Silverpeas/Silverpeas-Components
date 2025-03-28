@@ -131,35 +131,35 @@ public class KmeliaDisplayHelper {
       previewTabLabel = resources.getString("kmelia.PublicPreview");
     }
 
-    if (invisibleTabs.indexOf(KmeliaSessionController.TAB_PREVIEW) == -1) {
-      tabbedPane.addTab(previewTabLabel, routerUrl + "ViewPublication?PubId=" + pubId, "View".equals(
-          action) || "ViewPublication".equals(action), enabled);
+    if (!invisibleTabs.contains(KmeliaSessionController.TAB_PREVIEW)) {
+      tabbedPane.addTab(previewTabLabel, routerUrl + "ViewPublication?PubId=" + pubId,
+          "View".equals(action) || "ViewPublication".equals(action), enabled);
     }
     if (cloneDetail != null) {
       tabbedPane.addTab(resources.getString("kmelia.ClonePreview") + decoration, routerUrl
           + "ViewClone", "ViewClone".equals(action), enabled);
     }
-    if (invisibleTabs.indexOf(KmeliaSessionController.TAB_HEADER) == -1) {
+    if (!invisibleTabs.contains(KmeliaSessionController.TAB_HEADER)) {
       tabbedPane.addTab(kmeliaScc.getString("Header") + decoration, routerUrl
           + "ToUpdatePublicationHeader", "UpdateView".equals(action)
           || "New".equals(action) || "KmaxModifyPublication".equals(action), enabled);
     }
-    if (invisibleTabs.indexOf(KmeliaSessionController.TAB_CONTENT) == -1) {
+    if (!invisibleTabs.contains(KmeliaSessionController.TAB_CONTENT)) {
       tabbedPane.addTab(resources.getString("Model") + decoration,
           "javaScript:onClick=goToOperation('" + routerUrl + "ToPubliContent', '" + sureId
               + "', 'ModelUpdateView')", "ModelUpdateView".equals(action) || "NewModel".equals(action)
               || "ModelChoice".equals(action), enabled);
     }
-    if (invisibleTabs.indexOf(KmeliaSessionController.TAB_ATTACHMENTS) == -1) {
-      if (kmeliaScc.getComponentId().startsWith("toolbox")) {
+    if (!invisibleTabs.contains(KmeliaSessionController.TAB_ATTACHMENTS)
+        && kmeliaScc.getComponentId().startsWith("toolbox")) {
         decoration = "";
         tabbedPane.addTab(resources.getString("GML.attachments") + decoration,
             "javaScript:onClick=goToOperationByGet('" + routerUrl + "ViewAttachments', '" + pubId
                 + "', 'ViewAttachments')", "ViewAttachments".equals(action), enabled);
       }
-    }
 
-    if (invisibleTabs.indexOf(KmeliaSessionController.TAB_ACCESS_PATHS) == -1 && !kmaxMode && !pubDetail.isAlias()) {
+
+    if (!invisibleTabs.contains(KmeliaSessionController.TAB_ACCESS_PATHS) && !kmaxMode && !pubDetail.isAlias()) {
       tabbedPane.addTab(resources.getString("PubGererChemins")+ " ("+kmeliaScc.getPublicationLocations().size()+")", routerUrl
           + "PublicationPaths?PubId=" + pubId, "ViewPath".equals(action), enabled);
     }
@@ -169,7 +169,7 @@ public class KmeliaDisplayHelper {
           action.equals("KmaxViewCombination"), enabled);
     }
 
-    if (invisibleTabs.indexOf(kmeliaScc.TAB_READER_LIST) == -1) {
+    if (!invisibleTabs.contains(KmeliaSessionController.TAB_READER_LIST)) {
       tabbedPane.addTab(resources.getString("PubGererControlesLecture"), routerUrl
           + "ReadingControl", action.equals("ViewReadingControl"), enabled);
     }
