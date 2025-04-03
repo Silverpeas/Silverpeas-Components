@@ -39,7 +39,7 @@ public class DownloadFolderHandler extends FunctionHandler {
   public String getDestination(SilverCrawlerSessionController sessionController,
       HttpServletRequest request) throws Exception {
     // Get requested folder name
-    String folderName = FileUtil.verifyTaintedData(request.getParameter("FolderName"));
+    String folderName = FileUtil.checkTaintedData(request.getParameter("FolderName"));
 
     // Store objects in request as attributes
     request.setAttribute("ZipInfo", sessionController.zipFolder(folderName));

@@ -40,7 +40,7 @@ public class ViewDownloadHistoryFromResultHandler extends FunctionHandler {
       HttpServletRequest request) throws Exception {
 
     // Retrieve requested path
-    String fullPath = FileUtil.verifyTaintedData(request.getParameter("Name"));
+    String fullPath = FileUtil.checkTaintedData(request.getParameter("Name"));
 
     // stores objects as request attributes
     request.setAttribute("Downloads", sessionController.getHistoryByFolderFromResult(fullPath));

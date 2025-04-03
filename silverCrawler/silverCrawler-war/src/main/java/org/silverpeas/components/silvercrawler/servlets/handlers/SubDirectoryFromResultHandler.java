@@ -39,7 +39,7 @@ public class SubDirectoryFromResultHandler extends FunctionHandler {
   public String getDestination(SilverCrawlerSessionController sessionController,
       HttpServletRequest request) throws Exception {
     // Update current Path
-    String newPath = FileUtil.verifyTaintedData(request.getParameter("DirectoryPath"));
+    String newPath = FileUtil.checkTaintedData(request.getParameter("DirectoryPath"));
     sessionController.setCurrentPathFromResult(newPath);
 
     // redirect to "ViewDirectory" use case

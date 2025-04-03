@@ -40,7 +40,7 @@ public class RemoveFileHandler extends FunctionHandler {
       HttpServletRequest request) throws Exception {
 
     // Retrieving files name to be removed
-    String fileName = FileUtil.verifyTaintedData(request.getParameter("FileName"));
+    String fileName = FileUtil.checkTaintedData(request.getParameter("FileName"));
 
     // Is User has admin or publisher profile
     String userHighestRole = getUserHighestRole(sessionController);

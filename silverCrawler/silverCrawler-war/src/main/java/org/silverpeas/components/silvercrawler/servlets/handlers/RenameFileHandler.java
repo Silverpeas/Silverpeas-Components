@@ -40,8 +40,8 @@ public class RenameFileHandler extends FunctionHandler {
       HttpServletRequest request) throws Exception {
 
     // Retrieves parameters
-    String fileName = FileUtil.verifyTaintedData(request.getParameter("oldName"));
-    String newName = FileUtil.verifyTaintedData(request.getParameter("newName"));
+    String fileName = FileUtil.checkTaintedData(request.getParameter("oldName"));
+    String newName = FileUtil.checkTaintedData(request.getParameter("newName"));
 
     // Is User has admin or publisher profile
     String userHighestRole = getUserHighestRole(sessionController);

@@ -42,7 +42,7 @@ public class ViewHistoryByUserHandler extends FunctionHandler {
     // Retrieve parameters
     String userId = request.getParameter("UserId");
     String userName = request.getParameter("UserName");
-    String folderName = FileUtil.verifyTaintedData(request.getParameter("FolderName"));
+    String folderName = FileUtil.checkTaintedData(request.getParameter("FolderName"));
 
     // stores objects as request attributes
     request.setAttribute("DownloadsByUser", sessionController.getHistoryByUser(folderName, userId));
