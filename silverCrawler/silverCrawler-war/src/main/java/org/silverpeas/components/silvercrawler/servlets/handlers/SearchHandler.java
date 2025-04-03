@@ -42,7 +42,7 @@ public class SearchHandler extends FunctionHandler {
   public String getDestination(SilverCrawlerSessionController sessionController,
       HttpServletRequest request) throws Exception {
 
-    String searchResult = FileUtil.verifyTaintedData(request.getParameter("Id"));
+    String searchResult = FileUtil.checkTaintedData(request.getParameter("Id"));
     if (StringUtil.isDefined(searchResult)) {
       sessionController.setCurrentPathFromResult(searchResult);
       // Go back to main page

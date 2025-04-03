@@ -79,8 +79,8 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
   private File currentPath;
   private File rootPath;
   private List<String> paths;
-  private List<FileDetail> currentResultSearch = new ArrayList<>();
-  private SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmm");
+  private final List<FileDetail> currentResultSearch = new ArrayList<>();
+  private final SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmm");
   private UploadReport lastReport;
   private static final Pattern WEIRD_CHARACTERS_REGEX = Pattern.compile("[/\\\\:*?\"<>|]");
 
@@ -144,7 +144,7 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
     List<String> newPaths = new ArrayList<>();
     currentPath = rootPath;
     for (final String path : paths) {
-      currentPath = FileUtils.getFile(currentPath, FileUtil.verifyTaintedData(path));
+      currentPath = FileUtils.getFile(currentPath, FileUtil.checkTaintedData(path));
       // on ajoute ce répertoire à la liste
       newPaths.add(path);
       if (path.equals(directory)) {
@@ -158,11 +158,7 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
 
   public Boolean isDownload() {
     // retourne true si l'utilisateur peut télécharger un répertoire complet
-    boolean download = true;
-    if (getSizeMax() == 0) {
-      download = false;
-    }
-    return download;
+    return getSizeMax() != 0;
   }
 
   public Boolean isAllowedNav() {
@@ -185,7 +181,7 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
     // mise à jour de la collection des chemins
     paths.clear();
     // décomposer le chemin pour créer le path
-    while (pathFile != null && pathFile.getName().length() > 0) {
+    while (pathFile != null && !pathFile.getName().isEmpty()) {
       paths.add(pathFile.getName());
       pathFile = pathFile.getParentFile();
     }
@@ -224,8 +220,8 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
     long sizeMax = UnitUtil.convertTo(getSizeMax(), MemoryUnit.MB, MemoryUnit.B);
     zipInfo.setMaxiSize(sizeMax);
 
-    long zipSize = 0;
-    String url = "";
+    long zipSize;
+    String url;
 
     // rechercher si la taille du répertoire est < à la taille maxi
     boolean sizeOk = getSize(downloadPath.getPath(), sizeMax);
@@ -267,12 +263,12 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
 
   public void unindexPath(String folderName) {
     RepositoryIndexer repositoryIndexer = new RepositoryIndexer(getSpaceId(), getComponentId());
-    Path pathRepository = Paths.get(getFullPath(FileUtil.verifyTaintedData(folderName)));
+    Path pathRepository = Paths.get(getFullPath(FileUtil.checkTaintedData(folderName)));
     repositoryIndexer.removePath(pathRepository, getUserId());
   }
 
   public void unindexFile(String fileName) {
-    Path path = Paths.get(currentPath.getPath(), FileUtil.verifyTaintedData(fileName));
+    Path path = Paths.get(currentPath.getPath(), FileUtil.checkTaintedData(fileName));
     RepositoryIndexer repositoryIndexer = new RepositoryIndexer(getSpaceId(), getComponentId());
     repositoryIndexer.removePath(path, getUserId());
   }
@@ -291,13 +287,13 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
 
   public void indexPathSelected(Collection<String> dirToIndex) {
     for (final String name : dirToIndex) {
-      indexPath(FileUtil.verifyTaintedData(name));
+      indexPath(FileUtil.checkTaintedData(name));
     }
   }
 
   public void indexSelectedFiles(Collection<String> fileToIndex) {
     for (final String name : fileToIndex) {
-      indexFile(FileUtil.verifyTaintedData(name));
+      indexFile(FileUtil.checkTaintedData(name));
     }
   }
 
@@ -390,9 +386,9 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
   }
 
   /**
-   * Activate/Desactivate read//write access.
+   * Enable/disable read//write access.
    * @param active true to activate read/write access
-   * @throws SilverCrawlerForbiddenActionException
+   * @throws SilverCrawlerForbiddenActionException if the user can change the read/write access.
    */
   public void switchReadWriteAccess(boolean active) throws SilverCrawlerForbiddenActionException {
 
@@ -480,8 +476,10 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
       throws SilverCrawlerForbiddenActionException {
     if (!userRoles.contains(SilverpeasRole.ADMIN)) {
       if (throwException) {
-        throw new SilverCrawlerForbiddenActionException("userRoles: " + String.join(", ",
-            userRoles.stream().map(SilverpeasRole::getName).collect(Collectors.toList())));
+        throw new SilverCrawlerForbiddenActionException("userRoles: " +
+            userRoles.stream()
+                .map(SilverpeasRole::getName)
+                .collect(Collectors.joining(", ")));
       } else {
         return true;
       }
@@ -490,10 +488,10 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
   }
 
   /**
-   * Remove given subfolder.
+   * Remove the given subfolder.
    * @param folderName name of folder to be removed
    * @param isAdmin flag to indicate if user has admin profile
-   * @throws SilverCrawlerForbiddenActionException
+   * @throws SilverCrawlerForbiddenActionException if the deletion is forbidden or cannot be done.
    */
   public void removeSubFolder(String folderName, boolean isAdmin)
       throws SilverCrawlerForbiddenActionException {
@@ -510,7 +508,7 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
     }
 
     // Get Full Path
-    String fullPath = getFullPath(FileUtil.verifyTaintedData(folderName));
+    String fullPath = getFullPath(FileUtil.checkTaintedData(folderName));
 
     FileFolderManager.deleteFolder(fullPath);
   }
@@ -581,7 +579,7 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
     }
 
     // Get Full Path
-    String fullPath = getFullPath(FileUtil.verifyTaintedData(fileName));
+    String fullPath = getFullPath(FileUtil.checkTaintedData(fileName));
 
     FileFolderManager.deleteFile(fullPath);
   }
@@ -637,8 +635,9 @@ public class SilverCrawlerSessionController extends AbstractComponentSessionCont
   }
 
   /**
-   * Process copy from DragAndDrop temp repository to current folder
-   * @return
+   * Processes the files upload by copying the uploaded files by DragAndDrop from the temporary
+   * repository to the current folder.
+   * @return a report about the upload process.
    */
   public UploadReport processLastUpload() {
     for (UploadItem item : lastReport.items) {

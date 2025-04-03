@@ -40,7 +40,7 @@ public class CreateFolderHandler extends FunctionHandler {
       HttpServletRequest request) throws Exception {
 
     // Retrieves parameters
-    String newName = FileUtil.verifyTaintedData(request.getParameter("newName"));
+    String newName = FileUtil.checkTaintedData(request.getParameter("newName"));
 
     // Is User has admin profile
     String userHisghestRole = getUserHighestRole(sessionController);

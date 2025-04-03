@@ -40,7 +40,7 @@ public class SubDirectoryHandler extends FunctionHandler {
       HttpServletRequest request) throws Exception {
 
     // Update current Path
-    String newPath = FileUtil.verifyTaintedData(request.getParameter("DirectoryPath"));
+    String newPath = FileUtil.checkTaintedData(request.getParameter("DirectoryPath"));
     sessionController.setCurrentPath(newPath);
 
     // redirect to "ViewDirectory" use case

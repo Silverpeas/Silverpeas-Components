@@ -41,7 +41,7 @@ public class RenameFileFormHandler extends FunctionHandler {
       HttpServletRequest request) throws Exception {
 
     // Retrieves folder's name to be removed
-    String fileName = FileUtil.verifyTaintedData(request.getParameter("oldName"));
+    String fileName = FileUtil.checkTaintedData(request.getParameter("oldName"));
 
     // Is User has admin or publisher profile
     String userHighestRole = getUserHighestRole(sessionController);

@@ -40,7 +40,7 @@ public class IndexPathHandler extends FunctionHandler {
       HttpServletRequest request) throws Exception {
 
     // Index requested path
-    String folderName = FileUtil.verifyTaintedData(request.getParameter("FolderName"));
+    String folderName = FileUtil.checkTaintedData(request.getParameter("FolderName"));
     sessionController.indexPath(folderName);
 
     // redirect to "ViewDirectory" use case

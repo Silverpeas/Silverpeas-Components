@@ -52,10 +52,6 @@ import java.io.StringReader;
 
 import static org.silverpeas.core.web.http.FileResponse.encodeAttachmentFilenameAsUtf8;
 
-/**
- * Class declaration
- * @author
- */
 public class SilverCrawlerFileServer extends SilverpeasAuthenticatedHttpServlet {
 
   private static final long serialVersionUID = 4892517833096053490L;
@@ -73,16 +69,16 @@ public class SilverCrawlerFileServer extends SilverpeasAuthenticatedHttpServlet 
   }
 
   @Override
-  public void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
+  public void doGet(HttpServletRequest req, HttpServletResponse res) {
     doPost(req, res);
   }
 
   @Override
-  public void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException {
-    String sourceFile = FileUtil.verifyTaintedData(req.getParameter("SourceFile"));
+  public void doPost(HttpServletRequest req, HttpServletResponse res) {
+    String sourceFile = FileUtil.checkTaintedData(req.getParameter("SourceFile"));
     String componentId = req.getParameter("ComponentId");
     String typeUpload = req.getParameter("TypeUpload");
-    String path = FileUtil.verifyTaintedData(req.getParameter("Path"));
+    String path = FileUtil.checkTaintedData(req.getParameter("Path"));
 
     try {
       FileUtil.assertPathNotRelative(sourceFile);
@@ -125,12 +121,11 @@ public class SilverCrawlerFileServer extends SilverpeasAuthenticatedHttpServlet 
     }
 
     sendFile(res, fileToSend);
-
     // ajout dans la table des téléchargements
     Statistic.addStat(userId, fileStat, componentId, type);
   }
 
-  private void sendFile(HttpServletResponse response, File file) throws IOException {
+  private void sendFile(HttpServletResponse response, File file) {
     response.setHeader("Content-Length", String.valueOf(file.length()));
     final String normalizedFilename = StringUtil.normalize(file.getName());
     response.setContentType(FileUtil.getMimeType(normalizedFilename));
@@ -145,7 +140,7 @@ public class SilverCrawlerFileServer extends SilverpeasAuthenticatedHttpServlet 
     }
   }
 
-  private void displayWarningHtmlCode(HttpServletResponse res) throws IOException {
+  private void displayWarningHtmlCode(HttpServletResponse res) {
     LocalizationBundle messages = ResourceLocator.getLocalizationBundle(
         "org.silverpeas.util.peasUtil.multiLang.fileServerBundle");
 

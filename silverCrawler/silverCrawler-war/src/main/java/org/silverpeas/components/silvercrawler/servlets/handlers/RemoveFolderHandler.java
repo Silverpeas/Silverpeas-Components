@@ -40,7 +40,7 @@ public class RemoveFolderHandler extends FunctionHandler {
       HttpServletRequest request) throws Exception {
 
     // Retrieves folder's name to be removed
-    String folderName = FileUtil.verifyTaintedData(request.getParameter("FolderName"));
+    String folderName = FileUtil.checkTaintedData(request.getParameter("FolderName"));
 
     // Is User has admin profile
     String userHighestRole = getUserHighestRole(sessionController);

@@ -40,7 +40,7 @@ public class ViewDownloadHistoryHandler extends FunctionHandler {
       HttpServletRequest request) throws Exception {
 
     // Retrieve requested name
-    String name = FileUtil.verifyTaintedData(request.getParameter("Name"));
+    String name = FileUtil.checkTaintedData(request.getParameter("Name"));
 
     // stores objects as request attributes
     request.setAttribute("Downloads", sessionController.getHistoryByFolder(name));
