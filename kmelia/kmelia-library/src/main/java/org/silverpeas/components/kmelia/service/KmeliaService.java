@@ -124,16 +124,6 @@ public interface KmeliaService extends ApplicationService {
    */
   NodeDetail getSubTopicDetail(NodePK nodePK);
 
-  /**
-   * Delete a topic and all descendants. Delete all links between descendants and publications. Its
-   * publications will deleted. Delete All subscriptions and favorites on its topics and all
-   * descendants
-   *
-   * @param nodePK the id of the topic to delete
-   * @since 1.0
-   */
-  void deleteTopic(NodePK nodePK);
-
   void changeTopicStatus(String newStatus, NodePK nodePK, boolean recursiveChanges);
 
   void sortSubTopics(NodePK fatherPK, boolean recursive, String[] criteria);
