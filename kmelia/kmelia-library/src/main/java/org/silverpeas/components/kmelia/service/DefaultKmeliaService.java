@@ -173,7 +173,7 @@ import static org.silverpeas.kernel.util.StringUtil.*;
 @Singleton
 @Named("kmeliaService")
 @Transactional(Transactional.TxType.SUPPORTS)
-public class DefaultKmeliaService implements KmeliaService {
+public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
 
   private static final String MESSAGES_PATH = "org.silverpeas.kmelia.multilang.kmeliaBundle";
   private static final String SETTINGS_PATH = "org.silverpeas.kmelia.settings.kmeliaSettings";
@@ -1382,7 +1382,8 @@ public class DefaultKmeliaService implements KmeliaService {
    *
    * @param pubPK the unique identifier of the publication to delete.
    */
-  private void deletePublication(PublicationPK pubPK) {
+  @Override
+  public void deletePublication(PublicationPK pubPK) {
     KmeliaOperationContext.about(DELETION);
     try {
       // remove form content
@@ -1424,7 +1425,7 @@ public class DefaultKmeliaService implements KmeliaService {
       }
 
       // remove all links between this publication and topics
-      publicationService.removeAllFathers(pubPK);
+      publicationService.removeAllFathe<>rs(pubPK);
       // add link between this publication and the basket topic
       publicationService.addFather(pubPK, new NodePK(NodePK.BIN_NODE_ID, pubPK));
 
