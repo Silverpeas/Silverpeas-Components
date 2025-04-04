@@ -40,15 +40,11 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
-import java.time.zone.ZoneRules;
-import java.util.TimeZone;
 
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
@@ -145,42 +141,39 @@ public class SendInAlmanach extends ExternalActionImpl {
       zoneId = ZoneId.systemDefault();
     }
 
-    ZoneOffset zoneOffset = zoneId.getRules().getOffset(LocalDateTime.now());
-
     final String startDayValue = getFolderValueFromTriggerParam(AlmanachTriggerParam.START_DATE);
     final String endDayValue = getFolderValueFromTriggerParam(AlmanachTriggerParam.END_DATE);
-    if (startDayValue != null) {
-      final String startHourValue = getFolderValueFromTriggerParam(AlmanachTriggerParam.START_HOUR);
-      final String endHourValue = getFolderValueFromTriggerParam(AlmanachTriggerParam.END_HOUR);
-      try {
-        final Temporal start;
-        if (StringUtil.isValidHour(startHourValue)) {
-          var localDateTime = LocalDateTime.parse(startDayValue + " " + startHourValue, DATE_TIME_FORMATTER);
-          start = localDateTime.atOffset(zoneOffset);
-        } else {
-          start = LocalDate.parse(startDayValue, DATE_FORMATTER);
-        }
+    if (StringUtil.isNotDefined(startDayValue)) {
+      return null;
+    }
 
-        final Temporal end;
-        if (endDayValue != null) {
-          if (StringUtil.isValidHour(endHourValue)) {
-            var localDateTime = LocalDateTime.parse(endDayValue + " " + endHourValue, DATE_TIME_FORMATTER);
-            end = localDateTime.atOffset(zoneOffset);
-          } else {
-            end = LocalDate.parse(endDayValue, DATE_FORMATTER).plusDays(1);
-          }
-        } else {
-          if (StringUtil.isValidHour(endHourValue)) {
-            var localDateTime = LocalDateTime.parse(startDayValue + " " + endHourValue, DATE_TIME_FORMATTER);
-            end = localDateTime.atOffset(zoneOffset);
-          } else {
-            end = start.plus(1, ChronoUnit.DAYS);
-          }
-        }
-        return Period.between(start, end);
-      } catch (DateTimeParseException e) {
-        SilverLogger.getLogger(this).warn(e);
+    final String startHourValue = getFolderValueFromTriggerParam(AlmanachTriggerParam.START_HOUR);
+    final String endHourValue = getFolderValueFromTriggerParam(AlmanachTriggerParam.END_HOUR);
+    try {
+      final Temporal start;
+      if (StringUtil.isValidHour(startHourValue)) {
+        start = getTemporalWithOffset(startDayValue, startHourValue, zoneId);
+      } else {
+        start = LocalDate.parse(startDayValue, DATE_FORMATTER);
       }
+
+      final Temporal end;
+      if (endDayValue != null) {
+        if (StringUtil.isValidHour(endHourValue)) {
+          end = getTemporalWithOffset(endDayValue, endHourValue, zoneId);
+        } else {
+          end = LocalDate.parse(endDayValue, DATE_FORMATTER).plusDays(1);
+        }
+      } else {
+        if (StringUtil.isValidHour(endHourValue)) {
+          end = getTemporalWithOffset(startDayValue, endHourValue, zoneId);
+        } else {
+          end = start.plus(1, ChronoUnit.DAYS);
+        }
+      }
+      return Period.between(start, end);
+    } catch (DateTimeParseException e) {
+      SilverLogger.getLogger(this).warn(e);
     }
     return null;
   }
@@ -229,4 +222,14 @@ public class SendInAlmanach extends ExternalActionImpl {
     return organizationController;
   }
 
+  /** Get date with offset due to Timezone
+   * @param day day of the event
+   * @param hour of the event
+   * @param zoneId Timezone of the user who has created the event
+  **/
+  private Temporal getTemporalWithOffset(String day, String hour, ZoneId zoneId) {
+    var localDateTime = LocalDateTime.parse(day + " " + hour, DATE_TIME_FORMATTER);
+    var zoneOffset = ZoneId.of(zoneId.getId()).getRules().getOffset(localDateTime.atZone(zoneId).toInstant());
+    return localDateTime.atOffset(zoneOffset);
+  }
 }
