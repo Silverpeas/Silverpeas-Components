@@ -24,6 +24,7 @@
 package org.silverpeas.components.almanach.workflowextensions;
 
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.Priority;
@@ -39,10 +40,15 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
+import java.time.zone.ZoneRules;
+import java.util.TimeZone;
 
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
@@ -65,7 +71,6 @@ import static org.silverpeas.kernel.util.StringUtil.getBooleanValue;
 public class SendInAlmanach extends ExternalActionImpl {
 
   private String role = "unknown";
-  private static final String ADMIN_ID = "0";
   private static final DateTimeFormatter DATE_TIME_FORMATTER = ofPattern("dd/MM/yyyy HH:mm");
   private static final DateTimeFormatter DATE_FORMATTER = ofPattern("dd/MM/yyyy");
 
@@ -131,6 +136,17 @@ public class SendInAlmanach extends ExternalActionImpl {
   }
 
   private Period getEventPeriod() {
+    //Get user Timezone
+    User requester = User.getById(getEvent().getUser().getUserId());
+    ZoneId zoneId;
+    if (requester != null) {
+      zoneId = requester.getUserPreferences().getZoneId();
+    } else {
+      zoneId = ZoneId.systemDefault();
+    }
+
+    ZoneOffset zoneOffset = zoneId.getRules().getOffset(LocalDateTime.now());
+
     final String startDayValue = getFolderValueFromTriggerParam(AlmanachTriggerParam.START_DATE);
     final String endDayValue = getFolderValueFromTriggerParam(AlmanachTriggerParam.END_DATE);
     if (startDayValue != null) {
@@ -139,20 +155,24 @@ public class SendInAlmanach extends ExternalActionImpl {
       try {
         final Temporal start;
         if (StringUtil.isValidHour(startHourValue)) {
-          start = LocalDateTime.parse(startDayValue + " " + startHourValue, DATE_TIME_FORMATTER);
+          var localDateTime = LocalDateTime.parse(startDayValue + " " + startHourValue, DATE_TIME_FORMATTER);
+          start = localDateTime.atOffset(zoneOffset);
         } else {
           start = LocalDate.parse(startDayValue, DATE_FORMATTER);
         }
+
         final Temporal end;
         if (endDayValue != null) {
           if (StringUtil.isValidHour(endHourValue)) {
-            end = LocalDateTime.parse(endDayValue + " " + endHourValue, DATE_TIME_FORMATTER);
+            var localDateTime = LocalDateTime.parse(endDayValue + " " + endHourValue, DATE_TIME_FORMATTER);
+            end = localDateTime.atOffset(zoneOffset);
           } else {
             end = LocalDate.parse(endDayValue, DATE_FORMATTER).plusDays(1);
           }
         } else {
           if (StringUtil.isValidHour(endHourValue)) {
-            end = LocalDateTime.parse(startDayValue + " " + endHourValue, DATE_TIME_FORMATTER);
+            var localDateTime = LocalDateTime.parse(startDayValue + " " + endHourValue, DATE_TIME_FORMATTER);
+            end = localDateTime.atOffset(zoneOffset);
           } else {
             end = start.plus(1, ChronoUnit.DAYS);
           }
@@ -208,4 +228,5 @@ public class SendInAlmanach extends ExternalActionImpl {
   private OrganizationController getOrganizationController() {
     return organizationController;
   }
+
 }
