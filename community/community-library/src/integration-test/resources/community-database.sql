@@ -225,6 +225,8 @@ CREATE TABLE IF NOT EXISTS sb_node_node
     orderNumber      int DEFAULT (0)  NULL,
     lang             char(2),
     rightsDependsOn  int default (-1) NOT NULL,
+    nodeRemovalDate  varchar (10)     NULL,
+    nodeRemoverId    varchar (100)    NULL,
     CONSTRAINT PK_Node_Node PRIMARY KEY (nodeId, instanceId)
 );
 
@@ -274,7 +276,9 @@ CREATE TABLE IF NOT EXISTS SB_Publication_Publi
     pubCloneId           int DEFAULT (-1),
     pubCloneStatus       varchar(50)     NULL,
     lang                 char(2)         NULL,
-    pubdraftoutdate      varchar(10)     NULL
+    pubdraftoutdate      varchar(10)     NULL,
+    pubRemovalDate       varchar(10)	 NULL,
+    pubRemoverId         varchar(100)	 NULL
 );
 
 CREATE TABLE IF NOT EXISTS SB_Publication_PubliI18N

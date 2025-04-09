@@ -658,7 +658,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
         QuestionManagerProvider.getQuestionManager().updateQuestion(question);
       }
       NodePK nodePk = new NodePK(categoryId, getComponentId());
-      getNodeService().removeNode(nodePk);
+      getNodeService().deleteNode(nodePk);
     } catch (Exception e) {
       throw new QuestionReplyException(e);
     }

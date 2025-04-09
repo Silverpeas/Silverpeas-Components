@@ -273,7 +273,7 @@ public class DefaultBlogService implements BlogService, Initialization {
       // Delete wysiwyg content
       WysiwygController.deleteFileAndAttachment(instanceId, postId);
       // Delete publication
-      publicationService.removePublication(pubPK);
+      publicationService.deletePublication(pubPK);
       // Delete silverContent
       blogContentManager.deleteSilverContent(con, pubPK);
     } catch (Exception e) {
@@ -467,7 +467,7 @@ public class DefaultBlogService implements BlogService, Initialization {
             .getPK(), nodePk);
       }
       // suppression de la catégorie
-      nodeService.removeNode(nodePk);
+      nodeService.deleteNode(nodePk);
     } catch (Exception e) {
       throw new BlogRuntimeException(e);
     }
