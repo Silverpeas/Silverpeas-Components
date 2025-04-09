@@ -59,8 +59,9 @@ function sendData() {
 }
 
 function viewClassifieds(fieldNumber, fieldValue) {
-  var id = $("#searchForm select").get(fieldNumber).id;
-  $("#searchForm #"+id+" option[value='"+fieldValue+"']").prop('selected',true);
+  let chkChoice = $("#searchForm input:checkbox").get(fieldNumber);
+  $(chkChoice).val(fieldValue);
+  $(chkChoice).attr("checked",true);
   sendData();
 }
 </script>
