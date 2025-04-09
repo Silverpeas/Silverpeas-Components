@@ -61,7 +61,7 @@ public class KmeliaBinsScheduledPurger implements Initialization {
 
   private static final String COMPONENT_NAME = "kmelia";
   private static final String SETTINGS_NAME = "org.silverpeas.kmelia.settings.kmeliaSettings";
-  private static final String JOB_NAME = "OldBinItemsDeleter";
+  private static final String JOB_NAME = "BinOlderItemsDeleter";
 
   @Inject
   private KmeliaDeleter deleter;
@@ -76,9 +76,9 @@ public class KmeliaBinsScheduledPurger implements Initialization {
     if (!cron.isEmpty()) {
       final Scheduler scheduler = SchedulerProvider.getVolatileScheduler();
       scheduler.unscheduleJob(JOB_NAME);
-      scheduler.scheduleJob(new OldBinItemsDeleter(), JobTrigger.triggerAt(cron));
+      scheduler.scheduleJob(new BinOlderItemsDeleter(), JobTrigger.triggerAt(cron));
     }
-    new OldBinItemsDeleter().execute(JobExecutionContext.createWith(JOB_NAME, new Date()));
+    new BinOlderItemsDeleter().execute(JobExecutionContext.createWith(JOB_NAME, new Date()));
   }
 
   @Override
@@ -94,9 +94,9 @@ public class KmeliaBinsScheduledPurger implements Initialization {
     return settings.getString("kmelia.autoDeletionCron", "");
   }
 
-  private class OldBinItemsDeleter extends Job {
+  private class BinOlderItemsDeleter extends Job {
 
-    OldBinItemsDeleter() {
+    BinOlderItemsDeleter() {
       super(JOB_NAME);
     }
 

@@ -21,18 +21,8 @@
 package org.silverpeas.components.kmelia.service;
 
 import org.apache.commons.io.FilenameUtils;
-import org.silverpeas.components.kmelia.InstanceParameters;
-import org.silverpeas.components.kmelia.KmeliaContentManager;
-import org.silverpeas.components.kmelia.KmeliaCopyDetail;
-import org.silverpeas.components.kmelia.KmeliaPasteDetail;
-import org.silverpeas.components.kmelia.KmeliaPublicationHelper;
-import org.silverpeas.components.kmelia.PublicationImport;
-import org.silverpeas.components.kmelia.model.KmaxRuntimeException;
-import org.silverpeas.components.kmelia.model.KmeliaPublication;
-import org.silverpeas.components.kmelia.model.KmeliaRuntimeException;
-import org.silverpeas.components.kmelia.model.TopicComparator;
-import org.silverpeas.components.kmelia.model.TopicDetail;
-import org.silverpeas.components.kmelia.model.ValidatorsList;
+import org.silverpeas.components.kmelia.*;
+import org.silverpeas.components.kmelia.model.*;
 import org.silverpeas.components.kmelia.notification.*;
 import org.silverpeas.core.ActionType;
 import org.silverpeas.core.ResourceReference;
@@ -47,11 +37,7 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.contribution.attachment.AttachmentException;
-import org.silverpeas.core.contribution.attachment.model.DocumentType;
-import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
-import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.contribution.attachment.model.*;
 import org.silverpeas.core.contribution.attachment.notification.AttachmentRef;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.RecordSet;
@@ -62,12 +48,7 @@ import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygControlle
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.publication.dao.DistributionTreeCriteria;
 import org.silverpeas.core.contribution.publication.dao.PublicationCriteria;
-import org.silverpeas.core.contribution.publication.model.CompletePublication;
-import org.silverpeas.core.contribution.publication.model.Location;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.contribution.publication.model.PublicationLink;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
-import org.silverpeas.core.contribution.publication.model.ValidationStep;
+import org.silverpeas.core.contribution.publication.model.*;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.contribution.template.form.dao.ModelDAO;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
@@ -538,7 +519,7 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
       }
 
       // Delete the topic
-      nodeService.removeNode(pkToDelete);
+      nodeService.deleteNode(pkToDelete);
     } catch (Exception e) {
       throw new KmeliaRuntimeException(e);
     }
@@ -1153,6 +1134,9 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
     } else {
       // update parent
       publicationService.movePublication(pub.getPK(), to, false);
+      if (pub.isRemoved() && !to.isTrash()) {
+        publicationService.restorePublication(pub.getPK());
+      }
       pub.setTargetValidatorId(pasteContext.getTargetValidatorIds());
       processPublicationAfterMove(pub, to, pasteContext.getUserId());
     }
@@ -1393,7 +1377,7 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
       // delete all links
       publicationService.removeAllFathers(pubPK);
       // delete the publication
-      publicationService.removePublication(pubPK);
+      publicationService.deletePublication(pubPK);
       // delete reference to contentManager
       deleteSilverContent(pubPK);
     } catch (Exception e) {
@@ -1425,9 +1409,11 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
       }
 
       // remove all links between this publication and topics
-      publicationService.removeAllFathe<>rs(pubPK);
+      publicationService.removeAllFathers(pubPK);
       // add link between this publication and the basket topic
       publicationService.addFather(pubPK, new NodePK(NodePK.BIN_NODE_ID, pubPK));
+      // set removal status
+      publicationService.removePublication(pubPK);
 
       cleanUpPublicationsInBasket(pubPK);
     } catch (Exception e) {
@@ -1456,6 +1442,8 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
     // get all the tree of folders, rooted to the topic, to be sent in the basket with the topic
     final Collection<NodeDetail> children = nodeService.getDescendantDetails(topic.getNodePK());
     for (final NodeDetail childTopic : children) {
+      // set the removal status of the child
+      nodeService.removeNode(childTopic);
       // get all the direct publications in the topic child (including aliases)
       final Collection<PublicationDetail> publications =
           publicationService.getDetailsByFatherPK(childTopic.getNodePK());
@@ -1473,6 +1461,7 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
       }
     }
 
+    nodeService.removeNode(topic);
     nodeService.moveNode(topic.getNodePK(), trash);
   }
 
@@ -2976,7 +2965,7 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
       }
       removeCoordinatesByPoints(points, componentId);
       // delete axis
-      nodeService.removeNode(pkToDelete);
+      nodeService.deleteNode(pkToDelete);
     } catch (Exception e) {
       throw new KmaxRuntimeException(e);
     }
@@ -3053,7 +3042,7 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
       }
       removeCoordinatesByPoints(points, componentId);
       // delete component
-      nodeService.removeNode(pkToDelete);
+      nodeService.deleteNode(pkToDelete);
     } catch (Exception e) {
       throw new KmaxRuntimeException(e);
     }
@@ -4003,6 +3992,10 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
 
     // move node and subtree
     nodeService.moveNode(nodePK, to, rightsOnTopicsEnabled);
+    NodeDetail node = nodeService.getHeader(nodePK);
+    if (node.isRemoved() && !to.isTrash()) {
+      nodeService.restoreNode(node);
+    }
 
     for (NodeDetail fromNode : treeToPaste) {
       if (fromNode != null) {

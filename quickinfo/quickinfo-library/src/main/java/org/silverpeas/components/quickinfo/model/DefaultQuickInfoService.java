@@ -348,7 +348,7 @@ public class DefaultQuickInfoService implements QuickInfoService {
     final PublicationPK foreignPK = news.getForeignPK();
 
     // Deleting publication
-    getPublicationService().removePublication(foreignPK);
+    getPublicationService().deletePublication(foreignPK);
 
     // De-reffering contribution in taxonomy
     try (final Connection connection = DBUtil.openConnection()) {

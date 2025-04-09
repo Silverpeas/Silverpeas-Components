@@ -1043,7 +1043,7 @@ public class DefaultForumService implements ForumService {
       }
       // suppression de la categorie
       NodePK nodePk = new NodePK(categoryId, instanceId);
-      node.removeNode(nodePk);
+      node.deleteNode(nodePk);
     } catch (Exception e) {
       throw new ForumsRuntimeException(e);
     }

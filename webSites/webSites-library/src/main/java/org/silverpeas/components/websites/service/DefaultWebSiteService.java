@@ -233,7 +233,7 @@ public class DefaultWebSiteService implements WebSiteService {
         }
       }
       // Delete the topic
-      nodeService.removeNode(pkToDelete);
+      nodeService.deleteNode(pkToDelete);
     } catch (Exception re) {
       throw new WebSitesRuntimeException(re);
     }
@@ -357,7 +357,7 @@ public class DefaultWebSiteService implements WebSiteService {
 
     try {
       publicationService.removeAllFathers(pubPK);
-      publicationService.removePublication(pubPK);
+      publicationService.deletePublication(pubPK);
     } catch (Exception re) {
       throw new WebSitesRuntimeException(re);
     }

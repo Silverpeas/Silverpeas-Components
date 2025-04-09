@@ -325,7 +325,7 @@ public class GalleryProcessManagement {
     for (final NodeDetail node : childrens) {
       addDeleteAlbumProcesses(node.getNodePK());
     }
-    getNodeService().removeNode(albumPk);
+    getNodeService().deleteNode(albumPk);
   }
 
   /**

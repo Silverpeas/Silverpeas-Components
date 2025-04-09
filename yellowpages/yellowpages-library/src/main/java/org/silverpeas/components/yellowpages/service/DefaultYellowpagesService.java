@@ -338,7 +338,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
 
     // Delete the topic
     try {
-      nodeService.removeNode(pkToDelete);
+      nodeService.deleteNode(pkToDelete);
     } catch (Exception re) {
       throw new YellowpagesRuntimeException(re);
     }
