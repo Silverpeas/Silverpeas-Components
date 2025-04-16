@@ -73,7 +73,7 @@
   </c:when>
   <c:otherwise>
     <view:link href="/util/styleSheets/fieldset.css"/>
-    <view:link href="styleSheets/printContact.css"/>
+    <view:link href="/yellowpages/jsp/styleSheets/printContact.css"/>
     <script type="text/javascript">
       function closePopup() {
         window.contactPopup.close();
