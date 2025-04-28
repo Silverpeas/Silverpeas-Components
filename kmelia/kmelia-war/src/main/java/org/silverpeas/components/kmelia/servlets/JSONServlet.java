@@ -144,7 +144,7 @@ public class JSONServlet extends HttpServlet {
     operations.put("importFiles", addPublicationAllowed && kmeliaSC.isImportFilesAllowed());
     operations.put("copyPublications", copyCutAllowed);
     operations.put("cutPublications", copyCutAllowed);
-    operations.put("paste", addPublicationAllowed);
+    operations.put("paste", !role.isUser());
 
     operations.put("putPublicationsInBasket", publicationsInTopic && displayPutIntoBasketSelectionShortcut());
 

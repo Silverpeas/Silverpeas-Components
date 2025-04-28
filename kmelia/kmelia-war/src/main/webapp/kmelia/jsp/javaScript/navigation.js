@@ -27,6 +27,7 @@ let importFileWindow = window;
 let importFilesWindow = window;
 let exportComponentWindow = window;
 
+
 function addFavorite(name, description, url)
 {
   postNewLink(name, url, description);
@@ -90,16 +91,16 @@ function displayTopicDescription(id) {
   const ieFix = new Date().getTime();
   const componentId = getComponentId();
   $.get(getWebContext() + '/KmeliaAJAXServlet', {Id: id, Action: 'GetTopicWysiwyg', ComponentId: componentId, IEFix: ieFix},
-  function(data) {
-    if (data && data.length > 0) {
-      $("#topicDescription").show();
-      $("#topicDescription").html(data);
-      activateIDCards();
-    } else {
-      $("#topicDescription").html("");
-      $("#topicDescription").hide();
-    }
-  }, "html");
+      function(data) {
+        if (data && data.length > 0) {
+          $("#topicDescription").show();
+          $("#topicDescription").html(data);
+          activateIDCards();
+        } else {
+          $("#topicDescription").html("");
+          $("#topicDescription").hide();
+        }
+      }, "html");
 }
 
 function refreshPublications()
@@ -227,19 +228,19 @@ function displayOperations(id) {
   const componentId = getComponentId();
   const url = getWebContext() + "/KmeliaJSONServlet";
   $.get(url, {Id: id, Action: 'GetOperations', ComponentId: componentId, IEFix: ieFix},
-  function(operations) {
-    //display dNd according rights
-    checkDnD(id, operations);
-    initOperations(id, operations);
-    try {
-      if (operations.addTopic) {
-        showRightClickHelp();
-      }
-    } catch (e) {
-      // right click could not be supported by calling page
-    }
-    applyTokenSecurity();
-  }, 'json');
+      function(operations) {
+        //display dNd according rights
+        checkDnD(id, operations);
+        initOperations(id, operations);
+        try {
+          if (operations.addTopic) {
+            showRightClickHelp();
+          }
+        } catch (e) {
+          // right click could not be supported by calling page
+        }
+        applyTokenSecurity();
+      }, 'json');
 }
 
 function displayResponsibles() {
@@ -263,7 +264,6 @@ function initOperations(id, op) {
   let groupEmpty = true;
   let menuEmpty = true;
   let menuBarEmpty = true;
-
   if (op.emptyTrash) {
     menuItem = new YAHOO.widget.MenuItem(getString('EmptyBasket'), {url: "javascript:onClick=emptyTrash()"});
     oMenu.addItem(menuItem, groupIndex);
@@ -302,7 +302,7 @@ function initOperations(id, op) {
 
   if (op.exportApplication && id == "0") {
     menuItem = new YAHOO.widget.MenuItem(getString('kmelia.ExportComponent'),
-          {url : "javascript:onClick=exportTopic()"});
+        {url : "javascript:onClick=exportTopic()"});
     oMenu.addItem(menuItem, groupIndex);
     groupEmpty = false;
   }
@@ -365,9 +365,21 @@ function initOperations(id, op) {
     oMenu.addItem(menuItem, groupIndex);
     groupEmpty = false;
   }
+
+  if (op.paste) {
+    kmeliaWebService.getClipboardState().then(function(clipboardState) {
+      let isClipboardEmpty = (clipboardState=='IS_EMPTY');
+      menuItem = new YAHOO.widget.MenuItem(getString('GML.paste'), {url: "javascript:onclick=pasteFromOperations()", disabled: isClipboardEmpty});
+      oMenu.addItem(menuItem, groupIndex);
+      groupEmpty = false;
+    });
+  }
+
   if (op.hideTopic) {
     menuItem = new YAHOO.widget.MenuItem(getString('TopicVisible2Invisible'), {url: "javascript:onclick=changeCurrentTopicStatus()"});
+    menuItem
     oMenu.addItem(menuItem, groupIndex);
+
     groupEmpty = false;
   }
   if (op.showTopic) {
@@ -453,11 +465,7 @@ function initOperations(id, op) {
     oMenu.addItem(menuItem, groupIndex);
     groupEmpty = false;
   }
-  if (op.paste) {
-    menuItem = new YAHOO.widget.MenuItem(getString('GML.paste'), {url: "javascript:onclick=pasteFromOperations()"});
-    oMenu.addItem(menuItem, groupIndex);
-    groupEmpty = false;
-  }
+
   if (op.updatePublications) {
     menuItem = new YAHOO.widget.MenuItem(getString('kmelia.operation.updatePublications'), {url: "javascript:onclick=updatePublications()", id: "menuitem-updatepubs"});
     oMenu.addItem(menuItem, groupIndex);
@@ -550,7 +558,7 @@ function initOperations(id, op) {
   if (op.notify) {
     menuItem = new YAHOO.widget.MenuItem(getString('GML.notify'), {
       url: "javascript:onclick=notifyOnFolder('" + op.context.componentId + "', '" +
-        op.context.nodeId + "')"
+          op.context.nodeId + "')"
     });
     oMenu.addItem(menuItem, groupIndex);
   }
@@ -713,20 +721,20 @@ function deleteFolder(nodeId, nodeLabel) {
     const componentId = getComponentId();
     const url = getWebContext() + '/KmeliaAJAXServlet';
     $.post(url, {Id: nodeId, ComponentId: componentId, Action: 'Delete'},
-    function(data) {
-      if (data !== null && data.length > 0 && !isNaN(data)) {
-        // fires event
-        try {
-          nodeDeleted(nodeId);
-        } catch (e) {
-          writeInConsole(e);
-        }
-        // go to parent node
-        displayTopicContent(data);
-      } else {
-        notyError(data);
-      }
-    }, 'text');
+        function(data) {
+          if (data !== null && data.length > 0 && !isNaN(data)) {
+            // fires event
+            try {
+              nodeDeleted(nodeId);
+            } catch (e) {
+              writeInConsole(e);
+            }
+            // go to parent node
+            displayTopicContent(data);
+          } else {
+            notyError(data);
+          }
+        }, 'text');
     return true;
   });
 }
@@ -892,14 +900,14 @@ function emptyTrash() {
     const componentId = getComponentId();
     const url = getWebContext() + '/KmeliaAJAXServlet';
     $.post(url, {ComponentId: componentId, Action: 'EmptyTrash'},
-    function(data) {
-      spProgressMessage.hide();
-      if (data === "ok") {
-        displayTopicContent("1");
-      } else {
-        notyError(data);
-      }
-    }, 'text');
+        function(data) {
+          spProgressMessage.hide();
+          if (data === "ok") {
+            displayTopicContent("1");
+          } else {
+            notyError(data);
+          }
+        }, 'text');
     return true;
   });
 }
@@ -989,10 +997,10 @@ function doPagination(index, nbItemsPerPage) {
   const notSelectedPublicationIds = getNotSelectedPublicationIds();
   const url = getWebContext() + '/RAjaxPublicationsListServlet';
   $.get(url, {Index: index, NbItemsPerPage: nbItemsPerPage, ComponentId: componentId, Query: topicQuery, SelectedPubIds: selectedPublicationIds, NotSelectedPubIds: notSelectedPublicationIds, IEFix: ieFix},
-  function(data) {
-    __updateDataAndUI(data);
-    location.href = "#pubList";
-  }, "html");
+      function(data) {
+        __updateDataAndUI(data);
+        location.href = "#pubList";
+      }, "html");
 }
 
 function showStats() {
@@ -1021,35 +1029,35 @@ function changeStatus(nodeId, currentStatus) {
     width: 400,
     title: title,
     buttons: [{
-        text: getString('GML.yes'),
-        click: function() {
-          _updateTopicStatus(nodeId, newStatus, '1');
-          $(this).dialog("close");
-        }
-      }, {
-        text: getString('kmelia.folder.onlythisfolder'),
-        click: function() {
-          _updateTopicStatus(nodeId, newStatus, '0');
-          $(this).dialog("close");
-        }
-      }, {
-        text: getString('GML.cancel'),
-        click: function() {
-          $(this).dialog("close");
-        }
-      }]
+      text: getString('GML.yes'),
+      click: function() {
+        _updateTopicStatus(nodeId, newStatus, '1');
+        $(this).dialog("close");
+      }
+    }, {
+      text: getString('kmelia.folder.onlythisfolder'),
+      click: function() {
+        _updateTopicStatus(nodeId, newStatus, '0');
+        $(this).dialog("close");
+      }
+    }, {
+      text: getString('GML.cancel'),
+      click: function() {
+        $(this).dialog("close");
+      }
+    }]
   });
 }
 
 function _updateTopicStatus(nodeId, status, recursive) {
   $.post(getWebContext() + '/KmeliaAJAXServlet', {ComponentId: getComponentId(), Action: 'UpdateTopicStatus', Id: nodeId, Status: status, Recursive: recursive},
-  function(data) {
-    if (data === "ok") {
-      updateUIStatus(nodeId, status, recursive);
-    } else {
-      notyError(data);
-    }
-  }, 'text');
+      function(data) {
+        if (data === "ok") {
+          updateUIStatus(nodeId, status, recursive);
+        } else {
+          notyError(data);
+        }
+      }, 'text');
 }
 
 function movePublication(id, sourceId, targetId) {
@@ -1089,3 +1097,4 @@ function setDataInFolderDialog(name, desc) {
 function notifyOnFolder(componentId, folderId) {
   sp.messager.open(componentId, {nodeId: folderId});
 }
+
