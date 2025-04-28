@@ -377,7 +377,6 @@ function initOperations(id, op) {
 
   if (op.hideTopic) {
     menuItem = new YAHOO.widget.MenuItem(getString('TopicVisible2Invisible'), {url: "javascript:onclick=changeCurrentTopicStatus()"});
-    menuItem
     oMenu.addItem(menuItem, groupIndex);
 
     groupEmpty = false;
