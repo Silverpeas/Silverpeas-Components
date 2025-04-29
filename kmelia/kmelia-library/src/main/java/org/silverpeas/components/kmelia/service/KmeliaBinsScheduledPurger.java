@@ -26,11 +26,13 @@ package org.silverpeas.components.kmelia.service;
 
 import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.contribution.model.Contribution;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.initialization.Initialization;
+import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
+import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.scheduler.Job;
 import org.silverpeas.core.scheduler.JobExecutionContext;
 import org.silverpeas.core.scheduler.Scheduler;
@@ -42,7 +44,6 @@ import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.Date;
 
@@ -100,28 +101,33 @@ public class KmeliaBinsScheduledPurger implements Initialization {
       super(JOB_NAME);
     }
 
-    @Transactional
     @Override
     public void execute(final JobExecutionContext context) {
       int delay = getDeletionDelay();
       if (delay > 0) {
+        SilverLogger.getLogger(this)
+            .info("Purge Kmelia bins from contributions removed more than " + delay + " days");
         try {
-          final LocalDate now = LocalDate.now();
-          WAComponent.getByName(COMPONENT_NAME)
-              .ifPresent(component ->
-                  component.getAllInstanceIds()
-                      .forEach(instanceId -> {
-                        NodePK bin = new NodePK(NodePK.BIN_NODE_ID, instanceId);
-                        nodeService.getChildrenDetails(bin).stream()
-                            .filter(node -> isOlder(node, now))
-                            .forEach(topic ->
-                                deleter.deleteTopic(topic.getNodePK()));
-                        publicationService.getDetailsByFatherPK(bin).stream()
-                            .filter(publication -> isOlder(publication, now))
-                            .forEach(publication ->
-                                deleter.deletePublication(publication.getPK()));
-                      }));
-
+          // browse all the root items in each Kmelia bins and for each of them apply the purge algo
+          Transaction.performInOne(() -> {
+            final LocalDate now = LocalDate.now();
+            WAComponent.getByName(COMPONENT_NAME)
+                .ifPresent(component ->
+                    component.getAllInstanceIds().stream()
+                        .map(id -> COMPONENT_NAME + id)
+                        .forEach(instanceId -> {
+                          NodePK bin = new NodePK(NodePK.BIN_NODE_ID, instanceId);
+                          nodeService.getChildrenDetails(bin).stream()
+                              .filter(node -> isOlder(node, now))
+                              .forEach(topic ->
+                                  deleter.deleteTopic(topic.getNodePK()));
+                          publicationService.getDetailsByFatherPK(bin).stream()
+                              .filter(publication -> isOlder(publication, now))
+                              .forEach(publication ->
+                                  deleter.deletePublication(publication.getPK()));
+                        }));
+            return null;
+          });
         } catch (SilverpeasRuntimeException e) {
           SilverLogger.getLogger(this).error(e.getMessage(), e);
         }
@@ -134,8 +140,26 @@ public class KmeliaBinsScheduledPurger implements Initialization {
       return Math.max(delay, 0);
     }
 
-    private boolean isOlder(Contribution contribution, LocalDate date) {
-      final LocalDate removeDayDateWithDelay = toLocalDate(contribution.getLastUpdateDate())
+    private boolean isOlder(PublicationDetail publication, LocalDate date) {
+      // old publication in bin before the adding of the removal properties. In such situation, it
+      // is automatically deleted
+      if (!publication.isRemoved()) {
+        return true;
+      }
+      return isOlder(publication.getRemovalDate(), date);
+    }
+
+    private boolean isOlder(NodeDetail topic, LocalDate date) {
+      // old topic in bin before the adding of the removal properties. In such situation, it is
+      // automatically deleted
+      if (!topic.isRemoved()) {
+        return true;
+      }
+      return isOlder(topic.getRemovalDate(), date);
+    }
+
+    private boolean isOlder(Date removalDate, LocalDate date) {
+      final LocalDate removeDayDateWithDelay = toLocalDate(removalDate)
           .plusDays(getDeletionDelay());
       return removeDayDateWithDelay.isBefore(date) ||
           removeDayDateWithDelay.isEqual(date);

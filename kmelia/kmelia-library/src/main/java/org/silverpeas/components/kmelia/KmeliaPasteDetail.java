@@ -8,7 +8,7 @@ import org.silverpeas.core.node.model.NodePK;
 public class KmeliaPasteDetail {
 
   private String userId;
-  private NodePK toPK;
+  private final NodePK toPK;
   private NodePK fromPK;
   private String targetValidatorIds;
   private String status;
