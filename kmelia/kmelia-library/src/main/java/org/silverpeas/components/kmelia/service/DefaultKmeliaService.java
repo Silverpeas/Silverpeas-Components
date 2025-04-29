@@ -805,6 +805,9 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
     PublicationPK pubPK;
     try {
       PublicationDetail detail = changePublicationStatusOnCreation(pubDetail, fatherPK);
+      if (isInTrash(fatherPK)) {
+        detail.setRemovalStatus(detail.getCreationDate(), detail.getCreatorId());
+      }
       // create the publication
       pubPK = publicationService.createPublication(detail);
       detail.getPK().setId(pubPK.getId());
@@ -1132,10 +1135,13 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
     if (to.isTrash()) {
       sendPublicationInBasket(pub.getPK());
     } else {
+      boolean isInTrash = isInTrash(to);
       // update parent
       publicationService.movePublication(pub.getPK(), to, false);
-      if (pub.isRemoved() && !to.isTrash()) {
+      if (pub.isRemoved() && !isInTrash) {
         publicationService.restorePublication(pub.getPK());
+      } else if (isInTrash) {
+        publicationService.removePublication(pub.getPK());
       }
       pub.setTargetValidatorId(pasteContext.getTargetValidatorIds());
       processPublicationAfterMove(pub, to, pasteContext.getUserId());
@@ -1233,6 +1239,14 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
       int toSilverObjectId = getSilverObjectId(pub.getPK());
       // add original positions to pasted publication
       pdcManager.addPositions(positions, toSilverObjectId, to.getInstanceId());
+
+      if (to.isTrash()) {
+        sendPublicationInBasket(pub.getPK());
+      } else if (isInTrash(to)) {
+        publicationService.removePublication(pub.getPK());
+      } else if (pub.isRemoved()) {
+        publicationService.restorePublication(pub.getPK());
+      }
     } catch (Exception e) {
       throw new KmeliaRuntimeException(e);
     }
@@ -1367,6 +1381,7 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
    * @param pubPK the unique identifier of the publication to delete.
    */
   @Override
+  @Transactional
   public void deletePublication(PublicationPK pubPK) {
     KmeliaOperationContext.about(DELETION);
     try {
@@ -1429,6 +1444,8 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
     updateSilverContentVisibility(pubPK);
 
     unIndexExternalElementsOfPublication(pubPK);
+
+    publicationService.removePublication(pubPK);
   }
 
   private void sendPublicationInBasket(PublicationPK pubPK) {
@@ -1440,17 +1457,19 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
         topic.getIdentifier().getComponentInstanceId());
 
     // get all the tree of folders, rooted to the topic, to be sent in the basket with the topic
-    final Collection<NodeDetail> children = nodeService.getDescendantDetails(topic.getNodePK());
-    for (final NodeDetail childTopic : children) {
+    List<NodeDetail> nodes = new ArrayList<>();
+    nodes.add(topic);
+    nodes.addAll(nodeService.getDescendantDetails(topic.getNodePK()));
+    for (final NodeDetail node : nodes) {
       // set the removal status of the child
-      nodeService.removeNode(childTopic);
+      nodeService.removeNode(node);
       // get all the direct publications in the topic child (including aliases)
       final Collection<PublicationDetail> publications =
-          publicationService.getDetailsByFatherPK(childTopic.getNodePK());
+          publicationService.getDetailsByFatherPK(node.getNodePK());
       // check each publication: if it is an alias, remove it, otherwise it is moved into the trash
       // with its topic
       for (PublicationDetail publication : publications) {
-        final KmeliaPublication kmeliaPublication = fromDetail(publication, childTopic.getNodePK());
+        final KmeliaPublication kmeliaPublication = fromDetail(publication, node.getNodePK());
         if (kmeliaPublication.isAlias()) {
           // remove only the alias
           final Collection<Location> aliases = singletonList(kmeliaPublication.getLocation());
@@ -1461,7 +1480,6 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
       }
     }
 
-    nodeService.removeNode(topic);
     nodeService.moveNode(topic.getNodePK(), trash);
   }
 
@@ -3940,7 +3958,7 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
       return;
     }
     NodeDetail folder = getNodeHeader(topic);
-    boolean isInTrash = nodeService.getPath(topic).get(1).getId().equals(NodePK.BIN_NODE_ID);
+    boolean isInTrash = isInTrash(topic);
     // check if user is allowed to delete this topic
     NodePK root = new NodePK(NodePK.ROOT_NODE_ID, topic.getInstanceId());
     if (SilverpeasRole.ADMIN.isInRole(getUserTopicProfile(topic, userId)) ||
@@ -3981,29 +3999,44 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
         instanceId.startsWith("toolbox");
   }
 
+  private void removeOrRestoreNode(NodeDetail node, boolean isRemoval) {
+    if (node.isRemoved() && !isRemoval) {
+      nodeService.restoreNode(node);
+    } else if (!node.isRemoved() && isRemoval) {
+      nodeService.removeNode(node);
+    }
+  }
+
+  private boolean isInTrash(NodePK nodePK) {
+    if (nodePK.isTrash()) {
+      return true;
+    } else if (nodePK.isRoot() || nodePK.isUnclassed()) {
+      return false;
+    }
+    var destinationPath = nodeService.getPath(nodePK);
+    return destinationPath.stream().anyMatch(NodeDetail::isBin);
+  }
+
   @SimulationActionProcess(elementLister = KmeliaNodeSimulationElementLister.class)
   @Action(ActionType.MOVE)
+  @Transactional
   @Override
   public void moveNode(@SourcePK NodePK nodePK, @TargetPK NodePK to,
       KmeliaPasteDetail pasteContext) {
     List<NodeDetail> treeToPaste = nodeService.getSubTree(nodePK);
-
+    boolean inTrash = isInTrash(to);
+    boolean movedToAnotherApp = !nodePK.getInstanceId().equals(to.getInstanceId());
     boolean rightsOnTopicsEnabled = isRightsOnTopicsEnabled(to.getInstanceId());
 
     // move node and subtree
     nodeService.moveNode(nodePK, to, rightsOnTopicsEnabled);
-    NodeDetail node = nodeService.getHeader(nodePK);
-    if (node.isRemoved() && !to.isTrash()) {
-      nodeService.restoreNode(node);
-    }
 
     for (NodeDetail fromNode : treeToPaste) {
       if (fromNode != null) {
         NodePK toNodePK = new NodePK(fromNode.getNodePK().getId(), to);
-        boolean movedToAnotherApp = !nodePK.getInstanceId().equals(to.getInstanceId());
-
+        NodeDetail toNode;
         if (movedToAnotherApp) {
-          NodeDetail toNode = nodeService.getDetail(toNodePK);
+          toNode = nodeService.getDetail(toNodePK);
 
           checkNodeRights(fromNode, toNode, rightsOnTopicsEnabled);
           // move rich description of node
@@ -4011,7 +4044,10 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
             WysiwygController.move(fromNode.getNodePK().getInstanceId(),
                 NODE_PREFIX + fromNode.getId(), to.getInstanceId(), NODE_PREFIX + toNodePK.getId());
           }
+        } else {
+          toNode = fromNode;
         }
+        removeOrRestoreNode(toNode, inTrash);
 
         // move publications of node
         movePublicationsOfTopic(fromNode.getNodePK(), toNodePK, pasteContext);
@@ -4072,6 +4108,7 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
     NodeDetail nodeToCopy = nodeService.getDetail(nodePKToCopy);
     NodeDetail father = getNodeHeader(targetPK);
     boolean rightsOnTopicsEnabled = isRightsOnTopicsEnabled(targetPK.getInstanceId());
+    boolean inTrash = isInTrash(targetPK);
 
     // paste topic
     NodePK nodePK = new NodePK(UNKNOWN, targetPK);
@@ -4080,6 +4117,11 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
     node.setCreatorId(userId);
     node.setRightsDependsOn(NodeDetail.NO_RIGHTS_DEPENDENCY);
     node.setCreationDate(new Date());
+    if (inTrash) {
+      node.setRemovalStatus(new Date(), userId);
+    } else {
+      node.setRemovalStatus(null, null);
+    }
     nodePK = nodeService.createNode(node, father);
 
     // duplicate the predefined classification on the PdC if any
@@ -4255,6 +4297,7 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
     newPubli.setTranslations(publiToCopy.getClonedTranslations());
     newPubli.setAuthor(publiToCopy.getAuthor());
     newPubli.setCreatorId(userId);
+    newPubli.setCreationDate(new Date());
     if (copyDetail.isPublicationContentMustBeCopied()) {
       newPubli.setInfoId(publiToCopy.getInfoId());
     }
