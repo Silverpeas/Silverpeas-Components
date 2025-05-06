@@ -62,7 +62,7 @@
       boolean isOwner = kmeliaScc.getSessionOwner();
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="<%= currentLang %>">
   <head>
   	<title></title>
     <view:looknfeel/>
@@ -74,7 +74,7 @@
       }
 
       function isCorrectForm() {
-        var result = false;
+        let result = false;
         ifCorrectFormExecute(function() {
           result = true;
         });
