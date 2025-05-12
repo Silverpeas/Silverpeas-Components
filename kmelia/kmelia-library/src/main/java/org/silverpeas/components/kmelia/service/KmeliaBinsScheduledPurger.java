@@ -25,6 +25,8 @@
 package org.silverpeas.components.kmelia.service;
 
 import org.silverpeas.core.admin.component.model.WAComponent;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.service.ComponentInstManager;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
@@ -46,6 +48,7 @@ import org.silverpeas.kernel.logging.SilverLogger;
 import javax.inject.Inject;
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.stream.Stream;
 
 import static org.silverpeas.core.util.DateUtil.toLocalDate;
 
@@ -66,6 +69,8 @@ public class KmeliaBinsScheduledPurger implements Initialization {
 
   @Inject
   private KmeliaDeleter deleter;
+  @Inject
+  private ComponentInstManager componentInstManager;
   @Inject
   private NodeService nodeService;
   @Inject
@@ -113,7 +118,7 @@ public class KmeliaBinsScheduledPurger implements Initialization {
             final LocalDate now = LocalDate.now();
             WAComponent.getByName(COMPONENT_NAME)
                 .ifPresent(component ->
-                    component.getAllInstanceIds().stream()
+                    getAllInstanceIds(component)
                         .map(id -> COMPONENT_NAME + id)
                         .forEach(instanceId -> {
                           NodePK bin = new NodePK(NodePK.BIN_NODE_ID, instanceId);
@@ -163,6 +168,14 @@ public class KmeliaBinsScheduledPurger implements Initialization {
           .plusDays(getDeletionDelay());
       return removeDayDateWithDelay.isBefore(date) ||
           removeDayDateWithDelay.isEqual(date);
+    }
+
+    private Stream<String> getAllInstanceIds(WAComponent component) {
+      try {
+        return Stream.of(componentInstManager.getAllCompoIdsByComponentName(component.getName()));
+      } catch (AdminException e) {
+        throw new SilverpeasRuntimeException(e);
+      }
     }
   }
 }
