@@ -151,6 +151,7 @@ import org.silverpeas.kernel.SilverpeasException;
 import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.kernel.util.StringUtil;
 
+import javax.inject.Inject;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -239,6 +240,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   // select/deselect all
   private boolean allPublicationsListSelected = false;
 
+  @Inject
   public KmeliaSessionController(MainSessionController mainSessionCtrl, ComponentContext context) {
     super(mainSessionCtrl, context, "org.silverpeas.kmelia.multilang.kmeliaBundle",
         "org.silverpeas.kmelia.settings.kmeliaIcons",
@@ -262,7 +264,18 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     return languages;
   }
 
-  private void init() {
+  public boolean isPasteNodeAllowed() throws ClipboardException {
+    SilverLogger.getLogger(this).info("isPasteNodeAllowed() nbSelectedObjects = {0}", getClipboardSelectedObjects().size());
+    return getClipboardSelectedObjects().stream().anyMatch(s->s.isDataFlavorSupported(NodeSelection.NodeDetailFlavor));
+  }
+
+  public boolean isPastePublicationAllowed(boolean isRoot) throws ClipboardException {
+    SilverLogger.getLogger(this).info("isPastePublicationAllowed() isRoot = {0} - nbSelectedObjects = {1}", isRoot,getClipboardSelectedObjects().size());
+    return getClipboardSelectedObjects().stream().anyMatch(s->s.isDataFlavorSupported(
+        PublicationSelection.PublicationDetailFlavor)) && (!isRoot || getNbPublicationsOnRoot()==0);
+  }
+
+  private void init()  {
     sortValue = new KmeliaPublicationSort(getDefaultSortValue());
 
     // Remove all data store by this SessionController
@@ -2324,7 +2337,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
         if (selection == null) {
           continue;
         }
-        if (selection.isDataFlavorSupported(PublicationSelection.PublicationDetailFlavor)) {
+        if (selection.isDataFlavorSupported(PublicationSelection.PublicationDetailFlavor) && isPublicationAllowed(targetNode)) {
           PublicationSelection.TransferData data =
               (PublicationSelection.TransferData) selection.getTransferData(
                   PublicationSelection.PublicationDetailFlavor);
@@ -2377,6 +2390,15 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       throw new KmeliaRuntimeException(e);
     }
     clipboardPasteDone();
+  }
+
+  /**
+   * Is publications can be created in this node
+   * @param targetNode
+   * @return true or false
+   */
+  private boolean isPublicationAllowed(final NodeDetail targetNode) {
+    return !targetNode.isRoot() || (targetNode.isRoot() && getNbPublicationsOnRoot()==0);
   }
 
   private void pasteClipboardSelection(ClipboardSelection selection,
@@ -3312,10 +3334,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       if (pubTemplate != null) {
         formUpdate = pubTemplate.getUpdateForm();
         RecordSet recordSet = pubTemplate.getRecordSet();
-
-        DataRecord record = recordSet.getEmptyRecord();
-
-        formUpdate.setData(record);
+        DataRecord theRecord = recordSet.getEmptyRecord();
+        formUpdate.setData(theRecord);
       }
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e);
@@ -3357,13 +3377,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     return form;
   }
 
-  private void setSearchCriteria(DataRecord record) {
+  private void setSearchCriteria(DataRecord theRecord) {
     if (getSearchContext() != null) {
       QueryDescription queryDescription = getSearchContext().getQueryDescription();
       if (queryDescription != null && queryDescription.getMultiFieldQuery() != null) {
         for (FieldDescription fieldDescription : queryDescription.getMultiFieldQuery()) {
           try {
-            Field field = record.getField(extractFieldName(fieldDescription.getFieldName()));
+            Field field = theRecord.getField(extractFieldName(fieldDescription.getFieldName()));
             if (field != null) {
               field.setValue(
                   fieldDescription.getContent().replace(" OR ", "##").replace(" AND ", "##"));
@@ -3606,4 +3626,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       selectedPublicationPKs.add(publication.getPk());
     }
   }
+
+
+
+
 }
