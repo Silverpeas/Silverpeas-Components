@@ -118,7 +118,7 @@ public class JSONServlet extends HttpServlet {
           try {
             addPublicationOperations(kmeliaSC, operations, role, isRoot, user);
           } catch (ClipboardException e) {
-            throw new RuntimeException(e);
+            SilverLogger.getLogger(this).error(e);
           }
         }
       }
