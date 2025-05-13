@@ -28,6 +28,7 @@ import org.silverpeas.components.kmelia.service.KmeliaHelper;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.clipboard.ClipboardException;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.util.JSONCodec;
@@ -51,6 +52,7 @@ public class JSONServlet extends HttpServlet {
 
   private static final String OP_DELETE_PUBLICATIONS = "deletePublications";
   private static final String OP_EXPORT_PUBLICATIONS = "exportSelection";
+
 
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res) {
@@ -113,7 +115,11 @@ public class JSONServlet extends HttpServlet {
           addTopicOperations(kmeliaSC, operations, role, isRoot, node, user);
 
           // publication operations
-          addPublicationOperations(kmeliaSC, operations, role, isRoot, user);
+          try {
+            addPublicationOperations(kmeliaSC, operations, role, isRoot, user);
+          } catch (ClipboardException e) {
+            throw new RuntimeException(e);
+          }
         }
       }
       return operations;
@@ -123,7 +129,7 @@ public class JSONServlet extends HttpServlet {
 
   private void addPublicationOperations(final KmeliaSessionController kmeliaSC,
       final JSONCodec.JSONObject operations, final Role role,
-      final boolean isRoot, final UserDetail user) {
+      final boolean isRoot, final UserDetail user) throws ClipboardException {
     boolean publicationsInTopic =
         !isRoot || (kmeliaSC.getNbPublicationsOnRoot() == 0 || !kmeliaSC.isTreeStructure());
     boolean addPublicationAllowed = !role.isUser() && publicationsInTopic;
@@ -144,7 +150,10 @@ public class JSONServlet extends HttpServlet {
     operations.put("importFiles", addPublicationAllowed && kmeliaSC.isImportFilesAllowed());
     operations.put("copyPublications", copyCutAllowed);
     operations.put("cutPublications", copyCutAllowed);
-    operations.put("paste", !role.isUser());
+
+    boolean pasteNodeAllowed = kmeliaSC.isPasteNodeAllowed();
+    boolean pastePublicationAllowed = kmeliaSC.isPastePublicationAllowed(isRoot);
+    operations.put("paste", !role.isUser() && (pasteNodeAllowed || pastePublicationAllowed));
 
     operations.put("putPublicationsInBasket", publicationsInTopic && displayPutIntoBasketSelectionShortcut());
 
