@@ -650,22 +650,25 @@
         </label>
         <order>28</order>
         <mandatory>false</mandatory>
-        <value></value>
+        <value>60</value>
         <type>text</type>
         <size>5</size>
         <updatable>always</updatable>
         <help>
-          <message lang="fr">Cette option permet de choisir un délais de réservation des fichiers
-            joints et d'en gérer les retards.
-            Ce délais est exprimé en jours et ne tiens pas compte des samedis et dimanches.
+          <message lang="fr">Cette option permet de choisir un délai de réservation des fichiers
+            et d'en gérer les retards.
+            Ce délai est exprimé en jours et ne tient pas compte des samedis et dimanches.
+            Au terme de ce délai, le fichier est déverrouillé automatiquement.
           </message>
-          <message lang="en">This option defines a maximum duration for booking a file and managing
-            the backlog.
+          <message lang="en">This option defines a maximum duration for booking a file and
+            managing the backlog.
             This duration is expressed in days, and week-ends are not taken into account.
+            At the end of this period, the file is automatically unlocked.
           </message>
           <message lang="de">Diese Option erlaubt, ein Buchungsfristen der verbundenen Dateien zu
             wählen und die Verspätungen zu verwalten.
             Die Frist ist in den Tagen ausgedrückt und berücksichtige keine Samstage und Sonntage.
+            Nach Ablauf dieser Frist wird die Datei automatisch entsperrt.
           </message>
         </help>
       </parameter>
