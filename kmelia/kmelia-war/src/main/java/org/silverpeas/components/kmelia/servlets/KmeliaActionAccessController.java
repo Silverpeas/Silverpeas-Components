@@ -36,7 +36,7 @@ import java.util.Map;
 @Singleton
 public class KmeliaActionAccessController {
 
-  private Map<String, SilverpeasRole> actionRole = new HashMap<>();
+  private final Map<String, SilverpeasRole> actionRole = new HashMap<>();
 
   public KmeliaActionAccessController() {
     actionRole.put("Main", SilverpeasRole.READER);
@@ -57,6 +57,6 @@ public class KmeliaActionAccessController {
    */
   public boolean hasRightAccess(String action, SilverpeasRole role) {
     boolean actionExist = actionRole.containsKey(action);
-    return (actionExist && role.isGreaterThanOrEquals(actionRole.get(action))) || !actionExist;
+    return !actionExist || role.isGreaterThanOrEquals(actionRole.get(action));
   }
 }

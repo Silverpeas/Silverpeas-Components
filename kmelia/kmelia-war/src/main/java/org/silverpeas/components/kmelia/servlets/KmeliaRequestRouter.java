@@ -1525,6 +1525,11 @@ public class KmeliaRequestRouter extends ComponentRequestRouter<KmeliaSessionCon
   @Override
   protected boolean checkUserAuthorization(final String function,
       final KmeliaSessionController kmelia) {
+    if (function.startsWith("Main")) {
+      // take the case the user go back to the kmelia instance after accessing a topic for which
+      // he doesn't have access right. In this case, we accept to lost the last accessed folder.
+      kmelia.setSessionTopic(null);
+    }
     KmeliaActionAccessController actionAccessController =
         ServiceProvider.getService(KmeliaActionAccessController.class);
     return actionAccessController.hasRightAccess(function, kmelia.getHighestSilverpeasUserRole());
