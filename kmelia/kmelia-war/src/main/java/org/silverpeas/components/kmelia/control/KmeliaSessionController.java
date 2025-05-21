@@ -151,7 +151,6 @@ import org.silverpeas.kernel.SilverpeasException;
 import org.silverpeas.kernel.util.Pair;
 import org.silverpeas.kernel.util.StringUtil;
 
-import javax.inject.Inject;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -240,7 +239,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   // select/deselect all
   private boolean allPublicationsListSelected = false;
 
-  @Inject
   public KmeliaSessionController(MainSessionController mainSessionCtrl, ComponentContext context) {
     super(mainSessionCtrl, context, "org.silverpeas.kmelia.multilang.kmeliaBundle",
         "org.silverpeas.kmelia.settings.kmeliaIcons",
@@ -265,14 +263,14 @@ public class KmeliaSessionController extends AbstractComponentSessionController
   }
 
   public boolean isPasteNodeAllowed() throws ClipboardException {
-    SilverLogger.getLogger(this).info("isPasteNodeAllowed() nbSelectedObjects = {0}", getClipboardSelectedObjects().size());
+    SilverLogger.getLogger(this).debug("isPasteNodeAllowed() nbSelectedObjects = {0}", getClipboardSelectedObjects().size());
     return getClipboardSelectedObjects().stream().anyMatch(s->s.isDataFlavorSupported(NodeSelection.NodeDetailFlavor));
   }
 
   public boolean isPastePublicationAllowed(boolean isRoot) throws ClipboardException {
-    SilverLogger.getLogger(this).info("isPastePublicationAllowed() isRoot = {0} - nbSelectedObjects = {1}", isRoot,getClipboardSelectedObjects().size());
+    SilverLogger.getLogger(this).debug("isPastePublicationAllowed() isRoot = {0} - nbSelectedObjects = {1}", isRoot,getClipboardSelectedObjects().size());
     return getClipboardSelectedObjects().stream().anyMatch(s->s.isDataFlavorSupported(
-        PublicationSelection.PublicationDetailFlavor)) && (!isRoot || getNbPublicationsOnRoot()==0);
+        PublicationSelection.PublicationDetailFlavor)) && (isPublicationAllowed(isRoot));
   }
 
   private void init()  {
@@ -2337,7 +2335,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
         if (selection == null) {
           continue;
         }
-        if (selection.isDataFlavorSupported(PublicationSelection.PublicationDetailFlavor) && isPublicationAllowed(targetNode)) {
+        if (selection.isDataFlavorSupported(PublicationSelection.PublicationDetailFlavor) && isPublicationAllowed(targetNode.isRoot())) {
           PublicationSelection.TransferData data =
               (PublicationSelection.TransferData) selection.getTransferData(
                   PublicationSelection.PublicationDetailFlavor);
@@ -2394,11 +2392,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController
 
   /**
    * Is publications can be created in this node
-   * @param targetNode
+   * @param isRoot true or false
    * @return true or false
    */
-  private boolean isPublicationAllowed(final NodeDetail targetNode) {
-    return !targetNode.isRoot() || (targetNode.isRoot() && getNbPublicationsOnRoot()==0);
+  private boolean isPublicationAllowed(final boolean isRoot) {
+    return (!isRoot) || (getNbPublicationsOnRoot()==0);
   }
 
   private void pasteClipboardSelection(ClipboardSelection selection,
