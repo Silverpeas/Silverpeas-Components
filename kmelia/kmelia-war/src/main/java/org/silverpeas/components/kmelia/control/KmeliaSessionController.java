@@ -262,7 +262,18 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     return languages;
   }
 
-  private void init() {
+  public boolean isPasteNodeAllowed() throws ClipboardException {
+    SilverLogger.getLogger(this).debug("isPasteNodeAllowed() nbSelectedObjects = {0}", getClipboardSelectedObjects().size());
+    return getClipboardSelectedObjects().stream().anyMatch(s->s.isDataFlavorSupported(NodeSelection.NodeDetailFlavor));
+  }
+
+  public boolean isPastePublicationAllowed(boolean isRoot) throws ClipboardException {
+    SilverLogger.getLogger(this).debug("isPastePublicationAllowed() isRoot = {0} - nbSelectedObjects = {1}", isRoot,getClipboardSelectedObjects().size());
+    return getClipboardSelectedObjects().stream().anyMatch(s->s.isDataFlavorSupported(
+        PublicationSelection.PublicationDetailFlavor)) && (isPublicationAllowed(isRoot));
+  }
+
+  private void init()  {
     sortValue = new KmeliaPublicationSort(getDefaultSortValue());
 
     // Remove all data store by this SessionController
@@ -2324,7 +2335,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
         if (selection == null) {
           continue;
         }
-        if (selection.isDataFlavorSupported(PublicationSelection.PublicationDetailFlavor)) {
+        if (selection.isDataFlavorSupported(PublicationSelection.PublicationDetailFlavor) && isPublicationAllowed(targetNode.isRoot())) {
           PublicationSelection.TransferData data =
               (PublicationSelection.TransferData) selection.getTransferData(
                   PublicationSelection.PublicationDetailFlavor);
@@ -2377,6 +2388,15 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       throw new KmeliaRuntimeException(e);
     }
     clipboardPasteDone();
+  }
+
+  /**
+   * Is publications can be created in this node
+   * @param isRoot true or false
+   * @return true or false
+   */
+  private boolean isPublicationAllowed(final boolean isRoot) {
+    return (!isRoot) || (getNbPublicationsOnRoot()==0);
   }
 
   private void pasteClipboardSelection(ClipboardSelection selection,
@@ -3312,10 +3332,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       if (pubTemplate != null) {
         formUpdate = pubTemplate.getUpdateForm();
         RecordSet recordSet = pubTemplate.getRecordSet();
-
-        DataRecord record = recordSet.getEmptyRecord();
-
-        formUpdate.setData(record);
+        DataRecord theRecord = recordSet.getEmptyRecord();
+        formUpdate.setData(theRecord);
       }
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e);
@@ -3357,13 +3375,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     return form;
   }
 
-  private void setSearchCriteria(DataRecord record) {
+  private void setSearchCriteria(DataRecord theRecord) {
     if (getSearchContext() != null) {
       QueryDescription queryDescription = getSearchContext().getQueryDescription();
       if (queryDescription != null && queryDescription.getMultiFieldQuery() != null) {
         for (FieldDescription fieldDescription : queryDescription.getMultiFieldQuery()) {
           try {
-            Field field = record.getField(extractFieldName(fieldDescription.getFieldName()));
+            Field field = theRecord.getField(extractFieldName(fieldDescription.getFieldName()));
             if (field != null) {
               field.setValue(
                   fieldDescription.getContent().replace(" OR ", "##").replace(" AND ", "##"));
@@ -3606,4 +3624,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       selectedPublicationPKs.add(publication.getPk());
     }
   }
+
+
+
+
 }

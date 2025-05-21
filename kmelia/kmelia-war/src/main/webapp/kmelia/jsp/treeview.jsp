@@ -28,6 +28,7 @@
 <%@page import="org.silverpeas.core.admin.user.model.SilverpeasRole"%>
 <%@ page import="org.silverpeas.core.i18n.I18NHelper" %>
 <%@ page import="org.silverpeas.core.webapi.node.NodeType" %>
+<%@ page import="org.silverpeas.components.kmelia.service.KmeliaService" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="checkKmelia.jsp" %>
@@ -71,6 +72,11 @@
   boolean userCanManageRoot = "admin".equalsIgnoreCase(profile);
   boolean userCanManageTopics = rightsOnTopics || "admin".equalsIgnoreCase(profile) || kmeliaScc.isTopicManagementDelegated();
   boolean userCanEmptyTrash = kmeliaScc.isSuppressionAllowed(profile);
+
+  boolean isPasteNodeAllowed = kmeliaScc.isPasteNodeAllowed();
+  NodeDetail nodeDetail = KmeliaService.get().getNodeHeader(id, kmeliaScc.getComponentId());
+  boolean isPastePublicationAllowed = kmeliaScc.isPastePublicationAllowed(nodeDetail.isRoot());
+
 %>
 <view:sp-page>
 <view:sp-head-part withCheckFormScript="true">
@@ -537,7 +543,9 @@
           const node = getTreeview().get_node(obj.reference);
           cutNode(node.id);
         }
-      },
+      }
+      <% if (isPasteNodeAllowed || isPastePublicationAllowed) { %>
+      ,
       pasteItem: {
         label: "<%=resources.getString("GML.paste")%>",
         action: function (obj) {
@@ -546,6 +554,8 @@
         },
         "separator_after": true
       }
+      <% } %>
+
       <% if (kmeliaScc.isWysiwygOnTopicsEnabled()) { %>
       ,
       wysiwygItem: {
