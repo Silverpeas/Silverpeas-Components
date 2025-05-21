@@ -39,7 +39,6 @@
 <c:set var="listNews" value="${requestScope.ListNews}"/>
 <c:set var="isAdmin" value="${sessionController.admin}" />
 <c:set var="componentId" value="${requestScope.browseContext[3]}"/>
-<c:set var="context" value="${requestScope.context}"/>
 
 <view:sp-page angularJsAppName="silverpeas.delegatedNews">
   <view:sp-head-part withCheckFormScript="true">
@@ -165,7 +164,7 @@
       });
       
       function sortDelegatedNews(updatedDelegatedNewsJSON){
-        let url = "${context}/services/delegatednews/${componentId}";
+        let url = webContext + "/services/delegatednews/${componentId}";
         let ajaxRequest = window.sp.ajaxRequest(url).byPutMethod();
         ajaxRequest.sendAndPromiseJsonResponse(updatedDelegatedNewsJSON).then(function(data) {
           listDelegatedNewsJSON = data;
@@ -214,7 +213,7 @@
       }
       
       function deleteDelegagedNews(updatedDelegatedNews) {
-        let url = "${context}/services/delegatednews/${componentId}";
+        let url = webContext + "/services/delegatednews/${componentId}";
         let ajaxRequest = window.sp.ajaxRequest(url).byPutMethod();
         ajaxRequest.sendAndPromiseJsonResponse(updatedDelegatedNews).then(function(data) {
           let listPubIdToDelete = getAllPubIdToDelete(data);
