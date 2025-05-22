@@ -166,10 +166,10 @@ public class WebSiteSessionController extends AbstractComponentSessionController
     }
   }
 
-  public synchronized NodePK updateFolderHeader(NodeDetail nd, String alertType)
+  public synchronized void updateFolderHeader(NodeDetail nd)
       throws WebSitesException {
     try {
-      return getWebSiteService().updateFolder(nd, sessionTopic.getNodePK());
+      getWebSiteService().updateFolder(nd, sessionTopic.getNodePK());
     } catch (Exception re) {
       throw new WebSitesException("WebSiteSessionController.updateFolderHeader()",
           SilverpeasException.ERROR, "webSites.EX_UPDATE_FOLDER_HEADER_FAILED", re);
@@ -185,9 +185,9 @@ public class WebSiteSessionController extends AbstractComponentSessionController
     }
   }
 
-  public synchronized NodePK addFolder(NodeDetail nd, String alertType) throws WebSitesException {
+  public synchronized void addFolder(NodeDetail nd) throws WebSitesException {
     try {
-      return getWebSiteService().addFolder(nd, sessionTopic.getNodePK(), getUserDetail());
+      getWebSiteService().addFolder(nd, sessionTopic.getNodePK(), getUserDetail());
     } catch (Exception re) {
       throw new WebSitesException("WebSiteSessionController.addFolder()", SilverpeasException.ERROR,
           "webSites.EX_ADD_FOLDER_FAILED", re);

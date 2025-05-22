@@ -760,7 +760,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     NodeDetail previousTopic = getNodeHeader(topic.getId());
     updateTopicHeader(topic, alertType);
     if (!previousTopic.haveLocalRights() && topic.haveLocalRights()) {
-      initTopicSpecificAdminProfiles(topic.getNodePK(), topic.getFatherPK());
+      initTopicSpecificAdminProfiles(topic, topic.getFatherPK());
     }
   }
 
@@ -776,8 +776,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     if (isTopicAdmin(nd.getNodePK().getId())) {
       nd.setCreatorId(getUserId());
       nd.setCreationDate(new Date());
-      final NodePK updatedNodePK = getKmeliaService().updateTopic(nd, alertType);
-      if (updatedNodePK.getId().equals(getCurrentFolderId())) {
+      final NodeDetail updatedNode = getKmeliaService().updateTopic(nd, alertType);
+      if (updatedNode.getId().equals(getCurrentFolderId())) {
         processBreadcrumb(getCurrentFolderId());
       }
     }
@@ -793,16 +793,15 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     nd.getNodePK().setComponentName(getComponentId());
     nd.setCreatorId(getUserId());
     NodePK parentPk = getNodePK(parentId);
-    NodePK pk = getKmeliaService().addSubTopic(parentPk, nd, alertType);
-    initTopicSpecificAdminProfiles(pk, parentPk);
+    NodeDetail node = getKmeliaService().addSubTopic(parentPk, nd, alertType);
+    initTopicSpecificAdminProfiles(node, parentPk);
 
-    return pk;
+    return node.getNodePK();
   }
 
-  private void initTopicSpecificAdminProfiles(NodePK pk, NodePK parentPk) {
+  private void initTopicSpecificAdminProfiles(NodeDetail node, NodePK parentPk) {
     // by default, sets father's admin rights in the case of specific rights
     // to prevent no access to users having some rights with the father topic
-    NodeDetail node = getNodeHeader(pk.getId());
     String parentId = parentPk.getId();
     if (node.haveLocalRights()) {
       ProfileInst parentProfile;
@@ -813,7 +812,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
         parentProfile = getRecursiveTopicProfile(profileAdmin, parentId);
       }
       if (parentProfile != null) {
-        updateTopicRole(profileAdmin, pk.getId(),
+        updateTopicRole(profileAdmin, node.getId(),
             parentProfile.getAllGroups().toArray(new String[0]),
             parentProfile.getAllUsers().toArray(new String[0]));
       }

@@ -217,10 +217,9 @@ public class FolderResource extends RESTWebService {
     String description = nodeAttr.getDescription();
 
     try {
-      String nodeId = getKmeliaService().createTopic(
+      NodeDetail node = getKmeliaService().createTopic(
           componentId, parentNodeId, null, userId, nodeName, description);
 
-      NodeDetail node = getNodeDetail(nodeId);
       URI uri = getUri().getRequestUri();
       NodeEntity newNodeEntity = NodeEntity.fromNodeDetail(getHighestUserRoleIfAny(), node, uri);
 
@@ -334,14 +333,6 @@ public class FolderResource extends RESTWebService {
       decorateRoot(entity, language);
     }
     return entity;
-  }
-
-  private NodeDetail getNodeDetail(String id) {
-    try {
-      return getNodeService().getDetail(getNodePK(id));
-    } catch (Exception e) {
-      throw new WebApplicationException(e, Status.INTERNAL_SERVER_ERROR);
-    }
   }
 
   private NodePK getNodePK(String id) {

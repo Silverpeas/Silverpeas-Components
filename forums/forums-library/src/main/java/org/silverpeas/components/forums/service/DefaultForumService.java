@@ -1015,10 +1015,9 @@ public class DefaultForumService implements ForumService {
 
   @Transactional(Transactional.TxType.REQUIRED)
   @Override
-  public String createCategory(NodeDetail category) {
+  public void createCategory(NodeDetail category) {
     try {
-      NodePK nodePK = node.createNode(category, new NodeDetail());
-      return nodePK.getId();
+      node.createNode(category, new NodeDetail());
     } catch (Exception e) {
       throw new ForumsRuntimeException(e);
     }

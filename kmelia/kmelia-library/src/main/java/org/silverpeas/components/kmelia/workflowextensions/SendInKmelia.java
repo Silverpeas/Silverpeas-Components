@@ -78,9 +78,7 @@ import java.io.FileInputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Named("SendInKmeliaHandler")
 public class SendInKmelia extends ExternalActionImpl {
@@ -142,7 +140,7 @@ public class SendInKmelia extends ExternalActionImpl {
     ResourceReference fromPK = new ResourceReference(getProcessInstance().getInstanceId(),
         getProcessInstance().getModelId());
     ResourceReference toPK = new ResourceReference(pubPK);
-    copyFiles(fromPK, toPK, DocumentType.attachment, DocumentType.attachment);
+    copyFiles(fromPK, toPK, DocumentType.attachment);
 
     if (isHistoryEnable && !isHistoryFirstAdding) {
       addPdfHistory(pdfHistoryName, role, pubPK, userId);
@@ -154,7 +152,7 @@ public class SendInKmelia extends ExternalActionImpl {
       populateFields(pubId, fromPK, toPK, xmlFormName);
     } else {
       // target app do not use form : copy files of worflow folder
-      copyFiles(fromPK, toPK, DocumentType.form, DocumentType.attachment);
+      copyFiles(fromPK, toPK, DocumentType.form);
     }
 
     Parameter draftOutParameter = getTriggerParameter("forceDraftOut");
@@ -272,21 +270,18 @@ public class SendInKmelia extends ExternalActionImpl {
     return null;
   }
 
-  private Map<String, String> copyFiles(ResourceReference fromPK, ResourceReference toPK,
-      DocumentType fromType, DocumentType toType) {
-    Map<String, String> fileIds = new HashMap<>();
+  private void copyFiles(ResourceReference fromPK, ResourceReference toPK,
+      DocumentType fromType) {
     try {
       List<SimpleDocument> origins = AttachmentServiceProvider.getAttachmentService()
           .listDocumentsByForeignKeyAndType(fromPK, fromType, getLanguage());
       for (SimpleDocument origin : origins) {
-        SimpleDocumentPK copyPk = copyFile(origin, toPK, toType);
-        fileIds.put(origin.getId(), copyPk.getId());
+        copyFile(origin, toPK, DocumentType.attachment);
       }
 
     } catch (AttachmentException e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
-    return fileIds;
   }
 
   private SimpleDocumentPK copyFileWithoutDocumentTypeChange(SimpleDocument file,
@@ -465,10 +460,7 @@ public class SendInKmelia extends ExternalActionImpl {
         fieldValue = sw.toString();
       }
 
-      boolean displayField = true;
-      if (!Util.isEmptyFieldsDisplayed() && !StringUtil.isDefined(fieldValue)) {
-        displayField = false;
-      }
+      boolean displayField = Util.isEmptyFieldsDisplayed() || StringUtil.isDefined(fieldValue);
 
       if (displayField) {
         PdfPCell cell = new PdfPCell(new Phrase(fieldLabel, fontLabel));
@@ -599,16 +591,16 @@ public class SendInKmelia extends ExternalActionImpl {
             newNode.setNodePK(new NodePK(UNKNOWN, targetId));
             newNode.setFatherPK(new NodePK(parentId, targetId));
             newNode.setCreatorId(userId);
-            NodePK newNodePK;
+            NodeDetail node;
             try {
-              newNodePK = getNodeService().createNode(newNode);
+              node = getNodeService().createNode(newNode);
             } catch (Exception e) {
               SilverLogger.getLogger(this)
                   .warn("Cannot create node {0} in path {1}: {2}", name, explicitPath,
                       e.getMessage());
               return "0";
             }
-            parentId = newNodePK.getId();
+            parentId = node.getId();
           }
         }
         return parentId;

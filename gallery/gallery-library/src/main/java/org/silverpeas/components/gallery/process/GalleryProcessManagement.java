@@ -80,7 +80,6 @@ public class GalleryProcessManagement {
 
   /**
    * Execute the transactional processing
-   * @throws Exception
    */
   public void execute() {
     Transaction.performInOne(() -> {
@@ -98,14 +97,6 @@ public class GalleryProcessManagement {
    * Media
    */
 
-  /**
-   * Adds processes to create the given media
-   * @param media
-   * @param albumId
-   * @param file
-   * @param watermark
-   * @param delegate
-   */
   public void addCreateMediaProcesses(final Media media, final String albumId, final Object file,
       final Watermark watermark, final MediaDataCreateDelegate delegate) {
     processList.add(GalleryCreateMediaDataProcess.getInstance(media, albumId, delegate));
@@ -114,12 +105,6 @@ public class GalleryProcessManagement {
     processList.add(GalleryIndexMediaDataProcess.getInstance(media));
   }
 
-  /**
-   * Adds processes to update the given media
-   * @param media
-   * @param watermark
-   * @param delegate
-   */
   public void addUpdateMediaProcesses(final Media media, final Watermark watermark,
       final MediaDataUpdateDelegate delegate) {
     processList.add(GalleryUpdateMediaDataProcess.getInstance(media, delegate));
@@ -134,7 +119,7 @@ public class GalleryProcessManagement {
 
   /**
    * Adds processes to index the given media
-   * @param media
+   * @param media the media to index
    */
   public void addIndexMediaProcesses(final Media media) {
     processList.add(GalleryIndexMediaDataProcess.getInstance(media));
@@ -142,7 +127,7 @@ public class GalleryProcessManagement {
 
   /**
    * Adds processes to delete the given media
-   * @param media
+   * @param media the media to delete
    */
   public void addDeleteMediaProcesses(final Media media) {
     processList.add(GalleryDeleteMediaDataProcess.getInstance(media));
@@ -150,19 +135,13 @@ public class GalleryProcessManagement {
     processList.add(GalleryDeindexMediaDataProcess.getInstance(media));
   }
 
-  /**
-   * Adds processes to paste the given media to the given album
-   * @param mediaToPaste
-   * @param toAlbum
-   * @param isCutted
-   */
   public void addPasteMediaProcesses(final Media mediaToPaste, final NodePK toAlbum,
-      final boolean isCutted) {
+      final boolean isCut) {
     final MediaPK fromMediaPk = new MediaPK(mediaToPaste.getId(), mediaToPaste.getInstanceId());
     processList.add(GalleryPasteMediaDataProcess
-        .getInstance(mediaToPaste, toAlbum.getId(), fromMediaPk, isCutted));
-    processList.add(GalleryPasteMediaFileProcess.getInstance(mediaToPaste, fromMediaPk, isCutted));
-    if (isCutted) {
+        .getInstance(mediaToPaste, toAlbum.getId(), fromMediaPk, isCut));
+    processList.add(GalleryPasteMediaFileProcess.getInstance(mediaToPaste, fromMediaPk, isCut));
+    if (isCut) {
       processList.add(GalleryDeindexMediaDataProcess.getInstance(mediaToPaste));
       processList.add(GalleryIndexMediaDataProcess.getInstance(mediaToPaste));
     }
@@ -176,12 +155,16 @@ public class GalleryProcessManagement {
    * Recursive method to add processes to create albums from a file repository.
    * This method performs a transaction between each file to save.<br>
    * It could happen, in the very particular case of space memory quota exception, that an album
-   * is created with no media inside...
-   * @throws Exception
+   * is created with no media inside.
+   * @param user the user invoking the import.
+   * @param componentInstanceId the unique identifier of a Gallery instance.
+   * @param repository the repository in the filesystem into which the album will be imported.
+   * @param albumId the unique identifier of the father album.
+   * @param delegate media data
    */
   public static void importFromRepositoryProcesses(final UserDetail user,
       final String componentInstanceId, final File repository, final String albumId,
-      final MediaDataCreateDelegate delegate) throws Exception {
+      final MediaDataCreateDelegate delegate) {
 
     final Watermark watermark = getWatermark(componentInstanceId);
 
@@ -190,8 +173,7 @@ public class GalleryProcessManagement {
       for (final File file : fileList) {
         if (file.isFile()) {
           MediaMimeType mediaMimeType = MediaMimeType.fromFile(file);
-          Media newMedia = null;
-          newMedia = getMediaByType(mediaMimeType, newMedia);
+          Media newMedia = getMediaByType(mediaMimeType);
           if (newMedia != null) {
             // Creation of the media
             // In a transaction.
@@ -210,13 +192,16 @@ public class GalleryProcessManagement {
     }
   }
 
-  private static Media getMediaByType(final MediaMimeType mediaMimeType, Media newMedia) {
+  private static Media getMediaByType(final MediaMimeType mediaMimeType) {
+    Media newMedia;
     if (mediaMimeType.isSupportedPhotoType()) {
       newMedia = new Photo();
     } else if (mediaMimeType.isSupportedVideoType()) {
       newMedia = new Video();
     } else if (mediaMimeType.isSupportedSoundType()) {
       newMedia = new Sound();
+    } else {
+      newMedia = null;
     }
     return newMedia;
   }
@@ -227,7 +212,6 @@ public class GalleryProcessManagement {
    * @param componentInstanceId the identifier of component instance
    * @param albumId an album identifier
    * @return an AlbumDetail
-   * @throws Exception
    */
   private static AlbumDetail createAlbum(final UserDetail user, final String componentInstanceId,
       final String name, final String albumId) {
@@ -236,20 +220,17 @@ public class GalleryProcessManagement {
     newAlbum.setCreationDate(new Date());
     newAlbum.setCreatorId(user.getId());
     newAlbum.getNodePK().setComponentName(componentInstanceId);
-    newAlbum.setNodePK(
-        getGalleryService().createAlbum(newAlbum, new NodePK(albumId, componentInstanceId)));
-    return newAlbum;
+    return getGalleryService().createAlbum(newAlbum, new NodePK(albumId, componentInstanceId));
   }
 
   /**
    * Recursive method to add media paste processes for given albums (because of sub album)
-   * @param fromAlbum
-   * @param toAlbum
-   * @param isCutted
-   * @throws Exception
+   * @param fromAlbum the album to paste.
+   * @param toAlbum the destination album.
+   * @param isCut is the album to paste has been cut or copied.
    */
   public void addPasteAlbumProcesses(final AlbumDetail fromAlbum, final AlbumDetail toAlbum,
-      final boolean isCutted) throws Exception {
+      final boolean isCut) {
 
     // Check if node can be copied or not (parent or same object)
     boolean pasteAllowed = !fromAlbum.equals(toAlbum) && !fromAlbum.isFatherOf(toAlbum);
@@ -257,7 +238,7 @@ public class GalleryProcessManagement {
       return;
     }
 
-    if (isCutted) {
+    if (isCut) {
 
       // CUT & PASTE
 
@@ -299,30 +280,22 @@ public class GalleryProcessManagement {
     }
   }
 
-  /**
-   * Adds processes to paste an album to an other one
-   * @param fromAlbumPk
-   * @param toAlbumPk
-   * @param isCutted
-   * @throws Exception
-   */
   private void addPasteMediaAlbumProcesses(final NodePK fromAlbumPk, final NodePK toAlbumPk,
-      final boolean isCutted) {
+      final boolean isCut) {
     for (final Media media : getGalleryService()
         .getAllMedia(fromAlbumPk, MediaCriteria.VISIBILITY.FORCE_GET_ALL)) {
-      addPasteMediaProcesses(media, toAlbumPk, isCutted);
+      addPasteMediaProcesses(media, toAlbumPk, isCut);
     }
   }
 
   /**
    * Recursive method to add media delete processes for the given album (because of sub album)
-   * @param albumPk
-   * @throws Exception
+   * @param albumPk the unique identifier of an album.
    */
-  public void addDeleteAlbumProcesses(final NodePK albumPk) throws Exception {
+  public void addDeleteAlbumProcesses(final NodePK albumPk) {
     addDeleteMediaAlbumProcesses(albumPk);
-    final Collection<NodeDetail> childrens = getNodeService().getChildrenDetails(albumPk);
-    for (final NodeDetail node : childrens) {
+    final Collection<NodeDetail> children = getNodeService().getChildrenDetails(albumPk);
+    for (final NodeDetail node : children) {
       addDeleteAlbumProcesses(node.getNodePK());
     }
     getNodeService().removeNode(albumPk);
@@ -330,8 +303,7 @@ public class GalleryProcessManagement {
 
   /**
    * Adds processes to delete all media from the given album
-   * @param albumPk
-   * @throws Exception
+   * @param albumPk the unique identifier of the album.
    */
   private void addDeleteMediaAlbumProcesses(final NodePK albumPk) {
     for (final Media media : getGalleryService()
@@ -341,29 +313,17 @@ public class GalleryProcessManagement {
         // the image is in several albums
         // delete only the link between it and album to delete
         albumIds.remove(albumPk.getId());
-        media.setToAlbums(albumIds.toArray(new String[albumIds.size()]));
+        media.setToAlbums(albumIds.toArray(new String[0]));
       } else {
         addDeleteMediaProcesses(media);
       }
     }
   }
 
-  /*
-   * Tools
-   */
-
-  /**
-   * Gets the GalleryService Service
-   * @return
-   */
   private static GalleryService getGalleryService() {
       return ServiceProvider.getService(GalleryService.class);
   }
 
-  /**
-   * Gets the Node service
-   * @return
-   */
   private static NodeService getNodeService() {
       return NodeService.get();
   }

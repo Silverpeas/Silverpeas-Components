@@ -143,10 +143,11 @@ public class DefaultGalleryService implements GalleryService {
 
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
-  public NodePK createAlbum(final AlbumDetail album, final NodePK nodePK) {
+  public AlbumDetail createAlbum(final AlbumDetail album, final NodePK nodePK) {
     try {
       final AlbumDetail currentAlbum = getAlbum(nodePK);
-      return nodeService.createNode(album, currentAlbum);
+      NodeDetail node = nodeService.createNode(album, currentAlbum);
+      return new AlbumDetail(node);
     } catch (final Exception e) {
       throw new GalleryRuntimeException(e);
     }

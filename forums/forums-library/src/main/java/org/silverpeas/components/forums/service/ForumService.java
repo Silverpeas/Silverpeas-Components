@@ -180,7 +180,7 @@ public interface ForumService {
 
   int getSilverObjectId(ForumPK forumPK);
 
-  String createCategory(NodeDetail category);
+  void createCategory(NodeDetail category);
 
   void deleteCategory(String categoryId, String instanceId);
 

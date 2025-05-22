@@ -69,45 +69,39 @@ public interface KmeliaService extends ApplicationService {
   List<NodeDetail> getAllowedSubfolders(NodeDetail folder, String userId);
 
   /**
-   * Add a subtopic to a topic - If a subtopic of same name already exists a NodePK with id=-1 is
-   * returned else the new topic NodePK
-   * @param fatherPK the topic Id of the future father
-   * @param subtopic the NodeDetail of the new sub topic
-   * @return If a subtopic of same name already exists a NodePK with id=-1 is returned else the new
-   * topic NodePK
+   * Add a subtopic to the specified topic.
+   * @param fatherPK the topic identifier of the father topic.
+   * @param subtopic the details about the new subtopic.
+   * @return the new added subtopic.
    * @see NodeDetail
    * @see NodePK
    * @since 1.0
    */
-  NodePK addToTopic(NodePK fatherPK, NodeDetail subtopic);
+  NodeDetail addToTopic(NodePK fatherPK, NodeDetail subtopic);
 
   /**
-   * Add a subtopic to currentTopic and alert users - If a subtopic of same name already exists a
-   * NodePK with id=-1 is returned else the new topic NodePK
-   * @param subtopic the NodeDetail of the new sub topic
-   * @param alertType Alert all users, only publishers or nobody of the topic creation alertType =
-   * "All"|"Publisher"|"None"
-   * @return If a subtopic of same name already exists a NodePK with id=-1 is returned else the new
-   * topic NodePK
+   * Add a subtopic to currentTopic and alert users about it.
+   * @param subtopic the details about the new subtopic
+   * @param alertType Notifies either all users (<code>"All"</code>"), only publishers
+   * (<code>"Publisher"</code>) or nobody (<code>"None"</code>) about the topic creation.
+   * @return the new added subtopic.
    * @see NodeDetail
    * @see NodePK
    * @since 1.0
    */
-  NodePK addSubTopic(NodePK fatherPK, NodeDetail subtopic, String alertType);
+  NodeDetail addSubTopic(NodePK fatherPK, NodeDetail subtopic, String alertType);
 
   /**
-   * Update a subtopic to currentTopic and alert users - If a subtopic of same name already exists a
-   * NodePK with id=-1 is returned else the new topic NodePK
-   * @param topic the NodeDetail of the updated sub topic
-   * @param alertType Alert all users, only publishers or nobody of the topic creation alertType =
-   * "All"|"Publisher"|"None"
-   * @return If a subtopic of same name already exists a NodePK with id=-1 is returned else the new
-   * topic NodePK
+   * Update the specified topic and alert users about it.
+   * @param topic the updated data of the topic.
+   * @param alertType Notifies either all users (<code>"All"</code>"), only publishers
+   * (<code>"Publisher"</code>) or nobody (<code>"None"</code>) about the topic creation.
+   * @return the updated topic.
    * @see NodeDetail
    * @see NodePK
    * @since 1.0
    */
-  NodePK updateTopic(NodeDetail topic, String alertType);
+  NodeDetail updateTopic(NodeDetail topic, String alertType);
 
   /**
    * Return a subtopic to currentTopic
@@ -526,10 +520,9 @@ public interface KmeliaService extends ApplicationService {
    * @param position the position to add.
    * @param componentId the unique identifier of the component instance.
    * @param userId the unique identifier of a user.
-   * @return the identifier of the new position.
    */
   @SuppressWarnings("UnusedReturnValue")
-  NodePK addPosition(String fatherId, NodeDetail position, String componentId, String userId);
+  void addPosition(String fatherId, NodeDetail position, String componentId, String userId);
 
   /**
    * Update a position in an axis
@@ -648,7 +641,7 @@ public interface KmeliaService extends ApplicationService {
   void addAttachmentToPublication(PublicationPK pubPK, String userId, String filename,
       String description, byte[] contents);
 
-  String createTopic(String componentId, String topicId, String spaceId, String userId, String name,
+  NodeDetail createTopic(String componentId, String topicId, String spaceId, String userId, String name,
       String description);
 
   /**
