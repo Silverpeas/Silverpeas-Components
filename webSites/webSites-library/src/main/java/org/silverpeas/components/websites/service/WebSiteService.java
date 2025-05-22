@@ -54,9 +54,9 @@ public interface WebSiteService {
   /* gestion des themes */
   public FolderDetail goTo(NodePK pk);
 
-  public NodePK addFolder(NodeDetail subFolder, NodePK fatherId, UserDetail currentUser);
+  public void addFolder(NodeDetail subFolder, NodePK fatherId, UserDetail currentUser);
 
-  public NodePK updateFolder(NodeDetail topic, NodePK fatherPK);
+  public void updateFolder(NodeDetail topic, NodePK fatherPK);
 
   public NodeDetail getFolderDetail(NodePK pk);
 

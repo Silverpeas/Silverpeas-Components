@@ -63,10 +63,6 @@ public class KmeliaImportExport extends GEDImportExport {
     super(curentUserDetail, currentComponentId);
   }
 
-  /**
-   * @return KmeliaService service
-   * @throws ImportExportException
-   */
   protected KmeliaService getKmeliaService() {
     return KmeliaService.get();
   }
@@ -143,9 +139,6 @@ public class KmeliaImportExport extends GEDImportExport {
    * @return un objet clé primaire du nouveau thème créé ou du thème déjà existant (thème de même
    * identifiant non modifié).
    * @throws ImportExportException en cas d'anomalie lors de la création du noeud.
-   *
-   * GEDImportExport#addSubTopicToTopic(NodeDetail,
-   * int, UnitReport)
    */
   @Override
   protected NodePK addSubTopicToTopic(NodeDetail nodeDetail, int topicId, UnitReport unitReport)
@@ -164,14 +157,9 @@ public class KmeliaImportExport extends GEDImportExport {
       final NodePK parentTopicPk = new NodePK(Integer.toString(topicId), getCurrentComponentId());
       final NodeDetail father = getNodeService().getDetail(parentTopicPk);
       nodeDetail.setRightsDependsOn(father.getRightsDependsOn());
-      final NodePK newTopicPk = getKmeliaService().addSubTopic(parentTopicPk, nodeDetail, "None");
-      if (Integer.parseInt(newTopicPk.getId()) < 0) {
-        unitReport.setError(UnitReport.ERROR_ERROR);
-        SilverLogger.getLogger(this).error("Bad node identifier retrieved");
-        throw new ImportExportException("KmeliaImportExport.addSubTopicToTopic", NODE_ERR_MSG);
-      }
+      final NodeDetail newTopic = getKmeliaService().addSubTopic(parentTopicPk, nodeDetail, "None");
       unitReport.setStatus(UnitReport.STATUS_TOPIC_CREATED);
-      return newTopicPk;
+      return newTopic.getNodePK();
     } catch (Exception ex) {
       unitReport.setError(UnitReport.ERROR_INCORRECT_CLASSIFICATION_ON_COMPONENT);
       unitReport.setStatus(UnitReport.STATUS_PUBLICATION_NOT_CREATED);
@@ -199,19 +187,15 @@ public class KmeliaImportExport extends GEDImportExport {
    * @param topicId l'ID du thème dans lequel créer le nouveau thème.
    * @return un objet clé primaire du nouveau thème créé.
    * @throws ImportExportException en cas d'anomalie lors de la création du noeud.
-   *
-   * GEDImportExport#addSubTopicToTopic(NodeDetail,
-   * int, MassiveReport)
    */
   @Override
-  protected NodePK addSubTopicToTopic(NodeDetail nodeDetail, int topicId,
+  protected NodeDetail addSubTopicToTopic(NodeDetail nodeDetail, int topicId,
       MassiveReport massiveReport) throws ImportExportException {
-    final NodeDetail existingNodeDetail = getNodeService()
+    final NodeDetail existingTopic = getNodeService()
         .getDetailByNameAndFatherId(new NodePK("unKnown", null, getCurrentComponentId()),
             nodeDetail.getName(), topicId);
-    final NodePK nodePK;
-    if (existingNodeDetail != null) {
-      nodePK = existingNodeDetail.getNodePK();
+    if (existingTopic != null) {
+      return existingTopic;
     } else {
       try {
         // Il n'y a pas de topic, on le crée
@@ -220,13 +204,13 @@ public class KmeliaImportExport extends GEDImportExport {
         nodeDetail.setCreatorId(getCurrentUserDetail().getId());
         final NodeDetail father = getNodeService().getDetail(topicPK);
         nodeDetail.setRightsDependsOn(father.getRightsDependsOn());
-        nodePK = getKmeliaService().addSubTopic(topicPK, nodeDetail, "None");
+        NodeDetail topic = getKmeliaService().addSubTopic(topicPK, nodeDetail, "None");
         massiveReport.addOneTopicCreated();
+        return topic;
       } catch (Exception ex) {
         throw new ImportExportException("GEDImportExport.addSubTopicToTopic", NODE_ERR_MSG, ex);
       }
     }
-    return nodePK;
   }
 
   /**
@@ -260,7 +244,7 @@ public class KmeliaImportExport extends GEDImportExport {
   /**
    * Specific Kmax: Create publication with no nodeFather
    *
-   * @param pubDetail
+   * @param pubDetail publication to create
    * @return pubDetail
    */
   @Override
