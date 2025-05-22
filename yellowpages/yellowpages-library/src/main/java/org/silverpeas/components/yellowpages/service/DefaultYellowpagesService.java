@@ -106,7 +106,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
           }
         } else { // groupe
           String groupId =
-              childPK.getId().substring(childPK.getId().indexOf('_') + 1, childPK.getId().length());
+              childPK.getId().substring(childPK.getId().indexOf('_') + 1);
           nbContacts = getOrganisationController().getAllSubUsersNumber(groupId);
         }
         nbContactsByTopic.add(nbContacts);
@@ -200,7 +200,7 @@ public class DefaultYellowpagesService implements YellowpagesService {
     return result;
   }
 
-  public List<NodeDetail> addGroup(List<NodeDetail> tree, Group group, int level) {
+  public void addGroup(List<NodeDetail> tree, Group group, int level) {
     if (group != null) {
       NodeDetail nGroup = new NodeDetail();
       nGroup.setName(group.getName());
@@ -216,33 +216,18 @@ public class DefaultYellowpagesService implements YellowpagesService {
         addGroup(tree, subGroup, level + 1);
       }
     }
-    return tree;
   }
 
-  /**
-   * Add a subtopic to a topic - If a subtopic of same name already exists a NodePK with id=-1 is
-   * returned else the new topic NodePK
-   * @param father the topic Id of the future father
-   * @param subTopic the NodeDetail of the new sub topic
-   * @return If a subtopic of same name already exists a NodePK with id=-1 is returned else the new
-   * topic NodePK
-   * @see NodeDetail
-   * @see NodePK
-   */
   @Override
-  public NodePK addToTopic(NodeDetail father, NodeDetail subTopic) {
-
-    if (isSameTopicSameLevelOnCreation(subTopic)) {
-      // a subtopic of same name already exists
-      return new NodePK("-1");
-    } else {
+  public void addToTopic(NodeDetail father, NodeDetail subTopic) {
+    if (!isSameTopicSameLevelOnCreation(subTopic)) {
       try {
         // register form to current app
         String xmlFormName = subTopic.getModelId();
         if (StringUtil.isDefined(xmlFormName)) {
           registerTemplate(xmlFormName, father.getNodePK().getInstanceId());
         }
-        return nodeService.createNode(subTopic, father);
+        nodeService.createNode(subTopic, father);
       } catch (Exception re) {
         throw new YellowpagesRuntimeException(re);
       }
@@ -277,22 +262,9 @@ public class DefaultYellowpagesService implements YellowpagesService {
     }
   }
 
-  /**
-   * Update a subtopic to currentTopic and alert users - If a subtopic of same name already exists
-   * a NodePK with id=-1 is returned else the new topic NodePK
-   * @param topic the NodeDetail of the updated sub topic
-   * @return If a subtopic of same name already exists a NodePK with id=-1 is returned else the new
-   * topic NodePK
-   * @see NodeDetail
-   * @see NodePK
-   */
   @Override
-  public NodePK updateTopic(NodeDetail topic) {
-
-    if (isSameTopicSameLevelOnUpdate(topic)) {
-      // a subtopic of same name already exists
-      return new NodePK("-1");
-    } else {
+  public void updateTopic(NodeDetail topic) {
+    if (!isSameTopicSameLevelOnUpdate(topic)) {
       try {
         // register form to current app
         String xmlFormName = topic.getModelId();
@@ -303,9 +275,6 @@ public class DefaultYellowpagesService implements YellowpagesService {
       } catch (Exception re) {
         throw new YellowpagesRuntimeException(re);
       }
-
-
-      return topic.getNodePK();
     }
   }
 

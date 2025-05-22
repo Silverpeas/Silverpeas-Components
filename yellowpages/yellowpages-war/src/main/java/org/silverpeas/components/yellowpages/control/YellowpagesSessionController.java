@@ -259,7 +259,6 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
   }
 
   public void updateTopicHeader(NodeDetail nd) {
-
     nd.setFatherPK(getCurrentTopic().getNodePK());
     nd.getNodePK().setComponentName(getComponentId());
     getYellowpagesService().updateTopic(nd);
@@ -704,7 +703,7 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
     List<ContactFatherDetail> result = new ArrayList<>();
     if (contacts != null) {
       for (ContactDetail contact : contacts) {
-        if (retourneUserReferentiel || (!retourneUserReferentiel && contact.getUserId() == null)) {
+        if (retourneUserReferentiel || contact.getUserId() == null) {
           Collection<NodePK> fathers = getContactFathers(contact.getPK().getId());
           for (NodePK nodePK : fathers) {
             if (!"1".equals(nodePK.getId()) && !"2".equals(nodePK.getId())) {
@@ -963,8 +962,8 @@ public class YellowpagesSessionController extends AbstractComponentSessionContro
 
   /**
    * Remove start & end " and replace double " by single "
-   * @param value the value to treat
-   * @return the formatted valued
+   * @param value the value to parse
+   * @return the new formatted valued
    */
   private String formatStringSeparator(String value) {
     String newValue = value;

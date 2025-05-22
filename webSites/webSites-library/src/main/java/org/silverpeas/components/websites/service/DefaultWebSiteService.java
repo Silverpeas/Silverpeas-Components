@@ -148,11 +148,10 @@ public class DefaultWebSiteService implements WebSiteService {
     return newPath;
   }
 
-  public NodePK addToFolder(NodePK fatherId, NodeDetail subTopic) {
-
+  public void addToFolder(NodePK fatherId, NodeDetail subTopic) {
     try {
       NodeDetail father = nodeService.getDetail(fatherId);
-      return nodeService.createNode(subTopic, father);
+      nodeService.createNode(subTopic, father);
     } catch (Exception re) {
       throw new WebSitesRuntimeException(re);
     }
@@ -165,7 +164,7 @@ public class DefaultWebSiteService implements WebSiteService {
    * @return
    */
   @Override
-  public NodePK addFolder(NodeDetail subFolder, NodePK fatherId, UserDetail currentUser) {
+  public void addFolder(NodeDetail subFolder, NodePK fatherId, UserDetail currentUser) {
     if (subFolder == null) {
       throw new WebSitesRuntimeException("Non existing subfolder node detail to add");
     }
@@ -176,7 +175,7 @@ public class DefaultWebSiteService implements WebSiteService {
     subFolder.setCreationDate(new Date());
     subFolder.setCreatorId(currentUser.getId());
     // add new topic to current topic
-    return addToFolder(fatherId, subFolder);
+    addToFolder(fatherId, subFolder);
   }
 
   /**
@@ -185,7 +184,7 @@ public class DefaultWebSiteService implements WebSiteService {
    * @return a NodePK
    */
   @Override
-  public NodePK updateFolder(NodeDetail topic, NodePK fatherPK) {
+  public void updateFolder(NodeDetail topic, NodePK fatherPK) {
     try {
       NodeDetail father = nodeService.getDetail(fatherPK);
       topic.setLevel(father.getLevel());
@@ -195,7 +194,6 @@ public class DefaultWebSiteService implements WebSiteService {
     } catch (Exception re) {
       throw new WebSitesRuntimeException(re);
     }
-    return topic.getNodePK();
   }
 
   /**

@@ -58,7 +58,7 @@ public interface GalleryService extends ApplicationService {
 
   AlbumDetail getAlbum(NodePK nodePK, MediaCriteria.VISIBILITY visibility);
 
-  NodePK createAlbum(AlbumDetail album, NodePK nodePK);
+  AlbumDetail createAlbum(AlbumDetail album, NodePK nodePK);
 
   void updateAlbum(AlbumDetail album);
 

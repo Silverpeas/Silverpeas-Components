@@ -57,30 +57,25 @@ public interface YellowpagesService {
   List<NodeDetail> getTree(String instanceId);
 
   /**
-   * Add a subtopic to a topic - If a subtopic of same name already exists a NodePK with id=-1 is
-   * returned else the new topic NodePK
+   * Add a subtopic to a topic. Does nothing if a subtopic with the same name exists in the
+   * father topic.
    * @param father the father
    * @param subtopic the NodeDetail of the new sub topic
-   * @return If a subtopic of same name already exists a NodePK with id=-1 is returned else the new
-   * topic NodePK
    * @see NodeDetail
    * @see NodePK
    * @since 1.0
    */
-  NodePK addToTopic(NodeDetail father, NodeDetail subtopic);
+  void addToTopic(NodeDetail father, NodeDetail subtopic);
 
   /**
-   * Update a subtopic to currentTopic and alert users - If a subtopic of same name already exists
-   * a
-   * NodePK with id=-1 is returned else the new topic NodePK
+   * Update a subtopic to currentTopic. Does nothing if the topic to update is at the same level
+   * than another sibling topic.
    * @param topic the NodeDetail of the updated sub topic
-   * @return If a subtopic of same name already exists a NodePK with id=-1 is returned else the new
-   * topic NodePK
    * @see NodeDetail
    * @see NodePK
    * @since 1.0
    */
-  NodePK updateTopic(NodeDetail topic);
+  void updateTopic(NodeDetail topic);
 
   /**
    * Return a subtopic to currentTopic

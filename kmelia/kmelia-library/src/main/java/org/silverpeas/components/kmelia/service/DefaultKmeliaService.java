@@ -115,6 +115,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.time.OffsetDateTime;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -304,10 +305,10 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
                           .limitTo(limit));
               return asKmeliaPublication(pubDetails);
             });
-    String count = result == null ? "" : String.valueOf(result.size());
+    int size = result == null ? 0 : result.size();
     SilverLogger.getLogger(this)
         .debug(() -> format("getting {0} latest authorized publications of instance {1} in {2}",
-            count, instanceId, formatDurationHMS(System.currentTimeMillis() - start)));
+            size, instanceId, formatDurationHMS(System.currentTimeMillis() - start)));
     return result;
   }
 
@@ -383,32 +384,28 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
    * @see NodePK
    */
   @Override
-  public NodePK addToTopic(NodePK fatherPK, NodeDetail subTopic) {
-    NodePK theNodePK;
+  public NodeDetail addToTopic(NodePK fatherPK, NodeDetail subTopic) {
     try {
       NodeDetail fatherDetail = nodeService.getHeader(fatherPK);
-      theNodePK = nodeService.createNode(subTopic, fatherDetail);
+      return nodeService.createNode(subTopic, fatherDetail);
     } catch (Exception e) {
       throw new KmeliaRuntimeException(e);
     }
-    return theNodePK;
   }
 
   @Override
-  public NodePK addSubTopic(NodePK fatherPK, NodeDetail subTopic, String alertType) {
+  public NodeDetail addSubTopic(NodePK fatherPK, NodeDetail subTopic, String alertType) {
     // Construction de la date de création (date courante)
     subTopic.setCreationDate(new Date());
     // Web visibility parameter. The topic is by default invisible.
     subTopic.setStatus("Invisible");
     // add new topic to current topic
-    NodePK pk = addToTopic(fatherPK, subTopic);
+    NodeDetail addedTopic = addToTopic(fatherPK, subTopic);
     // Creation alert
-    if (!UNDEFINED_NODE_ID.equals(pk.getId())) {
-      subTopic.setNodePK(pk);
-      subTopic.setFatherPK(fatherPK);
-      topicCreationAlert(subTopic, NotifAction.CREATE, alertType);
-    }
-    return pk;
+    subTopic.setNodePK(addedTopic.getNodePK());
+    subTopic.setFatherPK(fatherPK);
+    topicCreationAlert(subTopic, NotifAction.CREATE, alertType);
+    return addedTopic;
   }
 
   /**
@@ -422,20 +419,8 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
     UserNotificationHelper.buildAndSend(new KmeliaTopicUserNotification(node, action, alertType));
   }
 
-  /**
-   * Update a subtopic to currentTopic and alert users - If a subtopic of same name already exists a
-   * NodePK with id=-1 is returned else the new topic NodePK
-   * @param topic the NodeDetail of the updated sub topic
-   * @param alertType Alert all users, only publishers or nobody of the topic creation alertType =
-   * "All"|"Publisher"|"None"
-   * @return If a subtopic of same name already exists a NodePK with id=-1 is returned else the new
-   * topic NodePK
-   * @see NodeDetail
-   * @see NodePK
-   * @since 1.0
-   */
   @Override
-  public NodePK updateTopic(NodeDetail topic, String alertType) {
+  public NodeDetail updateTopic(NodeDetail topic, String alertType) {
     // Order of the node must be unchanged
     NodeDetail oldNode = nodeService.getHeader(topic.getNodePK());
     int order = oldNode.getOrder();
@@ -450,7 +435,7 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
     // Update Alert
     topic.setFatherPK(oldNode.getFatherPK());
     topicCreationAlert(topic, NotifAction.UPDATE, alertType);
-    return topic.getNodePK();
+    return topic;
   }
 
   private void updateNode(final NodeDetail newNode, final NodeDetail oldNode) {
@@ -475,9 +460,7 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
 
   private void deleteProfiles(final List<ProfileInst> profiles) {
     for (ProfileInst profile : profiles) {
-      if (profile != null) {
-        adminController.deleteProfileInst(profile.getId());
-      }
+      adminController.deleteProfileInst(profile.getId());
     }
   }
 
@@ -493,6 +476,14 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
     return subTopic;
   }
 
+  /**
+   * Delete a topic and all descendants. Delete all links between descendants and publications. This
+   * publications will be visible in the Declassified zone. Delete All subscriptions and favorites
+   * on this topics and all descendants
+   *
+   * @param pkToDelete the id of the topic to delete
+   * @since 1.0
+   */
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
   public void deleteTopic(NodePK pkToDelete) {
@@ -1375,11 +1366,6 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
         !isDefined(publication.getCloneStatus());
   }
 
-  /**
-   * Deletes definitively the specified publication.
-   *
-   * @param pubPK the unique identifier of the publication to delete.
-   */
   @Override
   @Transactional
   public void deletePublication(PublicationPK pubPK) {
@@ -1768,12 +1754,14 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
             .filter(HAS_CLONE)
             .map(PublicationDetail::getClonePK)
             .collect(Collectors.toList()))
-        .stream()
-        .collect(toMap(PublicationDetail::getPK, k -> k));
+            .stream()
+            .collect(toMap(PublicationDetail::getPK, k -> k));
     return publications.stream()
         .map(p -> KmeliaPublication.fromDetail(p, null, locationsByPublication))
-        .map(k -> ofNullable(HAS_CLONE.test(k.getDetail()) ? clones.getOrDefault(k.getDetail().getClonePK(), null) : null)
-            .map(c -> Pair.of(k, KmeliaPublication.fromDetail(c, k.getLocation(), locationsByPublication)))
+        .map(k -> ofNullable(HAS_CLONE.test(k.getDetail()) ?
+            clones.getOrDefault(k.getDetail().getClonePK(), null) : null)
+            .map(c -> Pair.of(k, KmeliaPublication.fromDetail(c, k.getLocation(),
+                locationsByPublication)))
             .orElseGet(() -> Pair.of(k, null)))
         .collect(Collectors.toList());
   }
@@ -2928,7 +2916,8 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
     CoordinatePK coordinatePK = new CoordinatePK(USELESS, axisPK);
     try {
       // axis creation
-      axisPK = nodeService.createNode(axis, rootDetail);
+      NodeDetail createdAxis = nodeService.createNode(axis, rootDetail);
+      axisPK = createdAxis.getNodePK();
       // add this new axis to existing coordinates
       CoordinatePoint point = new CoordinatePoint(-1, Integer.parseInt(axisPK.getId()), true);
       coordinatesService.addPointToAllCoordinates(coordinatePK, point);
@@ -3022,14 +3011,14 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
   }
 
   @Override
-  public NodePK addPosition(String fatherId, NodeDetail position, String componentId,
+  public void addPosition(String fatherId, NodeDetail position, String componentId,
       String userId) {
     position.getNodePK().setComponentName(componentId);
     position.setCreationDate(new Date());
     position.setCreatorId(userId);
     NodeDetail fatherDetail = getNodeHeader(fatherId, componentId);
     try {
-      return nodeService.createNode(position, fatherDetail);
+      nodeService.createNode(position, fatherDetail);
     } catch (Exception e) {
       throw new KmaxRuntimeException(e);
     }
@@ -3435,11 +3424,17 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
   }
 
   @Override
-  public String createTopic(String componentId, String topicId, String spaceId, String userId,
+  public NodeDetail createTopic(String componentId, String topicId, String spaceId, String userId,
       String name, String description) {
-    PublicationImport publicationImport =
-        new PublicationImport(this, componentId, topicId, spaceId, userId);
-    return publicationImport.createTopic(name, description);
+    NodeDetail topic = new NodeDetail(NodePK.UNDEFINED_NODE_ID, name, description, 0, "X");
+    topic.getNodePK().setSpace(spaceId);
+    topic.getNodePK().setComponentName(componentId);
+    topic.setCreatorId(userId);
+
+    NodePK fatherPK = new NodePK(topicId, spaceId, componentId);
+    String alertType = "None";
+
+    return addSubTopic(fatherPK, topic, alertType);
   }
 
   @Override
@@ -3835,7 +3830,7 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
           // check if user is admin, publisher or writer on this topic
           String[] profiles = adminController.getProfilesByObjectAndUserId(
               ProfiledObjectId.fromNode(descendant.getNodePK().getId()), componentId, userId);
-          if (profiles != null && profiles.length > 0) {
+          if (profiles.length > 0) {
             userProfile = SilverpeasRole.fromString(KmeliaHelper.getProfile(profiles));
             checked = Objects.requireNonNull(userProfile).isInRole(roles);
           }
@@ -4037,8 +4032,7 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
         NodeDetail toNode;
         if (movedToAnotherApp) {
           toNode = nodeService.getDetail(toNodePK);
-
-          checkNodeRights(fromNode, toNode, rightsOnTopicsEnabled);
+          updateNodeRights(toNode, fromNode, rightsOnTopicsEnabled);
           // move rich description of node
           if (!nodePK.getInstanceId().equals(to.getInstanceId())) {
             WysiwygController.move(fromNode.getNodePK().getInstanceId(),
@@ -4057,28 +4051,20 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
     nodePK.setComponentName(to.getInstanceId());
   }
 
-  private void checkNodeRights(final NodeDetail fromNode, final NodeDetail node,
+  private void updateNodeRights(final NodeDetail node, final NodeDetail fromNode,
       final boolean rightsOnTopicsEnabled) {
     if (fromNode.haveLocalRights()) {
       List<ProfileInst> profiles = adminController.getProfilesByObject(
           ProfiledObjectId.fromNode(fromNode.getNodePK().getId()),
           fromNode.getNodePK().getInstanceId());
       if (rightsOnTopicsEnabled) {
-        // adjusting previous rights according to target component
-        for (ProfileInst profile : profiles) {
-          if (profile != null && StringUtil.isDefined(profile.getId())) {
-
-            // removing previous rights (can't be reused cause componentId have changed)
-            adminController.deleteProfileInst(profile.getId());
-
-            // checking rights and add new profile
-            checkNodeProfile(profile, node);
-            adminController.addProfileInst(profile);
-          }
-        }
+        // adjusting previous rights according to target component after deleting the previous
+        // existing profiles
+        filterTopicProfiles(profiles, node, null,
+            p -> adminController.deleteProfileInst(p.getId()));
       } else {
         // target component does not use specific rights, so removing rights
-        for (ProfileInst profile: profiles) {
+        for (ProfileInst profile : profiles) {
           adminController.deleteProfileInst(profile.getId());
         }
       }
@@ -4122,30 +4108,30 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
     } else {
       node.setRemovalStatus(null, null);
     }
-    nodePK = nodeService.createNode(node, father);
+    NodeDetail copiedNode = nodeService.createNode(node, father);
 
     // duplicate the predefined classification on the PdC if any
-    copyNodePredefinedClassification(nodeToCopy.getNodePK(), nodePK);
+    copyNodePredefinedClassification(nodeToCopy.getNodePK(), copiedNode.getNodePK());
 
     // duplicate rights
     if (rightsOnTopicsEnabled && copyDetail.isNodeRightsMustBeCopied()) {
-      oldAndNewIds.put(nodePKToCopy.getId(), nodePK.getId());
-      setNodeRightsDependency(nodeToCopy, father, node);
+      oldAndNewIds.put(nodePKToCopy.getId(), copiedNode.getId());
+      setNodeRightsDependency(nodeToCopy, father, copiedNode);
       // Set topic rights if any
-      copyNodeRights(userId, nodeToCopy, nodePK);
+      copyNodeRights(userId, nodeToCopy, copiedNode);
     }
 
     // paste wysiwyg attached to node
     WysiwygController.copy(nodePKToCopy.getInstanceId(), NODE_PREFIX + nodePKToCopy.getId(),
-        nodePK.getInstanceId(), NODE_PREFIX + nodePK.getId(), userId);
+        copiedNode.getNodePK().getInstanceId(), NODE_PREFIX + copiedNode.getId(), userId);
 
     // associate model used by copied folder to new folder
-    copyUsedModel(nodePKToCopy, nodePK);
+    copyUsedModel(nodePKToCopy, copiedNode.getNodePK());
 
     // paste publications of topics
     KmeliaCopyDetail folderContentCopy = new KmeliaCopyDetail(copyDetail);
     folderContentCopy.setFromNodePK(nodePKToCopy);
-    folderContentCopy.setToNodePK(nodePK);
+    folderContentCopy.setToNodePK(copiedNode.getNodePK());
 
     if (copyDetail.isPublicationHeaderMustBeCopied()) {
       copyPublications(folderContentCopy);
@@ -4160,24 +4146,17 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
       }
     }
 
-    return node;
+    return copiedNode;
   }
 
-  private void copyNodeRights(final String userId, final NodeDetail nodeToCopy,
-      final NodePK nodePK) {
-    if (nodeToCopy.haveLocalRights()) {
-      NodeDetail node = nodeService.getDetail(nodePK);
+  private void copyNodeRights(final String userId, final NodeDetail sourceNode,
+      final NodeDetail targetNode) {
+    if (sourceNode.haveLocalRights()) {
       List<ProfileInst> topicProfiles = adminController.getProfilesByObject(
-          ProfiledObjectId.fromNode(nodeToCopy.getNodePK().getId()),
-          nodeToCopy.getNodePK().getInstanceId());
-      for (ProfileInst nodeToPasteProfile : topicProfiles) {
-        if (nodeToPasteProfile != null) {
-          ProfileInst nodeProfileInst = new ProfileInst(nodeToPasteProfile);
-          checkNodeProfile(nodeProfileInst, node);
-          // Add the profile
-          adminController.addProfileInst(nodeProfileInst, userId);
-        }
-      }
+          ProfiledObjectId.fromNode(sourceNode.getNodePK().getId()),
+          sourceNode.getNodePK().getInstanceId());
+      filterTopicProfiles(topicProfiles, targetNode, userId, p -> {
+      });
     }
   }
 
@@ -4193,29 +4172,57 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
     }
   }
 
+  private void filterTopicProfiles(List<ProfileInst> profiles, NodeDetail node, String userId,
+      Consumer<ProfileInst> preFiltering) {
+    NodeDetail father = getNodeHeader(node.getFatherPK());
+    List<ProfileInst> fatherProfiles = new ArrayList<>();
+    if (father.haveRights()) {
+      fatherProfiles.addAll(
+          adminController.getProfilesByObject(ProfiledObjectId.fromNode(father.getRightsDependsOn()),
+              father.getNodePK().getInstanceId()));
+    }
+    for (ProfileInst topicProfile : profiles) {
+      preFiltering.accept(topicProfile);
+      ProfileInst nodeProfileInst = new ProfileInst(topicProfile);
+      filterUsersAndGroupsInNodeProfile(nodeProfileInst, fatherProfiles, node);
+      // Add the profile
+      adminController.addProfileInst(nodeProfileInst, userId);
+    }
+  }
+
   /*
-   * Checks given profile according to component instance.
-   * Removes all groups and users which are not authorized to access to component instance.
-   *
+   * Filter the users and the groups defined in the given profile according to the profiles
+   * of either the topic parent or component instance. It removes all groups and users which are
+   * not authorized to access the parent topic or the component instance.
    */
-  private void checkNodeProfile(ProfileInst profile, NodeDetail node) {
+  private void filterUsersAndGroupsInNodeProfile(ProfileInst profile,
+      List<ProfileInst> fatherProfiles, NodeDetail node) {
     List<String> verifiedUserIds = new ArrayList<>();
     List<String> verifiedGroupIds = new ArrayList<>();
     String instanceId = node.getNodePK().getInstanceId();
 
-    // check users and groups according to component instance rights
-    List<String> userIdsToCheck = profile.getAllUsers();
-    for (String userIdToCheck : userIdsToCheck) {
-      if (ComponentAccessControl.get().isUserAuthorized(userIdToCheck, instanceId)) {
-        verifiedUserIds.add(userIdToCheck);
-      }
-    }
+    if (!fatherProfiles.isEmpty()) {
+      // check users and groups according to a father node rights
+      fatherProfiles.stream()
+          .flatMap(p -> p.getAllUsers().stream())
+          .distinct()
+          .filter(u -> profile.getAllUsers().contains(u))
+          .forEach(verifiedUserIds::add);
 
-    List<String> groupIdsToCheck = profile.getAllGroups();
-    for (String groupIdToCheck : groupIdsToCheck) {
-      if (ComponentAccessControl.get().isGroupAuthorized(groupIdToCheck, instanceId)) {
-        verifiedGroupIds.add(groupIdToCheck);
-      }
+      fatherProfiles.stream()
+          .flatMap(p -> p.getAllGroups().stream())
+          .distinct()
+          .filter(g -> profile.getAllGroups().contains(g))
+          .forEach(verifiedGroupIds::add);
+    } else {
+      // check users and groups according to component instance rights
+      ComponentAccessControl accessControl = ComponentAccessControl.get();
+      profile.getAllUsers().stream()
+          .filter(u -> accessControl.isUserAuthorized(u, instanceId))
+          .forEach(verifiedUserIds::add);
+      profile.getAllGroups().stream()
+          .filter(g -> accessControl.isGroupAuthorized(g, instanceId))
+          .forEach(verifiedGroupIds::add);
     }
 
     profile.setId("-1");
@@ -4276,7 +4283,8 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
     return null;
   }
 
-  private PublicationDetail copyPublication(final PublicationDetail publiToCopy, final NodePK toNodePK,
+  private PublicationDetail copyPublication(final PublicationDetail publiToCopy,
+      final NodePK toNodePK,
       final String toComponentId, final KmeliaCopyDetail copyDetail, final String userId)
       throws PdcException, PublicationTemplateException, FormException {
     ResourceReference toResourceReference = new ResourceReference(ResourceReference.UNKNOWN_ID,
@@ -4419,7 +4427,8 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
   public List<KmeliaPublication> filterPublications(List<KmeliaPublication> publications,
       String instanceId, SilverpeasRole profile, String userId) {
     final boolean coWriting = isCoWritingEnable(instanceId);
-    final RemovedSpaceAndComponentInstanceChecker checker = RemovedSpaceAndComponentInstanceChecker.create();
+    final RemovedSpaceAndComponentInstanceChecker checker =
+        RemovedSpaceAndComponentInstanceChecker.create();
     final Predicate<KmeliaPublication> removedComponentInstance =
         k -> checker.isRemovedComponentInstanceById(k.getComponentInstanceId());
     final Predicate<KmeliaPublication> visiblePublication =
@@ -4504,7 +4513,8 @@ public class DefaultKmeliaService implements KmeliaService, KmeliaDeleter {
 
   private RecordSet getXMLFormFrom(String infoId, PublicationPK pubPK)
       throws PublicationTemplateException {
-    PublicationTemplateManager publicationTemplateManager = PublicationTemplateManager.getInstance();
+    PublicationTemplateManager publicationTemplateManager =
+        PublicationTemplateManager.getInstance();
     PublicationTemplate pubTemplate = publicationTemplateManager.getPublicationTemplate(
         pubPK.getInstanceId() + ":" + infoId);
 
