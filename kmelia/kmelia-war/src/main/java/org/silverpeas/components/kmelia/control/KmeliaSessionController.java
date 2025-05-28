@@ -299,6 +299,34 @@ public class KmeliaSessionController extends AbstractComponentSessionController
     return Integer.parseInt(defaultSortValue);
   }
 
+  public boolean isPasteNodeAllowed() {
+    try {
+      return getClipboardSelectedObjects().stream().anyMatch(s->s.isDataFlavorSupported(NodeSelection.NodeDetailFlavor));
+    } catch (ClipboardException e) {
+      SilverLogger.getLogger(this).error(e);
+      return false;
+    }
+  }
+
+  public boolean isPastePublicationAllowed(boolean isRootNode) {
+    try {
+      return getClipboardSelectedObjects().stream().anyMatch(s->s.isDataFlavorSupported(
+          PublicationSelection.PublicationDetailFlavor)) && (isPublicationAllowed(isRootNode));
+    } catch (ClipboardException e) {
+      SilverLogger.getLogger(this).error(e);
+      return false;
+    }
+  }
+
+  public boolean isPastePublicationAllowed(String topicId) {
+    NodeDetail topic = getNodeHeader(topicId);
+    return isPastePublicationAllowed(topic.isRoot());
+  }
+
+  public boolean isPublicationAllowed(final boolean isRootNode) {
+    return !isRootNode || getNbPublicationsOnRoot() == 0 || !isTreeStructure();
+  }
+
   public boolean isKmaxMode() {
     return isKmaxMode;
   }
@@ -2322,7 +2350,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController
         if (selection == null) {
           continue;
         }
-        if (selection.isDataFlavorSupported(PublicationSelection.PublicationDetailFlavor)) {
+        if (selection.isDataFlavorSupported(PublicationSelection.PublicationDetailFlavor)
+            && isPublicationAllowed(targetNode.isRoot())) {
           PublicationSelection.TransferData data =
               (PublicationSelection.TransferData) selection.getTransferData(
                   PublicationSelection.PublicationDetailFlavor);
@@ -3315,9 +3344,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController
       if (pubTemplate != null) {
         formUpdate = pubTemplate.getUpdateForm();
         RecordSet recordSet = pubTemplate.getRecordSet();
-
         DataRecord dataRecord = recordSet.getEmptyRecord();
-
         formUpdate.setData(dataRecord);
       }
     } catch (Exception e) {

@@ -38,13 +38,11 @@ function isParentNode(parentId, nodeId) {
   return idx > -1 && nodePath.indexOf(nodeId) > idx;
 }
 
-function addFavorite(name, description, url)
-{
+function addFavorite(name, description, url){
   postNewLink(name, url, description);
 }
 
-function importFile()
-{
+function importFile(){
   const url = "importOneFile.jsp?Action=ImportFileForm&TopicId=" + getCurrentNodeId();
   const windowName = "importFileWindow";
   const windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars=1";
@@ -55,8 +53,7 @@ function importFile()
   importFileWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
 }
 
-function importFiles()
-{
+function importFiles(){
   const url = "importMultiFiles.jsp?Action=ImportFilesForm&TopicId=" + getCurrentNodeId();
   const windowName = "importFilesWindow";
   const windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars=1";
@@ -84,7 +81,7 @@ function exportTopic() {
 
 function openPredefinedPdCClassification(nodeId) {
   let uri = getWebContext() + "/pdcPeas/jsp/predefinedClassification.jsp?componentId=" + getComponentId();
-  if (nodeId != 0) {
+  if (nodeId !== 0) {
     uri += "&nodeId=" + nodeId;
   }
 
@@ -100,30 +97,34 @@ function displayTopicDescription(id) {
   //display rich description of topic
   const ieFix = new Date().getTime();
   const componentId = getComponentId();
-  $.get(getWebContext() + '/KmeliaAJAXServlet', {Id: id, Action: 'GetTopicWysiwyg', ComponentId: componentId, IEFix: ieFix},
-  function(data) {
-    if (data && data.length > 0) {
-      $("#topicDescription").show();
-      $("#topicDescription").html(data);
-      activateIDCards();
-    } else {
-      $("#topicDescription").html("");
-      $("#topicDescription").hide();
-    }
-  }, "html");
+  $.get(getWebContext() + '/KmeliaAJAXServlet', {
+        Id: id,
+        Action: 'GetTopicWysiwyg',
+        ComponentId: componentId,
+        IEFix: ieFix
+      },
+      function (data) {
+        const $topicDesc = $("#topicDescription");
+        if (data && data.length > 0) {
+          $topicDesc.show();
+          $topicDesc.html(data);
+          activateIDCards();
+        } else {
+          $topicDesc.html("");
+          $topicDesc.hide();
+        }
+      }, "html");
 }
 
-function refreshPublications()
-{
+function refreshPublications(){
   const nodeId = getCurrentNodeId();
   const ieFix = new Date().getTime();
   const componentId = getComponentId();
   $.get(getWebContext() + '/RAjaxPublicationsListServlet',
-      {Id : nodeId, ComponentId : componentId, IEFix : ieFix}, __updateDataAndUI, "html");
+      {Id: nodeId, ComponentId: componentId, IEFix: ieFix}, __updateDataAndUI, "html");
 }
 
-function validatePublicationClassification(s)
-{
+function validatePublicationClassification(s){
   const componentId = getComponentId();
   SP_openWindow(getWebContext() + '/Rkmelia/' + componentId + '/validateClassification?' + s, "Validation", '600', '400', 'scrollbars=yes, resizable, alwaysRaised');
 }
@@ -158,6 +159,7 @@ const __updateDataAndUIWithError = function(data) {
       $link.remove();
     })
   } catch (e) {
+    sp.log.error(e);
     $div.innerText = sp.i18n.get('GML.error');
   } finally {
     $container.innerHTML = '';
@@ -186,7 +188,6 @@ function sortGoTo(selectedIndex) {
     $.get(getWebContext() + '/RAjaxPublicationsListServlet',
         {Index : 0, Sort : sort, ComponentId : componentId, Query : topicQuery, IEFix : ieFix},
         __updateDataAndUI, "html");
-    return;
   }
 }
 
@@ -223,13 +224,13 @@ function displayPublications(id) {
   const timer = setTimeout(spProgressMessage.show, 700);
   return sp.ajaxRequest(url)
       .withParams({
-        Id : id, ComponentId : componentId, PubIdToHighlight : pubIdToHighlight, IEFix : ieFix
+        Id: id, ComponentId: componentId, PubIdToHighlight: pubIdToHighlight, IEFix: ieFix
       })
       .send()
-      .then(function(request) {
+      .then(function (request) {
         clearTimeout(timer);
         __updateDataAndUI(request.responseText);
-      }, function(request) {
+      }, function (request) {
         clearTimeout(timer);
         __updateDataAndUIWithError(request.responseText);
       });
@@ -239,19 +240,20 @@ function displayOperations(id) {
   const componentId = getComponentId();
   const url = getWebContext() + "/KmeliaJSONServlet";
   $.get(url, {Id: id, Action: 'GetOperations', ComponentId: componentId, IEFix: ieFix},
-  function(operations) {
-    //display dNd according rights
-    checkDnD(id, operations);
-    initOperations(id, operations);
-    try {
-      if (operations.addTopic) {
-        showRightClickHelp();
-      }
-    } catch (e) {
-      // right click could not be supported by calling page
-    }
-    applyTokenSecurity();
-  }, 'json');
+      function (operations) {
+        //display dNd according rights
+        checkDnD(id, operations);
+        initOperations(id, operations);
+        try {
+          if (operations.addTopic) {
+            showRightClickHelp();
+          }
+        } catch (e) {
+          // right click could not be supported by calling page
+          sp.log.error(e);
+        }
+        applyTokenSecurity();
+      }, 'json');
 }
 
 function displayResponsibles() {
@@ -312,14 +314,14 @@ function initOperations(id, op) {
     groupEmpty = false;
   }
 
-  if (op.exportApplication && id == "0") {
+  if (op.exportApplication && id === "0") {
     menuItem = new YAHOO.widget.MenuItem(getString('kmelia.ExportComponent'),
           {url : "javascript:onClick=exportTopic()"});
     oMenu.addItem(menuItem, groupIndex);
     groupEmpty = false;
   }
 
-  if (op.exportTopic && id != "0") {
+  if (op.exportTopic && id !== "0") {
     menuItem = new YAHOO.widget.MenuItem(getString('kmelia.ExportTopic'),
         {url : "javascript:onClick=exportTopic()"});
     oMenu.addItem(menuItem, groupIndex);
@@ -352,46 +354,55 @@ function initOperations(id, op) {
     addCreationItem(url, icons["operation.addTopic"], label);
     menuBarEmpty = false;
   }
+
   if (op.updateTopic) {
     menuItem = new YAHOO.widget.MenuItem(getString('ModifierSousTheme'), {url: "javascript:onclick=updateCurrentNode()"});
     oMenu.addItem(menuItem, groupIndex);
     groupEmpty = false;
   }
+
   if (op.deleteTopic) {
     menuItem = new YAHOO.widget.MenuItem(getString('SupprimerSousTheme'), {url: "javascript:onclick=deleteCurrentNode()"});
     oMenu.addItem(menuItem, groupIndex);
     groupEmpty = false;
   }
+
   if (op.sortSubTopics) {
     menuItem = new YAHOO.widget.MenuItem(getString('kmelia.SortTopics'), {url: "javascript:onclick=sortSubTopics()"});
     oMenu.addItem(menuItem, groupIndex);
     groupEmpty = false;
   }
+
   if (op.copyTopic) {
     menuItem = new YAHOO.widget.MenuItem(getString('kmelia.operation.folder.copy'), {url: "javascript:onclick=copyCurrentNode()"});
     oMenu.addItem(menuItem, groupIndex);
     groupEmpty = false;
   }
+
   if (op.cutTopic) {
     menuItem = new YAHOO.widget.MenuItem(getString('kmelia.operation.folder.cut'), {url: "javascript:onclick=cutCurrentNode()"});
     oMenu.addItem(menuItem, groupIndex);
     groupEmpty = false;
   }
+
   if (op.hideTopic) {
     menuItem = new YAHOO.widget.MenuItem(getString('TopicVisible2Invisible'), {url: "javascript:onclick=changeCurrentTopicStatus()"});
     oMenu.addItem(menuItem, groupIndex);
     groupEmpty = false;
   }
+
   if (op.showTopic) {
     menuItem = new YAHOO.widget.MenuItem(getString('TopicInvisible2Visible'), {url: "javascript:onclick=changeCurrentTopicStatus()"});
     oMenu.addItem(menuItem, groupIndex);
     groupEmpty = false;
   }
+
   if (op.wysiwygTopic) {
     menuItem = new YAHOO.widget.MenuItem(getString('TopicWysiwyg'), {url: "javascript:onclick=updateCurrentTopicWysiwyg()"});
     oMenu.addItem(menuItem, groupIndex);
     groupEmpty = false;
   }
+
   if (op.shareTopic) {
     menuItem = new YAHOO.widget.MenuItem(getString('kmelia.operation.shareTopic'), {url: "javascript:onclick=shareCurrentTopic()"});
     oMenu.addItem(menuItem, groupIndex);
@@ -413,6 +424,7 @@ function initOperations(id, op) {
     addCreationItem(url, icons["operation.addPubli"], label);
     menuBarEmpty = false;
   }
+
   if (op.addFiles) {
     label = getString('kmelia.AddFile');
     url = "javascript:onclick=kmeliaFileAddingApp.addFiles()";
@@ -422,6 +434,7 @@ function initOperations(id, op) {
     addCreationItem(url, icons["operation.importFile"], label);
     menuBarEmpty = false;
   }
+
   if (op.importFile) {
     label = getString('kmelia.ImportFile');
     url = "javascript:onclick=importFile()";
@@ -431,6 +444,7 @@ function initOperations(id, op) {
     addCreationItem(url, icons["operation.importFile"], label);
     menuBarEmpty = false;
   }
+
   if (op.importFiles) {
     label = getString('kmelia.ImportFiles');
     url = "javascript:onclick=importFiles()";
@@ -440,43 +454,57 @@ function initOperations(id, op) {
     addCreationItem(url, icons["operation.importFiles"], label);
     menuBarEmpty = false;
   }
+
   if (op.sortPublications) {
     menuItem = new YAHOO.widget.MenuItem(getString('kmelia.OrderPublications'), {url: "ToOrderPublications"});
     oMenu.addItem(menuItem, groupIndex);
     groupEmpty = false;
   }
+
   if (op.selectAllPublications) {
     menuItem = new YAHOO.widget.MenuItem(getString('kmelia.operation.publications.select'), {url: "javascript:onclick=selectAllPublications(true)", id: "menuitem-selectAllPubs"});
     oMenu.addItem(menuItem, groupIndex);
     groupEmpty = false;
   }
+
   if (op.unselectAllPublications) {
     menuItem = new YAHOO.widget.MenuItem(getString('kmelia.operation.publications.unselect'), {url: "javascript:onclick=selectAllPublications(false)", id: "menuitem-selectAllPubs"});
     oMenu.addItem(menuItem, groupIndex);
     groupEmpty = false;
   }
+
   if (op.copyPublications) {
     menuItem = new YAHOO.widget.MenuItem(getString('kmelia.operation.copyPublications'), {url: "javascript:onclick=copyPublications()"});
     oMenu.addItem(menuItem, groupIndex);
     groupEmpty = false;
   }
+
   if (op.cutPublications) {
     menuItem = new YAHOO.widget.MenuItem(getString('kmelia.operation.cutPublications'), {url: "javascript:onclick=cutPublications()"});
     oMenu.addItem(menuItem, groupIndex);
     groupEmpty = false;
   }
-  if (op.paste) {
-    menuItem = new YAHOO.widget.MenuItem(getString('GML.paste'), {url: "javascript:onclick=pasteFromOperations()"});
-    oMenu.addItem(menuItem, groupIndex);
-    groupEmpty = false;
-  }
+
   if (op.updatePublications) {
     menuItem = new YAHOO.widget.MenuItem(getString('kmelia.operation.updatePublications'), {url: "javascript:onclick=updatePublications()", id: "menuitem-updatepubs"});
     oMenu.addItem(menuItem, groupIndex);
     groupEmpty = false;
   }
+
   if (op.deletePublications) {
     menuItem = new YAHOO.widget.MenuItem(getString('kmelia.operation.deletePublications'), {url: "javascript:onclick=deletePublications()", id: "menuitem-deletepubs"});
+    oMenu.addItem(menuItem, groupIndex);
+    groupEmpty = false;
+  }
+
+  if (!groupEmpty) {
+    groupIndex++;
+    groupEmpty = true;
+    menuEmpty = false;
+  }
+
+  if (op.paste) {
+    menuItem = new YAHOO.widget.MenuItem(getString('GML.paste'), {url: "javascript:onclick=pasteFromOperations()"});
     oMenu.addItem(menuItem, groupIndex);
     groupEmpty = false;
   }
@@ -559,6 +587,7 @@ function initOperations(id, op) {
     oMenu.addItem(menuItem, groupIndex);
     menuEmpty = false;
   }
+
   if (op.notify) {
     menuItem = new YAHOO.widget.MenuItem(getString('GML.notify'), {
       url: "javascript:onclick=notifyOnFolder('" + op.context.componentId + "', '" +
@@ -693,7 +722,7 @@ function displayTopicInformation(id) {
   if (id !== "0" && id !== "1" && id !== getToValidateFolderId() && id !== getNonVisiblePubsFolderId()) {
     $("#footer").css({'visibility': 'visible'});
     const url = getWebContext() + "/services/folders/" + getComponentId() + "/" + id;
-    $.getJSON(url, function(topic) {
+    $.getJSON(url, function (topic) {
       const name = topic.text;
       const desc = topic.attr["description"];
       const date = $.datepicker.formatDate(getDateFormat(), new Date(topic.attr["creationDate"]));
@@ -728,20 +757,20 @@ function deleteFolder(nodeId, nodeLabel) {
     const componentId = getComponentId();
     const url = getWebContext() + '/KmeliaAJAXServlet';
     $.post(url, {Id: nodeId, ComponentId: componentId, Action: 'Delete'},
-    function(data) {
-      if (data !== null && data.length > 0 && !isNaN(data)) {
-        // fires event
-        try {
-          nodeDeleted(nodeId, isInBin);
-        } catch (e) {
-          writeInConsole(e);
-        }
-        // go to parent node
-        displayTopicContent(data);
-      } else {
-        notyError(data);
-      }
-    }, 'text');
+        function (data) {
+          if (data !== null && data.length > 0 && !isNaN(data)) {
+            // fires event
+            try {
+              nodeDeleted(nodeId, isInBin);
+            } catch (e) {
+              writeInConsole(e);
+            }
+            // go to parent node
+            displayTopicContent(data);
+          } else {
+            notyError(data);
+          }
+        }, 'text');
     return true;
   });
 }
@@ -796,7 +825,7 @@ function topicAdd(topicId, isLinked) {
       $("#addOrUpdateNode #path").html("");
       $(data).each(function(i, topic) {
         let item = " > " + topic.text;
-        if (topic.id == 0) {
+        if (parseInt(topic.id) === 0) {
           item = getComponentLabel();
         }
         $("#addOrUpdateNode #path").html($("#addOrUpdateNode #path").html() + item);
@@ -841,17 +870,15 @@ function topicUpdate(id) {
 
     // display path of parent
     const url = getWebContext() + "/services/folders/" + getComponentId() + "/" + id + "/path?lang=" + getTranslation() + "&IEFix=" + new Date().getTime();
-    $.getJSON(url, function(data) {
+    $.getJSON(url, function (data) {
       //remove topic breadcrumb
       $("#addOrUpdateNode #path").html("");
-      $(data).each(function(i, topic) {
+      $(data).each(function (i, topic) {
         let item = " > " + topic.text;
-        if (topic.id == 0) {
+        if (parseInt(topic.id) === 0) {
           item = getComponentLabel();
-        } else {
-          if (i === data.length - 1) {
-            item = "";
-          }
+        } else if (i === data.length - 1) {
+          item = "";
         }
         $("#addOrUpdateNode #path").html($("#addOrUpdateNode #path").html() + item);
       });
@@ -907,14 +934,14 @@ function emptyTrash() {
     const componentId = getComponentId();
     const url = getWebContext() + '/KmeliaAJAXServlet';
     $.post(url, {ComponentId: componentId, Action: 'EmptyTrash'},
-    function(data) {
-      spProgressMessage.hide();
-      if (data === "ok") {
-        displayTopicContent(binNodeId);
-      } else {
-        notyError(data);
-      }
-    }, 'text');
+        function (data) {
+          spProgressMessage.hide();
+          if (data === "ok") {
+            displayTopicContent(binNodeId);
+          } else {
+            notyError(data);
+          }
+        }, 'text');
     return true;
   });
 }
@@ -931,7 +958,7 @@ function addCurrentNodeAsFavorite() {
   const path = $("#breadCrumb").text();
   let description = "";
   let url = getComponentPermalink();
-  if (getCurrentNodeId() != "0") {
+  if (parseInt(getCurrentNodeId()) !== 0) {
     url = $("#topicPermalink").attr("href");
     description = currentTopicDescription;
   }
@@ -1003,11 +1030,19 @@ function doPagination(index, nbItemsPerPage) {
   const selectedPublicationIds = getSelectedPublicationIds();
   const notSelectedPublicationIds = getNotSelectedPublicationIds();
   const url = getWebContext() + '/RAjaxPublicationsListServlet';
-  $.get(url, {Index: index, NbItemsPerPage: nbItemsPerPage, ComponentId: componentId, Query: topicQuery, SelectedPubIds: selectedPublicationIds, NotSelectedPubIds: notSelectedPublicationIds, IEFix: ieFix},
-  function(data) {
-    __updateDataAndUI(data);
-    location.href = "#pubList";
-  }, "html");
+  $.get(url, {
+        Index: index,
+        NbItemsPerPage: nbItemsPerPage,
+        ComponentId: componentId,
+        Query: topicQuery,
+        SelectedPubIds: selectedPublicationIds,
+        NotSelectedPubIds: notSelectedPublicationIds,
+        IEFix: ieFix
+      },
+      function (data) {
+        __updateDataAndUI(data);
+        location.href = "#pubList";
+      }, "html");
 }
 
 function showStats() {

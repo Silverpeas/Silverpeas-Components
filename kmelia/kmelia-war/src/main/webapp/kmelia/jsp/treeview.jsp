@@ -24,7 +24,6 @@
 
 --%>
 <%@page import="org.silverpeas.components.kmelia.KmeliaPublicationHelper"%>
-<%@page import="org.silverpeas.components.kmelia.SearchContext"%>
 <%@page import="org.silverpeas.core.admin.user.model.SilverpeasRole"%>
 <%@ page import="org.silverpeas.core.i18n.I18NHelper" %>
 <%@ page import="org.silverpeas.core.webapi.node.NodeType" %>
@@ -32,13 +31,14 @@
 
 <%@ include file="checkKmelia.jsp" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/kmelia" prefix="kmelia" %>
 
 <c:url var="mandatoryFieldUrl" value="/util/icons/mandatoryField.gif"/>
-<fmt:setLocale value="${sessionScope[sessionController].language}" />
+<fmt:setLocale value="${requestScope.kmelia.language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 
 <c:set var='highestUserRole' value='<%=SilverpeasRole.fromString((String) request.getAttribute("Profile"))%>'/>
@@ -53,23 +53,26 @@
   <c:set var="folderId" value="0"/>
 </c:if>
 
+<c:set var="kmelia" value="${requestScope.kmelia}"/>
+<jsp:useBean id="kmelia" type="org.silverpeas.components.kmelia.control.KmeliaSessionController"/>
+
+<c:set var="profile" value="${requestScope.Profile}"/>
+<c:set var="rightsOnTopics" value="${requestScope.RightsOnTopicsEnabled}"/>
+<c:set var="displayNBPublis" value="${requestScope.DisplayNBPublis}"/>
+<c:set var="searchContext" value="${requestScope.SearchContext}"/>
+<c:set var="currentPageIndex" value="${requestScope.PageIndex}"/>
+<c:set var="pubIdToHighlight" value="${requestScope.PubIdToHighlight}"/>
+<c:set var="userId" value="${kmelia.userId}"/>
+
+<c:set var="userCanManageRoot" value="${'admin'.equalsIgnoreCase(profile)}"/>
+<c:set var="userCanManageTopics"
+       value="${rightsOnTopics || userCanManageRoot || kmelia.topicManagementDelegated}"/>
+<c:set var="userCanEmptyTrash" value="${kmelia.isSuppressionAllowed(profile)}"/>
+<c:set var="isPasteNodeAllowed" value="${kmelia.pasteNodeAllowed}"/>
+<c:set var="isPastePublicationAllowed" value="${kmelia.isPastePublicationAllowed(folderId)}"/>
+
 <%
-  String profile			= (String) request.getAttribute("Profile");
-  String translation 	= (String) request.getAttribute("Language");
-  boolean displayNBPublis = (Boolean) request.getAttribute("DisplayNBPublis");
-  Boolean rightsOnTopics  = (Boolean) request.getAttribute("RightsOnTopicsEnabled");
-  SearchContext searchContext = (SearchContext) request.getAttribute("SearchContext");
-  int currentPageIndex = (Integer) request.getAttribute("PageIndex");
-
-  String pubIdToHighlight	= (String) request.getAttribute("PubIdToHighlight"); //used when we have found publication from search (only toolbox)
-
-  String language = kmeliaScc.getLanguage();
-
-  String userId = kmeliaScc.getUserId();
-
-  boolean userCanManageRoot = "admin".equalsIgnoreCase(profile);
-  boolean userCanManageTopics = rightsOnTopics || "admin".equalsIgnoreCase(profile) || kmeliaScc.isTopicManagementDelegated();
-  boolean userCanEmptyTrash = kmeliaScc.isSuppressionAllowed(profile);
+  String translation = (String) request.getAttribute("Language");
 %>
 <view:sp-page>
 <view:sp-head-part withCheckFormScript="true">
@@ -90,7 +93,7 @@
     let isSearchTopicEnabled = ${displaySearch};
 
     function canEmptyTrash(nodeType) {
-      const isUserCanEmptyTrash = <%= userCanEmptyTrash %>;
+      const isUserCanEmptyTrash = ${userCanEmptyTrash};
       return nodeType === "bin" && isUserCanEmptyTrash;
     }
 
@@ -103,7 +106,7 @@
     }
 
     function getCurrentUserId() {
-      return "<%=userId%>";
+      return "${userId}";
     }
 
     function getWebContext() {
@@ -115,16 +118,15 @@
     }
 
     function getComponentLabel() {
-      return "<%=WebEncodeHelper.javaStringToJsString(WebEncodeHelper.javaStringToHtmlString(
-      componentLabel))%>";
+      return "<%=WebEncodeHelper.javaStringToJsString(WebEncodeHelper.javaStringToHtmlString(componentLabel))%>";
     }
 
     function getLanguage() {
-      return "<%=language%>";
+      return "${kmelia.language}";
     }
 
     function getPubIdToHighlight() {
-      return "<%=pubIdToHighlight%>";
+      return "${pubIdToHighlight}";
     }
 
     function getTranslation() {
@@ -161,17 +163,17 @@
     icons["operation.favorites"] = "<%=resources.getIcon("kmelia.operation.favorites")%>";
 
     const params = {};
-    params["rightsOnTopic"] = <%=rightsOnTopics.booleanValue()%>;
+    params["rightsOnTopic"] = ${rightsOnTopics};
     params["i18n"] = <%=I18NHelper.isI18nContentActivated%>;
-    params["nbPublisDisplayed"] = <%=displayNBPublis%>;
+    params["nbPublisDisplayed"] = ${displayNBPublis};
 
-    let searchInProgress = <%=searchContext != null%>;
+    let searchInProgress = ${searchContext != null};
     let searchFolderId = "${folderId}";
   </script>
 </view:sp-head-part>
 <view:sp-body-part cssClass="yui-skin-sam treeView" id="${componentId}">
   <div compile-directive style="display: none"></div>
-  <div id="<%=componentId %>" class="<%=profile%>">
+  <div id="<%=componentId %>" class="${profile}">
   <%
     Window window = gef.getWindow();
     BrowseBar browseBar = window.getBrowseBar();
@@ -426,7 +428,7 @@
       displayOperations(id);
       $("#searchZone").css({'display':'block'});
       if (searchInProgress) {
-        doPagination(<%=currentPageIndex%>);
+        doPagination(${currentPageIndex});
       } else {
         displayPublications(id);
       }
@@ -473,13 +475,14 @@
   }
 
   function customMenu(node) {
-    <% if (!userCanManageTopics) { %>
+    <c:choose>
+    <c:when test="${!userCanManageTopics}">
     //user can not manage folders
     return false;
-    <% } %>
-
+    </c:when>
+    <c:otherwise>
     const nodeType = node.type;
-    let userRole = '<%=profile%>';
+    let userRole = '${profile}';
     if (params["rightsOnTopic"]) {
       userRole = node.original.attr["role"];
     }
@@ -543,7 +546,7 @@
         label: "<%=resources.getString("GML.PDCPredefinePositions")%>",
         action: function (obj) {
           const node = getTreeview().get_node(obj.reference);
-          openPredefinedPdCClassification(node.id);
+          openPredefinedPdCClassification(parseInt(node.id));
         },
         "separator_after": true
       },
@@ -561,8 +564,9 @@
           const node = getTreeview().get_node(obj.reference);
           cutNode(node.id);
         }
-      },
-      pasteItem: {
+      }
+      <c:if test="${isPasteNodeAllowed || isPastePublicationAllowed}">
+      , pasteItem: {
         label: "<%=resources.getString("GML.paste")%>",
         action: function (obj) {
           const node = getTreeview().get_node(obj.reference);
@@ -570,6 +574,7 @@
         },
         "separator_after": true
       }
+      </c:if>
       <% if (kmeliaScc.isWysiwygOnTopicsEnabled()) { %>
       ,
       wysiwygItem: {
@@ -583,15 +588,19 @@
     };
 
     if (nodeType === "root") {
-      <% if(!userCanManageRoot) { %>
+      <c:choose>
+        <c:when test="${!userCanManageRoot}">
       // user can not manage root folder
       return false;
-      <% } %>
+        </c:when>
+        <c:otherwise>
       delete items.editItem;
       delete items.deleteItem;
       delete items.copyItem;
       delete items.cutItem;
       delete items.statusItem;
+        </c:otherwise>
+      </c:choose>
     }
 
     if (items.statusItem) {
@@ -644,6 +653,8 @@
       }
     }
     return items;
+      </c:otherwise>
+    </c:choose>
   }
 
   function getMinimalContextualMenuForAdmins(items) {
@@ -926,13 +937,13 @@
 
         sp.i18n.load({
           bundle : 'org.silverpeas.kmelia.multilang.kmeliaBundle',
-          language : '<%=language%>'
+          language : '${sessionScope[sessionController].language}'
         });
 
-        <% if (KmeliaHelper.ROLE_ADMIN.equals(profile)) { %>
+        <c:if test="${userCanManageRoot}">
         //Right-click concerns only admins
         showRightClickHelp();
-        <% } %>
+        </c:if>
       }
   );
 
