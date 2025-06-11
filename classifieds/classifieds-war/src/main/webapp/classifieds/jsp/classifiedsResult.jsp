@@ -59,17 +59,7 @@
 
 <view:sp-page>
 <view:sp-head-part>
-<script type="text/javascript">
-function sendData() {
-  document.searchForm.submit();
-}
-
-function viewClassifieds(fieldNumber, fieldValue) {
-  var id = $("#searchForm select").get(fieldNumber).id;
-  $("#searchForm #"+id+" option[value='"+fieldValue+"']").prop('selected',true);
-  sendData();
-}
-</script>
+  <view:script src="/classifieds/jsp/javaScript/classifieds.js"/>
 </view:sp-head-part>
 <view:sp-body-part id="classifieds">
   <fmt:message var="classifiedPath" key="classifieds.classifiedsResult" />

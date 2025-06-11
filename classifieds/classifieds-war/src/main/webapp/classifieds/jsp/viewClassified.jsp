@@ -85,7 +85,7 @@
 <script type="text/javascript">
   function deleteConfirm() {
     // confirmation de suppression de l'annonce
-    var label = "<c:out value='${deletionConfirm}'/>";
+    const label = "<c:out value='${deletionConfirm}'/>";
     jQuery.popup.confirm(label, function() {
       document.classifiedForm.action = "DeleteClassified";
       document.classifiedForm.submit();
@@ -127,9 +127,9 @@
   }
 
   function sendRefusalForm() {
-    var errorMsg = "";
-    var errorNb = 0;
-    var motive = stripInitialWhitespace(document.refusalForm.Motive.value);
+    let errorMsg = "";
+    let errorNb = 0;
+    const motive = stripInitialWhitespace(document.refusalForm.Motive.value);
     if (isWhitespace(motive)) {
       errorMsg += "  - '<fmt:message key="classifieds.refusalMotive"/>' <fmt:message key="GML.MustBeFilled"/>\n";
       errorNb++;
@@ -162,13 +162,13 @@
     });
 
   function openImage(url) {
-      var urlPart = "/size/250x/";
-      var i = url.indexOf(urlPart);
-      if (i != -1) {
+    const urlPart = "/size/250x/";
+    const i = url.indexOf(urlPart);
+    if (i !== -1) {
         url = url.substring(0, i) + url.substring(i+urlPart.length, url.length);
-      }
-    SP_openWindow(url,'image','700','500','scrollbars=yes, noresize, alwaysRaised');
     }
+    SP_openWindow(url,'image','700','500','scrollbars=yes, noresize, alwaysRaised');
+  }
 
   function toNotify() {
     sp.messager.open('${instanceId}', {${contributionIdKey}: '${classified.id}'});
@@ -186,7 +186,7 @@
 
   function sendMessageToOwner() {
     SilverpeasError.reset();
-    var message = stripInitialWhitespace(document.messageToOwnerForm.Message.value);
+    const message = stripInitialWhitespace(document.messageToOwnerForm.Message.value);
     if (isWhitespace(message)) {
       SilverpeasError.add("<b><fmt:message key="GML.notification.message"/></b> <fmt:message key="GML.MustBeFilled"/>\n");
     }
@@ -284,11 +284,11 @@
 
   <view:window>
     <view:frame>
-        <table cellpadding="5" width="100%">
+        <table>
           <caption></caption>
           <th id="classified-view-header"></th>
         <tr>
-            <td valign="top">
+            <td>
               <div class="rightContent">
                 <c:if test="${not empty index}">
                   <viewTags:displayIndex nbItems="${index.nbItems}" index="${index.currentIndex}" />
@@ -407,11 +407,11 @@
                 <td valign="top">${displayedTitle}</td>
               </tr>
               <tr>
-                <td class="txtlibform" valign="top"><fmt:message key="classifieds.refusalMotive" /> :</td>
-                <td><textarea name="Motive" rows="5" cols="55"></textarea>&nbsp;<img border="0" src="${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}"/>" width="5" height="5"/></td>
+                <td class="txtlibform"><fmt:message key="classifieds.refusalMotive" /> :</td>
+                <td><textarea name="Motive" rows="5" cols="55"></textarea>&nbsp;<img src="${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}"/>" width="5" height="5"/></td>
               </tr>
               <tr>
-                <td colspan="2"><img border="0" src="${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}"/>" width="5" height="5"/> : <fmt:message key="GML.requiredField" /></td>
+                <td colspan="2"><img src="${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}"/>" width="5" height="5"/> : <fmt:message key="GML.requiredField" /></td>
               </tr>
             </table></td>
         </tr>
@@ -424,14 +424,14 @@
           <caption></caption>
           <th id="messageToOnwerFormHeader"></th>
           <tr>
-            <td><textarea name="Message" rows="7" cols="70"></textarea>&nbsp;<img border="0" src="${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}"/>" width="5" height="5"/></td>
+            <td><textarea name="Message" rows="7" cols="70"></textarea>&nbsp;<img src="${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}"/>" width="5" height="5"/></td>
           </tr>
           <tr>
-            <td><img border="0" src="${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}"/>" width="5" height="5"/> : <fmt:message key="GML.requiredField" /></td>
+            <td><img src="${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}"/>" width="5" height="5"/> : <fmt:message key="GML.requiredField" /></td>
           </tr>
         </table>
     </form>
   </div>
-</div>  
+</div>
 </view:sp-body-part>
 </view:sp-page>
