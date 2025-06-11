@@ -52,18 +52,8 @@
 
 <view:sp-page angularJsAppName="silverpeas.classifieds">
 <view:sp-head-part>
-<view:includePlugin name="toggle"/>
-<script type="text/javascript">
-function sendData() {
-  document.searchForm.submit();
-}
-
-function viewClassifieds(fieldNumber, fieldValue) {
-  var id = $("#searchForm select").get(fieldNumber).id;
-  $("#searchForm #"+id+" option[value='"+fieldValue+"']").prop('selected',true);
-  sendData();
-}
-</script>
+  <view:includePlugin name="toggle"/>
+  <view:script src="/classifieds/jsp/javaScript/classifieds.js"/>
 </view:sp-head-part>
 <view:sp-body-part id="classifieds">
     <div id="${instanceId}">
