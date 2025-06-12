@@ -110,6 +110,8 @@
 <fmt:message var="GML_ThisFormContains" key="GML.ThisFormContains"/>
 <fmt:message var="GML_error" key="GML.error"/>
 <fmt:message var="GML_errors" key="GML.errors"/>
+<fmt:message var="mandatoryField" key="GML.requiredField"/>
+<fmt:message var="deletionOp" key="GML.delete"/>
 
 <script type="text/javascript">
 
@@ -140,7 +142,6 @@
 
   function ifCorrectLocalFormExecute(callback)
   {
-    let verif;
     let errorMsg = "";
     let errorNb = 0;
     const title = stripInitialWhitespace(document.classifiedForm.Title.value);
@@ -168,35 +169,28 @@
       </c:if>
 
     <c:if test="${instanceSettings.photosAllowed}">
-      if (!isWhitespace(document.classifiedForm.Image1.value)) {
-        verif = /[.][jpg,gif,bmp,tiff,tif,jpeg,png,JPG,GIF,BMP,TIFF,TIF,JPEG,PNG]{3,4}$/;
-        if (verif.exec(document.classifiedForm.Image1.value) == null) {
-        errorMsg+="  - '${classifieds_image}1' : ${classifieds_imageFormat}\n";
+      let imgExtPattern = /\.(jpg|gif|bmp|tiff|tif|jpeg|png|webp)$/i;
+      if (!isWhitespace(document.classifiedForm.Image1.value) &&
+              imgExtPattern.exec(document.classifiedForm.Image1.value) == null) {
+        errorMsg+="  - '${classifieds_image}1': ${classifieds_imageFormat}\n";
         errorNb++;
-       }
       }
       
-      if (!isWhitespace(document.classifiedForm.Image2.value)) {
-        verif = /[.][jpg,gif,bmp,tiff,tif,jpeg,png,JPG,GIF,BMP,TIFF,TIF,JPEG,PNG]{3,4}$/;
-        if (verif.exec(document.classifiedForm.Image2.value) == null) {
-        errorMsg+="  - '${classifieds_image}2' : ${classifieds_imageFormat}\n";
+      if (!isWhitespace(document.classifiedForm.Image2.value) &&
+              imgExtPattern.exec(document.classifiedForm.Image2.value) == null) {
+        errorMsg+="  - '${classifieds_image}2': ${classifieds_imageFormat}\n";
         errorNb++;
-       }
       }
       
-      if (!isWhitespace(document.classifiedForm.Image3.value)) {
-        verif = /[.][jpg,gif,bmp,tiff,tif,jpeg,png,JPG,GIF,BMP,TIFF,TIF,JPEG,PNG]{3,4}$/;
-        if (verif.exec(document.classifiedForm.Image3.value) == null) {
-        errorMsg+="  - '${classifieds_image}3' : ${classifieds_imageFormat}\n";
+      if (!isWhitespace(document.classifiedForm.Image3.value) &&
+              imgExtPattern.exec(document.classifiedForm.Image3.value) == null) {
+        errorMsg+="  - '${classifieds_image}3': ${classifieds_imageFormat}\n";
         errorNb++;
-       }
       }
-      if (!isWhitespace(document.classifiedForm.Image4.value)) {
-        verif = /[.][jpg,gif,bmp,tiff,tif,jpeg,png,JPG,GIF,BMP,TIFF,TIF,JPEG,PNG]{3,4}$/;
-        if (verif.exec(document.classifiedForm.Image4.value) == null) {
-           errorMsg+="  - '${classifieds_image}4' : ${classifieds_imageFormat}\n";
-           errorNb++;
-          }
+      if (!isWhitespace(document.classifiedForm.Image4.value) &&
+              imgExtPattern.exec(document.classifiedForm.Image4.value) == null) {
+        errorMsg+="  - '${classifieds_image}4': ${classifieds_imageFormat}\n";
+        errorNb++;
       }
     </c:if>
 
@@ -205,7 +199,7 @@
               callback.call(this);
                break;
            case 1 :
-               errorMsg = "${GML_ThisFormContains} 1 ${GML_error} : \n" + errorMsg;
+               errorMsg = "${GML_ThisFormContains} 1 ${GML_error}: \n" + errorMsg;
               jQuery.popup.error(errorMsg);
                break;
            default :
@@ -217,6 +211,7 @@
   function hideImageFile(idElement) {
     document.getElementById("imageFile"+idElement).style.visibility = "hidden";
     document.classifiedForm["RemoveImageFile"+idElement].value = "yes";
+    return true;
   }
 
 </script>
@@ -240,7 +235,8 @@
 </c:if>
 </c:set>
 <c:set var="displayedId"><view:encodeHtml string="${classifiedId}" /></c:set>
-
+<c:set var="mandatoryIcon">${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}"/></c:set>
+<c:set var="deletionIcon">${pageContext.request.contextPath}<fmt:message key="classifieds.crossDelete" bundle="${icons}"/></c:set>
 <form name="classifiedForm" class="classifiedForm" action="${action}" method="post" enctype="multipart/form-data" onsubmit="sendData();return false;">
 <fieldset id="classifiedInfo" class="skinFieldset">
 <legend><fmt:message key="classifieds.mainInfos"/></legend>
@@ -259,7 +255,7 @@
     <label for="classifiedName" class="txtlibform"><fmt:message key="GML.title"/></label>
     <div class="champs">
       <input type="text" name="Title" id="classifiedName" size="60" maxlength="100" value="${displayedTitle}"/>
-      &nbsp;<img src="${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}"/>" width="5" height="5" />
+      &nbsp;<img alt="${mandatoryField}" src="${mandatoryIcon}" width="5" height="5" />
       <input type="hidden" name="ClassifiedId" value="${displayedId}"/>
       <input type="hidden" id="publishInput" name="Publish" value=""/>
     </div>
@@ -269,7 +265,7 @@
     <label for="classifiedDesc" class="txtlibform"><fmt:message key="GML.description"/></label>
     <div class="champs">
       <textarea cols="100" rows="8" name="Description" id="classifiedDesc">${displayedDescription}</textarea>
-      &nbsp;<img src="${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}"/>" width="5" height="5" />
+      &nbsp;<img alt="${mandatoryField}" src="${mandatoryIcon}" width="5" height="5" />
     </div>
   </div>
 
@@ -284,7 +280,7 @@
   
   <c:if test="${action eq 'UpdateClassified'}">
     <div class="field" id="creationDateArea">
-      <label class="txtlibform"><fmt:message key="classifieds.creationDate"/></label>
+      <span class="label txtlibform"><fmt:message key="classifieds.creationDate"/></span>
       <div class="champs">
         <view:formatDateTime value="${creationDate}"/> <fmt:message key="classifieds.by"/>
         <view:username userId="${creatorId}" />
@@ -293,7 +289,7 @@
   </c:if>
   <c:if test="${not empty updateDate}">
     <div class="field" id="updateDateArea">
-      <label class="txtlibform"><fmt:message key="classifieds.updateDate"/></label>
+      <span class="label txtlibform"><fmt:message key="classifieds.updateDate"/></span>
       <div class="champs">
         <view:formatDateTime value="${updateDate}"/>
       </div>
@@ -301,7 +297,7 @@
   </c:if>
   <c:if test="${(not empty validateDate) && (not empty validatorName)}">
     <div class="field" id="validationDateArea">
-      <label class="txtlibform"><fmt:message key="classifieds.validateDate"/></label>
+      <span class="label txtlibform"><fmt:message key="classifieds.validateDate"/></span>
       <div class="champs">
         <view:formatDateTime value="${validateDate}" /> <fmt:message key="classifieds.by"/> ${validatorName}
       </div>
@@ -309,7 +305,9 @@
   </c:if>
   
   <div class="field" id="mandatoryArea">
-    <label class="txtlibform"><img src="${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}" />" width="5" height="5"/> : <fmt:message key="GML.requiredField"/></label>
+    <span class="txtlibform">
+      <img alt="${mandatoryField}" src="${mandatoryIcon}" width="5" height="5"/>&nbsp;&nbsp;${mandatoryField}
+    </span>
   </div>
       
   </div>    
@@ -329,7 +327,7 @@
           <view:image src="${image.attachmentURL}" size="250x" css="thumbnail" id="actualImage1"/>
          </div>
          <div id="thumbnailActions">
-          <a href="javascript:onClick=hideImageFile('1');"><img src="${pageContext.request.contextPath}<fmt:message key="classifieds.crossDelete" bundle="${icons}"/>" /></a>
+          <a href="javascript:onClick=hideImageFile('1');"><img alt="${deletionOp}" src="${deletionIcon}" /></a>
           <input type="hidden" name="IdImage1" value="${image.id}"/> 
          </div>
        </div>
@@ -348,7 +346,9 @@
           <view:image src="${image.attachmentURL}" size="250x" css="thumbnail" id="actualImage2"/>
          </div>
          <div id="thumbnailActions">
-          <a href="javascript:onClick=hideImageFile('2');"><img src="${pageContext.request.contextPath}<fmt:message key="classifieds.crossDelete" bundle="${icons}"/>" /></a>
+          <a href="javascript:onClick=hideImageFile('2');">
+            <img alt="${deletionOp}" src="${deletionIcon}" />
+          </a>
           <input type="hidden" name="IdImage2" value="${image.id}"/> 
          </div>
        </div>
@@ -367,7 +367,8 @@
           <view:image src="${image.attachmentURL}" size="250x" css="thumbnail" id="actualImage3"/>
          </div>
          <div id="thumbnailActions">
-          <a href="javascript:onClick=hideImageFile('3');"><img src="${pageContext.request.contextPath}<fmt:message key="classifieds.crossDelete" bundle="${icons}"/>"/></a>
+          <a href="javascript:onClick=hideImageFile('3');">
+            <img alt="${deletionOp}" src="${deletionIcon}"/></a>
           <input type="hidden" name="IdImage3" value="${image.id}"/> 
          </div>
        </div>
@@ -386,7 +387,8 @@
           <view:image src="${image.attachmentURL}" size="250x" css="thumbnail" id="actualImage4"/>
          </div>
          <div id="thumbnailActions">
-          <a href="javascript:onClick=hideImageFile('4');"><img src="${pageContext.request.contextPath}<fmt:message key="classifieds.crossDelete" bundle="${icons}"/>"/></a>
+          <a href="javascript:onClick=hideImageFile('4');">
+            <img alt="${deletionOp}" src="${deletionIcon}"/></a>
           <input type="hidden" name="IdImage4" value="${image.id}"/> 
          </div>
        </div>
