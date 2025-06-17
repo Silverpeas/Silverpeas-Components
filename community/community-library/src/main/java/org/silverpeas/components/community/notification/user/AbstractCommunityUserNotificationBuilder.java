@@ -35,6 +35,9 @@ import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.util.MemoizedSupplier;
+import org.silverpeas.core.util.URLUtil;
+
+import static org.silverpeas.core.util.URLUtil.Permalink.SPACE;
 
 /**
  * @author silveryocha
@@ -99,7 +102,7 @@ public abstract class AbstractCommunityUserNotificationBuilder
 
   @Override
   protected String getResourceURL(final CommunityOfUsers resource) {
-    return getSpace().getPermalink();
+    return URLUtil.getSimpleURL(SPACE.getType(), resource.getSpaceId(), false);
   }
 
   @Override

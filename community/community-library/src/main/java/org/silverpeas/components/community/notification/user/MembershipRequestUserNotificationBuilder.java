@@ -28,11 +28,11 @@ import org.silverpeas.components.community.model.CommunityOfUsers;
 import org.silverpeas.core.admin.service.SpaceProfile;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.template.SilverpeasTemplate;
+import org.silverpeas.core.util.URLUtil;
 
 import java.util.Collection;
 
 import static org.silverpeas.core.util.URLUtil.Permalink.COMPONENT;
-import static org.silverpeas.core.util.URLUtil.getPermalink;
 
 /**
  * User notification dedicated to notify validators about a new member request to join a
@@ -103,7 +103,7 @@ public class MembershipRequestUserNotificationBuilder
 
   @Override
   protected String getResourceURL(final CommunityOfUsers resource) {
-    return getPermalink(COMPONENT, getResource().getComponentInstanceId());
+    return URLUtil.getSimpleURL(COMPONENT.getType(), resource.getComponentInstanceId(), false);
   }
 
   @Override
