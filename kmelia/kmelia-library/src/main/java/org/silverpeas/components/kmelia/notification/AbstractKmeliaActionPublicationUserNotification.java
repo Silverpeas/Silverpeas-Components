@@ -34,7 +34,8 @@ import org.silverpeas.core.contribution.publication.model.PublicationDetail;
  */
 public abstract class AbstractKmeliaActionPublicationUserNotification extends AbstractKmeliaPublicationUserNotification {
 
-  public AbstractKmeliaActionPublicationUserNotification(NodePK nodePK, PublicationDetail resource, NotifAction action) {
+  protected AbstractKmeliaActionPublicationUserNotification(NodePK nodePK, PublicationDetail resource,
+      NotifAction action) {
     super(nodePK, resource, action);
   }
 

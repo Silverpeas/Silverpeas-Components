@@ -44,7 +44,7 @@ import java.util.List;
  */
 public abstract class AbstractKmeliaUserNotification<T> extends AbstractTemplateUserNotificationBuilder<T> {
 
-  public AbstractKmeliaUserNotification(final T resource) {
+  protected AbstractKmeliaUserNotification(final T resource) {
     super(resource);
   }
 
@@ -77,7 +77,8 @@ public abstract class AbstractKmeliaUserNotification<T> extends AbstractTemplate
   }
 
   /**
-   * @param nodePK
+   * Gets the path of the specified node in HTML.
+   * @param nodePK the unique identifier of a node in a Kmelia instance.
    * @return a String like Space1 > SubSpace > Component2 > Topic1 > Topic2
    */
   protected String getHTMLNodePath(final NodePK nodePK, final String language) {
