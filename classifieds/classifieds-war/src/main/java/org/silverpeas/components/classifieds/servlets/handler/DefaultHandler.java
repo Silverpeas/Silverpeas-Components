@@ -24,25 +24,28 @@
 
 package org.silverpeas.components.classifieds.servlets.handler;
 
+import org.silverpeas.components.classifieds.control.ClassifiedsSessionController;
+import org.silverpeas.components.classifieds.model.Category;
+import org.silverpeas.components.classifieds.model.ClassifiedDetail;
+import org.silverpeas.components.classifieds.servlets.FunctionHandler;
+import org.silverpeas.components.classifieds.servlets.SubscriptionField;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
-import org.silverpeas.components.classifieds.control.ClassifiedsSessionController;
-import org.silverpeas.components.classifieds.model.Category;
-import org.silverpeas.components.classifieds.model.ClassifiedDetail;
-import org.silverpeas.components.classifieds.servlets.FunctionHandler;
 import org.silverpeas.core.index.indexing.model.FieldDescription;
 import org.silverpeas.core.index.search.model.QueryDescription;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Default use case : show all categories and for each one, list last published adds
+ *
  * @author Ludovic Bertin
  */
 public class DefaultHandler extends FunctionHandler {
@@ -83,6 +86,10 @@ public class DefaultHandler extends FunctionHandler {
       Collection<Category> categories = null;
 
       if (pubTemplate != null) {
+        // subscription fieds
+        var fields = getSubscriptionFields(pubTemplate, request.getUserLanguage());
+        request.setAttribute("Fields", fields);
+
         // Template Name
         String templateFileName = pubTemplate.getFileName();
         String templateName = templateFileName.substring(0, templateFileName.lastIndexOf("."));
@@ -101,6 +108,9 @@ public class DefaultHandler extends FunctionHandler {
       return "accueil.jsp";
     } else {
       //Affichage page d'accueil annonces listées
+      List<SubscriptionField> fields = pubTemplate != null ?
+          getSubscriptionFields(pubTemplate, request.getUserLanguage()) : List.of();
+      request.setAttribute("Fields", fields);
       request.setAttribute("Classifieds", classifiedsSC.getAllValidClassifieds());
 
       // Returns jsp to redirect to
@@ -111,12 +121,13 @@ public class DefaultHandler extends FunctionHandler {
 
   /**
    * Build collection of categories filled with the collection of corresponding classifieds.
+   *
    * @param templateName XML form template name
    * @param label field label
    * @param stringKeys listbox key list
    * @param stringValues listbox value list
    * @param classifiedsSC Classified Session Controller
-   * @return
+   * @return a collection with the classifieds categories
    */
   private Collection<Category> createCategory(String templateName, String label, String stringKeys,
       String stringValues, ClassifiedsSessionController classifiedsSC) {

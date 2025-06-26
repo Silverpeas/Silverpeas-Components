@@ -34,9 +34,9 @@ public class HandlerProvider {
   /**
    * Map the function name to the function handler
    */
-  private static Map<String, FunctionHandler> handlerMap = null;
+  private static final Map<String, FunctionHandler> handlerMap;
 
-  /**
+  /*
    * Inits the function handler
    */
   static {

@@ -60,7 +60,7 @@ public class Subscribe implements Serializable {
   }
 
   public String getField1() {
-    return field1;
+    return field1 == null ? "" : field1;
   }
 
   public void setField1(String field1) {
@@ -68,7 +68,7 @@ public class Subscribe implements Serializable {
   }
 
   public String getField2() {
-    return field2;
+    return field2 == null ? "" : field2;
   }
 
   public void setField2(String field2) {

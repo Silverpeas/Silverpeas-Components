@@ -31,7 +31,6 @@ import org.silverpeas.components.classifieds.model.Subscribe;
 import org.silverpeas.components.classifieds.notification.ClassifiedSubscriptionUserNotification;
 import org.silverpeas.components.classifieds.notification.ClassifiedSupervisorUserNotification;
 import org.silverpeas.components.classifieds.notification.ClassifiedValidationUserNotification;
-import org.silverpeas.kernel.exception.NotFoundException;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.UserDetail;
@@ -56,20 +55,15 @@ import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
-import org.silverpeas.kernel.util.StringUtil;
+import org.silverpeas.kernel.exception.NotFoundException;
 import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 
@@ -348,7 +342,8 @@ public class DefaultClassifiedService implements ClassifiedService {
       Collections.reverse(classifieds);
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException(e.getMessage(), e);
-    } return classifieds;
+    }
+    return classifieds;
   }
 
   @Override
@@ -418,7 +413,8 @@ public class DefaultClassifiedService implements ClassifiedService {
   }
 
   @Override
-  public void draftOutClassified(ContributionIdentifier classifiedId, String profile, boolean isValidationEnabled) {
+  public void draftOutClassified(ContributionIdentifier classifiedId, String profile,
+      boolean isValidationEnabled) {
     ClassifiedDetail classified = getContributionById(classifiedId)
         .orElseThrow(() -> new NotFoundException(NO_SUCH_CLASSIFIED + classifiedId.asString()));
     String status = classified.getStatus();
@@ -485,9 +481,8 @@ public class DefaultClassifiedService implements ClassifiedService {
       Collection<Subscribe> subscriptions =
           getSubscribesByUser(subscribe.getInstanceId(), subscribe.getUserId());
       for (Subscribe sub : subscriptions) {
-        if (sub.getField1()
-            .equals(subscribe.getField1()) && sub.getField2()
-            .equals(subscribe.getField2())) {
+        if (sub.getField1().equals(subscribe.getField1())
+            && sub.getField2().equals(subscribe.getField2())) {
           return false;
         }
       }

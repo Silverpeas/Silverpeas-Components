@@ -24,17 +24,23 @@
 
 package org.silverpeas.components.classifieds.servlets;
 
+import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.components.classifieds.control.ClassifiedsSessionController;
-import org.silverpeas.core.web.look.LookHelper;
+import org.silverpeas.core.contribution.content.form.*;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.core.web.look.LookHelper;
+import org.silverpeas.kernel.util.StringUtil;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
- * A functio handler is associated to a peas function and is called by the request router when this
+ * A function handler is associated to a peas function and is called by the request router when this
  * function has to be processed.
  */
 public abstract class FunctionHandler {
@@ -57,6 +63,7 @@ public abstract class FunctionHandler {
 
   /**
    * Process the request and returns the response url.
+   *
    * @param request the user request params
    * @param session the user request context
    */
@@ -65,6 +72,7 @@ public abstract class FunctionHandler {
 
   /**
    * Gets the template of the publication based on the classified XML form.
+   *
    * @param classifiedsSC the session controller.
    * @return the publication template for classifieds.
    * @throws PublicationTemplateException if an error occurs while getting the publication
@@ -84,8 +92,39 @@ public abstract class FunctionHandler {
     return pubTemplate;
   }
 
+  protected List<SubscriptionField> getSubscriptionFields(PublicationTemplate template,
+      String language) throws PublicationTemplateException, FormException {
+    return Arrays.stream(template.getSearchTemplate().getFieldTemplates())
+        .map(t -> {
+          var field = new SubscriptionField(t.getFieldName(), t.getLabel(language));
+          t.getFieldValueTemplate(language).forEach(
+              f -> field.valuedBy(f.getKey(), f.getValue()));
+          return field;
+        })
+        .collect(Collectors.toList());
+  }
+
+  protected static void setDataRecord(ClassifiedsSessionController classifiedsSC,
+      PublicationTemplate pubTemplate, String classifiedId, List<FileItem> items) throws PublicationTemplateException, FormException {
+    RecordSet set = pubTemplate.getRecordSet();
+    Form form = pubTemplate.getUpdateForm();
+    DataRecord data = set.getRecord(classifiedId);
+    if (data == null) {
+      data = set.getEmptyRecord();
+      data.setId(classifiedId);
+    }
+    PagesContext context = new PagesContext("myForm", "0", classifiedsSC.getLanguage(), false,
+        classifiedsSC.getComponentId(), classifiedsSC.getUserId());
+    context.setObjectId(classifiedId);
+
+    // save data record
+    form.update(items, data, context);
+    set.save(data);
+  }
+
   /**
    * Gets an instance of PublicationTemplateManager.
+   *
    * @return an instance of PublicationTemplateManager.
    */
   private PublicationTemplateManager getPublicationTemplateManager() {
