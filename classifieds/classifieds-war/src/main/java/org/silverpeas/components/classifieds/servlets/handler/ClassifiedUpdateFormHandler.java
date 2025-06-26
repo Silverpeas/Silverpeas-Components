@@ -48,8 +48,8 @@ public class ClassifiedUpdateFormHandler extends FunctionHandler {
     ClassifiedDetail classified = classifiedsSC.getClassifiedWithImages(classifiedId);
 
     // Get form template and data
-    Form formView = null;
-    DataRecord data = null;
+    Form formView;
+    DataRecord data;
     PublicationTemplate pubTemplate = getPublicationTemplate(classifiedsSC);
     if (pubTemplate != null) {
       formView = pubTemplate.getUpdateForm();

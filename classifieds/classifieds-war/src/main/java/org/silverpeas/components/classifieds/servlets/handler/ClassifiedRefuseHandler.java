@@ -25,16 +25,14 @@
 package org.silverpeas.components.classifieds.servlets.handler;
 
 import org.silverpeas.components.classifieds.control.ClassifiedsSessionController;
-import org.silverpeas.components.classifieds.servlets.FunctionHandler;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
 
 /**
  * Use Case : for all users, show all adds of given category
  * @author Ludovic Bertin
  */
-public class ClassifiedRefuseHandler extends FunctionHandler {
+public class ClassifiedRefuseHandler extends ClassifiedValidationHandler {
 
   @Override
   public String getDestination(ClassifiedsSessionController classifiedsSC,
@@ -49,17 +47,6 @@ public class ClassifiedRefuseHandler extends FunctionHandler {
 
     MultiSilverpeasBundle resources = classifiedsSC.getResources();
     String message = resources.getString("classifieds.classifiedRefused") + "...\n";
-    if (!classifiedsSC.getSessionClassifieds().isEmpty()) {
-      WebMessager.getInstance()
-          .addSuccess(message + resources.getString("classifieds.redirect.next"));
-      // More classifieds to validate, go to the next one
-      return HandlerProvider.getHandler("Next").computeDestination(classifiedsSC, request);
-    }
-
-    // go back to classifieds to validate
-    WebMessager.getInstance()
-        .addSuccess(message + resources.getString("classifieds.toValidate.nomore"));
-    return HandlerProvider.getHandler("ViewClassifiedToValidate")
-        .computeDestination(classifiedsSC, request);
+    return nextDestination(classifiedsSC, request, message);
   }
 }

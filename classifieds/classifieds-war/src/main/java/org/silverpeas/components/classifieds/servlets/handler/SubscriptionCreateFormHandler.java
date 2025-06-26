@@ -26,9 +26,6 @@ package org.silverpeas.components.classifieds.servlets.handler;
 
 import org.silverpeas.components.classifieds.control.ClassifiedsSessionController;
 import org.silverpeas.components.classifieds.servlets.FunctionHandler;
-import org.silverpeas.core.contribution.content.form.DataRecord;
-import org.silverpeas.core.contribution.content.form.Form;
-import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.web.http.HttpRequest;
 
@@ -41,20 +38,9 @@ public class SubscriptionCreateFormHandler extends FunctionHandler {
   @Override
   public String getDestination(ClassifiedsSessionController classifiedsSC,
       HttpRequest request) throws Exception {
-
-    // Get form template and data
-    Form formUpdate = null;
-    DataRecord data = null;
-    PublicationTemplate pubTemplate = getPublicationTemplate(classifiedsSC);
-    if (pubTemplate != null) {
-      formUpdate = pubTemplate.getSearchForm();
-      RecordSet recordSet = pubTemplate.getRecordSet();
-      data = recordSet.getEmptyRecord();
-    }
-
-    // Stores objects in request
-    request.setAttribute("Form", formUpdate);
-    request.setAttribute("Data", data);
+    PublicationTemplate template = getPublicationTemplate(classifiedsSC);
+    var fields = getSubscriptionFields(template, request.getUserLanguage());
+    request.setAttribute("Fields", fields);
 
     // Returns jsp to redirect to
     return "subscriptionManager.jsp";

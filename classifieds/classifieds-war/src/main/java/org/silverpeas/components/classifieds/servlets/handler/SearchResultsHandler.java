@@ -41,11 +41,7 @@ public class SearchResultsHandler extends FunctionHandler {
     String id = request.getParameter("Id");
     String type = request.getParameter("Type");
 
-    if ("Classified".equals(type)) {
-      request.setAttribute("ClassifiedId", id);
-      return HandlerProvider.getHandler("ViewClassified")
-          .computeDestination(classifiedsSC, request);
-    } else if (type.startsWith("Comment")) {
+    if ("Classified".equals(type) || type.startsWith("Comment")) {
       request.setAttribute("ClassifiedId", id);
       return HandlerProvider.getHandler("ViewClassified")
           .computeDestination(classifiedsSC, request);

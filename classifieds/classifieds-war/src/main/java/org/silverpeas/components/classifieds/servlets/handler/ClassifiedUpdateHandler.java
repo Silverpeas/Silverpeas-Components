@@ -24,22 +24,17 @@
 
 package org.silverpeas.components.classifieds.servlets.handler;
 
-import java.util.List;
-
 import org.apache.commons.fileupload.FileItem;
-
 import org.silverpeas.components.classifieds.control.ClassifiedsRole;
 import org.silverpeas.components.classifieds.control.ClassifiedsSessionController;
 import org.silverpeas.components.classifieds.model.ClassifiedDetail;
 import org.silverpeas.components.classifieds.servlets.FunctionHandler;
-import org.silverpeas.core.contribution.content.form.DataRecord;
-import org.silverpeas.core.contribution.content.form.Form;
-import org.silverpeas.core.contribution.content.form.PagesContext;
-import org.silverpeas.core.contribution.content.form.RecordSet;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.kernel.util.StringUtil;
+
+import java.util.List;
 
 /**
  * Use Case : for all users, show all adds of given category
@@ -75,19 +70,7 @@ public class ClassifiedUpdateHandler extends FunctionHandler {
       // Populate data record
       PublicationTemplate pub = getPublicationTemplate(classifiedsSC);
       if (pub != null) {
-        RecordSet set = pub.getRecordSet();
-        Form form = pub.getUpdateForm();
-        DataRecord data = set.getRecord(classifiedId);
-        if (data == null) {
-          data = set.getEmptyRecord();
-          data.setId(classifiedId);
-        }
-        PagesContext context = new PagesContext("myForm", "0", classifiedsSC.getLanguage(), false,
-            classifiedsSC.getComponentId(), classifiedsSC.getUserId());
-        context.setObjectId(classifiedId);
-        // mise à jour des données saisies
-        form.update(items, data, context);
-        set.save(data);
+        setDataRecord(classifiedsSC, pub, classifiedId, items);
       }
       //Update classified
       classifiedsSC

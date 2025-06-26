@@ -96,9 +96,9 @@ public class SearchHandler extends FunctionHandler {
         for (String fieldName : fieldNames) {
           Field field = data.getField(fieldName);
           String fieldValue = field.getStringValue();
-          if (fieldValue != null && fieldValue.trim().length() > 0) {
+          if (fieldValue != null && !fieldValue.trim().isEmpty()) {
             // multiple checkbox
-            String fieldQuery = fieldValue.trim().replaceAll("##", " AND ");
+            String fieldQuery = fieldValue.trim().replace("##", " AND ");
             query.addFieldQuery(
                 new FieldDescription(templateName + "$$" + fieldName, fieldQuery, null));
           }
