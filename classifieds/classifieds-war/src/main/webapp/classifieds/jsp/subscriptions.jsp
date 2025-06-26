@@ -46,8 +46,7 @@
 <c:set var="componentLabel" value="${browseContext[1]}" />
 
 <c:set var="subscribes" value="${requestScope.Subscribes}" />
-<c:set var="fieldsLabel" value="${requestScope.FieldsLabel}" />
-<c:set var="data" value="${requestScope.Data}" />
+<c:set var="fields" value="${requestScope.Fields}"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -86,16 +85,16 @@
                 <p>
                   &nbsp; &#149; &nbsp;
                   <c:if test="${not empty subscribe.fieldName1}">
-                    ${fieldsLabel[data.fields[0].name]}:&nbsp;<strong>${subscribe.fieldName1}</strong>&nbsp;
+                    ${fields[0].label}:&nbsp;<strong>${subscribe.fieldName1}</strong>&nbsp;
                   </c:if>
                   <c:if test="${not empty subscribe.fieldName2}">
-                    ${fieldsLabel[data.fields[1].name]}:&nbsp;<strong>${subscribe.fieldName2}</strong>
+                    ${fields[1].label}:&nbsp;<strong>${subscribe.fieldName2}</strong>
                   </c:if>
                   <a href="DeleteSubscription?SubscribeId=${subscribe.subscribeId}">
                     <fmt:message var="iconDelete" key="classifieds.smallDelete" bundle="${icons}" />
                     <c:url var="iconDeleteUrl" value="${iconDelete}"/>
                     <fmt:message var="deleteLabel" key="GML.delete" />
-                    <img src="${iconDeleteUrl}" border="0" alt="${deleteLabel}" title="${deleteLabel}" align="absmiddle" />
+                    <img src="${iconDeleteUrl}" border="0" alt="${deleteLabel}" title="${deleteLabel}" />
                   </a>
                 </p>
               </td>
@@ -104,7 +103,7 @@
         </c:if>
         <c:if test="${empty subscribes}">
           <tr>
-            <td colspan="5" valign="middle" align="center" width="100%">
+            <td colspan="5">
               <br /> <fmt:message key="classifieds.SubscribeEmpty" /> <br /></td>
           </tr>
         </c:if>

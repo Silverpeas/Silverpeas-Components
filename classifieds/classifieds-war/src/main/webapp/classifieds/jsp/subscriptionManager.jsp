@@ -25,10 +25,6 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@page import="org.silverpeas.core.contribution.content.form.Form"%>
-<%@page import="org.silverpeas.core.contribution.content.form.PagesContext"%>
-<%@page import="org.silverpeas.core.contribution.content.form.DataRecord"%>
-
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
@@ -40,9 +36,7 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 
-<c:set var="formSearch" value="${requestScope.Form}" />
-<c:set var="data" value="${requestScope.Data}" />
-<c:set var="instanceId" value="${requestScope.InstanceId}" />
+<c:set var="fields" value="${requestScope.Fields}"/>
 
 <fmt:message var="dialogTitle" key="classifieds.subscriptionsAdd"/>
 <fmt:message var="validateLabel" key="GML.validate"/>
@@ -80,27 +74,30 @@
 <div id="subscription-adding" style="display: none">
 	<br/>
 	<form name="SubscriptionForm" action="AddSubscription" method="post" enctype="multipart/form-data">
-	<c:if test="${not empty formSearch}">
-		<table>
-			<caption></caption>
-			<th id="subscriptionFormHeader"></th>
-			<!-- AFFICHAGE du formulaire -->
-			<tr>
-				<td colspan="2">
-					<%
-						String language = (String) pageContext.getAttribute("language");
-						String instanceId = (String) pageContext.getAttribute("instanceId");
-						Form formSearch = (Form) pageContext.getAttribute("formSearch");
-						DataRecord data = (DataRecord) pageContext.getAttribute("data");
-
-						PagesContext context = new PagesContext("formSearch", "0", language, false, instanceId, null, null);
-					    context.setIgnoreDefaultValues(true);
-						formSearch.display(out, context, data);
-					%>
-				</td>
-			</tr>
-		</table>
-		<br/>
+	<c:if test="${not empty fields}">
+        <div class="forms mode-search">
+            <ul class="fields">
+                <c:forEach items="${fields}" var="field">
+                <jsp:useBean id="field"
+                             type="org.silverpeas.components.classifieds.servlets.SubscriptionField"/>
+                <li class="field field_${field.key}" id="form-row-${field.key}">
+                    <div>
+                        <label for="${field.key}">${field.label}</label>
+                    </div>
+                    <div class="fieldInput">
+                        <select id="${field.key}" name="${field.key}">
+                            <option value="" selected></option>
+                            <c:forEach items="${field.values}" var="value">
+                            <jsp:useBean id="value"
+                                         type="org.silverpeas.components.classifieds.servlets.SubscriptionFieldValue"/>
+                            <option value="${value.key}">${value.value}</option>
+                            </c:forEach>
+                        </select>
+                    </div>
+                </li>
+                </c:forEach>
+            </ul>
+        </div>
 	</c:if>
 	</form>
 </div>

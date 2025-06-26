@@ -24,23 +24,18 @@
 
 package org.silverpeas.components.classifieds.servlets.handler;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import org.apache.commons.fileupload.FileItem;
-
 import org.silverpeas.components.classifieds.control.ClassifiedsRole;
 import org.silverpeas.components.classifieds.control.ClassifiedsSessionController;
 import org.silverpeas.components.classifieds.model.ClassifiedDetail;
 import org.silverpeas.components.classifieds.servlets.FunctionHandler;
-import org.silverpeas.core.contribution.content.form.DataRecord;
-import org.silverpeas.core.contribution.content.form.Form;
-import org.silverpeas.core.contribution.content.form.PagesContext;
-import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.kernel.util.StringUtil;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Use Case : for all users, show all adds of given category
@@ -86,20 +81,7 @@ public class ClassifiedCreationHandler extends FunctionHandler {
       PublicationTemplate pubTemplate = getPublicationTemplate(classifiedsSC);
       if (pubTemplate != null) {
         // populate data record
-        RecordSet set = pubTemplate.getRecordSet();
-        Form form = pubTemplate.getUpdateForm();
-        DataRecord data = set.getRecord(classifiedId);
-        if (data == null) {
-          data = set.getEmptyRecord();
-          data.setId(classifiedId);
-        }
-        PagesContext context = new PagesContext("myForm", "0", classifiedsSC.getLanguage(), false,
-            classifiedsSC.getComponentId(), classifiedsSC.getUserId());
-        context.setObjectId(classifiedId);
-
-        // save data record
-        form.update(items, data, context);
-        set.save(data);
+        setDataRecord(classifiedsSC, pubTemplate, classifiedId, items);
         classifiedsSC.updateClassified(classified, false, false, false);
       }
     }
