@@ -321,10 +321,10 @@
 
     });
 
-    var publicVersionsWindow = window;
-    var suspendMotiveWindow = window;
-    var attachmentWindow = window;
-    var favoriteWindow = window;
+    const publicVersionsWindow = window;
+    let suspendMotiveWindow = window;
+    let attachmentWindow = window;
+    const favoriteWindow = window;
 
     function exportPublication() {
       $( '#publication-export' ).dialog('open');
@@ -349,7 +349,7 @@
 
     function pubDeleteConfirm() {
       closeWindows();
-      var label = "<%=resources.getString("ConfirmDeletePub")%>";
+      const label = "<%=resources.getString("ConfirmDeletePub")%>";
       jQuery.popup.confirm(label, function() {
         document.toRouterForm.action = "<%=routerUrl%>DeletePublication";
         document.toRouterForm.PubId.value = "<%=id%>";
@@ -407,7 +407,7 @@
     function alertUsers()
     {
       <% if (!pubDetail.isValid()) {%>
-      var label = "<%=WebEncodeHelper.javaStringToJsString(resources.getString("kmelia.AlertButPubNotValid"))%>";
+      const label = "<%=WebEncodeHelper.javaStringToJsString(resources.getString("kmelia.AlertButPubNotValid"))%>";
       jQuery.popup.confirm(label, function() {
         sp.messager.open('<%= contextComponentId %>', {
           nodeId: '<%= kmeliaScc.getCurrentFolderId() %>',
@@ -425,7 +425,7 @@
     function alertUsersAttachment(attachmentId)
     {
       <% if (!pubDetail.isValid()) {%>
-      var label = "<%=WebEncodeHelper.javaStringToJsString(resources.getString("kmelia.AlertButPubNotValid"))%>";
+      const label = "<%=WebEncodeHelper.javaStringToJsString(resources.getString("kmelia.AlertButPubNotValid"))%>";
       jQuery.popup.confirm(label, function() {
         sp.messager.open('<%= contextComponentId %>', {
           nodeId: '<%= kmeliaScc.getCurrentFolderId() %>',
@@ -465,19 +465,18 @@
     }
 
     function addFavorite() {
-      var name = $("#breadCrumb").text();
-      var description =
-              "<%=WebEncodeHelper.convertBlanksForHtml(Encode.forHtml(pubDetail.getDescription(language)))%>";
-      var url = "<%=pubPermalink%>";
+      const name = $("#breadCrumb").text();
+      const description = "${silfn:escapeJs(publication.getDescription(contentLanguage))}";
+      const url = "<%=pubPermalink%>";
       postNewLink(name, url, description);
     }
 
     function pubShare() {
-      var sharingObject = {
+      const sharingObject = {
         componentId: "<%=contextComponentId%>",
-        type       : "Publication",
-        id         : "${publication.id}",
-        name   : "${silfn:escapeJs(publication.getName(contentLanguage))}"
+        type: "Publication",
+        id: "${publication.id}",
+        name: "${silfn:escapeJs(publication.getName(contentLanguage))}"
       };
       createSharingTicketPopup(sharingObject);
     }
