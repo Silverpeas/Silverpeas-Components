@@ -97,8 +97,8 @@ public abstract class FunctionHandler {
     return Arrays.stream(template.getSearchTemplate().getFieldTemplates())
         .map(t -> {
           var field = new SubscriptionField(t.getFieldName(), t.getLabel(language));
-          t.getFieldValueTemplate(language).forEach(
-              f -> field.valuedBy(f.getKey(), f.getValue()));
+          t.getFieldValuesTemplate(language).apply(
+              f -> field.valuedBy(f.getKey(), f.getLabel()));
           return field;
         })
         .collect(Collectors.toList());

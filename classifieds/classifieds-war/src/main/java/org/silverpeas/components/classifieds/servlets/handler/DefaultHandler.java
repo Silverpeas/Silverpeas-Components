@@ -37,6 +37,7 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.index.indexing.model.FieldDescription;
 import org.silverpeas.core.index.search.model.QueryDescription;
 import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.kernel.annotation.NonNull;
 import org.silverpeas.kernel.logging.SilverLogger;
 
 import java.util.ArrayList;
@@ -53,8 +54,8 @@ public class DefaultHandler extends FunctionHandler {
   private static final int NB_ADDS_BY_CATEGORY = 5;
 
   @Override
-  public String getDestination(ClassifiedsSessionController classifiedsSC, HttpRequest request)
-      throws Exception {
+  public String getDestination(ClassifiedsSessionController classifiedsSC,
+      @NonNull HttpRequest request) throws Exception {
 
     boolean portletMode = request.getParameterAsBoolean("PortletMode");
 
@@ -97,10 +98,7 @@ public class DefaultHandler extends FunctionHandler {
         // Category list based on a listbox field
         String field = classifiedsSC.getSearchFields1();
         FieldTemplate fieldTemplate = pubTemplate.getRecordTemplate().getFieldTemplate(field);
-        String keys = fieldTemplate.getParameters(classifiedsSC.getLanguage()).get("keys");
-        String values = fieldTemplate.getParameters(classifiedsSC.getLanguage()).get("values");
-        String label = fieldTemplate.getFieldName();
-        categories = createCategory(templateName, label, keys, values, classifiedsSC);
+        categories = createCategory(templateName, fieldTemplate, classifiedsSC);
       }
       request.setAttribute("Categories", categories);
 
@@ -120,43 +118,44 @@ public class DefaultHandler extends FunctionHandler {
   }
 
   /**
-   * Build collection of categories filled with the collection of corresponding classifieds.
+   * Build collection of categories from the definition of the different values of the specified
+   * field template. Each value definition of the field will serve as a category.
    *
    * @param templateName XML form template name
-   * @param label field label
-   * @param stringKeys listbox key list
-   * @param stringValues listbox value list
+   * @param fieldTemplate the template of the field to use to build the different categories of
+   * the classifieds.
    * @param classifiedsSC Classified Session Controller
    * @return a collection with the classifieds categories
    */
-  private Collection<Category> createCategory(String templateName, String label, String stringKeys,
-      String stringValues, ClassifiedsSessionController classifiedsSC) {
-
-    Collection<Category> categories = new ArrayList<>();
-    String[] keys = stringKeys.split("##");
-    String[] values = stringValues.split("##");
-
-    // Populate categories
-    for (int i = 0; i < keys.length; i++) {
-      // build Category object
-      Category category = new Category(keys[i], values[i]);
-
-      // search for classified inside this category
-      QueryDescription query = new QueryDescription();
-      query.addFieldQuery(new FieldDescription(templateName + "$$" + label, keys[i], null));
-      Collection<ClassifiedDetail> classifieds;
-      try {
-        classifieds = classifiedsSC.getClassifieds(query, NB_ADDS_BY_CATEGORY);
-      } catch (Exception e) {
-        SilverLogger.getLogger(this).error(e.getMessage(), e);
-        classifieds = new ArrayList<>();
-      }
-      category.setClassifieds(classifieds);
-
-      // add category to collection
-      categories.add(category);
-    }
-
+  @NonNull
+  private Collection<Category> createCategory(String templateName, FieldTemplate fieldTemplate,
+      ClassifiedsSessionController classifiedsSC) {
+    List<Category> categories = new ArrayList<>();
+    fieldTemplate.getFieldValuesTemplate(classifiedsSC.getLanguage())
+        .apply(v -> {
+          Category category = new Category(v.getKey(), v.getLabel());
+          var classifieds =
+              searchCategorizedClassifieds(category.getKey(), templateName,
+                  fieldTemplate.getFieldName(), classifiedsSC);
+          category.setClassifieds(classifieds);
+          categories.add(category);
+        });
     return categories;
+  }
+
+  @NonNull
+  private Collection<ClassifiedDetail> searchCategorizedClassifieds(String category,
+      String templateName, String fieldName, ClassifiedsSessionController classifiedsSC) {
+    // search for classified inside this category
+    QueryDescription query = new QueryDescription();
+    query.addFieldQuery(new FieldDescription(templateName + "$$" + fieldName, category, null));
+    Collection<ClassifiedDetail> classifieds;
+    try {
+      classifieds = classifiedsSC.getClassifieds(query, NB_ADDS_BY_CATEGORY);
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
+      classifieds = new ArrayList<>();
+    }
+    return classifieds;
   }
 }

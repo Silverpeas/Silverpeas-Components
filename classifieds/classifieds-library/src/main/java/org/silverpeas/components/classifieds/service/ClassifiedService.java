@@ -23,15 +23,14 @@
  */
 package org.silverpeas.components.classifieds.service;
 
-import org.silverpeas.core.ApplicationService;
 import org.silverpeas.components.classifieds.model.ClassifiedDetail;
 import org.silverpeas.components.classifieds.model.Subscribe;
+import org.silverpeas.core.ApplicationService;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.index.search.model.QueryDescription;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -205,16 +204,13 @@ public interface ClassifiedService extends ApplicationService {
   /**
    * get all valid classifieds
    * @param instanceId : String
-   * @param mapFields1 : HashMap des champs de recherche 1
-   * @param mapFields2 : HashMap des champs de recherche 1
-   * @param searchField1 : champ de recherche 1
-   * @param searchField2 : champ de recherche 2
+   * @param searchField1 : name of the search field 1
+   * @param searchField2 : name of the search field 2
    * @param firstItemIndex : index of first item to display
-   * @param elementsPerPage : nombre d'éléments à afficher par page
+   * @param elementsPerPage : the number of items to render per page
    * @return a collection of ClassifiedDetail
    */
-  List<ClassifiedDetail> getAllValidClassifieds(String instanceId,
-      Map<String, String> mapFields1, Map<String, String> mapFields2, String searchField1,
+  List<ClassifiedDetail> getAllValidClassifieds(String instanceId, String searchField1,
       String searchField2, int firstItemIndex, int elementsPerPage);
 
   List<ClassifiedDetail> getAllValidClassifieds(String instanceId);

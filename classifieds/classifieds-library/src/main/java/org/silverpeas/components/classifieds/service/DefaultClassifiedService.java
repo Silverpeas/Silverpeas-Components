@@ -38,9 +38,7 @@ import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.contribution.content.form.DataRecord;
-import org.silverpeas.core.contribution.content.form.Field;
-import org.silverpeas.core.contribution.content.form.RecordSet;
+import org.silverpeas.core.contribution.content.form.*;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
@@ -542,8 +540,8 @@ public class DefaultClassifiedService implements ClassifiedService {
 
   @Override
   public List<ClassifiedDetail> getAllValidClassifieds(String instanceId,
-      Map<String, String> mapFields1, Map<String, String> mapFields2, String searchField1,
-      String searchField2, int firstItemIndex, int elementsPerPage) {
+      String searchField1, String searchField2, int firstItemIndex,
+      int elementsPerPage) {
     try (Connection con = openConnection()) {
       List<ClassifiedDetail> listClassified =
           ClassifiedsDAO.getClassifiedsWithStatus(con, instanceId, ClassifiedDetail.VALID,

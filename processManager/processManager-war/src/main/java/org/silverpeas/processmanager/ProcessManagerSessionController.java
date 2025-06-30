@@ -24,6 +24,7 @@
 package org.silverpeas.processmanager;
 
 import org.silverpeas.core.SilverpeasExceptionMessages;
+import org.silverpeas.core.contribution.content.form.record.Parameter;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.user.model.Group;
@@ -2164,42 +2165,27 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   }
 
   private String getFieldValue(ProcessInstanceRowRecord instance, Item[] items, String fieldName) {
-    String fieldString;
+    String encodedFieldValue;
     try {
       Field field = instance.getFullProcessInstance().getField(fieldName);
-      fieldString = field.getValue(getLanguage());
-      if (!isDefined(fieldString) || !field.getTypeName().equals(DateField.TYPE)) {
+      encodedFieldValue = field.getValue(getLanguage());
+      if (!isDefined(encodedFieldValue) || !field.getTypeName().equals(DateField.TYPE)) {
         ItemImpl item = (ItemImpl) getItemByName(items, fieldName);
         if (item != null) {
           Map<String, String> keyValuePairs = item.getKeyValuePairs();
           if (keyValuePairs != null && !keyValuePairs.isEmpty()) {
-            StringBuilder newValue = new StringBuilder();
-            if (isDefined(fieldString)) {
-              final String delimiter = "##";
-              if (fieldString.contains(delimiter)) {
-                // Try to display a checkbox list
-                StringTokenizer tokenizer = new StringTokenizer(fieldString, delimiter);
-                String token;
-                while (tokenizer.hasMoreTokens()) {
-                  token = tokenizer.nextToken();
-                  token = keyValuePairs.get(token);
-                  newValue.append(token);
-                  if (tokenizer.hasMoreTokens()) {
-                    newValue.append(", ");
-                  }
-                }
-              } else {
-                newValue.append(keyValuePairs.get(fieldString));
-              }
+            if (isDefined(encodedFieldValue)) {
+              encodedFieldValue = Parameter.decode(encodedFieldValue).stream()
+                  .map(keyValuePairs::get)
+                  .collect(Collectors.joining(", "));
             }
-            fieldString = newValue.toString();
           }
         }
       }
     } catch (WorkflowException we) {
-      fieldString = "";
+      encodedFieldValue = "";
     }
-    return fieldString;
+    return encodedFieldValue;
   }
 
   private List<String> getCSVCols() throws FormException {

@@ -30,9 +30,7 @@ import org.silverpeas.components.classifieds.model.Subscribe;
 import org.silverpeas.components.classifieds.notification.ClassifiedOwnerNotification;
 import org.silverpeas.components.classifieds.service.ClassifiedService;
 import org.silverpeas.components.classifieds.service.ClassifiedServiceProvider;
-import org.silverpeas.kernel.exception.NotFoundException;
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.comment.service.CommentServiceProvider;
@@ -42,8 +40,9 @@ import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.FieldValue;
+import org.silverpeas.core.contribution.content.form.FieldValuesTemplate;
 import org.silverpeas.core.contribution.content.form.RecordSet;
-import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
@@ -51,23 +50,22 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.index.search.model.QueryDescription;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
 import org.silverpeas.core.web.util.ListIndex;
 import org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
+import org.silverpeas.kernel.exception.NotFoundException;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public final class ClassifiedsSessionController extends AbstractComponentSessionController {
 
@@ -79,8 +77,8 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
 
   private int currentFirstItemIndex = 0;
   private int nbItemsPerPage = DEFAULT_NBITEMS_PERPAGE;
-  private Map<String, String> fields1 = null;
-  private Map<String, String> fields2 = null;
+  private FieldValuesTemplate fields1 = null;
+  private FieldValuesTemplate fields2 = null;
   private transient CommentService commentService = null;
   private transient MultiSilverpeasBundle resources = null;
   private transient ClassifiedService classifiedService;
@@ -88,7 +86,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
   private transient SearchContext searchContext = null;
   private List<ClassifiedDetail> sessionClassifieds = null;
   transient Pagination pagination = null;
-  private ListIndex currentIndex = new ListIndex(0);
+  private final ListIndex currentIndex = new ListIndex(0);
   private int currentScope = SCOPE_ALL;
 
   /**
@@ -412,6 +410,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
     boolean notify = false;
     if (isDraftEnabled() && classified.isDraft() && !publish) {
       // do nothing
+      return false;
     } else if (!isAdmin && isValidationEnabled() && !classified.isToValidate()) {
       classified.setStatus(ClassifiedDetail.TO_VALIDATE);
       notify = true;
@@ -460,8 +459,12 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
       if (fields2 == null) {
         fields2 = createListField(getSearchFields2());
       }
-      subscribe.setFieldName1(fields1.get(subscribe.getField1()));
-      subscribe.setFieldName2(fields2.get(subscribe.getField2()));
+      subscribe.setFieldName1(fields1.get(subscribe.getField1())
+          .orElseGet(() -> FieldValue.emptyFor(getLanguage()))
+          .getLabel());
+      subscribe.setFieldName2(fields2.get(subscribe.getField2())
+          .orElseGet(() -> FieldValue.emptyFor(getLanguage()))
+          .getLabel());
       getClassifiedService().createSubscribe(subscribe);
     } catch (Exception e) {
       throw new SilverpeasRuntimeException(e);
@@ -481,25 +484,20 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @param listName : String
    * @return a Hashtable of <String, String>
    */
-  private Map<String, String> createListField(String listName) {
-    Map<String, String> fields = Collections.synchronizedMap(new HashMap<>());
+  private FieldValuesTemplate createListField(String listName) {
     if (StringUtil.isDefined(listName)) {
-      // création de la hashtable (key,value)
       try {
         PublicationTemplate pubTemplate = getPublicationTemplate();
         if (pubTemplate != null) {
-          GenericFieldTemplate field = (GenericFieldTemplate) pubTemplate.getRecordTemplate()
-              .getFieldTemplate(listName);
-          return field.getKeyValuePairs(getLanguage());
+          return pubTemplate.getRecordTemplate()
+              .getFieldTemplate(listName).getFieldValuesTemplate(getLanguage());
         }
       } catch (Exception e) {
-        // ERREUR : le champ de recherche renseigné n'est pas une liste déroulante
+        // ERROR: the search field isn't a selection list as expected!
         throw new SilverpeasRuntimeException("Field is not a list", e);
       }
-    } else {
-      // ERREUR : le champs de recherche n'est pas renseigné
     }
-    return fields;
+    return new FieldValuesTemplate(getLanguage());
   }
 
   /**
@@ -518,9 +516,13 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
     }
 
     for (Subscribe subscribe : subscribes) {
-      // ajout des libellés
-      subscribe.setFieldName1(fields1.get(subscribe.getField1()));
-      subscribe.setFieldName2(fields2.get(subscribe.getField2()));
+      // add the value labels
+      subscribe.setFieldName1(fields1.get(subscribe.getField1())
+          .orElseGet(() -> FieldValue.emptyFor(getLanguage()))
+          .getLabel());
+      subscribe.setFieldName2(fields2.get(subscribe.getField2())
+          .orElseGet(() -> FieldValue.emptyFor(getLanguage()))
+          .getLabel());
     }
 
     return subscribes;
@@ -572,14 +574,6 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    */
   private PublicationTemplateManager getPublicationTemplateManager() {
     return PublicationTemplateManager.getInstance();
-  }
-
-  /**
-   * return true if comments feature is enabled
-   * @return boolean
-   */
-  public boolean isCommentsEnabled() {
-    return !"no".equalsIgnoreCase(getComponentParameterValue("comments"));
   }
 
   /**
@@ -734,8 +728,8 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
       fields2 = createListField(getSearchFields2());
     }
     int nbElementsPerPage = getNbPerPage();
-    return getClassifiedService().getAllValidClassifieds(getComponentId(), fields1, fields2,
-        getSearchFields1(), getSearchFields2(), getCurrentFirstItemIndex(), nbElementsPerPage);
+    return getClassifiedService().getAllValidClassifieds(getComponentId(), getSearchFields1(),
+        getSearchFields2(), getCurrentFirstItemIndex(), nbElementsPerPage);
   }
 
   public int getNbPerPage() {
