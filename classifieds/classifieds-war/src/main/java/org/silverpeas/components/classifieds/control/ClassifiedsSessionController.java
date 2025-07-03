@@ -79,8 +79,8 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
 
   private int currentFirstItemIndex = 0;
   private int nbItemsPerPage = DEFAULT_NBITEMS_PERPAGE;
-  private Map<String, String> fields1 = null;
-  private Map<String, String> fields2 = null;
+  private transient Map<String, String> fields1 = null;
+  private transient Map<String, String> fields2 = null;
   private transient CommentService commentService = null;
   private transient MultiSilverpeasBundle resources = null;
   private transient ClassifiedService classifiedService;
@@ -88,7 +88,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
   private transient SearchContext searchContext = null;
   private List<ClassifiedDetail> sessionClassifieds = null;
   transient Pagination pagination = null;
-  private ListIndex currentIndex = new ListIndex(0);
+  private final ListIndex currentIndex = new ListIndex(0);
   private int currentScope = SCOPE_ALL;
 
   /**
@@ -411,7 +411,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
   private boolean setStatusOnUpdate(ClassifiedDetail classified, boolean isAdmin, boolean publish) {
     boolean notify = false;
     if (isDraftEnabled() && classified.isDraft() && !publish) {
-      // do nothing
+      return false;
     } else if (!isAdmin && isValidationEnabled() && !classified.isToValidate()) {
       classified.setStatus(ClassifiedDetail.TO_VALIDATE);
       notify = true;
@@ -496,8 +496,6 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
         // ERREUR : le champ de recherche renseigné n'est pas une liste déroulante
         throw new SilverpeasRuntimeException("Field is not a list", e);
       }
-    } else {
-      // ERREUR : le champs de recherche n'est pas renseigné
     }
     return fields;
   }
