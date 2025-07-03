@@ -24,69 +24,48 @@
 package org.silverpeas.processmanager;
 
 import org.silverpeas.core.SilverpeasExceptionMessages;
-import org.silverpeas.core.contribution.content.form.record.Parameter;
-import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.contribution.content.form.DataRecord;
-import org.silverpeas.core.contribution.content.form.DataRecordUtil;
-import org.silverpeas.core.contribution.content.form.Field;
-import org.silverpeas.core.contribution.content.form.FieldTemplate;
+import org.silverpeas.core.contribution.content.form.*;
 import org.silverpeas.core.contribution.content.form.Form;
-import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.contribution.content.form.PagesContext;
-import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.silverpeas.core.contribution.content.form.field.DateField;
 import org.silverpeas.core.contribution.content.form.field.MultipleUserField;
 import org.silverpeas.core.contribution.content.form.field.UserField;
 import org.silverpeas.core.contribution.content.form.form.XmlForm;
 import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
 import org.silverpeas.core.contribution.content.form.record.GenericRecordTemplate;
+import org.silverpeas.core.contribution.content.form.record.Parameter;
 import org.silverpeas.core.notification.message.MessageNotifier;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.MapUtil;
-import org.silverpeas.kernel.util.Mutable;
-import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.csv.CSVRow;
-import org.silverpeas.kernel.logging.SilverLogger;
 import org.silverpeas.core.web.export.ExportCSVBuilder;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
-import org.silverpeas.core.workflow.api.ProcessInstanceManager;
-import org.silverpeas.core.workflow.api.UpdatableProcessInstanceManager;
-import org.silverpeas.core.workflow.api.Workflow;
-import org.silverpeas.core.workflow.api.WorkflowEngine;
-import org.silverpeas.core.workflow.api.WorkflowException;
+import org.silverpeas.core.workflow.api.*;
 import org.silverpeas.core.workflow.api.error.WorkflowError;
-import org.silverpeas.core.workflow.api.event.GenericEvent;
-import org.silverpeas.core.workflow.api.event.QuestionEvent;
-import org.silverpeas.core.workflow.api.event.ResponseEvent;
-import org.silverpeas.core.workflow.api.event.TaskDoneEvent;
-import org.silverpeas.core.workflow.api.event.TaskSavedEvent;
-import org.silverpeas.core.workflow.api.instance.Actor;
-import org.silverpeas.core.workflow.api.instance.HistoryStep;
-import org.silverpeas.core.workflow.api.instance.ProcessInstance;
-import org.silverpeas.core.workflow.api.instance.Question;
-import org.silverpeas.core.workflow.api.instance.UpdatableProcessInstance;
+import org.silverpeas.core.workflow.api.event.*;
+import org.silverpeas.core.workflow.api.instance.*;
 import org.silverpeas.core.workflow.api.model.*;
+import org.silverpeas.core.workflow.api.model.Participant;
 import org.silverpeas.core.workflow.api.task.Task;
-import org.silverpeas.core.workflow.api.user.Replacement;
-import org.silverpeas.core.workflow.api.user.ReplacementList;
-import org.silverpeas.core.workflow.api.user.User;
-import org.silverpeas.core.workflow.api.user.UserInfo;
-import org.silverpeas.core.workflow.api.user.UserSettings;
+import org.silverpeas.core.workflow.api.user.*;
 import org.silverpeas.core.workflow.engine.WorkflowHub;
 import org.silverpeas.core.workflow.engine.datarecord.ProcessInstanceRowRecord;
 import org.silverpeas.core.workflow.engine.instance.LockingUser;
 import org.silverpeas.core.workflow.engine.model.ActionRefs;
 import org.silverpeas.core.workflow.engine.model.ItemImpl;
 import org.silverpeas.core.workflow.engine.user.UserSettingsService;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
+import org.silverpeas.kernel.logging.SilverLogger;
+import org.silverpeas.kernel.util.Mutable;
+import org.silverpeas.kernel.util.StringUtil;
 import org.silverpeas.processmanager.record.QuestionRecord;
 import org.silverpeas.processmanager.record.QuestionTemplate;
 
@@ -105,8 +84,8 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnGetting;
 import static org.silverpeas.core.cache.service.CacheAccessorProvider.getThreadCacheAccessor;
 import static org.silverpeas.core.contribution.attachment.AttachmentService.VERSION_MODE;
 import static org.silverpeas.core.util.CollectionUtil.asList;
-import static org.silverpeas.kernel.util.StringUtil.isDefined;
 import static org.silverpeas.core.workflow.util.WorkflowUtil.getItemByName;
+import static org.silverpeas.kernel.util.StringUtil.isDefined;
 import static org.silverpeas.processmanager.ProcessManagerException.PROCESS_INSTANCE_CREATION_FAILURE;
 
 /**
@@ -124,6 +103,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Builds and init a new session controller for the process manager instance.
+   *
    * @param mainSessionCtrl the main session controller of the current user in Silverpeas.
    * @param context the context of the user navigation in the process manager instance.
    * @throws ProcessManagerException if the initialization of the controller failed.
@@ -159,6 +139,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    * Builds a ill session controller. Initialization is skipped and this session controller can only
    * display the fatal exception. Used by the request router when a full session controller can't be
    * built.
+   *
    * @param mainSessionCtrl the main session controller of the user in Silverpeas.
    * @param context the user navigation context in the process manager instance.
    * @param fatal the exception to display in case of failure.
@@ -174,6 +155,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Get the creation rights
+   *
    * @return true if user can do the "Creation" action
    */
   public boolean getCreationRights() {
@@ -203,6 +185,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   /**
    * Is the history can be filtered? In this case, the forms mapped to each state are visible only
    * if the current user was a working or an interested user.
+   *
    * @return true if the history can be filtered.
    */
   public boolean isHistoryCanBeFiltered() {
@@ -225,6 +208,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   /**
    * Print button on an action can be disabled. So it's return the visibility status of that
    * button.
+   *
    * @return true is print button is visible
    */
   public boolean isPrintButtonEnabled() {
@@ -233,6 +217,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Save button on an action can be disabled. So it's return the visibility status of that button.
+   *
    * @return true is save button is visible
    */
   public boolean isSaveButtonEnabled() {
@@ -300,7 +285,8 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    * Reset the current instance list rows template.
    */
   public void resetCurrentProcessListHeaders() {
-    currentListHeaders = processModel.getRowTemplate(currentRole, getLanguage(), isProcessIdVisible());
+    currentListHeaders = processModel.getRowTemplate(currentRole, getLanguage(),
+        isProcessIdVisible());
   }
 
   /**
@@ -350,6 +336,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Get the process instance Id referred by the todo with the given todo id
+   *
    * @param externalTodoId external todo identifier
    * @return the process instance Id referred by the todo with the given todo id.
    * @throws ProcessManagerException if an error occurs.
@@ -378,6 +365,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Get the active states.
+   *
    * @return the active states.
    */
   public List<CurrentState> getActiveStates() throws ProcessManagerException {
@@ -646,6 +634,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Returns the workflow user having the given id.
+   *
    * @param userId the user identifier
    * @return the workflow user having the given id.
    * @throws ProcessManagerException if an error occurs.
@@ -660,6 +649,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Returns the process model having the given id.
+   *
    * @param modelId the model identifier
    * @return the process model having the given id.
    * @throws ProcessManagerException if an error occurs.
@@ -695,14 +685,15 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     replacement.ifPresent(r -> finalRole.set(getRoleNameForSubstitute(r, role)));
     if (replacement.isEmpty()) {
       WebMessager.getInstance().addWarning(getMultilang()
-          .getString("processManager.replacements.errors.noMoreValid"),
-              getUser(incumbentId).getFullName());
+              .getString("processManager.replacements.errors.noMoreValid"),
+          getUser(incumbentId).getFullName());
     }
     resetCurrentRole(finalRole.get());
   }
 
   /**
    * Returns the current role name.
+   *
    * @param role a role
    * @throws ProcessManagerException if an error occurs.
    */
@@ -885,6 +876,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * get the question with the given id
+   *
    * @param questionId question id
    * @return the found question
    */
@@ -941,6 +933,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Deletion of problematic characters in state name (spaces)
+   *
    * @param name name of a state process
    * @return the normalized name
    */
@@ -951,6 +944,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   /**
    * Gets a form with the assignation of users to roles for all the active states (for the
    * re-affectations of some roles in the active states)
+   *
    * @param processInstance the instance of the process for which the assignation form is asked.
    * @return a form with for active states a field with the roles required by the state.
    * @throws ProcessManagerException if the build of the form fails.
@@ -967,6 +961,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   /**
    * Gets the assignation data of the users working on the active states (for the re-affectations of
    * some roles in the active states).
+   *
    * @param processInstance the instance of the process for which the assignation data is asked.
    * @return a data record with all the assignation of the working users to the different roles of
    * each active states. Each field of the record is a mapping between a role in an active state to
@@ -1001,6 +996,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   /**
    * Reassign the roles in the active states of the specified process instance to the users defined
    * in the given assignation data.
+   *
    * @param processInstance the instance of the process in which the reassignation will be operated
    * @param data the record data in which are defined the assignation of the working users to the
    * different roles of each active states. Each field of the record should be a mapping between a
@@ -1040,6 +1036,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    * Reassign the roles played by the given actors to the new ones in the specified states of the
    * given process instance. An actor is a user that plays a given role in a given state of a
    * process instance.
+   *
    * @param processInstance the process instance in which the reassignation has to be done.
    * @param states the name of the states of the process instance concerned by the reassignation.
    * @param actorsToReplace a predicate for filtering the actors of each state that has to be
@@ -1105,6 +1102,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   /**
    * Reassign in all the states of the specified process instance the roles of the given user to the
    * specified substitute.
+   *
    * @param processInstance the instance of the process in which the reassignation will be operated
    * @param user the user playing one or several roles in the states of the process instance.
    * @param substitute the user to whom the roles in the states will be reassigned.
@@ -1126,6 +1124,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    * instances. All the roles assigned to the user in all the state in each process instance are
    * reassigned to the specified substitute. So, the constrain is the substitute must have the
    * ability to play the same roles than the given user. Otherwise an exception is thrown.
+   *
    * @param userId the unique identifier of the user to replace.
    * @param substituteId the unique identifier of the user that will substitute the above user.
    * @throws ProcessManagerException if an error occurs while performing the substitution.
@@ -1181,6 +1180,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Create a new process instance with the filled form.
+   *
    * @param data the form data
    * @param isDraft true if form has just been saved as draft
    * @param firstTimeSaved true if form is saved as draft for the first time
@@ -1272,6 +1272,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   /**
    * Search for an hypothetical action of kind "delete", allowed for the current user with the given
    * role
+   *
    * @return an array of 3 Strings { action.name, state.name, action.label }, an empty array if no
    * action found
    */
@@ -1433,6 +1434,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Get locking users list
+   *
    * @throws ProcessManagerException if an error occurs.
    */
   public List<LockVO> getLockingUsers() throws ProcessManagerException {
@@ -1469,6 +1471,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Lock the current instance for current user and given state
+   *
    * @param stateName state name
    */
   public void lock(String stateName) throws ProcessManagerException {
@@ -1483,6 +1486,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Un-Lock the current instance for given user and given state
+   *
    * @param userId user Id
    * @param stateName state name
    */
@@ -1499,6 +1503,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Un-Lock the current instance for current user and given state
+   *
    * @param stateName state name
    */
   public void unlock(String stateName) throws ProcessManagerException {
@@ -1627,6 +1632,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Get the list of actors in History Step of current process instance
+   *
    * @return an array of string containing actors full name
    */
   public String getStepActor(HistoryStep step) {
@@ -1652,6 +1658,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Get the list of actions in History Step of current process instance
+   *
    * @return an array of string containing actions names
    */
   public String getStepAction(HistoryStep step) {
@@ -1678,6 +1685,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Returns the form used to display the i-th step. Returns null if the step is unknown.
+   *
    * @throws ProcessManagerException if an error occurs
    */
   public Form getStepForm(HistoryStep step) throws ProcessManagerException {
@@ -1738,6 +1746,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Get step saved by given user id.
+   *
    * @throws ProcessManagerException if an error occurs.
    */
   public HistoryStep getSavedStep() throws ProcessManagerException {
@@ -1750,6 +1759,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Get step data record saved.
+   *
    * @throws ProcessManagerException if an error occurs.
    */
   public DataRecord getSavedStepRecord(HistoryStep savedStep) throws ProcessManagerException {
@@ -1762,6 +1772,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Get the state with the given name in the specified process instance.
+   *
    * @param processInstance the process in which the state is defined
    * @param stateName state name
    * @return the {@link State} instance corresponding to the asked name.
@@ -1778,6 +1789,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Get the named action
+   *
    * @param actionName action name
    * @return action
    */
@@ -1791,6 +1803,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Tests if there is some question for current user in current processInstance
+   *
    * @return true if there is one or more question
    */
   public boolean hasPendingQuestions() {
@@ -1890,7 +1903,8 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    */
   public ProcessFilter getCurrentFilter() throws ProcessManagerException {
     if (currentProcessFilter == null) {
-      currentProcessFilter = new ProcessFilter(processModel, currentRole, getLanguage(), isProcessIdVisible());
+      currentProcessFilter = new ProcessFilter(processModel, currentRole, getLanguage(),
+          isProcessIdVisible());
     }
     return currentProcessFilter;
   }
@@ -1900,7 +1914,8 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    */
   private void resetProcessFilter() throws ProcessManagerException {
     ProcessFilter oldFilter = currentProcessFilter;
-    currentProcessFilter = new ProcessFilter(processModel, currentRole, getLanguage(), isProcessIdVisible());
+    currentProcessFilter = new ProcessFilter(processModel, currentRole, getLanguage(),
+        isProcessIdVisible());
 
     if (oldFilter != null) {
       currentProcessFilter.setCollapse(oldFilter.isCollapse());
@@ -2173,12 +2188,10 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
         ItemImpl item = (ItemImpl) getItemByName(items, fieldName);
         if (item != null) {
           Map<String, String> keyValuePairs = item.getKeyValuePairs();
-          if (keyValuePairs != null && !keyValuePairs.isEmpty()) {
-            if (isDefined(encodedFieldValue)) {
-              encodedFieldValue = Parameter.decode(encodedFieldValue).stream()
-                  .map(keyValuePairs::get)
-                  .collect(Collectors.joining(", "));
-            }
+          if (keyValuePairs != null && !keyValuePairs.isEmpty() && isDefined(encodedFieldValue)) {
+            encodedFieldValue = Parameter.decode(encodedFieldValue).stream()
+                .map(keyValuePairs::get)
+                .collect(Collectors.joining(", "));
           }
         }
       }
@@ -2212,6 +2225,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Is current user is part of the locking users for current process instance ?
+   *
    * @return true is current user is part of the locking users for current process instance
    */
   public boolean isCurrentUserIsLockingUser() {
@@ -2228,6 +2242,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Get the current tokenId. Token Id prevents users to use several windows with same session.
+   *
    * @return the current token id
    */
   public String getCurrentTokenId() {
@@ -2236,6 +2251,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Set the current tokenId. Token Id prevents users to use several windows with same session.
+   *
    * @param newTokenId the current token id
    */
   public void setCurrentTokenId(String newTokenId) {
@@ -2260,6 +2276,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   /**
    * Gets current replacements at date of day in which the current user can play as a substitute in
    * the workflow.
+   *
    * @return a list of possible replacements.
    */
   private List<Replacement<?>> getCurrentUserReplacements() {
@@ -2273,6 +2290,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   /**
    * Gets current replacement at date of day in which the current user can play as a substitute
    * according to the given incumbent and the given role.
+   *
    * @param incumbentId the identifier of the incumbent the current user can replace.
    * @param role the role the current user and the incumbent must have.
    * @return the optional current replacement.
@@ -2291,6 +2309,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    * Gets the roles of the specified user in the underlying workflow the current user can play as a
    * substitute of him. The current user can play the roles of the specified user only and only if
    * he has the same role in the workflow.
+   *
    * @param user a user of the workflow.
    * @return a list of roles.
    */
@@ -2307,6 +2326,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   /**
    * Gets among the roles available in the current process, the label of the specified role in the
    * given language.
+   *
    * @param replacement a possible replacement for which the role is looking for. Null if the search
    * isn't done in the context of a replacement.
    * @param roles the roles the current process supports.
@@ -2362,6 +2382,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   /**
    * Gets the current active user. It takes into account any enabled replacement. It such a
    * replacement exists, then the replaced user is returned as the current user is being him.
+   *
    * @return the current active user: either the current user behind the session or a replaced user
    * from the enabled replacement.
    */
@@ -2381,6 +2402,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   /**
    * Gets current and next replacements at date of day in which the current user can be replaced in
    * the workflow.
+   *
    * @return a list of possible replacements.
    */
   @SuppressWarnings("rawtypes")

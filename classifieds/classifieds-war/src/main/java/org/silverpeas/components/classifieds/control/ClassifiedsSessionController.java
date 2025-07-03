@@ -77,8 +77,8 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
 
   private int currentFirstItemIndex = 0;
   private int nbItemsPerPage = DEFAULT_NBITEMS_PERPAGE;
-  private FieldValuesTemplate fields1 = null;
-  private FieldValuesTemplate fields2 = null;
+  private transient FieldValuesTemplate fields1 = null;
+  private transient FieldValuesTemplate fields2 = null;
   private transient CommentService commentService = null;
   private transient MultiSilverpeasBundle resources = null;
   private transient ClassifiedService classifiedService;
