@@ -71,6 +71,7 @@ import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.security.authorization.ForbiddenRuntimeException;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.kernel.annotation.NonNull;
+import org.silverpeas.kernel.annotation.Nullable;
 import org.silverpeas.kernel.bundle.LocalizationBundle;
 import org.silverpeas.core.util.MemoizedSupplier;
 import org.silverpeas.kernel.util.Pair;
@@ -740,13 +741,20 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
                 request.getPK().getInstanceId() + ":" + xmlFormShortName);
     }
 
-    protected MailSending buildMail(User sender, String receiver, String subject, FormInstance request, Multipart multipart, boolean replyRequired) {
-        return MailSending
-                .from(MailAddress.eMail(sender.getEmailAddress()).withName(sender.getDisplayedName()))
+    protected MailSending buildMail(@Nullable User sender, String receiver, String subject,
+        FormInstance request, Multipart multipart, boolean replyRequired) {
+        Objects.requireNonNull(request, "request shouldn't be null");
+        var senderEmail = sender == null ? null :
+            MailAddress.eMail(sender.getEmailAddress()).withName(sender.getDisplayedName());
+        var mail = MailSending
+                .from(senderEmail)
                 .to(MailAddress.eMail(receiver))
                 .withSubject(subject)
-                .withContent(multipart)
-                .setReplyToRequired();
+                .withContent(multipart);
+        if (replyRequired) {
+            mail.setReplyToRequired();
+        }
+        return mail;
     }
 
     private void sendRequestByEmail(FormInstance request) throws FormsOnlineException {
@@ -763,7 +771,8 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
                 attachFilesToMail(multipart, contents.getSecond());
                 // Sending to service exchange
                 final User sender = User.getById(request.getCreatorId());
-                buildMail(sender, email, form.getTitle(), request, multipart, true).send();
+                buildMail(sender, email, form.getTitle(), request, multipart, true)
+                    .send();
 
                 // Sending to sender
                 final LocalizationBundle messages = FormsOnlineComponentSettings
@@ -772,7 +781,8 @@ public class DefaultFormsOnlineService implements FormsOnlineService, Initializa
                     final String title = messages
                             .getStringWithParams("formsOnline.request.exchange.senderCopy", form.getTitle());
 
-                    buildMail(null, sender.getEmailAddress(), title, request, multipart, true).send();
+                    buildMail(null, sender.getEmailAddress(), title, request, multipart, false)
+                        .send();
 
                     MessageNotifier.addSuccess(
                             messages.getStringWithParams("formsOnline.request.exchange.successAndSummary", form.getTitle()));
