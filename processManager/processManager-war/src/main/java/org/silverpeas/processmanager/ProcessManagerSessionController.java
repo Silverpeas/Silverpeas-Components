@@ -698,22 +698,32 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    * @throws ProcessManagerException if an error occurs.
    */
   public void resetCurrentRole(String role) throws ProcessManagerException {
+    final Mutable<String> roleToPlay = Mutable.empty();
     if (role != null && !role.isEmpty()) {
       final String[] roleCtx = role.split(":");
       if (roleCtx.length == 2) {
         Replacement.get(roleCtx[0]).ifPresent(r -> {
           this.currentReplacement = r;
-          this.currentRole = roleCtx[1];
+          roleToPlay.set(roleCtx[1]);
         });
       } else {
         this.currentReplacement = null;
-        this.currentRole = role;
+        roleToPlay.set(role);
       }
     }
+    resetUserRole(roleToPlay.orElse(null));
     resetCreationRights();
     resetProcessFilter();
     resetCurrentProcessList(false);
     resetCurrentProcessListHeaders();
+  }
+
+  private void resetUserRole(String role) {
+    if (StringUtil.isDefined(role)) {
+      if (List.of(getUserRoles()).contains(role)) {
+        this.currentRole = role;
+      }
+    }
   }
 
   /**
