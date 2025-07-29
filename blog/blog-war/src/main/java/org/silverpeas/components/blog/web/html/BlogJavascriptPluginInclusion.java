@@ -56,10 +56,9 @@ public class BlogJavascriptPluginInclusion implements Initialization {
     add(BLOG, BlogJavascriptPluginInclusion::includeBlog);
   }
 
-  static ElementContainer includeBlog(final ElementContainer xhtml, String language) {
+  static void includeBlog(final ElementContainer xhtml, String language) {
     xhtml.addElement(WebPlugin.get().getHtml(IMAGETOOL, language));
     xhtml.addElement(link(VUEJS_COMPONENT_PATH + "silverpeas-blog.css"));
     xhtml.addElement(script(VUEJS_COMPONENT_PATH + "silverpeas-blog.js"));
-    return xhtml;
   }
 }

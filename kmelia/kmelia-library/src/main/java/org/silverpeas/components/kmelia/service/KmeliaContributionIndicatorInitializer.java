@@ -24,6 +24,7 @@
 
 package org.silverpeas.components.kmelia.service;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.indicator.ContributionIndicatorRegistry;
 import org.silverpeas.core.contribution.indicator.NewContributionIndicator;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
@@ -39,10 +40,11 @@ import java.time.ZoneId;
 /**
  * @author silveryocha
  */
+@Service
 public class KmeliaContributionIndicatorInitializer implements Initialization {
 
   @Override
-  public void init() throws Exception {
+  public void init() {
     ContributionIndicatorRegistry.get()
         .addNewContributionIndicator(new KmeliaNewPublicationIndicator());
   }

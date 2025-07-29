@@ -58,7 +58,7 @@ public class SurveyJavascriptPluginInclusion implements Initialization {
     add(SURVEY_RESULT_CHART, SurveyJavascriptPluginInclusion::includeResultChart);
   }
 
-  static ElementContainer includeResultChart(final ElementContainer xhtml, String language) {
+  static void includeResultChart(final ElementContainer xhtml, String language) {
     xhtml.addElement(WebPlugin.get().getHtml(CHART, language));
     final JavascriptSettingProducer settingBundle = settingVariableName("SurveyResultChartSettings");
     xhtml.addElement(scriptContent(settingBundle
@@ -67,6 +67,5 @@ public class SurveyJavascriptPluginInclusion implements Initialization {
         .produce()));
     xhtml.addElement(link(VUEJS_COMPONENT_PATH + "silverpeas-survey-result-chart.css"));
     xhtml.addElement(script(VUEJS_COMPONENT_PATH + "silverpeas-survey-result-chart.js"));
-    return xhtml;
   }
 }

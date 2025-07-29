@@ -43,8 +43,7 @@ import java.util.List;
  */
 @Service
 @Singleton
-public class QuickInfoUserAuthenticationListener
-    implements UserAuthenticationListener, Initialization {
+public class QuickInfoUserAuthenticationListener implements UserAuthenticationListener {
 
   @Override
   public String firstHomepageAccessAfterAuthentication(HttpServletRequest request, User user,

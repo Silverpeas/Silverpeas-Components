@@ -56,7 +56,7 @@ public class ScheduledUnpublishExpiredClassifieds implements SchedulerEventListe
   public static final String CLASSIFIEDSENGINE_JOB_NAME = "ClassifiedsEngineJobDelete";
 
   @Override
-  public void init() throws Exception{
+  public void init() {
     try {
       SettingBundle settings =
           ResourceLocator.getSettingBundle("org.silverpeas.classifieds.settings.classifiedsSettings");

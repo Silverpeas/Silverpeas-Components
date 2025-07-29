@@ -54,7 +54,7 @@ import static org.silverpeas.core.subscription.constant.CommonSubscriptionResour
 public class ForumsSubscriptionService extends AbstractResourceSubscriptionService {
 
   @Override
-  public void init() throws Exception {
+  public void init()  {
     super.init();
     SubscriptionFactory.get().register(FORUM,
         (r, s, i) -> new ForumSubscriptionResource(new ForumPK(i, r)),

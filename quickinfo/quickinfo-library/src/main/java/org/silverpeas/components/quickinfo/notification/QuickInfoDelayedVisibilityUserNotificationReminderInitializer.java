@@ -29,13 +29,17 @@ import org.silverpeas.components.quickinfo.model.News;
 import org.silverpeas.components.quickinfo.model.QuickInfoService;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
+import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 import javax.inject.Inject;
 import java.io.File;
+import java.io.IOException;
+import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -49,20 +53,16 @@ import java.util.List;
 public class QuickInfoDelayedVisibilityUserNotificationReminderInitializer
     implements Initialization {
 
-  private File dataFile = new File(FileRepositoryManager.getInitDataDirPath(),
+  private final File dataFile = new File(FileRepositoryManager.getInitDataDirPath(),
       "quickInfoDelayedVisibilityReminderInitialization");
 
   @Inject
   private QuickInfoDelayedVisibilityUserNotificationReminder delayedVisibilityUserNotificationReminder;
 
   @Override
-  public void init() throws Exception {
+  public void init() throws PersistenceException {
     if (!dataFile.exists()) {
-      final List<String> potentialNewsIds = JdbcSqlQuery.select("n.id")
-          .from("sc_quickinfo_news n, sb_publication_publi p")
-          .where("CAST(n.foreignid AS INT) = p.pubid")
-          .and("p.pubbegindate >= ?", DateUtil.today2SQLDate())
-          .execute(r -> r.getString(1));
+      final List<String> potentialNewsIds = getNewsIds();
       final StringBuilder report = new StringBuilder((potentialNewsIds.size() + 1) * 180);
       try {
         if (potentialNewsIds.isEmpty()) {
@@ -82,8 +82,30 @@ public class QuickInfoDelayedVisibilityUserNotificationReminderInitializer
           });
         }
       } finally {
-        FileUtils.write(dataFile, report.toString(), Charsets.UTF_8);
+        writeReport(report);
       }
     }
+  }
+
+  private void writeReport(StringBuilder report) {
+    try {
+      FileUtils.write(dataFile, report.toString(), Charsets.UTF_8);
+    } catch (IOException e) {
+      throw new SilverpeasRuntimeException(e);
+    }
+  }
+
+  private static List<String> getNewsIds() throws PersistenceException {
+    final List<String> potentialNewsIds;
+    try {
+      potentialNewsIds = JdbcSqlQuery.select("n.id")
+          .from("sc_quickinfo_news n, sb_publication_publi p")
+          .where("CAST(n.foreignid AS INT) = p.pubid")
+          .and("p.pubbegindate >= ?", DateUtil.today2SQLDate())
+          .execute(r -> r.getString(1));
+    } catch (SQLException e) {
+      throw new PersistenceException(e.getMessage(), e);
+    }
+    return potentialNewsIds;
   }
 }

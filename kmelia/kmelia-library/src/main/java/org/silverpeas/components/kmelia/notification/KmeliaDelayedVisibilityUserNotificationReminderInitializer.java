@@ -30,13 +30,17 @@ import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.initialization.Initialization;
+import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 import javax.inject.Inject;
 import java.io.File;
+import java.io.IOException;
+import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -50,20 +54,16 @@ import java.util.List;
 public class KmeliaDelayedVisibilityUserNotificationReminderInitializer
     implements Initialization {
 
-  private File dataFile = new File(FileRepositoryManager.getInitDataDirPath(),
+  private final File dataFile = new File(FileRepositoryManager.getInitDataDirPath(),
       "kmeliaDelayedVisibilityReminderInitialization");
 
   @Inject
   private KmeliaDelayedVisibilityUserNotificationReminder delayedVisibilityUserNotificationReminder;
 
   @Override
-  public void init() throws Exception {
+  public void init() throws PersistenceException {
     if (!dataFile.exists()) {
-      final List<PublicationPK> potentialPubIds = JdbcSqlQuery.select("pubId, instanceId")
-          .from("sb_publication_publi")
-          .where("instanceId like 'kmelia%'")
-          .and("pubbegindate >= ?", DateUtil.today2SQLDate())
-          .execute(r -> new PublicationPK(String.valueOf(r.getInt(1)), r.getString(2)));
+      final List<PublicationPK> potentialPubIds = getPublicationPKS();
       final StringBuilder report = new StringBuilder((potentialPubIds.size() + 1) * 180);
       try {
         if (potentialPubIds.isEmpty()) {
@@ -82,8 +82,30 @@ public class KmeliaDelayedVisibilityUserNotificationReminderInitializer
           });
         }
       } finally {
-        FileUtils.write(dataFile, report.toString(), Charsets.UTF_8);
+        writeReport(report);
       }
+    }
+  }
+
+  private static List<PublicationPK> getPublicationPKS() throws PersistenceException {
+    final List<PublicationPK> potentialPubIds;
+    try {
+      potentialPubIds = JdbcSqlQuery.select("pubId, instanceId")
+          .from("sb_publication_publi")
+          .where("instanceId like 'kmelia%'")
+          .and("pubbegindate >= ?", DateUtil.today2SQLDate())
+          .execute(r -> new PublicationPK(String.valueOf(r.getInt(1)), r.getString(2)));
+    } catch (SQLException e) {
+      throw new PersistenceException(e.getMessage(), e);
+    }
+    return potentialPubIds;
+  }
+
+  private void writeReport(StringBuilder report) {
+    try {
+      FileUtils.write(dataFile, report.toString(), Charsets.UTF_8);
+    } catch (IOException e) {
+      throw new SilverpeasRuntimeException(e);
     }
   }
 }

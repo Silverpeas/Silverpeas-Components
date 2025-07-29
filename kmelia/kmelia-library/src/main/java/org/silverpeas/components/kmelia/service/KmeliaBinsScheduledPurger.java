@@ -35,17 +35,16 @@ import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.persistence.Transaction;
-import org.silverpeas.core.scheduler.Job;
-import org.silverpeas.core.scheduler.JobExecutionContext;
-import org.silverpeas.core.scheduler.Scheduler;
-import org.silverpeas.core.scheduler.SchedulerProvider;
+import org.silverpeas.core.scheduler.*;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.kernel.SilverpeasRuntimeException;
+import org.silverpeas.kernel.annotation.NonNull;
 import org.silverpeas.kernel.bundle.ResourceLocator;
 import org.silverpeas.kernel.bundle.SettingBundle;
 import org.silverpeas.kernel.logging.SilverLogger;
 
 import javax.inject.Inject;
+import java.text.ParseException;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.stream.Stream;
@@ -77,18 +76,27 @@ public class KmeliaBinsScheduledPurger implements Initialization {
   private PublicationService publicationService;
 
   @Override
-  public void init() throws Exception {
+  public void init() throws SchedulerException {
     String cron = getSchedulingCron();
     if (!cron.isEmpty()) {
       final Scheduler scheduler = SchedulerProvider.getVolatileScheduler();
       scheduler.unscheduleJob(JOB_NAME);
-      scheduler.scheduleJob(new BinOlderItemsDeleter(), JobTrigger.triggerAt(cron));
+      scheduler.scheduleJob(new BinOlderItemsDeleter(), eachTimeAt(cron));
     }
     new BinOlderItemsDeleter().execute(JobExecutionContext.createWith(JOB_NAME, new Date()));
   }
 
+  @NonNull
+  private static JobTrigger eachTimeAt(String cron) throws SchedulerException {
+    try {
+      return JobTrigger.triggerAt(cron);
+    } catch (ParseException e) {
+      throw new SchedulerException(e.getMessage(), e);
+    }
+  }
+
   @Override
-  public void release() throws Exception {
+  public void release() throws SchedulerException {
     Scheduler scheduler = SchedulerProvider.getVolatileScheduler();
     if (scheduler.isJobScheduled(JOB_NAME)) {
       scheduler.unscheduleJob(JOB_NAME);

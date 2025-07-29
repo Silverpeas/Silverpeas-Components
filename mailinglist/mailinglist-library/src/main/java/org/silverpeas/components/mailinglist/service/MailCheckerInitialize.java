@@ -46,7 +46,7 @@ public class MailCheckerInitialize implements Initialization {
   private MessageChecker messageChecker;
   @Inject
   private MailingListService mailingListService;
-  private static SettingBundle settings;
+  private static final SettingBundle settings;
   private static final int DEFAULT_FREQUENCY = 1;
 
   static {
@@ -66,7 +66,7 @@ public class MailCheckerInitialize implements Initialization {
   }
 
   @Override
-  public void init() throws Exception {
+  public void init() {
     try {
       MessageChecker checker = getMessageChecker();
       checker.unschedule();

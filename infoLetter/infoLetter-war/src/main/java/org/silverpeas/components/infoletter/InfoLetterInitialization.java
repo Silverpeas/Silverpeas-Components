@@ -23,6 +23,7 @@
  */
 package org.silverpeas.components.infoletter;
 
+import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.web.mvc.util.WysiwygEditorConfigRegistry;
 import org.silverpeas.core.web.util.WysiwygEditorConfig;
@@ -31,6 +32,7 @@ import org.silverpeas.core.web.util.WysiwygEditorConfig;
  * Initializes some resources required by infoLetter.
  * @author silveryocha
  */
+@Service
 public class InfoLetterInitialization implements Initialization {
 
   private static final String DEFAULT_COMPONENT_NAME = "infoLetter";

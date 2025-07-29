@@ -66,7 +66,7 @@ public class JavascriptPluginInclusion implements Initialization {
     add(COMMUNITY_MANAGEMENT, JavascriptPluginInclusion::includeCommunityManagement);
   }
 
-  static ElementContainer includeCommunitySubscription(final ElementContainer xhtml, String language) {
+  static void includeCommunitySubscription(final ElementContainer xhtml, String language) {
     final String cssUrl = VUEJS_COMPONENT_PATH + "silverpeas-community-membership.css";
     xhtml.addElement(scriptContent(settingVariableName("CommunityMembershipSettings")
         .add("c.m.s.u", normalizeWebResourceUrl(cssUrl))
@@ -76,15 +76,13 @@ public class JavascriptPluginInclusion implements Initialization {
     xhtml.addElement(script(SERVICE_PATH + "silverpeas-community-membership-service.js"));
     xhtml.addElement(link(cssUrl));
     xhtml.addElement(script(VUEJS_COMPONENT_PATH + "silverpeas-community-membership.js"));
-    return xhtml;
   }
 
-  static ElementContainer includeCommunityManagement(final ElementContainer xhtml, String language) {
+  static void includeCommunityManagement(final ElementContainer xhtml, String language) {
     xhtml.addElement(WebPlugin.get().getHtml(ADMIN_SPACE_HOMEPAGE, language));
     includeCommunitySubscription(xhtml, language);
     xhtml.addElement(script(SERVICE_PATH + "silverpeas-community-service.js"));
     xhtml.addElement(link(VUEJS_COMPONENT_PATH + "silverpeas-community.css"));
     xhtml.addElement(script(VUEJS_COMPONENT_PATH + "silverpeas-community.js"));
-    return xhtml;
   }
 }
