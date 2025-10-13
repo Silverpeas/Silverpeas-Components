@@ -5,11 +5,11 @@ VALUES ('1', 'st_domain'),
        ('6', 'st_user'),
        ('13', 'st_spaceuserrole');
 
-INSERT INTO st_space (id, domainFatherId, name, lang, firstPageType, isInheritanceBlocked)
-VALUES (1, NULL, 'Space 1', 'fr', 0, 0),
-       (2, 1, 'Space 1-2', 'fr', 0, 0),
-       (3, NULL, 'Space 2', 'fr', 0, 0),
-       (4, NULL, 'Space 3', 'fr', 0, 0);
+INSERT INTO st_space (id, domainFatherId, name, lang, firstPageType, isInheritanceBlocked, isCommunity)
+VALUES (1, NULL, 'Space 1', 'fr', 0, 0, 1),
+       (2, 1, 'Space 1-2', 'fr', 0, 0, 1),
+       (3, NULL, 'Space 2', 'fr', 0, 0, 1),
+       (4, NULL, 'Space 3', 'fr', 0, 0, 1);
 
 INSERT INTO st_componentinstance (id, spaceId, name, componentName, isPublic, isInheritanceBlocked)
 VALUES (1, 1, 'Community 1', 'community', 1, 0),

@@ -54,7 +54,7 @@
   </suite>
   <inheritSpaceRightsByDefault>false</inheritSpaceRightsByDefault>
   <publicByDefault>true</publicByDefault>
-  <visible>true</visible>
+  <visible>false</visible>
   <portlet>false</portlet>
   <profiles>
     <profile name="user">
@@ -113,7 +113,7 @@
       </label>
       <order>2</order>
       <mandatory>true</mandatory>
-      <value>no</value>
+      <value>reader</value>
       <options>
         <option>
           <name>
