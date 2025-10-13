@@ -26,8 +26,6 @@ package org.silverpeas.components.community;
 import org.silverpeas.components.community.model.CommunityOfUsers;
 import org.silverpeas.components.community.notification.CommunityEventNotifier;
 import org.silverpeas.components.community.repository.CommunityOfUsersRepository;
-import org.silverpeas.core.notification.system.ResourceEvent;
-import org.silverpeas.kernel.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.ComponentInstancePostConstruction;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.service.AdminException;
@@ -35,6 +33,8 @@ import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.space.SpaceHomePageType;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.annotation.Bean;
+import org.silverpeas.core.notification.system.ResourceEvent;
+import org.silverpeas.kernel.SilverpeasRuntimeException;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -68,8 +68,13 @@ public class CommunityInstancePostConstruction implements ComponentInstancePostC
     CommunityOfUsers community = new CommunityOfUsers(instance.getId(), spaceInst.getId());
     CommunityOfUsers savedCommunity = repository.save(community);
 
+    if (!spaceInst.isCommunitySpace()) {
+      spaceInst.setFirstPageExtraParam(componentInstanceId);
+      spaceInst.setInheritanceBlocked(true);
+      spaceInst.setCommunitySpace(true);
+      spaceInst.setFirstPageType(SpaceHomePageType.COMPONENT_INST.ordinal());
+    }
     spaceInst.setFirstPageExtraParam(componentInstanceId);
-    spaceInst.setInheritanceBlocked(true);
     spaceInst.setFirstPageType(SpaceHomePageType.COMPONENT_INST.ordinal());
     updateSpaceInst(spaceInst);
 
